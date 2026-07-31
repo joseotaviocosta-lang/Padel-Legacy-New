@@ -8,6 +8,7 @@ import { setupCareerMigrationTest } from './careers/CareerMigrationTest.js';
 import { setupGameplayIntegrationTest } from './gameplay/tests/GameplayIntegrationTest.js';
 import { setupSprint2IntegrationTest } from './gameplay/tests/Sprint2IntegrationTest.js';
 import { setupProfileLoadingHotfixTest } from './gameplay/tests/ProfileLoadingHotfixTest.js';
+import { setupInitializationRegressionTest } from './gameplay/tests/InitializationRegressionTest.js';
 import "./index.css";
 
 if (import.meta.env.DEV) {
@@ -30,6 +31,7 @@ if (import.meta.env.DEV) {
     setupGameplayIntegrationTest();
     setupSprint2IntegrationTest();
     setupProfileLoadingHotfixTest();
+    setupInitializationRegressionTest();
   } catch (error) {
     console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
   }
