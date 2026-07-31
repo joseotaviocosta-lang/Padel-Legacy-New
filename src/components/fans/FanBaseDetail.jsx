@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { X, Users, Heart, Star, Eye, Zap, Calendar, Activity } from 'lucide-react';
 import { BEHAVIOR_TYPES, getFanBaseStatus, getTrendIcon, FAN_EVENTS, reactToEvent } from '@/lib/fanBase';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 function MetricRow({ icon: Icon, label, value, color }) {
   return (
@@ -26,7 +26,7 @@ export default function FanBaseDetail({ fanBase, onClose, onUpdate }) {
     setReacting(eventType);
     try {
       const updated = reactToEvent(fanBase, eventType);
-      const saved = await base44.entities.FanBase.update(fanBase.id, {
+      const saved = await localGame.entities.FanBase.update(fanBase.id, {
         morale: updated.morale,
         popularity: updated.popularity,
         loyalty: updated.loyalty,

@@ -1,11 +1,11 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { getTeamRankings } from '@/lib/teamRanking';
 
 export async function generateJournal() {
   try {
     const [matches, tournaments, rankings] = await Promise.all([
-      base44.entities.Match.list('-created_date', 30),
-      base44.entities.Tournament.filter({ status: 'finalizado' }),
+      localGame.entities.Match.list('-created_date', 30),
+      localGame.entities.Tournament.filter({ status: 'finalizado' }),
       getTeamRankings(10),
     ]);
 

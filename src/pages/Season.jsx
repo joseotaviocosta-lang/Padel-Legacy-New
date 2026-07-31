@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { CalendarDays, Loader2 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import SeasonPanel from '@/components/home/SeasonPanel';
@@ -15,7 +15,7 @@ export default function Season() {
     let active = true;
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const currentProfile = await ensureMyProfile(user);
         if (!active) return;
         setProfile(currentProfile);

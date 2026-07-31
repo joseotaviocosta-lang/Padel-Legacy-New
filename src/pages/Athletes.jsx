@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Users, Search, SlidersHorizontal } from 'lucide-react';
 import { ensureMyProfile } from '@/lib/padel';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { LoadingScreen, PageHeader, FilterPills } from '@/components/padel/ui';
 import { ensureAthleteProfiles, generateRelationships, getAthletes, PERSONALITIES } from '@/lib/athleteBehavior';
 import AthleteCard from '@/components/athletes/AthleteCard';
@@ -29,7 +29,7 @@ export default function Athletes() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         await ensureAthleteProfiles();

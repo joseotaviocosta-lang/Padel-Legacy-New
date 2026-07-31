@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 const STAFF_CATALOG = {
   accountant: { name: 'Contador', monthlyCost: 800, bonus: 'Despesas mensais -15%' },
@@ -29,7 +29,7 @@ function weekKey(date) {
 
 async function safeCreate(entityName, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity?.create) return null;
     return await entity.create(payload);
   } catch (error) {
@@ -42,7 +42,7 @@ export async function getStaffSnapshot(profile) {
   if (!profile?.id) return { staff: [], monthlyCost: 0, bonuses: [] };
   let staff = [];
   try {
-    staff = await base44.entities.PlayerStaffHire.filter({ profile_id: profile.id });
+    staff = await localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id });
   } catch (error) {
     console.warn('[Equipe Técnica] Não foi possível carregar a equipe:', error);
   }
@@ -95,7 +95,7 @@ export async function processStaffDay(profile, previousDate, currentDate) {
 
   let updatedProfile = profile;
   try {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, patch);
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, patch);
   } catch (error) {
     console.warn('[Equipe Técnica] Bônus diários não foram salvos:', error);
   }
@@ -112,7 +112,7 @@ export async function processStaffDay(profile, previousDate, currentDate) {
       created_date: new Date().toISOString(),
     });
     try {
-      updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+      updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
         staff_last_summary_week: currentWeek,
       });
     } catch (error) {

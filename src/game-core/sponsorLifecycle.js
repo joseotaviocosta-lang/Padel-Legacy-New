@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -55,7 +55,7 @@ function evaluateGoal(goal, stats) {
 
 async function safeCreate(entityName, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (entity?.create) return await entity.create(payload);
   } catch (error) {
     console.warn(`[Game Core] Não foi possível registrar ${entityName}:`, error);
@@ -68,8 +68,8 @@ export async function evaluateSponsorContracts(profile) {
 
   const month = monthKey(profile.career_date);
   const [contracts, matches] = await Promise.all([
-    base44.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }),
-    base44.entities.Match.filter({ profile_id: profile.id }),
+    localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }),
+    localGame.entities.Match.filter({ profile_id: profile.id }),
   ]);
 
   const stats = getMonthlyStats(matches, profile, month);
@@ -112,7 +112,7 @@ export async function evaluateSponsorContracts(profile) {
     const terminationThreshold = Number(clauses.termination_threshold || 25);
     const terminated = satisfaction < terminationThreshold;
 
-    await base44.entities.PlayerContract.update(contract.id, {
+    await localGame.entities.PlayerContract.update(contract.id, {
       satisfaction_score: satisfaction,
       goals_progress: stats,
       last_evaluated_month: month,
@@ -136,7 +136,7 @@ export async function evaluateSponsorContracts(profile) {
 
   let updatedProfile = profile;
   if (totalAdjustment !== 0) {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       coins: Number(profile.coins || 0) + totalAdjustment,
     });
   }

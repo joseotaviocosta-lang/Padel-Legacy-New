@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Users, Search, Heart, Swords, Handshake, GraduationCap, Zap, TrendingUp, MessageCircle, X, RefreshCw, Trophy } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { getPlayerRelationships, getRelationshipEffects, interactSocially, checkSpecialRelationshipEvents, generateRelationshipInterview } from '@/lib/relationships';
 import { ensurePlayerRelationships } from '@/game-core/relationshipLifecycle';
 import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
@@ -22,7 +22,7 @@ export default function Relationships() {
   async function load(forceSeed = true) {
     setLoading(true);
     try {
-      const p = await base44.entities.PlayerProfile.list('-created_date', 1);
+      const p = await localGame.entities.PlayerProfile.list('-created_date', 1);
       if (p?.[0]) {
         setProfile(p[0]);
         if (forceSeed) await ensurePlayerRelationships(p[0]);

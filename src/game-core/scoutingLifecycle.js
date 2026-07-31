@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 const LEVELS = {
   basico: { label: 'Básico', cost: 250, accuracy: 55 },
@@ -43,13 +43,13 @@ export function getScoutingLevels() {
 
 export async function getPlayerScoutingReports(profileId) {
   if (!profileId) return [];
-  const reports = await base44.entities.PlayerScoutingReport.filter({ profile_id: profileId });
+  const reports = await localGame.entities.PlayerScoutingReport.filter({ profile_id: profileId });
   return reports || [];
 }
 
 export async function toggleShortlist(profile, athlete, enabled) {
   if (!profile?.id || !athlete?.id) throw new Error('Perfil ou atleta inválido.');
-  const existing = await base44.entities.PlayerScoutingReport.filter({
+  const existing = await localGame.entities.PlayerScoutingReport.filter({
     profile_id: profile.id,
     athlete_id: athlete.id,
   });
@@ -61,8 +61,8 @@ export async function toggleShortlist(profile, athlete, enabled) {
     is_shortlisted: Boolean(enabled),
     updated_at: new Date().toISOString(),
   };
-  if (report) return base44.entities.PlayerScoutingReport.update(report.id, data);
-  return base44.entities.PlayerScoutingReport.create({
+  if (report) return localGame.entities.PlayerScoutingReport.update(report.id, data);
+  return localGame.entities.PlayerScoutingReport.create({
     ...data,
     scouting_level: null,
     scouted_month: null,
@@ -95,7 +95,7 @@ export async function scoutAthlete(profile, athlete, levelKey = 'basico') {
     100,
   );
 
-  const existing = await base44.entities.PlayerScoutingReport.filter({
+  const existing = await localGame.entities.PlayerScoutingReport.filter({
     profile_id: profile.id,
     athlete_id: athlete.id,
   });
@@ -122,15 +122,15 @@ export async function scoutAthlete(profile, athlete, levelKey = 'basico') {
   };
 
   const report = old
-    ? await base44.entities.PlayerScoutingReport.update(old.id, reportData)
-    : await base44.entities.PlayerScoutingReport.create(reportData);
+    ? await localGame.entities.PlayerScoutingReport.update(old.id, reportData)
+    : await localGame.entities.PlayerScoutingReport.create(reportData);
 
-  const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: currentCoins - level.cost,
   });
 
   try {
-    await base44.entities.FinancialTransaction.create({
+    await localGame.entities.FinancialTransaction.create({
       profile_id: profile.id,
       month: monthKey(careerDate),
       type: 'despesa',

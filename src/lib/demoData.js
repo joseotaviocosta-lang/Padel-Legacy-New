@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { BOTS_BY_DIFFICULTY } from '@/lib/bots';
 import { COACHES_DATA } from '@/lib/coaches';
 import { SPONSOR_CATALOG } from '@/lib/sponsors';
@@ -13,7 +13,7 @@ function pick(arr, n) {
 
 async function exists(entityName, query) {
   try {
-    const list = await base44.entities[entityName].filter(query);
+    const list = await localGame.entities[entityName].filter(query);
     return list && list.length > 0;
   } catch {
     return false;
@@ -22,16 +22,16 @@ async function exists(entityName, query) {
 
 // ── Season ────────────────────────────────────────────────────────────────
 async function seedSeason() {
-  const seasons = await base44.entities.Season.list('-start_date', 50);
+  const seasons = await localGame.entities.Season.list('-start_date', 50);
   const has2026 = (seasons || []).find(s => s.season_number === 2026 || (s.name || '').includes('2026'));
   if (has2026) {
     // Ensure it's marked active
     if (!has2026.is_active) {
-      await base44.entities.Season.update(has2026.id, { is_active: true });
+      await localGame.entities.Season.update(has2026.id, { is_active: true });
     }
     return has2026.id;
   }
-  const season = await base44.entities.Season.create({
+  const season = await localGame.entities.Season.create({
     name: 'Temporada 2026',
     description: 'Circuito profissional de padel — Temporada inaugural',
     start_date: '2026-01-01',
@@ -44,7 +44,7 @@ async function seedSeason() {
 
 // ── Coaches ──────────────────────────────────────────────────────────────
 async function seedCoaches() {
-  const existing = await base44.entities.Coach.list('-created_date', 100);
+  const existing = await localGame.entities.Coach.list('-created_date', 100);
   const existingNames = new Set((existing || []).map(c => c.name));
   const toCreate = COACHES_DATA
     .filter(c => !existingNames.has(c.name))
@@ -78,14 +78,14 @@ async function seedCoaches() {
       bio: c.bio || c.personality,
     }));
   if (toCreate.length > 0) {
-    await base44.entities.Coach.bulkCreate(toCreate);
+    await localGame.entities.Coach.bulkCreate(toCreate);
   }
   return toCreate.length;
 }
 
 // ── Sponsors ─────────────────────────────────────────────────────────────
 async function seedSponsors() {
-  const existing = await base44.entities.Sponsor.list('-created_date', 100);
+  const existing = await localGame.entities.Sponsor.list('-created_date', 100);
   const existingNames = new Set((existing || []).map(s => s.name));
   const toCreate = SPONSOR_CATALOG
     .filter(s => !existingNames.has(s.name))
@@ -117,7 +117,7 @@ async function seedSponsors() {
       is_available: true,
     }));
   if (toCreate.length > 0) {
-    await base44.entities.Sponsor.bulkCreate(toCreate);
+    await localGame.entities.Sponsor.bulkCreate(toCreate);
   }
   return toCreate.length;
 }
@@ -133,11 +133,11 @@ const DEMO_CLUBS = [
 ];
 
 async function seedClubs() {
-  const existing = await base44.entities.Club.list('-created_date', 100);
+  const existing = await localGame.entities.Club.list('-created_date', 100);
   const existingNames = new Set((existing || []).map(c => c.name));
   const toCreate = DEMO_CLUBS.filter(c => !existingNames.has(c.name));
   if (toCreate.length > 0) {
-    await base44.entities.Club.bulkCreate(toCreate.map(c => ({ ...c, club_points: c.trophies * 100, description: `Clube de padel em ${c.city}, ${c.country}` })));
+    await localGame.entities.Club.bulkCreate(toCreate.map(c => ({ ...c, club_points: c.trophies * 100, description: `Clube de padel em ${c.city}, ${c.country}` })));
   }
   return toCreate.length;
 }
@@ -165,7 +165,7 @@ const TOURNAMENT_NAMES = [
 ];
 
 async function seedTournaments(seasonId) {
-  const existing = await base44.entities.Tournament.list('-start_date', 200);
+  const existing = await localGame.entities.Tournament.list('-start_date', 200);
   const has2026 = (existing || []).filter(t => (t.start_date || '').startsWith('2026-'));
   if (has2026.length >= 10) return 0; // Already seeded
 
@@ -197,13 +197,13 @@ async function seedTournaments(seasonId) {
       participants: [],
     };
   });
-  await base44.entities.Tournament.bulkCreate(toCreate);
+  await localGame.entities.Tournament.bulkCreate(toCreate);
   return toCreate.length;
 }
 
 // ── Athlete Profiles (from bot data) ──────────────────────────────────────
 async function seedAthletes() {
-  const existing = await base44.entities.AthleteProfile.list('-created_date', 100);
+  const existing = await localGame.entities.AthleteProfile.list('-created_date', 100);
   if ((existing || []).length >= 6) return 0;
 
   const bots = [
@@ -233,7 +233,7 @@ async function seedAthletes() {
     coach_relationship: 50,
     attributes: ['serve','forehand','backhand','volley','bandeja','smash','defense','agility','strategy','emotional_control'].reduce((acc, k) => { acc[k] = bot[k] || 5; return acc; }, {}),
   }));
-  await base44.entities.AthleteProfile.bulkCreate(toCreate);
+  await localGame.entities.AthleteProfile.bulkCreate(toCreate);
   return toCreate.length;
 }
 
@@ -248,11 +248,11 @@ const DEMO_MISSIONS = [
 ];
 
 async function seedMissions() {
-  const existing = await base44.entities.Mission.list('-created_date', 100);
+  const existing = await localGame.entities.Mission.list('-created_date', 100);
   const existingTitles = new Set((existing || []).map(m => m.title));
   const toCreate = DEMO_MISSIONS.filter(m => !existingTitles.has(m.title));
   if (toCreate.length > 0) {
-    await base44.entities.Mission.bulkCreate(toCreate.map(m => ({ ...m, is_active: true })));
+    await localGame.entities.Mission.bulkCreate(toCreate.map(m => ({ ...m, is_active: true })));
   }
   return toCreate.length;
 }
@@ -270,9 +270,9 @@ const DEMO_ITEMS = [
 ];
 
 async function seedShopItems() {
-  const existing = await base44.entities.ShopItem.list('-created_date', 10);
+  const existing = await localGame.entities.ShopItem.list('-created_date', 10);
   if ((existing || []).length >= 5) return 0;
-  await base44.entities.ShopItem.bulkCreate(DEMO_ITEMS.map(i => ({ ...i, is_available: true })));
+  await localGame.entities.ShopItem.bulkCreate(DEMO_ITEMS.map(i => ({ ...i, is_available: true })));
   return DEMO_ITEMS.length;
 }
 
@@ -318,13 +318,13 @@ export async function resetCareer(profileId) {
 
   for (const entity of playerEntities) {
     try {
-      await base44.entities[entity].deleteMany({ profile_id: profileId });
+      await localGame.entities[entity].deleteMany({ profile_id: profileId });
     } catch (e) { console.error(`delete ${entity}`, e); }
   }
 
   // Reset PlayerProfile to initial state
   try {
-    await base44.entities.PlayerProfile.update(profileId, {
+    await localGame.entities.PlayerProfile.update(profileId, {
       sport_name: 'Novo Jogador',
       level: 'Iniciante',
       xp: 0,

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 function safeNumber(value, fallback = 0) {
   const parsed = Number(value);
@@ -72,7 +72,7 @@ function compatibility(a, b) {
 
 async function createWorldEvent(payload) {
   try {
-    const entity = base44.entities?.WorldEvent;
+    const entity = localGame.entities?.WorldEvent;
     if (!entity?.create) return null;
     return await entity.create(payload);
   } catch (error) {
@@ -83,7 +83,7 @@ async function createWorldEvent(payload) {
 
 async function updateAthlete(id, payload) {
   if (!id) return null;
-  return base44.entities.AthleteProfile.update(id, payload);
+  return localGame.entities.AthleteProfile.update(id, payload);
 }
 
 function availableAthletes(athletes, date) {
@@ -252,9 +252,9 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
     return { skipped: true, month: currentMonth, formed: 0, dissolved: 0, events: [] };
   }
 
-  const athletes = (await base44.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
   const dissolution = await dissolvePartnerships(athletes, currentDate);
-  const refreshed = (await base44.entities.AthleteProfile.list('ranking_position', 500)) || athletes;
+  const refreshed = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || athletes;
   const formation = await formNewPartnerships(refreshed, currentDate);
 
   let updatedProfile = profile;
@@ -266,7 +266,7 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
   };
 
   if (profile?.id) {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       last_ai_partnership_month: currentMonth,
       last_ai_partnership_summary: summary,
     });
@@ -281,7 +281,7 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
 }
 
 export async function getAiPartnershipSnapshot(profile) {
-  const athletes = (await base44.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
   const activePairs = new Set();
   let freeAgents = 0;
   for (const athlete of athletes) {

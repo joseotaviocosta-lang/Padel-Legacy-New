@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import {
   BarChart3, Trophy, Swords, Target, Flame, TrendingUp, Percent, Activity,
   CalendarDays, Medal, Crown, ShieldCheck, Gauge, Users, MapPin
@@ -90,14 +90,14 @@ export default function CareerStats() {
   useEffect(() => {
     async function load() {
       try {
-        const user = await base44.auth.me();
-        const profiles = await base44.entities.PlayerProfile.filter({ created_by_id: user.id });
+        const user = await localGame.auth.me();
+        const profiles = await localGame.entities.PlayerProfile.filter({ created_by_id: user.id });
         const currentProfile = profiles?.[0] || null;
         setProfile(currentProfile);
 
         const [allMatches, allTournaments] = await Promise.all([
-          base44.entities.Match.list('-date', 500).catch(() => []),
-          base44.entities.Tournament.list('-date', 250).catch(() => []),
+          localGame.entities.Match.list('-date', 500).catch(() => []),
+          localGame.entities.Tournament.list('-date', 250).catch(() => []),
         ]);
         setMatches(allMatches || []);
         setTournaments(allTournaments || []);

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 
@@ -52,7 +52,7 @@ function generateBotMembers(clubId, count) {
 
 export async function createClub(profile, clubData) {
   const foundedDate = profile?.career_date || new Date().toISOString().slice(0, 10);
-  const club = await base44.entities.Club.create({
+  const club = await localGame.entities.Club.create({
     ...clubData,
     reputation: 50,
     monthly_fee: 100,
@@ -69,9 +69,9 @@ export async function createClub(profile, clubData) {
   });
 
   const bots = generateBotMembers(club.id, 5 + Math.floor(Math.random() * 6));
-  if (bots.length > 0) await base44.entities.ClubMember.bulkCreate(bots);
+  if (bots.length > 0) await localGame.entities.ClubMember.bulkCreate(bots);
 
-  await base44.entities.ClubMember.create({
+  await localGame.entities.ClubMember.create({
     club_id: club.id,
     profile_id: profile?.id || '',
     member_name: profile?.sport_name || 'Presidente',
@@ -81,14 +81,14 @@ export async function createClub(profile, clubData) {
     joined_date: foundedDate,
   });
 
-  return await base44.entities.Club.update(club.id, { member_count: bots.length + 1 });
+  return await localGame.entities.Club.update(club.id, { member_count: bots.length + 1 });
 }
 
 export async function joinClub(profile, club) {
-  const existing = await base44.entities.ClubMember.filter({ club_id: club.id, profile_id: profile.id });
+  const existing = await localGame.entities.ClubMember.filter({ club_id: club.id, profile_id: profile.id });
   if (existing && existing.length > 0) return existing[0];
 
-  const member = await base44.entities.ClubMember.create({
+  const member = await localGame.entities.ClubMember.create({
     club_id: club.id,
     profile_id: profile.id,
     member_name: profile.sport_name || 'Membro',
@@ -98,33 +98,33 @@ export async function joinClub(profile, club) {
     joined_date: profile.career_date || new Date().toISOString().slice(0, 10),
   });
 
-  await base44.entities.Club.update(club.id, { member_count: (club.member_count || 0) + 1 });
+  await localGame.entities.Club.update(club.id, { member_count: (club.member_count || 0) + 1 });
   return member;
 }
 
 export async function leaveClub(member, club) {
-  await base44.entities.ClubMember.delete(member.id);
-  await base44.entities.Club.update(club.id, { member_count: Math.max(0, (club.member_count || 1) - 1) });
+  await localGame.entities.ClubMember.delete(member.id);
+  await localGame.entities.Club.update(club.id, { member_count: Math.max(0, (club.member_count || 1) - 1) });
 }
 
 export async function hireClubStaff(club, staffType) {
-  await base44.entities.ClubStaff.create({
+  await localGame.entities.ClubStaff.create({
     club_id: club.id,
     staff_type: staffType.id,
     staff_name: staffType.name,
     monthly_cost: staffType.monthly_cost,
     bonus_description: staffType.bonus,
   });
-  return await base44.entities.Club.update(club.id, { staff_count: (club.staff_count || 0) + 1 });
+  return await localGame.entities.Club.update(club.id, { staff_count: (club.staff_count || 0) + 1 });
 }
 
 export async function fireClubStaff(staffRecord, club) {
-  await base44.entities.ClubStaff.delete(staffRecord.id);
-  return await base44.entities.Club.update(club.id, { staff_count: Math.max(0, (club.staff_count || 1) - 1) });
+  await localGame.entities.ClubStaff.delete(staffRecord.id);
+  return await localGame.entities.Club.update(club.id, { staff_count: Math.max(0, (club.staff_count || 1) - 1) });
 }
 
 export async function hostEvent(club, eventData) {
-  return await base44.entities.ClubEvent.create({
+  return await localGame.entities.ClubEvent.create({
     club_id: club.id,
     ...eventData,
     status: 'agendado',
@@ -134,16 +134,16 @@ export async function hostEvent(club, eventData) {
 export async function addCourt(club, profile) {
   const cost = 25000 + (club.court_count || 2) * 10000;
   if ((profile.coins || 0) < cost) throw new Error('Moedas insuficientes');
-  const updated = await base44.entities.PlayerProfile.update(profile.id, { coins: profile.coins - cost });
-  const updatedClub = await base44.entities.Club.update(club.id, { court_count: (club.court_count || 2) + 1 });
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, { coins: profile.coins - cost });
+  const updatedClub = await localGame.entities.Club.update(club.id, { court_count: (club.court_count || 2) + 1 });
   return { profile: updated, club: updatedClub };
 }
 
 export async function buildFacility(club, facility, profile) {
   if ((profile.coins || 0) < facility.cost) throw new Error('Moedas insuficientes');
   const facilities = [...(club.facilities || []), facility.id];
-  const updated = await base44.entities.PlayerProfile.update(profile.id, { coins: profile.coins - facility.cost });
-  const updatedClub = await base44.entities.Club.update(club.id, { facilities });
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, { coins: profile.coins - facility.cost });
+  const updatedClub = await localGame.entities.Club.update(club.id, { facilities });
   return { profile: updated, club: updatedClub };
 }
 
@@ -151,8 +151,8 @@ export async function buildFacility(club, facility, profile) {
 
 export async function processClubMonthlyUpdate(club) {
   const [staff, members] = await Promise.all([
-    base44.entities.ClubStaff.filter({ club_id: club.id }),
-    base44.entities.ClubMember.filter({ club_id: club.id }),
+    localGame.entities.ClubStaff.filter({ club_id: club.id }),
+    localGame.entities.ClubMember.filter({ club_id: club.id }),
   ]);
 
   const facilities = club.facilities || [];
@@ -173,13 +173,13 @@ export async function processClubMonthlyUpdate(club) {
   if (growthRate > 0) {
     const newMembers = generateBotMembers(club.id, growthRate);
     if (newMembers.length > 0) {
-      await base44.entities.ClubMember.bulkCreate(newMembers);
+      await localGame.entities.ClubMember.bulkCreate(newMembers);
       memberCount += newMembers.length;
     }
   } else if (growthRate < 0 && botMembers.length > 0) {
     const toRemove = botMembers.slice(0, Math.min(Math.abs(growthRate), botMembers.length));
     for (const m of toRemove) {
-      await base44.entities.ClubMember.delete(m.id);
+      await localGame.entities.ClubMember.delete(m.id);
       memberCount--;
     }
   }
@@ -187,14 +187,14 @@ export async function processClubMonthlyUpdate(club) {
   const clubPoints = memberCount * 5 + reputation * 3 + (club.trophies || 0) * 20;
   const level = clubPoints >= 2000 ? 5 : clubPoints >= 1000 ? 4 : clubPoints >= 500 ? 3 : clubPoints >= 200 ? 2 : 1;
 
-  return await base44.entities.Club.update(club.id, {
+  return await localGame.entities.Club.update(club.id, {
     reputation, member_count: memberCount, club_points: clubPoints, level, staff_count: staff.length,
   });
 }
 
 export async function processAllClubsMonthly() {
   try {
-    const clubs = await base44.entities.Club.list();
+    const clubs = await localGame.entities.Club.list();
     await Promise.all((clubs || []).map(c => processClubMonthlyUpdate(c).catch(() => {})));
   } catch (e) { console.error('processAllClubsMonthly', e); }
 }

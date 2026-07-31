@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ─── Author Types ────────────────────────────────────────────────────────────
 

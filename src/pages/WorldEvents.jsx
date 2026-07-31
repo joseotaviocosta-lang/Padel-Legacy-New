@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Globe, Sparkles, RefreshCw, Flame, Calendar, TrendingUp } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import WorldEventCard from '@/components/world/WorldEventCard';
@@ -39,7 +39,7 @@ export default function WorldEventsPage() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         const date = p?.career_date || new Date().toISOString().slice(0, 10);

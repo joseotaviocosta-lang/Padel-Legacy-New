@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating } from '@/lib/padel';
 
@@ -62,7 +62,7 @@ function normalizeAthlete(athlete, index, careerDate) {
 
 async function createWorldEvent(data) {
   try {
-    return await base44.entities.WorldEvent.create(data);
+    return await localGame.entities.WorldEvent.create(data);
   } catch (error) {
     console.warn('Não foi possível registrar notícia do mercado:', error);
     return null;
@@ -70,7 +70,7 @@ async function createWorldEvent(data) {
 }
 
 export async function ensureWorldMarket(careerDate) {
-  let athletes = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+  let athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   if (!athletes || athletes.length === 0) {
     const bots = getAllBotsAsProfiles();
     for (let index = 0; index < bots.length; index += 1) {
@@ -87,9 +87,9 @@ export async function ensureWorldMarket(careerDate) {
         fatigue: 0,
         peak_age: seededValue(`${bot.id}:peak`, 26, 30),
       }, index, careerDate);
-      await base44.entities.AthleteProfile.create(normalized);
+      await localGame.entities.AthleteProfile.create(normalized);
     }
-    athletes = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+    athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   }
 
   const sorted = [...(athletes || [])].sort((a, b) => {
@@ -104,11 +104,11 @@ export async function ensureWorldMarket(careerDate) {
     const normalized = normalizeAthlete(athlete, index, careerDate);
     const needsUpdate = !athlete.market_value || !athlete.expected_salary || !athlete.world_rank || !athlete.market_status;
     if (needsUpdate) {
-      updates.push(base44.entities.AthleteProfile.update(athlete.id, normalized));
+      updates.push(localGame.entities.AthleteProfile.update(athlete.id, normalized));
     }
   }
   if (updates.length) await Promise.all(updates);
-  return base44.entities.AthleteProfile.list('-market_value', 200);
+  return localGame.entities.AthleteProfile.list('-market_value', 200);
 }
 
 function createProspect(careerDate, sequence) {
@@ -188,7 +188,7 @@ export async function evolveWorldMarket(careerDate) {
       market_months_elapsed: months,
       last_updated_date: careerDate,
     };
-    await base44.entities.AthleteProfile.update(athlete.id, updated);
+    await localGame.entities.AthleteProfile.update(athlete.id, updated);
     rankingCandidates.push({ ...athlete, ...updated });
     reports.push({ id: athlete.id, name: athlete.name, oldValue, value, trend, retired });
 
@@ -207,13 +207,13 @@ export async function evolveWorldMarket(careerDate) {
   }
 
   rankingCandidates.sort((a, b) => ((b.overall_rating || 0) * 2 + (b.current_form || 0)) - ((a.overall_rating || 0) * 2 + (a.current_form || 0)));
-  await Promise.all(rankingCandidates.map((athlete, index) => base44.entities.AthleteProfile.update(athlete.id, { world_rank: index + 1 })));
+  await Promise.all(rankingCandidates.map((athlete, index) => localGame.entities.AthleteProfile.update(athlete.id, { world_rank: index + 1 })));
 
   const prospects = [];
   const prospectCount = seededValue(`${targetMonth}:prospects`, 1, 3);
   for (let index = 0; index < prospectCount; index += 1) {
     const prospect = createProspect(careerDate, index + 1);
-    const created = await base44.entities.AthleteProfile.create(prospect);
+    const created = await localGame.entities.AthleteProfile.create(prospect);
     prospects.push(created);
     await createWorldEvent({
       event_type: 'promessa',
@@ -244,7 +244,7 @@ export async function evolveWorldMarket(careerDate) {
   return {
     skipped: false,
     month: targetMonth,
-    athletes: await base44.entities.AthleteProfile.list('-market_value', 200),
+    athletes: await localGame.entities.AthleteProfile.list('-market_value', 200),
     events: reports,
     prospects,
   };

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { enrichTournamentWeather } from '@/lib/weather';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
@@ -164,7 +164,7 @@ export function generateTournamentNews(tournaments, profile) {
 }
 
 export async function saveCircuitSeason(year, tournaments) {
-  const existing = await base44.entities.CircuitSeason.filter({ year });
+  const existing = await localGame.entities.CircuitSeason.filter({ year });
   if (existing && existing.length > 0) return existing[0];
 
   const stats = computeCircuitStats(tournaments.filter(t => {
@@ -172,7 +172,7 @@ export async function saveCircuitSeason(year, tournaments) {
     return tYear === year;
   }));
 
-  return await base44.entities.CircuitSeason.create({
+  return await localGame.entities.CircuitSeason.create({
     year,
     total_tournaments: stats.totalFinished,
     total_audience: stats.totalAudience,

@@ -11,6 +11,7 @@ import { setupProfileLoadingHotfixTest } from './gameplay/tests/ProfileLoadingHo
 import { setupInitializationRegressionTest } from './gameplay/tests/InitializationRegressionTest.js';
 import { setupInitialDataRegressionTest } from './gameplay/tests/InitialDataRegressionTest.js';
 import { setupModuleStabilityTest } from './gameplay/tests/ModuleStabilityTest.js';
+import { setupLocalRuntimeRegressionTest } from './gameplay/tests/LocalRuntimeRegressionTest.js';
 import "./index.css";
 
 if (import.meta.env.DEV) {
@@ -36,6 +37,7 @@ if (import.meta.env.DEV) {
     setupInitializationRegressionTest();
     setupInitialDataRegressionTest();
     setupModuleStabilityTest();
+    setupLocalRuntimeRegressionTest();
   } catch (error) {
     console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
   }

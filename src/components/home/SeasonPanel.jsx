@@ -11,7 +11,7 @@ import {
   Target,
   TrendingUp,
 } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { GlassCard } from '@/components/padel/ui';
 import { getWorldRank } from '@/lib/padel';
 import {
@@ -46,8 +46,8 @@ export default function SeasonPanel({ profile, worldRank: suppliedWorldRank }) {
       setLoading(true);
       try {
         const [matchList, tournamentList, rank] = await Promise.all([
-          base44.entities.Match.list('-date', 500),
-          base44.entities.Tournament.list('-start_date', 500),
+          localGame.entities.Match.list('-date', 500),
+          localGame.entities.Tournament.list('-start_date', 500),
           suppliedWorldRank?.rank ? Promise.resolve(suppliedWorldRank) : getWorldRank(profile),
         ]);
         if (active) {

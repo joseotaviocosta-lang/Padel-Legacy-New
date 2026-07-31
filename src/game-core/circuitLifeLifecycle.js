@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 const MAX_STORIES_PER_WEEK = 4;
 
@@ -35,7 +35,7 @@ function weekKey(date) {
 
 async function safeList(entityName, sort = '-overall_rating', limit = 250) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity?.list) return [];
     return (await entity.list(sort, limit)) || [];
   } catch (error) {
@@ -46,7 +46,7 @@ async function safeList(entityName, sort = '-overall_rating', limit = 250) {
 
 async function safeUpdate(entityName, id, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!id || !entity?.update) return null;
     return await entity.update(id, payload);
   } catch (error) {
@@ -57,7 +57,7 @@ async function safeUpdate(entityName, id, payload) {
 
 async function createWorldEvent(payload) {
   try {
-    const entity = base44.entities?.WorldEvent;
+    const entity = localGame.entities?.WorldEvent;
     if (!entity?.create) return null;
     return await entity.create({
       author_name: 'Central do Circuito',

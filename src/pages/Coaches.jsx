@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Search, Users, Sparkles, UserCheck, Wallet } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
@@ -33,14 +33,14 @@ export default function Coaches() {
   async function load() {
     setLoading(true);
     try {
-      const profiles = await base44.entities.PlayerProfile.list('-created_date', 1);
+      const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
       if (profiles && profiles[0]) setProfile(profiles[0]);
 
       // Load coaches from DB (or seed if empty)
-      let dbCoaches = await base44.entities.Coach.list('-reputation', 50);
+      let dbCoaches = await localGame.entities.Coach.list('-reputation', 50);
       if (!dbCoaches || dbCoaches.length === 0) {
-        await base44.entities.Coach.bulkCreate(COACHES_DATA.map(c => ({ ...c })));
-        dbCoaches = await base44.entities.Coach.list('-reputation', 50);
+        await localGame.entities.Coach.bulkCreate(COACHES_DATA.map(c => ({ ...c })));
+        dbCoaches = await localGame.entities.Coach.list('-reputation', 50);
       }
       setCoaches(dbCoaches || []);
 
@@ -73,7 +73,7 @@ export default function Coaches() {
       return;
     }
     const totalCost = (coach.monthly_cost || 0) + (coach.sign_on_bonus || 0);
-    const updated = await base44.entities.PlayerProfile.update(profile.id, {
+    const updated = await localGame.entities.PlayerProfile.update(profile.id, {
       coins: (profile.coins || 0) - totalCost,
       coach_id: coach.id,
       coach_name: coach.name,
@@ -86,7 +86,7 @@ export default function Coaches() {
 
   async function handleFire() {
     if (!profile || !hiredCoach) return;
-    const updated = await base44.entities.PlayerProfile.update(profile.id, {
+    const updated = await localGame.entities.PlayerProfile.update(profile.id, {
       coach_id: null,
       coach_name: null,
     });

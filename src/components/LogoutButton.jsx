@@ -1,10 +1,10 @@
 import React from 'react';
 import { LogOut } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 export default function LogoutButton({ variant = 'sidebar' }) {
   const handleLogout = async () => {
-    await base44.auth.logout(window.location.origin + '/login');
+    await localGame.auth.logout(window.location.origin + '/login');
   };
 
   if (variant === 'sidebar') {

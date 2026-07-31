@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ─── Expanded Sponsor Catalog ────────────────────────────────────────────────
 // Each sponsor has own objectives, budget, preferences, marketing demands,
@@ -572,7 +572,7 @@ export async function signSponsorContract(profile, sponsor) {
   const d = new Date(careerDate + 'T00:00:00');
   d.setMonth(d.getMonth() + offer.duration_months);
 
-  await base44.entities.PlayerContract.create({
+  await localGame.entities.PlayerContract.create({
     profile_id: profile.id,
     sponsor_id: sponsor.id,
     sponsor_name: sponsor.name,
@@ -591,7 +591,7 @@ export async function signSponsorContract(profile, sponsor) {
     is_renewable: true,
   });
 
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + offer.sign_bonus,
   });
 }
@@ -606,13 +606,13 @@ export async function renewContract(contract, sponsor, profile) {
   d.setMonth(d.getMonth() + offer.duration_months);
 
   // Deactivate old contract
-  await base44.entities.PlayerContract.update(contract.id, {
+  await localGame.entities.PlayerContract.update(contract.id, {
     is_active: false,
     termination_reason: 'Renovado',
   });
 
   // Create renewed contract
-  await base44.entities.PlayerContract.create({
+  await localGame.entities.PlayerContract.create({
     profile_id: profile.id,
     sponsor_id: sponsor.id,
     sponsor_name: sponsor.name,
@@ -631,13 +631,13 @@ export async function renewContract(contract, sponsor, profile) {
     is_renewable: true,
   });
 
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + renewalBonus,
   });
 }
 
 export async function terminateSponsorContract(contract, reason = 'Rescisão voluntária') {
-  await base44.entities.PlayerContract.update(contract.id, {
+  await localGame.entities.PlayerContract.update(contract.id, {
     is_active: false,
     termination_reason: reason,
   });

@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { X, Crown, Trophy, Coins, Zap, Star, Play, ChevronRight, Bot, CheckCircle, XCircle } from 'lucide-react';
 import { overallRating, applyMatchRewards, levelForXp, getChemistryBonus, isInjured, injuryRecoveryDays, getEnergyPenalty, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
 import { getTournamentRounds, generateTournamentOpponent, getPartnerBot, getTournamentRewards } from '@/lib/career';
@@ -57,7 +57,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
     const won = matchState.winner === 'A';
 
     try {
-      await base44.entities.Match.create({
+      await localGame.entities.Match.create({
         date: new Date().toISOString().slice(0, 10),
         location: tournament.name,
         tournament_name: tournament.name,
@@ -120,7 +120,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         updates.tournaments_won = (p.tournaments_won || 0) + 1;
         updates.titles = [...(p.titles || []), tournament.name];
       }
-      const updated = await base44.entities.PlayerProfile.update(p.id, updates);
+      const updated = await localGame.entities.PlayerProfile.update(p.id, updates);
       await addTeamRankingPoints(p, partner, rewards.rankPoints);
       if (isChampion) {
         incrementMissionProgress(p.id, 'win_tournament').catch(() => {});
@@ -140,7 +140,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
             score: match.score,
           }],
         }));
-        await base44.entities.Tournament.update(tournament.id, {
+        await localGame.entities.Tournament.update(tournament.id, {
           status: 'finalizado',
           champion: `${p.sport_name} & ${partner?.name || 'Parceiro'}`,
           runner_up: finalMatch?.team_b || 'Dupla finalista',
@@ -150,13 +150,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       }
       // Resolve the calendar event for this tournament
       try {
-        const events = await base44.entities.CalendarEvent.filter({
+        const events = await localGame.entities.CalendarEvent.filter({
           profile_id: p.id,
           related_id: tournament.id,
           status: 'scheduled',
         });
         if (events && events.length > 0) {
-          await base44.entities.CalendarEvent.update(events[0].id, {
+          await localGame.entities.CalendarEvent.update(events[0].id, {
             status: 'completed',
             requires_decision: false,
           });

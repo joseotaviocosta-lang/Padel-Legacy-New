@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -78,8 +78,8 @@ function weeklyResult(athlete, currentDate) {
 
 async function createWorldEvent(payload) {
   try {
-    if (!base44.entities?.WorldEvent?.create) return null;
-    return await base44.entities.WorldEvent.create({
+    if (!localGame.entities?.WorldEvent?.create) return null;
+    return await localGame.entities.WorldEvent.create({
       author_name: 'Padel Legacy News',
       related_players: [],
       tier: 'normal',
@@ -94,9 +94,9 @@ async function createWorldEvent(payload) {
 }
 
 async function updateTeamRankings(athletes, currentDate) {
-  if (!base44.entities?.TeamRanking?.list || !base44.entities?.TeamRanking?.create) return { processed: 0 };
+  if (!localGame.entities?.TeamRanking?.list || !localGame.entities?.TeamRanking?.create) return { processed: 0 };
   const byId = new Map(athletes.map((athlete) => [athlete.id, athlete]));
-  const existing = (await base44.entities.TeamRanking.list('-ranking_points', 500)) || [];
+  const existing = (await localGame.entities.TeamRanking.list('-ranking_points', 500)) || [];
   const byKey = new Map(existing.map((team) => [team.team_key, team]));
   const processed = new Set();
   let count = 0;
@@ -123,8 +123,8 @@ async function updateTeamRankings(athletes, currentDate) {
       season_id: currentDate.slice(0, 4),
     };
     const current = byKey.get(key);
-    if (current?.id && base44.entities.TeamRanking.update) await base44.entities.TeamRanking.update(current.id, payload);
-    else await base44.entities.TeamRanking.create(payload);
+    if (current?.id && localGame.entities.TeamRanking.update) await localGame.entities.TeamRanking.update(current.id, payload);
+    else await localGame.entities.TeamRanking.create(payload);
     count += 1;
   }
   return { processed: count };
@@ -136,7 +136,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     return { profile, skipped: true, week: currentWeek, athletesProcessed: 0, events: [] };
   }
 
-  const athletes = ((await base44.entities.AthleteProfile.list('ranking_position', 500)) || [])
+  const athletes = ((await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [])
     .filter((athlete) => athlete?.id && !isRetired(athlete));
 
   const selected = athletes
@@ -171,7 +171,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     else if (age >= 31) careerPhase = 'Declínio';
     else if (age >= safeNumber(athlete.peak_age, 28) - 1) careerPhase = 'Auge';
 
-    await base44.entities.AthleteProfile.update(athlete.id, {
+    await localGame.entities.AthleteProfile.update(athlete.id, {
       world_ranking_points: entry.generalPoints,
       ranking_points: entry.generalPoints,
       race_points: entry.racePoints,
@@ -249,7 +249,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
 
   let updatedProfile = profile;
   if (profile?.id) {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       last_circuit_week: currentWeek,
       last_circuit_update: currentDate,
       last_circuit_summary: summary,
@@ -261,7 +261,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
 }
 
 export async function getCircuitSnapshot() {
-  const athletes = (await base44.entities.AthleteProfile.list('ranking_position', 200)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 200)) || [];
   const active = athletes.filter((athlete) => !isRetired(athlete));
   return {
     general: [...active].sort((a, b) => safeNumber(b.world_ranking_points ?? b.ranking_points, 0) - safeNumber(a.world_ranking_points ?? a.ranking_points, 0)),

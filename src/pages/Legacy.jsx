@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Crown, Trophy, Medal, Star, TrendingUp, Flame, Swords, Lock, Check, Award, Target, Zap, Calendar, GraduationCap, Flag, UserPlus } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen, InfoBanner, PrimaryButton } from '@/components/padel/ui';
 import { StatCard } from '@/components/padel/Shared';
@@ -63,8 +63,8 @@ export default function Legacy() {
   useEffect(() => {
     async function load() {
       try {
-        const user = await base44.auth.me();
-        const profiles = await base44.entities.PlayerProfile.filter({ created_by_id: user.id });
+        const user = await localGame.auth.me();
+        const profiles = await localGame.entities.PlayerProfile.filter({ created_by_id: user.id });
         const p = profiles?.[0];
         if (p) {
           setProfile(p);
@@ -75,7 +75,7 @@ export default function Legacy() {
             setCoachLegacy(coach);
           }
         }
-        let ach = await base44.entities.Achievement.list();
+        let ach = await localGame.entities.Achievement.list();
         if (!ach || ach.length === 0) ach = DEFAULT_ACHIEVEMENTS;
         setAchievements(ach);
       } catch (e) {

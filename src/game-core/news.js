@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { safeName, todayForProfile } from './utils';
 
 export async function publishMatchNews(profile, won, partnerName, opponents, score) {
@@ -10,7 +10,7 @@ export async function publishMatchNews(profile, won, partnerName, opponents, sco
     ? `${player} e ${partnerName} venceram ${opponents.join(' e ')} por ${score}. A dupla segue ganhando entrosamento.`
     : `${player} e ${partnerName} perderam para ${opponents.join(' e ')} por ${score}, mas ganharam experiência para a sequência da temporada.`;
 
-  const article = await base44.entities.PressArticle.create({
+  const article = await localGame.entities.PressArticle.create({
     profile_id: profile.id,
     title,
     content,
@@ -20,7 +20,7 @@ export async function publishMatchNews(profile, won, partnerName, opponents, sco
     published_date: todayForProfile(profile),
   });
 
-  await base44.entities.Post.create({
+  await localGame.entities.Post.create({
     author_name: 'Padel Legacy News',
     author_type: 'media',
     content: title,

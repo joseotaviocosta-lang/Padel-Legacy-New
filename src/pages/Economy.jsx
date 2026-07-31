@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Wallet, Star, Users, Building2, TrendingUp, Receipt, ClipboardCheck } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
@@ -42,16 +42,16 @@ export default function Economy() {
 
   async function load() {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
       if (p) {
         const [c, s, props, invs, txs] = await Promise.all([
-          base44.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }),
-          base44.entities.PlayerStaffHire.filter({ profile_id: p.id }),
-          base44.entities.PlayerProperty.filter({ profile_id: p.id }),
-          base44.entities.PlayerInvestment.filter({ profile_id: p.id }),
-          base44.entities.FinancialTransaction.filter({ profile_id: p.id }),
+          localGame.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }),
+          localGame.entities.PlayerStaffHire.filter({ profile_id: p.id }),
+          localGame.entities.PlayerProperty.filter({ profile_id: p.id }),
+          localGame.entities.PlayerInvestment.filter({ profile_id: p.id }),
+          localGame.entities.FinancialTransaction.filter({ profile_id: p.id }),
         ]);
         setContracts(c || []);
         setStaff(s || []);
@@ -65,11 +65,11 @@ export default function Economy() {
 
   async function refresh(profileId) {
     const [c, s, props, invs, txs] = await Promise.all([
-      base44.entities.PlayerContract.filter({ profile_id: profileId, is_active: true }),
-      base44.entities.PlayerStaffHire.filter({ profile_id: profileId }),
-      base44.entities.PlayerProperty.filter({ profile_id: profileId }),
-      base44.entities.PlayerInvestment.filter({ profile_id: profileId }),
-      base44.entities.FinancialTransaction.filter({ profile_id: profileId }),
+      localGame.entities.PlayerContract.filter({ profile_id: profileId, is_active: true }),
+      localGame.entities.PlayerStaffHire.filter({ profile_id: profileId }),
+      localGame.entities.PlayerProperty.filter({ profile_id: profileId }),
+      localGame.entities.PlayerInvestment.filter({ profile_id: profileId }),
+      localGame.entities.FinancialTransaction.filter({ profile_id: profileId }),
     ]);
     setContracts(c || []);
     setStaff(s || []);

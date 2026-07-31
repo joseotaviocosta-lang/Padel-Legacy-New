@@ -1,4 +1,4 @@
-﻿import { careerManager } from '@/local/localDatabase';
+import { careerManager } from '@/local/careerDataStore.js';
 import React from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import {  Gamepad2, Dumbbell, Swords, Trophy, Target, MessageCircle, User, ShoppingBag, Package, Award, Newspaper, Users, Calendar, Crown, BarChart3, Wallet, UserCog, Palette, LayoutDashboard, Database, ScrollText, Star, Heart, Handshake, GraduationCap, Building2, Mic, Sparkles, Megaphone, Medal, Globe, CloudSun, BookOpen, TrendingUp } from 'lucide-react';

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ChevronUp, Sparkles } from 'lucide-react';
 import { ATTRIBUTES } from '@/lib/padel';
 import { getAttributeIcon } from '@/components/padel/Shared';
@@ -12,7 +12,7 @@ export default function AttributeDistribution({ profile, onDistribute }) {
     if (points <= 0) return;
     setBusy(attrKey);
     try {
-      const updated = await base44.entities.PlayerProfile.update(profile.id, {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         [attrKey]: Math.min(100, (profile[attrKey] || 0) + 1),
         unspent_attribute_points: points - 1,
       });

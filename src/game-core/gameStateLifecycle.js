@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { CAREER_START_DATE, daysBetween } from '@/lib/career';
 import { safeName } from './utils';
 import { tickWorldAfterMatch } from './world';
@@ -18,7 +18,7 @@ function monthChanged(oldDate, newDate) {
 
 async function createOptional(entityName, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity?.create) return null;
     return await entity.create(payload);
   } catch (error) {
@@ -154,7 +154,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   if (updatedProfile?.id) {
     try {
-      updatedProfile = await base44.entities.PlayerProfile.update(updatedProfile.id, {
+      updatedProfile = await localGame.entities.PlayerProfile.update(updatedProfile.id, {
         game_state_version: '3.5.0',
         game_state_last_processed_date: currentDate,
         game_state_last_report: report,

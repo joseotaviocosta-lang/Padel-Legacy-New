@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 function addDays(dateStr, days) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -467,16 +467,16 @@ export async function generateMacroEvents(date, count = 1) {
     events.push(generateMacroEventObject(date));
   }
   if (events.length === 0) return [];
-  return await base44.entities.WorldEvent.bulkCreate(events);
+  return await localGame.entities.WorldEvent.bulkCreate(events);
 }
 
 // Expire macro events whose end_date has passed
 export async function expireMacroEvents(date) {
   try {
-    const active = await base44.entities.WorldEvent.filter({ is_macro: true, is_active: true }, '-created_date', 200);
+    const active = await localGame.entities.WorldEvent.filter({ is_macro: true, is_active: true }, '-created_date', 200);
     const toExpire = (active || []).filter(e => e.end_date && e.end_date < date);
     if (toExpire.length === 0) return 0;
-    await base44.entities.WorldEvent.bulkUpdate(
+    await localGame.entities.WorldEvent.bulkUpdate(
       toExpire.map(e => ({ id: e.id, is_active: false }))
     );
     return toExpire.length;
@@ -489,7 +489,7 @@ export async function expireMacroEvents(date) {
 // Get all currently active macro events and their combined effects
 export async function getActiveMacroEvents(date) {
   try {
-    const events = await base44.entities.WorldEvent.filter({ is_macro: true, is_active: true }, '-created_date', 50);
+    const events = await localGame.entities.WorldEvent.filter({ is_macro: true, is_active: true }, '-created_date', 50);
     return (events || []).filter(e => {
       if (!e.start_date || !e.end_date) return true;
       return e.start_date <= date && e.end_date >= date;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { Users, Search, Inbox, Lightbulb, History, Handshake, FileText, RefreshCw, AlertTriangle, Coins, CalendarDays } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { getPlayerRelationships } from '@/lib/relationships';
 import {
@@ -64,7 +64,7 @@ export default function PartnerHub() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
       } catch (e) { console.error(e); }
@@ -131,7 +131,7 @@ export default function PartnerHub() {
     if (!activePartnership) return;
     try {
       await endPartnership(activePartnership.id, 'encerrada_jogador', 'Decisão do jogador');
-      const updated = await base44.entities.PlayerProfile.update(profile.id, {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         partner_id: null, partner_name: null, partner_locked_until: null, partner_chemistry: 50,
       });
       setProfile(updated);
@@ -190,7 +190,7 @@ export default function PartnerHub() {
     const chemBoost = tone === 'positivo' ? 2 : tone === 'negativo' ? -3 : 0;
     if (chemBoost !== 0) {
       const newChem = Math.max(0, Math.min(100, (activePartnership.chemistry || 50) + chemBoost));
-      const updated = await base44.entities.Partnership.update(activePartnership.id, { chemistry: newChem });
+      const updated = await localGame.entities.Partnership.update(activePartnership.id, { chemistry: newChem });
       setActivePartnership(updated);
     }
     setShowConverse(false);

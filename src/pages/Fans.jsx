@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Megaphone, Users, Star, Activity, RefreshCw, TrendingUp } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, LoadingScreen, EmptyStateCard, FilterPills } from '@/components/padel/ui';
 import FanBaseCard from '@/components/fans/FanBaseCard';
 import FanBaseDetail from '@/components/fans/FanBaseDetail';
@@ -33,12 +33,12 @@ export default function Fans() {
   async function load() {
     setLoading(true);
     try {
-      const user = await base44.auth.me();
-      const profiles = await base44.entities.PlayerProfile.filter({ user_id: user?.id });
-      const activeProfile = profiles?.[0] || (await base44.entities.PlayerProfile.list('-created_date', 1))?.[0];
+      const user = await localGame.auth.me();
+      const profiles = await localGame.entities.PlayerProfile.filter({ user_id: user?.id });
+      const activeProfile = profiles?.[0] || (await localGame.entities.PlayerProfile.list('-created_date', 1))?.[0];
       setProfile(activeProfile || null);
       if (activeProfile) setPlayerFanBase(await getOrCreatePlayerFanBase(activeProfile));
-      setFanBases((await base44.entities.FanBase.list('-total_fans', 200)) || []);
+      setFanBases((await localGame.entities.FanBase.list('-total_fans', 200)) || []);
     } catch (error) {
       console.error(error);
       setNotice('Não foi possível carregar os dados da torcida.');

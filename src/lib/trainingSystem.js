@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import {
   ATTRIBUTES, ATTRIBUTE_KEYS, calculateTrainingGain, trainingGainChance,
   rollInjury, calculateAge, isInjured, isRetired,
@@ -221,7 +221,7 @@ function isSessionInCareerWeek(session, careerDate) {
 // ── Count Trainings This Week on an Attribute ─────────────────────────────
 export async function countTrainingsThisWeek(profileId, attribute, careerDate) {
   try {
-    const sessions = await base44.entities.TrainingSession.filter({
+    const sessions = await localGame.entities.TrainingSession.filter({
       profile_id: profileId,
       attribute_target: attribute,
     });
@@ -235,7 +235,7 @@ export async function countTrainingsThisWeek(profileId, attribute, careerDate) {
 // ── Get Weekly Training Counts per Attribute ─────────────────────────────
 export async function getWeeklyTrainingCounts(profileId, careerDate) {
   try {
-    const sessions = await base44.entities.TrainingSession.filter({ profile_id: profileId });
+    const sessions = await localGame.entities.TrainingSession.filter({ profile_id: profileId });
     if (!sessions) return {};
     const counts = {};
     for (const session of sessions) {
@@ -322,7 +322,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   }
 
   // ── Persist Training Session ──
-  await base44.entities.TrainingSession.create({
+  await localGame.entities.TrainingSession.create({
     profile_id: profile.id,
     training_type: activity.id,
     training_label: activity.label,
@@ -364,7 +364,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     updates.fatigue = Math.min(100, newFatigue + 20);
   }
 
-  const updated = await base44.entities.PlayerProfile.update(profile.id, updates);
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
 
   // ── Mission Progress ──
   await incrementMissionProgress(profile.id, 'complete_training');
@@ -394,7 +394,7 @@ export async function createGoal(profile, attribute, target, deadline) {
     created_date: profile.career_date || todayStr(),
     completed: false,
   };
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     development_goals: [...goals, newGoal],
   });
   return updated;
@@ -402,7 +402,7 @@ export async function createGoal(profile, attribute, target, deadline) {
 
 export async function deleteGoal(profile, goalId) {
   const goals = (profile.development_goals || []).filter(g => g.id !== goalId);
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     development_goals: goals,
   });
   return updated;
@@ -420,7 +420,7 @@ export function checkGoalCompletion(profile) {
 
 // ── Weekly Planner Helpers ────────────────────────────────────────────────
 export async function saveWeeklyPlan(profile, plan) {
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     weekly_training_plan: plan,
   });
   return updated;

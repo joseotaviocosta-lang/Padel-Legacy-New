@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
 import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, ATTRIBUTE_KEYS, ageAtDate, RETIREMENT_AGE, incrementMissionProgress } from '@/lib/padel';
 import { processMonthlyFinances } from '@/lib/economy';
@@ -66,7 +66,7 @@ export function careerDateLabel(profile) {
 export async function selectPartner(profile, bot) {
   const careerDate = profile?.career_date || CAREER_START_DATE;
   const lockedUntil = addDays(careerDate, PARTNER_LOCK_DAYS);
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_id: bot.id,
     partner_name: bot.name,
     partner_locked_until: lockedUntil,
@@ -157,7 +157,7 @@ export async function advanceDay(profile) {
     }
   }
 
-  const updated = await base44.entities.PlayerProfile.update(profile.id, updates);
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   // Simulations are non-blocking — they don't affect the player's profile,
   // so we fire-and-forget to keep day advancement fast and responsive.
   if (oldMonth !== newMonth) {
@@ -216,7 +216,7 @@ export function getLockedPartners(profile) {
 }
 
 export async function selectPosition(profile, position) {
-  const updated = await base44.entities.PlayerProfile.update(profile.id, { position });
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, { position });
   return updated;
 }
 
@@ -318,8 +318,8 @@ export async function ensureFutureTournaments(careerDate) {
       Major: { prize: 3500, xp: 1750, rank: 700, fee: 500, diff: 1 },
     };
 
-    const tournaments = (await base44.entities.Tournament.list('-start_date', 1000)) || [];
-    const seasons = (await base44.entities.Season.list('-start_date', 100)) || [];
+    const tournaments = (await localGame.entities.Tournament.list('-start_date', 1000)) || [];
+    const seasons = (await localGame.entities.Season.list('-start_date', 100)) || [];
     const seasonByYear = new Map();
     for (const season of seasons) {
       const year = Number(season?.season_number || String(season?.start_date || '').slice(0, 4));
@@ -337,7 +337,7 @@ export async function ensureFutureTournaments(careerDate) {
       let season = seasonByYear.get(year);
       if (!season) {
         try {
-          season = await base44.entities.Season.create({
+          season = await localGame.entities.Season.create({
             name: `Temporada ${year}`,
             description: `Circuito profissional de padel ${year}`,
             start_date: `${year}-01-01`,
@@ -382,7 +382,7 @@ export async function ensureFutureTournaments(careerDate) {
         try {
           if (existing?.id) {
             // Registros futuros herdavam "concluído" e campeão de anos anteriores.
-            await base44.entities.Tournament.update(existing.id, {
+            await localGame.entities.Tournament.update(existing.id, {
               ...payload,
               champion: null,
               runner_up: null,
@@ -390,7 +390,7 @@ export async function ensureFutureTournaments(careerDate) {
             });
             repaired += 1;
           } else {
-            const createdTournament = await base44.entities.Tournament.create(payload);
+            const createdTournament = await localGame.entities.Tournament.create(payload);
             existingByDate.set(date, createdTournament || payload);
             created += 1;
           }

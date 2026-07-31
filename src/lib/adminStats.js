@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { levelForXp } from '@/lib/padel';
 
 const CHART_COLORS = ['#a3e635', '#0ea5e9', '#f43f5e', '#f59e0b', '#8b5cf6', '#10b981'];
@@ -28,17 +28,17 @@ function toChartData(dist) {
 
 export async function fetchAdminStats() {
   const [players, athletes, matches, tournaments, clubs, contracts, staffHires, transactions, worldEvents, legacies, rankings] = await Promise.all([
-    safeList(base44.entities.PlayerProfile, '-created_date', 200),
-    safeList(base44.entities.AthleteProfile, '-overall_rating', 200),
-    safeList(base44.entities.Match, '-created_date', 200),
-    safeList(base44.entities.Tournament, '-start_date', 200),
-    safeList(base44.entities.Club, '-club_points', 200),
-    safeList(base44.entities.PlayerContract, '-created_date', 200),
-    safeList(base44.entities.PlayerStaffHire, '-created_date', 200),
-    safeList(base44.entities.FinancialTransaction, '-created_date', 200),
-    safeList(base44.entities.WorldEvent, '-created_date', 200),
-    safeList(base44.entities.CareerLegacy, '-created_date', 200),
-    safeList(base44.entities.TeamRanking, '-ranking_points', 200),
+    safeList(localGame.entities.PlayerProfile, '-created_date', 200),
+    safeList(localGame.entities.AthleteProfile, '-overall_rating', 200),
+    safeList(localGame.entities.Match, '-created_date', 200),
+    safeList(localGame.entities.Tournament, '-start_date', 200),
+    safeList(localGame.entities.Club, '-club_points', 200),
+    safeList(localGame.entities.PlayerContract, '-created_date', 200),
+    safeList(localGame.entities.PlayerStaffHire, '-created_date', 200),
+    safeList(localGame.entities.FinancialTransaction, '-created_date', 200),
+    safeList(localGame.entities.WorldEvent, '-created_date', 200),
+    safeList(localGame.entities.CareerLegacy, '-created_date', 200),
+    safeList(localGame.entities.TeamRanking, '-ranking_points', 200),
   ]);
 
   // ── Totals ─────────────────────────────────────────────────────────────

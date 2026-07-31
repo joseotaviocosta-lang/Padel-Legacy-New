@@ -3,7 +3,7 @@ import { Newspaper, Trophy, Swords, TrendingUp, Crown, Calendar, Globe } from 'l
 import { generateJournal } from '@/lib/journal';
 import { LoadingScreen, TabBar } from '@/components/padel/ui';
 import { ensureMyProfile } from '@/lib/padel';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import WorldFeed from '@/components/world/WorldFeed';
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
@@ -22,7 +22,7 @@ export default function Journal() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
       } catch {}

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating, ATTRIBUTE_KEYS } from '@/lib/padel';
 import { assignTraits, computeTraitEffects } from '@/lib/personalityTraits';
@@ -80,7 +80,7 @@ function generatePersonality(name) {
 export async function ensureAthleteProfiles() {
   let existing = [];
   try {
-    existing = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   } catch {}
 
   const existingIds = new Set((existing || []).map(a => a.bot_id));
@@ -127,8 +127,8 @@ export async function ensureAthleteProfiles() {
   }
 
   if (toCreate.length > 0) {
-    await base44.entities.AthleteProfile.bulkCreate(toCreate);
-    existing = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+    await localGame.entities.AthleteProfile.bulkCreate(toCreate);
+    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   }
 
   return existing;
@@ -137,7 +137,7 @@ export async function ensureAthleteProfiles() {
 // ── Relationships ───────────────────────────────────────────────────────────
 
 export async function generateRelationships() {
-  const profiles = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+  const profiles = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   if (!profiles || profiles.length === 0) return;
 
   const updates = [];
@@ -173,14 +173,14 @@ export async function generateRelationships() {
   }
 
   if (updates.length > 0) {
-    await base44.entities.AthleteProfile.bulkUpdate(updates);
+    await localGame.entities.AthleteProfile.bulkUpdate(updates);
   }
 }
 
 export async function updateRelationshipAfterMatch(winnerName, loserName) {
   try {
-    const winner = await base44.entities.AthleteProfile.filter({ name: winnerName }, null, 1);
-    const loser = await base44.entities.AthleteProfile.filter({ name: loserName }, null, 1);
+    const winner = await localGame.entities.AthleteProfile.filter({ name: winnerName }, null, 1);
+    const loser = await localGame.entities.AthleteProfile.filter({ name: loserName }, null, 1);
     if (!winner?.[0] || !loser?.[0]) return;
 
     const wRels = [...(winner[0].relationships || [])];
@@ -200,7 +200,7 @@ export async function updateRelationshipAfterMatch(winnerName, loserName) {
     }
     lRel.score = Math.max(-100, (lRel.score || 0) - 8);
 
-    await base44.entities.AthleteProfile.bulkUpdate([
+    await localGame.entities.AthleteProfile.bulkUpdate([
       { id: winner[0].id, relationships: wRels, morale: Math.min(100, (winner[0].morale||70) + 3) },
       { id: loser[0].id, relationships: lRels, morale: Math.max(20, (loser[0].morale||70) - 5) },
     ]);
@@ -212,13 +212,13 @@ export async function updateRelationshipAfterMatch(winnerName, loserName) {
 export async function evolveAthletesMonthly(date) {
   let profiles = [];
   try {
-    profiles = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+    profiles = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   } catch {}
 
   if (!profiles || profiles.length === 0) {
     await ensureAthleteProfiles();
     await generateRelationships();
-    profiles = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+    profiles = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
     if (!profiles || profiles.length === 0) return;
   }
 
@@ -275,7 +275,7 @@ export async function evolveAthletesMonthly(date) {
   }
 
   if (updates.length > 0) {
-    await base44.entities.AthleteProfile.bulkUpdate(updates);
+    await localGame.entities.AthleteProfile.bulkUpdate(updates);
   }
 }
 
@@ -283,7 +283,7 @@ export async function evolveAthletesMonthly(date) {
 
 export async function getAthletes(filters = {}) {
   try {
-    let list = await base44.entities.AthleteProfile.list('-overall_rating', 200);
+    let list = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
     if (!list) return [];
     if (filters.phase) list = list.filter(a => a.career_phase === filters.phase);
     if (filters.personality) list = list.filter(a => a.personality === filters.personality);

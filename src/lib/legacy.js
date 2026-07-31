@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { RETIREMENT_AGE, overallRating, levelForXp } from '@/lib/padel';
 
 export function computeLegacyScore(profile) {
@@ -26,10 +26,10 @@ export function computeLegacyBonuses(legacyRecord) {
 
 export async function retireProfile(profile) {
   const gen = profile.legacy_generation || 1;
-  const existing = await base44.entities.CareerLegacy.filter({ user_id: profile.created_by_id, generation: gen });
+  const existing = await localGame.entities.CareerLegacy.filter({ user_id: profile.created_by_id, generation: gen });
   if (existing && existing.length > 0) return existing[0];
 
-  const legacy = await base44.entities.CareerLegacy.create({
+  const legacy = await localGame.entities.CareerLegacy.create({
     profile_id: profile.id,
     user_id: profile.created_by_id,
     sport_name: profile.sport_name,
@@ -56,7 +56,7 @@ export async function retireProfile(profile) {
     is_coach: false,
   });
 
-  await base44.entities.PlayerProfile.update(profile.id, { retired: true });
+  await localGame.entities.PlayerProfile.update(profile.id, { retired: true });
   return legacy;
 }
 
@@ -64,7 +64,7 @@ export async function startNewCareer(profile, legacyRecord, newAthleteName) {
   const bonuses = computeLegacyBonuses(legacyRecord);
 
   if (legacyRecord) {
-    await base44.entities.CareerLegacy.update(legacyRecord.id, {
+    await localGame.entities.CareerLegacy.update(legacyRecord.id, {
       is_coach: true,
       coached_athlete_name: newAthleteName,
     });
@@ -75,7 +75,7 @@ export async function startNewCareer(profile, legacyRecord, newAthleteName) {
   d.setFullYear(d.getFullYear() - 16);
   const newBirthDate = d.toISOString().slice(0, 10);
 
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     sport_name: newAthleteName,
     avatar_url: '',
     level: 'Iniciante',
@@ -104,19 +104,19 @@ export async function startNewCareer(profile, legacyRecord, newAthleteName) {
 export async function getUserLegacies(userId) {
   if (!userId) return [];
   try {
-    return await base44.entities.CareerLegacy.filter({ user_id: userId });
+    return await localGame.entities.CareerLegacy.filter({ user_id: userId });
   } catch { return []; }
 }
 
 export async function getHallOfFame(limit = 20) {
   try {
-    return await base44.entities.CareerLegacy.list('-legacy_score', limit);
+    return await localGame.entities.CareerLegacy.list('-legacy_score', limit);
   } catch { return []; }
 }
 
 export async function getCoachLegacy(coachLegacyId) {
   if (!coachLegacyId) return null;
   try {
-    return await base44.entities.CareerLegacy.get(coachLegacyId);
+    return await localGame.entities.CareerLegacy.get(coachLegacyId);
   } catch { return null; }
 }

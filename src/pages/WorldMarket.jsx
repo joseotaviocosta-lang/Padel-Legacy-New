@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Search, RefreshCw, TrendingUp, TrendingDown, Minus, Globe2, Users, Banknote, Activity, Eye, Star, X, ShieldAlert, Target, Handshake, Send } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { evolveWorldMarket, getWorldMarketSnapshot, getPlayerScoutingReports, getScoutingLevels, scoutAthlete, toggleShortlist, getNegotiationPreview, submitPartnerOffer } from '@/game-core';
@@ -37,7 +37,7 @@ export default function WorldMarket() {
 
   async function load() {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const currentProfile = await ensureMyProfile(user);
       setProfile(currentProfile);
       const date = currentProfile?.career_date || new Date().toISOString().slice(0, 10);

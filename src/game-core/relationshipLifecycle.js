@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { getPlayerRelationships, getRelationshipType, seedInitialRelationships } from '@/lib/relationships';
 
 function isNewWeek(previousDate, currentDate) {
@@ -18,7 +18,7 @@ function deterministicDelta(seed) {
 
 async function safeList(entityName, sort = '-overall_rating', limit = 80) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity?.list) return [];
     const rows = await entity.list(sort, limit);
     return Array.isArray(rows) ? rows.filter(Boolean) : [];
@@ -29,7 +29,7 @@ async function safeList(entityName, sort = '-overall_rating', limit = 80) {
 
 async function safeUpdate(entityName, id, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity?.update || !id) return null;
     return await entity.update(id, payload);
   } catch (error) {
@@ -40,7 +40,7 @@ async function safeUpdate(entityName, id, payload) {
 
 async function safeCreate(entityName, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity?.create) return null;
     return await entity.create(payload);
   } catch {

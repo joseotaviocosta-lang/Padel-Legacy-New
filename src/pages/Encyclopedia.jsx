@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { BookOpen, Search, Sparkles, TrendingUp, X } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard } from '@/components/padel/ui';
 import { ENCYCLOPEDIA_ENTRIES, ENCYCLOPEDIA_CATEGORIES } from '@/lib/encyclopediaData';
 import EncyclopediaCard from '@/components/encyclopedia/EncyclopediaCard';
@@ -19,15 +19,15 @@ export default function Encyclopedia() {
     (async () => {
       try {
         const existing = await safeModuleTask(
-          () => base44.entities.EncyclopediaEntry.list('-created_date', 500),
+          () => localGame.entities.EncyclopediaEntry.list('-created_date', 500),
           { label: 'enciclopédia', fallback: [] },
         );
         const existingNames = new Set((existing || []).map(e => e.name));
         const missing = ENCYCLOPEDIA_ENTRIES.filter(e => !existingNames.has(e.name));
         if (missing.length > 0) {
-          await safeModuleTask(() => base44.entities.EncyclopediaEntry.bulkCreate(missing), { label: 'criação da enciclopédia', fallback: null });
+          await safeModuleTask(() => localGame.entities.EncyclopediaEntry.bulkCreate(missing), { label: 'criação da enciclopédia', fallback: null });
           const all = await safeModuleTask(
-            () => base44.entities.EncyclopediaEntry.list('-created_date', 500),
+            () => localGame.entities.EncyclopediaEntry.list('-created_date', 500),
             { label: 'releitura da enciclopédia', fallback: ENCYCLOPEDIA_ENTRIES },
           );
           setEntries(all || ENCYCLOPEDIA_ENTRIES);

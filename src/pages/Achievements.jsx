@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Lock, HelpCircle, Star, Search, Filter } from 'lucide-react';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
@@ -39,12 +39,12 @@ export default function Achievements() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         const { achs, unlocked } = await loadModuleTasks({
-          achs: { task: () => base44.entities.Achievement.filter({}, '-points', 500), fallback: [], label: 'catálogo de conquistas' },
-          unlocked: { task: () => p ? base44.entities.PlayerAchievement.filter({ profile_id: p.id }) : [], fallback: [], label: 'conquistas do jogador' },
+          achs: { task: () => localGame.entities.Achievement.filter({}, '-points', 500), fallback: [], label: 'catálogo de conquistas' },
+          unlocked: { task: () => p ? localGame.entities.PlayerAchievement.filter({ profile_id: p.id }) : [], fallback: [], label: 'conquistas do jogador' },
         });
         setAchievements(achs || []);
         setUnlockedIds(new Set((unlocked || []).map(u => u.achievement_id)));

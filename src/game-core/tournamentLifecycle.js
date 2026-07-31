@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { levelForXp, incrementMissionProgress } from '@/lib/padel';
 import { getTournamentRewards } from '@/lib/career';
 import { addTeamRankingPoints, addTeamTitle } from '@/lib/teamRanking';
@@ -15,13 +15,13 @@ function placementLabel(roundsWon, totalRounds, champion) {
 }
 
 async function resolveTournamentCalendar(profileId, tournamentId) {
-  const events = await base44.entities.CalendarEvent.filter({
+  const events = await localGame.entities.CalendarEvent.filter({
     profile_id: profileId,
     related_id: tournamentId,
     status: 'scheduled',
   });
   if (!events?.length) return null;
-  return base44.entities.CalendarEvent.update(events[0].id, {
+  return localGame.entities.CalendarEvent.update(events[0].id, {
     status: 'completed',
     requires_decision: false,
   });
@@ -45,14 +45,14 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
     updates.morale = Math.min(100, (Number(profile?.morale) || 70) + 10);
   }
 
-  const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, updates);
+  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, updates);
   await addTeamRankingPoints(profile, partner, rewards.rankPoints);
 
   if (champion) {
     await Promise.allSettled([
       incrementMissionProgress(profile.id, 'win_tournament'),
       addTeamTitle(profile, partner, tournament.name),
-      base44.entities.Tournament.update(tournament.id, {
+      localGame.entities.Tournament.update(tournament.id, {
         status: 'finalizado',
         champion: `${safeName(profile)} & ${partner?.name || 'Parceiro'}`,
         current_phase: 'concluido',
@@ -66,7 +66,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
   const date = todayForProfile(profile);
   await Promise.allSettled([
     resolveTournamentCalendar(profile.id, tournament.id),
-    base44.entities.FinancialTransaction.create({
+    localGame.entities.FinancialTransaction.create({
       profile_id: profile.id,
       date,
       type: 'income',
@@ -74,7 +74,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
       description: `${placement} — ${tournament.name}`,
       amount: rewards.coins,
     }),
-    base44.entities.HistoryEntry.create({
+    localGame.entities.HistoryEntry.create({
       profile_id: profile.id,
       year: Number(date.slice(0, 4)),
       event_date: date,
@@ -82,7 +82,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
       description: `${safeName(profile)} e ${partner?.name || 'Parceiro'} encerraram o torneio como ${placement.toLowerCase()}.`,
       category: 'carreira',
     }),
-    base44.entities.PressArticle.create({
+    localGame.entities.PressArticle.create({
       profile_id: profile.id,
       title: champion
         ? `${safeName(profile)} conquista o ${tournament.name}`
@@ -95,7 +95,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
       journalist_name: 'Redação PL',
       published_date: date,
     }),
-    base44.entities.Post.create({
+    localGame.entities.Post.create({
       author_name: 'Padel Legacy News',
       author_type: 'media',
       content: champion

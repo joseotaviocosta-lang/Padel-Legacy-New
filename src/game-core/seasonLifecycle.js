@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureFutureTournaments } from '@/lib/career';
 import { levelForXp } from '@/lib/padel';
 import { addTeamRankingPoints } from '@/lib/teamRanking';
@@ -47,11 +47,11 @@ export function calculateSeasonAwards(snapshot) {
 export async function getSeasonSnapshot(profile, requestedYear = null) {
   const year = requestedYear || dateYear(profile?.career_date) || new Date().getFullYear();
   const [matches, transactions, tournaments, rankings, results] = await Promise.all([
-    base44.entities.Match.list('-created_date', 1000),
-    base44.entities.FinancialTransaction.filter({ profile_id: profile.id }),
-    base44.entities.Tournament.list('-start_date', 500),
-    base44.entities.TeamRanking.list('-ranking_points', 500),
-    base44.entities.SeasonResult.filter({ profile_id: profile.id, season_year: year }),
+    localGame.entities.Match.list('-created_date', 1000),
+    localGame.entities.FinancialTransaction.filter({ profile_id: profile.id }),
+    localGame.entities.Tournament.list('-start_date', 500),
+    localGame.entities.TeamRanking.list('-ranking_points', 500),
+    localGame.entities.SeasonResult.filter({ profile_id: profile.id, season_year: year }),
   ]);
 
   const playerMatches = (matches || []).filter((match) => {
@@ -96,7 +96,7 @@ export async function getSeasonSnapshot(profile, requestedYear = null) {
 }
 
 export async function getSeasonHistory(profile) {
-  const results = await base44.entities.SeasonResult.filter({ profile_id: profile.id }, '-season_year', 50);
+  const results = await localGame.entities.SeasonResult.filter({ profile_id: profile.id }, '-season_year', 50);
   return results || [];
 }
 
@@ -107,7 +107,7 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     throw new Error('O encerramento normal fica disponível a partir de 15 de dezembro.');
   }
 
-  const existing = await base44.entities.SeasonResult.filter({ profile_id: profile.id, season_year: year });
+  const existing = await localGame.entities.SeasonResult.filter({ profile_id: profile.id, season_year: year });
   if (existing?.length) return { alreadyCompleted: true, result: existing[0], updatedProfile: profile };
 
   const snapshot = await getSeasonSnapshot(profile, year);
@@ -120,7 +120,7 @@ export async function finalizeSeason({ profile, partner, force = false }) {
   const newXp = number(profile.xp) + totals.xp;
   const nextDate = `${nextYear}-01-01`;
 
-  const result = await base44.entities.SeasonResult.create({
+  const result = await localGame.entities.SeasonResult.create({
     profile_id: profile.id,
     season_year: year,
     completed_date: profile.career_date || `${year}-12-31`,
@@ -139,7 +139,7 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     bonus_rank_points: totals.rankPoints,
   });
 
-  const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     career_date: nextDate,
     coins: number(profile.coins) + totals.coins,
     xp: newXp,
@@ -156,12 +156,12 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     await addTeamRankingPoints(profile, partner, totals.rankPoints);
   }
 
-  const seasons = await base44.entities.Season.list('-start_date', 100);
+  const seasons = await localGame.entities.Season.list('-start_date', 100);
   const currentSeason = (seasons || []).find((item) => item.season_number === year || dateYear(item.start_date) === year);
-  if (currentSeason) await base44.entities.Season.update(currentSeason.id, { is_active: false, status: 'completed' });
+  if (currentSeason) await localGame.entities.Season.update(currentSeason.id, { is_active: false, status: 'completed' });
   let nextSeason = (seasons || []).find((item) => item.season_number === nextYear || dateYear(item.start_date) === nextYear);
   if (!nextSeason) {
-    nextSeason = await base44.entities.Season.create({
+    nextSeason = await localGame.entities.Season.create({
       name: `Temporada ${nextYear}`,
       description: `Circuito profissional de padel ${nextYear}`,
       start_date: `${nextYear}-01-01`,
@@ -171,17 +171,17 @@ export async function finalizeSeason({ profile, partner, force = false }) {
       season_number: nextYear,
     });
   } else {
-    await base44.entities.Season.update(nextSeason.id, { is_active: true, status: 'active' });
+    await localGame.entities.Season.update(nextSeason.id, { is_active: true, status: 'active' });
   }
 
   await ensureFutureTournaments(nextDate);
   const summary = `${safeName(profile)} encerrou ${year} com ${snapshot.wins} vitórias, ${snapshot.titles} título(s) e ${snapshot.winRate}% de aproveitamento.`;
   await Promise.allSettled([
-    base44.entities.FinancialTransaction.create({ profile_id: profile.id, date: nextDate, type: 'income', category: 'premiacao_anual', description: `Premiação anual ${year}`, amount: totals.coins }),
-    base44.entities.HistoryEntry.create({ profile_id: profile.id, year, event_date: `${year}-12-31`, title: `Encerramento da temporada ${year}`, description: summary, category: 'temporada' }),
-    base44.entities.CareerMessage.create({ profile_id: profile.id, sender_name: 'Circuito Padel Legacy', subject: `Relatório final de ${year}`, body: `${summary} Bônus: ${totals.coins} moedas, ${totals.xp} XP e ${totals.rankPoints} pontos de ranking.`, status: 'nao_lida', message_type: 'season_report' }),
-    base44.entities.PressArticle.create({ profile_id: profile.id, title: `${safeName(profile)} fecha a temporada ${year}`, content: summary, sentiment: snapshot.winRate >= 60 ? 'positivo' : 'neutro', outlet: 'Padel Legacy News', journalist_name: 'Redação PL', published_date: `${year}-12-31` }),
-    base44.entities.Post.create({ author_name: 'Padel Legacy News', author_type: 'media', content: `📊 ${summary}`, likes: 60 + snapshot.wins * 3, comments_count: 8 + snapshot.titles * 5, created_date: new Date().toISOString() }),
+    localGame.entities.FinancialTransaction.create({ profile_id: profile.id, date: nextDate, type: 'income', category: 'premiacao_anual', description: `Premiação anual ${year}`, amount: totals.coins }),
+    localGame.entities.HistoryEntry.create({ profile_id: profile.id, year, event_date: `${year}-12-31`, title: `Encerramento da temporada ${year}`, description: summary, category: 'temporada' }),
+    localGame.entities.CareerMessage.create({ profile_id: profile.id, sender_name: 'Circuito Padel Legacy', subject: `Relatório final de ${year}`, body: `${summary} Bônus: ${totals.coins} moedas, ${totals.xp} XP e ${totals.rankPoints} pontos de ranking.`, status: 'nao_lida', message_type: 'season_report' }),
+    localGame.entities.PressArticle.create({ profile_id: profile.id, title: `${safeName(profile)} fecha a temporada ${year}`, content: summary, sentiment: snapshot.winRate >= 60 ? 'positivo' : 'neutro', outlet: 'Padel Legacy News', journalist_name: 'Redação PL', published_date: `${year}-12-31` }),
+    localGame.entities.Post.create({ author_name: 'Padel Legacy News', author_type: 'media', content: `📊 ${summary}`, likes: 60 + snapshot.wins * 3, comments_count: 8 + snapshot.titles * 5, created_date: new Date().toISOString() }),
   ]);
 
   return { snapshot, result, updatedProfile, totals, nextSeason, alreadyCompleted: false };

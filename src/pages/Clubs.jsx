@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Plus, MapPin, Users, Trophy, X, Calendar, Crown, Star } from 'lucide-react';
 import { formatDate, ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
@@ -18,10 +18,10 @@ export default function Clubs() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const list = await base44.entities.Club.list('-club_points', 50);
+        const list = await localGame.entities.Club.list('-club_points', 50);
         setClubs(list || []);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
@@ -32,7 +32,7 @@ export default function Clubs() {
     setSubmitting(true);
     try {
       await createClub(profile, form);
-      const list = await base44.entities.Club.list('-club_points', 50);
+      const list = await localGame.entities.Club.list('-club_points', 50);
       setClubs(list || []);
       setShowForm(false);
       setForm({ name: '', city: '', country: 'Brasil', description: '' });

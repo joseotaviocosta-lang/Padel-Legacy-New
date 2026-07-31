@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, Trophy } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { ensureMyProfile } from '@/lib/padel';
@@ -45,7 +45,7 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
 
   const loadData = useCallback(async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
       if (!p) return;
@@ -55,9 +55,9 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
       setTeamRank(rank);
 
       const { t, m, tr, events, pending } = await loadModuleTasks({
-        t: { task: () => base44.entities.Tournament.list('-start_date', 100), fallback: [], label: 'torneios do calendário' },
-        m: { task: () => base44.entities.Match.list('-created_date', 50), fallback: [], label: 'partidas do calendário' },
-        tr: { task: () => base44.entities.TrainingSession.filter({ profile_id: p.id }), fallback: [], label: 'treinos do calendário' },
+        t: { task: () => localGame.entities.Tournament.list('-start_date', 100), fallback: [], label: 'torneios do calendário' },
+        m: { task: () => localGame.entities.Match.list('-created_date', 50), fallback: [], label: 'partidas do calendário' },
+        tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: p.id }), fallback: [], label: 'treinos do calendário' },
         events: { task: () => getEventsForRange(p.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos do calendário' },
         pending: { task: () => getPendingDecisions(p.id, p.career_date || CAREER_START_DATE), fallback: [], label: 'decisões pendentes' },
       });
@@ -164,9 +164,9 @@ const updated = await advanceCareerDay(profile);
     });
     setCalendarEvents(events || []);
     setPendingDecisions(pending || []);
-    const matchesList = await base44.entities.Match.list('-created_date', 50);
+    const matchesList = await localGame.entities.Match.list('-created_date', 50);
     setMatches(matchesList || []);
-    const updatedProfile = await ensureMyProfile(await base44.auth.me());
+    const updatedProfile = await ensureMyProfile(await localGame.auth.me());
     setProfile(updatedProfile);
   }
 
@@ -257,7 +257,7 @@ const updated = await advanceCareerDay(profile);
             setProfile(updatedProfile);
             const events = await getEventsForRange(profile.id, '2026-01-01', '2027-12-31');
             setCalendarEvents(events || []);
-            const tList = await base44.entities.Tournament.list('-start_date', 100);
+            const tList = await localGame.entities.Tournament.list('-start_date', 100);
             setTournaments((tList || []).map(enrichTournament));
           }}
         />

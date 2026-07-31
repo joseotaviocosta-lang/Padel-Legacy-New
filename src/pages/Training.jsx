@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Moon, Activity, Calendar, TrendingUp, Target, Check, AlertCircle } from 'lucide-react';
 import { ensureMyProfile, isInjured, injuryRecoveryDays, isRetired, RECOVERY_TYPES, applyRecovery, canDoPhysio, MAX_ENERGY, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE, advanceDay } from '@/lib/career';
@@ -42,12 +42,12 @@ export default function Training() {
 
   async function load() {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
       if (p) {
         const [sessions, counts] = await Promise.all([
-          base44.entities.TrainingSession.filter({ profile_id: p.id }),
+          localGame.entities.TrainingSession.filter({ profile_id: p.id }),
           getWeeklyTrainingCounts(p.id, p.career_date),
         ]);
         setHistory((sessions || []).sort((a, b) => (b.created_date || '').localeCompare(a.created_date || '')));
@@ -56,7 +56,7 @@ export default function Training() {
         // Fetch coach for training bonuses
         if (p.coach_id) {
           try {
-            const c = await base44.entities.Coach.get(p.coach_id);
+            const c = await localGame.entities.Coach.get(p.coach_id);
             setCoach(c);
           } catch { /* coach may not exist */ }
         }
@@ -112,7 +112,7 @@ export default function Training() {
       // Refresh weekly counts and history
       const [counts, sessions] = await Promise.all([
         getWeeklyTrainingCounts(res.profile.id, res.profile.career_date),
-        base44.entities.TrainingSession.filter({ profile_id: res.profile.id }),
+        localGame.entities.TrainingSession.filter({ profile_id: res.profile.id }),
       ]);
       setWeeklyCounts(counts);
       setHistory((sessions || []).sort((a, b) => (b.created_date || '').localeCompare(a.created_date || '')));
@@ -131,7 +131,7 @@ export default function Training() {
       const updated = await advanceDay(profile);
       setProfile(updated);
       const [sessions, counts] = await Promise.all([
-        base44.entities.TrainingSession.filter({ profile_id: updated.id }),
+        localGame.entities.TrainingSession.filter({ profile_id: updated.id }),
         getWeeklyTrainingCounts(updated.id, updated.career_date),
       ]);
       setHistory((sessions || []).sort((a, b) => (b.created_date || '').localeCompare(a.created_date || '')));

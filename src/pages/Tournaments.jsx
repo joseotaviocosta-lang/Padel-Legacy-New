@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Crown, Flame, Circle, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle } from 'lucide-react';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
@@ -77,7 +77,7 @@ export default function Tournaments() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
 
@@ -89,11 +89,11 @@ export default function Tournaments() {
         }
 
         // Fetch all tournaments — the calendar spans multiple seasons now
-        const list = await base44.entities.Tournament.list('-start_date', 200);
+        const list = await localGame.entities.Tournament.list('-start_date', 200);
         setTournaments((list || []).map(enrichTournament));
 
         // Determine the current season based on career year
-        const seasons = await base44.entities.Season.list('-start_date', 50);
+        const seasons = await localGame.entities.Season.list('-start_date', 50);
         const careerYear = p?.career_date ? new Date(p.career_date + 'T00:00:00').getFullYear() : 2026;
         const currentSeason = seasons?.find(s => s.season_number === careerYear)
           || seasons?.find(s => s.is_active)
@@ -101,7 +101,7 @@ export default function Tournaments() {
         setSeason(currentSeason);
 
         // Track played tournaments
-        const matches = await base44.entities.Match.list('-created_date', 100);
+        const matches = await localGame.entities.Match.list('-created_date', 100);
         const played = new Set(
           (matches || [])
             .filter(m => m.tournament_name && m.tournament_name !== 'Partida Oficial' && m.team_a?.[0] === p?.sport_name)
@@ -112,7 +112,7 @@ export default function Tournaments() {
 
         // Track registered tournaments (scheduled calendar events)
         if (p?.id) {
-          const calEvents = await base44.entities.CalendarEvent.filter({
+          const calEvents = await localGame.entities.CalendarEvent.filter({
             profile_id: p.id,
             event_type: 'tournament',
             status: 'scheduled',
@@ -134,12 +134,12 @@ export default function Tournaments() {
   }, []);
 
   async function refreshProfile() {
-    const user = await base44.auth.me();
+    const user = await localGame.auth.me();
     const p = await ensureMyProfile(user);
     setProfile(p);
     const [matches, tournamentList] = await Promise.all([
-      base44.entities.Match.list('-created_date', 100),
-      base44.entities.Tournament.list('-start_date', 200),
+      localGame.entities.Match.list('-created_date', 100),
+      localGame.entities.Tournament.list('-start_date', 200),
     ]);
     setMatches(matches || []);
     setTournaments((tournamentList || []).map(enrichTournament));
@@ -151,7 +151,7 @@ export default function Tournaments() {
     setPlayedTournaments(played);
 
     // Reload registered tournaments
-    const calEvents = await base44.entities.CalendarEvent.filter({
+    const calEvents = await localGame.entities.CalendarEvent.filter({
       profile_id: p.id,
       event_type: 'tournament',
       status: 'scheduled',
@@ -231,7 +231,7 @@ export default function Tournaments() {
   async function handleRegistered(updatedProfile) {
     if (updatedProfile) setProfile(updatedProfile);
     // Refresh registered set
-    const calEvents = await base44.entities.CalendarEvent.filter({
+    const calEvents = await localGame.entities.CalendarEvent.filter({
       profile_id: (updatedProfile || profile).id,
       event_type: 'tournament',
       status: 'scheduled',

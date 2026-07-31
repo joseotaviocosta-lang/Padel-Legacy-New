@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { executeTraining } from '@/lib/trainingSystem';
 import { safeName } from './utils';
 
@@ -21,7 +21,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
   const gain = Number(result.gain) || 0;
 
   const jobs = [
-    base44.entities.HistoryEntry.create({
+    localGame.entities.HistoryEntry.create({
       profile_id: updated.id,
       year: Number(String(date || '').slice(0, 4)) || new Date().getFullYear(),
       event_date: date,
@@ -35,7 +35,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
 
   if (result.injured) {
     jobs.push(
-      base44.entities.CareerMessage.create({
+      localGame.entities.CareerMessage.create({
         profile_id: updated.id,
         sender_name: 'Departamento Médico',
         subject: 'Relatório de lesão',
@@ -44,7 +44,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
         message_type: 'injury_report',
         created_date: new Date().toISOString(),
       }),
-      base44.entities.PressArticle.create({
+      localGame.entities.PressArticle.create({
         title: `${athleteName} sofre lesão durante treinamento`,
         subtitle: `Atleta deve ficar afastado por ${result.recoveryDays || 1} dia(s).`,
         content: `${athleteName} interrompeu a preparação após sentir uma lesão durante ${trainingTitle(result.activity || activity).toLowerCase()}.`,
@@ -54,7 +54,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
       }),
     );
   } else if (gain > 0 && (updated.trainings_today || 0) === 1) {
-    jobs.push(base44.entities.CareerMessage.create({
+    jobs.push(localGame.entities.CareerMessage.create({
       profile_id: updated.id,
       sender_name: 'Equipe Técnica',
       subject: 'Treino concluído',
@@ -68,7 +68,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
   // Treinos táticos e mentais também ajudam a estabilidade da dupla.
   if (updated.partner_id && ['tactical', 'mental'].includes(activity?.category)) {
     const chemistry = clamp((updated.partner_chemistry ?? 50) + 1);
-    jobs.push(base44.entities.PlayerProfile.update(updated.id, { partner_chemistry: chemistry }));
+    jobs.push(localGame.entities.PlayerProfile.update(updated.id, { partner_chemistry: chemistry }));
     updated.partner_chemistry = chemistry;
   }
 
@@ -80,7 +80,7 @@ export async function registerRecovery(profile, recovery) {
   if (!profile?.id || !recovery) return profile;
   const date = profile.career_date;
   await Promise.allSettled([
-    base44.entities.HistoryEntry.create({
+    localGame.entities.HistoryEntry.create({
       profile_id: profile.id,
       year: Number(String(date || '').slice(0, 4)) || new Date().getFullYear(),
       event_date: date,

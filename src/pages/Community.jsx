@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Heart, MessageCircle, Share2, Send, Trophy, Flame, Swords, Sparkles, X } from 'lucide-react';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { LevelBadge } from '@/components/padel/Shared';
@@ -23,10 +23,10 @@ export default function Community() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const list = await base44.entities.Post.list('-created_date', 50);
+        const list = await localGame.entities.Post.list('-created_date', 50);
         setPosts(list || []);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
@@ -37,7 +37,7 @@ export default function Community() {
     if (!content.trim()) return;
     setSubmitting(true);
     try {
-      await base44.entities.Post.create({
+      await localGame.entities.Post.create({
         author_name: profile?.sport_name || 'Jogador',
         author_avatar: profile?.avatar_url || '',
         author_level: levelForXp(profile?.xp || 0),
@@ -48,7 +48,7 @@ export default function Community() {
       });
       setContent('');
       setPostType('geral');
-      const list = await base44.entities.Post.list('-created_date', 50);
+      const list = await localGame.entities.Post.list('-created_date', 50);
       setPosts(list || []);
     } catch (e) { console.error(e); }
     finally { setSubmitting(false); }
@@ -59,7 +59,7 @@ export default function Community() {
     const liked = (post.liked_by || []).includes(userId);
     const liked_by = liked ? (post.liked_by || []).filter(u => u !== userId) : [...(post.liked_by || []), userId];
     try {
-      const updated = await base44.entities.Post.update(post.id, { liked_by, likes: liked_by.length });
+      const updated = await localGame.entities.Post.update(post.id, { liked_by, likes: liked_by.length });
       setPosts(prev => prev.map(p => p.id === post.id ? updated : p));
     } catch (e) { console.error(e); }
   }

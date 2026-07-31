@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
 import { ProfileMini } from '@/components/padel/Shared';
@@ -28,10 +28,10 @@ export default function Ranking() {
     (async () => {
       try {
         const { p, c, t, a } = await loadModuleTasks({
-          p: { task: () => base44.entities.PlayerProfile.list('-xp', 100), fallback: [], label: 'perfis do ranking' },
-          c: { task: () => base44.entities.Club.list('-club_points', 100), fallback: [], label: 'clubes do ranking' },
-          t: { task: () => base44.entities.TeamRanking.list('-ranking_points', 100), fallback: [], label: 'ranking de duplas' },
-          a: { task: () => base44.entities.AthleteProfile.list('ranking_position', 200), fallback: [], label: 'atletas do ranking' },
+          p: { task: () => localGame.entities.PlayerProfile.list('-xp', 100), fallback: [], label: 'perfis do ranking' },
+          c: { task: () => localGame.entities.Club.list('-club_points', 100), fallback: [], label: 'clubes do ranking' },
+          t: { task: () => localGame.entities.TeamRanking.list('-ranking_points', 100), fallback: [], label: 'ranking de duplas' },
+          a: { task: () => localGame.entities.AthleteProfile.list('ranking_position', 200), fallback: [], label: 'atletas do ranking' },
         });
         setPlayers(p || []);
         setClubs(c || []);

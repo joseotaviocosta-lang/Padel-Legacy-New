@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ── Location Climate Profiles ─────────────────────────────────────────────
 // Base climate data per city: [avgTemp, tempVariance, avgHumidity, avgWind, weatherWeights]
@@ -278,12 +278,12 @@ export function enrichTournamentWeather(tournament) {
 
 export async function ensureTournamentWeather(tournamentId) {
   try {
-    const t = await base44.entities.Tournament.get(tournamentId);
+    const t = await localGame.entities.Tournament.get(tournamentId);
     if (!t) return null;
     if (t.temperature !== undefined && t.weather_condition) return t;
 
     const weather = generateWeather(t.location, t.month);
-    const updated = await base44.entities.Tournament.update(tournamentId, weather);
+    const updated = await localGame.entities.Tournament.update(tournamentId, weather);
     return updated;
   } catch (e) {
     console.error('ensureTournamentWeather', e);
@@ -295,7 +295,7 @@ export async function ensureTournamentWeather(tournamentId) {
 
 export async function getWeatherStats(limit = 100) {
   try {
-    const tournaments = await base44.entities.Tournament.filter({ status: 'finalizado' }, '-start_date', limit);
+    const tournaments = await localGame.entities.Tournament.filter({ status: 'finalizado' }, '-start_date', limit);
     const withWeather = (tournaments || []).filter(t => t.temperature !== undefined);
 
     if (withWeather.length === 0) return { total: 0 };
@@ -341,7 +341,7 @@ export async function getWeatherStats(limit = 100) {
 
 export async function getWeatherForecast(profileDate, limit = 10) {
   try {
-    const tournaments = await base44.entities.Tournament.filter({ status: 'inscricoes' }, 'start_date', limit);
+    const tournaments = await localGame.entities.Tournament.filter({ status: 'inscricoes' }, 'start_date', limit);
     return (tournaments || []).map(t => enrichTournamentWeather(t));
   } catch (e) {
     console.error('getWeatherForecast', e);

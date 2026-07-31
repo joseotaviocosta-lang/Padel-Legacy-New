@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { generateFanBase, reactToEvent } from '@/lib/fanBase';
 
 function monthKey(value) {
@@ -19,7 +19,7 @@ function isWin(match, profile) {
 
 async function safeList(entityName, filter = null) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (!entity) return [];
     return filter && entity.filter ? await entity.filter(filter) : entity.list ? await entity.list('-created_date', 500) : [];
   } catch (error) {
@@ -30,7 +30,7 @@ async function safeList(entityName, filter = null) {
 
 async function safeCreate(entityName, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     return entity?.create ? await entity.create(payload) : null;
   } catch (error) {
     console.warn(`[Game Core] Falha ao registrar ${entityName}:`, error);
@@ -49,7 +49,7 @@ export async function getOrCreatePlayerFanBase(profile) {
     popularity: clamp(profile.popularity || 45),
     morale: 70,
   });
-  return base44.entities.FanBase.create({ ...created, profile_id: profile.id });
+  return localGame.entities.FanBase.create({ ...created, profile_id: profile.id });
 }
 
 export async function evaluateMonthlyFanEngagement(profile) {
@@ -96,7 +96,7 @@ export async function evaluateMonthlyFanEngagement(profile) {
     monthly_summary: { matches: monthlyMatches.length, wins, losses, titles, posts: monthlyPosts.length, articles: monthlyArticles.length },
   };
 
-  const saved = await base44.entities.FanBase.update(fanBase.id, updated);
+  const saved = await localGame.entities.FanBase.update(fanBase.id, updated);
   await safeCreate('CareerMessage', {
     profile_id: profile.id,
     sender: 'Equipe de Comunicação',

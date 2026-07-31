@@ -1,5 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { X, Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain } from 'lucide-react';
 
 import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
@@ -51,7 +51,7 @@ export default function SimulationModal({ profile: initialProfile, onClose, onCo
     savedRef.current = true;
     try {
       const won = matchState.winner === 'A';
-      await base44.entities.Match.create({
+      await localGame.entities.Match.create({
         date: new Date().toISOString().slice(0, 10),
         location: 'Arena Virtual',
         tournament_name: 'Partida Treino',

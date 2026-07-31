@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Sparkles, Send, Users, TrendingUp, Zap } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
 import SocialPost from '@/components/social/SocialPost';
@@ -35,7 +35,7 @@ export default function Social() {
   async function load() {
     setLoading(true);
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
 
@@ -43,16 +43,16 @@ export default function Social() {
       const baseFollowers = (p?.fan_appeal || 50) * 120;
       setFollowers(baseFollowers);
 
-      const list = await base44.entities.Post.list('-created_date', 30);
+      const list = await localGame.entities.Post.list('-created_date', 30);
       let allPosts = list || [];
 
       // Auto-generate posts if feed is thin
       if (allPosts.length < 10) {
         const autoPosts = generateBatchAutoPosts(p, 12);
         try {
-          await base44.entities.Post.bulkCreate(autoPosts);
+          await localGame.entities.Post.bulkCreate(autoPosts);
         } catch (e) { console.error(e); }
-        const refreshedList = await base44.entities.Post.list('-created_date', 30);
+        const refreshedList = await localGame.entities.Post.list('-created_date', 30);
         allPosts = refreshedList || [];
       }
 
@@ -60,7 +60,7 @@ export default function Social() {
       if (Math.random() > 0.5 && allPosts.length > 0) {
         const newPost = generateAutoPost(p);
         try {
-          await base44.entities.Post.create(newPost);
+          await localGame.entities.Post.create(newPost);
           allPosts = [newPost, ...allPosts];
         } catch (e) { console.error(e); }
       }
@@ -74,7 +74,7 @@ export default function Social() {
     if (!content.trim()) return;
     setSubmitting(true);
     try {
-      const post = await base44.entities.Post.create({
+      const post = await localGame.entities.Post.create({
         author_name: profile?.sport_name || 'Jogador',
         author_handle: (profile?.sport_name || 'jogador').toLowerCase().replace(/\s/g, ''),
         author_avatar: profile?.avatar_url || '',
@@ -122,7 +122,7 @@ export default function Social() {
         // Increase fan appeal
         const newFanAppeal = Math.min(100, (profile.fan_appeal || 50) + 2);
         try {
-          const updated = await base44.entities.PlayerProfile.update(profile.id, { fan_appeal: newFanAppeal });
+          const updated = await localGame.entities.PlayerProfile.update(profile.id, { fan_appeal: newFanAppeal });
           setProfile(updated);
         } catch (e) { console.error(e); }
         toast({ title: '🔥 Post Viralizou!', description: `+${gain} seguidores ganhos!` });
@@ -130,7 +130,7 @@ export default function Social() {
     }
 
     try {
-      const updated = await base44.entities.Post.update(post.id, updates);
+      const updated = await localGame.entities.Post.update(post.id, updates);
       setPosts(prev => prev.map(p => p.id === post.id ? updated : p));
     } catch (e) { console.error(e); }
   }
@@ -146,14 +146,14 @@ export default function Social() {
     };
     const newComments = [...(post.comments || []), comment];
     try {
-      const updated = await base44.entities.Post.update(post.id, { comments: newComments });
+      const updated = await localGame.entities.Post.update(post.id, { comments: newComments });
       setPosts(prev => prev.map(p => p.id === post.id ? updated : p));
     } catch (e) { console.error(e); }
   }
 
   async function handleShare(post) {
     try {
-      const updated = await base44.entities.Post.update(post.id, { shares: (post.shares || 0) + 1 });
+      const updated = await localGame.entities.Post.update(post.id, { shares: (post.shares || 0) + 1 });
       setPosts(prev => prev.map(p => p.id === post.id ? updated : p));
       // Small follower gain for sharing
       if (Math.random() > 0.7) {

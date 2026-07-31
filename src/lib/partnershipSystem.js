@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { overallRating, levelForXp, LEVELS, ATTRIBUTE_KEYS } from '@/lib/padel';
 import { getAvailablePartners, getPartnerBot, canChangePartner, daysUntilPartnerUnlock, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { getRelationshipEffects, getOrCreateRelationship, getPartnerChemistryBonus } from '@/lib/relationships';
@@ -103,7 +103,7 @@ export function compatibilityLabel(score) {
 export async function getActivePartnership(profileId) {
   if (!profileId) return null;
   try {
-    const list = await base44.entities.Partnership.filter(
+    const list = await localGame.entities.Partnership.filter(
       { profile_id: profileId, status: 'ativa' },
       '-started_career_date', 1
     );
@@ -114,7 +114,7 @@ export async function getActivePartnership(profileId) {
 export async function getPartnershipHistory(profileId) {
   if (!profileId) return [];
   try {
-    const list = await base44.entities.Partnership.filter(
+    const list = await localGame.entities.Partnership.filter(
       { profile_id: profileId },
       '-started_career_date', 50
     );
@@ -133,10 +133,10 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
     await endPartnership(existing.id, 'encerrada_jogador', 'Nova parceria formada');
   }
 
-  const relationships = await base44.entities.Relationship.filter({ profile_id: profile.id }, null, 200).catch(() => []);
+  const relationships = await localGame.entities.Relationship.filter({ profile_id: profile.id }, null, 200).catch(() => []);
   const compat = computeCompatibility(profile, bot, relationships || []);
 
-  const partnership = await base44.entities.Partnership.create({
+  const partnership = await localGame.entities.Partnership.create({
     profile_id: profile.id,
     partner_bot_id: bot.id,
     partner_name: bot.name,
@@ -158,7 +158,7 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
   });
 
   // Update PlayerProfile partner fields
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_id: bot.id,
     partner_name: bot.name,
     partner_locked_until: endDate,
@@ -168,7 +168,7 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
   // Create or upgrade relationship to 'parceiro'
   const rel = await getOrCreateRelationship(profile.id, bot.id, bot.name, bot.country);
   if (rel) {
-    await base44.entities.Relationship.update(rel.id, {
+    await localGame.entities.Relationship.update(rel.id, {
       relationship_type: 'parceiro',
       score: Math.max(rel.score || 0, 40),
       chemistry: partnership.chemistry,
@@ -181,10 +181,10 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
 export async function endPartnership(partnershipId, endStatus, reason) {
   if (!partnershipId) return null;
   try {
-    const p = await base44.entities.Partnership.get(partnershipId);
+    const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const careerDate = p.started_career_date || CAREER_START_DATE;
-    return await base44.entities.Partnership.update(partnershipId, {
+    return await localGame.entities.Partnership.update(partnershipId, {
       status: endStatus,
       end_reason: reason,
       ended_career_date: careerDate,
@@ -195,7 +195,7 @@ export async function endPartnership(partnershipId, endStatus, reason) {
 export async function recordPartnershipMatch(partnershipId, won, tournamentName) {
   if (!partnershipId) return null;
   try {
-    const p = await base44.entities.Partnership.get(partnershipId);
+    const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const chemChange = won ? 3 : -1;
     const newChem = Math.max(0, Math.min(100, (p.chemistry || 50) + chemChange));
@@ -204,7 +204,7 @@ export async function recordPartnershipMatch(partnershipId, won, tournamentName)
       chemistry: newChem,
       event: won ? 'Vitória juntos' : 'Derrota juntos',
     }].slice(-30);
-    return await base44.entities.Partnership.update(partnershipId, {
+    return await localGame.entities.Partnership.update(partnershipId, {
       chemistry: newChem,
       shared_matches: (p.shared_matches || 0) + 1,
       shared_wins: won ? (p.shared_wins || 0) + 1 : p.shared_wins,
@@ -218,10 +218,10 @@ export async function recordPartnershipMatch(partnershipId, won, tournamentName)
 export async function recordPartnershipTitle(partnershipId) {
   if (!partnershipId) return null;
   try {
-    const p = await base44.entities.Partnership.get(partnershipId);
+    const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const newChem = Math.min(100, (p.chemistry || 50) + 8);
-    return await base44.entities.Partnership.update(partnershipId, {
+    return await localGame.entities.Partnership.update(partnershipId, {
       chemistry: newChem,
       shared_titles: (p.shared_titles || 0) + 1,
       chemistry_history: [...(p.chemistry_history || []), { date: new Date().toISOString().slice(0, 10), chemistry: newChem, event: 'Título conquistado!' }].slice(-30),
@@ -232,11 +232,11 @@ export async function recordPartnershipTitle(partnershipId) {
 export async function addConflict(partnershipId, title, description, severity = 'media') {
   if (!partnershipId) return null;
   try {
-    const p = await base44.entities.Partnership.get(partnershipId);
+    const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const chemDrop = severity === 'alta' ? -8 : severity === 'media' ? -5 : -2;
     const newChem = Math.max(0, (p.chemistry || 50) + chemDrop);
-    return await base44.entities.Partnership.update(partnershipId, {
+    return await localGame.entities.Partnership.update(partnershipId, {
       chemistry: newChem,
       conflicts: [...(p.conflicts || []), { date: new Date().toISOString().slice(0, 10), title, description, severity, resolved: false }].slice(-20),
       chemistry_history: [...(p.chemistry_history || []), { date: new Date().toISOString().slice(0, 10), chemistry: newChem, event: `Conflito: ${title}` }].slice(-30),
@@ -247,9 +247,9 @@ export async function addConflict(partnershipId, title, description, severity = 
 export async function addConversation(partnershipId, speaker, text, tone = 'neutro') {
   if (!partnershipId) return null;
   try {
-    const p = await base44.entities.Partnership.get(partnershipId);
+    const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    return await base44.entities.Partnership.update(partnershipId, {
+    return await localGame.entities.Partnership.update(partnershipId, {
       conversations: [...(p.conversations || []), { date: new Date().toISOString().slice(0, 10), speaker, text, tone }].slice(-30),
     });
   } catch (e) { return null; }
@@ -269,14 +269,14 @@ function generateDefaultGoals(partner) {
 export async function updateGoalProgress(partnershipId, goalId, newProgress) {
   if (!partnershipId || !goalId) return null;
   try {
-    const p = await base44.entities.Partnership.get(partnershipId);
+    const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const goals = (p.shared_goals || []).map(g => {
       if (g.id !== goalId) return g;
       const completed = newProgress >= g.target;
       return { ...g, progress: Math.min(g.target, newProgress), completed };
     });
-    return await base44.entities.Partnership.update(partnershipId, { shared_goals: goals });
+    return await localGame.entities.Partnership.update(partnershipId, { shared_goals: goals });
   } catch (e) { return null; }
 }
 
@@ -291,7 +291,7 @@ export function calculatePrizeSplit(totalPrize, splitPct) {
 export async function negotiatePrizeSplit(partnershipId, newSplit) {
   if (!partnershipId) return null;
   try {
-    return await base44.entities.Partnership.update(partnershipId, { prize_split_pct: Math.max(20, Math.min(80, newSplit)) });
+    return await localGame.entities.Partnership.update(partnershipId, { prize_split_pct: Math.max(20, Math.min(80, newSplit)) });
   } catch (e) { return null; }
 }
 
@@ -320,14 +320,14 @@ export async function getInbox(profileId, statusFilter = null) {
   if (!profileId) return [];
   try {
     const query = statusFilter ? { profile_id: profileId, status: statusFilter } : { profile_id: profileId };
-    return await base44.entities.CareerMessage.filter(query, '-created_date', 100);
+    return await localGame.entities.CareerMessage.filter(query, '-created_date', 100);
   } catch { return []; }
 }
 
 export async function getUnreadCount(profileId) {
   if (!profileId) return 0;
   try {
-    const msgs = await base44.entities.CareerMessage.filter({ profile_id: profileId, status: 'nao_lida' }, null, 50);
+    const msgs = await localGame.entities.CareerMessage.filter({ profile_id: profileId, status: 'nao_lida' }, null, 50);
     return msgs?.length || 0;
   } catch { return 0; }
 }
@@ -335,14 +335,14 @@ export async function getUnreadCount(profileId) {
 export async function getPendingDecisions(profileId) {
   if (!profileId) return [];
   try {
-    return await base44.entities.CareerMessage.filter({ profile_id: profileId, status: 'decisao_pendente' }, '-created_date', 20);
+    return await localGame.entities.CareerMessage.filter({ profile_id: profileId, status: 'decisao_pendente' }, '-created_date', 20);
   } catch { return []; }
 }
 
 export async function sendMessage(profileId, msg) {
   if (!profileId) return null;
   try {
-    return await base44.entities.CareerMessage.create({
+    return await localGame.entities.CareerMessage.create({
       profile_id: profileId,
       message_type: msg.message_type || 'mensagem',
       sender_name: msg.sender_name || 'Sistema',
@@ -365,19 +365,19 @@ export async function sendMessage(profileId, msg) {
 
 export async function markMessageRead(messageId) {
   try {
-    return await base44.entities.CareerMessage.update(messageId, { status: 'lida', is_new: false });
+    return await localGame.entities.CareerMessage.update(messageId, { status: 'lida', is_new: false });
   } catch { return null; }
 }
 
 export async function resolveMessage(messageId, chosenActionId) {
   try {
-    return await base44.entities.CareerMessage.update(messageId, { status: 'resolvida', chosen_action_id: chosenActionId, is_new: false });
+    return await localGame.entities.CareerMessage.update(messageId, { status: 'resolvida', chosen_action_id: chosenActionId, is_new: false });
   } catch { return null; }
 }
 
 export async function dismissMessage(messageId) {
   try {
-    return await base44.entities.CareerMessage.update(messageId, { status: 'ignorada', is_new: false });
+    return await localGame.entities.CareerMessage.update(messageId, { status: 'ignorada', is_new: false });
   } catch { return null; }
 }
 
@@ -386,7 +386,7 @@ export async function dismissMessage(messageId) {
 
 export async function generatePartnerProposals(profile, availablePartners) {
   if (!profile || !availablePartners || availablePartners.length === 0) return [];
-  const existingMsgs = await base44.entities.CareerMessage.filter(
+  const existingMsgs = await localGame.entities.CareerMessage.filter(
     { profile_id: profile.id, message_type: 'proposta_parceria', status: 'nao_lida' }, null, 20
   ).catch(() => []);
 
@@ -397,7 +397,7 @@ export async function generatePartnerProposals(profile, availablePartners) {
     .slice(0, 3);
 
   for (const bot of candidates) {
-    const relationships = await base44.entities.Relationship.filter({ profile_id: profile.id, target_athlete_id: bot.id }, null, 1).catch(() => []);
+    const relationships = await localGame.entities.Relationship.filter({ profile_id: profile.id, target_athlete_id: bot.id }, null, 1).catch(() => []);
     const compat = computeCompatibility(profile, bot, relationships || []);
     if (compat.total < 45) continue; // only interested if reasonable compatibility
 

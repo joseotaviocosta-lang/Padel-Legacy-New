@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Package, ShoppingBag, Check, Disc, Crown, Circle, Target, Shirt, Briefcase, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
 import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
@@ -29,12 +29,12 @@ export default function Inventory() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         const [inv, shopItems] = await Promise.all([
-          p ? base44.entities.PlayerInventory.filter({ profile_id: p.id }) : [],
-          base44.entities.ShopItem.list(),
+          p ? localGame.entities.PlayerInventory.filter({ profile_id: p.id }) : [],
+          localGame.entities.ShopItem.list(),
         ]);
         setInventory(inv || []);
         const map = {};
@@ -92,11 +92,11 @@ export default function Inventory() {
 
       // Single profile update
       if (Object.keys(profileUpdates).length > 0) {
-        await base44.entities.PlayerProfile.update(profile.id, profileUpdates);
+        await localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
       }
       // Batch inventory updates
       if (invUpdates.length > 0) {
-        await base44.entities.PlayerInventory.bulkUpdate(invUpdates);
+        await localGame.entities.PlayerInventory.bulkUpdate(invUpdates);
       }
 
       setProfile(prev => ({ ...prev, ...profileUpdates }));
@@ -123,8 +123,8 @@ export default function Inventory() {
     const sellPrice = Math.floor((shopItem?.price || 0) * 0.3);
     setSelling(invItem.id);
     try {
-      await base44.entities.PlayerInventory.delete(invItem.id);
-      const updated = await base44.entities.PlayerProfile.update(profile.id, {
+      await localGame.entities.PlayerInventory.delete(invItem.id);
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         coins: (profile.coins || 0) + sellPrice,
       });
       setProfile(updated);

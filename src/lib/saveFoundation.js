@@ -1,11 +1,10 @@
-import { base44 } from '@/api/base44Client';
-import { localDatabase } from '@/local/localDatabase';
+import { localGame } from '@/api/localGameClient.js';
 import worldSeed from '@/data/worldSeed2025.json';
 
 export const SAVE_FOUNDATION_VERSION = '3.4.4';
 
 const safeList = async (entity, order='-created_date', limit=1000) => {
-  try { return await base44.entities[entity].list(order, limit) || []; }
+  try { return await localGame.entities[entity].list(order, limit) || []; }
   catch (error) { console.warn(`[Save Foundation] list ${entity}`, error); return []; }
 };
 
@@ -20,14 +19,14 @@ async function upsertBy(entity, existing, key, value, payload) {
       }
     }
     if (Object.keys(patch).length) {
-      try { await base44.entities[entity].update(found.id, patch); } catch (error) {
+      try { await localGame.entities[entity].update(found.id, patch); } catch (error) {
         console.warn(`[Save Foundation] update ${entity}`, error);
       }
     }
     return found;
   }
   try {
-    const created = await base44.entities[entity].create(payload);
+    const created = await localGame.entities[entity].create(payload);
     existing.push(created || payload);
     return created;
   } catch (error) {
@@ -38,8 +37,8 @@ async function upsertBy(entity, existing, key, value, payload) {
 
 export async function createCriticalBackup() {
   try {
-    await localDatabase.checkpoint('save-foundation-backup');
-    return await localDatabase.exportPersistent();
+    await localGame.storage.checkpoint('save-foundation-backup');
+    return await localGame.storage.exportPersistent();
   } catch (error) {
     console.warn('[Save Foundation] backup nativo não criado', error);
     return null;
@@ -73,7 +72,7 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
       if (partner) patch.partner_name = partner.name;
     }
     if (Object.keys(patch).length) {
-      try { await base44.entities.PlayerProfile.update(profile.id, patch); } catch (error) {
+      try { await localGame.entities.PlayerProfile.update(profile.id, patch); } catch (error) {
         console.warn('[Save Foundation] perfil preservado, patch ignorado', error);
       }
     }

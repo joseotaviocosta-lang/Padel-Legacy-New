@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Trophy, Lock } from 'lucide-react';
 import { careerDateLabel, careerMonthLabel, advanceDay, daysBetween } from '@/lib/career';
 import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, MAX_ENERGY, chemistryLabel, isInjured, injuryRecoveryDays, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
@@ -30,7 +30,7 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
       try {
         const careerDate = profile?.career_date || '2026-01-01';
         const [list, pending] = await Promise.all([
-          base44.entities.Tournament.list('-start_date', 50),
+          localGame.entities.Tournament.list('-start_date', 50),
           getPendingDecisions(profile?.id, careerDate),
         ]);
         const upcoming = (list || [])

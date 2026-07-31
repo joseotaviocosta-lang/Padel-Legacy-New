@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CalendarRange, Trophy, Swords, TrendingUp, Wallet, Coins, Medal, ArrowRight, Loader2, RotateCcw } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { getSeasonSnapshot, getSeasonHistory, finalizeSeason } from '@/game-core';
 import { useToast } from '@/components/ui/use-toast';
 
@@ -35,16 +35,16 @@ const localMode = import.meta.env.VITE_LOCAL_DEV_MODE === 'true';
 
 async function loadPlayerProfile() {
   try {
-    const user = await base44.auth.me();
+    const user = await localGame.auth.me();
     if (user?.id) {
-      const owned = await base44.entities.PlayerProfile.filter({ created_by_id: user.id });
+      const owned = await localGame.entities.PlayerProfile.filter({ created_by_id: user.id });
       if (owned?.length) return owned[0];
     }
   } catch (error) {
     console.warn('Não foi possível localizar o perfil pelo usuário:', error);
   }
 
-  const profiles = await base44.entities.PlayerProfile.list('-created_date', 1);
+  const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
   if (!profiles?.length) throw new Error('Nenhum perfil de jogador foi encontrado.');
   return profiles[0];
 }
@@ -69,7 +69,7 @@ export default function SeasonDashboard() {
       const [s, h, partners] = await Promise.all([
         getSeasonSnapshot(p),
         getSeasonHistory(p),
-        p.partner_id ? base44.entities.AthleteProfile.filter({ id: p.partner_id }) : Promise.resolve([]),
+        p.partner_id ? localGame.entities.AthleteProfile.filter({ id: p.partner_id }) : Promise.resolve([]),
       ]);
       setProfile(p); setSnapshot(s); setHistory(h); setPartner(partners?.[0] || null);
     } catch (error) {

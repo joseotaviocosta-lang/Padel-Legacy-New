@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
 import { TrendingUp, ArrowUpRight, Activity } from 'lucide-react';
 import { ATTRIBUTES } from '@/lib/padel';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ── Attribute Evolution ──────────────────────────────────────────────────
 // Shows a radar chart of all attributes, progression bars with gains from
@@ -15,7 +15,7 @@ export default function AttributeEvolution({ profile }) {
     if (!profile?.id) return;
     (async () => {
       try {
-        const list = await base44.entities.TrainingSession.filter({ profile_id: profile.id });
+        const list = await localGame.entities.TrainingSession.filter({ profile_id: profile.id });
         setSessions(list || []);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'ativo', 'livre', 'contratado']);
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Suécia', 'México', 'Chile', 'Paraguai'];
@@ -150,7 +150,7 @@ function addDays(date, days) {
 
 async function createWorldEvent(payload) {
   try {
-    return await base44.entities.WorldEvent.create(payload);
+    return await localGame.entities.WorldEvent.create(payload);
   } catch (error) {
     console.warn('[Game Core] WorldEvent não disponível:', error?.message || error);
     return null;
@@ -168,7 +168,7 @@ async function generateProspect(currentDate, existingAthletes) {
   const country = COUNTRIES[integer(`${month}:country`, 0, COUNTRIES.length - 1)];
   const overall = integer(`${month}:overall`, 48, 61);
   const potential = integer(`${month}:potential`, Math.max(72, overall + 12), 94);
-  const profile = await base44.entities.AthleteProfile.create({
+  const profile = await localGame.entities.AthleteProfile.create({
     name: `${first} ${last}`,
     nationality: country,
     age: 17,
@@ -212,7 +212,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     return { profile, skipped: true, processed: 0, events: [], summary: null };
   }
 
-  const athletes = (await base44.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
   const activeAthletes = athletes.filter((athlete) => athleteStatus(athlete) !== 'retired');
   const events = [];
   let processed = 0;
@@ -265,7 +265,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
 
     if (result.overallDelta > 0) improvements += 1;
     earnings += result.wealthDelta;
-    await base44.entities.AthleteProfile.update(athlete.id, updates);
+    await localGame.entities.AthleteProfile.update(athlete.id, updates);
     processed += 1;
   }
 
@@ -286,7 +286,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
 
   let updatedProfile = profile;
   if (profile?.id) {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       last_world_simulation_date: currentDate,
       last_world_simulation_summary: summary,
     });
@@ -297,7 +297,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
 
 export async function getWorldSimulationStatus(profile) {
   const date = profile?.career_date || new Date().toISOString().slice(0, 10);
-  const athletes = (await base44.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
   const active = athletes.filter((athlete) => athleteStatus(athlete) !== 'retired');
   return {
     date,

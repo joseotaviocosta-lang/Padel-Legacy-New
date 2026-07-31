@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 const INJURIES = [
   { type: 'Sobrecarga muscular', severity: 'leve', days: [2, 4], risk: 1.0 },
@@ -24,8 +24,8 @@ function isWeeklyBoundary(previousDate, currentDate) {
 
 async function createMessage(profile, subject, body, type) {
   try {
-    if (!base44.entities?.CareerMessage?.create) return;
-    await base44.entities.CareerMessage.create({
+    if (!localGame.entities?.CareerMessage?.create) return;
+    await localGame.entities.CareerMessage.create({
       profile_id: profile.id,
       sender_name: 'Departamento Médico',
       subject,
@@ -73,7 +73,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
           energy: Math.min(100, (Number(profile.energy) || 0) + 8),
         };
 
-    const updated = await base44.entities.PlayerProfile.update(profile.id, patch);
+    const updated = await localGame.entities.PlayerProfile.update(profile.id, patch);
     if (recovered) {
       await createMessage(updated, 'Liberado para competir', 'A recuperação foi concluída. Você está novamente disponível para treinos e partidas.', 'medical_clearance');
     }
@@ -111,7 +111,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
   returnDate.setUTCDate(returnDate.getUTCDate() + days);
   const history = [...current.history, { type: injury.type, severity: injury.severity, date: currentDate, days }].slice(-20);
 
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     injury_status: 'lesionado',
     injury_type: injury.type,
     injury_severity: injury.severity,

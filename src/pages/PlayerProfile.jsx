@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, MapPin, Disc, Trophy, Coins } from 'lucide-react';
 import { ensureMyProfile, levelForXp, nextLevelXp, overallRating, winRate, ATTRIBUTES, PLAY_STYLES, calculateAge, isRetired } from '@/lib/padel';
 import LogoutButton from '@/components/LogoutButton';
@@ -20,7 +20,7 @@ export default function PlayerProfile() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         setForm({
@@ -48,7 +48,7 @@ export default function PlayerProfile() {
   async function save() {
     setSaving(true);
     try {
-      const updated = await base44.entities.PlayerProfile.update(profile.id, form);
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, form);
       setProfile(updated);
       setEditing(false);
     } catch (e) { console.error(e); }

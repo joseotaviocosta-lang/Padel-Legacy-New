@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Sun, TrendingUp, MapPin, BarChart3, CloudRain, Wind, Droplets } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import { getWeatherForecast, getWeatherStats, WEATHER_META, enrichTournamentWeather } from '@/lib/weather';
@@ -23,7 +23,7 @@ export default function Weather() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         const { fc, st } = await loadModuleTasks({

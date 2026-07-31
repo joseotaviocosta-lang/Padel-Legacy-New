@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { overallRating } from '@/lib/padel';
 import { formPartnerContract } from './partnerLifecycle';
 
@@ -132,14 +132,14 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
 
   let offer;
   try {
-    offer = await base44.entities.PartnerOffer.create(offerData);
+    offer = await localGame.entities.PartnerOffer.create(offerData);
   } catch {
     offer = offerData;
   }
 
   if (!accepted) {
     await Promise.allSettled([
-      base44.entities.CareerMessage.create({
+      localGame.entities.CareerMessage.create({
         profile_id: profile.id,
         sender_name: athlete.name,
         subject: 'Proposta de dupla recusada',
@@ -148,7 +148,7 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
         message_type: 'partner_offer',
         created_date: new Date().toISOString(),
       }),
-      base44.entities.HistoryEntry.create({
+      localGame.entities.HistoryEntry.create({
         profile_id: profile.id,
         year: Number(careerDate.slice(0, 4)),
         event_date: careerDate,
@@ -160,7 +160,7 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
     return { accepted: false, preview, offer, profile };
   }
 
-  const profileAfterBonus = await base44.entities.PlayerProfile.update(profile.id, {
+  const profileAfterBonus = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: Math.max(0, (Number(profile.coins) || 0) - preview.signingBonus),
   });
 
@@ -173,13 +173,13 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
   });
 
   await Promise.allSettled([
-    base44.entities.AthleteProfile.update(athlete.id, {
+    localGame.entities.AthleteProfile.update(athlete.id, {
       market_status: 'contratado',
       current_partner_profile_id: profile.id,
       current_partner_name: profile.name || profile.full_name || 'Jogador',
       last_updated_date: careerDate,
     }),
-    base44.entities.FinancialTransaction.create({
+    localGame.entities.FinancialTransaction.create({
       profile_id: profile.id,
       month: monthKey(careerDate),
       type: 'despesa',
@@ -189,7 +189,7 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
       net: -preview.signingBonus,
       date: careerDate,
     }),
-    base44.entities.CareerMessage.create({
+    localGame.entities.CareerMessage.create({
       profile_id: profile.id,
       sender_name: athlete.name,
       subject: 'Proposta aceita',

@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock } from 'lucide-react';
 import { ensureMyProfile, ensureTutorialMissionCatalog, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
@@ -32,12 +32,12 @@ function daysRemaining(careerDate, endDate) {
 
 async function ensureExtendedMissionCatalog() {
   await ensureTutorialMissionCatalog();
-  const existing = await base44.entities.Mission.list('-created_date', 300);
+  const existing = await localGame.entities.Mission.list('-created_date', 300);
   const titles = new Set((existing || []).map(m => m.title));
   const missing = EXTRA_MISSIONS.filter(m => !titles.has(m.title));
   if (missing.length) {
-    try { await base44.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
-    catch { for (const mission of missing) await base44.entities.Mission.create({ ...mission, is_active: true }); }
+    try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
+    catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
   }
 }
 
@@ -53,21 +53,21 @@ export default function Missions() {
 
   async function load() {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
       await safeModuleTask(() => ensureExtendedMissionCatalog(), { label: 'catálogo de missões', fallback: null, timeoutMs: 10000 });
       const missionsData = await safeModuleTask(
-        () => base44.entities.Mission.filter({ is_active: true }),
+        () => localGame.entities.Mission.filter({ is_active: true }),
         { label: 'missões ativas', fallback: [] },
       );
       let progData = p ? await safeModuleTask(
-        () => base44.entities.MissionProgress.filter({ profile_id: p.id }),
+        () => localGame.entities.MissionProgress.filter({ profile_id: p.id }),
         { label: 'progresso das missões', fallback: [] },
       ) : [];
       await safeModuleTask(() => syncMissionProgressPeriods(p, missionsData, progData), { label: 'sincronização das missões', fallback: null });
       progData = p ? await safeModuleTask(
-        () => base44.entities.MissionProgress.filter({ profile_id: p.id }),
+        () => localGame.entities.MissionProgress.filter({ profile_id: p.id }),
         { label: 'releitura do progresso das missões', fallback: progData },
       ) : [];
       setMissions(missionsData || []);

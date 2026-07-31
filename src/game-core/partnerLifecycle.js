@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { addDays, CAREER_START_DATE } from '@/lib/career';
 import {
   getActivePartnership,
@@ -45,7 +45,7 @@ export async function formPartnerContract(profile, bot, requestedTerms = {}) {
 
   const result = await startPartnership(profile, bot, terms.durationDays, terms.prizeSplit);
   const careerDate = profile.career_date || CAREER_START_DATE;
-  const partnership = await base44.entities.Partnership.update(result.partnership.id, {
+  const partnership = await localGame.entities.Partnership.update(result.partnership.id, {
     contract_status: 'ativo',
     monthly_salary: terms.monthlySalary,
     partner_morale: terms.morale,
@@ -56,7 +56,7 @@ export async function formPartnerContract(profile, bot, requestedTerms = {}) {
   });
 
   await Promise.allSettled([
-    base44.entities.HistoryEntry.create({
+    localGame.entities.HistoryEntry.create({
       profile_id: profile.id,
       year: Number(careerDate.slice(0, 4)),
       event_date: careerDate,
@@ -64,7 +64,7 @@ export async function formPartnerContract(profile, bot, requestedTerms = {}) {
       description: `Contrato de ${terms.durationDays} dias, divisão de ${terms.prizeSplit}% da premiação e salário mensal de ${terms.monthlySalary} moedas.`,
       category: 'parceria',
     }),
-    base44.entities.CareerMessage.create({
+    localGame.entities.CareerMessage.create({
       profile_id: profile.id,
       sender_name: bot.name,
       subject: 'Contrato de dupla confirmado',
@@ -87,7 +87,7 @@ export async function renewPartnerContract(profile, terms = {}) {
   const monthlySalary = clamp(terms.monthlySalary ?? active.monthly_salary ?? 100, 0, 999999);
 
   await negotiatePrizeSplit(active.id, prizeSplit);
-  const partnership = await base44.entities.Partnership.update(active.id, {
+  const partnership = await localGame.entities.Partnership.update(active.id, {
     status: 'ativa',
     contract_status: 'renovado',
     negotiated_duration_days: durationDays,
@@ -97,11 +97,11 @@ export async function renewPartnerContract(profile, terms = {}) {
     renewal_available: false,
     partner_morale: clamp((active.partner_morale ?? 70) + 5, 0, 100),
   });
-  const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_locked_until: partnership.contract_end_date,
   });
   await Promise.allSettled([
-    base44.entities.HistoryEntry.create({
+    localGame.entities.HistoryEntry.create({
       profile_id: profile.id,
       year: Number(careerDate.slice(0, 4)),
       event_date: careerDate,
@@ -109,7 +109,7 @@ export async function renewPartnerContract(profile, terms = {}) {
       description: `Novo vínculo de ${durationDays} dias, salário mensal de ${monthlySalary} moedas e ${prizeSplit}% da premiação para o jogador.`,
       category: 'parceria',
     }),
-    base44.entities.CareerMessage.create({
+    localGame.entities.CareerMessage.create({
       profile_id: profile.id,
       sender_name: active.partner_name,
       subject: 'Renovação confirmada',
@@ -130,7 +130,7 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
   const penalty = early ? Math.min(Number(profile.coins) || 0, Math.max(50, Math.round((active.monthly_salary || 100) * 0.5))) : 0;
 
   await endPartnership(active.id, 'encerrada_jogador', reason);
-  const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_id: null,
     partner_name: null,
     partner_locked_until: null,
@@ -138,7 +138,7 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
     coins: Math.max(0, (Number(profile.coins) || 0) - penalty),
   });
   if (penalty > 0) {
-    await base44.entities.FinancialTransaction.create({
+    await localGame.entities.FinancialTransaction.create({
       profile_id: profile.id,
       date: careerDate,
       type: 'expense',
@@ -167,7 +167,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
       if (balance >= salary) {
         profileUpdates.coins = balance - salary;
         updates.partner_morale = clamp(oldMorale + 2, 0, 100);
-        await base44.entities.FinancialTransaction.create({
+        await localGame.entities.FinancialTransaction.create({
           profile_id: profile.id,
           date: currentDate,
           type: 'expense',
@@ -177,7 +177,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
         });
       } else {
         updates.partner_morale = clamp(oldMorale - 15, 0, 100);
-        await base44.entities.CareerMessage.create({
+        await localGame.entities.CareerMessage.create({
           profile_id: profile.id,
           sender_name: active.partner_name,
           subject: 'Salário da dupla em atraso',
@@ -197,7 +197,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
     updates.contract_status = 'vencido';
     if (currentDate > addDays(endDate, 7)) {
       await endPartnership(active.id, 'encerrada_contrato', 'Contrato não renovado');
-      return base44.entities.PlayerProfile.update(profile.id, {
+      return localGame.entities.PlayerProfile.update(profile.id, {
         ...profileUpdates,
         partner_id: null,
         partner_name: null,
@@ -214,9 +214,9 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
     updates.contract_status = 'insatisfeito';
   }
 
-  await base44.entities.Partnership.update(active.id, updates);
+  await localGame.entities.Partnership.update(active.id, updates);
   if (Object.keys(profileUpdates).length > 0) {
-    return base44.entities.PlayerProfile.update(profile.id, profileUpdates);
+    return localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
   }
   return profile;
 }

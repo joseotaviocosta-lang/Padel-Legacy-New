@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ChevronLeft, Building2, Users, Calendar, Briefcase, Star, MapPin, Crown } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
@@ -35,15 +35,15 @@ export default function ClubDetail() {
 
   async function load() {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
-      const c = await base44.entities.Club.get(clubId);
+      const c = await localGame.entities.Club.get(clubId);
       setClub(c);
       const [m, e, s] = await Promise.all([
-        base44.entities.ClubMember.filter({ club_id: clubId }),
-        base44.entities.ClubEvent.filter({ club_id: clubId }),
-        base44.entities.ClubStaff.filter({ club_id: clubId }),
+        localGame.entities.ClubMember.filter({ club_id: clubId }),
+        localGame.entities.ClubEvent.filter({ club_id: clubId }),
+        localGame.entities.ClubStaff.filter({ club_id: clubId }),
       ]);
       setMembers(m || []);
       setEvents(e || []);
@@ -53,12 +53,12 @@ export default function ClubDetail() {
   }
 
   async function refresh() {
-    const c = await base44.entities.Club.get(clubId);
+    const c = await localGame.entities.Club.get(clubId);
     setClub(c);
     const [m, e, s] = await Promise.all([
-      base44.entities.ClubMember.filter({ club_id: clubId }),
-      base44.entities.ClubEvent.filter({ club_id: clubId }),
-      base44.entities.ClubStaff.filter({ club_id: clubId }),
+      localGame.entities.ClubMember.filter({ club_id: clubId }),
+      localGame.entities.ClubEvent.filter({ club_id: clubId }),
+      localGame.entities.ClubStaff.filter({ club_id: clubId }),
     ]);
     setMembers(m || []);
     setEvents(e || []);

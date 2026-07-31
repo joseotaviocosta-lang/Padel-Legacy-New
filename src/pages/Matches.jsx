@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { MapPin, Calendar, Swords, Trophy, Bot, Play, AlertCircle } from 'lucide-react';
 import { formatDate, levelForXp, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
@@ -16,10 +16,10 @@ export default function Matches() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const list = await base44.entities.Match.list('-created_date', 50);
+        const list = await localGame.entities.Match.list('-created_date', 50);
         setMatches(list || []);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
@@ -105,7 +105,7 @@ export default function Matches() {
           onClose={() => setShowSimulation(false)}
           onProfileUpdate={setProfile}
           onComplete={async () => {
-            const list = await base44.entities.Match.list('-created_date', 50);
+            const list = await localGame.entities.Match.list('-created_date', 50);
             setMatches(list || []);
           }}
         />

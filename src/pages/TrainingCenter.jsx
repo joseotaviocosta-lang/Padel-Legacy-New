@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, Zap, Heart, Shield, TrendingUp, Brain, Coins, Sparkles } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, LoadingScreen } from '@/components/padel/ui';
 import FacilityCard from '@/components/training/FacilityCard';
 import { FACILITY_LIST, FACILITY_CATEGORIES, getCenterEffects, getCenterLevel, getCenterReputation, DEFAULT_FACILITIES } from '@/lib/trainingCenter';
@@ -33,14 +33,14 @@ export default function TrainingCenterPage() {
   async function load() {
     setLoading(true);
     try {
-      const profiles = await base44.entities.PlayerProfile.list('-created_date', 1);
+      const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
       if (profiles && profiles[0]) {
         setProfile(profiles[0]);
-        const centers = await base44.entities.TrainingCenter.filter({ profile_id: profiles[0].id }, null, 1);
+        const centers = await localGame.entities.TrainingCenter.filter({ profile_id: profiles[0].id }, null, 1);
         if (centers && centers.length > 0) {
           setCenter(centers[0]);
         } else {
-          const created = await base44.entities.TrainingCenter.create({
+          const created = await localGame.entities.TrainingCenter.create({
             profile_id: profiles[0].id,
             name: 'Centro de Treinamento',
             level: 1,
@@ -71,7 +71,7 @@ export default function TrainingCenterPage() {
     try {
       const newFacilities = { ...center.facilities, [facilityId]: currentLevel + 1 };
       const newInvested = (center.total_invested || 0) + nextLevel.cost;
-      const updated = await base44.entities.TrainingCenter.update(center.id, {
+      const updated = await localGame.entities.TrainingCenter.update(center.id, {
         facilities: newFacilities,
         total_invested: newInvested,
         level: getCenterLevel({ facilities: newFacilities }),
@@ -80,7 +80,7 @@ export default function TrainingCenterPage() {
       setCenter(updated);
 
       // Deduct coins from profile
-      const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+      const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
         coins: (profile.coins || 0) - nextLevel.cost,
       });
       setProfile(updatedProfile);

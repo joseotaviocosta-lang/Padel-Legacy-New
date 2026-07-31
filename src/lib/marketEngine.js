@@ -1,7 +1,7 @@
 // ─── Living Market Engine ─────────────────────────────────────────────────────
 // Computes dynamic prices based on demand, supply, events, sponsorships & volatility
 
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { RARITY_STYLES } from '@/lib/equipmentCatalog';
 
 // ─── Price Computation ────────────────────────────────────────────────────────
@@ -161,15 +161,15 @@ export async function processMarketTick(careerDate) {
   const today = careerDate || new Date().toISOString().slice(0, 10);
 
   // 1. Expire old events
-  const activeEvents = await base44.asServiceRole.entities.MarketEvent.filter({ is_active: true });
+  const activeEvents = await localGame.asServiceRole.entities.MarketEvent.filter({ is_active: true });
   for (const ev of activeEvents) {
     if (ev.end_date && ev.end_date < today) {
-      await base44.asServiceRole.entities.MarketEvent.update(ev.id, { is_active: false });
+      await localGame.asServiceRole.entities.MarketEvent.update(ev.id, { is_active: false });
     }
   }
 
   // 2. Update price histories with demand/supply drift
-  const histories = await base44.asServiceRole.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200);
+  const histories = await localGame.asServiceRole.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200);
   const updates = [];
   for (const h of histories) {
     // Demand drift toward 50 (mean reversion)
@@ -193,7 +193,7 @@ export async function processMarketTick(careerDate) {
     // Update price history array (keep last 30 entries)
     const hist = [...(h.price_history || []), { date: today, price: newPrice }].slice(-30);
 
-    updates.push(base44.asServiceRole.entities.MarketPriceHistory.update(h.id, {
+    updates.push(localGame.asServiceRole.entities.MarketPriceHistory.update(h.id, {
       previous_price: h.current_price || h.base_price,
       current_price: newPrice,
       demand_score: newDemand,
@@ -317,7 +317,7 @@ async function generateRandomEvent(today) {
   const endDate = new Date(today);
   endDate.setDate(endDate.getDate() + template.duration_days);
 
-  await base44.asServiceRole.entities.MarketEvent.create({
+  await localGame.asServiceRole.entities.MarketEvent.create({
     ...template,
     affected_categories: useCategory ? pickRandom(ALL_CATEGORIES, 1 + Math.floor(Math.random() * 3)) : [],
     affected_manufacturers: useManufacturer ? pickRandom(SOME_MANUFACTURERS, 1 + Math.floor(Math.random() * 2)) : [],
@@ -454,7 +454,7 @@ export async function seedMarket() {
   const today = new Date().toISOString().slice(0, 10);
 
   // Check if already seeded
-  const existing = await base44.asServiceRole.entities.MarketEvent.filter({ is_active: true });
+  const existing = await localGame.asServiceRole.entities.MarketEvent.filter({ is_active: true });
   if (existing.length > 0) return { alreadySeeded: true, count: existing.length };
 
   // Create initial permanent-ish events
@@ -563,16 +563,16 @@ export async function seedMarket() {
     created_date: today,
   }));
 
-  await base44.asServiceRole.entities.MarketEvent.bulkCreate(events);
+  await localGame.asServiceRole.entities.MarketEvent.bulkCreate(events);
 
   // Add historical rare items to ShopItem
-  const existingHistorical = await base44.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
+  const existingHistorical = await localGame.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
   if (existingHistorical.length === 0) {
     const historicalItems = HISTORICAL_RARE_ITEMS.map(item => ({ ...item, is_available: true }));
-    await base44.asServiceRole.entities.ShopItem.bulkCreate(historicalItems);
+    await localGame.asServiceRole.entities.ShopItem.bulkCreate(historicalItems);
 
     // Create limited stock entries for historical items
-    const createdItems = await base44.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
+    const createdItems = await localGame.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
     const stockEntries = createdItems.map(item => ({
       item_id: item.id,
       item_name: item.name,
@@ -591,7 +591,7 @@ export async function seedMarket() {
       is_limited_stock: true,
       stock_remaining: Math.floor(Math.random() * 5) + 1, // 1-5 units
     }));
-    await base44.asServiceRole.entities.MarketPriceHistory.bulkCreate(stockEntries);
+    await localGame.asServiceRole.entities.MarketPriceHistory.bulkCreate(stockEntries);
   }
 
   return { seeded: true, events: events.length };

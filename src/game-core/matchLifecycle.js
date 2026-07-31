@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { CORE_BALANCE } from './config';
 import { calculatePracticeProgress } from './progression';
 import { calculatePostMatchCondition } from './condition';
@@ -12,7 +12,7 @@ export async function finalizePracticeMatch({ profile, won, partnerName, opponen
   const balance = CORE_BALANCE.practice;
   const progress = calculatePracticeProgress(profile, won, balance);
   const condition = calculatePostMatchCondition(profile, won, balance);
-  const updated = await base44.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     ...progress.updates,
     ...condition,
     rank_points: (Number(profile?.rank_points) || 0) + (won ? CORE_BALANCE.ranking.practiceWin : CORE_BALANCE.ranking.practiceLoss),

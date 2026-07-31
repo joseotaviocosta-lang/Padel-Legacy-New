@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, ensureTutorialMissionCatalog, incrementMissionProgress } from '@/lib/padel';
 import { toast } from '@/components/ui/use-toast';
 import { ToastAction } from '@/components/ui/toast';
@@ -38,7 +38,7 @@ export default function MissionNotificationBridge() {
       try {
         await ensureTutorialMissionCatalog();
         if (!profileRef.current) {
-          const user = await base44.auth.me();
+          const user = await localGame.auth.me();
           profileRef.current = await ensureMyProfile(user);
         }
         const objective = ROUTE_OBJECTIVES[location.pathname];

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 export const PLAY_STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
@@ -225,9 +225,9 @@ export async function ensureMyProfile(user) {
     // Saves antigos podem não possuir created_by_id. No sistema offline há
     // somente um PlayerProfile por carreira, então tentamos primeiro pelo
     // proprietário e, se necessário, reutilizamos o perfil da carreira ativa.
-    let existing = await base44.entities.PlayerProfile.filter({ created_by_id: user.id });
+    let existing = await localGame.entities.PlayerProfile.filter({ created_by_id: user.id });
     if (!existing || existing.length === 0) {
-      existing = await base44.entities.PlayerProfile.list(null, 1);
+      existing = await localGame.entities.PlayerProfile.list(null, 1);
     }
 
     if (existing && existing.length > 0) {
@@ -238,13 +238,13 @@ export async function ensureMyProfile(user) {
       if (!p.career_date) updates.career_date = '2026-01-01';
       if (!p.created_by_id && user.id) updates.created_by_id = user.id;
       if (Object.keys(updates).length > 0) {
-        return await base44.entities.PlayerProfile.update(p.id, updates);
+        return await localGame.entities.PlayerProfile.update(p.id, updates);
       }
       return p;
     }
 
     const firstName = (user.full_name || user.email || 'Jogador').split(' ')[0];
-    const created = await base44.entities.PlayerProfile.create({
+    const created = await localGame.entities.PlayerProfile.create({
       created_by_id: user.id,
       sport_name: user.full_name || firstName,
       avatar_url: '',
@@ -282,8 +282,8 @@ export async function getWorldRank(profile) {
   if (!profile) return { rank: 0, total: 0 };
   try {
     const [athletes, teams] = await Promise.all([
-      base44.entities.AthleteProfile.list('-world_ranking_points', 500),
-      base44.entities.TeamRanking.list('-ranking_points', 300),
+      localGame.entities.AthleteProfile.list('-world_ranking_points', 500),
+      localGame.entities.TeamRanking.list('-ranking_points', 300),
     ]);
 
     const active = (athletes || []).filter(
@@ -385,7 +385,7 @@ export function missionPeriodEndsAt(missionType, careerDate = todayStr()) {
 
 async function missionCareerDate(profileId, fallback = todayStr()) {
   try {
-    const profiles = await base44.entities.PlayerProfile.filter({ id: profileId });
+    const profiles = await localGame.entities.PlayerProfile.filter({ id: profileId });
     return profiles?.[0]?.career_date || fallback;
   } catch {
     return fallback;
@@ -412,14 +412,14 @@ export const TUTORIAL_MISSIONS = [
 ];
 
 export async function ensureTutorialMissionCatalog() {
-  const existing = await base44.entities.Mission.list('-created_date', 300);
+  const existing = await localGame.entities.Mission.list('-created_date', 300);
   const titles = new Set((existing || []).map(m => m.title));
   const missing = TUTORIAL_MISSIONS.filter(m => !titles.has(m.title));
   if (missing.length) {
-    try { await base44.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
-    catch { for (const mission of missing) await base44.entities.Mission.create({ ...mission, is_active: true }); }
+    try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
+    catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
   }
-  return base44.entities.Mission.filter({ is_active: true });
+  return localGame.entities.Mission.filter({ is_active: true });
 }
 
 function emitMissionEvent(detail) {
@@ -428,17 +428,17 @@ function emitMissionEvent(detail) {
 
 async function rewardMissionAutomatically(profileId, mission, progressRow) {
   if (!progressRow || progressRow.claimed) return progressRow;
-  const profiles = await base44.entities.PlayerProfile.filter({ id: profileId });
+  const profiles = await localGame.entities.PlayerProfile.filter({ id: profileId });
   const profile = profiles?.[0];
   if (!profile) return progressRow;
   const medal = mission.medal_reward;
   const medals = medal && !(profile.medals || []).includes(medal) ? [...(profile.medals || []), medal] : (profile.medals || []);
-  await base44.entities.PlayerProfile.update(profile.id, {
+  await localGame.entities.PlayerProfile.update(profile.id, {
     xp: Number(profile.xp || 0) + Number(mission.xp_reward || 0),
     coins: Number(profile.coins || 0) + Number(mission.coins_reward || 0),
     medals,
   });
-  const claimed = await base44.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, completed_at: new Date().toISOString() });
+  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, completed_at: new Date().toISOString() });
   emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial' });
   return claimed;
 }
@@ -455,8 +455,8 @@ async function tutorialUnlocked(mission, allMissions, progressRows) {
 export async function syncMissionProgressPeriods(profile, missions = null, rows = null) {
   if (!profile?.id) return [];
   const careerDate = profile.career_date || todayStr();
-  const activeMissions = missions || await base44.entities.Mission.filter({ is_active: true });
-  const progressRows = rows || await base44.entities.MissionProgress.filter({ profile_id: profile.id });
+  const activeMissions = missions || await localGame.entities.Mission.filter({ is_active: true });
+  const progressRows = rows || await localGame.entities.MissionProgress.filter({ profile_id: profile.id });
   const byMission = new Map((progressRows || []).map(row => [row.mission_id, row]));
   const synced = [];
 
@@ -466,7 +466,7 @@ export async function syncMissionProgressPeriods(profile, missions = null, rows 
     const periodKey = missionPeriodKey(mission.mission_type, careerDate);
     if (!row) continue;
     if (row.period_key !== periodKey) {
-      const reset = await base44.entities.MissionProgress.update(row.id, { progress: 0, completed: false, claimed: false, period_key: periodKey, period_ends_at: missionPeriodEndsAt(mission.mission_type, careerDate) });
+      const reset = await localGame.entities.MissionProgress.update(row.id, { progress: 0, completed: false, claimed: false, period_key: periodKey, period_ends_at: missionPeriodEndsAt(mission.mission_type, careerDate) });
       synced.push(reset);
     } else synced.push(row);
   }
@@ -479,7 +479,7 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
     const careerDate = careerDateOverride || await missionCareerDate(profileId);
     const types = Array.isArray(objectiveTypes) ? objectiveTypes : [objectiveTypes];
     const allMissions = await ensureTutorialMissionCatalog();
-    let progressRows = await base44.entities.MissionProgress.filter({ profile_id: profileId });
+    let progressRows = await localGame.entities.MissionProgress.filter({ profile_id: profileId });
     for (const type of types) {
       const missions = (allMissions || []).filter(m => m.is_active !== false && m.objective_type === type);
       for (const m of missions) {
@@ -491,8 +491,8 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
         if (prog?.claimed) continue;
         const newProgress = Math.min(Number(m.target_count || 1), baseProgress + count);
         let updated;
-        if (prog) updated = await base44.entities.MissionProgress.update(prog.id, { progress: newProgress, completed: newProgress >= Number(m.target_count || 1), claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate) });
-        else updated = await base44.entities.MissionProgress.create({ mission_id: m.id, profile_id: profileId, progress: newProgress, completed: newProgress >= Number(m.target_count || 1), claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate) });
+        if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, { progress: newProgress, completed: newProgress >= Number(m.target_count || 1), claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate) });
+        else updated = await localGame.entities.MissionProgress.create({ mission_id: m.id, profile_id: profileId, progress: newProgress, completed: newProgress >= Number(m.target_count || 1), claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate) });
         progressRows = [...progressRows.filter(p => p.mission_id !== m.id), updated];
         if (newProgress >= Number(m.target_count || 1)) {
           const claimed = await rewardMissionAutomatically(profileId, m, updated);
@@ -537,7 +537,7 @@ export async function applyMatchRewards(profile, won) {
     updates.injured_until = recoveryDate.toISOString().slice(0, 10);
     updates.energy = 0;
   }
-  const updated = await base44.entities.PlayerProfile.update(profile.id, updates);
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   await incrementMissionProgress(profile.id, won ? ['win_matches', 'play_matches'] : ['play_matches']);
   return updated;
 }
@@ -562,7 +562,7 @@ export async function applyPracticeRewards(profile, won) {
     updates.injured_until = recoveryDate.toISOString().slice(0, 10);
     updates.energy = 0;
   }
-  const updated = await base44.entities.PlayerProfile.update(profile.id, updates);
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   await incrementMissionProgress(profile.id, won ? ['play_matches', 'win_matches'] : ['play_matches']);
   return updated;
 }
@@ -603,7 +603,7 @@ export async function applyRecovery(profile, recoveryType) {
     }
   }
 
-  const updated = await base44.entities.PlayerProfile.update(profile.id, updates);
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   incrementMissionProgress(profile.id, 'use_recovery').catch(() => {});
   return updated;
 }

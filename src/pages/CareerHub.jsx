@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { Gamepad2, Trophy, Target, Dumbbell, Coins, TrendingUp, Activity, ChevronRight, Flame, Crown, Zap, ShoppingBag, Package, AlertCircle, Newspaper, MessageCircle, BarChart3, Calendar, Wallet } from 'lucide-react';
 
 import { ensureMyProfile, levelForXp, overallRating, winRate, getWorldRank, topAttributes, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
@@ -38,13 +38,13 @@ export default function CareerHub() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
 
         const [matches, missionsData, rank] = await Promise.all([
-          base44.entities.Match.list('-created_date', 4),
-          base44.entities.Mission.filter({ is_active: true }),
+          localGame.entities.Match.list('-created_date', 4),
+          localGame.entities.Mission.filter({ is_active: true }),
           getWorldRank(p),
         ]);
         setRecentMatches(matches || []);
@@ -53,11 +53,11 @@ export default function CareerHub() {
 
         if (p) {
           const [trainings, prog, teamRankings, upcoming, latestPosts] = await Promise.all([
-            base44.entities.TrainingSession.filter({ profile_id: p.id }),
-            base44.entities.MissionProgress.filter({ profile_id: p.id }),
-            p.partner_id ? base44.entities.TeamRanking.list('-ranking_points', 500) : Promise.resolve([]),
-            base44.entities.Tournament.filter({ status: 'inscricoes' }),
-            base44.entities.Post.list('-created_date', 3),
+            localGame.entities.TrainingSession.filter({ profile_id: p.id }),
+            localGame.entities.MissionProgress.filter({ profile_id: p.id }),
+            p.partner_id ? localGame.entities.TeamRanking.list('-ranking_points', 500) : Promise.resolve([]),
+            localGame.entities.Tournament.filter({ status: 'inscricoes' }),
+            localGame.entities.Post.list('-created_date', 3),
           ]);
           setRecentTrainings((trainings || []).slice(0, 4));
           const map = {};

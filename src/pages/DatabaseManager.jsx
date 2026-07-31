@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Database, Users, Bot, Trophy, Building2, Briefcase, Package, RefreshCw, Sparkles, AlertTriangle, CheckCircle, Target, Calendar } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { generateDemoData, resetCareer } from '@/lib/demoData';
 import { LoadingScreen, PageHeader } from '@/components/padel/ui';
@@ -16,14 +16,14 @@ export default function DatabaseManager() {
   const loadCounts = async () => {
     setLoading(true);
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
       const entities = ['AthleteProfile', 'Coach', 'Sponsor', 'Club', 'Tournament', 'ShopItem', 'WorldEvent', 'TeamRanking', 'CareerLegacy', 'Mission', 'Season'];
       const results = await Promise.all(
         entities.map(async (name) => {
           try {
-            const list = await base44.entities[name].list('-created_date', 1);
+            const list = await localGame.entities[name].list('-created_date', 1);
             return { name, count: list?.length || 0 };
           } catch {
             return { name, count: 0, error: true };

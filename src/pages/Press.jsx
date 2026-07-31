@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Newspaper, Mic, Users, Star, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
 import ArticleCard from '@/components/press/ArticleCard';
@@ -26,24 +26,24 @@ export default function Press() {
   async function load() {
     setLoading(true);
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
 
       if (p) {
         const [arts, mats] = await Promise.all([
-          base44.entities.PressArticle.filter({ profile_id: p.id }, '-created_date', 50),
-          base44.entities.Match.list('-created_date', 5),
+          localGame.entities.PressArticle.filter({ profile_id: p.id }, '-created_date', 50),
+          localGame.entities.Match.list('-created_date', 5),
         ]);
         setArticles(arts || []);
         setRecentMatches(mats || []);
 
         // Load or seed journalists for this profile
-        const existing = await base44.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
+        const existing = await localGame.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
         if (existing && existing.length > 0) {
           setJournalists(existing);
         } else {
-          const seeded = await base44.entities.PressJournalist.bulkCreate(
+          const seeded = await localGame.entities.PressJournalist.bulkCreate(
             JOURNALISTS.map(j => ({ ...j, profile_id: p.id, bias_toward_player: 0, interviews_done: 0 }))
           );
           setJournalists(seeded || []);
@@ -84,7 +84,7 @@ export default function Press() {
 
     try {
       // Create article
-      const article = await base44.entities.PressArticle.create({
+      const article = await localGame.entities.PressArticle.create({
         profile_id: profile.id,
         journalist_id: journalist.id,
         journalist_name: journalist.name,
@@ -110,7 +110,7 @@ export default function Press() {
       // Apply reputation effects to profile
       const profileUpdates = applyReputationEffects(profile, effects);
       if (Object.keys(profileUpdates).length > 0) {
-        const updated = await base44.entities.PlayerProfile.update(profile.id, profileUpdates);
+        const updated = await localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
         setProfile(updated);
       }
 
@@ -118,7 +118,7 @@ export default function Press() {
       if (journalist.id) {
         try {
           const newBias = Math.max(-100, Math.min(100, (journalist.bias_toward_player || 0) + (effects.journalist_bias || 0)));
-          await base44.entities.PressJournalist.update(journalist.id, {
+          await localGame.entities.PressJournalist.update(journalist.id, {
             bias_toward_player: newBias,
             interviews_done: (journalist.interviews_done || 0) + 1,
           });
@@ -153,7 +153,7 @@ export default function Press() {
   async function handleReadArticle(article) {
     if (!article.is_read) {
       try {
-        await base44.entities.PressArticle.update(article.id, { is_read: true });
+        await localGame.entities.PressArticle.update(article.id, { is_read: true });
         await load();
       } catch (e) { console.error(e); }
     }

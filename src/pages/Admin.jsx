@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { LayoutDashboard, TrendingUp, Bot, Trophy, Building2, Users } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { fetchAdminStats } from '@/lib/adminStats';
 import { LoadingScreen, PageHeader, TabBar } from '@/components/padel/ui';
@@ -28,7 +28,7 @@ export default function Admin() {
   useEffect(() => {
     (async () => {
       try {
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         await ensureMyProfile(user);
         const data = await fetchAdminStats();
         setStats(data);

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { generateInterviewQuote, getInterviewStyle } from '@/lib/personalityTraits';
 
 // ─── Relationship Types ────────────────────────────────────────────────────
@@ -31,17 +31,17 @@ export function getRelTypeMeta(typeId) {
 export async function getPlayerRelationships(profileId) {
   if (!profileId) return [];
   try {
-    return await base44.entities.Relationship.filter({ profile_id: profileId }, '-score', 100);
+    return await localGame.entities.Relationship.filter({ profile_id: profileId }, '-score', 100);
   } catch { return []; }
 }
 
 export async function getOrCreateRelationship(profileId, athleteId, athleteName, country) {
   if (!profileId || !athleteName) return null;
   try {
-    let existing = await base44.entities.Relationship.filter({ profile_id: profileId, target_athlete_id: athleteId || athleteName }, null, 1);
+    let existing = await localGame.entities.Relationship.filter({ profile_id: profileId, target_athlete_id: athleteId || athleteName }, null, 1);
     if (existing && existing.length > 0) return existing[0];
 
-    const created = await base44.entities.Relationship.create({
+    const created = await localGame.entities.Relationship.create({
       profile_id: profileId,
       target_athlete_id: athleteId || athleteName,
       target_name: athleteName,
@@ -60,7 +60,7 @@ export async function getOrCreateRelationship(profileId, athleteId, athleteName,
 
 export async function updateRelationshipScore(relId, scoreChange, event, description, extra = {}) {
   try {
-    const rel = await base44.entities.Relationship.get(relId);
+    const rel = await localGame.entities.Relationship.get(relId);
     if (!rel) return null;
 
     const newScore = Math.max(-100, Math.min(100, (rel.score || 0) + scoreChange));
@@ -86,7 +86,7 @@ export async function updateRelationshipScore(relId, scoreChange, event, descrip
       updates.chemistry = Math.min(100, (rel.chemistry || 0) + Math.round(scoreChange * 0.5));
     }
 
-    return await base44.entities.Relationship.update(relId, updates);
+    return await localGame.entities.Relationship.update(relId, updates);
   } catch (e) { console.error('updateRelationshipScore', e); return null; }
 }
 
@@ -371,16 +371,16 @@ export async function seedInitialRelationships(profileId, athleteProfiles = []) 
   }
 
   if (toCreate.length > 0) {
-    if (base44.entities.Relationship.bulkCreate) {
+    if (localGame.entities.Relationship.bulkCreate) {
       try {
-        await base44.entities.Relationship.bulkCreate(toCreate);
+        await localGame.entities.Relationship.bulkCreate(toCreate);
         return;
       } catch (error) {
         console.warn('seedInitialRelationships bulkCreate falhou; usando criação individual.', error);
       }
     }
     for (const item of toCreate) {
-      try { await base44.entities.Relationship.create(item); } catch (error) { console.warn('Falha ao criar relacionamento inicial', error); }
+      try { await localGame.entities.Relationship.create(item); } catch (error) { console.warn('Falha ao criar relacionamento inicial', error); }
     }
   }
 }

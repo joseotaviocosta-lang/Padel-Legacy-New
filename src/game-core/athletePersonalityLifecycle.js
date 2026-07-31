@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -85,8 +85,8 @@ function behaviorSummary(athlete, axes) {
 
 async function createWorldEvent(payload) {
   try {
-    if (!base44.entities?.WorldEvent?.create) return null;
-    return await base44.entities.WorldEvent.create({
+    if (!localGame.entities?.WorldEvent?.create) return null;
+    return await localGame.entities.WorldEvent.create({
       author: 'Central Padel Legacy',
       likes: 0,
       related_players: [],
@@ -101,13 +101,13 @@ async function createWorldEvent(payload) {
 }
 
 export async function ensureAthleteIntelligenceProfiles() {
-  const athletes = (await base44.entities.AthleteProfile.list('-overall_rating', 250)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('-overall_rating', 250)) || [];
   let updated = 0;
   for (const athlete of athletes) {
     const axes = personalityAxes(athlete);
     const missing = !athlete.ai_profile_version || !athlete.behavior_axes || !athlete.pressure_profile;
     if (!missing) continue;
-    await base44.entities.AthleteProfile.update(athlete.id, {
+    await localGame.entities.AthleteProfile.update(athlete.id, {
       behavior_axes: axes,
       preferred_side: athlete.preferred_side || preferredSide(athlete),
       pressure_profile: pressureProfile(axes),
@@ -130,7 +130,7 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
   }
 
   await ensureAthleteIntelligenceProfiles();
-  const athletes = (await base44.entities.AthleteProfile.list('-overall_rating', 250)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('-overall_rating', 250)) || [];
   let stories = 0;
 
   for (const athlete of athletes) {
@@ -151,7 +151,7 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
     const newConfidence = clamp(previousConfidence + confidenceDelta);
     const momentum = clamp((newForm * 0.55) + (newConfidence * 0.45));
 
-    await base44.entities.AthleteProfile.update(athlete.id, {
+    await localGame.entities.AthleteProfile.update(athlete.id, {
       behavior_axes: axes,
       form: Math.round(newForm),
       current_form: Math.round(newForm),
@@ -195,7 +195,7 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
   const summary = { week: currentWeek, processed: athletes.length, stories };
   let updatedProfile = profile;
   if (profile?.id) {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       last_athlete_ai_week: currentWeek,
       last_athlete_ai_summary: summary,
       game_state_version: '2.5.0',
@@ -205,7 +205,7 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
 }
 
 export async function getAthleteIntelligenceSnapshot() {
-  const athletes = (await base44.entities.AthleteProfile.list('-overall_rating', 250)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('-overall_rating', 250)) || [];
   return athletes.map((athlete) => ({
     ...athlete,
     behavior_axes: athlete.behavior_axes || personalityAxes(athlete),

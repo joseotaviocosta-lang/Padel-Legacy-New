@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { BOTS_BY_DIFFICULTY, simulateMatch } from '@/lib/bots';
 
 const PRO_TEAMS = [];
@@ -24,11 +24,11 @@ export async function updateTeamRanking(profile, partner, won, bonusPoints = 0) 
   const totalPoints = basePoints + bonusPoints;
 
   try {
-    const existing = await base44.entities.TeamRanking.filter({ team_key: key });
+    const existing = await localGame.entities.TeamRanking.filter({ team_key: key });
 
     if (existing && existing.length > 0) {
       const team = existing[0];
-      await base44.entities.TeamRanking.update(team.id, {
+      await localGame.entities.TeamRanking.update(team.id, {
         ranking_points: (team.ranking_points || 0) + totalPoints,
         matches_played: (team.matches_played || 0) + 1,
         wins: (team.wins || 0) + (won ? 1 : 0),
@@ -36,7 +36,7 @@ export async function updateTeamRanking(profile, partner, won, bonusPoints = 0) 
       });
     } else {
       const [p1, p2] = [profile, partner].sort((a, b) => a.id.localeCompare(b.id));
-      await base44.entities.TeamRanking.create({
+      await localGame.entities.TeamRanking.create({
         team_key: key,
         player1_id: p1.id,
         player1_name: p1.sport_name || p1.name,
@@ -57,10 +57,10 @@ export async function addTeamTitle(profile, partner, title) {
 
   const key = teamKey(profile.id, partner.id);
   try {
-    const existing = await base44.entities.TeamRanking.filter({ team_key: key });
+    const existing = await localGame.entities.TeamRanking.filter({ team_key: key });
     if (existing && existing.length > 0) {
       const team = existing[0];
-      await base44.entities.TeamRanking.update(team.id, {
+      await localGame.entities.TeamRanking.update(team.id, {
         titles: [...(team.titles || []), title],
       });
     }
@@ -71,15 +71,15 @@ export async function addTeamRankingPoints(profile, partner, points) {
   if (!profile?.id || !partner?.id) return;
   const key = teamKey(profile.id, partner.id);
   try {
-    const existing = await base44.entities.TeamRanking.filter({ team_key: key });
+    const existing = await localGame.entities.TeamRanking.filter({ team_key: key });
     if (existing && existing.length > 0) {
       const team = existing[0];
-      await base44.entities.TeamRanking.update(team.id, {
+      await localGame.entities.TeamRanking.update(team.id, {
         ranking_points: (team.ranking_points || 0) + points,
       });
     } else {
       const [p1, p2] = [profile, partner].sort((a, b) => a.id.localeCompare(b.id));
-      await base44.entities.TeamRanking.create({
+      await localGame.entities.TeamRanking.create({
         team_key: key,
         player1_id: p1.id,
         player1_name: p1.sport_name || p1.name,
@@ -97,7 +97,7 @@ export async function addTeamRankingPoints(profile, partner, points) {
 
 export async function getTeamRankings(limit = 50) {
   try {
-    return await base44.entities.TeamRanking.list('-ranking_points', limit);
+    return await localGame.entities.TeamRanking.list('-ranking_points', limit);
   } catch (e) { return []; }
 }
 
@@ -190,7 +190,7 @@ export async function simulatePastTournaments(careerDate) {
   const currentMonth = new Date(careerDate + 'T00:00:00').getMonth() + 1;
 
   try {
-    const tournaments = await base44.entities.Tournament.list('-created_date', 200);
+    const tournaments = await localGame.entities.Tournament.list('-created_date', 200);
     const needsSimulation = tournaments.filter(t => {
       if (t.champion) return false;
       if (t.status === 'finalizado') return false;
@@ -207,7 +207,7 @@ export async function simulatePastTournaments(careerDate) {
       const champName = `${champTeam[0].name} & ${champTeam[1].name}`;
       const mult = TIER_MULT[t.tier] || 1;
 
-      await base44.entities.Tournament.update(t.id, {
+      await localGame.entities.Tournament.update(t.id, {
         status: 'finalizado',
         champion: champName,
         runner_up: teamName(runnerUp),

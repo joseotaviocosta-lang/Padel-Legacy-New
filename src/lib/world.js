@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ── Name pools ────────────────────────────────────────────────────────────
 
@@ -247,17 +247,17 @@ export async function generateWorldEvents(date, count = 3) {
     events.push(generateEventObject(date));
   }
   if (events.length === 0) return [];
-  return await base44.entities.WorldEvent.bulkCreate(events);
+  return await localGame.entities.WorldEvent.bulkCreate(events);
 }
 
 export async function ensureWorldEvents(date, minCount = 15) {
   try {
-    const existing = await base44.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
+    const existing = await localGame.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
     if (existing && existing.length >= minCount) return existing;
 
     const toGenerate = Math.max(1, minCount - (existing?.length || 0));
     await generateWorldEvents(date, toGenerate);
-    return await base44.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
+    return await localGame.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
   } catch (e) {
     console.error('ensureWorldEvents', e);
     return [];
@@ -266,7 +266,7 @@ export async function ensureWorldEvents(date, minCount = 15) {
 
 export async function getRecentWorldEvents(limit = 30) {
   try {
-    return await base44.entities.WorldEvent.list('-created_date', limit);
+    return await localGame.entities.WorldEvent.list('-created_date', limit);
   } catch (e) {
     console.error('getRecentWorldEvents', e);
     return [];

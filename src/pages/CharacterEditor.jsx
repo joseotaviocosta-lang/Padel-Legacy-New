@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Palette, Shirt, Disc, Sparkles, User, BookOpen, Save, RotateCcw } from 'lucide-react';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, TabBar, PrimaryButton } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
@@ -44,10 +44,10 @@ export default function CharacterEditor() {
 
   const load = useCallback(async () => {
     try {
-      const user = await base44.auth.me();
+      const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
-      const existing = await base44.entities.CharacterCustomization.filter({ profile_id: p.id }, null, 1);
+      const existing = await localGame.entities.CharacterCustomization.filter({ profile_id: p.id }, null, 1);
       if (existing && existing.length > 0) {
         setCustomization(existing[0]);
       } else {
@@ -72,9 +72,9 @@ export default function CharacterEditor() {
     try {
       let saved;
       if (customization.id) {
-        saved = await base44.entities.CharacterCustomization.update(customization.id, customization);
+        saved = await localGame.entities.CharacterCustomization.update(customization.id, customization);
       } else {
-        saved = await base44.entities.CharacterCustomization.create(customization);
+        saved = await localGame.entities.CharacterCustomization.create(customization);
       }
       setCustomization(saved);
       toast({ title: 'Personagem salvo!', description: 'Suas customizações foram aplicadas.' });

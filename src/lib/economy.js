@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 
@@ -124,10 +124,10 @@ export function calculateMonthlyExpenses(staff, properties, hasAccountant) {
 
 export async function processMonthlyFinances(profile) {
   const [contracts, staff, properties, investments] = await Promise.all([
-    base44.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }),
-    base44.entities.PlayerStaffHire.filter({ profile_id: profile.id }),
-    base44.entities.PlayerProperty.filter({ profile_id: profile.id }),
-    base44.entities.PlayerInvestment.filter({ profile_id: profile.id }),
+    localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }),
+    localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id }),
+    localGame.entities.PlayerProperty.filter({ profile_id: profile.id }),
+    localGame.entities.PlayerInvestment.filter({ profile_id: profile.id }),
   ]);
 
   const hasManager = hasStaff(staff, 'manager');
@@ -138,9 +138,9 @@ export async function processMonthlyFinances(profile) {
   const net = income.total - expenses.total;
   const newBalance = (profile.coins || 0) + net;
 
-  await base44.entities.PlayerProfile.update(profile.id, { coins: newBalance });
+  await localGame.entities.PlayerProfile.update(profile.id, { coins: newBalance });
 
-  await base44.entities.FinancialTransaction.create({
+  await localGame.entities.FinancialTransaction.create({
     profile_id: profile.id,
     month: profile.career_date || new Date().toISOString().slice(0, 7),
     income: income.total,
@@ -168,7 +168,7 @@ export async function signSponsor(profile, sponsor) {
   const d = new Date(careerDate + 'T00:00:00');
   d.setMonth(d.getMonth() + 6);
 
-  await base44.entities.PlayerContract.create({
+  await localGame.entities.PlayerContract.create({
     profile_id: profile.id,
     sponsor_id: sponsor.id,
     sponsor_name: sponsor.name,
@@ -180,17 +180,17 @@ export async function signSponsor(profile, sponsor) {
     is_active: true,
   });
 
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + sponsor.sign_bonus,
   });
 }
 
 export async function terminateContract(contract) {
-  await base44.entities.PlayerContract.update(contract.id, { is_active: false });
+  await localGame.entities.PlayerContract.update(contract.id, { is_active: false });
 }
 
 export async function hireStaff(profile, staffType) {
-  await base44.entities.PlayerStaffHire.create({
+  await localGame.entities.PlayerStaffHire.create({
     profile_id: profile.id,
     staff_type: staffType.id,
     staff_name: staffType.name,
@@ -201,13 +201,13 @@ export async function hireStaff(profile, staffType) {
 }
 
 export async function fireStaff(staffRecord) {
-  await base44.entities.PlayerStaffHire.delete(staffRecord.id);
+  await localGame.entities.PlayerStaffHire.delete(staffRecord.id);
 }
 
 export async function buyProperty(profile, property) {
   if ((profile.coins || 0) < property.price) throw new Error('Moedas insuficientes');
 
-  await base44.entities.PlayerProperty.create({
+  await localGame.entities.PlayerProperty.create({
     profile_id: profile.id,
     property_id: property.id,
     property_name: property.name,
@@ -218,15 +218,15 @@ export async function buyProperty(profile, property) {
     bonus_value: property.bonus_value,
   });
 
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) - property.price,
   });
 }
 
 export async function sellProperty(profile, playerProperty) {
   const refund = Math.round((playerProperty.purchase_price || 0) * 0.7);
-  await base44.entities.PlayerProperty.delete(playerProperty.id);
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  await localGame.entities.PlayerProperty.delete(playerProperty.id);
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + refund,
   });
 }
@@ -239,7 +239,7 @@ export async function makeInvestment(profile, investment, amount) {
   if (numericAmount < minimum) throw new Error(`Investimento mínimo: ${minimum}`);
   if ((Number(profile?.coins) || 0) < numericAmount) throw new Error('Moedas insuficientes');
 
-  await base44.entities.PlayerInvestment.create({
+  await localGame.entities.PlayerInvestment.create({
     profile_id: profile.id,
     investment_id: investment.id,
     investment_name: investment.name,
@@ -250,7 +250,7 @@ export async function makeInvestment(profile, investment, amount) {
     invested_date: profile.career_date || new Date().toISOString().slice(0, 10),
   });
 
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (Number(profile?.coins) || 0) - numericAmount,
   });
 }
@@ -258,8 +258,8 @@ export async function makeInvestment(profile, investment, amount) {
 export async function withdrawInvestment(profile, playerInvestment) {
   if (!playerInvestment?.id) throw new Error('Investimento inválido');
   const normalized = normalizePlayerInvestment(playerInvestment);
-  await base44.entities.PlayerInvestment.delete(playerInvestment.id);
-  return await base44.entities.PlayerProfile.update(profile.id, {
+  await localGame.entities.PlayerInvestment.delete(playerInvestment.id);
+  return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (Number(profile?.coins) || 0) + normalized.amount,
   });
 }

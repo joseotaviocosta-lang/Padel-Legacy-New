@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { ShoppingBag, Coins, Check, Lock, Package, Search, SlidersHorizontal, TrendingUp, TrendingDown, Flame } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
@@ -81,15 +81,15 @@ export default function Shop() {
       try {
         await safeModuleTask(() => seedMarket(), { label: 'semente do mercado', fallback: null, timeoutMs: 6000 });
         await safeModuleTask(() => ensureExpandedShopCatalog(), { label: 'catálogo ampliado', fallback: null, timeoutMs: 6000 });
-        const user = await base44.auth.me();
+        const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         const { shopItems, inventory, events, histories, contracts } = await loadModuleTasks({
-          shopItems: { task: () => base44.entities.ShopItem.filter({ is_available: true }, '-created_date', 500), fallback: [], label: 'itens da loja' },
-          inventory: { task: () => p ? base44.entities.PlayerInventory.filter({ profile_id: p.id }) : [], fallback: [], label: 'inventário' },
-          events: { task: () => base44.entities.MarketEvent.filter({ is_active: true }, '-priority', 20), fallback: [], label: 'eventos do mercado' },
-          histories: { task: () => base44.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200), fallback: [], label: 'histórico de preços' },
-          contracts: { task: () => p ? base44.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }) : [], fallback: [], label: 'contratos ativos' },
+          shopItems: { task: () => localGame.entities.ShopItem.filter({ is_available: true }, '-created_date', 500), fallback: [], label: 'itens da loja' },
+          inventory: { task: () => p ? localGame.entities.PlayerInventory.filter({ profile_id: p.id }) : [], fallback: [], label: 'inventário' },
+          events: { task: () => localGame.entities.MarketEvent.filter({ is_active: true }, '-priority', 20), fallback: [], label: 'eventos do mercado' },
+          histories: { task: () => localGame.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200), fallback: [], label: 'histórico de preços' },
+          contracts: { task: () => p ? localGame.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }) : [], fallback: [], label: 'contratos ativos' },
         }, { timeoutMs: 8000 });
         setItems((shopItems || []).filter(Boolean).map(normalizeShopItem).map(item => ({ ...item, price: safePrice(item.price) })));
         setOwnedIds(new Set((inventory || []).map(i => i.item_id)));
@@ -165,7 +165,7 @@ export default function Shop() {
     }
     setBuying(item.id);
     try {
-      await base44.entities.PlayerInventory.create({
+      await localGame.entities.PlayerInventory.create({
         profile_id: profile.id,
         item_id: item.id,
         item_name: item.name,
@@ -176,7 +176,7 @@ export default function Shop() {
         current_durability: item.durability || 100,
         usage_count: 0,
       });
-      const updated = await base44.entities.PlayerProfile.update(profile.id, {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         coins: (profile.coins || 0) - currentPrice,
       });
       setProfile(updated);
@@ -186,7 +186,7 @@ export default function Shop() {
       // Update demand in MarketPriceHistory
       const hist = priceHistories.find(h => h.item_id === item.id);
       if (hist) {
-        base44.entities.MarketPriceHistory.update(hist.id, {
+        localGame.entities.MarketPriceHistory.update(hist.id, {
           demand_score: Math.min(100, (hist.demand_score || 50) + 5),
           purchase_count: (hist.purchase_count || 0) + 1,
           stock_remaining: hist.is_limited_stock ? Math.max(0, (hist.stock_remaining || 0) - 1) : -1,

@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 export const CAREER_OPPORTUNITIES = [
   {
@@ -100,7 +100,7 @@ export function getDailyOpportunityStatus(profile) {
 
 async function safeCreate(entityName, payload) {
   try {
-    const entity = base44.entities?.[entityName];
+    const entity = localGame.entities?.[entityName];
     if (entity?.create) return await entity.create(payload);
   } catch (error) {
     console.warn(`[Game Core] Não foi possível registrar ${entityName}:`, error);
@@ -126,7 +126,7 @@ export async function completeCareerOpportunity(profile, opportunityId) {
     opportunity_uses_today: status.usesToday + 1,
   };
 
-  const updatedProfile = await base44.entities.PlayerProfile.update(profile.id, updatedData);
+  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, updatedData);
 
   await safeCreate('FinancialTransaction', {
     profile_id: profile.id,

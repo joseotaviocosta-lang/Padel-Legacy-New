@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 import { addDays, CAREER_START_DATE } from '@/lib/career';
 import { levelForXp, LEVELS, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
 
@@ -108,7 +108,7 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
   }
 
   // Check for existing registration
-  const existing = await base44.entities.CalendarEvent.filter({
+  const existing = await localGame.entities.CalendarEvent.filter({
     profile_id: profile.id,
     related_id: tournament.id,
     status: 'scheduled',
@@ -118,7 +118,7 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
   }
 
   // Check schedule conflicts
-  const allEvents = await base44.entities.CalendarEvent.filter({
+  const allEvents = await localGame.entities.CalendarEvent.filter({
     profile_id: profile.id,
     status: 'scheduled',
   });
@@ -135,13 +135,13 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
   // Deduct entry fee if applicable
   let updatedProfile = profile;
   if ((tournament.entry_fee || 0) > 0) {
-    updatedProfile = await base44.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       coins: (profile.coins || 0) - tournament.entry_fee,
     });
   }
 
   // Create calendar event
-  await base44.entities.CalendarEvent.create({
+  await localGame.entities.CalendarEvent.create({
     profile_id: profile.id,
     event_type: 'tournament',
     title: tournament.name,
@@ -170,7 +170,7 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
     const participants = [...(tournament.participants || [])];
     if (!participants.includes(profile.id)) {
       participants.push(profile.id);
-      await base44.entities.Tournament.update(tournament.id, { participants });
+      await localGame.entities.Tournament.update(tournament.id, { participants });
     }
   }
 
@@ -181,19 +181,19 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
 
 // ── Cancel registration ──────────────────────────────────────────────────
 export async function cancelRegistration(profileId, eventId, tournamentId) {
-  await base44.entities.CalendarEvent.update(eventId, { status: 'cancelled' });
+  await localGame.entities.CalendarEvent.update(eventId, { status: 'cancelled' });
   if (tournamentId) {
-    const t = await base44.entities.Tournament.get(tournamentId);
+    const t = await localGame.entities.Tournament.get(tournamentId);
     if (t) {
       const participants = (t.participants || []).filter(id => id !== profileId);
-      await base44.entities.Tournament.update(tournamentId, { participants });
+      await localGame.entities.Tournament.update(tournamentId, { participants });
     }
   }
 }
 
 // ── Pending decisions (blocks day advance) ───────────────────────────────
 export async function getPendingDecisions(profileId, careerDate) {
-  const events = await base44.entities.CalendarEvent.filter({
+  const events = await localGame.entities.CalendarEvent.filter({
     profile_id: profileId,
     status: 'scheduled',
     requires_decision: true,
@@ -217,7 +217,7 @@ export async function canAdvanceDay(profileId, careerDate) {
 
 // ── Process calendar events on day advance ───────────────────────────────
 export async function processCalendarEvents(profile, newDate) {
-  const events = await base44.entities.CalendarEvent.filter({
+  const events = await localGame.entities.CalendarEvent.filter({
     profile_id: profile.id,
     status: 'scheduled',
   });
@@ -231,7 +231,7 @@ export async function processCalendarEvents(profile, newDate) {
   for (const event of events || []) {
     // Mark past events as missed if they were tournaments requiring decisions
     if (event.end_date < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
-      await base44.entities.CalendarEvent.update(event.id, { status: 'missed' });
+      await localGame.entities.CalendarEvent.update(event.id, { status: 'missed' });
       // Penalty for missing a tournament
       coinChange -= 50;
       completed.push({ ...event, newStatus: 'missed' });
@@ -240,7 +240,7 @@ export async function processCalendarEvents(profile, newDate) {
 
     // Complete non-tournament events that have ended
     if (event.end_date < newDate && !event.requires_decision) {
-      await base44.entities.CalendarEvent.update(event.id, { status: 'completed' });
+      await localGame.entities.CalendarEvent.update(event.id, { status: 'completed' });
       coinChange += event.coin_reward || 0;
       xpChange += event.xp_reward || 0;
       completed.push({ ...event, newStatus: 'completed' });
@@ -261,7 +261,7 @@ export async function autoCreateTravelForTournament(profile, tournament) {
   if (!tournamentDate) return;
 
   // Check if travel is already planned
-  const existing = await base44.entities.CalendarEvent.filter({
+  const existing = await localGame.entities.CalendarEvent.filter({
     profile_id: profile.id,
     event_type: 'travel',
     related_id: tournament.id,
@@ -272,7 +272,7 @@ export async function autoCreateTravelForTournament(profile, tournament) {
   const travelDate = addDays(tournamentDate, -1);
   if (travelDate < careerDate) return; // Can't travel to the past
 
-  await base44.entities.CalendarEvent.create({
+  await localGame.entities.CalendarEvent.create({
     profile_id: profile.id,
     event_type: 'travel',
     title: `Viagem para ${tournament.name}`,
@@ -291,7 +291,7 @@ export async function autoCreateTravelForTournament(profile, tournament) {
 
 // ── Get events for a date range ───────────────────────────────────────────
 export async function getEventsForRange(profileId, startDate, endDate) {
-  const events = await base44.entities.CalendarEvent.filter({
+  const events = await localGame.entities.CalendarEvent.filter({
     profile_id: profileId,
     status: 'scheduled',
   });
@@ -302,9 +302,9 @@ export async function getEventsForRange(profileId, startDate, endDate) {
 export async function resolveDecision(eventId, action) {
   // action: 'play' | 'skip' | 'confirm'
   if (action === 'skip') {
-    await base44.entities.CalendarEvent.update(eventId, { status: 'cancelled', requires_decision: false });
+    await localGame.entities.CalendarEvent.update(eventId, { status: 'cancelled', requires_decision: false });
   } else {
-    await base44.entities.CalendarEvent.update(eventId, { requires_decision: false });
+    await localGame.entities.CalendarEvent.update(eventId, { requires_decision: false });
   }
 }
 

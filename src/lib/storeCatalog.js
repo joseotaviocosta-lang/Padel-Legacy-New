@@ -1,4 +1,4 @@
-import { base44 } from '@/api/base44Client';
+import { localGame } from '@/api/localGameClient.js';
 
 const CATEGORY_ALIASES = {
   racket: 'raquete', raquetes: 'raquete', pala: 'raquete', palas: 'raquete',
@@ -107,7 +107,7 @@ function buildItem(row, index) {
 }
 
 export async function ensureExpandedShopCatalog() {
-  const existing = (await base44.entities.ShopItem.list('-created_date', 500)) || [];
+  const existing = (await localGame.entities.ShopItem.list('-created_date', 500)) || [];
   const catalog = EXPANDED_ITEMS.map(buildItem);
   const byName = new Map(catalog.map(item => [cleanKey(item.name), item]));
   const names = new Set(existing.map(i => cleanKey(i?.name)));
@@ -120,7 +120,7 @@ export async function ensureExpandedShopCatalog() {
     const template = byName.get(cleanKey(item.name));
     const currentPrice = Number(item.price);
     if (template && (!Number.isFinite(currentPrice) || currentPrice <= 0)) {
-      await base44.entities.ShopItem.update(item.id, {
+      await localGame.entities.ShopItem.update(item.id, {
         price: template.price,
         category: template.category,
         subcategory: template.subcategory,
@@ -133,8 +133,8 @@ export async function ensureExpandedShopCatalog() {
   }
 
   if (missing.length > 0) {
-    if (base44.entities.ShopItem.bulkCreate) await base44.entities.ShopItem.bulkCreate(missing);
-    else for (const item of missing) await base44.entities.ShopItem.create(item);
+    if (localGame.entities.ShopItem.bulkCreate) await localGame.entities.ShopItem.bulkCreate(missing);
+    else for (const item of missing) await localGame.entities.ShopItem.create(item);
   }
   return { created: missing.length, repaired, total: existing.length + missing.length };
 }
