@@ -1,5 +1,6 @@
 import { runMatchEngineTest } from '@/engine/match/MatchEngineTest.js';
 import { setupPersonalityModelTest } from '@/engine/match/PersonalityModelTest.js';
+import { setupContextualDecisionTest } from '@/engine/match/ContextualDecisionTest.js';
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from "./App.jsx";
@@ -40,6 +41,7 @@ if (import.meta.env.DEV) {
     setupModuleStabilityTest();
     setupLocalRuntimeRegressionTest();
     setupPersonalityModelTest();
+    setupContextualDecisionTest();
   } catch (error) {
     console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
   }

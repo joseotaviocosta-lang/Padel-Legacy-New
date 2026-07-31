@@ -20,7 +20,7 @@ export function createMatch(teamA, teamB, options = {}) {
   const teams = createTeams(teamA, teamB);
   const seed = options.seed ?? `${Date.now()}-${teamA?.[0]?.id || 'A'}-${teamB?.[0]?.id || 'B'}`;
   return {
-    engineVersion: '0.4.0-alpha.1', seed, randomState: 0, teams,
+    engineVersion: '0.4.0-alpha.2', seed, randomState: 0, teams,
     teamANames: teams.A.map((p) => p.name), teamBNames: teams.B.map((p) => p.name),
     setsA: 0, setsB: 0, currentSet: 1, gamesA: 0, gamesB: 0, pointsA: 0, pointsB: 0,
     servingTeam: 'A', inTiebreak: false, superTiebreak: false, finished: false, winner: null,
@@ -52,12 +52,29 @@ export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
   const momentum = new MomentumEngine();
   const fatigue = new FatigueEngine();
   const commentary = new CommentaryEngine();
-  const result = rally.play({ teams: state.teams, servingTeam: state.servingTeam, tactic, random, stats: state.stats });
+  const pointContext = createPointContext(state);
+  const result = rally.play({ teams: state.teams, servingTeam: state.servingTeam, tactic, random, stats: state.stats, match: pointContext });
   state.pointNumber += 1;
   momentum.update(state.teams, result.winner, result.winner === 'A' ? 'B' : 'A', { breakPoint: isBreakPoint(state, result.winner) });
   const msg = commentary.point({ ...result, random });
   awardPoint(state, result.winner, msg, result, fatigue);
   return state;
+}
+
+function createPointContext(state) {
+  const breakPoint = state.pointsA >= 3 || state.pointsB >= 3;
+  return {
+    pointsA: state.pointsA,
+    pointsB: state.pointsB,
+    gamesA: state.gamesA,
+    gamesB: state.gamesB,
+    setsA: state.setsA,
+    setsB: state.setsB,
+    inTiebreak: state.inTiebreak,
+    superTiebreak: state.superTiebreak,
+    breakPoint,
+    importantPoint: Boolean(state.inTiebreak || breakPoint),
+  };
 }
 
 function isBreakPoint(state, winner) {
@@ -74,7 +91,7 @@ function awardPoint(state, winner, msg, detail, fatigue) {
       else { state.gamesA = state.pointsA; state.gamesB = state.pointsB; }
       state.narration.push({ type: 'tiebreak_end', msg: `${msg} Tiebreak ${state.pointsA}-${state.pointsB}.`, scorer: winner, rallyLength: detail.rallyLength, ...snapshot(state) });
       finishSet(state, setWinner);
-    } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, ...snapshot(state) });
+    } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], ...snapshot(state) });
     return;
   }
 
@@ -87,9 +104,9 @@ function awardPoint(state, winner, msg, detail, fatigue) {
     state.pointsA = 0; state.pointsB = 0;
     state.servingTeam = state.servingTeam === 'A' ? 'B' : 'A';
     fatigue.recoverBetweenGames(state.teams);
-    state.narration.push({ type: 'game', msg: `${msg} Game para ${gameWinner === 'A' ? state.teamANames[0] : state.teamBNames[0]}.`, scorer: gameWinner, rallyLength: detail.rallyLength, ...snapshot(state) });
+    state.narration.push({ type: 'game', msg: `${msg} Game para ${gameWinner === 'A' ? state.teamANames[0] : state.teamBNames[0]}.`, scorer: gameWinner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], ...snapshot(state) });
     checkSet(state);
-  } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, ...snapshot(state) });
+  } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], ...snapshot(state) });
 }
 
 function checkSet(state) {

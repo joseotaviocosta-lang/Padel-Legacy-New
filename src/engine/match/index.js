@@ -6,3 +6,7 @@ export { FatigueEngine } from './FatigueEngine.js';
 export { MomentumEngine } from './MomentumEngine.js';
 export { CommentaryEngine } from './CommentaryEngine.js';
 export { createBehaviorProfile, behaviorProfileEquals, AXIS_NAMES } from './PersonalityModel.js';
+
+export { RallyMemory } from './RallyMemory.js';
+export { createDecisionContext } from './DecisionContext.js';
+export { AdaptiveTactics } from './AdaptiveTactics.js';

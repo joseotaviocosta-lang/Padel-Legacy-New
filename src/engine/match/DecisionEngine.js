@@ -1,3 +1,5 @@
+import { AdaptiveTactics } from './AdaptiveTactics.js';
+
 const SHOTS = ['drive', 'backhand', 'lob', 'volley', 'bandeja', 'smash', 'chiquita'];
 
 function shotSkill(player, shot) {
@@ -18,7 +20,11 @@ function tendency(player, name, fallback = 50) {
 }
 
 export class DecisionEngine {
-  choose({ player, pressure, tactic, random }) {
+  constructor({ adaptiveTactics = new AdaptiveTactics() } = {}) {
+    this.adaptiveTactics = adaptiveTactics;
+  }
+
+  evaluate({ player, pressure, tactic, context = {} }) {
     const atNet = player.position.zone === 'net';
     const tired = 100 - player.energy;
     const aggressive = tactic?.id === 'agressivo' || tactic?.id === 'potencia';
@@ -27,31 +33,60 @@ export class DecisionEngine {
     const defense = tendency(player, 'defense');
     const control = tendency(player, 'control');
     const improvisation = tendency(player, 'improvisation');
+    const riskTolerance = Number(player.personality?.riskTolerance ?? 50);
+    const discipline = Number(player.personality?.discipline ?? 50);
 
-    const candidates = SHOTS.map((shot) => {
+    return SHOTS.map((shot) => {
+      const reasons = [];
       let weight = 8 + shotSkill(player, shot) / 8;
-      if (atNet && ['volley', 'bandeja', 'smash'].includes(shot)) weight += 18;
+      if (atNet && ['volley', 'bandeja', 'smash'].includes(shot)) { weight += 18; reasons.push('posição de rede'); }
       if (!atNet && ['lob', 'drive', 'backhand', 'chiquita'].includes(shot)) weight += 14;
       if (!atNet && ['volley', 'smash'].includes(shot)) weight = 0;
-      if (pressure > 65 && shot === 'lob') weight += 18;
+      if (pressure > 65 && shot === 'lob') { weight += 18; reasons.push('alívio sob pressão'); }
       if (pressure > 65 && shot === 'smash') weight -= 8;
       if (aggressive && ['smash', 'volley', 'drive'].includes(shot)) weight += 12;
       if (defensive && ['lob', 'bandeja', 'backhand'].includes(shot)) weight += 12;
       if (player.style.includes('pot') && shot === 'smash') weight += 18;
       if (player.style.includes('defens') && shot === 'lob') weight += 18;
-      if (tired > 45 && shot === 'smash') weight -= 12;
+      if (tired > 45 && shot === 'smash') { weight -= 12; reasons.push('energia baixa'); }
 
-      // Etapa 1: a personalidade já diferencia preferências sem substituir
-      // a tomada de decisão contextual, que será aprofundada na Etapa 2.
       if (['smash', 'volley', 'drive'].includes(shot)) weight += (attack - 50) / 7;
       if (['lob', 'bandeja', 'backhand'].includes(shot)) weight += (defense - 50) / 8;
       if (['bandeja', 'chiquita', 'lob'].includes(shot)) weight += (control - 50) / 10;
       if (['chiquita', 'smash'].includes(shot)) weight += (improvisation - 50) / 10;
 
-      weight += player.personality.creativity / 20;
-      return { value: shot, weight: Math.max(0, weight) };
-    });
+      const highRisk = ['smash', 'chiquita', 'drive'].includes(shot);
+      if (context.importantPoint && highRisk) {
+        const composure = Number(player.behavior?.tendencies?.pressure_resistance ?? 50);
+        weight += (composure - 50) / 5;
+        weight += context.trailingPoint ? -(discipline / 18) : context.riskFreedom / 3;
+        reasons.push(context.trailingPoint ? 'reduz risco em ponto decisivo' : 'placar permite agressividade');
+      }
+      if (context.leadingPoint && highRisk) weight += riskTolerance / 16;
+      if (context.confidenceGap > 8 && highRisk) weight += Math.min(8, context.confidenceGap / 3);
+      if (context.confidenceGap < -8 && ['lob', 'bandeja', 'backhand'].includes(shot)) weight += 7;
 
-    return random.weighted(candidates);
+      const adaptive = this.adaptiveTactics.modifiers({ shot, player, context });
+      weight += adaptive.value;
+      reasons.push(...adaptive.reasons);
+
+      weight += player.personality.creativity / 20;
+      return { value: shot, weight: Math.max(0, weight), reasons };
+    });
+  }
+
+  chooseDetailed({ player, pressure, tactic, random, context = {} }) {
+    const candidates = this.evaluate({ player, pressure, tactic, context });
+    const shot = random.weighted(candidates.map(({ value, weight }) => ({ value, weight })));
+    const selected = candidates.find((candidate) => candidate.value === shot);
+    return {
+      shot,
+      reasons: selected?.reasons || [],
+      candidates: candidates.map(({ value, weight }) => ({ shot: value, weight: Number(weight.toFixed(2)) })),
+    };
+  }
+
+  choose(args) {
+    return this.chooseDetailed(args).shot;
   }
 }

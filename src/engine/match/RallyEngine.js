@@ -1,6 +1,8 @@
 import { DecisionEngine } from './DecisionEngine.js';
 import { PositionEngine } from './PositionEngine.js';
 import { FatigueEngine } from './FatigueEngine.js';
+import { RallyMemory } from './RallyMemory.js';
+import { createDecisionContext } from './DecisionContext.js';
 import { recordShot, recordPoint } from './StatisticsEngine.js';
 
 export class RallyEngine {
@@ -10,37 +12,66 @@ export class RallyEngine {
     this.fatigue = fatigue;
   }
 
-  play({ teams, servingTeam, tactic, random, stats }) {
+  play({ teams, servingTeam, tactic, random, stats, match = {} }) {
     let activeTeam = servingTeam;
     let playerIndex = Math.floor(random.next() * teams[activeTeam].length);
     let pressure = 20;
     let shot = 'serve';
     let lastPlayer = teams[activeTeam][playerIndex];
+    const memory = new RallyMemory();
+    const decisionTrace = [];
 
     for (let rallyLength = 1; rallyLength <= 60; rallyLength += 1) {
       const player = teams[activeTeam][playerIndex % teams[activeTeam].length];
       lastPlayer = player;
-      if (rallyLength > 1) shot = this.decision.choose({ player, pressure, tactic: activeTeam === 'A' ? tactic : null, random });
+      let reasons = ['início do ponto'];
+      if (rallyLength > 1) {
+        const context = createDecisionContext({ player, teams, activeTeam, pressure, match, memory });
+        const decision = this.decision.chooseDetailed({
+          player,
+          pressure,
+          tactic: activeTeam === 'A' ? tactic : null,
+          random,
+          context,
+        });
+        shot = decision.shot;
+        reasons = decision.reasons;
+        decisionTrace.push({
+          rallyLength,
+          team: activeTeam,
+          playerId: player.id,
+          shot,
+          reasons: reasons.slice(0, 4),
+          context: {
+            importantPoint: context.importantPoint,
+            partnerTired: context.partnerTired,
+            opponentAtNet: context.opponentAtNet,
+            tiredOpponentEnergy: context.tiredOpponentEnergy,
+          },
+        });
+      }
       recordShot(stats, player, shot);
       this.fatigue.consume(player, shot, rallyLength);
 
       const skill = this.skill(player, shot);
       const confidence = (player.confidence - 50) * 0.14;
       const energyPenalty = (100 - player.energy) * 0.12;
-      const risk = this.risk(shot, tactic, activeTeam === 'A');
+      const risk = this.risk(shot, tactic, activeTeam === 'A', player, match);
       const execution = skill + confidence - energyPenalty - risk + (random.next() - 0.5) * 28;
       const difficulty = 38 + pressure * 0.28 + rallyLength * 0.18;
+
+      memory.record({ team: activeTeam, playerId: player.id, shot, pressure, execution, difficulty });
 
       if (execution < difficulty) {
         const winner = activeTeam === 'A' ? 'B' : 'A';
         recordPoint(stats, winner, player, 'error', rallyLength, teams);
-        return { winner, finisher: player, shot, result: 'error', rallyLength };
+        return { winner, finisher: player, shot, result: 'error', rallyLength, decisionTrace, rallyMemory: memory.events };
       }
 
       const winnerChance = Math.max(0.025, Math.min(0.42, (execution - difficulty) / 85 + this.winnerBonus(shot)));
       if (random.next() < winnerChance) {
         recordPoint(stats, activeTeam, player, 'winner', rallyLength, teams);
-        return { winner: activeTeam, finisher: player, shot, result: 'winner', rallyLength };
+        return { winner: activeTeam, finisher: player, shot, result: 'winner', rallyLength, decisionTrace, rallyMemory: memory.events };
       }
 
       const movement = this.position.afterShot(player, shot);
@@ -53,7 +84,7 @@ export class RallyEngine {
 
     const winner = activeTeam === 'A' ? 'B' : 'A';
     recordPoint(stats, winner, lastPlayer, 'error', 60, teams);
-    return { winner, finisher: lastPlayer, shot, result: 'error', rallyLength: 60 };
+    return { winner, finisher: lastPlayer, shot, result: 'error', rallyLength: 60, decisionTrace, rallyMemory: memory.events };
   }
 
   skill(player, shot) {
@@ -66,10 +97,14 @@ export class RallyEngine {
     return map[shot] ?? player.overall;
   }
 
-  risk(shot, tactic, isTeamA) {
+  risk(shot, tactic, isTeamA, player, match = {}) {
     let risk = { serve: 4, drive: 8, backhand: 7, lob: 6, volley: 8, bandeja: 7, smash: 16, chiquita: 12 }[shot] || 8;
     if (isTeamA && tactic?.id === 'defensivo') risk -= 3;
     if (isTeamA && ['agressivo', 'potencia'].includes(tactic?.id)) risk += 3;
+    if (match.importantPoint && ['smash', 'chiquita'].includes(shot)) {
+      const composure = Number(player.behavior?.tendencies?.pressure_resistance ?? 50);
+      risk += (50 - composure) / 12;
+    }
     return risk;
   }
 
