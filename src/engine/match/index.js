@@ -10,3 +10,6 @@ export { createBehaviorProfile, behaviorProfileEquals, AXIS_NAMES } from './Pers
 export { RallyMemory } from './RallyMemory.js';
 export { createDecisionContext } from './DecisionContext.js';
 export { AdaptiveTactics } from './AdaptiveTactics.js';
+export { NarrativeEngine } from './NarrativeEngine.js';
+export { buildStatisticsSummary } from './StatisticsEngine.js';
+export { buildMatchAnalysis } from './MatchAnalysis.js';

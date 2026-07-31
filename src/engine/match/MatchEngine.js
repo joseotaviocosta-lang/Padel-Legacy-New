@@ -4,7 +4,8 @@ import { RallyEngine } from './RallyEngine.js';
 import { MomentumEngine } from './MomentumEngine.js';
 import { FatigueEngine } from './FatigueEngine.js';
 import { CommentaryEngine } from './CommentaryEngine.js';
-import { createStatistics } from './StatisticsEngine.js';
+import { createStatistics, buildStatisticsSummary } from './StatisticsEngine.js';
+import { buildMatchAnalysis } from './MatchAnalysis.js';
 
 export const MATCH_TACTICS = [
   { id: 'equilibrado', label: 'Equilibrado', icon: 'Scale', desc: 'Neutro e seguro' },
@@ -20,11 +21,11 @@ export function createMatch(teamA, teamB, options = {}) {
   const teams = createTeams(teamA, teamB);
   const seed = options.seed ?? `${Date.now()}-${teamA?.[0]?.id || 'A'}-${teamB?.[0]?.id || 'B'}`;
   return {
-    engineVersion: '0.4.0-alpha.2', seed, randomState: 0, teams,
+    engineVersion: '0.4.0-alpha.3', seed, randomState: 0, teams,
     teamANames: teams.A.map((p) => p.name), teamBNames: teams.B.map((p) => p.name),
     setsA: 0, setsB: 0, currentSet: 1, gamesA: 0, gamesB: 0, pointsA: 0, pointsB: 0,
     servingTeam: 'A', inTiebreak: false, superTiebreak: false, finished: false, winner: null,
-    setScores: [], narration: [], stats: createStatistics(teams), pointNumber: 0,
+    setScores: [], narration: [], stats: createStatistics(teams), analysis: null, pointNumber: 0,
   };
 }
 
@@ -56,8 +57,8 @@ export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
   const result = rally.play({ teams: state.teams, servingTeam: state.servingTeam, tactic, random, stats: state.stats, match: pointContext });
   state.pointNumber += 1;
   momentum.update(state.teams, result.winner, result.winner === 'A' ? 'B' : 'A', { breakPoint: isBreakPoint(state, result.winner) });
-  const msg = commentary.point({ ...result, random });
-  awardPoint(state, result.winner, msg, result, fatigue);
+  const narrative = commentary.describe({ ...result, random, stats: state.stats, match: pointContext });
+  awardPoint(state, result.winner, narrative.message, { ...result, narrative }, fatigue);
   return state;
 }
 
@@ -89,9 +90,9 @@ function awardPoint(state, winner, msg, detail, fatigue) {
       const setWinner = state.pointsA > state.pointsB ? 'A' : 'B';
       if (!state.superTiebreak) { state.gamesA = setWinner === 'A' ? 7 : 6; state.gamesB = setWinner === 'B' ? 7 : 6; }
       else { state.gamesA = state.pointsA; state.gamesB = state.pointsB; }
-      state.narration.push({ type: 'tiebreak_end', msg: `${msg} Tiebreak ${state.pointsA}-${state.pointsB}.`, scorer: winner, rallyLength: detail.rallyLength, ...snapshot(state) });
+      state.narration.push({ type: 'tiebreak_end', msg: `${msg} Tiebreak ${state.pointsA}-${state.pointsB}.`, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], narrative: detail.narrative || null, ...snapshot(state) });
       finishSet(state, setWinner);
-    } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], ...snapshot(state) });
+    } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], narrative: detail.narrative || null, ...snapshot(state) });
     return;
   }
 
@@ -104,9 +105,9 @@ function awardPoint(state, winner, msg, detail, fatigue) {
     state.pointsA = 0; state.pointsB = 0;
     state.servingTeam = state.servingTeam === 'A' ? 'B' : 'A';
     fatigue.recoverBetweenGames(state.teams);
-    state.narration.push({ type: 'game', msg: `${msg} Game para ${gameWinner === 'A' ? state.teamANames[0] : state.teamBNames[0]}.`, scorer: gameWinner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], ...snapshot(state) });
+    state.narration.push({ type: 'game', msg: `${msg} Game para ${gameWinner === 'A' ? state.teamANames[0] : state.teamBNames[0]}.`, scorer: gameWinner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], narrative: detail.narrative || null, ...snapshot(state) });
     checkSet(state);
-  } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], ...snapshot(state) });
+  } else state.narration.push({ type: 'point', msg, scorer: winner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], narrative: detail.narrative || null, ...snapshot(state) });
 }
 
 function checkSet(state) {
@@ -125,7 +126,9 @@ function finishSet(state, winner) {
   state.narration.push({ type: 'set', msg: `Set ${state.currentSet}: ${state.gamesA}-${state.gamesB}.`, scorer: winner, ...snapshot(state) });
   if (state.setsA === 2 || state.setsB === 2) {
     state.finished = true; state.winner = state.setsA > state.setsB ? 'A' : 'B';
+    state.stats = buildStatisticsSummary(state.stats);
     state.narration.push({ type: 'match', msg: `Fim de jogo! ${state.winner === 'A' ? state.teamANames.join(' & ') : state.teamBNames.join(' & ')} vencem por ${state.setsA}-${state.setsB}.`, scorer: state.winner, ...snapshot(state) });
+    state.analysis = buildMatchAnalysis(state);
     return;
   }
   state.currentSet += 1; state.gamesA = 0; state.gamesB = 0;

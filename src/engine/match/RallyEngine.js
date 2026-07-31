@@ -50,6 +50,8 @@ export class RallyEngine {
           },
         });
       }
+
+      const finishingZone = player.position.zone;
       recordShot(stats, player, shot);
       this.fatigue.consume(player, shot, rallyLength);
 
@@ -64,14 +66,59 @@ export class RallyEngine {
 
       if (execution < difficulty) {
         const winner = activeTeam === 'A' ? 'B' : 'A';
-        recordPoint(stats, winner, player, 'error', rallyLength, teams);
-        return { winner, finisher: player, shot, result: 'error', rallyLength, decisionTrace, rallyMemory: memory.events };
+        const forcedError = this.isForcedError({ pressure, execution, difficulty, rallyLength, memory });
+        recordPoint(stats, winner, player, 'error', rallyLength, teams, {
+          shot,
+          zone: finishingZone,
+          servingTeam,
+          match,
+          forcedError,
+          pressure,
+          execution,
+          difficulty,
+        });
+        return {
+          winner,
+          finisher: player,
+          shot,
+          result: 'error',
+          forcedError,
+          rallyLength,
+          pressure,
+          execution,
+          difficulty,
+          match,
+          decisionTrace,
+          rallyMemory: memory.events,
+        };
       }
 
       const winnerChance = Math.max(0.025, Math.min(0.42, (execution - difficulty) / 85 + this.winnerBonus(shot)));
       if (random.next() < winnerChance) {
-        recordPoint(stats, activeTeam, player, 'winner', rallyLength, teams);
-        return { winner: activeTeam, finisher: player, shot, result: 'winner', rallyLength, decisionTrace, rallyMemory: memory.events };
+        recordPoint(stats, activeTeam, player, 'winner', rallyLength, teams, {
+          shot,
+          zone: finishingZone,
+          servingTeam,
+          match,
+          forcedError: false,
+          pressure,
+          execution,
+          difficulty,
+        });
+        return {
+          winner: activeTeam,
+          finisher: player,
+          shot,
+          result: 'winner',
+          forcedError: false,
+          rallyLength,
+          pressure,
+          execution,
+          difficulty,
+          match,
+          decisionTrace,
+          rallyMemory: memory.events,
+        };
       }
 
       const movement = this.position.afterShot(player, shot);
@@ -83,15 +130,44 @@ export class RallyEngine {
     }
 
     const winner = activeTeam === 'A' ? 'B' : 'A';
-    recordPoint(stats, winner, lastPlayer, 'error', 60, teams);
-    return { winner, finisher: lastPlayer, shot, result: 'error', rallyLength: 60, decisionTrace, rallyMemory: memory.events };
+    recordPoint(stats, winner, lastPlayer, 'error', 60, teams, {
+      shot,
+      zone: lastPlayer.position.zone,
+      servingTeam,
+      match,
+      forcedError: true,
+      pressure: 100,
+    });
+    return {
+      winner,
+      finisher: lastPlayer,
+      shot,
+      result: 'error',
+      forcedError: true,
+      rallyLength: 60,
+      pressure: 100,
+      match,
+      decisionTrace,
+      rallyMemory: memory.events,
+    };
+  }
+
+  isForcedError({ pressure, execution, difficulty, rallyLength, memory }) {
+    const previous = memory.events[memory.events.length - 2];
+    const previousAttack = previous && ['smash', 'volley', 'chiquita'].includes(previous.shot);
+    const narrowFailure = difficulty - execution <= 8;
+    return pressure >= 62 || rallyLength >= 12 || previousAttack || narrowFailure;
   }
 
   skill(player, shot) {
     const map = {
-      serve: player.attributes.serve, drive: player.attributes.forehand, backhand: player.attributes.backhand,
-      lob: (player.attributes.defense + player.attributes.strategy) / 2, volley: player.attributes.volley,
-      bandeja: player.attributes.bandeja, smash: player.attributes.smash,
+      serve: player.attributes.serve,
+      drive: player.attributes.forehand,
+      backhand: player.attributes.backhand,
+      lob: (player.attributes.defense + player.attributes.strategy) / 2,
+      volley: player.attributes.volley,
+      bandeja: player.attributes.bandeja,
+      smash: player.attributes.smash,
       chiquita: (player.attributes.forehand + player.attributes.strategy) / 2,
     };
     return map[shot] ?? player.overall;
