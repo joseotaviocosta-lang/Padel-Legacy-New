@@ -24,12 +24,23 @@ export class ActiveCareerAdapter {
   }
 
   async getActiveCareer({ fresh = false } = {}) {
-    const careerId = await this.careerManager.getLastCareer();
+    // A carreira mantida em memória é a fonte imediata durante a transição
+    // entre a criação/seleção do save e a montagem das telas do jogo. Consultar
+    // primeiro o índice podia apagar essa referência quando o bootstrap e a
+    // navegação ocorriam em paralelo, causando "Nenhuma carreira ativa" no
+    // primeiro PlayerProfile.create().
+    if (!fresh && this.activeCareer?.career_id && this.activeCareerId === this.activeCareer.career_id) {
+      return clone(this.activeCareer);
+    }
+
+    // Em leituras frescas, preserve o id já selecionado em memória. O índice é
+    // usado como fallback para inicializações/reaberturas da aplicação.
+    const careerId = this.activeCareerId || await this.careerManager.getLastCareer();
     if (!careerId) {
       this.clearActiveCareer();
       return null;
     }
-    if (!fresh && this.activeCareer && this.activeCareerId === careerId) return clone(this.activeCareer);
+
     const career = fresh
       ? await this.careerManager.readCareer(careerId)
       : await this.careerManager.loadCareer(careerId);
