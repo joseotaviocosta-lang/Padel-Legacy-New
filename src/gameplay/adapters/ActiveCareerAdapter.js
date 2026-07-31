@@ -23,11 +23,13 @@ export class ActiveCareerAdapter {
     this.activeCareerId = null;
   }
 
-  async getActiveCareer({ fresh = false } = {}) {
-    // Toda leitura fresca deve aguardar gravações já enfileiradas. Isso impede
-    // que componentes montados logo após a criação do save leiam o arquivo
-    // enquanto uma mutação anterior ainda está sendo concluída.
-    await this.writeChain.catch(() => {});
+  async getActiveCareer({ fresh = false, waitForWrites = true } = {}) {
+    // Leituras externas aguardam gravações anteriores. Operações que já estão
+    // dentro da própria fila usam waitForWrites=false para não aguardarem a si
+    // mesmas (deadlock).
+    if (waitForWrites) {
+      await this.writeChain.catch(() => {});
+    }
 
     const memoryCareer = (
       this.activeCareer?.career_id
@@ -83,73 +85,76 @@ export class ActiveCareerAdapter {
   }
 
   async createPlayerProfile(profile = {}) {
-    const career = await this.ensureActiveCareer({ fresh: true });
+    const transaction = await this.mutateActiveCareer(async (career) => {
+      // A criação é idempotente: montagens repetidas reutilizam o jogador.
+      if (career.player?.id) {
+        const missingFields = Object.fromEntries(
+          Object.entries(clone(profile) || {}).filter(([key, value]) => (
+            key !== 'id'
+            && value !== undefined
+            && value !== null
+            && (career.player[key] === undefined || career.player[key] === null)
+          )),
+        );
 
-    // A criação precisa ser idempotente. Algumas telas chamam ensureMyProfile
-    // mais de uma vez durante a montagem; se a carreira já possui jogador,
-    // reutilizamos o registro existente e apenas completamos campos ausentes.
-    if (career.player?.id) {
-      const missingFields = Object.fromEntries(
-        Object.entries(clone(profile) || {}).filter(([key, value]) => (
-          key !== 'id'
-          && value !== undefined
-          && value !== null
-          && (career.player[key] === undefined || career.player[key] === null)
-        )),
-      );
-
-      if (Object.keys(missingFields).length === 0) {
-        this.setActiveCareer(career);
-        return clone(career.player);
+        if (Object.keys(missingFields).length > 0) {
+          career.player = {
+            ...clone(career.player),
+            ...missingFields,
+            id: career.player.id,
+            updated_date: new Date().toISOString(),
+          };
+        }
+        return career.player;
       }
 
-      const updated = {
-        ...clone(career.player),
-        ...missingFields,
-        id: career.player.id,
-        updated_date: new Date().toISOString(),
+      const now = new Date().toISOString();
+      career.player = {
+        ...clone(profile),
+        id: profile.id || `playerprofile-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        created_date: profile.created_date || now,
+        updated_date: now,
       };
-      career.player = updated;
-      const saved = await this.careerManager.saveCareer(career.career_id, career);
-      this.setActiveCareer(saved);
-      return clone(updated);
-    }
-
-    const now = new Date().toISOString();
-    const created = {
-      ...clone(profile),
-      id: profile.id || `playerprofile-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-      created_date: profile.created_date || now,
-      updated_date: now,
-    };
-    career.player = created;
-    const saved = await this.careerManager.saveCareer(career.career_id, career);
-    this.setActiveCareer(saved);
-    return clone(created);
+      return career.player;
+    });
+    return clone(transaction.result);
   }
 
   async updatePlayerProfile(id, updates = {}) {
-    const career = await this.ensureActiveCareer({ fresh: true });
-    const player = career.player || {};
-    if (!player.id || player.id !== id) throw new Error('O PlayerProfile ativo não corresponde ao id informado.');
-    const updated = { ...clone(player), ...clone(updates), id: player.id, updated_date: new Date().toISOString() };
-    career.player = updated;
-    const saved = await this.careerManager.saveCareer(career.career_id, career);
-    this.setActiveCareer(saved);
-    return clone(updated);
+    const transaction = await this.mutateActiveCareer(async (career) => {
+      const player = career.player || {};
+      if (!player.id || player.id !== id) {
+        throw new Error('O PlayerProfile ativo não corresponde ao id informado.');
+      }
+      career.player = {
+        ...clone(player),
+        ...clone(updates),
+        id: player.id,
+        updated_date: new Date().toISOString(),
+      };
+      return career.player;
+    });
+    return clone(transaction.result);
   }
 
   async mutateActiveCareer(mutator) {
-    const operation = this.writeChain
-      .catch(() => {})
-      .then(async () => {
-        const career = await this.ensureActiveCareer({ fresh: true });
-        const result = await mutator(career);
-        const saved = await this.careerManager.saveCareer(career.career_id, career);
-        this.setActiveCareer(saved);
-        return { result: clone(result), career: clone(saved) };
+    // Capture a fila anterior antes de criar a nova operação. Assim, a operação
+    // atual aguarda somente trabalhos anteriores e nunca aguarda a si mesma.
+    const previousWrites = this.writeChain.catch(() => {});
+    const operation = previousWrites.then(async () => {
+      const career = await this.ensureActiveCareer({
+        fresh: true,
+        waitForWrites: false,
       });
-    this.writeChain = operation;
+      const result = await mutator(career);
+      const saved = await this.careerManager.saveCareer(career.career_id, career);
+      this.setActiveCareer(saved);
+      return { result: clone(result), career: clone(saved) };
+    });
+
+    // A fila permanece resolvível mesmo quando uma operação falha, permitindo
+    // que gravações futuras continuem. O chamador ainda recebe o erro original.
+    this.writeChain = operation.then(() => undefined, () => undefined);
     return operation;
   }
 
