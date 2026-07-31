@@ -72,14 +72,83 @@ export class GameStorage {
     await this.initialize();
     const normalizedPath = relativePath;
     if (!(await this.storage.exists(normalizedPath))) {
-      throw new StorageError('O arquivo não existe no armazenamento local.', 'FILE_NOT_FOUND');
+      throw new StorageError(
+        `O arquivo não existe no armazenamento local: ${normalizedPath}`,
+        'FILE_NOT_FOUND'
+      );
     }
-    const raw = await this.storage.readText(normalizedPath);
+
+    let raw;
+    try {
+      raw = await this.storage.readText(normalizedPath);
+    } catch (error) {
+      // O arquivo pode desaparecer entre exists() e readText(). Mantemos o
+      // mesmo contrato de erro para que os consumidores possam distinguir
+      // ausência esperada de falhas reais de leitura.
+      if (error?.code === 'FILE_NOT_FOUND') {
+        throw new StorageError(
+          `O arquivo não existe no armazenamento local: ${normalizedPath}`,
+          'FILE_NOT_FOUND'
+        );
+      }
+      throw error;
+    }
+
     try {
       return JSON.parse(raw);
     } catch (error) {
-      throw new StorageError('Falha ao analisar o arquivo JSON.', 'INVALID_JSON');
+      throw new StorageError(
+        `Falha ao analisar o arquivo JSON: ${normalizedPath}`,
+        'INVALID_JSON'
+      );
     }
+  }
+
+  /**
+   * Lê um JSON opcional sem transformar a primeira execução em erro.
+   *
+   * Retorna defaultValue somente quando o arquivo realmente não existe.
+   * JSON inválido, falta de permissão e outros erros continuam sendo lançados,
+   * evitando mascarar corrupção de dados ou falhas reais do armazenamento.
+   */
+  async readJsonIfExists(relativePath, defaultValue = null) {
+    await this.initialize();
+    const normalizedPath = relativePath;
+
+    if (!(await this.storage.exists(normalizedPath))) {
+      return defaultValue;
+    }
+
+    try {
+      return await this.readJson(normalizedPath);
+    } catch (error) {
+      // Protege também contra a condição de corrida em que o arquivo é
+      // removido entre a verificação de existência e a leitura.
+      if (error?.code === 'FILE_NOT_FOUND') {
+        return defaultValue;
+      }
+      throw error;
+    }
+  }
+
+  /**
+   * Lê um JSON opcional e o cria atomicamente com o valor padrão quando ainda
+   * não existe. Útil para índices, preferências, caches e rankings locais.
+   */
+  async readJsonOrCreate(relativePath, defaultValue, options = {}) {
+    const existing = await this.readJsonIfExists(relativePath, undefined);
+    if (existing !== undefined) {
+      return existing;
+    }
+
+    const initialValue = typeof defaultValue === 'function'
+      ? await defaultValue()
+      : defaultValue;
+
+    return this.writeJson(relativePath, initialValue, {
+      backup: false,
+      ...options,
+    });
   }
 
   async writeJson(relativePath, data, options = {}) {

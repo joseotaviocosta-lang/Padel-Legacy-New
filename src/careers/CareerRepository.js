@@ -28,14 +28,11 @@ export class CareerRepository {
 
   async readIndex() {
     await this.initialize();
-    if (!(await this.storage.exists(CAREER_INDEX_FILE_NAME))) {
-      return {
-        schema_version: 1,
-        last_career_id: null,
-        careers: [],
-      };
-    }
-    const index = await this.storage.readJson(CAREER_INDEX_FILE_NAME);
+    const index = await this.storage.readJsonIfExists(CAREER_INDEX_FILE_NAME, {
+      schema_version: 1,
+      last_career_id: null,
+      careers: [],
+    });
     return validateCareerIndex(index);
   }
 
