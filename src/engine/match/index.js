@@ -15,3 +15,5 @@ export { buildStatisticsSummary } from './StatisticsEngine.js';
 export { buildMatchAnalysis } from './MatchAnalysis.js';
 
 export { TeamCoordinationEngine, communicationScore, chemistryScore } from './TeamCoordinationEngine.js';
+
+export { runBalanceBatch, evaluateBalanceGates, compareBalanceBatches, createDefaultBalanceTeams } from './BalanceSimulator.js';

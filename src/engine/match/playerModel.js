@@ -1,5 +1,15 @@
-import { overallRating } from '@/lib/padel';
 import { createBehaviorProfile } from './PersonalityModel.js';
+
+const ATTRIBUTE_KEYS = ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense', 'agility', 'strategy', 'emotional_control'];
+
+function overallRating(profile) {
+  if (!profile) return 0;
+  const sum = ATTRIBUTE_KEYS.reduce((total, key) => total + (Number(profile[key]) || 0), 0);
+  let rating = Math.round(sum / ATTRIBUTE_KEYS.length);
+  if (profile._chemistryBonus) rating += Number(profile._chemistryBonus) || 0;
+  if (profile._energyPenalty) rating += Number(profile._energyPenalty) || 0;
+  return Math.max(1, Math.min(100, rating));
+}
 
 const number = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, value));

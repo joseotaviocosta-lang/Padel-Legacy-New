@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.4.0-alpha.4",
+  "version": "0.4.0-alpha.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -17,7 +17,8 @@
     "android:init": "tauri android init",
     "android:dev": "tauri android dev",
     "android:build": "tauri android build",
-    "validate:architecture": "node scripts/validate-architecture.mjs"
+    "validate:architecture": "node scripts/validate-architecture.mjs",
+    "test:match-balance": "node src/engine/match/MatchBalanceCli.js --matches=1000"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
