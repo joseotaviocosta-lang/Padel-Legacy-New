@@ -9,5 +9,6 @@ export class GameRepository {
   getPlayerProfile() { return this.adapter.getPlayerProfile(); }
   createPlayerProfile(profile) { return this.adapter.createPlayerProfile(profile); }
   updatePlayerProfile(id, updates) { return this.adapter.updatePlayerProfile(id, updates); }
+  mutateActiveCareer(mutator) { return this.adapter.mutateActiveCareer(mutator); }
   saveActiveCareer(career) { return this.adapter.saveActiveCareer(career); }
 }

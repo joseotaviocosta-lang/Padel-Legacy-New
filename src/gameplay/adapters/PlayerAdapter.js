@@ -1,22 +1,8 @@
-import { localDatabase } from '@/local/localDatabase.js';
 import { gameRepository as repository } from '../services/runtime.js';
-import { isNewCareerSystemEnabled } from '../config/featureFlags.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
   return JSON.parse(JSON.stringify(value));
-}
-
-function fallbackEntity() {
-  return {
-    list: (sort, limit) => localDatabase.list('PlayerProfile', sort, limit),
-    filter: (query, sort, limit) => localDatabase.filter('PlayerProfile', query, sort, limit),
-    get: (id) => localDatabase.get('PlayerProfile', id),
-    create: (data) => localDatabase.create('PlayerProfile', data),
-    update: (id, data) => localDatabase.update('PlayerProfile', id, data),
-    delete: (id) => localDatabase.delete('PlayerProfile', id),
-    count: (query) => localDatabase.count('PlayerProfile', query),
-  };
 }
 
 function matches(row, query = {}) {
@@ -39,49 +25,41 @@ function matches(row, query = {}) {
   });
 }
 
-const legacy = fallbackEntity();
 
 const PlayerAdapter = {
   async list(sort, limit) {
-    if (!isNewCareerSystemEnabled()) return legacy.list(sort, limit);
     const profile = await repository.getPlayerProfile();
     const results = profile ? [clone(profile)] : [];
     return typeof limit === 'number' ? results.slice(0, limit) : results;
   },
 
   async filter(query = {}, sort, limit) {
-    if (!isNewCareerSystemEnabled()) return legacy.filter(query, sort, limit);
     const profile = await repository.getPlayerProfile();
     const results = profile && matches(profile, query) ? [clone(profile)] : [];
     return typeof limit === 'number' ? results.slice(0, limit) : results;
   },
 
   async get(id) {
-    if (!isNewCareerSystemEnabled()) return legacy.get(id);
     const profile = await repository.getPlayerProfile();
     if (!profile || profile.id !== id) throw new Error(`PlayerProfile não encontrado: ${id}`);
     return clone(profile);
   },
 
   async create(data = {}) {
-    if (!isNewCareerSystemEnabled()) return legacy.create(data);
     return repository.createPlayerProfile(data);
   },
 
   async update(id, updates = {}) {
-    if (!isNewCareerSystemEnabled()) return legacy.update(id, updates);
     return repository.updatePlayerProfile(id, updates);
   },
 
   async delete(id) {
-    if (!isNewCareerSystemEnabled()) return legacy.delete(id);
     const profile = await repository.getPlayerProfile();
     if (!profile || profile.id !== id) throw new Error(`PlayerProfile não encontrado: ${id}`);
     throw new Error('Exclusão do PlayerProfile ativo não é permitida no novo sistema de carreira.');
   },
 
   async count(query = {}) {
-    if (!isNewCareerSystemEnabled()) return legacy.count(query);
     return (await this.filter(query)).length;
   },
 

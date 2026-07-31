@@ -45,7 +45,7 @@ export class CareerManager {
   async initialize() {
     if (this.initialized) return;
     await this.repository.initialize();
-    await this.repository.writeIndex(await this.repository.readIndex());
+    await this.repository.readIndex();
     this.initialized = true;
   }
 
@@ -100,6 +100,15 @@ export class CareerManager {
       summary,
       career: defaultData,
     };
+  }
+
+  async readCareer(careerId) {
+    await this.initialize();
+    const index = await this.repository.readIndex();
+    if (!index.careers.some((item) => item.id === careerId)) {
+      throw new Error('Carreira não encontrada no índice.');
+    }
+    return this.repository.readCareer(careerId);
   }
 
   async loadCareer(careerId) {
@@ -258,6 +267,13 @@ export class CareerManager {
   async getLastCareer() {
     const index = await this.loadFreshIndex();
     return index.last_career_id;
+  }
+
+  async clearLastCareer() {
+    const index = await this.loadFreshIndex();
+    index.last_career_id = null;
+    await this.repository.writeIndex(index);
+    return true;
   }
 
   async exportCareer(careerId) {

@@ -1,13 +1,7 @@
-export const USE_NEW_CAREER_SYSTEM = typeof import.meta !== 'undefined' && import.meta.env
-  ? import.meta.env.VITE_USE_NEW_CAREER_SYSTEM === 'true' || import.meta.env.USE_NEW_CAREER_SYSTEM === 'true'
-  : false;
+// Compatibility API retained for older imports. Foundation 0.3.0.1 uses
+// the CareerRepository flow unconditionally; the legacy runtime was removed.
+export const USE_NEW_CAREER_SYSTEM = true;
 
 export function isNewCareerSystemEnabled() {
-  if (typeof window !== 'undefined') {
-    const runtimeFlag = window.USE_NEW_CAREER_SYSTEM;
-    if (runtimeFlag === true || runtimeFlag === 'true') {
-      return true;
-    }
-  }
-  return USE_NEW_CAREER_SYSTEM;
+  return true;
 }

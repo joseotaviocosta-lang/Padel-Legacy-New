@@ -51,11 +51,17 @@ export class CareerEntityRepository {
   }
 
   async withCareer(mutator, { save = false } = {}) {
+    if (save) {
+      const transaction = await this.repository.mutateActiveCareer(async (career) => {
+        if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
+        return mutator(career);
+      });
+      return clone(transaction.result);
+    }
+
     const career = await this.repository.ensureActiveCareer({ fresh: true });
     if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
-    const result = await mutator(career);
-    if (save) await this.repository.saveActiveCareer(career);
-    return clone(result);
+    return clone(await mutator(career));
   }
 
   seedFor(entityName, career) {
@@ -79,7 +85,7 @@ export class CareerEntityRepository {
       const rows = await this.ensureCollection(entityName, career);
       const out = sortRows(rows, sort);
       return limit ? out.slice(0, limit) : out;
-    }, { save: true });
+    }, { save: false });
   }
 
   async filter(entityName, query = {}, sort = null, limit = null) {
@@ -87,7 +93,7 @@ export class CareerEntityRepository {
       const rows = await this.ensureCollection(entityName, career);
       const out = sortRows(rows.filter((row) => matches(row, query)), sort);
       return limit ? out.slice(0, limit) : out;
-    }, { save: true });
+    }, { save: false });
   }
 
   async get(entityName, id) {
@@ -96,7 +102,7 @@ export class CareerEntityRepository {
       const found = rows.find((row) => row.id === id);
       if (!found) throw new Error(`${entityName} não encontrado: ${id}`);
       return found;
-    }, { save: true });
+    }, { save: false });
   }
 
   async create(entityName, data = {}) {

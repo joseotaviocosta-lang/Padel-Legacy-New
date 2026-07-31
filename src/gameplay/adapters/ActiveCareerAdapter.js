@@ -10,6 +10,7 @@ export class ActiveCareerAdapter {
     this.careerManager = careerManager;
     this.activeCareer = null;
     this.activeCareerId = null;
+    this.writeChain = Promise.resolve();
   }
 
   setActiveCareer(career) {
@@ -29,7 +30,9 @@ export class ActiveCareerAdapter {
       return null;
     }
     if (!fresh && this.activeCareer && this.activeCareerId === careerId) return clone(this.activeCareer);
-    const career = await this.careerManager.loadCareer(careerId);
+    const career = fresh
+      ? await this.careerManager.readCareer(careerId)
+      : await this.careerManager.loadCareer(careerId);
     this.setActiveCareer(career);
     return clone(this.activeCareer);
   }
@@ -100,6 +103,20 @@ export class ActiveCareerAdapter {
     const saved = await this.careerManager.saveCareer(career.career_id, career);
     this.setActiveCareer(saved);
     return clone(updated);
+  }
+
+  async mutateActiveCareer(mutator) {
+    const operation = this.writeChain
+      .catch(() => {})
+      .then(async () => {
+        const career = await this.ensureActiveCareer({ fresh: true });
+        const result = await mutator(career);
+        const saved = await this.careerManager.saveCareer(career.career_id, career);
+        this.setActiveCareer(saved);
+        return { result: clone(result), career: clone(saved) };
+      });
+    this.writeChain = operation;
+    return operation;
   }
 
   async saveActiveCareer(careerData = null) {

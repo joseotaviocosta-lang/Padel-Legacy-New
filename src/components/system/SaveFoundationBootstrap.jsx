@@ -1,8 +1,13 @@
 import { useEffect } from 'react';
 import { ensureWorldSeed2025, verifySaveFoundation } from '@/lib/saveFoundation';
+import { useCareer } from '@/careers/useCareer.js';
 
 export default function SaveFoundationBootstrap() {
+  const { activeCareer, loading } = useCareer();
+
   useEffect(() => {
+    if (loading || !activeCareer?.career_id) return undefined;
+
     let cancelled = false;
     const run = async () => {
       try {
@@ -12,8 +17,10 @@ export default function SaveFoundationBootstrap() {
         console.error('[Save Foundation] inicialização segura falhou; nenhum save foi apagado.', error);
       }
     };
-    const timer = window.setTimeout(run, 700);
-    return () => { cancelled = true; window.clearTimeout(timer); };
-  }, []);
+
+    run();
+    return () => { cancelled = true; };
+  }, [activeCareer?.career_id, loading]);
+
   return null;
 }
