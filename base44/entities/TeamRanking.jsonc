@@ -1,0 +1,55 @@
+{
+  "name": "TeamRanking",
+  "type": "object",
+  "properties": {
+    "team_key": {
+      "type": "string",
+      "description": "Chave \u00fanica: IDs ordenados joined por _"
+    },
+    "player1_id": {
+      "type": "string"
+    },
+    "player1_name": {
+      "type": "string"
+    },
+    "player2_id": {
+      "type": "string"
+    },
+    "player2_name": {
+      "type": "string"
+    },
+    "ranking_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Pontos no ranking de duplas"
+    },
+    "matches_played": {
+      "type": "number",
+      "default": 0
+    },
+    "wins": {
+      "type": "number",
+      "default": 0
+    },
+    "losses": {
+      "type": "number",
+      "default": 0
+    },
+    "titles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "T\u00edtulos conquistados pela dupla"
+    },
+    "season_id": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "team_key",
+    "player1_id",
+    "player2_id"
+  ]
+}

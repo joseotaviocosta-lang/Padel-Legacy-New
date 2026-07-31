@@ -1,0 +1,20 @@
+[package]
+name = "padel-legacy"
+version = "0.2.0"
+description = "Padel Legacy - simulador de carreira de padel offline"
+authors = ["Padel Legacy"]
+edition = "2021"
+
+[lib]
+name = "padel_legacy_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-store = "2"
+tauri-plugin-fs = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"

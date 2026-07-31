@@ -1,0 +1,51 @@
+{
+  "name": "ClubEvent",
+  "type": "object",
+  "properties": {
+    "club_id": {
+      "type": "string"
+    },
+    "name": {
+      "type": "string",
+      "description": "Nome do evento"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "social",
+        "tournament",
+        "clinic",
+        "exhibition"
+      ],
+      "default": "social"
+    },
+    "description": {
+      "type": "string"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "prize_coins": {
+      "type": "number",
+      "default": 0
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "agendado",
+        "em_andamento",
+        "finalizado"
+      ],
+      "default": "agendado"
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 16
+    }
+  },
+  "required": [
+    "club_id",
+    "name"
+  ]
+}

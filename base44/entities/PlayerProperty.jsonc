@@ -1,0 +1,42 @@
+{
+  "name": "PlayerProperty",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador"
+    },
+    "property_id": {
+      "type": "string",
+      "description": "ID do im\u00f3vel no cat\u00e1logo"
+    },
+    "property_name": {
+      "type": "string",
+      "description": "Nome do im\u00f3vel"
+    },
+    "property_type": {
+      "type": "string",
+      "description": "Tipo (residencial, comercial)"
+    },
+    "purchase_price": {
+      "type": "number",
+      "default": 0
+    },
+    "monthly_maintenance": {
+      "type": "number",
+      "default": 0,
+      "description": "Custo de manuten\u00e7\u00e3o mensal"
+    },
+    "bonus_type": {
+      "type": "string"
+    },
+    "bonus_value": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "profile_id",
+    "property_name"
+  ]
+}

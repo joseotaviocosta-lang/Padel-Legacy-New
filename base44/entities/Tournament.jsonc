@@ -1,0 +1,223 @@
+{
+  "name": "Tournament",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do torneio"
+    },
+    "description": {
+      "type": "string"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "P2",
+        "P1",
+        "Major"
+      ],
+      "default": "P2"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "eliminacao_simples",
+        "eliminacao_dupla",
+        "grupos"
+      ],
+      "default": "eliminacao_simples"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "inscricoes",
+        "em_andamento",
+        "finalizado"
+      ],
+      "default": "inscricoes"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "month": {
+      "type": "number"
+    },
+    "bot_difficulty_modifier": {
+      "type": "number",
+      "default": -1
+    },
+    "max_participants": {
+      "type": "number",
+      "default": 16
+    },
+    "participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "champion": {
+      "type": "string"
+    },
+    "runner_up": {
+      "type": "string",
+      "description": "Vice-campe\u00e3o"
+    },
+    "prize_coins": {
+      "type": "number",
+      "default": 0
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 0
+    },
+    "rank_points": {
+      "type": "number",
+      "default": 0
+    },
+    "season_id": {
+      "type": "string"
+    },
+    "bracket": {
+      "type": "object"
+    },
+    "sponsor": {
+      "type": "string",
+      "description": "Patrocinador do torneio"
+    },
+    "audience": {
+      "type": "number",
+      "default": 0,
+      "description": "P\u00fablico/espectadores"
+    },
+    "location": {
+      "type": "string",
+      "description": "Local do torneio"
+    },
+    "year": {
+      "type": "number",
+      "description": "Ano do torneio"
+    },
+    "temperature": {
+      "type": "number",
+      "description": "Temperatura em \u00b0C"
+    },
+    "humidity": {
+      "type": "number",
+      "description": "Umidade relativa em %"
+    },
+    "wind_speed": {
+      "type": "number",
+      "description": "Velocidade do vento em km/h"
+    },
+    "wind_direction": {
+      "type": "string",
+      "enum": [
+        "N",
+        "NE",
+        "L",
+        "SE",
+        "S",
+        "SO",
+        "O",
+        "NO"
+      ],
+      "description": "Dire\u00e7\u00e3o do vento"
+    },
+    "weather_condition": {
+      "type": "string",
+      "enum": [
+        "ensolarado",
+        "nublado",
+        "parcialmente_nublado",
+        "chuvoso",
+        "ventoso",
+        "tempestade",
+        "neblina",
+        "calor_extremo",
+        "frio_extremo"
+      ],
+      "description": "Condi\u00e7\u00e3o clim\u00e1tica"
+    },
+    "court_condition": {
+      "type": "string",
+      "enum": [
+        "seca",
+        "umida",
+        "molhada",
+        "molhada_parcial",
+        "poeirenta"
+      ],
+      "description": "Condi\u00e7\u00e3o da quadra"
+    },
+    "uv_index": {
+      "type": "number",
+      "description": "\u00cdndice UV (0-11)"
+    },
+    "visibility_km": {
+      "type": "number",
+      "description": "Visibilidade em km"
+    },
+    "surface": {
+      "type": "string",
+      "enum": [
+        "vidro",
+        "cimento",
+        "indoor",
+        "outdoor",
+        "areia",
+        "gramado"
+      ],
+      "default": "vidro",
+      "description": "Superf\u00edcie/tipo de quadra"
+    },
+    "entry_fee": {
+      "type": "number",
+      "default": 0,
+      "description": "Taxa de inscri\u00e7\u00e3o em moedas"
+    },
+    "min_ranking": {
+      "type": "number",
+      "default": 0,
+      "description": "Ranking m\u00ednimo necess\u00e1rio para participar"
+    },
+    "min_level": {
+      "type": "string",
+      "enum": [
+        "Iniciante",
+        "Amador",
+        "Competitivo",
+        "Avan\u00e7ado",
+        "Elite",
+        "Lenda"
+      ],
+      "default": "Iniciante",
+      "description": "N\u00edvel m\u00ednimo do jogador"
+    },
+    "registration_deadline": {
+      "type": "string",
+      "format": "date",
+      "description": "Prazo final de inscri\u00e7\u00e3o"
+    },
+    "current_phase": {
+      "type": "string",
+      "enum": [
+        "inscricoes",
+        "chaveamento",
+        "r32",
+        "r16",
+        "quartas",
+        "semifinal",
+        "final",
+        "concluido"
+      ],
+      "default": "inscricoes",
+      "description": "Fase atual do torneio"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

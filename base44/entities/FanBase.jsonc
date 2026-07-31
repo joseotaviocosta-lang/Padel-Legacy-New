@@ -1,0 +1,106 @@
+{
+  "name": "FanBase",
+  "type": "object",
+  "properties": {
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "clube",
+        "atleta",
+        "jogador"
+      ],
+      "description": "Tipo de entidade que a torcida apoia"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID da entidade (Club, AthleteProfile, PlayerProfile)"
+    },
+    "entity_name": {
+      "type": "string",
+      "description": "Nome da entidade"
+    },
+    "entity_country": {
+      "type": "string"
+    },
+    "total_fans": {
+      "type": "number",
+      "default": 0,
+      "description": "N\u00famero total de torcedores"
+    },
+    "popularity": {
+      "type": "number",
+      "default": 50,
+      "description": "Popularidade (0-100)"
+    },
+    "loyalty": {
+      "type": "number",
+      "default": 50,
+      "description": "Fidelidade (0-100)"
+    },
+    "expectation": {
+      "type": "number",
+      "default": 50,
+      "description": "Exig\u00eancia (0-100)"
+    },
+    "influence": {
+      "type": "number",
+      "default": 50,
+      "description": "Influ\u00eancia social/m\u00eddia (0-100)"
+    },
+    "morale": {
+      "type": "number",
+      "default": 70,
+      "description": "Moral atual (0-100)"
+    },
+    "behavior": {
+      "type": "string",
+      "enum": [
+        "apaixonado",
+        "fanatico",
+        "casual",
+        "critico",
+        "agressivo"
+      ],
+      "default": "apaixonado",
+      "description": "Comportamento predominante"
+    },
+    "trend": {
+      "type": "string",
+      "enum": [
+        "subindo",
+        "estavel",
+        "caindo"
+      ],
+      "default": "estavel",
+      "description": "Tend\u00eancia de crescimento"
+    },
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile (para fan base do jogador)"
+    },
+    "last_event": {
+      "type": "string",
+      "description": "\u00daltimo evento que gerou rea\u00e7\u00e3o"
+    },
+    "last_reaction": {
+      "type": "string",
+      "description": "Texto da \u00faltima rea\u00e7\u00e3o"
+    },
+    "last_reaction_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "reaction_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Hist\u00f3rico: [{date, event, reaction, morale_change}]"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_name"
+  ]
+}

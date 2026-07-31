@@ -1,0 +1,36 @@
+{
+  "name": "PlayerStaffHire",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador"
+    },
+    "staff_type": {
+      "type": "string",
+      "description": "Tipo de funcion\u00e1rio (accountant, manager, physio, nutritionist, mental_coach)"
+    },
+    "staff_name": {
+      "type": "string",
+      "description": "Nome do funcion\u00e1rio"
+    },
+    "monthly_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Custo mensal em moedas"
+    },
+    "bonus_type": {
+      "type": "string",
+      "description": "Tipo de b\u00f4nus oferecido"
+    },
+    "bonus_value": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor do b\u00f4nus"
+    }
+  },
+  "required": [
+    "profile_id",
+    "staff_type"
+  ]
+}

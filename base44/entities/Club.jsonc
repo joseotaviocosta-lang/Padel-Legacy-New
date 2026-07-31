@@ -1,0 +1,88 @@
+{
+  "name": "Club",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do clube"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Logo do clube"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do clube"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 0
+    },
+    "trophies": {
+      "type": "number",
+      "default": 0
+    },
+    "club_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Pontos para ranking de clubes"
+    },
+    "founded_year": {
+      "type": "number"
+    },
+    "reputation": {
+      "type": "number",
+      "default": 50,
+      "description": "Reputa\u00e7\u00e3o do clube (0-100)"
+    },
+    "monthly_fee": {
+      "type": "number",
+      "default": 100,
+      "description": "Mensalidade em moedas"
+    },
+    "court_count": {
+      "type": "number",
+      "default": 2,
+      "description": "N\u00famero de quadras"
+    },
+    "facilities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Facilidades do clube"
+    },
+    "owner_profile_id": {
+      "type": "string",
+      "description": "ID do profile do presidente"
+    },
+    "owner_name": {
+      "type": "string",
+      "description": "Nome do presidente"
+    },
+    "founded_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de funda\u00e7\u00e3o no jogo"
+    },
+    "level": {
+      "type": "number",
+      "default": 1,
+      "description": "N\u00edvel do clube (1-5)"
+    },
+    "staff_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "FinancialTransaction",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador"
+    },
+    "month": {
+      "type": "string",
+      "description": "M\u00eas de refer\u00eancia (YYYY-MM)"
+    },
+    "income": {
+      "type": "number",
+      "default": 0,
+      "description": "Receita total do m\u00eas"
+    },
+    "expenses": {
+      "type": "number",
+      "default": 0,
+      "description": "Despesas totais do m\u00eas"
+    },
+    "net": {
+      "type": "number",
+      "default": 0,
+      "description": "Saldo l\u00edquido do m\u00eas"
+    },
+    "breakdown": {
+      "type": "object",
+      "description": "Detalhamento: sponsor_income, investment_income, passive_income, staff_cost, maintenance_cost"
+    }
+  },
+  "required": [
+    "profile_id",
+    "month"
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "ClubMember",
+  "type": "object",
+  "properties": {
+    "club_id": {
+      "type": "string",
+      "description": "ID do clube"
+    },
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile (vazio se bot)"
+    },
+    "member_name": {
+      "type": "string",
+      "description": "Nome do membro"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "presidente",
+        "diretor",
+        "treinador",
+        "membro"
+      ],
+      "default": "membro"
+    },
+    "ranking_points": {
+      "type": "number",
+      "default": 0,
+      "description": "Pontos no ranking interno do clube"
+    },
+    "is_bot": {
+      "type": "boolean",
+      "default": false
+    },
+    "joined_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "club_id",
+    "member_name"
+  ]
+}

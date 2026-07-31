@@ -1,0 +1,33 @@
+{
+  "name": "MissionProgress",
+  "type": "object",
+  "properties": {
+    "mission_id": {
+      "type": "string",
+      "description": "ID da miss\u00e3o"
+    },
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Progresso atual"
+    },
+    "completed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o objetivo foi atingido"
+    },
+    "claimed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se as recompensas j\u00e1 foram resgatadas"
+    }
+  },
+  "required": [
+    "mission_id",
+    "profile_id"
+  ]
+}

@@ -1,0 +1,105 @@
+{
+  "name": "HallOfFameEntry",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do homenageado"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "atleta",
+        "treinador",
+        "dupla",
+        "clube"
+      ],
+      "description": "Tipo de homenageado"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "lendario",
+        "epico",
+        "destaque"
+      ],
+      "default": "lendario",
+      "description": "N\u00edvel do Hall"
+    },
+    "induction_year": {
+      "type": "number",
+      "description": "Ano de indu\u00e7\u00e3o"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string",
+      "description": "Biografia completa"
+    },
+    "career_stats": {
+      "type": "object",
+      "description": "Estat\u00edsticas da carreira"
+    },
+    "trophies": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Trof\u00e9us: [{name, year, type, description}]"
+    },
+    "career_timeline": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Linha do tempo: [{year, event, description}]"
+    },
+    "career_records": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Recordes: [{record, value, year}]"
+    },
+    "videos": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "V\u00eddeos fict\u00edcios: [{title, description, duration, views, thumbnail_url}]"
+    },
+    "highlights": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Destaques da carreira"
+    },
+    "comparison_stats": {
+      "type": "object",
+      "description": "Stats para compara\u00e7\u00e3o: {titles, winRate, yearsPro, rankingPeak}"
+    },
+    "partner_name": {
+      "type": "string",
+      "description": "Nome do parceiro (para duplas)"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number",
+      "default": 90,
+      "description": "Rating hist\u00f3rico (0-100)"
+    }
+  },
+  "required": [
+    "name",
+    "entity_type"
+  ]
+}

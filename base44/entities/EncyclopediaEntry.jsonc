@@ -1,0 +1,109 @@
+{
+  "name": "EncyclopediaEntry",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "T\u00edtulo da entrada"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "atleta",
+        "clube",
+        "treinador",
+        "patrocinador",
+        "equipamento",
+        "regra",
+        "torneio",
+        "pais",
+        "cidade",
+        "estatistica",
+        "recorde",
+        "termo_tecnico",
+        "historia",
+        "tecnica",
+        "quadra"
+      ],
+      "default": "historia",
+      "description": "Categoria da enciclop\u00e9dia"
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Subcategoria (ex: masculino, feminino, marca, etc.)"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Resumo curto exibido no card"
+    },
+    "content": {
+      "type": "string",
+      "description": "Conte\u00fado completo (texto longo)"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Tags para busca"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Nome do \u00edcone lucide",
+      "default": "BookOpen"
+    },
+    "country": {
+      "type": "string",
+      "description": "Pa\u00eds relacionado (para atletas, clubes, cidades)"
+    },
+    "year": {
+      "type": "number",
+      "description": "Ano relevante (para recordes, hist\u00f3ria)"
+    },
+    "related_entries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Nomes de entradas relacionadas"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Dados extras estruturados (stats, conquistas, dimens\u00f5es, etc.)"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "mundo_real",
+        "universo_legacy"
+      ],
+      "default": "mundo_real",
+      "description": "Origem: mundo real ou universo do jogo"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Destaque na p\u00e1gina inicial"
+    },
+    "reading_time_min": {
+      "type": "number",
+      "default": 2,
+      "description": "Tempo estimado de leitura"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Visualiza\u00e7\u00f5es"
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "content"
+  ]
+}

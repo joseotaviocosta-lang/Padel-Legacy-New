@@ -1,0 +1,368 @@
+import React, { useEffect, useState } from 'react';
+import { Newspaper, Mic, Users, Star, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
+import { ensureMyProfile } from '@/lib/padel';
+import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import ArticleCard from '@/components/press/ArticleCard';
+import JournalistCard from '@/components/press/JournalistCard';
+import InterviewModal from '@/components/press/InterviewModal';
+import { JOURNALISTS, getPendingInterviews, pickJournalist, applyReputationEffects } from '@/lib/pressData';
+import { useToast } from '@/components/ui/use-toast';
+
+export default function Press() {
+  const [profile, setProfile] = useState(null);
+  const [articles, setArticles] = useState([]);
+  const [journalists, setJournalists] = useState([]);
+  const [recentMatches, setRecentMatches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState('feed');
+  const [activeInterview, setActiveInterview] = useState(null);
+  const [activeJournalist, setActiveJournalist] = useState(null);
+  const [selectedArticle, setSelectedArticle] = useState(null);
+  const { toast } = useToast();
+
+  useEffect(() => { load(); }, []);
+
+  async function load() {
+    setLoading(true);
+    try {
+      const user = await base44.auth.me();
+      const p = await ensureMyProfile(user);
+      setProfile(p);
+
+      if (p) {
+        const [arts, mats] = await Promise.all([
+          base44.entities.PressArticle.filter({ profile_id: p.id }, '-created_date', 50),
+          base44.entities.Match.list('-created_date', 5),
+        ]);
+        setArticles(arts || []);
+        setRecentMatches(mats || []);
+
+        // Load or seed journalists for this profile
+        const existing = await base44.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
+        if (existing && existing.length > 0) {
+          setJournalists(existing);
+        } else {
+          const seeded = await base44.entities.PressJournalist.bulkCreate(
+            JOURNALISTS.map(j => ({ ...j, profile_id: p.id, bias_toward_player: 0, interviews_done: 0 }))
+          );
+          setJournalists(seeded || []);
+        }
+      }
+    } catch (e) { console.error(e); }
+    setLoading(false);
+  }
+
+  const pendingInterviews = profile
+    ? getPendingInterviews(profile, recentMatches).filter(interview => {
+        return !articles.some(article =>
+          article.career_date === profile.career_date &&
+          article.related_event === interview.relatedEvent &&
+          (
+            article.article_type === 'entrevista' ||
+            article.article_type === 'repercussao' ||
+            article.article_type === 'rumor' ||
+            article.article_type === 'especulacao' ||
+            article.article_type === 'previsao'
+          )
+        );
+      })
+    : [];
+
+  async function handleStartInterview(interview) {
+    // Pick journalist based on interview type
+    const bias = interview.questionCategory === 'post_loss' || interview.questionCategory === 'rumor' ? 'critical' : 'any';
+    const journalist = pickJournalist(bias);
+    // Find in saved journalists or use template
+    const saved = journalists.find(j => j.name === journalist.name) || journalist;
+    setActiveInterview(interview);
+    setActiveJournalist(saved);
+  }
+
+  async function handleCompleteInterview(result) {
+    const { headline, content, tone, effects, journalist, interview } = result;
+
+    try {
+      // Create article
+      const article = await base44.entities.PressArticle.create({
+        profile_id: profile.id,
+        journalist_id: journalist.id,
+        journalist_name: journalist.name,
+        outlet: journalist.outlet,
+        article_type: interview.questionCategory === 'post_win' ? 'repercussao'
+          : interview.questionCategory === 'post_loss' ? 'repercussao'
+          : interview.questionCategory === 'rumor' ? 'rumor'
+          : interview.questionCategory === 'speculation' ? 'especulacao'
+          : interview.questionCategory === 'prediction' ? 'previsao'
+          : 'entrevista',
+        title: headline,
+        content,
+        tone,
+        reputation_change: effects.reputation || 0,
+        fan_appeal_change: effects.fan_appeal || 0,
+        sponsor_appeal_change: effects.sponsor_appeal || 0,
+        morale_change: effects.morale || 0,
+        related_event: interview.relatedEvent,
+        career_date: profile.career_date,
+        is_read: false,
+      });
+
+      // Apply reputation effects to profile
+      const profileUpdates = applyReputationEffects(profile, effects);
+      if (Object.keys(profileUpdates).length > 0) {
+        const updated = await base44.entities.PlayerProfile.update(profile.id, profileUpdates);
+        setProfile(updated);
+      }
+
+      // Update journalist bias
+      if (journalist.id) {
+        try {
+          const newBias = Math.max(-100, Math.min(100, (journalist.bias_toward_player || 0) + (effects.journalist_bias || 0)));
+          await base44.entities.PressJournalist.update(journalist.id, {
+            bias_toward_player: newBias,
+            interviews_done: (journalist.interviews_done || 0) + 1,
+          });
+        } catch (e) { console.error(e); }
+      }
+
+      // Atualiza a interface localmente sem desmontar e remontar o modal.
+      setArticles(prev => [article, ...prev].slice(0, 50));
+      setJournalists(prev => prev.map(item =>
+        item.id === journalist.id
+          ? {
+              ...item,
+              bias_toward_player: Math.max(-100, Math.min(100, (item.bias_toward_player || 0) + (effects.journalist_bias || 0))),
+              interviews_done: (item.interviews_done || 0) + 1,
+            }
+          : item
+      ));
+
+      toast({
+        title: 'Entrevista Publicada!',
+        description: `${journalist.name} publicou: "${headline.substring(0, 50)}..."`,
+      });
+
+      return true;
+    } catch (e) {
+      console.error(e);
+      toast({ title: 'Erro', description: 'Falha ao publicar entrevista.', variant: 'destructive' });
+      return false;
+    }
+  }
+
+  async function handleReadArticle(article) {
+    if (!article.is_read) {
+      try {
+        await base44.entities.PressArticle.update(article.id, { is_read: true });
+        await load();
+      } catch (e) { console.error(e); }
+    }
+    setSelectedArticle(article);
+  }
+
+  if (loading) return <LoadingScreen />;
+
+  const fanAppeal = profile?.fan_appeal || 50;
+  const sponsorAppeal = profile?.sponsor_appeal || 50;
+  const morale = profile?.morale || 70;
+  const unreadCount = articles.filter(a => !a.is_read).length;
+
+  return (
+    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
+      <PageHeader icon={Newspaper} title="Imprensa Esportiva" subtitle="Entrevistas, coletivas, rumores e repercussões — suas respostas moldam sua reputação" accent="primary" />
+
+      {/* Reputation Summary */}
+      <div className="grid grid-cols-3 gap-3">
+        <RepCard icon={Star} label="Apego dos Fãs" value={fanAppeal} color="text-primary" />
+        <RepCard icon={TrendingUp} label="Apego Patrocinadores" value={sponsorAppeal} color="text-yellow-400" />
+        <RepCard icon={Sparkles} label="Moral" value={morale} color="text-purple-400" />
+      </div>
+
+      {/* Tabs */}
+      <div className="flex gap-2">
+        {[
+          { id: 'feed', label: 'Feed', icon: Newspaper, badge: unreadCount },
+          { id: 'interviews', label: 'Entrevistas', icon: Mic, badge: pendingInterviews.length },
+          { id: 'journalists', label: 'Jornalistas', icon: Users },
+        ].map(t => {
+          const Icon = t.icon;
+          const isActive = activeTab === t.id;
+          return (
+            <button
+              key={t.id}
+              onClick={() => setActiveTab(t.id)}
+              className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all ${
+                isActive ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {t.label}
+              {t.badge > 0 && <span className="text-[10px] bg-background/30 px-1.5 py-0.5 rounded-full">{t.badge}</span>}
+            </button>
+          );
+        })}
+      </div>
+
+      {/* Feed Tab */}
+      {activeTab === 'feed' && (
+        articles.length === 0 ? (
+          <EmptyStateCard icon={Newspaper} title="Nenhuma notícia ainda" message="Complete entrevistas e jogue partidas para gerar manchetes." />
+        ) : (
+          <div className="space-y-3 animate-stagger">
+            {articles.map(a => (
+              <ArticleCard key={a.id} article={a} onClick={() => handleReadArticle(a)} />
+            ))}
+          </div>
+        )
+      )}
+
+      {/* Interviews Tab */}
+      {activeTab === 'interviews' && (
+        pendingInterviews.length === 0 ? (
+          <EmptyStateCard icon={Mic} title="Sem entrevistas agendadas" message="Jogue partidas para desbloquear entrevistas." />
+        ) : (
+          <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
+            {pendingInterviews.map(interview => (
+              <div key={interview.id} className="glass rounded-2xl p-4 hover-lift">
+                <div className="flex items-start gap-3 mb-3">
+                  <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
+                    <Mic className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="font-bold text-sm">{interview.title}</p>
+                    <p className="text-[11px] text-muted-foreground leading-tight">{interview.description}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => handleStartInterview(interview)}
+                  className="w-full py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors flex items-center justify-center gap-2"
+                >
+                  <Mic className="h-4 w-4" /> Iniciar
+                </button>
+              </div>
+            ))}
+          </div>
+        )
+      )}
+
+      {/* Journalists Tab */}
+      {activeTab === 'journalists' && (
+        journalists.length === 0 ? (
+          <EmptyStateCard icon={Users} title="Nenhum jornalista" message="Os jornalistas aparecerão aqui." />
+        ) : (
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+            {journalists.map(j => (
+              <JournalistCard key={j.id} journalist={j} onClick={() => setActiveJournalist(j)} />
+            ))}
+          </div>
+        )
+      )}
+
+      {/* Interview Modal */}
+      {activeInterview && activeJournalist && (
+        <InterviewModal
+          interview={activeInterview}
+          journalist={activeJournalist}
+          profile={profile}
+          onClose={() => { setActiveInterview(null); setActiveJournalist(null); }}
+          onComplete={handleCompleteInterview}
+        />
+      )}
+
+      {/* Article Detail Modal */}
+      {selectedArticle && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedArticle(null)}>
+          <div className="glass rounded-2xl p-5 max-w-md w-full max-h-[80vh] overflow-y-auto scrollbar-premium animate-scale-in" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start justify-between gap-2 mb-3">
+              <div className="flex-1">
+                <p className="text-[9px] font-bold uppercase tracking-wide text-primary mb-1">{selectedArticle.outlet}</p>
+                <p className="font-bold text-base leading-tight">{selectedArticle.title}</p>
+              </div>
+              <button onClick={() => setSelectedArticle(null)} className="text-xs text-muted-foreground hover:text-foreground shrink-0">Fechar</button>
+            </div>
+            <div className="flex items-center gap-2 mb-3 text-[10px] text-muted-foreground">
+              <span>Por {selectedArticle.journalist_name}</span>
+              <span>·</span>
+              <span>{selectedArticle.career_date}</span>
+            </div>
+            <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap">{selectedArticle.content}</p>
+            {(selectedArticle.reputation_change !== 0 || selectedArticle.fan_appeal_change !== 0) && (
+              <div className="mt-4 pt-3 border-t border-border/40">
+                <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Impacto na Reputação</p>
+                <div className="flex flex-wrap gap-2">
+                  {selectedArticle.reputation_change !== 0 && (
+                    <span className={`text-xs font-bold px-2 py-1 rounded-lg ${selectedArticle.reputation_change > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {selectedArticle.reputation_change > 0 ? '+' : ''}{selectedArticle.reputation_change} Reputação
+                    </span>
+                  )}
+                  {selectedArticle.fan_appeal_change !== 0 && (
+                    <span className={`text-xs font-bold px-2 py-1 rounded-lg ${selectedArticle.fan_appeal_change > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {selectedArticle.fan_appeal_change > 0 ? '+' : ''}{selectedArticle.fan_appeal_change} Fãs
+                    </span>
+                  )}
+                  {selectedArticle.sponsor_appeal_change !== 0 && (
+                    <span className={`text-xs font-bold px-2 py-1 rounded-lg ${selectedArticle.sponsor_appeal_change > 0 ? 'bg-green-500/10 text-green-400' : 'bg-red-500/10 text-red-400'}`}>
+                      {selectedArticle.sponsor_appeal_change > 0 ? '+' : ''}{selectedArticle.sponsor_appeal_change} Patrocinadores
+                    </span>
+                  )}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Journalist Detail Modal */}
+      {activeJournalist && !activeInterview && (
+        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setActiveJournalist(null)}>
+          <div className="glass rounded-2xl p-5 max-w-md w-full animate-scale-in" onClick={e => e.stopPropagation()}>
+            <div className="flex items-start gap-3 mb-4">
+              <span className="text-4xl">{activeJournalist.avatar_emoji}</span>
+              <div className="flex-1">
+                <p className="font-bold text-base">{activeJournalist.name}</p>
+                <p className="text-xs text-muted-foreground">{activeJournalist.outlet} · {activeJournalist.nationality}</p>
+              </div>
+              <button onClick={() => setActiveJournalist(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
+            </div>
+            <div className="glass rounded-xl p-3 bg-secondary/30 mb-3">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Estilo</p>
+              <p className="text-sm italic">"{activeJournalist.signature_style}"</p>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div className="glass rounded-xl p-2.5 bg-secondary/30">
+                <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold">Personalidade</p>
+                <p className="text-xs font-bold text-primary">{activeJournalist.personality}</p>
+              </div>
+              <div className="glass rounded-xl p-2.5 bg-secondary/30">
+                <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold">Especialidade</p>
+                <p className="text-xs font-bold text-cyan-400">{activeJournalist.specialty}</p>
+              </div>
+            </div>
+            <div className="glass rounded-xl p-2.5 bg-secondary/30 mt-2">
+              <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Relação com você</p>
+              <div className="flex items-center gap-2">
+                <div className="flex-1 h-2 rounded-full bg-secondary/60 overflow-hidden">
+                  <div
+                    className={`h-full rounded-full ${(activeJournalist.bias_toward_player || 0) >= 0 ? 'bg-green-500' : 'bg-red-500'}`}
+                    style={{ width: `${Math.abs(activeJournalist.bias_toward_player || 0)}%` }}
+                  />
+                </div>
+                <span className="text-xs font-bold">{activeJournalist.bias_toward_player || 0}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function RepCard({ icon: Icon, label, value, color }) {
+  return (
+    <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1">
+      <Icon className={`h-4 w-4 ${color}`} />
+      <span className="text-xl font-black tabular-nums">{value}</span>
+      <span className="text-[9px] text-muted-foreground uppercase tracking-wide text-center leading-tight">{label}</span>
+    </div>
+  );
+}

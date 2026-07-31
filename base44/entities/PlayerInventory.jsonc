@@ -1,0 +1,50 @@
+{
+  "name": "PlayerInventory",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador dono do item"
+    },
+    "item_id": {
+      "type": "string",
+      "description": "ID do ShopItem"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "Nome do item (denormalizado)"
+    },
+    "category": {
+      "type": "string",
+      "description": "Categoria (denormalizada)"
+    },
+    "rarity": {
+      "type": "string",
+      "description": "Raridade (denormalizada)"
+    },
+    "equipped": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o item est\u00e1 equipado"
+    },
+    "acquired_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de aquisi\u00e7\u00e3o"
+    },
+    "current_durability": {
+      "type": "number",
+      "default": 100,
+      "description": "Durabilidade atual"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Vezes usado"
+    }
+  },
+  "required": [
+    "profile_id",
+    "item_id"
+  ]
+}

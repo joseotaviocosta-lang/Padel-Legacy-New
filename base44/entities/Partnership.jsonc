@@ -1,0 +1,150 @@
+{
+  "name": "Partnership",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "partner_bot_id": {
+      "type": "string",
+      "description": "ID do bot/athlete parceiro"
+    },
+    "partner_name": {
+      "type": "string",
+      "description": "Nome do parceiro (denormalizado)"
+    },
+    "partner_country": {
+      "type": "string"
+    },
+    "partner_level": {
+      "type": "string",
+      "description": "N\u00edvel do parceiro quando a parceria iniciou"
+    },
+    "partner_position": {
+      "type": "string",
+      "enum": [
+        "direita",
+        "esquerda"
+      ]
+    },
+    "partner_play_style": {
+      "type": "string"
+    },
+    "partner_overall": {
+      "type": "number",
+      "description": "Overall do parceiro na \u00e9poca"
+    },
+    "started_career_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data no jogo quando a parceria come\u00e7ou"
+    },
+    "negotiated_duration_days": {
+      "type": "number",
+      "default": 60,
+      "description": "Dura\u00e7\u00e3o negociada em dias"
+    },
+    "scheduled_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de fim contratual"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ativa",
+        "encerrada_amigavel",
+        "encerrada_jogador",
+        "encerrada_parceiro",
+        "expirada",
+        "recusada"
+      ],
+      "default": "ativa",
+      "description": "Estado da parceria"
+    },
+    "prize_split_pct": {
+      "type": "number",
+      "default": 50,
+      "description": "Percentual da premia\u00e7\u00e3o que fica com o jogador (0-100)"
+    },
+    "chemistry": {
+      "type": "number",
+      "default": 50,
+      "description": "Entrosamento atual (0-100)"
+    },
+    "shared_matches": {
+      "type": "number",
+      "default": 0
+    },
+    "shared_wins": {
+      "type": "number",
+      "default": 0
+    },
+    "shared_losses": {
+      "type": "number",
+      "default": 0
+    },
+    "shared_tournaments": {
+      "type": "number",
+      "default": 0
+    },
+    "shared_titles": {
+      "type": "number",
+      "default": 0
+    },
+    "shared_goals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Objetivos compartilhados: [{id, title, target, progress, completed}]"
+    },
+    "conflicts": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Conflitos registrados: [{date, title, description, severity, resolved}]"
+    },
+    "conversations": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Conversas: [{date, speaker, text, tone}]"
+    },
+    "chemistry_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Hist\u00f3rico de entrosamento: [{date, chemistry, event}]"
+    },
+    "end_reason": {
+      "type": "string",
+      "description": "Motivo do encerramento"
+    },
+    "ended_career_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "compatibility_score": {
+      "type": "number",
+      "default": 50,
+      "description": "Compatibilidade inicial calculada (0-100)"
+    },
+    "compatibility_breakdown": {
+      "type": "object",
+      "description": "Detalhamento: {position, style, personality, level, schedule}"
+    }
+  },
+  "required": [
+    "profile_id",
+    "partner_name"
+  ]
+}

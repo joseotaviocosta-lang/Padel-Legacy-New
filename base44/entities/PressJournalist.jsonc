@@ -1,0 +1,64 @@
+{
+  "name": "PressJournalist",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do jornalista"
+    },
+    "outlet": {
+      "type": "string",
+      "description": "Ve\u00edculo de comunica\u00e7\u00e3o"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "personality": {
+      "type": "string",
+      "enum": [
+        "critico",
+        "sensacionalista",
+        "tecnico",
+        "passional",
+        "neutro",
+        "provocador"
+      ],
+      "description": "Personalidade do jornalista"
+    },
+    "specialty": {
+      "type": "string",
+      "enum": [
+        "tatico",
+        "social",
+        "estatistico",
+        "polemico",
+        "investigativo"
+      ],
+      "description": "Especialidade"
+    },
+    "avatar_emoji": {
+      "type": "string"
+    },
+    "signature_style": {
+      "type": "string",
+      "description": "Estilo marcante"
+    },
+    "bias_toward_player": {
+      "type": "number",
+      "default": 0,
+      "description": "Vi\u00e9s em rela\u00e7\u00e3o ao jogador (-100 a 100)"
+    },
+    "interviews_done": {
+      "type": "number",
+      "default": 0
+    },
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    }
+  },
+  "required": [
+    "name",
+    "personality"
+  ]
+}

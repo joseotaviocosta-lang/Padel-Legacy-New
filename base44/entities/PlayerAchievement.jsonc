@@ -1,0 +1,42 @@
+{
+  "name": "PlayerAchievement",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "achievement_id": {
+      "type": "string",
+      "description": "ID da Achievement"
+    },
+    "achievement_name": {
+      "type": "string",
+      "description": "Nome (denormalizado)"
+    },
+    "unlocked_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de desbloqueio"
+    },
+    "career_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data no jogo quando desbloqueada"
+    },
+    "is_new": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se ainda n\u00e3o foi vista pelo jogador (para notifica\u00e7\u00e3o)"
+    },
+    "progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Progresso atual (para conquistas com threshold)"
+    }
+  },
+  "required": [
+    "profile_id",
+    "achievement_id"
+  ]
+}

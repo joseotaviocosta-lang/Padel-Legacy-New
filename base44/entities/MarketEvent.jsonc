@@ -1,0 +1,114 @@
+{
+  "name": "MarketEvent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do evento de mercado"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do evento"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "lancamento",
+        "promocao",
+        "liquidacao",
+        "escassez",
+        "patrocinio",
+        "sazonal",
+        "flash_sale",
+        "historico",
+        "febre",
+        "exclusivo"
+      ],
+      "description": "Tipo de evento de mercado"
+    },
+    "affected_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Categorias afetadas (vazio = todas)"
+    },
+    "affected_manufacturers": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Fabricantes afetados (vazio = todos)"
+    },
+    "affected_rarities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Raridades afetadas (vazio = todas)"
+    },
+    "affected_item_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs espec\u00edficos afetados (vazio = todos que matcham filtros)"
+    },
+    "price_modifier": {
+      "type": "number",
+      "default": 1,
+      "description": "Multiplicador de pre\u00e7o (0.5 = 50% off, 1.5 = 50% premium)"
+    },
+    "demand_modifier": {
+      "type": "number",
+      "default": 0,
+      "description": "Modificador de demanda (-100 a 100)"
+    },
+    "supply_modifier": {
+      "type": "number",
+      "default": 0,
+      "description": "Modificador de oferta (-100 a 100)"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "badge_label": {
+      "type": "string",
+      "description": "Texto do badge (ex: PROMO, LIQUIDA\u00c7\u00c3O, LAN\u00c7AMENTO)"
+    },
+    "badge_color": {
+      "type": "string",
+      "description": "Cor do badge: green, red, amber, cyan, purple, primary"
+    },
+    "image_emoji": {
+      "type": "string",
+      "description": "Emoji representando o evento"
+    },
+    "priority": {
+      "type": "number",
+      "default": 0,
+      "description": "Prioridade de exibi\u00e7\u00e3o (maior = mais destaque)"
+    },
+    "created_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "title",
+    "event_type"
+  ]
+}

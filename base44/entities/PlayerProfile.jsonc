@@ -1,0 +1,274 @@
+{
+  "name": "PlayerProfile",
+  "type": "object",
+  "properties": {
+    "sport_name": {
+      "type": "string",
+      "description": "Nome esportivo do jogador"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Foto/avatar do jogador"
+    },
+    "country": {
+      "type": "string",
+      "description": "Pa\u00eds"
+    },
+    "city": {
+      "type": "string",
+      "description": "Cidade"
+    },
+    "position": {
+      "type": "string",
+      "enum": [
+        "direita",
+        "esquerda"
+      ],
+      "description": "Posi\u00e7\u00e3o do jogador na quadra"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "Iniciante",
+        "Amador",
+        "Competitivo",
+        "Avan\u00e7ado",
+        "Elite",
+        "Lenda"
+      ],
+      "default": "Iniciante",
+      "description": "N\u00edvel do jogador"
+    },
+    "play_style": {
+      "type": "string",
+      "enum": [
+        "Agressivo",
+        "Defensivo",
+        "Equilibrado",
+        "T\u00e1tico",
+        "Pot\u00eancia"
+      ],
+      "default": "Equilibrado",
+      "description": "Estilo de jogo preferido"
+    },
+    "xp": {
+      "type": "number",
+      "default": 0,
+      "description": "Pontos de experi\u00eancia"
+    },
+    "coins": {
+      "type": "number",
+      "default": 0,
+      "description": "Moeda virtual do jogo"
+    },
+    "unspent_attribute_points": {
+      "type": "number",
+      "default": 10,
+      "description": "Pontos de atributo n\u00e3o distribu\u00eddos"
+    },
+    "matches_played": {
+      "type": "number",
+      "default": 0
+    },
+    "wins": {
+      "type": "number",
+      "default": 0
+    },
+    "losses": {
+      "type": "number",
+      "default": 0
+    },
+    "tournaments_won": {
+      "type": "number",
+      "default": 0
+    },
+    "titles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "T\u00edtulos conquistados na carreira"
+    },
+    "medals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Medalhas conquistadas"
+    },
+    "serve": {
+      "type": "number",
+      "default": 5
+    },
+    "forehand": {
+      "type": "number",
+      "default": 5
+    },
+    "backhand": {
+      "type": "number",
+      "default": 5
+    },
+    "volley": {
+      "type": "number",
+      "default": 5
+    },
+    "bandeja": {
+      "type": "number",
+      "default": 5
+    },
+    "smash": {
+      "type": "number",
+      "default": 5
+    },
+    "defense": {
+      "type": "number",
+      "default": 5
+    },
+    "agility": {
+      "type": "number",
+      "default": 5
+    },
+    "strategy": {
+      "type": "number",
+      "default": 5
+    },
+    "emotional_control": {
+      "type": "number",
+      "default": 5
+    },
+    "racket": {
+      "type": "string"
+    },
+    "bio": {
+      "type": "string"
+    },
+    "club_id": {
+      "type": "string"
+    },
+    "season_id": {
+      "type": "string"
+    },
+    "trainings_today": {
+      "type": "number",
+      "default": 0
+    },
+    "practice_matches_today": {
+      "type": "number",
+      "default": 0
+    },
+    "last_training_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "career_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "retired": {
+      "type": "boolean",
+      "default": false
+    },
+    "partner_id": {
+      "type": "string"
+    },
+    "partner_name": {
+      "type": "string"
+    },
+    "partner_locked_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "partner_chemistry": {
+      "type": "number",
+      "default": 50
+    },
+    "energy": {
+      "type": "number",
+      "default": 100
+    },
+    "fatigue": {
+      "type": "number",
+      "default": 0,
+      "description": "Fadiga acumulada (0-100). Alta fadiga reduz ganhos e aumenta risco de les\u00e3o."
+    },
+    "morale": {
+      "type": "number",
+      "default": 70,
+      "description": "Moral/\u00e2nimo do atleta (0-100)"
+    },
+    "confidence": {
+      "type": "number",
+      "default": 50,
+      "description": "Confian\u00e7a do atleta (0-100)"
+    },
+    "form": {
+      "type": "number",
+      "default": 50,
+      "description": "Forma f\u00edsica condicionada (0-100)"
+    },
+    "weekly_training_plan": {
+      "type": "object",
+      "description": "Planejamento semanal de treinos: {seg: {activity_id, intensity}, ter: {...}, ...}"
+    },
+    "development_goals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Metas de desenvolvimento: [{id, attribute, target, deadline, created_date, completed}]"
+    },
+    "injured_until": {
+      "type": "string",
+      "format": "date"
+    },
+    "did_physio_today": {
+      "type": "boolean",
+      "default": false
+    },
+    "last_physio_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "legacy_generation": {
+      "type": "number",
+      "default": 1,
+      "description": "Gera\u00e7\u00e3o da carreira atual (1 = primeira)"
+    },
+    "coach_legacy_id": {
+      "type": "string",
+      "description": "ID do registro de legado do treinador"
+    },
+    "legacy_bonuses": {
+      "type": "object",
+      "description": "B\u00f4nus de legado herdados do treinador"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "ID do treinador contratado"
+    },
+    "coach_name": {
+      "type": "string",
+      "description": "Nome do treinador contratado"
+    },
+    "coach_hired_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de contrata\u00e7\u00e3o do treinador"
+    },
+    "coach_affinity_score": {
+      "type": "number",
+      "default": 50,
+      "description": "Score de afinidade com o treinador atual"
+    }
+  },
+  "required": [
+    "sport_name"
+  ]
+}

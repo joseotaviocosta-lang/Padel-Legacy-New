@@ -1,0 +1,135 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome da conquista"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o completa (revelada ao desbloquear)"
+    },
+    "mystery_description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o misteriosa exibida antes de desbloquear (para conquistas ocultas)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Nome do \u00edcone lucide",
+      "default": "Lock"
+    },
+    "mystery_icon": {
+      "type": "string",
+      "description": "\u00cdcone exibido antes de desbloquear (para ocultas)",
+      "default": "HelpCircle"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "comum",
+        "incomum",
+        "raro",
+        "\u00e9pico",
+        "lend\u00e1rio",
+        "mitico",
+        "exclusivo"
+      ],
+      "default": "comum",
+      "description": "Raridade da conquista"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "partidas",
+        "torneios",
+        "evolu\u00e7\u00e3o",
+        "social",
+        "economia",
+        "mercado",
+        "cole\u00e7\u00e3o",
+        "hist\u00f3ria",
+        "carreira",
+        "secreto",
+        "lend\u00e1rio"
+      ],
+      "default": "partidas",
+      "description": "Categoria da conquista"
+    },
+    "visibility": {
+      "type": "string",
+      "enum": [
+        "publico",
+        "oculto",
+        "secreto"
+      ],
+      "default": "publico",
+      "description": "Visibilidade: publico=vis\u00edvel, oculto=descri\u00e7\u00e3o misteriosa, secreto=invis\u00edvel at\u00e9 desbloquear"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "facil",
+        "medio",
+        "dificil",
+        "extremo",
+        "lendario"
+      ],
+      "default": "facil",
+      "description": "N\u00edvel de dificuldade"
+    },
+    "trigger_type": {
+      "type": "string",
+      "description": "Tipo de gatilho: win_match, buy_item, reach_rank, max_attribute, etc."
+    },
+    "trigger_condition": {
+      "type": "object",
+      "description": "Condi\u00e7\u00e3o espec\u00edfica do gatilho"
+    },
+    "threshold": {
+      "type": "number",
+      "description": "Valor necess\u00e1rio para desbloquear"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Recompensa de XP"
+    },
+    "coins_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Recompensa em moedas"
+    },
+    "medal_reward": {
+      "type": "string",
+      "description": "Medalha concedida"
+    },
+    "title_reward": {
+      "type": "string",
+      "description": "T\u00edtulo desbloqueado"
+    },
+    "exclusive_item": {
+      "type": "string",
+      "description": "Nome do item exclusivo concedido"
+    },
+    "hint": {
+      "type": "string",
+      "description": "Dica sutil para descobrir conquistas secretas"
+    },
+    "is_revealed_hint": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se a dica \u00e9 vis\u00edvel para o jogador"
+    },
+    "points": {
+      "type": "number",
+      "default": 10,
+      "description": "Pontos de conquista (para score total)"
+    }
+  },
+  "required": [
+    "name",
+    "description",
+    "category"
+  ]
+}

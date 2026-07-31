@@ -1,0 +1,5 @@
+@layer components {
+  .padel-input {
+    @apply w-full rounded-xl bg-secondary/50 border border-border px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40 focus:border-primary/40 transition-all;
+  }
+}

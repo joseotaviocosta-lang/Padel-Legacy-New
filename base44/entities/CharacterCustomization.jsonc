@@ -1,0 +1,145 @@
+{
+  "name": "CharacterCustomization",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "skin_tone": {
+      "type": "string",
+      "default": "media"
+    },
+    "hair_style": {
+      "type": "string",
+      "default": "curto"
+    },
+    "hair_color": {
+      "type": "string",
+      "default": "preto"
+    },
+    "eye_color": {
+      "type": "string",
+      "default": "castanho"
+    },
+    "face_type": {
+      "type": "string",
+      "default": "oval"
+    },
+    "height_cm": {
+      "type": "number",
+      "default": 178
+    },
+    "build": {
+      "type": "string",
+      "default": "atletico"
+    },
+    "shirt_color": {
+      "type": "string",
+      "default": "#a3e635"
+    },
+    "shorts_color": {
+      "type": "string",
+      "default": "#1e293b"
+    },
+    "shoes_color": {
+      "type": "string",
+      "default": "#f8fafc"
+    },
+    "headband": {
+      "type": "boolean",
+      "default": false
+    },
+    "headband_color": {
+      "type": "string",
+      "default": "#a3e635"
+    },
+    "wristband": {
+      "type": "boolean",
+      "default": false
+    },
+    "wristband_color": {
+      "type": "string",
+      "default": "#a3e635"
+    },
+    "racket_model": {
+      "type": "string",
+      "default": "classic"
+    },
+    "racket_color": {
+      "type": "string",
+      "default": "#a3e635"
+    },
+    "grip_color": {
+      "type": "string",
+      "default": "#1e293b"
+    },
+    "idle_animation": {
+      "type": "string",
+      "default": "repouso"
+    },
+    "celebration": {
+      "type": "string",
+      "default": "soco_ar"
+    },
+    "victory_pose": {
+      "type": "string",
+      "default": "bracos_cruzados"
+    },
+    "accessories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "title": {
+      "type": "string",
+      "default": "O Novato"
+    },
+    "nationality": {
+      "type": "string",
+      "default": "Brasil"
+    },
+    "languages": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [
+        "Portugu\u00eas"
+      ]
+    },
+    "voice_type": {
+      "type": "string",
+      "default": "medio"
+    },
+    "voice_pitch": {
+      "type": "number",
+      "default": 50
+    },
+    "voice_speed": {
+      "type": "number",
+      "default": 50
+    },
+    "primary_color": {
+      "type": "string",
+      "default": "#a3e635"
+    },
+    "secondary_color": {
+      "type": "string",
+      "default": "#0ea5e9"
+    },
+    "signature_emoji": {
+      "type": "string",
+      "default": "\ud83c\udfbe"
+    },
+    "backstory": {
+      "type": "string",
+      "default": ""
+    }
+  },
+  "required": [
+    "profile_id"
+  ]
+}

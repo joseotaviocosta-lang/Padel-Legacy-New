@@ -1,0 +1,145 @@
+{
+  "name": "AthleteProfile",
+  "type": "object",
+  "properties": {
+    "bot_id": {
+      "type": "string",
+      "description": "ID do bot correspondente"
+    },
+    "name": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "age": {
+      "type": "number",
+      "default": 20
+    },
+    "personality": {
+      "type": "string",
+      "description": "ID da personalidade principal"
+    },
+    "personality_label": {
+      "type": "string"
+    },
+    "personality_traits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs dos tra\u00e7os de personalidade (3-4 por atleta)"
+    },
+    "play_style": {
+      "type": "string",
+      "enum": [
+        "Agressivo",
+        "Defensivo",
+        "Equilibrado",
+        "T\u00e1tico",
+        "Pot\u00eancia"
+      ],
+      "default": "Equilibrado"
+    },
+    "ambition": {
+      "type": "number",
+      "default": 50,
+      "description": "N\u00edvel de ambi\u00e7\u00e3o (0-100)"
+    },
+    "discipline": {
+      "type": "number",
+      "default": 50,
+      "description": "N\u00edvel de disciplina (0-100)"
+    },
+    "coach_preference": {
+      "type": "string",
+      "description": "Tipo de treinador preferido"
+    },
+    "morale": {
+      "type": "number",
+      "default": 70,
+      "description": "Moral atual (0-100)"
+    },
+    "fatigue": {
+      "type": "number",
+      "default": 0,
+      "description": "Fadiga atual (0-100)"
+    },
+    "injury_prone": {
+      "type": "number",
+      "default": 30,
+      "description": "Propens\u00e3o a les\u00f5es (0-100)"
+    },
+    "current_injury": {
+      "type": "string",
+      "description": "Les\u00e3o atual (null se saud\u00e1vel)"
+    },
+    "injury_recovery_days": {
+      "type": "number",
+      "default": 0
+    },
+    "peak_age": {
+      "type": "number",
+      "default": 28,
+      "description": "Idade de pico"
+    },
+    "career_phase": {
+      "type": "string",
+      "enum": [
+        "Ascens\u00e3o",
+        "Auge",
+        "Decl\u00ednio",
+        "Veterano"
+      ],
+      "default": "Ascens\u00e3o"
+    },
+    "growth_rate": {
+      "type": "number",
+      "default": 1
+    },
+    "decline_rate": {
+      "type": "number",
+      "default": 1
+    },
+    "relationships": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Relacionamentos: [{target_name, type, score}]"
+    },
+    "attributes": {
+      "type": "object",
+      "description": "Atributos evolutivos do atleta"
+    },
+    "overall_rating": {
+      "type": "number",
+      "default": 50
+    },
+    "fan_appeal": {
+      "type": "number",
+      "default": 50,
+      "description": "Apego da torcida (0-100)"
+    },
+    "sponsor_appeal": {
+      "type": "number",
+      "default": 50,
+      "description": "Apego de patrocinadores (0-100)"
+    },
+    "coach_relationship": {
+      "type": "number",
+      "default": 50,
+      "description": "Qualidade da rela\u00e7\u00e3o com treinador (0-100)"
+    },
+    "last_updated_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "bot_id",
+    "name"
+  ]
+}

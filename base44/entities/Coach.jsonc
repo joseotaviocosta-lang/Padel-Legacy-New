@@ -1,0 +1,170 @@
+{
+  "name": "Coach",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do treinador"
+    },
+    "nationality": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "age": {
+      "type": "number",
+      "default": 45,
+      "description": "Idade do treinador"
+    },
+    "avatar_url": {
+      "type": "string"
+    },
+    "specialty": {
+      "type": "string",
+      "enum": [
+        "tecnico",
+        "motivacional",
+        "estratega",
+        "fisico",
+        "mental"
+      ],
+      "description": "Especialidade principal"
+    },
+    "coaching_style": {
+      "type": "string",
+      "enum": [
+        "autocratico",
+        "colaborativo",
+        "analitico",
+        "inspirador",
+        "tradicional",
+        "inovador"
+      ],
+      "default": "colaborativo",
+      "description": "Estilo de comando"
+    },
+    "philosophy": {
+      "type": "string",
+      "description": "Filosofia de treinamento"
+    },
+    "personality": {
+      "type": "string",
+      "description": "Personalidade resumida"
+    },
+    "personality_traits": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "IDs dos tra\u00e7os de personalidade"
+    },
+    "training_methods": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "M\u00e9todos: [repeticao_tecnica, video_analise, simulacao_partida, condicionamento_fisico, visualizacao, jogos_mentais, etc]"
+    },
+    "specializations": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Atributos especializados: [serve, volley, smash, ...]"
+    },
+    "preferred_styles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Estilos de jogo preferidos: [Agressivo, Defensivo, ...]"
+    },
+    "preferred_personalities": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Personalidades de atleta que melhor trabalha"
+    },
+    "experience_years": {
+      "type": "number",
+      "default": 0
+    },
+    "reputation": {
+      "type": "number",
+      "default": 50,
+      "description": "Reputa\u00e7\u00e3o (0-100)"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "iniciante",
+        "regional",
+        "profissional",
+        "elite",
+        "lendario"
+      ],
+      "default": "regional",
+      "description": "N\u00edvel do treinador"
+    },
+    "monthly_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Custo mensal em moedas"
+    },
+    "sign_on_bonus": {
+      "type": "number",
+      "default": 0,
+      "description": "B\u00f4nus de assinatura"
+    },
+    "performance_bonus_pct": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentual de b\u00f4nus por vit\u00f3ria"
+    },
+    "demands": {
+      "type": "object",
+      "description": "Exig\u00eancias: {min_level, min_reputation, min_club_level, exclusivity}"
+    },
+    "achievements": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Conquistas: [{title, year, description}]"
+    },
+    "career_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Hist\u00f3rico: [{role, entity, start_year, end_year, description}]"
+    },
+    "track_record": {
+      "type": "object",
+      "description": "Estat\u00edsticas: {athletes_coached, titles_won, top_ranking_achieved, grand_slams}"
+    },
+    "training_bonus": {
+      "type": "object",
+      "description": "B\u00f4nus de treino por atributo: {serve: 2, volley: 1, ...}"
+    },
+    "signature_quote": {
+      "type": "string",
+      "description": "Frase de efeito do treinador"
+    },
+    "bio": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "name"
+  ]
+}

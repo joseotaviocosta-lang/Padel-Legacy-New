@@ -1,0 +1,10 @@
+export const CAREER_SAVE_SCHEMA_VERSION = 2;
+export const CAREER_INDEX_SCHEMA_VERSION = 1;
+export const ALLOWED_COURT_SIDES = ['direita', 'esquerda'];
+export const ALLOWED_PLAY_STYLES = ['controle', 'equilibrado', 'agressivo', 'defensivo'];
+export const ALLOWED_CAREER_TYPES = ['normal', 'experiment'];
+export const CAREER_INDEX_FILE_NAME = 'careers-index.json';
+export const CAREERS_DIRECTORY = 'careers';
+export const CAREER_BACKUPS_DIRECTORY = 'backups';
+export const EXPORTS_DIRECTORY = 'exports';
+export const TEST_ORIGIN_TAG = 'padel-career-test';

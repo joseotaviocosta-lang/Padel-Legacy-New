@@ -1,0 +1,28 @@
+{
+  "name": "ClubStaff",
+  "type": "object",
+  "properties": {
+    "club_id": {
+      "type": "string"
+    },
+    "staff_type": {
+      "type": "string",
+      "description": "Tipo: manager, coach, physio, receptionist, groundskeeper"
+    },
+    "staff_name": {
+      "type": "string"
+    },
+    "monthly_cost": {
+      "type": "number",
+      "default": 0
+    },
+    "bonus_description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do b\u00f4nus"
+    }
+  },
+  "required": [
+    "club_id",
+    "staff_type"
+  ]
+}

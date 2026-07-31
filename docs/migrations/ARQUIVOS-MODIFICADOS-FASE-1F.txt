@@ -1,0 +1,44 @@
+.env.desktop
+  Ativação do novo sistema de carreira no modo desktop.
+
+src/App.jsx
+  Inclusão de ActiveCareerGuard nas rotas internas do jogo.
+
+src/main.jsx
+  Registro do teste de integração da Fase 1F em modo DEV.
+
+src/local/localBase44Client.js
+  Injeção central do PlayerAdapter para todas as operações PlayerProfile.
+
+src/pages/CareerManager.jsx
+  Substituição do gerenciador legado pelo CareerProvider/CareerManager nativo.
+
+src/careers/CareerProvider.jsx
+  Restauração da última carreira, sincronização do runtime e atualização segura da carreira ativa.
+
+src/gameplay/ActiveCareerAdapter.js
+  Correção do cache, troca de carreira, persistência e validação do perfil ativo.
+
+src/gameplay/GameRepository.js
+  API consolidada para carreira ativa e perfil.
+
+src/gameplay/GameStateBridge.js
+  Persistência estrita no perfil da carreira ativa, sem fallback silencioso.
+
+src/gameplay/PlayerAdapter.js
+  Integração real com PlayerProfile e fallback legado somente quando o feature flag está desligado.
+
+src/gameplay/runtime.js
+  NOVO. Singleton compartilhado de ActiveCareerAdapter e GameRepository.
+
+src/gameplay/index.js
+  NOVO. Exportações públicas da camada gameplay.
+
+src/gameplay/GameplayIntegrationTest.js
+  NOVO. Teste de independência entre duas carreiras.
+
+AUDITORIA-FASE-1F.md
+  NOVO. Relatório técnico da auditoria.
+
+ARQUIVOS-MODIFICADOS-FASE-1F.txt
+  NOVO. Relação detalhada das alterações.

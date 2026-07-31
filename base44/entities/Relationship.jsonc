@@ -1,0 +1,78 @@
+{
+  "name": "Relationship",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile do jogador"
+    },
+    "target_athlete_id": {
+      "type": "string",
+      "description": "ID do AthleteProfile alvo"
+    },
+    "target_name": {
+      "type": "string",
+      "description": "Nome do atleta alvo"
+    },
+    "target_country": {
+      "type": "string"
+    },
+    "relationship_type": {
+      "type": "string",
+      "enum": [
+        "neutro",
+        "amigo",
+        "rival",
+        "parceiro",
+        "inimigo",
+        "respeito",
+        "mentor"
+      ],
+      "default": "neutro",
+      "description": "Tipo de relacionamento"
+    },
+    "score": {
+      "type": "number",
+      "default": 0,
+      "description": "Pontua\u00e7\u00e3o de -100 (\u00f3dio) a 100 (amor)"
+    },
+    "chemistry": {
+      "type": "number",
+      "default": 0,
+      "description": "Qu\u00edmica em quadra (0-100)"
+    },
+    "shared_matches": {
+      "type": "number",
+      "default": 0,
+      "description": "Partidas jogadas contra ou com"
+    },
+    "shared_wins": {
+      "type": "number",
+      "default": 0
+    },
+    "shared_losses": {
+      "type": "number",
+      "default": 0
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Hist\u00f3rico: [{date, event, score_change, description}]"
+    },
+    "last_interaction_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "profile_id",
+    "target_name"
+  ]
+}

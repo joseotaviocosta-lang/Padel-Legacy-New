@@ -1,0 +1,15 @@
+MODIFICADOS
+src/careers/careerSchema.js
+src/careers/careerDefaults.js
+src/careers/CareerValidator.js
+src/careers/CareerMigration.js
+src/local/localBase44Client.js
+src/gameplay/index.js
+src/main.jsx
+
+NOVOS
+src/gameplay/CareerEntityRepository.js
+src/gameplay/EntityAdapter.js
+src/gameplay/Sprint2IntegrationTest.js
+SPRINT-2-RELATORIO.md
+ARQUIVOS-MODIFICADOS-SPRINT-2.txt

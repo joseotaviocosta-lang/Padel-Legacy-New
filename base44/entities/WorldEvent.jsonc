@@ -1,0 +1,138 @@
+{
+  "name": "WorldEvent",
+  "type": "object",
+  "properties": {
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "noticia",
+        "entrevista",
+        "rivalidade",
+        "social",
+        "rumor",
+        "transferencia",
+        "aposentadoria",
+        "promessa",
+        "lesao",
+        "escandalo",
+        "ranking",
+        "historico",
+        "regra",
+        "crise_economica",
+        "tecnologia",
+        "novo_patrocinador",
+        "expansao",
+        "beneficente",
+        "temporada_especial",
+        "celebracao_historica"
+      ],
+      "default": "noticia",
+      "description": "Tipo de evento mundial"
+    },
+    "title": {
+      "type": "string",
+      "description": "Manchete"
+    },
+    "content": {
+      "type": "string",
+      "description": "Texto completo"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Fonte/autor"
+    },
+    "related_players": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Jogadores envolvidos"
+    },
+    "tier": {
+      "type": "string",
+      "enum": [
+        "breaking",
+        "destaque",
+        "normal"
+      ],
+      "default": "normal",
+      "description": "Import\u00e2ncia do evento"
+    },
+    "event_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data no jogo"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "likes": {
+      "type": "number",
+      "default": 0
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "is_macro": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se \u00e9 um evento macro (afeta o universo, n\u00e3o apenas not\u00edcia de jogador)"
+    },
+    "impact_level": {
+      "type": "string",
+      "enum": [
+        "baixo",
+        "medio",
+        "alto",
+        "extremo"
+      ],
+      "default": "baixo",
+      "description": "N\u00edvel de impacto no universo do jogo"
+    },
+    "effects": {
+      "type": "object",
+      "description": "Efeitos mec\u00e2nicos no jogo: {training_bonus, coin_modifier, xp_modifier, market_modifier, injury_risk_modifier, fan_appeal_bonus, sponsor_appeal_bonus, energy_cost_modifier, match_reward_modifier}"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "In\u00edcio do efeito (para eventos com dura\u00e7\u00e3o)"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Fim do efeito (para eventos com dura\u00e7\u00e3o)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o evento/efeito est\u00e1 ativo"
+    },
+    "duration_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Dura\u00e7\u00e3o em dias do efeito (0 = instant\u00e2neo)"
+    },
+    "affected_categories": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Categorias afetadas pelo evento (ex: raquete, treinamento, mercado)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Nome do \u00edcone lucide para eventos macro"
+    }
+  },
+  "required": [
+    "title",
+    "event_type"
+  ]
+}

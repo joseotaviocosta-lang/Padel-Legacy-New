@@ -1,0 +1,98 @@
+{
+  "name": "TrainingSession",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador que treinou"
+    },
+    "training_type": {
+      "type": "string",
+      "description": "Identificador do tipo de treino"
+    },
+    "training_label": {
+      "type": "string",
+      "description": "Nome leg\u00edvel do treino"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "technical",
+        "physical",
+        "tactical",
+        "mental",
+        "recovery"
+      ],
+      "default": "technical",
+      "description": "Categoria do treino"
+    },
+    "intensity": {
+      "type": "string",
+      "enum": [
+        "leve",
+        "moderado",
+        "intenso"
+      ],
+      "default": "moderado",
+      "description": "Intensidade do treino"
+    },
+    "attribute_target": {
+      "type": "string",
+      "description": "Atributo que foi melhorado"
+    },
+    "attribute_gain": {
+      "type": "number",
+      "description": "Quanto o atributo aumentou"
+    },
+    "xp_reward": {
+      "type": "number",
+      "description": "XP recebido"
+    },
+    "coins_reward": {
+      "type": "number",
+      "description": "Moedas recebidas"
+    },
+    "energy_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Energia gasta no treino"
+    },
+    "fatigue_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Fadiga gerada pelo treino"
+    },
+    "injury_risk": {
+      "type": "number",
+      "default": 0,
+      "description": "Risco de les\u00e3o calculado (0-1)"
+    },
+    "condition_before": {
+      "type": "object",
+      "description": "Condi\u00e7\u00e3o antes do treino: {energy, fatigue, morale, confidence, form}"
+    },
+    "condition_after": {
+      "type": "object",
+      "description": "Condi\u00e7\u00e3o depois do treino: {energy, fatigue, morale, confidence, form}"
+    },
+    "duration_min": {
+      "type": "number",
+      "default": 45,
+      "description": "Dura\u00e7\u00e3o em minutos"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data do treino"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Observa\u00e7\u00f5es"
+    }
+  },
+  "required": [
+    "profile_id",
+    "training_type",
+    "attribute_target"
+  ]
+}

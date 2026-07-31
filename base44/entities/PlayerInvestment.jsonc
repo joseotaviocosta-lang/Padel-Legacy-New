@@ -1,0 +1,44 @@
+{
+  "name": "PlayerInvestment",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador"
+    },
+    "investment_id": {
+      "type": "string",
+      "description": "ID do investimento no cat\u00e1logo"
+    },
+    "investment_name": {
+      "type": "string"
+    },
+    "investment_type": {
+      "type": "string",
+      "description": "Categoria (Renda Fixa, Renda Vari\u00e1vel, Alto Risco)"
+    },
+    "amount": {
+      "type": "number",
+      "default": 0,
+      "description": "Valor investido"
+    },
+    "return_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Taxa de retorno mensal (%)"
+    },
+    "risk_level": {
+      "type": "string",
+      "description": "Baixo, M\u00e9dio, Alto"
+    },
+    "invested_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "profile_id",
+    "investment_name",
+    "amount"
+  ]
+}

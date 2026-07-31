@@ -1,0 +1,92 @@
+{
+  "name": "MarketPriceHistory",
+  "type": "object",
+  "properties": {
+    "item_id": {
+      "type": "string",
+      "description": "ID do ShopItem"
+    },
+    "item_name": {
+      "type": "string",
+      "description": "Nome do item (denormalizado)"
+    },
+    "base_price": {
+      "type": "number",
+      "description": "Pre\u00e7o base original"
+    },
+    "current_price": {
+      "type": "number",
+      "description": "Pre\u00e7o atual de mercado"
+    },
+    "previous_price": {
+      "type": "number",
+      "description": "Pre\u00e7o anterior"
+    },
+    "all_time_low": {
+      "type": "number",
+      "description": "Menor pre\u00e7o hist\u00f3rico"
+    },
+    "all_time_high": {
+      "type": "number",
+      "description": "Maior pre\u00e7o hist\u00f3rico"
+    },
+    "demand_score": {
+      "type": "number",
+      "default": 50,
+      "description": "Demanda atual (0-100)"
+    },
+    "supply_level": {
+      "type": "number",
+      "default": 50,
+      "description": "Oferta atual (0-100)"
+    },
+    "purchase_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Vezes comprado"
+    },
+    "trend": {
+      "type": "string",
+      "enum": [
+        "subindo",
+        "descendo",
+        "estavel",
+        "volatil"
+      ],
+      "default": "estavel",
+      "description": "Tend\u00eancia de pre\u00e7o"
+    },
+    "volatility": {
+      "type": "number",
+      "default": 0,
+      "description": "Volatilidade (0-100)"
+    },
+    "price_history": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Hist\u00f3rico: [{date, price, event}]"
+    },
+    "last_updated_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_limited_stock": {
+      "type": "boolean",
+      "default": false,
+      "description": "Estoque limitado"
+    },
+    "stock_remaining": {
+      "type": "number",
+      "default": -1,
+      "description": "Estoque restante (-1 = ilimitado)"
+    }
+  },
+  "required": [
+    "item_id",
+    "base_price",
+    "current_price"
+  ]
+}

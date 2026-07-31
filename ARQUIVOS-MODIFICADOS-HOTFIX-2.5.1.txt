@@ -1,0 +1,12 @@
+MODIFICADOS
+- package.json
+- package-lock.json
+- src/main.jsx
+- src/lib/padel.js
+- src/storage/GameStorage.js
+- src/gameplay/adapters/ActiveCareerAdapter.js
+
+NOVOS
+- src/gameplay/tests/ProfileLoadingHotfixTest.js
+- HOTFIX-2.5.1-PERFIL-SALVO.md
+- ARQUIVOS-MODIFICADOS-HOTFIX-2.5.1.txt

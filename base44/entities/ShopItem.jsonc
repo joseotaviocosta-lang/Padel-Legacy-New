@@ -1,0 +1,127 @@
+{
+  "name": "ShopItem",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Nome do item"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do item"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "raquete",
+        "grip",
+        "bola",
+        "roupa",
+        "tenis",
+        "mochila",
+        "acessorio_tec",
+        "colecionavel",
+        "acessorio"
+      ],
+      "default": "acessorio",
+      "description": "Categoria do item"
+    },
+    "subcategory": {
+      "type": "string",
+      "description": "Subcategoria (ex: control, power, hybrid para raquetes)"
+    },
+    "rarity": {
+      "type": "string",
+      "enum": [
+        "comum",
+        "incomum",
+        "raro",
+        "epico",
+        "lendario",
+        "mitico",
+        "exclusivo"
+      ],
+      "default": "comum",
+      "description": "Raridade do item"
+    },
+    "price": {
+      "type": "number",
+      "default": 0,
+      "description": "Pre\u00e7o em moedas"
+    },
+    "manufacturer": {
+      "type": "string",
+      "description": "Fabricante/marca"
+    },
+    "country": {
+      "type": "string",
+      "description": "Pa\u00eds de origem do fabricante"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Nome do \u00edcone lucide"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Imagem do item (opcional)"
+    },
+    "attribute_bonus": {
+      "type": "object",
+      "description": "B\u00f4nus de atributos ao equipar (ex.: {\"serve\": 5})"
+    },
+    "durability": {
+      "type": "number",
+      "default": 100,
+      "description": "Durabilidade m\u00e1xima (0-100)"
+    },
+    "weight": {
+      "type": "number",
+      "description": "Peso em gramas (raquetes/bolas)"
+    },
+    "balance": {
+      "type": "string",
+      "enum": [
+        "baixo",
+        "medio",
+        "alto"
+      ],
+      "description": "Balanceamento (raquetes)"
+    },
+    "shape": {
+      "type": "string",
+      "enum": [
+        "redonda",
+        "lagrima",
+        "diamante"
+      ],
+      "description": "Formato da raquete"
+    },
+    "release_year": {
+      "type": "number",
+      "description": "Ano de lan\u00e7amento"
+    },
+    "history": {
+      "type": "string",
+      "description": "Hist\u00f3ria/contexto do item"
+    },
+    "is_available": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se est\u00e1 dispon\u00edvel para compra"
+    },
+    "is_exclusive": {
+      "type": "boolean",
+      "default": false,
+      "description": "Item exclusivo/colecion\u00e1vel"
+    },
+    "collection": {
+      "type": "string",
+      "description": "Nome da cole\u00e7\u00e3o/linha"
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "price"
+  ]
+}

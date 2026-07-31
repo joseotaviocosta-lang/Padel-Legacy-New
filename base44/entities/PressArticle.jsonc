@@ -1,0 +1,88 @@
+{
+  "name": "PressArticle",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "journalist_id": {
+      "type": "string"
+    },
+    "journalist_name": {
+      "type": "string"
+    },
+    "outlet": {
+      "type": "string",
+      "description": "Ve\u00edculo"
+    },
+    "article_type": {
+      "type": "string",
+      "enum": [
+        "entrevista",
+        "coletiva",
+        "manchete",
+        "rumor",
+        "critica",
+        "elogio",
+        "previsao",
+        "especulacao",
+        "repercussao"
+      ],
+      "description": "Tipo de artigo"
+    },
+    "title": {
+      "type": "string",
+      "description": "Manchete"
+    },
+    "content": {
+      "type": "string",
+      "description": "Conte\u00fado completo"
+    },
+    "tone": {
+      "type": "string",
+      "enum": [
+        "positivo",
+        "neutro",
+        "negativo",
+        "controverso"
+      ],
+      "default": "neutro"
+    },
+    "reputation_change": {
+      "type": "number",
+      "default": 0,
+      "description": "Mudan\u00e7a de reputa\u00e7\u00e3o gerada"
+    },
+    "fan_appeal_change": {
+      "type": "number",
+      "default": 0
+    },
+    "sponsor_appeal_change": {
+      "type": "number",
+      "default": 0
+    },
+    "morale_change": {
+      "type": "number",
+      "default": 0
+    },
+    "related_event": {
+      "type": "string",
+      "description": "Evento relacionado (partida/torneio)"
+    },
+    "career_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data no jogo"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "profile_id",
+    "title",
+    "article_type"
+  ]
+}

@@ -1,0 +1,44 @@
+PADEL LEGACY — ETAPA 1: OFFLINE + MÚLTIPLAS CARREIRAS
+======================================================
+
+O que mudou
+-----------
+- SDK e plugin Base44 removidos do projeto.
+- Autenticação online removida; o aplicativo usa um proprietário local.
+- IndexedDB e localStorage removidos do sistema de save.
+- Todos os dados são gravados no arquivo nativo do Tauri Store.
+- Tela inicial de saves no estilo Football Manager.
+- Criação de várias carreiras independentes.
+- Selecionar, renomear, duplicar como experimento e excluir carreira.
+- Cada carreira possui jogador, mundo, ranking e calendário próprios.
+- Botão "Trocar carreira" dentro do jogo.
+- Mercado Mundial passa a usar a camada local, sem requisições HTTP.
+- Build Release carrega arquivos internos: não depende de localhost.
+
+Como instalar esta versão sobre a anterior
+-------------------------------------------
+1. Feche o Padel Legacy e todas as janelas de terminal do projeto.
+2. Extraia este ZIP em uma pasta NOVA.
+3. Execute INSTALAR-E-TESTAR-ETAPA-1.bat.
+4. Na primeira abertura, crie uma carreira.
+5. Para testar vários perfis, volte em "Trocar carreira" e crie outros saves.
+
+Teste obrigatório
+-----------------
+1. Crie "Direita Controle".
+2. Jogue e avance o calendário.
+3. Clique em "Trocar carreira".
+4. Crie "Esquerda Agressivo".
+5. Alterne entre os dois saves e confirme que datas/atributos não se misturam.
+6. Feche o aplicativo e abra novamente.
+7. Confirme que a lista de carreiras continua disponível.
+
+Desenvolvimento x aplicativo final
+----------------------------------
+- app:dev usa um servidor Vite local apenas para atualização instantânea durante programação.
+- app:build gera o aplicativo final com a interface embutida, sem localhost, Chrome ou internet.
+
+Gerar instalador final
+----------------------
+Execute GERAR-INSTALADOR-ETAPA-1.bat.
+O resultado fica em src-tauri\target\release\bundle.

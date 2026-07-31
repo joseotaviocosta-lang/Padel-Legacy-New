@@ -1,0 +1,72 @@
+{
+  "name": "HistoryEntry",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do evento hist\u00f3rico"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "fundacao",
+        "decada",
+        "campeao",
+        "clube_lendario",
+        "torneio_historico",
+        "recorde",
+        "rivalidade",
+        "regra",
+        "momento",
+        "tecnologia"
+      ],
+      "description": "Categoria do evento"
+    },
+    "year": {
+      "type": "number",
+      "description": "Ano do evento"
+    },
+    "decade": {
+      "type": "number",
+      "description": "D\u00e9cada (ex: 1960, 1970)"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Nome do \u00edcone lucide"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "related_entries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "T\u00edtulos de entradas relacionadas"
+    },
+    "importance": {
+      "type": "string",
+      "enum": [
+        "lendario",
+        "epico",
+        "destaque",
+        "normal"
+      ],
+      "default": "normal"
+    }
+  },
+  "required": [
+    "title",
+    "category",
+    "year"
+  ]
+}

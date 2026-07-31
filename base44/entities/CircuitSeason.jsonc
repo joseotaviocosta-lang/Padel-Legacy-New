@@ -1,0 +1,41 @@
+{
+  "name": "CircuitSeason",
+  "type": "object",
+  "properties": {
+    "year": {
+      "type": "number",
+      "description": "Ano da temporada"
+    },
+    "total_tournaments": {
+      "type": "number",
+      "default": 0
+    },
+    "total_audience": {
+      "type": "number",
+      "default": 0,
+      "description": "Audi\u00eancia acumulada do ano"
+    },
+    "top_player_name": {
+      "type": "string",
+      "description": "Jogador com mais t\u00edtulos no ano"
+    },
+    "top_player_wins": {
+      "type": "number",
+      "default": 0
+    },
+    "most_watched_tournament": {
+      "type": "string"
+    },
+    "most_watched_audience": {
+      "type": "number",
+      "default": 0
+    },
+    "circuit_description": {
+      "type": "string",
+      "description": "Resumo narrativo da temporada"
+    }
+  },
+  "required": [
+    "year"
+  ]
+}

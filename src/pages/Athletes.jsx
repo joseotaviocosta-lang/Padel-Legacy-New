@@ -1,0 +1,106 @@
+import React, { useEffect, useState } from 'react';
+import { Users, Search, SlidersHorizontal } from 'lucide-react';
+import { ensureMyProfile } from '@/lib/padel';
+import { base44 } from '@/api/base44Client';
+import { LoadingScreen, PageHeader, FilterPills } from '@/components/padel/ui';
+import { ensureAthleteProfiles, generateRelationships, getAthletes, PERSONALITIES } from '@/lib/athleteBehavior';
+import AthleteCard from '@/components/athletes/AthleteCard';
+import AthleteDetail from '@/components/athletes/AthleteDetail';
+
+const PHASE_FILTERS = [
+  { id: 'all', label: 'Todas' },
+  { id: 'Ascensão', label: 'Ascensão' },
+  { id: 'Auge', label: 'Auge' },
+  { id: 'Declínio', label: 'Declínio' },
+  { id: 'Veterano', label: 'Veteranos' },
+];
+
+export default function Athletes() {
+  const [athletes, setAthletes] = useState([]);
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [phaseFilter, setPhaseFilter] = useState('all');
+  const [persFilter, setPersFilter] = useState('all');
+  const [selected, setSelected] = useState(null);
+  const [styleFilter, setStyleFilter] = useState('all');
+  const [search, setSearch] = useState('');
+  const [sortBy, setSortBy] = useState('ranking');
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const user = await base44.auth.me();
+        const p = await ensureMyProfile(user);
+        setProfile(p);
+        await ensureAthleteProfiles();
+        await generateRelationships();
+        const list = await getAthletes();
+        setAthletes(list);
+      } catch (e) { console.error(e); }
+      finally { setLoading(false); }
+    })();
+  }, []);
+
+  if (loading) return <LoadingScreen />;
+
+  const filtered = athletes
+    .filter(a => phaseFilter === 'all' || a.career_phase === phaseFilter)
+    .filter(a => persFilter === 'all' || a.personality === persFilter)
+    .filter(a => styleFilter === 'all' || a.play_style === styleFilter)
+    .filter(a => !search.trim() || `${a.name || ''} ${a.country || ''}`.toLowerCase().includes(search.trim().toLowerCase()))
+    .sort((a, b) => {
+      if (sortBy === 'form') return Number(b.form || b.current_form || 0) - Number(a.form || a.current_form || 0);
+      if (sortBy === 'clutch') return Number(b.behavior_axes?.clutch || 0) - Number(a.behavior_axes?.clutch || 0);
+      if (sortBy === 'overall') return Number(b.overall_rating || 0) - Number(a.overall_rating || 0);
+      return Number(a.ranking_position || 9999) - Number(b.ranking_position || 9999);
+    });
+
+  const PERS_FILTERS = [{ id: 'all', label: 'Todas' }, ...PERSONALITIES.map(p => ({ id: p.id, label: p.label }))];
+  const STYLE_FILTERS = [
+    { id: 'all', label: 'Todos os estilos' },
+    { id: 'Agressivo', label: 'Agressivo' },
+    { id: 'Defensivo', label: 'Defensivo' },
+    { id: 'Equilibrado', label: 'Equilibrado' },
+    { id: 'Tático', label: 'Tático' },
+    { id: 'Potência', label: 'Potência' },
+  ];
+
+  return (
+    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+      <PageHeader icon={Users} title="Atletas do Circuito" subtitle="Personalidades, evolução e relacionamentos dos atletas IA" accent="primary" />
+
+      <div className="glass rounded-2xl p-3 grid gap-3 md:grid-cols-[1fr_180px]">
+        <label className="relative block">
+          <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar atleta ou país..." className="w-full rounded-xl border border-border bg-background/50 pl-9 pr-3 py-2 text-sm" />
+        </label>
+        <label className="relative block">
+          <SlidersHorizontal className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground pointer-events-none" />
+          <select value={sortBy} onChange={e => setSortBy(e.target.value)} className="w-full rounded-xl border border-border bg-background/50 pl-9 pr-3 py-2 text-sm">
+            <option value="ranking">Ordenar: ranking</option>
+            <option value="overall">Ordenar: overall</option>
+            <option value="form">Ordenar: melhor forma</option>
+            <option value="clutch">Ordenar: decisões</option>
+          </select>
+        </label>
+      </div>
+
+      <FilterPills filters={PHASE_FILTERS} activeFilter={phaseFilter} onFilterChange={setPhaseFilter} />
+      <FilterPills filters={PERS_FILTERS} activeFilter={persFilter} onFilterChange={setPersFilter} />
+      <FilterPills filters={STYLE_FILTERS} activeFilter={styleFilter} onFilterChange={setStyleFilter} />
+
+      {filtered.length === 0 ? (
+        <div className="glass rounded-2xl p-10 text-center">
+          <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
+          <p className="text-sm text-muted-foreground">Nenhum atleta encontrado com esses filtros.</p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+          {filtered.map(a => <AthleteCard key={a.id} athlete={a} onClick={() => setSelected(a)} />)}
+        </div>
+      )}
+
+      {selected && <AthleteDetail athlete={selected} onClose={() => setSelected(null)} />}
+    </div>
+  );
+}

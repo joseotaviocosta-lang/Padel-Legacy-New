@@ -1,0 +1,33 @@
+PADEL LEGACY APP v0.1 — WINDOWS + BASE PARA ANDROID
+
+O que foi feito
+- Projeto convertido para Tauri 2.
+- A interface React/Vite foi mantida.
+- No aplicativo instalado, o save usa um arquivo nativo persistente no diretório privado do app.
+- Mantido fallback IndexedDB para abrir a versão no navegador durante desenvolvimento.
+- Backup transacional career-backup continua ativo.
+- Modo local é ativado automaticamente no app.
+
+PRIMEIRO TESTE NO WINDOWS
+1. Instale Node.js LTS.
+2. Instale Rust: https://rustup.rs
+3. No Windows, instale também “Desktop development with C++” pelo Visual Studio Build Tools.
+4. Execute INSTALAR-E-TESTAR-WINDOWS.bat.
+5. Jogue, avance a carreira, feche a janela e abra novamente pelo mesmo BAT para validar o save.
+
+GERAR O INSTALADOR .EXE/MSI
+Execute GERAR-INSTALADOR-WINDOWS.bat.
+O resultado ficará em src-tauri\target\release\bundle.
+
+ANDROID
+Depois que o Windows estiver validado:
+1. Instale Android Studio, Android SDK e NDK.
+2. Execute npm run android:init (uma vez).
+3. Conecte o celular com depuração USB.
+4. Execute npm run android:dev.
+5. Para gerar pacote: npm run android:build.
+
+IMPORTANTE
+- Esta entrega é o código convertido e preparado. O .exe não foi compilado aqui porque a compilação Windows exige as ferramentas do Windows no seu computador.
+- iPhone exige macOS/Xcode para compilação, embora a mesma base Tauri possa ser usada.
+- O arquivo nativo é salvo pelo plugin Store no app_data do sistema; ele não depende do Chrome nem do localhost.

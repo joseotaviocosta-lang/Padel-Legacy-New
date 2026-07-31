@@ -1,0 +1,78 @@
+{
+  "name": "Mission",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo da miss\u00e3o"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o do objetivo"
+    },
+    "mission_type": {
+      "type": "string",
+      "enum": [
+        "diaria",
+        "semanal",
+        "mensal",
+        "sazonal"
+      ],
+      "default": "diaria",
+      "description": "Periodicidade da miss\u00e3o"
+    },
+    "objective_type": {
+      "type": "string",
+      "enum": [
+        "win_matches",
+        "play_matches",
+        "complete_training",
+        "play_with_partner",
+        "join_tournament",
+        "win_tournament",
+        "buy_item",
+        "equip_item",
+        "use_recovery",
+        "advance_days"
+      ],
+      "description": "Tipo de objetivo"
+    },
+    "target_count": {
+      "type": "number",
+      "default": 1,
+      "description": "Quantidade necess\u00e1ria para concluir"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "XP de recompensa"
+    },
+    "coins_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Moedas de recompensa"
+    },
+    "medal_reward": {
+      "type": "string",
+      "description": "Medalha concedida ao concluir (opcional)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se a miss\u00e3o est\u00e1 dispon\u00edvel"
+    },
+    "season_id": {
+      "type": "string",
+      "description": "Temporada vinculada (opcional)"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Data de expira\u00e7\u00e3o"
+    }
+  },
+  "required": [
+    "title",
+    "objective_type"
+  ]
+}

@@ -1,0 +1,75 @@
+{
+  "name": "Match",
+  "type": "object",
+  "properties": {
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data da partida"
+    },
+    "location": {
+      "type": "string",
+      "description": "Local/club"
+    },
+    "tournament_name": {
+      "type": "string",
+      "description": "Campeonato (opcional)"
+    },
+    "player_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "IDs dos jogadores participantes (dupla + advers\u00e1rios)"
+    },
+    "team_a": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nomes da dupla A"
+    },
+    "team_b": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Nomes da dupla B (advers\u00e1rios)"
+    },
+    "score_a": {
+      "type": "number",
+      "description": "Jogos ganhos pela dupla A"
+    },
+    "score_b": {
+      "type": "number",
+      "description": "Jogos ganhos pela dupla B"
+    },
+    "winner": {
+      "type": "string",
+      "enum": [
+        "A",
+        "B"
+      ],
+      "description": "Dupla vencedora"
+    },
+    "match_type": {
+      "type": "string",
+      "enum": [
+        "real",
+        "simulada"
+      ],
+      "default": "real",
+      "description": "Tipo de partida (real ou simulada)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "An\u00e1lise de desempenho"
+    }
+  },
+  "required": [
+    "date",
+    "team_a",
+    "team_b",
+    "winner"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "PlayerContract",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do jogador"
+    },
+    "sponsor_id": {
+      "type": "string",
+      "description": "ID do patrocinador"
+    },
+    "sponsor_name": {
+      "type": "string",
+      "description": "Nome do patrocinador"
+    },
+    "sponsor_tier": {
+      "type": "string",
+      "description": "N\u00edvel do patroc\u00ednio (Ouro/Prata/Bronze)"
+    },
+    "monthly_salary": {
+      "type": "number",
+      "default": 0,
+      "description": "Sal\u00e1rio mensal em moedas"
+    },
+    "sign_bonus": {
+      "type": "number",
+      "default": 0,
+      "description": "B\u00f4nus de assinatura"
+    },
+    "started_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "duration_months": {
+      "type": "number",
+      "default": 6,
+      "description": "Dura\u00e7\u00e3o contratual em meses"
+    },
+    "marketing_requirements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Exig\u00eancias de marketing acordadas"
+    },
+    "commercial_goals": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "Metas comerciais do contrato"
+    },
+    "performance_clauses": {
+      "type": "object",
+      "description": "Cl\u00e1usulas de desempenho aplic\u00e1veis"
+    },
+    "goals_progress": {
+      "type": "object",
+      "description": "Progresso das metas: {goal_type: {current, target, met}}"
+    },
+    "satisfaction_score": {
+      "type": "number",
+      "default": 50,
+      "description": "Satisfa\u00e7\u00e3o do patrocinador (0-100)"
+    },
+    "is_renewable": {
+      "type": "boolean",
+      "default": true,
+      "description": "Se o contrato pode ser renovado"
+    },
+    "termination_reason": {
+      "type": "string",
+      "description": "Motivo de rescis\u00e3o (se rescindido)"
+    }
+  },
+  "required": [
+    "profile_id",
+    "sponsor_name"
+  ]
+}

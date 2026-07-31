@@ -1,0 +1,208 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+@import './lib/padel-inputs.css';
+
+@layer base {
+  :root {
+    --background: 230 35% 5%;
+    --foreground: 210 40% 98%;
+    --card: 228 30% 9%;
+    --card-foreground: 210 40% 98%;
+    --popover: 228 30% 9%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 84 81% 52%;
+    --primary-foreground: 230 35% 5%;
+    --secondary: 228 25% 14%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 228 22% 13%;
+    --muted-foreground: 220 12% 60%;
+    --accent: 199 89% 48%;
+    --accent-foreground: 230 35% 5%;
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 228 20% 17%;
+    --input: 228 20% 17%;
+    --ring: 84 81% 52%;
+    --chart-1: 84 81% 52%;
+    --chart-2: 199 89% 48%;
+    --chart-3: 280 65% 60%;
+    --chart-4: 43 90% 60%;
+    --chart-5: 340 75% 58%;
+    --radius: 0.85rem;
+    --font-heading: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-body: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-display: 'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --sidebar-background: 230 35% 5%;
+    --sidebar-foreground: 220 12% 65%;
+    --sidebar-primary: 84 81% 52%;
+    --sidebar-primary-foreground: 230 35% 5%;
+    --sidebar-accent: 228 25% 14%;
+    --sidebar-accent-foreground: 210 40% 98%;
+    --sidebar-border: 228 20% 17%;
+    --sidebar-ring: 84 81% 52%;
+  }
+
+  .dark {
+    --background: 0 0% 3.9%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 0 0% 9%;
+    --secondary: 0 0% 14.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 14.9%;
+    --muted-foreground: 0 0% 63.9%;
+    --accent: 0 0% 14.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --chart-1: 220 70% 50%;
+    --chart-2: 160 60% 45%;
+    --chart-3: 30 80% 55%;
+    --chart-4: 280 65% 60%;
+    --chart-5: 340 75% 55%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body antialiased;
+  }
+
+  ::-webkit-scrollbar { width: 8px; height: 8px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: hsl(228 20% 17%); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: hsl(228 25% 22%); }
+}
+
+@layer utilities {
+  .glass {
+    background: hsl(228 30% 9% / 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid hsl(228 20% 17% / 0.6);
+  }
+  .glass-hover {
+    transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  .glass-hover:hover {
+    border-color: hsl(84 81% 52% / 0.4);
+    transform: translateY(-2px);
+  }
+  .glow-primary { box-shadow: 0 0 24px hsl(84 81% 52% / 0.25); }
+  .text-glow { text-shadow: 0 0 18px hsl(84 81% 52% / 0.4); }
+  .grid-bg {
+    background-image:
+      linear-gradient(hsl(228 20% 17% / 0.4) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(228 20% 17% / 0.4) 1px, transparent 1px);
+    background-size: 40px 40px;
+  }
+  .scrollbar-none {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-none::-webkit-scrollbar {
+    display: none;
+  }
+  .animate-stagger > * {
+    animation: stagger-in 0.35s ease-out backwards;
+  }
+  .animate-stagger > *:nth-child(1) { animation-delay: 0.05s; }
+  .animate-stagger > *:nth-child(2) { animation-delay: 0.1s; }
+  .animate-stagger > *:nth-child(3) { animation-delay: 0.15s; }
+  .animate-stagger > *:nth-child(4) { animation-delay: 0.2s; }
+  .animate-stagger > *:nth-child(5) { animation-delay: 0.25s; }
+  .animate-stagger > *:nth-child(6) { animation-delay: 0.3s; }
+  .animate-stagger > *:nth-child(7) { animation-delay: 0.35s; }
+  .animate-stagger > *:nth-child(8) { animation-delay: 0.4s; }
+  .animate-stagger > *:nth-child(9) { animation-delay: 0.45s; }
+  .animate-stagger > *:nth-child(10) { animation-delay: 0.5s; }
+  .animate-stagger > *:nth-child(11) { animation-delay: 0.55s; }
+  .animate-stagger > *:nth-child(12) { animation-delay: 0.6s; }
+
+  .shimmer {
+    background: linear-gradient(90deg, transparent 0%, hsl(84 81% 52% / 0.08) 50%, transparent 100%);
+    background-size: 200% 100%;
+    animation: shimmer 1.8s ease-in-out infinite;
+  }
+  @keyframes shimmer {
+    0% { background-position: -200% 0; }
+    100% { background-position: 200% 0; }
+  }
+
+  .glass-premium {
+    background: hsl(228 30% 9% / 0.55);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid hsl(228 20% 17% / 0.5);
+    box-shadow: 0 8px 32px hsl(0 0% 0% / 0.35), inset 0 1px 0 hsl(0 0% 100% / 0.04);
+  }
+
+  .hover-lift {
+    transition: transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .hover-lift:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px hsl(0 0% 0% / 0.4);
+  }
+
+  .press-scale {
+    transition: transform 0.12s ease;
+  }
+  .press-scale:active {
+    transform: scale(0.96);
+  }
+
+  .text-glow-primary {
+    text-shadow: 0 0 20px hsl(84 81% 52% / 0.5), 0 0 40px hsl(84 81% 52% / 0.2);
+  }
+
+  .scrollbar-premium::-webkit-scrollbar { width: 6px; height: 6px; }
+  .scrollbar-premium::-webkit-scrollbar-track { background: transparent; }
+  .scrollbar-premium::-webkit-scrollbar-thumb { background: hsl(228 20% 20%); border-radius: 3px; }
+  .scrollbar-premium::-webkit-scrollbar-thumb:hover { background: hsl(228 20% 25%); }
+
+  .pulse-ring {
+    animation: pulse-ring 1.8s cubic-bezier(0.22, 1, 0.36, 1) infinite;
+  }
+  @keyframes pulse-ring {
+    0% { transform: scale(0.85); opacity: 0.6; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
+
+  .fade-up {
+    animation: fade-up 0.5s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  @keyframes fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .blur-in {
+    animation: blur-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) backwards;
+  }
+  @keyframes blur-in {
+    from { opacity: 0; filter: blur(6px); transform: scale(0.98); }
+    to { opacity: 1; filter: blur(0); transform: scale(1); }
+  }
+}

@@ -1,0 +1,22 @@
+# Dependências
+node_modules/
+
+# Build Vite
+dist/
+
+# Build Tauri
+src-tauri/target/
+
+# Logs
+*.log
+
+# Variáveis locais
+.env.local
+.env.desktop
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+
+# GitHub Desktop
+.github/

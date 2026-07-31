@@ -1,0 +1,22 @@
+PADEL LEGACY — HOTFIX DE PERSISTÊNCIA v3
+
+COMO INSTALAR
+1. Extraia TODO o conteúdo deste ZIP na pasta raiz do projeto.
+2. Confirme que APLICAR-HOTFIX.bat ficou ao lado de package.json e da pasta src.
+3. Dê dois cliques em APLICAR-HOTFIX.bat.
+4. O instalador cria um backup e substitui somente src\local\localDatabase.js.
+5. Depois execute npm run dev.
+
+CORREÇÕES
+- Remove o create/update quebrado pelos logs de diagnóstico.
+- update() não cria mais registros inexistentes silenciosamente.
+- Cria espelho completo do save no localStorage.
+- Restaura esse espelho quando o IndexedDB não estiver disponível.
+- Verifica o save relendo o slot career-current após a gravação.
+- Bloqueia a criação silenciosa de outro personagem se uma carreira já existiu.
+- Registra falhas de flush no console.
+
+IMPORTANTE
+- Este hotfix não recupera uma carreira que já tenha sido sobrescrita.
+- Faça o teste com uma nova carreira, avance alguns dias, escolha uma dupla, feche o navegador e abra novamente.
+- Use a mesma URL e a mesma porta do Vite.

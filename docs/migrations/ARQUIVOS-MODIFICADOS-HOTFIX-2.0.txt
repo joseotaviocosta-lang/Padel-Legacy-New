@@ -1,0 +1,9 @@
+MODIFICADOS
+src/careers/CareerRepository.js
+src/careers/CareerMigration.js
+src/main.jsx
+
+NOVOS
+src/careers/CareerMigrationTest.js
+HOTFIX-2.0-MIGRACAO-SAVES.md
+ARQUIVOS-MODIFICADOS-HOTFIX-2.0.txt

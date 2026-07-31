@@ -1,0 +1,114 @@
+{
+  "name": "CareerLegacy",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile que foi aposentado"
+    },
+    "user_id": {
+      "type": "string",
+      "description": "ID do usu\u00e1rio dono do legado"
+    },
+    "sport_name": {
+      "type": "string",
+      "description": "Nome esportivo do atleta"
+    },
+    "avatar_url": {
+      "type": "string",
+      "description": "Avatar do atleta"
+    },
+    "country": {
+      "type": "string"
+    },
+    "city": {
+      "type": "string"
+    },
+    "birth_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "career_start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "career_end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "retirement_age": {
+      "type": "number",
+      "default": 40
+    },
+    "final_xp": {
+      "type": "number",
+      "default": 0
+    },
+    "final_level": {
+      "type": "string"
+    },
+    "final_overall": {
+      "type": "number"
+    },
+    "tournaments_won": {
+      "type": "number",
+      "default": 0
+    },
+    "matches_played": {
+      "type": "number",
+      "default": 0
+    },
+    "wins": {
+      "type": "number",
+      "default": 0
+    },
+    "losses": {
+      "type": "number",
+      "default": 0
+    },
+    "titles": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "medals": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "legacy_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Pontua\u00e7\u00e3o total do legado"
+    },
+    "generation": {
+      "type": "number",
+      "default": 1,
+      "description": "Gera\u00e7\u00e3o da carreira (1 = primeira, 2 = segunda, etc.)"
+    },
+    "coach_legacy_id": {
+      "type": "string",
+      "description": "ID do legado do treinador (pai na \u00e1rvore geneal\u00f3gica)"
+    },
+    "inherited_bonuses": {
+      "type": "object",
+      "description": "B\u00f4nus herdados do treinador"
+    },
+    "is_coach": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se este atleta tornou-se treinador de uma nova gera\u00e7\u00e3o"
+    },
+    "coached_athlete_name": {
+      "type": "string",
+      "description": "Nome do atleta treinado por este legado"
+    }
+  },
+  "required": [
+    "sport_name"
+  ]
+}

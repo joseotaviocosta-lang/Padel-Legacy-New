@@ -1,0 +1,132 @@
+{
+  "name": "CalendarEvent",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "event_type": {
+      "type": "string",
+      "enum": [
+        "tournament",
+        "travel",
+        "rest",
+        "training_camp",
+        "press",
+        "sponsor_event",
+        "medical",
+        "personal"
+      ],
+      "default": "training_camp",
+      "description": "Tipo de compromisso"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo do compromisso"
+    },
+    "description": {
+      "type": "string",
+      "description": "Descri\u00e7\u00e3o detalhada"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de in\u00edcio"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data de fim"
+    },
+    "related_id": {
+      "type": "string",
+      "description": "ID da entidade relacionada (torneio, contrato, etc.)"
+    },
+    "related_name": {
+      "type": "string",
+      "description": "Nome da entidade relacionada (denormalizado)"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "active",
+        "completed",
+        "cancelled",
+        "missed"
+      ],
+      "default": "scheduled",
+      "description": "Status do compromisso"
+    },
+    "location": {
+      "type": "string",
+      "description": "Local do compromisso"
+    },
+    "city": {
+      "type": "string"
+    },
+    "country": {
+      "type": "string"
+    },
+    "energy_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Custo de energia por dia"
+    },
+    "energy_gain": {
+      "type": "number",
+      "default": 0,
+      "description": "Ganho de energia por dia"
+    },
+    "coin_cost": {
+      "type": "number",
+      "default": 0,
+      "description": "Custo em moedas (viagem, inscri\u00e7\u00e3o)"
+    },
+    "coin_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Recompensa em moedas"
+    },
+    "xp_reward": {
+      "type": "number",
+      "default": 0,
+      "description": "Recompensa em XP"
+    },
+    "is_mandatory": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se o compromisso \u00e9 obrigat\u00f3rio"
+    },
+    "requires_decision": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se exige decis\u00e3o do jogador antes de avan\u00e7ar o dia"
+    },
+    "decision_type": {
+      "type": "string",
+      "description": "Tipo de decis\u00e3o: accept_invite, confirm_travel, choose_tactic, etc."
+    },
+    "travel_required": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se requer viagem"
+    },
+    "travel_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Dias de viagem (ida + volta)"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Dados extras estruturados"
+    }
+  },
+  "required": [
+    "profile_id",
+    "event_type",
+    "title",
+    "start_date"
+  ]
+}

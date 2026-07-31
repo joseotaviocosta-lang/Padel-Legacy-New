@@ -1,0 +1,121 @@
+{
+  "name": "CareerMessage",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "proposta_parceria",
+        "mensagem",
+        "decisao",
+        "conselho_assessor",
+        "negociacao",
+        "aviso_sistema"
+      ],
+      "default": "mensagem",
+      "description": "Tipo de mensagem"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Nome do remetente"
+    },
+    "sender_type": {
+      "type": "string",
+      "enum": [
+        "atleta",
+        "empresario",
+        "treinador",
+        "patrocinador",
+        "sistema",
+        "clube",
+        "imprensa"
+      ],
+      "default": "sistema",
+      "description": "Tipo de remetente"
+    },
+    "sender_avatar": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string",
+      "description": "T\u00edtulo/assunto"
+    },
+    "content": {
+      "type": "string",
+      "description": "Conte\u00fado da mensagem"
+    },
+    "related_entity_type": {
+      "type": "string",
+      "description": "Tipo de entidade relacionada (partnership, tournament, sponsor, etc)"
+    },
+    "related_entity_id": {
+      "type": "string",
+      "description": "ID da entidade relacionada"
+    },
+    "related_entity_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "nao_lida",
+        "lida",
+        "decisao_pendente",
+        "resolvida",
+        "ignorada"
+      ],
+      "default": "nao_lida",
+      "description": "Status da mensagem"
+    },
+    "priority": {
+      "type": "string",
+      "enum": [
+        "baixa",
+        "normal",
+        "alta",
+        "urgente"
+      ],
+      "default": "normal"
+    },
+    "career_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data no jogo"
+    },
+    "expires_career_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Data limite para responder (opcional)"
+    },
+    "actions": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "default": [],
+      "description": "A\u00e7\u00f5es dispon\u00edveis: [{id, label, type, payload}]"
+    },
+    "chosen_action_id": {
+      "type": "string",
+      "description": "ID da a\u00e7\u00e3o escolhida pelo jogador"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Dados extras estruturados"
+    },
+    "is_new": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "profile_id",
+    "message_type",
+    "sender_name",
+    "title"
+  ]
+}
