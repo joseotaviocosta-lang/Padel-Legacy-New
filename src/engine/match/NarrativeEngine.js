@@ -6,12 +6,13 @@ const SHOT_LABELS = {
 const capitalize = (text) => text ? `${text[0].toUpperCase()}${text.slice(1)}` : text;
 
 export class NarrativeEngine {
-  describePoint({ winner, finisher, shot, result, rallyLength, decisionTrace = [], random, match = {}, stats, forcedError = false }) {
+  describePoint({ winner, finisher, shot, result, rallyLength, decisionTrace = [], coordinationEvents = [], random, match = {}, stats, forcedError = false }) {
     const label = SHOT_LABELS[shot] || shot;
     const lastDecision = [...decisionTrace].reverse().find((entry) => entry.playerId === finisher.id);
     const reasons = lastDecision?.reasons || [];
     const streak = stats?.currentTeamStreak?.team === winner ? stats.currentTeamStreak.length : 1;
     const archetype = finisher.behavior?.archetype?.label;
+    const coordination = coordinationEvents[coordinationEvents.length - 1] || null;
     const tags = [];
     let importance = 1;
 
@@ -22,11 +23,14 @@ export class NarrativeEngine {
     if (result === 'winner') tags.push('winner');
     if (forcedError) tags.push('erro_forcado');
     if (result === 'error' && !forcedError) tags.push('erro_nao_forcado');
+    if (coordination?.positive) { tags.push('coordenacao'); importance += 1; }
+    if (coordination?.type === 'coordination_error') tags.push('falha_de_comunicacao');
 
     const options = result === 'winner'
       ? this.winnerOptions({ finisher, label, rallyLength, streak, match, reasons, archetype })
       : this.errorOptions({ finisher, label, rallyLength, match, forcedError, reasons });
 
+    if (coordination?.message) options.push(coordination.message);
     const message = random.pick(options.filter(Boolean));
     return {
       message,
@@ -36,6 +40,7 @@ export class NarrativeEngine {
       reasons: reasons.slice(0, 3),
       archetype: archetype || null,
       streak,
+      coordination,
     };
   }
 

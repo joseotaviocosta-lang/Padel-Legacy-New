@@ -3,13 +3,15 @@ import { PositionEngine } from './PositionEngine.js';
 import { FatigueEngine } from './FatigueEngine.js';
 import { RallyMemory } from './RallyMemory.js';
 import { createDecisionContext } from './DecisionContext.js';
-import { recordShot, recordPoint } from './StatisticsEngine.js';
+import { recordShot, recordPoint, recordCoordination } from './StatisticsEngine.js';
+import { TeamCoordinationEngine } from './TeamCoordinationEngine.js';
 
 export class RallyEngine {
-  constructor({ decision = new DecisionEngine(), position = new PositionEngine(), fatigue = new FatigueEngine() } = {}) {
+  constructor({ decision = new DecisionEngine(), position = new PositionEngine(), fatigue = new FatigueEngine(), coordination = new TeamCoordinationEngine() } = {}) {
     this.decision = decision;
     this.position = position;
     this.fatigue = fatigue;
+    this.coordination = coordination;
   }
 
   play({ teams, servingTeam, tactic, random, stats, match = {} }) {
@@ -20,6 +22,8 @@ export class RallyEngine {
     let lastPlayer = teams[activeTeam][playerIndex];
     const memory = new RallyMemory();
     const decisionTrace = [];
+    const coordinationEvents = [];
+    this.coordination.resetPoint(teams);
 
     for (let rallyLength = 1; rallyLength <= 60; rallyLength += 1) {
       const player = teams[activeTeam][playerIndex % teams[activeTeam].length];
@@ -50,6 +54,12 @@ export class RallyEngine {
           },
         });
       }
+
+      const pointCoordination = this.coordination.coordinate({ teams, activeTeam, player, shot, rallyLength });
+      pointCoordination.forEach((event) => {
+        coordinationEvents.push({ rallyLength, ...event });
+        recordCoordination(stats, event);
+      });
 
       const finishingZone = player.position.zone;
       recordShot(stats, player, shot);
@@ -90,6 +100,7 @@ export class RallyEngine {
           match,
           decisionTrace,
           rallyMemory: memory.events,
+          coordinationEvents,
         };
       }
 
@@ -118,6 +129,7 @@ export class RallyEngine {
           match,
           decisionTrace,
           rallyMemory: memory.events,
+          coordinationEvents,
         };
       }
 
@@ -149,6 +161,7 @@ export class RallyEngine {
       match,
       decisionTrace,
       rallyMemory: memory.events,
+      coordinationEvents,
     };
   }
 

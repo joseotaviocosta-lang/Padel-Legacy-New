@@ -47,6 +47,9 @@ function buildTacticalSummary(stats, winner) {
   if (winning.netEfficiency > loser.netEfficiency + 5) notes.push('O domínio da rede foi um fator decisivo.');
   if (winning.decisiveEfficiency > loser.decisiveEfficiency + 10) notes.push('A eficiência nos pontos decisivos fez a diferença.');
   if (winning.breakPointEfficiency > loser.breakPointEfficiency) notes.push('A dupla aproveitou melhor as oportunidades de break.');
+  if (winning.coordinationEfficiency > loser.coordinationEfficiency + 8) notes.push('A coordenação e as coberturas da dupla foram determinantes.');
+  if (winning.coordinatedAdvances > loser.coordinatedAdvances) notes.push('A dupla recuperou a rede com mais movimentos coordenados.');
+  if (loser.coordinationErrors > winning.coordinationErrors) notes.push('Os adversários sofreram mais com falhas de comunicação e ocupação de espaço.');
   if (notes.length === 0) notes.push('A partida foi decidida pelo equilíbrio e pela regularidade ao longo dos sets.');
   return notes;
 }

@@ -40,6 +40,9 @@ export function createStatistics(teams) {
       energyStart: player.energy,
       energyEnd: player.energy,
       energyByPoint: [],
+      coverages: 0,
+      supportActions: 0,
+      coordinationErrors: 0,
     };
   });
 
@@ -79,6 +82,15 @@ function createTeamRow(team) {
     breakPointsCreated: 0,
     breakPointsConverted: 0,
     maxPointStreak: 0,
+    coverages: 0,
+    coordinatedAdvances: 0,
+    netRecoveries: 0,
+    fatigueCompensations: 0,
+    spacingCorrections: 0,
+    communicationSuccesses: 0,
+    coordinationErrors: 0,
+    coordinationQualityTotal: 0,
+    coordinationEvents: 0,
   };
 }
 
@@ -211,6 +223,32 @@ function registerStreak(stats, winner, teams) {
   teams[loser].forEach((player) => { stats.players[player.id].currentPointStreak = 0; });
 }
 
+
+export function recordCoordination(stats, event) {
+  if (!event || !stats?.teams?.[event.team]) return;
+  const team = stats.teams[event.team];
+  const actor = stats.players[event.actorId];
+  const partner = stats.players[event.partnerId];
+  team.coordinationEvents += 1;
+  team.coordinationQualityTotal += Number(event.quality || 0);
+  if (event.positive) team.communicationSuccesses += 1;
+  if (event.type === 'center_cover') team.coverages += 1;
+  if (event.type === 'coordinated_advance') team.coordinatedAdvances += 1;
+  if (event.type === 'net_recovery') team.netRecoveries += 1;
+  if (event.type === 'fatigue_cover') team.fatigueCompensations += 1;
+  if (event.type === 'spacing_correction') team.spacingCorrections += 1;
+  if (event.type === 'coordination_error') team.coordinationErrors += 1;
+  if (partner && ['center_cover', 'fatigue_cover', 'spacing_correction'].includes(event.type)) {
+    partner.coverages += 1;
+    partner.supportActions += 1;
+  }
+  if (actor && ['coordinated_advance', 'net_recovery'].includes(event.type)) actor.supportActions += 1;
+  if (event.type === 'coordination_error') {
+    if (actor) actor.coordinationErrors += 1;
+    if (partner) partner.coordinationErrors += 1;
+  }
+}
+
 export function buildStatisticsSummary(stats) {
   const players = Object.fromEntries(Object.entries(stats.players).map(([id, row]) => [id, {
     ...row,
@@ -228,6 +266,8 @@ export function buildStatisticsSummary(stats) {
     baselineEfficiency: percentage(row.baselinePointsWon, row.baselinePointsPlayed),
     decisiveEfficiency: percentage(row.decisivePointsWon, row.decisivePointsPlayed),
     breakPointEfficiency: percentage(row.breakPointsConverted, row.breakPointsCreated),
+    coordinationEfficiency: percentage(row.communicationSuccesses, row.coordinationEvents),
+    averageCoordinationQuality: row.coordinationEvents > 0 ? Math.round((row.coordinationQualityTotal / row.coordinationEvents) * 10) / 10 : 0,
   }]));
 
   return { ...stats, players, teams };

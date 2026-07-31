@@ -43,7 +43,8 @@ export function normalizePlayer(raw, team, index) {
     behavior,
     energy: clamp(number(raw?.energy, 100)),
     confidence: clamp(number(raw?.morale ?? raw?.confidence, 70)),
-    position: { zone: 'back', side: index === 0 ? 'left' : 'right' },
+    chemistry: clamp(number(raw?.chemistry ?? raw?.entrosamento ?? raw?.team_chemistry, 50)),
+    position: { zone: 'back', side: index === 0 ? 'left' : 'right', lane: index === 0 ? 'left' : 'right' },
   };
 }
 

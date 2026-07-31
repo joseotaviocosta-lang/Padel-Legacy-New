@@ -1,4 +1,5 @@
 import { setupAdvancedNarrativeStatsTest } from '@/engine/match/AdvancedNarrativeStatsTest.js';
+import { setupTeamCoordinationTest } from '@/engine/match/TeamCoordinationTest.js';
 import { runMatchEngineTest } from '@/engine/match/MatchEngineTest.js';
 import { setupPersonalityModelTest } from '@/engine/match/PersonalityModelTest.js';
 import { setupContextualDecisionTest } from '@/engine/match/ContextualDecisionTest.js';
@@ -44,6 +45,7 @@ if (import.meta.env.DEV) {
     setupPersonalityModelTest();
     setupContextualDecisionTest();
     setupAdvancedNarrativeStatsTest();
+    setupTeamCoordinationTest();
   } catch (error) {
     console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
   }

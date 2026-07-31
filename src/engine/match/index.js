@@ -13,3 +13,5 @@ export { AdaptiveTactics } from './AdaptiveTactics.js';
 export { NarrativeEngine } from './NarrativeEngine.js';
 export { buildStatisticsSummary } from './StatisticsEngine.js';
 export { buildMatchAnalysis } from './MatchAnalysis.js';
+
+export { TeamCoordinationEngine, communicationScore, chemistryScore } from './TeamCoordinationEngine.js';
