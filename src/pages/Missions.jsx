@@ -5,6 +5,7 @@ import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, Rotat
 import { ensureMyProfile, ensureTutorialMissionCatalog, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
+import { safeModuleTask } from '@/lib/moduleLoading';
 
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
@@ -55,11 +56,20 @@ export default function Missions() {
       const user = await base44.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
-      await ensureExtendedMissionCatalog();
-      const missionsData = await base44.entities.Mission.filter({ is_active: true });
-      let progData = p ? await base44.entities.MissionProgress.filter({ profile_id: p.id }) : [];
-      await syncMissionProgressPeriods(p, missionsData, progData);
-      progData = p ? await base44.entities.MissionProgress.filter({ profile_id: p.id }) : [];
+      await safeModuleTask(() => ensureExtendedMissionCatalog(), { label: 'catálogo de missões', fallback: null, timeoutMs: 10000 });
+      const missionsData = await safeModuleTask(
+        () => base44.entities.Mission.filter({ is_active: true }),
+        { label: 'missões ativas', fallback: [] },
+      );
+      let progData = p ? await safeModuleTask(
+        () => base44.entities.MissionProgress.filter({ profile_id: p.id }),
+        { label: 'progresso das missões', fallback: [] },
+      ) : [];
+      await safeModuleTask(() => syncMissionProgressPeriods(p, missionsData, progData), { label: 'sincronização das missões', fallback: null });
+      progData = p ? await safeModuleTask(
+        () => base44.entities.MissionProgress.filter({ profile_id: p.id }),
+        { label: 'releitura do progresso das missões', fallback: progData },
+      ) : [];
       setMissions(missionsData || []);
       setProgress(Object.fromEntries((progData || []).map(pr => [pr.mission_id, pr])));
     } catch (e) { console.error(e); }

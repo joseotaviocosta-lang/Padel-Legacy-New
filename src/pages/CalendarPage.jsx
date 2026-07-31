@@ -16,6 +16,7 @@ import PendingDecisionBanner from '@/components/calendar/PendingDecisionBanner';
 import TournamentRegistrationModal from '@/components/calendar/TournamentRegistrationModal';
 import TournamentModal from '@/components/tournaments/TournamentModal';
 import { useToast } from '@/components/ui/use-toast';
+import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const TIER_DOT = {
   P2: 'bg-cyan-500',
@@ -50,16 +51,16 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
       if (!p) return;
 
       const partner = getPartnerBot(p);
-      const rank = partner ? await getTeamRank(p, partner) : { rank: 0, total: 0 };
+      const rank = partner ? await safeModuleTask(() => getTeamRank(p, partner), { label: 'ranking da dupla', fallback: { rank: 0, total: 0 } }) : { rank: 0, total: 0 };
       setTeamRank(rank);
 
-      const [t, m, tr, events, pending] = await Promise.all([
-        base44.entities.Tournament.list('-start_date', 100),
-        base44.entities.Match.list('-created_date', 50),
-        base44.entities.TrainingSession.filter({ profile_id: p.id }),
-        getEventsForRange(p.id, '2026-01-01', '2027-12-31'),
-        getPendingDecisions(p.id, p.career_date || CAREER_START_DATE),
-      ]);
+      const { t, m, tr, events, pending } = await loadModuleTasks({
+        t: { task: () => base44.entities.Tournament.list('-start_date', 100), fallback: [], label: 'torneios do calendário' },
+        m: { task: () => base44.entities.Match.list('-created_date', 50), fallback: [], label: 'partidas do calendário' },
+        tr: { task: () => base44.entities.TrainingSession.filter({ profile_id: p.id }), fallback: [], label: 'treinos do calendário' },
+        events: { task: () => getEventsForRange(p.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos do calendário' },
+        pending: { task: () => getPendingDecisions(p.id, p.career_date || CAREER_START_DATE), fallback: [], label: 'decisões pendentes' },
+      });
       setTournaments((t || []).map(enrichTournament));
       setMatches(m || []);
       setTrainings(tr || []);
@@ -108,10 +109,10 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
 const updated = await advanceCareerDay(profile);
       setProfile(updated);
       // Refresh events and pending decisions
-      const [events, pending] = await Promise.all([
-        getEventsForRange(updated.id, '2026-01-01', '2027-12-31'),
-        getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE),
-      ]);
+      const { events, pending } = await loadModuleTasks({
+        events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço do dia' },
+        pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço do dia' },
+      });
       setCalendarEvents(events || []);
       setPendingDecisions(pending || []);
       // Move selected day to new career date
@@ -157,10 +158,10 @@ const updated = await advanceCareerDay(profile);
   }
 
   async function handleTournamentComplete() {
-    const [events, pending] = await Promise.all([
-      getEventsForRange(profile.id, '2026-01-01', '2027-12-31'),
-      getPendingDecisions(profile.id, careerDate),
-    ]);
+    const { events, pending } = await loadModuleTasks({
+      events: { task: () => getEventsForRange(profile.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após torneio' },
+      pending: { task: () => getPendingDecisions(profile.id, careerDate), fallback: [], label: 'decisões após torneio' },
+    });
     setCalendarEvents(events || []);
     setPendingDecisions(pending || []);
     const matchesList = await base44.entities.Match.list('-created_date', 50);

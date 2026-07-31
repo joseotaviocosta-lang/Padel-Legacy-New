@@ -5,6 +5,7 @@ import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard } from '@/componen
 import { ENCYCLOPEDIA_ENTRIES, ENCYCLOPEDIA_CATEGORIES } from '@/lib/encyclopediaData';
 import EncyclopediaCard from '@/components/encyclopedia/EncyclopediaCard';
 import EncyclopediaDetail from '@/components/encyclopedia/EncyclopediaDetail';
+import { safeModuleTask } from '@/lib/moduleLoading';
 
 export default function Encyclopedia() {
   const [entries, setEntries] = useState([]);
@@ -17,13 +18,19 @@ export default function Encyclopedia() {
   useEffect(() => {
     (async () => {
       try {
-        const existing = await base44.entities.EncyclopediaEntry.list('-created_date', 500);
+        const existing = await safeModuleTask(
+          () => base44.entities.EncyclopediaEntry.list('-created_date', 500),
+          { label: 'enciclopédia', fallback: [] },
+        );
         const existingNames = new Set((existing || []).map(e => e.name));
         const missing = ENCYCLOPEDIA_ENTRIES.filter(e => !existingNames.has(e.name));
         if (missing.length > 0) {
-          await base44.entities.EncyclopediaEntry.bulkCreate(missing);
-          const all = await base44.entities.EncyclopediaEntry.list('-created_date', 500);
-          setEntries(all || []);
+          await safeModuleTask(() => base44.entities.EncyclopediaEntry.bulkCreate(missing), { label: 'criação da enciclopédia', fallback: null });
+          const all = await safeModuleTask(
+            () => base44.entities.EncyclopediaEntry.list('-created_date', 500),
+            { label: 'releitura da enciclopédia', fallback: ENCYCLOPEDIA_ENTRIES },
+          );
+          setEntries(all || ENCYCLOPEDIA_ENTRIES);
         } else {
           setEntries(existing || []);
         }

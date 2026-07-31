@@ -6,6 +6,7 @@ import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } fro
 import WorldEventCard from '@/components/world/WorldEventCard';
 import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
 import { ensureMacroEvents, getActiveMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META, IMPACT_META } from '@/lib/worldEvents';
+import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const ALL_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -42,11 +43,11 @@ export default function WorldEventsPage() {
         const p = await ensureMyProfile(user);
         setProfile(p);
         const date = p?.career_date || new Date().toISOString().slice(0, 10);
-        await ensureWorldEvents(date, 15);
-        const [list, macros] = await Promise.all([
-          getRecentWorldEvents(50),
-          ensureMacroEvents(date, 2),
-        ]);
+        await safeModuleTask(() => ensureWorldEvents(date, 15), { label: 'inicialização de eventos mundiais', fallback: null });
+        const { list, macros } = await loadModuleTasks({
+          list: { task: () => getRecentWorldEvents(50), fallback: [], label: 'eventos mundiais recentes' },
+          macros: { task: () => ensureMacroEvents(date, 2), fallback: [], label: 'macroeventos' },
+        });
         setEvents(list || []);
         setMacroEvents(macros || []);
       } catch (e) { console.error(e); }

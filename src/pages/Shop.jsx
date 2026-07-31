@@ -12,6 +12,7 @@ import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
 import { RARITY_STYLES, RARITY_ORDER, CATEGORY_META } from '@/lib/equipmentCatalog';
 import { computeItemPrice, BADGE_COLORS, seedMarket } from '@/lib/marketEngine';
 import { ensureExpandedShopCatalog, normalizeShopItem } from '@/lib/storeCatalog';
+import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const PAGE_SIZE = 24;
 
@@ -78,18 +79,18 @@ export default function Shop() {
   useEffect(() => {
     (async () => {
       try {
-        await seedMarket().catch(() => {});
-        await ensureExpandedShopCatalog().catch((e) => console.warn('Catálogo ampliado:', e));
+        await safeModuleTask(() => seedMarket(), { label: 'semente do mercado', fallback: null, timeoutMs: 6000 });
+        await safeModuleTask(() => ensureExpandedShopCatalog(), { label: 'catálogo ampliado', fallback: null, timeoutMs: 6000 });
         const user = await base44.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const [shopItems, inventory, events, histories, contracts] = await Promise.all([
-          base44.entities.ShopItem.filter({ is_available: true }, '-created_date', 500),
-          p ? base44.entities.PlayerInventory.filter({ profile_id: p.id }) : [],
-          base44.entities.MarketEvent.filter({ is_active: true }, '-priority', 20),
-          base44.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200),
-          p ? base44.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }) : [],
-        ]);
+        const { shopItems, inventory, events, histories, contracts } = await loadModuleTasks({
+          shopItems: { task: () => base44.entities.ShopItem.filter({ is_available: true }, '-created_date', 500), fallback: [], label: 'itens da loja' },
+          inventory: { task: () => p ? base44.entities.PlayerInventory.filter({ profile_id: p.id }) : [], fallback: [], label: 'inventário' },
+          events: { task: () => base44.entities.MarketEvent.filter({ is_active: true }, '-priority', 20), fallback: [], label: 'eventos do mercado' },
+          histories: { task: () => base44.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200), fallback: [], label: 'histórico de preços' },
+          contracts: { task: () => p ? base44.entities.PlayerContract.filter({ profile_id: p.id, is_active: true }) : [], fallback: [], label: 'contratos ativos' },
+        }, { timeoutMs: 8000 });
         setItems((shopItems || []).filter(Boolean).map(normalizeShopItem).map(item => ({ ...item, price: safePrice(item.price) })));
         setOwnedIds(new Set((inventory || []).map(i => i.item_id)));
         setEquippedItems((inventory || []).filter(i => i.equipped));

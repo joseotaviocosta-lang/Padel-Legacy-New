@@ -5,6 +5,7 @@ import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import { getWeatherForecast, getWeatherStats, WEATHER_META, enrichTournamentWeather } from '@/lib/weather';
 import WeatherCard from '@/components/weather/WeatherCard';
+import { loadModuleTasks } from '@/lib/moduleLoading';
 
 const TABS = [
   { id: 'previsao', label: 'Previsão' },
@@ -25,10 +26,10 @@ export default function Weather() {
         const user = await base44.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const [fc, st] = await Promise.all([
-          getWeatherForecast(p?.career_date, 12),
-          getWeatherStats(100),
-        ]);
+        const { fc, st } = await loadModuleTasks({
+          fc: { task: () => getWeatherForecast(p?.career_date, 12), fallback: [], label: 'previsão do tempo' },
+          st: { task: () => getWeatherStats(100), fallback: null, label: 'histórico climático' },
+        });
         setForecast(fc);
         setStats(st);
       } catch (e) { console.error(e); }

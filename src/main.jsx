@@ -10,6 +10,7 @@ import { setupSprint2IntegrationTest } from './gameplay/tests/Sprint2Integration
 import { setupProfileLoadingHotfixTest } from './gameplay/tests/ProfileLoadingHotfixTest.js';
 import { setupInitializationRegressionTest } from './gameplay/tests/InitializationRegressionTest.js';
 import { setupInitialDataRegressionTest } from './gameplay/tests/InitialDataRegressionTest.js';
+import { setupModuleStabilityTest } from './gameplay/tests/ModuleStabilityTest.js';
 import "./index.css";
 
 if (import.meta.env.DEV) {
@@ -34,6 +35,7 @@ if (import.meta.env.DEV) {
     setupProfileLoadingHotfixTest();
     setupInitializationRegressionTest();
     setupInitialDataRegressionTest();
+    setupModuleStabilityTest();
   } catch (error) {
     console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
   }

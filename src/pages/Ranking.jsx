@@ -5,6 +5,7 @@ import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays } fro
 import { overallRating } from '@/lib/padel';
 import { ProfileMini } from '@/components/padel/Shared';
 import { LoadingScreen, PageHeader, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
+import { loadModuleTasks } from '@/lib/moduleLoading';
 
 const TABS = [
   { key: 'circuit', label: 'Circuito', icon: Trophy },
@@ -26,12 +27,12 @@ export default function Ranking() {
   useEffect(() => {
     (async () => {
       try {
-        const [p, c, t, a] = await Promise.all([
-          base44.entities.PlayerProfile.list('-xp', 100),
-          base44.entities.Club.list('-club_points', 100),
-          base44.entities.TeamRanking.list('-ranking_points', 100),
-          base44.entities.AthleteProfile.list('ranking_position', 200),
-        ]);
+        const { p, c, t, a } = await loadModuleTasks({
+          p: { task: () => base44.entities.PlayerProfile.list('-xp', 100), fallback: [], label: 'perfis do ranking' },
+          c: { task: () => base44.entities.Club.list('-club_points', 100), fallback: [], label: 'clubes do ranking' },
+          t: { task: () => base44.entities.TeamRanking.list('-ranking_points', 100), fallback: [], label: 'ranking de duplas' },
+          a: { task: () => base44.entities.AthleteProfile.list('ranking_position', 200), fallback: [], label: 'atletas do ranking' },
+        });
         setPlayers(p || []);
         setClubs(c || []);
         setTeams(t || []);

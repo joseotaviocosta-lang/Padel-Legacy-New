@@ -5,6 +5,7 @@ import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { evolveWorldMarket, getWorldMarketSnapshot, getPlayerScoutingReports, getScoutingLevels, scoutAthlete, toggleShortlist, getNegotiationPreview, submitPartnerOffer } from '@/game-core';
 import { useToast } from '@/components/ui/use-toast';
+import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const STATUS_LABELS = { livre: 'Livre', contratado: 'Contratado', lesionado: 'Lesionado', aposentado: 'Aposentado' };
 const RECOMMENDATION_LABELS = { prioridade: 'Prioridade', acompanhar: 'Acompanhar', cautela: 'Cautela' };
@@ -40,12 +41,12 @@ export default function WorldMarket() {
       const currentProfile = await ensureMyProfile(user);
       setProfile(currentProfile);
       const date = currentProfile?.career_date || new Date().toISOString().slice(0, 10);
-      const [market, scoutingReports] = await Promise.all([
-        getWorldMarketSnapshot(date),
-        getPlayerScoutingReports(currentProfile?.id),
-      ]);
-      setSnapshot(market);
-      setReports(scoutingReports);
+      const { market, scoutingReports } = await loadModuleTasks({
+        market: { task: () => getWorldMarketSnapshot(date), fallback: { athletes: [], active: [], processed: false }, label: 'mercado mundial' },
+        scoutingReports: { task: () => getPlayerScoutingReports(currentProfile?.id), fallback: [], label: 'relatórios de scouting' },
+      }, { timeoutMs: 10000 });
+      setSnapshot(market || { athletes: [], active: [], processed: false });
+      setReports(scoutingReports || []);
     } catch (error) {
       console.error(error);
       toast({ title: 'Erro no mercado', description: error.message || 'Não foi possível carregar o mercado mundial.', variant: 'destructive' });
@@ -53,7 +54,11 @@ export default function WorldMarket() {
   }
 
   async function refreshReports(profileId = profile?.id) {
-    setReports(await getPlayerScoutingReports(profileId));
+    const nextReports = await safeModuleTask(() => getPlayerScoutingReports(profileId), {
+      label: 'relatórios de scouting',
+      fallback: [],
+    });
+    setReports(nextReports || []);
   }
 
   async function processMonth() {

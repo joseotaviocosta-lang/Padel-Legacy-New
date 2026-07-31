@@ -6,6 +6,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { ACHIEVEMENT_STATS, CATEGORY_META, DIFFICULTY_META } from '@/lib/achievementsData';
 import AchievementCard from '@/components/achievements/AchievementCard';
+import { loadModuleTasks } from '@/lib/moduleLoading';
 
 const VISIBILITY_TABS = [
   { id: 'all', label: 'Todas', icon: Trophy },
@@ -41,10 +42,10 @@ export default function Achievements() {
         const user = await base44.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const [achs, unlocked] = await Promise.all([
-          base44.entities.Achievement.filter({}, '-points', 500),
-          p ? base44.entities.PlayerAchievement.filter({ profile_id: p.id }) : [],
-        ]);
+        const { achs, unlocked } = await loadModuleTasks({
+          achs: { task: () => base44.entities.Achievement.filter({}, '-points', 500), fallback: [], label: 'catálogo de conquistas' },
+          unlocked: { task: () => p ? base44.entities.PlayerAchievement.filter({ profile_id: p.id }) : [], fallback: [], label: 'conquistas do jogador' },
+        });
         setAchievements(achs || []);
         setUnlockedIds(new Set((unlocked || []).map(u => u.achievement_id)));
       } catch (e) { console.error(e); }
