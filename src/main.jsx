@@ -1,4 +1,5 @@
 import { runMatchEngineTest } from '@/engine/match/MatchEngineTest.js';
+import { setupPersonalityModelTest } from '@/engine/match/PersonalityModelTest.js';
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import App from "./App.jsx";
@@ -38,6 +39,7 @@ if (import.meta.env.DEV) {
     setupInitialDataRegressionTest();
     setupModuleStabilityTest();
     setupLocalRuntimeRegressionTest();
+    setupPersonalityModelTest();
   } catch (error) {
     console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
   }
