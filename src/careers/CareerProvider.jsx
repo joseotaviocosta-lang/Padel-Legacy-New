@@ -38,11 +38,23 @@ export function CareerProvider({ children }) {
   }, []);
 
   const createCareer = useCallback(async (payload) => {
-    const result = await careerManager.createCareer(payload);
-    gameRepository.setActiveCareer(result.career);
-    setActiveCareer(result.career);
-    await reloadCareers();
-    return result;
+    setLoading(true);
+    setError('');
+    try {
+      const result = await careerManager.createCareer(payload);
+
+      // A navegação só recebe a carreira depois que CareerManager confirmou
+      // que o arquivo principal está legível e o índice foi persistido.
+      gameRepository.setActiveCareer(result.career);
+      setActiveCareer(result.career);
+      await reloadCareers();
+      return result;
+    } catch (e) {
+      setError(e.message || 'Falha ao criar carreira');
+      throw e;
+    } finally {
+      setLoading(false);
+    }
   }, [reloadCareers]);
 
   const renameCareer = useCallback(async (careerId, newName) => {

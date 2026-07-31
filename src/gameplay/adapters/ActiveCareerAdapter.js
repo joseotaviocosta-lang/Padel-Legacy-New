@@ -24,28 +24,51 @@ export class ActiveCareerAdapter {
   }
 
   async getActiveCareer({ fresh = false } = {}) {
-    // A carreira mantida em memória é a fonte imediata durante a transição
-    // entre a criação/seleção do save e a montagem das telas do jogo. Consultar
-    // primeiro o índice podia apagar essa referência quando o bootstrap e a
-    // navegação ocorriam em paralelo, causando "Nenhuma carreira ativa" no
-    // primeiro PlayerProfile.create().
-    if (!fresh && this.activeCareer?.career_id && this.activeCareerId === this.activeCareer.career_id) {
-      return clone(this.activeCareer);
-    }
+    // Toda leitura fresca deve aguardar gravações já enfileiradas. Isso impede
+    // que componentes montados logo após a criação do save leiam o arquivo
+    // enquanto uma mutação anterior ainda está sendo concluída.
+    await this.writeChain.catch(() => {});
 
-    // Em leituras frescas, preserve o id já selecionado em memória. O índice é
-    // usado como fallback para inicializações/reaberturas da aplicação.
+    const memoryCareer = (
+      this.activeCareer?.career_id
+      && this.activeCareerId === this.activeCareer.career_id
+    ) ? clone(this.activeCareer) : null;
+
+    if (!fresh && memoryCareer) return memoryCareer;
+
+    // Preserve o id selecionado em memória. O índice só é consultado ao abrir
+    // novamente o aplicativo ou quando ainda não houve seleção nesta sessão.
     const careerId = this.activeCareerId || await this.careerManager.getLastCareer();
     if (!careerId) {
       this.clearActiveCareer();
       return null;
     }
 
-    const career = fresh
-      ? await this.careerManager.readCareer(careerId)
-      : await this.careerManager.loadCareer(careerId);
-    this.setActiveCareer(career);
-    return clone(this.activeCareer);
+    try {
+      const career = fresh
+        ? await this.careerManager.readCareer(careerId)
+        : await this.careerManager.loadCareer(careerId);
+      this.setActiveCareer(career);
+      return clone(this.activeCareer);
+    } catch (error) {
+      // Durante a primeira montagem, a referência em memória já representa a
+      // carreira recém-criada e validada. Caso o sistema de arquivos ainda não
+      // exponha o arquivo naquele instante, não derrube ranking, tutorial ou
+      // escolha do lado: use a cópia em memória e deixe a próxima gravação
+      // consolidar o estado. Erros sem carreira em memória continuam fatais.
+      const isMissingFile = error?.code === 'FILE_NOT_FOUND'
+        || error?.code === 'CAREER_NOT_FOUND'
+        || /arquivo não existe|carreira não encontrada no armazenamento/i.test(String(error?.message || ''));
+
+      if (memoryCareer && memoryCareer.career_id === careerId && isMissingFile) {
+        console.warn('[Career] leitura antecipada do save; usando carreira ativa em memória.', {
+          careerId,
+          code: error?.code,
+        });
+        return memoryCareer;
+      }
+      throw error;
+    }
   }
 
   async ensureActiveCareer(options) {

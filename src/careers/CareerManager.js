@@ -49,6 +49,25 @@ export class CareerManager {
     this.initialized = true;
   }
 
+
+  async waitUntilCareerIsReadable(careerId, { attempts = 6, delayMs = 25 } = {}) {
+    let lastError = null;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+      try {
+        if (await this.repository.careerExists(careerId)) {
+          return await this.repository.readCareer(careerId);
+        }
+      } catch (error) {
+        lastError = error;
+      }
+      if (attempt < attempts) {
+        await new Promise((resolve) => setTimeout(resolve, delayMs));
+      }
+    }
+    if (lastError) throw lastError;
+    throw new Error(`A carreira ${careerId} não ficou disponível após a gravação.`);
+  }
+
   async loadFreshIndex() {
     await this.initialize();
     const index = await this.repository.readIndex();
@@ -89,6 +108,12 @@ export class CareerManager {
     index.last_career_id = defaultData.career_id;
 
     await this.repository.writeCareer(defaultData.career_id, defaultData);
+
+    // Só publique a carreira no índice e para a interface depois que o arquivo
+    // principal puder ser relido. Isso fecha a janela em que o tutorial e o
+    // ranking montavam contra um save ainda não visível no armazenamento.
+    const persistedCareer = await this.waitUntilCareerIsReadable(defaultData.career_id);
+
     try {
       await this.repository.writeIndex(index);
     } catch (error) {
@@ -97,8 +122,8 @@ export class CareerManager {
     }
 
     return {
-      summary,
-      career: defaultData,
+      summary: createSummaryFromCareer(persistedCareer),
+      career: persistedCareer,
     };
   }
 
