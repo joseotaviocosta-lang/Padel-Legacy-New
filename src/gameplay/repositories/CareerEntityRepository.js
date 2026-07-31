@@ -1,5 +1,5 @@
 import { gameRepository as repository } from '../services/runtime.js';
-import { LOCAL_SEED, LOCAL_PROFILE } from '@/local/localSeed.js';
+import { seedCollection } from '../services/CareerInitialDataService.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -65,24 +65,21 @@ export class CareerEntityRepository {
   }
 
   seedFor(entityName, career) {
-    if (entityName === 'PlayerProfile' || entityName === 'User') return [];
-    const activePlayerId = career?.player?.id || null;
-    return clone(LOCAL_SEED[entityName] || []).map((row) => {
-      const seeded = { ...row };
-      if (activePlayerId && seeded.profile_id === LOCAL_PROFILE.id) seeded.profile_id = activePlayerId;
-      if (activePlayerId && seeded.created_by_id === LOCAL_PROFILE.id) seeded.created_by_id = activePlayerId;
-      return seeded;
-    });
+    return seedCollection(entityName, career?.player?.id || null);
   }
 
-  async ensureCollection(entityName, career) {
-    if (!Array.isArray(career.entities[entityName])) career.entities[entityName] = this.seedFor(entityName, career);
-    return career.entities[entityName];
+  ensureCollection(entityName, career, { persist = false } = {}) {
+    const existing = career.entities?.[entityName];
+    if (Array.isArray(existing)) return existing;
+
+    const seeded = this.seedFor(entityName, career);
+    if (persist) career.entities[entityName] = seeded;
+    return seeded;
   }
 
   async list(entityName, sort = null, limit = null) {
     return this.withCareer(async (career) => {
-      const rows = await this.ensureCollection(entityName, career);
+      const rows = this.ensureCollection(entityName, career);
       const out = sortRows(rows, sort);
       return limit ? out.slice(0, limit) : out;
     }, { save: false });
@@ -90,7 +87,7 @@ export class CareerEntityRepository {
 
   async filter(entityName, query = {}, sort = null, limit = null) {
     return this.withCareer(async (career) => {
-      const rows = await this.ensureCollection(entityName, career);
+      const rows = this.ensureCollection(entityName, career);
       const out = sortRows(rows.filter((row) => matches(row, query)), sort);
       return limit ? out.slice(0, limit) : out;
     }, { save: false });
@@ -98,7 +95,7 @@ export class CareerEntityRepository {
 
   async get(entityName, id) {
     return this.withCareer(async (career) => {
-      const rows = await this.ensureCollection(entityName, career);
+      const rows = this.ensureCollection(entityName, career);
       const found = rows.find((row) => row.id === id);
       if (!found) throw new Error(`${entityName} não encontrado: ${id}`);
       return found;
@@ -107,7 +104,7 @@ export class CareerEntityRepository {
 
   async create(entityName, data = {}) {
     return this.withCareer(async (career) => {
-      const rows = await this.ensureCollection(entityName, career);
+      const rows = this.ensureCollection(entityName, career, { persist: true });
       const timestamp = new Date().toISOString();
       const record = { ...clone(data), id: data.id || makeId(entityName.toLowerCase()), created_date: data.created_date || timestamp, updated_date: timestamp };
       rows.push(record);
@@ -117,7 +114,7 @@ export class CareerEntityRepository {
 
   async update(entityName, id, data = {}) {
     return this.withCareer(async (career) => {
-      const rows = await this.ensureCollection(entityName, career);
+      const rows = this.ensureCollection(entityName, career, { persist: true });
       const index = rows.findIndex((row) => row.id === id);
       if (index < 0) throw new Error(`${entityName} não encontrado para atualização: ${id}`);
       rows[index] = { ...rows[index], ...clone(data), id, updated_date: new Date().toISOString() };
@@ -127,7 +124,7 @@ export class CareerEntityRepository {
 
   async delete(entityName, id) {
     return this.withCareer(async (career) => {
-      const rows = await this.ensureCollection(entityName, career);
+      const rows = this.ensureCollection(entityName, career, { persist: true });
       const index = rows.findIndex((row) => row.id === id);
       if (index >= 0) rows.splice(index, 1);
       return { success: true };

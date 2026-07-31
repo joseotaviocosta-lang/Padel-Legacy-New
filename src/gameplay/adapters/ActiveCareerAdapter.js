@@ -1,4 +1,5 @@
 import { CareerManager } from '../../careers/CareerManager.js';
+import { initializeCareerInitialData } from '../services/CareerInitialDataService.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -105,6 +106,7 @@ export class ActiveCareerAdapter {
             updated_date: new Date().toISOString(),
           };
         }
+        initializeCareerInitialData(career);
         return career.player;
       }
 
@@ -115,7 +117,15 @@ export class ActiveCareerAdapter {
         created_date: profile.created_date || now,
         updated_date: now,
       };
+      initializeCareerInitialData(career);
       return career.player;
+    });
+    return clone(transaction.result);
+  }
+
+  async ensureInitialData() {
+    const transaction = await this.mutateActiveCareer(async (career) => {
+      return initializeCareerInitialData(career);
     });
     return clone(transaction.result);
   }

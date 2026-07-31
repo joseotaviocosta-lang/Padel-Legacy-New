@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.3.0-foundation.1",
+  "version": "0.3.1-beta.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
