@@ -19,6 +19,8 @@ import { useToast } from '@/components/ui/use-toast';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const TIER_DOT = {
+  Regional: 'bg-slate-500',
+  Challenger: 'bg-emerald-500',
   P2: 'bg-cyan-500',
   P1: 'bg-purple-500',
   Major: 'bg-amber-500',
@@ -231,8 +233,8 @@ const updated = await advanceCareerDay(profile);
                   <div className="flex-1 min-w-0">
                     <p className="font-semibold text-sm truncate">{t.name}</p>
                     <div className="flex items-center gap-2 mt-0.5">
-                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${TIER_DOT[t.tier]} bg-opacity-15`}>
-                        <span className={`h-1.5 w-1.5 rounded-full ${TIER_DOT[t.tier]}`} /> {t.tier}
+                      <span className={`inline-flex items-center gap-1 text-[9px] font-bold uppercase px-1.5 py-0.5 rounded ${TIER_DOT[t.tier] || TIER_DOT.P2} bg-opacity-15`}>
+                        <span className={`h-1.5 w-1.5 rounded-full ${TIER_DOT[t.tier] || TIER_DOT.P2}`} /> {t.tier}
                       </span>
                       <span className="text-[10px] text-muted-foreground">{t.location?.split(',')[0]}</span>
                       {isRegistered && <span className="text-[9px] text-primary font-bold">✓ Inscrito</span>}

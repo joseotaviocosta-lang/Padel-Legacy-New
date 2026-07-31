@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trophy, MapPin, Coins, Zap, Star, Calendar, Lock, CheckCircle, AlertCircle, Award } from 'lucide-react';
+import { X, Trophy, MapPin, Coins, Zap, Star, Calendar, Lock, CheckCircle, AlertCircle, Award, Shield } from 'lucide-react';
 import { formatDate } from '@/lib/padel';
 import { daysBetween } from '@/lib/career';
 import { SURFACE_META, PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen } from '@/lib/calendarSystem';
@@ -9,6 +9,8 @@ const TIER_STYLES = {
   Major: { badge: 'bg-amber-500/15 text-amber-300 border-amber-500/40', icon: Trophy, label: 'Major' },
   P1: { badge: 'bg-purple-500/15 text-purple-300 border-purple-500/30', icon: Award, label: 'P1' },
   P2: { badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30', icon: Award, label: 'P2' },
+  Challenger: { badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', icon: Shield, label: 'Challenger' },
+  Regional: { badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30', icon: MapPin, label: 'Regional' },
 };
 
 export default function TournamentRegistrationModal({ tournament, profile, teamRank = 0, onClose, onRegistered }) {
@@ -52,7 +54,13 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
-              <TierIcon className={`h-5 w-5 ${tierStyle.badge.includes('amber') ? 'text-amber-400' : tierStyle.badge.includes('purple') ? 'text-purple-400' : 'text-cyan-400'}`} />
+              <TierIcon className={`h-5 w-5 ${
+                tierStyle.badge.includes('amber') ? 'text-amber-400'
+                  : tierStyle.badge.includes('purple') ? 'text-purple-400'
+                    : tierStyle.badge.includes('emerald') ? 'text-emerald-400'
+                      : tierStyle.badge.includes('slate') ? 'text-slate-300'
+                        : 'text-cyan-400'
+              }`} />
             </div>
             <div>
               <h2 className="text-base font-black leading-tight">{tournament.name}</h2>

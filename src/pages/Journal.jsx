@@ -8,6 +8,8 @@ import WorldFeed from '@/components/world/WorldFeed';
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 const TIER_BADGE = {
+  Regional: 'bg-slate-500/15 text-slate-300',
+  Challenger: 'bg-emerald-500/15 text-emerald-300',
   Major: 'bg-amber-500/15 text-amber-300',
   P1: 'bg-purple-500/15 text-purple-300',
   P2: 'bg-cyan-500/15 text-cyan-300',

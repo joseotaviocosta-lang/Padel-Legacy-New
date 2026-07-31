@@ -5,6 +5,8 @@ import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { SPONSORS } from '@/lib/simulatedData';
 
 const TIER_STYLES = {
+  Regional: { bg: 'bg-slate-500/15', text: 'text-slate-300', label: 'Regional' },
+  Challenger: { bg: 'bg-emerald-500/15', text: 'text-emerald-300', label: 'Challenger' },
   P2: { bg: 'bg-blue-500/15', text: 'text-blue-300', label: 'P2' },
   P1: { bg: 'bg-purple-500/15', text: 'text-purple-300', label: 'P1' },
   Major: { bg: 'bg-amber-500/15', text: 'text-amber-300', label: 'Major' },

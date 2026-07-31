@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { BOTS_BY_DIFFICULTY } from '@/lib/bots';
 import { COACHES_DATA } from '@/lib/coaches';
 import { SPONSOR_CATALOG } from '@/lib/sponsors';
+import { buildSeasonTournaments } from '@/lib/circuitCatalog.js';
 
 // ── Demo Data Generator ──────────────────────────────────────────────────
 // Creates a moderate, coherent set of initial data for demonstration.
@@ -143,61 +144,14 @@ async function seedClubs() {
 }
 
 // ── Tournaments ──────────────────────────────────────────────────────────
-const TIER_REWARDS = {
-  P2: { prize: 500, xp: 50, rank: 25, fee: 50, diff: -1 },
-  P1: { prize: 1200, xp: 120, rank: 60, fee: 100, diff: 0 },
-  Major: { prize: 3000, xp: 300, rank: 150, fee: 200, diff: 1 },
-};
-
-const TOURNAMENT_NAMES = [
-  { name: 'Aberto de São Paulo', tier: 'P2', location: 'São Paulo', surface: 'vidro' },
-  { name: 'Madrid Open', tier: 'P1', location: 'Madrid', surface: 'vidro' },
-  { name: 'Buenos Aires Masters', tier: 'Major', location: 'Buenos Aires', surface: 'vidro' },
-  { name: 'Barcelona Padel Cup', tier: 'P1', location: 'Barcelona', surface: 'cimento' },
-  { name: 'Lisbon Challenger', tier: 'P2', location: 'Lisboa', surface: 'vidro' },
-  { name: 'Stockholm Open', tier: 'P2', location: 'Estocolmo', surface: 'indoor' },
-  { name: 'Paris Padel Major', tier: 'Major', location: 'Paris', surface: 'vidro' },
-  { name: 'Rome Classic', tier: 'P1', location: 'Roma', surface: 'cimento' },
-  { name: 'Rio Padel Open', tier: 'P2', location: 'Rio de Janeiro', surface: 'outdoor' },
-  { name: 'Dubai World Padel', tier: 'Major', location: 'Dubai', surface: 'vidro' },
-  { name: 'Amsterdam Challenger', tier: 'P2', location: 'Amsterdã', surface: 'indoor' },
-  { name: 'Copenhagen Open', tier: 'P1', location: 'Copenhague', surface: 'indoor' },
-];
-
 async function seedTournaments(seasonId) {
-  const existing = await localGame.entities.Tournament.list('-start_date', 200);
-  const has2026 = (existing || []).filter(t => (t.start_date || '').startsWith('2026-'));
-  if (has2026.length >= 10) return 0; // Already seeded
-
-  const toCreate = TOURNAMENT_NAMES.map((t, i) => {
-    const rewards = TIER_REWARDS[t.tier];
-    const month = i + 1;
-    const day = 15; // Mid-month
-    return {
-      name: t.name,
-      description: `${t.tier === 'Major' ? 'Torneio Major' : t.tier} em ${t.location}`,
-      tier: t.tier,
-      format: 'eliminacao_simples',
-      status: 'inscricoes',
-      start_date: `2026-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`,
-      month,
-      bot_difficulty_modifier: rewards.diff,
-      max_participants: 16,
-      prize_coins: rewards.prize,
-      xp_reward: rewards.xp,
-      rank_points: rewards.rank,
-      season_id: seasonId,
-      surface: t.surface,
-      entry_fee: rewards.fee,
-      min_ranking: 0,
-      min_level: 'Iniciante',
-      current_phase: 'inscricoes',
-      location: t.location,
-      year: 2026,
-      participants: [],
-    };
+  const existing = await localGame.entities.Tournament.list('-start_date', 500);
+  const existingCodes = new Set((existing || []).map((tournament) => `${tournament.year || String(tournament.start_date || '').slice(0, 4)}:${tournament.circuit_code || tournament.start_date}`));
+  const toCreate = buildSeasonTournaments(2026, seasonId).filter((tournament) => {
+    const key = `${tournament.year}:${tournament.circuit_code}`;
+    return !existingCodes.has(key);
   });
-  await localGame.entities.Tournament.bulkCreate(toCreate);
+  if (toCreate.length > 0) await localGame.entities.Tournament.bulkCreate(toCreate);
   return toCreate.length;
 }
 

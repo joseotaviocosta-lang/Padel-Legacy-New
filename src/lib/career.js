@@ -8,6 +8,7 @@ import { maybeGenerateMacroEvent, expireMacroEvents } from '@/lib/worldEvents';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents } from '@/lib/calendarSystem';
+import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 export const CAREER_START_DATE = '2026-01-01';
@@ -222,6 +223,17 @@ export async function selectPosition(profile, position) {
 
 // Tournament helpers
 const TOURNAMENT_ROUNDS = {
+  Regional: [
+    { label: 'Quartas de Final', short: 'QF' },
+    { label: 'Semifinal', short: 'SF' },
+    { label: 'Final', short: 'F' },
+  ],
+  Challenger: [
+    { label: 'R16', short: 'R16' },
+    { label: 'Quartas de Final', short: 'QF' },
+    { label: 'Semifinal', short: 'SF' },
+    { label: 'Final', short: 'F' },
+  ],
   P2: [
     { label: 'R32', short: 'R32' },
     { label: 'R16', short: 'R16' },
@@ -245,52 +257,87 @@ const TOURNAMENT_ROUNDS = {
   ],
 };
 
-const TOURNAMENT_ROUND_DIFFS = ['avancado', 'avancado', 'elite', 'elite', 'lenda'];
+const TIER_DIFFICULTY_PATHS = {
+  Regional: ['iniciante', 'iniciante', 'amador'],
+  Challenger: ['iniciante', 'amador', 'amador', 'competitivo'],
+  P2: ['amador', 'competitivo', 'competitivo', 'avancado', 'avancado'],
+  P1: ['competitivo', 'avancado', 'avancado', 'elite', 'elite'],
+  Major: ['avancado', 'elite', 'elite', 'lenda', 'lenda'],
+};
+
+const TIER_REWARD_TABLES = {
+  Regional: {
+    coins: [10, 30, 75, 180],
+    xp: [10, 25, 55, 120],
+    rankPoints: [2, 6, 15, 35],
+  },
+  Challenger: {
+    coins: [20, 55, 120, 260, 500],
+    xp: [15, 40, 90, 170, 300],
+    rankPoints: [5, 12, 30, 60, 110],
+  },
+  P2: {
+    coins: [40, 80, 160, 300, 550, 1000],
+    xp: [25, 50, 100, 200, 400, 800],
+    rankPoints: [10, 25, 50, 85, 130, 200],
+  },
+  P1: {
+    coins: [80, 160, 320, 600, 1100, 2000],
+    xp: [50, 100, 200, 400, 800, 1600],
+    rankPoints: [20, 50, 100, 170, 260, 400],
+  },
+  Major: {
+    coins: [140, 280, 560, 1050, 1925, 3500],
+    xp: [88, 175, 350, 700, 1400, 2800],
+    rankPoints: [35, 88, 175, 298, 455, 700],
+  },
+};
 
 export function getTournamentRounds(tournament) {
   return TOURNAMENT_ROUNDS[tournament?.tier] || TOURNAMENT_ROUNDS.P2;
 }
 
-export function getTournamentDifficulty(tournament, profile) {
-  const baseDiffId = getDifficultyForPlayer(profile);
-  const baseIdx = BOT_DIFFICULTIES.findIndex(d => d.id === baseDiffId);
-  const modifier = tournament?.bot_difficulty_modifier ?? -1;
-  const newIdx = Math.max(0, Math.min(BOT_DIFFICULTIES.length - 1, baseIdx + modifier));
-  return BOT_DIFFICULTIES[newIdx].id;
+export function getTournamentDifficulty(tournament, profile, roundIdx = 0, teamRank = 0) {
+  const path = TIER_DIFFICULTY_PATHS[tournament?.tier] || TIER_DIFFICULTY_PATHS.P2;
+  const baseDifficulty = path[Math.min(roundIdx, path.length - 1)] || 'competitivo';
+  let idx = BOT_DIFFICULTIES.findIndex((difficulty) => difficulty.id === baseDifficulty);
+  if (idx < 0) idx = 0;
+
+  // Cabeças de chave ganham uma estreia mais favorável nos eventos grandes.
+  if (roundIdx === 0 && teamRank > 0) {
+    if (teamRank <= 4) idx -= 2;
+    else if (teamRank <= 8) idx -= 1;
+  }
+
+  // O modificador do torneio continua disponível para eventos especiais.
+  const tierConfig = getTournamentTierConfig(tournament?.tier);
+  const explicitModifier = Number(tournament?.bot_difficulty_modifier);
+  const modifier = Number.isFinite(explicitModifier)
+    ? explicitModifier - tierConfig.difficultyModifier
+    : 0;
+  idx += modifier;
+
+  return BOT_DIFFICULTIES[Math.max(0, Math.min(BOT_DIFFICULTIES.length - 1, idx))].id;
 }
 
-export function generateTournamentOpponent(tournament, profile, roundIdx, excludeIds = []) {
-  const diffId = TOURNAMENT_ROUND_DIFFS[roundIdx] || 'lenda';
+export function generateTournamentOpponent(tournament, profile, roundIdx, excludeIds = [], teamRank = 0) {
+  const diffId = getTournamentDifficulty(tournament, profile, roundIdx, teamRank);
   return getRandomBots(diffId, 2, excludeIds);
 }
 
-// ── Tournament reward system ──────────────────────────────────────────────
-// Tier multipliers: P2 is baseline, P1 is 2x, Major is 3.5x — maintaining
-// proportional prestige between tournament categories.
-const TIER_MULTIPLIERS = { P2: 1, P1: 2, Major: 3.5 };
-
-// Base rewards indexed by roundsWon (0 = eliminated in first round, 5 = champion).
-// Each round advanced increases the reward; the title is worth the most.
-const ROUND_REWARDS = {
-  coins:      [40, 80, 160, 300, 550, 1000],
-  xp:         [25, 50, 100, 200, 400, 800],
-  rankPoints: [10, 25, 50, 85, 130, 200],
-};
-
 export function getTournamentRewards(tier, roundsWon) {
-  const mult = TIER_MULTIPLIERS[tier] || 1;
-  const idx = Math.max(0, Math.min(ROUND_REWARDS.coins.length - 1, roundsWon));
+  const table = TIER_REWARD_TABLES[tier] || TIER_REWARD_TABLES.P2;
+  const idx = Math.max(0, Math.min(table.coins.length - 1, roundsWon));
   return {
-    coins: Math.round(ROUND_REWARDS.coins[idx] * mult),
-    xp: Math.round(ROUND_REWARDS.xp[idx] * mult),
-    rankPoints: Math.round(ROUND_REWARDS.rankPoints[idx] * mult),
+    coins: table.coins[idx],
+    xp: table.xp[idx],
+    rankPoints: table.rankPoints[idx],
   };
 }
 
 // ── Future tournament generation ──────────────────────────────────────────
-// Ensures the calendar extends at least 6 months ahead of the current career
-// date. When it doesn't, replicates the latest year's tournament template
-// into the next year (new season + cloned tournaments with shifted dates).
+// Mantém ao menos 15 meses de calendário, usando um circuito anual com etapas
+// de desenvolvimento (Regional e Challenger) e eventos profissionais.
 export async function ensureFutureTournaments(careerDate) {
   if (!careerDate) return { created: 0, repaired: 0 };
   try {
@@ -298,27 +345,7 @@ export async function ensureFutureTournaments(careerDate) {
     const horizon = new Date(careerD);
     horizon.setMonth(horizon.getMonth() + 15);
 
-    const schedule = [
-      { name: 'Aberto de São Paulo', tier: 'P2', month: 1, day: 15, location: 'São Paulo', surface: 'vidro' },
-      { name: 'Madrid Open', tier: 'P1', month: 2, day: 15, location: 'Madrid', surface: 'vidro' },
-      { name: 'Buenos Aires Masters', tier: 'Major', month: 3, day: 15, location: 'Buenos Aires', surface: 'vidro' },
-      { name: 'Barcelona Padel Cup', tier: 'P1', month: 4, day: 15, location: 'Barcelona', surface: 'cimento' },
-      { name: 'Lisbon Challenger', tier: 'P2', month: 5, day: 15, location: 'Lisboa', surface: 'vidro' },
-      { name: 'Stockholm Open', tier: 'P2', month: 6, day: 15, location: 'Estocolmo', surface: 'indoor' },
-      { name: 'Paris Padel Major', tier: 'Major', month: 7, day: 15, location: 'Paris', surface: 'vidro' },
-      { name: 'Rome Classic', tier: 'P1', month: 8, day: 15, location: 'Roma', surface: 'cimento' },
-      { name: 'Rio Padel Open', tier: 'P2', month: 9, day: 15, location: 'Rio de Janeiro', surface: 'outdoor' },
-      { name: 'Dubai World Padel', tier: 'Major', month: 10, day: 15, location: 'Dubai', surface: 'vidro' },
-      { name: 'Amsterdam Challenger', tier: 'P2', month: 11, day: 15, location: 'Amsterdã', surface: 'indoor' },
-      { name: 'Copenhagen Open', tier: 'P1', month: 12, day: 15, location: 'Copenhague', surface: 'indoor' },
-    ];
-    const rewards = {
-      P2: { prize: 1000, xp: 500, rank: 200, fee: 100, diff: -1 },
-      P1: { prize: 2000, xp: 1000, rank: 400, fee: 250, diff: 0 },
-      Major: { prize: 3500, xp: 1750, rank: 700, fee: 500, diff: 1 },
-    };
-
-    const tournaments = (await localGame.entities.Tournament.list('-start_date', 1000)) || [];
+    const tournaments = (await localGame.entities.Tournament.list('-start_date', 2000)) || [];
     const seasons = (await localGame.entities.Season.list('-start_date', 100)) || [];
     const seasonByYear = new Map();
     for (const season of seasons) {
@@ -326,8 +353,13 @@ export async function ensureFutureTournaments(careerDate) {
       if (year) seasonByYear.set(year, season);
     }
 
+    const existingByCodeAndYear = new Map();
     const existingByDate = new Map();
     for (const tournament of tournaments) {
+      const year = Number(tournament?.year || String(tournament?.start_date || '').slice(0, 4));
+      if (tournament?.circuit_code && year) {
+        existingByCodeAndYear.set(`${year}:${tournament.circuit_code}`, tournament);
+      }
       if (tournament?.start_date) existingByDate.set(tournament.start_date, tournament);
     }
 
@@ -339,7 +371,7 @@ export async function ensureFutureTournaments(careerDate) {
         try {
           season = await localGame.entities.Season.create({
             name: `Temporada ${year}`,
-            description: `Circuito profissional de padel ${year}`,
+            description: `Circuito Mundial de Padel ${year}`,
             start_date: `${year}-01-01`,
             end_date: `${year}-12-31`,
             is_active: year === careerD.getFullYear(),
@@ -351,58 +383,39 @@ export async function ensureFutureTournaments(careerDate) {
         }
       }
 
-      for (const stage of schedule) {
-        const date = `${year}-${String(stage.month).padStart(2, '0')}-${String(stage.day).padStart(2, '0')}`;
-        const dateObj = new Date(`${date}T00:00:00`);
+      const annualSchedule = buildSeasonTournaments(year, season?.id);
+      for (const payload of annualSchedule) {
+        const dateObj = new Date(`${payload.start_date}T00:00:00`);
         if (dateObj < careerD || dateObj > horizon) continue;
-        const r = rewards[stage.tier];
-        const existing = existingByDate.get(date);
-        const payload = {
-          name: stage.name,
-          description: `${stage.tier === 'Major' ? 'Torneio Major' : stage.tier} em ${stage.location}`,
-          tier: stage.tier,
-          format: 'eliminacao_simples',
-          status: 'inscricoes',
-          start_date: date,
-          month: stage.month,
-          year,
-          bot_difficulty_modifier: r.diff,
-          max_participants: 32,
-          prize_coins: r.prize,
-          xp_reward: r.xp,
-          rank_points: r.rank,
-          season_id: season?.id,
-          surface: stage.surface,
-          entry_fee: r.fee,
-          min_ranking: 0,
-          min_level: 'Iniciante',
-          current_phase: 'inscricoes',
-          location: stage.location,
-        };
+
+        const key = `${year}:${payload.circuit_code}`;
+        const existing = existingByCodeAndYear.get(key) || existingByDate.get(payload.start_date);
         try {
           if (existing?.id) {
-            // Registros futuros herdavam "concluído" e campeão de anos anteriores.
+            const { id: _generatedId, ...updatePayload } = payload;
             await localGame.entities.Tournament.update(existing.id, {
-              ...payload,
-              champion: null,
-              runner_up: null,
-              completed_date: null,
+              ...updatePayload,
+              champion: existing.status === 'finalizado' ? existing.champion : null,
+              runner_up: existing.status === 'finalizado' ? existing.runner_up : null,
+              completed_date: existing.status === 'finalizado' ? existing.completed_date : null,
+              participants: existing.participants || [],
             });
             repaired += 1;
           } else {
             const createdTournament = await localGame.entities.Tournament.create(payload);
-            existingByDate.set(date, createdTournament || payload);
+            existingByCodeAndYear.set(key, createdTournament || payload);
+            existingByDate.set(payload.start_date, createdTournament || payload);
             created += 1;
           }
         } catch (error) {
-          console.warn('Não foi possível criar/corrigir torneio', date, error);
+          console.warn('Não foi possível criar/corrigir torneio', payload.start_date, error);
         }
       }
     }
     return { created, repaired };
-  } catch (e) {
-    console.error('ensureFutureTournaments', e);
-    return { created: 0, repaired: 0, error: e };
+  } catch (error) {
+    console.error('ensureFutureTournaments', error);
+    return { created: 0, repaired: 0, error };
   }
 }
 

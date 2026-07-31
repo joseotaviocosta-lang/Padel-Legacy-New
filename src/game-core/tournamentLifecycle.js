@@ -36,6 +36,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
     xp: newXp,
     level: levelForXp(newXp),
     tournaments_played: (Number(profile?.tournaments_played) || 0) + 1,
+    rank_points: (Number(profile?.rank_points) || 0) + rewards.rankPoints,
   };
 
   if (champion) {

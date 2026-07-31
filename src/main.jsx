@@ -17,6 +17,7 @@ import { setupInitializationRegressionTest } from './gameplay/tests/Initializati
 import { setupInitialDataRegressionTest } from './gameplay/tests/InitialDataRegressionTest.js';
 import { setupModuleStabilityTest } from './gameplay/tests/ModuleStabilityTest.js';
 import { setupLocalRuntimeRegressionTest } from './gameplay/tests/LocalRuntimeRegressionTest.js';
+import { setupCircuitSeasonTest } from './gameplay/tests/CircuitSeasonTest.js';
 import "./index.css";
 
 if (import.meta.env.DEV) {
@@ -43,6 +44,7 @@ if (import.meta.env.DEV) {
     setupInitialDataRegressionTest();
     setupModuleStabilityTest();
     setupLocalRuntimeRegressionTest();
+    setupCircuitSeasonTest();
     setupPersonalityModelTest();
     setupContextualDecisionTest();
     setupAdvancedNarrativeStatsTest();

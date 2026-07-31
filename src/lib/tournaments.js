@@ -41,7 +41,9 @@ function hashString(str) {
 function generateAudience(tier, hash) {
   if (tier === 'Major') return 100000 + (hash % 400000);
   if (tier === 'P1') return 20000 + (hash % 60000);
-  return 5000 + (hash % 15000);
+  if (tier === 'P2') return 5000 + (hash % 15000);
+  if (tier === 'Challenger') return 1200 + (hash % 5000);
+  return 250 + (hash % 1200);
 }
 
 export function enrichTournament(t) {
@@ -82,6 +84,8 @@ export function computeCircuitStats(tournaments) {
     Major: finished.filter(t => t.tier === 'Major').length,
     P1: finished.filter(t => t.tier === 'P1').length,
     P2: finished.filter(t => t.tier === 'P2').length,
+    Challenger: finished.filter(t => t.tier === 'Challenger').length,
+    Regional: finished.filter(t => t.tier === 'Regional').length,
   };
 
   const championCounts = {};

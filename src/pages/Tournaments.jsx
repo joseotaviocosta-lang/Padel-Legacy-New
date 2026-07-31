@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Crown, Flame, Circle, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle } from 'lucide-react';
+import { Crown, Flame, Circle, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, MapPin, Shield } from 'lucide-react';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
 import { simulatePastTournaments } from '@/lib/teamRanking';
@@ -46,6 +46,24 @@ const TIER_CONFIG = {
     diffLabel: 'Equilibrado',
     diffColor: 'text-green-400',
   },
+  Challenger: {
+    label: 'Challenger',
+    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
+    card: 'border-emerald-500/20 hover:border-emerald-500/40',
+    glow: '',
+    icon: Shield,
+    diffLabel: 'Acessível',
+    diffColor: 'text-emerald-400',
+  },
+  Regional: {
+    label: 'Regional',
+    badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
+    card: 'border-slate-500/20 hover:border-slate-500/40',
+    glow: '',
+    icon: MapPin,
+    diffLabel: 'Entrada',
+    diffColor: 'text-slate-300',
+  },
 };
 
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
@@ -55,6 +73,8 @@ const FILTERS = [
   { id: 'Major', label: 'Majors' },
   { id: 'P1', label: 'P1' },
   { id: 'P2', label: 'P2' },
+  { id: 'Challenger', label: 'Challengers' },
+  { id: 'Regional', label: 'Regionais' },
 ];
 
 export default function Tournaments() {
@@ -203,6 +223,8 @@ export default function Tournaments() {
     Major: sorted.filter(t => t.tier === 'Major').length,
     P1: sorted.filter(t => t.tier === 'P1').length,
     P2: sorted.filter(t => t.tier === 'P2').length,
+    Challenger: sorted.filter(t => t.tier === 'Challenger').length,
+    Regional: sorted.filter(t => t.tier === 'Regional').length,
   };
 
   const byMonth = {};
@@ -256,6 +278,8 @@ export default function Tournaments() {
             <SummaryStat icon={Crown} label="Majors" value={counts.Major} color="text-amber-400" />
             <SummaryStat icon={Flame} label="P1" value={counts.P1} color="text-purple-400" />
             <SummaryStat icon={Circle} label="P2" value={counts.P2} color="text-cyan-400" />
+            <SummaryStat icon={Shield} label="Challengers" value={counts.Challenger} color="text-emerald-400" />
+            <SummaryStat icon={MapPin} label="Regionais" value={counts.Regional} color="text-slate-300" />
           </div>
         </div>
       </div>

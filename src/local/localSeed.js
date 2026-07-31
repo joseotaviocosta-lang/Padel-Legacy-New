@@ -1,3 +1,5 @@
+import { buildSeasonTournaments } from '@/lib/circuitCatalog.js';
+
 export const LOCAL_USER = {
   id: 'local-user-001',
   email: 'jose@padellegacy.local',
@@ -95,31 +97,7 @@ const clubs = [
   is_active: true,
 }));
 
-const tournaments = [
-  ['tournament-local-1', 'Open de Porto Alegre', 'P2', '2026-01-15', 50, 1000, 500, 200],
-  ['tournament-local-2', 'Copa Brasil de Padel', 'P1', '2026-02-10', 120, 2500, 900, 400],
-  ['tournament-local-3', 'Madrid Major', 'Major', '2026-03-18', 250, 6000, 1600, 800],
-  ['tournament-local-4', 'Buenos Aires Premier', 'P1', '2026-04-22', 150, 3200, 1000, 450],
-].map(([id, name, tier, start_date, entry_fee, prize_coins, xp_reward, rank_points], index) => ({
-  id, name,
-  description: `Etapa ${tier} do circuito profissional.`,
-  tier,
-  format: 'eliminacao',
-  status: 'inscricoes',
-  current_phase: 'inscricoes',
-  start_date,
-  month: Number(start_date.slice(5, 7)),
-  surface: index % 2 ? 'panoramica' : 'vidro',
-  entry_fee,
-  min_ranking: 0,
-  min_level: 'Iniciante',
-  prize_coins,
-  xp_reward,
-  rank_points,
-  bot_difficulty_modifier: index - 1,
-  max_participants: 32,
-  season_id: 'season-2026',
-}));
+const tournaments = buildSeasonTournaments(2026, 'season-2026');
 
 const achievements = [
   ['achievement-001', 'Primeiro treino', 'Complete seu primeiro treino.', 10, 'training'],
@@ -160,7 +138,7 @@ export const LOCAL_SEED = {
   CircuitSeason: [{ id: 'circuit-season-2026', year: 2026, name: 'Circuito Mundial 2026', is_active: true, total_tournaments: tournaments.length }],
   CalendarEvent: [
     { id: 'cal-001', profile_id: LOCAL_PROFILE.id, event_type: 'training', title: 'Treino técnico', event_date: '2026-01-03', status: 'agendado', is_mandatory: false },
-    { id: 'cal-002', profile_id: LOCAL_PROFILE.id, event_type: 'tournament', title: 'Open de Porto Alegre', event_date: '2026-01-15', status: 'agendado', tournament_id: 'tournament-local-1', is_mandatory: false },
+    { id: 'cal-002', profile_id: LOCAL_PROFILE.id, event_type: 'tournament', title: tournaments[0].name, start_date: tournaments[0].start_date, end_date: tournaments[0].start_date, status: 'scheduled', related_id: tournaments[0].id, tournament_id: tournaments[0].id, is_mandatory: false },
   ],
   TrainingSession: [
     { id: 'training-001', profile_id: LOCAL_PROFILE.id, session_date: '2025-12-28', training_type: 'tecnico', focus_attribute: 'forehand', duration_minutes: 60, energy_cost: 12, xp_gained: 20, attribute_gain: 1, status: 'concluido' },
@@ -168,8 +146,8 @@ export const LOCAL_SEED = {
   TrainingCenter: [{ id: 'center-001', profile_id: LOCAL_PROFILE.id, name: 'Centro Inicial', level: 1, court_level: 1, gym_level: 1, physio_level: 1, psychology_level: 0, nutrition_level: 0, monthly_cost: 250 }],
   Partnership: [],
   TeamRanking: [
-    { id: 'ranking-001', team_key: 'mateo-tomas', player1_name: 'Mateo Ruiz', player2_name: 'Tomás Vidal', rank_points: 2240, ranking_position: 1, wins: 18, losses: 3 },
-    { id: 'ranking-002', team_key: 'lucas-rafael', player1_name: 'Lucas Ferraz', player2_name: 'Rafael Martins', rank_points: 1810, ranking_position: 2, wins: 14, losses: 5 },
+    { id: 'ranking-001', team_key: 'mateo-tomas', player1_name: 'Mateo Ruiz', player2_name: 'Tomás Vidal', ranking_points: 2240, ranking_position: 1, wins: 18, losses: 3 },
+    { id: 'ranking-002', team_key: 'lucas-rafael', player1_name: 'Lucas Ferraz', player2_name: 'Rafael Martins', ranking_points: 1810, ranking_position: 2, wins: 14, losses: 5 },
   ],
   Coach: [
     { id: 'coach-001', name: 'Carlos Mendes', country: 'Brasil', specialty: 'Técnica', reputation: 65, monthly_salary: 500, philosophy: 'Equilíbrio e consistência', is_available: true },

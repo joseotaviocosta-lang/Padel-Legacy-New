@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { X, Crown, Trophy, Coins, Zap, Star, Play, ChevronRight, Bot, CheckCircle, XCircle } from 'lucide-react';
+import { X, Crown, Trophy, Coins, Zap, Star, Play, ChevronRight, Bot, CheckCircle, XCircle, MapPin, Shield } from 'lucide-react';
 import { overallRating, applyMatchRewards, levelForXp, getChemistryBonus, isInjured, injuryRecoveryDays, getEnergyPenalty, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
 import { getTournamentRounds, generateTournamentOpponent, getPartnerBot, getTournamentRewards } from '@/lib/career';
 import { getActivePartnership, recordPartnershipMatch, recordPartnershipTitle } from '@/lib/partnershipSystem';
@@ -13,6 +13,8 @@ const TIER_STYLES = {
   Major: { icon: Crown, color: 'text-amber-400' },
   P1: { icon: Trophy, color: 'text-purple-400' },
   P2: { icon: Trophy, color: 'text-cyan-400' },
+  Challenger: { icon: Shield, color: 'text-emerald-400' },
+  Regional: { icon: MapPin, color: 'text-slate-300' },
 };
 
 export default function TournamentModal({ tournament, profile: initialProfile, onClose, onProfileUpdate, onComplete }) {
@@ -36,9 +38,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   // Generate opponent when round changes
   useEffect(() => {
     const excludeIds = [partner?.id].filter(Boolean);
-    const opp = generateTournamentOpponent(tournament, initialProfile, roundIdx, excludeIds);
+    const opp = generateTournamentOpponent(tournament, initialProfile, roundIdx, excludeIds, teamRank.rank);
     setOpponent(opp);
-  }, [roundIdx]);
+  }, [roundIdx, teamRank.rank, tournament?.id]);
 
   // Fetch team ranking seed
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         coins: (p.coins || 0) + rewards.coins,
         xp: (p.xp || 0) + rewards.xp,
         level: levelForXp((p.xp || 0) + rewards.xp),
+        rank_points: (Number(p.rank_points) || 0) + rewards.rankPoints,
       };
       if (isChampion) {
         updates.tournaments_won = (p.tournaments_won || 0) + 1;
