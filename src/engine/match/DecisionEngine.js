@@ -48,6 +48,9 @@ export class DecisionEngine {
       if (defensive && ['lob', 'bandeja', 'backhand'].includes(shot)) weight += 12;
       if (player.style.includes('pot') && shot === 'smash') weight += 18;
       if (player.style.includes('defens') && shot === 'lob') weight += 18;
+      if ((player.style.includes('ofens') || player.style.includes('finaliz')) && ['smash', 'volley', 'drive'].includes(shot)) weight += 12;
+      if ((player.style.includes('controle') || player.style.includes('construtor')) && ['bandeja', 'chiquita', 'lob'].includes(shot)) weight += 11;
+      if (player.style.includes('contra') && ['lob', 'backhand', 'drive'].includes(shot)) weight += pressure > 50 ? 12 : 5;
       if (tired > 45 && shot === 'smash') { weight -= 12; reasons.push('energia baixa'); }
 
       if (['smash', 'volley', 'drive'].includes(shot)) weight += (attack - 50) / 7;

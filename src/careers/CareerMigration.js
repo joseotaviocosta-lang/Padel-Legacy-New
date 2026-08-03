@@ -3,6 +3,7 @@ import { normalizeCharacterCustomization } from '../lib/characterCustomization.j
 import { repairTournamentCollection } from '../lib/tournamentIntegrity.js';
 import { normalizeTutorialState } from '../onboarding/tutorialState.js';
 import { normalizeAthlete } from '../players/athleteSchema.js';
+import { buildInitialProfile } from '../lib/initialCareerProfiles.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -173,6 +174,29 @@ export function migrateCareer(career) {
     data.metadata = { ...(data.metadata || {}), onboarding_completed: tutorial.status === 'completed' };
     data.save_schema_version = 10;
     version = 10;
+  }
+  if (version < 11) {
+    const player = { ...(data.player || {}) };
+    const styleAliases = { agressivo: 'ofensivo', técnico: 'construtor', tecnico: 'construtor', defensive: 'defensivo', control: 'controle', balanced: 'equilibrado', offensive: 'ofensivo' };
+    const rawStyle = String(player.play_style || '').trim().toLowerCase();
+    const mappedStyle = styleAliases[rawStyle] || rawStyle || null;
+    player.handedness = ['right', 'left'].includes(player.handedness) ? player.handedness : 'right';
+    player.dominant_hand = player.handedness;
+    player.handedness_inferred = !['right', 'left'].includes(data.player?.handedness);
+    if (mappedStyle) player.play_style = mappedStyle;
+    if (player.court_side && mappedStyle) {
+      try {
+        const build = buildInitialProfile({ handedness: player.handedness, preferredSide: player.court_side, playStyle: mappedStyle });
+        player.tactical_role = player.tactical_role || build.tactical_role;
+        player.archetype_id = player.archetype_id || build.archetype_id;
+        player.archetype_label = player.archetype_label || build.archetype_label;
+        player.recommended_training_attributes = player.recommended_training_attributes || build.recommended_attributes;
+      } catch { /* Preserve unknown legacy combinations without changing attributes. */ }
+    }
+    data.player = player;
+    data.metadata = { ...data.metadata, play_style: mappedStyle || data.metadata?.play_style || null };
+    data.save_schema_version = 11;
+    version = 11;
   }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

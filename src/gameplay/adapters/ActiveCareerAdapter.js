@@ -153,6 +153,8 @@ export class ActiveCareerAdapter {
         career.metadata.play_style = updates.play_style;
         career.metadata.style_selected = Boolean(updates.play_style);
       }
+      if (Object.prototype.hasOwnProperty.call(updates, 'handedness')) career.metadata.handedness = updates.handedness;
+      if (Object.prototype.hasOwnProperty.call(updates, 'archetype_id')) career.metadata.archetype_id = updates.archetype_id;
       if (Object.prototype.hasOwnProperty.call(updates, 'onboarding_completed')) {
         career.metadata.onboarding_completed = Boolean(updates.onboarding_completed);
       }

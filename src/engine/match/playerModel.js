@@ -18,13 +18,17 @@ export function normalizePlayer(raw, team, index) {
   const overall = overallRating(raw) || 50;
   const style = String(raw?.play_style || raw?.style || 'Equilibrado').toLowerCase();
   const behavior = createBehaviorProfile(raw);
+  const rawSide = String(raw?.preferred_side || raw?.court_side || '').toLowerCase();
+  const side = rawSide === 'left' || rawSide === 'esquerda' ? 'left' : rawSide === 'right' || rawSide === 'direita' ? 'right' : (index === 0 ? 'left' : 'right');
 
   return {
     id: raw?.id || `${team}-${index}`,
     name: raw?.sport_name || raw?.name || `Jogador ${index + 1}`,
     team,
-    side: index === 0 ? 'left' : 'right',
+    side,
     style,
+    handedness: raw?.handedness || raw?.dominant_hand || 'right',
+    tacticalRole: raw?.tactical_role || null,
     overall,
     attributes: {
       serve: number(raw?.serve, overall),
@@ -54,7 +58,7 @@ export function normalizePlayer(raw, team, index) {
     energy: clamp(number(raw?.energy, 100)),
     confidence: clamp(number(raw?.morale ?? raw?.confidence, 70)),
     chemistry: clamp(number(raw?.chemistry ?? raw?.entrosamento ?? raw?.team_chemistry, 50)),
-    position: { zone: 'back', side: index === 0 ? 'left' : 'right', lane: index === 0 ? 'left' : 'right' },
+    position: { zone: 'back', side, lane: side },
   };
 }
 

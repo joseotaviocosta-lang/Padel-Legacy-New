@@ -1,4 +1,4 @@
-export const COURT_SIDES = Object.freeze(['direita', 'esquerda']);
+export const COURT_SIDES = Object.freeze(['direita', 'esquerda', 'versatil']);
 
 export function normalizeCourtSide(value) {
   return COURT_SIDES.includes(value) ? value : null;

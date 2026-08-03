@@ -9,7 +9,8 @@ const NAMES = {
   França: [['Alexandre', 'Clément', 'Hugo', 'Julien', 'Louis', 'Mathis', 'Nathan', 'Théo'], ['Bernard', 'Dubois', 'Fontaine', 'Laurent', 'Leroy', 'Martin', 'Moreau', 'Petit']],
 };
 const COUNTRIES = Object.keys(NAMES);
-const STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
+const STYLES = ['controle', 'ofensivo', 'defensivo', 'equilibrado', 'contra_ataque', 'construtor', 'finalizador'];
+const STYLE_ROLES = { controle: 'controlador', ofensivo: 'pressionador', defensivo: 'defensor', equilibrado: 'coringa', contra_ataque: 'defensor', construtor: 'construtor', finalizador: 'finalizador' };
 const PERSONALITIES = ['carismatico', 'reservado', 'competitivo', 'calmo', 'lider', 'perfeccionista'];
 const ATTRIBUTES = ['serve', 'forehand', 'backhand', 'volley', 'lob', 'smash', 'bandeja', 'speed', 'stamina', 'strength', 'reflexes', 'tactics', 'positioning', 'concentration', 'resilience'];
 
@@ -26,11 +27,14 @@ export function generateFictionalAthletes({ count = 240, seed = 'padel-legacy-wo
     const preferredSide = sideRoll < 9 ? 'right' : sideRoll < 18 ? 'left' : 'flex';
     const attributes = Object.fromEntries(ATTRIBUTES.map(key => [key, Math.max(1, Math.min(100, overall + number(`${seed}:${index}:${key}`, -7, 7)))]));
     const templateId = `bot:${seed}:${String(index + 1).padStart(4, '0')}`;
+    let playStyle = STYLES[number(`${seed}:${index}:style`, 0, STYLES.length - 1)];
+    const handedness = number(`${seed}:${index}:hand`, 0, 9) === 0 ? 'left' : 'right';
+    if (handedness === 'left' && preferredSide === 'right' && index % 3 === 0) playStyle = index % 2 ? 'ofensivo' : 'finalizador';
     return normalizeAthlete({
       template_id: templateId, source_type: 'fictional', name, country,
-      preferred_side: preferredSide, handedness: number(`${seed}:${index}:hand`, 0, 9) === 0 ? 'left' : 'right',
+      preferred_side: preferredSide, handedness,
       side_flexibility: preferredSide === 'flex' ? 0.88 : number(`${seed}:${index}:flex`, 12, 48) / 100,
-      play_style: STYLES[number(`${seed}:${index}:style`, 0, STYLES.length - 1)],
+      play_style: playStyle, tactical_role: STYLE_ROLES[playStyle], archetype_id: `${preferredSide}-${handedness}-${STYLE_ROLES[playStyle]}`,
       personality: PERSONALITIES[number(`${seed}:${index}:personality`, 0, PERSONALITIES.length - 1)],
       overall, overall_rating: overall, potential: Math.min(100, overall + number(`${seed}:${index}:potential`, 3, 18)),
       age: number(`${seed}:${index}:age`, 18, 37), attributes,

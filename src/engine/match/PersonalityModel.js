@@ -89,6 +89,22 @@ function applyPlayStyle(profile, style) {
     applyModifier(profile, 'risk_tolerance', 9);
     applyModifier(profile, 'net_preference', 10);
   }
+  if (value.includes('ofens') || value.includes('finaliz')) {
+    applyModifier(profile, 'aggression', 12);
+    applyModifier(profile, 'net_preference', 14);
+    applyModifier(profile, 'courage', 7);
+    applyModifier(profile, 'risk_tolerance', 8);
+  }
+  if (value.includes('construtor')) {
+    applyModifier(profile, 'tactical_intelligence', 13);
+    applyModifier(profile, 'control_preference', 13);
+    applyModifier(profile, 'teamwork', 8);
+  }
+  if (value.includes('contra')) {
+    applyModifier(profile, 'lob_preference', 10);
+    applyModifier(profile, 'consistency', 9);
+    applyModifier(profile, 'adaptability', 9);
+  }
   if (value.includes('defens')) {
     applyModifier(profile, 'aggression', -8);
     applyModifier(profile, 'consistency', 10);
@@ -182,10 +198,14 @@ export function createBehaviorProfile(raw = {}) {
 
   applyPersonalityLabel(profile, raw.personality_label || raw.personality || raw.temperament);
   applyPlayStyle(profile, raw.play_style || raw.style);
+  applyPlayStyle(profile, raw.tactical_role);
 
   for (const axis of AXIS_NAMES) profile[axis] = clamp(Math.round(profile[axis]));
 
-  const archetype = resolveArchetype(profile);
+  const inferredArchetype = resolveArchetype(profile);
+  const archetype = raw.archetype_id
+    ? { id: raw.archetype_id, label: raw.archetype_label || inferredArchetype.label }
+    : inferredArchetype;
   const tendencies = createTendencies(profile);
 
   return {

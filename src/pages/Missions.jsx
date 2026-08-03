@@ -6,11 +6,11 @@ import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, missionPe
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
 import { safeModuleTask } from '@/lib/moduleLoading';
-import { CAREER_STYLE_PROFILES, ATTRIBUTE_LABELS, buildInitialAttributes } from '@/lib/initialCareerProfiles';
-import { applyTutorialSide } from '@/lib/tutorialSideState.js';
+import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
+import { TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
 
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
@@ -68,6 +68,9 @@ export default function Missions() {
   const [loadError, setLoadError] = useState('');
   const [actionFeedback, setActionFeedback] = useState('');
   const [actionError, setActionError] = useState('');
+  const [draftHandedness, setDraftHandedness] = useState('right');
+  const [draftSide, setDraftSide] = useState('');
+  const [draftStyle, setDraftStyle] = useState('');
 
   useEffect(() => { load(); }, []);
 
@@ -99,6 +102,8 @@ export default function Missions() {
       const reconciliation = await reconcilePersistedTutorial(p, { registrations, matches, trainings }, missionsData, progData);
       p = reconciliation.profile || p;
       progData = reconciliation.progressRows || progData;
+      setDraftHandedness(p.handedness || 'right');
+      setDraftSide(p.court_side || '');
       setProfile(p);
       setMissions(missionsData || []);
       setProgress(Object.fromEntries((progData || []).map(pr => [pr.mission_id, pr])));
@@ -114,17 +119,19 @@ export default function Missions() {
   const tutorialStatus = profile?.tutorial_onboarding?.status;
   const onboardingStage = tutorialStatus === 'completed' ? 'completed' : tutorialStep?.id;
 
-  async function chooseSide(side) {
-    if (!['direita', 'esquerda'].includes(side) || !profile?.id) return;
+  async function chooseSide() {
+    if (!COURT_SIDE_OPTIONS.some(side => side.id === draftSide) || !profile?.id) return;
     if (savingChoice) return;
     setSavingChoice(true);
     setActionError(''); setActionFeedback('Salvando lado...');
     try {
-      const choice = applyTutorialSide(profile, side);
       const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-        court_side: choice.court_side,
-        play_style: choice.play_style,
-        onboarding_stage: choice.onboarding_stage,
+        handedness: draftHandedness,
+        dominant_hand: draftHandedness,
+        court_side: draftSide,
+        preferred_side: draftSide,
+        play_style: null,
+        onboarding_stage: 'style-selected',
       });
       await incrementMissionProgress(updated.id, 'choose_court_side', 1, updated.career_date);
       await localGame.entities.PlayerProfile.update(updated.id, { onboarding_stage: 'style' });
@@ -160,15 +167,20 @@ export default function Missions() {
 
   async function chooseStyle(style) {
     const side = profile?.court_side;
-    if (!side || !CAREER_STYLE_PROFILES[side]?.[style]) return;
+    if (!side || !PLAY_STYLE_OPTIONS.some(option => option.id === style)) return;
     if (savingChoice) return;
-    const attributes = buildInitialAttributes(side, style);
+    const build = buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: side, playStyle: style });
     setSavingChoice(true);
     setActionError(''); setActionFeedback('Salvando estilo...');
     try {
       const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-        ...attributes,
+        ...build.attributes,
         play_style: style,
+        tactical_role: build.tactical_role,
+        archetype_id: build.archetype_id,
+        archetype_label: build.archetype_label,
+        build_affinity: build.affinity,
+        recommended_training_attributes: build.recommended_attributes,
         unspent_attribute_points: 0,
         onboarding_completed: false,
         onboarding_stage: 'first-training',
@@ -189,6 +201,11 @@ export default function Missions() {
   const nextTutorial = tutorialStatus === 'in_progress' ? tutorialMissions.find(m => m.objective_type === tutorialStep?.objectiveType) : null;
   const tutorialDone = getTutorialProgress(profile?.tutorial_onboarding).completed;
   const inlineAction = ['set_player_name', 'choose_court_side', 'choose_play_style'].includes(nextTutorial?.objective_type);
+  const currentStepIndex = TUTORIAL_STEPS.findIndex(step => step.id === tutorialStep?.id);
+  const anticipatedCompleted = TUTORIAL_STEPS.filter((step, index) => index > currentStepIndex && profile?.tutorial_onboarding?.completedStepIds?.includes(step.id));
+  const buildPreview = draftStyle && profile?.court_side
+    ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle })
+    : null;
   const filtered = tab === 'tutorial' ? tutorialMissions : missions.filter(m => m.mission_type === tab);
   const summary = useMemo(() => {
     const current = filtered;
@@ -224,23 +241,22 @@ export default function Missions() {
         </form>}
 
         {nextTutorial?.objective_type === 'choose_court_side' && <>
-          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Escolha seu lado</p><h2 className="text-2xl font-black mt-2">Onde você prefere jogar?</h2><p className="text-muted-foreground mt-2">Essa escolha define sua responsabilidade principal dentro da dupla.</p></div>
-          <div className="grid md:grid-cols-2 gap-4">
-            <button type="button" disabled={savingChoice} onClick={() => chooseSide('direita')} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors disabled:opacity-50"><h3 className="text-xl font-black">Direita</h3><p className="text-sm text-muted-foreground mt-2">Construção dos pontos, consistência, defesa e organização tática.</p></button>
-            <button type="button" disabled={savingChoice} onClick={() => chooseSide('esquerda')} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors disabled:opacity-50"><h3 className="text-xl font-black">Esquerda</h3><p className="text-sm text-muted-foreground mt-2">Pressão ofensiva, bolas aéreas, potência e definição dos pontos.</p></button>
-          </div>
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Mão e lado preferencial</p><h2 className="text-2xl font-black mt-2">Como você ocupa a quadra?</h2><p className="text-muted-foreground mt-2">Mão dominante e lado são escolhas independentes. Nenhuma delas bloqueará estilos.</p></div>
+          <fieldset><legend className="text-sm font-black mb-2">1. Mão dominante</legend><div className="grid md:grid-cols-2 gap-3">{DOMINANT_HANDS.map(hand => <button type="button" key={hand.id} disabled={savingChoice} onClick={() => setDraftHandedness(hand.id)} aria-pressed={draftHandedness === hand.id} className={`rounded-2xl border p-4 text-left ${draftHandedness === hand.id ? 'border-primary bg-primary/10' : 'border-border/70'}`}><strong>{hand.label}</strong><p className="mt-1 text-xs text-muted-foreground">{hand.description}</p></button>)}</div></fieldset>
+          <fieldset><legend className="text-sm font-black mb-2">2. Lado preferencial</legend><div className="grid md:grid-cols-3 gap-3">{COURT_SIDE_OPTIONS.map(side => <button type="button" key={side.id} disabled={savingChoice} onClick={() => setDraftSide(side.id)} aria-pressed={draftSide === side.id} className={`rounded-2xl border p-4 text-left ${draftSide === side.id ? 'border-primary bg-primary/10' : 'border-border/70'}`}><strong>{side.label}</strong><p className="mt-1 text-xs text-muted-foreground">{side.description}</p></button>)}</div></fieldset>
+          <button type="button" disabled={savingChoice || !draftSide} onClick={chooseSide} className="rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Salvando...' : 'Confirmar mão e lado'}</button>
         </>}
 
         {nextTutorial?.objective_type === 'choose_play_style' && <>
-          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Defina seu estilo</p><h2 className="text-2xl font-black mt-2">Escolha sua identidade tática</h2><p className="text-muted-foreground mt-2">Três atributos ficarão no nível 15. Todos os demais começarão no nível 10.</p></div>
-          <div className="grid md:grid-cols-2 gap-4">
-            {Object.entries(CAREER_STYLE_PROFILES[profile?.court_side] || {}).map(([key, option]) => <button type="button" key={key} disabled={savingChoice} onClick={() => chooseStyle(key)} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors disabled:opacity-50"><h3 className="text-xl font-black">{option.label}</h3><p className="text-sm text-muted-foreground mt-2">{option.description}</p><div className="flex flex-wrap gap-2 mt-4">{option.strengths.map(attr => <span key={attr} className="rounded-full bg-primary/15 text-primary px-3 py-1 text-xs font-bold">{ATTRIBUTE_LABELS[attr]} 15</span>)}</div></button>)}
-          </div>
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Estilo e arquétipo</p><h2 className="text-2xl font-black mt-2">Escolha sua identidade tática</h2><p className="text-muted-foreground mt-2">Todos os estilos estão disponíveis para todos os lados. Afinidade é recomendação, não restrição.</p></div>
+          <div className="grid md:grid-cols-2 gap-3">{PLAY_STYLE_OPTIONS.map(option => <button type="button" key={option.id} disabled={savingChoice} onClick={() => setDraftStyle(option.id)} aria-pressed={draftStyle === option.id} className={`rounded-2xl border p-4 text-left ${draftStyle === option.id ? 'border-primary bg-primary/10' : 'border-border/70'}`}><div className="flex justify-between gap-2"><h3 className="font-black">{option.label}</h3><span className="text-[10px] text-primary">{option.difficulty}</span></div><p className="mt-1 text-xs text-muted-foreground">{option.description}</p><p className="mt-2 text-[10px]">Função: <strong>{option.role}</strong></p></button>)}</div>
+          {buildPreview && <section className="rounded-2xl border border-primary/40 bg-background/60 p-5" aria-label="Resumo do perfil inicial"><div className="flex flex-wrap items-start justify-between gap-3"><div><p className="text-xs uppercase text-primary font-bold">Seu atleta</p><h3 className="text-xl font-black">{buildPreview.archetype_label}</h3><p className="text-sm text-muted-foreground">Afinidade {buildPreview.affinity.level} · {buildPreview.affinity.score}/100 · {buildPreview.difficulty}</p></div><button type="button" disabled={savingChoice} onClick={() => chooseStyle(draftStyle)} className="rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Salvando...' : 'Confirmar perfil'}</button></div><div className="mt-4 grid md:grid-cols-2 gap-4 text-xs"><div><strong>Pontos fortes</strong><ul className="mt-1 list-disc pl-4 text-muted-foreground">{buildPreview.strengths.map(key => <li key={key}>{ATTRIBUTE_LABELS[key]}</li>)}</ul></div><div><strong>Pontos a desenvolver</strong><ul className="mt-1 list-disc pl-4 text-muted-foreground">{buildPreview.weaknesses.map(key => <li key={key}>{ATTRIBUTE_LABELS[key]}</li>)}</ul></div></div><div className="mt-4 grid grid-cols-5 gap-2">{Object.entries(buildPreview.attributes).map(([key, value]) => <div key={key} className="rounded-lg bg-secondary/50 p-2 text-center"><span className="block text-[9px] text-muted-foreground">{ATTRIBUTE_LABELS[key]}</span><strong>{value}</strong></div>)}</div>{buildPreview.affinity.challenges.length > 0 && <p className="mt-3 text-xs text-amber-300"><strong>Desafios:</strong> {buildPreview.affinity.challenges.join('; ')}.</p>}</section>}
         </>}
       </div>}
 
       {actionFeedback && <p role="status" aria-live="polite" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{actionFeedback}</p>}
       {actionError && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{actionError}</p>}
+      {anticipatedCompleted.length > 0 && <p role="status" className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">Ação antecipada reconhecida: {anticipatedCompleted.map(step => step.title).join(', ')}. Você não precisará repeti-la; conclua apenas o passo atual.</p>}
 
       {nextTutorial && !inlineAction ? <div className="glass rounded-2xl border border-primary/40 p-5 bg-primary/5">
         <div className="flex items-start gap-4">
