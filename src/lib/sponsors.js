@@ -426,6 +426,30 @@ export function getSponsorTierStyle(tier) {
   return TIER_STYLES[tier] || TIER_STYLES['Bronze'];
 }
 
+export const SPONSOR_SLOT_LIMITS = { principal: 1, raquete: 1, vestuario: 1, calcado: 1, comercial: 2 };
+
+export function getSponsorCategory(sponsor) {
+  if (sponsor.category) return sponsor.category;
+  const industry = String(sponsor.industry || '').toLocaleLowerCase('pt-BR');
+  if (industry.includes('equip')) return 'raquete';
+  if (industry.includes('vest') || industry.includes('moda')) return 'vestuario';
+  if (industry.includes('calç') || industry.includes('calc')) return 'calcado';
+  if (sponsor.tier === 'Ouro' && Number(sponsor.reputation || 0) >= 90) return 'principal';
+  return 'comercial';
+}
+
+export function validateSponsorSlot(sponsor, activeContracts = []) {
+  const category = getSponsorCategory(sponsor);
+  const sameCategory = (activeContracts || []).filter((contract) => {
+    if (contract.sponsor_category) return contract.sponsor_category === category;
+    const legacySponsor = SPONSOR_CATALOG.find((item) => item.id === contract.sponsor_id || item.name === contract.sponsor_name);
+    return legacySponsor ? getSponsorCategory(legacySponsor) === category : false;
+  });
+  const limit = SPONSOR_SLOT_LIMITS[category] || 1;
+  if (sameCategory.length >= limit) return { ok: false, category, reason: `Slot de ${category} ocupado por ${sameCategory.map((item) => item.sponsor_name).join(', ')}.` };
+  return { ok: true, category, remaining: limit - sameCategory.length };
+}
+
 // ─── Preference Matching ────────────────────────────────────────────────────
 
 export function calculateProfileMatch(sponsor, profile) {
@@ -566,6 +590,10 @@ export function shouldTerminateContract(contract, satisfaction) {
 export async function signSponsorContract(profile, sponsor) {
   const check = canSign(sponsor, profile);
   if (!check.ok) throw new Error(check.reason);
+  const activeContracts = await localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true });
+  if ((activeContracts || []).some((contract) => contract.sponsor_id === sponsor.id)) throw new Error('Este patrocinador já possui contrato ativo.');
+  const slot = validateSponsorSlot(sponsor, activeContracts);
+  if (!slot.ok) throw new Error(slot.reason);
 
   const offer = negotiateOffer(sponsor, profile);
   const careerDate = profile.career_date || '2026-01-01';
@@ -577,6 +605,7 @@ export async function signSponsorContract(profile, sponsor) {
     sponsor_id: sponsor.id,
     sponsor_name: sponsor.name,
     sponsor_tier: sponsor.tier,
+    sponsor_category: slot.category,
     monthly_salary: offer.monthly_salary,
     sign_bonus: offer.sign_bonus,
     started_date: careerDate,
@@ -589,6 +618,9 @@ export async function signSponsorContract(profile, sponsor) {
     goals_progress: {},
     satisfaction_score: 50,
     is_renewable: true,
+    signing_bonus_paid: true,
+    signing_bonus_paid_at: new Date().toISOString(),
+    last_payment_month: null,
   });
 
   return await localGame.entities.PlayerProfile.update(profile.id, {

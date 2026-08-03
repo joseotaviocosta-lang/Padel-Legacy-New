@@ -51,6 +51,7 @@ function generateBotMembers(clubId, count) {
 // ── Actions ────────────────────────────────────────────────────────────────
 
 export async function createClub(profile, clubData) {
+  if (profile?.club_id) throw new Error('Você já possui um clube principal.');
   const foundedDate = profile?.career_date || new Date().toISOString().slice(0, 10);
   const club = await localGame.entities.Club.create({
     ...clubData,
@@ -81,12 +82,21 @@ export async function createClub(profile, clubData) {
     joined_date: foundedDate,
   });
 
-  return await localGame.entities.Club.update(club.id, { member_count: bots.length + 1 });
+  const updatedClub = await localGame.entities.Club.update(club.id, { member_count: bots.length + 1 });
+  if (profile?.id) await localGame.entities.PlayerProfile.update(profile.id, {
+    club_id: club.id, club_name: club.name, club_joined_date: foundedDate,
+    club_monthly_fee: 0, club_training_bonus: 0.04, club_recovery_bonus: 1,
+    club_affiliation_status: 'owner',
+  });
+  return updatedClub;
 }
 
 export async function joinClub(profile, club) {
+  if (profile.club_id && profile.club_id !== club.id) throw new Error('Você já possui um clube principal. Saia dele antes de trocar.');
   const existing = await localGame.entities.ClubMember.filter({ club_id: club.id, profile_id: profile.id });
   if (existing && existing.length > 0) return existing[0];
+  const membershipFee = Math.max(0, Number(club.membership_fee ?? (club.monthly_fee || 100) * 2));
+  if ((profile.coins || 0) < membershipFee) throw new Error(`Saldo insuficiente. A filiação custa ${membershipFee} moedas.`);
 
   const member = await localGame.entities.ClubMember.create({
     club_id: club.id,
@@ -99,12 +109,28 @@ export async function joinClub(profile, club) {
   });
 
   await localGame.entities.Club.update(club.id, { member_count: (club.member_count || 0) + 1 });
+  const level = Math.max(1, Number(club.level) || 1);
+  await localGame.entities.PlayerProfile.update(profile.id, {
+    coins: (profile.coins || 0) - membershipFee,
+    club_id: club.id,
+    club_name: club.name,
+    club_joined_date: profile.career_date,
+    club_monthly_fee: Math.max(0, Number(club.monthly_fee) || 0),
+    club_training_bonus: Math.min(0.12, 0.03 + level * 0.01),
+    club_recovery_bonus: Math.min(5, level),
+    club_affiliation_status: 'active',
+  });
   return member;
 }
 
-export async function leaveClub(member, club) {
+export async function leaveClub(member, club, profile) {
   await localGame.entities.ClubMember.delete(member.id);
   await localGame.entities.Club.update(club.id, { member_count: Math.max(0, (club.member_count || 1) - 1) });
+  if (profile?.id) await localGame.entities.PlayerProfile.update(profile.id, {
+    club_id: null, club_name: null, club_monthly_fee: 0, club_training_bonus: 0,
+    club_recovery_bonus: 0, club_affiliation_status: 'inactive',
+    club_history: [...(profile.club_history || []), { club_id: club.id, club_name: club.name, joined_date: profile.club_joined_date, left_date: profile.career_date }].slice(-20),
+  });
 }
 
 export async function hireClubStaff(club, staffType) {

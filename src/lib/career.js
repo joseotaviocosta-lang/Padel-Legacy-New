@@ -95,7 +95,7 @@ export async function advanceDay(profile) {
 
   // Fatigued if played a practice match today — recovers less
   const fatigued = (profile.practice_matches_today || 0) > 0;
-  const recovery = fatigued ? ENERGY_RECOVERY_FATIGUED : ENERGY_RECOVERY_PER_DAY;
+  const recovery = (fatigued ? ENERGY_RECOVERY_FATIGUED : ENERGY_RECOVERY_PER_DAY) + Math.max(0, Number(profile.club_recovery_bonus) || 0);
 
   // ── Process calendar events for the new day ──
   const calendarResult = await processCalendarEvents(profile, newCareerDate);

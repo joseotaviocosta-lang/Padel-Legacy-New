@@ -53,6 +53,8 @@ export default function ClubDetail() {
   }
 
   async function refresh() {
+    const currentProfile = await ensureMyProfile(await localGame.auth.me());
+    if (currentProfile) setProfile(currentProfile);
     const c = await localGame.entities.Club.get(clubId);
     setClub(c);
     const [m, e, s] = await Promise.all([
@@ -136,7 +138,7 @@ export default function ClubDetail() {
       {tab === 'members' && (
         <ClubMembers members={members} isMember={isMember} isOwner={isOwner}
           onJoin={() => handle('join', () => joinClub(profile, club), 'Você se associou ao clube!')}
-          onLeave={() => handle('leave', () => leaveClub(myMembership, club), 'Você saiu do clube')}
+          onLeave={() => handle('leave', () => leaveClub(myMembership, club, profile), 'Você saiu do clube')}
           busy={busy}
         />
       )}

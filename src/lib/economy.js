@@ -123,18 +123,34 @@ export function calculateMonthlyExpenses(staff, properties, hasAccountant) {
 // ── Monthly Processing ───────────────────────────────────────────────────
 
 export async function processMonthlyFinances(profile) {
-  const [contracts, staff, properties, investments] = await Promise.all([
+  const month = String(profile.career_date || new Date().toISOString()).slice(0, 7);
+  const prior = await localGame.entities.FinancialTransaction.filter({ profile_id: profile.id, month });
+  if ((prior || []).some((entry) => entry.type === 'monthly_close')) {
+    return { skipped: true, reason: 'Fechamento mensal já processado.', newBalance: profile.coins || 0 };
+  }
+  const [rawContracts, staff, properties, investments] = await Promise.all([
     localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }),
     localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id }),
     localGame.entities.PlayerProperty.filter({ profile_id: profile.id }),
     localGame.entities.PlayerInvestment.filter({ profile_id: profile.id }),
   ]);
+  const contracts = [];
+  for (const contract of rawContracts || []) {
+    if (contract.end_date && contract.end_date < profile.career_date) {
+      await localGame.entities.PlayerContract.update(contract.id, { is_active: false, termination_reason: 'Contrato expirado' });
+    } else contracts.push(contract);
+  }
 
   const hasManager = hasStaff(staff, 'manager');
   const hasAccountant = hasStaff(staff, 'accountant');
 
   const income = calculateMonthlyIncome(contracts, investments, properties, hasManager);
   const expenses = calculateMonthlyExpenses(staff, properties, hasAccountant);
+  const coachSalary = profile.coach_id && profile.coach_contract_status !== 'terminated' ? Math.max(0, Number(profile.coach_monthly_salary) || 0) : 0;
+  const clubFee = profile.club_id ? Math.max(0, Number(profile.club_monthly_fee) || 0) : 0;
+  expenses.coach = coachSalary;
+  expenses.club = clubFee;
+  expenses.total += coachSalary + clubFee;
   const net = income.total - expenses.total;
   const newBalance = (profile.coins || 0) + net;
 
@@ -142,7 +158,8 @@ export async function processMonthlyFinances(profile) {
 
   await localGame.entities.FinancialTransaction.create({
     profile_id: profile.id,
-    month: profile.career_date || new Date().toISOString().slice(0, 7),
+    month,
+    type: 'monthly_close',
     income: income.total,
     expenses: expenses.total,
     net,
@@ -152,8 +169,16 @@ export async function processMonthlyFinances(profile) {
       passive_income: income.passive,
       staff_cost: expenses.staff,
       maintenance_cost: expenses.maintenance,
+      coach_salary: coachSalary,
+      club_membership_fee: clubFee,
     },
   });
+
+  for (const contract of contracts || []) {
+    if (contract.last_payment_month !== month) {
+      await localGame.entities.PlayerContract.update(contract.id, { last_payment_month: month });
+    }
+  }
 
   return { income, expenses, net, newBalance };
 }

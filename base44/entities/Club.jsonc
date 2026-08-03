@@ -46,6 +46,15 @@
       "default": 100,
       "description": "Mensalidade em moedas"
     },
+    "membership_fee": {
+      "type": "number",
+      "default": 200,
+      "description": "Custo único de entrada no clube"
+    },
+    "bonuses": {
+      "type": "object",
+      "description": "Benefícios funcionais da filiação"
+    },
     "court_count": {
       "type": "number",
       "default": 2,

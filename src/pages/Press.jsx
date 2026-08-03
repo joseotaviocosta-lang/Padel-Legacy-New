@@ -62,7 +62,7 @@ export default function Press() {
   const pendingInterviews = profile
     ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership }).filter(interview => {
         return !articles.some(article =>
-          article.related_event === interview.relatedEvent &&
+          (article.source_event_id === interview.sourceId || article.related_event === interview.relatedEvent) &&
           (
             article.article_type === 'entrevista' ||
             article.article_type === 'repercussao' ||
@@ -108,6 +108,9 @@ export default function Press() {
         sponsor_appeal_change: effects.sponsor_appeal || 0,
         morale_change: effects.morale || 0,
         related_event: interview.relatedEvent,
+        source_event_id: interview.sourceId,
+        interview_status: 'answered',
+        answered_at: new Date().toISOString(),
         career_date: profile.career_date,
         is_read: false,
       });

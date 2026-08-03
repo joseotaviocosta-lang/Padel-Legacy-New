@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Star, Check, Lock, Coins, RefreshCw, AlertTriangle, Handshake, Search, SlidersHorizontal } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
-import { SPONSOR_CATALOG, getSponsorTierStyle, canSign, calculateProfileMatch, negotiateOffer } from '@/lib/sponsors';
+import { SPONSOR_CATALOG, getSponsorTierStyle, canSign, calculateProfileMatch, negotiateOffer, getSponsorCategory, validateSponsorSlot, SPONSOR_SLOT_LIMITS } from '@/lib/sponsors';
 import SponsorNegotiationModal from './SponsorNegotiationModal';
 import { formatDate } from '@/lib/padel';
 
@@ -26,7 +26,7 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
   const filteredSponsors = useMemo(() => {
     let result = validSponsors.map(sponsor => ({
       sponsor,
-      check: canSign(sponsor, profile),
+      check: (() => { const eligibility = canSign(sponsor, profile); return eligibility.ok ? validateSponsorSlot(sponsor, activeContracts) : eligibility; })(),
       match: calculateProfileMatch(sponsor, profile),
       offer: negotiateOffer(sponsor, profile),
       isActive: activeSponsorIds.includes(sponsor.id),
@@ -48,6 +48,7 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
 
   return (
     <div className="space-y-4">
+      <GlassCard><h2 className="font-bold text-sm mb-2">Slots de patrocínio</h2><div className="grid grid-cols-2 md:grid-cols-5 gap-2">{Object.entries(SPONSOR_SLOT_LIMITS).map(([category, limit]) => { const used = activeContracts.filter((contract) => { const sponsor = validSponsors.find((item) => item.id === contract.sponsor_id || item.name === contract.sponsor_name); return (contract.sponsor_category || (sponsor && getSponsorCategory(sponsor))) === category; }).length; return <div key={category} className="rounded-lg bg-secondary/30 p-2"><p className="text-[9px] uppercase text-muted-foreground">{category}</p><p className="text-sm font-black">{used}/{limit}</p></div>; })}</div><p className="text-[10px] text-muted-foreground mt-2">Marcas da mesma categoria competem pelo mesmo espaço. Contratos legados são preservados.</p></GlassCard>
       {/* Active contracts */}
       <GlassCard>
         <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
@@ -62,6 +63,7 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
                 || validSponsors.find(s => String(s?.name || '').toLowerCase() === String(c?.sponsor_name || '').toLowerCase());
               const tier = getSponsorTierStyle(c.sponsor_tier);
               const satisfaction = c.satisfaction_score || 50;
+              const category = c.sponsor_category || (sponsor ? getSponsorCategory(sponsor) : 'legado');
               const satColor = satisfaction >= 70 ? 'text-green-400' : satisfaction >= 40 ? 'text-amber-400' : 'text-destructive';
               const canRenew = c.is_renewable && sponsor;
               return (
@@ -76,7 +78,7 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
                         <span className={`text-[8px] font-bold uppercase px-1 py-0.5 rounded border ${tier.badge}`}>{tier.label}</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground">
-                        {formatNumber(c.monthly_salary)} moedas/mês · até {c.end_date ? formatDate(c.end_date) : 'data a definir'} · {c.duration_months || 6} meses
+                        {formatNumber(c.monthly_salary)} moedas/mês · até {c.end_date ? formatDate(c.end_date) : 'data a definir'} · {c.duration_months || 6} meses · slot {category}
                       </p>
                     </div>
                   </div>

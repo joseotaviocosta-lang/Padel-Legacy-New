@@ -70,6 +70,18 @@
       "type": "string",
       "description": "Evento relacionado (partida/torneio)"
     },
+    "source_event_id": {
+      "type": "string",
+      "description": "Identificador canônico do evento que originou a entrevista"
+    },
+    "interview_status": {
+      "type": "string",
+      "description": "Estado da entrevista contextual"
+    },
+    "answered_at": {
+      "type": "string",
+      "description": "Instante em que a entrevista foi respondida"
+    },
     "career_date": {
       "type": "string",
       "format": "date",

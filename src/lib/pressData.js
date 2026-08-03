@@ -273,10 +273,13 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
   const lastMatch = ownMatches[0];
   if (lastMatch) {
     const outcome = resolvePlayerOutcome(lastMatch, playerNames);
-    if (outcome === 'win' || outcome === 'loss') {
+    const matchDate = lastMatch.date || lastMatch.played_date || lastMatch.match_date || lastMatch.created_date;
+    const matchContext = lastMatch.tournament_name || lastMatch.match_type || lastMatch.event_name;
+    if ((outcome === 'win' || outcome === 'loss') && matchDate && matchContext) {
       const opponent = resolveOpponentName(lastMatch, playerNames);
-      const matchKey = lastMatch.id || `${lastMatch.date || careerDate}-${lastMatch.tournament_name || 'partida'}`;
-      pending.push({
+      if (opponent && opponent !== 'o adversário') {
+        const matchKey = lastMatch.id || `${lastMatch.date || careerDate}-${lastMatch.tournament_name || 'partida'}`;
+        pending.push({
         id: `interview_match_${matchKey}`,
         sourceId: `match:${matchKey}`,
         type: 'interview',
@@ -287,7 +290,8 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
         relatedEvent: `Partida:${matchKey}`,
         eventLabel: lastMatch.tournament_name || 'Partida Oficial',
         careerDate,
-      });
+        });
+      }
     }
   }
 
@@ -367,7 +371,7 @@ function asTeamNames(team) {
 
 function isPlayerMatch(match, profile, playerNames) {
   if (!match) return false;
-  if (match.profile_id && match.profile_id === profile.id) return true;
+  if (match.profile_id) return match.profile_id === profile.id;
   const names = [
     ...asTeamNames(match.team_a),
     ...asTeamNames(match.team_b),

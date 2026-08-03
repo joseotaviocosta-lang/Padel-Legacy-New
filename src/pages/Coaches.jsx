@@ -77,6 +77,10 @@ export default function Coaches() {
       coins: (profile.coins || 0) - totalCost,
       coach_id: coach.id,
       coach_name: coach.name,
+      coach_hired_date: profile.career_date,
+      coach_monthly_salary: coach.monthly_cost || 0,
+      coach_signing_cost: coach.sign_on_bonus || 0,
+      coach_contract_status: 'active',
     });
     setProfile(updated);
     setHiredCoach(coach);
@@ -89,6 +93,8 @@ export default function Coaches() {
     const updated = await localGame.entities.PlayerProfile.update(profile.id, {
       coach_id: null,
       coach_name: null,
+      coach_monthly_salary: 0,
+      coach_contract_status: 'terminated',
     });
     setProfile(updated);
     setHiredCoach(null);

@@ -72,6 +72,7 @@ export default function Clubs() {
                 </div>
               </div>
               {c.description && <p className="text-xs text-muted-foreground mb-3 line-clamp-2">{c.description}</p>}
+              <div className="grid grid-cols-3 gap-1 mb-3 text-[9px]"><span className="rounded bg-secondary/30 p-1.5">Entrada {(c.membership_fee ?? (c.monthly_fee || 100) * 2).toLocaleString('pt-BR')}</span><span className="rounded bg-secondary/30 p-1.5">Treino +{Math.round(Math.min(0.12, 0.03 + Math.max(1, c.level || 1) * 0.01) * 100)}%</span><span className="rounded bg-secondary/30 p-1.5">Recuperação +{Math.min(5, Math.max(1, c.level || 1))}</span></div>
               <div className="flex items-center gap-4 pt-3 border-t border-border/40">
                 <div className="flex items-center gap-1.5"><Users className="h-3.5 w-3.5 text-primary" /><span className="text-xs font-bold">{c.member_count || 0}</span><span className="text-[10px] text-muted-foreground">membros</span></div>
                 <div className="flex items-center gap-1.5"><Star className="h-3.5 w-3.5 text-amber-400" /><span className="text-xs font-bold">{c.reputation || 50}</span></div>

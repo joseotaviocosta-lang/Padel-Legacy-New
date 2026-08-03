@@ -18,6 +18,10 @@
       "type": "string",
       "description": "N\u00edvel do patroc\u00ednio (Ouro/Prata/Bronze)"
     },
+    "sponsor_category": { "type": "string", "description": "Slot comercial ocupado pelo contrato" },
+    "signing_bonus_paid": { "type": "boolean", "default": false },
+    "signing_bonus_paid_at": { "type": "string" },
+    "last_payment_month": { "type": "string" },
     "monthly_salary": {
       "type": "number",
       "default": 0,

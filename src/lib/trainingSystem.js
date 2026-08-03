@@ -278,7 +278,8 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   const dimMult = getDiminishingMultiplier(weekCount + 1);
   const fatiguePen = getFatiguePenalty(fatigue);
 
-  let actualGain = Math.round(baseGain * intensity.gainMult * dimMult);
+  const clubTrainingMultiplier = 1 + Math.max(0, Number(profile.club_training_bonus) || 0);
+  let actualGain = Math.round(baseGain * intensity.gainMult * dimMult * clubTrainingMultiplier);
   actualGain = Math.max(0, actualGain + fatiguePen);
 
   // Coach bonus (extra gain on specialized attributes)

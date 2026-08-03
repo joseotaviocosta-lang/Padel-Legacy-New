@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Coins, TrendingUp, Calendar, Target, AlertTriangle, CheckCircle2, Handshake } from 'lucide-react';
-import { getSponsorTierStyle, negotiateOffer, canSign, calculateProfileMatch, MARKETING_LABELS, GOAL_LABELS } from '@/lib/sponsors';
+import { getSponsorTierStyle, negotiateOffer, canSign, calculateProfileMatch, MARKETING_LABELS, GOAL_LABELS, getSponsorCategory } from '@/lib/sponsors';
 
 export default function SponsorNegotiationModal({ sponsor, profile, onSign, onClose, busy }) {
   const [step, setStep] = useState('overview'); // overview → offer → confirm
@@ -8,6 +8,9 @@ export default function SponsorNegotiationModal({ sponsor, profile, onSign, onCl
   const offer = negotiateOffer(sponsor, profile);
   const match = calculateProfileMatch(sponsor, profile);
   const tier = getSponsorTierStyle(sponsor.tier);
+  const category = getSponsorCategory(sponsor);
+  const potential = (sponsor.commercial_goals || []).reduce((sum, goal) => sum + Math.max(0, Number(goal.reward) || 0), 0);
+  const riskLabel = potential > offer.monthly_salary * 0.5 ? 'Contrato agressivo' : offer.duration_months >= 12 ? 'Contrato de longo prazo' : 'Contrato seguro';
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
@@ -32,6 +35,7 @@ export default function SponsorNegotiationModal({ sponsor, profile, onSign, onCl
         </div>
 
         <p className="text-xs text-muted-foreground mb-4 italic">{sponsor.description}</p>
+        <div className="grid grid-cols-3 gap-2 mb-4 text-center"><div className="rounded-lg bg-secondary/30 p-2"><p className="text-[8px] text-muted-foreground uppercase">Slot</p><p className="text-[10px] font-bold capitalize">{category}</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-[8px] text-muted-foreground uppercase">Perfil</p><p className="text-[10px] font-bold">{riskLabel}</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-[8px] text-muted-foreground uppercase">Potencial</p><p className="text-[10px] font-bold text-green-400">+{potential}/mês</p></div></div>
 
         {step === 'overview' && (
           <div className="space-y-4">

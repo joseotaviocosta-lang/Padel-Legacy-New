@@ -42,6 +42,16 @@ export default function ClubOverview({ club, profile, isOwner, onAddCourt, onBui
         </div>
       </GlassCard>
 
+      <GlassCard>
+        <h2 className="font-bold text-sm mb-3">Benefícios da filiação</h2>
+        <div className="grid md:grid-cols-3 gap-2 text-xs">
+          <div className="rounded-xl bg-primary/10 p-3"><p className="font-bold text-primary">+{Math.round(Math.min(0.12, 0.03 + Math.max(1, club.level || 1) * 0.01) * 100)}% treino</p><p className="text-muted-foreground mt-1">Eficiência adicional em todos os treinos.</p></div>
+          <div className="rounded-xl bg-cyan-500/10 p-3"><p className="font-bold text-cyan-300">+{Math.min(5, Math.max(1, club.level || 1))} recuperação</p><p className="text-muted-foreground mt-1">Energia adicional a cada avanço diário.</p></div>
+          <div className="rounded-xl bg-amber-500/10 p-3"><p className="font-bold text-amber-300">{((club.membership_fee ?? (club.monthly_fee || 100) * 2)).toLocaleString('pt-BR')} entrada</p><p className="text-muted-foreground mt-1">Mensalidade de {(club.monthly_fee || 0).toLocaleString('pt-BR')} moedas.</p></div>
+        </div>
+        <p className="text-[10px] text-muted-foreground mt-3">Somente um clube principal pode ficar ativo. Os benefícios terminam ao sair.</p>
+      </GlassCard>
+
       {/* Courts */}
       {isOwner && (
         <GlassCard>
