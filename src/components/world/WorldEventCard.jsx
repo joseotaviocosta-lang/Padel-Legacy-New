@@ -1,5 +1,5 @@
 import React from 'react';
-import { Newspaper, Mic, Swords, Share2, HelpCircle, ArrowRightLeft, Clock, Sparkles, Activity, AlertTriangle, TrendingUp, BookOpen, Heart, Flame, Scale, TrendingDown, Cpu, Star, Globe, HeartHandshake, Crown, Calendar, Zap, Shield, Coins, Award, Brain, Trophy } from 'lucide-react';
+import { Newspaper, Mic, Swords, Share2, HelpCircle, ArrowRightLeft, Clock, Sparkles, Activity, AlertTriangle, TrendingUp, BookOpen, Heart, Scale, TrendingDown, Cpu, Star, Globe, HeartHandshake, Crown, Calendar, Zap, Shield, Coins, Award, Brain, Trophy } from 'lucide-react';
 import { EVENT_TYPE_META } from '@/lib/world';
 import { MACRO_EVENT_META, IMPACT_META } from '@/lib/worldEvents';
 

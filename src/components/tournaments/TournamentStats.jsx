@@ -1,5 +1,5 @@
 import React from 'react';
-import { BarChart3, Trophy, Crown, TrendingUp, Users, Coins, Zap, Star } from 'lucide-react';
+import { BarChart3, Trophy, Crown, TrendingUp, Users, Coins, Star } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { computePlayerTournamentStats, computeCircuitStats } from '@/lib/tournaments';
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { X, ArrowRight, Check } from 'lucide-react';
-import { QUESTION_BANKS, fillTemplate, generateHeadline, generateArticleContent, toneFromEffects, toneEmoji } from '@/lib/pressData';
+import { X, Check } from 'lucide-react';
+import { QUESTION_BANKS, fillTemplate, generateHeadline, generateArticleContent, toneFromEffects } from '@/lib/pressData';
 
 const PERSONALITY_LABELS = {
   critico: 'Crítico', sensacionalista: 'Sensacionalista', tecnico: 'Técnico',

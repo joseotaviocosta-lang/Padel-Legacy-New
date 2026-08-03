@@ -343,12 +343,10 @@ export async function getWorldRank(profile) {
 }
 
 export function formatDate(dateStr) {
-  if (!dateStr) return '';
-  try {
-    return new Date(dateStr).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
-  } catch {
-    return dateStr;
-  }
+  if (!dateStr) return 'Data não disponível';
+  const normalized = /^\d{4}-\d{2}-\d{2}$/.test(String(dateStr)) ? `${dateStr}T00:00:00` : dateStr;
+  const date = new Date(normalized);
+  return Number.isNaN(date.getTime()) ? 'Data não disponível' : date.toLocaleDateString('pt-BR');
 }
 
 export function todayStr() {

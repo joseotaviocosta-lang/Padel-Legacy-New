@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Globe, RefreshCw, Flame, Sparkles, Calendar } from 'lucide-react';
+import { Globe, RefreshCw, Flame, Sparkles } from 'lucide-react';
 import WorldEventCard from '@/components/world/WorldEventCard';
 import { FilterPills, EmptyStateCard, GlassCard } from '@/components/padel/ui';
 import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';

@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { X, Coins, Lock, Shield, Weight, Calendar, Factory, BookOpen, TrendingUp, TrendingDown, Flame } from 'lucide-react';
+import React from 'react';
+import { X, Coins, Lock, Shield, Weight, Calendar, Factory, BookOpen, TrendingUp, TrendingDown } from 'lucide-react';
 import { RARITY_STYLES, CATEGORY_META, SUBCATEGORY_LABELS } from '@/lib/equipmentCatalog';
 import { ATTRIBUTES } from '@/lib/padel';
 import { BADGE_COLORS } from '@/lib/marketEngine';

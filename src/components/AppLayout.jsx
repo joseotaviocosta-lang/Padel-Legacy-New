@@ -11,15 +11,15 @@ const NAV_GROUPS = [
     label: 'Carreira',
     items: [
       { to: '/game', icon: Gamepad2, label: 'Carreira' },
-      { to: '/game/training', icon: Dumbbell, label: 'Treino' },
-      { to: '/training-center', icon: Building2, label: 'Centro' },
-      { to: '/game/missions', icon: Target, label: 'MissÃµes' },
+      { to: '/game/training', icon: Dumbbell, label: 'Treinamento' },
+      { to: '/training-center', icon: Building2, label: 'Centro de Treinamento' },
+      { to: '/game/missions', icon: Target, label: 'Missões' },
       { to: '/achievements', icon: Medal, label: 'Conquistas' },
       { to: '/world-events', icon: Globe, label: 'Eventos Mundiais' },
       { to: '/world-market', icon: TrendingUp, label: 'Mercado Mundial' },
       { to: '/weather', icon: CloudSun, label: 'Clima' },
-  { to: '/encyclopedia', icon: BookOpen, label: 'EnciclopÃ©dia' },
-      { to: '/game/calendar', icon: Calendar, label: 'CalendÃ¡rio' },
+      { to: '/encyclopedia', icon: BookOpen, label: 'Enciclopédia' },
+      { to: '/game/calendar', icon: Calendar, label: 'Calendário' },
       { to: '/game/season', icon: BarChart3, label: 'Temporada' },
       { to: '/game/legacy', icon: Crown, label: 'Legado' },
       { to: '/character', icon: Palette, label: 'Personagem' },
@@ -30,11 +30,11 @@ const NAV_GROUPS = [
     items: [
       { to: '/game/economy', icon: Wallet, label: 'Economia' },
       { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
-      { to: '/game/inventory', icon: Package, label: 'InventÃ¡rio' },
+      { to: '/game/inventory', icon: Package, label: 'Inventário' },
     ],
   },
   {
-    label: 'CompetiÃ§Ã£o',
+    label: 'Competição',
     items: [
       { to: '/matches', icon: Swords, label: 'Partidas' },
       { to: '/tournaments', icon: Award, label: 'Torneios' },
@@ -42,22 +42,22 @@ const NAV_GROUPS = [
       { to: '/journal', icon: Newspaper, label: 'Jornal' },
       { to: '/press', icon: Mic, label: 'Imprensa' },
       { to: '/athletes', icon: UserCog, label: 'Atletas' },
-      { to: '/game/stats', icon: BarChart3, label: 'EstatÃ­sticas' },
+      { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' },
     ],
   },
   {
-    label: 'AdministraÃ§Ã£o',
+    label: 'Administração',
     items: [
       { to: '/admin', icon: LayoutDashboard, label: 'Painel Admin' },
       { to: '/database', icon: Database, label: 'Banco de Dados' },
-      { to: '/history', icon: ScrollText, label: 'HistÃ³ria do Padel' },
+      { to: '/history', icon: ScrollText, label: 'História do Padel' },
       { to: '/hall-of-fame', icon: Star, label: 'Hall da Fama' },
     ],
   },
   {
     label: 'Conta',
     items: [
-      { to: '/partners', icon: Handshake, label: 'Dupla & Carreira' },
+      { to: '/partners', icon: Handshake, label: 'Parceiros' },
       { to: '/coaches', icon: GraduationCap, label: 'Treinadores' },
       { to: '/relationships', icon: Heart, label: 'Relacionamentos' },
       { to: '/community', icon: MessageCircle, label: 'Social' },
@@ -71,22 +71,22 @@ const NAV_GROUPS = [
 
 const PAGE_TITLES = {
   '/game': 'Carreira',
-  '/game/training': 'Treino',
-  '/game/missions': 'MissÃµes',
+  '/game/training': 'Treinamento',
+  '/game/missions': 'Missões',
   '/achievements': 'Conquistas',
   '/world-events': 'Eventos Mundiais',
   '/world-market': 'Mercado Mundial',
   '/weather': 'Clima',
-  '/encyclopedia': 'EnciclopÃ©dia',
-  '/partners': 'Dupla & Carreira',
+  '/encyclopedia': 'Enciclopédia',
+  '/partners': 'Parceiros',
   '/game/shop': 'Loja',
-  '/game/inventory': 'InventÃ¡rio',
+  '/game/inventory': 'Inventário',
   '/game/economy': 'Economia',
-  '/game/calendar': 'CalendÃ¡rio',
+  '/game/calendar': 'Calendário',
   '/game/season': 'Temporada',
   '/game/legacy': 'Legado',
   '/character': 'Personagem',
-  '/game/stats': 'EstatÃ­sticas',
+  '/game/stats': 'Estatísticas',
   '/matches': 'Partidas',
   '/tournaments': 'Torneios',
   '/journal': 'Jornal',
@@ -99,11 +99,11 @@ const PAGE_TITLES = {
   '/press': 'Imprensa',
   '/social': 'Rede Social',
   '/fans': 'Torcidas',
-  '/training-center': 'Centro de Treino',
+  '/training-center': 'Centro de Treinamento',
   '/profile': 'Perfil',
   '/admin': 'Painel Admin',
   '/database': 'Banco de Dados',
-  '/history': 'HistÃ³ria',
+  '/history': 'História',
   '/hall-of-fame': 'Hall da Fama',
 };
 
@@ -154,7 +154,7 @@ export default function AppLayout() {
                     }
                   >
                     <item.icon className="h-5 w-5 shrink-0" strokeWidth={2} />
-                    {item.label}
+                    <span className="min-w-0 leading-tight">{item.label}</span>
                   </NavLink>
                 ))}
               </div>
@@ -164,7 +164,7 @@ export default function AppLayout() {
         <div className="px-3 py-4 border-t border-border/40 space-y-2">
           <LogoutButton variant="sidebar" />
           <p className="text-[10px] text-muted-foreground leading-relaxed px-3">
-            "Criamos um universo onde cada jogador constrÃ³i seu legado."
+            “Criamos um universo onde cada jogador constrói seu legado.”
           </p>
         </div>
       </aside>
@@ -190,5 +190,3 @@ export default function AppLayout() {
     </div>
   );
 }
-
-

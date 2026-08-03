@@ -1,5 +1,5 @@
 import React from 'react';
-import { Crown, Building2, Handshake, Star, Trophy } from 'lucide-react';
+import { Crown, Building2, Handshake, Star } from 'lucide-react';
 import { HOF_CATEGORY_CONFIG } from '@/lib/hallOfFameData';
 
 const TYPE_ICONS = { atleta: Crown, treinador: Star, dupla: Handshake, clube: Building2 };

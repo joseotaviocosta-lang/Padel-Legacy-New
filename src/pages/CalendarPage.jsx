@@ -9,7 +9,7 @@ import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
 import { getEventsForRange, getPendingDecisions, resolveDecision, isRegistrationOpen } from '@/lib/calendarSystem';
-import { startOfWeek, addDays, format } from 'date-fns';
+import { startOfWeek, format } from 'date-fns';
 import CalendarWeekView from '@/components/calendar/CalendarWeekView';
 import DayEventList from '@/components/calendar/DayEventList';
 import PendingDecisionBanner from '@/components/calendar/PendingDecisionBanner';

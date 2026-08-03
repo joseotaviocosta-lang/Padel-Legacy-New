@@ -125,7 +125,6 @@ if (typeof import.meta !== 'undefined' && import.meta.env && import.meta.env.DEV
     if (isValidIsoDate('not-a-date')) throw new Error('ISO validator incorrectly accepted garbage');
   } catch (e) {
     // Log without throwing to avoid breaking app startup; developer will see console error
-    // eslint-disable-next-line no-console
     console.error('[career-validator] self-test failed:', e?.message || e);
   }
 }

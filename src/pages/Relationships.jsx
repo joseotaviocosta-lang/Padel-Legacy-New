@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Users, Search, Heart, Swords, Handshake, GraduationCap, Zap, TrendingUp, MessageCircle, X, RefreshCw, Trophy } from 'lucide-react';
+import { Users, Search, Heart, Swords, Handshake, Zap, TrendingUp, MessageCircle, X, RefreshCw, Trophy } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { getPlayerRelationships, getRelationshipEffects, interactSocially, checkSpecialRelationshipEvents, generateRelationshipInterview } from '@/lib/relationships';
 import { ensurePlayerRelationships } from '@/game-core/relationshipLifecycle';

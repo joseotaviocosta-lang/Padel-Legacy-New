@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { StatCard } from '@/components/padel/Shared';
-import { ATTRIBUTES, overallRating, winRate, levelForXp, nextLevelXp, prevLevelXp, levelProgress } from '@/lib/padel';
+import { ATTRIBUTES, formatDate, overallRating, levelForXp, nextLevelXp, prevLevelXp, levelProgress } from '@/lib/padel';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 const CHART_COLORS = {
@@ -276,7 +276,7 @@ export default function CareerStats() {
                     <p className="text-xs font-bold truncate">vs {(result.opponent || []).join(' & ') || 'Adversário'}</p>
                     <p className="text-[10px] text-muted-foreground truncate">{match.tournament_name || match.location || 'Partida'} · {tournamentRound(match.notes)}</p>
                   </div>
-                  <span className="text-[10px] text-muted-foreground tabular-nums">{String(match.date || '').slice(0, 10)}</span>
+                  <span className="text-[10px] text-muted-foreground tabular-nums">{formatDate(match.date)}</span>
                 </div>
               ))}
             </div>

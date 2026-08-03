@@ -1,7 +1,7 @@
 import React from 'react';
 import { format, addDays, isSameDay } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import { Calendar, ChevronLeft, ChevronRight, Trophy, Dumbbell, Moon, Plane, Mic, Swords, FastForward, Clock } from 'lucide-react';
+import { Calendar, ChevronLeft, ChevronRight, Trophy, Dumbbell, Moon, Plane, Mic, FastForward, Clock } from 'lucide-react';
 import { EVENT_TYPES } from '@/lib/calendarSystem';
 
 const WEEKDAY_LABELS = ['Dom', 'Seg', 'Ter', 'Qua', 'Qui', 'Sex', 'Sáb'];

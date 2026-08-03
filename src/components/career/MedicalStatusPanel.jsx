@@ -1,5 +1,6 @@
 import React from 'react';
 import { Activity, HeartPulse, ShieldCheck, CalendarDays } from 'lucide-react';
+import { formatDate } from '@/lib/padel';
 
 export default function MedicalStatusPanel({ profile }) {
   const days = Math.max(0, Number(profile?.injury_days_remaining) || 0);
@@ -41,7 +42,7 @@ export default function MedicalStatusPanel({ profile }) {
         </div>
         <div className="rounded-xl bg-background/40 p-3 flex items-center gap-2">
           <CalendarDays className="h-4 w-4 text-cyan-400" />
-          <div><p className="text-muted-foreground">Retorno previsto</p><p className="font-semibold">{profile.injury_return_date || '—'}</p></div>
+          <div><p className="text-muted-foreground">Retorno previsto</p><p className="font-semibold">{formatDate(profile.injury_return_date)}</p></div>
         </div>
       </div>
     </div>

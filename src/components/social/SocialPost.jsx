@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, MessageCircle, Share2, BadgeCheck, Flame, TrendingUp, Send, X } from 'lucide-react';
+import { Heart, MessageCircle, Share2, BadgeCheck, Flame, TrendingUp, Send } from 'lucide-react';
 import { AUTHOR_TYPES, getViralStatus, generateAutoComment } from '@/lib/socialNetwork';
 
 const POST_TYPE_LABELS = {

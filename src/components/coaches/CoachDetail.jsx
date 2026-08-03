@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Star, Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
+import { X, Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
 import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, getCoachEffects, canHireCoach, calculateAffinity } from '@/lib/coaches';
 
 export default function CoachDetail({ coach, profile, onHire, onFire, onClose, isHired }) {

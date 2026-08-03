@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Sun, TrendingUp, MapPin, BarChart3, CloudRain, Wind, Droplets } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { ensureMyProfile } from '@/lib/padel';
+import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import { getWeatherForecast, getWeatherStats, WEATHER_META, enrichTournamentWeather } from '@/lib/weather';
 import WeatherCard from '@/components/weather/WeatherCard';
@@ -42,7 +42,7 @@ export default function Weather() {
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
       <PageHeader icon={Sun} title="Centro Meteorológico" subtitle="Clima, previsões e impacto no padel" accent="cyan">
-        <span className="text-xs text-muted-foreground">{profile?.career_date || '—'}</span>
+        <span className="text-xs text-muted-foreground">{formatDate(profile?.career_date)}</span>
       </PageHeader>
 
       <FilterPills filters={TABS} activeFilter={tab} onFilterChange={setTab} />

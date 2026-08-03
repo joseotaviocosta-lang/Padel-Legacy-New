@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Users, Heart, Star, Eye, Zap, Calendar, Activity } from 'lucide-react';
 import { BEHAVIOR_TYPES, getFanBaseStatus, getTrendIcon, FAN_EVENTS, reactToEvent } from '@/lib/fanBase';
 import { localGame } from '@/api/localGameClient.js';
+import { formatDate } from '@/lib/padel';
 
 function MetricRow({ icon: Icon, label, value, color }) {
   return (
@@ -63,7 +64,7 @@ export default function FanBaseDetail({ fanBase, onClose, onUpdate }) {
               </div>
             </div>
           </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary/50">
+          <button onClick={onClose} aria-label="Fechar detalhes da torcida" title="Fechar" className="p-1.5 rounded-lg hover:bg-secondary/50">
             <X className="h-5 w-5 text-muted-foreground" />
           </button>
         </div>
@@ -137,7 +138,7 @@ export default function FanBaseDetail({ fanBase, onClose, onUpdate }) {
                     </span>
                   </div>
                   <p className="text-[10px] text-muted-foreground italic">"{h.reaction}"</p>
-                  <p className="text-[8px] text-muted-foreground/60 mt-0.5">{h.date}</p>
+                  <p className="text-[8px] text-muted-foreground/60 mt-0.5">{formatDate(h.date)}</p>
                 </div>
               ))}
             </div>

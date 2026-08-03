@@ -4,7 +4,7 @@ import { Wallet, Star, Users, Building2, TrendingUp, Receipt, ClipboardCheck } f
 import { LoadingScreen } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
-import { signSponsor, terminateContract, hireStaff, fireStaff, buyProperty, sellProperty, makeInvestment, withdrawInvestment, processMonthlyFinances } from '@/lib/economy';
+import { hireStaff, fireStaff, buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
 import { signSponsorContract, renewContract, terminateSponsorContract } from '@/lib/sponsors';
 import EconomyDashboard from '@/components/economy/EconomyDashboard';
 import SponsorPanel from '@/components/economy/SponsorPanel';

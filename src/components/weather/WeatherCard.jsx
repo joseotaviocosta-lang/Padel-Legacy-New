@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, CloudSun, Cloud, CloudRain, Wind, CloudLightning, CloudFog, ThermometerSun, Snowflake, Droplets, Gauge, Eye, Compass, AlertTriangle } from 'lucide-react';
+import { Sun, CloudSun, Cloud, CloudRain, Wind, CloudLightning, CloudFog, ThermometerSun, Snowflake, Droplets, Eye, AlertTriangle } from 'lucide-react';
 import { WEATHER_META, COURT_META, computeWeatherImpact } from '@/lib/weather';
 
 const ICON_MAP = {

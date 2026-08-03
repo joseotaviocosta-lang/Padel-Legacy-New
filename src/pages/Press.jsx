@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Newspaper, Mic, Users, Star, TrendingUp, TrendingDown, Sparkles } from 'lucide-react';
+import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui';

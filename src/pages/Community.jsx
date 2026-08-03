@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Heart, MessageCircle, Share2, Send, Trophy, Flame, Swords, Sparkles, X } from 'lucide-react';
+import { Heart, MessageCircle, Share2, Send, Trophy, Flame, Swords, Sparkles } from 'lucide-react';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { LevelBadge } from '@/components/padel/Shared';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';

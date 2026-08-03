@@ -1,7 +1,7 @@
 import React from 'react';
 import { BookOpen } from 'lucide-react';
 import { ENCYCLOPEDIA_CATEGORIES } from '@/lib/encyclopediaData';
-import { Clock, Eye } from 'lucide-react';
+import { Clock } from 'lucide-react';
 
 export default function EncyclopediaCard({ entry, onClick }) {
   const cat = ENCYCLOPEDIA_CATEGORIES[entry.category] || ENCYCLOPEDIA_CATEGORIES.historia;

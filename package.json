@@ -19,7 +19,8 @@
     "android:build": "tauri android build",
     "validate:architecture": "node scripts/validate-architecture.mjs",
     "test:match-balance": "node src/engine/match/MatchBalanceCli.js --matches=1000",
-    "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js"
+    "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js",
+    "test:ui-quality": "node scripts/audit-ui-quality.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

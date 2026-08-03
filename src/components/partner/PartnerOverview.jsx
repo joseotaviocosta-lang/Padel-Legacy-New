@@ -2,6 +2,7 @@ import React from 'react';
 import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
+import { formatDate } from '@/lib/padel';
 
 export default function PartnerOverview({ partnership, profile, onEnd, onNegotiate, onConverse }) {
   if (!partnership) {
@@ -66,7 +67,7 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
         <div className="flex-1">
           <p className="text-xs font-semibold">Contrato de parceria</p>
           <p className="text-[10px] text-muted-foreground">
-            Início: {partnership.started_career_date} · Duração: {partnership.negotiated_duration_days} dias
+            Início: {formatDate(partnership.started_career_date)} · Duração: {partnership.negotiated_duration_days || 0} dias
             {daysLeft > 0 ? ` · Expira em ${daysLeft} dias` : ' · Expirado'}
           </p>
         </div>

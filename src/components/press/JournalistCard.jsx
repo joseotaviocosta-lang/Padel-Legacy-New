@@ -1,5 +1,4 @@
 import React from 'react';
-import { JOURNALISTS, toneEmoji } from '@/lib/pressData';
 
 const PERSONALITY_LABELS = {
   critico: 'Crítico', sensacionalista: 'Sensacionalista', tecnico: 'Técnico',

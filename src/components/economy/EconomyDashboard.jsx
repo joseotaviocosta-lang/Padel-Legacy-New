@@ -1,5 +1,5 @@
 import React from 'react';
-import { Wallet, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Coins, Star, Users, Wrench } from 'lucide-react';
+import { Wallet, TrendingUp, ArrowUpRight, ArrowDownRight, Coins, Star, Users, Wrench } from 'lucide-react';
 import { GlassCard } from '@/components/padel/ui';
 import { calculateMonthlyIncome, calculateMonthlyExpenses, hasStaff } from '@/lib/economy';
 

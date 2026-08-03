@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { MapPin, Calendar, Swords, Trophy, Bot, Play, AlertCircle } from 'lucide-react';
-import { formatDate, levelForXp, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
+import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import { LoadingScreen, PageHeader, EmptyStateCard, InfoBanner, EmptyStateCard as EmptyProfileCard } from '@/components/padel/ui';
+import { LoadingScreen, PageHeader, EmptyStateCard, InfoBanner } from '@/components/padel/ui';
 
 export default function Matches() {
   const [matches, setMatches] = useState([]);

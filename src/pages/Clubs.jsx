@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Plus, MapPin, Users, Trophy, X, Calendar, Crown, Star } from 'lucide-react';
-import { formatDate, ensureMyProfile } from '@/lib/padel';
+import { Plus, MapPin, Users, Trophy, X, Crown, Star } from 'lucide-react';
+import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
 import { createClub } from '@/lib/clubs';
 

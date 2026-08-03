@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Search, Users, Sparkles, UserCheck, Wallet } from 'lucide-react';
+import { Search, Users, UserCheck } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import CoachCard from '@/components/coaches/CoachCard';

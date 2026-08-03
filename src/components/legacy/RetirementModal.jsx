@@ -1,5 +1,5 @@
 import React from 'react';
-import { X, Crown, Trophy, AlertTriangle, Flame } from 'lucide-react';
+import { X, Crown, AlertTriangle, Flame } from 'lucide-react';
 import { calculateAge, RETIREMENT_AGE, overallRating, levelForXp } from '@/lib/padel';
 
 export default function RetirementModal({ profile, legacyScore, onConfirm, onClose }) {

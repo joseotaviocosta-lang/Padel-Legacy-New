@@ -3,7 +3,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { Crown, Trophy, Medal, Star, TrendingUp, Flame, Swords, Lock, Check, Award, Target, Zap, Calendar, GraduationCap, Flag, UserPlus } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen, InfoBanner, PrimaryButton } from '@/components/padel/ui';
 import { StatCard } from '@/components/padel/Shared';
-import { calculateAge, isRetired, RETIREMENT_AGE, STARTING_AGE, overallRating, winRate, levelForXp } from '@/lib/padel';
+import { calculateAge, isRetired, RETIREMENT_AGE, STARTING_AGE, overallRating } from '@/lib/padel';
 import { computeLegacyScore, computeLegacyBonuses, retireProfile, startNewCareer, getUserLegacies, getCoachLegacy } from '@/lib/legacy';
 import RetirementModal from '@/components/legacy/RetirementModal';
 import NewAthleteModal from '@/components/legacy/NewAthleteModal';

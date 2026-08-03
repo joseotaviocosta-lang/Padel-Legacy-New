@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Trophy, Lock } from 'lucide-react';
 import { careerDateLabel, careerMonthLabel, advanceDay, daysBetween } from '@/lib/career';
-import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, MAX_ENERGY, chemistryLabel, isInjured, injuryRecoveryDays, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
+import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, isInjured, injuryRecoveryDays, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
 import { getPendingDecisions } from '@/lib/calendarSystem';
 
 export default function CareerCalendar({ profile, onAdvanceDay }) {

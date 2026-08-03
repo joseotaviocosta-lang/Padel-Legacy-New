@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Moon, Activity, Calendar, TrendingUp, Target, Check, AlertCircle } from 'lucide-react';
-import { ensureMyProfile, isInjured, injuryRecoveryDays, isRetired, RECOVERY_TYPES, applyRecovery, canDoPhysio, MAX_ENERGY, DAILY_TRAINING_LIMIT } from '@/lib/padel';
+import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, RECOVERY_TYPES, applyRecovery, canDoPhysio, MAX_ENERGY, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE, advanceDay } from '@/lib/career';
 import { simulateProRankingWeek } from '@/lib/teamRanking';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
@@ -137,7 +137,7 @@ export default function Training() {
       setHistory((sessions || []).sort((a, b) => (b.created_date || '').localeCompare(a.created_date || '')));
       setWeeklyCounts(counts);
       setResult(null);
-      toast({ title: 'Dia avançado', description: `${updated.career_date} · Energia: ${updated.energy} · Fadiga: ${updated.fatigue}` });
+      toast({ title: 'Dia avançado', description: `${formatDate(updated.career_date)} · Energia: ${updated.energy}/100 · Fadiga: ${updated.fatigue}/100` });
     } catch (e) {
       console.error(e);
       toast({ title: 'Bloqueado', description: e.message || 'Não foi possível avançar o dia.', variant: 'destructive' });

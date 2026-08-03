@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { ChevronLeft, Building2, Users, Calendar, Briefcase, Star, MapPin, Crown } from 'lucide-react';
+import { ChevronLeft, Building2, Users, Calendar, Briefcase, Star, MapPin } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';

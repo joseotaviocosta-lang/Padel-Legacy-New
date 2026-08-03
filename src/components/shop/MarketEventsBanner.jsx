@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ChevronRight, X } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { EVENT_TYPE_META } from '@/lib/marketEngine';
 
 export default function MarketEventsBanner({ events, onDismiss }) {

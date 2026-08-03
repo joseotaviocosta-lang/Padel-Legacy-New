@@ -1,7 +1,7 @@
 import React from 'react';
 import { X, Star, Eye, Flame, Waves, Zap, Crown, Target, TrendingUp, TrendingDown, Clock, Heart, Brain, Dumbbell, Users, Activity, Shield, Gauge, Swords, Handshake, Sparkles } from 'lucide-react';
 import { getPersonalityMeta, getCoachMeta, getPhaseMeta } from '@/lib/athleteBehavior';
-import { TraitList, TraitDetailedList } from '@/components/athletes/TraitBadge';
+import { TraitList } from '@/components/athletes/TraitBadge';
 import { getInterviewStyle, generateInterviewQuote } from '@/lib/personalityTraits';
 import { AttributeBar } from '@/components/padel/Shared';
 

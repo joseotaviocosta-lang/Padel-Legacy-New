@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Inbox, Mail, Check, X, Clock, AlertCircle, UserCheck } from 'lucide-react';
 import { getInbox, markMessageRead, resolveMessage, dismissMessage } from '@/lib/partnershipSystem';
 import { LoadingScreen } from '@/components/padel/ui';
+import { formatDate } from '@/lib/padel';
 
 const TYPE_ICONS = {
   proposta_parceria: UserCheck,
@@ -145,14 +146,14 @@ export default function InboxPanel({ profile, onAction }) {
                   <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{selected.sender_type}</p>
                   <h3 className="font-black text-base">{selected.title}</h3>
                 </div>
-                <button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-secondary/60">
+                <button onClick={() => setSelected(null)} aria-label="Fechar mensagem" title="Fechar" className="p-1.5 rounded-lg hover:bg-secondary/60">
                   <X className="h-5 w-5 text-muted-foreground" />
                 </button>
               </div>
 
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-xs font-semibold">{selected.sender_name}</span>
-                {selected.career_date && <span className="text-[10px] text-muted-foreground">· {selected.career_date}</span>}
+                {selected.career_date && <span className="text-[10px] text-muted-foreground">· {formatDate(selected.career_date)}</span>}
                 <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full ${PRIORITY_COLORS[selected.priority] || ''}`}>{selected.priority}</span>
               </div>
 
@@ -161,7 +162,7 @@ export default function InboxPanel({ profile, onAction }) {
               {selected.expires_career_date && (
                 <div className="glass rounded-xl p-2 flex items-center gap-2 mb-3">
                   <Clock className="h-3.5 w-3.5 text-amber-400" />
-                  <p className="text-[10px] text-muted-foreground">Expira em {selected.expires_career_date}</p>
+                  <p className="text-[10px] text-muted-foreground">Expira em {formatDate(selected.expires_career_date)}</p>
                 </div>
               )}
 

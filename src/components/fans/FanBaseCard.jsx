@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, TrendingUp, Heart, Star, Eye, Zap } from 'lucide-react';
+import { Users, Heart, Star, Eye, Zap } from 'lucide-react';
 import { BEHAVIOR_TYPES, getFanBaseStatus, getTrendIcon } from '@/lib/fanBase';
 
 function MetricBar({ icon: Icon, label, value, color }) {

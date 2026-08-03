@@ -62,7 +62,7 @@ export function PageHeader({ icon: Icon, title, subtitle, children, accent = 'pr
   return (
     <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-6 grid-bg">
       <div className={`absolute -top-10 -right-10 h-36 w-36 ${GLOW[accent] || GLOW.primary} rounded-full blur-3xl`} />
-      <div className="relative flex items-center gap-4">
+      <div className="relative flex flex-wrap sm:flex-nowrap items-center gap-4">
         {Icon && (
           <div className={`h-14 w-14 rounded-2xl ${ACCENT_BG[accent] || ACCENT_BG.primary} flex items-center justify-center shrink-0`}>
             <Icon className={`h-7 w-7 ${ACCENT_TEXT[accent] || ACCENT_TEXT.primary}`} />
@@ -78,7 +78,7 @@ export function PageHeader({ icon: Icon, title, subtitle, children, accent = 'pr
           <h1 className="text-xl md:text-2xl font-black tracking-tight">{title}</h1>
           {subtitle && <p className="text-sm text-muted-foreground">{subtitle}</p>}
         </div>
-        {children && <div className="flex items-center gap-2 shrink-0">{children}</div>}
+        {children && <div className="flex w-full sm:w-auto items-center gap-2 sm:shrink-0">{children}</div>}
       </div>
     </div>
   );
@@ -128,7 +128,7 @@ export function EmptyStateCard({ icon: Icon, title, message, action }) {
 export function TabBar({ tabs, activeTab, onTabChange, variant = 'buttons' }) {
   if (variant === 'segmented') {
     return (
-      <div className="flex gap-1 p-1 glass rounded-2xl">
+      <div className="flex gap-1 p-1 glass rounded-2xl overflow-x-auto scrollbar-none">
         {tabs.map(t => {
           const Icon = t.icon;
           const isActive = activeTab === t.key;
@@ -136,7 +136,7 @@ export function TabBar({ tabs, activeTab, onTabChange, variant = 'buttons' }) {
             <button
               key={t.key}
               onClick={() => onTabChange(t.key)}
-              className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
+              className={`min-w-max flex-1 flex items-center justify-center gap-1.5 px-3 py-2.5 rounded-xl text-xs font-semibold transition-all ${isActive ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}
             >
               {Icon && <Icon className="h-3.5 w-3.5" />} {t.label}
             </button>
@@ -146,7 +146,7 @@ export function TabBar({ tabs, activeTab, onTabChange, variant = 'buttons' }) {
     );
   }
   return (
-    <div className="flex gap-2">
+    <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
       {tabs.map(t => {
         const Icon = t.icon;
         const isActive = activeTab === t.key;
@@ -154,7 +154,7 @@ export function TabBar({ tabs, activeTab, onTabChange, variant = 'buttons' }) {
           <button
             key={t.key}
             onClick={() => onTabChange(t.key)}
-            className={`flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm transition-all ${isActive ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground hover:text-foreground'}`}
+            className={`min-w-max flex-1 flex items-center justify-center gap-2 px-3 py-2.5 rounded-xl font-semibold text-sm transition-all ${isActive ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground hover:text-foreground'}`}
           >
             {Icon && <Icon className="h-4 w-4" />}
             {t.label}

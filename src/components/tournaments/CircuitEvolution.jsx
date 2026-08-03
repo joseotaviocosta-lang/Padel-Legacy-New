@@ -1,5 +1,5 @@
 import React from 'react';
-import { TrendingUp, Calendar, Users, Crown, Trophy } from 'lucide-react';
+import { TrendingUp, Trophy } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { getCircuitEvolution } from '@/lib/tournaments';
 

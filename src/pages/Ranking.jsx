@@ -3,7 +3,6 @@ import { Link as RouterLink } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
-import { ProfileMini } from '@/components/padel/Shared';
 import { LoadingScreen, PageHeader, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Scroll, Swords, Trophy, Crown, Star, TrendingUp, Flame, Calendar, Flag } from 'lucide-react';
-import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
+import { GlassCard } from '@/components/padel/ui';
 import { levelForXp, formatDate } from '@/lib/padel';
 
 export default function CareerTimeline({ profile, legacies }) {

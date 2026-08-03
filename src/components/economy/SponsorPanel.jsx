@@ -3,6 +3,7 @@ import { Star, Check, Lock, Coins, RefreshCw, AlertTriangle, Handshake, Search, 
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { SPONSOR_CATALOG, getSponsorTierStyle, canSign, calculateProfileMatch, negotiateOffer } from '@/lib/sponsors';
 import SponsorNegotiationModal from './SponsorNegotiationModal';
+import { formatDate } from '@/lib/padel';
 
 const formatNumber = (value, fallback = 0) => {
   const number = Number(value);
@@ -75,7 +76,7 @@ export default function SponsorPanel({ profile, contracts, onSign, onTerminate, 
                         <span className={`text-[8px] font-bold uppercase px-1 py-0.5 rounded border ${tier.badge}`}>{tier.label}</span>
                       </div>
                       <p className="text-[10px] text-muted-foreground">
-                        {formatNumber(c.monthly_salary)}/mês · até {c.end_date || 'sem data'} · {c.duration_months || 6}m
+                        {formatNumber(c.monthly_salary)} moedas/mês · até {c.end_date ? formatDate(c.end_date) : 'data a definir'} · {c.duration_months || 6} meses
                       </p>
                     </div>
                   </div>

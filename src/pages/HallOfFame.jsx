@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Crown, Search, Trophy, Award, FileText } from 'lucide-react';
-import { HOF_LEGENDS, HOF_CRITERIA, HOF_CATEGORY_CONFIG, HOF_TYPE_CONFIG } from '@/lib/hallOfFameData';
+import { HOF_LEGENDS, HOF_CRITERIA, HOF_TYPE_CONFIG } from '@/lib/hallOfFameData';
 import { PageHeader, TabBar, FilterPills, EmptyStateCard } from '@/components/padel/ui';
 import HallOfFameCard from '@/components/hof/HallOfFameCard';
 import HallOfFameDetail from '@/components/hof/HallOfFameDetail';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Newspaper, Mic, Flame, TrendingUp, Eye, Star, AlertCircle, ThumbsUp, Sparkles } from 'lucide-react';
+import { Newspaper, Mic, Flame, TrendingUp, Eye, AlertCircle, ThumbsUp, Sparkles } from 'lucide-react';
 import { toneEmoji } from '@/lib/pressData';
 
 const TYPE_ICONS = {

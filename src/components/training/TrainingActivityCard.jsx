@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Dumbbell, Zap, Coins, Clock, AlertTriangle, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
+import { Dumbbell, Zap, Clock, AlertTriangle, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
 import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/trainingSystem';
 import { getAttributeIcon } from '@/components/padel/Shared';
 import { ProgressBar } from '@/components/padel/GameShared';

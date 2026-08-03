@@ -1,5 +1,5 @@
 import React from 'react';
-import { Zap, Battery, Heart, Brain, Activity, Shield, AlertTriangle, TrendingDown, Users } from 'lucide-react';
+import { Zap, Battery, Heart, Brain, Activity, Shield, AlertTriangle, Users } from 'lucide-react';
 import { getConditionScore, getConditionLabel, getOvertrainingStatus } from '@/lib/trainingSystem';
 import { isInjured, injuryRecoveryDays, chemistryLabel } from '@/lib/padel';
 

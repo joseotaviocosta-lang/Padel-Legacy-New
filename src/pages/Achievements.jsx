@@ -4,7 +4,7 @@ import { Trophy, Lock, HelpCircle, Star, Search, Filter } from 'lucide-react';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
-import { ACHIEVEMENT_STATS, CATEGORY_META, DIFFICULTY_META } from '@/lib/achievementsData';
+import { CATEGORY_META } from '@/lib/achievementsData';
 import AchievementCard from '@/components/achievements/AchievementCard';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 

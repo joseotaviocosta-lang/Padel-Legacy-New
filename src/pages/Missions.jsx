@@ -210,7 +210,7 @@ export default function Missions() {
                 <div className="mt-3 flex items-center gap-3"><ProgressBar value={done ? m.target_count : current} max={m.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{done ? m.target_count : current}/{m.target_count || 1}</span></div>
                 <div className="flex flex-wrap gap-3 mt-3 text-xs"><span className="flex items-center gap-1 text-cyan-400"><Zap className="h-3.5 w-3.5" />+{m.xp_reward || 0} XP</span><span className="flex items-center gap-1 text-amber-400"><Coins className="h-3.5 w-3.5" />+{m.coins_reward || 0}</span>{m.medal_reward && <span className="flex items-center gap-1 text-primary"><Award className="h-3.5 w-3.5" />{m.medal_reward}</span>}</div>
               </div>
-              {!locked && !done && m.tutorial_route && <button onClick={() => navigate(m.tutorial_route)} className="text-xs font-bold text-primary inline-flex items-center gap-1">Ir <ArrowRight className="h-3.5 w-3.5" /></button>}
+              {!locked && !done && m.tutorial_route && <button onClick={() => navigate(m.tutorial_route)} className="text-xs font-bold text-primary inline-flex items-center gap-1">Abrir <ArrowRight className="h-3.5 w-3.5" /></button>}
             </div>
           </div>;
         })}

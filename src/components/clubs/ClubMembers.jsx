@@ -1,5 +1,5 @@
 import React from 'react';
-import { Users, Crown, UserPlus, UserMinus, Trophy } from 'lucide-react';
+import { Users, Crown, UserPlus, UserMinus } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 
 const ROLE_STYLES = {

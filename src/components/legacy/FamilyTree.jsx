@@ -1,5 +1,5 @@
 import React from 'react';
-import { Crown, GraduationCap, TreePine, ChevronDown } from 'lucide-react';
+import { Crown, GraduationCap, TreePine } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 
 export default function FamilyTree({ legacies, currentGeneration }) {

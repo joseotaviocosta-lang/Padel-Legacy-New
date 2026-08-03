@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Globe, Sparkles, RefreshCw, Flame, Calendar, TrendingUp } from 'lucide-react';
+import { Globe, Sparkles, RefreshCw, Flame } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import WorldEventCard from '@/components/world/WorldEventCard';
 import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
-import { ensureMacroEvents, getActiveMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META, IMPACT_META } from '@/lib/worldEvents';
+import { ensureMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const ALL_FILTERS = [
