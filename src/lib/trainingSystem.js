@@ -369,6 +369,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
 
   // ── Mission Progress ──
   await incrementMissionProgress(profile.id, 'complete_training');
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
 
   return {
     profile: updated,

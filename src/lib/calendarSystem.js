@@ -280,6 +280,7 @@ export async function registerForTournament(profile, tournament, teamRank = 0, o
   }
 
   await incrementMissionProgress(profile.id, 'join_tournament');
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
 
   return { success: true, profile: updatedProfile, entry: validation.entry, replacedConflicts: conflicts };
 }

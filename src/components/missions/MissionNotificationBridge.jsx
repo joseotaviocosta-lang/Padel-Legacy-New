@@ -6,7 +6,7 @@ import { toast } from '@/components/ui/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 
 const ROUTE_OBJECTIVES = {
-  '/game': 'visit_career', '/character': 'visit_character', '/training-center': 'visit_training_center',
+  '/game': ['visit_career', 'visit_career_after_intro'], '/character': 'visit_character', '/training-center': 'visit_training_center',
   '/partners': 'visit_partners', '/game/shop': 'visit_shop', '/game/calendar': 'visit_calendar',
   '/tournaments': 'visit_tournaments', '/ranking': 'visit_ranking', '/journal': 'visit_journal',
   '/press': 'visit_press', '/game/economy': 'visit_economy',

@@ -1,4 +1,5 @@
 import { ALLOWED_CAREER_TYPES, CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
+import { normalizeTutorialState } from '../onboarding/tutorialState.js';
 
 function createUuid() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -44,7 +45,7 @@ export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName
   const createdAt = nowIsoDate();
   const careerDate = createdAt.slice(0, 10);
 
-  return {
+  const career = {
     save_schema_version: CAREER_SAVE_SCHEMA_VERSION,
     career_id: createUuid(),
     career_name: normalizedSaveName,
@@ -77,4 +78,6 @@ export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName
     history: {},
     entities: {},
   };
+  career.tutorial = normalizeTutorialState(null, career);
+  return career;
 }

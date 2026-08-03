@@ -1,6 +1,7 @@
 import { CAREER_INDEX_SCHEMA_VERSION, CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
 import { normalizeCharacterCustomization } from '../lib/characterCustomization.js';
 import { repairTournamentCollection } from '../lib/tournamentIntegrity.js';
+import { normalizeTutorialState } from '../onboarding/tutorialState.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -116,6 +117,14 @@ export function migrateCareer(career) {
     }
     data.save_schema_version = 7;
     version = 7;
+  }
+  if (version < 8) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data);
+    data.tutorial = tutorial;
+    data.player = { ...(data.player || {}), tutorial_onboarding: tutorial };
+    data.save_schema_version = 8;
+    version = 8;
   }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

@@ -62,6 +62,7 @@ export default function Missions() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('tutorial');
   const [savingChoice, setSavingChoice] = useState(false);
+  const [athleteName, setAthleteName] = useState('');
   const [loadError, setLoadError] = useState('');
 
   useEffect(() => { load(); }, []);
@@ -124,6 +125,18 @@ export default function Missions() {
     }
   }
 
+  async function saveAthleteName(event) {
+    event.preventDefault();
+    const name = athleteName.trim();
+    if (!profile?.id || !name || name.length > 40) return;
+    setSavingChoice(true);
+    try {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, { sport_name: name });
+      await incrementMissionProgress(updated.id, 'set_player_name', 1, updated.career_date);
+      await load();
+    } finally { setSavingChoice(false); }
+  }
+
   async function chooseStyle(style) {
     const side = profile?.court_side;
     if (!side || !CAREER_STYLE_PROFILES[side]?.[style]) return;
@@ -180,6 +193,12 @@ export default function Missions() {
           <button disabled={savingChoice} onClick={() => nextTutorial?.tutorial_route && navigate(nextTutorial.tutorial_route)} className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-bold">Começar tutorial <ArrowRight className="inline h-4 w-4 ml-1" /></button>
         </>}
 
+        {nextTutorial?.objective_type === 'set_player_name' && <form onSubmit={saveAthleteName} className="space-y-4">
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Identidade do atleta</p><h2 className="text-2xl font-black mt-2">Como seu atleta será conhecido?</h2><p className="text-muted-foreground mt-2">Este nome aparece em partidas e notícias. O nome do save continua separado.</p></div>
+          <label className="block text-sm font-bold" htmlFor="tutorial-athlete-name">Nome do atleta</label>
+          <div className="flex gap-2"><input id="tutorial-athlete-name" autoFocus value={athleteName} onChange={event => setAthleteName(event.target.value)} maxLength={40} placeholder="Ex.: José Silva" className="min-w-0 flex-1 rounded-xl border border-border bg-background px-4 py-3"/><button disabled={savingChoice || !athleteName.trim()} className="rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground disabled:opacity-50">Confirmar</button></div>
+        </form>}
+
         {nextTutorial?.objective_type === 'choose_court_side' && <>
           <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Escolha seu lado</p><h2 className="text-2xl font-black mt-2">Onde você prefere jogar?</h2><p className="text-muted-foreground mt-2">Essa escolha define sua responsabilidade principal dentro da dupla.</p></div>
           <div className="grid md:grid-cols-2 gap-4">
@@ -199,10 +218,10 @@ export default function Missions() {
       {nextTutorial ? <div className="glass rounded-2xl border border-primary/40 p-5 bg-primary/5">
         <div className="flex items-start gap-4">
           <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center"><GraduationCap className="h-6 w-6 text-primary" /></div>
-          <div className="flex-1"><p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p><h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2><p className="text-sm text-muted-foreground mt-1">{nextTutorial.description}</p>
+          <div className="flex-1"><p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p><h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2><p className="text-sm text-muted-foreground mt-1">{nextTutorial.description}</p>{nextTutorial.why_it_matters && <p className="mt-2 text-xs"><strong>Por que isso importa?</strong> {nextTutorial.why_it_matters}</p>}
             <div className="mt-3 flex items-center gap-3"><ProgressBar value={progress[nextTutorial.id]?.progress || 0} max={nextTutorial.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{progress[nextTutorial.id]?.progress || 0}/{nextTutorial.target_count || 1}</span></div>
           </div>
-          {nextTutorial.tutorial_route && <button onClick={() => navigate(nextTutorial.tutorial_route)} className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Ir agora <ArrowRight className="h-4 w-4" /></button>}
+          {nextTutorial.tutorial_route && <button onClick={() => navigate(nextTutorial.tutorial_route)} className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>}
         </div>
       </div> : <div className="glass rounded-2xl border border-primary/40 p-5 flex items-center gap-4"><Award className="h-9 w-9 text-primary" /><div><p className="font-black">Tutorial concluído!</p><p className="text-sm text-muted-foreground">Você conheceu os principais sistemas do Padel Legacy.</p></div></div>}
 
@@ -231,10 +250,11 @@ export default function Missions() {
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2"><p className="font-semibold text-sm">{tab === 'tutorial' && <span className="text-primary mr-2">#{index + 1}</span>}{m.title}</p><span className="text-[10px] uppercase font-bold text-muted-foreground">{done ? 'Concluída' : locked ? 'Bloqueada' : 'Em andamento'}</span></div>
                 <p className="text-xs text-muted-foreground mt-1">{m.description}</p>
+                {m.why_it_matters && <p className="mt-2 text-xs"><strong>Por que importa:</strong> {m.why_it_matters}</p>}
                 <div className="mt-3 flex items-center gap-3"><ProgressBar value={done ? m.target_count : current} max={m.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{done ? m.target_count : current}/{m.target_count || 1}</span></div>
                 <div className="flex flex-wrap gap-3 mt-3 text-xs"><span className="flex items-center gap-1 text-cyan-400"><Zap className="h-3.5 w-3.5" />+{m.xp_reward || 0} XP</span><span className="flex items-center gap-1 text-amber-400"><Coins className="h-3.5 w-3.5" />+{m.coins_reward || 0}</span>{m.medal_reward && <span className="flex items-center gap-1 text-primary"><Award className="h-3.5 w-3.5" />{m.medal_reward}</span>}</div>
               </div>
-              {!locked && !done && m.tutorial_route && <button onClick={() => navigate(m.tutorial_route)} className="text-xs font-bold text-primary inline-flex items-center gap-1">Abrir <ArrowRight className="h-3.5 w-3.5" /></button>}
+              {!locked && !done && m.tutorial_route && <button onClick={() => navigate(m.tutorial_route)} className="text-xs font-bold text-primary inline-flex items-center gap-1">{m.action_label || 'Abrir'} <ArrowRight className="h-3.5 w-3.5" /></button>}
             </div>
           </div>;
         })}

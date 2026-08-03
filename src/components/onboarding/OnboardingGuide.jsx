@@ -1,0 +1,106 @@
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { BookOpen, Check, ChevronDown, ChevronUp, CircleHelp, GraduationCap, RotateCcw, X } from 'lucide-react';
+import { localGame } from '@/api/localGameClient.js';
+import { ensureMyProfile } from '@/lib/padel.js';
+import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
+import { getPageIntroduction } from '@/onboarding/pageIntroductions.js';
+import { CORE_GAME_LOOP, GLOSSARY, TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
+import { getNextTutorialStep, normalizeTutorialState } from '@/onboarding/tutorialState.js';
+
+const sameState = (a, b) => JSON.stringify(a || {}) === JSON.stringify(b || {});
+
+function PageIntroduction({ pathname, state, onStateChange }) {
+  const intro = getPageIntroduction(pathname);
+  const collapsed = state?.collapsedIntroductions?.includes(pathname);
+  return (
+    <section className="mx-4 md:mx-8 mt-5 rounded-2xl border border-border/60 bg-card/70 px-4 py-3" aria-label={`Introdução: ${intro.title}`}>
+      <div className="flex items-center gap-3">
+        <BookOpen className="h-4 w-4 text-primary shrink-0" />
+        <div className="flex-1 min-w-0"><h2 className="text-sm font-bold">{intro.title}</h2>{collapsed && <p className="text-xs text-muted-foreground truncate">{intro.description}</p>}</div>
+        <button type="button" onClick={() => onStateChange(current => ({ ...current, collapsedIntroductions: collapsed ? current.collapsedIntroductions.filter(item => item !== pathname) : [...current.collapsedIntroductions, pathname] }))} className="rounded-lg p-2 hover:bg-secondary" aria-expanded={!collapsed} aria-label={collapsed ? 'Expandir explicação' : 'Recolher explicação'}>
+          {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
+        </button>
+      </div>
+      {!collapsed && <div className="mt-3 grid gap-2 text-xs md:grid-cols-3"><p>{intro.description}</p><p><strong>Por que importa:</strong> {intro.purpose}</p><p className="text-muted-foreground"><strong>Dica:</strong> {intro.tip}</p></div>}
+    </section>
+  );
+}
+
+function HelpCenter({ open, onClose, state, onRestart }) {
+  if (!open) return null;
+  return <div className="fixed inset-0 z-[80] bg-black/70 p-3 md:p-8 flex justify-end" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={event => event.target === event.currentTarget && onClose()}>
+    <div className="w-full max-w-2xl h-full overflow-y-auto rounded-3xl border border-border bg-background p-5 md:p-7 shadow-2xl">
+      <div className="flex items-start gap-3"><CircleHelp className="h-7 w-7 text-primary"/><div className="flex-1"><h2 id="help-title" className="text-2xl font-black">Guia da carreira</h2><p className="text-sm text-muted-foreground">Reveja o tutorial quando quiser.</p></div><button onClick={onClose} className="rounded-xl p-2 hover:bg-secondary" aria-label="Fechar ajuda"><X className="h-5 w-5"/></button></div>
+      <section className="mt-6"><h3 className="font-black">Ciclo principal</h3><div className="mt-3 flex flex-wrap gap-2">{CORE_GAME_LOOP.map((item, index) => <span key={item} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">{index + 1}. {item}</span>)}</div></section>
+      <section className="mt-7"><div className="flex items-center justify-between"><h3 className="font-black">Tutorial</h3><button onClick={onRestart} className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold"><RotateCcw className="h-3.5 w-3.5"/> Reiniciar explicações</button></div><div className="mt-3 space-y-2">{TUTORIAL_STEPS.map(step => <div key={step.id} className="flex gap-3 rounded-xl bg-secondary/35 p-3"><span className={`mt-0.5 h-5 w-5 rounded-full flex items-center justify-center ${state?.completedSteps?.includes(step.id) ? 'bg-emerald-500 text-white' : 'border border-border'}`}>{state?.completedSteps?.includes(step.id) && <Check className="h-3 w-3"/>}</span><div><p className="text-sm font-bold">{step.title}</p><p className="text-xs text-muted-foreground">{step.explanation}</p></div></div>)}</div></section>
+      <section className="mt-7"><h3 className="font-black">Glossário</h3><dl className="mt-3 grid gap-3 sm:grid-cols-2">{Object.entries(GLOSSARY).map(([term, description]) => <div key={term} className="rounded-xl border border-border/60 p-3"><dt className="text-sm font-bold">{term}</dt><dd className="mt-1 text-xs text-muted-foreground">{description}</dd></div>)}</dl></section>
+    </div>
+  </div>;
+}
+
+export default function OnboardingGuide() {
+  const location = useLocation();
+  const [profile, setProfile] = useState(null);
+  const [facts, setFacts] = useState({ registrations: [], matches: [], trainings: [] });
+  const [state, setState] = useState(null);
+  const [helpOpen, setHelpOpen] = useState(false);
+
+  const load = useCallback(async () => {
+    try {
+      const user = await localGame.auth.me();
+      const currentProfile = await ensureMyProfile(user);
+      if (!currentProfile?.id) return;
+      const [registrations, matches, trainings] = await Promise.all([
+        localGame.entities.CalendarEvent.filter({ profile_id: currentProfile.id, event_type: 'tournament' }).catch(() => []),
+        localGame.entities.Match.list('-created_date', 20).catch(() => []),
+        localGame.entities.TrainingSession.filter({ profile_id: currentProfile.id }).catch(() => []),
+      ]);
+      const currentFacts = { registrations, matches, trainings };
+      const normalized = normalizeTutorialState(currentProfile.tutorial_onboarding, currentProfile, currentFacts);
+      setProfile(currentProfile); setFacts(currentFacts); setState(normalized);
+      if (!sameState(normalized, currentProfile.tutorial_onboarding)) {
+        const updated = await localGame.entities.PlayerProfile.update(currentProfile.id, { tutorial_onboarding: normalized });
+        setProfile(updated);
+      }
+    } catch (error) { console.error('[onboarding] Falha ao carregar orientação.', error); }
+  }, []);
+
+  useEffect(() => { load(); }, [load, location.pathname]);
+  useEffect(() => {
+    const refresh = () => load();
+    window.addEventListener('padel:mission-completed', refresh);
+    window.addEventListener('padel:onboarding-refresh', refresh);
+    return () => { window.removeEventListener('padel:mission-completed', refresh); window.removeEventListener('padel:onboarding-refresh', refresh); };
+  }, [load]);
+
+  const persist = useCallback(async updater => {
+    const next = typeof updater === 'function' ? updater(state) : updater;
+    setState(next);
+    if (profile?.id) {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, { tutorial_onboarding: next });
+      setProfile(updated);
+    }
+  }, [profile, state]);
+
+  useEffect(() => {
+    if (!state || state.pageIntroductionsSeen.includes(location.pathname)) return;
+    persist(current => ({ ...current, pageIntroductionsSeen: [...current.pageIntroductionsSeen, location.pathname] }));
+  }, [location.pathname, persist, state]);
+
+  const step = getNextTutorialStep(state);
+  const recommendation = useMemo(() => getCareerRecommendations(profile, facts)[0], [profile, facts]);
+  if (!profile || !state) return null;
+
+  return <>
+    <PageIntroduction pathname={location.pathname} state={state} onStateChange={persist}/>
+    {!state.minimized && state.status === 'in_progress' && <aside className="mx-4 md:mx-8 mt-3 rounded-2xl border border-primary/40 bg-primary/10 p-4" aria-label="Orientação do tutorial">
+      {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><GraduationCap className="h-7 w-7 text-primary shrink-0"/><div className="flex-1"><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p><h2 className="font-black">{step.title}</h2><p className="text-xs text-muted-foreground"><strong>Por quê:</strong> {step.explanation}</p></div><Link to={step.route} onClick={() => persist(current => ({ ...current, welcomeSeen: true }))} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link><button onClick={() => persist(current => ({ ...current, minimized: true, welcomeSeen: true }))} className="rounded-xl border px-3 py-2 text-xs font-bold">Minimizar</button><button onClick={() => persist(current => ({ ...current, status: 'skipped', tutorialSkipped: true, minimized: false, welcomeSeen: true }))} className="px-2 py-2 text-xs text-muted-foreground">Pular guia</button></div>
+    </aside>}
+    {state.minimized && state.status === 'in_progress' && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-24 right-4 z-40 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xl">Próximo passo: {step.title}</button>}
+    {recommendation && <div className="mx-4 md:mx-8 mt-3 flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-xs"><span className="rounded-full bg-primary/15 px-2 py-1 font-bold text-primary">{recommendation.importance}</span><div className="flex-1"><strong>{recommendation.title}</strong><span className="text-muted-foreground"> · {recommendation.explanation}</span></div><Link to={recommendation.route} className="font-bold text-primary">{recommendation.actionLabel}</Link></div>}
+    <button onClick={() => setHelpOpen(true)} className="fixed bottom-20 left-4 md:bottom-5 md:left-auto md:right-5 z-50 rounded-full border border-primary/30 bg-background p-3 text-primary shadow-xl" aria-label="Abrir guia e glossário"><CircleHelp className="h-5 w-5"/></button>
+    <HelpCenter open={helpOpen} onClose={() => setHelpOpen(false)} state={state} onRestart={() => persist(current => ({ ...current, status: 'in_progress', tutorialSkipped: false, minimized: false, welcomeSeen: false, pageIntroductionsSeen: [], collapsedIntroductions: [] }))}/>
+  </>;
+}

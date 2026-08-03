@@ -249,10 +249,9 @@ export async function ensureMyProfile(user) {
       return p;
     }
 
-    const firstName = (user.full_name || user.email || 'Jogador').split(' ')[0];
     const created = await localGame.entities.PlayerProfile.create({
       created_by_id: user.id,
-      sport_name: user.full_name || firstName,
+      sport_name: 'Novo Atleta',
       avatar_url: '',
       country: 'Brasil',
       city: '',
@@ -400,7 +399,7 @@ async function missionCareerDate(profileId, fallback = todayStr()) {
   }
 }
 
-export const TUTORIAL_MISSIONS = [
+const LEGACY_TUTORIAL_MISSIONS = [
   { title: 'Bem-vindo ao Padel Legacy', description: 'Abra a página Carreira e conheça o painel principal.', mission_type: 'tutorial', objective_type: 'visit_career', target_count: 1, xp_reward: 20, coins_reward: 50, tutorial_order: 1, tutorial_route: '/game' },
   { title: 'Crie sua identidade', description: 'Defina o nome e a identidade visual do seu atleta.', mission_type: 'tutorial', objective_type: 'visit_character', target_count: 1, xp_reward: 25, coins_reward: 50, tutorial_order: 2, tutorial_route: '/character' },
   { title: 'Escolha seu lado', description: 'Defina se você jogará prioritariamente pela direita ou pela esquerda.', mission_type: 'tutorial', objective_type: 'choose_court_side', target_count: 1, xp_reward: 30, coins_reward: 50, tutorial_order: 3, tutorial_route: '/game/missions' },
@@ -421,6 +420,23 @@ export const TUTORIAL_MISSIONS = [
   { title: 'Administre sua carreira', description: 'Abra a Economia e conheça receitas, despesas e equipe.', mission_type: 'tutorial', objective_type: 'visit_economy', target_count: 1, xp_reward: 50, coins_reward: 100, tutorial_order: 18, tutorial_route: '/game/economy', medal_reward: 'Primeiros Passos' },
 ];
 
+// Catálogo curto e orientado ao ciclo principal. O legado acima permanece no
+// arquivo apenas para reconhecer títulos antigos e desativá-los sem apagar o
+// progresso ou as recompensas já persistidas.
+export const TUTORIAL_MISSIONS = [
+  { title: 'Bem-vindo ao Padel Legacy', description: 'Conheça o painel e o ciclo da carreira.', why_it_matters: 'O painel mostra o que fazer agora e como acompanhar sua evolução.', action_label: 'Ver painel', mission_type: 'tutorial', objective_type: 'visit_career', target_count: 1, xp_reward: 20, coins_reward: 50, tutorial_order: 1, tutorial_route: '/game' },
+  { title: 'Nome do atleta', description: 'Defina como seu atleta será chamado em partidas e notícias.', why_it_matters: 'O nome do atleta é separado do nome usado para identificar o save.', action_label: 'Definir nome', mission_type: 'tutorial', objective_type: 'set_player_name', target_count: 1, xp_reward: 25, coins_reward: 50, tutorial_order: 2, tutorial_route: '/game/missions' },
+  { title: 'Escolha seu lado', description: 'Escolha sua função mais frequente dentro da dupla.', why_it_matters: 'Direita constrói os pontos; esquerda assume mais finalizações.', action_label: 'Escolher lado', mission_type: 'tutorial', objective_type: 'choose_court_side', target_count: 1, xp_reward: 30, coins_reward: 50, tutorial_order: 3, tutorial_route: '/game/missions' },
+  { title: 'Defina seu estilo', description: 'Escolha seus pontos fortes iniciais.', why_it_matters: 'O estilo orienta seus treinos e a escolha de um parceiro complementar.', action_label: 'Escolher estilo', mission_type: 'tutorial', objective_type: 'choose_play_style', target_count: 1, xp_reward: 40, coins_reward: 75, tutorial_order: 4, tutorial_route: '/game/missions' },
+  { title: 'Primeiro treino', description: 'Escolha um treino importante para seu estilo e observe o custo de energia.', why_it_matters: 'Evoluir os atributos certos aumenta suas chances sem desperdiçar energia.', action_label: 'Ir para Treinos', mission_type: 'tutorial', objective_type: 'complete_training', target_count: 1, xp_reward: 50, coins_reward: 75, tutorial_order: 5, tutorial_route: '/game/training' },
+  { title: 'Encontre sua dupla', description: 'Forme uma parceria compatível com seu lado e estilo.', why_it_matters: 'Entrosamento e complementaridade afetam o desempenho competitivo.', action_label: 'Buscar parceiro', mission_type: 'tutorial', objective_type: 'select_partner', target_count: 1, xp_reward: 60, coins_reward: 100, tutorial_order: 6, tutorial_route: '/partners' },
+  { title: 'Planeje sua semana', description: 'Abra o calendário e confira seus próximos compromissos.', why_it_matters: 'Planejar evita conflitos e cansaço antes de competir.', action_label: 'Abrir calendário', mission_type: 'tutorial', objective_type: 'visit_calendar', target_count: 1, xp_reward: 30, coins_reward: 60, tutorial_order: 7, tutorial_route: '/game/calendar' },
+  { title: 'Primeiro torneio', description: 'Inscreva sua dupla em um torneio adequado ao seu nível.', why_it_matters: 'Torneios rendem ranking, experiência, dinheiro e reputação.', action_label: 'Ver torneios', mission_type: 'tutorial', objective_type: 'join_tournament', target_count: 1, xp_reward: 100, coins_reward: 150, tutorial_order: 8, tutorial_route: '/tournaments' },
+  { title: 'Primeiro resultado', description: 'Conclua uma partida e analise recompensas, energia e evolução.', why_it_matters: 'O resultado mostra o que funcionou e qual deve ser seu próximo ajuste.', action_label: 'Jogar partida', mission_type: 'tutorial', objective_type: 'play_matches', target_count: 1, xp_reward: 100, coins_reward: 150, tutorial_order: 9, tutorial_route: '/matches' },
+  { title: 'Meça sua evolução', description: 'Consulte o ranking depois de competir.', why_it_matters: 'O ranking mostra seu avanço e o caminho para torneios maiores.', action_label: 'Ver ranking', mission_type: 'tutorial', objective_type: 'visit_ranking', target_count: 1, xp_reward: 35, coins_reward: 75, tutorial_order: 10, tutorial_route: '/ranking' },
+  { title: 'Sua carreira, suas decisões', description: 'Volte ao painel e escolha seu próximo objetivo.', why_it_matters: 'Agora você pode repetir o ciclo no seu ritmo.', action_label: 'Voltar ao painel', mission_type: 'tutorial', objective_type: 'visit_career_after_intro', target_count: 1, xp_reward: 50, coins_reward: 100, tutorial_order: 11, tutorial_route: '/game', medal_reward: 'Primeiros Passos' },
+];
+
 export async function ensureTutorialMissionCatalog() {
   const existing = await localGame.entities.Mission.list('-created_date', 300);
   const titles = new Set((existing || []).map(m => m.title));
@@ -429,6 +445,12 @@ export async function ensureTutorialMissionCatalog() {
     try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
     catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
   }
+  const canonicalByTitle = new Map(TUTORIAL_MISSIONS.map(mission => [mission.title, mission]));
+  const legacyTitles = new Set(LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title));
+  const updates = (existing || [])
+    .filter(mission => mission?.id && mission.mission_type === 'tutorial' && (legacyTitles.has(mission.title) || canonicalByTitle.has(mission.title)))
+    .map(mission => ({ ...mission, ...(canonicalByTitle.get(mission.title) || {}), is_active: canonicalByTitle.has(mission.title) }));
+  if (updates.length) await localGame.entities.Mission.bulkUpdate(updates);
   return localGame.entities.Mission.filter({ is_active: true });
 }
 

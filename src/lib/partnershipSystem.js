@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { overallRating, levelForXp, LEVELS, ATTRIBUTE_KEYS } from '@/lib/padel';
+import { overallRating, levelForXp, LEVELS, ATTRIBUTE_KEYS, incrementMissionProgress } from '@/lib/padel';
 import { getAvailablePartners, getPartnerBot, canChangePartner, daysUntilPartnerUnlock, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { getRelationshipEffects, getOrCreateRelationship, getPartnerChemistryBonus } from '@/lib/relationships';
 
@@ -174,6 +174,9 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
       chemistry: partnership.chemistry,
     });
   }
+
+  await incrementMissionProgress(profile.id, 'select_partner', 1, careerDate);
+  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
 
   return { partnership, profile: updated };
 }
