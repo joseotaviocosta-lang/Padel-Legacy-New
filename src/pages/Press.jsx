@@ -6,7 +6,7 @@ import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
-import { JOURNALISTS, getPendingInterviews, pickJournalist, applyReputationEffects } from '@/lib/pressData';
+import { getPendingInterviews, pickJournalist, applyReputationEffects, reconcileJournalistCatalog } from '@/lib/pressData';
 import { useToast } from '@/components/ui/use-toast';
 
 export default function Press() {
@@ -46,14 +46,13 @@ export default function Press() {
 
         // Load or seed journalists for this profile
         const existing = await localGame.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
-        if (existing && existing.length > 0) {
-          setJournalists(existing);
-        } else {
-          const seeded = await localGame.entities.PressJournalist.bulkCreate(
-            JOURNALISTS.map(j => ({ ...j, profile_id: p.id, bias_toward_player: 0, interviews_done: 0 }))
-          );
-          setJournalists(seeded || []);
+        const reconciliation = reconcileJournalistCatalog(existing, p.id);
+        const created = [];
+        for (const journalist of reconciliation.missing) {
+          created.push(await localGame.entities.PressJournalist.upsert(journalist.id, journalist));
         }
+        const createdById = new Map(created.map(item => [item.id, item]));
+        setJournalists(reconciliation.records.map(item => createdById.get(item.id) || item));
       }
     } catch (e) { console.error(e); }
     setLoading(false);

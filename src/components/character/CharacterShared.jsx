@@ -5,20 +5,28 @@ export function SectionLabel({ children }) {
 }
 
 export function ColorPicker({ label, options, value, onChange }) {
+  const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   return (
     <div>
       <SectionLabel>{label}</SectionLabel>
       <div className="flex flex-wrap gap-2">
-        {options.map(opt => {
+        {validOptions.map(opt => {
           const val = opt.id || opt;
           const isSel = value === val;
+          const disabled = typeof opt === 'object' && (opt.unlocked === false || opt.disabled === true);
+          const background = typeof opt === 'string' ? opt : opt.color || opt.id;
           return (
             <button
+              type="button"
               key={val}
-              onClick={() => onChange(val)}
-              className={`h-8 w-8 rounded-full border-2 transition-all ${isSel ? 'border-primary scale-110 ring-2 ring-primary/30' : 'border-transparent hover:scale-105'}`}
-              style={{ background: opt.color || opt }}
-              title={opt.label}
+              onClick={() => !disabled && onChange(val)}
+              disabled={disabled}
+              aria-label={`${label}: ${opt.label || val}${disabled ? ' (bloqueado)' : ''}`}
+              aria-pressed={isSel}
+              data-option-id={val}
+              className={`h-8 w-8 rounded-full border-2 transition-all ${isSel ? 'border-primary scale-110 ring-2 ring-primary/30' : 'border-transparent hover:scale-105'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
+              style={{ background }}
+              title={opt.label || val}
             />
           );
         })}
@@ -28,19 +36,26 @@ export function ColorPicker({ label, options, value, onChange }) {
 }
 
 export function OptionGrid({ label, options, value, onChange, columns = 3 }) {
+  const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   const colClass = columns === 4 ? 'grid-cols-4' : columns === 2 ? 'grid-cols-2' : 'grid-cols-3';
   return (
     <div>
       {label && <SectionLabel>{label}</SectionLabel>}
       <div className={`grid ${colClass} gap-2`}>
-        {options.map(opt => {
+        {validOptions.map(opt => {
           const val = opt.id || opt;
           const isSel = value === val;
+          const disabled = typeof opt === 'object' && (opt.unlocked === false || opt.disabled === true);
           return (
             <button
+              type="button"
               key={val}
-              onClick={() => onChange(val)}
-              className={`rounded-xl p-2 border-2 transition-all text-center ${isSel ? 'border-primary bg-primary/10' : 'border-border glass hover:border-primary/30'}`}
+              onClick={() => !disabled && onChange(val)}
+              disabled={disabled}
+              aria-pressed={isSel}
+              aria-label={`${label || 'Opção'}: ${opt.label || val}${disabled ? ' (bloqueado)' : ''}`}
+              data-option-id={val}
+              className={`rounded-xl p-2 border-2 transition-all text-center ${isSel ? 'border-primary bg-primary/10' : 'border-border glass hover:border-primary/30'} ${disabled ? 'opacity-40 cursor-not-allowed' : ''}`}
             >
               {opt.emoji && <div className="text-xl mb-0.5">{opt.emoji}</div>}
               <div className="text-[10px] font-semibold leading-tight">{opt.label || opt}</div>
@@ -57,6 +72,7 @@ export function ToggleRow({ label, value, onChange }) {
     <div className="flex items-center justify-between glass rounded-xl px-3 py-2.5">
       <span className="text-sm font-semibold">{label}</span>
       <button
+        type="button"
         onClick={() => onChange(!value)}
         className={`relative h-6 w-11 rounded-full transition-colors ${value ? 'bg-primary' : 'bg-secondary'}`}
       >
@@ -80,6 +96,7 @@ export function SliderRow({ label, value, onChange, min = 0, max = 100, unit = '
         min={min}
         max={max}
         value={safeValue}
+        aria-label={label}
         onChange={e => onChange(Number(e.target.value))}
         className="w-full h-2 rounded-full bg-secondary appearance-none cursor-pointer accent-primary"
       />
@@ -88,16 +105,18 @@ export function SliderRow({ label, value, onChange, min = 0, max = 100, unit = '
 }
 
 export function MultiSelectGrid({ label, options, selected, onToggle, columns = 4 }) {
+  const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   const colClass = columns === 3 ? 'grid-cols-3' : 'grid-cols-4';
   return (
     <div>
       {label && <SectionLabel>{label}</SectionLabel>}
       <div className={`grid ${colClass} gap-2`}>
-        {options.map(opt => {
+        {validOptions.map(opt => {
           const val = opt.id || opt;
           const isSel = (selected || []).includes(val);
           return (
             <button
+              type="button"
               key={val}
               onClick={() => onToggle(val)}
               className={`rounded-xl p-2 border-2 transition-all text-center ${isSel ? 'border-primary bg-primary/10' : 'border-border glass hover:border-primary/30'}`}

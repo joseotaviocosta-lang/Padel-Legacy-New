@@ -122,6 +122,26 @@ export class CareerEntityRepository {
     }, { save: true });
   }
 
+  /**
+   * Cria ou atualiza uma entidade de ID estável em uma única transação.
+   * Indicado para catálogos canônicos que precisam reparar saves parciais.
+   */
+  async upsert(entityName, id, data = {}) {
+    if (!id) throw new Error(`ID obrigatório para upsert de ${entityName}.`);
+    return this.withCareer(async (career) => {
+      const rows = this.ensureCollection(entityName, career, { persist: true });
+      const index = rows.findIndex((row) => row?.id === id);
+      const timestamp = new Date().toISOString();
+      if (index < 0) {
+        const record = { ...clone(data), id, created_date: data.created_date || timestamp, updated_date: timestamp };
+        rows.push(record);
+        return record;
+      }
+      rows[index] = { ...rows[index], ...clone(data), id, updated_date: timestamp };
+      return rows[index];
+    }, { save: true });
+  }
+
   async delete(entityName, id) {
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });

@@ -9,6 +9,7 @@ export function createEntityAdapter(entityName) {
     get: (id) => repository.get(entityName, id),
     create: (data) => repository.create(entityName, data),
     update: (id, data) => repository.update(entityName, id, data),
+    upsert: (id, data) => repository.upsert(entityName, id, data),
     delete: (id) => repository.delete(entityName, id),
     bulkCreate: (data) => repository.bulkCreate(entityName, data),
     bulkUpdate: (data) => repository.bulkUpdate(entityName, data),

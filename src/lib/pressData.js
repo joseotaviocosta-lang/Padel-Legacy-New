@@ -18,6 +18,31 @@ export const JOURNALISTS = [
   { id: 'j12', name: 'Anya Petrov', outlet: 'Eastern European Sports', nationality: 'Sérvia', personality: 'sensacionalista', specialty: 'social', avatar_emoji: '⚡', signature_style: 'Rumores e fofocas que pegam fogo' },
 ];
 
+export function reconcileJournalistCatalog(existing, profileId) {
+  const saved = (Array.isArray(existing) ? existing : []).filter(item => item?.id && item?.name);
+  const records = [];
+  const missing = [];
+
+  for (const template of JOURNALISTS) {
+    const persisted = saved.find(item => item.id === template.id)
+      || saved.find(item => item.name === template.name);
+    if (persisted) {
+      records.push({ ...template, ...persisted, profile_id: profileId });
+    } else {
+      const record = {
+        ...template,
+        profile_id: profileId,
+        bias_toward_player: 0,
+        interviews_done: 0,
+      };
+      records.push(record);
+      missing.push(record);
+    }
+  }
+
+  return { records, missing };
+}
+
 // ─── Question Banks ──────────────────────────────────────────────────────────
 // Each question has 3-4 answer choices with different effects.
 // Effects: fan_appeal, sponsor_appeal, morale, reputation, journalist_bias

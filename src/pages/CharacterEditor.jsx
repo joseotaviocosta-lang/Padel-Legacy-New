@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Palette, Shirt, Disc, Sparkles, User, BookOpen, Save, RotateCcw } from 'lucide-react';
+import { Palette, Shirt, Disc, Sparkles, User, BookOpen, Save, RotateCcw, AlertTriangle } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, TabBar, PrimaryButton } from '@/components/padel/ui';
@@ -11,7 +11,7 @@ import EquipmentEditor from '@/components/character/EquipmentEditor';
 import StyleEditor from '@/components/character/StyleEditor';
 import IdentityEditor from '@/components/character/IdentityEditor';
 import HistoryEditor from '@/components/character/HistoryEditor';
-import { normalizeCharacterCustomization } from '@/lib/characterCustomization';
+import { applyCharacterCustomizationChange, DEFAULT_CHARACTER_CUSTOMIZATION, normalizeCharacterCustomization } from '@/lib/characterCustomization';
 
 const TABS = [
   { key: 'appearance', label: 'Aparência', icon: Palette },
@@ -22,28 +22,19 @@ const TABS = [
   { key: 'history', label: 'História', icon: BookOpen },
 ];
 
-const DEFAULTS = {
-  skin_tone: 'media', hair_style: 'curto', hair_color: 'preto', eye_color: 'castanho',
-  face_type: 'oval', height_cm: 178, build: 'atletico',
-  shirt_color: '#a3e635', shorts_color: '#1e293b', shoes_color: '#f8fafc',
-  headband: false, headband_color: '#a3e635', wristband: false, wristband_color: '#a3e635',
-  racket_model: 'classic', racket_color: '#a3e635', grip_color: '#1e293b',
-  idle_animation: 'repouso', celebration: 'soco_ar', victory_pose: 'bracos_cruzados',
-  accessories: [], title: 'O Novato', nationality: 'Brasil', languages: ['Português'],
-  voice_type: 'medio', voice_pitch: 50, voice_speed: 50,
-  primary_color: '#a3e635', secondary_color: '#0ea5e9', signature_emoji: '🎾',
-  backstory: '',
-};
-
 export default function CharacterEditor() {
   const [profile, setProfile] = useState(null);
   const [customization, setCustomization] = useState(null);
   const [activeTab, setActiveTab] = useState('appearance');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
+  const [loadError, setLoadError] = useState('');
   const { toast } = useToast();
 
   const load = useCallback(async () => {
+    setLoading(true);
+    setLoadError('');
     try {
       const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
@@ -52,10 +43,12 @@ export default function CharacterEditor() {
       if (existing && existing.length > 0) {
         setCustomization(normalizeCharacterCustomization(existing[0], p.id));
       } else {
-        setCustomization({ ...DEFAULTS, profile_id: p.id });
+        setCustomization(normalizeCharacterCustomization(null, p.id));
       }
+      setDirty(false);
     } catch (e) {
       console.error(e);
+      setLoadError('Não foi possível carregar a aparência desta carreira.');
     } finally {
       setLoading(false);
     }
@@ -64,20 +57,23 @@ export default function CharacterEditor() {
   useEffect(() => { load(); }, [load]);
 
   const update = useCallback((key, value) => {
-    setCustomization(prev => prev ? { ...prev, [key]: value } : prev);
+    setCustomization(prev => prev ? applyCharacterCustomizationChange(prev, key, value) : prev);
+    setDirty(true);
   }, []);
 
   const handleSave = async () => {
     if (!customization) return;
     setSaving(true);
     try {
+      const payload = normalizeCharacterCustomization(customization, profile?.id);
       let saved;
-      if (customization.id) {
-        saved = await localGame.entities.CharacterCustomization.update(customization.id, customization);
+      if (payload.id) {
+        saved = await localGame.entities.CharacterCustomization.update(payload.id, payload);
       } else {
-        saved = await localGame.entities.CharacterCustomization.create(customization);
+        saved = await localGame.entities.CharacterCustomization.create(payload);
       }
       setCustomization(normalizeCharacterCustomization(saved, profile?.id));
+      setDirty(false);
       toast({ title: 'Personagem salvo!', description: 'Suas customizações foram aplicadas.' });
     } catch (e) {
       toast({ title: 'Erro ao salvar', description: 'Tente novamente.', variant: 'destructive' });
@@ -87,10 +83,21 @@ export default function CharacterEditor() {
   };
 
   const handleReset = () => {
-    setCustomization({ ...DEFAULTS, profile_id: profile?.id, id: customization?.id });
+    setCustomization(normalizeCharacterCustomization({
+      ...DEFAULT_CHARACTER_CUSTOMIZATION,
+      ...(customization?.id ? { id: customization.id } : {}),
+    }, profile?.id));
+    setDirty(true);
   };
 
-  if (loading || !customization) return <LoadingScreen />;
+  if (loading) return <LoadingScreen />;
+  if (loadError || !customization) return (
+    <div role="alert" className="m-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-5 flex items-center gap-3">
+      <AlertTriangle className="h-5 w-5 text-destructive" />
+      <span className="flex-1">{loadError || 'A aparência não está disponível.'}</span>
+      <button type="button" onClick={load} className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Tentar novamente</button>
+    </div>
+  );
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
@@ -100,7 +107,7 @@ export default function CharacterEditor() {
         subtitle="Personalize cada detalhe do seu atleta"
         accent="purple"
       >
-        <button onClick={handleReset} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+        <button type="button" onClick={handleReset} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
           <RotateCcw className="h-3.5 w-3.5" /> Resetar
         </button>
       </PageHeader>
@@ -125,7 +132,7 @@ export default function CharacterEditor() {
           <div className="sticky bottom-20 md:bottom-4 z-30">
             <PrimaryButton onClick={handleSave} disabled={saving} className="w-full">
               <Save className="h-4 w-4" />
-              {saving ? 'Salvando...' : 'Salvar Personagem'}
+              {saving ? 'Salvando...' : dirty ? 'Salvar alterações' : 'Personagem salvo'}
             </PrimaryButton>
           </div>
         </div>

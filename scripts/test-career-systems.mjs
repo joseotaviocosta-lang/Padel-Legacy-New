@@ -1,4 +1,6 @@
 import { createServer } from 'vite';
+import React from 'react';
+import { renderToStaticMarkup } from 'react-dom/server';
 
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom' });
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -6,8 +8,15 @@ try {
   const { getPendingInterviews } = await server.ssrLoadModule('/src/lib/pressData.js');
   const { COACHES_DATA, canHireCoach } = await server.ssrLoadModule('/src/lib/coaches.js');
   const { getSponsorCategory, validateSponsorSlot, normalizeSponsorshipContract } = await server.ssrLoadModule('/src/lib/sponsors.js');
-  const { normalizeCharacterCustomization } = await server.ssrLoadModule('/src/lib/characterCustomization.js');
+  const { normalizeCharacterCustomization, applyCharacterCustomizationChange, canSelectCharacterOption } = await server.ssrLoadModule('/src/lib/characterCustomization.js');
+  const characterCatalog = await server.ssrLoadModule('/src/lib/characterCatalog.js');
+  const { default: CharacterPreview } = await server.ssrLoadModule('/src/components/character/CharacterPreview.jsx');
+  const { default: AppearanceEditor } = await server.ssrLoadModule('/src/components/character/AppearanceEditor.jsx');
+  const { OptionGrid } = await server.ssrLoadModule('/src/components/character/CharacterShared.jsx');
   const { findMissingMissionCatalog } = await server.ssrLoadModule('/src/lib/missionCatalogLogic.js');
+  const { reconcileJournalistCatalog } = await server.ssrLoadModule('/src/lib/pressData.js');
+  const { migrateCareer } = await server.ssrLoadModule('/src/careers/CareerMigration.js');
+  const { CareerEntityRepository } = await server.ssrLoadModule('/src/gameplay/repositories/CareerEntityRepository.js');
   const profile = { id: 'career-a-player', sport_name: 'Teste', career_date: '2026-01-01', coins: 999999, level: 'Lenda', xp: 999999, fan_appeal: 100, tournaments_won: 20 };
   assert(getPendingInterviews(profile, [], {}).length === 0, 'Carreira nova gerou entrevista.');
   const win = { id: 'win-1', profile_id: profile.id, date: '2026-01-02', tournament_name: 'Teste Open', team_a: ['Teste', 'Dupla'], team_b: ['Rival A', 'Rival B'], winner: 'A' };
@@ -27,9 +36,72 @@ try {
   assert(normalizeSponsorshipContract(null) === null, 'Contrato nulo não foi descartado.');
   const legacyCharacter = normalizeCharacterCustomization({ height_cm: undefined, voice_pitch: '75' }, profile.id);
   assert(legacyCharacter.height_cm === 178 && legacyCharacter.voice_pitch === 75, 'Save antigo do personagem não foi normalizado.');
+  const legacyAppearance = normalizeCharacterCustomization({
+    hairStyle: 2, hairColor: '#3b2a1f', skinTone: 'inexistente', accessory: 'oculos', celebration: 'fist_pump',
+  }, profile.id);
+  assert(legacyAppearance.hair_style === 'longo' && legacyAppearance.hair_color === 'castanho', 'Aliases/índices antigos de aparência não foram migrados.');
+  assert(legacyAppearance.skin_tone === 'media' && legacyAppearance.accessories[0] === 'oculos' && legacyAppearance.celebration === 'soco_ar', 'Valores inválidos/legados não receberam fallback seguro.');
+  const appearanceCategories = ['SKIN_TONES', 'HAIR_STYLES', 'HAIR_COLORS', 'EYE_COLORS', 'FACE_TYPES', 'BUILDS'];
+  assert(appearanceCategories.every(key => Array.isArray(characterCatalog[key]) && characterCatalog[key].length > 0), 'Uma categoria básica do catálogo está vazia.');
+  assert(new Set(appearanceCategories.flatMap(key => characterCatalog[key].map(item => `${key}:${item.id}`))).size === appearanceCategories.reduce((total, key) => total + characterCatalog[key].length, 0), 'Catálogo contém IDs duplicados na mesma categoria.');
+  const withHair = applyCharacterCustomizationChange(legacyCharacter, 'hair_style', 'preso');
+  const withShirt = applyCharacterCustomizationChange(withHair, 'shirt_color', '#ef4444');
+  const withSkin = applyCharacterCustomizationChange(withShirt, 'skin_tone', 'escura');
+  assert(withShirt.hair_style === 'preso' && withSkin.shirt_color === '#ef4444', 'Alterar uma categoria apagou outra escolha.');
+  const previewMarkup = renderToStaticMarkup(React.createElement(CharacterPreview, { data: withSkin, profile }));
+  assert(previewMarkup.includes('data-hair-style="preso"') && previewMarkup.includes('data-shirt="#ef4444"') && previewMarkup.includes('data-skin-tone="escura"'), 'Preview não recebeu a aparência atualizada.');
+  const appearanceMarkup = renderToStaticMarkup(React.createElement(AppearanceEditor, { data: withSkin, update: () => {} }));
+  assert(appearanceMarkup.includes('Estilo de Cabelo') && appearanceMarkup.includes('aria-pressed="true"'), 'Opções básicas/equipadas não foram renderizadas.');
+  const lockedMarkup = renderToStaticMarkup(React.createElement(OptionGrid, { label: 'Teste', options: [{ id: 'locked', label: 'Bloqueado', unlocked: false }], value: '', onChange: () => {} }));
+  assert(!canSelectCharacterOption({ id: 'locked', unlocked: false }) && lockedMarkup.includes('disabled=""'), 'Item bloqueado continua selecionável.');
   const missing = findMissingMissionCatalog([{ title: 'Tutorial A' }, null], [{ title: 'Tutorial A' }, { title: 'Missão B' }]);
   assert(missing.length === 1 && missing[0].title === 'Missão B', 'Catálogo de missões não foi deduplicado.');
-  console.log('CareerSystemsAuditTest: regressões de personagem, patrocinadores e missões aprovadas.');
+
+  const career = { entities: { PressJournalist: [{ id: 'j1', name: 'Existente', bias_toward_player: 4 }] } };
+  const fakeCareerStore = {
+    async ensureActiveCareer() { return career; },
+    async mutateActiveCareer(mutator) { return { result: await mutator(career), career }; },
+  };
+  const repository = new CareerEntityRepository(fakeCareerStore);
+  assert((await repository.update('PressJournalist', 'j1', { interviews_done: 1 })).interviews_done === 1, 'Jornalista existente não foi atualizado.');
+  let missingUpdateRejected = false;
+  try { await repository.update('PressJournalist', 'j12', { interviews_done: 1 }); } catch { missingUpdateRejected = true; }
+  assert(missingUpdateRejected, 'Update de jornalista inexistente deixou de sinalizar erro.');
+  assert((await repository.upsert('PressJournalist', 'j12', { name: 'Anya Petrov' })).id === 'j12', 'Upsert não criou jornalista ausente.');
+  assert((await repository.upsert('PressJournalist', 'j12', { interviews_done: 2 })).interviews_done === 2, 'Upsert não atualizou jornalista existente.');
+
+  const legacyCareer = {
+    save_schema_version: 4,
+    metadata: { pressJournalistId: 'j12', preserved: 'sim' },
+    player: {}, world: {}, entities: { PressJournalist: [{ id: 'j1', name: 'Rafael' }], Other: [{ id: 'keep' }] },
+  };
+  const firstMigration = migrateCareer(legacyCareer);
+  const secondMigration = migrateCareer(firstMigration.data);
+  assert(firstMigration.data.save_schema_version === 6 && firstMigration.data.metadata.pressJournalistId === 'j12', 'Migration não preservou referência canônica recuperável j12.');
+  assert(secondMigration.migrated === false, 'Migration de jornalistas não é idempotente.');
+  assert(firstMigration.data.entities.Other[0].id === 'keep' && firstMigration.data.metadata.preserved === 'sim', 'Migration alterou dados não relacionados.');
+  assert(reconcileJournalistCatalog(firstMigration.data.entities.PressJournalist, profile.id).missing.some(item => item.id === 'j12'), 'Save parcial não recupera o jornalista j12.');
+
+  const appearanceCareer = {
+    save_schema_version: 5, metadata: { preserved: true },
+    player: { id: profile.id, appearance: { hairStyle: 'longo', shirtColor: '#ef4444' }, coins: 321 },
+    world: {}, entities: { Other: [{ id: 'keep-appearance' }] },
+  };
+  const appearanceMigration = migrateCareer(appearanceCareer);
+  const appearanceMigrationAgain = migrateCareer(appearanceMigration.data);
+  const restoredAppearance = appearanceMigration.data.entities.CharacterCustomization[0];
+  assert(restoredAppearance.hair_style === 'longo' && restoredAppearance.shirt_color === '#ef4444', 'Migration não restaurou aparência antiga.');
+  assert(appearanceMigrationAgain.migrated === false, 'Migration de aparência não é idempotente.');
+  assert(appearanceMigration.data.player.coins === 321 && appearanceMigration.data.entities.Other[0].id === 'keep-appearance', 'Migration de aparência alterou dados do jogador.');
+
+  const savedAppearance = await repository.create('CharacterCustomization', { profile_id: profile.id, hair_style: 'curto' });
+  await repository.update('CharacterCustomization', savedAppearance.id, { ...withSkin, id: savedAppearance.id });
+  const restoredRows = await repository.filter('CharacterCustomization', { id: savedAppearance.id });
+  assert(normalizeCharacterCustomization(restoredRows[0], profile.id).hair_style === 'preso', 'Aparência não persistiu após salvar e restaurar.');
+
+  const missionsPage = await server.ssrLoadModule('/src/pages/Missions.jsx');
+  assert(typeof missionsPage.default === 'function', 'Página Missions não possui export válido.');
+  console.log('CareerSystemsAuditTest: persistência, migration e Missions aprovadas.');
 } finally {
   await server.close();
 }

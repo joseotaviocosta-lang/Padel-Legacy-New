@@ -200,5 +200,5 @@ export const LOCAL_SEED = {
     { id: 'encyclopedia-002', title: 'Ranking de duplas', category: 'regras', summary: 'Classificação baseada em resultados de torneios.', content: 'Pontos variam conforme categoria e fase alcançada.' },
   ],
   WorldEvent: [{ id: 'world-event-001', title: 'Expansão do circuito sul-americano', description: 'Novas etapas são anunciadas para 2026.', event_date: '2026-01-01', category: 'expansao', impact: 'positivo', likes: 35, is_active: true, is_macro: false }],
-  CharacterCustomization: [{ id: 'customization-001', profile_id: LOCAL_PROFILE.id, hair_style: 'curto', hair_color: '#3b2a1f', shirt_style: 'classic', shirt_color: '#84cc16', shorts_color: '#111827', accessory: 'none', celebration: 'fist_pump' }],
+  CharacterCustomization: [{ id: 'customization-001', profile_id: LOCAL_PROFILE.id, hair_style: 'curto', hair_color: 'castanho', shirt_color: '#84cc16', shorts_color: '#1e293b', accessories: [], celebration: 'soco_ar' }],
 };
