@@ -69,3 +69,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
 if (typeof window !== 'undefined') {
   window.PadelMatchEngineTest = { run: runMatchEngineTest };
 }
+
+if (import.meta.env.DEV) import('./gameplay/tests/WorldTourPhysicalConditionTest.js');

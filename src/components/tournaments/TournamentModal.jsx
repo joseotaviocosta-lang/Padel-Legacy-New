@@ -9,6 +9,8 @@ import { getSetScoreString } from '@/lib/matchEngine';
 import LiveMatch from '@/components/matches/LiveMatch';
 import { useToast } from '@/components/ui/use-toast';
 import { createQualifyingState, recordQualifyingResult, buildQualifyingBracketHistory } from '@/gameplay/worldTour/QualifyingManager.js';
+import { createMainDrawState, recordMainDrawResult, buildMainDrawBracketHistory } from '@/gameplay/worldTour/MainDrawManager.js';
+import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
 
 const TIER_STYLES = {
   Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
@@ -27,6 +29,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   const [calendarEvent, setCalendarEvent] = useState(null);
   const [qualifyingState, setQualifyingState] = useState(null);
   const [tournamentStage, setTournamentStage] = useState('main');
+  const [mainDrawState, setMainDrawState] = useState(null);
+  const [physicalReport, setPhysicalReport] = useState(null);
   const savedRef = useRef(false);
   const tournamentHistoryRef = useRef([]);
   const { toast } = useToast();
@@ -52,6 +56,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       const event = events[0];
       setCalendarEvent(event);
       const metadata = event.metadata || {};
+      if (metadata.main_draw_state) { setMainDrawState(metadata.main_draw_state); if (!metadata.qualifying_required || metadata.qualifying_status === 'qualified') setRoundIdx(Number(metadata.main_draw_state.currentRound || 0)); }
       if (metadata.qualifying_required && metadata.qualifying_status !== 'qualified') {
         const restored = metadata.qualifying_state || createQualifyingState({
           tournament,
@@ -84,6 +89,17 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       }
     })();
   }, []);
+
+  useEffect(() => {
+    if (tournamentStage !== 'main' || mainDrawState || !profile || !partner) return;
+    const opponentTeams = mainRounds.map((_, idx) => {
+      const members = generateTournamentOpponent(tournament, profile, idx, [partner?.id].filter(Boolean), teamRank.rank);
+      return { id: `round-${idx}`, name: members.map(m => m.name).join(' & '), rank: Math.max(1, (teamRank.rank || 200) - idx * 5), members };
+    });
+    const created = createMainDrawState({ tournament, profile, partner, teamRank: teamRank.rank || 9999, rounds: mainRounds, opponentTeams });
+    setMainDrawState(created);
+    if (calendarEvent?.id) localGame.entities.CalendarEvent.update(calendarEvent.id, { metadata: { ...(calendarEvent.metadata || {}), main_draw_state: created, main_draw_status: 'in_progress', player_seed: created.playerSeed } }).then(setCalendarEvent).catch(console.error);
+  }, [tournamentStage, mainDrawState, profile?.id, partner?.id, teamRank.rank, calendarEvent?.id]);
 
   async function handleMatchFinished(matchState) {
     if (savedRef.current) return;
@@ -146,6 +162,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         return;
       }
 
+      const currentMain = mainDrawState || createMainDrawState({ tournament, profile, partner, teamRank: teamRank.rank || 9999, rounds: mainRounds });
+      const teamAName = `${profile.sport_name} & ${partner?.name || 'Parceiro'}`;
+      const teamBName = opponent.map((bot) => bot.name).join(' & ');
+      const nextMain = recordMainDrawResult(currentMain, { won, teamA: teamAName, teamB: teamBName, winner: won ? teamAName : teamBName, score: getSetScoreString(matchState) });
+      setMainDrawState(nextMain);
+      if (calendarEvent?.id) {
+        const saved = await localGame.entities.CalendarEvent.update(calendarEvent.id, { metadata: { ...(calendarEvent.metadata || {}), main_draw_state: nextMain, main_draw_status: nextMain.status, main_draw_bracket_history: buildMainDrawBracketHistory(nextMain), player_seed: nextMain.playerSeed } });
+        setCalendarEvent(saved);
+      }
+
       await localGame.entities.Match.create({
         date: new Date().toISOString().slice(0, 10),
         location: tournament.name,
@@ -158,7 +184,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         match_type: 'simulada',
         notes: `${currentRound?.label || 'Torneio'} | ${getSetScoreString(matchState)}`,
       });
-      const updated = await applyMatchRewards(profile, won);
+      let updated = await applyMatchRewards(profile, won, { skipPhysical: true });
+      const physical = buildPhysicalPatch({ profile: updated, tournament, roundLabel: currentRound?.label, won, matchesThisWeek: Number(profile.matches_this_week) || 0, date: profile.career_date || new Date().toISOString().slice(0, 10) });
+      updated = await localGame.entities.PlayerProfile.update(updated.id, physical.patch);
+      setPhysicalReport(physical);
       await updateTeamRanking(profile, partner, won);
       // Record partnership match result for chemistry evolution
       const activeP = await getActivePartnership(profile.id);
@@ -179,13 +208,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
 
       if (won) {
         if (roundIdx + 1 >= rounds.length) {
-          await applyTournamentCompletion(updated, rounds.length);
+          await applyTournamentCompletion(updated, rounds.length, nextMain);
           setPhase('champion');
         } else {
           setPhase('round_result');
         }
       } else {
-        await applyTournamentCompletion(updated, roundIdx);
+        await applyTournamentCompletion(updated, roundIdx, nextMain);
         setPhase('eliminated');
       }
       onComplete?.();
@@ -196,7 +225,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
     }
   }
 
-  async function applyTournamentCompletion(p, roundsWon) {
+  async function applyTournamentCompletion(p, roundsWon, completedMainState = mainDrawState) {
     const rewards = getTournamentRewards(tournament.tier, roundsWon);
     const isChampion = roundsWon >= rounds.length;
     try {
@@ -249,6 +278,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
           await localGame.entities.CalendarEvent.update(events[0].id, {
             status: 'completed',
             requires_decision: false,
+            metadata: { ...(events[0].metadata || {}), main_draw_state: completedMainState, main_draw_status: isChampion ? 'champion' : 'eliminated', main_draw_bracket_history: buildMainDrawBracketHistory(completedMainState), finish_label: isChampion ? 'Campeão' : (currentRound?.label || 'Participação') },
           });
         }
       } catch (e) { console.error('calendar event resolve', e); }
@@ -258,8 +288,24 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
     } catch (e) { console.error(e); }
   }
 
+  async function abandonTournament() {
+    const reason = profile?.injury_status === 'lesionado' ? `Abandono por ${profile.injury_type || 'lesão'}` : 'Abandono por desgaste físico';
+    try {
+      if (calendarEvent?.id) {
+        await localGame.entities.CalendarEvent.update(calendarEvent.id, {
+          status: 'completed', requires_decision: false,
+          metadata: { ...(calendarEvent.metadata || {}), main_draw_status: 'withdrawn', finish_label: reason, withdrawal_reason: reason },
+        });
+      }
+      setTournamentRewards({ coins: 0, xp: 10, rankPoints: 0 });
+      const xp = (Number(profile.xp) || 0) + 10;
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, { xp, level: levelForXp(xp) });
+      setProfile(updated); onProfileUpdate?.(updated); setPhase('withdrawn'); onComplete?.();
+    } catch (error) { console.error(error); toast({ title: 'Erro', description: 'Não foi possível registrar o abandono.', variant: 'destructive' }); }
+  }
+
   function nextRound() {
-    setRoundIdx(tournamentStage === 'qualifying' ? Number(qualifyingState?.currentRound || roundIdx + 1) : roundIdx + 1);
+    setRoundIdx(tournamentStage === 'qualifying' ? Number(qualifyingState?.currentRound || roundIdx + 1) : Number(mainDrawState?.currentRound || roundIdx + 1));
     setLastResult(null);
     savedRef.current = false;
     setPhase('intro');
@@ -277,6 +323,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       setCalendarEvent(savedEvent);
     }
     setTournamentStage('main');
+    setMainDrawState(null);
     setRoundIdx(0);
     setLastResult(null);
     savedRef.current = false;
@@ -354,6 +401,21 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
               </p>
             </div>
 
+            {(() => {
+              const medical = getCoachPhysicalRecommendation(profile, tournament, currentRound?.label);
+              return (
+                <div className="glass rounded-xl p-3 border border-orange-500/20 bg-orange-500/5 space-y-2">
+                  <div className="flex items-center justify-between"><span className="text-[10px] uppercase font-bold text-muted-foreground">Avaliação física</span><span className="text-xs font-black text-orange-300">{medical.level}</span></div>
+                  <div className="grid grid-cols-3 gap-2 text-center">
+                    <div><p className="text-[9px] text-muted-foreground">Energia após</p><p className="text-xs font-bold">{medical.projectedEnergy}%</p></div>
+                    <div><p className="text-[9px] text-muted-foreground">Fadiga após</p><p className="text-xs font-bold">{medical.projectedFatigue}%</p></div>
+                    <div><p className="text-[9px] text-muted-foreground">Risco lesão</p><p className="text-xs font-bold">{Math.round(medical.injuryRisk * 100)}%</p></div>
+                  </div>
+                  <p className="text-[10px] text-muted-foreground">{medical.advice}</p>
+                </div>
+              );
+            })()}
+
             <button
               onClick={() => {
                 if (isInjured(profile)) {
@@ -371,6 +433,18 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
             >
               <Play className="h-4 w-4" /> Jogar {currentRound?.label}
             </button>
+            {(profile.energy || 0) < 35 && <button onClick={abandonTournament} className="w-full py-2 rounded-xl border border-red-500/30 text-red-300 text-xs font-bold hover:bg-red-500/10">Abandonar torneio e iniciar recuperação</button>}
+          </div>
+        )}
+
+        {phase === 'withdrawn' && (
+          <div className="space-y-4 text-center">
+            <div className="glass rounded-2xl p-6 border border-orange-500/40 bg-orange-500/5">
+              <Shield className="h-12 w-12 text-orange-400 mx-auto mb-2" />
+              <p className="text-xl font-black text-orange-300">Torneio abandonado</p>
+              <p className="text-sm text-muted-foreground mt-1">A equipe priorizou sua recuperação física. Você recebeu 10 XP.</p>
+            </div>
+            <button onClick={onClose} className="w-full py-3 rounded-xl bg-secondary font-bold text-sm">Fechar</button>
           </div>
         )}
 
@@ -393,6 +467,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
               <p className="text-sm text-muted-foreground mt-1">
                 {currentRound?.label}: {lastResult.matchState.setsA}-{lastResult.matchState.setsB}
               </p>
+              {physicalReport && <p className="text-xs text-muted-foreground mt-2">Energia: {profile.energy}% · Fadiga: {profile.fatigue || 0}%{physicalReport.injury?.injured ? ` · Lesão: ${physicalReport.injury.type}` : ''}</p>}
             </div>
             <button
               onClick={nextRound}
@@ -446,6 +521,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
               <p className="text-sm text-muted-foreground mt-1">
                 {currentRound?.label}: {lastResult.matchState.setsA}-{lastResult.matchState.setsB}
               </p>
+              {physicalReport && <p className="text-xs text-muted-foreground mt-2">Energia: {profile.energy}% · Fadiga: {profile.fatigue || 0}%{physicalReport.injury?.injured ? ` · Lesão: ${physicalReport.injury.type}` : ''}</p>}
             </div>
             {tournamentRewards && (
               <div className="glass rounded-xl p-4 flex items-center justify-around">

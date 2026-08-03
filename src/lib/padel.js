@@ -511,7 +511,7 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
   return completedNow;
 }
 
-export async function applyMatchRewards(profile, won) {
+export async function applyMatchRewards(profile, won, options = {}) {
   const xpGain = won ? 50 : 20;
   const coinsGain = won ? 30 : 10;
   const newXp = (profile.xp || 0) + xpGain;
@@ -534,8 +534,10 @@ export async function applyMatchRewards(profile, won) {
   if (profile.partner_id) {
     updates.partner_chemistry = Math.max(0, Math.min(100, (profile.partner_chemistry || 50) + (won ? 10 : -5)));
   }
-  updates.energy = Math.max(0, (profile.energy || 100) - TOURNAMENT_ENERGY_COST);
-  if (rollInjury(profile.energy || 100, calculateAge(profile))) {
+  if (!options.skipPhysical) {
+    updates.energy = Math.max(0, (profile.energy || 100) - TOURNAMENT_ENERGY_COST);
+  }
+  if (!options.skipPhysical && rollInjury(profile.energy || 100, calculateAge(profile))) {
     const careerD = new Date((profile.career_date || '2026-01-01') + 'T00:00:00');
     const recoveryDays = 7 + Math.floor(Math.random() * 8);
     const recoveryDate = new Date(careerD);
