@@ -184,24 +184,26 @@ export default function Tournaments() {
 
   const hasEnergyForTournament = (profile?.energy || 0) >= 20;
 
-  const sorted = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
-  const byView = view === 'upcoming'
-    ? sorted.filter(t => !isTournamentPast(t))
-    : sorted.filter(t => isTournamentPast(t));
-  const filtered = filter === 'all' ? byView : byView.filter(t => t.tier === filter);
-
-  const counts = {
-    Crown:sorted.filter(t=>t.tier==='Crown').length, Elite:sorted.filter(t=>t.tier==='Elite').length,
-    Masters:sorted.filter(t=>t.tier==='Masters').length, Platinum:sorted.filter(t=>t.tier==='Platinum').length,
-    Gold:sorted.filter(t=>t.tier==='Gold').length, Silver:sorted.filter(t=>t.tier==='Silver').length,
-  };
-
-  const byMonth = {};
-  filtered.forEach(t => {
-    const key = t.start_date?.slice(0, 7) || `sem-data-${t.month || 0}`;
-    if (!byMonth[key]) byMonth[key] = [];
-    byMonth[key].push(t);
-  });
+  const { filtered, counts, byMonth } = (() => {
+    const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
+    const totals = Object.fromEntries(FILTERS.slice(1).map(item => [item.id, 0]));
+    ordered.forEach(tournament => {
+      if (Object.hasOwn(totals, tournament.tier)) totals[tournament.tier] += 1;
+    });
+    const inSelectedView = ordered.filter(tournament => {
+      const isPast = tournament.start_date && careerDate
+        ? tournament.start_date < careerDate
+        : (tournament.month || 0) < currentMonth;
+      return view === 'upcoming' ? !isPast : isPast;
+    });
+    const selected = filter === 'all' ? inSelectedView : inSelectedView.filter(tournament => tournament.tier === filter);
+    const grouped = selected.reduce((groups, tournament) => {
+      const key = tournament.start_date?.slice(0, 7) || `sem-data-${tournament.month || 0}`;
+      (groups[key] ||= []).push(tournament);
+      return groups;
+    }, {});
+    return { filtered: selected, counts: totals, byMonth: grouped };
+  })();
 
   function handlePlay(tournament) {
     if (isTournamentPast(tournament)) return;

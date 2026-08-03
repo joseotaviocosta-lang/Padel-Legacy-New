@@ -1,78 +1,17 @@
-import { setupAdvancedNarrativeStatsTest } from '@/engine/match/AdvancedNarrativeStatsTest.js';
-import { setupTeamCoordinationTest } from '@/engine/match/TeamCoordinationTest.js';
-import { setupMatchBalanceTest } from '@/engine/match/MatchBalanceTest.js';
-import { runMatchEngineTest } from '@/engine/match/MatchEngineTest.js';
-import { setupPersonalityModelTest } from '@/engine/match/PersonalityModelTest.js';
-import { setupContextualDecisionTest } from '@/engine/match/ContextualDecisionTest.js';
-import React from 'react'
-import ReactDOM from 'react-dom/client'
-import App from "./App.jsx";
-import { setupStorageTest } from './storage';
-import { setupCareerTest, setupCareerFlowTest } from './careers';
-import { setupCareerMigrationTest } from './careers/CareerMigrationTest.js';
-import { setupGameplayIntegrationTest } from './gameplay/tests/GameplayIntegrationTest.js';
-import { setupSprint2IntegrationTest } from './gameplay/tests/Sprint2IntegrationTest.js';
-import { setupProfileLoadingHotfixTest } from './gameplay/tests/ProfileLoadingHotfixTest.js';
-import { setupInitializationRegressionTest } from './gameplay/tests/InitializationRegressionTest.js';
-import { setupInitialDataRegressionTest } from './gameplay/tests/InitialDataRegressionTest.js';
-import { setupModuleStabilityTest } from './gameplay/tests/ModuleStabilityTest.js';
-import { setupLocalRuntimeRegressionTest } from './gameplay/tests/LocalRuntimeRegressionTest.js';
-import { setupCircuitSeasonTest } from './gameplay/tests/CircuitSeasonTest.js';
-import { setupWorldTourBrainTest } from './gameplay/tests/WorldTourBrainTest.js';
-import "./index.css";
+import React from 'react';
+import ReactDOM from 'react-dom/client';
+import App from './App.jsx';
+import './index.css';
 
 if (import.meta.env.DEV) {
-  try {
-    setupStorageTest();
-  } catch (error) {
-    console.error('[storage-test] Não foi possível registrar os testes de storage.', error);
-  }
-  try {
-    setupCareerTest();
-  } catch (error) {
-    console.error('[career-test] Não foi possível registrar os testes de career.', error);
-  }
-  try {
-    setupCareerMigrationTest();
-  } catch (error) {
-    console.error('[migration-test] Não foi possível registrar o teste de migração.', error);
-  }
-  try {
-    setupGameplayIntegrationTest();
-    setupSprint2IntegrationTest();
-    setupProfileLoadingHotfixTest();
-    setupInitializationRegressionTest();
-    setupInitialDataRegressionTest();
-    setupModuleStabilityTest();
-    setupLocalRuntimeRegressionTest();
-    setupCircuitSeasonTest();
-    setupWorldTourBrainTest();
-    setupPersonalityModelTest();
-    setupContextualDecisionTest();
-    setupAdvancedNarrativeStatsTest();
-    setupTeamCoordinationTest();
-    setupMatchBalanceTest();
-  } catch (error) {
-    console.error('[gameplay-test] Não foi possível registrar os testes de gameplay.', error);
-  }
-  try {
-    setupCareerFlowTest();
-  } catch (error) {
-    console.error('[career-flow-test] Não foi possível registrar o teste de fluxo de carreira.', error);
-  }
-}
+  import('./dev/registerDevTests.js').catch((error) => {
+    console.error('[dev-tests] Não foi possível registrar os testes de desenvolvimento.', error);
+  });
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <App />
-)
-
-if (typeof window !== 'undefined') {
-  window.PadelMatchEngineTest = { run: runMatchEngineTest };
-}
-
-if (import.meta.env.DEV) {
   import('./gameplay/tests/WorldTourPhysicalConditionTest.js');
   import('./gameplay/tests/WorldTourMedicalCenterTest.js');
   import('./gameplay/tests/ContextualPressTest.js');
   import('./gameplay/tests/SequentialContextRegressionTest.js');
 }
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);

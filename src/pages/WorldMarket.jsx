@@ -9,6 +9,7 @@ import { safeModuleTask } from '@/lib/moduleLoading';
 
 const STATUS_LABELS = { livre: 'Livre', contratado: 'Contratado', lesionado: 'Lesionado', aposentado: 'Aposentado' };
 const RECOMMENDATION_LABELS = { prioridade: 'Prioridade', acompanhar: 'Acompanhar', cautela: 'Cautela' };
+const ATHLETES_PAGE_SIZE = 50;
 
 function formatMoney(value) { return Number(value || 0).toLocaleString('pt-BR'); }
 function TrendIcon({ trend }) {
@@ -31,6 +32,7 @@ export default function WorldMarket() {
   const [negotiating, setNegotiating] = useState(false);
   const [offerTerms, setOfferTerms] = useState({ durationDays: 60, partnerPrizeShare: 50, monthlySalary: 0, signingBonus: 0 });
   const [loadError, setLoadError] = useState('');
+  const [visibleCount, setVisibleCount] = useState(ATHLETES_PAGE_SIZE);
   const { toast } = useToast();
   const levels = getScoutingLevels();
 
@@ -147,6 +149,9 @@ export default function WorldMarket() {
     }).filter(athlete => `${athlete.name || ''} ${athlete.country || ''}`.toLowerCase().includes(search.toLowerCase()))
       .sort((a, b) => (Number(a.world_rank) || 9999) - (Number(b.world_rank) || 9999));
   }, [snapshot, search, status, reportMap]);
+  const visibleAthletes = useMemo(() => athletes.slice(0, visibleCount), [athletes, visibleCount]);
+
+  useEffect(() => { setVisibleCount(ATHLETES_PAGE_SIZE); }, [search, status]);
 
   if (loading) return <LoadingScreen />;
   if (loadError && !snapshot) return (
@@ -185,7 +190,7 @@ export default function WorldMarket() {
       </GlassCard>
 
       {athletes.length === 0 ? <EmptyStateCard icon={Users} title="Nenhum atleta encontrado" message="Altere os filtros para consultar outros jogadores." /> : (
-        <div className="space-y-2">{athletes.map(athlete => {
+        <div className="space-y-2">{visibleAthletes.map(athlete => {
           const report = reportMap[athlete.id];
           return <div key={athlete.id} className="glass rounded-2xl p-4 flex items-center gap-3">
             <div className="w-10 text-center"><p className="text-lg font-black text-primary">#{athlete.world_rank || '—'}</p></div>
@@ -196,7 +201,12 @@ export default function WorldMarket() {
             <button onClick={() => handleShortlist(athlete)} className={`p-2 rounded-xl ${report?.is_shortlisted ? 'bg-amber-400/15 text-amber-400' : 'bg-secondary/50 text-muted-foreground'}`} title="Lista de observação"><Star className={`h-4 w-4 ${report?.is_shortlisted ? 'fill-current' : ''}`} /></button>
             <button onClick={() => openAthlete(athlete)} className="p-2 rounded-xl bg-primary/15 text-primary" title="Abrir scouting"><Eye className="h-4 w-4" /></button>
           </div>;
-        })}</div>
+        })}
+        {visibleCount < athletes.length && (
+          <button type="button" onClick={() => setVisibleCount(count => count + ATHLETES_PAGE_SIZE)} className="w-full rounded-xl border border-border/60 bg-secondary/40 px-4 py-3 text-sm font-bold text-primary">
+            Carregar mais ({athletes.length - visibleCount} restantes)
+          </button>
+        )}</div>
       )}
 
       {selected && <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4" onMouseDown={e => { if (e.target === e.currentTarget) setSelected(null); }}>

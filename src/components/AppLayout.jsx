@@ -5,6 +5,7 @@ import {  Gamepad2, Dumbbell, Swords, Trophy, Target, MessageCircle, User, Shopp
 import BottomNav from './BottomNav';
 import LogoutButton from './LogoutButton';
 import { motion, AnimatePresence } from 'framer-motion';
+import { preloadRoute } from '@/lib/routeModules';
 
 const NAV_GROUPS = [
   {
@@ -145,6 +146,8 @@ export default function AppLayout() {
                   <NavLink
                     key={item.to}
                     to={item.to}
+                    onMouseEnter={() => preloadRoute(item.to)}
+                    onFocus={() => preloadRoute(item.to)}
                     className={({ isActive }) =>
                       `relative flex items-center gap-3 px-3 py-2 rounded-xl transition-all duration-300 font-medium text-sm ${
                         isActive

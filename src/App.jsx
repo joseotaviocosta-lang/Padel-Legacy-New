@@ -1,63 +1,40 @@
 import { Toaster } from "@/components/ui/toaster"
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClientInstance } from '@/lib/query-client'
+import { lazy, Suspense } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate, useLocation } from 'react-router-dom';
-import PageNotFound from './lib/PageNotFound';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import ScrollToTop from './components/ScrollToTop';
 import MissionNotificationBridge from '@/components/missions/MissionNotificationBridge';
 import ProtectedRoute from '@/components/ProtectedRoute';
 import AppLayout from '@/components/AppLayout';
-import Login from '@/pages/Login';
-import Register from '@/pages/Register';
-import ForgotPassword from '@/pages/ForgotPassword';
-import ResetPassword from '@/pages/ResetPassword';
-// Add page imports here
-import Landing from '@/pages/Landing';
-import PlayerProfile from '@/pages/PlayerProfile';
-import Matches from '@/pages/Matches';
-import Ranking from '@/pages/Ranking';
-import Clubs from '@/pages/Clubs';
-import Community from '@/pages/Community';
-import CareerHub from '@/pages/CareerHub';
-import Training from '@/pages/Training';
-import Missions from '@/pages/Missions';
-import Shop from '@/pages/Shop';
-import Inventory from '@/pages/Inventory';
-import Tournaments from '@/pages/Tournaments';
-import Journal from '@/pages/Journal';
-import Legacy from '@/pages/Legacy';
-import CareerStats from '@/pages/CareerStats';
-import CalendarPage from '@/pages/CalendarPage';
-import Economy from '@/pages/Economy';
-import ClubDetail from '@/pages/ClubDetail';
-import Athletes from '@/pages/Athletes';
-import CharacterEditor from '@/pages/CharacterEditor';
-import Admin from '@/pages/Admin';
-import DatabaseManager from '@/pages/DatabaseManager';
-import History from '@/pages/History';
-import HallOfFame from '@/pages/HallOfFame';
-import Relationships from '@/pages/Relationships';
-import Coaches from '@/pages/Coaches';
-import TrainingCenter from '@/pages/TrainingCenter';
-import Press from '@/pages/Press';
-import Social from '@/pages/Social';
-import Fans from '@/pages/Fans';
-import Achievements from '@/pages/Achievements';
-import WorldEvents from '@/pages/WorldEvents';
-import Weather from '@/pages/Weather';
-import Encyclopedia from '@/pages/Encyclopedia';
-import PartnerHub from '@/pages/PartnerHub';
-import Season from '@/pages/Season';
-import CareerManager from '@/pages/CareerManager';
-import WorldMarket from '@/pages/WorldMarket';
+import { PAGE_LOADERS } from '@/lib/routeModules';
 import { CareerProvider } from '@/careers/CareerProvider';
 import { ActiveCareerGuard } from '@/careers/ActiveCareerGuard';
 
 import GlobalDayAdvanceSummary from '@/components/calendar/GlobalDayAdvanceSummary';
 import SaveFoundationBootstrap from '@/components/system/SaveFoundationBootstrap';
 import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
+
+const lazyPage = (name) => lazy(PAGE_LOADERS[name]);
+const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPassword, CareerHub, Training, Missions,
+  Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
+  Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
+  Relationships, Coaches, TrainingCenter, Press, Social, Fans, Achievements, WorldEvents, WorldMarket, Weather,
+  Encyclopedia, PartnerHub, Community] = [
+  'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
+  'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
+  'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
+  'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Social', 'Fans',
+  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community',
+].map(lazyPage);
+
+const RouteLoadingFallback = () => (
+  <div className="fixed inset-0 flex items-center justify-center bg-background" role="status" aria-label="Carregando tela">
+    <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary/30 border-t-primary" />
+  </div>
+);
 
 const RuntimeServices = () => {
   const location = useLocation();
@@ -150,7 +127,9 @@ function App() {
           <Router>
             <ScrollToTop />
             <RuntimeServices />
-            <AuthenticatedApp />
+            <Suspense fallback={<RouteLoadingFallback />}>
+              <AuthenticatedApp />
+            </Suspense>
           </Router>
           <Toaster />
         </CareerProvider>
