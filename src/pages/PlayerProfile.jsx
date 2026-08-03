@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, MapPin, Disc, Trophy, Coins } from 'lucide-react';
-import { ensureMyProfile, levelForXp, nextLevelXp, overallRating, winRate, ATTRIBUTES, PLAY_STYLES, calculateAge, isRetired } from '@/lib/padel';
+import { ensureMyProfile, levelForXp, nextLevelXp, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
+import { PLAY_STYLE_OPTIONS } from '@/lib/initialCareerProfiles.js';
 import LogoutButton from '@/components/LogoutButton';
 import { LevelBadge, StatCard, AttributeBar } from '@/components/padel/Shared';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
@@ -74,7 +75,7 @@ export default function PlayerProfile() {
               <LevelBadge level={level} size="md" />
               {profile?.court_side && (
                 <span className="inline-flex items-center rounded-full bg-primary/15 text-primary px-2.5 py-1 text-xs font-bold">
-                  {profile.court_side === 'direita' ? 'Lado Direito' : 'Lado Esquerdo'}
+                  {profile.court_side === 'direita' ? 'Lado Direito' : profile.court_side === 'esquerda' ? 'Lado Esquerdo' : 'Lado Versátil'}
                 </span>
               )}
             </div>
@@ -138,7 +139,7 @@ export default function PlayerProfile() {
             <Field label="Cidade"><input className="padel-input" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} /></Field>
             <Field label="Estilo de jogo">
               <select className="padel-input" value={form.play_style} onChange={e => setForm({ ...form, play_style: e.target.value })}>
-                {PLAY_STYLES.map(s => <option key={s} value={s}>{s}</option>)}
+                {PLAY_STYLE_OPTIONS.map(style => <option key={style.id} value={style.id}>{style.label}</option>)}
               </select>
             </Field>
             <Field label="Raquete"><input className="padel-input" value={form.racket} onChange={e => setForm({ ...form, racket: e.target.value })} placeholder="Marca / modelo" /></Field>

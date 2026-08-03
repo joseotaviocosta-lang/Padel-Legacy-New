@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Copy, Play, Plus, Trash2, Pencil, FlaskConical, UserRound, Archive } from 'lucide-react';
 import { useCareer } from '@/careers/useCareer.js';
 
-const positionLabel = (value) => value === 'esquerda' ? 'Esquerda' : value === 'direita' ? 'Direita' : 'A definir';
+const positionLabel = (value) => value === 'esquerda' ? 'Esquerda' : value === 'direita' ? 'Direita' : value === 'versatil' ? 'Versátil' : 'A definir';
 const styleLabel = (value = '') => !value || value === 'equilibrado' ? 'A definir' : value.charAt(0).toUpperCase() + value.slice(1);
 
 export default function CareerManager() {

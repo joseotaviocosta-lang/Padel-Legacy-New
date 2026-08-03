@@ -24,7 +24,7 @@ export default function CareerStatusBar({ profile, onPartnerClick }) {
 
       {profile?.court_side && (
         <span className="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-1 rounded-lg shrink-0">
-          {profile.court_side === 'direita' ? 'Direita' : 'Esquerda'}
+          {profile.court_side === 'direita' ? 'Direita' : profile.court_side === 'esquerda' ? 'Esquerda' : 'Versátil'}
         </span>
       )}
 

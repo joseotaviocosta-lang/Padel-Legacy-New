@@ -22,7 +22,7 @@ let state = normalizeTutorialState(null, career);
 const expected = ['athlete-named', 'side-selected', 'style-selected', 'first-training', 'partner-selected', 'tournament-registered', 'first-match', 'autonomy'];
 assert.equal(state.currentStepId, expected.shift());
 career.player.sport_name = 'Lia Monteiro'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
-career.player.court_side = 'direita'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
+career.player.handedness = 'right'; career.player.court_side = 'direita'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 career.player.play_style = 'controle'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 career.entities.TrainingSession = [{ id: 'training-1' }]; state = normalizeTutorialState(state, career); assert(state.completedStepIds.includes('energy-understood')); assert.equal(state.currentStepId, expected.shift());
 career.player.partner_id = 'partner-1'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());

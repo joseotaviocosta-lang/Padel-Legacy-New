@@ -45,14 +45,22 @@ export function evaluatePartnerCompatibility(player, partner) {
   const playerOverall = ratingOf(player);
   const partnerOverall = ratingOf(partner);
   const level = clamp(100 - Math.abs(playerOverall - partnerOverall) * 2, 25, 100);
-  const style = player?.play_style && partner?.play_style && player.play_style !== partner.play_style ? 84 : 70;
+  const roleA = player?.tactical_role || player?.role || 'coringa';
+  const roleB = partner?.tactical_role || partner?.role || 'coringa';
+  const complementaryRoles = new Set(['controlador:finalizador', 'construtor:pressionador', 'defensor:finalizador', 'defensor:pressionador']);
+  const roleKey = [roleA, roleB].sort().join(':');
+  const style = complementaryRoles.has(roleKey) ? 94 : roleA === roleB ? 62 : 80;
   const sideScore = clamp(100 - side.penalties.total * 3, 25, 100);
-  const total = Math.round(sideScore * 0.42 + level * 0.33 + style * 0.25);
+  const handA = player?.handedness || player?.dominant_hand;
+  const handB = partner?.handedness || partner?.dominant_hand;
+  const centerForehands = (side.assignments.playerA === 'right' && handA === 'left') || (side.assignments.playerB === 'right' && handB === 'left');
+  const handedness = centerForehands ? 90 : handA && handB && handA !== handB ? 84 : 76;
+  const total = Math.round(sideScore * 0.34 + level * 0.25 + style * 0.29 + handedness * 0.12);
   return {
     total, sideResolution: side,
-    breakdown: { position: sideScore, style, level },
-    strengths: [side.naturalFit ? 'Lados naturalmente complementares' : 'Adaptação viável com experiência', style >= 80 ? 'Estilos complementares' : 'Estilo familiar'],
-    warnings: side.penalties.total > 0 ? [side.explanation] : [],
+    breakdown: { position: sideScore, style, role: style, handedness, level },
+    strengths: [side.naturalFit ? 'Lados naturalmente complementares' : 'Adaptação viável com experiência', style >= 90 ? 'Funções táticas complementares' : 'Combinação tática viável', centerForehands ? 'Bons ângulos de forehand pelo centro' : null].filter(Boolean),
+    warnings: [...(side.penalties.total > 0 ? [side.explanation] : []), ...(roleA === roleB && ['finalizador', 'controlador'].includes(roleA) ? [`Dois ${roleA === 'finalizador' ? 'finalizadores podem perder construção' : 'controladores podem perder definição'}.`] : [])],
   };
 }
 

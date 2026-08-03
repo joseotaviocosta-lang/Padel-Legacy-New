@@ -22,7 +22,7 @@ export function computeCompatibility(profile, partnerBot, relationships = []) {
     'Defensivo-Equilibrado': 75, 'Equilibrado-Tatico': 80,
   };
   const styleKey = `${profile.play_style}-${partnerBot.play_style}`;
-  let styleScore = STYLE_PAIRS[styleKey];
+  let styleScore = tacticalFit.breakdown.style ?? STYLE_PAIRS[styleKey];
   if (styleScore === undefined) {
     styleScore = profile.play_style === partnerBot.play_style ? 70 : 65;
   }

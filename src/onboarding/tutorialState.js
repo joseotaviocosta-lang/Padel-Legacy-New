@@ -12,7 +12,7 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
   return {
     careerCreated: Boolean(career.career_id || player.id),
     athleteNamed: usefulName(player.sport_name || player.name),
-    sideSelected: Boolean(player.court_side || player.preferred_side),
+    sideSelected: Boolean((player.court_side || player.preferred_side) && (player.handedness || player.dominant_hand)),
     styleSelected: Boolean(player.play_style) && player.play_style !== 'Equilibrado',
     trainingCompleted: Number(player.trainings_completed || player.total_trainings || 0) > 0 || trainings.length > 0,
     partnerSelected: Boolean(player.partner_id || player.current_partner_id),
