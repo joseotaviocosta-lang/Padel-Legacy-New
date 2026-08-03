@@ -7,7 +7,7 @@ import { generateWorldEvents } from '@/lib/world';
 import { maybeGenerateMacroEvent, expireMacroEvents } from '@/lib/worldEvents';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
-import { canAdvanceDay, processCalendarEvents } from '@/lib/calendarSystem';
+import { canAdvanceDay, processCalendarEvents, executePlannedActivities } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js';
 
@@ -171,28 +171,30 @@ export async function advanceDay(profile) {
     updates.low_chemistry_days = 0;
   }
 
-  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
-  // Simulations are non-blocking — they don't affect the player's profile,
-  // so we fire-and-forget to keep day advancement fast and responsive.
+  let updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
+  const plannedResult = await executePlannedActivities(updated, newCareerDate);
+  updated = plannedResult.profile || updated;
+  // Aguarde efeitos globais antes de concluir o dia. Isso garante que avanço
+  // manual e avanço em lote tenham exatamente a mesma ordem e persistência.
   if (oldMonth !== newMonth) {
-    simulatePastTournaments(newCareerDate).catch(e => console.error('simulatePastTournaments', e));
-    ensureFutureTournaments(newCareerDate).catch(e => console.error('ensureFutureTournaments', e));
+    await simulatePastTournaments(newCareerDate).catch(e => console.error('simulatePastTournaments', e));
+    await ensureFutureTournaments(newCareerDate).catch(e => console.error('ensureFutureTournaments', e));
     try {
       const result = await processMonthlyFinances(updated);
       if (result) updated.coins = result.newBalance;
     } catch (e) { console.error('processMonthlyFinances', e); }
-    processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e));
-    evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e));
+    await processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e));
+    await evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e));
   }
   const totalDays = daysBetween(CAREER_START_DATE, newCareerDate);
   if (totalDays > 0 && totalDays % 7 === 0) {
-    simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e));
+    await simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e));
   }
-  processWorldTourDay(newCareerDate).catch(e => console.error('world tour day', e));
-  generateWorldEvents(newCareerDate, 1 + Math.floor(Math.random() * 2)).catch(e => console.error('world events', e));
-  expireMacroEvents(newCareerDate).catch(e => console.error('expire macro events', e));
-  maybeGenerateMacroEvent(newCareerDate).catch(e => console.error('macro event', e));
-  incrementMissionProgress(updated.id, 'advance_days').catch(() => {});
+  await processWorldTourDay(newCareerDate).catch(e => console.error('world tour day', e));
+  await generateWorldEvents(newCareerDate, 1 + Math.floor(Math.random() * 2)).catch(e => console.error('world events', e));
+  await expireMacroEvents(newCareerDate).catch(e => console.error('expire macro events', e));
+  await maybeGenerateMacroEvent(newCareerDate).catch(e => console.error('macro event', e));
+  await incrementMissionProgress(updated.id, 'advance_days').catch(() => {});
   emitDayAdvanced(profile, updated);
   return updated;
 }

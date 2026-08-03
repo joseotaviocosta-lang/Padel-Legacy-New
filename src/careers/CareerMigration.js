@@ -40,6 +40,16 @@ export function migrateCareer(career) {
     data.save_schema_version = 3;
     version = 3;
   }
+  if (version < 4) {
+    data.career_name = String(data.career_name || data.save_name || data.metadata?.player_name || 'Carreira importada').trim();
+    data.calendar = {
+      ...(data.calendar || {}),
+      preferences: data.calendar?.preferences || { default_view: 'week' },
+    };
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    data.save_schema_version = 4;
+    version = 4;
+  }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }
 
@@ -48,5 +58,14 @@ export function migrateIndex(index) {
   const fromVersion = Number(data.schema_version ?? 1);
   const toVersion = CAREER_INDEX_SCHEMA_VERSION;
   if (fromVersion > toVersion) throw new Error(`Versão futura desconhecida do índice: ${fromVersion}.`);
-  return { migrated: false, fromVersion, toVersion, data };
+  let version = fromVersion;
+  if (version < 2) {
+    data.careers = (data.careers || []).map((item, position) => ({
+      ...item,
+      save_name: String(item.save_name || item.career_name || item.player_name || `Carreira ${position + 1}`).trim(),
+    }));
+    data.schema_version = 2;
+    version = 2;
+  }
+  return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

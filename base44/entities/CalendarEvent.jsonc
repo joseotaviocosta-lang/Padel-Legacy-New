@@ -120,7 +120,7 @@
     },
     "metadata": {
       "type": "object",
-      "description": "Dados extras estruturados"
+      "description": "Dados extras estruturados, incluindo configuração e resultado de atividades criadas pelo planejador"
     }
   },
   "required": [

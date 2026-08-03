@@ -186,6 +186,7 @@ export function rollInjury(energy, age = 16) {
 }
 
 export function isInjured(profile) {
+  if (profile?.injury_status === 'lesionado' && Number(profile?.injury_days_remaining) > 0) return true;
   if (!profile?.injured_until) return false;
   const careerDate = profile?.career_date || '2026-01-01';
   return profile.injured_until > careerDate;
@@ -193,6 +194,9 @@ export function isInjured(profile) {
 
 export function injuryRecoveryDays(profile) {
   if (!isInjured(profile)) return 0;
+  if (profile?.injury_status === 'lesionado' && Number(profile?.injury_days_remaining) > 0) {
+    return Number(profile.injury_days_remaining);
+  }
   const careerDate = new Date((profile?.career_date || '2026-01-01') + 'T00:00:00');
   const injuredUntil = new Date(profile.injured_until + 'T00:00:00');
   return Math.max(0, Math.ceil((injuredUntil - careerDate) / (1000 * 60 * 60 * 24)));

@@ -19,6 +19,7 @@ import UpcomingPanel from '@/components/home/UpcomingPanel';
 import FeedPanel from '@/components/home/FeedPanel';
 import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
 import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
+import { advanceCareerUntilRecovered } from '@/game-core';
 
 export default function CareerHub() {
   const [profile, setProfile] = useState(null);
@@ -32,6 +33,31 @@ export default function CareerHub() {
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [skippingInjury, setSkippingInjury] = useState(false);
+  const [injurySkipError, setInjurySkipError] = useState('');
+  const [injurySkipSummary, setInjurySkipSummary] = useState(null);
+
+  async function handleSkipInjury() {
+    const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? Math.ceil((new Date(`${profile.injured_until}T00:00:00`).getTime() - new Date(`${profile.career_date}T00:00:00`).getTime()) / 86400000) : 0);
+    const warning = `Avançar ${days} dia${days === 1 ? '' : 's'} até a recuperação?\n\nTorneios, rankings, despesas, agenda, notícias, contratos e missões continuarão sendo processados. O avanço será interrompido antes de qualquer torneio ou decisão obrigatória.`;
+    if (!profile || !window.confirm(warning)) return;
+    setSkippingInjury(true);
+    setInjurySkipError('');
+    setInjurySkipSummary(null);
+    try {
+      const result = await advanceCareerUntilRecovered(profile);
+      setProfile(result.profile);
+      setInjurySkipSummary({ ...result.summary, daysAdvanced: result.daysAdvanced, energy: result.profile.energy, fatigue: result.profile.fatigue, recovered: result.recovered });
+      if (result.blockedBy) setInjurySkipError(`Avanço interrompido antes de “${result.blockedBy.title}” em ${result.blockedBy.start_date}. Resolva esse compromisso no Calendário.`);
+      else if (!result.recovered) setInjurySkipError('O limite seguro de 60 dias foi atingido. Confirme novamente para continuar.');
+    } catch (error) {
+      setInjurySkipError(error?.message || 'O avanço foi interrompido com segurança.');
+      const fresh = await ensureMyProfile(await localGame.auth.me());
+      if (fresh) setProfile(fresh);
+    } finally {
+      setSkippingInjury(false);
+    }
+  }
 
   useEffect(() => {
     (async () => {
@@ -158,7 +184,7 @@ export default function CareerHub() {
       {/* Status strip */}
       <StatusStrip profile={profile} />
 
-      <MedicalStatusPanel profile={profile} />
+      <MedicalStatusPanel profile={profile} onSkipRecovery={handleSkipInjury} skipping={skippingInjury} skipError={injurySkipError} skipSummary={injurySkipSummary} />
       <MedicalCenterPanel profile={profile} onProfileUpdate={setProfile} />
 
       {/* Next step guidance */}

@@ -18,6 +18,17 @@ function requireString(value, fieldName) {
   return value.trim();
 }
 
+export function normalizeSaveName(value) {
+  const normalized = requireString(value, 'Nome da carreira');
+  if (normalized.length > 40) {
+    throw new Error('O nome da carreira deve ter no máximo 40 caracteres.');
+  }
+  if (/[<>:"/\\|?*\u0000-\u001F]/u.test(normalized)) {
+    throw new Error('O nome da carreira contém caracteres inválidos: < > : " / \\ | ? *');
+  }
+  return normalized;
+}
+
 function requireOption(value, allowed, fieldName) {
   const normalized = requireString(value, fieldName).toLowerCase();
   if (!allowed.includes(normalized)) {
@@ -27,7 +38,7 @@ function requireOption(value, allowed, fieldName) {
 }
 
 export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName = 'Novo Atleta', careerType = 'normal' }) {
-  const normalizedSaveName = requireString(saveName, 'saveName');
+  const normalizedSaveName = normalizeSaveName(saveName);
   const normalizedPlayerName = requireString(playerName, 'playerName');
   const normalizedCareerType = requireOption(careerType, ALLOWED_CAREER_TYPES, 'careerType');
   const createdAt = nowIsoDate();
@@ -55,7 +66,7 @@ export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName
     },
     player: {},
     world: {},
-    calendar: {},
+    calendar: { preferences: { default_view: 'week' } },
     ranking: {},
     market: {},
     tournaments: {},

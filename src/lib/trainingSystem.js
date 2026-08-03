@@ -451,6 +451,9 @@ export function getPlanSummary(plan) {
 // Helper for injury recovery days (imported from padel.js to avoid circular deps)
 function injuryRecoveryDays(profile) {
   if (!isInjured(profile)) return 0;
+  if (profile?.injury_status === 'lesionado' && Number(profile?.injury_days_remaining) > 0) {
+    return Number(profile.injury_days_remaining);
+  }
   const careerDate = new Date((profile?.career_date || '2026-01-01') + 'T00:00:00');
   const injuredUntil = new Date(profile.injured_until + 'T00:00:00');
   return Math.max(0, Math.ceil((injuredUntil - careerDate) / (1000 * 60 * 60 * 24)));

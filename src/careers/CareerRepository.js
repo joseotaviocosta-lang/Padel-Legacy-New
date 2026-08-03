@@ -1,7 +1,7 @@
 import { GameStorage } from '../storage/GameStorage.js';
 import { CAREER_INDEX_FILE_NAME, CAREERS_DIRECTORY, CAREER_BACKUPS_DIRECTORY } from './careerSchema.js';
 import { validateCareerData, validateCareerIndex } from './CareerValidator.js';
-import { migrateCareer } from './CareerMigration.js';
+import { migrateCareer, migrateIndex } from './CareerMigration.js';
 
 const careerFileName = (careerId) => `${careerId}.json`;
 const backupFolderName = (careerId) => `career-${careerId}`;
@@ -33,7 +33,9 @@ export class CareerRepository {
       last_career_id: null,
       careers: [],
     });
-    return validateCareerIndex(index);
+    const migrated = migrateIndex(index);
+    if (migrated.migrated) await this.storage.writeJson(CAREER_INDEX_FILE_NAME, migrated.data, { backup: true, validate: false });
+    return validateCareerIndex(migrated.data);
   }
 
   async writeIndex(index) {

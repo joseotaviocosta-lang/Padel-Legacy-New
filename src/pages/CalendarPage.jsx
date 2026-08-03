@@ -4,11 +4,11 @@ import { Calendar as CalendarIcon, Trophy } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { ensureMyProfile } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
-import { advanceCareerDay } from '@/game-core';
+import { advanceCareerDay, advanceCareerUntilRecovered, hasActiveInjury } from '@/game-core';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
-import { getEventsForRange, getPendingDecisions, resolveDecision, isRegistrationOpen } from '@/lib/calendarSystem';
+import { getEventsForRange, getPendingDecisions, resolveDecision, isRegistrationOpen, scheduleRecurringActivities, cancelPlannedActivity, updatePlannedActivity } from '@/lib/calendarSystem';
 import { startOfWeek, format } from 'date-fns';
 import CalendarWeekView from '@/components/calendar/CalendarWeekView';
 import DayEventList from '@/components/calendar/DayEventList';
@@ -17,6 +17,8 @@ import TournamentRegistrationModal from '@/components/calendar/TournamentRegistr
 import TournamentModal from '@/components/tournaments/TournamentModal';
 import { useToast } from '@/components/ui/use-toast';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
+import CalendarPlanner from '@/components/calendar/CalendarPlanner';
+import CalendarMonthView from '@/components/calendar/CalendarMonthView';
 
 const TIER_DOT = {
   Silver:'bg-slate-500', Gold:'bg-yellow-500', Platinum:'bg-cyan-500',
@@ -32,6 +34,10 @@ export default function CalendarPage() {
   const [pendingDecisions, setPendingDecisions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
+  const [planning, setPlanning] = useState(false);
+  const [viewMode, setViewMode] = useState('week');
+  const [visibleMonth, setVisibleMonth] = useState(new Date('2026-01-01T00:00:00'));
+  const [skippingInjury, setSkippingInjury] = useState(false);
 const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:00:00'), { weekStartsOn: 0 }));
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDayData, setSelectedDayData] = useState({ events: [], matches: [], trainings: [] });
@@ -70,6 +76,7 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
       const cd = new Date((p.career_date || CAREER_START_DATE) + 'T00:00:00');
       setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
       setSelectedDay(cd);
+      setVisibleMonth(cd);
     } catch (e) {
       console.error('CalendarPage', e);
     } finally {
@@ -108,12 +115,14 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
 const updated = await advanceCareerDay(profile);
       setProfile(updated);
       // Refresh events and pending decisions
-      const { events, pending } = await loadModuleTasks({
+      const { events, pending, tr } = await loadModuleTasks({
         events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço do dia' },
         pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço do dia' },
+        tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: [], label: 'treinos após avanço do dia' },
       });
       setCalendarEvents(events || []);
       setPendingDecisions(pending || []);
+      setTrainings(tr || []);
       // Move selected day to new career date
       const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
       setSelectedDay(cd);
@@ -123,6 +132,62 @@ const updated = await advanceCareerDay(profile);
     } finally {
       setAdvancing(false);
     }
+  }
+
+  async function refreshCalendarEvents() {
+    const events = await getEventsForRange(profile.id, '2026-01-01', '2027-12-31');
+    setCalendarEvents(events || []);
+  }
+
+  async function handleScheduleActivity(input) {
+    setPlanning(true);
+    try {
+      const result = await scheduleRecurringActivities(profile, input, input.repeatWeeks);
+      await refreshCalendarEvents();
+      const skipped = result.skipped.length ? ` ${result.skipped.length} data(s) com conflito foram ignoradas.` : '';
+      toast({ title: `${result.created.length} atividade(s) programada(s)`, description: `Serão processadas automaticamente.${skipped}` });
+    } catch (error) {
+      toast({ title: 'Não foi possível programar', description: error?.message, variant: 'destructive' });
+    } finally { setPlanning(false); }
+  }
+
+  async function handleCancelActivity(event) {
+    setPlanning(true);
+    try {
+      await cancelPlannedActivity(profile.id, event);
+      await refreshCalendarEvents();
+      toast({ title: 'Atividade cancelada' });
+    } catch (error) {
+      toast({ title: 'Não foi possível cancelar', description: error?.message, variant: 'destructive' });
+    } finally { setPlanning(false); }
+  }
+
+  async function handleEditActivity(event) {
+    const date = window.prompt('Nova data da atividade (AAAA-MM-DD):', event.start_date);
+    if (!date || date === event.start_date) return;
+    setPlanning(true);
+    try {
+      await updatePlannedActivity(profile, event, date.trim());
+      await refreshCalendarEvents();
+      toast({ title: 'Atividade reagendada' });
+    } catch (error) {
+      toast({ title: 'Não foi possível reagendar', description: error?.message, variant: 'destructive' });
+    } finally { setPlanning(false); }
+  }
+
+  async function handleSkipInjury() {
+    const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysBetween(careerDate, profile.injured_until) : 0);
+    if (!window.confirm(`Avançar ${days} dia(s) até a recuperação?\n\nTodos os sistemas diários serão processados. O avanço parará antes de torneios e decisões obrigatórias.`)) return;
+    setSkippingInjury(true);
+    try {
+      const result = await advanceCareerUntilRecovered(profile);
+      setProfile(result.profile);
+      await refreshCalendarEvents();
+      if (result.blockedBy) toast({ title: 'Avanço interrompido com segurança', description: `Compromisso: ${result.blockedBy.title} em ${result.blockedBy.start_date}.` });
+      else toast({ title: result.recovered ? 'Recuperação concluída' : 'Limite de segurança atingido', description: `${result.daysAdvanced} dia(s) avançado(s) · Energia ${result.profile.energy} · Fadiga ${result.profile.fatigue}` });
+    } catch (error) {
+      toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
+    } finally { setSkippingInjury(false); }
   }
 
   async function handleResolveDecision(event, action) {
@@ -176,13 +241,17 @@ const updated = await advanceCareerDay(profile);
     <PageContainer>
       <PageHeader icon={CalendarIcon} title="Calendário da Carreira" subtitle="Gerencie sua agenda, inscrições e compromissos" accent="cyan" />
 
+      <div className="flex rounded-xl bg-secondary/30 p-1"><button onClick={() => setViewMode('week')} className={`flex-1 rounded-lg py-2 text-xs font-bold ${viewMode === 'week' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Visão semanal</button><button onClick={() => setViewMode('month')} className={`flex-1 rounded-lg py-2 text-xs font-bold ${viewMode === 'month' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Visão mensal</button></div>
+
       {/* Pending decisions — blocks day advance */}
       {pendingDecisions.length > 0 && (
         <PendingDecisionBanner events={pendingDecisions} onResolve={handleResolveDecision} />
       )}
 
+      {hasActiveInjury(profile) && <div className="glass rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 flex flex-col md:flex-row md:items-center gap-3"><div className="flex-1"><p className="text-sm font-bold text-rose-200">Período de recuperação</p><p className="text-xs text-muted-foreground">Retorno estimado em {Math.max(Number(profile.injury_days_remaining) || 0, profile.injured_until ? daysBetween(careerDate, profile.injured_until) : 0)} dia(s).</p></div><button onClick={handleSkipInjury} disabled={skippingInjury} className="rounded-xl bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-200 disabled:opacity-50">{skippingInjury ? 'Processando...' : 'Avançar até a recuperação'}</button></div>}
+
       {/* Week view */}
-      <CalendarWeekView
+      {viewMode === 'week' ? <CalendarWeekView
         careerDate={careerDate}
         weekStart={weekStart}
         onWeekChange={setWeekStart}
@@ -192,7 +261,7 @@ const updated = await advanceCareerDay(profile);
         onDayClick={handleDayClick}
         onAdvanceDay={handleAdvanceDay}
         advancing={advancing}
-      />
+      /> : <CalendarMonthView month={visibleMonth} onMonthChange={setVisibleMonth} careerDate={careerDate} events={calendarEvents} injuryReturnDate={profile.injury_return_date || profile.injured_until} onDayClick={handleDayClick} />}
 
       {/* Selected day details */}
       {selectedDay && (
@@ -203,6 +272,8 @@ const updated = await advanceCareerDay(profile);
           onPlayTournament={handlePlayTournament}
         />
       )}
+
+      <CalendarPlanner profile={profile} selectedDate={selectedDay ? format(selectedDay, 'yyyy-MM-dd') : careerDate} events={calendarEvents} onSchedule={handleScheduleActivity} onCancel={handleCancelActivity} onEdit={handleEditActivity} busy={planning} />
 
       {/* Upcoming tournament registrations */}
       <GlassCard>

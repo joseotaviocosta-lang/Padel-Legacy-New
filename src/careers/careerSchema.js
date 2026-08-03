@@ -1,5 +1,5 @@
-export const CAREER_SAVE_SCHEMA_VERSION = 3;
-export const CAREER_INDEX_SCHEMA_VERSION = 1;
+export const CAREER_SAVE_SCHEMA_VERSION = 4;
+export const CAREER_INDEX_SCHEMA_VERSION = 2;
 export const ALLOWED_COURT_SIDES = ['direita', 'esquerda'];
 export const ALLOWED_PLAY_STYLES = ['controle', 'equilibrado', 'agressivo', 'defensivo'];
 export const ALLOWED_CAREER_TYPES = ['normal', 'experiment'];

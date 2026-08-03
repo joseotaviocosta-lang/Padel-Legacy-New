@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { addDays, CAREER_START_DATE } from '@/lib/career';
 import { levelForXp, LEVELS, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
+import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystem.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -79,6 +80,110 @@ export function hasScheduleConflict(events, startDate, endDate, excludeId = null
     e.status === 'scheduled' &&
     !(endDate < e.start_date || startDate > (e.end_date || e.start_date))
   );
+}
+
+export const PLANNED_ACTIVITY_TYPES = [
+  { id: 'training', label: 'Treino', eventType: 'training_camp' },
+  { id: 'rest', label: 'Dia de descanso', eventType: 'rest' },
+  { id: 'personal', label: 'Atividade pessoal', eventType: 'personal' },
+];
+
+export async function schedulePlannedActivity(profile, input) {
+  const date = String(input?.date || '');
+  const careerDate = profile?.career_date || CAREER_START_DATE;
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date <= careerDate) {
+    throw new Error('Escolha uma data futura válida.');
+  }
+  const kind = PLANNED_ACTIVITY_TYPES.find((item) => item.id === input?.kind);
+  if (!kind) throw new Error('Escolha uma atividade válida.');
+
+  const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
+  const conflicts = hasScheduleConflict(events || [], date, date);
+  if (conflicts.length) throw new Error(`Já existe um compromisso nesse dia: ${conflicts[0].title}.`);
+
+  let title = String(input?.title || '').trim();
+  let description = '';
+  const metadata = { planner_created: true, planned_activity_kind: kind.id };
+  if (kind.id === 'training') {
+    const activity = TRAINING_ACTIVITIES.find((item) => item.id === input.activityId);
+    const intensity = INTENSITY_LEVELS.find((item) => item.id === input.intensityId);
+    if (!activity || !intensity) throw new Error('Escolha o treino e a intensidade.');
+    title = activity.label;
+    description = `${intensity.label} · ${activity.duration} min`;
+    metadata.training_activity_id = activity.id;
+    metadata.training_intensity_id = intensity.id;
+  } else if (!title) {
+    title = kind.label;
+  }
+  if (title.length > 60) throw new Error('O título deve ter no máximo 60 caracteres.');
+
+  return localGame.entities.CalendarEvent.create({
+    profile_id: profile.id,
+    event_type: kind.eventType,
+    title,
+    description,
+    start_date: date,
+    end_date: date,
+    status: 'scheduled',
+    is_mandatory: false,
+    requires_decision: false,
+    metadata,
+  });
+}
+
+export async function cancelPlannedActivity(profileId, event) {
+  if (!event?.id || event.profile_id !== profileId || !event.metadata?.planner_created || event.status !== 'scheduled') {
+    throw new Error('Somente atividades planejadas e ainda pendentes podem ser canceladas.');
+  }
+  return localGame.entities.CalendarEvent.update(event.id, { status: 'cancelled' });
+}
+
+export async function updatePlannedActivity(profile, event, date) {
+  if (!event?.id || event.profile_id !== profile.id || !event.metadata?.planner_created || event.status !== 'scheduled') throw new Error('Somente atividades futuras pendentes podem ser alteradas.');
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || date <= (profile.career_date || CAREER_START_DATE)) throw new Error('Escolha uma data futura válida.');
+  const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
+  const conflicts = hasScheduleConflict(events || [], date, date, event.id);
+  if (conflicts.length) throw new Error(`Já existe um compromisso nesse dia: ${conflicts[0].title}.`);
+  return localGame.entities.CalendarEvent.update(event.id, { start_date: date, end_date: date });
+}
+
+export async function scheduleRecurringActivities(profile, input, weeks = 1) {
+  const count = Math.max(1, Math.min(8, Number(weeks) || 1));
+  const created = [];
+  const skipped = [];
+  for (let index = 0; index < count; index += 1) {
+    const date = addDays(input.date, index * 7);
+    try { created.push(await schedulePlannedActivity(profile, { ...input, date })); }
+    catch (error) { skipped.push({ date, reason: error?.message || String(error) }); }
+  }
+  return { created, skipped };
+}
+
+export async function executePlannedActivities(profile, date) {
+  const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
+  const due = (events || []).filter((event) => event.start_date === date && event.metadata?.planner_created);
+  let currentProfile = profile;
+  const results = [];
+  for (const event of due) {
+    let failure = null;
+    if (event.metadata.planned_activity_kind === 'training') {
+      const activity = TRAINING_ACTIVITIES.find((item) => item.id === event.metadata.training_activity_id);
+      if (!activity) failure = 'Treino não encontrado.';
+      else {
+        const result = await executeTraining(currentProfile, activity, event.metadata.training_intensity_id);
+        if (result.error) failure = result.error;
+        else currentProfile = result.profile;
+      }
+    }
+    const cancelledByInjury = failure && /lesionad/i.test(failure);
+    const status = failure ? (cancelledByInjury ? 'cancelled' : 'missed') : 'completed';
+    await localGame.entities.CalendarEvent.update(event.id, {
+      status,
+      metadata: { ...event.metadata, executed_at: date, failure_reason: failure, cancellation_reason: cancelledByInjury ? 'lesão' : null },
+    });
+    results.push({ event, status, error: failure });
+  }
+  return { profile: currentProfile, results };
 }
 
 // ── Tournament registration ───────────────────────────────────────────────
@@ -230,7 +335,8 @@ export async function processCalendarEvents(profile, newDate) {
 
   for (const event of events || []) {
     // Mark past events as missed if they were tournaments requiring decisions
-    if (event.end_date < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
+    const eventEnd = event.end_date || event.start_date;
+    if (eventEnd < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
       await localGame.entities.CalendarEvent.update(event.id, { status: 'missed' });
       // Penalty for missing a tournament
       coinChange -= 50;
@@ -239,7 +345,7 @@ export async function processCalendarEvents(profile, newDate) {
     }
 
     // Complete non-tournament events that have ended
-    if (event.end_date < newDate && !event.requires_decision) {
+    if (eventEnd < newDate && !event.requires_decision) {
       await localGame.entities.CalendarEvent.update(event.id, { status: 'completed' });
       coinChange += event.coin_reward || 0;
       xpChange += event.xp_reward || 0;

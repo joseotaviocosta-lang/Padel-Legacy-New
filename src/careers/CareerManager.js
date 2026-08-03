@@ -1,6 +1,6 @@
 import { validateCareerData, validateCareerIndex } from './CareerValidator.js';
 import { migrateCareer, migrateIndex } from './CareerMigration.js';
-import { createDefaultCareerData } from './careerDefaults.js';
+import { createDefaultCareerData, normalizeSaveName } from './careerDefaults.js';
 import { CareerRepository } from './CareerRepository.js';
 import { CAREER_INDEX_FILE_NAME, CAREER_BACKUPS_DIRECTORY } from './careerSchema.js';
 
@@ -9,13 +9,6 @@ function cloneDeep(value) {
     return structuredClone(value);
   }
   return JSON.parse(JSON.stringify(value));
-}
-
-function normalizeName(name, field) {
-  if (typeof name !== 'string' || !name.trim()) {
-    throw new Error(`${field} deve ser uma string não vazia.`);
-  }
-  return name.trim();
 }
 
 function createSummaryFromCareer(career) {
@@ -184,7 +177,7 @@ export class CareerManager {
     const index = await this.loadFreshIndex();
     const entry = index.careers.find((item) => item.id === careerId);
     if (!entry) throw new Error('Carreira não encontrada no índice.');
-    const normalized = normalizeName(newName, 'Nome da carreira');
+    const normalized = normalizeSaveName(newName);
 
     const career = await this.repository.readCareer(careerId);
     career.career_name = normalized;

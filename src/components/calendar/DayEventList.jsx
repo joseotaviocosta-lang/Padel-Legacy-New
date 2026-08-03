@@ -60,6 +60,7 @@ export default function DayEventList({ day, dayData, onResolve, onPlayTournament
                         {item.energy_cost > 0 && <span className="text-[9px] text-amber-400">-{item.energy_cost} energia</span>}
                         {item.coin_cost > 0 && <span className="text-[9px] text-red-400">-{item.coin_cost} moedas</span>}
                         {item.coin_reward > 0 && <span className="text-[9px] text-green-400">+{item.coin_reward} moedas</span>}
+                        {item.metadata?.failure_reason && <span className="text-[9px] text-red-400">Não realizado: {item.metadata.failure_reason}</span>}
                         {item.requires_decision && (
                           <span className="text-[9px] text-amber-400 font-bold">⚠ Decisão obrigatória</span>
                         )}
