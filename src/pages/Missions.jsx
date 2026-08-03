@@ -1,13 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock } from 'lucide-react';
-import { ensureMyProfile, ensureTutorialMissionCatalog, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, reconcileCourtSideTutorial, syncMissionProgressPeriods } from '@/lib/padel';
+import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock, AlertTriangle } from 'lucide-react';
+import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, reconcileCourtSideTutorial, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { CAREER_STYLE_PROFILES, ATTRIBUTE_LABELS, buildInitialAttributes } from '@/lib/initialCareerProfiles';
 import { applyTutorialSide } from '@/lib/tutorialSideState.js';
+import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
@@ -32,15 +33,25 @@ function daysRemaining(careerDate, endDate) {
   return Math.max(0, Math.ceil((end - start) / 86400000));
 }
 
-async function ensureExtendedMissionCatalog() {
-  await ensureTutorialMissionCatalog();
+async function syncExtendedMissionCatalog() {
   const existing = await localGame.entities.Mission.list('-created_date', 300);
-  const titles = new Set((existing || []).map(m => m.title));
-  const missing = EXTRA_MISSIONS.filter(m => !titles.has(m.title));
+  const missing = findMissingMissionCatalog(existing, [...TUTORIAL_MISSIONS, ...EXTRA_MISSIONS]);
   if (missing.length) {
     try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
-    catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
+    catch {
+      const refreshed = await localGame.entities.Mission.list('-created_date', 300);
+      const stillMissing = findMissingMissionCatalog(refreshed, missing);
+      for (const mission of stillMissing) await localGame.entities.Mission.create({ ...mission, is_active: true });
+    }
   }
+}
+
+let catalogSyncPromise = null;
+function ensureExtendedMissionCatalog() {
+  if (!catalogSyncPromise) {
+    catalogSyncPromise = syncExtendedMissionCatalog().finally(() => { catalogSyncPromise = null; });
+  }
+  return catalogSyncPromise;
 }
 
 export default function Missions() {
@@ -51,14 +62,17 @@ export default function Missions() {
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('tutorial');
   const [savingChoice, setSavingChoice] = useState(false);
+  const [loadError, setLoadError] = useState('');
 
   useEffect(() => { load(); }, []);
 
   async function load() {
+    setLoading(true);
+    setLoadError('');
     try {
       const user = await localGame.auth.me();
       let p = await ensureMyProfile(user);
-      await safeModuleTask(() => ensureExtendedMissionCatalog(), { label: 'catálogo de missões', fallback: null, timeoutMs: 10000 });
+      await ensureExtendedMissionCatalog();
       const missionsData = await safeModuleTask(
         () => localGame.entities.Mission.filter({ is_active: true }),
         { label: 'missões ativas', fallback: [] },
@@ -80,7 +94,10 @@ export default function Missions() {
       setProfile(p);
       setMissions(missionsData || []);
       setProgress(Object.fromEntries((progData || []).map(pr => [pr.mission_id, pr])));
-    } catch (e) { console.error(e); }
+    } catch (e) {
+      console.error(e);
+      setLoadError('Não foi possível carregar o catálogo de missões. Verifique o armazenamento local e tente novamente.');
+    }
     finally { setLoading(false); }
   }
 
@@ -142,6 +159,13 @@ export default function Missions() {
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+      {loadError && (
+        <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100 flex items-center gap-3">
+          <AlertTriangle className="h-5 w-5 shrink-0" />
+          <span className="flex-1">{loadError}</span>
+          <button onClick={load} className="rounded-lg border border-amber-400/40 px-3 py-1.5 font-bold">Tentar novamente</button>
+        </div>
+      )}
       <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-6 grid-bg">
         <div className="relative flex items-center gap-4">
           <div className="h-14 w-14 rounded-2xl bg-amber-500/20 flex items-center justify-center shrink-0"><Target className="h-7 w-7 text-amber-400" /></div>

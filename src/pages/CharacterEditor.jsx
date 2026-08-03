@@ -11,6 +11,7 @@ import EquipmentEditor from '@/components/character/EquipmentEditor';
 import StyleEditor from '@/components/character/StyleEditor';
 import IdentityEditor from '@/components/character/IdentityEditor';
 import HistoryEditor from '@/components/character/HistoryEditor';
+import { normalizeCharacterCustomization } from '@/lib/characterCustomization';
 
 const TABS = [
   { key: 'appearance', label: 'Aparência', icon: Palette },
@@ -49,7 +50,7 @@ export default function CharacterEditor() {
       setProfile(p);
       const existing = await localGame.entities.CharacterCustomization.filter({ profile_id: p.id }, null, 1);
       if (existing && existing.length > 0) {
-        setCustomization(existing[0]);
+        setCustomization(normalizeCharacterCustomization(existing[0], p.id));
       } else {
         setCustomization({ ...DEFAULTS, profile_id: p.id });
       }
@@ -76,7 +77,7 @@ export default function CharacterEditor() {
       } else {
         saved = await localGame.entities.CharacterCustomization.create(customization);
       }
-      setCustomization(saved);
+      setCustomization(normalizeCharacterCustomization(saved, profile?.id));
       toast({ title: 'Personagem salvo!', description: 'Suas customizações foram aplicadas.' });
     } catch (e) {
       toast({ title: 'Erro ao salvar', description: 'Tente novamente.', variant: 'destructive' });

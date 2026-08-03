@@ -57,6 +57,7 @@ import { ActiveCareerGuard } from '@/careers/ActiveCareerGuard';
 
 import GlobalDayAdvanceSummary from '@/components/calendar/GlobalDayAdvanceSummary';
 import SaveFoundationBootstrap from '@/components/system/SaveFoundationBootstrap';
+import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
 
 const RuntimeServices = () => {
   const location = useLocation();
@@ -107,7 +108,7 @@ const AuthenticatedApp = () => {
           <Route path="/game/stats" element={<CareerStats />} />
           <Route path="/game/calendar" element={<CalendarPage />} />
           <Route path="/game/season" element={<Season />} />
-          <Route path="/game/economy" element={<Economy />} />
+          <Route path="/game/economy" element={<ModuleErrorBoundary moduleName="Economia"><Economy /></ModuleErrorBoundary>} />
           <Route path="/profile" element={<PlayerProfile />} />
           <Route path="/matches" element={<Matches />} />
           <Route path="/tournaments" element={<Tournaments />} />
@@ -116,7 +117,7 @@ const AuthenticatedApp = () => {
           <Route path="/clubs" element={<Clubs />} />
           <Route path="/clubs/:clubId" element={<ClubDetail />} />
           <Route path="/athletes" element={<Athletes />} />
-          <Route path="/character" element={<CharacterEditor />} />
+          <Route path="/character" element={<ModuleErrorBoundary moduleName="Editor de Personagem"><CharacterEditor /></ModuleErrorBoundary>} />
           <Route path="/admin" element={<Admin />} />
           <Route path="/database" element={<DatabaseManager />} />
           <Route path="/history" element={<History />} />

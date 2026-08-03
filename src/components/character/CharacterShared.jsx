@@ -67,17 +67,19 @@ export function ToggleRow({ label, value, onChange }) {
 }
 
 export function SliderRow({ label, value, onChange, min = 0, max = 100, unit = '' }) {
+  const parsedValue = Number(value);
+  const safeValue = Number.isFinite(parsedValue) ? parsedValue : min;
   return (
     <div>
       <div className="flex justify-between items-baseline mb-1">
         <SectionLabel>{label}</SectionLabel>
-        <span className="text-xs font-black text-primary tabular-nums">{value}{unit}</span>
+        <span className="text-xs font-black text-primary tabular-nums">{safeValue}{unit}</span>
       </div>
       <input
         type="range"
         min={min}
         max={max}
-        value={value}
+        value={safeValue}
         onChange={e => onChange(Number(e.target.value))}
         className="w-full h-2 rounded-full bg-secondary appearance-none cursor-pointer accent-primary"
       />

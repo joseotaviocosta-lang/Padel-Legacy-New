@@ -429,6 +429,7 @@ export function getSponsorTierStyle(tier) {
 export const SPONSOR_SLOT_LIMITS = { principal: 1, raquete: 1, vestuario: 1, calcado: 1, comercial: 2 };
 
 export function getSponsorCategory(sponsor) {
+  if (!sponsor || typeof sponsor !== 'object') return null;
   if (sponsor.category) return sponsor.category;
   const industry = String(sponsor.industry || '').toLocaleLowerCase('pt-BR');
   if (industry.includes('equip')) return 'raquete';
@@ -438,14 +439,31 @@ export function getSponsorCategory(sponsor) {
   return 'comercial';
 }
 
+export function normalizeSponsorshipContract(contract) {
+  if (!contract || typeof contract !== 'object') return null;
+  const sponsorId = contract.sponsor_id || contract.brand_id || '';
+  const sponsorName = String(contract.sponsor_name || contract.brand_name || '').trim();
+  if (!contract.id && !sponsorId && !sponsorName) return null;
+  return { ...contract, sponsor_id: sponsorId, sponsor_name: sponsorName || 'Patrocinador legado' };
+}
+
 export function validateSponsorSlot(sponsor, activeContracts = []) {
   const category = getSponsorCategory(sponsor);
-  const sameCategory = (activeContracts || []).filter((contract) => {
+  if (!sponsor || typeof sponsor !== 'object' || !sponsor.id) {
+    return { ok: false, category: null, reason: 'Dados do patrocinador estão incompletos.' };
+  }
+  if (!category || !Object.prototype.hasOwnProperty.call(SPONSOR_SLOT_LIMITS, category)) {
+    return { ok: false, category: category || null, reason: 'Categoria de patrocínio inválida.' };
+  }
+  const sameCategory = (Array.isArray(activeContracts) ? activeContracts : [])
+    .map(normalizeSponsorshipContract)
+    .filter(Boolean)
+    .filter((contract) => {
     if (contract.sponsor_category) return contract.sponsor_category === category;
-    const legacySponsor = SPONSOR_CATALOG.find((item) => item.id === contract.sponsor_id || item.name === contract.sponsor_name);
+    const legacySponsor = SPONSOR_CATALOG.find((item) => item && (item.id === contract.sponsor_id || item.name === contract.sponsor_name));
     return legacySponsor ? getSponsorCategory(legacySponsor) === category : false;
   });
-  const limit = SPONSOR_SLOT_LIMITS[category] || 1;
+  const limit = SPONSOR_SLOT_LIMITS[category];
   if (sameCategory.length >= limit) return { ok: false, category, reason: `Slot de ${category} ocupado por ${sameCategory.map((item) => item.sponsor_name).join(', ')}.` };
   return { ok: true, category, remaining: limit - sameCategory.length };
 }

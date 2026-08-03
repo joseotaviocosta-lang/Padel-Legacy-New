@@ -13,6 +13,7 @@ import PropertyPanel from '@/components/economy/PropertyPanel';
 import InvestmentPanel from '@/components/economy/InvestmentPanel';
 import FinancialFlow from '@/components/economy/FinancialFlow';
 import OpportunityPanel from '@/components/economy/OpportunityPanel';
+import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
 import { evaluateSponsorContracts, getSponsorEvaluationStatus, completeCareerOpportunity } from '@/game-core';
 
 const TABS = [
@@ -197,14 +198,14 @@ export default function Economy() {
               </div>
             );
           })()}
-          <SponsorPanel
+          <ModuleErrorBoundary moduleName="Patrocinadores"><SponsorPanel
           profile={profile}
           contracts={contracts}
           onSign={(s) => handle('sign', () => signSponsorContract(profile, s), `Contrato assinado com ${s.name}!`)}
           onRenew={(c, s) => handle('renew', () => renewContract(c, s, profile), `Contrato renovado com ${s.name}!`)}
           onTerminate={(c) => handle('terminate', () => terminateSponsorContract(c), 'Contrato rescindido')}
           busy={busy}
-          />
+          /></ModuleErrorBoundary>
         </div>
       )}
       {tab === 'staff' && (
