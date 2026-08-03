@@ -46,8 +46,8 @@ export async function runCareerMigrationTest() {
 
   const success = result.migrated
     && result.fromVersion === 1
-    && result.toVersion === 2
-    && validated.save_schema_version === 2
+    && result.toVersion === 3
+    && validated.save_schema_version === 3
     && validated.entities
     && typeof validated.entities === 'object'
     && !Array.isArray(validated.entities)

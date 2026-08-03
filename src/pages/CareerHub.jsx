@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Gamepad2, Trophy, Target, Dumbbell, Coins, TrendingUp, Activity, ChevronRight, Flame, Crown, Zap, ShoppingBag, Package, AlertCircle, Newspaper, MessageCircle, BarChart3, Calendar, Wallet } from 'lucide-react';
+import { Gamepad2, Trophy, Target, Dumbbell, TrendingUp, Activity, ChevronRight, Flame, Crown, Zap, ShoppingBag, Package, AlertCircle, MessageCircle, BarChart3, Calendar, Wallet } from 'lucide-react';
 
-import { ensureMyProfile, levelForXp, overallRating, winRate, getWorldRank, topAttributes, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
+import { ensureMyProfile, levelForXp, overallRating, winRate, getWorldRank, topAttributes, calculateAge, isRetired } from '@/lib/padel';
 import { LevelBadge, StatCard, getAttributeIcon } from '@/components/padel/Shared';
 import { CoinBadge, XpBar, SectionCard, EmptyState, QuickLink, ProgressBar } from '@/components/padel/GameShared';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import CareerCalendar from '@/components/career/CareerCalendar';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import PositionSelection from '@/components/career/PositionSelection';
-import OnboardingAttributes from '@/components/career/OnboardingAttributes';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import NextStepCard from '@/components/career/NextStepCard';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
@@ -20,6 +18,7 @@ import SeasonPanel from '@/components/home/SeasonPanel';
 import UpcomingPanel from '@/components/home/UpcomingPanel';
 import FeedPanel from '@/components/home/FeedPanel';
 import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
+import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
 
 export default function CareerHub() {
   const [profile, setProfile] = useState(null);
@@ -30,7 +29,6 @@ export default function CareerHub() {
   const [worldRank, setWorldRank] = useState({ rank: 0, total: 0 });
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
-  const [showOnboardingAttrs, setShowOnboardingAttrs] = useState(false);
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [posts, setPosts] = useState([]);
@@ -80,10 +78,6 @@ export default function CareerHub() {
           setPosts(latestPosts || []);
         }
 
-        // Auto-show onboarding attributes if profile has position + unspent points + no matches yet
-        if (p?.position && (p.unspent_attribute_points || 0) > 0 && (p.matches_played || 0) === 0) {
-          setShowOnboardingAttrs(true);
-        }
       } catch (e) { console.error('CareerHub', e); }
       finally { setLoading(false); }
     })();
@@ -165,6 +159,7 @@ export default function CareerHub() {
       <StatusStrip profile={profile} />
 
       <MedicalStatusPanel profile={profile} />
+      <MedicalCenterPanel profile={profile} onProfileUpdate={setProfile} />
 
       {/* Next step guidance */}
       <NextStepCard profile={profile} upcomingTournaments={upcomingTournaments} />
@@ -189,7 +184,7 @@ export default function CareerHub() {
       <SeasonPanel profile={profile} />
 
       {/* Career status */}
-      <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
+      <CareerStatusBar profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />
       <PlayStyleSummary profile={profile} />
 
       {/* Stats grid */}
@@ -320,31 +315,6 @@ export default function CareerHub() {
         />
       )}
 
-      {/* Sequential onboarding: Position → Attributes → Partner */}
-      {profile && !profile.position && (
-        <PositionSelection
-          profile={profile}
-          onPositionSelected={(p) => {
-            setProfile(p);
-            // After position is selected, automatically show attributes onboarding
-            setShowOnboardingAttrs(true);
-          }}
-        />
-      )}
-
-      {showOnboardingAttrs && profile && profile.position && (profile.unspent_attribute_points || 0) > 0 && (profile.matches_played || 0) === 0 && (
-        <OnboardingAttributes
-          profile={profile}
-          onComplete={(p) => {
-            setProfile(p);
-            // After attributes are distributed, automatically prompt partner selection
-            if ((p.unspent_attribute_points || 0) === 0 && !p.partner_id) {
-              setShowOnboardingAttrs(false);
-              setShowPartner(true);
-            }
-          }}
-        />
-      )}
     </div>
   );
 }

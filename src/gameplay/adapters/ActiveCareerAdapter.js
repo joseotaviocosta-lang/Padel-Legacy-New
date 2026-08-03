@@ -142,6 +142,17 @@ export class ActiveCareerAdapter {
         id: player.id,
         updated_date: new Date().toISOString(),
       };
+      if (Object.prototype.hasOwnProperty.call(updates, 'court_side')) {
+        career.metadata.court_side = updates.court_side;
+        career.metadata.side_selected = Boolean(updates.court_side);
+      }
+      if (Object.prototype.hasOwnProperty.call(updates, 'play_style')) {
+        career.metadata.play_style = updates.play_style;
+        career.metadata.style_selected = Boolean(updates.play_style);
+      }
+      if (Object.prototype.hasOwnProperty.call(updates, 'onboarding_completed')) {
+        career.metadata.onboarding_completed = Boolean(updates.onboarding_completed);
+      }
       return career.player;
     });
     return clone(transaction.result);

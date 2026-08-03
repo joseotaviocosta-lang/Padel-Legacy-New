@@ -4,6 +4,16 @@ function isTestCareer(summary) {
   return String(summary.save_name).startsWith('Direita Controle Teste') || String(summary.save_name).startsWith('Esquerda Agressivo Teste');
 }
 
+async function configureTutorialChoices(manager, created, courtSide, playStyle) {
+  const career = created.career;
+  career.metadata.court_side = courtSide;
+  career.metadata.play_style = playStyle;
+  career.metadata.side_selected = true;
+  career.metadata.style_selected = true;
+  career.player = { ...career.player, court_side: courtSide, play_style: playStyle };
+  return manager.saveCareer(created.summary.id, career);
+}
+
 export function setupCareerTest() {
   if (typeof window === 'undefined') return;
 
@@ -26,6 +36,8 @@ export function setupCareerTest() {
         playStyle: 'agressivo',
         careerType: 'experiment',
       });
+      await configureTutorialChoices(manager, a, 'direita', 'controle');
+      await configureTutorialChoices(manager, b, 'esquerda', 'agressivo');
 
       const list = await manager.listCareers({ includeArchived: true });
       const loadedA = await manager.loadCareer(a.summary.id);
@@ -69,6 +81,8 @@ export function setupCareerTest() {
         playStyle: 'agressivo',
         careerType: 'experiment',
       });
+      await configureTutorialChoices(manager, first, 'direita', 'controle');
+      await configureTutorialChoices(manager, second, 'esquerda', 'agressivo');
       return { firstId: first.summary.id, secondId: second.summary.id };
     },
 

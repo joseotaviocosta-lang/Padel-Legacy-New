@@ -57,7 +57,8 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
 
   const current = getInjuryStatus(profile);
   if (current.injured) {
-    const remaining = Math.max(0, current.daysRemaining - 1);
+    const recovery = calculateDailyRecovery(profile, { restDay: true });
+    const remaining = Math.max(0, current.daysRemaining - Math.max(1, Number(recovery.injuryDayReduction) || 1));
     const recovered = remaining === 0;
     const patch = recovered
       ? {
@@ -71,7 +72,8 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
         }
       : {
           injury_days_remaining: remaining,
-          energy: Math.min(100, (Number(profile.energy) || 0) + 8),
+          energy: Math.min(100, (Number(profile.energy) || 0) + recovery.energyGain),
+          fatigue: Math.max(0, (Number(profile.fatigue) || 0) - recovery.fatigueReduction),
         };
 
     const updated = await localGame.entities.PlayerProfile.update(profile.id, patch);
@@ -103,7 +105,8 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
   const fatigueRisk = Math.max(0, fatigue - 35) * 0.0012;
   const energyRisk = Math.max(0, 45 - energy) * 0.0015;
   const conditionProtection = Math.max(0, condition - 60) * 0.00035;
-  const risk = Math.min(0.18, Math.max(0.006, baseRisk + fatigueRisk + energyRisk - conditionProtection));
+  const medical = (await import('@/gameplay/worldTour/MedicalCenterManager.js')).getMedicalModifiers(profile);
+  const risk = Math.min(0.18, Math.max(0.006, (baseRisk + fatigueRisk + energyRisk - conditionProtection) * (1 - medical.injuryReduction) + Number(profile?.early_return_relapse_risk || 0)));
   const roll = hash(`${profile.id}:${currentDate}:injury`);
 
   if (roll >= risk) {

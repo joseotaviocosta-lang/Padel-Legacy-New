@@ -164,11 +164,38 @@ export function pickRandom(arr) {
   return arr[Math.floor(Math.random() * arr.length)];
 }
 
+function isContextualTemplateAllowed(profile, template) {
+  const content = String(template?.content || '').toLowerCase();
+  const matches = Number(profile?.matches_played || 0);
+  const wins = Number(profile?.wins || 0);
+  const losses = Number(profile?.losses || 0);
+  const hasPartner = Boolean(profile?.partner_id || profile?.partner_name);
+  const hasUpcomingEvent = Boolean(profile?.next_tournament_id || profile?.next_tournament_name);
+
+  if (/derrota|perdemos|erros não forçados|custaram caro/.test(content)) return losses > 0;
+  if (/vitória|campeã|campeão|parabéns ao meu atleta|que partida incrível/.test(content)) return wins > 0;
+  if (/troca de dupla|trocar de parceiro|parceria de quadra/.test(content)) return hasPartner && matches >= 5;
+  if (/partida de amanhã|próximo torneio|esse torneio/.test(content)) return hasUpcomingEvent;
+  if (/melhor partida do ano|aquela jogada|esse smash|jogada incrível|nível de jogo hoje/.test(content)) return matches > 0;
+
+  return true;
+}
+
 export function generateAutoPost(profile) {
-  const types = Object.keys(BOT_AUTHORS);
-  const authorType = pickRandom(types);
-  const author = pickRandom(BOT_AUTHORS[authorType]);
-  const template = pickRandom(POST_TEMPLATES[authorType]);
+  const candidates = [];
+  for (const [authorType, authors] of Object.entries(BOT_AUTHORS)) {
+    const templates = (POST_TEMPLATES[authorType] || []).filter(template => isContextualTemplateAllowed(profile, template));
+    for (const template of templates) candidates.push({ authorType, authors, template });
+  }
+
+  const selected = pickRandom(candidates) || {
+    authorType: 'treinador',
+    authors: BOT_AUTHORS.treinador,
+    template: POST_TEMPLATES.treinador[0],
+  };
+  const authorType = selected.authorType;
+  const author = pickRandom(selected.authors);
+  const template = selected.template;
   const baseLikes = Math.floor(Math.random() * 80) + 5;
 
   return {

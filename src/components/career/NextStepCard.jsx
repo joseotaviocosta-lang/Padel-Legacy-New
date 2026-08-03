@@ -1,6 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowRight, Users, Sparkles, Dumbbell, Trophy, Heart, FastForward, Swords, AlertCircle, CheckCircle } from 'lucide-react';
+import { ArrowRight, Users, Sparkles, Dumbbell, Trophy, Heart, FastForward, Swords, CheckCircle } from 'lucide-react';
 import { isInjured, canTrainToday, canPlayMatchToday, isRetired } from '@/lib/padel';
 
 // Analyzes the player's current state and returns the recommended next action.
@@ -18,13 +18,13 @@ export function getNextStep(profile, upcomingTournaments) {
     };
   }
 
-  if (!profile.position) {
+  if (!profile.court_side) {
     return {
       icon: Users,
-      title: 'Escolha sua posição',
-      description: 'Defina se joga no lado direito ou esquerdo da quadra.',
-      to: '/game',
-      cta: 'Definir posição',
+      title: 'Escolha seu lado',
+      description: 'Complete a missão "Escolha seu lado" no Tutorial.',
+      to: '/game/missions',
+      cta: 'Ir para a missão',
       accent: 'primary',
     };
   }

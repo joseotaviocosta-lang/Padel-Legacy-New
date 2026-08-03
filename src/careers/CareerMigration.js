@@ -19,6 +19,27 @@ export function migrateCareer(career) {
     data.save_schema_version = 2;
     version = 2;
   }
+  if (version < 3) {
+    const validSides = ['direita', 'esquerda'];
+    const legacySide = validSides.includes(data.player?.court_side)
+      ? data.player.court_side
+      : validSides.includes(data.player?.position) ? data.player.position : null;
+    const canonicalSide = data.metadata?.side_selected === true || legacySide
+      ? (legacySide || data.metadata?.court_side || null)
+      : null;
+
+    data.player = { ...(data.player || {}), court_side: canonicalSide };
+    delete data.player.position;
+    data.metadata = {
+      ...(data.metadata || {}),
+      court_side: canonicalSide,
+      play_style: data.player.play_style || (data.metadata?.style_selected ? data.metadata?.play_style : null),
+      side_selected: Boolean(canonicalSide),
+      style_selected: Boolean(data.player.play_style || data.metadata?.style_selected),
+    };
+    data.save_schema_version = 3;
+    version = 3;
+  }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }
 

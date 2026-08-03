@@ -144,19 +144,31 @@ export async function advanceDay(profile) {
     }
   }
 
-  // Chemistry: +1 per day together (familiarity)
+  // O tempo sozinho não cria entrosamento. A química cresce lentamente por
+  // convivência semanal; ganhos relevantes continuam vindo de partidas e treinos.
   if (profile.partner_id) {
-    updates.partner_chemistry = Math.min(100, (profile.partner_chemistry || 50) + 1);
+    const elapsedDays = daysBetween(CAREER_START_DATE, newCareerDate);
+    if (elapsedDays > 0 && elapsedDays % 7 === 0) {
+      updates.partner_chemistry = Math.min(100, (profile.partner_chemistry || 50) + 1);
+    }
   }
 
-  // Partner may leave if chemistry too low (lower daily chance)
+  // Uma parceria não termina por uma rolagem diária isolada. É necessário um
+  // período prolongado de baixa química e histórico mínimo em conjunto.
   if (profile.partner_id && (profile.partner_chemistry || 50) < 20) {
-    if (Math.random() < 0.15) {
+    const lowDays = Number(profile.low_chemistry_days || 0) + 1;
+    updates.low_chemistry_days = lowDays;
+    const sharedMatches = Number(profile.partnership_matches || profile.matches_with_partner || 0);
+    if (lowDays >= 14 && sharedMatches >= 5 && Math.random() < 0.10) {
       updates.partner_id = null;
       updates.partner_name = null;
       updates.partner_locked_until = null;
       updates.partner_chemistry = 50;
+      updates.low_chemistry_days = 0;
+      updates.last_partnership_end_reason = 'Baixa química prolongada';
     }
+  } else if (profile.low_chemistry_days) {
+    updates.low_chemistry_days = 0;
   }
 
   const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
@@ -201,8 +213,8 @@ export function getAvailablePartners(profile) {
   availableDiffs.forEach(diff => {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
-  if (!profile?.position) return pool;
-  const oppositePosition = profile.position === 'direita' ? 'esquerda' : 'direita';
+  if (!profile?.court_side) return [];
+  const oppositePosition = profile.court_side === 'direita' ? 'esquerda' : 'direita';
   return pool.filter(b => b.position === oppositePosition);
 }
 
@@ -213,14 +225,9 @@ export function getLockedPartners(profile) {
   lockedDiffs.forEach(diff => {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
-  if (!profile?.position) return pool;
-  const oppositePosition = profile.position === 'direita' ? 'esquerda' : 'direita';
+  if (!profile?.court_side) return [];
+  const oppositePosition = profile.court_side === 'direita' ? 'esquerda' : 'direita';
   return pool.filter(b => b.position === oppositePosition);
-}
-
-export async function selectPosition(profile, position) {
-  const updated = await localGame.entities.PlayerProfile.update(profile.id, { position });
-  return updated;
 }
 
 // Tournament helpers

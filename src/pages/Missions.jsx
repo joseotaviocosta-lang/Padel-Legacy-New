@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock } from 'lucide-react';
-import { ensureMyProfile, ensureTutorialMissionCatalog, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
+import { ensureMyProfile, ensureTutorialMissionCatalog, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, reconcileCourtSideTutorial, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { CAREER_STYLE_PROFILES, ATTRIBUTE_LABELS, buildInitialAttributes } from '@/lib/initialCareerProfiles';
+import { applyTutorialSide } from '@/lib/tutorialSideState.js';
 
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
@@ -56,8 +57,7 @@ export default function Missions() {
   async function load() {
     try {
       const user = await localGame.auth.me();
-      const p = await ensureMyProfile(user);
-      setProfile(p);
+      let p = await ensureMyProfile(user);
       await safeModuleTask(() => ensureExtendedMissionCatalog(), { label: 'catálogo de missões', fallback: null, timeoutMs: 10000 });
       const missionsData = await safeModuleTask(
         () => localGame.entities.Mission.filter({ is_active: true }),
@@ -72,6 +72,12 @@ export default function Missions() {
         () => localGame.entities.MissionProgress.filter({ profile_id: p.id }),
         { label: 'releitura do progresso das missões', fallback: progData },
       ) : [];
+      const reconciliation = await reconcileCourtSideTutorial(p, missionsData, progData);
+      p = reconciliation.profile || p;
+      if (reconciliation.changed) {
+        progData = await localGame.entities.MissionProgress.filter({ profile_id: p.id });
+      }
+      setProfile(p);
       setMissions(missionsData || []);
       setProgress(Object.fromEntries((progData || []).map(pr => [pr.mission_id, pr])));
     } catch (e) { console.error(e); }
@@ -79,39 +85,46 @@ export default function Missions() {
   }
 
 
-  async function updateOnboarding(fields) {
-    if (!profile?.id) return;
-    setSavingChoice(true);
-    try {
-      const updated = await localGame.entities.PlayerProfile.update(profile.id, fields);
-      setProfile(updated);
-    } finally {
-      setSavingChoice(false);
-    }
-  }
-
   const onboardingStage = profile?.onboarding_completed
     ? 'completed'
     : (profile?.onboarding_stage || 'welcome');
 
   async function chooseSide(side) {
-    await updateOnboarding({
-      court_side: side,
-      play_style: null,
-      onboarding_stage: 'style',
-    });
+    if (!['direita', 'esquerda'].includes(side) || !profile?.id) return;
+    setSavingChoice(true);
+    try {
+      const choice = applyTutorialSide(profile, side);
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+        court_side: choice.court_side,
+        play_style: choice.play_style,
+        onboarding_stage: choice.onboarding_stage,
+      });
+      await incrementMissionProgress(updated.id, 'choose_court_side', 1, updated.career_date);
+      await localGame.entities.PlayerProfile.update(updated.id, { onboarding_stage: 'style' });
+      await load();
+    } finally {
+      setSavingChoice(false);
+    }
   }
 
   async function chooseStyle(style) {
     const side = profile?.court_side;
+    if (!side || !CAREER_STYLE_PROFILES[side]?.[style]) return;
     const attributes = buildInitialAttributes(side, style);
-    await updateOnboarding({
-      ...attributes,
-      play_style: style,
-      unspent_attribute_points: 0,
-      onboarding_completed: true,
-      onboarding_stage: 'completed',
-    });
+    setSavingChoice(true);
+    try {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+        ...attributes,
+        play_style: style,
+        unspent_attribute_points: 0,
+        onboarding_completed: true,
+        onboarding_stage: 'completed',
+      });
+      await incrementMissionProgress(updated.id, 'choose_play_style', 1, updated.career_date);
+      await load();
+    } finally {
+      setSavingChoice(false);
+    }
   }
 
   const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial').sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
@@ -138,12 +151,12 @@ export default function Missions() {
       </div>
 
       {onboardingStage !== 'completed' && <div className="glass rounded-3xl border border-primary/50 p-5 md:p-7 bg-primary/5 space-y-5">
-        {onboardingStage === 'welcome' && <>
+        {onboardingStage === 'welcome' && !['choose_court_side', 'choose_play_style'].includes(nextTutorial?.objective_type) && <>
           <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Primeiros passos</p><h2 className="text-2xl font-black mt-2">Bem-vindo ao Padel Legacy</h2><p className="text-muted-foreground mt-2">Sua carreira já foi criada. Agora o treinador vai ajudar você a definir sua função em quadra e sua identidade tática.</p></div>
-          <button disabled={savingChoice} onClick={() => updateOnboarding({ onboarding_stage: 'side' })} className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-bold">Começar tutorial <ArrowRight className="inline h-4 w-4 ml-1" /></button>
+          <button disabled={savingChoice} onClick={() => nextTutorial?.tutorial_route && navigate(nextTutorial.tutorial_route)} className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-bold">Começar tutorial <ArrowRight className="inline h-4 w-4 ml-1" /></button>
         </>}
 
-        {onboardingStage === 'side' && <>
+        {nextTutorial?.objective_type === 'choose_court_side' && <>
           <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Escolha seu lado</p><h2 className="text-2xl font-black mt-2">Onde você prefere jogar?</h2><p className="text-muted-foreground mt-2">Essa escolha define sua responsabilidade principal dentro da dupla.</p></div>
           <div className="grid md:grid-cols-2 gap-4">
             <button disabled={savingChoice} onClick={() => chooseSide('direita')} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors"><h3 className="text-xl font-black">Direita</h3><p className="text-sm text-muted-foreground mt-2">Construção dos pontos, consistência, defesa e organização tática.</p></button>
@@ -151,12 +164,11 @@ export default function Missions() {
           </div>
         </>}
 
-        {onboardingStage === 'style' && <>
+        {nextTutorial?.objective_type === 'choose_play_style' && <>
           <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Defina seu estilo</p><h2 className="text-2xl font-black mt-2">Escolha sua identidade tática</h2><p className="text-muted-foreground mt-2">Três atributos ficarão no nível 15. Todos os demais começarão no nível 10.</p></div>
           <div className="grid md:grid-cols-2 gap-4">
             {Object.entries(CAREER_STYLE_PROFILES[profile?.court_side] || {}).map(([key, option]) => <button key={key} disabled={savingChoice} onClick={() => chooseStyle(key)} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors"><h3 className="text-xl font-black">{option.label}</h3><p className="text-sm text-muted-foreground mt-2">{option.description}</p><div className="flex flex-wrap gap-2 mt-4">{option.strengths.map(attr => <span key={attr} className="rounded-full bg-primary/15 text-primary px-3 py-1 text-xs font-bold">{ATTRIBUTE_LABELS[attr]} 15</span>)}</div></button>)}
           </div>
-          <button disabled={savingChoice} onClick={() => updateOnboarding({ court_side: null, onboarding_stage: 'side' })} className="text-sm font-bold text-muted-foreground">Voltar e trocar o lado</button>
         </>}
       </div>}
 

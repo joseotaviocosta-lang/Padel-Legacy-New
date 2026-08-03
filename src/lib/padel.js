@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { normalizeCourtSide, sideMissionRepair } from '@/lib/tutorialSideState.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 export const PLAY_STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
@@ -237,6 +238,7 @@ export async function ensureMyProfile(user) {
       if (p.level !== correctLevel) updates.level = correctLevel;
       if (!p.career_date) updates.career_date = '2026-01-01';
       if (!p.created_by_id && user.id) updates.created_by_id = user.id;
+      if (!p.court_side && ['direita', 'esquerda'].includes(p.position)) updates.court_side = p.position;
       if (Object.keys(updates).length > 0) {
         return await localGame.entities.PlayerProfile.update(p.id, updates);
       }
@@ -434,6 +436,16 @@ function emitMissionEvent(detail) {
 
 async function rewardMissionAutomatically(profileId, mission, progressRow) {
   if (!progressRow || progressRow.claimed) return progressRow;
+  const latestRows = await localGame.entities.MissionProgress.filter({ id: progressRow.id, profile_id: profileId });
+  const latest = latestRows?.[0] || progressRow;
+  if (latest.claimed) return latest;
+  if (latest.reward_delivered) {
+    return localGame.entities.MissionProgress.update(progressRow.id, {
+      completed: true,
+      claimed: true,
+      completed_at: latest.completed_at || new Date().toISOString(),
+    });
+  }
   const profiles = await localGame.entities.PlayerProfile.filter({ id: profileId });
   const profile = profiles?.[0];
   if (!profile) return progressRow;
@@ -444,7 +456,7 @@ async function rewardMissionAutomatically(profileId, mission, progressRow) {
     coins: Number(profile.coins || 0) + Number(mission.coins_reward || 0),
     medals,
   });
-  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, completed_at: new Date().toISOString() });
+  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, reward_delivered: true, completed_at: new Date().toISOString() });
   emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial' });
   return claimed;
 }
@@ -509,6 +521,42 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
     }
   } catch (e) { console.error('mission progress', e); }
   return completedNow;
+}
+
+export async function reconcileCourtSideTutorial(profile, missions = null, rows = null) {
+  if (!profile?.id) return { profile, changed: false };
+  const allMissions = missions || await ensureTutorialMissionCatalog();
+  const mission = (allMissions || []).find(item => item.objective_type === 'choose_court_side');
+  if (!mission) return { profile, changed: false };
+  const progressRows = rows || await localGame.entities.MissionProgress.filter({ profile_id: profile.id });
+  const row = (progressRows || []).find(item => item.mission_id === mission.id);
+  const side = normalizeCourtSide(profile.court_side);
+  const repair = sideMissionRepair(profile, row);
+
+  if (repair === 'reopen') {
+    if (typeof window !== 'undefined' && ['localhost', '127.0.0.1'].includes(window.location.hostname)) {
+      console.warn('[career-migration] Missão de lado concluída sem court_side; missão reaberta sem remover recompensa.', { profileId: profile.id });
+    }
+    await localGame.entities.MissionProgress.update(row.id, {
+      progress: 0,
+      completed: false,
+      claimed: false,
+      reward_delivered: Boolean(row.reward_delivered || row.claimed),
+    });
+    const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+      play_style: null,
+      onboarding_completed: false,
+      onboarding_stage: 'side',
+    });
+    return { profile: updated, changed: true };
+  }
+
+  if (repair === 'complete' && await tutorialUnlocked(mission, allMissions, progressRows)) {
+    await incrementMissionProgress(profile.id, 'choose_court_side', 1, profile.career_date);
+    const updated = await localGame.entities.PlayerProfile.update(profile.id, { onboarding_stage: 'style' });
+    return { profile: updated, changed: true };
+  }
+  return { profile, changed: false };
 }
 
 export async function applyMatchRewards(profile, won, options = {}) {

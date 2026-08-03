@@ -70,4 +70,9 @@ if (typeof window !== 'undefined') {
   window.PadelMatchEngineTest = { run: runMatchEngineTest };
 }
 
-if (import.meta.env.DEV) import('./gameplay/tests/WorldTourPhysicalConditionTest.js');
+if (import.meta.env.DEV) {
+  import('./gameplay/tests/WorldTourPhysicalConditionTest.js');
+  import('./gameplay/tests/WorldTourMedicalCenterTest.js');
+  import('./gameplay/tests/ContextualPressTest.js');
+  import('./gameplay/tests/SequentialContextRegressionTest.js');
+}

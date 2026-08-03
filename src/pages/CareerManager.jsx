@@ -16,7 +16,7 @@ export default function CareerManager() {
     setCreating(true);
     try {
       const number = careers.filter(c => !c.archived).length + 1;
-      await createCareer({ saveName: `Nova Carreira ${number}`, playerName: 'Novo Atleta', courtSide: 'direita', playStyle: 'equilibrado', careerType: 'normal' });
+      await createCareer({ saveName: `Nova Carreira ${number}`, playerName: 'Novo Atleta', careerType: 'normal' });
       navigate('/game/missions', { replace: true, state: { onboarding: true } });
     } finally { setCreating(false); }
   });

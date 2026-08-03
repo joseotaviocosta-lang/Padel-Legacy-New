@@ -153,7 +153,7 @@ export class CareerManager {
     careerData.updated_at = careerData.last_played_at;
     await this.repository.writeCareer(careerId, careerData);
 
-    entry.last_played_at = careerData.last_played_at;
+    Object.assign(entry, createSummaryFromCareer(careerData));
     index.last_career_id = careerId;
     await this.repository.writeIndex(index);
 

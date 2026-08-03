@@ -10,8 +10,8 @@ export function computeCompatibility(profile, partnerBot, relationships = []) {
 
   // Position: opposite sides complement
   let positionScore = 50;
-  if (profile.position && partnerBot.position) {
-    positionScore = profile.position === partnerBot.position ? 20 : 100;
+  if (profile.court_side && partnerBot.position) {
+    positionScore = profile.court_side === partnerBot.position ? 20 : 100;
   } else if (partnerBot.position) {
     positionScore = 75;
   }

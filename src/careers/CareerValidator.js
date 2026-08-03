@@ -47,8 +47,8 @@ function validateSummaryItem(summary) {
   if (!isSafeId(summary.id)) fail('Resumo de carreira inválido: id deve ser seguro.');
   if (!isNonEmptyString(summary.save_name)) fail('Resumo de carreira inválido: save_name obrigatório.');
   if (!isNonEmptyString(summary.player_name)) fail('Resumo de carreira inválido: player_name obrigatório.');
-  if (!ALLOWED_COURT_SIDES.includes(summary.court_side)) fail('Resumo de carreira inválido: court_side inválido.');
-  if (!ALLOWED_PLAY_STYLES.includes(summary.play_style)) fail('Resumo de carreira inválido: play_style inválido.');
+  if (summary.court_side !== null && !ALLOWED_COURT_SIDES.includes(summary.court_side)) fail('Resumo de carreira inválido: court_side inválido.');
+  if (summary.play_style !== null && !ALLOWED_PLAY_STYLES.includes(summary.play_style)) fail('Resumo de carreira inválido: play_style inválido.');
   if (!ALLOWED_CAREER_TYPES.includes(summary.career_type)) fail('Resumo de carreira inválido: career_type inválido.');
   if (!isValidIsoDate(summary.career_date)) fail('Resumo de carreira inválido: career_date deve ser uma data ISO.');
   if (summary.ranking_position !== null && typeof summary.ranking_position !== 'number') {
@@ -77,8 +77,8 @@ export function validateCareerData(career) {
   if (!isObject(career.metadata)) fail('metadata deve ser um objeto.');
   const metadata = career.metadata;
   if (!isNonEmptyString(metadata.player_name)) fail('metadata.player_name obrigatório.');
-  if (!ALLOWED_COURT_SIDES.includes(metadata.court_side)) fail('metadata.court_side inválido.');
-  if (!ALLOWED_PLAY_STYLES.includes(metadata.play_style)) fail('metadata.play_style inválido.');
+  if (metadata.court_side !== null && !ALLOWED_COURT_SIDES.includes(metadata.court_side)) fail('metadata.court_side inválido.');
+  if (metadata.play_style !== null && !ALLOWED_PLAY_STYLES.includes(metadata.play_style)) fail('metadata.play_style inválido.');
   if (!isNonEmptyString(metadata.career_date) || !isValidIsoDate(`${metadata.career_date}T00:00:00`)) {
     fail('metadata.career_date deve ser uma data ISO válida (YYYY-MM-DD).');
   }

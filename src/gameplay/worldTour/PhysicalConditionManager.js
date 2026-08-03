@@ -1,3 +1,4 @@
+import { getMedicalModifiers } from './MedicalCenterManager.js';
 const ROUND_LOAD = {
   qualifying: 12,
   first_round: 14,
@@ -63,7 +64,9 @@ export function calculateInjuryRisk(profile, load, won = false) {
   const loadRisk = Math.max(0, Number(load?.energyCost || 0) - 14) * 0.0011;
   const conditionProtection = Math.max(0, condition - 60) * 0.00045;
   const extraRound = won ? 0.001 : 0;
-  return clamp(base + lowEnergy + highFatigue + loadRisk + extraRound - conditionProtection, 0.003, 0.28);
+  const medical = getMedicalModifiers(profile);
+  const relapse = Number(profile?.early_return_relapse_risk || 0);
+  return clamp((base + lowEnergy + highFatigue + loadRisk + extraRound - conditionProtection) * (1 - medical.injuryReduction) + relapse, 0.003, 0.28);
 }
 function chooseSeverity(seed, risk) {
   const adjusted = risk > 0.16 ? [35, 40, 25] : risk > 0.08 ? [48, 37, 15] : SEVERITIES.map(x => x.weight);
@@ -113,8 +116,10 @@ export function getCoachPhysicalRecommendation(profile, tournament, roundLabel =
   return { level, advice, projectedEnergy, projectedFatigue, injuryRisk: risk, load, travel, canPlay: level !== 'Indisponível' };
 }
 export function calculateDailyRecovery(profile, { restDay = true } = {}) {
-  if (profile?.injury_status === 'lesionado') return { energyGain: 8, fatigueReduction: 10 };
+  const medical = getMedicalModifiers(profile);
+  const multiplier = 1 + medical.recoveryBonus;
+  if (profile?.injury_status === 'lesionado') return { energyGain: Math.round(8 * multiplier), fatigueReduction: Math.round(10 * multiplier), injuryDayReduction: medical.recoveryBonus >= 0.3 ? 2 : 1 };
   const condition = Number(profile?.condition) || 70;
   const gain = restDay ? 10 + Math.floor(condition / 25) : 5;
-  return { energyGain: gain, fatigueReduction: restDay ? 12 : 6 };
+  return { energyGain: Math.round(gain * multiplier), fatigueReduction: Math.round((restDay ? 12 : 6) * multiplier), injuryDayReduction: 0 };
 }

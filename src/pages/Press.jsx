@@ -14,6 +14,8 @@ export default function Press() {
   const [articles, setArticles] = useState([]);
   const [journalists, setJournalists] = useState([]);
   const [recentMatches, setRecentMatches] = useState([]);
+  const [calendarEvents, setCalendarEvents] = useState([]);
+  const [partnership, setPartnership] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('feed');
   const [activeInterview, setActiveInterview] = useState(null);
@@ -31,12 +33,16 @@ export default function Press() {
       setProfile(p);
 
       if (p) {
-        const [arts, mats] = await Promise.all([
+        const [arts, mats, events, partnerships] = await Promise.all([
           localGame.entities.PressArticle.filter({ profile_id: p.id }, '-created_date', 50),
-          localGame.entities.Match.list('-created_date', 5),
+          localGame.entities.Match.filter({ profile_id: p.id }, '-created_date', 20),
+          localGame.entities.CalendarEvent.filter({ profile_id: p.id }, 'start_date', 100),
+          localGame.entities.Partnership.filter({ profile_id: p.id }, '-created_date', 20).catch(() => []),
         ]);
         setArticles(arts || []);
         setRecentMatches(mats || []);
+        setCalendarEvents(events || []);
+        setPartnership((partnerships || []).find(item => item.is_active || item.status === 'active') || null);
 
         // Load or seed journalists for this profile
         const existing = await localGame.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
@@ -54,9 +60,8 @@ export default function Press() {
   }
 
   const pendingInterviews = profile
-    ? getPendingInterviews(profile, recentMatches).filter(interview => {
+    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership }).filter(interview => {
         return !articles.some(article =>
-          article.career_date === profile.career_date &&
           article.related_event === interview.relatedEvent &&
           (
             article.article_type === 'entrevista' ||

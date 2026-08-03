@@ -254,82 +254,175 @@ export function toneEmoji(tone) {
 // ─── Pending Interview Generation ────────────────────────────────────────────
 // Based on profile state, generates available interviews/press conferences.
 
-export function getPendingInterviews(profile, recentMatches) {
+export function getPendingInterviews(profile, recentMatches = [], context = {}) {
+  if (!profile?.id) return [];
+
   const pending = [];
-  const careerDate = profile?.career_date || '2026-01-01';
+  const careerDate = profile.career_date || new Date().toISOString().slice(0, 10);
+  const playerNames = new Set([
+    profile.sport_name,
+    profile.name,
+    profile.full_name,
+  ].filter(Boolean).map(normalizeName));
 
-  // Post-match interviews
-  if (recentMatches && recentMatches.length > 0) {
-    const lastMatch = recentMatches[0];
-    const won = lastMatch.winner && lastMatch.team_a && lastMatch.team_a[0] === profile?.sport_name
-      ? lastMatch.winner === profile.sport_name
-      : false;
+  const ownMatches = (recentMatches || [])
+    .filter(match => isPlayerMatch(match, profile, playerNames))
+    .sort((a, b) => String(b.date || b.created_date || '').localeCompare(String(a.date || a.created_date || '')));
 
-    const existingType = won ? 'post_win' : 'post_loss';
+  // Entrevistas pós-jogo só existem quando uma partida real do jogador foi registrada.
+  const lastMatch = ownMatches[0];
+  if (lastMatch) {
+    const outcome = resolvePlayerOutcome(lastMatch, playerNames);
+    if (outcome === 'win' || outcome === 'loss') {
+      const opponent = resolveOpponentName(lastMatch, playerNames);
+      const matchKey = lastMatch.id || `${lastMatch.date || careerDate}-${lastMatch.tournament_name || 'partida'}`;
+      pending.push({
+        id: `interview_match_${matchKey}`,
+        sourceId: `match:${matchKey}`,
+        type: 'interview',
+        title: outcome === 'win' ? 'Entrevista Pós-Vitória' : 'Entrevista Pós-Derrota',
+        description: `A imprensa quer repercutir sua partida contra ${opponent}.`,
+        questionCategory: outcome === 'win' ? 'post_win' : 'post_loss',
+        opponent,
+        relatedEvent: `Partida:${matchKey}`,
+        eventLabel: lastMatch.tournament_name || 'Partida Oficial',
+        careerDate,
+      });
+    }
+  }
+
+  // Coletiva pré-torneio apenas quando há um torneio realmente agendado e próximo.
+  const nextTournament = findNextTournament(context.calendarEvents || [], careerDate);
+  if (nextTournament) {
+    const eventKey = nextTournament.id || `${nextTournament.start_date || nextTournament.event_date}-${nextTournament.title || nextTournament.name}`;
     pending.push({
-      id: `interview_match_${lastMatch.id}`,
-      type: 'interview',
-      title: won ? 'Entrevista Pós-Vitória' : 'Entrevista Pós-Derrota',
-      description: `Imprensa quer saber sobre sua última partida contra ${lastMatch.team_b?.[0] || 'o adversário'}.`,
-      questionCategory: won ? 'post_win' : 'post_loss',
-      opponent: lastMatch.team_b?.[0] || 'o adversário',
-      relatedEvent: lastMatch.tournament_name || 'Partida Oficial',
+      id: `press_conf_pre_${eventKey}`,
+      sourceId: `calendar:${eventKey}`,
+      type: 'press_conference',
+      title: 'Coletiva Pré-Torneio',
+      description: `Jornalistas aguardam sua avaliação antes de ${nextTournament.title || nextTournament.name || 'seu próximo torneio'}.`,
+      questionCategory: 'pre_match',
+      opponent: nextTournament.opponent_name || 'o próximo adversário',
+      relatedEvent: `Torneio:${eventKey}`,
+      eventLabel: nextTournament.title || nextTournament.name || 'Próximo torneio',
       careerDate,
     });
   }
 
-  // Pre-tournament press conference
-  pending.push({
-    id: 'press_conf_pre',
-    type: 'press_conference',
-    title: 'Coletiva de Imprensa',
-    description: 'Jornalistas reunidos para a coletiva pré-torneio.',
-    questionCategory: 'pre_match',
-    opponent: 'o próximo adversário',
-    relatedEvent: 'Coletiva Oficial',
-    careerDate,
-  });
-
-  // Rumor interview (periodic)
-  pending.push({
-    id: 'interview_rumor',
-    type: 'interview',
-    title: 'Rumor do Dia',
-    description: 'Um jornalista quer comentar os rumores sobre você.',
-    questionCategory: 'rumor',
-    opponent: 'a imprensa',
-    relatedEvent: 'Rumores',
-    careerDate,
-  });
-
-  // Speculation (if player is older or high level)
-  const age = profile?.birth_date ? calculateAgeFromBirth(profile.birth_date, careerDate) : 20;
-  if (age >= 30 || (profile?.xp || 0) > 5000) {
+  // Rumores só aparecem quando existe um fato de relacionamento que os sustente.
+  const partnership = context.partnership;
+  const chemistry = Number(partnership?.chemistry ?? profile.partner_chemistry ?? 100);
+  const partnershipAtRisk = partnership && (
+    chemistry <= 35 ||
+    ['ending', 'at_risk', 'negotiating_exit'].includes(partnership.status) ||
+    Number(partnership.consecutive_losses || 0) >= 4
+  );
+  if (partnershipAtRisk) {
+    const partnershipKey = partnership.id || profile.partner_id || 'active';
     pending.push({
-      id: 'interview_speculation',
+      id: `interview_rumor_partner_${partnershipKey}`,
+      sourceId: `partnership:${partnershipKey}:${careerDate}`,
       type: 'interview',
-      title: 'Especulação',
-      description: 'Jornalistas especulam sobre seu futuro no padel.',
+      title: 'Rumores sobre a Dupla',
+      description: 'O momento recente da parceria levantou dúvidas na imprensa.',
+      questionCategory: 'rumor',
+      opponent: partnership.partner_name || profile.partner_name || 'seu parceiro',
+      relatedEvent: `RumorDupla:${partnershipKey}:${careerDate}`,
+      eventLabel: 'Situação da parceria',
+      careerDate,
+    });
+  }
+
+  // Especulações de futuro exigem uma carreira já estabelecida.
+  const totalMatches = Number(profile.wins || 0) + Number(profile.losses || 0);
+  const age = profile.birth_date ? calculateAgeFromBirth(profile.birth_date, careerDate) : 20;
+  if (totalMatches >= 30 && (age >= 32 || Number(profile.xp || 0) >= 5000)) {
+    const season = String(careerDate).slice(0, 4);
+    pending.push({
+      id: `interview_speculation_${season}`,
+      sourceId: `career-future:${season}`,
+      type: 'interview',
+      title: 'Futuro da Carreira',
+      description: 'Sua trajetória já permite perguntas sobre os próximos passos da carreira.',
       questionCategory: 'speculation',
       opponent: 'o futuro',
-      relatedEvent: 'Especulação',
+      relatedEvent: `FuturoCarreira:${season}`,
+      eventLabel: 'Futuro da carreira',
       careerDate,
     });
   }
 
-  // Prediction (before tournaments)
-  pending.push({
-    id: 'interview_prediction',
-    type: 'interview',
-    title: 'Previsões da Imprensa',
-    description: 'Jornalistas querem saber suas previsões para o circuito.',
-    questionCategory: 'prediction',
-    opponent: 'o circuito',
-    relatedEvent: 'Previsões',
-    careerDate,
-  });
-
   return pending;
+}
+
+function normalizeName(value) {
+  return String(value || '').trim().toLocaleLowerCase('pt-BR');
+}
+
+function asTeamNames(team) {
+  if (Array.isArray(team)) return team.map(item => typeof item === 'string' ? item : item?.name).filter(Boolean);
+  if (typeof team === 'string') return team.split(/\s*(?:&|,|\/| e )\s*/i).filter(Boolean);
+  return [];
+}
+
+function isPlayerMatch(match, profile, playerNames) {
+  if (!match) return false;
+  if (match.profile_id && match.profile_id === profile.id) return true;
+  const names = [
+    ...asTeamNames(match.team_a),
+    ...asTeamNames(match.team_b),
+    match.winner_name,
+    match.loser_name,
+  ].filter(Boolean).map(normalizeName);
+  return names.some(name => playerNames.has(name));
+}
+
+function resolvePlayerOutcome(match, playerNames) {
+  const explicit = normalizeName(match.result);
+  if (['vitória', 'vitoria', 'win', 'won'].includes(explicit)) return 'win';
+  if (['derrota', 'loss', 'lost'].includes(explicit)) return 'loss';
+
+  const teamA = asTeamNames(match.team_a).map(normalizeName);
+  const teamB = asTeamNames(match.team_b).map(normalizeName);
+  const playerInA = teamA.some(name => playerNames.has(name));
+  const playerInB = teamB.some(name => playerNames.has(name));
+  const winner = normalizeName(match.winner);
+
+  if (winner === 'a' || winner === 'team_a') return playerInA ? 'win' : playerInB ? 'loss' : null;
+  if (winner === 'b' || winner === 'team_b') return playerInB ? 'win' : playerInA ? 'loss' : null;
+  if (winner && playerNames.has(winner)) return 'win';
+
+  const winnerName = normalizeName(match.winner_name);
+  const loserName = normalizeName(match.loser_name);
+  if (winnerName && playerNames.has(winnerName)) return 'win';
+  if (loserName && playerNames.has(loserName)) return 'loss';
+  return null;
+}
+
+function resolveOpponentName(match, playerNames) {
+  const teamA = asTeamNames(match.team_a);
+  const teamB = asTeamNames(match.team_b);
+  const playerInA = teamA.some(name => playerNames.has(normalizeName(name)));
+  const opponents = playerInA ? teamB : teamA;
+  return opponents.filter(name => !playerNames.has(normalizeName(name))).join(' & ') ||
+    match.opponent_name || match.winner_name || match.loser_name || 'o adversário';
+}
+
+function findNextTournament(events, careerDate) {
+  const today = new Date(`${careerDate}T00:00:00`);
+  const limit = new Date(today);
+  limit.setDate(limit.getDate() + 7);
+  return (events || [])
+    .filter(event => {
+      const type = normalizeName(event.event_type || event.type);
+      const status = normalizeName(event.status);
+      const dateValue = event.start_date || event.event_date || event.date;
+      if (!dateValue || !type.includes('tournament') && !type.includes('torneio')) return false;
+      if (['completed', 'concluido', 'concluído', 'cancelled', 'cancelado'].includes(status)) return false;
+      const date = new Date(`${String(dateValue).slice(0, 10)}T00:00:00`);
+      return date >= today && date <= limit;
+    })
+    .sort((a, b) => String(a.start_date || a.event_date || '').localeCompare(String(b.start_date || b.event_date || '')))[0] || null;
 }
 
 function calculateAgeFromBirth(birthDate, currentDate) {

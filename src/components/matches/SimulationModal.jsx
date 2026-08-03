@@ -52,7 +52,9 @@ export default function SimulationModal({ profile: initialProfile, onClose, onCo
     try {
       const won = matchState.winner === 'A';
       await localGame.entities.Match.create({
-        date: new Date().toISOString().slice(0, 10),
+        profile_id: profile.id,
+        career_date: profile.career_date,
+        date: profile.career_date || new Date().toISOString().slice(0, 10),
         location: 'Arena Virtual',
         tournament_name: 'Partida Treino',
         team_a: [profile.sport_name, teams.partner.name],
@@ -60,6 +62,7 @@ export default function SimulationModal({ profile: initialProfile, onClose, onCo
         score_a: matchState.setsA,
         score_b: matchState.setsB,
         winner: matchState.winner,
+        result: won ? 'vitória' : 'derrota',
         match_type: 'simulada',
         notes: `Sets: ${getSetScoreString(matchState)} | Força: ${Math.round(matchState.strA)} vs ${Math.round(matchState.strB)}`,
       });

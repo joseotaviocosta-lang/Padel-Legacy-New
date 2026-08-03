@@ -134,7 +134,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
           setCalendarEvent(savedEvent);
         }
         await localGame.entities.Match.create({
-          date: new Date().toISOString().slice(0, 10),
+          profile_id: profile.id,
+          career_date: profile.career_date,
+          date: profile.career_date || new Date().toISOString().slice(0, 10),
           location: tournament.name,
           tournament_name: tournament.name,
           team_a: [profile.sport_name, partner?.name || 'Parceiro'],
@@ -142,6 +144,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
           score_a: matchState.setsA,
           score_b: matchState.setsB,
           winner: matchState.winner,
+          result: won ? 'vitória' : 'derrota',
           match_type: 'qualifying',
           notes: `${currentRound?.label || 'Qualifying'} | ${getSetScoreString(matchState)}`,
         });
@@ -173,7 +176,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       }
 
       await localGame.entities.Match.create({
-        date: new Date().toISOString().slice(0, 10),
+        profile_id: profile.id,
+        career_date: profile.career_date,
+        date: profile.career_date || new Date().toISOString().slice(0, 10),
         location: tournament.name,
         tournament_name: tournament.name,
         team_a: [profile.sport_name, partner?.name || 'Parceiro'],
@@ -181,6 +186,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         score_a: matchState.setsA,
         score_b: matchState.setsB,
         winner: matchState.winner,
+        result: won ? 'vitória' : 'derrota',
         match_type: 'simulada',
         notes: `${currentRound?.label || 'Torneio'} | ${getSetScoreString(matchState)}`,
       });

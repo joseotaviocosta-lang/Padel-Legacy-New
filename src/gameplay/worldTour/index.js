@@ -8,3 +8,4 @@ export * from './WorldTourLifecycle.js';
 export * from './MainDrawManager.js';
 
 export * from './PhysicalConditionManager.js';
+export * from './MedicalCenterManager.js';

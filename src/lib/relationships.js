@@ -308,67 +308,33 @@ export async function seedInitialRelationships(profileId, athleteProfiles = []) 
   if (!profileId || !athleteProfiles || athleteProfiles.length === 0) return;
 
   const existing = await getPlayerRelationships(profileId);
-  if (existing.length >= 10) return; // Already seeded
+  if (existing.length > 0) return;
 
-  // Pick top athletes as initial rivals and friends based on rating proximity
-  const sorted = [...athleteProfiles].sort((a, b) => (b.overall_rating || 0) - (a.overall_rating || 0));
-  const toCreate = [];
+  // A carreira começa com contatos profissionais neutros. Amizades, rivalidades
+  // e mentorias só podem surgir depois de partidas, treinos ou interações reais.
+  const sorted = [...athleteProfiles]
+    .filter(a => a?.bot_id || a?.id)
+    .sort((a, b) => (b.overall_rating || 0) - (a.overall_rating || 0))
+    .slice(0, 5);
 
-  // 2 rivals (similar rating)
-  const rivals = sorted.slice(0, 6);
-  for (const r of rivals.slice(0, 2)) {
-    if (existing.find(e => e.target_athlete_id === r.bot_id)) continue;
-    toCreate.push({
-      profile_id: profileId,
-      target_athlete_id: r.bot_id,
-      target_name: r.name,
-      target_country: r.country,
-      relationship_type: 'rival',
-      score: -28 - (String(r.bot_id || r.name).length % 10),
-      chemistry: 0,
-      shared_matches: String(r.bot_id || r.name).length % 3,
-      history: [{ date: new Date().toISOString().slice(0, 10), event: 'initial_seed', score_change: 0, description: 'Rivalidade natural do circuito' }],
-      last_interaction_date: new Date().toISOString().slice(0, 10),
-    });
-  }
-
-  // 2 friends (any rating)
-  const friends = sorted.slice(4, 10);
-  for (const f of friends.slice(0, 2)) {
-    if (existing.find(e => e.target_athlete_id === f.bot_id)) continue;
-    toCreate.push({
-      profile_id: profileId,
-      target_athlete_id: f.bot_id,
-      target_name: f.name,
-      target_country: f.country,
-      relationship_type: 'amigo',
-      score: 42 + (String(f.bot_id || f.name).length % 12),
-      chemistry: 20,
-      shared_matches: String(f.bot_id || f.name).length % 2,
-      history: [{ date: new Date().toISOString().slice(0, 10), event: 'initial_seed', score_change: 0, description: 'Amizade do circuito' }],
-      last_interaction_date: new Date().toISOString().slice(0, 10),
-    });
-  }
-
-  // 1 mentor (older, higher rated)
-  const mentors = sorted.filter(a => (a.age || 0) > 30);
-  if (mentors.length > 0) {
-    const m = mentors[0];
-    if (!existing.find(e => e.target_athlete_id === m.bot_id)) {
-      toCreate.push({
-        profile_id: profileId,
-        target_athlete_id: m.bot_id,
-        target_name: m.name,
-        target_country: m.country,
-        relationship_type: 'mentor',
-        score: 58 + (String(m.bot_id || m.name).length % 10),
-        chemistry: 10,
-        shared_matches: 0,
-        history: [{ date: new Date().toISOString().slice(0, 10), event: 'initial_seed', score_change: 0, description: 'Mentor do circuito' }],
-        last_interaction_date: new Date().toISOString().slice(0, 10),
-      });
-    }
-  }
+  const careerDate = new Date().toISOString().slice(0, 10);
+  const toCreate = sorted.map((athlete) => ({
+    profile_id: profileId,
+    target_athlete_id: athlete.bot_id || athlete.id,
+    target_name: athlete.name,
+    target_country: athlete.country,
+    relationship_type: 'neutro',
+    score: 0,
+    chemistry: 0,
+    shared_matches: 0,
+    history: [{
+      date: careerDate,
+      event: 'circuit_introduction',
+      score_change: 0,
+      description: 'Contato conhecido no circuito; ainda não há histórico esportivo entre os atletas.',
+    }],
+    last_interaction_date: null,
+  }));
 
   if (toCreate.length > 0) {
     if (localGame.entities.Relationship.bulkCreate) {
@@ -380,7 +346,8 @@ export async function seedInitialRelationships(profileId, athleteProfiles = []) 
       }
     }
     for (const item of toCreate) {
-      try { await localGame.entities.Relationship.create(item); } catch (error) { console.warn('Falha ao criar relacionamento inicial', error); }
+      try { await localGame.entities.Relationship.create(item); }
+      catch (error) { console.warn('Falha ao criar relacionamento inicial', error); }
     }
   }
 }

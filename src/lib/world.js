@@ -224,20 +224,40 @@ const TEMPLATES = buildTemplate();
 
 // ── Generation ──────────────────────────────────────────────────────────────
 
+const AMBIENT_WORLD_EVENTS = [
+  {
+    event_type: 'noticia',
+    title: 'Circuito divulga a programação da semana',
+    content: 'Organizadores confirmaram a agenda dos próximos eventos. Atletas e equipes já ajustam viagens, treinos e períodos de recuperação.',
+    tier: 'normal',
+  },
+  {
+    event_type: 'social',
+    title: 'Comunidade do padel debate os próximos torneios',
+    content: 'Torcedores analisam as chaves e os possíveis confrontos da semana. A expectativa cresce à medida que as inscrições são confirmadas.',
+    tier: 'normal',
+  },
+  {
+    event_type: 'noticia',
+    title: 'Academias intensificam a preparação para a temporada',
+    content: 'Centros de treinamento aumentaram a carga técnica e física de seus atletas, com atenção especial à recuperação entre torneios.',
+    tier: 'normal',
+  },
+];
+
 export function generateEventObject(date) {
-  const types = EVENT_TYPES;
-  const type = pick(types);
-  const tpl = TEMPLATES[type]();
+  // Eventos aleatórios servem apenas como ambientação. Lesões, resultados,
+  // aposentadorias, transferências e mudanças de ranking devem ser publicadas
+  // exclusivamente pelos sistemas que realmente processaram esses fatos.
+  const template = pick(AMBIENT_WORLD_EVENTS);
   return {
-    event_type: type,
-    title: tpl.title,
-    content: tpl.content,
+    ...template,
     author_name: 'Redação Mundo do Padel',
-    related_players: tpl.players || [],
-    tier: tpl.tier || 'normal',
+    related_players: [],
     event_date: date,
-    likes: randInt(50, 5000),
-    tags: [type],
+    likes: randInt(25, 450),
+    tags: [template.event_type, 'ambientacao'],
+    source_event_id: `ambient:${date}:${Math.random().toString(36).slice(2, 8)}`,
   };
 }
 

@@ -1,4 +1,4 @@
-import { ALLOWED_COURT_SIDES, ALLOWED_PLAY_STYLES, ALLOWED_CAREER_TYPES, CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
+import { ALLOWED_CAREER_TYPES, CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
 
 function createUuid() {
   if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
@@ -26,11 +26,9 @@ function requireOption(value, allowed, fieldName) {
   return normalized;
 }
 
-export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName = 'Novo Atleta', courtSide = 'direita', playStyle = 'equilibrado', careerType = 'normal' }) {
+export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName = 'Novo Atleta', careerType = 'normal' }) {
   const normalizedSaveName = requireString(saveName, 'saveName');
   const normalizedPlayerName = requireString(playerName, 'playerName');
-  const normalizedCourtSide = requireOption(courtSide, ALLOWED_COURT_SIDES, 'courtSide');
-  const normalizedPlayStyle = requireOption(playStyle, ALLOWED_PLAY_STYLES, 'playStyle');
   const normalizedCareerType = requireOption(careerType, ALLOWED_CAREER_TYPES, 'careerType');
   const createdAt = nowIsoDate();
   const careerDate = createdAt.slice(0, 10);
@@ -45,8 +43,8 @@ export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName
     last_played_at: createdAt,
     metadata: {
       player_name: normalizedPlayerName,
-      court_side: normalizedCourtSide,
-      play_style: normalizedPlayStyle,
+      court_side: null,
+      play_style: null,
       career_date: careerDate,
       ranking_position: null,
       season: new Date().getFullYear(),

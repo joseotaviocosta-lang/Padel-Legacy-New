@@ -22,9 +22,9 @@ export default function CareerStatusBar({ profile, onPartnerClick }) {
         </div>
       </div>
 
-      {profile?.position && (
+      {profile?.court_side && (
         <span className="text-[10px] font-bold uppercase tracking-wide bg-primary/10 text-primary px-2 py-1 rounded-lg shrink-0">
-          {profile.position === 'direita' ? 'Direita' : 'Esquerda'}
+          {profile.court_side === 'direita' ? 'Direita' : 'Esquerda'}
         </span>
       )}
 

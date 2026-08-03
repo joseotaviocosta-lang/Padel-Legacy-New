@@ -454,9 +454,9 @@ export function calculateProfileMatch(sponsor, profile) {
 
   // Position preference
   if (sponsor.preferred_positions && sponsor.preferred_positions.length > 0) {
-    if (sponsor.preferred_positions.includes(profile?.position)) {
+    if (sponsor.preferred_positions.includes(profile?.court_side)) {
       score += 10;
-      reasons.push(`Posição ${profile.position} é procurada`);
+      reasons.push(`Posição ${profile.court_side} é procurada`);
     }
   }
 

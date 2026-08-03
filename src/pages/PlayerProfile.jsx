@@ -72,9 +72,9 @@ export default function PlayerProfile() {
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <h1 className="text-2xl md:text-3xl font-black tracking-tight">{profile?.sport_name}</h1>
               <LevelBadge level={level} size="md" />
-              {profile?.position && (
+              {profile?.court_side && (
                 <span className="inline-flex items-center rounded-full bg-primary/15 text-primary px-2.5 py-1 text-xs font-bold">
-                  {profile.position === 'direita' ? 'Lado Direito' : 'Lado Esquerdo'}
+                  {profile.court_side === 'direita' ? 'Lado Direito' : 'Lado Esquerdo'}
                 </span>
               )}
             </div>
