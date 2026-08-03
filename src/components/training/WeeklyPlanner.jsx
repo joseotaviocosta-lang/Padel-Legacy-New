@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Calendar, Trash2, Activity, Zap, AlertTriangle, Save } from 'lucide-react';
-import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, INTENSITY_LEVELS, WEEKDAYS, getPlanSummary, saveWeeklyPlan } from '@/lib/trainingSystem';
+import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, INTENSITY_LEVELS, WEEKDAYS, getPlanSummary, saveWeeklyPlan } from '@/lib/trainingSystemV2';
 import { getAttributeIcon } from '@/components/padel/Shared';
 
 // ── Weekly Planner ─────────────────────────────────────────────────────────

@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { executeTraining } from '@/lib/trainingSystem';
+import { executeTraining } from '@/lib/trainingSystemV2';
 import { safeName } from './utils';
 
 function clamp(value, min = 0, max = 100) {
@@ -17,7 +17,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
   const updated = result.profile;
   const date = updated.career_date || profile?.career_date;
   const athleteName = safeName(updated);
-  const attribute = result.activity?.attribute || activity?.attribute || 'atributo';
+  const attribute = Object.keys(result.gains || {}).join(', ') || result.activity?.attribute || activity?.attribute || 'atributos';
   const gain = Number(result.gain) || 0;
 
   const jobs = [
@@ -66,7 +66,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
   }
 
   // Treinos táticos e mentais também ajudam a estabilidade da dupla.
-  if (updated.partner_id && ['tactical', 'mental'].includes(activity?.category)) {
+  if (updated.partner_id && activity?.category === 'mental') {
     const chemistry = clamp((updated.partner_chemistry ?? 50) + 1);
     jobs.push(localGame.entities.PlayerProfile.update(updated.id, { partner_chemistry: chemistry }));
     updated.partner_chemistry = chemistry;

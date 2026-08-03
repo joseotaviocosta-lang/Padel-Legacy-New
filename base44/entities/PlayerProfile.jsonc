@@ -223,6 +223,15 @@
       "type": "object",
       "description": "Planejamento semanal de treinos: {seg: {activity_id, intensity}, ter: {...}, ...}"
     },
+    "attribute_progress": {
+      "type": "object",
+      "default": {},
+      "description": "Progresso fracionado preservado por atributo entre sessões"
+    },
+    "training_schema_version": {
+      "type": "number",
+      "default": 2
+    },
     "development_goals": {
       "type": "array",
       "items": {

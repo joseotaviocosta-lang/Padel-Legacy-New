@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CalendarPlus, Trash2, Pencil } from 'lucide-react';
-import { TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystem';
+import { TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystemV2';
 
 export default function CalendarPlanner({ profile, selectedDate, events, onSchedule, onCancel, onEdit, busy }) {
   const minimumDate = useMemo(() => {

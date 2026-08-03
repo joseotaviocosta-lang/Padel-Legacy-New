@@ -6,7 +6,7 @@ import { daysBetween, CAREER_START_DATE, advanceDay } from '@/lib/career';
 import { simulateProRankingWeek } from '@/lib/teamRanking';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
-import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystem';
+import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
 import ConditionPanel from '@/components/training/ConditionPanel';
@@ -35,7 +35,7 @@ export default function Training() {
   const [recovering, setRecovering] = useState(null);
   const [advancing, setAdvancing] = useState(false);
   const [activeTab, setActiveTab] = useState('treino');
-  const [activeCategory, setActiveCategory] = useState('technical');
+  const [activeCategory, setActiveCategory] = useState('court');
   const { toast } = useToast();
 
   useEffect(() => { load(); }, []);
@@ -95,6 +95,7 @@ export default function Training() {
         activity: res.activity,
         intensity: res.intensity,
         gain: res.gain,
+        gains: res.gains,
         injured: res.injured,
         recoveryDays: res.recoveryDays,
         diminishing: res.diminishing,
@@ -213,7 +214,7 @@ export default function Training() {
           </div>
           <div className="flex-1">
             <h1 className="text-xl md:text-2xl font-black tracking-tight">Centro de Treino</h1>
-            <p className="text-sm text-muted-foreground">Evolua atributos, gerencie fadiga e alcance seu potencial</p>
+            <p className="text-sm text-muted-foreground">Escolha grupo, foco e intensidade. Cada sessão distribui progresso entre atributos relacionados.</p>
           </div>
           <div className="flex items-center gap-2">
             <button
@@ -275,11 +276,12 @@ export default function Training() {
             <p className="font-bold text-sm">{result.activity.label} · {result.intensity.label}</p>
             <p className="text-xs text-muted-foreground">
               {result.gain > 0
-                ? `+${result.gain} ${result.activity.attribute} · +${result.activity.xp} XP · +${result.activity.coins} moedas`
-                : `Sem progresso no ${result.activity.attribute}. +${result.activity.xp} XP · +${result.activity.coins} moedas`}
+                ? `${Number(result.gain).toFixed(2)} de progresso distribuído · +${result.activity.xp} XP · +${result.activity.coins} moedas`
+                : `Sessão de manutenção · +${result.activity.xp} XP · +${result.activity.coins} moedas`}
               {result.diminishing < 1 && ` · ${Math.round(result.diminishing * 100)}% eficiência`}
               {result.fatiguePenalty < 0 && ` · fadiga: ${result.fatiguePenalty}`}
             </p>
+            {result.gains && <p className="text-[10px] text-primary mt-1">{Object.entries(result.gains).map(([key, value]) => `${key}: +${Number(value.progress || 0).toFixed(2)}${value.levels ? ` (${value.levels} nível)` : ''}`).join(' · ')}</p>}
           </div>
           <button onClick={() => setResult(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
         </div>
@@ -389,8 +391,8 @@ export default function Training() {
             {/* Activity cards */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
               {TRAINING_ACTIVITIES.filter(a => a.category === activeCategory).map(activity => {
-                const weeklyCount = weeklyCounts[activity.attribute] || 0;
-                const coachBonusVal = coach?.training_bonus?.[activity.attribute] || 0;
+                const weeklyCount = weeklyCounts[activity.id] || 0;
+                const coachBonusVal = coach?.training_bonus || {};
                 return (
                   <TrainingActivityCard
                     key={activity.id}

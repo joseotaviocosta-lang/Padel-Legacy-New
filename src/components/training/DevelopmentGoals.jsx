@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Target, Plus, Trash2, CheckCircle, Clock, TrendingUp } from 'lucide-react';
 import { ATTRIBUTES } from '@/lib/padel';
-import { createGoal, deleteGoal } from '@/lib/trainingSystem';
+import { createGoal, deleteGoal } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
 
 // ── Development Goals ────────────────────────────────────────────────────

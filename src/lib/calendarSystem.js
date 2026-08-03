@@ -2,7 +2,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { addDays, CAREER_START_DATE } from '@/lib/career';
 import { levelForXp, LEVELS, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
-import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystem.js';
+import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystemV2.js';
+import { normalizeTrainingId } from '@/lib/trainingCatalog.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -167,7 +168,7 @@ export async function executePlannedActivities(profile, date) {
   for (const event of due) {
     let failure = null;
     if (event.metadata.planned_activity_kind === 'training') {
-      const activity = TRAINING_ACTIVITIES.find((item) => item.id === event.metadata.training_activity_id);
+      const activity = TRAINING_ACTIVITIES.find((item) => item.id === normalizeTrainingId(event.metadata.training_activity_id));
       if (!activity) failure = 'Treino não encontrado.';
       else {
         const result = await executeTraining(currentProfile, activity, event.metadata.training_intensity_id);

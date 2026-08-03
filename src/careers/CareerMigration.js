@@ -4,6 +4,7 @@ import { repairTournamentCollection } from '../lib/tournamentIntegrity.js';
 import { normalizeTutorialState } from '../onboarding/tutorialState.js';
 import { normalizeAthlete } from '../players/athleteSchema.js';
 import { buildInitialProfile } from '../lib/initialCareerProfiles.js';
+import { migrateTrainingReference } from '../lib/trainingCatalog.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -197,6 +198,25 @@ export function migrateCareer(career) {
     data.metadata = { ...data.metadata, play_style: mappedStyle || data.metadata?.play_style || null };
     data.save_schema_version = 11;
     version = 11;
+  }
+  if (version < 12) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    data.entities.TrainingSession = (Array.isArray(data.entities.TrainingSession) ? data.entities.TrainingSession : []).map(migrateTrainingReference);
+    data.entities.CalendarEvent = (Array.isArray(data.entities.CalendarEvent) ? data.entities.CalendarEvent : []).map(event => {
+      const metadata = event?.metadata && typeof event.metadata === 'object' ? event.metadata : {};
+      return metadata.training_activity_id
+        ? { ...event, metadata: { ...metadata, training_activity_id: migrateTrainingReference({ activity_id: metadata.training_activity_id }).activity_id, training_schema_version: 2 } }
+        : event;
+    });
+    const player = { ...(data.player || {}) };
+    if (player.weekly_training_plan && typeof player.weekly_training_plan === 'object') {
+      player.weekly_training_plan = Object.fromEntries(Object.entries(player.weekly_training_plan).map(([day, entry]) => [day, migrateTrainingReference(entry)]));
+    }
+    player.attribute_progress = player.attribute_progress && typeof player.attribute_progress === 'object' ? player.attribute_progress : {};
+    player.training_schema_version = 2;
+    data.player = player;
+    data.save_schema_version = 12;
+    version = 12;
   }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

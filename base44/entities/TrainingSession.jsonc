@@ -14,9 +14,18 @@
       "type": "string",
       "description": "Nome leg\u00edvel do treino"
     },
+    "group_id": { "type": "string", "description": "Grupo central do treino" },
+    "focus_id": { "type": "string", "description": "Foco escolhido dentro do grupo" },
+    "attribute_gains": { "type": "object", "description": "Progresso e níveis ganhos por atributo" },
+    "progress_before": { "type": "object" },
+    "progress_after": { "type": "object" },
+    "partner_id": { "type": "string" },
+    "coach_id": { "type": "string" },
+    "training_schema_version": { "type": "number", "default": 2 },
     "category": {
       "type": "string",
       "enum": [
+        "court",
         "technical",
         "physical",
         "tactical",

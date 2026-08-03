@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Dumbbell, Zap, Clock, AlertTriangle, TrendingDown, ChevronDown, ChevronUp } from 'lucide-react';
-import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/trainingSystem';
+import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/trainingSystemV2';
 import { getAttributeIcon } from '@/components/padel/Shared';
 import { ProgressBar } from '@/components/padel/GameShared';
 
@@ -22,10 +22,10 @@ export default function TrainingActivityCard({
 
   const category = TRAINING_CATEGORIES[activity.category];
   const Icon = getAttributeIcon(activity.icon);
-  const prediction = getPredictedGain(profile, activity, intensity, weeklyCount);
+  const prediction = getPredictedGain(profile, activity, intensity, weeklyCount, coachBonus);
 
   const intensityObj = INTENSITY_LEVELS.find(i => i.id === intensity) || INTENSITY_LEVELS[1];
-  const energyCost = Math.round(intensityObj.energyCost + ((profile?.trainings_today || 0) > 0 ? intensityObj.energyCost * 0.5 : 0));
+  const energyCost = prediction.energyCost;
   const lowEnergy = (profile?.energy || 100) < energyCost;
   const isDisabled = disabled || busy || lowEnergy;
 
@@ -41,7 +41,7 @@ export default function TrainingActivityCard({
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className={`text-[9px] font-bold uppercase ${category?.color}`}>{category?.label}</span>
             <span className="text-[9px] text-muted-foreground">·</span>
-            <span className="text-[9px] text-muted-foreground uppercase">{activity.attribute}</span>
+            <span className="text-[9px] text-muted-foreground">{Object.keys(activity.attributes || {}).length} atributos</span>
           </div>
         </div>
         <button
@@ -72,11 +72,11 @@ export default function TrainingActivityCard({
       <div className="glass rounded-xl p-2.5 mb-3 flex items-center justify-between">
         <div>
           <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold">Ganho Previsto</p>
-          <p className="text-sm font-bold text-primary">+{prediction.expected} {activity.attribute}</p>
+          <p className="text-sm font-bold text-primary">{prediction.expected.toFixed(2)} progresso total</p>
         </div>
         <div className="text-right">
-          <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold">Chance</p>
-          <p className="text-sm font-bold tabular-nums">{prediction.chance}%</p>
+          <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold">Afinidade</p>
+          <p className="text-sm font-bold tabular-nums">{prediction.affinity.label}</p>
         </div>
       </div>
 
@@ -100,6 +100,7 @@ export default function TrainingActivityCard({
       {expanded && (
         <div className="mb-3 space-y-2 animate-fade-in">
           <div className="glass rounded-xl p-2.5 space-y-1.5">
+            {Object.entries(prediction.gains).map(([attribute, gain]) => <DetailRow key={attribute} label={attribute} value={`+${gain.toFixed(2)}`} highlight />)}
             <DetailRow label="Fadiga gerada" value={`${intensityObj.fatigueCost + (activity.fatigueExtra || 0)}`} />
             <DetailRow label="XP" value={`+${activity.xp}`} />
             <DetailRow label="Moedas" value={`+${activity.coins}`} />
@@ -107,7 +108,7 @@ export default function TrainingActivityCard({
             {activity.moraleBoost && <DetailRow label="Bônus de moral" value={`+${activity.moraleBoost}`} highlight />}
             {activity.confidenceBoost && <DetailRow label="Bônus de confiança" value={`+${activity.confidenceBoost}`} highlight />}
             {activity.fatigueReduction && <DetailRow label="Redução de fadiga" value={`-${activity.fatigueReduction}`} highlight />}
-            {coachBonus > 0 && <DetailRow label="Bônus do treinador" value={`+${coachBonus}`} highlight />}
+            {prediction.coachMultiplier > 1 && <DetailRow label="Bônus do treinador" value={`+${Math.round((prediction.coachMultiplier - 1) * 100)}%`} highlight />}
           </div>
           <p className="text-[10px] text-muted-foreground">{category?.description}</p>
         </div>
