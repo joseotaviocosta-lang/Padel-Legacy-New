@@ -125,6 +125,8 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
 
   const offerData = {
     profile_id: profile.id,
+    candidate_player_id: athlete.id,
+    candidate_snapshot: athlete,
     athlete_id: athlete.id,
     athlete_name: athlete.name,
     offer_month: monthKey(careerDate),
@@ -135,7 +137,11 @@ export async function submitPartnerOffer(profile, athlete, scoutingReport, terms
     partner_prize_share: preview.partnerPrizeShare,
     acceptance_chance: preview.acceptanceChance,
     decision_roll: roll,
-    status: accepted ? 'aceita' : 'recusada',
+    status: accepted ? 'accepted' : 'rejected',
+    created_career_date: careerDate,
+    source: 'player-market-offer',
+    contract: { type: 'temporary', durationDays: preview.durationDays, prizeSplit: 100 - preview.partnerPrizeShare, monthlySalary: preview.monthlySalary, signingBonus: preview.signingBonus, conditions: [] },
+    schema_version: 1,
   };
 
   let offer;

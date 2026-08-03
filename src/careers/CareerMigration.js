@@ -261,6 +261,38 @@ export function migrateCareer(career) {
     data.save_schema_version = 13;
     version = 13;
   }
+  if (version < 14) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    const profileId = data.player?.id;
+    const messages = Array.isArray(data.entities.CareerMessage) ? data.entities.CareerMessage : [];
+    const existingOffers = Array.isArray(data.entities.PartnerOffer) ? data.entities.PartnerOffer : [];
+    const offers = new Map(existingOffers.filter(item => item?.profile_id && (item?.candidate_player_id || item?.athlete_id)).map(item => {
+      const candidateId = item.candidate_player_id || item.athlete_id;
+      const statusAliases = { aceita: 'accepted', recusada: 'rejected', pendente: 'pending' };
+      const normalized = { ...item, candidate_player_id: candidateId, status: statusAliases[item.status] || item.status || 'pending', candidate_snapshot: item.candidate_snapshot || { id: candidateId, name: item.athlete_name } };
+      return [`${item.profile_id}:${candidateId}`, normalized];
+    }));
+    for (const message of messages.filter(item => item?.message_type === 'proposta_parceria')) {
+      const oldPayload = message.actions?.find(action => action?.payload?.bot)?.payload;
+      const candidate = oldPayload?.bot || message.metadata?.candidate_snapshot || null;
+      const candidateId = candidate?.id || (message.related_entity_type !== 'partner_offer' ? message.related_entity_id : null);
+      if (!profileId || !candidateId) continue;
+      const key = `${profileId}:${candidateId}`;
+      const offerId = `partner-offer-${profileId}-${candidateId}`;
+      const matchesCurrent = data.player?.partner_id === candidateId;
+      const inferredStatus = matchesCurrent ? 'accepted' : message.chosen_action_id === 'decline' ? 'rejected' : message.status === 'decisao_pendente' ? 'pending' : 'withdrawn';
+      const prior = offers.get(key);
+      offers.set(key, { ...prior, id: prior?.id || offerId, profile_id: profileId, candidate_player_id: candidateId, status: matchesCurrent ? 'accepted' : (prior?.status || inferredStatus), created_career_date: prior?.created_career_date || message.career_date || data.player?.career_date, expires_career_date: prior?.expires_career_date || message.expires_career_date, source: prior?.source || 'legacy-inbox-migration', candidate_snapshot: prior?.candidate_snapshot || candidate || { id: candidateId, name: message.related_entity_name || message.sender_name }, contract: prior?.contract || { type: 'temporary', durationDays: oldPayload?.duration || message.metadata?.duration || 60, prizeSplit: oldPayload?.split || message.metadata?.split || 50, conditions: [] }, schema_version: 1 });
+      message.related_entity_type = 'partner_offer'; message.related_entity_id = offerId;
+      message.metadata = { ...(message.metadata || {}), offer_id: offerId };
+      if (matchesCurrent) { message.status = 'resolvida'; message.chosen_action_id = 'accept'; message.actions = []; }
+      else if (message.status === 'decisao_pendente') message.actions = [{ id: 'view_offer', label: 'Analisar na área de Parceiros', type: 'view_partner_offer', payload: { offerId } }];
+    }
+    if (data.player?.partner_id) for (const offer of offers.values()) if (offer.candidate_player_id !== data.player.partner_id && offer.status === 'accepted') offer.status = 'withdrawn';
+    data.entities.PartnerOffer = [...offers.values()];
+    data.save_schema_version = 14;
+    version = 14;
+  }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }
 

@@ -1,0 +1,31 @@
+{
+  "name": "PartnerOffer",
+  "type": "object",
+  "properties": {
+    "profile_id": { "type": "string" },
+    "candidate_player_id": { "type": "string" },
+    "athlete_id": { "type": "string" },
+    "athlete_name": { "type": "string" },
+    "status": { "type": "string", "enum": ["pending", "accepted", "rejected", "expired", "withdrawn", "cancelled"], "default": "pending" },
+    "created_career_date": { "type": "string", "format": "date" },
+    "expires_career_date": { "type": "string", "format": "date" },
+    "source": { "type": "string", "default": "initial-partner-offer" },
+    "candidate_snapshot": { "type": "object" },
+    "contract": { "type": "object" },
+    "compatibility_snapshot": { "type": "object" },
+    "recommendation_score": { "type": "number" },
+    "recommended": { "type": "boolean", "default": false },
+    "resolved_career_date": { "type": "string", "format": "date" },
+    "partnership_id": { "type": "string" },
+    "offer_month": { "type": "string" },
+    "offer_date": { "type": "string", "format": "date" },
+    "monthly_salary": { "type": "number" },
+    "signing_bonus": { "type": "number" },
+    "duration_days": { "type": "number" },
+    "partner_prize_share": { "type": "number" },
+    "acceptance_chance": { "type": "number" },
+    "decision_roll": { "type": "number" },
+    "schema_version": { "type": "number", "default": 1 }
+  },
+  "required": ["profile_id", "candidate_player_id", "status"]
+}

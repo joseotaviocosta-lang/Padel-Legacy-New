@@ -1,11 +1,12 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Users, Search, Inbox, Lightbulb, History, Handshake, FileText, RefreshCw, AlertTriangle, Coins, CalendarDays } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { getPlayerRelationships } from '@/lib/relationships';
 import {
   getActivePartnership, getPartnershipHistory, startPartnership, endPartnership,
-  getInbox, generatePartnerProposals, createProposalMessage, generateAdvisorTips,
+  getInbox, generateAdvisorTips,
   getPartnerSwitchCount, getInstabilityPenalty, negotiatePrizeSplit, addConversation,
   sendMessage,
 } from '@/lib/partnershipSystem';
@@ -18,10 +19,13 @@ import InboxPanel from '@/components/partner/InboxPanel';
 import AdvisorPanel from '@/components/partner/AdvisorPanel';
 import PartnerNegotiationModal from '@/components/partner/PartnerNegotiationModal';
 import { renewPartnerContract, releasePartner } from '@/game-core/partnerLifecycle';
+import PartnerOffersPanel from '@/components/partner/PartnerOffersPanel';
+import { acceptPartnerOffer, ensureInitialPartnerOffers, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
 
 const TABS = [
-  { id: 'overview', label: 'Dupla', icon: Users },
-  { id: 'search', label: 'Buscar', icon: Search },
+  { id: 'offers', label: 'Propostas recebidas', icon: Handshake },
+  { id: 'search', label: 'Buscar parceiro', icon: Search },
+  { id: 'overview', label: 'Minha dupla', icon: Users },
   { id: 'inbox', label: 'Caixa de Entrada', icon: Inbox },
   { id: 'advisors', label: 'Assessores', icon: Lightbulb },
   { id: 'contract', label: 'Contrato', icon: FileText },
@@ -29,6 +33,7 @@ const TABS = [
 ];
 
 export default function PartnerHub() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
   const [relationships, setRelationships] = useState([]);
   const [activePartnership, setActivePartnership] = useState(null);
@@ -36,12 +41,22 @@ export default function PartnerHub() {
   const [inboxCount, setInboxCount] = useState(0);
   const [tips, setTips] = useState([]);
   const [proposals, setProposals] = useState([]);
+  const [offersLoading, setOffersLoading] = useState(true);
+  const [offersError, setOffersError] = useState(null);
+  const [busyOfferId, setBusyOfferId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview');
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('view') || 'offers');
   const [showNegotiation, setShowNegotiation] = useState(false);
   const [showConverse, setShowConverse] = useState(false);
   const proposalsRef = useRef([]);
   const { toast } = useToast();
+
+  const selectTab = useCallback((tab, extra = {}) => {
+    setActiveTab(tab);
+    const next = new URLSearchParams(); next.set('view', tab);
+    Object.entries(extra).forEach(([key, value]) => value && next.set(key, value));
+    setSearchParams(next, { replace: true });
+  }, [setSearchParams]);
 
   const load = useCallback(async () => {
     if (!profile) return;
@@ -76,31 +91,21 @@ export default function PartnerHub() {
     if (profile) load();
   }, [profile, load]);
 
-  // Generate proposals if inbox is empty and no active partnership
+  // PartnerOffer is the source of truth; inbox messages only reference offers.
   useEffect(() => {
     if (!profile || !relationships) return;
-    if (activePartnership) return;
     (async () => {
-      const available = getAvailablePartnersForSearch(profile);
-      if (available.length === 0) return;
-      const newProposals = await generatePartnerProposals(profile, available);
-      if (newProposals.length > 0) {
-        proposalsRef.current = newProposals;
-        setProposals(newProposals);
-        // Only create messages for proposals that don't already exist
-        const existingMsgs = await getInbox(profile.id);
-        const existingIds = (existingMsgs || []).map(m => m.related_entity_id);
-        for (const proposal of newProposals) {
-          if (!existingIds.includes(proposal.bot.id)) {
-            await createProposalMessage(profile, proposal);
-          }
-        }
-        if (newProposals.some(p => !existingIds.includes(p.bot.id))) {
-          load();
-        }
-      }
+      setOffersLoading(true); setOffersError(null);
+      try {
+        const available = getAvailablePartnersForSearch(profile);
+        const rows = activePartnership ? await listPartnerOffers(profile.id) : await ensureInitialPartnerOffers(profile, available);
+        proposalsRef.current = rows; setProposals(rows);
+        await load();
+        if (activePartnership && !searchParams.get('view')) selectTab('overview');
+      } catch (error) { console.error('partner offers', error); setOffersError(error); }
+      finally { setOffersLoading(false); }
     })();
-  }, [profile, activePartnership]);
+  }, [profile?.id, activePartnership?.id]);
 
   if (loading) return <LoadingScreen />;
 
@@ -125,6 +130,31 @@ export default function PartnerHub() {
     } catch (e) {
       toast({ title: 'Erro', description: 'Não foi possível formar a parceria.', variant: 'destructive' });
     }
+  }
+
+  async function reloadOffers() {
+    setOffersLoading(true); setOffersError(null);
+    try { const rows = await listPartnerOffers(profile.id); proposalsRef.current = rows; setProposals(rows); }
+    catch (error) { setOffersError(error); }
+    finally { setOffersLoading(false); }
+  }
+
+  async function handleAcceptOffer(offer) {
+    setBusyOfferId(offer.id);
+    try {
+      const result = await acceptPartnerOffer(profile, offer);
+      setProfile(result.profile); setActivePartnership(result.partnership);
+      toast({ title: 'Dupla formada', description: `Você e ${result.partnership.partner_name} agora jogarão juntos. Entrosamento inicial: ${result.partnership.chemistry}.` });
+      await reloadOffers(); await load(); selectTab('overview');
+    } catch (error) { toast({ title: 'Não foi possível confirmar', description: error.message, variant: 'destructive' }); }
+    finally { setBusyOfferId(null); }
+  }
+
+  async function handleRejectOffer(offer) {
+    setBusyOfferId(offer.id);
+    try { await rejectPartnerOffer(profile, offer); toast({ title: 'Proposta recusada', description: 'A decisão foi registrada e as demais propostas continuam disponíveis.' }); await reloadOffers(); await load(); }
+    catch (error) { toast({ title: 'Erro ao recusar', description: error.message, variant: 'destructive' }); }
+    finally { setBusyOfferId(null); }
   }
 
   async function handleEndPartnership() {
@@ -199,7 +229,9 @@ export default function PartnerHub() {
   }
 
   async function handleInboxAction(action, msg) {
-    if (action.type === 'accept_partnership') {
+    if (action.type === 'view_partner_offer') {
+      selectTab('offers', { offer: action.payload?.offerId || msg.related_entity_id });
+    } else if (action.type === 'accept_partnership') {
       const { bot, duration, split } = action.payload;
       const { partnership, profile: updated } = await startPartnership(profile, bot, duration, split);
       setActivePartnership(partnership);
@@ -257,7 +289,7 @@ export default function PartnerHub() {
           return (
             <button
               key={t.id}
-              onClick={() => setActiveTab(t.id)}
+              onClick={() => selectTab(t.id)}
               className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}
             >
               <Icon className="h-3.5 w-3.5" /> {t.label}
@@ -268,6 +300,10 @@ export default function PartnerHub() {
       </div>
 
       {/* Tab content */}
+      {activeTab === 'offers' && (
+        <PartnerOffersPanel profile={profile} offers={proposals} loading={offersLoading} error={offersError} busyOfferId={busyOfferId} focusOfferId={searchParams.get('offer')} onRetry={reloadOffers} onAccept={handleAcceptOffer} onReject={handleRejectOffer} onSearch={() => selectTab('search')} />
+      )}
+
       {activeTab === 'overview' && (
         <PartnerOverview
           partnership={activePartnership}

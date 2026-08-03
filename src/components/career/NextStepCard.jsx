@@ -45,7 +45,7 @@ export function getNextStep(profile, upcomingTournaments) {
       icon: Users,
       title: 'Selecione um parceiro',
       description: 'Você precisa de uma dupla para jogar torneios e partidas.',
-      to: '/partners',
+      to: '/partners?view=offers',
       cta: 'Escolher dupla',
       accent: 'cyan',
     };

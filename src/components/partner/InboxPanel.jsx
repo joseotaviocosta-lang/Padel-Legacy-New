@@ -60,7 +60,8 @@ export default function InboxPanel({ profile, onAction }) {
   }
 
   async function handleAction(msg, action) {
-    await resolveMessage(msg.id, action.id);
+    if (action.type !== 'view_partner_offer') await resolveMessage(msg.id, action.id);
+    else if (msg.status === 'nao_lida') await markMessageRead(msg.id);
     setSelected(null);
     onAction?.(action, msg);
     load();
