@@ -1,5 +1,6 @@
 import { migrateCareer } from './CareerMigration.js';
 import { validateCareerData } from './CareerValidator.js';
+import { CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -46,8 +47,8 @@ export async function runCareerMigrationTest() {
 
   const success = result.migrated
     && result.fromVersion === 1
-    && result.toVersion === 8
-    && validated.save_schema_version === 8
+    && result.toVersion === CAREER_SAVE_SCHEMA_VERSION
+    && validated.save_schema_version === CAREER_SAVE_SCHEMA_VERSION
     && validated.entities
     && typeof validated.entities === 'object'
     && !Array.isArray(validated.entities)

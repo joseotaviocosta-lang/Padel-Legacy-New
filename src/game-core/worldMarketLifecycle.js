@@ -71,7 +71,7 @@ async function createWorldEvent(data) {
 }
 
 async function initializeWorldMarket(careerDate) {
-  let athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
+  let athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 500);
   if (!athletes || athletes.length === 0) {
     const bots = getAllBotsAsProfiles();
     const records = [];
@@ -92,7 +92,7 @@ async function initializeWorldMarket(careerDate) {
       records.push(normalized);
     }
     if (records.length) await localGame.entities.AthleteProfile.bulkCreate(records);
-    athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
+    athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 500);
   }
 
   const sorted = [...(athletes || [])].sort((a, b) => {
@@ -111,7 +111,7 @@ async function initializeWorldMarket(careerDate) {
     }
   }
   if (updates.length) await localGame.entities.AthleteProfile.bulkUpdate(updates);
-  return localGame.entities.AthleteProfile.list('-market_value', 200);
+  return localGame.entities.AthleteProfile.list('-market_value', 500);
 }
 
 const initializeWorldMarketOnce = createKeyedInitializer(initializeWorldMarket);

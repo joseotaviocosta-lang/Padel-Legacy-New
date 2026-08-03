@@ -1,16 +1,16 @@
-export const TUTORIAL_VERSION = 2;
+export const TUTORIAL_VERSION = 3;
 
 export const TUTORIAL_STEPS = [
-  { id: 'career-created', title: 'Carreira criada', explanation: 'Seu save está pronto. Agora vamos definir como seu atleta joga.', route: '/game/missions', actionLabel: 'Começar', phase: 'Identidade' },
-  { id: 'athlete-named', title: 'Dê um nome ao atleta', explanation: 'O nome do atleta aparece em partidas, notícias e registros; ele não altera o nome do save.', route: '/game/missions', actionLabel: 'Definir nome', phase: 'Identidade' },
-  { id: 'side-selected', title: 'Escolha seu lado', explanation: 'O lado define sua função mais frequente na dupla. Direita constrói; esquerda finaliza.', route: '/game/missions', actionLabel: 'Escolher lado', phase: 'Identidade' },
-  { id: 'style-selected', title: 'Defina seu estilo', explanation: 'O estilo determina seus pontos fortes iniciais e orienta os primeiros treinos.', route: '/game/missions', actionLabel: 'Escolher estilo', phase: 'Identidade' },
-  { id: 'first-training', title: 'Faça um treino adequado', explanation: 'Melhore um atributo importante para seu estilo e confira o custo de energia antes de confirmar.', route: '/game/training', actionLabel: 'Ir para Treinos', phase: 'Preparação' },
-  { id: 'energy-understood', title: 'Observe sua energia', explanation: 'Energia baixa reduz seu desempenho e aumenta riscos. Recupere antes de competir cansado.', route: '/game/training', actionLabel: 'Ver energia e recuperação', phase: 'Preparação' },
-  { id: 'partner-selected', title: 'Forme sua dupla', explanation: 'Procure um parceiro do lado complementar e com qualidades que cubram seus pontos fracos.', route: '/partners', actionLabel: 'Escolher parceiro', phase: 'Dupla' },
-  { id: 'tournament-registered', title: 'Inscreva-se no primeiro torneio', explanation: 'Escolha uma competição compatível com seu nível, saldo, parceiro e energia.', route: '/tournaments', actionLabel: 'Ver torneios', phase: 'Competição' },
-  { id: 'first-match', title: 'Dispute sua primeira partida', explanation: 'O resultado gera experiência e mostra como treino, energia e dupla afetam seu desempenho.', route: '/matches', actionLabel: 'Jogar', phase: 'Competição' },
-  { id: 'autonomy', title: 'Continue seu ciclo de carreira', explanation: 'Planeje, treine, recupere, compita, avalie o resultado e ajuste seu próximo objetivo.', route: '/game', actionLabel: 'Ver painel', phase: 'Autonomia' },
+  { id: 'career-created', objectiveType: 'visit_career', title: 'Carreira criada', explanation: 'Seu save está pronto. Agora vamos definir a identidade do atleta.', route: '/game/missions', actionLabel: 'Começar', phase: 'Identidade' },
+  { id: 'athlete-named', objectiveType: 'set_player_name', title: 'Dê um nome ao atleta', explanation: 'O nome aparece em partidas e notícias; ele não altera o nome do save.', route: '/game/missions', actionLabel: 'Definir nome', phase: 'Identidade' },
+  { id: 'side-selected', objectiveType: 'choose_court_side', title: 'Escolha seu lado', explanation: 'Direita prioriza construção; esquerda, finalização.', route: '/game/missions', actionLabel: 'Escolher lado', phase: 'Identidade' },
+  { id: 'style-selected', objectiveType: 'choose_play_style', title: 'Defina seu estilo', explanation: 'O estilo determina seus pontos fortes iniciais.', route: '/game/missions', actionLabel: 'Escolher estilo', phase: 'Identidade' },
+  { id: 'first-training', objectiveType: 'complete_training', title: 'Faça seu primeiro treino', explanation: 'Melhore um atributo e confira o custo antes de confirmar.', route: '/game/training', actionLabel: 'Ir para Treinos', phase: 'Preparação' },
+  { id: 'energy-understood', objectiveType: 'understand_energy', title: 'Entenda sua energia', explanation: 'O treino consumiu energia; recupere antes de competir cansado.', route: '/game/training', actionLabel: 'Ver energia', phase: 'Preparação' },
+  { id: 'partner-selected', objectiveType: 'select_partner', title: 'Forme sua dupla', explanation: 'Escolha por compatibilidade; ações antecipadas também serão reconhecidas.', route: '/partners', actionLabel: 'Escolher parceiro', phase: 'Dupla' },
+  { id: 'tournament-registered', objectiveType: 'join_tournament', title: 'Inscreva-se no primeiro torneio', explanation: 'Escolha uma competição compatível com sua dupla e energia.', route: '/tournaments', actionLabel: 'Ver torneios', phase: 'Competição' },
+  { id: 'first-match', objectiveType: 'play_matches', title: 'Dispute sua primeira partida', explanation: 'A conclusão persistida da partida avança o tutorial.', route: '/matches', actionLabel: 'Jogar', phase: 'Competição' },
+  { id: 'autonomy', objectiveType: 'visit_career_after_intro', title: 'Continue seu ciclo de carreira', explanation: 'Avalie o resultado e escolha seu próximo objetivo.', route: '/game', actionLabel: 'Ver painel', phase: 'Autonomia' },
 ];
 
 export const CORE_GAME_LOOP = ['Planejar', 'Treinar', 'Administrar energia', 'Escolher parceiro', 'Competir', 'Receber resultados', 'Evoluir', 'Subir no ranking'];

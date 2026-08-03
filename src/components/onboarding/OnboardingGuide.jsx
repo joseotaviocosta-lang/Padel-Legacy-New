@@ -6,9 +6,9 @@ import { ensureMyProfile } from '@/lib/padel.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getPageIntroduction } from '@/onboarding/pageIntroductions.js';
 import { CORE_GAME_LOOP, GLOSSARY, TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
-import { getNextTutorialStep, normalizeTutorialState } from '@/onboarding/tutorialState.js';
-
-const sameState = (a, b) => JSON.stringify(a || {}) === JSON.stringify(b || {});
+import { getNextTutorialStep } from '@/onboarding/tutorialState.js';
+import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
+import { ensureTutorialMissionCatalog } from '@/lib/padel.js';
 
 function PageIntroduction({ pathname, state, onStateChange }) {
   const intro = getPageIntroduction(pathname);
@@ -51,18 +51,16 @@ export default function OnboardingGuide() {
       const user = await localGame.auth.me();
       const currentProfile = await ensureMyProfile(user);
       if (!currentProfile?.id) return;
-      const [registrations, matches, trainings] = await Promise.all([
+      const [registrations, matches, trainings, missions, progressRows] = await Promise.all([
         localGame.entities.CalendarEvent.filter({ profile_id: currentProfile.id, event_type: 'tournament' }).catch(() => []),
         localGame.entities.Match.list('-created_date', 20).catch(() => []),
         localGame.entities.TrainingSession.filter({ profile_id: currentProfile.id }).catch(() => []),
+        ensureTutorialMissionCatalog().catch(() => []),
+        localGame.entities.MissionProgress.filter({ profile_id: currentProfile.id }).catch(() => []),
       ]);
       const currentFacts = { registrations, matches, trainings };
-      const normalized = normalizeTutorialState(currentProfile.tutorial_onboarding, currentProfile, currentFacts);
-      setProfile(currentProfile); setFacts(currentFacts); setState(normalized);
-      if (!sameState(normalized, currentProfile.tutorial_onboarding)) {
-        const updated = await localGame.entities.PlayerProfile.update(currentProfile.id, { tutorial_onboarding: normalized });
-        setProfile(updated);
-      }
+      const reconciliation = await reconcilePersistedTutorial(currentProfile, currentFacts, missions, progressRows);
+      setProfile(reconciliation.profile || currentProfile); setFacts(currentFacts); setState(reconciliation.state);
     } catch (error) { console.error('[onboarding] Falha ao carregar orientação.', error); }
   }, []);
 
@@ -90,16 +88,17 @@ export default function OnboardingGuide() {
 
   const step = getNextTutorialStep(state);
   const recommendation = useMemo(() => getCareerRecommendations(profile, facts)[0], [profile, facts]);
+  const isMissionCenter = location.pathname === '/game/missions';
   if (!profile || !state) return null;
 
   return <>
-    <PageIntroduction pathname={location.pathname} state={state} onStateChange={persist}/>
-    {!state.minimized && state.status === 'in_progress' && <aside className="mx-4 md:mx-8 mt-3 rounded-2xl border border-primary/40 bg-primary/10 p-4" aria-label="Orientação do tutorial">
+    {!isMissionCenter && <PageIntroduction pathname={location.pathname} state={state} onStateChange={persist}/>}
+    {!isMissionCenter && !state.minimized && state.status === 'in_progress' && step && <aside className="mx-4 md:mx-8 mt-3 rounded-2xl border border-primary/40 bg-primary/10 p-4" aria-label="Orientação contextual do tutorial">
       {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><GraduationCap className="h-7 w-7 text-primary shrink-0"/><div className="flex-1"><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p><h2 className="font-black">{step.title}</h2><p className="text-xs text-muted-foreground"><strong>Por quê:</strong> {step.explanation}</p></div><Link to={step.route} onClick={() => persist(current => ({ ...current, welcomeSeen: true }))} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link><button onClick={() => persist(current => ({ ...current, minimized: true, welcomeSeen: true }))} className="rounded-xl border px-3 py-2 text-xs font-bold">Minimizar</button><button onClick={() => persist(current => ({ ...current, status: 'skipped', tutorialSkipped: true, minimized: false, welcomeSeen: true }))} className="px-2 py-2 text-xs text-muted-foreground">Pular guia</button></div>
     </aside>}
-    {state.minimized && state.status === 'in_progress' && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-24 right-4 z-40 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xl">Próximo passo: {step.title}</button>}
-    {recommendation && <div className="mx-4 md:mx-8 mt-3 flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-xs"><span className="rounded-full bg-primary/15 px-2 py-1 font-bold text-primary">{recommendation.importance}</span><div className="flex-1"><strong>{recommendation.title}</strong><span className="text-muted-foreground"> · {recommendation.explanation}</span></div><Link to={recommendation.route} className="font-bold text-primary">{recommendation.actionLabel}</Link></div>}
+    {!isMissionCenter && state.minimized && state.status === 'in_progress' && step && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-24 right-4 z-40 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xl">Próximo passo: {step.title}</button>}
+    {state.status !== 'in_progress' && recommendation && <div className="mx-4 md:mx-8 mt-3 flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-xs"><span className="rounded-full bg-primary/15 px-2 py-1 font-bold text-primary">{recommendation.importance}</span><div className="flex-1"><strong>{recommendation.title}</strong><span className="text-muted-foreground"> · {recommendation.explanation}</span></div><Link to={recommendation.route} className="font-bold text-primary">{recommendation.actionLabel}</Link></div>}
     <button onClick={() => setHelpOpen(true)} className="fixed bottom-20 left-4 md:bottom-5 md:left-auto md:right-5 z-50 rounded-full border border-primary/30 bg-background p-3 text-primary shadow-xl" aria-label="Abrir guia e glossário"><CircleHelp className="h-5 w-5"/></button>
     <HelpCenter open={helpOpen} onClose={() => setHelpOpen(false)} state={state} onRestart={() => persist(current => ({ ...current, status: 'in_progress', tutorialSkipped: false, minimized: false, welcomeSeen: false, pageIntroductionsSeen: [], collapsedIntroductions: [] }))}/>
   </>;

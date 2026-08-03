@@ -4,11 +4,13 @@ import { getAvailablePartners, getLockedPartners, canChangePartner, daysUntilPar
 import { overallRating } from '@/lib/padel';
 import { computeCompatibility, compatibilityLabel } from '@/lib/partnershipSystem';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
+import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
 
 export default function PartnerSearch({ profile, relationships, onInvite, onCompare }) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('compat');
   const [selected, setSelected] = useState(null);
+  const [sideFilter, setSideFilter] = useState('all');
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
 
@@ -17,7 +19,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
     const partners = getAvailablePartners(profile);
     return partners.map(bot => {
       const compat = computeCompatibility(profile, bot, relationships);
-      return { bot, compat };
+      return { bot, compat, interest: calculatePartnershipInterest(profile, bot, compat) };
     });
   }, [profile, relationships]);
 
@@ -27,11 +29,12 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
       const s = search.toLowerCase();
       list = list.filter(({ bot }) => bot.name.toLowerCase().includes(s) || (bot.country || '').toLowerCase().includes(s));
     }
+    if (sideFilter !== 'all') list = list.filter(({ bot }) => bot.preferred_side === sideFilter);
     if (sort === 'compat') list = [...list].sort((a, b) => b.compat.total - a.compat.total);
     if (sort === 'rating') list = [...list].sort((a, b) => overallRating(b.bot) - overallRating(a.bot));
     if (sort === 'name') list = [...list].sort((a, b) => a.bot.name.localeCompare(b.bot.name));
     return list;
-  }, [available, search, sort]);
+  }, [available, search, sort, sideFilter]);
 
   const locked = useMemo(() => getLockedPartners(profile).slice(0, 4), [profile]);
 
@@ -46,6 +49,12 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
           placeholder="Buscar atleta por nome ou país..."
           className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
+      </div>
+
+      <div className="flex flex-wrap gap-2" aria-label="Filtrar por lado preferido">
+        {[['all', 'Todos os lados'], ['right', 'Direita'], ['left', 'Esquerda'], ['flex', 'Versátil']].map(([id, label]) => (
+          <button key={id} onClick={() => setSideFilter(id)} className={`px-3 py-1.5 rounded-lg text-xs ${sideFilter === id ? 'bg-cyan-500/20 text-cyan-300' : 'glass text-muted-foreground'}`}>{label}</button>
+        ))}
       </div>
 
       {/* Sort */}
@@ -76,7 +85,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
 
       {/* Results */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 animate-stagger">
-        {filtered.map(({ bot, compat }) => {
+        {filtered.map(({ bot, compat, interest }) => {
           const cl = compatibilityLabel(compat.total);
           return (
             <button
@@ -97,10 +106,13 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
                   <p className={`text-[8px] uppercase font-bold ${cl.color}`}>{cl.label}</p>
                 </div>
               </div>
+              <p className="mb-2 text-[10px] text-muted-foreground">Lado: {sideLabel(bot.preferred_side)} · Interesse {interest.level}</p>
               <PlayStyleSummary profile={bot} compact />
               {selected === bot.id && (
                 <div className="mt-3 pt-3 border-t border-border/40 space-y-2 animate-fade-in">
                   <p className="text-[10px] uppercase text-muted-foreground font-bold">Detalhamento</p>
+                  {compat.sideResolution && <p className="text-[11px] text-muted-foreground">{compat.sideResolution.explanation}</p>}
+                  {compat.warnings?.map(warning => <p key={warning} className="text-[11px] text-amber-400">⚠ {warning}</p>)}
                   {Object.entries(compat.breakdown).map(([key, val]) => (
                     <div key={key} className="flex items-center gap-2">
                       <span className="text-[10px] text-muted-foreground w-24 capitalize">{factorLabel(key)}</span>
@@ -148,4 +160,8 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
 function factorLabel(key) {
   const map = { position: 'Posição', style: 'Estilo', personality: 'Personalidade', level: 'Nível', schedule: 'Agenda', chemistry: 'Química', overall: 'Overall' };
   return map[key] || key;
+}
+
+function sideLabel(side) {
+  return side === 'left' ? 'esquerda' : side === 'right' ? 'direita' : 'versátil';
 }

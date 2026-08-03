@@ -80,17 +80,16 @@ function generatePersonality(name) {
 export async function ensureAthleteProfiles() {
   let existing = [];
   try {
-    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
+    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 500);
   } catch {}
 
-  const existingIds = new Set((existing || []).map(a => a.bot_id));
-  if (existingIds.size >= 60) return existing;
+  const existingIds = new Set((existing || []).flatMap(a => [a.id, a.bot_id, a.template_id].filter(Boolean)));
 
   const bots = getAllBotsAsProfiles();
   const toCreate = [];
 
   for (const bot of bots) {
-    if (existingIds.has(bot.id)) continue;
+    if (existingIds.has(bot.id) || existingIds.has(bot.template_id)) continue;
     const p = generatePersonality(bot.name);
     const attrs = {};
     ATTRIBUTE_KEYS.forEach(k => { attrs[k] = bot[k] || 5; });
@@ -99,9 +98,21 @@ export async function ensureAthleteProfiles() {
     const traitEffects = computeTraitEffects(traitIds);
 
     toCreate.push({
-      bot_id: bot.id,
+      id: bot.id,
+      bot_id: bot.template_id,
+      template_id: bot.template_id,
+      athlete_schema_version: bot.athlete_schema_version,
+      source_type: bot.source_type,
+      licensing_mode: bot.licensing_mode,
       name: bot.name,
       country: bot.country || '—',
+      nationality_code: bot.nationality_code,
+      handedness: bot.handedness,
+      preferred_side: bot.preferred_side,
+      secondary_side: bot.secondary_side,
+      side_flexibility: bot.side_flexibility,
+      side_experience: bot.side_experience,
+      position: bot.position,
       age: p.age,
       personality: p.personality.id,
       personality_label: p.personality.label,
@@ -128,7 +139,7 @@ export async function ensureAthleteProfiles() {
 
   if (toCreate.length > 0) {
     await localGame.entities.AthleteProfile.bulkCreate(toCreate);
-    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
+    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 500);
   }
 
   return existing;

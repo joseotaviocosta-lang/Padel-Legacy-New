@@ -217,8 +217,7 @@ export function getAvailablePartners(profile) {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
   if (!profile?.court_side) return [];
-  const oppositePosition = profile.court_side === 'direita' ? 'esquerda' : 'direita';
-  return pool.filter(b => b.position === oppositePosition);
+  return pool;
 }
 
 export function getLockedPartners(profile) {
@@ -229,8 +228,7 @@ export function getLockedPartners(profile) {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
   if (!profile?.court_side) return [];
-  const oppositePosition = profile.court_side === 'direita' ? 'esquerda' : 'direita';
-  return pool.filter(b => b.position === oppositePosition);
+  return pool;
 }
 
 // Tournament helpers

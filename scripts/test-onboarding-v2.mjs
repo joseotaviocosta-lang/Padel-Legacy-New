@@ -7,7 +7,7 @@ import { getPageIntroduction, PAGE_INTRODUCTIONS } from '../src/onboarding/pageI
 import { getNextTutorialStep, normalizeTutorialState } from '../src/onboarding/tutorialState.js';
 
 const career = createDefaultCareerData({ saveName: 'Teste onboarding', playerName: 'Atleta', careerType: 'normal' });
-assert.equal(career.tutorial.version, 2);
+assert.equal(career.tutorial.version, 3);
 assert.equal(getNextTutorialStep(career.tutorial).id, 'athlete-named');
 
 const progressed = {
@@ -19,7 +19,7 @@ const progressed = {
     Match: [{ id: 'match-1', profile_id: 'p1' }],
   },
 };
-const state = normalizeTutorialState(null, progressed);
+const state = normalizeTutorialState(null, progressed, { completedObjectiveTypes: ['visit_career_after_intro'] });
 assert.deepEqual(state.completedSteps, ['career-created', 'athlete-named', 'side-selected', 'style-selected', 'first-training', 'energy-understood', 'partner-selected', 'tournament-registered', 'first-match', 'autonomy']);
 assert.equal(state.status, 'completed');
 

@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 
 function safeNumber(value, fallback = 0) {
   const parsed = Number(value);
@@ -30,13 +31,6 @@ function athleteOverall(athlete) {
   return clamp(athlete?.overall ?? athlete?.overall_rating ?? 50, 1, 99);
 }
 
-function athletePosition(athlete) {
-  const raw = String(athlete?.position || athlete?.court_position || '').toLowerCase();
-  if (raw.includes('direita') || raw === 'right') return 'direita';
-  if (raw.includes('esquerda') || raw === 'left') return 'esquerda';
-  return hash(athlete?.id || athlete?.name) % 2 === 0 ? 'direita' : 'esquerda';
-}
-
 function isRetired(athlete) {
   const status = String(athlete?.market_status || athlete?.status || athlete?.career_status || '').toLowerCase();
   return Boolean(athlete?.retired) || status === 'retired' || status === 'aposentado';
@@ -59,15 +53,13 @@ function aiPartnerId(athlete) {
 }
 
 function compatibility(a, b) {
-  const overallGap = Math.abs(athleteOverall(a) - athleteOverall(b));
   const rankingGap = Math.abs(safeNumber(a?.ranking_position, 500) - safeNumber(b?.ranking_position, 500));
-  const positionScore = athletePosition(a) !== athletePosition(b) ? 30 : 8;
-  const levelScore = clamp(32 - overallGap * 2, 0, 32);
-  const rankingScore = clamp(22 - rankingGap / 35, 0, 22);
+  const tacticalScore = evaluatePartnerCompatibility(a, b).total;
+  const rankingScore = clamp(100 - rankingGap / 8, 0, 100);
   const ambitionA = safeNumber(a?.ambition, 50);
   const ambitionB = safeNumber(b?.ambition, 50);
-  const personalityScore = clamp(16 - Math.abs(ambitionA - ambitionB) / 6, 0, 16);
-  return Math.round(positionScore + levelScore + rankingScore + personalityScore);
+  const personalityScore = clamp(100 - Math.abs(ambitionA - ambitionB) * 2, 0, 100);
+  return Math.round(tacticalScore * 0.6 + rankingScore * 0.25 + personalityScore * 0.15);
 }
 
 async function createWorldEvent(payload) {

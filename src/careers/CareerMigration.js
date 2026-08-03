@@ -2,6 +2,7 @@ import { CAREER_INDEX_SCHEMA_VERSION, CAREER_SAVE_SCHEMA_VERSION } from './caree
 import { normalizeCharacterCustomization } from '../lib/characterCustomization.js';
 import { repairTournamentCollection } from '../lib/tournamentIntegrity.js';
 import { normalizeTutorialState } from '../onboarding/tutorialState.js';
+import { normalizeAthlete } from '../players/athleteSchema.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -120,11 +121,58 @@ export function migrateCareer(career) {
   }
   if (version < 8) {
     data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
-    const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data);
+    const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data, {
+      autonomyVisited: Boolean(data.player?.onboarding_completed || Number(data.player?.matches_played || 0) > 0 || (data.entities?.Match || []).length > 0),
+    });
     data.tutorial = tutorial;
     data.player = { ...(data.player || {}), tutorial_onboarding: tutorial };
     data.save_schema_version = 8;
     version = 8;
+  }
+  if (version < 9) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    const athletes = Array.isArray(data.entities.AthleteProfile) ? data.entities.AthleteProfile : [];
+    const remaps = new Map();
+    const unique = new Map();
+    for (const athlete of athletes) {
+      if (!athlete || typeof athlete !== 'object') continue;
+      const normalized = normalizeAthlete(athlete);
+      if (athlete.id && athlete.id !== normalized.id) remaps.set(athlete.id, normalized.id);
+      const previous = unique.get(normalized.id);
+      unique.set(normalized.id, previous ? { ...previous, ...normalized, attributes: { ...previous.attributes, ...normalized.attributes } } : normalized);
+    }
+    data.entities.AthleteProfile = [...unique.values()];
+    if (remaps.size > 0) {
+      for (const rows of Object.values(data.entities)) {
+        if (!Array.isArray(rows)) continue;
+        for (const row of rows) {
+          if (!row || typeof row !== 'object') continue;
+          for (const key of ['athlete_id', 'partner_id', 'partner_bot_id', 'current_partner_id', 'player1_id', 'player2_id']) {
+            if (remaps.has(row[key])) row[key] = remaps.get(row[key]);
+          }
+        }
+      }
+      for (const key of ['partner_id', 'current_partner_id']) {
+        if (remaps.has(data.player?.[key])) data.player[key] = remaps.get(data.player[key]);
+      }
+    }
+    data.save_schema_version = 9;
+    version = 9;
+  }
+  if (version < 10) {
+    const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data, {
+      autonomyVisited: Boolean(data.player?.onboarding_completed || Number(data.player?.matches_played || 0) > 0 || (data.entities?.Match || []).length > 0),
+    });
+    data.tutorial = tutorial;
+    data.player = {
+      ...(data.player || {}),
+      tutorial_onboarding: tutorial,
+      onboarding_completed: tutorial.status === 'completed',
+      onboarding_stage: tutorial.currentStepId,
+    };
+    data.metadata = { ...(data.metadata || {}), onboarding_completed: tutorial.status === 'completed' };
+    data.save_schema_version = 10;
+    version = 10;
   }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

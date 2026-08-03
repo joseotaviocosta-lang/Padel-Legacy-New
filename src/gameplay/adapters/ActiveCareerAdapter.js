@@ -156,6 +156,9 @@ export class ActiveCareerAdapter {
       if (Object.prototype.hasOwnProperty.call(updates, 'onboarding_completed')) {
         career.metadata.onboarding_completed = Boolean(updates.onboarding_completed);
       }
+      if (Object.prototype.hasOwnProperty.call(updates, 'tutorial_onboarding')) {
+        career.tutorial = clone(updates.tutorial_onboarding);
+      }
       return career.player;
     });
     return clone(transaction.result);

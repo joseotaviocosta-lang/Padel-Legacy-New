@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { overallRating, levelForXp, LEVELS, ATTRIBUTE_KEYS, incrementMissionProgress } from '@/lib/padel';
 import { getAvailablePartners, getPartnerBot, canChangePartner, daysUntilPartnerUnlock, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { getRelationshipEffects, getOrCreateRelationship, getPartnerChemistryBonus } from '@/lib/relationships';
+import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 
 // ─── Compatibility Calculation ──────────────────────────────────────────────
 // Computes a 0-100 compatibility score with per-factor breakdown.
@@ -9,12 +10,8 @@ export function computeCompatibility(profile, partnerBot, relationships = []) {
   if (!profile || !partnerBot) return { total: 0, breakdown: {} };
 
   // Position: opposite sides complement
-  let positionScore = 50;
-  if (profile.court_side && partnerBot.position) {
-    positionScore = profile.court_side === partnerBot.position ? 20 : 100;
-  } else if (partnerBot.position) {
-    positionScore = 75;
-  }
+  const tacticalFit = evaluatePartnerCompatibility(profile, partnerBot);
+  const positionScore = tacticalFit.breakdown.position;
 
   // Play style: complementary styles score higher
   const STYLE_PAIRS = {
@@ -81,6 +78,9 @@ export function computeCompatibility(profile, partnerBot, relationships = []) {
       chemistry: chemScore,
       overall: ovrScore,
     },
+    sideResolution: tacticalFit.sideResolution,
+    strengths: tacticalFit.strengths,
+    warnings: tacticalFit.warnings,
   };
 }
 

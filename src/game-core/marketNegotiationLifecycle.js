@@ -1,6 +1,8 @@
 import { localGame } from '@/api/localGameClient.js';
 import { overallRating } from '@/lib/padel';
 import { formPartnerContract } from './partnerLifecycle';
+import { normalizeAthlete, toLegacyCourtSide } from '@/players/athleteSchema.js';
+import { calculatePartnershipInterest, evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -20,13 +22,14 @@ function monthKey(date) {
 }
 
 function candidateAsPartner(athlete) {
+  const canonical = normalizeAthlete(athlete);
   const overall = clamp(athlete?.overall_rating || 50, 1, 100);
   return {
-    ...athlete,
+    ...canonical,
     id: athlete.id,
     name: athlete.name,
     country: athlete.country,
-    position: athlete.position || (hash(athlete.id) % 2 === 0 ? 'direita' : 'esquerda'),
+    position: toLegacyCourtSide(canonical.preferred_side),
     play_style: athlete.play_style || 'Equilibrado',
     level: athlete.level || 'Profissional',
     forehand: athlete.forehand || overall,
@@ -66,6 +69,8 @@ export function getNegotiationPreview(profile, athlete, scoutingReport, terms = 
   const scoutingScore = clamp(Number(scoutingReport?.tactical_fit) || 50, 0, 100);
   const shareScore = clamp(50 + (partnerPrizeShare - 50) * 3, 0, 100);
   const durationScore = durationDays >= 90 ? 72 : durationDays >= 60 ? 60 : 45;
+  const compatibility = evaluatePartnerCompatibility(profile, athlete);
+  const interest = calculatePartnershipInterest(profile, athlete, compatibility);
   const statusPenalty = athlete?.market_status === 'livre' ? 0 : 35;
   const injuryPenalty = athlete?.current_injury ? 25 : 0;
 
@@ -76,7 +81,8 @@ export function getNegotiationPreview(profile, athlete, scoutingReport, terms = 
     reputationScore * 0.10 +
     scoutingScore * 0.12 +
     shareScore * 0.10 +
-    durationScore * 0.05 -
+    durationScore * 0.05 +
+    (interest.score - 50) * 0.18 -
     statusPenalty -
     injuryPenalty
   ), 3, 97);
@@ -92,6 +98,8 @@ export function getNegotiationPreview(profile, athlete, scoutingReport, terms = 
     totalImmediateCost: signingBonus,
     monthlyCommitment: salary,
     canAfford: (Number(profile?.coins) || 0) >= signingBonus,
+    interest,
+    compatibility,
     factors: {
       salary: Math.round(salaryScore),
       bonus: Math.round(bonusScore),
