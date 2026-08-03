@@ -6,6 +6,7 @@ import { ensureMyProfile, ensureTutorialMissionCatalog, missionPeriodEndsAt, mis
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
 import { safeModuleTask } from '@/lib/moduleLoading';
+import { CAREER_STYLE_PROFILES, ATTRIBUTE_LABELS, buildInitialAttributes } from '@/lib/initialCareerProfiles';
 
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
@@ -48,6 +49,7 @@ export default function Missions() {
   const [progress, setProgress] = useState({});
   const [loading, setLoading] = useState(true);
   const [tab, setTab] = useState('tutorial');
+  const [savingChoice, setSavingChoice] = useState(false);
 
   useEffect(() => { load(); }, []);
 
@@ -76,6 +78,42 @@ export default function Missions() {
     finally { setLoading(false); }
   }
 
+
+  async function updateOnboarding(fields) {
+    if (!profile?.id) return;
+    setSavingChoice(true);
+    try {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, fields);
+      setProfile(updated);
+    } finally {
+      setSavingChoice(false);
+    }
+  }
+
+  const onboardingStage = profile?.onboarding_completed
+    ? 'completed'
+    : (profile?.onboarding_stage || 'welcome');
+
+  async function chooseSide(side) {
+    await updateOnboarding({
+      court_side: side,
+      play_style: null,
+      onboarding_stage: 'style',
+    });
+  }
+
+  async function chooseStyle(style) {
+    const side = profile?.court_side;
+    const attributes = buildInitialAttributes(side, style);
+    await updateOnboarding({
+      ...attributes,
+      play_style: style,
+      unspent_attribute_points: 0,
+      onboarding_completed: true,
+      onboarding_stage: 'completed',
+    });
+  }
+
   const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial').sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
   const nextTutorial = tutorialMissions.find(m => !progress[m.id]?.claimed);
   const tutorialDone = tutorialMissions.filter(m => progress[m.id]?.claimed).length;
@@ -98,6 +136,29 @@ export default function Missions() {
           <CoinBadge coins={profile?.coins || 0} size="md" />
         </div>
       </div>
+
+      {onboardingStage !== 'completed' && <div className="glass rounded-3xl border border-primary/50 p-5 md:p-7 bg-primary/5 space-y-5">
+        {onboardingStage === 'welcome' && <>
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Primeiros passos</p><h2 className="text-2xl font-black mt-2">Bem-vindo ao Padel Legacy</h2><p className="text-muted-foreground mt-2">Sua carreira já foi criada. Agora o treinador vai ajudar você a definir sua função em quadra e sua identidade tática.</p></div>
+          <button disabled={savingChoice} onClick={() => updateOnboarding({ onboarding_stage: 'side' })} className="rounded-xl bg-primary text-primary-foreground px-5 py-3 font-bold">Começar tutorial <ArrowRight className="inline h-4 w-4 ml-1" /></button>
+        </>}
+
+        {onboardingStage === 'side' && <>
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Escolha seu lado</p><h2 className="text-2xl font-black mt-2">Onde você prefere jogar?</h2><p className="text-muted-foreground mt-2">Essa escolha define sua responsabilidade principal dentro da dupla.</p></div>
+          <div className="grid md:grid-cols-2 gap-4">
+            <button disabled={savingChoice} onClick={() => chooseSide('direita')} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors"><h3 className="text-xl font-black">Direita</h3><p className="text-sm text-muted-foreground mt-2">Construção dos pontos, consistência, defesa e organização tática.</p></button>
+            <button disabled={savingChoice} onClick={() => chooseSide('esquerda')} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors"><h3 className="text-xl font-black">Esquerda</h3><p className="text-sm text-muted-foreground mt-2">Pressão ofensiva, bolas aéreas, potência e definição dos pontos.</p></button>
+          </div>
+        </>}
+
+        {onboardingStage === 'style' && <>
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Defina seu estilo</p><h2 className="text-2xl font-black mt-2">Escolha sua identidade tática</h2><p className="text-muted-foreground mt-2">Três atributos ficarão no nível 15. Todos os demais começarão no nível 10.</p></div>
+          <div className="grid md:grid-cols-2 gap-4">
+            {Object.entries(CAREER_STYLE_PROFILES[profile?.court_side] || {}).map(([key, option]) => <button key={key} disabled={savingChoice} onClick={() => chooseStyle(key)} className="rounded-2xl border border-border/70 p-5 text-left hover:border-primary transition-colors"><h3 className="text-xl font-black">{option.label}</h3><p className="text-sm text-muted-foreground mt-2">{option.description}</p><div className="flex flex-wrap gap-2 mt-4">{option.strengths.map(attr => <span key={attr} className="rounded-full bg-primary/15 text-primary px-3 py-1 text-xs font-bold">{ATTRIBUTE_LABELS[attr]} 15</span>)}</div></button>)}
+          </div>
+          <button disabled={savingChoice} onClick={() => updateOnboarding({ court_side: null, onboarding_stage: 'side' })} className="text-sm font-bold text-muted-foreground">Voltar e trocar o lado</button>
+        </>}
+      </div>}
 
       {nextTutorial ? <div className="glass rounded-2xl border border-primary/40 p-5 bg-primary/5">
         <div className="flex items-start gap-4">

@@ -40,12 +40,12 @@ function isRetired(athlete) {
 }
 
 function categoryFor(points, overall) {
-  if (points >= 9000 || overall >= 92) return 'Major';
+  if (points >= 9000 || overall >= 92) return 'Crown';
   if (points >= 5000 || overall >= 86) return 'Elite';
-  if (points >= 2500 || overall >= 80) return 'Master';
-  if (points >= 1100 || overall >= 72) return 'Open';
-  if (points >= 400 || overall >= 64) return 'Challenger';
-  return 'Future';
+  if (points >= 2500 || overall >= 80) return 'Masters';
+  if (points >= 1100 || overall >= 72) return 'Platinum';
+  if (points >= 400 || overall >= 64) return 'Gold';
+  return 'Silver';
 }
 
 function weeklyResult(athlete, currentDate) {

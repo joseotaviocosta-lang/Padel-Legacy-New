@@ -17,64 +17,23 @@ import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { isRegistrationOpen } from '@/lib/calendarSystem';
+import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
+import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 
 const TIER_CONFIG = {
-  Major: {
-    label: 'Major',
-    badge: 'bg-amber-500/15 text-amber-300 border-amber-500/40',
-    card: 'border-amber-500/25 hover:border-amber-500/50',
-    glow: 'shadow-[0_0_24px_rgba(245,158,11,0.12)]',
-    icon: Crown,
-    diffLabel: 'Muito Difícil',
-    diffColor: 'text-red-400',
-  },
-  P1: {
-    label: 'P1',
-    badge: 'bg-purple-500/15 text-purple-300 border-purple-500/30',
-    card: 'border-purple-500/20 hover:border-purple-500/40',
-    glow: '',
-    icon: Flame,
-    diffLabel: 'Difícil',
-    diffColor: 'text-orange-400',
-  },
-  P2: {
-    label: 'P2',
-    badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',
-    card: 'border-cyan-500/20 hover:border-cyan-500/40',
-    glow: '',
-    icon: Circle,
-    diffLabel: 'Equilibrado',
-    diffColor: 'text-green-400',
-  },
-  Challenger: {
-    label: 'Challenger',
-    badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
-    card: 'border-emerald-500/20 hover:border-emerald-500/40',
-    glow: '',
-    icon: Shield,
-    diffLabel: 'Acessível',
-    diffColor: 'text-emerald-400',
-  },
-  Regional: {
-    label: 'Regional',
-    badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30',
-    card: 'border-slate-500/20 hover:border-slate-500/40',
-    glow: '',
-    icon: MapPin,
-    diffLabel: 'Entrada',
-    diffColor: 'text-slate-300',
-  },
+  Crown:{label:'Legacy Crown',badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',card:'border-amber-500/25 hover:border-amber-500/50',glow:'shadow-[0_0_24px_rgba(245,158,11,0.12)]',icon:Crown,diffLabel:'Lendário',diffColor:'text-red-400'},
+  Elite:{label:'Legacy Elite',badge:'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',card:'border-fuchsia-500/20 hover:border-fuchsia-500/40',glow:'',icon:Flame,diffLabel:'Muito Difícil',diffColor:'text-red-400'},
+  Masters:{label:'Legacy Masters',badge:'bg-purple-500/15 text-purple-300 border-purple-500/30',card:'border-purple-500/20 hover:border-purple-500/40',glow:'',icon:Trophy,diffLabel:'Difícil',diffColor:'text-orange-400'},
+  Platinum:{label:'Legacy Platinum',badge:'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',card:'border-cyan-500/20 hover:border-cyan-500/40',glow:'',icon:Star,diffLabel:'Competitivo',diffColor:'text-yellow-400'},
+  Gold:{label:'Legacy Gold',badge:'bg-yellow-500/15 text-yellow-300 border-yellow-500/30',card:'border-yellow-500/20 hover:border-yellow-500/40',glow:'',icon:Award,diffLabel:'Acessível',diffColor:'text-emerald-400'},
+  Silver:{label:'Legacy Silver',badge:'bg-slate-500/15 text-slate-300 border-slate-500/30',card:'border-slate-500/20 hover:border-slate-500/40',glow:'',icon:Shield,diffLabel:'Entrada Mundial',diffColor:'text-slate-300'},
 };
 
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
 const FILTERS = [
-  { id: 'all', label: 'Todos' },
-  { id: 'Major', label: 'Majors' },
-  { id: 'P1', label: 'P1' },
-  { id: 'P2', label: 'P2' },
-  { id: 'Challenger', label: 'Challengers' },
-  { id: 'Regional', label: 'Regionais' },
+  {id:'all',label:'Todos'}, {id:'Crown',label:'Crown'}, {id:'Elite',label:'Elite'},
+  {id:'Masters',label:'Masters'}, {id:'Platinum',label:'Platinum'}, {id:'Gold',label:'Gold'}, {id:'Silver',label:'Silver'},
 ];
 
 export default function Tournaments() {
@@ -220,11 +179,9 @@ export default function Tournaments() {
   const filtered = filter === 'all' ? byView : byView.filter(t => t.tier === filter);
 
   const counts = {
-    Major: sorted.filter(t => t.tier === 'Major').length,
-    P1: sorted.filter(t => t.tier === 'P1').length,
-    P2: sorted.filter(t => t.tier === 'P2').length,
-    Challenger: sorted.filter(t => t.tier === 'Challenger').length,
-    Regional: sorted.filter(t => t.tier === 'Regional').length,
+    Crown:sorted.filter(t=>t.tier==='Crown').length, Elite:sorted.filter(t=>t.tier==='Elite').length,
+    Masters:sorted.filter(t=>t.tier==='Masters').length, Platinum:sorted.filter(t=>t.tier==='Platinum').length,
+    Gold:sorted.filter(t=>t.tier==='Gold').length, Silver:sorted.filter(t=>t.tier==='Silver').length,
   };
 
   const byMonth = {};
@@ -269,17 +226,18 @@ export default function Tournaments() {
         <div className="relative">
           <div className="flex items-center gap-2 mb-1">
             <Trophy className="h-5 w-5 text-amber-400" />
-            <span className="text-[10px] uppercase tracking-[0.3em] text-amber-400 font-bold">Circuito Oficial</span>
+            <span className="text-[10px] uppercase tracking-[0.3em] text-amber-400 font-bold">Padel Legacy World Tour</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black tracking-tight">{season?.name || 'Temporada 2026'}</h1>
           <p className="text-sm text-muted-foreground mt-1">{season?.description || 'Calendário completo de torneios'}</p>
 
           <div className="flex gap-3 mt-4 flex-wrap">
-            <SummaryStat icon={Crown} label="Majors" value={counts.Major} color="text-amber-400" />
-            <SummaryStat icon={Flame} label="P1" value={counts.P1} color="text-purple-400" />
-            <SummaryStat icon={Circle} label="P2" value={counts.P2} color="text-cyan-400" />
-            <SummaryStat icon={Shield} label="Challengers" value={counts.Challenger} color="text-emerald-400" />
-            <SummaryStat icon={MapPin} label="Regionais" value={counts.Regional} color="text-slate-300" />
+            <SummaryStat icon={Crown} label="Crown" value={counts.Crown} color="text-amber-400" />
+            <SummaryStat icon={Flame} label="Elite" value={counts.Elite} color="text-fuchsia-400" />
+            <SummaryStat icon={Trophy} label="Masters" value={counts.Masters} color="text-purple-400" />
+            <SummaryStat icon={Star} label="Platinum" value={counts.Platinum} color="text-cyan-400" />
+            <SummaryStat icon={Award} label="Gold" value={counts.Gold} color="text-yellow-400" />
+            <SummaryStat icon={Shield} label="Silver" value={counts.Silver} color="text-slate-300" />
           </div>
         </div>
       </div>
@@ -386,6 +344,8 @@ export default function Tournaments() {
                     onPlay={() => handlePlay(t)}
                     onViewBracket={() => setBracketTournament(t)}
                     careerDate={profile?.career_date}
+                    profile={profile}
+                    teamRank={teamRank}
                   />
                 ))}
               </div>
@@ -455,9 +415,17 @@ function SummaryStat({ icon: Icon, label, value, color }) {
   );
 }
 
-function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onViewBracket, careerDate }) {
-  const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.P2;
+function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onViewBracket, careerDate, profile, teamRank }) {
+  const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
+  const coach = !isPast ? evaluateTournamentChoice(tournament, {
+    rank: teamRank,
+    teamRank,
+    energy: profile?.energy ?? 100,
+    age: profile?.age ?? 25,
+    nationality: profile?.nationality,
+  }, {}) : null;
+  const entry = !isPast ? evaluateTournamentEntry(tournament, buildAthleteEntryContext(profile, teamRank, tournament)) : null;
 
   return (
     <div className={`glass rounded-2xl p-4 border ${config.card} ${config.glow} transition-all ${isPlayed || isPast ? 'opacity-60' : 'hover:scale-[1.02]'}`}>
@@ -471,6 +439,11 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
             <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide mt-0.5 ${config.badge}`}>
               {config.label}
             </span>
+            {tournament.concurrent_events > 1 && (
+              <span className="ml-1 inline-flex items-center rounded-full bg-red-500/10 text-red-300 border border-red-500/20 px-2 py-0.5 text-[9px] font-bold uppercase">
+                Escolha estratégica · {tournament.concurrent_events} eventos
+              </span>
+            )}
           </div>
         </div>
         {isPlayed ? (
@@ -523,6 +496,24 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
         <span className="text-[10px] text-muted-foreground">·</span>
         <span className="text-[10px] text-muted-foreground">{tournament.max_participants || 16} vagas</span>
       </div>
+
+      {coach && (
+        <div className="mb-3 rounded-xl bg-secondary/35 border border-border/40 p-2.5">
+          <div className="flex items-center justify-between mb-2">
+            <span className="text-[9px] uppercase tracking-wider font-black text-primary">Análise do treinador</span>
+            <span className={`text-[9px] font-bold ${entry?.eligible ? 'text-emerald-400' : 'text-red-400'}`}>
+              {getEntryPathLabel(entry?.path)}
+            </span>
+          </div>
+          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+            <span className="text-muted-foreground">Chance de título</span><strong className="text-right">{coach.titleChance}%</strong>
+            <span className="text-muted-foreground">Chance de semifinal</span><strong className="text-right">{coach.semifinalChance}%</strong>
+            <span className="text-muted-foreground">Lucro esperado</span><strong className="text-right">{coach.expectedNet >= 0 ? '+' : ''}{coach.expectedNet}</strong>
+            <span className="text-muted-foreground">Pontos esperados</span><strong className="text-right">{coach.expectedPoints}</strong>
+            <span className="text-muted-foreground">Fadiga estimada</span><strong className="text-right text-orange-400">+{coach.fatigueIncrease}%</strong>
+          </div>
+        </div>
+      )}
 
       <div className="flex items-center gap-3 pt-2 border-t border-border/40">
         <Reward icon={Coins} value={tournament.prize_coins} color="text-yellow-400" />

@@ -8,13 +8,12 @@ import { updateTeamRanking, addTeamTitle, getTeamRank, addTeamRankingPoints } fr
 import { getSetScoreString } from '@/lib/matchEngine';
 import LiveMatch from '@/components/matches/LiveMatch';
 import { useToast } from '@/components/ui/use-toast';
+import { createQualifyingState, recordQualifyingResult, buildQualifyingBracketHistory } from '@/gameplay/worldTour/QualifyingManager.js';
 
 const TIER_STYLES = {
-  Major: { icon: Crown, color: 'text-amber-400' },
-  P1: { icon: Trophy, color: 'text-purple-400' },
-  P2: { icon: Trophy, color: 'text-cyan-400' },
-  Challenger: { icon: Shield, color: 'text-emerald-400' },
-  Regional: { icon: MapPin, color: 'text-slate-300' },
+  Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
+  Masters:{icon:Trophy,color:'text-purple-400'}, Platinum:{icon:Trophy,color:'text-cyan-400'},
+  Gold:{icon:Trophy,color:'text-yellow-400'}, Silver:{icon:Trophy,color:'text-slate-300'},
 };
 
 export default function TournamentModal({ tournament, profile: initialProfile, onClose, onProfileUpdate, onComplete }) {
@@ -25,22 +24,55 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   const [lastResult, setLastResult] = useState(null);
   const [tournamentRewards, setTournamentRewards] = useState(null);
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
+  const [calendarEvent, setCalendarEvent] = useState(null);
+  const [qualifyingState, setQualifyingState] = useState(null);
+  const [tournamentStage, setTournamentStage] = useState('main');
   const savedRef = useRef(false);
   const tournamentHistoryRef = useRef([]);
   const { toast } = useToast();
 
   const partner = getPartnerBot(profile);
-  const rounds = getTournamentRounds(tournament);
+  const mainRounds = getTournamentRounds(tournament);
+  const qualifyingRounds = (qualifyingState?.roundLabels || []).map((label, index) => ({ id: `qualifying-${index + 1}`, label }));
+  const rounds = tournamentStage === 'qualifying' ? qualifyingRounds : mainRounds;
   const currentRound = rounds[roundIdx];
-  const tierStyle = TIER_STYLES[tournament?.tier] || TIER_STYLES.P2;
+  const tierStyle = TIER_STYLES[tournament?.tier] || TIER_STYLES.Silver;
   const TierIcon = tierStyle.icon;
+
+  // Load the registration and restore a pending qualifying bracket.
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const events = await localGame.entities.CalendarEvent.filter({
+        profile_id: initialProfile.id,
+        related_id: tournament.id,
+        status: 'scheduled',
+      });
+      if (cancelled || !events?.length) return;
+      const event = events[0];
+      setCalendarEvent(event);
+      const metadata = event.metadata || {};
+      if (metadata.qualifying_required && metadata.qualifying_status !== 'qualified') {
+        const restored = metadata.qualifying_state || createQualifyingState({
+          tournament,
+          profile: initialProfile,
+          partner: getPartnerBot(initialProfile),
+          teamRank: metadata.team_rank || 0,
+        });
+        setQualifyingState(restored);
+        setTournamentStage('qualifying');
+        setRoundIdx(Number(restored.currentRound || 0));
+      }
+    })().catch(console.error);
+    return () => { cancelled = true; };
+  }, [initialProfile.id, tournament.id]);
 
   // Generate opponent when round changes
   useEffect(() => {
     const excludeIds = [partner?.id].filter(Boolean);
     const opp = generateTournamentOpponent(tournament, initialProfile, roundIdx, excludeIds, teamRank.rank);
     setOpponent(opp);
-  }, [roundIdx, teamRank.rank, tournament?.id]);
+  }, [roundIdx, teamRank.rank, tournament?.id, tournamentStage]);
 
   // Fetch team ranking seed
   useEffect(() => {
@@ -59,6 +91,61 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
     const won = matchState.winner === 'A';
 
     try {
+      if (tournamentStage === 'qualifying' && qualifyingState) {
+        const teamA = `${profile.sport_name} & ${partner?.name || 'Parceiro'}`;
+        const teamB = opponent.map((bot) => bot.name).join(' & ');
+        const nextQualifying = recordQualifyingResult(qualifyingState, {
+          won,
+          teamA,
+          teamB,
+          winner: won ? teamA : teamB,
+          score: getSetScoreString(matchState),
+        });
+        setQualifyingState(nextQualifying);
+        const nextMetadata = {
+          ...(calendarEvent?.metadata || {}),
+          qualifying_state: nextQualifying,
+          qualifying_status: nextQualifying.status,
+          qualifying_bracket_history: buildQualifyingBracketHistory(nextQualifying),
+        };
+        if (calendarEvent?.id) {
+          const eventUpdates = { metadata: nextMetadata };
+          if (nextQualifying.eliminated) {
+            eventUpdates.status = 'completed';
+            eventUpdates.requires_decision = false;
+          }
+          const savedEvent = await localGame.entities.CalendarEvent.update(calendarEvent.id, eventUpdates);
+          setCalendarEvent(savedEvent);
+        }
+        await localGame.entities.Match.create({
+          date: new Date().toISOString().slice(0, 10),
+          location: tournament.name,
+          tournament_name: tournament.name,
+          team_a: [profile.sport_name, partner?.name || 'Parceiro'],
+          team_b: opponent.map((bot) => bot.name),
+          score_a: matchState.setsA,
+          score_b: matchState.setsB,
+          winner: matchState.winner,
+          match_type: 'qualifying',
+          notes: `${currentRound?.label || 'Qualifying'} | ${getSetScoreString(matchState)}`,
+        });
+        setLastResult({ won, matchState });
+        if (nextQualifying.eliminated) {
+          const xp = (Number(profile.xp) || 0) + 20;
+          const updated = await localGame.entities.PlayerProfile.update(profile.id, { xp, level: levelForXp(xp) });
+          setProfile(updated);
+          onProfileUpdate?.(updated);
+          setTournamentRewards({ coins: 0, xp: 20, rankPoints: 0 });
+          setPhase('eliminated');
+          onComplete?.();
+        } else if (nextQualifying.promoted) {
+          setPhase('qualified');
+        } else {
+          setPhase('round_result');
+        }
+        return;
+      }
+
       await localGame.entities.Match.create({
         date: new Date().toISOString().slice(0, 10),
         location: tournament.name,
@@ -172,7 +259,25 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   }
 
   function nextRound() {
-    setRoundIdx(roundIdx + 1);
+    setRoundIdx(tournamentStage === 'qualifying' ? Number(qualifyingState?.currentRound || roundIdx + 1) : roundIdx + 1);
+    setLastResult(null);
+    savedRef.current = false;
+    setPhase('intro');
+  }
+
+  async function enterMainDraw() {
+    if (calendarEvent?.id) {
+      const metadata = {
+        ...(calendarEvent.metadata || {}),
+        qualifying_status: 'qualified',
+        qualifying_state: qualifyingState,
+        promoted_to_main_draw: true,
+      };
+      const savedEvent = await localGame.entities.CalendarEvent.update(calendarEvent.id, { metadata });
+      setCalendarEvent(savedEvent);
+    }
+    setTournamentStage('main');
+    setRoundIdx(0);
     setLastResult(null);
     savedRef.current = false;
     setPhase('intro');
@@ -200,6 +305,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
           {rounds.map((r, i) => (
             <div key={i} className={`flex-1 h-1.5 rounded-full transition-all ${i < roundIdx ? 'bg-primary' : i === roundIdx ? 'bg-primary/50' : 'bg-secondary'}`} />
           ))}
+        </div>
+
+        <div className="mb-3 flex items-center justify-between rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-3 py-2">
+          <span className="text-[10px] uppercase font-bold text-muted-foreground">Etapa atual</span>
+          <span className="text-xs font-black text-cyan-300">{tournamentStage === 'qualifying' ? 'Qualifying' : 'Chave principal'}</span>
         </div>
 
         {/* Intro */}
@@ -289,6 +399,19 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
               className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
             >
               {rounds[roundIdx + 1]?.label} <ChevronRight className="h-4 w-4" />
+            </button>
+          </div>
+        )}
+
+        {phase === 'qualified' && (
+          <div className="space-y-4 text-center">
+            <div className="glass rounded-2xl p-6 border border-cyan-500/40 bg-cyan-500/5">
+              <Shield className="h-14 w-14 text-cyan-400 mx-auto mb-2" />
+              <p className="text-2xl font-black text-cyan-300">CLASSIFICADO!</p>
+              <p className="text-sm text-muted-foreground mt-1">Sua dupla garantiu vaga na chave principal.</p>
+            </div>
+            <button onClick={enterMainDraw} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-2">
+              Entrar na chave principal <ChevronRight className="h-4 w-4" />
             </button>
           </div>
         )}

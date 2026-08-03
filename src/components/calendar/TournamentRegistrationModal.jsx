@@ -4,39 +4,45 @@ import { formatDate } from '@/lib/padel';
 import { daysBetween } from '@/lib/career';
 import { SURFACE_META, PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen } from '@/lib/calendarSystem';
 import { useToast } from '@/components/ui/use-toast';
+import { getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 
 const TIER_STYLES = {
-  Major: { badge: 'bg-amber-500/15 text-amber-300 border-amber-500/40', icon: Trophy, label: 'Major' },
-  P1: { badge: 'bg-purple-500/15 text-purple-300 border-purple-500/30', icon: Award, label: 'P1' },
-  P2: { badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30', icon: Award, label: 'P2' },
-  Challenger: { badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', icon: Shield, label: 'Challenger' },
-  Regional: { badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30', icon: MapPin, label: 'Regional' },
+  Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',icon:Trophy,label:'Legacy Crown'},
+  Elite:{badge:'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',icon:Trophy,label:'Legacy Elite'},
+  Masters:{badge:'bg-purple-500/15 text-purple-300 border-purple-500/30',icon:Award,label:'Legacy Masters'},
+  Platinum:{badge:'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',icon:Award,label:'Legacy Platinum'},
+  Gold:{badge:'bg-yellow-500/15 text-yellow-300 border-yellow-500/30',icon:Award,label:'Legacy Gold'},
+  Silver:{badge:'bg-slate-500/15 text-slate-300 border-slate-500/30',icon:Shield,label:'Legacy Silver'},
 };
 
 export default function TournamentRegistrationModal({ tournament, profile, teamRank = 0, onClose, onRegistered }) {
   const [registering, setRegistering] = useState(false);
+  const [conflicts, setConflicts] = useState([]);
   const { toast } = useToast();
 
-  const tierStyle = TIER_STYLES[tournament.tier] || TIER_STYLES.P2;
+  const tierStyle = TIER_STYLES[tournament.tier] || TIER_STYLES.Silver;
   const TierIcon = tierStyle.icon;
   const surface = SURFACE_META[tournament.surface] || SURFACE_META.vidro;
   const deadline = getRegistrationDeadline(tournament);
   const careerDate = profile?.career_date || '2026-01-01';
   const regOpen = isRegistrationOpen(tournament, careerDate);
   const validation = checkTournamentRequirements(profile, tournament, teamRank);
+  const entry = validation.entry;
   const daysUntilTournament = tournament.start_date ? daysBetween(careerDate, tournament.start_date) : 0;
   const daysUntilDeadline = deadline ? daysBetween(careerDate, deadline) : 0;
 
-  async function handleRegister() {
+  async function handleRegister(replaceConflicts = false) {
     if (!validation.canRegister) return;
     setRegistering(true);
     try {
       const { registerForTournament } = await import('@/lib/calendarSystem');
-      const result = await registerForTournament(profile, tournament, teamRank);
+      const result = await registerForTournament(profile, tournament, teamRank, { replaceConflicts });
       if (result.success) {
-        toast({ title: 'Inscrição confirmada!', description: `Você está inscrito para ${tournament.name}.` });
+        toast({ title: 'Inscrição confirmada!', description: `${getEntryPathLabel(result.entry?.path)} em ${tournament.name}.` });
         onRegistered?.(result.profile);
         onClose();
+      } else if (result.requiresConfirmation) {
+        setConflicts(result.conflicts || []);
       } else {
         toast({ title: 'Não foi possível inscrever', description: result.reasons.join(', '), variant: 'destructive' });
       }
@@ -84,17 +90,39 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
           <InfoCard icon={Trophy} label="Superfície" value={surface.label} sub={surface.desc} />
         </div>
 
+        <div className="glass rounded-xl p-3 mb-4 border border-primary/20 bg-primary/5">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Caminho de entrada</p>
+          <div className="flex items-center justify-between gap-3">
+            <p className={`text-sm font-black ${entry?.eligible ? 'text-primary' : 'text-red-400'}`}>{getEntryPathLabel(entry?.path)}</p>
+            <span className="text-[10px] text-muted-foreground text-right">{entry?.reason}</span>
+          </div>
+        </div>
+
         {/* Entry requirements */}
         <div className="glass rounded-xl p-3 mb-4">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Requisitos de Entrada</p>
           <div className="space-y-1.5">
             <RequirementRow label="Nível mínimo" value={tournament.min_level || 'Iniciante'} met={validation.canRegister || !tournament.min_level} />
-            <RequirementRow label="Ranking de dupla" value={tournament.min_ranking ? `Top ${tournament.min_ranking}` : 'Livre'} met={validation.canRegister || !tournament.min_ranking} />
+            <RequirementRow label="Entrada esportiva" value={getEntryPathLabel(entry?.path)} met={!!entry?.eligible} />
             <RequirementRow label="Taxa de inscrição" value={tournament.entry_fee ? `${tournament.entry_fee} moedas` : 'Gratuito'} met={(profile?.coins || 0) >= (tournament.entry_fee || 0)} />
             <RequirementRow label="Parceiro" value={profile?.partner_id ? 'Definido' : 'Necessário'} met={!!profile?.partner_id} />
             <RequirementRow label="Inscrições" value={regOpen ? (daysUntilDeadline >= 0 ? `Fecha em ${daysUntilDeadline}d` : 'Aberta') : 'Encerrada'} met={regOpen} />
           </div>
         </div>
+
+        <div className="glass rounded-xl p-3 mb-4 border border-cyan-500/20">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Caminho de entrada</p>
+          <p className="text-sm font-bold text-cyan-300 mt-1">{entryPathLabel(validation.entry?.path)}</p>
+          <p className="text-[11px] text-muted-foreground mt-0.5">{validation.entry?.reason}</p>
+        </div>
+
+        {conflicts.length > 0 && (
+          <div className="glass rounded-xl p-3 mb-4 border border-amber-500/30 bg-amber-500/5">
+            <p className="text-xs font-bold text-amber-300">Conflito de calendário</p>
+            <p className="text-[11px] text-muted-foreground mt-1">Para disputar este torneio, sua inscrição em <strong>{conflicts[0].title}</strong> será cancelada.</p>
+            <button onClick={() => handleRegister(true)} disabled={registering} className="w-full mt-3 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs disabled:opacity-40">Substituir inscrição e confirmar</button>
+          </div>
+        )}
 
         {/* Blocking reasons */}
         {!validation.canRegister && (
@@ -123,7 +151,7 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
 
         {/* Action button */}
         <button
-          onClick={handleRegister}
+          onClick={() => handleRegister(false)}
           disabled={!validation.canRegister || registering || !regOpen}
           className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
@@ -165,4 +193,16 @@ function RequirementRow({ label, value, met }) {
       </span>
     </div>
   );
+}
+function entryPathLabel(path) {
+  return ({
+    direct: 'Chave principal — entrada direta',
+    qualifying: 'Qualifying — precisa se classificar',
+    wildcard: 'Wildcard',
+    protected_ranking: 'Ranking protegido',
+    special_exempt: 'Special Exempt',
+    junior_invite: 'Convite juvenil',
+    national_invite: 'Convite nacional',
+    ineligible: 'Sem vaga disponível',
+  })[path] || 'Entrada a confirmar';
 }

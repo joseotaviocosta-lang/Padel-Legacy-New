@@ -8,11 +8,9 @@ import WorldFeed from '@/components/world/WorldFeed';
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
 const TIER_BADGE = {
-  Regional: 'bg-slate-500/15 text-slate-300',
-  Challenger: 'bg-emerald-500/15 text-emerald-300',
-  Major: 'bg-amber-500/15 text-amber-300',
-  P1: 'bg-purple-500/15 text-purple-300',
-  P2: 'bg-cyan-500/15 text-cyan-300',
+  Silver:'bg-slate-500/15 text-slate-300', Gold:'bg-yellow-500/15 text-yellow-300',
+  Platinum:'bg-cyan-500/15 text-cyan-300', Masters:'bg-purple-500/15 text-purple-300',
+  Elite:'bg-fuchsia-500/15 text-fuchsia-300', Crown:'bg-amber-500/15 text-amber-300',
 };
 
 export default function Journal() {
@@ -92,7 +90,7 @@ export default function Journal() {
                     </p>
                   </div>
                   {c.tier && (
-                    <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${TIER_BADGE[c.tier] || TIER_BADGE.P2}`}>
+                    <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${TIER_BADGE[c.tier] || TIER_BADGE.Silver}`}>
                       {c.tier}
                     </span>
                   )}

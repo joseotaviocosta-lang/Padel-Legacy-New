@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { addDays, CAREER_START_DATE } from '@/lib/career';
 import { levelForXp, LEVELS, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
+import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -28,6 +29,7 @@ export const SURFACE_META = {
 export const PHASE_LABELS = {
   inscricoes: 'Inscrições Abertas',
   chaveamento: 'Montando Chaveamento',
+  r64: 'Rodada de 64',
   r32: 'Rodada de 32',
   r16: 'Rodada de 16',
   quartas: 'Quartas de Final',
@@ -42,34 +44,22 @@ export function checkTournamentRequirements(profile, tournament, teamRank = 0) {
   const playerLevel = levelForXp(profile?.xp || 0);
   const playerLevelIdx = LEVELS.indexOf(playerLevel);
 
-  // Level check
   if (tournament.min_level) {
     const minIdx = LEVELS.indexOf(tournament.min_level);
-    if (playerLevelIdx < minIdx) {
-      reasons.push(`Nível mínimo: ${tournament.min_level}`);
-    }
+    if (playerLevelIdx < minIdx) reasons.push(`Nível mínimo: ${tournament.min_level}`);
   }
 
-  // Ranking check
-  if (tournament.min_ranking && tournament.min_ranking > 0) {
-    if (teamRank === 0 || teamRank > tournament.min_ranking) {
-      reasons.push(`Ranking de dupla mínimo: top ${tournament.min_ranking}`);
-    }
-  }
+  const entry = evaluateTournamentEntry(
+    tournament,
+    buildAthleteEntryContext(profile, teamRank, tournament),
+  );
+  if (!entry.eligible) reasons.push(entry.reason);
 
-  // Entry fee check
-  if ((tournament.entry_fee || 0) > 0) {
-    if ((profile?.coins || 0) < tournament.entry_fee) {
-      reasons.push(`Taxa de inscrição: ${tournament.entry_fee} moedas`);
-    }
+  if ((tournament.entry_fee || 0) > 0 && (profile?.coins || 0) < tournament.entry_fee) {
+    reasons.push(`Taxa de inscrição: ${tournament.entry_fee} moedas`);
   }
+  if (!profile?.partner_id) reasons.push('Você precisa de um parceiro de dupla');
 
-  // Partner check
-  if (!profile?.partner_id) {
-    reasons.push('Você precisa de um parceiro de dupla');
-  }
-
-  // Registration window check
   const careerDate = profile?.career_date || CAREER_START_DATE;
   if (!isRegistrationOpen(tournament, careerDate)) {
     const opening = getRegistrationOpeningDate(tournament);
@@ -77,18 +67,9 @@ export function checkTournamentRequirements(profile, tournament, teamRank = 0) {
     if (opening && careerDate < opening) reasons.push(`Inscrições abrem em ${opening}`);
     else if (deadline && careerDate > deadline) reasons.push('Inscrições encerradas');
   }
+  if (tournament.registration_deadline && careerDate > tournament.registration_deadline) reasons.push('Inscrições encerradas');
 
-  // Registration deadline check
-  if (tournament.registration_deadline) {
-    if (careerDate > tournament.registration_deadline) {
-      reasons.push('Inscrições encerradas');
-    }
-  }
-
-  return {
-    canRegister: reasons.length === 0,
-    reasons,
-  };
+  return { canRegister: reasons.length === 0, reasons, entry };
 }
 
 // ── Schedule conflict detection ───────────────────────────────────────────
@@ -101,11 +82,13 @@ export function hasScheduleConflict(events, startDate, endDate, excludeId = null
 }
 
 // ── Tournament registration ───────────────────────────────────────────────
-export async function registerForTournament(profile, tournament, teamRank = 0) {
+export async function registerForTournament(profile, tournament, teamRank = 0, options = {}) {
   const validation = checkTournamentRequirements(profile, tournament, teamRank);
   if (!validation.canRegister) {
     return { success: false, reasons: validation.reasons };
   }
+
+  const entry = validation.entry;
 
   // Check for existing registration
   const existing = await localGame.entities.CalendarEvent.filter({
@@ -123,13 +106,20 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
     status: 'scheduled',
   });
   const startDate = tournament.start_date;
-  const endDate = tournament.start_date; // Single-day for now
+  const endDate = tournament.end_date || tournament.start_date;
   const conflicts = hasScheduleConflict(allEvents, startDate, endDate);
-  if (conflicts.length > 0) {
+  if (conflicts.length > 0 && !options.replaceConflicts) {
     return {
       success: false,
-      reasons: [`Conflito de agenda: ${conflicts[0].title} em ${conflicts[0].start_date}`],
+      requiresConfirmation: true,
+      conflicts,
+      reasons: [`Você já possui ${conflicts[0].title} neste período.`],
     };
+  }
+  if (conflicts.length > 0 && options.replaceConflicts) {
+    for (const conflict of conflicts) {
+      await cancelRegistration(profile.id, conflict.id, conflict.related_id);
+    }
   }
 
   // Deduct entry fee if applicable
@@ -145,7 +135,7 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
     profile_id: profile.id,
     event_type: 'tournament',
     title: tournament.name,
-    description: `${tournament.tier} · ${tournament.location || '—'} · ${tournament.surface || 'vidro'}`,
+    description: `${tournament.tier_label || tournament.tier} · ${tournament.location || '—'} · ${getEntryPathLabel(entry.path)}`,
     start_date: startDate,
     end_date: endDate,
     related_id: tournament.id,
@@ -162,6 +152,16 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
       surface: tournament.surface,
       prize: tournament.prize_coins,
       rank_points: tournament.rank_points,
+      conflict_group: tournament.conflict_group,
+      prestige: tournament.prestige,
+      exposure: tournament.exposure,
+      entry_path: entry.path,
+      entry_label: getEntryPathLabel(entry.path),
+      entry_reason: entry.reason,
+      qualifying_required: entry.path === 'qualifying',
+      qualifying_status: entry.path === 'qualifying' ? 'pending' : 'not_required',
+      team_rank: Number(teamRank || 0),
+      replaced_event_ids: conflicts.map((event) => event.id),
     },
   });
 
@@ -176,7 +176,7 @@ export async function registerForTournament(profile, tournament, teamRank = 0) {
 
   await incrementMissionProgress(profile.id, 'join_tournament');
 
-  return { success: true, profile: updatedProfile };
+  return { success: true, profile: updatedProfile, entry: validation.entry, replacedConflicts: conflicts };
 }
 
 // ── Cancel registration ──────────────────────────────────────────────────
@@ -328,7 +328,7 @@ export function getRegistrationDeadline(tournament) {
 // ── Check if registration is still open ──────────────────────────────────
 export function getRegistrationOpeningDate(tournament) {
   if (!tournament?.start_date) return null;
-  return addDays(tournament.start_date, -45);
+  return tournament.registration_open_date || addDays(tournament.start_date, -45);
 }
 
 export function isRegistrationOpen(tournament, careerDate) {

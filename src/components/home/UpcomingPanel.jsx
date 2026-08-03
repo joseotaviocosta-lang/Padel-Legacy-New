@@ -5,11 +5,9 @@ import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { SPONSORS } from '@/lib/simulatedData';
 
 const TIER_STYLES = {
-  Regional: { bg: 'bg-slate-500/15', text: 'text-slate-300', label: 'Regional' },
-  Challenger: { bg: 'bg-emerald-500/15', text: 'text-emerald-300', label: 'Challenger' },
-  P2: { bg: 'bg-blue-500/15', text: 'text-blue-300', label: 'P2' },
-  P1: { bg: 'bg-purple-500/15', text: 'text-purple-300', label: 'P1' },
-  Major: { bg: 'bg-amber-500/15', text: 'text-amber-300', label: 'Major' },
+  Crown:{bg:'bg-amber-500/15',text:'text-amber-300',label:'Crown'}, Elite:{bg:'bg-fuchsia-500/15',text:'text-fuchsia-300',label:'Elite'},
+  Masters:{bg:'bg-purple-500/15',text:'text-purple-300',label:'Masters'}, Platinum:{bg:'bg-cyan-500/15',text:'text-cyan-300',label:'Platinum'},
+  Gold:{bg:'bg-yellow-500/15',text:'text-yellow-300',label:'Gold'}, Silver:{bg:'bg-slate-500/15',text:'text-slate-300',label:'Silver'},
 };
 
 export default function UpcomingPanel({ tournaments }) {
@@ -29,7 +27,7 @@ export default function UpcomingPanel({ tournaments }) {
         ) : (
           <div className="space-y-2">
             {upcoming.map((t, i) => {
-              const tier = TIER_STYLES[t.tier] || TIER_STYLES.P2;
+              const tier = TIER_STYLES[t.tier] || TIER_STYLES.Silver;
               const date = new Date(t.start_date + 'T00:00:00');
               return (
                 <div key={t.id || i} className="flex items-center gap-3 rounded-xl bg-secondary/30 p-2.5">

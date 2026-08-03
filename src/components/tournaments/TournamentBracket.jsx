@@ -2,11 +2,12 @@ import React, { useMemo, useState } from 'react';
 import { X, Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
 
 const TIER_STYLES = {
-  Regional: { badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30', label: 'Regional' },
-  Challenger: { badge: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30', label: 'Challenger' },
-  Major: { badge: 'bg-amber-500/15 text-amber-300 border-amber-500/40', label: 'Major' },
-  P1: { badge: 'bg-purple-500/15 text-purple-300 border-purple-500/30', label: 'P1' },
-  P2: { badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30', label: 'P2' },
+  Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
+  Elite:{badge:'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',label:'Legacy Elite'},
+  Masters:{badge:'bg-purple-500/15 text-purple-300 border-purple-500/30',label:'Legacy Masters'},
+  Platinum:{badge:'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',label:'Legacy Platinum'},
+  Gold:{badge:'bg-yellow-500/15 text-yellow-300 border-yellow-500/30',label:'Legacy Gold'},
+  Silver:{badge:'bg-slate-500/15 text-slate-300 border-slate-500/30',label:'Legacy Silver'},
 };
 
 const LEGACY_TEAMS = [
@@ -86,7 +87,7 @@ function normalizeHistory(tournament) {
 }
 
 export default function TournamentBracket({ tournament, onClose }) {
-  const tier = TIER_STYLES[tournament.tier] || TIER_STYLES.P2;
+  const tier = TIER_STYLES[tournament.tier] || TIER_STYLES.Silver;
   const history = useMemo(() => normalizeHistory(tournament), [tournament]);
   const [activeRound, setActiveRound] = useState(Math.max(0, history.length - 1));
   const champion = normalizeTeamName(tournament.champion);

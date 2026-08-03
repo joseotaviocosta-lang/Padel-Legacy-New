@@ -26,7 +26,7 @@ function requireOption(value, allowed, fieldName) {
   return normalized;
 }
 
-export function createDefaultCareerData({ saveName, playerName, courtSide, playStyle, careerType = 'normal' }) {
+export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName = 'Novo Atleta', courtSide = 'direita', playStyle = 'equilibrado', careerType = 'normal' }) {
   const normalizedSaveName = requireString(saveName, 'saveName');
   const normalizedPlayerName = requireString(playerName, 'playerName');
   const normalizedCourtSide = requireOption(courtSide, ALLOWED_COURT_SIDES, 'courtSide');
@@ -51,6 +51,9 @@ export function createDefaultCareerData({ saveName, playerName, courtSide, playS
       ranking_position: null,
       season: new Date().getFullYear(),
       archived: false,
+      onboarding_completed: false,
+      side_selected: false,
+      style_selected: false,
     },
     player: {},
     world: {},

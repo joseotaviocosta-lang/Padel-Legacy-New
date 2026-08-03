@@ -17,8 +17,8 @@ export default function TournamentStats({ profile, tournaments, matches }) {
   const circuitCards = [
     { icon: Trophy, label: 'Finalizados', value: circuit.totalFinished, color: 'text-primary' },
     { icon: Users, label: 'Audiência Total', value: circuit.totalAudience.toLocaleString('pt-BR'), color: 'text-purple-400' },
-    { icon: Crown, label: 'Majors', value: circuit.byTier.Major, color: 'text-amber-400' },
-    { icon: Star, label: 'P1', value: circuit.byTier.P1, color: 'text-purple-400' },
+    { icon: Crown, label: 'Crown', value: circuit.byTier.Crown || 0, color: 'text-amber-400' },
+    { icon: Star, label: 'Elite', value: circuit.byTier.Elite || 0, color: 'text-fuchsia-400' },
   ];
 
   return (

@@ -39,11 +39,12 @@ function hashString(str) {
 }
 
 function generateAudience(tier, hash) {
-  if (tier === 'Major') return 100000 + (hash % 400000);
-  if (tier === 'P1') return 20000 + (hash % 60000);
-  if (tier === 'P2') return 5000 + (hash % 15000);
-  if (tier === 'Challenger') return 1200 + (hash % 5000);
-  return 250 + (hash % 1200);
+  if (tier === 'Crown') return 180000 + (hash % 520000);
+  if (tier === 'Elite') return 70000 + (hash % 180000);
+  if (tier === 'Masters') return 25000 + (hash % 90000);
+  if (tier === 'Platinum') return 8000 + (hash % 32000);
+  if (tier === 'Gold') return 2500 + (hash % 11000);
+  return 600 + (hash % 3500);
 }
 
 export function enrichTournament(t) {
@@ -81,11 +82,12 @@ export function computeCircuitStats(tournaments) {
   const finished = (tournaments || []).filter(t => t.champion);
   const totalAudience = finished.reduce((sum, t) => sum + (t.audience || 0), 0);
   const byTier = {
-    Major: finished.filter(t => t.tier === 'Major').length,
-    P1: finished.filter(t => t.tier === 'P1').length,
-    P2: finished.filter(t => t.tier === 'P2').length,
-    Challenger: finished.filter(t => t.tier === 'Challenger').length,
-    Regional: finished.filter(t => t.tier === 'Regional').length,
+    Crown: finished.filter(t => t.tier === 'Crown').length,
+    Elite: finished.filter(t => t.tier === 'Elite').length,
+    Masters: finished.filter(t => t.tier === 'Masters').length,
+    Platinum: finished.filter(t => t.tier === 'Platinum').length,
+    Gold: finished.filter(t => t.tier === 'Gold').length,
+    Silver: finished.filter(t => t.tier === 'Silver').length,
   };
 
   const championCounts = {};

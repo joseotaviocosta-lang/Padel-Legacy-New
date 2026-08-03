@@ -116,7 +116,7 @@ export async function fetchAdminStats() {
   };
 
   // ── Tournaments ────────────────────────────────────────────────────────
-  const tierDist = countBy(tournaments, t => t.tier || 'P2');
+  const tierDist = countBy(tournaments, t => t.tier || 'Silver');
   const statusDist = countBy(tournaments, t => t.status || 'inscricoes');
   const totalPrize = sumBy(tournaments, t => t.prize_coins);
   const recentChampions = finishedTournaments

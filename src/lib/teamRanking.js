@@ -181,7 +181,7 @@ function simulateTournamentBracket(teams) {
 
 // Simulates champions for past tournaments the player didn't win.
 // Updates tournament records, team rankings, and feeds results to the journal.
-const TIER_MULT = { Regional: 0.2, Challenger: 0.55, P2: 1, P1: 2, Major: 3.5 };
+const TIER_MULT = { Silver:0.28, Gold:0.65, Platinum:1.15, Masters:2.1, Elite:3.2, Crown:5 };
 const CHAMP_RANK_POINTS = 200;
 const RUNNER_RANK_POINTS = 85;
 

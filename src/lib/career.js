@@ -9,6 +9,7 @@ import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 export const CAREER_START_DATE = '2026-01-01';
@@ -175,6 +176,7 @@ export async function advanceDay(profile) {
   if (totalDays > 0 && totalDays % 7 === 0) {
     simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e));
   }
+  processWorldTourDay(newCareerDate).catch(e => console.error('world tour day', e));
   generateWorldEvents(newCareerDate, 1 + Math.floor(Math.random() * 2)).catch(e => console.error('world events', e));
   expireMacroEvents(newCareerDate).catch(e => console.error('expire macro events', e));
   maybeGenerateMacroEvent(newCareerDate).catch(e => console.error('macro event', e));
@@ -223,100 +225,69 @@ export async function selectPosition(profile, position) {
 
 // Tournament helpers
 const TOURNAMENT_ROUNDS = {
-  Regional: [
+  Silver: [
+    { label: 'Oitavas de Final', short: 'R16' },
     { label: 'Quartas de Final', short: 'QF' },
     { label: 'Semifinal', short: 'SF' },
     { label: 'Final', short: 'F' },
   ],
-  Challenger: [
-    { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' },
-    { label: 'Semifinal', short: 'SF' },
-    { label: 'Final', short: 'F' },
+  Gold: [
+    { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
+    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
   ],
-  P2: [
-    { label: 'R32', short: 'R32' },
-    { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' },
-    { label: 'Semifinal', short: 'SF' },
-    { label: 'Final', short: 'F' },
+  Platinum: [
+    { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
+    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
   ],
-  P1: [
-    { label: 'R32', short: 'R32' },
-    { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' },
-    { label: 'Semifinal', short: 'SF' },
-    { label: 'Final', short: 'F' },
+  Masters: [
+    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
+    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
   ],
-  Major: [
-    { label: 'R32', short: 'R32' },
-    { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' },
-    { label: 'Semifinal', short: 'SF' },
-    { label: 'Final', short: 'F' },
+  Elite: [
+    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
+    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
+  ],
+  Crown: [
+    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
+    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
   ],
 };
 
 const TIER_DIFFICULTY_PATHS = {
-  Regional: ['iniciante', 'iniciante', 'amador'],
-  Challenger: ['iniciante', 'amador', 'amador', 'competitivo'],
-  P2: ['amador', 'competitivo', 'competitivo', 'avancado', 'avancado'],
-  P1: ['competitivo', 'avancado', 'avancado', 'elite', 'elite'],
-  Major: ['avancado', 'elite', 'elite', 'lenda', 'lenda'],
+  Silver: ['iniciante','iniciante','amador','competitivo'],
+  Gold: ['iniciante','amador','competitivo','competitivo','avancado'],
+  Platinum: ['amador','competitivo','competitivo','avancado','elite'],
+  Masters: ['competitivo','competitivo','avancado','avancado','elite','elite'],
+  Elite: ['avancado','avancado','elite','elite','lenda','lenda'],
+  Crown: ['avancado','elite','elite','lenda','lenda','lenda'],
 };
 
 const TIER_REWARD_TABLES = {
-  Regional: {
-    coins: [10, 30, 75, 180],
-    xp: [10, 25, 55, 120],
-    rankPoints: [2, 6, 15, 35],
-  },
-  Challenger: {
-    coins: [20, 55, 120, 260, 500],
-    xp: [15, 40, 90, 170, 300],
-    rankPoints: [5, 12, 30, 60, 110],
-  },
-  P2: {
-    coins: [40, 80, 160, 300, 550, 1000],
-    xp: [25, 50, 100, 200, 400, 800],
-    rankPoints: [10, 25, 50, 85, 130, 200],
-  },
-  P1: {
-    coins: [80, 160, 320, 600, 1100, 2000],
-    xp: [50, 100, 200, 400, 800, 1600],
-    rankPoints: [20, 50, 100, 170, 260, 400],
-  },
-  Major: {
-    coins: [140, 280, 560, 1050, 1925, 3500],
-    xp: [88, 175, 350, 700, 1400, 2800],
-    rankPoints: [35, 88, 175, 298, 455, 700],
-  },
+  Silver: { coins:[15,45,110,260,650], xp:[12,30,70,130,220], rankPoints:[2,6,15,30,55] },
+  Gold: { coins:[30,80,180,380,760,1300], xp:[20,50,110,220,340,420], rankPoints:[5,15,35,70,120,180] },
+  Platinum: { coins:[55,140,320,700,1450,2800], xp:[35,90,190,360,560,760], rankPoints:[10,30,70,140,240,350] },
+  Masters: { coins:[90,220,500,1050,2200,3900,6200], xp:[60,140,290,520,780,1020,1250], rankPoints:[20,50,110,220,380,600,900] },
+  Elite: { coins:[140,350,800,1650,3400,7000,12500], xp:[90,220,430,760,1200,1700,2200], rankPoints:[35,85,180,350,600,950,1400] },
+  Crown: { coins:[220,550,1250,2600,5400,11000,24000], xp:[140,340,650,1100,1800,2700,3600], rankPoints:[50,120,250,500,900,1500,2200] },
 };
 
 export function getTournamentRounds(tournament) {
-  return TOURNAMENT_ROUNDS[tournament?.tier] || TOURNAMENT_ROUNDS.P2;
+  return TOURNAMENT_ROUNDS[tournament?.tier] || TOURNAMENT_ROUNDS.Silver;
 }
 
 export function getTournamentDifficulty(tournament, profile, roundIdx = 0, teamRank = 0) {
-  const path = TIER_DIFFICULTY_PATHS[tournament?.tier] || TIER_DIFFICULTY_PATHS.P2;
+  const path = TIER_DIFFICULTY_PATHS[tournament?.tier] || TIER_DIFFICULTY_PATHS.Silver;
   const baseDifficulty = path[Math.min(roundIdx, path.length - 1)] || 'competitivo';
   let idx = BOT_DIFFICULTIES.findIndex((difficulty) => difficulty.id === baseDifficulty);
   if (idx < 0) idx = 0;
-
-  // Cabeças de chave ganham uma estreia mais favorável nos eventos grandes.
   if (roundIdx === 0 && teamRank > 0) {
-    if (teamRank <= 4) idx -= 2;
-    else if (teamRank <= 8) idx -= 1;
+    if (teamRank <= 8) idx -= 2;
+    else if (teamRank <= 24) idx -= 1;
   }
-
-  // O modificador do torneio continua disponível para eventos especiais.
   const tierConfig = getTournamentTierConfig(tournament?.tier);
   const explicitModifier = Number(tournament?.bot_difficulty_modifier);
-  const modifier = Number.isFinite(explicitModifier)
-    ? explicitModifier - tierConfig.difficultyModifier
-    : 0;
+  const modifier = Number.isFinite(explicitModifier) ? explicitModifier - tierConfig.difficultyModifier : 0;
   idx += modifier;
-
   return BOT_DIFFICULTIES[Math.max(0, Math.min(BOT_DIFFICULTIES.length - 1, idx))].id;
 }
 
@@ -326,18 +297,13 @@ export function generateTournamentOpponent(tournament, profile, roundIdx, exclud
 }
 
 export function getTournamentRewards(tier, roundsWon) {
-  const table = TIER_REWARD_TABLES[tier] || TIER_REWARD_TABLES.P2;
+  const table = TIER_REWARD_TABLES[tier] || TIER_REWARD_TABLES.Silver;
   const idx = Math.max(0, Math.min(table.coins.length - 1, roundsWon));
-  return {
-    coins: table.coins[idx],
-    xp: table.xp[idx],
-    rankPoints: table.rankPoints[idx],
-  };
+  return { coins:table.coins[idx], xp:table.xp[idx], rankPoints:table.rankPoints[idx] };
 }
 
 // ── Future tournament generation ──────────────────────────────────────────
-// Mantém ao menos 15 meses de calendário, usando um circuito anual com etapas
-// de desenvolvimento (Regional e Challenger) e eventos profissionais.
+// Mantém ao menos 15 meses de calendário, usando o Padel Legacy World Tour global, com eventos simultâneos e seis níveis.
 export async function ensureFutureTournaments(careerDate) {
   if (!careerDate) return { created: 0, repaired: 0 };
   try {
@@ -345,7 +311,12 @@ export async function ensureFutureTournaments(careerDate) {
     const horizon = new Date(careerD);
     horizon.setMonth(horizon.getMonth() + 15);
 
-    const tournaments = (await localGame.entities.Tournament.list('-start_date', 2000)) || [];
+    const tournaments = (await localGame.entities.Tournament.list('-start_date', 5000)) || [];
+    const legacyTiers = new Set(['Regional', 'Challenger', 'P2', 'P1', 'Major']);
+    for (const legacy of tournaments.filter((item) => legacyTiers.has(item?.tier) && item?.start_date >= careerDate && !item?.champion && !(item?.participants || []).length)) {
+      try { await localGame.entities.Tournament.delete(legacy.id); } catch (error) { console.warn('Torneio legado não removido', legacy.id, error); }
+    }
+    const activeTournaments = tournaments.filter((item) => !(legacyTiers.has(item?.tier) && item?.start_date >= careerDate && !item?.champion && !(item?.participants || []).length));
     const seasons = (await localGame.entities.Season.list('-start_date', 100)) || [];
     const seasonByYear = new Map();
     for (const season of seasons) {
@@ -354,13 +325,11 @@ export async function ensureFutureTournaments(careerDate) {
     }
 
     const existingByCodeAndYear = new Map();
-    const existingByDate = new Map();
-    for (const tournament of tournaments) {
+    for (const tournament of activeTournaments) {
       const year = Number(tournament?.year || String(tournament?.start_date || '').slice(0, 4));
       if (tournament?.circuit_code && year) {
         existingByCodeAndYear.set(`${year}:${tournament.circuit_code}`, tournament);
       }
-      if (tournament?.start_date) existingByDate.set(tournament.start_date, tournament);
     }
 
     let created = 0;
@@ -389,7 +358,7 @@ export async function ensureFutureTournaments(careerDate) {
         if (dateObj < careerD || dateObj > horizon) continue;
 
         const key = `${year}:${payload.circuit_code}`;
-        const existing = existingByCodeAndYear.get(key) || existingByDate.get(payload.start_date);
+        const existing = existingByCodeAndYear.get(key);
         try {
           if (existing?.id) {
             const { id: _generatedId, ...updatePayload } = payload;
@@ -404,7 +373,6 @@ export async function ensureFutureTournaments(careerDate) {
           } else {
             const createdTournament = await localGame.entities.Tournament.create(payload);
             existingByCodeAndYear.set(key, createdTournament || payload);
-            existingByDate.set(payload.start_date, createdTournament || payload);
             created += 1;
           }
         } catch (error) {
