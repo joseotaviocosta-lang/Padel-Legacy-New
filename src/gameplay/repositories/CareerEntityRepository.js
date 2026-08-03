@@ -107,6 +107,9 @@ export class CareerEntityRepository {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const timestamp = new Date().toISOString();
       const record = { ...clone(data), id: data.id || makeId(entityName.toLowerCase()), created_date: data.created_date || timestamp, updated_date: timestamp };
+      if (rows.some((row) => row?.id === record.id)) {
+        throw new Error(`${entityName} já existe com o id: ${record.id}`);
+      }
       rows.push(record);
       return record;
     }, { save: true });
@@ -152,19 +155,45 @@ export class CareerEntityRepository {
   }
 
   async bulkCreate(entityName, data = []) {
-    const created = [];
-    for (const item of data) created.push(await this.create(entityName, item));
-    return created;
+    if (!Array.isArray(data) || data.length === 0) return [];
+    return this.withCareer(async (career) => {
+      const rows = this.ensureCollection(entityName, career, { persist: true });
+      const knownIds = new Set(rows.map(row => row?.id).filter(Boolean));
+      const timestamp = new Date().toISOString();
+      const created = [];
+      for (const item of data) {
+        const record = { ...clone(item), id: item.id || makeId(entityName.toLowerCase()), created_date: item.created_date || timestamp, updated_date: timestamp };
+        if (knownIds.has(record.id)) throw new Error(`${entityName} já existe com o id: ${record.id}`);
+        knownIds.add(record.id);
+        rows.push(record);
+        created.push(record);
+      }
+      return created;
+    }, { save: true });
   }
 
   async bulkUpdate(entityName, updates = []) {
-    const result = [];
-    for (const item of updates) {
-      if (!item?.id) continue;
-      try { result.push(await this.update(entityName, item.id, item)); }
-      catch { result.push(await this.create(entityName, item)); }
-    }
-    return result;
+    if (!Array.isArray(updates) || updates.length === 0) return [];
+    return this.withCareer(async (career) => {
+      const rows = this.ensureCollection(entityName, career, { persist: true });
+      const indexById = new Map(rows.map((row, index) => [row?.id, index]).filter(([id]) => id));
+      const timestamp = new Date().toISOString();
+      const result = [];
+      for (const item of updates) {
+        if (!item?.id) continue;
+        const index = indexById.get(item.id);
+        if (index === undefined) {
+          const record = { ...clone(item), id: item.id, created_date: item.created_date || timestamp, updated_date: timestamp };
+          rows.push(record);
+          indexById.set(item.id, rows.length - 1);
+          result.push(record);
+        } else {
+          rows[index] = { ...rows[index], ...clone(item), id: item.id, updated_date: timestamp };
+          result.push(rows[index]);
+        }
+      }
+      return result;
+    }, { save: true });
   }
 
   async count(entityName, query = {}) {

@@ -1,4 +1,5 @@
 const DEFAULT_TIMEOUT_MS = 8000;
+const reportedFailures = new Set();
 
 export class ModuleLoadTimeoutError extends Error {
   constructor(label, timeoutMs) {
@@ -33,9 +34,16 @@ export async function safeModuleTask(task, {
 } = {}) {
   try {
     const value = await withModuleTimeout(task, { label, timeoutMs });
+    for (const key of reportedFailures) {
+      if (key.startsWith(`${label}:`)) reportedFailures.delete(key);
+    }
     return value ?? fallback;
   } catch (error) {
-    console.warn(`[ModuleLoader] ${label} indisponível; usando estado vazio.`, error);
+    const failureKey = `${label}:${error?.code || error?.name || 'ERROR'}:${error?.message || ''}`;
+    if (!reportedFailures.has(failureKey)) {
+      reportedFailures.add(failureKey);
+      console.warn(`[ModuleTask] falha ao executar ${label}; usando fallback temporário.`, error);
+    }
     onError?.(error);
     return typeof fallback === 'function' ? fallback(error) : fallback;
   }

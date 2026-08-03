@@ -4,6 +4,7 @@ import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY,
 import { processMonthlyFinances } from '@/lib/economy';
 import { processAllClubsMonthly } from '@/lib/clubs';
 import { generateWorldEvents } from '@/lib/world';
+import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 import { maybeGenerateMacroEvent, expireMacroEvents } from '@/lib/worldEvents';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
@@ -313,7 +314,7 @@ export function getTournamentRewards(tier, roundsWon) {
 
 // ── Future tournament generation ──────────────────────────────────────────
 // Mantém ao menos 15 meses de calendário, usando o Padel Legacy World Tour global, com eventos simultâneos e seis níveis.
-export async function ensureFutureTournaments(careerDate) {
+async function ensureFutureTournamentsInternal(careerDate) {
   if (!careerDate) return { created: 0, repaired: 0 };
   try {
     const careerD = new Date(`${careerDate}T00:00:00`);
@@ -343,6 +344,7 @@ export async function ensureFutureTournaments(careerDate) {
 
     let created = 0;
     let repaired = 0;
+    const pendingTournamentUpserts = [];
     for (let year = careerD.getFullYear(); year <= horizon.getFullYear(); year += 1) {
       let season = seasonByYear.get(year);
       if (!season) {
@@ -368,32 +370,40 @@ export async function ensureFutureTournaments(careerDate) {
 
         const key = `${year}:${payload.circuit_code}`;
         const existing = existingByCodeAndYear.get(key);
-        try {
-          if (existing?.id) {
+        if (existing?.id) {
             const { id: _generatedId, ...updatePayload } = payload;
-            await localGame.entities.Tournament.update(existing.id, {
+            pendingTournamentUpserts.push({
               ...updatePayload,
+              id: existing.id,
               champion: existing.status === 'finalizado' ? existing.champion : null,
               runner_up: existing.status === 'finalizado' ? existing.runner_up : null,
               completed_date: existing.status === 'finalizado' ? existing.completed_date : null,
               participants: existing.participants || [],
             });
             repaired += 1;
-          } else {
-            const createdTournament = await localGame.entities.Tournament.create(payload);
-            existingByCodeAndYear.set(key, createdTournament || payload);
+        } else {
+            pendingTournamentUpserts.push(payload);
+            existingByCodeAndYear.set(key, payload);
             created += 1;
-          }
-        } catch (error) {
-          console.warn('Não foi possível criar/corrigir torneio', payload.start_date, error);
         }
       }
+    }
+    if (pendingTournamentUpserts.length) {
+      await localGame.entities.Tournament.bulkUpdate(pendingTournamentUpserts);
     }
     return { created, repaired };
   } catch (error) {
     console.error('ensureFutureTournaments', error);
     return { created: 0, repaired: 0, error };
   }
+}
+
+const initializeFutureTournamentsOnce = createKeyedInitializer(ensureFutureTournamentsInternal);
+
+export function ensureFutureTournaments(careerDate) {
+  if (!careerDate) return Promise.resolve({ created: 0, repaired: 0 });
+  const key = String(careerDate).slice(0, 10);
+  return initializeFutureTournamentsOnce(key, careerDate);
 }
 
 function cleanTournamentName(name) {

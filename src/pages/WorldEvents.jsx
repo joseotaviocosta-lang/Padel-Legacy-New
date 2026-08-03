@@ -6,7 +6,7 @@ import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } fro
 import WorldEventCard from '@/components/world/WorldEventCard';
 import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
 import { ensureMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
-import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
+import { loadModuleTasks } from '@/lib/moduleLoading';
 
 const ALL_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -34,26 +34,32 @@ export default function WorldEventsPage() {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [generating, setGenerating] = useState(false);
+  const [initializationError, setInitializationError] = useState('');
   const careerDate = profile?.career_date || new Date().toISOString().slice(0, 10);
 
-  useEffect(() => {
-    (async () => {
+  useEffect(() => { load(); }, []);
+
+  async function load() {
+      setLoading(true);
+      setInitializationError('');
       try {
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
         const date = p?.career_date || new Date().toISOString().slice(0, 10);
-        await safeModuleTask(() => ensureWorldEvents(date, 15), { label: 'inicialização de eventos mundiais', fallback: null });
+        await ensureWorldEvents(date, 15);
         const { list, macros } = await loadModuleTasks({
           list: { task: () => getRecentWorldEvents(50), fallback: [], label: 'eventos mundiais recentes' },
           macros: { task: () => ensureMacroEvents(date, 2), fallback: [], label: 'macroeventos' },
         });
         setEvents(list || []);
         setMacroEvents(macros || []);
-      } catch (e) { console.error(e); }
+      } catch (e) {
+        console.error('[WorldEvents] falha na inicialização', e);
+        setInitializationError(e.message || 'Não foi possível inicializar os eventos mundiais.');
+      }
       finally { setLoading(false); }
-    })();
-  }, []);
+  }
 
   async function handleRefresh() {
     setGenerating(true);
@@ -87,6 +93,13 @@ export default function WorldEventsPage() {
           <RefreshCw className={`h-3.5 w-3.5 ${generating ? 'animate-spin' : ''}`} /> Atualizar
         </button>
       </PageHeader>
+
+      {initializationError && (
+        <GlassCard className="border-red-500/30 bg-red-500/5 flex items-center gap-3">
+          <span className="flex-1 text-sm text-red-200">{initializationError}</span>
+          <button type="button" onClick={load} className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Tentar novamente</button>
+        </GlassCard>
+      )}
 
       {/* Active macro events with combined effects */}
       {activeMacros.length > 0 && (

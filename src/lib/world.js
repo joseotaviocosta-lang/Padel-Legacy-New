@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 
 // ── Name pools ────────────────────────────────────────────────────────────
 
@@ -270,18 +271,20 @@ export async function generateWorldEvents(date, count = 3) {
   return await localGame.entities.WorldEvent.bulkCreate(events);
 }
 
-export async function ensureWorldEvents(date, minCount = 15) {
-  try {
+async function initializeWorldEvents(date, minCount) {
     const existing = await localGame.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
     if (existing && existing.length >= minCount) return existing;
 
     const toGenerate = Math.max(1, minCount - (existing?.length || 0));
     await generateWorldEvents(date, toGenerate);
     return await localGame.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
-  } catch (e) {
-    console.error('ensureWorldEvents', e);
-    return [];
-  }
+}
+
+const initializeWorldEventsOnce = createKeyedInitializer(initializeWorldEvents);
+
+export function ensureWorldEvents(date, minCount = 15) {
+  const key = `${date}:${minCount}`;
+  return initializeWorldEventsOnce(key, date, minCount);
 }
 
 export async function getRecentWorldEvents(limit = 30) {

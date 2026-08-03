@@ -1,5 +1,6 @@
 import { CAREER_INDEX_SCHEMA_VERSION, CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
 import { normalizeCharacterCustomization } from '../lib/characterCustomization.js';
+import { repairTournamentCollection } from '../lib/tournamentIntegrity.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -90,6 +91,31 @@ export function migrateCareer(career) {
     }
     data.save_schema_version = 6;
     version = 6;
+  }
+  if (version < 7) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    const repair = repairTournamentCollection(data.entities.Tournament || []);
+    data.entities.Tournament = repair.tournaments;
+
+    if (repair.remaps.length > 0) {
+      for (const rows of Object.values(data.entities)) {
+        if (!Array.isArray(rows)) continue;
+        for (const row of rows) {
+          if (!row || typeof row !== 'object') continue;
+          for (const remap of repair.remaps) {
+            const sameNamedEdition = !remap.tournamentName || row.tournament_name === remap.tournamentName;
+            for (const key of ['tournament_id', 'tournamentId', 'related_tournament_id']) {
+              if (row[key] === remap.oldId && sameNamedEdition) row[key] = remap.newId;
+            }
+            if (row.related_id === remap.oldId && sameNamedEdition && ['tournament', 'torneio'].includes(row.event_type)) {
+              row.related_id = remap.newId;
+            }
+          }
+        }
+      }
+    }
+    data.save_schema_version = 7;
+    version = 7;
   }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

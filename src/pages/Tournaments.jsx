@@ -19,6 +19,7 @@ import { getPartnerBot } from '@/lib/career';
 import { isRegistrationOpen } from '@/lib/calendarSystem';
 import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
+import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
 
 const TIER_CONFIG = {
   Crown:{label:'Legacy Crown',badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',card:'border-amber-500/25 hover:border-amber-500/50',glow:'shadow-[0_0_24px_rgba(245,158,11,0.12)]',icon:Crown,diffLabel:'Lendário',diffColor:'text-red-400'},
@@ -35,6 +36,17 @@ const FILTERS = [
   {id:'all',label:'Todos'}, {id:'Crown',label:'Crown'}, {id:'Elite',label:'Elite'},
   {id:'Masters',label:'Masters'}, {id:'Platinum',label:'Platinum'}, {id:'Gold',label:'Gold'}, {id:'Silver',label:'Silver'},
 ];
+
+function prepareTournamentList(items) {
+  const enriched = (Array.isArray(items) ? items : []).filter(Boolean).map(enrichTournament);
+  const errors = validateTournamentIntegrity(enriched);
+  const identityErrors = errors.filter(error => error.type === 'missing-id' || error.type === 'duplicate-id');
+  if (identityErrors.length > 0) {
+    throw new Error(`Integridade dos torneios inválida: ${identityErrors.map(error => error.id || error.type).join(', ')}`);
+  }
+  if (import.meta.env.DEV && errors.length > 0) console.warn('[Tournaments] inconsistências não fatais', errors);
+  return enriched;
+}
 
 export default function Tournaments() {
   const [tournaments, setTournaments] = useState([]);
@@ -69,7 +81,7 @@ export default function Tournaments() {
 
         // Fetch all tournaments — the calendar spans multiple seasons now
         const list = await localGame.entities.Tournament.list('-start_date', 200);
-        setTournaments((list || []).map(enrichTournament));
+        setTournaments(prepareTournamentList(list));
 
         // Determine the current season based on career year
         const seasons = await localGame.entities.Season.list('-start_date', 50);
@@ -121,7 +133,7 @@ export default function Tournaments() {
       localGame.entities.Tournament.list('-start_date', 200),
     ]);
     setMatches(matches || []);
-    setTournaments((tournamentList || []).map(enrichTournament));
+    setTournaments(prepareTournamentList(tournamentList));
     const played = new Set(
       (matches || [])
         .filter(m => m.tournament_name && m.tournament_name !== 'Partida Oficial' && m.team_a?.[0] === p?.sport_name)

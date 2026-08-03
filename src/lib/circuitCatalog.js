@@ -1,3 +1,5 @@
+import { createTournamentEditionId } from './tournamentIntegrity.js';
+
 export const WORLD_TOUR_VERSION = '0.5.0-alpha.1';
 export const WORLD_PLAYER_CAPACITY = 5000;
 
@@ -181,7 +183,7 @@ export function buildSeasonTournaments(year, seasonId = null) {
       const estimatedField = config.mainDrawSize + config.qualifyingSize;
 
       events.push({
-        id: `tournament-${year}-${code.toLowerCase()}`,
+        id: createTournamentEditionId({ year, circuitCode: code }),
         circuit_code: code,
         name: `${city.city} ${brand}`,
         description: `${config.description} Evento global realizado em ${city.city}, ${city.country}.`,

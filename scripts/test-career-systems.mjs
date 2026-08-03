@@ -17,6 +17,9 @@ try {
   const { reconcileJournalistCatalog } = await server.ssrLoadModule('/src/lib/pressData.js');
   const { migrateCareer } = await server.ssrLoadModule('/src/careers/CareerMigration.js');
   const { CareerEntityRepository } = await server.ssrLoadModule('/src/gameplay/repositories/CareerEntityRepository.js');
+  const { buildSeasonTournaments } = await server.ssrLoadModule('/src/lib/circuitCatalog.js');
+  const { createTournamentEditionId, repairTournamentCollection, validateTournamentIntegrity } = await server.ssrLoadModule('/src/lib/tournamentIntegrity.js');
+  const { createKeyedInitializer } = await server.ssrLoadModule('/src/lib/keyedInitialization.js');
   const profile = { id: 'career-a-player', sport_name: 'Teste', career_date: '2026-01-01', coins: 999999, level: 'Lenda', xp: 999999, fan_appeal: 100, tournaments_won: 20 };
   assert(getPendingInterviews(profile, [], {}).length === 0, 'Carreira nova gerou entrevista.');
   const win = { id: 'win-1', profile_id: profile.id, date: '2026-01-02', tournament_name: 'Teste Open', team_a: ['Teste', 'Dupla'], team_b: ['Rival A', 'Rival B'], winner: 'A' };
@@ -77,7 +80,7 @@ try {
   };
   const firstMigration = migrateCareer(legacyCareer);
   const secondMigration = migrateCareer(firstMigration.data);
-  assert(firstMigration.data.save_schema_version === 6 && firstMigration.data.metadata.pressJournalistId === 'j12', 'Migration não preservou referência canônica recuperável j12.');
+  assert(firstMigration.data.save_schema_version === 7 && firstMigration.data.metadata.pressJournalistId === 'j12', 'Migration não preservou referência canônica recuperável j12.');
   assert(secondMigration.migrated === false, 'Migration de jornalistas não é idempotente.');
   assert(firstMigration.data.entities.Other[0].id === 'keep' && firstMigration.data.metadata.preserved === 'sim', 'Migration alterou dados não relacionados.');
   assert(reconcileJournalistCatalog(firstMigration.data.entities.PressJournalist, profile.id).missing.some(item => item.id === 'j12'), 'Save parcial não recupera o jornalista j12.');
@@ -98,6 +101,50 @@ try {
   await repository.update('CharacterCustomization', savedAppearance.id, { ...withSkin, id: savedAppearance.id });
   const restoredRows = await repository.filter('CharacterCustomization', { id: savedAppearance.id });
   assert(normalizeCharacterCustomization(restoredRows[0], profile.id).hair_style === 'preso', 'Aparência não persistiu após salvar e restaurar.');
+
+  const schedule2027 = buildSeasonTournaments(2027, 'season-2027');
+  assert(validateTournamentIntegrity(schedule2027).length === 0, 'Calendário anual gerou torneios inválidos ou IDs duplicados.');
+  assert(JSON.stringify(schedule2027.map(item => item.id)) === JSON.stringify(buildSeasonTournaments(2027, 'season-2027').map(item => item.id)), 'IDs de torneio não são determinísticos.');
+  assert(
+    createTournamentEditionId({ year: 2027, cityCode: 'NAI', tier: 'Silver', week: 2, slot: 1 })
+      !== createTournamentEditionId({ year: 2027, cityCode: 'NAI', tier: 'Silver', week: 2, slot: 2 }),
+    'Dois eventos legítimos na mesma cidade/semana receberam o mesmo ID.',
+  );
+  const duplicateTournament = { ...schedule2027[0], champion: 'Dupla Campeã', status: 'finalizado', results: [{ id: 'result-1', winner: 'Dupla Campeã' }] };
+  const tournamentRepair = repairTournamentCollection([schedule2027[0], duplicateTournament]);
+  assert(tournamentRepair.tournaments.length === 1 && tournamentRepair.mergedCount === 1, 'Duplicata equivalente não foi combinada.');
+  assert(tournamentRepair.tournaments[0].champion === 'Dupla Campeã' && tournamentRepair.tournaments[0].results[0].id === 'result-1', 'Reparo apagou resultado concluído.');
+
+  let initializerCalls = 0;
+  const initializeOnce = createKeyedInitializer(async value => { initializerCalls += 1; await Promise.resolve(); return value; });
+  const concurrentA = initializeOnce('career-a:2027', 'ok');
+  const concurrentB = initializeOnce('career-a:2027', 'ok');
+  assert(concurrentA === concurrentB && (await concurrentA) === 'ok' && initializerCalls === 1, 'Inicialização concorrente não compartilhou a mesma Promise.');
+  let shouldFail = true;
+  const recoverableInitializer = createKeyedInitializer(async () => { if (shouldFail) throw new Error('falha esperada'); return 'recuperado'; });
+  try { await recoverableInitializer('retry'); } catch { /* falha esperada */ }
+  shouldFail = false;
+  assert(await recoverableInitializer('retry') === 'recuperado', 'Inicializador não liberou nova tentativa após falha.');
+
+  let transactionCount = 0;
+  const bulkCareer = { entities: {} };
+  const bulkStore = {
+    async ensureActiveCareer() { return bulkCareer; },
+    async mutateActiveCareer(mutator) { transactionCount += 1; return { result: await mutator(bulkCareer), career: bulkCareer }; },
+  };
+  const bulkRepository = new CareerEntityRepository(bulkStore);
+  await bulkRepository.bulkCreate('BulkTestEntity', [{ id: 'event-a' }, { id: 'event-b' }, { id: 'event-c' }]);
+  await bulkRepository.bulkUpdate('BulkTestEntity', [{ id: 'event-a', title: 'Atualizado' }, { id: 'event-d', title: 'Novo' }]);
+  assert(transactionCount === 2 && bulkCareer.entities.BulkTestEntity.length === 4, 'Operações em lote ainda gravam uma transação por item.');
+
+  const tournamentLegacyCareer = {
+    save_schema_version: 6, metadata: {}, player: {}, world: {},
+    entities: { Tournament: [schedule2027[0], duplicateTournament], Match: [{ id: 'match-keep', tournament_id: schedule2027[0].id, score: '6-4' }] },
+  };
+  const tournamentMigration = migrateCareer(tournamentLegacyCareer);
+  const tournamentMigrationAgain = migrateCareer(tournamentMigration.data);
+  assert(tournamentMigration.data.entities.Tournament.length === 1 && tournamentMigration.data.entities.Tournament[0].champion === 'Dupla Campeã', 'Migration não reparou torneios duplicados preservando resultado.');
+  assert(tournamentMigration.data.entities.Match[0].score === '6-4' && tournamentMigrationAgain.migrated === false, 'Migration de torneios alterou referências ou não é idempotente.');
 
   const missionsPage = await server.ssrLoadModule('/src/pages/Missions.jsx');
   assert(typeof missionsPage.default === 'function', 'Página Missions não possui export válido.');

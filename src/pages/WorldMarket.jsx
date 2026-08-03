@@ -5,7 +5,7 @@ import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { evolveWorldMarket, getWorldMarketSnapshot, getPlayerScoutingReports, getScoutingLevels, scoutAthlete, toggleShortlist, getNegotiationPreview, submitPartnerOffer } from '@/game-core';
 import { useToast } from '@/components/ui/use-toast';
-import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
+import { safeModuleTask } from '@/lib/moduleLoading';
 
 const STATUS_LABELS = { livre: 'Livre', contratado: 'Contratado', lesionado: 'Lesionado', aposentado: 'Aposentado' };
 const RECOMMENDATION_LABELS = { prioridade: 'Prioridade', acompanhar: 'Acompanhar', cautela: 'Cautela' };
@@ -30,25 +30,29 @@ export default function WorldMarket() {
   const [selected, setSelected] = useState(null);
   const [negotiating, setNegotiating] = useState(false);
   const [offerTerms, setOfferTerms] = useState({ durationDays: 60, partnerPrizeShare: 50, monthlySalary: 0, signingBonus: 0 });
+  const [loadError, setLoadError] = useState('');
   const { toast } = useToast();
   const levels = getScoutingLevels();
 
   useEffect(() => { load(); }, []);
 
   async function load() {
+    setLoading(true);
+    setLoadError('');
     try {
       const user = await localGame.auth.me();
       const currentProfile = await ensureMyProfile(user);
       setProfile(currentProfile);
       const date = currentProfile?.career_date || new Date().toISOString().slice(0, 10);
-      const { market, scoutingReports } = await loadModuleTasks({
-        market: { task: () => getWorldMarketSnapshot(date), fallback: { athletes: [], active: [], processed: false }, label: 'mercado mundial' },
-        scoutingReports: { task: () => getPlayerScoutingReports(currentProfile?.id), fallback: [], label: 'relatórios de scouting' },
-      }, { timeoutMs: 10000 });
+      const market = await getWorldMarketSnapshot(date);
+      const scoutingReports = await safeModuleTask(() => getPlayerScoutingReports(currentProfile?.id), {
+        label: 'relatórios de scouting', fallback: [],
+      });
       setSnapshot(market || { athletes: [], active: [], processed: false });
       setReports(scoutingReports || []);
     } catch (error) {
       console.error(error);
+      setLoadError(error.message || 'Não foi possível carregar o mercado mundial.');
       toast({ title: 'Erro no mercado', description: error.message || 'Não foi possível carregar o mercado mundial.', variant: 'destructive' });
     } finally { setLoading(false); }
   }
@@ -145,6 +149,13 @@ export default function WorldMarket() {
   }, [snapshot, search, status, reportMap]);
 
   if (loading) return <LoadingScreen />;
+  if (loadError && !snapshot) return (
+    <div role="alert" className="m-6 rounded-2xl border border-red-500/30 bg-red-500/10 p-5 flex items-center gap-3">
+      <ShieldAlert className="h-5 w-5 text-red-400" />
+      <span className="flex-1 text-sm">{loadError}</span>
+      <button type="button" onClick={load} className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">Tentar novamente</button>
+    </div>
+  );
   const selectedReport = selected ? reportMap[selected.id] : null;
   const negotiationPreview = selected ? getNegotiationPreview(profile, selected, selectedReport, offerTerms) : null;
 

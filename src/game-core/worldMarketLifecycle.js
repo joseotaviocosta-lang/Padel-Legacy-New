@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating } from '@/lib/padel';
+import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Chile', 'Uruguai'];
 const FIRST_NAMES = ['Lucas', 'Mateo', 'Thiago', 'Nicolás', 'Martín', 'Alejandro', 'João', 'Bruno', 'Enzo', 'Tomás'];
@@ -69,10 +70,11 @@ async function createWorldEvent(data) {
   }
 }
 
-export async function ensureWorldMarket(careerDate) {
+async function initializeWorldMarket(careerDate) {
   let athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   if (!athletes || athletes.length === 0) {
     const bots = getAllBotsAsProfiles();
+    const records = [];
     for (let index = 0; index < bots.length; index += 1) {
       const bot = bots[index];
       const normalized = normalizeAthlete({
@@ -87,8 +89,9 @@ export async function ensureWorldMarket(careerDate) {
         fatigue: 0,
         peak_age: seededValue(`${bot.id}:peak`, 26, 30),
       }, index, careerDate);
-      await localGame.entities.AthleteProfile.create(normalized);
+      records.push(normalized);
     }
+    if (records.length) await localGame.entities.AthleteProfile.bulkCreate(records);
     athletes = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
   }
 
@@ -104,11 +107,18 @@ export async function ensureWorldMarket(careerDate) {
     const normalized = normalizeAthlete(athlete, index, careerDate);
     const needsUpdate = !athlete.market_value || !athlete.expected_salary || !athlete.world_rank || !athlete.market_status;
     if (needsUpdate) {
-      updates.push(localGame.entities.AthleteProfile.update(athlete.id, normalized));
+      updates.push({ ...normalized, id: athlete.id });
     }
   }
-  if (updates.length) await Promise.all(updates);
+  if (updates.length) await localGame.entities.AthleteProfile.bulkUpdate(updates);
   return localGame.entities.AthleteProfile.list('-market_value', 200);
+}
+
+const initializeWorldMarketOnce = createKeyedInitializer(initializeWorldMarket);
+
+export function ensureWorldMarket(careerDate) {
+  const key = monthKey(careerDate);
+  return initializeWorldMarketOnce(key, careerDate);
 }
 
 function createProspect(careerDate, sequence) {
@@ -153,6 +163,7 @@ export async function evolveWorldMarket(careerDate) {
 
   const reports = [];
   const rankingCandidates = [];
+  const marketUpdates = [];
   for (const athlete of athletes) {
     if (athlete.career_status === 'aposentado') continue;
     const months = (Number(athlete.market_months_elapsed) || 0) + 1;
@@ -188,7 +199,7 @@ export async function evolveWorldMarket(careerDate) {
       market_months_elapsed: months,
       last_updated_date: careerDate,
     };
-    await localGame.entities.AthleteProfile.update(athlete.id, updated);
+    marketUpdates.push({ ...updated, id: athlete.id });
     rankingCandidates.push({ ...athlete, ...updated });
     reports.push({ id: athlete.id, name: athlete.name, oldValue, value, trend, retired });
 
@@ -207,7 +218,12 @@ export async function evolveWorldMarket(careerDate) {
   }
 
   rankingCandidates.sort((a, b) => ((b.overall_rating || 0) * 2 + (b.current_form || 0)) - ((a.overall_rating || 0) * 2 + (a.current_form || 0)));
-  await Promise.all(rankingCandidates.map((athlete, index) => localGame.entities.AthleteProfile.update(athlete.id, { world_rank: index + 1 })));
+  const rankById = new Map(rankingCandidates.map((athlete, index) => [athlete.id, index + 1]));
+  if (marketUpdates.length) {
+    await localGame.entities.AthleteProfile.bulkUpdate(
+      marketUpdates.map(update => ({ ...update, world_rank: rankById.get(update.id) || update.world_rank })),
+    );
+  }
 
   const prospects = [];
   const prospectCount = seededValue(`${targetMonth}:prospects`, 1, 3);
