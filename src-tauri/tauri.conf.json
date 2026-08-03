@@ -4,8 +4,8 @@
   "version": "0.2.0",
   "identifier": "com.padellegacy.game",
   "build": {
-    "beforeDevCommand": "npm run dev:local",
-    "devUrl": "http://localhost:5174",
+    "beforeDevCommand": "npm run dev:tauri",
+    "devUrl": "http://127.0.0.1:5174",
     "beforeBuildCommand": "npm run build -- --mode desktop",
     "frontendDist": "../dist"
   },
