@@ -1,4 +1,4 @@
-import { ATTRIBUTE_KEYS } from './padel.js';
+const ATTRIBUTE_KEYS = ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense', 'agility', 'strategy', 'emotional_control'];
 
 export const TRAINING_GROUPS = {
   court: { id: 'court', label: 'Treino de Quadra', category: 'technical', description: 'Fundamentos técnicos aplicados à construção do ponto.' },

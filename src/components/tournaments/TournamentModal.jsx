@@ -11,6 +11,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { createQualifyingState, recordQualifyingResult, buildQualifyingBracketHistory } from '@/gameplay/worldTour/QualifyingManager.js';
 import { createMainDrawState, recordMainDrawResult, buildMainDrawBracketHistory } from '@/gameplay/worldTour/MainDrawManager.js';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
+import { isPlayerRegisteredForTournament } from '@/lib/tournamentRegistration.js';
 
 const TIER_STYLES = {
   Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
@@ -31,6 +32,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   const [tournamentStage, setTournamentStage] = useState('main');
   const [mainDrawState, setMainDrawState] = useState(null);
   const [physicalReport, setPhysicalReport] = useState(null);
+  const [registration, setRegistration] = useState(null);
+  const [registrationChecked, setRegistrationChecked] = useState(false);
   const savedRef = useRef(false);
   const tournamentHistoryRef = useRef([]);
   const { toast } = useToast();
@@ -47,6 +50,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   useEffect(() => {
     let cancelled = false;
     (async () => {
+      const confirmed = await isPlayerRegisteredForTournament(initialProfile.id, tournament.id);
+      if (cancelled) return;
+      setRegistration(confirmed);
+      setRegistrationChecked(true);
+      if (!confirmed) return;
       const events = await localGame.entities.CalendarEvent.filter({
         profile_id: initialProfile.id,
         related_id: tournament.id,
@@ -424,6 +432,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
 
             <button
               onClick={() => {
+                if (!registrationChecked || !registration) {
+                  toast({ title: 'Inscrição necessária', description: 'Sua dupla não possui uma inscrição confirmada neste torneio.', variant: 'destructive' });
+                  return;
+                }
                 if (isInjured(profile)) {
                   toast({ title: 'Lesionado', description: `Recupera em ${injuryRecoveryDays(profile)} dias.` });
                   return;
@@ -435,9 +447,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
                 savedRef.current = false;
                 setPhase('match');
               }}
-              className="w-full py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+              disabled={!registrationChecked || !registration}
+              className="w-full py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
             >
-              <Play className="h-4 w-4" /> Jogar {currentRound?.label}
+              <Play className="h-4 w-4" /> {!registrationChecked ? 'Verificando inscrição...' : registration ? `Jogar ${currentRound?.label}` : 'Dupla não inscrita'}
             </button>
             {(profile.energy || 0) < 35 && <button onClick={abandonTournament} className="w-full py-2 rounded-xl border border-red-500/30 text-red-300 text-xs font-bold hover:bg-red-500/10">Abandonar torneio e iniciar recuperação</button>}
           </div>

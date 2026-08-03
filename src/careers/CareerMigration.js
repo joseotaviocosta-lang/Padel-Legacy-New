@@ -218,6 +218,49 @@ export function migrateCareer(career) {
     data.save_schema_version = 12;
     version = 12;
   }
+  if (version < 13) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    const tournaments = new Map((Array.isArray(data.entities.Tournament) ? data.entities.Tournament : []).map(item => [item.id, item]));
+    const existing = Array.isArray(data.entities.TournamentRegistration) ? data.entities.TournamentRegistration : [];
+    const legacyEvents = (Array.isArray(data.entities.CalendarEvent) ? data.entities.CalendarEvent : []).filter(event => event?.event_type === 'tournament' && event?.related_id);
+    const candidates = [...existing, ...legacyEvents.map(event => ({
+      id: `registration-${data.player?.id || event.profile_id}-${event.related_id}`,
+      profile_id: event.profile_id || data.player?.id,
+      player_id: event.profile_id || data.player?.id,
+      partner_id: event.metadata?.partner_id || data.player?.partner_id || null,
+      tournament_id: event.related_id,
+      tournament_name: event.related_name || event.title,
+      status: event.status === 'cancelled' ? 'cancelled' : event.status === 'completed' ? 'completed' : 'confirmed',
+      registered_at: event.created_date || data.player?.career_date,
+      entry_fee_paid: Number(event.coin_cost) || 0,
+    }))];
+    const unique = new Map();
+    for (const registration of candidates) {
+      if (!registration?.profile_id || !registration?.tournament_id) continue;
+      const key = `${registration.profile_id}:${registration.tournament_id}`;
+      if (unique.has(key)) continue;
+      const tournament = tournaments.get(registration.tournament_id) || {};
+      unique.set(key, {
+        ...registration,
+        id: registration.id || `registration-${registration.profile_id}-${registration.tournament_id}`,
+        status: ['pending', 'confirmed', 'cancelled', 'withdrawn', 'rejected', 'completed'].includes(registration.status) ? registration.status : 'confirmed',
+        effective_start_date: registration.effective_start_date || tournament.qualifying_start_date || tournament.start_date || null,
+        effective_end_date: registration.effective_end_date || tournament.end_date || tournament.start_date || null,
+        registration_schema_version: 2,
+      });
+    }
+    data.entities.TournamentRegistration = [...unique.values()];
+    data.registration_migration_warnings = [];
+    const active = data.entities.TournamentRegistration.filter(item => ['pending', 'confirmed'].includes(item.status));
+    for (let i = 0; i < active.length; i += 1) for (let j = i + 1; j < active.length; j += 1) {
+      const a = active[i]; const b = active[j];
+      const shared = [a.profile_id, a.partner_id].filter(Boolean).some(id => id === b.profile_id || id === b.partner_id);
+      const overlap = a.effective_start_date && b.effective_start_date && a.effective_start_date <= b.effective_end_date && b.effective_start_date <= a.effective_end_date;
+      if (shared && overlap && a.tournament_id !== b.tournament_id) data.registration_migration_warnings.push({ code: 'LEGACY_DATE_CONFLICT', registration_ids: [a.id, b.id] });
+    }
+    data.save_schema_version = 13;
+    version = 13;
+  }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }
 

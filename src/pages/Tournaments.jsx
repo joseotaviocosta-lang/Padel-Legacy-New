@@ -20,6 +20,7 @@ import { isRegistrationOpen } from '@/lib/calendarSystem';
 import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
+import { cancelTournamentRegistration, isPlayerRegisteredForTournament, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
 
 const TIER_CONFIG = {
   Crown:{label:'Legacy Crown',badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',card:'border-amber-500/25 hover:border-amber-500/50',glow:'shadow-[0_0_24px_rgba(245,158,11,0.12)]',icon:Crown,diffLabel:'Lendário',diffColor:'text-red-400'},
@@ -62,6 +63,7 @@ export default function Tournaments() {
   const [matches, setMatches] = useState([]);
   const [bracketTournament, setBracketTournament] = useState(null);
   const [registeredTournaments, setRegisteredTournaments] = useState(new Set());
+  const [registrationRecords, setRegistrationRecords] = useState(new Map());
   const [registrationTournament, setRegistrationTournament] = useState(null);
   const [teamRank, setTeamRank] = useState(0);
 
@@ -101,14 +103,12 @@ export default function Tournaments() {
         setPlayedTournaments(played);
         setMatches(matches || []);
 
-        // Track registered tournaments (scheduled calendar events)
+        // Track confirmed registrations from the canonical registration entity.
         if (p?.id) {
-          const calEvents = await localGame.entities.CalendarEvent.filter({
-            profile_id: p.id,
-            event_type: 'tournament',
-            status: 'scheduled',
-          });
-          setRegisteredTournaments(new Set((calEvents || []).map(e => e.related_id).filter(Boolean)));
+          const registrations = await listTournamentRegistrations(p.id);
+          const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
+          setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
+          setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
 
           // Compute team rank if player has a partner
           if (p.partner_id) {
@@ -142,12 +142,10 @@ export default function Tournaments() {
     setPlayedTournaments(played);
 
     // Reload registered tournaments
-    const calEvents = await localGame.entities.CalendarEvent.filter({
-      profile_id: p.id,
-      event_type: 'tournament',
-      status: 'scheduled',
-    });
-    setRegisteredTournaments(new Set((calEvents || []).map(e => e.related_id).filter(Boolean)));
+    const registrations = await listTournamentRegistrations(p.id);
+    const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
+    setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
+    setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
   }
 
   if (loading) {
@@ -205,15 +203,17 @@ export default function Tournaments() {
     return { filtered: selected, counts: totals, byMonth: grouped };
   })();
 
-  function handlePlay(tournament) {
+  async function handlePlay(tournament) {
     if (isTournamentPast(tournament)) return;
     if (playedTournaments.has(tournament.name)) return;
     // If not registered yet, open registration modal first
-    if (!registeredTournaments.has(tournament.id)) {
+    const persistedRegistration = await isPlayerRegisteredForTournament(profile.id, tournament.id);
+    if (!persistedRegistration) {
       if (!canRegisterForTournament(tournament)) return;
       setRegistrationTournament(tournament);
       return;
     }
+    if (!isTournamentPlayable(tournament)) return;
     if (!profile?.partner_id) {
       setShowPartner(true);
       return;
@@ -224,12 +224,17 @@ export default function Tournaments() {
   async function handleRegistered(updatedProfile) {
     if (updatedProfile) setProfile(updatedProfile);
     // Refresh registered set
-    const calEvents = await localGame.entities.CalendarEvent.filter({
-      profile_id: (updatedProfile || profile).id,
-      event_type: 'tournament',
-      status: 'scheduled',
-    });
-    setRegisteredTournaments(new Set((calEvents || []).map(e => e.related_id).filter(Boolean)));
+    const registrations = await listTournamentRegistrations((updatedProfile || profile).id);
+    const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
+    setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
+    setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
+  }
+
+  async function handleCancelRegistration(tournament) {
+    const registration = registrationRecords.get(tournament.id);
+    if (!registration || !window.confirm(`Cancelar a inscrição em ${tournament.name}? A agenda será liberada.`)) return;
+    const result = await cancelTournamentRegistration({ player: profile, registration, tournament, currentDate: careerDate });
+    if (result.success) await handleRegistered(result.profile);
   }
 
   return (
@@ -243,6 +248,7 @@ export default function Tournaments() {
             <span className="text-[10px] uppercase tracking-[0.3em] text-amber-400 font-bold">Padel Legacy World Tour</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-black tracking-tight">{season?.name || 'Temporada 2026'}</h1>
+          <p className="text-xs text-cyan-300/80 mt-2">Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Sua dupla só pode disputar um torneio por período; datas sobrepostas geram conflito.</p>
           <p className="text-sm text-muted-foreground mt-1">{season?.description || 'Calendário completo de torneios'}</p>
 
           <div className="flex gap-3 mt-4 flex-wrap">
@@ -356,6 +362,7 @@ export default function Tournaments() {
                     hasPartner={!!profile?.partner_id}
                     hasEnergy={hasEnergyForTournament}
                     onPlay={() => handlePlay(t)}
+                    onCancel={() => handleCancelRegistration(t)}
                     onViewBracket={() => setBracketTournament(t)}
                     careerDate={profile?.career_date}
                     profile={profile}
@@ -429,7 +436,7 @@ function SummaryStat({ icon: Icon, label, value, color }) {
   );
 }
 
-function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onViewBracket, careerDate, profile, teamRank }) {
+function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewBracket, careerDate, profile, teamRank }) {
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
   const coach = !isPast ? evaluateTournamentChoice(tournament, {
@@ -549,6 +556,7 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
             {!hasPartner ? <><Lock className="h-3 w-3" /> Parceiro</> : !hasEnergy ? <><AlertCircle className="h-3 w-3" /> Sem energia</> : isRegistered && isPlayable ? <><Play className="h-3 w-3" /> Jogar</> : isRegistered ? <><CheckCircle className="h-3 w-3" /> Inscrito</> : <><CheckCircle className="h-3 w-3" /> Inscrever</>}
           </button>
         )}
+        {isRegistered && !isPlayable && !isPast && <button onClick={onCancel} className="ml-auto text-[10px] font-bold text-red-300 hover:text-red-200">Cancelar inscrição</button>}
       </div>
     </div>
   );

@@ -44,7 +44,7 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
       } else if (result.requiresConfirmation) {
         setConflicts(result.conflicts || []);
       } else {
-        toast({ title: 'Não foi possível inscrever', description: result.reasons.join(', '), variant: 'destructive' });
+        toast({ title: 'Não foi possível inscrever', description: (result.reasons || []).map(item => item.message || item).join(' '), variant: 'destructive' });
       }
     } catch (e) {
       toast({ title: 'Erro', description: 'Falha na inscrição.', variant: 'destructive' });

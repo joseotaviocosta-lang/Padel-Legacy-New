@@ -26,7 +26,7 @@ career.player.handedness = 'right'; career.player.court_side = 'direita'; state 
 career.player.play_style = 'controle'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 career.entities.TrainingSession = [{ id: 'training-1' }]; state = normalizeTutorialState(state, career); assert(state.completedStepIds.includes('energy-understood')); assert.equal(state.currentStepId, expected.shift());
 career.player.partner_id = 'partner-1'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
-career.entities.CalendarEvent = [{ id: 'event-1', event_type: 'tournament', status: 'scheduled' }]; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
+career.entities.TournamentRegistration = [{ id: 'registration-1', profile_id: 'p1', tournament_id: 't1', status: 'confirmed' }]; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 career.entities.Match = [{ id: 'match-1' }]; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 state = normalizeTutorialState(state, career, { completedObjectiveTypes: ['visit_career_after_intro'] });
 assert.equal(state.status, 'completed'); assert.equal(getTutorialProgress(state).percent, 100);

@@ -1,9 +1,10 @@
 import { localGame } from '@/api/localGameClient.js';
-import { addDays, CAREER_START_DATE } from '@/lib/career';
+import { addDays, CAREER_START_DATE, getPartnerBot } from '@/lib/career';
 import { levelForXp, LEVELS, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystemV2.js';
 import { normalizeTrainingId } from '@/lib/trainingCatalog.js';
+import { registerTournament, cancelTournamentRegistration, getTournamentRegistrationWindow } from '@/lib/tournamentRegistration.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -189,6 +190,9 @@ export async function executePlannedActivities(profile, date) {
 
 // ── Tournament registration ───────────────────────────────────────────────
 export async function registerForTournament(profile, tournament, teamRank = 0, options = {}) {
+  if (!options.legacyCalendarRegistration) {
+    return registerTournament({ player: profile, partner: getPartnerBot(profile), tournament, teamRank });
+  }
   const validation = checkTournamentRequirements(profile, tournament, teamRank);
   if (!validation.canRegister) {
     return { success: false, reasons: validation.reasons };
@@ -288,6 +292,12 @@ export async function registerForTournament(profile, tournament, teamRank = 0, o
 
 // ── Cancel registration ──────────────────────────────────────────────────
 export async function cancelRegistration(profileId, eventId, tournamentId) {
+  const profile = await localGame.entities.PlayerProfile.get(profileId);
+  const rows = tournamentId ? await localGame.entities.TournamentRegistration.filter({ profile_id: profileId, tournament_id: tournamentId, status: 'confirmed' }) : [];
+  if (profile && rows[0]) {
+    const tournament = await localGame.entities.Tournament.get(tournamentId);
+    return cancelTournamentRegistration({ player: profile, registration: rows[0], tournament, currentDate: profile.career_date });
+  }
   await localGame.entities.CalendarEvent.update(eventId, { status: 'cancelled' });
   if (tournamentId) {
     const t = await localGame.entities.Tournament.get(tournamentId);
@@ -427,16 +437,12 @@ export function computeTournamentPhase(tournament, playerParticipated, roundIdx 
 
 // ── Get registration deadline (auto-compute if not set) ───────────────────
 export function getRegistrationDeadline(tournament) {
-  if (tournament.registration_deadline) return tournament.registration_deadline;
-  if (!tournament.start_date) return null;
-  // Default: 3 days before start
-  return addDays(tournament.start_date, -3);
+  return getTournamentRegistrationWindow(tournament).closesAt;
 }
 
 // ── Check if registration is still open ──────────────────────────────────
 export function getRegistrationOpeningDate(tournament) {
-  if (!tournament?.start_date) return null;
-  return tournament.registration_open_date || addDays(tournament.start_date, -45);
+  return getTournamentRegistrationWindow(tournament).opensAt;
 }
 
 export function isRegistrationOpen(tournament, careerDate) {

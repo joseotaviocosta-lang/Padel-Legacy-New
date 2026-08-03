@@ -1,0 +1,22 @@
+{
+  "name": "TournamentRegistration",
+  "type": "object",
+  "properties": {
+    "profile_id": { "type": "string" },
+    "player_id": { "type": "string" },
+    "partner_id": { "type": "string" },
+    "tournament_id": { "type": "string" },
+    "tournament_name": { "type": "string" },
+    "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled", "withdrawn", "rejected", "completed"] },
+    "registered_at": { "type": "string", "format": "date" },
+    "cancelled_at": { "type": "string", "format": "date" },
+    "effective_start_date": { "type": "string", "format": "date" },
+    "effective_end_date": { "type": "string", "format": "date" },
+    "entry_path": { "type": "string" },
+    "entry_label": { "type": "string" },
+    "entry_fee_paid": { "type": "number", "default": 0 },
+    "refund_amount": { "type": "number", "default": 0 },
+    "registration_schema_version": { "type": "number", "default": 2 }
+  },
+  "required": ["profile_id", "partner_id", "tournament_id", "status"]
+}

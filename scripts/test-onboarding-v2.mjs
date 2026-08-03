@@ -15,7 +15,7 @@ const progressed = {
   player: { id: 'p1', sport_name: 'Atleta Teste', handedness: 'right', court_side: 'direita', play_style: 'controle', partner_id: 'bot-1', matches_played: 1 },
   entities: {
     TrainingSession: [{ id: 'training-1', profile_id: 'p1' }],
-    CalendarEvent: [{ id: 'event-1', profile_id: 'p1', event_type: 'tournament', status: 'completed' }],
+    TournamentRegistration: [{ id: 'registration-1', profile_id: 'p1', tournament_id: 't1', status: 'confirmed' }],
     Match: [{ id: 'match-1', profile_id: 'p1' }],
   },
 };

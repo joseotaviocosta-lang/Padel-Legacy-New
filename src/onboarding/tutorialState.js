@@ -16,7 +16,7 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
     styleSelected: Boolean(player.play_style) && player.play_style !== 'Equilibrado',
     trainingCompleted: Number(player.trainings_completed || player.total_trainings || 0) > 0 || trainings.length > 0,
     partnerSelected: Boolean(player.partner_id || player.current_partner_id),
-    tournamentRegistered: registrations.some(item => (!item.event_type || ['tournament', 'torneio'].includes(item.event_type)) && item.status !== 'cancelled'),
+    tournamentRegistered: registrations.some(item => item.tournament_id ? item.status === 'confirmed' : ['tournament', 'torneio'].includes(item.event_type) && item.status === 'scheduled' && Boolean(item.metadata?.registration_id)),
     matchCompleted: Number(player.matches_played || 0) > 0 || matches.length > 0,
     autonomyVisited: Boolean(facts.autonomyVisited || facts.completedObjectiveTypes?.includes('visit_career_after_intro')),
   };
