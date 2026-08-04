@@ -1,12 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Scale, Flame, Shield, Hammer, Brain, Play, Pause, FastForward } from 'lucide-react';
 import { createMatch, playPoint, applyMatchTactic, decideLiveCoachSuggestion, askLiveMatchPartner, formatPoints, MATCH_TACTICS } from '@/lib/matchEngine';
-import ReplayPanel from './ReplayPanel';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 
-export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null, liveCoachSettings, onFinished, replayEnabled = false, displayMode = 'text', onDisplayModeChange }) {
-  const [state, setState] = useState(() => createMatch(teamA, teamB, { replayEnabled, initialTacticId, coach, liveCoachSettings }));
+export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null, liveCoachSettings, onFinished, displayMode = 'text', onDisplayModeChange }) {
+  const [state, setState] = useState(() => createMatch(teamA, teamB, { initialTacticId, coach, liveCoachSettings }));
   const [tactic, setTactic] = useState(
     () => MATCH_TACTICS.find(t => t.id === initialTacticId) || MATCH_TACTICS[0]
   );
@@ -65,7 +64,7 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null,
 
   return (
     <div className="space-y-3">
-      <div className="grid grid-cols-4 gap-1">{[['text','Texto'],['2d','2D'],['important_points','Pontos-chave'],['quick','Rápido']].map(([id,label])=><button key={id} onClick={()=>onDisplayModeChange?.(id)} className={`rounded-lg px-1 py-1.5 text-[10px] font-bold ${displayMode===id?'bg-primary text-primary-foreground':'bg-secondary/60'}`}>{label}</button>)}</div>
+      <div className="grid grid-cols-2 gap-1">{[['text','Texto'],['quick','Rápido']].map(([id,label])=><button key={id} onClick={()=>onDisplayModeChange?.(id)} className={`rounded-lg px-1 py-1.5 text-[10px] font-bold ${displayMode===id?'bg-primary text-primary-foreground':'bg-secondary/60'}`}>{label}</button>)}</div>
       {/* Scoreboard */}
       <div className="glass rounded-2xl p-4">
         <div className="grid grid-cols-[1fr_2rem_2rem_2.5rem] gap-2 items-center text-[9px] uppercase text-muted-foreground mb-2 px-0.5">
@@ -100,7 +99,6 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null,
         </div>
       </div>
 
-      {displayMode === '2d' && state.replay && <ReplayPanel replay={state.replay} live />}
 
       <div className="glass rounded-2xl p-3 border border-cyan-500/20 space-y-2" aria-label="Treinador ao vivo">
         <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] uppercase tracking-wider text-cyan-300 font-bold">Treinador ao vivo</p><p className="text-xs font-semibold">{coach?.name || 'Sem treinador contratado'}</p></div><span className="text-[10px] text-muted-foreground">Próxima janela: fim do game</span></div>

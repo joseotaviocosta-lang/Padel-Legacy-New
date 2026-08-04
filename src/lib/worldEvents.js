@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { createWorldEventObjects, normalizeWorldEventIds, validateWorldEventIds } from './worldEventIds.js';
 
 function addDays(dateStr, days) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -467,7 +468,10 @@ export async function generateMacroEvents(date, count = 1) {
     events.push(generateMacroEventObject(date));
   }
   if (events.length === 0) return [];
-  return await localGame.entities.WorldEvent.bulkCreate(events);
+
+  const prepared = normalizeWorldEventIds(createWorldEventObjects(events));
+  if (import.meta.env.DEV) validateWorldEventIds(prepared);
+  return await localGame.entities.WorldEvent.bulkCreate(prepared);
 }
 
 // Expire macro events whose end_date has passed

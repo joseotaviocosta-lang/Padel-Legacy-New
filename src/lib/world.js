@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
+import { createWorldEventObjects, normalizeWorldEventIds, validateWorldEventIds } from './worldEventIds.js';
 
 // ── Name pools ────────────────────────────────────────────────────────────
 
@@ -268,16 +269,19 @@ export async function generateWorldEvents(date, count = 3) {
     events.push(generateEventObject(date));
   }
   if (events.length === 0) return [];
-  return await localGame.entities.WorldEvent.bulkCreate(events);
+
+  const prepared = normalizeWorldEventIds(createWorldEventObjects(events));
+  if (import.meta.env.DEV) validateWorldEventIds(prepared);
+  return await localGame.entities.WorldEvent.bulkCreate(prepared);
 }
 
 async function initializeWorldEvents(date, minCount) {
-    const existing = await localGame.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
+    const existing = await localGame.entities.WorldEvent.filter({ event_date: date, is_macro: { $ne: true } }, '-likes', 50);
     if (existing && existing.length >= minCount) return existing;
 
     const toGenerate = Math.max(1, minCount - (existing?.length || 0));
     await generateWorldEvents(date, toGenerate);
-    return await localGame.entities.WorldEvent.filter({ event_date: date }, '-likes', 50);
+    return await localGame.entities.WorldEvent.filter({ event_date: date, is_macro: { $ne: true } }, '-likes', 50);
 }
 
 const initializeWorldEventsOnce = createKeyedInitializer(initializeWorldEvents);
@@ -289,7 +293,7 @@ export function ensureWorldEvents(date, minCount = 15) {
 
 export async function getRecentWorldEvents(limit = 30) {
   try {
-    return await localGame.entities.WorldEvent.list('-created_date', limit);
+    return await localGame.entities.WorldEvent.filter({ is_macro: { $ne: true } }, '-created_date', limit);
   } catch (e) {
     console.error('getRecentWorldEvents', e);
     return [];

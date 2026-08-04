@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { X, Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain, Eye } from 'lucide-react';
+import { X, Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain } from 'lucide-react';
 
 import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
 import { getPartnerBot } from '@/lib/career';
@@ -10,15 +10,8 @@ import { MATCH_TACTICS, getSetScoreString } from '@/lib/matchEngine';
 import { processMatchRelationships } from '@/lib/relationships';
 import LiveMatch from '@/components/matches/LiveMatch';
 import { useToast } from '@/components/ui/use-toast';
-import ReplayPanel from '@/components/matches/ReplayPanel';
-import { replayLibrary } from '@/gameplay/replay/library/ReplayLibrary.js';
-import { ReplaySaveQueue } from '@/gameplay/replay/library/ReplaySaveQueue.js';
-import { matchViewPreferences } from '@/gameplay/replay/library/MatchViewPreferences.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
-const REPLAY_ENABLED = import.meta.env.VITE_ENABLE_REPLAY_ENGINE !== 'false';
-
-const replaySaveQueue = new ReplaySaveQueue(replayLibrary);
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
   const [profile, setProfile] = useState(initialProfile);
   const [initialTacticId, setInitialTacticId] = useState('equilibrado');
@@ -30,11 +23,9 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
   const savedRef = useRef(false);
   const { toast } = useToast();
-  const [replayPreferences,setReplayPreferences]=useState(null);
-  useEffect(()=>{if(!careerId)return;matchViewPreferences.load(careerId).then((prefs)=>{setReplayPreferences(prefs);const preferred=prefs.default_match_view_mode==='ask_every_match'&&prefs.remember_last_match_mode?prefs.last_match_mode:prefs.default_match_view_mode;if(preferred!=='ask_every_match')setDisplayMode(preferred);});},[careerId]);
   useEffect(()=>{if(!profile?.coach_id){setCoach(null);return;}localGame.entities.Coach.get(profile.coach_id).then(setCoach).catch(()=>setCoach(null));},[profile?.coach_id]);
   const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
-  const changeDisplayMode=(mode)=>{setDisplayMode(mode);if(careerId&&replayPreferences?.remember_last_match_mode)matchViewPreferences.save(careerId,{last_match_mode:mode}).catch(()=>{});};
+  const changeDisplayMode=(mode)=>setDisplayMode(mode);
 
   function startMatch() {
     if (isInjured(profile)) {
@@ -65,10 +56,6 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     savedRef.current = true;
     try {
       const won = matchState.winner === 'A';
-      const replaySave = REPLAY_ENABLED && matchState.replay && careerId
-        ? await replaySaveQueue.enqueue(matchState.replay,{career_id:careerId,date:profile.career_date,tournament_name:'Partida Treino',winner_team_id:matchState.winner,result:won?'vitória':'derrota',score:getSetScoreString(matchState)},{force:true,policy:replayPreferences?.automatic_replay_storage||'all_player_matches'})
-        : null;
-      if (replaySave?.status === 'failed') toast({title:'Partida salva',description:'O replay não pôde ser arquivado. Você pode tentar novamente depois.'});
       await localGame.entities.Match.create({
         profile_id: profile.id,
         career_date: profile.career_date,
@@ -86,8 +73,6 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         point_events: matchState.pointEvents,
         live_coach_report: matchState.liveCoachReport || null,
         tactical_adjustment_history: matchState.liveCoach?.adjustments || [],
-        replay_id: replaySave?.status === 'saved' ? matchState.replay?.replay_id : null,
-        replay_match_id: replaySave?.status === 'saved' ? matchState.replay?.match_id : null,
         result: won ? 'vitória' : 'derrota',
         match_type: 'simulada',
         notes: `Sets: ${getSetScoreString(matchState)} | Força: ${Math.round(matchState.strA)} vs ${Math.round(matchState.strB)}`,
@@ -194,7 +179,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Modo da partida</p>
-              <div className="grid grid-cols-4 gap-2">{[['text','Texto'],['2d','2D'],['important_points','Pontos-chave'],['quick','Rápido']].map(([id,label]) => <button key={id} onClick={() => changeDisplayMode(id)} className={`rounded-xl px-2 py-2 text-xs font-bold ${displayMode === id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50'}`}>{label}</button>)}</div>
+              <div className="grid grid-cols-2 gap-2">{[['text','Texto'],['quick','Rápido']].map(([id,label]) => <button key={id} onClick={() => changeDisplayMode(id)} className={`rounded-xl px-2 py-2 text-xs font-bold ${displayMode === id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50'}`}>{label}</button>)}</div>
             </div>
 
             <button
@@ -215,7 +200,6 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             coach={coach}
             liveCoachSettings={liveCoachSettings}
             onFinished={handleFinished}
-            replayEnabled={REPLAY_ENABLED}
             displayMode={displayMode}
             onDisplayModeChange={changeDisplayMode}
           />
@@ -264,26 +248,11 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             {result.matchState.liveCoachReport && <div className="glass rounded-2xl p-4"><p className="text-xs font-black mb-2">Decisões durante a partida</p><p className="text-[11px] text-muted-foreground">{result.matchState.liveCoachReport.suggestionsReceived} sugestões · {result.matchState.liveCoachReport.suggestionsApplied} aplicadas · {result.matchState.liveCoachReport.suggestionsIgnored} ignoradas</p><p className="mt-2 text-[9px] text-muted-foreground">{result.matchState.liveCoachReport.disclaimer}</p></div>}
 
             <button
-              hidden={!REPLAY_ENABLED || !result.matchState.replay}
-              onClick={() => setPhase('replay')}
-              className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
-            >
-              <Eye className="h-4 w-4" /> Assistir replay experimental
-            </button>
-
-            <button
               onClick={reset}
               className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
             >
               <RefreshCw className="h-4 w-4" /> Jogar Novamente
             </button>
-          </div>
-        )}
-
-        {phase === 'replay' && result?.matchState.replay && (
-          <div className="space-y-3">
-            <ReplayPanel replay={result.matchState.replay} />
-            <button onClick={() => setPhase('result')} className="w-full py-2.5 rounded-xl bg-secondary/50 font-bold text-sm">Voltar ao resultado</button>
           </div>
         )}
       </div>

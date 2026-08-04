@@ -12,6 +12,7 @@ import { ensureTutorialMissionCatalog } from '@/lib/padel.js';
 
 function PageIntroduction({ pathname, state, onStateChange }) {
   const intro = getPageIntroduction(pathname);
+  if (!intro) return null;
   const collapsed = state?.collapsedIntroductions?.includes(pathname);
   return (
     <section className="mx-4 md:mx-8 mt-5 rounded-2xl border border-border/60 bg-card/70 px-4 py-3" aria-label={`Introdução: ${intro.title}`}>

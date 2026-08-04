@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { MapPin, Calendar, Swords, Trophy, Bot, Play, AlertCircle, Film } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { MapPin, Calendar, Swords, Trophy, Bot, Play, AlertCircle } from 'lucide-react';
 import { useCareer } from '@/careers/useCareer.js';
 import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
@@ -52,7 +51,6 @@ export default function Matches() {
         >
           <Play className="h-4 w-4" /> Jogar
         </button>
-        <Link to="/replays" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-sm font-bold"><Film className="h-4 w-4"/>Replays</Link>
       </PageHeader>
 
       {isInjured(profile) && (
@@ -96,7 +94,7 @@ export default function Matches() {
                   <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(m.date)}</span>
                   {m.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {m.location}</span>}
                   {m.match_type === 'simulada' && <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-bold text-muted-foreground"><Bot className="h-2.5 w-2.5" /> Simulada</span>}
-                  {m.replay_id ? <Link to={`/replays?replay=${encodeURIComponent(m.replay_id)}`} className="text-[9px] font-bold text-primary hover:underline">Assistir replay</Link> : <span className="text-[9px]" title="Esta partida foi concluída antes de o sistema de replay ser registrado. O placar e as estatísticas continuam disponíveis.">Replay indisponível</span>}
+                  <span className="text-[9px] text-muted-foreground">Replays não estão mais disponíveis</span>
                 </div>
               </div>
             );

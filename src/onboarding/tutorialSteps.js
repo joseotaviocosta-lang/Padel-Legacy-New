@@ -41,7 +41,6 @@ export const TUTORIAL_STEPS = [
   step('match-tactics','change_match_tactic','Altere a tática da dupla','/matches','Competições','domain_event'),
   step('match-speed','change_match_speed','Altere a velocidade','/matches','Competições','domain_event'),
   step('first-match','play_matches','Conclua sua primeira partida','/matches','Competições','domain_event',{reward:{xp:100,coins:150}}),
-  step('replay-watched','watch_replay','Assista ao replay','/replays','Competições','domain_event',{requirements:['has-replay']}),
   step('ranking-known','visit_ranking','Consulte o ranking','/ranking','Competições'),
   step('news-known','visit_journal','Abra as notícias','/journal','Mundo do jogo'),
   step('market-known','visit_world_market','Conheça o Mercado Mundial','/world-market','Mundo do jogo'),
