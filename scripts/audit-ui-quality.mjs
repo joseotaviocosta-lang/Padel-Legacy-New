@@ -33,9 +33,9 @@ for (const file of files) {
   });
 }
 
-const appLayout = fs.readFileSync(path.join(root, 'src/components/AppLayout.jsx'), 'utf8');
-for (const label of ['Carreira', 'Treinamento', 'Centro de Treinamento', 'Missões', 'Calendário', 'Torneios', 'Ranking', 'Parceiros', 'Inventário', 'Economia', 'Jornal', 'Imprensa', 'Relacionamentos', 'Estatísticas', 'Conquistas']) {
-  if (!appLayout.includes(`label: '${label}'`) && !appLayout.includes(`: '${label}'`)) errors.push(`Navegação sem o nome padronizado: ${label}`);
+const navigationSource = fs.readFileSync(path.join(root, 'src/navigation/navigationConfig.js'), 'utf8');
+for (const route of ['/game', '/game/training', '/training-center', '/game/missions', '/game/calendar', '/tournaments', '/ranking', '/partners', '/game/inventory', '/game/economy', '/journal', '/press', '/relationships', '/game/stats', '/achievements']) {
+  if (!navigationSource.includes(`to: '${route}'`)) errors.push(`Navegação sem o destino obrigatório: ${route}`);
 }
 
 const emptyStateRequirements = [

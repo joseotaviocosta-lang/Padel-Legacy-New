@@ -1,14 +1,14 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Gamepad2, Swords, Trophy, TrendingUp, User } from 'lucide-react';
+import { Gamepad2, Dumbbell, Handshake, Trophy, Globe2 } from 'lucide-react';
 
 const navItems = [
-  { to: '/game', icon: Gamepad2, label: 'Carreira' },
-  { to: '/matches', icon: Swords, label: 'Partidas' },
-  { to: '/tournaments', icon: Trophy, label: 'Torneios' },
-  { to: '/ranking', icon: TrendingUp, label: 'Ranking' },
-  { to: '/profile', icon: User, label: 'Perfil' },
+  { to: '/game', icon: Gamepad2, label: 'Início' },
+  { to: '/development', icon: Dumbbell, label: 'Evoluir' },
+  { to: '/team-hub', icon: Handshake, label: 'Dupla' },
+  { to: '/competitions', icon: Trophy, label: 'Competir' },
+  { to: '/world', icon: Globe2, label: 'Mundo' },
 ];
 
 export default function BottomNav() {

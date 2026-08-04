@@ -23,12 +23,12 @@ const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPasswo
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
   Relationships, Coaches, TrainingCenter, Press, Social, Fans, Achievements, WorldEvents, WorldMarket, Weather,
-  Encyclopedia, PartnerHub, Community, ReplayLibrary, WorldSpectator] = [
+  Encyclopedia, PartnerHub, Community, ReplayLibrary, WorldSpectator, NavigationHub] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
   'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Social', 'Fans',
-  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'ReplayLibrary', 'WorldSpectator',
+  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'ReplayLibrary', 'WorldSpectator', 'NavigationHub',
 ].map(lazyPage);
 
 const RouteLoadingFallback = () => (
@@ -79,6 +79,11 @@ const AuthenticatedApp = () => {
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
         <Route element={<ActiveCareerGuard><AppLayout /></ActiveCareerGuard>}>
           <Route path="/game" element={<CareerHub />} />
+          <Route path="/development" element={<NavigationHub areaId="development" />} />
+          <Route path="/team-hub" element={<NavigationHub areaId="team" />} />
+          <Route path="/competitions" element={<NavigationHub areaId="competition" />} />
+          <Route path="/world" element={<NavigationHub areaId="world" />} />
+          <Route path="/management" element={<NavigationHub areaId="management" />} />
           <Route path="/game/training" element={<Training />} />
           <Route path="/game/missions" element={<Missions />} />
           <Route path="/game/shop" element={<Shop />} />

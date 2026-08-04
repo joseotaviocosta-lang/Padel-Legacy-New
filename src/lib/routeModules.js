@@ -14,6 +14,7 @@ export const PAGE_LOADERS = {
   Social: () => import('@/pages/Social'), Fans: () => import('@/pages/Fans'), Achievements: () => import('@/pages/Achievements'),
   WorldEvents: () => import('@/pages/WorldEvents'), WorldMarket: () => import('@/pages/WorldMarket'), Weather: () => import('@/pages/Weather'),
   Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'), ReplayLibrary: () => import('@/pages/ReplayLibrary'), WorldSpectator: () => import('@/pages/WorldSpectator'),
+  NavigationHub: () => import('@/pages/NavigationHub'),
 };
 
 const ROUTE_MODULES = {
@@ -25,6 +26,7 @@ const ROUTE_MODULES = {
   '/hall-of-fame': 'HallOfFame', '/relationships': 'Relationships', '/coaches': 'Coaches', '/training-center': 'TrainingCenter',
   '/press': 'Press', '/social': 'Social', '/fans': 'Fans', '/achievements': 'Achievements', '/world-events': 'WorldEvents',
   '/world-market': 'WorldMarket', '/weather': 'Weather', '/encyclopedia': 'Encyclopedia', '/partners': 'PartnerHub', '/community': 'Community', '/replays': 'ReplayLibrary', '/world-tour/live': 'WorldSpectator',
+  '/development': 'NavigationHub', '/team-hub': 'NavigationHub', '/competitions': 'NavigationHub', '/world': 'NavigationHub', '/management': 'NavigationHub',
 };
 
 const preloadRequests = new Map();
