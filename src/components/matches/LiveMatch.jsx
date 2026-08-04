@@ -1,17 +1,18 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Scale, Flame, Shield, Hammer, Brain, Play, Pause, FastForward } from 'lucide-react';
-import { createMatch, playPoint, formatPoints, MATCH_TACTICS } from '@/lib/matchEngine';
+import { createMatch, playPoint, applyMatchTactic, decideLiveCoachSuggestion, askLiveMatchPartner, formatPoints, MATCH_TACTICS } from '@/lib/matchEngine';
 import ReplayPanel from './ReplayPanel';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 
-export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, replayEnabled = false, displayMode = 'text', onDisplayModeChange }) {
-  const [state, setState] = useState(() => createMatch(teamA, teamB, { replayEnabled }));
+export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null, liveCoachSettings, onFinished, replayEnabled = false, displayMode = 'text', onDisplayModeChange }) {
+  const [state, setState] = useState(() => createMatch(teamA, teamB, { replayEnabled, initialTacticId, coach, liveCoachSettings }));
   const [tactic, setTactic] = useState(
     () => MATCH_TACTICS.find(t => t.id === initialTacticId) || MATCH_TACTICS[0]
   );
   const [autoPlay, setAutoPlay] = useState(true);
   const [speed, setSpeed] = useState(1);
+  const [tacticFeedback, setTacticFeedback] = useState('');
   const finishedRef = useRef(false);
   const narrationRef = useRef(null);
 
@@ -20,18 +21,18 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
     setAutoPlay(false);
     setState((current) => {
       let next = current; let safety = 3000;
-      while (!next.finished && safety-- > 0) next = playPoint(next, tactic);
+      while (!next.finished && safety-- > 0) next = playPoint(next);
       return next;
     });
-  }, [displayMode, tactic]);
+  }, [displayMode]);
 
   useEffect(() => {
     if (state.finished || !autoPlay) return;
     const timer = setTimeout(() => {
-      setState(prev => playPoint(prev, tactic));
+      setState(prev => playPoint(prev));
     }, (displayMode === '2d' ? 3200 : 1000) / speed);
     return () => clearTimeout(timer);
-  }, [state, autoPlay, tactic, speed]);
+  }, [state, autoPlay, speed, displayMode]);
 
   useEffect(() => {
     if (narrationRef.current) {
@@ -47,20 +48,20 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
     }
   }, [state.finished]);
 
-  function skip() {
-    setState(prev => {
-      let s = prev;
-      let safety = 3000;
-      while (!s.finished && safety-- > 0) s = playPoint(s, tactic);
-      return s;
-    });
+  function advanceUntil(predicate) {
+    setAutoPlay(false);
+    setState(prev => { let next = prev; let safety = 3000; while (!next.finished && !predicate(next, prev) && safety-- > 0) next = playPoint(next); return next; });
   }
-
-  function toggleSpeed() {
-    setSpeed(s => (s === 1 ? 2 : s === 2 ? 3 : 1));
+  function changeTactic(nextTactic) {
+    setTactic(nextTactic);
+    setState(prev => applyMatchTactic(prev, nextTactic, 'A'));
+    setTacticFeedback(`Tática alterada para ${nextTactic.label}. ${nextTactic.desc}`);
   }
 
   const pts = formatPoints(state);
+  const coachSuggestion = state.liveCoach?.pendingSuggestion;
+  const partnerFeedback = state.liveCoach?.partnerFeedback?.at(-1);
+  const recent = state.liveCoach?.analytics?.points?.slice(-5) || [];
 
   return (
     <div className="space-y-3">
@@ -99,7 +100,16 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
         </div>
       </div>
 
-      {displayMode === '2d' && state.replay && state.pointNumber > 0 && <ReplayPanel key={state.pointNumber} replay={state.replay} live />}
+      {displayMode === '2d' && state.replay && <ReplayPanel replay={state.replay} live />}
+
+      <div className="glass rounded-2xl p-3 border border-cyan-500/20 space-y-2" aria-label="Treinador ao vivo">
+        <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] uppercase tracking-wider text-cyan-300 font-bold">Treinador ao vivo</p><p className="text-xs font-semibold">{coach?.name || 'Sem treinador contratado'}</p></div><span className="text-[10px] text-muted-foreground">Próxima janela: fim do game</span></div>
+        {!coach && <p className="text-[10px] text-muted-foreground">Métricas básicas disponíveis; recomendações especializadas desativadas.</p>}
+        {state.liveCoach?.settings?.showLiveMetrics && <div className="grid grid-cols-3 gap-2 text-center"><div className="rounded-lg bg-secondary/40 p-2"><b className="text-sm">{recent.filter(p=>p.winnerTeamId==='A').length}/{recent.length}</b><p className="text-[9px] text-muted-foreground">pontos recentes</p></div><div className="rounded-lg bg-secondary/40 p-2"><b className="text-sm">{state.activeTactics.A?.label}</b><p className="text-[9px] text-muted-foreground">plano atual</p></div><div className="rounded-lg bg-secondary/40 p-2"><b className="text-sm">{Math.round(Math.min(...state.teams.A.map(p=>p.energy)))}</b><p className="text-[9px] text-muted-foreground">energia mínima</p></div></div>}
+        {coachSuggestion && <div className="rounded-xl bg-cyan-500/10 border border-cyan-500/30 p-3 space-y-2"><p className="text-xs font-bold">{coachSuggestion.observation}</p><p className="text-[10px] text-muted-foreground">{coachSuggestion.expectedImpact}</p><p className="text-[10px]">Confiança: <b>{coachSuggestion.confidence}</b> · custo físico: <b>{coachSuggestion.physicalCost}</b></p><div className="grid grid-cols-2 gap-1.5"><button onClick={()=>setState(prev=>decideLiveCoachSuggestion(prev,'apply'))} className="rounded-lg bg-primary px-2 py-1.5 text-[10px] font-bold text-primary-foreground">Aplicar</button><button onClick={()=>setState(prev=>decideLiveCoachSuggestion(prev,'partial',Object.keys(coachSuggestion.suggestedAdjustment?.components||{}).slice(0,1)))} className="rounded-lg bg-secondary px-2 py-1.5 text-[10px] font-bold">Aplicar parcialmente</button><button onClick={()=>setState(prev=>askLiveMatchPartner(prev))} className="rounded-lg bg-secondary px-2 py-1.5 text-[10px] font-bold">Ouvir parceiro</button><button onClick={()=>setState(prev=>decideLiveCoachSuggestion(prev,'ignore'))} className="rounded-lg bg-secondary px-2 py-1.5 text-[10px] font-bold">Manter plano</button></div></div>}
+        {partnerFeedback && <p role="status" className="text-[10px] italic text-muted-foreground">Parceiro: “{partnerFeedback.response}”</p>}
+        {coach && !coachSuggestion && state.pointNumber<4 && <p className="text-[10px] text-muted-foreground">Ainda não há dados suficientes para recomendar uma mudança.</p>}
+      </div>
 
       {/* Narration */}
       <div className={`glass rounded-2xl p-3 ${displayMode === '2d' ? 'hidden' : ''}`}>
@@ -124,7 +134,7 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
             return (
               <button
                 key={t.id}
-                onClick={() => setTactic(t)}
+                onClick={() => changeTactic(t)}
                 disabled={state.finished}
                 className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-xl transition-all ${
                   active
@@ -139,6 +149,7 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
           })}
         </div>
         <p className="text-[10px] text-muted-foreground mt-2 text-center">{tactic.desc}</p>
+        {tacticFeedback && <p role="status" aria-live="polite" className="mt-2 rounded-lg bg-primary/10 px-2 py-1.5 text-center text-[10px] text-primary">{tacticFeedback}</p>}
       </div>
 
       {/* Controls */}
@@ -151,18 +162,7 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
             >
               {autoPlay ? <><Pause className="h-4 w-4" /> Pausar</> : <><Play className="h-4 w-4" /> Continuar</>}
             </button>
-            <button
-              onClick={toggleSpeed}
-              className="px-4 py-2.5 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors"
-            >
-              {speed}x
-            </button>
-            <button
-              onClick={skip}
-              className="px-4 py-2.5 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center gap-1"
-            >
-              <FastForward className="h-4 w-4" /> Pular
-            </button>
+            <div className="flex rounded-xl bg-secondary/50 p-1" aria-label="Velocidade">{[1,2,5,10].map(value=><button key={value} onClick={()=>setSpeed(value)} aria-pressed={speed===value} className={`rounded-lg px-2 py-1.5 text-xs font-bold ${speed===value?'bg-primary text-primary-foreground':''}`}>{value}x</button>)}</div>
           </>
         ) : (
           <div className="flex-1 py-2.5 rounded-xl bg-primary/10 text-primary font-bold text-sm flex items-center justify-center gap-2">
@@ -171,6 +171,12 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, r
           </div>
         )}
       </div>
+      {!state.finished && <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        <button onClick={()=>advanceUntil(next=>next.pointNumber>state.pointNumber)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold">Próximo ponto</button>
+        <button onClick={()=>advanceUntil((next,start)=>next.gamesA!==start.gamesA||next.gamesB!==start.gamesB||next.currentSet!==start.currentSet)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold">Fim do game</button>
+        <button onClick={()=>advanceUntil((next,start)=>next.setsA!==start.setsA||next.setsB!==start.setsB)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold">Fim do set</button>
+        <button onClick={()=>confirm('Simular até o fim da partida? As decisões táticas futuras não poderão ser alteradas.')&&advanceUntil(next=>next.finished)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold"><FastForward className="mr-1 inline h-3.5 w-3.5"/>Fim da partida</button>
+      </div>}
     </div>
   );
 }

@@ -6,15 +6,11 @@ import { FatigueEngine } from './FatigueEngine.js';
 import { CommentaryEngine } from './CommentaryEngine.js';
 import { createStatistics, buildStatisticsSummary } from './StatisticsEngine.js';
 import { buildMatchAnalysis } from './MatchAnalysis.js';
-import { appendPointToReplay, createReplay } from '../../gameplay/replay/ReplayRecorder.js';
+import { appendLiveCoachEventToReplay, appendPointToReplay, appendTacticChangeToReplay, createReplay } from '../../gameplay/replay/ReplayRecorder.js';
+import { MATCH_TACTICS, chooseBotTactic, getMatchTactic } from './MatchTactics.js';
+import { CoachCommunicationManager, LiveCoachObserver, LiveTacticalAdjustmentManager, OpponentAdaptationTracker, buildLiveCoachReport, createLiveCoachState } from '../live-coach/index.js';
 
-export const MATCH_TACTICS = [
-  { id: 'equilibrado', label: 'Equilibrado', icon: 'Scale', desc: 'Neutro e seguro' },
-  { id: 'agressivo', label: 'Agressivo', icon: 'Flame', desc: 'Mais riscos, mais pressão' },
-  { id: 'defensivo', label: 'Defensivo', icon: 'Shield', desc: 'Consistência e paciência' },
-  { id: 'potencia', label: 'Potência', icon: 'Hammer', desc: 'Busca o smash e a definição' },
-  { id: 'tatico', label: 'Tático', icon: 'Brain', desc: 'Variações para explorar espaços' },
-];
+export { MATCH_TACTICS };
 
 const pointDisplay = (points) => ['0', '15', '30', '40'][Math.min(points, 3)] || '40';
 export const TEAM_IDS = Object.freeze({ A: 'A', B: 'B' });
@@ -45,7 +41,9 @@ export function createMatch(teamA, teamB, options = {}) {
     servingTeam: 'A', inTiebreak: false, superTiebreak: false, finished: false, winner: null,
     setScores: [], narration: [], stats: createStatistics(teams), analysis: null, pointNumber: 0,
     replayEnabled: Boolean(options.replayEnabled), replay: null,
+    activeTactics: { A: getMatchTactic(options.initialTacticId), B: getMatchTactic('equilibrado') }, tacticsTimeline: [],
     pointEvents: [], serverPlayerIndices: { A: 0, B: 0 }, tiebreakFirstServingTeam: null, tiebreakFirstServerPlayerIndices: null, tiebreakPointsPlayed: 0,
+    liveCoach:createLiveCoachState({coach:options.coach||null,settings:options.liveCoachSettings,initialPlan:getMatchTactic(options.initialTacticId)}), aiCoach:{lastAdjustmentPoint:-99,adjustments:0},
   };
   if (state.replayEnabled) state.replay = createReplay(state);
   return state;
@@ -64,6 +62,8 @@ function cloneState(prev) {
     tiebreakFirstServerPlayerIndices: prev.tiebreakFirstServerPlayerIndices ? { ...prev.tiebreakFirstServerPlayerIndices } : null,
     stats: JSON.parse(JSON.stringify(prev.stats)),
     replay: prev.replay ? JSON.parse(JSON.stringify(prev.replay)) : null,
+    activeTactics: { ...prev.activeTactics }, tacticsTimeline: [...(prev.tacticsTimeline || [])],
+    liveCoach: prev.liveCoach ? JSON.parse(JSON.stringify(prev.liveCoach)) : null, aiCoach: {...(prev.aiCoach||{})},
   };
 }
 
@@ -71,9 +71,32 @@ function snapshot(s) {
   return { setsA: s.setsA, setsB: s.setsB, gamesA: s.gamesA, gamesB: s.gamesB, pointsA: s.pointsA, pointsB: s.pointsB, inTiebreak: s.inTiebreak, superTiebreak: s.superTiebreak };
 }
 
-export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
-  if (prev.finished) return prev;
+export function applyMatchTactic(prev, tacticValue, teamId = 'A') {
+  if (prev.finished || !['A', 'B'].includes(teamId)) return prev;
+  const tactic = getMatchTactic(tacticValue);
+  if (prev.activeTactics?.[teamId]?.id === tactic.id) return prev;
   const state = cloneState(prev);
+  state.activeTactics[teamId] = tactic;
+  const change = { type: 'tactic_changed', teamId, tacticId: tactic.id, effectiveFromPoint: state.pointNumber + 1 };
+  state.tacticsTimeline.push(change);
+  if (state.replay) appendTacticChangeToReplay(state.replay, change);
+  return state;
+}
+
+export function decideLiveCoachSuggestion(prev, decision='ignore', components=[]) {
+  const suggestion=prev.liveCoach?.pendingSuggestion;if(!suggestion||prev.finished)return prev;const state=cloneState(prev);const record={type:'player_tactical_decision',suggestionId:suggestion.id,decision,components,effectiveFromPoint:state.pointNumber+1};state.liveCoach.decisions.push(record);state.liveCoach.pendingSuggestion=null;if(state.replay)appendLiveCoachEventToReplay(state.replay,record);
+  const applied=new LiveTacticalAdjustmentManager().apply({currentPlan:state.activeTactics.A,suggestion,decision,components,pointNumber:state.pointNumber,setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB});if(applied.adjustment){state.activeTactics.A=applied.plan;state.liveCoach.adjustments.push(applied.adjustment);const change={type:'tactic_changed',teamId:'A',tacticId:applied.plan.id,effectiveFromPoint:state.pointNumber+1,source:'coach_suggestion'};state.tacticsTimeline.push(change);if(state.replay){appendLiveCoachEventToReplay(state.replay,applied.adjustment);appendTacticChangeToReplay(state.replay,change);}}return state;
+}
+
+export function askLiveMatchPartner(prev) { const suggestion=prev.liveCoach?.pendingSuggestion;if(!suggestion)return prev;const state=cloneState(prev);const feedback=new CoachCommunicationManager().partnerFeedback({partner:state.teams.A[1],suggestion});state.liveCoach.partnerFeedback=[...(state.liveCoach.partnerFeedback||[]),feedback];if(state.replay)appendLiveCoachEventToReplay(state.replay,feedback);return state; }
+
+export function playPoint(prev, tactic) {
+  if (prev.finished) return prev;
+  let state = cloneState(prev);
+  if (tactic) state.activeTactics.A = getMatchTactic(tactic);
+  const proposedBotTactic = chooseBotTactic(state, 'B');
+  const botTactic = OpponentAdaptationTracker.shouldAdjust(state,2) ? proposedBotTactic : state.activeTactics.B;
+  if (state.activeTactics.B?.id !== botTactic.id) { const previousBotTactic=state.activeTactics.B;state = applyMatchTactic(state, botTactic, 'B');state.aiCoach=OpponentAdaptationTracker.record(state,botTactic.id);const detected=OpponentAdaptationTracker.detect(previousBotTactic,botTactic,state.pointNumber);if(detected){state.liveCoach.observations.push(detected);if(state.replay)appendLiveCoachEventToReplay(state.replay,detected);} }
   const random = createRandom(state.seed, state.randomState);
   const rally = new RallyEngine();
   const momentum = new MomentumEngine();
@@ -88,7 +111,7 @@ export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
   const serverPlayerId = state.teams[servingTeam][serverPlayerIndex]?.id;
   const scoreBefore = snapshot(state);
   const pointContext = createPointContext(state);
-  const result = rally.play({ teams: state.teams, servingTeam, serverPlayerId, tactic, random, stats: state.stats, match: pointContext });
+  const result = rally.play({ teams: state.teams, servingTeam, serverPlayerId, tactics: state.activeTactics, random, stats: state.stats, match: pointContext });
   if (!['A', 'B'].includes(result?.winnerTeamId || result?.winner)) throw new Error('Ponto encerrado sem winnerTeamId válido.');
   result.winnerTeamId = result.winnerTeamId || result.winner;
   result.loserTeamId = getOpponentTeamId(result.winnerTeamId);
@@ -102,6 +125,9 @@ export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
   if (scoreBefore.inTiebreak) state.tiebreakPointsPlayed += 1;
   state.pointEvents.push({ type: 'point_completed', pointNumber: state.pointNumber, servingTeamId: servingTeam, serverPlayerId, winnerTeamId: result.winnerTeamId, loserTeamId: result.loserTeamId, reason: result.result, finalShotPlayerId: result.finisher?.id || null, scoreBefore, scoreAfter: snapshot(state), rngStateAfter: state.randomState });
   if (state.replayEnabled && state.replay) appendPointToReplay(state.replay, prev, state, result);
+  const safeWindow=scoreBefore.gamesA!==state.gamesA||scoreBefore.gamesB!==state.gamesB||scoreBefore.setsA!==state.setsA||scoreBefore.setsB!==state.setsB;
+  const previousSuggestionCount=state.liveCoach.suggestions.length;state.liveCoach=new LiveCoachObserver().observe(state.liveCoach,{pointNumber:state.pointNumber,result,teams:state.teams,scoreBefore,scoreAfter:snapshot(state),setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB},{safeWindow});if(state.liveCoach.suggestions.length>previousSuggestionCount&&state.replay){appendLiveCoachEventToReplay(state.replay,state.liveCoach.observations.at(-1));appendLiveCoachEventToReplay(state.replay,state.liveCoach.suggestions.at(-1));}
+  if(state.finished)state.liveCoachReport=buildLiveCoachReport(state);
   return state;
 }
 

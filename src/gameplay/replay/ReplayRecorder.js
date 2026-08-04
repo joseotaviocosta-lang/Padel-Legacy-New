@@ -3,7 +3,7 @@ import { validateReplay } from './ReplayValidator.js';
 import { hashSeed } from '../../engine/match/random.js';
 
 const pad = (number, width = 4) => String(number).padStart(width, '0');
-const initialPositions = { A: [{ x: 3, y: 16 }, { x: 7, y: 16 }], B: [{ x: 3, y: 4 }, { x: 7, y: 4 }] };
+const initialPositions = { A: [{ x: .3, y: .8 }, { x: .7, y: .8 }], B: [{ x: .3, y: .2 }, { x: .7, y: .2 }] };
 
 export class ReplayRecorder {
   constructor(replay) { this.replay = replay; this.time = replay.events.reduce((end, event) => Math.max(end, event.t + event.duration), 0); }
@@ -19,10 +19,27 @@ export class ReplayRecorder {
 export function createReplay(state) {
   const token = hashSeed(state.seed);
   const teams = ['A', 'B'].map((key) => ({ id: `team-${key.toLowerCase()}`, side: key === 'A' ? 'bottom' : 'top', players: state.teams[key].map((player, index) => ({ id: player.id, name: player.name, court_side: index ? 'left' : 'right', initial_position: initialPositions[key][index] })) }));
-  const replay = { replay_version: REPLAY_VERSION, engine_version: state.engineVersion, replay_id: `replay-${token}`, match_id: `match-${token}`, seed: state.seed, created_at: new Date(token * 1000).toISOString(), court: { width: COURT.width, length: COURT.length, orientation: COURT.orientation }, teams, initial_score: scoreSnapshot(state), events: [] };
+  const replay = { replay_version: REPLAY_VERSION, engine_version: state.engineVersion, replay_id: `replay-${token}`, match_id: `match-${token}`, seed: state.seed, created_at: new Date(token * 1000).toISOString(), coordinate_space: 'normalized', court: { width: COURT.width, length: COURT.length, orientation: COURT.orientation }, teams, initial_score: scoreSnapshot(state), initial_tactics: { A: state.activeTactics?.A?.id || 'equilibrado', B: state.activeTactics?.B?.id || 'equilibrado' }, tactics_timeline: [], events: [] };
   const recorder = new ReplayRecorder(replay);
   recorder.record({ type: 'match_start' }); recorder.record({ type: 'set_start', data: { set: 1 } }); recorder.record({ type: 'game_start', data: { game: 1 } });
   return replay;
+}
+
+export function appendTacticChangeToReplay(replay, change) {
+  const recorder = new ReplayRecorder(replay);
+  const event = recorder.record({ type: 'tactic_changed', data: { team_id: change.teamId, tactic_id: change.tacticId, effective_from_point: change.effectiveFromPoint } });
+  replay.tactics_timeline = [...(replay.tactics_timeline || []), { event_id: event.id, ...event.data }];
+  replay.duration = recorder.time;
+  return replay;
+}
+
+export function appendLiveCoachEventToReplay(replay, event) {
+  if (!replay || !event?.type) return null;
+  const recorder = new ReplayRecorder(replay);
+  const recorded = recorder.record({ type:event.type,point_id:event.pointId||event.appliedAtPointId||null,data:{...event} });
+  replay.live_coach_timeline = [...(replay.live_coach_timeline||[]), recorded.id];
+  replay.duration = recorder.time;
+  return recorded;
 }
 
 const shotTarget = (team, index, shot) => normalizePosition({ x: index % 2 ? 3.2 : 6.8, y: team === 'A' ? (shot === 'lob' ? 1.5 : 4) : (shot === 'lob' ? 18.5 : 16), z: 0 });

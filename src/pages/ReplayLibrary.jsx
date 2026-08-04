@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { Download, Eye, Film, Heart, Search, Trash2 } from 'lucide-react';
 import { useCareer } from '@/careers/useCareer.js';
 import { replayLibrary } from '@/gameplay/replay/library/ReplayLibrary.js';
@@ -8,9 +8,10 @@ import '@/gameplay/replay/library/ReplayCareerIntegrationTest.js';
 import '@/gameplay/replay/library/ReplayLibraryDebug.js';
 
 export default function ReplayLibraryPage(){
-  const {activeCareer}=useCareer(); const careerId=activeCareer?.career_id; const [items,setItems]=useState([]); const [total,setTotal]=useState(0); const [search,setSearch]=useState(''); const [sort,setSort]=useState('newest'); const [selected,setSelected]=useState(null); const [error,setError]=useState('');
+  const {activeCareer}=useCareer(); const careerId=activeCareer?.career_id; const [params]=useSearchParams(); const requestedReplayId=params.get('replay'); const [items,setItems]=useState([]); const [total,setTotal]=useState(0); const [search,setSearch]=useState(''); const [sort,setSort]=useState('newest'); const [selected,setSelected]=useState(null); const [error,setError]=useState('');
   const refresh=async()=>{if(!careerId)return;const result=await replayLibrary.list(careerId,{search,sort,limit:50});setItems(result.items);setTotal(result.total);};
   useEffect(()=>{refresh().catch(()=>setError('Não foi possível abrir a biblioteca.'));},[careerId,search,sort]);
+  useEffect(()=>{if(!careerId||!requestedReplayId||selected?.item?.replay_id===requestedReplayId)return;const item=items.find(entry=>entry.replay_id===requestedReplayId);if(item)watch(item);else if(items.length)setError('Replay indisponível. Esta partida pode ter sido concluída antes de o replay ser registrado.');},[careerId,requestedReplayId,items,selected?.item?.replay_id]);
   async function watch(item){try{setError('');setSelected({item,replay:await replayLibrary.load(careerId,item.replay_id)});}catch(e){setError(e.message);}}
   async function download(item){try{const data=await replayLibrary.export(careerId,item.replay_id);const url=URL.createObjectURL(new Blob([data],{type:'application/json'}));const anchor=document.createElement('a');anchor.href=url;anchor.download=`${item.replay_id}.padel-replay.json`;anchor.click();URL.revokeObjectURL(url);}catch(e){setError(e.message);}}
   return <div className="px-4 md:px-8 py-6 max-w-6xl mx-auto space-y-5">

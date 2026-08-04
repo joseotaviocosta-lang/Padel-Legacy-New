@@ -14,7 +14,7 @@ export class RallyEngine {
     this.coordination = coordination;
   }
 
-  play({ teams, servingTeam, serverPlayerId, tactic, random, stats, match = {} }) {
+  play({ teams, servingTeam, serverPlayerId, tactics, tactic, random, stats, match = {} }) {
     let activeTeam = servingTeam;
     let playerIndex = Math.max(0, teams[activeTeam].findIndex(player => player.id === serverPlayerId));
     let pressure = 20;
@@ -31,10 +31,11 @@ export class RallyEngine {
       let reasons = ['início do ponto'];
       if (rallyLength > 1) {
         const context = createDecisionContext({ player, teams, activeTeam, pressure, match, memory });
+        const activeTactic = tactics?.[activeTeam] || (activeTeam === 'A' ? tactic : null);
         const decision = this.decision.chooseDetailed({
           player,
           pressure,
-          tactic: activeTeam === 'A' ? tactic : null,
+          tactic: activeTactic,
           random,
           context,
         });
@@ -63,7 +64,8 @@ export class RallyEngine {
 
       const finishingZone = player.position.zone;
       recordShot(stats, player, shot);
-      this.fatigue.consume(player, shot, rallyLength);
+      const activeTactic = tactics?.[activeTeam] || (activeTeam === 'A' ? tactic : null);
+      this.fatigue.consume(player, shot, rallyLength, activeTactic);
 
       const rawSkill = this.skill(player, shot);
       // Match outcomes compound point-level differences through games and sets;
@@ -72,14 +74,16 @@ export class RallyEngine {
       const skill = 50 + (rawSkill - 50) * 0.2;
       const confidence = (player.confidence - 50) * 0.14;
       const energyPenalty = (100 - player.energy) * 0.12;
-      const risk = this.risk(shot, tactic, activeTeam === 'A', player, match);
+      const risk = this.risk(shot, activeTactic, true, player, match);
       const execution = skill + confidence - energyPenalty - risk + (random.next() - 0.5) * 28;
       const difficulty = 38 + pressure * 0.28 + rallyLength * 0.18;
       if (![rawSkill, skill, confidence, energyPenalty, risk, execution, difficulty].every(Number.isFinite)) {
         throw new Error(`Probabilidade de rally inválida no golpe ${shot} do jogador ${player.id}.`);
       }
 
-      memory.record({ team: activeTeam, playerId: player.id, shot, pressure, execution, difficulty });
+      const receivingTeam = activeTeam === 'A' ? 'B' : 'A';
+      const targetPlayer = teams[receivingTeam][(playerIndex + 1) % teams[receivingTeam].length];
+      memory.record({ team: activeTeam, playerId: player.id, targetPlayerId: targetPlayer?.id || null, shot, pressure, execution, difficulty, zone: player.position.zone });
 
       if (execution < difficulty) {
         const winner = activeTeam === 'A' ? 'B' : 'A';
@@ -195,8 +199,7 @@ export class RallyEngine {
 
   risk(shot, tactic, isTeamA, player, match = {}) {
     let risk = { serve: 4, drive: 8, backhand: 7, lob: 6, volley: 8, bandeja: 7, smash: 16, chiquita: 12 }[shot] || 8;
-    if (isTeamA && tactic?.id === 'defensivo') risk -= 3;
-    if (isTeamA && ['agressivo', 'potencia'].includes(tactic?.id)) risk += 3;
+    if (isTeamA) risk *= Number(tactic?.riskModifier || 1);
     if (match.importantPoint && ['smash', 'chiquita'].includes(shot)) {
       const composure = Number(player.behavior?.tendencies?.pressure_resistance ?? 50);
       risk += (50 - composure) / 12;

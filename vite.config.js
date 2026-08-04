@@ -16,6 +16,11 @@ export default defineConfig({
     strictPort: true,
     watch: { ignored: ['**/src-tauri/target/**', '**/target/**'] },
   },
+  preview: {
+    host: '127.0.0.1',
+    port: 4174,
+    strictPort: true,
+  },
   build: {
     target: ['es2021', 'chrome100', 'safari13'],
     manifest: true,

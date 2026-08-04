@@ -293,6 +293,27 @@ export function migrateCareer(career) {
     data.save_schema_version = 14;
     version = 14;
   }
+  if (version < 15) {
+    data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
+    const timestamp = data.updated_at || data.created_at || new Date().toISOString();
+    data.entities.Mission = (Array.isArray(data.entities.Mission) ? data.entities.Mission : []).map(mission => ({ ...mission, xp_reward:Number(mission.xp_reward ?? mission.reward_xp ?? 0),coins_reward:Number(mission.coins_reward ?? mission.reward_coins ?? 0),mission_type:mission.mission_type||'semanal' }));
+    data.entities.MissionProgress = (Array.isArray(data.entities.MissionProgress) ? data.entities.MissionProgress : []).map(row => {
+      const progress = Number(row.progress ?? row.current_count ?? 0); const rewarded = Boolean(row.reward_delivered || row.claimed);
+      return { ...row, progress, status: rewarded?'rewarded':row.completed?'completed':progress>0?'in_progress':'available',reward_delivered:rewarded,completed_at:row.completed_at||(row.completed?timestamp:null),reward_claimed_at:row.reward_claimed_at||(rewarded?timestamp:null),completion_notified_at:row.completion_notified_at||(rewarded?timestamp:null),mission_schema_version:2 };
+    });
+    const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data);
+    data.tutorial = tutorial; data.player = { ...(data.player||{}), tutorial_onboarding:tutorial, onboarding_completed:tutorial.status==='completed', onboarding_stage:tutorial.currentStepId };
+    data.save_schema_version = 15; version = 15;
+  }
+  if (version < 16) {
+    const defaults={liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true};
+    data.live_coach_settings={...defaults,...(data.live_coach_settings||data.player?.live_coach_settings||{})};
+    data.live_coach_history=Array.isArray(data.live_coach_history)?data.live_coach_history:[];
+    data.coach_match_observations=Array.isArray(data.coach_match_observations)?data.coach_match_observations:[];
+    data.tactical_adjustment_history=Array.isArray(data.tactical_adjustment_history)?data.tactical_adjustment_history:[];
+    data.player={...(data.player||{}),live_coach_settings:data.live_coach_settings};
+    data.save_schema_version=16;version=16;
+  }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }
 

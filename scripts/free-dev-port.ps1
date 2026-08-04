@@ -48,38 +48,8 @@ try {
         exit 0
     }
 
-    Write-Host "[dev-port] Porta $Port ocupada por $($listeners.Count) processo(s)." -ForegroundColor Yellow
-
-    foreach ($processId in $listeners) {
-        $description = Get-ProcessDescription -ProcessId $processId
-        $process = Get-Process -Id $processId -ErrorAction SilentlyContinue
-        if (-not $process) {
-            Write-Host "[dev-port] $description; nenhuma acao necessaria." -ForegroundColor DarkYellow
-            continue
-        }
-
-        Write-Host "[dev-port] Encerrando somente $description..." -ForegroundColor Yellow
-        try {
-            Stop-Process -Id $processId -Force -ErrorAction Stop
-        }
-        catch {
-            Write-Error "Nao foi possivel encerrar $description. Abra o PowerShell como administrador ou execute: Stop-Process -Id $processId -Force. Detalhes: $($_.Exception.Message)"
-            exit 1
-        }
-    }
-
-    $deadline = [DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
-    do {
-        Start-Sleep -Milliseconds 250
-        $remaining = @(Get-ListeningProcessIds -TargetPort $Port)
-        if ($remaining.Count -eq 0) {
-            Write-Host "[dev-port] Porta $Port liberada." -ForegroundColor Green
-            exit 0
-        }
-    } while ([DateTime]::UtcNow -lt $deadline)
-
-    $details = ($remaining | ForEach-Object { Get-ProcessDescription -ProcessId $_ }) -join ', '
-    Write-Error "Tempo limite de $TimeoutSeconds segundo(s): a porta $Port continua ocupada por $details. Comando manual: Stop-Process -Id $($remaining -join ',') -Force"
+    $details = ($listeners | ForEach-Object { Get-ProcessDescription -ProcessId $_ }) -join ', '
+    Write-Error "Porta $Port ja esta em uso por $details. O processo nao foi encerrado, para nao derrubar um servidor Vite ativo. Feche explicitamente a instancia antiga ou reutilize http://127.0.0.1:$Port/."
     exit 1
 }
 catch {

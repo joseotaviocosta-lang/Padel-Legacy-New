@@ -31,13 +31,18 @@
     "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js",
     "test:onboarding-v2": "node scripts/test-onboarding-v2.mjs",
     "test:tutorial-chronology": "node scripts/test-tutorial-chronology.mjs",
+    "test:missions": "node scripts/test-mission-system-v2.mjs",
+    "validate:missions": "node scripts/test-mission-system-v2.mjs",
     "test:ui-quality": "node scripts/audit-ui-quality.mjs",
     "test:career-systems": "node scripts/test-career-systems.mjs",
     "test:players": "node scripts/test-player-system.mjs",
     "test:player-builds": "node scripts/test-player-builds.mjs",
     "test:training-v2": "node scripts/test-training-system-v2.mjs",
     "test:tournament-registration": "node scripts/test-tournament-registration-v2.mjs",
-    "test:partner-offers": "node scripts/test-partner-offers-v2.mjs"
+    "test:partner-offers": "node scripts/test-partner-offers-v2.mjs",
+    "test:match-playback": "node scripts/test-match-playback-tactics.mjs",
+    "test:vite-config": "node scripts/test-vite-config.mjs",
+    "test:live-coach": "node scripts/test-live-coach.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

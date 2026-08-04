@@ -80,7 +80,7 @@ try {
   };
   const firstMigration = migrateCareer(legacyCareer);
   const secondMigration = migrateCareer(firstMigration.data);
-  assert(firstMigration.data.save_schema_version === 13 && firstMigration.data.metadata.pressJournalistId === 'j12', 'Migration não preservou referência canônica recuperável j12.');
+  assert(firstMigration.data.save_schema_version === 16 && firstMigration.data.metadata.pressJournalistId === 'j12', 'Migration não preservou referência canônica recuperável j12.');
   assert(secondMigration.migrated === false, 'Migration de jornalistas não é idempotente.');
   assert(firstMigration.data.entities.Other[0].id === 'keep' && firstMigration.data.metadata.preserved === 'sim', 'Migration alterou dados não relacionados.');
   assert(reconcileJournalistCatalog(firstMigration.data.entities.PressJournalist, profile.id).missing.some(item => item.id === 'j12'), 'Save parcial não recupera o jornalista j12.');

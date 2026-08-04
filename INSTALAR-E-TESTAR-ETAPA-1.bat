@@ -5,8 +5,9 @@ echo =============================================
 echo PADEL LEGACY - ETAPA 1 OFFLINE
  echo =============================================
 echo.
-echo Encerrando processos antigos na porta 5174...
-for /f "tokens=5" %%a in ('netstat -ano ^| findstr ":5174" ^| findstr "LISTENING"') do taskkill /PID %%a /F >nul 2>&1
+echo Verificando se a porta 5174 esta disponivel...
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File ".\scripts\free-dev-port.ps1" -Port 5174
+if errorlevel 1 goto erro
 
 echo Instalando dependencias locais...
 call npm install

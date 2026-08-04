@@ -1,0 +1,1 @@
+import assert from 'node:assert/strict';import {runPadelLiveCoachTest} from '../src/engine/live-coach/LiveCoachTest.js';const result=runPadelLiveCoachTest();assert.equal(result.ok,true);assert(Object.values(result).every(Boolean));console.log('PadelLiveCoachTest:',result);

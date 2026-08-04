@@ -1,5 +1,8 @@
 import { localGame } from '@/api/localGameClient.js';
 import { normalizeCourtSide, sideMissionRepair } from '@/lib/tutorialSideState.js';
+import { deterministicMissionSelection, missionRuntime, missionStatus, requirementsMet, validateMissionReward } from '@/missions/missionSystem.js';
+import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
+import { PERIODIC_MISSIONS } from '@/missions/periodicMissionCatalog.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 export const PLAY_STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
@@ -423,7 +426,7 @@ const LEGACY_TUTORIAL_MISSIONS = [
 // Catálogo curto e orientado ao ciclo principal. O legado acima permanece no
 // arquivo apenas para reconhecer títulos antigos e desativá-los sem apagar o
 // progresso ou as recompensas já persistidas.
-export const TUTORIAL_MISSIONS = [
+const SHORT_TUTORIAL_MISSIONS = [
   { title: 'Bem-vindo ao Padel Legacy', description: 'Conheça o painel e o ciclo da carreira.', why_it_matters: 'O painel mostra o que fazer agora e como acompanhar sua evolução.', action_label: 'Ver painel', mission_type: 'tutorial', objective_type: 'visit_career', target_count: 1, xp_reward: 20, coins_reward: 50, tutorial_order: 1, tutorial_route: '/game' },
   { title: 'Nome do atleta', description: 'Defina como seu atleta será chamado em partidas e notícias.', why_it_matters: 'O nome do atleta é separado do nome usado para identificar o save.', action_label: 'Definir nome', mission_type: 'tutorial', objective_type: 'set_player_name', target_count: 1, xp_reward: 25, coins_reward: 50, tutorial_order: 2, tutorial_route: '/game/missions' },
   { title: 'Escolha mão e lado', description: 'Defina sua mão dominante e o lado preferencial de forma independente.', why_it_matters: 'Esses eixos influenciam ângulos e posicionamento sem proibir estilos.', action_label: 'Escolher mão e lado', mission_type: 'tutorial', objective_type: 'choose_court_side', target_count: 1, xp_reward: 30, coins_reward: 50, tutorial_order: 3, tutorial_route: '/game/missions' },
@@ -436,16 +439,19 @@ export const TUTORIAL_MISSIONS = [
   { title: 'Conclua seus primeiros passos', description: 'Você conheceu os principais sistemas. Volte ao painel, veja suas recomendações e confirme o início da carreira livre.', why_it_matters: 'O painel reúne sua situação, compromissos e ações recomendadas.', action_label: 'Ir para o painel', mission_type: 'tutorial', objective_type: 'finish_tutorial', target_count: 1, xp_reward: 50, coins_reward: 100, tutorial_order: 10, tutorial_route: '/game', medal_reward: 'Primeiros Passos' },
 ];
 
+export const TUTORIAL_MISSIONS = TUTORIAL_MISSION_CATALOG;
+
 export async function ensureTutorialMissionCatalog() {
   const existing = await localGame.entities.Mission.list('-created_date', 300);
   const titles = new Set((existing || []).map(m => m.title));
-  const missing = TUTORIAL_MISSIONS.filter(m => !titles.has(m.title));
+  const fullCatalog = [...TUTORIAL_MISSIONS, ...PERIODIC_MISSIONS];
+  const missing = fullCatalog.filter(m => !titles.has(m.title));
   if (missing.length) {
     try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
     catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
   }
   const canonicalByTitle = new Map(TUTORIAL_MISSIONS.map(mission => [mission.title, mission]));
-  const legacyTitles = new Set([...LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title), 'Defina estilo e arquétipo', 'Sua carreira, suas decisões']);
+  const legacyTitles = new Set([...LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title), ...SHORT_TUTORIAL_MISSIONS.map(mission => mission.title), 'Defina estilo e arquétipo', 'Sua carreira, suas decisões']);
   const updates = (existing || [])
     .filter(mission => mission?.id && mission.mission_type === 'tutorial' && (legacyTitles.has(mission.title) || canonicalByTitle.has(mission.title)))
     .map(mission => ({ ...mission, ...(canonicalByTitle.get(mission.title) || {}), is_active: canonicalByTitle.has(mission.title) }));
@@ -484,6 +490,8 @@ async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRo
   const profiles = await localGame.entities.PlayerProfile.filter({ id: profileId });
   const profile = profiles?.[0];
   if (!profile) return progressRow;
+  const rewardValidation = validateMissionReward(mission);
+  if (!rewardValidation.valid) throw new Error(rewardValidation.errors.join('; '));
   const medal = mission.medal_reward;
   const medals = medal && !(profile.medals || []).includes(medal) ? [...(profile.medals || []), medal] : (profile.medals || []);
   await localGame.entities.PlayerProfile.update(profile.id, {
@@ -492,8 +500,9 @@ async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRo
     medals,
   });
   const completedAt = new Date().toISOString();
-  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, reward_delivered: true, completed_at: completedAt, completion_notified_at: completedAt });
-  emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial' });
+  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { status: 'rewarded', completed: true, claimed: true, reward_delivered: true, completed_at: completedAt, reward_claimed_at: completedAt, completion_notified_at: completedAt });
+  const cycleId = progressRow.period_key || 'tutorial:career';
+  emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial', cycleId, completedAt, notificationKey: `mission-completed:${profileId}:${mission.id}:${cycleId}` });
   return claimed;
 }
 
@@ -511,45 +520,54 @@ export async function syncMissionProgressPeriods(profile, missions = null, rows 
   const careerDate = profile.career_date || todayStr();
   const activeMissions = missions || await localGame.entities.Mission.filter({ is_active: true });
   const progressRows = rows || await localGame.entities.MissionProgress.filter({ profile_id: profile.id });
-  const byMission = new Map((progressRows || []).map(row => [row.mission_id, row]));
   const synced = [];
 
   for (const mission of activeMissions || []) {
-    const row = byMission.get(mission.id);
-    if (mission.mission_type === 'tutorial') { if (row) synced.push(row); continue; }
+    const rowsForMission = progressRows.filter(row => row.mission_id === mission.id);
+    if (mission.mission_type === 'tutorial') { synced.push(...rowsForMission); continue; }
     const periodKey = missionPeriodKey(mission.mission_type, careerDate);
-    if (!row) continue;
-    if (row.period_key !== periodKey) {
-      const reset = await localGame.entities.MissionProgress.update(row.id, { progress: 0, completed: false, claimed: false, period_key: periodKey, period_ends_at: missionPeriodEndsAt(mission.mission_type, careerDate) });
-      synced.push(reset);
-    } else synced.push(row);
+    for (const row of rowsForMission) {
+      if (row.period_key !== periodKey && !row.claimed && !row.completed) synced.push(await localGame.entities.MissionProgress.update(row.id, { status: 'expired', expired_at: new Date().toISOString() }));
+      else synced.push(row);
+    }
   }
   return synced;
 }
 
-export async function incrementMissionProgress(profileId, objectiveTypes, count = 1, careerDateOverride = null) {
+export async function incrementMissionProgress(profileId, objectiveTypes, count = 1, careerDateOverride = null, options = {}) {
   const completedNow = [];
   try {
+    if (!options.allowDuringHydration && !missionRuntime.canProcessEvents()) return completedNow;
     const careerDate = careerDateOverride || await missionCareerDate(profileId);
     const types = Array.isArray(objectiveTypes) ? objectiveTypes : [objectiveTypes];
     const allMissions = await ensureTutorialMissionCatalog();
+    const profilesForSelection = await localGame.entities.PlayerProfile.filter({ id: profileId });
+    const selectionProfile = profilesForSelection?.[0] || {};
+    const selectedPeriodicIds = new Set();
+    for (const category of ['diaria','semanal','mensal','sazonal']) {
+      const pool = allMissions.filter(m => m.mission_type === category && requirementsMet(m, selectionProfile, { tournamentsUnlocked:true, hasReplay:false, sponsorsUnlocked:false }));
+      const limit = category === 'diaria' || category === 'semanal' ? 3 : 20;
+      deterministicMissionSelection(pool,{careerId:profileId,cycleId:missionPeriodKey(category,careerDate),category,limit}).forEach(m => selectedPeriodicIds.add(m.id));
+    }
     let progressRows = await localGame.entities.MissionProgress.filter({ profile_id: profileId });
     for (const type of types) {
       const missions = (allMissions || []).filter(m => m.is_active !== false && m.objective_type === type);
       for (const m of missions) {
+        if (m.mission_type !== 'tutorial' && !selectedPeriodicIds.has(m.id)) continue;
         if (!(await tutorialUnlocked(m, allMissions, progressRows))) continue;
         const periodKey = m.mission_type === 'tutorial' ? 'tutorial:career' : missionPeriodKey(m.mission_type, careerDate);
-        const prog = progressRows.find(p => p.mission_id === m.id);
-        const isCurrentPeriod = m.mission_type === 'tutorial' || prog?.period_key === periodKey;
-        const baseProgress = isCurrentPeriod ? Number(prog?.progress || 0) : 0;
-        if (prog?.claimed) continue;
+        const prog = progressRows.find(p => p.mission_id === m.id && (m.mission_type === 'tutorial' || p.period_key === periodKey));
+        const baseProgress = Number(prog?.progress || 0);
+        if (prog?.claimed || prog?.reward_delivered || missionStatus(prog) === 'expired') continue;
+        if (options.triggerEventId && prog?.last_trigger_event_id === options.triggerEventId) continue;
         const newProgress = Math.min(Number(m.target_count || 1), baseProgress + count);
         let updated;
-        if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, { progress: newProgress, completed: newProgress >= Number(m.target_count || 1), claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate) });
-        else updated = await localGame.entities.MissionProgress.create({ mission_id: m.id, profile_id: profileId, progress: newProgress, completed: newProgress >= Number(m.target_count || 1), claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate) });
-        progressRows = [...progressRows.filter(p => p.mission_id !== m.id), updated];
+        const completed = newProgress >= Number(m.target_count || 1); const status = completed ? 'completed' : 'in_progress';
+        if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, { status, progress: newProgress, completed, claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate), last_trigger_event_id: options.triggerEventId || null });
+        else updated = await localGame.entities.MissionProgress.create({ mission_id: m.id, profile_id: profileId, status, progress: newProgress, completed, claimed: false, reward_delivered: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate), last_trigger_event_id: options.triggerEventId || null });
+        progressRows = [...progressRows.filter(p => p.id !== updated.id), updated];
         if (newProgress >= Number(m.target_count || 1)) {
-          const claimed = await rewardMissionAutomatically(profileId, m, updated);
+          const claimed = options.silent || options.noReward ? await localGame.entities.MissionProgress.update(updated.id, { status: 'rewarded', claimed: true, reward_delivered: true, completed: true, completed_at: new Date().toISOString(), reward_claimed_at: new Date().toISOString(), completion_notified_at: new Date().toISOString(), migration_recognized: true }) : await rewardMissionAutomatically(profileId, m, updated);
           progressRows = [...progressRows.filter(p => p.mission_id !== m.id), claimed];
           completedNow.push(m);
         }

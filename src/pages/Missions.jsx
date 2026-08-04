@@ -11,6 +11,7 @@ import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
 import { TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
+import { deterministicMissionSelection, missionStatus, requirementsMet } from '@/missions/missionSystem.js';
 
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
@@ -21,12 +22,20 @@ const TABS = [
 ];
 
 const EXTRA_MISSIONS = [
-  { title: 'Rotina de atleta', description: 'Complete 12 sessões de treino no mês', mission_type: 'mensal', objective_type: 'complete_training', target_count: 12, xp_reward: 180, coins_reward: 120 },
-  { title: 'Calendário competitivo', description: 'Dispute 8 partidas no mês', mission_type: 'mensal', objective_type: 'play_matches', target_count: 8, xp_reward: 220, coins_reward: 150 },
-  { title: 'Caçador de troféus', description: 'Vença 2 torneios no mês', mission_type: 'mensal', objective_type: 'win_tournament', target_count: 2, xp_reward: 500, coins_reward: 350 },
-  { title: 'Temporada consistente', description: 'Vença 25 partidas na temporada', mission_type: 'sazonal', objective_type: 'win_matches', target_count: 25, xp_reward: 1200, coins_reward: 900 },
-  { title: 'Presença no circuito', description: 'Participe de 12 torneios na temporada', mission_type: 'sazonal', objective_type: 'join_tournament', target_count: 12, xp_reward: 1000, coins_reward: 750 },
-  { title: 'Temporada de campeão', description: 'Conquiste 3 torneios na temporada', mission_type: 'sazonal', objective_type: 'win_tournament', target_count: 3, xp_reward: 2000, coins_reward: 1500, medal_reward: 'Temporada de Campeão' },
+  { id:'daily-training',title:'Movimente-se',description:'Complete 1 treino leve ou normal.',mission_type:'diaria',objective_type:'complete_training',target_count:1,xp_reward:20,coins_reward:25,difficulty:'baixa',cycle_scope:'career-day' },
+  { id:'daily-calendar',title:'Planeje o dia',description:'Revise o calendário da carreira.',mission_type:'diaria',objective_type:'visit_calendar',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
+  { id:'daily-news',title:'Informe-se',description:'Leia uma notícia do circuito.',mission_type:'diaria',objective_type:'visit_journal',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
+  { id:'daily-match',title:'Entre em quadra',description:'Jogue ou simule 1 partida.',mission_type:'diaria',objective_type:'play_matches',target_count:1,xp_reward:30,coins_reward:35,difficulty:'baixa',cycle_scope:'career-day' },
+  { id:'weekly-training',title:'Semana de evolução',description:'Complete 4 treinos.',mission_type:'semanal',objective_type:'complete_training',target_count:4,xp_reward:100,coins_reward:90,difficulty:'média',cycle_scope:'career-week' },
+  { id:'weekly-matches',title:'Ritmo competitivo',description:'Dispute 2 partidas.',mission_type:'semanal',objective_type:'play_matches',target_count:2,xp_reward:120,coins_reward:100,difficulty:'média',cycle_scope:'career-week' },
+  { id:'weekly-win',title:'Vitória da semana',description:'Vença 1 partida.',mission_type:'semanal',objective_type:'win_matches',target_count:1,xp_reward:130,coins_reward:120,difficulty:'média',cycle_scope:'career-week' },
+  { id:'weekly-recovery',title:'Carga controlada',description:'Realize 2 ações de recuperação.',mission_type:'semanal',objective_type:'use_recovery',target_count:2,xp_reward:90,coins_reward:80,difficulty:'média',cycle_scope:'career-week' },
+  { id:'monthly-training',title:'Bloco de preparação',description:'Complete 12 sessões de treino no mês.',mission_type:'mensal',objective_type:'complete_training',target_count:12,xp_reward:300,coins_reward:240,difficulty:'alta',cycle_scope:'career-month' },
+  { id:'monthly-matches',title:'Calendário competitivo',description:'Dispute 8 partidas no mês.',mission_type:'mensal',objective_type:'play_matches',target_count:8,xp_reward:380,coins_reward:300,difficulty:'alta',cycle_scope:'career-month' },
+  { id:'monthly-tournaments',title:'Presença mensal',description:'Dispute 3 torneios no mês.',mission_type:'mensal',objective_type:'join_tournament',target_count:3,xp_reward:450,coins_reward:350,difficulty:'alta',cycle_scope:'career-month',requirements:['has-partner'] },
+  { id:'season-wins',title:'Temporada consistente',description:'Vença 25 partidas na temporada.',mission_type:'sazonal',objective_type:'win_matches',target_count:25,xp_reward:1200,coins_reward:900,difficulty:'muito alta',cycle_scope:'career-season' },
+  { id:'season-tour',title:'Presença no circuito',description:'Participe de 12 torneios na temporada.',mission_type:'sazonal',objective_type:'join_tournament',target_count:12,xp_reward:1000,coins_reward:750,difficulty:'muito alta',cycle_scope:'career-season',requirements:['has-partner'] },
+  { id:'season-titles',title:'Temporada de campeão',description:'Conquiste 3 torneios na temporada.',mission_type:'sazonal',objective_type:'win_tournament',target_count:3,xp_reward:2000,coins_reward:1500,difficulty:'muito alta',cycle_scope:'career-season',requirements:['has-partner'],medal_reward:'Temporada de Campeão' },
 ];
 
 function daysRemaining(careerDate, endDate) {
@@ -46,6 +55,8 @@ async function syncExtendedMissionCatalog() {
       for (const mission of stillMissing) await localGame.entities.Mission.create({ ...mission, is_active: true });
     }
   }
+  const aliases = existing.filter(mission => mission?.id && (mission.reward_xp != null || mission.reward_coins != null || !mission.mission_type)).map(mission => ({ ...mission, xp_reward:Number(mission.xp_reward ?? mission.reward_xp ?? 0),coins_reward:Number(mission.coins_reward ?? mission.reward_coins ?? 0),mission_type:mission.mission_type||'semanal',is_active:mission.is_active!==false }));
+  if (aliases.length) await localGame.entities.Mission.bulkUpdate(aliases);
 }
 
 let catalogSyncPromise = null;
@@ -197,6 +208,14 @@ export default function Missions() {
     }
   }
 
+  async function confirmUnderstanding() {
+    if (!nextTutorial?.objective_type || savingChoice || !profile?.id) return;
+    setSavingChoice(true); setActionError('');
+    try { await incrementMissionProgress(profile.id, nextTutorial.objective_type, 1, profile.career_date, { triggerEventId: `confirm:${nextTutorial.id}` }); await load(); }
+    catch (error) { setActionError(error.message || 'Não foi possível confirmar esta etapa.'); }
+    finally { setSavingChoice(false); }
+  }
+
   const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial').sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
   const nextTutorial = tutorialStatus === 'in_progress' ? tutorialMissions.find(m => m.objective_type === tutorialStep?.objectiveType) : null;
   const tutorialDone = getTutorialProgress(profile?.tutorial_onboarding).completed;
@@ -206,7 +225,11 @@ export default function Missions() {
   const buildPreview = draftStyle && profile?.court_side
     ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle })
     : null;
-  const filtered = tab === 'tutorial' ? tutorialMissions : missions.filter(m => m.mission_type === tab);
+  const currentChapter = tutorialStep?.chapter;
+  const categoryPool = missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked:true, hasReplay:false, sponsorsUnlocked:false }));
+  const cycleId = tab === 'tutorial' ? 'tutorial:career' : missionPeriodKey(tab, profile?.career_date);
+  const categoryLimit = tab === 'diaria' ? 3 : tab === 'semanal' ? 3 : 20;
+  const filtered = tab === 'tutorial' ? tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter) : deterministicMissionSelection(categoryPool,{careerId:profile?.id,cycleId,category:tab,limit:categoryLimit});
   const summary = useMemo(() => {
     const current = filtered;
     return { total: current.length, completed: current.filter(m => progress[m.id]?.claimed).length };
@@ -264,7 +287,7 @@ export default function Missions() {
           <div className="flex-1"><p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p><h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2><p className="text-sm text-muted-foreground mt-1">{nextTutorial.description}</p>{nextTutorial.why_it_matters && <p className="mt-2 text-xs"><strong>Por que isso importa?</strong> {nextTutorial.why_it_matters}</p>}
             <div className="mt-3 flex items-center gap-3"><ProgressBar value={progress[nextTutorial.id]?.progress || 0} max={nextTutorial.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{progress[nextTutorial.id]?.progress || 0}/{nextTutorial.target_count || 1}</span></div>
           </div>
-          {nextTutorial.tutorial_route && <button type="button" onClick={() => navigate(nextTutorial.tutorial_route)} className="shrink-0 inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>}
+          <div className="flex shrink-0 flex-col gap-2">{nextTutorial.tutorial_route && <button type="button" onClick={() => navigate(nextTutorial.tutorial_route)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>}{nextTutorial.completion_type === 'confirm_understanding' && <button type="button" disabled={savingChoice} onClick={confirmUnderstanding} className="rounded-xl border px-4 py-2 text-xs font-bold">Entendi como funciona</button>}</div>
         </div>
       </div> : !nextTutorial && tutorialStatus === 'completed' ? <div className="glass rounded-2xl border border-primary/40 p-5 flex items-center gap-4"><Award className="h-9 w-9 text-primary" /><div><p className="font-black">Tutorial concluído!</p><p className="text-sm text-muted-foreground">Você conheceu os principais sistemas do Padel Legacy.</p></div></div> : null}
 
@@ -284,18 +307,18 @@ export default function Missions() {
       {filtered.length === 0 ? <SectionCard title="Missões" icon={Target}><EmptyState icon={Target} message="Nenhuma missão ativa." /></SectionCard> : <div className="space-y-3 animate-stagger">
         {filtered.map((m, index) => {
           const pr = progress[m.id];
-          const done = Boolean(pr?.claimed);
+          const status = missionStatus(pr,{locked:tab==='tutorial'&&!pr?.claimed&&nextTutorial?.id!==m.id}); const done = status === 'rewarded';
           const current = Number(pr?.progress || 0);
-          const locked = tab === 'tutorial' && !done && nextTutorial?.id !== m.id;
+          const locked = status === 'locked';
           return <div key={m.id} className={`glass rounded-2xl p-4 ${done ? 'opacity-60' : ''} ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id ? 'border-primary/40' : ''}`}>
             <div className="flex items-start gap-3">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${done ? 'bg-primary/20' : locked ? 'bg-secondary/60' : 'bg-amber-500/15'}`}>{done ? <Check className="h-5 w-5 text-primary" /> : locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Target className="h-5 w-5 text-amber-400" />}</div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2"><p className="font-semibold text-sm">{tab === 'tutorial' && <span className="text-primary mr-2">#{index + 1}</span>}{m.title}</p><span className="text-[10px] uppercase font-bold text-muted-foreground">{done ? 'Concluída' : locked ? 'Bloqueada' : 'Em andamento'}</span></div>
+                <div className="flex items-center justify-between gap-2"><p className="font-semibold text-sm">{tab === 'tutorial' && <span className="text-primary mr-2">#{index + 1}</span>}{m.title}</p><span className="text-[10px] uppercase font-bold text-muted-foreground">{{rewarded:'Recompensa recebida',completed:'Concluída',locked:'Bloqueada',available:'Disponível',in_progress:'Em andamento',expired:'Expirada'}[status]}</span></div>
                 <p className="text-xs text-muted-foreground mt-1">{m.description}</p>
                 {m.why_it_matters && <p className="mt-2 text-xs"><strong>Por que importa:</strong> {m.why_it_matters}</p>}
                 <div className="mt-3 flex items-center gap-3"><ProgressBar value={done ? m.target_count : current} max={m.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{done ? m.target_count : current}/{m.target_count || 1}</span></div>
-                <div className="flex flex-wrap gap-3 mt-3 text-xs"><span className="flex items-center gap-1 text-cyan-400"><Zap className="h-3.5 w-3.5" />+{m.xp_reward || 0} XP</span><span className="flex items-center gap-1 text-amber-400"><Coins className="h-3.5 w-3.5" />+{m.coins_reward || 0}</span>{m.medal_reward && <span className="flex items-center gap-1 text-primary"><Award className="h-3.5 w-3.5" />{m.medal_reward}</span>}</div>
+                {(Number(m.xp_reward)>0||Number(m.coins_reward)>0||m.medal_reward) ? <div className="flex flex-wrap gap-3 mt-3 text-xs">{Number(m.xp_reward)>0&&<span className="flex items-center gap-1 text-cyan-400"><Zap className="h-3.5 w-3.5" />+{m.xp_reward} XP</span>}{Number(m.coins_reward)>0&&<span className="flex items-center gap-1 text-amber-400"><Coins className="h-3.5 w-3.5" />+{m.coins_reward}</span>}{m.medal_reward && <span className="flex items-center gap-1 text-primary"><Award className="h-3.5 w-3.5" />{m.medal_reward}</span>}</div> : <p className="mt-3 text-xs text-muted-foreground">Etapa informativa</p>}
               </div>
               {!locked && !done && m.tutorial_route && nextTutorial?.id !== m.id && <button type="button" onClick={() => navigate(m.tutorial_route)} className="text-xs font-bold text-primary inline-flex items-center gap-1">{m.action_label || 'Abrir'} <ArrowRight className="h-3.5 w-3.5" /></button>}
             </div>

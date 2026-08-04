@@ -2,6 +2,7 @@ import { validateReplay } from '../ReplayValidator.js';
 import { checksumReplay } from './ReplayChecksum.js';
 import { createReplayMetadata, shouldAutoSave } from './ReplayMetadata.js';
 import { createReplayBackend } from './ReplayLibraryBackend.js';
+import { normalizeReplay } from '../ReplayMigration.js';
 
 const INDEX_PATH = 'replays/replay-index.json';
 const BACKUP_PATH = 'replays/replay-index.backup.json';
@@ -73,13 +74,17 @@ export class ReplayLibrary {
     const metadata = index.replays.find((item) => item.career_id === String(careerId) && item.replay_id === replayId);
     if (!metadata) throw new ReplayLibraryError('Replay não disponível para esta partida.', 'REPLAY_NOT_FOUND');
     try {
-      const replay = JSON.parse(await this.backend.read(metadata.path));
+      const rawReplay = JSON.parse(await this.backend.read(metadata.path));
+      const checksum = await checksumReplay(rawReplay);
+      if (metadata.checksum && checksum !== metadata.checksum) throw new Error('checksum');
+      const normalized = normalizeReplay(rawReplay);
+      if (!normalized.available) throw new ReplayLibraryError('Replay indisponível. Esta partida foi concluída antes de o sistema de replay ser registrado.', 'REPLAY_UNAVAILABLE');
+      const replay = normalized.replay;
       const validation = validateReplay(replay);
       if (!validation.valid) throw new Error('schema');
-      const checksum = await checksumReplay(replay);
-      if (metadata.checksum && checksum !== metadata.checksum) throw new Error('checksum');
       return replay;
     } catch (error) {
+      if (error instanceof ReplayLibraryError && error.code === 'REPLAY_UNAVAILABLE') throw error;
       metadata.integrity = 'corrupted'; await this.writeIndex(index);
       throw new ReplayLibraryError('Este replay está corrompido, mas os demais continuam disponíveis.', 'CORRUPTED_REPLAY', error);
     }
@@ -87,7 +92,7 @@ export class ReplayLibrary {
   async favorite(careerId, replayId, value = true) { return this.serialize(async () => { const index=await this.readIndex(); const item=index.replays.find((x)=>x.career_id===String(careerId)&&x.replay_id===replayId); if(!item) throw new ReplayLibraryError('Replay não encontrado.','REPLAY_NOT_FOUND'); item.is_favorite=Boolean(value); await this.writeIndex(index); return item; }); }
   async remove(careerId, replayId) { return this.serialize(async () => { const index=await this.readIndex(); const item=index.replays.find((x)=>x.career_id===String(careerId)&&x.replay_id===replayId); if(!item) return false; await this.backend.remove(item.path); index.replays=index.replays.filter((x)=>x!==item); await this.writeIndex(index); return true; }); }
   async export(careerId, replayId) { const replay=await this.load(careerId,replayId); return JSON.stringify({ format:'padel-legacy-replay', exported_at:new Date().toISOString(), replay },null,2); }
-  async import(serialized, careerId) { let wrapper; try { wrapper=typeof serialized==='string'?JSON.parse(serialized):serialized; } catch { throw new ReplayLibraryError('Arquivo JSON inválido.','INVALID_IMPORT'); } const replay=wrapper?.replay||wrapper; return this.save(replay,{career_id:careerId,is_external:true},{force:true}); }
+  async import(serialized, careerId) { let wrapper; try { wrapper=typeof serialized==='string'?JSON.parse(serialized):serialized; } catch { throw new ReplayLibraryError('Arquivo JSON inválido.','INVALID_IMPORT'); } const normalized=normalizeReplay(wrapper?.replay||wrapper);if(!normalized.available)throw new ReplayLibraryError('Replay sem timeline reproduzível.','REPLAY_UNAVAILABLE');return this.save(normalized.replay,{career_id:careerId,is_external:true},{force:true}); }
   async storage(careerId) { const {items,total}=await this.list(careerId,{limit:100000}); return { bytes:items.reduce((sum,x)=>sum+(x.storage_size_bytes||0),0), count:total }; }
   async cleanup(careerId, limitBytes) { return this.serialize(async () => { const index=await this.readIndex(); const own=index.replays.filter((x)=>x.career_id===String(careerId)); let bytes=own.reduce((s,x)=>s+(x.storage_size_bytes||0),0); const removed=[]; for(const item of own.filter((x)=>!x.is_favorite&&!x.is_historical).sort((a,b)=>String(a.played_at).localeCompare(String(b.played_at)))) { if(bytes<=limitBytes) break; await this.backend.remove(item.path); bytes-=item.storage_size_bytes||0; removed.push(item.replay_id); } index.replays=index.replays.filter((x)=>!removed.includes(x.replay_id)||x.career_id!==String(careerId)); await this.writeIndex(index); return { bytes,removed,limitRespected:bytes<=limitBytes }; }); }
   async findOrphans() { const index=await this.readIndex(); const known=new Set(index.replays.map((x)=>x.path)); return (await this.backend.list('replays/')).filter((path)=>path.endsWith('.json')&&!path.includes('replay-index')&&!known.has(path)); }

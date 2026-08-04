@@ -11,7 +11,8 @@ export function validateReplay(replay) {
   const initialPlayers = (replay?.teams || []).flatMap((team) => team.players || []);
   initialPlayers.forEach((player, index) => initialPlayers.slice(index + 1).forEach((other) => {
     const a = player.initial_position; const b = other.initial_position;
-    if (a && b && Math.hypot(a.x - b.x, a.y - b.y) < 0.4) errors.push(error('PLAYERS_TOO_CLOSE', `${player.id} e ${other.id} iniciam próximos demais.`));
+    const minimumDistance = replay?.coordinate_space === 'normalized' ? .04 : .4;
+    if (a && b && Math.hypot(a.x - b.x, a.y - b.y) < minimumDistance) errors.push(error('PLAYERS_TOO_CLOSE', `${player.id} e ${other.id} iniciam próximos demais.`));
   }));
   const ids = new Set();
   let previousTime = -1;
@@ -25,7 +26,8 @@ export function validateReplay(replay) {
     previousTime = Math.max(previousTime, event.t ?? -1);
     if (event.actor_id && !playerIds.has(event.actor_id)) errors.push(error('INVALID_ACTOR', `Ator ${event.actor_id} não existe no replay.`, event));
     for (const position of positions(event.data)) {
-      if (position.x < 0 || position.x > COURT.width || position.y < 0 || position.y > COURT.length || (position.z != null && (position.z < 0 || position.z > COURT.maxHeight))) {
+      const bounds = replay?.coordinate_space === 'normalized' ? { width: 1, length: 1, maxHeight: 1 } : COURT;
+      if (position.x < 0 || position.x > bounds.width || position.y < 0 || position.y > bounds.length || (position.z != null && (position.z < 0 || position.z > bounds.maxHeight))) {
         errors.push(error('INVALID_COORDINATES', 'Coordenadas fora da quadra.', event));
       }
     }

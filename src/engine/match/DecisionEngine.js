@@ -46,6 +46,10 @@ export class DecisionEngine {
       if (pressure > 65 && shot === 'smash') weight -= 8;
       if (aggressive && ['smash', 'volley', 'drive'].includes(shot)) weight += 12;
       if (defensive && ['lob', 'bandeja', 'backhand'].includes(shot)) weight += 12;
+      if (['smash', 'volley', 'drive'].includes(shot)) weight *= Number(tactic?.attackWeight || 1);
+      if (['lob', 'bandeja', 'backhand'].includes(shot)) weight *= Number(tactic?.safeWeight || 1);
+      if (shot === 'smash') weight *= Number(tactic?.powerWeight || 1);
+      if (['chiquita', 'bandeja', 'lob'].includes(shot)) weight *= Number(tactic?.tacticalWeight || 1);
       if (player.style.includes('pot') && shot === 'smash') weight += 18;
       if (player.style.includes('defens') && shot === 'lob') weight += 18;
       if ((player.style.includes('ofens') || player.style.includes('finaliz')) && ['smash', 'volley', 'drive'].includes(shot)) weight += 12;

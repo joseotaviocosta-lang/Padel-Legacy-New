@@ -16,7 +16,7 @@ import { ReplaySaveQueue } from '@/gameplay/replay/library/ReplaySaveQueue.js';
 import { matchViewPreferences } from '@/gameplay/replay/library/MatchViewPreferences.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
-const REPLAY_ENABLED = import.meta.env.VITE_ENABLE_REPLAY_ENGINE === 'true';
+const REPLAY_ENABLED = import.meta.env.VITE_ENABLE_REPLAY_ENGINE !== 'false';
 
 const replaySaveQueue = new ReplaySaveQueue(replayLibrary);
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
@@ -26,10 +26,12 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [phase, setPhase] = useState('config');
   const [teams, setTeams] = useState(null);
   const [result, setResult] = useState(null);
+  const [coach,setCoach]=useState(null);
   const savedRef = useRef(false);
   const { toast } = useToast();
   const [replayPreferences,setReplayPreferences]=useState(null);
   useEffect(()=>{if(!careerId)return;matchViewPreferences.load(careerId).then((prefs)=>{setReplayPreferences(prefs);const preferred=prefs.default_match_view_mode==='ask_every_match'&&prefs.remember_last_match_mode?prefs.last_match_mode:prefs.default_match_view_mode;if(preferred!=='ask_every_match')setDisplayMode(preferred);});},[careerId]);
+  useEffect(()=>{if(!profile?.coach_id){setCoach(null);return;}localGame.entities.Coach.get(profile.coach_id).then(setCoach).catch(()=>setCoach(null));},[profile?.coach_id]);
   const changeDisplayMode=(mode)=>{setDisplayMode(mode);if(careerId&&replayPreferences?.remember_last_match_mode)matchViewPreferences.save(careerId,{last_match_mode:mode}).catch(()=>{});};
 
   function startMatch() {
@@ -61,6 +63,10 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     savedRef.current = true;
     try {
       const won = matchState.winner === 'A';
+      const replaySave = REPLAY_ENABLED && matchState.replay && careerId
+        ? await replaySaveQueue.enqueue(matchState.replay,{career_id:careerId,date:profile.career_date,tournament_name:'Partida Treino',winner_team_id:matchState.winner,result:won?'vitória':'derrota',score:getSetScoreString(matchState)},{force:true,policy:replayPreferences?.automatic_replay_storage||'all_player_matches'})
+        : null;
+      if (replaySave?.status === 'failed') toast({title:'Partida salva',description:'O replay não pôde ser arquivado. Você pode tentar novamente depois.'});
       await localGame.entities.Match.create({
         profile_id: profile.id,
         career_date: profile.career_date,
@@ -76,6 +82,10 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         seed: String(matchState.seed),
         set_scores: matchState.setScores,
         point_events: matchState.pointEvents,
+        live_coach_report: matchState.liveCoachReport || null,
+        tactical_adjustment_history: matchState.liveCoach?.adjustments || [],
+        replay_id: replaySave?.status === 'saved' ? matchState.replay?.replay_id : null,
+        replay_match_id: replaySave?.status === 'saved' ? matchState.replay?.match_id : null,
         result: won ? 'vitória' : 'derrota',
         match_type: 'simulada',
         notes: `Sets: ${getSetScoreString(matchState)} | Força: ${Math.round(matchState.strA)} vs ${Math.round(matchState.strB)}`,
@@ -98,7 +108,6 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         won
       ).catch(() => {});
       setResult({ won, matchState });
-      if (REPLAY_ENABLED && matchState.replay && careerId) replaySaveQueue.enqueue(matchState.replay,{career_id:careerId,date:profile.career_date,tournament_name:'Partida Treino',winner_team_id:matchState.winner,result:won?'vitória':'derrota',score:getSetScoreString(matchState)},{policy:replayPreferences?.automatic_replay_storage||'important_only'}).then((save)=>{if(save.status==='failed')toast({title:'Partida salva',description:'O replay não pôde ser arquivado. Você pode tentar novamente depois.'});});
       onComplete?.();
     } catch (e) {
       console.error(e);
@@ -198,6 +207,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             teamA={teams.teamA}
             teamB={teams.teamB}
             initialTacticId={initialTacticId}
+            coach={coach}
+            liveCoachSettings={profile.live_coach_settings}
             onFinished={handleFinished}
             replayEnabled={REPLAY_ENABLED}
             displayMode={displayMode}
@@ -245,6 +256,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
                 </div>
               </div>
             )}
+            {result.matchState.liveCoachReport && <div className="glass rounded-2xl p-4"><p className="text-xs font-black mb-2">Decisões durante a partida</p><p className="text-[11px] text-muted-foreground">{result.matchState.liveCoachReport.suggestionsReceived} sugestões · {result.matchState.liveCoachReport.suggestionsApplied} aplicadas · {result.matchState.liveCoachReport.suggestionsIgnored} ignoradas</p><p className="mt-2 text-[9px] text-muted-foreground">{result.matchState.liveCoachReport.disclaimer}</p></div>}
 
             <button
               hidden={!REPLAY_ENABLED || !result.matchState.replay}

@@ -23,7 +23,9 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
 }
 
 const STEP_FACT = {
-  'career-created': facts => facts.careerCreated,
+  // A existência do save não é uma ação do jogador; o primeiro passo exige
+  // confirmação explícita na central de missões.
+  'career-created': () => false,
   'athlete-named': facts => facts.athleteNamed,
   'side-selected': facts => facts.sideSelected,
   'style-selected': facts => facts.styleSelected,
@@ -37,7 +39,7 @@ const STEP_FACT = {
 
 export function inferCompletedSteps(career = {}, facts = {}) {
   const derived = deriveTutorialFacts(career, facts);
-  return TUTORIAL_STEPS.filter(step => STEP_FACT[step.id]?.(derived)).map(step => step.id);
+  return TUTORIAL_STEPS.filter(step => STEP_FACT[step.id]?.(derived) || facts.completedObjectiveTypes?.includes(step.objectiveType)).map(step => step.id);
 }
 
 export function reconcileTutorialProgress(career = {}, value = {}, facts = {}) {

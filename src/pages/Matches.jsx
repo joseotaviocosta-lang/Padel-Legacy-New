@@ -96,7 +96,7 @@ export default function Matches() {
                   <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(m.date)}</span>
                   {m.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {m.location}</span>}
                   {m.match_type === 'simulada' && <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-bold text-muted-foreground"><Bot className="h-2.5 w-2.5" /> Simulada</span>}
-                  {!m.replay_id && <span className="text-[9px]">Replay não disponível</span>}
+                  {m.replay_id ? <Link to={`/replays?replay=${encodeURIComponent(m.replay_id)}`} className="text-[9px] font-bold text-primary hover:underline">Assistir replay</Link> : <span className="text-[9px]" title="Esta partida foi concluída antes de o sistema de replay ser registrado. O placar e as estatísticas continuam disponíveis.">Replay indisponível</span>}
                 </div>
               </div>
             );

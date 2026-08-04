@@ -5,10 +5,11 @@ import { CAREER_SAVE_SCHEMA_VERSION } from '../src/careers/careerSchema.js';
 import { getCareerRecommendations } from '../src/onboarding/careerRecommendations.js';
 import { getPageIntroduction, PAGE_INTRODUCTIONS } from '../src/onboarding/pageIntroductions.js';
 import { getNextTutorialStep, normalizeTutorialState } from '../src/onboarding/tutorialState.js';
+import { TUTORIAL_STEPS, TUTORIAL_VERSION } from '../src/onboarding/tutorialSteps.js';
 
 const career = createDefaultCareerData({ saveName: 'Teste onboarding', playerName: 'Atleta', careerType: 'normal' });
-assert.equal(career.tutorial.version, 3);
-assert.equal(getNextTutorialStep(career.tutorial).id, 'athlete-named');
+assert.equal(career.tutorial.version, TUTORIAL_VERSION);
+assert.equal(getNextTutorialStep(career.tutorial).id, 'career-created');
 
 const progressed = {
   ...career,
@@ -19,15 +20,16 @@ const progressed = {
     Match: [{ id: 'match-1', profile_id: 'p1' }],
   },
 };
-const state = normalizeTutorialState(null, progressed, { completedObjectiveTypes: ['finish_tutorial'] });
-assert.deepEqual(state.completedSteps, ['career-created', 'athlete-named', 'side-selected', 'style-selected', 'first-training', 'energy-understood', 'partner-selected', 'tournament-registered', 'first-match', 'autonomy']);
+const state = normalizeTutorialState(null, progressed, { completedObjectiveTypes: TUTORIAL_STEPS.map(step => step.objectiveType) });
+assert.deepEqual(state.completedSteps, TUTORIAL_STEPS.map(step => step.id));
 assert.equal(state.status, 'completed');
 
 const legacy = { ...progressed, save_schema_version: 7, tutorial: undefined, player: { ...progressed.player, tutorial_onboarding: undefined } };
 const first = migrateCareer(legacy);
 const second = migrateCareer(first.data);
 assert.equal(first.data.save_schema_version, CAREER_SAVE_SCHEMA_VERSION);
-assert.equal(first.data.player.tutorial_onboarding.status, 'completed');
+assert.equal(first.data.player.tutorial_onboarding.status, 'in_progress');
+assert.ok(first.data.player.tutorial_onboarding.completedStepIds.includes('first-match'));
 assert.equal(second.migrated, false);
 
 assert.equal(getCareerRecommendations({ court_side: 'direita', play_style: 'controle', energy: 20, coins: 500 })[0].id, 'recover-energy');
