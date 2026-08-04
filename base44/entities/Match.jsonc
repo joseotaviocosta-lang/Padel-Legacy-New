@@ -52,6 +52,24 @@
       ],
       "description": "Dupla vencedora"
     },
+    "engine_version": {
+      "type": "string",
+      "description": "Versão imutável do motor usada na simulação"
+    },
+    "seed": {
+      "type": "string",
+      "description": "Seed determinística da partida"
+    },
+    "set_scores": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "Placar detalhado e preservado dos sets"
+    },
+    "point_events": {
+      "type": "array",
+      "items": { "type": "object" },
+      "description": "Sequência canônica dos pontos, vencedores e sacadores"
+    },
     "match_type": {
       "type": "string",
       "enum": [

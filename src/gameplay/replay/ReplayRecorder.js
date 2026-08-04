@@ -19,7 +19,7 @@ export class ReplayRecorder {
 export function createReplay(state) {
   const token = hashSeed(state.seed);
   const teams = ['A', 'B'].map((key) => ({ id: `team-${key.toLowerCase()}`, side: key === 'A' ? 'bottom' : 'top', players: state.teams[key].map((player, index) => ({ id: player.id, name: player.name, court_side: index ? 'left' : 'right', initial_position: initialPositions[key][index] })) }));
-  const replay = { replay_version: REPLAY_VERSION, replay_id: `replay-${token}`, match_id: `match-${token}`, seed: state.seed, created_at: new Date(token * 1000).toISOString(), court: { width: COURT.width, length: COURT.length, orientation: COURT.orientation }, teams, initial_score: scoreSnapshot(state), events: [] };
+  const replay = { replay_version: REPLAY_VERSION, engine_version: state.engineVersion, replay_id: `replay-${token}`, match_id: `match-${token}`, seed: state.seed, created_at: new Date(token * 1000).toISOString(), court: { width: COURT.width, length: COURT.length, orientation: COURT.orientation }, teams, initial_score: scoreSnapshot(state), events: [] };
   const recorder = new ReplayRecorder(replay);
   recorder.record({ type: 'match_start' }); recorder.record({ type: 'set_start', data: { set: 1 } }); recorder.record({ type: 'game_start', data: { game: 1 } });
   return replay;
@@ -43,8 +43,8 @@ export function appendPointToReplay(replay, before, after, result) {
     recorder.record({ type: 'ball_move', point_id: pointId, rally_id: rallyId, data: { from: previous, to: { ...target, z: 0 }, trajectory: entry.shot === 'lob' ? 'lob' : entry.shot === 'smash' ? 'smash' : 'arc', speed_kmh: entry.shot === 'smash' ? 118 : 72 } });
     if (index < shots.length - 1) recorder.record({ type: 'bounce', point_id: pointId, rally_id: rallyId, data: { position: target } });
   });
-  recorder.record({ type: result.result === 'winner' ? 'winner' : 'error', actor_id: result.finisher?.id, point_id: pointId, rally_id: rallyId, data: { winning_team: result.winner, shot_type: result.shot, forced: Boolean(result.forcedError) } });
-  recorder.record({ type: 'point_end', point_id: pointId, rally_id: rallyId, data: { winner: result.winner } });
+  recorder.record({ type: result.result === 'winner' ? 'winner' : 'error', actor_id: result.finisher?.id, point_id: pointId, rally_id: rallyId, data: { winning_team: result.winnerTeamId, serving_team: result.servingTeamId, server_player_id: result.serverPlayerId, shot_type: result.shot, forced: Boolean(result.forcedError) } });
+  recorder.record({ type: 'point_end', point_id: pointId, rally_id: rallyId, data: { winner: result.winnerTeamId, loser: result.loserTeamId, serving_team: result.servingTeamId, server_player_id: result.serverPlayerId } });
   recorder.record({ type: 'score_update', point_id: pointId, rally_id: rallyId, data: scoreSnapshot(after) });
   const lastNarration = after.narration.at(-1)?.type;
   if (['game', 'tiebreak_end'].includes(lastNarration)) recorder.record({ type: 'game_end', data: { winner: after.narration.at(-1).scorer } });

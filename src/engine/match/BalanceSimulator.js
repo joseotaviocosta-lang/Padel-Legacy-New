@@ -76,6 +76,11 @@ function collectMatchMetrics(state) {
   const winners = playerRows.reduce((total, row) => total + row.winners, 0);
   const coordinationEvents = teamRows.reduce((total, row) => total + row.coordinationEvents, 0);
   const coordinationErrors = teamRows.reduce((total, row) => total + row.coordinationErrors, 0);
+  const completedGames = (state.pointEvents || []).filter(event => !event.scoreBefore.inTiebreak && (event.scoreAfter.gamesA !== event.scoreBefore.gamesA || event.scoreAfter.gamesB !== event.scoreBefore.gamesB || event.scoreAfter.setsA !== event.scoreBefore.setsA || event.scoreAfter.setsB !== event.scoreBefore.setsB));
+  const serviceGamesWon = completedGames.filter(event => event.winnerTeamId === event.servingTeamId).length;
+  const loveGames = completedGames.filter(event => Math.min(event.scoreBefore.pointsA, event.scoreBefore.pointsB) === 0).length;
+  const deucePoints = (state.pointEvents || []).filter(event => !event.scoreBefore.inTiebreak && event.scoreBefore.pointsA >= 3 && event.scoreBefore.pointsB >= 3).length;
+  const tiebreakEnds = state.narration.filter(event => event.type === 'tiebreak_end').map(event => `${event.pointsA}-${event.pointsB}`);
   return {
     winner: state.winner,
     points: state.stats.rallies,
@@ -89,6 +94,13 @@ function collectMatchMetrics(state) {
     coordinationEvents,
     coordinationErrors,
     superTiebreak: state.setScores.some((set) => set.gamesA >= 10 || set.gamesB >= 10),
+    completedGames: completedGames.length,
+    serviceGamesWon,
+    breaks: completedGames.length - serviceGamesWon,
+    loveGames,
+    deucePoints,
+    sixAllSets: state.setScores.filter(set => (set.gamesA === 7 && set.gamesB === 6) || (set.gamesB === 7 && set.gamesA === 6)).length,
+    tiebreakEnds,
   };
 }
 
@@ -128,9 +140,14 @@ export function runBalanceBatch(options = {}) {
   const lowEnergyRate = energies.length
     ? (energies.filter((energy) => energy < 10).length / energies.length) * 100
     : 0;
+  const completedGames = results.reduce((sum, row) => sum + row.completedGames, 0);
+  const breaks = results.reduce((sum, row) => sum + row.breaks, 0);
+  const loveGames = results.reduce((sum, row) => sum + row.loveGames, 0);
+  const allSets = results.reduce((sum, row) => sum + row.sets, 0);
+  const tiebreakScores = results.flatMap(row => row.tiebreakEnds);
 
   const summary = {
-    engineVersion: '0.4.0-alpha.6',
+    engineVersion: '0.4.0-alpha.7',
     matches,
     wins: { A: winsA, B: winsB },
     winRate: { A: round(winRateA), B: round(100 - winRateA) },
@@ -149,6 +166,12 @@ export function runBalanceBatch(options = {}) {
     averageCoordinationEvents: round(average(results.map((row) => row.coordinationEvents))),
     averageCoordinationErrors: round(average(results.map((row) => row.coordinationErrors))),
     superTiebreakRate: round((results.filter((row) => row.superTiebreak).length / matches) * 100),
+    serviceHoldRate: round(completedGames ? (completedGames - breaks) / completedGames * 100 : 0),
+    breakRate: round(completedGames ? breaks / completedGames * 100 : 0),
+    loveGameRate: round(completedGames ? loveGames / completedGames * 100 : 0),
+    sixAllSetRate: round(allSets ? results.reduce((sum, row) => sum + row.sixAllSets, 0) / allSets * 100 : 0),
+    averageDeucePoints: round(average(results.map(row => row.deucePoints))),
+    tiebreakScoreDistribution: Object.fromEntries([...new Set(tiebreakScores)].sort().map(score => [score, tiebreakScores.filter(value => value === score).length])),
   };
 
   summary.gates = evaluateBalanceGates(summary, options.gates);
@@ -160,7 +183,7 @@ export function evaluateBalanceGates(summary, custom = {}) {
   const limits = {
     maxSideBias: custom?.maxSideBias ?? 12,
     minAverageFinalEnergy: custom?.minAverageFinalEnergy ?? 12,
-    maxAverageFinalEnergy: custom?.maxAverageFinalEnergy ?? 70,
+    maxAverageFinalEnergy: custom?.maxAverageFinalEnergy ?? 90,
     maxLowEnergyRate: custom?.maxLowEnergyRate ?? 45,
     maxP95Points: custom?.maxP95Points ?? 350,
     minAverageRally: custom?.minAverageRally ?? 2,

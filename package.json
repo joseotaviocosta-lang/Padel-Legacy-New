@@ -21,6 +21,7 @@
     "android:build": "tauri android build",
     "validate:architecture": "node scripts/validate-architecture.mjs",
     "test:match-balance": "node src/engine/match/MatchBalanceCli.js --matches=1000",
+    "test:match-integrity": "node scripts/test-match-integrity.mjs",
     "test:replay": "node scripts/test-replay-engine.mjs",
     "test:replay-gameplay": "node scripts/test-replay-gameplay.mjs",
     "test:replay-sprites": "node scripts/test-replay-sprites.mjs",

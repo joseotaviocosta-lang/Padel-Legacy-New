@@ -28,18 +28,24 @@ export function getTieBreakServingTeam(firstServingTeamId, totalPointsPlayed) {
   const serviceBlock = Math.floor((totalPointsPlayed - 1) / 2);
   return serviceBlock % 2 === 0 ? getOpponentTeamId(firstServingTeamId) : firstServingTeamId;
 }
+export function getTieBreakServerPlayerIndex(firstServingTeamId, totalPointsPlayed, initialIndices = { A: 0, B: 0 }) {
+  const teamId = getTieBreakServingTeam(firstServingTeamId, totalPointsPlayed);
+  const block = totalPointsPlayed === 0 ? 0 : Math.floor((totalPointsPlayed - 1) / 2) + 1;
+  const occurrence = teamId === firstServingTeamId ? Math.floor(block / 2) : Math.floor((block - 1) / 2);
+  return (Number(initialIndices[teamId]) + Math.max(0, occurrence)) % 2;
+}
 
 export function createMatch(teamA, teamB, options = {}) {
   const teams = createTeams(teamA, teamB);
   const seed = options.seed ?? `${Date.now()}-${teamA?.[0]?.id || 'A'}-${teamB?.[0]?.id || 'B'}`;
   const state = {
-    engineVersion: '0.4.0-alpha.6', seed, randomState: hashSeed(seed) || 1, teams,
+    engineVersion: '0.4.0-alpha.7', seed, randomState: hashSeed(seed) || 1, teams,
     teamANames: teams.A.map((p) => p.name), teamBNames: teams.B.map((p) => p.name),
     setsA: 0, setsB: 0, currentSet: 1, gamesA: 0, gamesB: 0, pointsA: 0, pointsB: 0,
     servingTeam: 'A', inTiebreak: false, superTiebreak: false, finished: false, winner: null,
     setScores: [], narration: [], stats: createStatistics(teams), analysis: null, pointNumber: 0,
     replayEnabled: Boolean(options.replayEnabled), replay: null,
-    pointEvents: [], tiebreakFirstServingTeam: null, tiebreakPointsPlayed: 0,
+    pointEvents: [], serverPlayerIndices: { A: 0, B: 0 }, tiebreakFirstServingTeam: null, tiebreakFirstServerPlayerIndices: null, tiebreakPointsPlayed: 0,
   };
   if (state.replayEnabled) state.replay = createReplay(state);
   return state;
@@ -54,6 +60,8 @@ function cloneState(prev) {
     },
     narration: [...prev.narration], setScores: [...prev.setScores],
     pointEvents: [...(prev.pointEvents || [])],
+    serverPlayerIndices: { ...(prev.serverPlayerIndices || { A: 0, B: 0 }) },
+    tiebreakFirstServerPlayerIndices: prev.tiebreakFirstServerPlayerIndices ? { ...prev.tiebreakFirstServerPlayerIndices } : null,
     stats: JSON.parse(JSON.stringify(prev.stats)),
     replay: prev.replay ? JSON.parse(JSON.stringify(prev.replay)) : null,
   };
@@ -74,20 +82,25 @@ export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
   const servingTeam = state.inTiebreak
     ? getTieBreakServingTeam(state.tiebreakFirstServingTeam || state.servingTeam, state.tiebreakPointsPlayed)
     : state.servingTeam;
+  const serverPlayerIndex = state.inTiebreak
+    ? getTieBreakServerPlayerIndex(state.tiebreakFirstServingTeam || state.servingTeam, state.tiebreakPointsPlayed, state.tiebreakFirstServerPlayerIndices || state.serverPlayerIndices)
+    : state.serverPlayerIndices[servingTeam];
+  const serverPlayerId = state.teams[servingTeam][serverPlayerIndex]?.id;
   const scoreBefore = snapshot(state);
   const pointContext = createPointContext(state);
-  const result = rally.play({ teams: state.teams, servingTeam, tactic, random, stats: state.stats, match: pointContext });
+  const result = rally.play({ teams: state.teams, servingTeam, serverPlayerId, tactic, random, stats: state.stats, match: pointContext });
   if (!['A', 'B'].includes(result?.winnerTeamId || result?.winner)) throw new Error('Ponto encerrado sem winnerTeamId válido.');
   result.winnerTeamId = result.winnerTeamId || result.winner;
   result.loserTeamId = getOpponentTeamId(result.winnerTeamId);
   result.servingTeamId = servingTeam;
+  result.serverPlayerId = serverPlayerId;
   state.randomState = random.state();
   state.pointNumber += 1;
   momentum.update(state.teams, result.winnerTeamId, result.loserTeamId, { breakPoint: isBreakPoint(state, result.winnerTeamId) });
   const narrative = commentary.describe({ ...result, random, stats: state.stats, match: pointContext });
   awardPoint(state, result.winnerTeamId, narrative.message, { ...result, narrative }, fatigue);
   if (scoreBefore.inTiebreak) state.tiebreakPointsPlayed += 1;
-  state.pointEvents.push({ type: 'point_completed', pointNumber: state.pointNumber, servingTeamId: servingTeam, winnerTeamId: result.winnerTeamId, loserTeamId: result.loserTeamId, reason: result.result, finalShotPlayerId: result.finisher?.id || null, scoreBefore, scoreAfter: snapshot(state), rngStateAfter: state.randomState });
+  state.pointEvents.push({ type: 'point_completed', pointNumber: state.pointNumber, servingTeamId: servingTeam, serverPlayerId, winnerTeamId: result.winnerTeamId, loserTeamId: result.loserTeamId, reason: result.result, finalShotPlayerId: result.finisher?.id || null, scoreBefore, scoreAfter: snapshot(state), rngStateAfter: state.randomState });
   if (state.replayEnabled && state.replay) appendPointToReplay(state.replay, prev, state, result);
   return state;
 }
@@ -133,7 +146,8 @@ function awardPoint(state, winner, msg, detail, fatigue) {
     const gameWinner = aGame ? 'A' : 'B';
     if (aGame) state.gamesA += 1; else state.gamesB += 1;
     state.pointsA = 0; state.pointsB = 0;
-    state.servingTeam = state.servingTeam === 'A' ? 'B' : 'A';
+    state.serverPlayerIndices[state.servingTeam] = (state.serverPlayerIndices[state.servingTeam] + 1) % state.teams[state.servingTeam].length;
+    state.servingTeam = getOpponentTeamId(state.servingTeam);
     fatigue.recoverBetweenGames(state.teams);
     state.narration.push({ type: 'game', msg: `${msg} Game para ${gameWinner === 'A' ? state.teamANames[0] : state.teamBNames[0]}.`, scorer: gameWinner, rallyLength: detail.rallyLength, decisionTrace: detail.decisionTrace || [], narrative: detail.narrative || null, ...snapshot(state) });
     checkSet(state);
@@ -145,14 +159,14 @@ function checkSet(state) {
   if (state.gamesB >= 6 && state.gamesB - state.gamesA >= 2) return finishSet(state, 'B');
   if (state.gamesA === 6 && state.gamesB === 6) {
     state.inTiebreak = true; state.pointsA = 0; state.pointsB = 0;
-    state.tiebreakFirstServingTeam = state.servingTeam; state.tiebreakPointsPlayed = 0;
+    state.tiebreakFirstServingTeam = state.servingTeam; state.tiebreakFirstServerPlayerIndices = { ...state.serverPlayerIndices }; state.tiebreakPointsPlayed = 0;
     state.narration.push({ type: 'tiebreak_start', msg: '6-6. Vamos ao tiebreak!', ...snapshot(state) });
   }
 }
 
 function finishSet(state, winner) {
   state.inTiebreak = false; state.pointsA = 0; state.pointsB = 0;
-  state.tiebreakFirstServingTeam = null; state.tiebreakPointsPlayed = 0;
+  state.tiebreakFirstServingTeam = null; state.tiebreakFirstServerPlayerIndices = null; state.tiebreakPointsPlayed = 0;
   if (winner === 'A') state.setsA += 1; else state.setsB += 1;
   state.setScores.push({ gamesA: state.gamesA, gamesB: state.gamesB, winner });
   state.narration.push({ type: 'set', msg: `Set ${state.currentSet}: ${state.gamesA}-${state.gamesB}.`, scorer: winner, ...snapshot(state) });
@@ -166,7 +180,7 @@ function finishSet(state, winner) {
   state.currentSet += 1; state.gamesA = 0; state.gamesB = 0;
   if (state.setsA === 1 && state.setsB === 1) {
     state.superTiebreak = true; state.inTiebreak = true;
-    state.tiebreakFirstServingTeam = state.servingTeam; state.tiebreakPointsPlayed = 0;
+    state.tiebreakFirstServingTeam = state.servingTeam; state.tiebreakFirstServerPlayerIndices = { ...state.serverPlayerIndices }; state.tiebreakPointsPlayed = 0;
     state.narration.push({ type: 'tiebreak_start', msg: 'Terceiro set: super tiebreak até 10.', ...snapshot(state) });
   }
 }

@@ -14,9 +14,9 @@ export class RallyEngine {
     this.coordination = coordination;
   }
 
-  play({ teams, servingTeam, tactic, random, stats, match = {} }) {
+  play({ teams, servingTeam, serverPlayerId, tactic, random, stats, match = {} }) {
     let activeTeam = servingTeam;
-    let playerIndex = Math.floor(random.next() * teams[activeTeam].length);
+    let playerIndex = Math.max(0, teams[activeTeam].findIndex(player => player.id === serverPlayerId));
     let pressure = 20;
     let shot = 'serve';
     let lastPlayer = teams[activeTeam][playerIndex];
@@ -65,12 +65,19 @@ export class RallyEngine {
       recordShot(stats, player, shot);
       this.fatigue.consume(player, shot, rallyLength);
 
-      const skill = this.skill(player, shot);
+      const rawSkill = this.skill(player, shot);
+      // Match outcomes compound point-level differences through games and sets;
+      // use a calibrated rating slope so a small OVR gap is meaningful without
+      // becoming near-certain over a full best-of-three match.
+      const skill = 50 + (rawSkill - 50) * 0.2;
       const confidence = (player.confidence - 50) * 0.14;
       const energyPenalty = (100 - player.energy) * 0.12;
       const risk = this.risk(shot, tactic, activeTeam === 'A', player, match);
       const execution = skill + confidence - energyPenalty - risk + (random.next() - 0.5) * 28;
       const difficulty = 38 + pressure * 0.28 + rallyLength * 0.18;
+      if (![rawSkill, skill, confidence, energyPenalty, risk, execution, difficulty].every(Number.isFinite)) {
+        throw new Error(`Probabilidade de rally inválida no golpe ${shot} do jogador ${player.id}.`);
+      }
 
       memory.record({ team: activeTeam, playerId: player.id, shot, pressure, execution, difficulty });
 
