@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BookOpen, Check, ChevronDown, ChevronUp, CircleHelp, GraduationCap, RotateCcw, X } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { ensureMyProfile } from '@/lib/padel.js';
+import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getPageIntroduction } from '@/onboarding/pageIntroductions.js';
 import { CORE_GAME_LOOP, GLOSSARY, TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
@@ -13,13 +13,14 @@ import { ensureTutorialMissionCatalog } from '@/lib/padel.js';
 function PageIntroduction({ pathname, state, onStateChange }) {
   const intro = getPageIntroduction(pathname);
   if (!intro) return null;
-  const collapsed = state?.collapsedIntroductions?.includes(pathname);
+  const collapsedIntroductions = state?.collapsedIntroductions || [];
+  const collapsed = collapsedIntroductions.includes(pathname);
   return (
     <section className="mx-4 md:mx-8 mt-5 rounded-2xl border border-border/60 bg-card/70 px-4 py-3" aria-label={`Introdução: ${intro.title}`}>
       <div className="flex items-center gap-3">
         <BookOpen className="h-4 w-4 text-primary shrink-0" />
         <div className="flex-1 min-w-0"><h2 className="text-sm font-bold">{intro.title}</h2>{collapsed && <p className="text-xs text-muted-foreground truncate">{intro.description}</p>}</div>
-        <button type="button" onClick={() => onStateChange(current => ({ ...current, collapsedIntroductions: collapsed ? current.collapsedIntroductions.filter(item => item !== pathname) : [...current.collapsedIntroductions, pathname] }))} className="rounded-lg p-2 hover:bg-secondary" aria-expanded={!collapsed} aria-label={collapsed ? 'Expandir explicação' : 'Recolher explicação'}>
+        <button type="button" onClick={() => onStateChange(current => ({ ...current, collapsedIntroductions: collapsed ? (current.collapsedIntroductions || []).filter(item => item !== pathname) : [...(current.collapsedIntroductions || []), pathname] }))} className="rounded-lg p-2 hover:bg-secondary" aria-expanded={!collapsed} aria-label={collapsed ? 'Expandir explicação' : 'Recolher explicação'}>
           {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
         </button>
       </div>
@@ -83,20 +84,49 @@ export default function OnboardingGuide() {
   }, [profile, state]);
 
   useEffect(() => {
-    if (!state || state.pageIntroductionsSeen.includes(location.pathname)) return;
-    persist(current => ({ ...current, pageIntroductionsSeen: [...current.pageIntroductionsSeen, location.pathname] }));
+    if (!state || (state.pageIntroductionsSeen || []).includes(location.pathname)) return;
+    persist(current => ({ ...current, pageIntroductionsSeen: [...(current.pageIntroductionsSeen || []), location.pathname] }));
   }, [location.pathname, persist, state]);
 
   const step = getNextTutorialStep(state);
   const recommendation = useMemo(() => getCareerRecommendations(profile, facts)[0], [profile, facts]);
   const isMissionCenter = location.pathname === '/game/missions';
+  const stepPath = step?.route?.split('?')[0];
+  const isOnStepPage = Boolean(stepPath && (location.pathname === stepPath || (stepPath === '/clubs' && location.pathname.startsWith('/clubs/'))));
+
+  const confirmCurrentStep = useCallback(async () => {
+    if (!profile?.id || !step?.objectiveType || step.completionType !== 'confirm_understanding') return;
+    await incrementMissionProgress(profile.id, step.objectiveType, 1, profile.career_date, {
+      triggerEventId: `tutorial-confirm:${step.id}`,
+      onlyMissionTypes: ['tutorial'],
+    });
+    await load();
+  }, [load, profile?.career_date, profile?.id, step?.completionType, step?.id, step?.objectiveType]);
+
   if (!profile || !state) return null;
 
   return <>
     {!isMissionCenter && <PageIntroduction pathname={location.pathname} state={state} onStateChange={persist}/>}
     {!isMissionCenter && !state.minimized && state.status === 'in_progress' && step && <aside className="mx-4 md:mx-8 mt-3 rounded-2xl border border-primary/40 bg-primary/10 p-4" aria-label="Orientação contextual do tutorial">
       {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center"><GraduationCap className="h-7 w-7 text-primary shrink-0"/><div className="flex-1"><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p><h2 className="font-black">{step.title}</h2><p className="text-xs text-muted-foreground"><strong>Por quê:</strong> {step.explanation}</p></div><Link to={step.route} onClick={() => persist(current => ({ ...current, welcomeSeen: true }))} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link><button onClick={() => persist(current => ({ ...current, minimized: true, welcomeSeen: true }))} className="rounded-xl border px-3 py-2 text-xs font-bold">Minimizar</button><button onClick={() => persist(current => ({ ...current, status: 'skipped', tutorialSkipped: true, minimized: false, welcomeSeen: true }))} className="px-2 py-2 text-xs text-muted-foreground">Pular guia</button></div>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+        <GraduationCap className="h-7 w-7 text-primary shrink-0"/>
+        <div className="flex-1">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p>
+          <h2 className="font-black">{step.title}</h2>
+          <p className="text-xs text-muted-foreground">{step.explanation}</p>
+          <p className="mt-1 text-xs"><strong>Por que usar:</strong> {step.whyItMatters}</p>
+        </div>
+        {isOnStepPage && step.completionType === 'confirm_understanding' ? (
+          <button type="button" onClick={confirmCurrentStep} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">Entendi, continuar</button>
+        ) : isOnStepPage ? (
+          <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
+        ) : (
+          <Link to={step.route} onClick={() => persist(current => ({ ...current, welcomeSeen: true }))} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link>
+        )}
+        <button onClick={() => persist(current => ({ ...current, minimized: true, welcomeSeen: true }))} className="rounded-xl border px-3 py-2 text-xs font-bold">Minimizar</button>
+        <button onClick={() => persist(current => ({ ...current, status: 'skipped', tutorialSkipped: true, minimized: false, welcomeSeen: true }))} className="px-2 py-2 text-xs text-muted-foreground">Pular guia</button>
+      </div>
     </aside>}
     {!isMissionCenter && state.minimized && state.status === 'in_progress' && step && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-24 right-4 z-40 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xl">Próximo passo: {step.title}</button>}
     {state.status !== 'in_progress' && recommendation && <div className="mx-4 md:mx-8 mt-3 flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-xs"><span className="rounded-full bg-primary/15 px-2 py-1 font-bold text-primary">{recommendation.importance}</span><div className="flex-1"><strong>{recommendation.title}</strong><span className="text-muted-foreground"> · {recommendation.explanation}</span></div><Link to={recommendation.route} className="font-bold text-primary">{recommendation.actionLabel}</Link></div>}

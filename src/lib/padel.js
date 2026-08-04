@@ -442,19 +442,58 @@ const SHORT_TUTORIAL_MISSIONS = [
 export const TUTORIAL_MISSIONS = TUTORIAL_MISSION_CATALOG;
 
 export async function ensureTutorialMissionCatalog() {
-  const existing = await localGame.entities.Mission.list('-created_date', 300);
-  const titles = new Set((existing || []).map(m => m.title));
+  const existing = await localGame.entities.Mission.list('-created_date', 500);
   const fullCatalog = [...TUTORIAL_MISSIONS, ...PERIODIC_MISSIONS];
-  const missing = fullCatalog.filter(m => !titles.has(m.title));
-  if (missing.length) {
-    try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
-    catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
+
+  const canonicalKey = mission => mission.catalog_key
+    || (mission.mission_type === 'tutorial' ? `tutorial:${mission.objective_type}:${Number(mission.tutorial_order || 0)}` : `${mission.mission_type}:${mission.id || mission.objective_type}`);
+
+  const existingByKey = new Map();
+  for (const mission of existing || []) {
+    const key = canonicalKey(mission);
+    if (!existingByKey.has(key)) existingByKey.set(key, []);
+    existingByKey.get(key).push(mission);
   }
-  const canonicalByTitle = new Map(TUTORIAL_MISSIONS.map(mission => [mission.title, mission]));
-  const legacyTitles = new Set([...LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title), ...SHORT_TUTORIAL_MISSIONS.map(mission => mission.title), 'Defina estilo e arquétipo', 'Sua carreira, suas decisões']);
-  const updates = (existing || [])
-    .filter(mission => mission?.id && mission.mission_type === 'tutorial' && (legacyTitles.has(mission.title) || canonicalByTitle.has(mission.title)))
-    .map(mission => ({ ...mission, ...(canonicalByTitle.get(mission.title) || {}), is_active: canonicalByTitle.has(mission.title) }));
+
+  const missing = fullCatalog.filter(mission => !(existingByKey.get(canonicalKey(mission)) || []).length);
+  if (missing.length) {
+    const rows = missing.map(mission => ({ ...mission, catalog_key: mission.catalog_key || canonicalKey(mission), is_active: true }));
+    try {
+      await localGame.entities.Mission.bulkCreate(rows);
+    } catch {
+      for (const mission of rows) await localGame.entities.Mission.create(mission);
+    }
+  }
+
+  const refreshed = await localGame.entities.Mission.list('-created_date', 500);
+  const canonicalCatalog = new Map(fullCatalog.map(mission => [canonicalKey(mission), mission]));
+  const seenCanonical = new Set();
+  const updates = [];
+
+  for (const mission of refreshed || []) {
+    if (!mission?.id) continue;
+    const key = canonicalKey(mission);
+    const canonical = canonicalCatalog.get(key);
+
+    if (canonical && !seenCanonical.has(key)) {
+      seenCanonical.add(key);
+      updates.push({
+        ...mission,
+        ...canonical,
+        catalog_key: canonical.catalog_key || key,
+        id: mission.id,
+        is_active: true,
+      });
+      continue;
+    }
+
+    if (mission.mission_type === 'tutorial') {
+      // Tutoriais antigos ou linhas duplicadas permanecem no histórico, mas
+      // não aparecem nem recebem novos eventos/recompensas.
+      updates.push({ ...mission, is_active: false, superseded_by_catalog: true });
+    }
+  }
+
   if (updates.length) await localGame.entities.Mission.bulkUpdate(updates);
   return localGame.entities.Mission.filter({ is_active: true });
 }
@@ -551,7 +590,14 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
     }
     let progressRows = await localGame.entities.MissionProgress.filter({ profile_id: profileId });
     for (const type of types) {
-      const missions = (allMissions || []).filter(m => m.is_active !== false && m.objective_type === type);
+      const excludedMissionTypes = new Set(options.excludeMissionTypes || []);
+      const allowedMissionTypes = options.onlyMissionTypes ? new Set(options.onlyMissionTypes) : null;
+      const missions = (allMissions || []).filter(m =>
+        m.is_active !== false
+        && m.objective_type === type
+        && !excludedMissionTypes.has(m.mission_type)
+        && (!allowedMissionTypes || allowedMissionTypes.has(m.mission_type))
+      );
       for (const m of missions) {
         if (m.mission_type !== 'tutorial' && !selectedPeriodicIds.has(m.id)) continue;
         if (!(await tutorialUnlocked(m, allMissions, progressRows))) continue;
