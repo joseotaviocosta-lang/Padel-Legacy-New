@@ -1,7 +1,7 @@
 import React from 'react';
 import { Scroll, Swords, Trophy, Crown, Star, TrendingUp, Flame, Calendar, Flag } from 'lucide-react';
 import { GlassCard } from '@/components/padel/ui';
-import { levelForXp, formatDate } from '@/lib/padel';
+import { careerExperienceXpForLevel, formatDate } from '@/lib/padel';
 
 export default function CareerTimeline({ profile, legacies }) {
   if (!profile) return null;
@@ -47,19 +47,19 @@ export default function CareerTimeline({ profile, legacies }) {
   });
 
   // Level milestones
-  const level = levelForXp(profile.xp || 0);
   const levelEvents = [
-    { threshold: 500, label: 'Alcançou Amador', icon: Star },
-    { threshold: 3000, label: 'Alcançou Competitivo', icon: TrendingUp },
-    { threshold: 10000, label: 'Alcançou Avançado', icon: Flame },
-    { threshold: 25000, label: 'Alcançou Elite', icon: Flame },
-    { threshold: 50000, label: 'Alcançou Lenda', icon: Crown },
+    { threshold: careerExperienceXpForLevel(5), label: 'Experiência 5 · Aprendiz', icon: Star },
+    { threshold: careerExperienceXpForLevel(10), label: 'Experiência 10 · Competidor', icon: TrendingUp },
+    { threshold: careerExperienceXpForLevel(20), label: 'Experiência 20 · Profissional', icon: Flame },
+    { threshold: careerExperienceXpForLevel(30), label: 'Experiência 30 · Destaque do circuito', icon: Flame },
+    { threshold: careerExperienceXpForLevel(40), label: 'Experiência 40 · Elite', icon: Flame },
+    { threshold: careerExperienceXpForLevel(50), label: 'Experiência 50 · Lenda da carreira', icon: Crown },
   ];
   levelEvents.forEach(le => {
     events.push({
       icon: le.icon,
       title: le.label,
-      description: `${(profile.xp || 0).toLocaleString('pt-BR')} XP`,
+      description: `${(profile.xp || 0).toLocaleString('pt-BR')} XP de carreira`,
       accent: 'text-purple-400',
       done: (profile.xp || 0) >= le.threshold,
     });

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Coins } from 'lucide-react';
-import { levelForXp, levelProgress, prevLevelXp, nextLevelXp } from '@/lib/padel';
+import { careerExperienceSummary } from '@/lib/padel';
 
 export const RARITY_STYLES = {
   comum: { badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30', card: 'from-slate-500/10 to-transparent', label: 'Comum' },
@@ -35,17 +35,17 @@ export function ProgressBar({ value, max, className = '', barClassName = '' }) {
 }
 
 export function XpBar({ xp }) {
-  const level = levelForXp(xp || 0);
-  const prev = prevLevelXp(xp || 0);
-  const next = nextLevelXp(xp || 0);
-  const pct = levelProgress(xp || 0);
+  const experience = careerExperienceSummary(xp || 0);
   return (
     <div className="w-full">
-      <div className="flex justify-between items-baseline mb-1">
-        <span className="text-xs font-bold text-primary">{level}</span>
-        <span className="text-[10px] text-muted-foreground tabular-nums">{xp} / {next} XP</span>
+      <div className="flex justify-between items-baseline mb-1 gap-3">
+        <span className="text-xs font-bold text-primary">Experiência de carreira · Nível {experience.level}</span>
+        <span className="text-[10px] text-muted-foreground tabular-nums">
+          {experience.isMax ? 'Nível máximo' : `${experience.xp.toLocaleString('pt-BR')} / ${experience.nextXp.toLocaleString('pt-BR')} XP`}
+        </span>
       </div>
-      <ProgressBar value={xp} max={next} />
+      <ProgressBar value={experience.progress} max={100} />
+      <p className="mt-1 text-[9px] text-muted-foreground">{experience.title} · A força em quadra é definida pelos atributos e pelo Overall.</p>
     </div>
   );
 }

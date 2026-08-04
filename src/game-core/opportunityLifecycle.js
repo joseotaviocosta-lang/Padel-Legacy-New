@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { careerExperienceLevel } from '@/lib/padel.js';
 
 export const CAREER_OPPORTUNITIES = [
   {
@@ -68,14 +69,14 @@ function stableReward(profile, opportunity) {
 export function getOpportunityStatus(profile, opportunity) {
   const currentUses = usesToday(profile);
   const energy = Number(profile?.energy ?? 0);
-  const level = Number(profile?.level ?? 1);
+  const level = careerExperienceLevel(profile?.xp || 0);
   const reputation = Number(profile?.reputation ?? 0);
   const followers = Number(profile?.followers ?? 0);
 
   let reason = null;
   if (currentUses >= DAILY_LIMIT) reason = 'Limite diário atingido';
   else if (energy < opportunity.energyCost) reason = 'Energia insuficiente';
-  else if (level < (opportunity.minLevel || 1)) reason = `Requer nível ${opportunity.minLevel}`;
+  else if (level < (opportunity.minLevel || 1)) reason = `Requer Experiência de carreira ${opportunity.minLevel}`;
   else if (reputation < (opportunity.minReputation || 0)) reason = `Requer ${opportunity.minReputation} de reputação`;
   else if (followers < (opportunity.minFollowers || 0)) reason = `Requer ${opportunity.minFollowers} seguidores`;
 

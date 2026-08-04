@@ -6,7 +6,7 @@ import {
 } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { StatCard } from '@/components/padel/Shared';
-import { ATTRIBUTES, formatDate, overallRating, levelForXp, nextLevelXp, prevLevelXp, levelProgress } from '@/lib/padel';
+import { ATTRIBUTES, formatDate, overallRating, careerExperienceSummary, careerExperienceUnlocks } from '@/lib/padel';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
 const CHART_COLORS = {
@@ -183,10 +183,11 @@ export default function CareerStats() {
     { name: 'Vitórias', value: wins, color: CHART_COLORS.primary },
     { name: 'Derrotas', value: losses, color: CHART_COLORS.red },
   ];
-  const level = levelForXp(profile.xp || 0);
-  const xpPct = levelProgress(profile.xp || 0);
-  const prevXp = prevLevelXp(profile.xp || 0);
-  const nextXp = nextLevelXp(profile.xp || 0);
+  const careerExperience = careerExperienceSummary(profile.xp || 0);
+  const experienceUnlocks = careerExperienceUnlocks(careerExperience.level);
+  const xpPct = careerExperience.progress;
+  const prevXp = careerExperience.previousXp;
+  const nextXp = careerExperience.nextXp;
   const topAttributes = [...ATTRIBUTES]
     .map(a => ({ ...a, value: Number(profile[a.key]) || 0 }))
     .sort((a, b) => b.value - a.value);
@@ -259,10 +260,16 @@ export default function CareerStats() {
         </GlassCard>
 
         <GlassCard>
-          <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><TrendingUp className="h-4 w-4 text-primary" /> Progressão de nível</h2>
-          <div className="flex justify-between items-baseline mb-2"><span className="font-black text-primary text-lg">Nível {level}</span><span className="text-xs text-muted-foreground tabular-nums">{(profile.xp || 0).toLocaleString('pt-BR')} XP</span></div>
+          <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><TrendingUp className="h-4 w-4 text-primary" /> Experiência de carreira</h2>
+          <div className="flex justify-between items-baseline mb-2"><span className="font-black text-primary text-lg">Experiência de carreira · Nível {careerExperience.level}/{careerExperience.maxLevel}</span><span className="text-xs text-muted-foreground tabular-nums">{(profile.xp || 0).toLocaleString('pt-BR')} XP de carreira</span></div>
           <div className="h-3 rounded-full bg-secondary overflow-hidden"><div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${xpPct}%` }} /></div>
-          <div className="flex justify-between mt-1"><span className="text-[10px] text-muted-foreground">{prevXp.toLocaleString('pt-BR')}</span><span className="text-[10px] text-muted-foreground">{nextXp.toLocaleString('pt-BR')} XP</span></div>
+          <div className="flex justify-between mt-1"><span className="text-[10px] text-muted-foreground">{prevXp.toLocaleString('pt-BR')}</span><span className="text-[10px] text-muted-foreground">{careerExperience.isMax ? 'Nível máximo' : `${nextXp.toLocaleString('pt-BR')} XP`}</span></div>
+          <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3">
+            <p className="text-xs font-bold text-primary">{experienceUnlocks.latest.title}</p>
+            <p className="mt-1 text-[11px] text-muted-foreground">{experienceUnlocks.latest.description}</p>
+            {experienceUnlocks.next && <p className="mt-2 text-[10px] text-muted-foreground">Próximo marco no nível {experienceUnlocks.next.level}: {experienceUnlocks.next.title}.</p>}
+          </div>
+          <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">A Experiência de carreira representa sua trajetória e desbloqueia profundidade de gestão. Ela não aumenta sua força automaticamente: seu desempenho continua vindo dos atributos, do Overall, da forma e da qualidade da dupla.</p>
         </GlassCard>
 
         <GlassCard>

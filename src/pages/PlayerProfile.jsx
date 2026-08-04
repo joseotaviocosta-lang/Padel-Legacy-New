@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, MapPin, Disc, Trophy, Coins } from 'lucide-react';
-import { ensureMyProfile, levelForXp, nextLevelXp, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
+import { ensureMyProfile, careerExperienceSummary, careerExperienceUnlocks, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
 import { PLAY_STYLE_OPTIONS } from '@/lib/initialCareerProfiles.js';
 import LogoutButton from '@/components/LogoutButton';
 import { LevelBadge, StatCard, AttributeBar } from '@/components/padel/Shared';
@@ -42,9 +42,8 @@ export default function PlayerProfile() {
     return <LoadingScreen />;
   }
 
-  const level = levelForXp(profile?.xp || 0);
-  const nextXp = nextLevelXp(profile?.xp || 0);
-  const levelProgress = Math.round(((profile?.xp || 0) / nextXp) * 100);
+  const careerExperience = careerExperienceSummary(profile?.xp || 0);
+  const experienceUnlocks = careerExperienceUnlocks(careerExperience.level);
 
   async function save() {
     setSaving(true);
@@ -72,7 +71,7 @@ export default function PlayerProfile() {
           <div>
             <div className="flex items-center justify-center gap-2 flex-wrap">
               <h1 className="text-2xl md:text-3xl font-black tracking-tight">{profile?.sport_name}</h1>
-              <LevelBadge level={level} size="md" />
+              <LevelBadge level={`Experiência ${careerExperience.level}/${careerExperience.maxLevel}`} size="md" />
               {profile?.court_side && (
                 <span className="inline-flex items-center rounded-full bg-primary/15 text-primary px-2.5 py-1 text-xs font-bold">
                   {profile.court_side === 'direita' ? 'Lado Direito' : profile.court_side === 'esquerda' ? 'Lado Esquerdo' : 'Lado Versátil'}
@@ -95,7 +94,7 @@ export default function PlayerProfile() {
             </div>
             <div className="text-center">
               <p className="text-3xl font-black tabular-nums">{profile?.xp || 0}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">XP</p>
+              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">XP de carreira</p>
             </div>
             <div className="text-center">
               <p className="text-3xl font-black text-amber-400 tabular-nums">{winRate(profile)}%</p>
@@ -108,12 +107,18 @@ export default function PlayerProfile() {
           </div>
           <div className="w-full max-w-xs">
             <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
-              <span>{level}</span><span>{nextXp} XP</span>
+              <span>{careerExperience.title}</span><span>{careerExperience.isMax ? 'Nível máximo' : `${careerExperience.nextXp.toLocaleString('pt-BR')} XP`}</span>
             </div>
             <div className="h-2 rounded-full bg-secondary overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-primary/70 to-primary transition-all duration-700" style={{ width: `${levelProgress}%` }} />
+              <div className="h-full bg-gradient-to-r from-primary/70 to-primary transition-all duration-700" style={{ width: `${careerExperience.progress}%` }} />
             </div>
           </div>
+          <div className="max-w-xl rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-center">
+            <p className="text-[10px] font-bold text-primary">{experienceUnlocks.latest.title}</p>
+            <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">{experienceUnlocks.latest.description}</p>
+            {experienceUnlocks.next && <p className="mt-1 text-[9px] text-muted-foreground">Próximo marco: nível {experienceUnlocks.next.level} · {experienceUnlocks.next.title}</p>}
+          </div>
+          <p className="max-w-xl text-[10px] leading-relaxed text-muted-foreground">A Experiência de carreira mede sua trajetória. Sua força em quadra continua sendo definida pelos atributos, pelo Overall, pela forma e pela dupla.</p>
           <button
             onClick={() => editing ? save() : setEditing(true)}
             disabled={saving}

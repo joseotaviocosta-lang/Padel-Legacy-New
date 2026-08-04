@@ -7,7 +7,7 @@ import {
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
-  ensureMyProfile, incrementMissionProgress, levelForXp, overallRating, winRate,
+  ensureMyProfile, incrementMissionProgress, careerExperienceSummary, overallRating, winRate,
   getWorldRank, topAttributes, calculateAge, isRetired,
 } from '@/lib/padel';
 import { LevelBadge, StatCard, getAttributeIcon } from '@/components/padel/Shared';
@@ -162,7 +162,7 @@ export default function CareerHub() {
     return <div className="mx-auto max-w-5xl px-4 py-8"><EmptyStateCard icon={AlertCircle} title="Não foi possível carregar sua carreira" message="Volte ao gerenciador de carreiras ou tente novamente." /></div>;
   }
 
-  const level = levelForXp(profile.xp || 0);
+  const careerExperience = careerExperienceSummary(profile.xp || 0);
   const ovr = overallRating(profile);
   const top5 = topAttributes(profile).slice(0, 5);
   const finalTutorialStep = profile.tutorial_onboarding?.status === 'in_progress' && getCurrentTutorialStep(profile.tutorial_onboarding)?.id === 'autonomy';
@@ -171,7 +171,7 @@ export default function CareerHub() {
 
   return (
     <div className="mx-auto max-w-[1480px] space-y-5 px-4 py-5 md:px-6 lg:px-8 animate-fade-in">
-      <CareerCommandHeader profile={profile} level={level} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
+      <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
       <StatusStrip profile={profile} />
 
       {finalTutorialStep && (
@@ -209,7 +209,7 @@ export default function CareerHub() {
   );
 }
 
-function CareerCommandHeader({ profile, level, overall, worldRank, nextTournament, unreadCount }) {
+function CareerCommandHeader({ profile, careerExperience, overall, worldRank, nextTournament, unreadCount }) {
   return (
     <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-card via-card to-primary/[0.08] p-5 shadow-2xl shadow-black/20 md:p-7">
       <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
@@ -219,7 +219,7 @@ function CareerCommandHeader({ profile, level, overall, worldRank, nextTournamen
             {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : (profile.sport_name || 'J')[0]?.toUpperCase()}
           </div>
           <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2"><p className="text-[10px] font-bold uppercase tracking-[.28em] text-primary">Centro de controle da carreira</p><LevelBadge level={level} size="md" /></div>
+            <div className="flex flex-wrap items-center gap-2"><p className="text-[10px] font-bold uppercase tracking-[.28em] text-primary">Centro de controle da carreira</p><LevelBadge level={`Experiência ${careerExperience.level}/${careerExperience.maxLevel}`} size="md" /></div>
             <h1 className="mt-1 truncate text-2xl font-black tracking-tight md:text-4xl">{profile.sport_name || 'Jogador'}</h1>
             <p className="mt-1 text-sm text-muted-foreground">{profile.city || '—'}, {profile.country || '—'} · {calculateAge(profile)} anos · {profile.career_date || '—'}</p>
             <div className="mt-3 max-w-sm"><XpBar xp={profile.xp || 0} /></div>
@@ -278,7 +278,7 @@ function TournamentAndNews({ tournaments, posts, careerDate }) {
 }
 
 function RecentActivity({ matches, trainings }) {
-  return <GlassCard><div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Linha do tempo</p><h2 className="font-black">Atividade recente</h2></div><div className="flex gap-2"><Link to="/matches" className="text-xs font-bold text-primary">Partidas</Link><Link to="/game/training" className="text-xs font-bold text-primary">Treinos</Link></div></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Últimas partidas</p>{matches.length ? <div className="space-y-2">{matches.slice(0, 4).map((match) => <div key={match.id} className="flex items-center gap-3 rounded-xl bg-secondary/25 p-2.5"><div className={`flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-black ${match.winner === 'A' ? 'bg-primary/15 text-primary' : 'bg-destructive/15 text-destructive'}`}>{match.winner === 'A' ? 'V' : 'D'}</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{(match.team_a || []).join(' & ') || 'Sua dupla'}</p><p className="truncate text-[10px] text-muted-foreground">vs {(match.team_b || []).join(' & ') || 'Adversários'}</p></div><span className="text-xs font-black tabular-nums">{match.score_a}-{match.score_b}</span></div>)}</div> : <EmptyState icon={Activity} message="Nenhuma partida disputada." />}</div><div><p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Últimos treinos</p>{trainings.length ? <div className="space-y-2">{trainings.slice(0, 4).map((training) => <div key={training.id} className="flex items-center gap-3 rounded-xl bg-secondary/25 p-2.5"><div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10"><Dumbbell className="h-3.5 w-3.5 text-cyan-400" /></div><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{training.training_label || training.training_type || 'Treino concluído'}</p><p className="text-[10px] text-muted-foreground">+{training.attribute_gain || 0} {training.attribute_target || 'progresso'} · +{training.xp_reward || 0} XP</p></div></div>)}</div> : <EmptyState icon={Dumbbell} message="Nenhum treino registrado." />}</div></div></GlassCard>;
+  return <GlassCard><div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Linha do tempo</p><h2 className="font-black">Atividade recente</h2></div><div className="flex gap-2"><Link to="/matches" className="text-xs font-bold text-primary">Partidas</Link><Link to="/game/training" className="text-xs font-bold text-primary">Treinos</Link></div></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Últimas partidas</p>{matches.length ? <div className="space-y-2">{matches.slice(0, 4).map((match) => <div key={match.id} className="flex items-center gap-3 rounded-xl bg-secondary/25 p-2.5"><div className={`flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-black ${match.winner === 'A' ? 'bg-primary/15 text-primary' : 'bg-destructive/15 text-destructive'}`}>{match.winner === 'A' ? 'V' : 'D'}</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{(match.team_a || []).join(' & ') || 'Sua dupla'}</p><p className="truncate text-[10px] text-muted-foreground">vs {(match.team_b || []).join(' & ') || 'Adversários'}</p></div><span className="text-xs font-black tabular-nums">{match.score_a}-{match.score_b}</span></div>)}</div> : <EmptyState icon={Activity} message="Nenhuma partida disputada." />}</div><div><p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Últimos treinos</p>{trainings.length ? <div className="space-y-2">{trainings.slice(0, 4).map((training) => <div key={training.id} className="flex items-center gap-3 rounded-xl bg-secondary/25 p-2.5"><div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10"><Dumbbell className="h-3.5 w-3.5 text-cyan-400" /></div><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{training.training_label || training.training_type || 'Treino concluído'}</p><p className="text-[10px] text-muted-foreground">+{training.attribute_gain || 0} {training.attribute_target || 'progresso'} · +{training.xp_reward || 0} XP de carreira</p></div></div>)}</div> : <EmptyState icon={Dumbbell} message="Nenhum treino registrado." />}</div></div></GlassCard>;
 }
 
 function formatShortDate(value) { if (!value) return '—'; const date = new Date(`${value}T00:00:00`); return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', ''); }

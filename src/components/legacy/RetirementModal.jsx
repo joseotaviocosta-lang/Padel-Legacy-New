@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Crown, AlertTriangle, Flame } from 'lucide-react';
-import { calculateAge, RETIREMENT_AGE, overallRating, levelForXp } from '@/lib/padel';
+import { calculateAge, RETIREMENT_AGE, overallRating, careerExperienceSummary } from '@/lib/padel';
 
 export default function RetirementModal({ profile, legacyScore, onConfirm, onClose }) {
   const age = calculateAge(profile);
@@ -39,8 +39,8 @@ export default function RetirementModal({ profile, legacyScore, onConfirm, onClo
             <div><p className="text-lg font-black text-primary">{profile.tournaments_won || 0}</p><p className="text-[9px] text-muted-foreground uppercase">Títulos</p></div>
           </div>
           <div className="flex justify-between text-xs pt-2 border-t border-border/40">
-            <span className="text-muted-foreground">Nível final</span>
-            <span className="font-bold">{levelForXp(profile.xp || 0)}</span>
+            <span className="text-muted-foreground">Experiência de carreira</span>
+            <span className="font-bold">Nível {careerExperienceSummary(profile.xp || 0).level}/50</span>
           </div>
           <div className="flex justify-between text-xs">
             <span className="text-muted-foreground">Overall final</span>

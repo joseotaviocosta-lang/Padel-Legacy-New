@@ -1,6 +1,6 @@
 import React from 'react';
 import { Trophy, Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame } from 'lucide-react';
-import { levelForXp, overallRating } from '@/lib/padel';
+import { careerExperienceSummary, overallRating } from '@/lib/padel';
 
 const ATTRIBUTE_ICONS = { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame };
 
@@ -58,7 +58,7 @@ export function AttributeBar({ label, value, icon: Icon }) {
 }
 
 export function ProfileMini({ profile, rank }) {
-  const level = levelForXp(profile?.xp || 0);
+  const careerExperience = careerExperienceSummary(profile?.xp || 0);
   return (
     <div className="flex items-center gap-3">
       {rank && (
@@ -76,7 +76,7 @@ export function ProfileMini({ profile, rank }) {
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm text-foreground truncate">{profile?.sport_name || 'Jogador'}</p>
         <div className="flex items-center gap-2">
-          <LevelBadge level={level} size="sm" />
+          <LevelBadge level={`Exp. ${careerExperience.level}`} size="sm" />
           <span className="text-[10px] text-muted-foreground">{profile?.country || '—'}</span>
         </div>
       </div>

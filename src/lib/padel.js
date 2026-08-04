@@ -5,6 +5,99 @@ import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
 import { PERIODIC_MISSIONS } from '@/missions/periodicMissionCatalog.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
+
+// Experiência de carreira é uma progressão de longo prazo separada da força do atleta.
+// A habilidade esportiva continua sendo representada pelos atributos e pelo Overall.
+export const CAREER_EXPERIENCE_MAX_LEVEL = 50;
+export const CAREER_EXPERIENCE_MAX_XP = 500000;
+export const CAREER_EXPERIENCE_CURVE = 2.15;
+
+export const CAREER_EXPERIENCE_TITLES = Object.freeze([
+  { level: 1, title: 'Novato' },
+  { level: 5, title: 'Aprendiz' },
+  { level: 10, title: 'Competidor' },
+  { level: 20, title: 'Profissional' },
+  { level: 30, title: 'Destaque do circuito' },
+  { level: 40, title: 'Elite' },
+  { level: 50, title: 'Lenda da carreira' },
+]);
+
+export function careerExperienceXpForLevel(level) {
+  const safeLevel = Math.max(1, Math.min(CAREER_EXPERIENCE_MAX_LEVEL, Math.floor(Number(level) || 1)));
+  if (safeLevel <= 1) return 0;
+  const ratio = (safeLevel - 1) / (CAREER_EXPERIENCE_MAX_LEVEL - 1);
+  return Math.round(CAREER_EXPERIENCE_MAX_XP * Math.pow(ratio, CAREER_EXPERIENCE_CURVE));
+}
+
+export function careerExperienceLevel(xp) {
+  const safeXp = Math.max(0, Number(xp) || 0);
+  if (safeXp >= CAREER_EXPERIENCE_MAX_XP) return CAREER_EXPERIENCE_MAX_LEVEL;
+  let low = 1;
+  let high = CAREER_EXPERIENCE_MAX_LEVEL;
+  while (low < high) {
+    const mid = Math.ceil((low + high) / 2);
+    if (careerExperienceXpForLevel(mid) <= safeXp) low = mid;
+    else high = mid - 1;
+  }
+  return low;
+}
+
+export function careerExperienceTitle(levelOrXp, isXp = false) {
+  const level = isXp ? careerExperienceLevel(levelOrXp) : Math.max(1, Number(levelOrXp) || 1);
+  return [...CAREER_EXPERIENCE_TITLES].reverse().find(item => level >= item.level)?.title || 'Novato';
+}
+
+export function nextCareerExperienceXp(xp) {
+  const level = careerExperienceLevel(xp);
+  if (level >= CAREER_EXPERIENCE_MAX_LEVEL) return CAREER_EXPERIENCE_MAX_XP;
+  return careerExperienceXpForLevel(level + 1);
+}
+
+export function previousCareerExperienceXp(xp) {
+  return careerExperienceXpForLevel(careerExperienceLevel(xp));
+}
+
+export function careerExperienceProgress(xp) {
+  const safeXp = Math.max(0, Number(xp) || 0);
+  const level = careerExperienceLevel(safeXp);
+  if (level >= CAREER_EXPERIENCE_MAX_LEVEL) return 100;
+  const previous = careerExperienceXpForLevel(level);
+  const next = careerExperienceXpForLevel(level + 1);
+  return Math.max(0, Math.min(100, Math.round(((safeXp - previous) / Math.max(1, next - previous)) * 100)));
+}
+
+export function careerExperienceSummary(xp) {
+  const level = careerExperienceLevel(xp);
+  return {
+    level,
+    title: careerExperienceTitle(level),
+    xp: Math.max(0, Number(xp) || 0),
+    previousXp: previousCareerExperienceXp(xp),
+    nextXp: nextCareerExperienceXp(xp),
+    progress: careerExperienceProgress(xp),
+    maxLevel: CAREER_EXPERIENCE_MAX_LEVEL,
+    isMax: level >= CAREER_EXPERIENCE_MAX_LEVEL,
+  };
+}
+
+export const CAREER_EXPERIENCE_UNLOCKS = Object.freeze([
+  { level: 1, title: 'Base da carreira', description: 'Painel, treinos, dupla, calendário e competições essenciais.' },
+  { level: 3, title: 'Oportunidades locais', description: 'Aulas, exibições e atividades extras de início de carreira.' },
+  { level: 5, title: 'Relatórios de evolução', description: 'Leitura mais clara do progresso e dos pontos a desenvolver.' },
+  { level: 10, title: 'Análise de parceiros', description: 'Comparações mais completas para decisões de dupla.' },
+  { level: 15, title: 'Planejamento avançado', description: 'Mais contexto para calendário, carga de treinos e objetivos.' },
+  { level: 20, title: 'Carreira profissional', description: 'Oportunidades profissionais e análises competitivas ampliadas.' },
+  { level: 30, title: 'Influência no circuito', description: 'Mais peso em negociações, eventos e decisões de carreira.' },
+  { level: 40, title: 'Recursos de elite', description: 'Relatórios e oportunidades reservados a atletas experientes.' },
+  { level: 50, title: 'Legado máximo', description: 'Marco de auge da carreira e reconhecimento de uma trajetória lendária.' },
+]);
+
+export function careerExperienceUnlocks(levelOrXp, isXp = false) {
+  const level = isXp ? careerExperienceLevel(levelOrXp) : Math.max(1, Number(levelOrXp) || 1);
+  const unlocked = CAREER_EXPERIENCE_UNLOCKS.filter(item => item.level <= level);
+  const next = CAREER_EXPERIENCE_UNLOCKS.find(item => item.level > level) || null;
+  return { unlocked, next, latest: unlocked[unlocked.length - 1] || CAREER_EXPERIENCE_UNLOCKS[0] };
+}
 export const PLAY_STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
 
 export const ATTRIBUTES = [
@@ -242,7 +335,9 @@ export async function ensureMyProfile(user) {
       const p = existing[0];
       const updates = {};
       const correctLevel = levelForXp(p.xp || 0);
+      const correctCareerLevel = careerExperienceLevel(p.xp || 0);
       if (p.level !== correctLevel) updates.level = correctLevel;
+      if (Number(p.career_level) !== correctCareerLevel) updates.career_level = correctCareerLevel;
       if (!p.career_date) updates.career_date = '2026-01-01';
       if (!p.created_by_id && user.id) updates.created_by_id = user.id;
       if (!p.court_side && ['direita', 'esquerda'].includes(p.position)) updates.court_side = p.position;
@@ -259,6 +354,7 @@ export async function ensureMyProfile(user) {
       country: 'Brasil',
       city: '',
       level: 'Iniciante',
+      career_level: 1,
       play_style: 'Equilibrado',
       xp: 0,
       coins: 100,
