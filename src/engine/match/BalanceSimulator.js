@@ -130,7 +130,7 @@ export function runBalanceBatch(options = {}) {
     : 0;
 
   const summary = {
-    engineVersion: '0.4.0-alpha.5',
+    engineVersion: '0.4.0-alpha.6',
     matches,
     wins: { A: winsA, B: winsB },
     winRate: { A: round(winRateA), B: round(100 - winRateA) },

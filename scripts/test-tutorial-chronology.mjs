@@ -28,8 +28,8 @@ career.entities.TrainingSession = [{ id: 'training-1' }]; state = normalizeTutor
 career.player.partner_id = 'partner-1'; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 career.entities.TournamentRegistration = [{ id: 'registration-1', profile_id: 'p1', tournament_id: 't1', status: 'confirmed' }]; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
 career.entities.Match = [{ id: 'match-1' }]; state = normalizeTutorialState(state, career); assert.equal(state.currentStepId, expected.shift());
-state = normalizeTutorialState(state, career, { completedObjectiveTypes: ['visit_career_after_intro'] });
-assert.equal(state.status, 'completed'); assert.equal(getTutorialProgress(state).percent, 100);
+state = normalizeTutorialState(state, career, { completedObjectiveTypes: ['finish_tutorial'] });
+assert.equal(state.status, 'completed'); assert.equal(state.currentStepId, null); assert.ok(state.completedAt); assert.equal(getTutorialProgress(state).percent, 100);
 
 const skipped = normalizeTutorialState({ ...early, status: 'skipped', tutorialSkipped: true }, earlyPartnerCareer);
 assert.equal(skipped.status, 'skipped');
@@ -38,10 +38,14 @@ assert.equal(resumed.status, 'in_progress'); assert.equal(resumed.currentStepId,
 
 const missionsSource = await readFile(new URL('../src/pages/Missions.jsx', import.meta.url), 'utf8');
 const guideSource = await readFile(new URL('../src/components/onboarding/OnboardingGuide.jsx', import.meta.url), 'utf8');
+const hubSource = await readFile(new URL('../src/pages/CareerHub.jsx', import.meta.url), 'utf8');
+const bridgeSource = await readFile(new URL('../src/components/missions/MissionNotificationBridge.jsx', import.meta.url), 'utf8');
 assert.match(missionsSource, /if \(savingChoice\) return;/, 'double-submit guard exists');
 assert.match(missionsSource, /role="status"/); assert.match(missionsSource, /role="alert"/);
 assert.match(missionsSource, /type="submit"/); assert.match(missionsSource, /Salvando\.\.\./);
 assert.match(guideSource, /!isMissionCenter.*Orientação contextual do tutorial/s, 'global guide is suppressed in mission center');
 assert(!missionsSource.includes('onboarding_completed: true'), 'style selection no longer ends onboarding');
+assert.match(hubSource, /Começar carreira livre/); assert.match(hubSource, /finishingTutorial/);
+assert(!bridgeSource.includes("visit_career_after_intro"), 'visiting the dashboard does not complete the tutorial');
 
 console.log('TutorialChronologyTest: cronologia v3, ações antecipadas, idempotência, retomada e CTAs aprovados.');

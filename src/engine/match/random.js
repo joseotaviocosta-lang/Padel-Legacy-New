@@ -8,8 +8,8 @@ export function hashSeed(input = Date.now()) {
   return hash >>> 0;
 }
 
-export function createRandom(seed) {
-  let state = hashSeed(seed) || 1;
+export function createRandom(seed, initialState) {
+  let state = Number.isInteger(initialState) ? initialState >>> 0 : (hashSeed(seed) || 1);
   return {
     next() {
       state += 0x6d2b79f5;
@@ -18,6 +18,7 @@ export function createRandom(seed) {
       t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
       return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
     },
+    state() { return state >>> 0; },
     pick(items) {
       if (!items?.length) return undefined;
       return items[Math.floor(this.next() * items.length)];

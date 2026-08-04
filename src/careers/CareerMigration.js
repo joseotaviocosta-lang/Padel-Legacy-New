@@ -124,7 +124,7 @@ export function migrateCareer(career) {
   if (version < 8) {
     data.entities = data.entities && typeof data.entities === 'object' && !Array.isArray(data.entities) ? data.entities : {};
     const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data, {
-      autonomyVisited: Boolean(data.player?.onboarding_completed || Number(data.player?.matches_played || 0) > 0 || (data.entities?.Match || []).length > 0),
+      tutorialFinished: Boolean(data.player?.onboarding_completed || Number(data.player?.matches_played || 0) > 0 || (data.entities?.Match || []).length > 0),
     });
     data.tutorial = tutorial;
     data.player = { ...(data.player || {}), tutorial_onboarding: tutorial };
@@ -163,7 +163,7 @@ export function migrateCareer(career) {
   }
   if (version < 10) {
     const tutorial = normalizeTutorialState(data.tutorial || data.player?.tutorial_onboarding, data, {
-      autonomyVisited: Boolean(data.player?.onboarding_completed || Number(data.player?.matches_played || 0) > 0 || (data.entities?.Match || []).length > 0),
+      tutorialFinished: Boolean(data.player?.onboarding_completed || Number(data.player?.matches_played || 0) > 0 || (data.entities?.Match || []).length > 0),
     });
     data.tutorial = tutorial;
     data.player = {

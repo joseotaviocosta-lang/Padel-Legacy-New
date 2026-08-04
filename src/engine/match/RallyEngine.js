@@ -88,7 +88,7 @@ export class RallyEngine {
           difficulty,
         });
         return {
-          winner,
+          winner, winnerTeamId: winner, loserTeamId: activeTeam,
           finisher: player,
           shot,
           result: 'error',
@@ -117,7 +117,7 @@ export class RallyEngine {
           difficulty,
         });
         return {
-          winner: activeTeam,
+          winner: activeTeam, winnerTeamId: activeTeam, loserTeamId: activeTeam === 'A' ? 'B' : 'A',
           finisher: player,
           shot,
           result: 'winner',
@@ -151,7 +151,7 @@ export class RallyEngine {
       pressure: 100,
     });
     return {
-      winner,
+      winner, winnerTeamId: winner, loserTeamId: activeTeam,
       finisher: lastPlayer,
       shot,
       result: 'error',

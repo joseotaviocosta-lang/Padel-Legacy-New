@@ -433,7 +433,7 @@ export const TUTORIAL_MISSIONS = [
   { title: 'Encontre sua dupla', description: 'Forme uma parceria compatível com seu lado e estilo.', why_it_matters: 'Entrosamento e complementaridade afetam o desempenho competitivo.', action_label: 'Buscar parceiro', mission_type: 'tutorial', objective_type: 'select_partner', target_count: 1, xp_reward: 60, coins_reward: 100, tutorial_order: 7, tutorial_route: '/partners' },
   { title: 'Primeiro torneio', description: 'Encontre um torneio aberto, confira prazo e parceiro e confirme a inscrição. Depois, aguarde a data para jogar.', why_it_matters: 'Somente uma inscrição confirmada garante sua vaga; eventos sobrepostos exigem escolher uma única competição.', action_label: 'Ver torneios', mission_type: 'tutorial', objective_type: 'join_tournament', target_count: 1, xp_reward: 100, coins_reward: 150, tutorial_order: 8, tutorial_route: '/tournaments' },
   { title: 'Primeiro resultado', description: 'Conclua uma partida e analise recompensas, energia e evolução.', why_it_matters: 'O resultado mostra o que funcionou e qual deve ser seu próximo ajuste.', action_label: 'Jogar partida', mission_type: 'tutorial', objective_type: 'play_matches', target_count: 1, xp_reward: 100, coins_reward: 150, tutorial_order: 9, tutorial_route: '/matches' },
-  { title: 'Sua carreira, suas decisões', description: 'Volte ao painel e escolha seu próximo objetivo.', why_it_matters: 'Agora você pode repetir o ciclo no seu ritmo.', action_label: 'Voltar ao painel', mission_type: 'tutorial', objective_type: 'visit_career_after_intro', target_count: 1, xp_reward: 50, coins_reward: 100, tutorial_order: 10, tutorial_route: '/game', medal_reward: 'Primeiros Passos' },
+  { title: 'Conclua seus primeiros passos', description: 'Você conheceu os principais sistemas. Volte ao painel, veja suas recomendações e confirme o início da carreira livre.', why_it_matters: 'O painel reúne sua situação, compromissos e ações recomendadas.', action_label: 'Ir para o painel', mission_type: 'tutorial', objective_type: 'finish_tutorial', target_count: 1, xp_reward: 50, coins_reward: 100, tutorial_order: 10, tutorial_route: '/game', medal_reward: 'Primeiros Passos' },
 ];
 
 export async function ensureTutorialMissionCatalog() {
@@ -445,7 +445,7 @@ export async function ensureTutorialMissionCatalog() {
     catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
   }
   const canonicalByTitle = new Map(TUTORIAL_MISSIONS.map(mission => [mission.title, mission]));
-  const legacyTitles = new Set([...LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title), 'Defina estilo e arquétipo']);
+  const legacyTitles = new Set([...LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title), 'Defina estilo e arquétipo', 'Sua carreira, suas decisões']);
   const updates = (existing || [])
     .filter(mission => mission?.id && mission.mission_type === 'tutorial' && (legacyTitles.has(mission.title) || canonicalByTitle.has(mission.title)))
     .map(mission => ({ ...mission, ...(canonicalByTitle.get(mission.title) || {}), is_active: canonicalByTitle.has(mission.title) }));

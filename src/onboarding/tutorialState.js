@@ -18,7 +18,7 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
     partnerSelected: Boolean(player.partner_id || player.current_partner_id),
     tournamentRegistered: registrations.some(item => item.tournament_id ? item.status === 'confirmed' : ['tournament', 'torneio'].includes(item.event_type) && item.status === 'scheduled' && Boolean(item.metadata?.registration_id)),
     matchCompleted: Number(player.matches_played || 0) > 0 || matches.length > 0,
-    autonomyVisited: Boolean(facts.autonomyVisited || facts.completedObjectiveTypes?.includes('visit_career_after_intro')),
+    tutorialFinished: Boolean(player.tutorial_onboarding?.completedAt || player.onboarding_completed || facts.tutorialFinished || facts.completedObjectiveTypes?.includes('finish_tutorial')),
   };
 }
 
@@ -32,7 +32,7 @@ const STEP_FACT = {
   'partner-selected': facts => facts.partnerSelected,
   'tournament-registered': facts => facts.tournamentRegistered,
   'first-match': facts => facts.matchCompleted,
-  autonomy: facts => facts.matchCompleted && facts.autonomyVisited,
+  autonomy: facts => facts.matchCompleted && facts.tutorialFinished,
 };
 
 export function inferCompletedSteps(career = {}, facts = {}) {
@@ -50,7 +50,7 @@ export function reconcileTutorialProgress(career = {}, value = {}, facts = {}) {
   const next = {
     version: TUTORIAL_VERSION,
     status,
-    currentStepId: current?.id || TUTORIAL_STEPS.at(-1).id,
+    currentStepId: current?.id || null,
     completedStepIds,
     // Read-only compatibility alias for older consumers; v3 selectors use completedStepIds.
     completedSteps: completedStepIds,
@@ -62,6 +62,7 @@ export function reconcileTutorialProgress(career = {}, value = {}, facts = {}) {
     minimized: Boolean(old.minimized),
     welcomeSeen: Boolean(old.welcomeSeen),
     lastUpdatedAt: old.lastUpdatedAt || null,
+    completedAt: status === 'completed' ? (old.completedAt || old.lastUpdatedAt || new Date().toISOString()) : null,
   };
   const comparableOld = { ...old, lastUpdatedAt: null };
   const comparableNext = { ...next, lastUpdatedAt: null };
@@ -93,3 +94,8 @@ export function getTutorialProgress(state) {
 }
 
 export const getNextTutorialStep = getCurrentTutorialStep;
+
+export function completeTutorialState(value, career = {}, completedAt = new Date().toISOString()) {
+  const next = reconcileTutorialProgress(career, value, { completedObjectiveTypes: ['finish_tutorial'], tutorialFinished: true });
+  return { ...next, status: 'completed', currentStepId: null, completedAt, minimized: false, tutorialSkipped: false };
+}

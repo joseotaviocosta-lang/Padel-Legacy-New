@@ -19,7 +19,7 @@ const progressed = {
     Match: [{ id: 'match-1', profile_id: 'p1' }],
   },
 };
-const state = normalizeTutorialState(null, progressed, { completedObjectiveTypes: ['visit_career_after_intro'] });
+const state = normalizeTutorialState(null, progressed, { completedObjectiveTypes: ['finish_tutorial'] });
 assert.deepEqual(state.completedSteps, ['career-created', 'athlete-named', 'side-selected', 'style-selected', 'first-training', 'energy-understood', 'partner-selected', 'tournament-registered', 'first-match', 'autonomy']);
 assert.equal(state.status, 'completed');
 

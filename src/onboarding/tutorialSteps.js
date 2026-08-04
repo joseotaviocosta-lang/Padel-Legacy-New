@@ -10,7 +10,7 @@ export const TUTORIAL_STEPS = [
   { id: 'partner-selected', objectiveType: 'select_partner', title: 'Escolha sua primeira dupla', explanation: 'Você recebeu propostas de atletas interessados. Compare lados, estilos e condições antes de escolher.', route: '/partners?view=offers&source=tutorial', actionLabel: 'Analisar propostas', phase: 'Dupla' },
   { id: 'tournament-registered', objectiveType: 'join_tournament', title: 'Inscreva-se no primeiro torneio', explanation: 'Confira prazo, parceiro e conflitos; confirme a inscrição persistida e aguarde a data para jogar.', route: '/tournaments', actionLabel: 'Ver torneios', phase: 'Competição' },
   { id: 'first-match', objectiveType: 'play_matches', title: 'Dispute sua primeira partida', explanation: 'A conclusão persistida da partida avança o tutorial.', route: '/matches', actionLabel: 'Jogar', phase: 'Competição' },
-  { id: 'autonomy', objectiveType: 'visit_career_after_intro', title: 'Continue seu ciclo de carreira', explanation: 'Avalie o resultado e escolha seu próximo objetivo.', route: '/game', actionLabel: 'Ver painel', phase: 'Autonomia' },
+  { id: 'autonomy', objectiveType: 'finish_tutorial', title: 'Conclua seus primeiros passos', explanation: 'Volte ao painel, veja recomendações baseadas na sua carreira e confirme quando quiser seguir livremente.', route: '/game', actionLabel: 'Ir para o painel', phase: 'Encerramento' },
 ];
 
 export const CORE_GAME_LOOP = ['Planejar', 'Treinar', 'Administrar energia', 'Escolher parceiro', 'Competir', 'Receber resultados', 'Evoluir', 'Subir no ranking'];

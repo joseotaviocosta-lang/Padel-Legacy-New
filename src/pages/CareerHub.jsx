@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Gamepad2, Trophy, Target, Dumbbell, TrendingUp, Activity, ChevronRight, Flame, Crown, Zap, ShoppingBag, Package, AlertCircle, MessageCircle, BarChart3, Calendar, Wallet } from 'lucide-react';
+import { Gamepad2, Trophy, Target, Dumbbell, TrendingUp, Activity, ChevronRight, Flame, Crown, Zap, ShoppingBag, Package, AlertCircle, MessageCircle, BarChart3, Calendar, Wallet, GraduationCap, CheckCircle2 } from 'lucide-react';
 
-import { ensureMyProfile, levelForXp, overallRating, winRate, getWorldRank, topAttributes, calculateAge, isRetired } from '@/lib/padel';
+import { ensureMyProfile, incrementMissionProgress, levelForXp, overallRating, winRate, getWorldRank, topAttributes, calculateAge, isRetired } from '@/lib/padel';
 import { LevelBadge, StatCard, getAttributeIcon } from '@/components/padel/Shared';
 import { CoinBadge, XpBar, SectionCard, EmptyState, QuickLink, ProgressBar } from '@/components/padel/GameShared';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
@@ -20,6 +20,9 @@ import FeedPanel from '@/components/home/FeedPanel';
 import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
 import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
 import { advanceCareerUntilRecovered } from '@/game-core';
+import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
+import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
+import { useToast } from '@/components/ui/use-toast';
 
 export default function CareerHub() {
   const [profile, setProfile] = useState(null);
@@ -36,6 +39,28 @@ export default function CareerHub() {
   const [skippingInjury, setSkippingInjury] = useState(false);
   const [injurySkipError, setInjurySkipError] = useState('');
   const [injurySkipSummary, setInjurySkipSummary] = useState(null);
+  const [finishingTutorial, setFinishingTutorial] = useState(false);
+  const { toast } = useToast();
+
+  async function finishTutorial() {
+    if (!profile?.id || finishingTutorial || profile.tutorial_onboarding?.status === 'completed') return;
+    setFinishingTutorial(true);
+    try {
+      await incrementMissionProgress(profile.id, 'finish_tutorial', 1, profile.career_date);
+      const completedAt = new Date().toISOString();
+      const tutorial = completeTutorialState(profile.tutorial_onboarding, profile, completedAt);
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+        tutorial_onboarding: tutorial,
+        onboarding_completed: true,
+        onboarding_stage: 'completed',
+      });
+      setProfile(updated);
+      window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
+    } catch (error) {
+      console.error('[tutorial] Falha ao concluir o tutorial.', error);
+      toast({ title: 'Não foi possível concluir', description: 'Seu progresso foi preservado. Tente novamente.', variant: 'destructive' });
+    } finally { setFinishingTutorial(false); }
+  }
 
   async function handleSkipInjury() {
     const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? Math.ceil((new Date(`${profile.injured_until}T00:00:00`).getTime() - new Date(`${profile.career_date}T00:00:00`).getTime()) / 86400000) : 0);
@@ -128,6 +153,8 @@ export default function CareerHub() {
   const level = levelForXp(profile?.xp || 0);
   const ovr = overallRating(profile);
   const top3 = topAttributes(profile).slice(0, 3);
+  const finalTutorialStep = profile.tutorial_onboarding?.status === 'in_progress' && getCurrentTutorialStep(profile.tutorial_onboarding)?.id === 'autonomy';
+  const recommendations = getCareerRecommendations(profile, { trainings: recentTrainings, registrations: upcomingTournaments, matches: recentMatches }).slice(0, 4);
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
@@ -183,6 +210,13 @@ export default function CareerHub() {
 
       {/* Status strip */}
       <StatusStrip profile={profile} />
+
+      {finalTutorialStep && <section className="glass rounded-2xl border border-primary/40 p-5" aria-labelledby="tutorial-finish-title">
+        <div className="flex gap-3"><GraduationCap className="h-7 w-7 shrink-0 text-primary"/><div><p className="text-xs font-bold uppercase tracking-wider text-primary">Etapa final do tutorial</p><h2 id="tutorial-finish-title" className="mt-1 text-xl font-black">Tutorial concluído: confirme sua carreira livre</h2><p className="mt-2 text-sm text-muted-foreground">Você conheceu os fundamentos. Estas recomendações são opcionais e mudam conforme sua carreira:</p></div></div>
+        <div className="mt-4 grid gap-2 md:grid-cols-2">{recommendations.map(item => <Link key={item.id} to={item.route} className="rounded-xl bg-secondary/40 p-3 hover:bg-secondary"><strong className="text-sm">{item.title}</strong><p className="mt-1 text-xs text-muted-foreground">{item.explanation}</p></Link>)}</div>
+        <button type="button" disabled={finishingTutorial} onClick={finishTutorial} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"><CheckCircle2 className="h-4 w-4"/>{finishingTutorial ? 'Concluindo...' : 'Começar carreira livre'}</button>
+        <p className="mt-2 text-center text-xs text-muted-foreground">Recompensa final existente: 50 XP, 100 moedas e medalha Primeiros Passos.</p>
+      </section>}
 
       <MedicalStatusPanel profile={profile} onSkipRecovery={handleSkipInjury} skipping={skippingInjury} skipError={injurySkipError} skipSummary={injurySkipSummary} />
       <MedicalCenterPanel profile={profile} onProfileUpdate={setProfile} />
