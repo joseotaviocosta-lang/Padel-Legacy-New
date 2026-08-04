@@ -20,7 +20,7 @@ const ATTR_ICONS = {
   strategy: Brain, emotional_control: Heart,
 };
 
-export default function AthleteDetail({ athlete, onClose }) {
+export default function AthleteDetail({ athlete, onClose, followed = false, onToggleFollow }) {
   if (!athlete) return null;
   const personality = getPersonalityMeta(athlete.personality);
   const coach = getCoachMeta(athlete.coach_preference);
@@ -50,6 +50,7 @@ export default function AthleteDetail({ athlete, onClose }) {
             </div>
           </div>
         </div>
+        <button onClick={()=>onToggleFollow?.(athlete.id)} className={`w-full mb-3 rounded-xl py-2.5 text-xs font-bold ${followed?'bg-secondary text-muted-foreground':'bg-primary text-primary-foreground'}`}>{followed?'Deixar de seguir':'Seguir atleta'}</button>
 
         {/* Personality */}
         <div className="glass rounded-xl p-3 mb-3">

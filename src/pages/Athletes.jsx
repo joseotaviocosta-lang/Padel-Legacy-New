@@ -6,6 +6,8 @@ import { LoadingScreen, PageHeader, FilterPills } from '@/components/padel/ui';
 import { ensureAthleteProfiles, generateRelationships, getAthletes, PERSONALITIES } from '@/lib/athleteBehavior';
 import AthleteCard from '@/components/athletes/AthleteCard';
 import AthleteDetail from '@/components/athletes/AthleteDetail';
+import { useCareer } from '@/careers/useCareer.js';
+import { spectatorStore } from '@/gameplay/replay/spectator/SpectatorStore.js';
 
 const PHASE_FILTERS = [
   { id: 'all', label: 'Todas' },
@@ -16,6 +18,8 @@ const PHASE_FILTERS = [
 ];
 
 export default function Athletes() {
+  const {activeCareer}=useCareer();
+  const [followedPlayers,setFollowedPlayers]=useState(new Set());
   const [athletes, setAthletes] = useState([]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -40,6 +44,8 @@ export default function Athletes() {
       finally { setLoading(false); }
     })();
   }, []);
+  useEffect(()=>{if(activeCareer?.career_id)spectatorStore.load(activeCareer.career_id).then((state)=>setFollowedPlayers(new Set(state.followed_player_ids)));},[activeCareer?.career_id]);
+  async function toggleFollow(id){const next=await spectatorStore.toggle(activeCareer.career_id,'followed_player_ids',id);setFollowedPlayers(new Set(next.followed_player_ids));}
 
   if (loading) return <LoadingScreen />;
 
@@ -100,7 +106,7 @@ export default function Athletes() {
         </div>
       )}
 
-      {selected && <AthleteDetail athlete={selected} onClose={() => setSelected(null)} />}
+      {selected && <AthleteDetail athlete={selected} followed={followedPlayers.has(selected.id)} onToggleFollow={toggleFollow} onClose={() => setSelected(null)} />}
     </div>
   );
 }

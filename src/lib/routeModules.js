@@ -13,7 +13,7 @@ export const PAGE_LOADERS = {
   Coaches: () => import('@/pages/Coaches'), TrainingCenter: () => import('@/pages/TrainingCenter'), Press: () => import('@/pages/Press'),
   Social: () => import('@/pages/Social'), Fans: () => import('@/pages/Fans'), Achievements: () => import('@/pages/Achievements'),
   WorldEvents: () => import('@/pages/WorldEvents'), WorldMarket: () => import('@/pages/WorldMarket'), Weather: () => import('@/pages/Weather'),
-  Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'), ReplayLibrary: () => import('@/pages/ReplayLibrary'),
+  Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'), ReplayLibrary: () => import('@/pages/ReplayLibrary'), WorldSpectator: () => import('@/pages/WorldSpectator'),
 };
 
 const ROUTE_MODULES = {
@@ -24,7 +24,7 @@ const ROUTE_MODULES = {
   '/character': 'CharacterEditor', '/admin': 'Admin', '/database': 'DatabaseManager', '/history': 'History',
   '/hall-of-fame': 'HallOfFame', '/relationships': 'Relationships', '/coaches': 'Coaches', '/training-center': 'TrainingCenter',
   '/press': 'Press', '/social': 'Social', '/fans': 'Fans', '/achievements': 'Achievements', '/world-events': 'WorldEvents',
-  '/world-market': 'WorldMarket', '/weather': 'Weather', '/encyclopedia': 'Encyclopedia', '/partners': 'PartnerHub', '/community': 'Community', '/replays': 'ReplayLibrary',
+  '/world-market': 'WorldMarket', '/weather': 'Weather', '/encyclopedia': 'Encyclopedia', '/partners': 'PartnerHub', '/community': 'Community', '/replays': 'ReplayLibrary', '/world-tour/live': 'WorldSpectator',
 };
 
 const preloadRequests = new Map();

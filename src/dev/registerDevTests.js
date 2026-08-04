@@ -21,6 +21,7 @@ import { runReplayGameplayTest } from '@/gameplay/replay/ReplayGameplayTest.js';
 import { runReplaySpritesTest } from '@/gameplay/replay/sprites/ReplaySpritesTest.js';
 import { runReplayBroadcastTest } from '@/gameplay/replay/broadcast/ReplayBroadcastTest.js';
 import { runReplayCareerIntegrationTest } from '@/gameplay/replay/library/ReplayCareerIntegrationTest.js';
+import { runPadelSpectatorWorldTest } from '@/gameplay/replay/spectator/PadelSpectatorWorldTest.js';
 
 function register(label, callback) {
   try {
@@ -57,3 +58,4 @@ window.PadelReplayGameplayTest = { run: runReplayGameplayTest };
 window.PadelReplaySpritesTest = { run: runReplaySpritesTest };
 window.PadelReplayBroadcastTest = { run: runReplayBroadcastTest };
 window.PadelReplayCareerIntegrationTest = { run: runReplayCareerIntegrationTest };
+window.PadelSpectatorWorldTest = { run: runPadelSpectatorWorldTest };

@@ -26,6 +26,7 @@
     "test:replay-sprites": "node scripts/test-replay-sprites.mjs",
     "test:replay-broadcast": "node scripts/test-replay-broadcast.mjs",
     "test:replay-career": "node scripts/test-replay-career.mjs",
+    "test:replay-spectator": "node scripts/test-replay-spectator-world.mjs",
     "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js",
     "test:onboarding-v2": "node scripts/test-onboarding-v2.mjs",
     "test:tutorial-chronology": "node scripts/test-tutorial-chronology.mjs",

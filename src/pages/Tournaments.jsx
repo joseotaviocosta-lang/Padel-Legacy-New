@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield } from 'lucide-react';
+import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, Radio } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
 import { simulatePastTournaments } from '@/lib/teamRanking';
@@ -21,6 +22,8 @@ import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelecti
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
 import { cancelTournamentRegistration, isPlayerRegisteredForTournament, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
+import { useCareer } from '@/careers/useCareer.js';
+import { spectatorStore } from '@/gameplay/replay/spectator/SpectatorStore.js';
 
 const TIER_CONFIG = {
   Crown:{label:'Legacy Crown',badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',card:'border-amber-500/25 hover:border-amber-500/50',glow:'shadow-[0_0_24px_rgba(245,158,11,0.12)]',icon:Crown,diffLabel:'Lendário',diffColor:'text-red-400'},
@@ -50,6 +53,8 @@ function prepareTournamentList(items) {
 }
 
 export default function Tournaments() {
+  const {activeCareer}=useCareer();
+  const [followedTournaments,setFollowedTournaments]=useState(new Set());
   const [tournaments, setTournaments] = useState([]);
   const [season, setSeason] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -123,6 +128,8 @@ export default function Tournaments() {
       finally { setLoading(false); }
     })();
   }, []);
+  useEffect(()=>{if(activeCareer?.career_id)spectatorStore.load(activeCareer.career_id).then((state)=>setFollowedTournaments(new Set(state.followed_tournament_ids)));},[activeCareer?.career_id]);
+  async function toggleTournamentFollow(id){const next=await spectatorStore.toggle(activeCareer.career_id,'followed_tournament_ids',id);setFollowedTournaments(new Set(next.followed_tournament_ids));}
 
   async function refreshProfile() {
     const user = await localGame.auth.me();
@@ -259,6 +266,7 @@ export default function Tournaments() {
             <SummaryStat icon={Award} label="Gold" value={counts.Gold} color="text-yellow-400" />
             <SummaryStat icon={Shield} label="Silver" value={counts.Silver} color="text-slate-300" />
           </div>
+          <Link to="/world-tour/live" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-500/15 text-red-300 px-3 py-2 text-xs font-bold"><Radio className="h-4 w-4"/>Ao vivo e jogos recomendados</Link>
         </div>
       </div>
 
@@ -367,6 +375,8 @@ export default function Tournaments() {
                     careerDate={profile?.career_date}
                     profile={profile}
                     teamRank={teamRank}
+                    followed={followedTournaments.has(t.id)}
+                    onToggleFollow={()=>toggleTournamentFollow(t.id)}
                   />
                 ))}
               </div>
@@ -436,7 +446,7 @@ function SummaryStat({ icon: Icon, label, value, color }) {
   );
 }
 
-function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewBracket, careerDate, profile, teamRank }) {
+function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewBracket, careerDate, profile, teamRank, followed, onToggleFollow }) {
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
   const coach = !isPast ? evaluateTournamentChoice(tournament, {
@@ -479,6 +489,7 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
           </div>
         ) : null}
       </div>
+      <button onClick={onToggleFollow} className={`mb-3 text-[10px] font-bold rounded-lg px-2 py-1 ${followed?'bg-primary/15 text-primary':'bg-secondary text-muted-foreground'}`}>{followed?'Torneio acompanhado':'Acompanhar torneio'}</button>
 
       {tournament.description && (
         <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 line-clamp-2">{tournament.description}</p>

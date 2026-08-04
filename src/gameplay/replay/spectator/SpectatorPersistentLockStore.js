@@ -1,0 +1,3 @@
+import { TauriStorage } from '../../../storage/TauriStorage.js';
+const memory=new Map();const safe=(id)=>String(id).replace(/[^a-zA-Z0-9_-]/g,'_');
+export class SpectatorPersistentLockStore{constructor(storage=new TauriStorage()){this.storage=storage;}path(id){return `replays/world-locks/${safe(id)}.json`;}async get(id){try{const raw=this.storage.isSupported()?await this.storage.readText(this.path(id)):memory.get(this.path(id));return raw?JSON.parse(raw):null;}catch{return null;}}async set(id,value){const raw=JSON.stringify(value);if(this.storage.isSupported())await this.storage.writeText(this.path(id),raw);else memory.set(this.path(id),raw);return value;}}
