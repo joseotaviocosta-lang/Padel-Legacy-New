@@ -12,6 +12,7 @@ import AppLayout from '@/components/AppLayout';
 import { PAGE_LOADERS } from '@/lib/routeModules';
 import { CareerProvider } from '@/careers/CareerProvider';
 import { ActiveCareerGuard } from '@/careers/ActiveCareerGuard';
+import { useCareer } from '@/careers/useCareer.js';
 
 import GlobalDayAdvanceSummary from '@/components/calendar/GlobalDayAdvanceSummary';
 import SaveFoundationBootstrap from '@/components/system/SaveFoundationBootstrap';
@@ -43,6 +44,13 @@ const RuntimeServices = () => {
   return <><SaveFoundationBootstrap /><GlobalDayAdvanceSummary /><MissionNotificationBridge /></>;
 };
 
+
+const RootEntry = () => {
+  const { activeCareer, loading } = useCareer();
+  if (loading) return <RouteLoadingFallback />;
+  return <Navigate to={activeCareer ? '/game' : '/careers'} replace />;
+};
+
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
 
@@ -65,7 +73,7 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
-      <Route path="/" element={<CareerManager />} />
+      <Route path="/" element={<RootEntry />} />
       <Route path="/careers" element={<CareerManager />} />
       <Route path="/career-hub" element={<CareerManager />} />
       {/* Auth routes */}

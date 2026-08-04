@@ -1,28 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
+import {
+  Activity, AlertCircle, ArrowRight, Bell, CalendarDays, CheckCircle2,
+  ChevronRight, Crown, Dumbbell, Gamepad2, GraduationCap,
+  Inbox, MessageCircle, Newspaper, Target, Trophy, TrendingUp, Users, Zap,
+} from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { Gamepad2, Trophy, Target, Dumbbell, TrendingUp, Activity, ChevronRight, Flame, Crown, Zap, ShoppingBag, Package, AlertCircle, MessageCircle, BarChart3, Calendar, Wallet, GraduationCap, CheckCircle2 } from 'lucide-react';
-
-import { ensureMyProfile, incrementMissionProgress, levelForXp, overallRating, winRate, getWorldRank, topAttributes, calculateAge, isRetired } from '@/lib/padel';
+import {
+  ensureMyProfile, incrementMissionProgress, levelForXp, overallRating, winRate,
+  getWorldRank, topAttributes, calculateAge, isRetired,
+} from '@/lib/padel';
 import { LevelBadge, StatCard, getAttributeIcon } from '@/components/padel/Shared';
-import { CoinBadge, XpBar, SectionCard, EmptyState, QuickLink, ProgressBar } from '@/components/padel/GameShared';
+import { CoinBadge, XpBar, SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import CareerCalendar from '@/components/career/CareerCalendar';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import NextStepCard from '@/components/career/NextStepCard';
-import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard, GlassCard } from '@/components/padel/ui';
 import StatusStrip from '@/components/home/StatusStrip';
-import RankingCards from '@/components/home/RankingCards';
-import SeasonPanel from '@/components/home/SeasonPanel';
-import UpcomingPanel from '@/components/home/UpcomingPanel';
-import FeedPanel from '@/components/home/FeedPanel';
 import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
 import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
 import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { useToast } from '@/components/ui/use-toast';
+
+const safe = (promise, fallback = []) => promise.catch((error) => {
+  console.warn('[CareerControlCenter] módulo secundário indisponível', error);
+  return fallback;
+});
 
 export default function CareerHub() {
   const [profile, setProfile] = useState(null);
@@ -31,11 +37,13 @@ export default function CareerHub() {
   const [progress, setProgress] = useState({});
   const [recentTrainings, setRecentTrainings] = useState([]);
   const [worldRank, setWorldRank] = useState({ rank: 0, total: 0 });
-  const [loading, setLoading] = useState(true);
-  const [showPartner, setShowPartner] = useState(false);
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [posts, setPosts] = useState([]);
+  const [messages, setMessages] = useState([]);
+  const [partnerOffers, setPartnerOffers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [showPartner, setShowPartner] = useState(false);
   const [skippingInjury, setSkippingInjury] = useState(false);
   const [injurySkipError, setInjurySkipError] = useState('');
   const [injurySkipSummary, setInjurySkipSummary] = useState(null);
@@ -59,11 +67,18 @@ export default function CareerHub() {
     } catch (error) {
       console.error('[tutorial] Falha ao concluir o tutorial.', error);
       toast({ title: 'Não foi possível concluir', description: 'Seu progresso foi preservado. Tente novamente.', variant: 'destructive' });
-    } finally { setFinishingTutorial(false); }
+    } finally {
+      setFinishingTutorial(false);
+    }
   }
 
   async function handleSkipInjury() {
-    const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? Math.ceil((new Date(`${profile.injured_until}T00:00:00`).getTime() - new Date(`${profile.career_date}T00:00:00`).getTime()) / 86400000) : 0);
+    const days = Math.max(
+      Number(profile?.injury_days_remaining) || 0,
+      profile?.injured_until
+        ? Math.ceil((new Date(`${profile.injured_until}T00:00:00`).getTime() - new Date(`${profile.career_date}T00:00:00`).getTime()) / 86400000)
+        : 0,
+    );
     const warning = `Avançar ${days} dia${days === 1 ? '' : 's'} até a recuperação?\n\nTorneios, rankings, despesas, agenda, notícias, contratos e missões continuarão sendo processados. O avanço será interrompido antes de qualquer torneio ou decisão obrigatória.`;
     if (!profile || !window.confirm(warning)) return;
     setSkippingInjury(true);
@@ -85,304 +100,188 @@ export default function CareerHub() {
   }
 
   useEffect(() => {
+    let mounted = true;
     (async () => {
       try {
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
+        if (!mounted) return;
         setProfile(p);
 
-        const [matches, missionsData, rank] = await Promise.all([
-          localGame.entities.Match.list('-created_date', 4),
-          localGame.entities.Mission.filter({ is_active: true }),
-          getWorldRank(p),
+        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows] = await Promise.all([
+          safe(localGame.entities.Match.list('-created_date', 6)),
+          safe(localGame.entities.Mission.filter({ is_active: true })),
+          safe(getWorldRank(p), { rank: 0, total: 0 }),
+          p ? safe(localGame.entities.TrainingSession.filter({ profile_id: p.id }, '-created_date', 8)) : [],
+          p ? safe(localGame.entities.MissionProgress.filter({ profile_id: p.id })) : [],
+          p?.partner_id ? safe(localGame.entities.TeamRanking.list('-ranking_points', 500)) : [],
+          safe(localGame.entities.Tournament.filter({ status: 'inscricoes' })),
+          safe(localGame.entities.Post.list('-created_date', 5)),
+          p ? safe(localGame.entities.CareerMessage.filter({ profile_id: p.id }, '-created_date', 8)) : [],
+          p ? safe(localGame.entities.PartnerOffer.filter({ profile_id: p.id }, '-created_date', 8)) : [],
         ]);
+        if (!mounted) return;
+
         setRecentMatches(matches || []);
         setMissions(missionsData || []);
-        setWorldRank(rank);
+        setWorldRank(rank || { rank: 0, total: 0 });
+        setRecentTrainings((trainings || []).slice(0, 6));
+        setPosts(latestPosts || []);
+        setMessages(inboxRows || []);
+        setPartnerOffers(offerRows || []);
 
-        if (p) {
-          const [trainings, prog, teamRankings, upcoming, latestPosts] = await Promise.all([
-            localGame.entities.TrainingSession.filter({ profile_id: p.id }),
-            localGame.entities.MissionProgress.filter({ profile_id: p.id }),
-            p.partner_id ? localGame.entities.TeamRanking.list('-ranking_points', 500) : Promise.resolve([]),
-            localGame.entities.Tournament.filter({ status: 'inscricoes' }),
-            localGame.entities.Post.list('-created_date', 3),
-          ]);
-          setRecentTrainings((trainings || []).slice(0, 4));
-          const map = {};
-          (prog || []).forEach(pr => { map[pr.mission_id] = pr; });
-          setProgress(map);
+        const progressMap = {};
+        (prog || []).forEach((row) => { progressMap[row.mission_id] = row; });
+        setProgress(progressMap);
 
-          if (teamRankings && teamRankings.length > 0 && p.partner_id) {
-            const teamKey = [p.id, p.partner_id].sort().join('_');
-            const idx = teamRankings.findIndex(t => t.team_key === teamKey);
-            setTeamRank({ rank: idx + 1, total: teamRankings.length });
-          }
-
-          const careerDate = p.career_date || '2026-01-01';
-          const upcomingSorted = (upcoming || [])
-            .filter(t => t.start_date && t.start_date >= careerDate)
-            .sort((a, b) => a.start_date.localeCompare(b.start_date))
-            .slice(0, 5);
-          setUpcomingTournaments(upcomingSorted);
-
-          setPosts(latestPosts || []);
+        if (teamRankings?.length && p?.partner_id) {
+          const teamKey = [p.id, p.partner_id].sort().join('_');
+          const idx = teamRankings.findIndex((team) => team.team_key === teamKey);
+          setTeamRank({ rank: idx >= 0 ? idx + 1 : 0, total: teamRankings.length });
         }
 
-      } catch (e) { console.error('CareerHub', e); }
-      finally { setLoading(false); }
+        const careerDate = p?.career_date || '2026-01-01';
+        setUpcomingTournaments((upcoming || [])
+          .filter((tournament) => tournament.start_date && tournament.start_date >= careerDate)
+          .sort((a, b) => a.start_date.localeCompare(b.start_date))
+          .slice(0, 6));
+      } catch (error) {
+        console.error('CareerHub', error);
+      } finally {
+        if (mounted) setLoading(false);
+      }
     })();
+    return () => { mounted = false; };
   }, []);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  const unreadMessages = useMemo(() => messages.filter((message) => ['nao_lida', 'decisao_pendente'].includes(message.status)), [messages]);
+  const pendingOffers = useMemo(() => partnerOffers.filter((offer) => offer.status === 'pending'), [partnerOffers]);
 
+  if (loading) return <LoadingScreen />;
   if (!profile) {
-    return (
-      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6">
-        <EmptyStateCard
-          icon={AlertCircle}
-          title="Não foi possível carregar seu perfil"
-          message="Verifique sua conexão e tente novamente. Se o problema persistir, faça login novamente."
-        />
-      </div>
-    );
+    return <div className="mx-auto max-w-5xl px-4 py-8"><EmptyStateCard icon={AlertCircle} title="Não foi possível carregar sua carreira" message="Volte ao gerenciador de carreiras ou tente novamente." /></div>;
   }
 
-  const level = levelForXp(profile?.xp || 0);
+  const level = levelForXp(profile.xp || 0);
   const ovr = overallRating(profile);
-  const top3 = topAttributes(profile).slice(0, 3);
+  const top5 = topAttributes(profile).slice(0, 5);
   const finalTutorialStep = profile.tutorial_onboarding?.status === 'in_progress' && getCurrentTutorialStep(profile.tutorial_onboarding)?.id === 'autonomy';
   const recommendations = getCareerRecommendations(profile, { trainings: recentTrainings, registrations: upcomingTournaments, matches: recentMatches }).slice(0, 4);
+  const nextTournament = upcomingTournaments[0];
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      {/* Hero — Career header */}
-      <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-7 grid-bg">
-        <div className="absolute -top-12 -right-12 h-44 w-44 bg-primary/20 rounded-full blur-3xl" />
-        <div className="absolute -bottom-8 -left-8 h-32 w-32 bg-cyan-500/10 rounded-full blur-3xl" />
-        <div className="relative flex flex-col md:flex-row md:items-center gap-4">
-          <div className="relative">
-            <div className="h-20 w-20 md:h-24 md:w-24 rounded-2xl bg-gradient-to-br from-primary/40 to-secondary overflow-hidden flex items-center justify-center shrink-0 ring-4 ring-primary/20">
-              {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-              ) : (
-                <span className="text-4xl font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>
-              )}
-            </div>
-            <div className="absolute -bottom-2 -right-2 h-8 w-8 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-black text-xs ring-4 ring-background">
-              {levelIndex(profile?.xp)}
-            </div>
-          </div>
-          <div className="flex-1">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-2xl md:text-3xl font-black tracking-tight">{profile?.sport_name || 'Jogador'}</h1>
-              <LevelBadge level={level} size="md" />
-            </div>
-            <p className="text-sm text-muted-foreground">
-              {profile?.city || '—'}, {profile?.country || '—'} · {calculateAge(profile)} anos
-            </p>
-            <div className="mt-3 max-w-xs">
-              <XpBar xp={profile?.xp || 0} />
-            </div>
-          </div>
-          <div className="flex md:flex-col gap-4 md:gap-2 md:items-end">
-            <div className="text-center">
-              <p className="text-3xl font-black text-primary text-glow tabular-nums">{ovr}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Overall</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-black text-amber-400 tabular-nums flex items-center gap-1 justify-center">
-                <Crown className="h-5 w-5" />{worldRank.rank || '—'}
-              </p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Mundial</p>
-            </div>
-          </div>
-        </div>
-        <div className="relative flex items-center justify-between mt-4 pt-4 border-t border-border/40">
-          <CoinBadge coins={profile?.coins || 0} size="md" />
-          <Link to="/profile" className="text-xs text-primary font-medium flex items-center gap-1 hover:gap-2 transition-all">
-            Ver perfil <ChevronRight className="h-3 w-3" />
-          </Link>
-        </div>
-      </div>
-
-      {/* Status strip */}
+    <div className="mx-auto max-w-[1480px] space-y-5 px-4 py-5 md:px-6 lg:px-8 animate-fade-in">
+      <CareerCommandHeader profile={profile} level={level} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
       <StatusStrip profile={profile} />
 
-      {finalTutorialStep && <section className="glass rounded-2xl border border-primary/40 p-5" aria-labelledby="tutorial-finish-title">
-        <div className="flex gap-3"><GraduationCap className="h-7 w-7 shrink-0 text-primary"/><div><p className="text-xs font-bold uppercase tracking-wider text-primary">Etapa final do tutorial</p><h2 id="tutorial-finish-title" className="mt-1 text-xl font-black">Tutorial concluído: confirme sua carreira livre</h2><p className="mt-2 text-sm text-muted-foreground">Você conheceu os fundamentos. Estas recomendações são opcionais e mudam conforme sua carreira:</p></div></div>
-        <div className="mt-4 grid gap-2 md:grid-cols-2">{recommendations.map(item => <Link key={item.id} to={item.route} className="rounded-xl bg-secondary/40 p-3 hover:bg-secondary"><strong className="text-sm">{item.title}</strong><p className="mt-1 text-xs text-muted-foreground">{item.explanation}</p></Link>)}</div>
-        <button type="button" disabled={finishingTutorial} onClick={finishTutorial} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"><CheckCircle2 className="h-4 w-4"/>{finishingTutorial ? 'Concluindo...' : 'Começar carreira livre'}</button>
-        <p className="mt-2 text-center text-xs text-muted-foreground">Recompensa final existente: 50 XP, 100 moedas e medalha Primeiros Passos.</p>
-      </section>}
+      {finalTutorialStep && (
+        <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-primary/10 via-card to-card p-5" aria-labelledby="tutorial-finish-title">
+          <div className="flex gap-3"><GraduationCap className="h-7 w-7 shrink-0 text-primary" /><div><p className="text-xs font-bold uppercase tracking-wider text-primary">Etapa final do tutorial</p><h2 id="tutorial-finish-title" className="mt-1 text-xl font-black">Sua carreira está pronta para seguir</h2><p className="mt-2 text-sm text-muted-foreground">Escolha um objetivo sugerido ou confirme para administrar tudo livremente.</p></div></div>
+          <div className="mt-4 grid gap-2 md:grid-cols-2">{recommendations.map((item) => <Link key={item.id} to={item.route} className="rounded-xl bg-secondary/40 p-3 hover:bg-secondary"><strong className="text-sm">{item.title}</strong><p className="mt-1 text-xs text-muted-foreground">{item.explanation}</p></Link>)}</div>
+          <button type="button" disabled={finishingTutorial} onClick={finishTutorial} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"><CheckCircle2 className="h-4 w-4" />{finishingTutorial ? 'Concluindo...' : 'Começar carreira livre'}</button>
+        </section>
+      )}
 
       <MedicalStatusPanel profile={profile} onSkipRecovery={handleSkipInjury} skipping={skippingInjury} skipError={injurySkipError} skipSummary={injurySkipSummary} />
       <MedicalCenterPanel profile={profile} onProfileUpdate={setProfile} />
 
-      {/* Next step guidance */}
-      <NextStepCard profile={profile} upcomingTournaments={upcomingTournaments} />
-
-      {/* Retirement banner */}
-      {isRetired(profile) && (
-        <div className="glass rounded-2xl p-4 border border-amber-500/40 flex items-center gap-3 bg-amber-500/5">
-          <AlertCircle className="h-5 w-5 text-amber-400 shrink-0" />
-          <p className="text-sm text-amber-200 flex-1">
-            Você se aposentou aos 40 anos! Sua carreira como jogador profissional chegou ao fim, mas seu legado no padel é eterno.
-          </p>
+      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,0.85fr)]">
+        <div className="space-y-5">
+          <NextStepCard profile={profile} upcomingTournaments={upcomingTournaments} />
+          {!isRetired(profile) && <CareerCalendar profile={profile} onAdvanceDay={setProfile} />}
+          <TournamentAndNews tournaments={upcomingTournaments} posts={posts} careerDate={profile.career_date} />
+          <RecentActivity matches={recentMatches} trainings={recentTrainings} />
         </div>
-      )}
 
-      {/* Career calendar */}
-      {!isRetired(profile) && <CareerCalendar profile={profile} onAdvanceDay={setProfile} />}
+        <aside className="space-y-5">
+          <InboxControl messages={unreadMessages} pendingOffers={pendingOffers} profile={profile} onChoosePartner={() => setShowPartner(true)} />
+          <EvolutionPanel profile={profile} attributes={top5} trainings={recentTrainings} />
+          <ActiveMissionPanel missions={missions} progress={progress} />
+          <CareerSnapshot profile={profile} worldRank={worldRank} teamRank={teamRank} />
+        </aside>
+      </div>
 
-      {/* Ranking cards */}
-      <RankingCards profile={profile} worldRank={worldRank} teamRank={teamRank} />
-
-      {/* Season panel */}
-      <SeasonPanel profile={profile} />
-
-      {/* Career status */}
+      {isRetired(profile) && <div className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm text-amber-200">Você encerrou sua carreira como atleta. Continue acompanhando seu legado, conquistas e história.</div>}
       <CareerStatusBar profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />
-      <PlayStyleSummary profile={profile} />
 
-      {/* Stats grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-stagger">
-        <StatCard icon={Gamepad2} label="Partidas" value={profile?.matches_played || 0} />
-        <StatCard icon={Trophy} label="Vitórias" value={profile?.wins || 0} accent="text-amber-400" />
-        <StatCard icon={Target} label="Aproveit." value={`${winRate(profile)}%`} accent="text-cyan-400" />
-        <StatCard icon={Flame} label="Torneios" value={profile?.tournaments_won || 0} accent="text-purple-400" />
-      </div>
-
-      {/* Upcoming tournaments + sponsors */}
-      <UpcomingPanel tournaments={upcomingTournaments} />
-
-      {/* Quick links */}
-      <div className="grid grid-cols-2 gap-3 animate-stagger">
-        <QuickLink to="/game/training" icon={Dumbbell} title="Treinar" subtitle="Evolua atributos" accent="primary" />
-        <QuickLink to="/game/missions" icon={Target} title="Missões" subtitle="Ganhe recompensas" accent="amber" />
-        <QuickLink to="/game/calendar" icon={Calendar} title="Calendário" subtitle="Agenda da carreira" accent="cyan" />
-        <QuickLink to="/game/stats" icon={BarChart3} title="Estatísticas" subtitle="Análise de desempenho" accent="cyan" />
-        <QuickLink to="/game/economy" icon={Wallet} title="Economia" subtitle="Patrocinadores e finanças" accent="cyan" />
-        <QuickLink to="/game/shop" icon={ShoppingBag} title="Loja" subtitle="Compre equipamentos" accent="amber" />
-        <QuickLink to="/game/inventory" icon={Package} title="Inventário" subtitle="Equipe seus itens" accent="purple" />
-        <QuickLink to="/game/legacy" icon={Crown} title="Legado" subtitle="Seus troféus" accent="amber" />
-        <QuickLink to="/community" icon={MessageCircle} title="Social" subtitle="Feed da comunidade" accent="purple" />
-      </div>
-
-      <div className="grid md:grid-cols-2 gap-6">
-        {/* Active missions */}
-        <SectionCard title="Missões ativas" icon={Target} action={<Link to="/game/missions" className="text-xs text-primary font-medium">Ver tudo</Link>}>
-          {missions.length === 0 ? (
-            <EmptyState icon={Target} message="Nenhuma missão ativa." />
-          ) : (
-            <div className="space-y-3">
-              {missions.slice(0, 3).map((m) => {
-                const pr = progress[m.id];
-                const current = pr?.progress || 0;
-                const pct = m.target_count > 0 ? Math.min(100, Math.round((current / m.target_count) * 100)) : 0;
-                return (
-                  <div key={m.id}>
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-xs font-medium truncate flex-1">{m.title}</span>
-                      <span className="text-[10px] text-muted-foreground tabular-nums ml-2">{current}/{m.target_count}</span>
-                    </div>
-                    <ProgressBar value={current} max={m.target_count} />
-                  </div>
-                );
-              })}
-            </div>
-          )}
-        </SectionCard>
-
-        {/* Top attributes */}
-        <SectionCard title="Melhores atributos" icon={Zap} action={<Link to="/profile" className="text-xs text-primary font-medium">Ver tudo</Link>}>
-          <div className="space-y-3">
-            {top3.map((attr) => {
-              const Icon = getAttributeIcon(attr.icon);
-              return (
-                <div key={attr.key} className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-lg bg-secondary/60 flex items-center justify-center shrink-0">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex justify-between items-baseline mb-1">
-                      <span className="text-xs font-medium">{attr.label}</span>
-                      <span className="text-xs font-black text-primary tabular-nums">{attr.value}</span>
-                    </div>
-                    <ProgressBar value={attr.value} max={100} />
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </SectionCard>
-
-        {/* Recent matches */}
-        <SectionCard title="Partidas recentes" icon={Activity} action={<Link to="/matches" className="text-xs text-primary font-medium">Ver tudo</Link>}>
-          {recentMatches.length === 0 ? (
-            <EmptyState icon={Activity} message="Nenhuma partida ainda." />
-          ) : (
-            <div className="space-y-2">
-              {recentMatches.slice(0, 4).map((m) => (
-                <div key={m.id} className="flex items-center gap-3 py-1.5 border-b border-border/40 last:border-0">
-                  <div className={`h-7 w-7 rounded-lg flex items-center justify-center text-[10px] font-black ${m.winner === 'A' ? 'bg-primary/20 text-primary' : 'bg-destructive/20 text-destructive'}`}>
-                    {m.winner === 'A' ? 'W' : 'L'}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{(m.team_a || []).join(' & ')}</p>
-                    <p className="text-[10px] text-muted-foreground">vs {(m.team_b || []).join(' & ')}</p>
-                  </div>
-                  <span className="text-xs font-black tabular-nums text-muted-foreground">{m.score_a}-{m.score_b}</span>
-                </div>
-              ))}
-            </div>
-          )}
-        </SectionCard>
-
-        {/* Recent evolution */}
-        <SectionCard title="Evolução recente" icon={TrendingUp} action={<Link to="/game/training" className="text-xs text-primary font-medium">Treinar</Link>}>
-          {recentTrainings.length === 0 ? (
-            <EmptyState icon={Dumbbell} message="Nenhum treino ainda. Comece a evoluir!" />
-          ) : (
-            <div className="space-y-2">
-              {recentTrainings.map((t) => (
-                <div key={t.id} className="flex items-center gap-3 py-1.5 border-b border-border/40 last:border-0">
-                  <div className="h-7 w-7 rounded-lg bg-primary/15 flex items-center justify-center">
-                    <Dumbbell className="h-3.5 w-3.5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-medium truncate">{t.training_label}</p>
-                    <p className="text-[10px] text-muted-foreground">+{t.attribute_gain} {t.attribute_target} · +{t.xp_reward} XP</p>
-                  </div>
-                  <CoinBadge coins={t.coins_reward} />
-                </div>
-              ))}
-            </div>
-          )}
-        </SectionCard>
-      </div>
-
-      {/* News + messages + notifications */}
-      <FeedPanel posts={posts} profile={profile} upcomingTournaments={upcomingTournaments} />
-
-      {showPartner && (
-        <PartnerSelection
-          profile={profile}
-          onClose={() => setShowPartner(false)}
-          onPartnerSelected={setProfile}
-        />
-      )}
-
+      {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
     </div>
   );
 }
 
-function levelIndex(xp) {
-  const levels = [0, 200, 700, 1500, 3000, 5000];
-  for (let i = levels.length - 1; i >= 0; i--) {
-    if (xp >= levels[i]) return i + 1;
-  }
-  return 1;
+function CareerCommandHeader({ profile, level, overall, worldRank, nextTournament, unreadCount }) {
+  return (
+    <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-card via-card to-primary/[0.08] p-5 shadow-2xl shadow-black/20 md:p-7">
+      <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
+      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center">
+        <div className="flex min-w-0 flex-1 items-center gap-4">
+          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-primary/30 bg-primary/15 text-3xl font-black text-primary md:h-24 md:w-24">
+            {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : (profile.sport_name || 'J')[0]?.toUpperCase()}
+          </div>
+          <div className="min-w-0">
+            <div className="flex flex-wrap items-center gap-2"><p className="text-[10px] font-bold uppercase tracking-[.28em] text-primary">Centro de controle da carreira</p><LevelBadge level={level} size="md" /></div>
+            <h1 className="mt-1 truncate text-2xl font-black tracking-tight md:text-4xl">{profile.sport_name || 'Jogador'}</h1>
+            <p className="mt-1 text-sm text-muted-foreground">{profile.city || '—'}, {profile.country || '—'} · {calculateAge(profile)} anos · {profile.career_date || '—'}</p>
+            <div className="mt-3 max-w-sm"><XpBar xp={profile.xp || 0} /></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:w-[520px]">
+          <HeaderMetric label="Overall" value={overall} icon={Zap} accent="text-primary" />
+          <HeaderMetric label="Ranking" value={worldRank.rank ? `#${worldRank.rank}` : '—'} icon={Crown} accent="text-amber-400" />
+          <HeaderMetric label="Próximo torneio" value={nextTournament ? formatShortDate(nextTournament.start_date) : 'Livre'} icon={Trophy} accent="text-cyan-400" />
+          <HeaderMetric label="Pendências" value={unreadCount} icon={Bell} accent={unreadCount ? 'text-rose-400' : 'text-muted-foreground'} />
+        </div>
+      </div>
+      <div className="relative mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
+        <CoinBadge coins={profile.coins || 0} size="md" />
+        <div className="flex flex-wrap gap-2">
+          <CommandLink to="/game/training" icon={Dumbbell}>Treinar</CommandLink>
+          <CommandLink to="/tournaments" icon={Trophy}>Torneios</CommandLink>
+          <CommandLink to="/partners" icon={Users}>Dupla</CommandLink>
+          <CommandLink to="/game/calendar" icon={CalendarDays}>Calendário</CommandLink>
+        </div>
+      </div>
+    </header>
+  );
 }
+
+function HeaderMetric({ label, value, icon: Icon, accent }) {
+  return <div className="rounded-2xl border border-white/8 bg-black/15 p-3"><Icon className={`h-4 w-4 ${accent}`} /><p className="mt-2 truncate text-xl font-black tabular-nums">{value}</p><p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p></div>;
+}
+
+function CommandLink({ to, icon: Icon, children }) {
+  return <Link to={to} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary"><Icon className="h-3.5 w-3.5" />{children}</Link>;
+}
+
+function InboxControl({ messages, pendingOffers, profile, onChoosePartner }) {
+  const rows = [...pendingOffers.map((offer) => ({ id: `offer-${offer.id}`, title: offer.candidate_name || offer.player_name || 'Nova proposta de dupla', body: 'Um atleta demonstrou interesse em jogar com você.', type: 'offer' })), ...messages.map((message) => ({ id: `message-${message.id}`, title: message.subject || message.sender_name || 'Nova mensagem', body: message.body || message.message || '', type: 'message' }))].slice(0, 5);
+  return <GlassCard className="overflow-hidden p-0"><div className="flex items-center justify-between border-b border-border/60 p-4"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Comunicação</p><h2 className="font-black">Mensagens e dupla</h2></div><span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-black text-primary">{rows.length}</span></div><div className="p-3">{rows.length ? <div className="space-y-2">{rows.map((row) => <Link key={row.id} to={row.type === 'offer' ? '/partners?view=offers' : '/partners?view=inbox'} className="group flex gap-3 rounded-xl bg-secondary/30 p-3 hover:bg-secondary/60"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">{row.type === 'offer' ? <Users className="h-4 w-4 text-primary" /> : <Inbox className="h-4 w-4 text-cyan-400" />}</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">{row.title}</p><p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{row.body}</p></div><ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" /></Link>)}</div> : <div className="py-5 text-center"><MessageCircle className="mx-auto h-7 w-7 text-muted-foreground/50" /><p className="mt-2 text-xs font-semibold">Nenhuma pendência nova</p><p className="mt-1 text-[10px] text-muted-foreground">Sua caixa de entrada está organizada.</p></div>}<div className="mt-3 grid grid-cols-2 gap-2"><Link to="/partners?view=inbox" className="rounded-xl bg-secondary px-3 py-2 text-center text-xs font-bold">Caixa de entrada</Link><button type="button" onClick={onChoosePartner} className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">{profile.partner_id ? 'Gerenciar dupla' : 'Escolher dupla'}</button></div></div></GlassCard>;
+}
+
+function EvolutionPanel({ profile, attributes, trainings }) {
+  const max = Math.max(1, ...attributes.map((item) => Number(item.value) || 0));
+  const totalGain = trainings.reduce((sum, row) => sum + (Number(row.attribute_gain) || 0), 0);
+  return <GlassCard><div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Desenvolvimento</p><h2 className="font-black">Evolução do atleta</h2></div><Link to="/profile" className="text-xs font-bold text-primary">Detalhes</Link></div><div className="mt-4 space-y-3">{attributes.map((attr) => { const Icon = getAttributeIcon(attr.icon); return <div key={attr.key}><div className="mb-1 flex items-center gap-2"><Icon className="h-3.5 w-3.5 text-primary" /><span className="flex-1 text-xs font-medium">{attr.label}</span><strong className="text-xs tabular-nums">{attr.value}</strong></div><div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-gradient-to-r from-primary/55 to-primary transition-all duration-700" style={{ width: `${Math.max(5, ((Number(attr.value) || 0) / max) * 100)}%` }} /></div></div>; })}</div><div className="mt-4 grid grid-cols-2 gap-2"><div className="rounded-xl bg-secondary/30 p-3"><TrendingUp className="h-4 w-4 text-emerald-400" /><p className="mt-1 text-lg font-black">+{totalGain.toFixed(totalGain % 1 ? 1 : 0)}</p><p className="text-[9px] uppercase text-muted-foreground">ganho recente</p></div><div className="rounded-xl bg-secondary/30 p-3"><Dumbbell className="h-4 w-4 text-cyan-400" /><p className="mt-1 text-lg font-black">{trainings.length}</p><p className="text-[9px] uppercase text-muted-foreground">treinos recentes</p></div></div><Link to="/game/training" className="mt-3 flex items-center justify-center gap-2 rounded-xl border border-primary/25 bg-primary/10 px-3 py-2 text-xs font-bold text-primary">Planejar próximo treino <ArrowRight className="h-3.5 w-3.5" /></Link></GlassCard>;
+}
+
+function ActiveMissionPanel({ missions, progress }) {
+  const active = missions.slice(0, 4);
+  return <SectionCard title="Objetivos em andamento" icon={Target} action={<Link to="/game/missions" className="text-xs font-bold text-primary">Ver missões</Link>}>{active.length ? <div className="space-y-3">{active.map((mission) => { const row = progress[mission.id]; const current = Number(row?.progress) || 0; const target = Math.max(1, Number(mission.target_count) || 1); return <div key={mission.id}><div className="mb-1 flex items-center justify-between gap-2"><span className="truncate text-xs font-medium">{mission.title}</span><span className="text-[10px] tabular-nums text-muted-foreground">{current}/{target}</span></div><ProgressBar value={current} max={target} /></div>; })}</div> : <EmptyState icon={Target} message="Nenhuma missão ativa." />}</SectionCard>;
+}
+
+function CareerSnapshot({ profile, worldRank, teamRank }) {
+  return <div className="grid grid-cols-2 gap-3"><StatCard icon={Gamepad2} label="Partidas" value={profile.matches_played || 0} /><StatCard icon={Trophy} label="Vitórias" value={profile.wins || 0} accent="text-amber-400" /><StatCard icon={Target} label="Aproveit." value={`${winRate(profile)}%`} accent="text-cyan-400" /><StatCard icon={Crown} label="Ranking dupla" value={teamRank.rank ? `#${teamRank.rank}` : '—'} accent="text-purple-400" /><Link to="/ranking" className="col-span-2 flex items-center justify-between rounded-2xl border border-border/60 bg-card/50 p-3 text-xs font-bold hover:border-primary/30"><span>Ranking mundial: {worldRank.rank ? `#${worldRank.rank} de ${worldRank.total}` : 'ainda sem posição'}</span><ChevronRight className="h-4 w-4 text-primary" /></Link></div>;
+}
+
+function TournamentAndNews({ tournaments, posts, careerDate }) {
+  return <div className="grid gap-5 lg:grid-cols-2"><GlassCard><div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-wider text-amber-400">Agenda competitiva</p><h2 className="font-black">Próximos torneios</h2></div><Link to="/tournaments" className="text-xs font-bold text-primary">Ver todos</Link></div><div className="mt-3 space-y-2">{tournaments.length ? tournaments.slice(0, 4).map((tournament) => <Link key={tournament.id} to="/tournaments" className="flex items-center gap-3 rounded-xl bg-secondary/30 p-3 hover:bg-secondary/55"><div className="w-12 text-center"><p className="text-[9px] uppercase text-muted-foreground">{formatMonth(tournament.start_date)}</p><p className="text-xl font-black">{formatDay(tournament.start_date)}</p></div><div className="h-9 w-px bg-border" /><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">{tournament.name}</p><p className="mt-1 text-[10px] text-muted-foreground">{daysUntil(careerDate, tournament.start_date)} dias · {tournament.tier || tournament.category || 'Circuito'}</p></div><ChevronRight className="h-4 w-4 text-muted-foreground" /></Link>) : <EmptyState icon={Trophy} message="Nenhum torneio disponível no momento." />}</div></GlassCard><GlassCard><div className="flex items-center justify-between"><div><p className="text-[10px] font-bold uppercase tracking-wider text-cyan-400">Mundo vivo</p><h2 className="font-black">Notícias do circuito</h2></div><Link to="/journal" className="text-xs font-bold text-primary">Abrir jornal</Link></div><div className="mt-3 space-y-2">{posts.length ? posts.slice(0, 4).map((post) => <Link key={post.id} to="/journal" className="block rounded-xl bg-secondary/30 p-3 hover:bg-secondary/55"><div className="flex items-center gap-2"><Newspaper className="h-3.5 w-3.5 text-cyan-400" /><p className="truncate text-xs font-bold">{post.title || post.author_name || 'Notícia do circuito'}</p></div><p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{post.content || post.body || 'Acompanhe os acontecimentos mais recentes.'}</p></Link>) : <EmptyState icon={Newspaper} message="O circuito está tranquilo por enquanto." />}</div></GlassCard></div>;
+}
+
+function RecentActivity({ matches, trainings }) {
+  return <GlassCard><div className="flex flex-wrap items-center justify-between gap-2"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Linha do tempo</p><h2 className="font-black">Atividade recente</h2></div><div className="flex gap-2"><Link to="/matches" className="text-xs font-bold text-primary">Partidas</Link><Link to="/game/training" className="text-xs font-bold text-primary">Treinos</Link></div></div><div className="mt-4 grid gap-4 md:grid-cols-2"><div><p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Últimas partidas</p>{matches.length ? <div className="space-y-2">{matches.slice(0, 4).map((match) => <div key={match.id} className="flex items-center gap-3 rounded-xl bg-secondary/25 p-2.5"><div className={`flex h-8 w-8 items-center justify-center rounded-lg text-[10px] font-black ${match.winner === 'A' ? 'bg-primary/15 text-primary' : 'bg-destructive/15 text-destructive'}`}>{match.winner === 'A' ? 'V' : 'D'}</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{(match.team_a || []).join(' & ') || 'Sua dupla'}</p><p className="truncate text-[10px] text-muted-foreground">vs {(match.team_b || []).join(' & ') || 'Adversários'}</p></div><span className="text-xs font-black tabular-nums">{match.score_a}-{match.score_b}</span></div>)}</div> : <EmptyState icon={Activity} message="Nenhuma partida disputada." />}</div><div><p className="mb-2 text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Últimos treinos</p>{trainings.length ? <div className="space-y-2">{trainings.slice(0, 4).map((training) => <div key={training.id} className="flex items-center gap-3 rounded-xl bg-secondary/25 p-2.5"><div className="flex h-8 w-8 items-center justify-center rounded-lg bg-cyan-500/10"><Dumbbell className="h-3.5 w-3.5 text-cyan-400" /></div><div className="min-w-0 flex-1"><p className="truncate text-xs font-semibold">{training.training_label || training.training_type || 'Treino concluído'}</p><p className="text-[10px] text-muted-foreground">+{training.attribute_gain || 0} {training.attribute_target || 'progresso'} · +{training.xp_reward || 0} XP</p></div></div>)}</div> : <EmptyState icon={Dumbbell} message="Nenhum treino registrado." />}</div></div></GlassCard>;
+}
+
+function formatShortDate(value) { if (!value) return '—'; const date = new Date(`${value}T00:00:00`); return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', ''); }
+function formatMonth(value) { if (!value) return '—'; return new Date(`${value}T00:00:00`).toLocaleDateString('pt-BR', { month: 'short' }).replace('.', ''); }
+function formatDay(value) { if (!value) return '—'; return new Date(`${value}T00:00:00`).getDate(); }
+function daysUntil(from, to) { if (!from || !to) return 0; return Math.max(0, Math.ceil((new Date(`${to}T00:00:00`) - new Date(`${from}T00:00:00`)) / 86400000)); }

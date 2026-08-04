@@ -114,7 +114,7 @@ export default function AppLayout() {
       </aside>
 
       <main className={`${sidebarCollapsed ? 'md:pl-20' : 'md:pl-72'} min-h-screen pb-20 pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
-        <AnimatePresence mode="wait"><motion.div key={location.pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}><OnboardingGuide /><Outlet /><button onClick={async () => { await careerManager.close(); window.location.href = '/'; }} className="fixed bottom-20 right-4 z-40 rounded-full border bg-card px-3 py-2 text-xs shadow-lg">Trocar carreira</button></motion.div></AnimatePresence>
+        <AnimatePresence mode="wait"><motion.div key={location.pathname} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -4 }} transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}><OnboardingGuide /><Outlet /><button onClick={async () => { await careerManager.close(); window.location.href = '/careers'; }} className="fixed bottom-20 right-4 z-40 rounded-full border bg-card px-3 py-2 text-xs shadow-lg">Gerenciar carreiras</button></motion.div></AnimatePresence>
       </main>
       <BottomNav />
     </div>
