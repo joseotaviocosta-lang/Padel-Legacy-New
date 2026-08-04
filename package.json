@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:tauri": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/free-dev-port.ps1 -Port 5174 && vite --mode desktop",
+    "dev:tauri": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/free-dev-port.ps1 -Port 5174 -LaunchVite",
     "build": "vite build",
     "analyze": "npm run build && node scripts/analyze-build.mjs",
     "lint": "eslint . --quiet",
@@ -16,6 +16,7 @@
     "tauri": "tauri",
     "app:dev": "tauri dev",
     "app:build": "tauri build",
+    "diagnose:dev-port": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/free-dev-port.ps1 -Port 5174 -DiagnoseOnly",
     "android:init": "tauri android init",
     "android:dev": "tauri android dev",
     "android:build": "tauri android build",
