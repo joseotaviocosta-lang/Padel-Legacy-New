@@ -446,11 +446,20 @@ export async function createProposalMessage(profile, proposal) {
 
 export async function generateAdvisorTips(profile, activePartnership, proposals, switchCount) {
   const tips = [];
+  const normalizedProposals = (Array.isArray(proposals) ? proposals : []).map((proposal) => {
+    const bot = proposal?.bot || proposal?.candidate_snapshot;
+    if (!bot?.id) return null;
+    const stored = proposal?.compatibility || proposal?.compatibility_snapshot;
+    const compatibility = Number.isFinite(Number(stored?.total))
+      ? { ...stored, total: Number(stored.total), breakdown: stored.breakdown || {} }
+      : computeCompatibility(profile, bot);
+    return { ...proposal, bot, compatibility };
+  }).filter(Boolean);
 
   // Empresário (agent) — focuses on career/economics/reputation
   if (!activePartnership) {
-    if (proposals.length > 0) {
-      const best = proposals.reduce((a, b) => a.compatibility.total > b.compatibility.total ? a : b);
+    if (normalizedProposals.length > 0) {
+      const best = normalizedProposals.reduce((a, b) => a.compatibility.total > b.compatibility.total ? a : b);
       tips.push({
         advisor: 'empresario',
         title: 'Proposta com potencial',
@@ -495,10 +504,10 @@ export async function generateAdvisorTips(profile, activePartnership, proposals,
           icon: 'GraduationCap',
         });
       }
-    } else if (proposals.length > 0) {
-      const best = proposals.reduce((a, b) => a.compatibility.total > b.compatibility.total ? a : b);
+    } else if (normalizedProposals.length > 0) {
+      const best = normalizedProposals.reduce((a, b) => a.compatibility.total > b.compatibility.total ? a : b);
       const bd = best.compatibility.breakdown;
-      const weakFactor = Object.entries(bd).sort((a, b) => a[1] - b[1])[0];
+      const weakFactor = Object.entries(bd).sort((a, b) => a[1] - b[1])[0] || ['geral', best.compatibility.total];
       tips.push({
         advisor: 'treinador',
         title: 'Análise técnica',

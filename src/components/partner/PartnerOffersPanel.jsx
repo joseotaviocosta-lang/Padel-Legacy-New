@@ -9,7 +9,8 @@ const sideName = side => side === 'left' || side === 'esquerda' ? 'esquerda' : s
 export default function PartnerOffersPanel({ profile, offers, loading, error, busyOfferId, focusOfferId, onRetry, onAccept, onReject, onSearch }) {
   const [compared, setCompared] = useState([]);
   const pending = useMemo(() => (offers || []).filter(offer => offer.status === 'pending'), [offers]);
-  const analyses = useMemo(() => pending.map(offer => {
+  const invalidOffers = useMemo(() => pending.filter(offer => !offerCandidate(offer)?.id), [pending]);
+  const analyses = useMemo(() => pending.filter(offer => offerCandidate(offer)?.id).map(offer => {
     const candidate = offerCandidate(offer);
     const compatibility = evaluatePartnerCompatibility(profile, candidate);
     return { offer, candidate, compatibility, interest: calculatePartnershipInterest(profile, candidate, compatibility) };
@@ -26,6 +27,7 @@ export default function PartnerOffersPanel({ profile, offers, loading, error, bu
       <h2 id="partner-offers-title" className="font-black">Escolha sua dupla</h2>
       <p className="mt-1 text-sm text-muted-foreground">Seu parceiro influencia desempenho, entrosamento e evolução. Compare lado preferencial, estilo, nível e interesse antes de decidir.</p>
     </section>
+    {invalidOffers.map(offer => <section key={offer.id} className="glass rounded-2xl border border-amber-500/30 p-4" role="status"><div className="flex gap-3"><AlertTriangle className="h-5 w-5 shrink-0 text-amber-400"/><div><h3 className="font-bold">Proposta indisponível</h3><p className="mt-1 text-xs text-muted-foreground">O atleta vinculado a esta proposta não existe mais neste save. O registro foi preservado para diagnóstico e não pode ser aceito.</p><button disabled={busyOfferId} onClick={()=>onReject(offer)} className="mt-3 rounded-xl bg-secondary px-3 py-2 text-xs font-bold disabled:opacity-50">Arquivar proposta</button></div></div></section>)}
     {comparedRows.length >= 2 && <Comparison rows={comparedRows} onClose={() => setCompared([])} />}
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {analyses.map(({ offer, candidate, compatibility, interest }, index) => {

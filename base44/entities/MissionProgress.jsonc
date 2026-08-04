@@ -24,6 +24,21 @@
       "type": "boolean",
       "default": false,
       "description": "Se as recompensas j\u00e1 foram resgatadas"
+    },
+    "reward_delivered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Trava persistida de entrega idempotente da recompensa"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Instante da primeira conclus\u00e3o"
+    },
+    "completion_notified_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Instante em que a conclus\u00e3o foi notificada"
     }
   },
   "required": [

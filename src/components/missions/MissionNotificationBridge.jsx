@@ -16,11 +16,15 @@ export default function MissionNotificationBridge() {
   const location = useLocation();
   const navigate = useNavigate();
   const profileRef = useRef(null);
+  const shownNotificationsRef = useRef(new Set());
 
   useEffect(() => {
     const handler = event => {
       const { mission, reward, tutorial } = event.detail || {};
       if (!mission) return;
+      const key = `${profileRef.current?.id || 'profile'}:${mission.id}:${event.detail?.completedAt || 'completed'}`;
+      if (shownNotificationsRef.current.has(key)) return;
+      shownNotificationsRef.current.add(key);
       const description = `+${reward?.xp || 0} XP · +${reward?.coins || 0} moedas${reward?.medal ? ` · Medalha: ${reward.medal}` : ''}`;
       toast({
         title: tutorial ? `Tutorial concluído: ${mission.title}` : `Missão concluída: ${mission.title}`,

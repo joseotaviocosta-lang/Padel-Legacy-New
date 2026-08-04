@@ -427,7 +427,7 @@ export const TUTORIAL_MISSIONS = [
   { title: 'Bem-vindo ao Padel Legacy', description: 'Conheça o painel e o ciclo da carreira.', why_it_matters: 'O painel mostra o que fazer agora e como acompanhar sua evolução.', action_label: 'Ver painel', mission_type: 'tutorial', objective_type: 'visit_career', target_count: 1, xp_reward: 20, coins_reward: 50, tutorial_order: 1, tutorial_route: '/game' },
   { title: 'Nome do atleta', description: 'Defina como seu atleta será chamado em partidas e notícias.', why_it_matters: 'O nome do atleta é separado do nome usado para identificar o save.', action_label: 'Definir nome', mission_type: 'tutorial', objective_type: 'set_player_name', target_count: 1, xp_reward: 25, coins_reward: 50, tutorial_order: 2, tutorial_route: '/game/missions' },
   { title: 'Escolha mão e lado', description: 'Defina sua mão dominante e o lado preferencial de forma independente.', why_it_matters: 'Esses eixos influenciam ângulos e posicionamento sem proibir estilos.', action_label: 'Escolher mão e lado', mission_type: 'tutorial', objective_type: 'choose_court_side', target_count: 1, xp_reward: 30, coins_reward: 50, tutorial_order: 3, tutorial_route: '/game/missions' },
-  { title: 'Defina estilo e arquétipo', description: 'Compare todos os estilos, afinidades e atributos antes de confirmar.', why_it_matters: 'O perfil orienta decisões, treinos e parceria, mas não limita sua evolução.', action_label: 'Montar perfil', mission_type: 'tutorial', objective_type: 'choose_play_style', target_count: 1, xp_reward: 40, coins_reward: 75, tutorial_order: 4, tutorial_route: '/game/missions' },
+  { title: 'Revise seu atleta', description: 'Confira nome, mão dominante, lado, estilo, arquétipo, atributos, pontos fortes e pontos a desenvolver; conclua em Confirmar perfil.', why_it_matters: 'Essas escolhas definem seu ponto de partida e orientam treinos e parcerias.', action_label: 'Revisar atleta', mission_type: 'tutorial', objective_type: 'choose_play_style', target_count: 1, xp_reward: 40, coins_reward: 75, tutorial_order: 4, tutorial_route: '/game/missions' },
   { title: 'Primeiro treino de quadra', description: 'Escolha Golpes de fundo para desenvolver forehand e backhand com um orçamento compartilhado. Confira intensidade, energia e fadiga antes de confirmar.', why_it_matters: 'Grupos organizam a preparação; foco e intensidade definem onde o progresso será distribuído e quanto desgaste será gerado.', action_label: 'Ir para Treinos', mission_type: 'tutorial', objective_type: 'complete_training', target_count: 1, xp_reward: 50, coins_reward: 75, tutorial_order: 5, tutorial_route: '/game/training' },
   { title: 'Entenda sua energia', description: 'Observe a energia consumida pelo treino e como recuperá-la.', why_it_matters: 'Energia baixa reduz desempenho e aumenta o risco físico.', action_label: 'Ver energia', mission_type: 'tutorial', objective_type: 'understand_energy', target_count: 1, xp_reward: 20, coins_reward: 40, tutorial_order: 6, tutorial_route: '/game/training' },
   { title: 'Encontre sua dupla', description: 'Forme uma parceria compatível com seu lado e estilo.', why_it_matters: 'Entrosamento e complementaridade afetam o desempenho competitivo.', action_label: 'Buscar parceiro', mission_type: 'tutorial', objective_type: 'select_partner', target_count: 1, xp_reward: 60, coins_reward: 100, tutorial_order: 7, tutorial_route: '/partners' },
@@ -445,7 +445,7 @@ export async function ensureTutorialMissionCatalog() {
     catch { for (const mission of missing) await localGame.entities.Mission.create({ ...mission, is_active: true }); }
   }
   const canonicalByTitle = new Map(TUTORIAL_MISSIONS.map(mission => [mission.title, mission]));
-  const legacyTitles = new Set(LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title));
+  const legacyTitles = new Set([...LEGACY_TUTORIAL_MISSIONS.map(mission => mission.title), 'Defina estilo e arquétipo']);
   const updates = (existing || [])
     .filter(mission => mission?.id && mission.mission_type === 'tutorial' && (legacyTitles.has(mission.title) || canonicalByTitle.has(mission.title)))
     .map(mission => ({ ...mission, ...(canonicalByTitle.get(mission.title) || {}), is_active: canonicalByTitle.has(mission.title) }));
@@ -457,7 +457,18 @@ function emitMissionEvent(detail) {
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:mission-completed', { detail }));
 }
 
+const missionRewardLocks = new Map();
+
 async function rewardMissionAutomatically(profileId, mission, progressRow) {
+  const lockKey = `${profileId}:${mission?.id}:${progressRow?.period_key || 'career'}`;
+  if (missionRewardLocks.has(lockKey)) return missionRewardLocks.get(lockKey);
+  const operation = rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow)
+    .finally(() => missionRewardLocks.delete(lockKey));
+  missionRewardLocks.set(lockKey, operation);
+  return operation;
+}
+
+async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow) {
   if (!progressRow || progressRow.claimed) return progressRow;
   const latestRows = await localGame.entities.MissionProgress.filter({ id: progressRow.id, profile_id: profileId });
   const latest = latestRows?.[0] || progressRow;
@@ -467,6 +478,7 @@ async function rewardMissionAutomatically(profileId, mission, progressRow) {
       completed: true,
       claimed: true,
       completed_at: latest.completed_at || new Date().toISOString(),
+      completion_notified_at: latest.completion_notified_at || latest.completed_at || new Date().toISOString(),
     });
   }
   const profiles = await localGame.entities.PlayerProfile.filter({ id: profileId });
@@ -479,7 +491,8 @@ async function rewardMissionAutomatically(profileId, mission, progressRow) {
     coins: Number(profile.coins || 0) + Number(mission.coins_reward || 0),
     medals,
   });
-  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, reward_delivered: true, completed_at: new Date().toISOString() });
+  const completedAt = new Date().toISOString();
+  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { completed: true, claimed: true, reward_delivered: true, completed_at: completedAt, completion_notified_at: completedAt });
   emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial' });
   return claimed;
 }

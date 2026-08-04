@@ -1,4 +1,8 @@
-export const replayDuration = (replay) => replay?.events?.reduce((end, event) => Math.max(end, event.t + event.duration), 0) || 0;
+export const replayDuration = (replay) => replay?.events?.reduce((end, event) => {
+  const start = Number(event?.t);
+  const duration = Number(event?.duration);
+  return Math.max(end, (Number.isFinite(start) ? start : 0) + (Number.isFinite(duration) ? duration : 0));
+}, 0) || Number(replay?.duration) || 0;
 export const eventIndexAt = (events, time) => {
   let low = 0; let high = events.length - 1; let found = 0;
   while (low <= high) { const middle = (low + high) >> 1; if (events[middle].t <= time) { found = middle; low = middle + 1; } else high = middle - 1; }
