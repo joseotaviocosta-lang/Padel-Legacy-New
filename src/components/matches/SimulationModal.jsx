@@ -27,11 +27,13 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [teams, setTeams] = useState(null);
   const [result, setResult] = useState(null);
   const [coach,setCoach]=useState(null);
+  const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
   const savedRef = useRef(false);
   const { toast } = useToast();
   const [replayPreferences,setReplayPreferences]=useState(null);
   useEffect(()=>{if(!careerId)return;matchViewPreferences.load(careerId).then((prefs)=>{setReplayPreferences(prefs);const preferred=prefs.default_match_view_mode==='ask_every_match'&&prefs.remember_last_match_mode?prefs.last_match_mode:prefs.default_match_view_mode;if(preferred!=='ask_every_match')setDisplayMode(preferred);});},[careerId]);
   useEffect(()=>{if(!profile?.coach_id){setCoach(null);return;}localGame.entities.Coach.get(profile.coach_id).then(setCoach).catch(()=>setCoach(null));},[profile?.coach_id]);
+  const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
   const changeDisplayMode=(mode)=>{setDisplayMode(mode);if(careerId&&replayPreferences?.remember_last_match_mode)matchViewPreferences.save(careerId,{last_match_mode:mode}).catch(()=>{});};
 
   function startMatch() {
@@ -97,7 +99,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         opponents: teams.opponents.map(b => b.name),
         score: getSetScoreString(matchState),
       });
-      const updated = coreResult.updatedProfile;
+      let updated = coreResult.updatedProfile;
+      if(matchState.liveCoachReport){updated=await localGame.entities.PlayerProfile.update(updated.id,{live_coach_settings:liveCoachSettings,live_coach_history:[...(updated.live_coach_history||[]),matchState.liveCoachReport].slice(-100),coach_match_observations:[...(updated.coach_match_observations||[]),...(matchState.liveCoach?.observations||[])].slice(-500),tactical_adjustment_history:[...(updated.tactical_adjustment_history||[]),...(matchState.liveCoach?.adjustments||[])].slice(-300)});}
       setProfile(updated);
       onProfileUpdate?.(updated);
       // Update relationships with partner and opponents (non-blocking)
@@ -187,6 +190,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
               <p className="text-[10px] text-muted-foreground mt-2">{MATCH_TACTICS.find(t => t.id === initialTacticId)?.desc}. Você pode mudar a tática durante o jogo!</p>
             </div>
 
+            <div className="glass rounded-xl p-3 space-y-2"><div className="flex items-center justify-between gap-3"><div><p className="text-xs font-bold">Treinador ao vivo</p><p className="text-[10px] text-muted-foreground">{coach?`${coach.name} · ${coach.specialty}`:'Sem treinador: apenas métricas básicas'}</p></div><button aria-pressed={liveCoachSettings.liveCoachEnabled} onClick={()=>changeLiveCoachSettings({liveCoachEnabled:!liveCoachSettings.liveCoachEnabled})} className={`rounded-full px-3 py-1 text-[10px] font-bold ${liveCoachSettings.liveCoachEnabled?'bg-primary text-primary-foreground':'bg-secondary'}`}>{liveCoachSettings.liveCoachEnabled?'Ativo':'Desativado'}</button></div><select aria-label="Frequência das sugestões" value={liveCoachSettings.suggestionFrequency} onChange={event=>changeLiveCoachSettings({suggestionFrequency:event.target.value})} className="w-full rounded-lg bg-secondary/60 px-2 py-2 text-xs"><option value="minimal">Mínima</option><option value="normal">Normal</option><option value="frequent">Frequente</option><option value="sets_only">Apenas entre sets</option><option value="disabled">Desativada</option></select><label className="flex items-center gap-2 text-[10px] text-muted-foreground"><input type="checkbox" checked={liveCoachSettings.allowMinorAutoAdjustments} onChange={event=>changeLiveCoachSettings({allowMinorAutoAdjustments:event.target.checked})}/>Permitir somente ajustes automáticos leves</label></div>
+
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Modo da partida</p>
               <div className="grid grid-cols-4 gap-2">{[['text','Texto'],['2d','2D'],['important_points','Pontos-chave'],['quick','Rápido']].map(([id,label]) => <button key={id} onClick={() => changeDisplayMode(id)} className={`rounded-xl px-2 py-2 text-xs font-bold ${displayMode === id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50'}`}>{label}</button>)}</div>
@@ -208,7 +213,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             teamB={teams.teamB}
             initialTacticId={initialTacticId}
             coach={coach}
-            liveCoachSettings={profile.live_coach_settings}
+            liveCoachSettings={liveCoachSettings}
             onFinished={handleFinished}
             replayEnabled={REPLAY_ENABLED}
             displayMode={displayMode}
