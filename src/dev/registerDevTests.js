@@ -16,6 +16,11 @@ import { setupModuleStabilityTest } from '@/gameplay/tests/ModuleStabilityTest.j
 import { setupLocalRuntimeRegressionTest } from '@/gameplay/tests/LocalRuntimeRegressionTest.js';
 import { setupCircuitSeasonTest } from '@/gameplay/tests/CircuitSeasonTest.js';
 import { setupWorldTourBrainTest } from '@/gameplay/tests/WorldTourBrainTest.js';
+import { runReplayEngineTest } from '@/gameplay/replay/ReplayEngineTest.js';
+import { runReplayGameplayTest } from '@/gameplay/replay/ReplayGameplayTest.js';
+import { runReplaySpritesTest } from '@/gameplay/replay/sprites/ReplaySpritesTest.js';
+import { runReplayBroadcastTest } from '@/gameplay/replay/broadcast/ReplayBroadcastTest.js';
+import { runReplayCareerIntegrationTest } from '@/gameplay/replay/library/ReplayCareerIntegrationTest.js';
 
 function register(label, callback) {
   try {
@@ -47,3 +52,8 @@ register('gameplay-test', () => {
 register('career-flow-test', setupCareerFlowTest);
 
 window.PadelMatchEngineTest = { run: runMatchEngineTest };
+window.PadelReplayEngineTest = { run: runReplayEngineTest };
+window.PadelReplayGameplayTest = { run: runReplayGameplayTest };
+window.PadelReplaySpritesTest = { run: runReplaySpritesTest };
+window.PadelReplayBroadcastTest = { run: runReplayBroadcastTest };
+window.PadelReplayCareerIntegrationTest = { run: runReplayCareerIntegrationTest };

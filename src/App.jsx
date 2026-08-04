@@ -18,16 +18,17 @@ import SaveFoundationBootstrap from '@/components/system/SaveFoundationBootstrap
 import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
 
 const lazyPage = (name) => lazy(PAGE_LOADERS[name]);
+const SpritePreview = lazy(() => import('@/pages/dev/SpritePreview.jsx'));
 const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPassword, CareerHub, Training, Missions,
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
   Relationships, Coaches, TrainingCenter, Press, Social, Fans, Achievements, WorldEvents, WorldMarket, Weather,
-  Encyclopedia, PartnerHub, Community] = [
+  Encyclopedia, PartnerHub, Community, ReplayLibrary] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
   'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Social', 'Fans',
-  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community',
+  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'ReplayLibrary',
 ].map(lazyPage);
 
 const RouteLoadingFallback = () => (
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/dev/sprite-preview" element={import.meta.env.DEV ? <SpritePreview /> : <PageNotFound />} />
       {/* Public landing */}
       {/* Protected app with layout */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
@@ -88,6 +90,7 @@ const AuthenticatedApp = () => {
           <Route path="/game/economy" element={<ModuleErrorBoundary moduleName="Economia"><Economy /></ModuleErrorBoundary>} />
           <Route path="/profile" element={<PlayerProfile />} />
           <Route path="/matches" element={<Matches />} />
+          <Route path="/replays" element={<ReplayLibrary />} />
           <Route path="/tournaments" element={<Tournaments />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/ranking" element={<Ranking />} />

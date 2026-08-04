@@ -1,0 +1,8 @@
+export const COURT_RENDER_CONFIG = Object.freeze({ widthMeters: 10, lengthMeters: 20, netY: 10, serviceLineDistance: 3, wallHeightScale: 1, padding: 28 });
+export const REPLAY_TIMING = Object.freeze({ servePreparation: 500, serveFlight: 550, volleyFlight: 280, lobFlight: 900, smashFlight: 240, playerReaction: 140, wallImpactPause: 70, pointEndPause: 900, scoreTransition: 400 });
+export const DEFAULT_SHOT_SPEED = Object.freeze({ serve: 78, drive: 72, forehand: 75, backhand: 70, lob: 48, volley: 92, bandeja: 82, smash: 118 });
+export const CAMERA_MODES = Object.freeze(['full_court', 'follow_ball', 'follow_player', 'auto']);
+export const DEFAULT_VISUAL_OPTIONS = Object.freeze({ cameraMode: 'full_court', followedPlayerId: null, showTrails: true, showBounceMarks: true, showShotLabels: true, showNames: true, enableCameraMotion: true, reducedMotion: false, highContrast: false, colorBlindMode: false, ballScale: 1, playerScale: 1, quality: 'medium', debugSprites: false });
+export const MOVEMENT_EASING = Object.freeze({ walk: 'smooth', shuffle: 'smooth', run: 'accelerate', sprint: 'accelerate', recover: 'decelerate', backpedal: 'decelerate' });
+export function easeMovement(progress, profile = 'run', reducedMotion = false) { if (reducedMotion) return progress; const mode = MOVEMENT_EASING[profile] || 'smooth'; if (mode === 'accelerate') return progress < .5 ? 2 * progress * progress : 1 - ((-2 * progress + 2) ** 2) / 2; if (mode === 'decelerate') return 1 - (1 - progress) ** 3; return progress * progress * (3 - 2 * progress); }
+export function trajectoryHeight(type, progress, suppliedZ = 0) { const profile = { lob: 5, smash: 1.1, volley: .45, bandeja: 2.2, serve: 1.3, arc: 1.8 }[type] ?? 1.4; return suppliedZ + Math.sin(Math.PI * progress) * profile; }

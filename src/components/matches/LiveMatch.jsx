@@ -1,11 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Scale, Flame, Shield, Hammer, Brain, Play, Pause, FastForward } from 'lucide-react';
 import { createMatch, playPoint, formatPoints, MATCH_TACTICS } from '@/lib/matchEngine';
+import ReplayPanel from './ReplayPanel';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 
-export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished }) {
-  const [state, setState] = useState(() => createMatch(teamA, teamB));
+export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished, replayEnabled = false, displayMode = 'text', onDisplayModeChange }) {
+  const [state, setState] = useState(() => createMatch(teamA, teamB, { replayEnabled }));
   const [tactic, setTactic] = useState(
     () => MATCH_TACTICS.find(t => t.id === initialTacticId) || MATCH_TACTICS[0]
   );
@@ -15,10 +16,20 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished })
   const narrationRef = useRef(null);
 
   useEffect(() => {
+    if (displayMode !== 'quick') return;
+    setAutoPlay(false);
+    setState((current) => {
+      let next = current; let safety = 3000;
+      while (!next.finished && safety-- > 0) next = playPoint(next, tactic);
+      return next;
+    });
+  }, [displayMode, tactic]);
+
+  useEffect(() => {
     if (state.finished || !autoPlay) return;
     const timer = setTimeout(() => {
       setState(prev => playPoint(prev, tactic));
-    }, 1000 / speed);
+    }, (displayMode === '2d' ? 3200 : 1000) / speed);
     return () => clearTimeout(timer);
   }, [state, autoPlay, tactic, speed]);
 
@@ -53,6 +64,7 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished })
 
   return (
     <div className="space-y-3">
+      <div className="grid grid-cols-4 gap-1">{[['text','Texto'],['2d','2D'],['important_points','Pontos-chave'],['quick','Rápido']].map(([id,label])=><button key={id} onClick={()=>onDisplayModeChange?.(id)} className={`rounded-lg px-1 py-1.5 text-[10px] font-bold ${displayMode===id?'bg-primary text-primary-foreground':'bg-secondary/60'}`}>{label}</button>)}</div>
       {/* Scoreboard */}
       <div className="glass rounded-2xl p-4">
         <div className="grid grid-cols-[1fr_2rem_2rem_2.5rem] gap-2 items-center text-[9px] uppercase text-muted-foreground mb-2 px-0.5">
@@ -87,8 +99,10 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, onFinished })
         </div>
       </div>
 
+      {displayMode === '2d' && state.replay && state.pointNumber > 0 && <ReplayPanel key={state.pointNumber} replay={state.replay} live />}
+
       {/* Narration */}
-      <div className="glass rounded-2xl p-3">
+      <div className={`glass rounded-2xl p-3 ${displayMode === '2d' ? 'hidden' : ''}`}>
         <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Narração</p>
         <div ref={narrationRef} className="h-48 overflow-y-auto space-y-1.5 pr-1">
           {state.narration.length === 0 && (

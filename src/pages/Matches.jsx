@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { MapPin, Calendar, Swords, Trophy, Bot, Play, AlertCircle } from 'lucide-react';
+import { MapPin, Calendar, Swords, Trophy, Bot, Play, AlertCircle, Film } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { useCareer } from '@/careers/useCareer.js';
 import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
 import { LoadingScreen, PageHeader, EmptyStateCard, InfoBanner } from '@/components/padel/ui';
 
 export default function Matches() {
+  const { activeCareer } = useCareer();
   const [matches, setMatches] = useState([]);
   const [profile, setProfile] = useState(null);
   const [showSimulation, setShowSimulation] = useState(false);
@@ -49,6 +52,7 @@ export default function Matches() {
         >
           <Play className="h-4 w-4" /> Jogar
         </button>
+        <Link to="/replays" className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-secondary text-sm font-bold"><Film className="h-4 w-4"/>Replays</Link>
       </PageHeader>
 
       {isInjured(profile) && (
@@ -92,6 +96,7 @@ export default function Matches() {
                   <span className="flex items-center gap-1"><Calendar className="h-3 w-3" /> {formatDate(m.date)}</span>
                   {m.location && <span className="flex items-center gap-1"><MapPin className="h-3 w-3" /> {m.location}</span>}
                   {m.match_type === 'simulada' && <span className="ml-auto inline-flex items-center gap-1 rounded-full bg-secondary px-1.5 py-0.5 text-[9px] font-bold text-muted-foreground"><Bot className="h-2.5 w-2.5" /> Simulada</span>}
+                  {!m.replay_id && <span className="text-[9px]">Replay não disponível</span>}
                 </div>
               </div>
             );
@@ -102,6 +107,7 @@ export default function Matches() {
       {showSimulation && (
         <SimulationModal
           profile={profile}
+          careerId={activeCareer?.career_id}
           onClose={() => setShowSimulation(false)}
           onProfileUpdate={setProfile}
           onComplete={async () => {

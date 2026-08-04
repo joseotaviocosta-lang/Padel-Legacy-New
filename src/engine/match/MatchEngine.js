@@ -6,6 +6,7 @@ import { FatigueEngine } from './FatigueEngine.js';
 import { CommentaryEngine } from './CommentaryEngine.js';
 import { createStatistics, buildStatisticsSummary } from './StatisticsEngine.js';
 import { buildMatchAnalysis } from './MatchAnalysis.js';
+import { appendPointToReplay, createReplay } from '../../gameplay/replay/ReplayRecorder.js';
 
 export const MATCH_TACTICS = [
   { id: 'equilibrado', label: 'Equilibrado', icon: 'Scale', desc: 'Neutro e seguro' },
@@ -20,13 +21,16 @@ const pointDisplay = (points) => ['0', '15', '30', '40'][Math.min(points, 3)] ||
 export function createMatch(teamA, teamB, options = {}) {
   const teams = createTeams(teamA, teamB);
   const seed = options.seed ?? `${Date.now()}-${teamA?.[0]?.id || 'A'}-${teamB?.[0]?.id || 'B'}`;
-  return {
+  const state = {
     engineVersion: '0.4.0-alpha.5', seed, randomState: 0, teams,
     teamANames: teams.A.map((p) => p.name), teamBNames: teams.B.map((p) => p.name),
     setsA: 0, setsB: 0, currentSet: 1, gamesA: 0, gamesB: 0, pointsA: 0, pointsB: 0,
     servingTeam: 'A', inTiebreak: false, superTiebreak: false, finished: false, winner: null,
     setScores: [], narration: [], stats: createStatistics(teams), analysis: null, pointNumber: 0,
+    replayEnabled: Boolean(options.replayEnabled), replay: null,
   };
+  if (state.replayEnabled) state.replay = createReplay(state);
+  return state;
 }
 
 function cloneState(prev) {
@@ -38,6 +42,7 @@ function cloneState(prev) {
     },
     narration: [...prev.narration], setScores: [...prev.setScores],
     stats: JSON.parse(JSON.stringify(prev.stats)),
+    replay: prev.replay ? JSON.parse(JSON.stringify(prev.replay)) : null,
   };
 }
 
@@ -59,6 +64,7 @@ export function playPoint(prev, tactic = MATCH_TACTICS[0]) {
   momentum.update(state.teams, result.winner, result.winner === 'A' ? 'B' : 'A', { breakPoint: isBreakPoint(state, result.winner) });
   const narrative = commentary.describe({ ...result, random, stats: state.stats, match: pointContext });
   awardPoint(state, result.winner, narrative.message, { ...result, narrative }, fatigue);
+  if (state.replayEnabled && state.replay) appendPointToReplay(state.replay, prev, state, result);
   return state;
 }
 
