@@ -5,6 +5,7 @@ import { Plus, MapPin, Users, Trophy, X, Crown, Star } from 'lucide-react';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
 import { createClub } from '@/lib/clubs';
+import { ensureWorldClubCatalog } from '@/lib/sportsEconomyV26';
 
 export default function Clubs() {
   const navigate = useNavigate();
@@ -21,7 +22,8 @@ export default function Clubs() {
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        const list = await localGame.entities.Club.list('-club_points', 50);
+        await ensureWorldClubCatalog(72);
+        const list = await localGame.entities.Club.list('-club_points', 120);
         setClubs(list || []);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
@@ -32,7 +34,7 @@ export default function Clubs() {
     setSubmitting(true);
     try {
       await createClub(profile, form);
-      const list = await localGame.entities.Club.list('-club_points', 50);
+      const list = await localGame.entities.Club.list('-club_points', 120);
       setClubs(list || []);
       setShowForm(false);
       setForm({ name: '', city: '', country: 'Brasil', description: '' });
@@ -46,7 +48,7 @@ export default function Clubs() {
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Users} title="Clubes" subtitle="Comunidades padel do mundo" accent="primary">
+      <PageHeader icon={Users} title="Clubes" subtitle={`${clubs.length} clubes ativos no circuito mundial`} accent="primary">
         <button
           onClick={() => setShowForm(true)}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity glow-primary"

@@ -3,17 +3,38 @@ import { processGameStateDay } from './gameStateLifecycle';
 import { getInjuryStatus } from './injuryRecoveryLifecycle';
 import { isInjured } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
+import { shouldBlockBeforeAdvance, getInjuryAutoResolution } from './calendarAdvancePolicy';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
 
 async function getCriticalEventBeforeAdvance(profile) {
   const nextDate = addDays(profile.career_date || CAREER_START_DATE, 1);
   const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
-  return (events || []).find((event) => {
-    const ends = event.end_date || event.start_date;
-    const occursNextDay = event.start_date <= nextDate && ends >= nextDate;
-    return occursNextDay && (event.event_type === 'tournament' || event.requires_decision || event.is_mandatory);
-  }) || null;
+  return (events || []).find((event) => shouldBlockBeforeAdvance(event, nextDate)) || null;
+}
+
+async function resolveInjuryCalendarConflicts(profile) {
+  const nextDate = addDays(profile.career_date || CAREER_START_DATE, 1);
+  const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
+  const resolved = [];
+
+  for (const event of events || []) {
+    const resolution = getInjuryAutoResolution(event, nextDate);
+    if (!resolution) continue;
+    const metadata = {
+      ...(event.metadata || {}),
+      auto_resolved_due_to_injury: true,
+      auto_resolved_date: nextDate,
+    };
+    await localGame.entities.CalendarEvent.update(event.id, {
+      status: resolution.status,
+      requires_decision: false,
+      metadata,
+    });
+    resolved.push({ event, resolution });
+  }
+
+  return resolved;
 }
 
 /**
@@ -71,10 +92,16 @@ export async function advanceCareerUntilRecovered(profile, { maxDays = MAX_INJUR
   let current = profile;
   let daysAdvanced = 0;
   const initialEvents = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id });
+  const autoResolved = [];
   while (hasActiveInjury(current) && daysAdvanced < maxDays) {
+    // Durante uma lesão, treinos planejados são cancelados e torneios são
+    // marcados como perdidos automaticamente. Apenas decisões não esportivas
+    // realmente obrigatórias continuam interrompendo o avanço.
+    const resolutions = await resolveInjuryCalendarConflicts(current);
+    autoResolved.push(...resolutions);
     const blockingEvent = await getCriticalEventBeforeAdvance(current);
     if (blockingEvent) {
-      return { profile: current, daysAdvanced, recovered: false, blockedBy: blockingEvent };
+      return { profile: current, daysAdvanced, recovered: false, blockedBy: blockingEvent, autoResolved };
     }
     current = await advanceCareerDay(current);
     daysAdvanced += 1;
@@ -93,6 +120,7 @@ export async function advanceCareerUntilRecovered(profile, { maxDays = MAX_INJUR
       eventsProcessed: changed.length,
       trainingsCancelled: changed.filter((event) => event.event_type === 'training_camp' && event.status === 'cancelled').length,
       tournamentsMissed: changed.filter((event) => event.event_type === 'tournament' && event.status === 'missed').length,
+      activitiesCancelledByInjury: autoResolved.filter((item) => item.resolution.injury_resolution === 'activity_cancelled').length,
     },
   };
 }

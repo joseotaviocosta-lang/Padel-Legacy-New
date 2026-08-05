@@ -47,7 +47,10 @@
     "test:tutorial-engine": "node scripts/test-tutorial-engine-v2.mjs",
     "test:career-pace": "node scripts/test-career-pace-v17.mjs",
     "test:injuries": "node scripts/test-injury-balance-v21.mjs",
-    "test:living-world": "node scripts/test-living-world-v23.mjs"
+    "test:living-world": "node scripts/test-living-world-v23.mjs",
+    "test:calendar-advance": "node scripts/test-calendar-advance-v24.mjs",
+    "test:global-market": "node scripts/test-global-market-v25.mjs",
+    "test:sports-economy": "node scripts/test-sports-economy-v26.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

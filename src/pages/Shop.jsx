@@ -13,6 +13,7 @@ import { RARITY_STYLES, RARITY_ORDER, CATEGORY_META } from '@/lib/equipmentCatal
 import { computeItemPrice, BADGE_COLORS, seedMarket } from '@/lib/marketEngine';
 import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess, SHOP_PROGRESSION } from '@/lib/storeCatalog';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
+import { getEquipmentMarketState } from '@/lib/sportsEconomyV26';
 
 const PAGE_SIZE = 24;
 
@@ -62,7 +63,7 @@ export default function Shop() {
   const [rarity, setRarity] = useState('all');
   const [manufacturer, setManufacturer] = useState('all');
   const [subcategory, setSubcategory] = useState('all');
-  const [ownership, setOwnership] = useState('all');
+  const [ownership, setOwnership] = useState('market');
   const [sort, setSort] = useState('recommended');
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
@@ -120,11 +121,20 @@ export default function Shop() {
     return map;
   }, [items, profile]);
 
+
+  const marketAvailabilityMap = useMemo(() => {
+    const map = {};
+    const marketProfile = { ...(profile || {}), active_sponsor_names: playerSponsors };
+    items.forEach(item => { map[item.id] = getEquipmentMarketState(item, marketProfile); });
+    return map;
+  }, [items, profile, playerSponsors]);
+
   const progressionStats = useMemo(() => {
     const unlocked = items.filter(item => accessMap[item.id]?.unlocked).length;
+    const marketAvailable = items.filter(item => marketAvailabilityMap[item.id]?.available || ownedIds.has(item.id)).length;
     const affordable = items.filter(item => accessMap[item.id]?.unlocked && (priceMap[item.id]?.currentPrice ?? item.price) <= (profile?.coins || 0)).length;
-    return { unlocked, locked: Math.max(0, items.length - unlocked), affordable };
-  }, [items, accessMap, priceMap, profile?.coins]);
+    return { unlocked, locked: Math.max(0, items.length - unlocked), affordable, marketAvailable };
+  }, [items, accessMap, priceMap, profile?.coins, marketAvailabilityMap, ownedIds]);
 
   const manufacturers = useMemo(() => {
     const set = new Set(items.map(i => String(i.manufacturer || '').trim()).filter(Boolean));
@@ -143,6 +153,7 @@ export default function Shop() {
     if (rarity !== 'all') result = result.filter(i => i.rarity === rarity);
     if (manufacturer !== 'all') result = result.filter(i => i.manufacturer === manufacturer);
     if (subcategory !== 'all') result = result.filter(i => i.subcategory === subcategory);
+    if (ownership === 'market') result = result.filter(i => marketAvailabilityMap[i.id]?.available || ownedIds.has(i.id));
     if (ownership === 'owned') result = result.filter(i => ownedIds.has(i.id));
     if (ownership === 'not_owned') result = result.filter(i => !ownedIds.has(i.id));
     if (ownership === 'affordable') result = result.filter(i => accessMap[i.id]?.unlocked && (priceMap[i.id]?.currentPrice ?? i.price) <= (profile?.coins || 0));
@@ -171,7 +182,7 @@ export default function Shop() {
       case 'name_asc': result = [...result].sort((a, b) => a.name.localeCompare(b.name)); break;
     }
     return result;
-  }, [items, category, rarity, manufacturer, subcategory, ownership, sort, search, priceMap, accessMap, ownedIds, profile?.coins]);
+  }, [items, category, rarity, manufacturer, subcategory, ownership, sort, search, priceMap, accessMap, ownedIds, profile?.coins, marketAvailabilityMap]);
 
   const paged = filtered.slice(0, page * PAGE_SIZE);
   const hasMore = filtered.length > paged.length;
@@ -181,6 +192,11 @@ export default function Shop() {
 
   async function buy(item) {
     if (!profile) return;
+    const marketState = marketAvailabilityMap[item.id];
+    if (!marketState?.available && !ownedIds.has(item.id)) {
+      toast({ title: 'Item fora da rotação', description: marketState?.reason || 'Este equipamento pode voltar em outro mês.', variant: 'destructive' });
+      return;
+    }
     const access = getShopItemAccess(profile, item);
     if (!access.unlocked) {
       toast({ title: 'Equipamento ainda bloqueado', description: `Você precisa de ${access.reasons.join(', ')}.`, variant: 'destructive' });
@@ -235,7 +251,7 @@ export default function Shop() {
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={ShoppingBag} title="Loja de Equipamentos" subtitle={`${items.length} itens no catálogo · ${progressionStats.unlocked} liberados para sua carreira`} accent="amber">
+      <PageHeader icon={ShoppingBag} title="Loja de Equipamentos" subtitle={`${progressionStats.marketAvailable} itens na rotação mensal · ${progressionStats.unlocked} liberados para sua carreira`} accent="amber">
         <CoinBadge coins={profile?.coins || 0} size="md" />
         <Link to="/game/inventory" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
           <Package className="h-3.5 w-3.5" /> Inventário
@@ -346,7 +362,8 @@ export default function Shop() {
               <div>
                 <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1.5">Situação</p>
                 <select value={ownership} onChange={(e) => setOwnership(e.target.value)} className="w-full px-3 py-2 rounded-xl glass text-sm text-foreground focus:outline-none focus:border-primary/40">
-                  <option value="all" className="bg-card">Todos os itens</option>
+                  <option value="market" className="bg-card">Disponíveis neste mês</option>
+                  <option value="all" className="bg-card">Catálogo completo</option>
                   <option value="not_owned" className="bg-card">Ainda não adquiridos</option>
                   <option value="owned" className="bg-card">Já adquiridos</option>
                   <option value="affordable" className="bg-card">Posso comprar agora</option>

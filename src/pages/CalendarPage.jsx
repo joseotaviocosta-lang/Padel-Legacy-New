@@ -109,25 +109,28 @@ const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:0
       .slice(0, 5);
   }, [tournaments, careerDate]);
 
+  async function refreshAfterAdvance(updated) {
+    const { events, pending, tr } = await loadModuleTasks({
+      events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço do calendário' },
+      pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço do calendário' },
+      tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: [], label: 'treinos após avanço do calendário' },
+    });
+    setCalendarEvents(events || []);
+    setPendingDecisions(pending || []);
+    setTrainings(tr || []);
+    const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
+    setSelectedDay(cd);
+    setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
+    setVisibleMonth(cd);
+  }
+
   async function handleAdvanceDay() {
     if (!profile) return;
     setAdvancing(true);
     try {
 const updated = await advanceCareerDay(profile);
       setProfile(updated);
-      // Refresh events and pending decisions
-      const { events, pending, tr } = await loadModuleTasks({
-        events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço do dia' },
-        pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço do dia' },
-        tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: [], label: 'treinos após avanço do dia' },
-      });
-      setCalendarEvents(events || []);
-      setPendingDecisions(pending || []);
-      setTrainings(tr || []);
-      // Move selected day to new career date
-      const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
-      setSelectedDay(cd);
-      setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
+      await refreshAfterAdvance(updated);
     } catch (e) {
       toast({ title: 'Não é possível avançar', description: e.message, variant: 'destructive' });
     } finally {
@@ -142,18 +145,7 @@ const updated = await advanceCareerDay(profile);
       const result = await advanceCareerDays(profile, days);
       const updated = result.profile;
       setProfile(updated);
-      const { events, pending, tr } = await loadModuleTasks({
-        events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço em lote' },
-        pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço em lote' },
-        tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: [], label: 'treinos após avanço em lote' },
-      });
-      setCalendarEvents(events || []);
-      setPendingDecisions(pending || []);
-      setTrainings(tr || []);
-      const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
-      setSelectedDay(cd);
-      setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
-      setVisibleMonth(cd);
+      await refreshAfterAdvance(updated);
       const trainingsDone = (result.daily || []).filter((day) => day.automaticTraining).length;
       const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
       toast({ title: `${result.daysAdvanced} dia(s) processado(s)`, description: `${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}` });
@@ -207,14 +199,26 @@ const updated = await advanceCareerDay(profile);
 
   async function handleSkipInjury() {
     const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysBetween(careerDate, profile.injured_until) : 0);
-    if (!window.confirm(`Avançar ${days} dia(s) até a recuperação?\n\nTodos os sistemas diários serão processados. O avanço parará antes de torneios e decisões obrigatórias.`)) return;
+    if (!window.confirm(`Avançar ${days} dia(s) até a recuperação?\n\nTodos os sistemas diários serão processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.`)) return;
     setSkippingInjury(true);
     try {
       const result = await advanceCareerUntilRecovered(profile);
       setProfile(result.profile);
-      await refreshCalendarEvents();
-      if (result.blockedBy) toast({ title: 'Avanço interrompido com segurança', description: `Compromisso: ${result.blockedBy.title} em ${result.blockedBy.start_date}.` });
-      else toast({ title: result.recovered ? 'Recuperação concluída' : 'Limite de segurança atingido', description: `${result.daysAdvanced} dia(s) avançado(s) · Energia ${result.profile.energy} · Fadiga ${result.profile.fatigue}` });
+      await refreshAfterAdvance(result.profile);
+      if (result.blockedBy) {
+        toast({ title: 'Avanço interrompido com segurança', description: `Compromisso: ${result.blockedBy.title}${result.blockedBy.start_date ? ` em ${result.blockedBy.start_date}` : ''}.` });
+      } else {
+        const missed = Number(result.summary?.tournamentsMissed || 0);
+        const cancelled = Number(result.summary?.activitiesCancelledByInjury || 0);
+        const details = [
+          `${result.daysAdvanced} dia(s) avançado(s)`,
+          `Energia ${result.profile.energy}`,
+          `Fadiga ${result.profile.fatigue}`,
+          missed ? `${missed} torneio(s) perdido(s)` : null,
+          cancelled ? `${cancelled} atividade(s) cancelada(s)` : null,
+        ].filter(Boolean).join(' · ');
+        toast({ title: result.recovered ? 'Recuperação concluída' : 'Limite de segurança atingido', description: details });
+      }
     } catch (error) {
       toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
     } finally { setSkippingInjury(false); }

@@ -39,3 +39,4 @@ export { ensurePlayerRelationships, processRelationshipWeek, getRelationshipSnap
 export { processStaffDay, getStaffSnapshot, getStaffCatalog } from './staffLifecycle';
 
 export { processCircuitLifeWeek, getCircuitLifeSnapshot } from './circuitLifeLifecycle';
+export { getGlobalMarketSnapshot, processGlobalMarketMonth, TIER_MINIMUMS } from './globalMarketLifecycle';
