@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.7",
+  "version": "0.9.0-beta.11",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -60,7 +60,11 @@
     "test:ranking-carryover-v32": "node scripts/test-ranking-season-carryover-v32.mjs",
     "test:design-system-v33": "node scripts/test-design-system-v33.mjs",
     "test:premium-home-v33": "node scripts/test-premium-home-v33-2.mjs",
-    "test:premium-interfaces-v33": "node scripts/test-premium-interfaces-v33.mjs"
+    "test:premium-interfaces-v33": "node scripts/test-premium-interfaces-v33.mjs",
+    "test:premium-market-v33": "node scripts/test-premium-market-v33-4.mjs",
+    "test:premium-gameplay-v33": "node scripts/test-premium-gameplay-v33-5.mjs",
+    "test:premium-world-v33": "node scripts/test-premium-world-v33.mjs",
+    "test:premium-development-v33": "node scripts/test-premium-development-v33-7.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

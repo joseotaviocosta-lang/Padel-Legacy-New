@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Calendar as CalendarIcon, Trophy } from 'lucide-react';
-import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { Calendar as CalendarIcon, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
+import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { Page, PageHeader, StatCard, Surface, StatusBadge } from '@/components/design-system';
 import { ensureMyProfile } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
 import { advanceCareerDay, advanceCareerDays, advanceCareerUntilRecovered, hasActiveInjury } from '@/game-core';
@@ -39,7 +40,7 @@ export default function CalendarPage() {
   const [viewMode, setViewMode] = useState('week');
   const [visibleMonth, setVisibleMonth] = useState(new Date('2026-01-01T00:00:00'));
   const [skippingInjury, setSkippingInjury] = useState(false);
-const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:00:00'), { weekStartsOn: 0 }));
+  const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:00:00'), { weekStartsOn: 0 }));
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDayData, setSelectedDayData] = useState({ events: [], matches: [], trainings: [] });
   const [registrationTournament, setRegistrationTournament] = useState(null);
@@ -271,31 +272,63 @@ const updated = await advanceCareerDay(profile);
   if (loading) return <LoadingScreen />;
   if (!profile) return <EmptyStateCard icon={CalendarIcon} message="Crie seu perfil para ver o calendário." />;
 
+  const nextTournament = upcomingTournaments[0] || null;
+  const daysToNextTournament = nextTournament ? daysBetween(careerDate, nextTournament.start_date) : null;
+
   return (
-    <PageContainer>
-      <PageHeader icon={CalendarIcon} title="Calendário da Carreira" subtitle="Gerencie sua agenda, inscrições e compromissos" accent="cyan" />
+    <Page>
+      <PageHeader
+        eyebrow="Planejamento da carreira"
+        icon={CalendarIcon}
+        title="Calendário"
+        description="Organize treinos, descanso e competições sem perder decisões importantes."
+        breadcrumb={["Competições", "Calendário"]}
+        tone="info"
+        stats={
+          <>
+            <StatusBadge tone="info">{format(new Date(`${careerDate}T00:00:00`), 'dd/MM/yyyy')}</StatusBadge>
+            {pendingDecisions.length > 0 && <StatusBadge tone="warning">{pendingDecisions.length} decisão(ões)</StatusBadge>}
+            {nextTournament && <StatusBadge tone="premium">{daysToNextTournament > 0 ? `${daysToNextTournament}d para competir` : 'Competição hoje'}</StatusBadge>}
+          </>
+        }
+      />
 
-      <div className="flex rounded-xl bg-secondary/30 p-1"><button onClick={() => setViewMode('week')} className={`flex-1 rounded-lg py-2 text-xs font-bold ${viewMode === 'week' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Visão semanal</button><button onClick={() => setViewMode('month')} className={`flex-1 rounded-lg py-2 text-xs font-bold ${viewMode === 'month' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Visão mensal</button></div>
+      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
+        <StatCard label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} detail="Disponível hoje" icon={Battery} tone={Number(profile.energy) < 30 ? 'danger' : 'success'} />
+        <StatCard label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} detail="Carga acumulada" icon={Zap} tone={Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info'} />
+        <StatCard label="Agenda" value={calendarEvents.filter((event) => event.start_date >= careerDate).length} detail="Compromissos futuros" icon={Clock3} tone="brand" />
+        <StatCard label="Próximo torneio" value={nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament} dias` : 'Hoje') : 'Livre'} detail={nextTournament?.name || 'Janela para evolução'} icon={Trophy} tone="premium" />
+      </div>
 
-      <div className="glass rounded-2xl border border-primary/15 p-3">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <p className="text-xs font-bold">Avanço rápido com planejamento</p>
-            <p className="text-[10px] text-muted-foreground">Executa o plano semanal, descansa nos dias livres e para antes de torneios ou decisões obrigatórias.</p>
+      <Surface padding="compact" variant="subtle">
+        <div className="grid grid-cols-2 gap-1 rounded-xl bg-secondary/35 p-1">
+          <button type="button" onClick={() => setViewMode('week')} className={`min-h-10 rounded-lg px-3 text-xs font-bold transition ${viewMode === 'week' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Semana</button>
+          <button type="button" onClick={() => setViewMode('month')} className={`min-h-10 rounded-lg px-3 text-xs font-bold transition ${viewMode === 'month' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Mês</button>
+        </div>
+      </Surface>
+
+      <Surface variant="elevated" padding="compact">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex min-w-0 items-start gap-3">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Zap className="h-4 w-4" /></span>
+            <div className="min-w-0">
+              <p className="text-sm font-extrabold">Avanço inteligente</p>
+              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">Processa treinos automáticos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
+            </div>
           </div>
-          <div className="grid grid-cols-2 gap-2 sm:flex">
-            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(3)} className="rounded-xl bg-secondary px-3 py-2 text-xs font-bold disabled:opacity-40">{advancingBatch === 3 ? 'Processando...' : '+3 dias'}</button>
-            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(7)} className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-40">{advancingBatch === 7 ? 'Processando...' : '+1 semana'}</button>
+          <div className="grid shrink-0 grid-cols-2 gap-2">
+            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(3)} className="min-h-10 rounded-xl border border-border/60 bg-secondary px-4 text-xs font-extrabold disabled:opacity-40">{advancingBatch === 3 ? 'Processando…' : '+3 dias'}</button>
+            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(7)} className="min-h-10 rounded-xl bg-primary px-4 text-xs font-extrabold text-primary-foreground disabled:opacity-40">{advancingBatch === 7 ? 'Processando…' : '+1 semana'}</button>
           </div>
         </div>
-      </div>
+      </Surface>
 
       {/* Pending decisions — blocks day advance */}
       {pendingDecisions.length > 0 && (
         <PendingDecisionBanner events={pendingDecisions} onResolve={handleResolveDecision} />
       )}
 
-      {hasActiveInjury(profile) && <div className="glass rounded-2xl border border-rose-500/30 bg-rose-500/5 p-4 flex flex-col md:flex-row md:items-center gap-3"><div className="flex-1"><p className="text-sm font-bold text-rose-200">Período de recuperação</p><p className="text-xs text-muted-foreground">Retorno estimado em {Math.max(Number(profile.injury_days_remaining) || 0, profile.injured_until ? daysBetween(careerDate, profile.injured_until) : 0)} dia(s).</p></div><button onClick={handleSkipInjury} disabled={skippingInjury} className="rounded-xl bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-200 disabled:opacity-50">{skippingInjury ? 'Processando...' : 'Avançar até a recuperação'}</button></div>}
+      {hasActiveInjury(profile) && <Surface variant="elevated" padding="compact" className="border-rose-500/30 bg-rose-500/5"><div className="flex flex-col gap-3 md:flex-row md:items-center"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-300"><AlertTriangle className="h-5 w-5" /></span><div className="flex-1"><p className="text-sm font-bold text-rose-200">Período de recuperação</p><p className="text-xs text-muted-foreground">Retorno estimado em {Math.max(Number(profile.injury_days_remaining) || 0, profile.injured_until ? daysBetween(careerDate, profile.injured_until) : 0)} dia(s).</p></div><button onClick={handleSkipInjury} disabled={skippingInjury} className="rounded-xl bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-200 disabled:opacity-50">{skippingInjury ? 'Processando...' : 'Avançar até a recuperação'}</button></div></Surface>}
 
       {/* Week view */}
       {viewMode === 'week' ? <CalendarWeekView
@@ -390,6 +423,6 @@ const updated = await advanceCareerDay(profile);
           onComplete={handleTournamentComplete}
         />
       )}
-    </PageContainer>
+    </Page>
   );
 }

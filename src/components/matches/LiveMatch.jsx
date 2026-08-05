@@ -113,10 +113,10 @@ export default function LiveMatch({
         : `Set ${state.currentSet}`;
 
   return (
-    <div data-live-match className="flex h-full min-h-0 max-h-full flex-col gap-1.5 overflow-hidden">
+    <div data-live-match className="flex h-full min-h-0 max-h-full flex-col gap-2 overflow-hidden">
       <div className="shrink-0"><CompactScoreboard state={state} points={points} status={matchStatus} /></div>
 
-      <div className="grid shrink-0 grid-cols-3 gap-1 rounded-xl bg-secondary/40 p-1" role="tablist" aria-label="Painéis da partida">
+      <div className="grid shrink-0 grid-cols-3 gap-1 rounded-xl border border-border/40 bg-secondary/30 p-1" role="tablist" aria-label="Painéis da partida">
         {PANELS.map(({ id, label, icon: Icon }) => {
           const active = activePanel === id;
           const hasAlert = id === 'coach' && Boolean(coachSuggestion);
@@ -128,7 +128,7 @@ export default function LiveMatch({
               aria-selected={active}
               onClick={() => setActivePanel(id)}
               className={`relative flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-colors ${
-                active ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+                active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:bg-background/50 hover:text-foreground'
               }`}
             >
               <Icon className="h-3.5 w-3.5" />
@@ -139,7 +139,7 @@ export default function LiveMatch({
         })}
       </div>
 
-      <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border/50 bg-background/35">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-2xl border border-border/50 bg-background/45 shadow-inner">
         {activePanel === 'match' && (
           <MatchFeed
             state={state}
@@ -213,8 +213,8 @@ function CompactScoreboard({ state, points, status }) {
   ];
 
   return (
-    <section className="overflow-hidden rounded-xl border border-border/50 bg-background/45" aria-label="Placar da partida">
-      <div className="grid grid-cols-[minmax(0,1fr)_2rem_2rem_2.5rem] items-center gap-1 border-b border-border/40 px-3 py-1 text-[8px] font-bold uppercase tracking-wider text-muted-foreground">
+    <section className="overflow-hidden rounded-2xl border border-border/60 bg-gradient-to-br from-background/95 to-secondary/20 shadow-sm" aria-label="Placar da partida">
+      <div className="grid grid-cols-[minmax(0,1fr)_2rem_2rem_2.7rem] items-center gap-1 border-b border-border/40 bg-secondary/20 px-3 py-1.5 text-[8px] font-extrabold uppercase tracking-[0.14em] text-muted-foreground">
         <span>{status}</span>
         <span className="text-center">Set</span>
         <span className="text-center">Jg</span>
@@ -223,7 +223,7 @@ function CompactScoreboard({ state, points, status }) {
       {teams.map((team) => (
         <div
           key={team.id}
-          className="grid grid-cols-[minmax(0,1fr)_2rem_2rem_2.5rem] items-center gap-1 border-b border-border/30 px-3 py-1.5 last:border-b-0"
+          className="grid grid-cols-[minmax(0,1fr)_2rem_2rem_2.7rem] items-center gap-1 border-b border-border/30 px-3 py-2 last:border-b-0"
         >
           <div className="flex min-w-0 items-center gap-2">
             <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${team.accent}`} />
@@ -448,12 +448,12 @@ function PlaybackControls({
   }
 
   return (
-    <div className="space-y-1.5 rounded-xl border border-border/50 bg-background/65 p-2 shadow-lg backdrop-blur">
+    <div className="space-y-1.5 rounded-2xl border border-border/60 bg-background/90 p-2 shadow-xl backdrop-blur">
       <div className="flex items-center gap-1.5">
         <button
           type="button"
           onClick={onTogglePlay}
-          className="flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-bold text-primary-foreground"
+          className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-extrabold text-primary-foreground shadow-sm transition hover:brightness-110"
         >
           {autoPlay ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
           {autoPlay ? 'Pausar' : 'Continuar'}
@@ -487,7 +487,7 @@ function SkipButton({ onClick, label, icon = false }) {
     <button
       type="button"
       onClick={onClick}
-      className="min-h-8 rounded-lg bg-secondary/45 px-1 text-[9px] font-bold text-muted-foreground hover:bg-secondary hover:text-foreground"
+      className="min-h-9 rounded-xl border border-border/40 bg-secondary/35 px-1 text-[9px] font-extrabold text-muted-foreground transition hover:bg-secondary hover:text-foreground"
     >
       {icon && <FastForward className="mr-0.5 inline h-3 w-3" />}
       {label}

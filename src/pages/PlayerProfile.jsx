@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, MapPin, Disc, Trophy, Coins } from 'lucide-react';
+import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, Trophy, Coins } from 'lucide-react';
 import { ensureMyProfile, careerExperienceSummary, careerExperienceUnlocks, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
 import { PLAY_STYLE_OPTIONS } from '@/lib/initialCareerProfiles.js';
 import LogoutButton from '@/components/LogoutButton';
-import { LevelBadge, StatCard, AttributeBar } from '@/components/padel/Shared';
+import { LevelBadge, AttributeBar } from '@/components/padel/Shared';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import AttributeDistribution from '@/components/career/AttributeDistribution';
 import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge, Surface, SurfaceHeader, ProgressBar as PremiumProgressBar } from '@/components/design-system';
 
 const ICON_MAP = { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame };
 
@@ -56,84 +57,44 @@ export default function PlayerProfile() {
   }
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      {/* Header card */}
-      <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-7 grid-bg">
-        <div className="absolute -top-16 -right-16 h-48 w-48 bg-primary/20 rounded-full blur-3xl" />
-        <div className="relative flex flex-col items-center text-center gap-3">
-          <div className="h-24 w-24 rounded-full bg-gradient-to-br from-primary/40 to-secondary overflow-hidden flex items-center justify-center ring-4 ring-primary/20">
-            {profile?.avatar_url ? (
-              <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <span className="text-4xl font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>
-            )}
-          </div>
-          <div>
-            <div className="flex items-center justify-center gap-2 flex-wrap">
-              <h1 className="text-2xl md:text-3xl font-black tracking-tight">{profile?.sport_name}</h1>
-              <LevelBadge level={`Experiência ${careerExperience.level}/${careerExperience.maxLevel}`} size="md" />
-              {profile?.court_side && (
-                <span className="inline-flex items-center rounded-full bg-primary/15 text-primary px-2.5 py-1 text-xs font-bold">
-                  {profile.court_side === 'direita' ? 'Lado Direito' : profile.court_side === 'esquerda' ? 'Lado Esquerdo' : 'Lado Versátil'}
-                </span>
-              )}
+    <Page>
+      <PageContent className="max-w-6xl space-y-5">
+        <PageHeader
+          eyebrow="Carreira"
+          title={profile?.sport_name || 'Meu atleta'}
+          description={`${profile?.city || 'Cidade não definida'}, ${profile?.country || 'País não definido'} · ${calculateAge(profile)} anos`}
+          icon={Zap}
+          tone="brand"
+          breadcrumb={['Carreira', 'Perfil']}
+          stats={<>
+            <StatusBadge tone="brand">Overall {overallRating(profile)}</StatusBadge>
+            <StatusBadge tone="info">Experiência {careerExperience.level}/{careerExperience.maxLevel}</StatusBadge>
+            <StatusBadge tone={isRetired(profile) ? 'neutral' : 'success'}>{isRetired(profile) ? 'Aposentado' : 'Carreira ativa'}</StatusBadge>
+          </>}
+          action={<button onClick={() => editing ? save() : setEditing(true)} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground hover:brightness-110 disabled:opacity-50">{editing ? <><Check className="h-4 w-4" />Salvar perfil</> : <><Edit3 className="h-4 w-4" />Editar perfil</>}</button>}
+        />
+        <Surface variant="elevated">
+          <div className="grid gap-5 lg:grid-cols-[auto,1fr] lg:items-center">
+            <div className="mx-auto h-24 w-24 overflow-hidden rounded-3xl bg-gradient-to-br from-primary/35 to-secondary ring-4 ring-primary/15 lg:mx-0">
+              {profile?.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full w-full items-center justify-center text-4xl font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>}
             </div>
-            <p className="text-sm text-muted-foreground flex items-center justify-center gap-1 mt-1">
-              <MapPin className="h-3 w-3" /> {profile?.city || '—'}, {profile?.country || '—'} · {calculateAge(profile)} anos
-            </p>
-            {profile?.racket && (
-              <p className="text-xs text-muted-foreground flex items-center justify-center gap-1 mt-0.5">
-                <Disc className="h-3 w-3" /> {profile.racket}
-              </p>
-            )}
-          </div>
-          <div className="flex items-center gap-6 pt-2">
-            <div className="text-center">
-              <p className="text-3xl font-black text-primary text-glow tabular-nums">{overallRating(profile)}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Overall</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-black tabular-nums">{profile?.xp || 0}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">XP de carreira</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-black text-amber-400 tabular-nums">{winRate(profile)}%</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Vitórias</p>
-            </div>
-            <div className="text-center">
-              <p className="text-3xl font-black text-yellow-400 tabular-nums flex items-center gap-1 justify-center"><Coins className="h-5 w-5" />{profile?.coins || 0}</p>
-              <p className="text-[10px] text-muted-foreground uppercase tracking-wider">Moedas</p>
+            <div className="min-w-0">
+              <div className="flex flex-wrap items-center gap-2">
+                <LevelBadge level={`Experiência ${careerExperience.level}/${careerExperience.maxLevel}`} size="md" />
+                {profile?.play_style && <StatusBadge tone="premium">{profile.play_style}</StatusBadge>}
+                {profile?.racket && <StatusBadge tone="info">{profile.racket}</StatusBadge>}
+              </div>
+              <p className="mt-3 text-sm leading-relaxed text-muted-foreground">{profile?.bio || 'Construa sua história no circuito e acompanhe aqui a evolução completa do atleta.'}</p>
+              <div className="mt-4"><div className="mb-1.5 flex justify-between text-xs"><span className="font-bold">{careerExperience.title}</span><span className="text-muted-foreground">{careerExperience.isMax ? 'Nível máximo' : `${careerExperience.nextXp.toLocaleString('pt-BR')} XP`}</span></div><PremiumProgressBar value={careerExperience.progress} max={100} tone="brand" /><p className="mt-2 text-[11px] text-muted-foreground">{experienceUnlocks.latest.title}: {experienceUnlocks.latest.description}</p></div>
             </div>
           </div>
-          <div className="w-full max-w-xs">
-            <div className="flex justify-between text-[10px] text-muted-foreground mb-1">
-              <span>{careerExperience.title}</span><span>{careerExperience.isMax ? 'Nível máximo' : `${careerExperience.nextXp.toLocaleString('pt-BR')} XP`}</span>
-            </div>
-            <div className="h-2 rounded-full bg-secondary overflow-hidden">
-              <div className="h-full bg-gradient-to-r from-primary/70 to-primary transition-all duration-700" style={{ width: `${careerExperience.progress}%` }} />
-            </div>
-          </div>
-          <div className="max-w-xl rounded-xl border border-primary/20 bg-primary/5 px-3 py-2 text-center">
-            <p className="text-[10px] font-bold text-primary">{experienceUnlocks.latest.title}</p>
-            <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">{experienceUnlocks.latest.description}</p>
-            {experienceUnlocks.next && <p className="mt-1 text-[9px] text-muted-foreground">Próximo marco: nível {experienceUnlocks.next.level} · {experienceUnlocks.next.title}</p>}
-          </div>
-          <p className="max-w-xl text-[10px] leading-relaxed text-muted-foreground">A Experiência de carreira mede sua trajetória. Sua força em quadra continua sendo definida pelos atributos, pelo Overall, pela forma e pela dupla.</p>
-          <button
-            onClick={() => editing ? save() : setEditing(true)}
-            disabled={saving}
-            className="mt-1 inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors"
-          >
-            {editing ? <><Check className="h-4 w-4" /> Salvar</> : <><Edit3 className="h-4 w-4" /> Editar perfil</>}
-          </button>
-          {editing && (
-            <button onClick={() => { setEditing(false); }} className="text-xs text-muted-foreground hover:text-destructive flex items-center gap-1">
-              <X className="h-3 w-3" /> Cancelar
-            </button>
-          )}
+        </Surface>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <PremiumStatCard label="Overall" value={overallRating(profile)} detail="Força esportiva atual" icon={Sword} tone="brand" />
+          <PremiumStatCard label="XP de carreira" value={(profile?.xp || 0).toLocaleString('pt-BR')} detail={careerExperience.title} icon={Zap} tone="info" />
+          <PremiumStatCard label="Aproveitamento" value={`${winRate(profile)}%`} detail={`${profile?.wins || 0} vitórias`} icon={Trophy} tone="success" />
+          <PremiumStatCard label="Moedas" value={(profile?.coins || 0).toLocaleString('pt-BR')} detail="Saldo disponível" icon={Coins} tone="premium" />
         </div>
-      </div>
-
       {/* Edit form */}
       {editing && (
         <div className="glass rounded-2xl p-5 space-y-3">
@@ -160,13 +121,15 @@ export default function PlayerProfile() {
         </div>
       )}
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-stagger">
-        <StatCard icon={Sword} label="Partidas" value={profile?.matches_played || 0} />
-        <StatCard icon={Trophy} label="Vitórias" value={profile?.wins || 0} accent="text-amber-400" />
-        <StatCard icon={X} label="Derrotas" value={profile?.losses || 0} accent="text-destructive" />
-        <StatCard icon={Trophy} label="Torneios" value={profile?.tournaments_won || 0} accent="text-purple-400" />
-      </div>
+      <Surface>
+        <SurfaceHeader title="Resumo competitivo" description="Resultados acumulados da carreira oficial." icon={Trophy} />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <PremiumStatCard label="Partidas" value={profile?.matches_played || 0} icon={Sword} />
+          <PremiumStatCard label="Vitórias" value={profile?.wins || 0} icon={Trophy} tone="success" />
+          <PremiumStatCard label="Derrotas" value={profile?.losses || 0} icon={X} tone="danger" />
+          <PremiumStatCard label="Títulos" value={profile?.tournaments_won || 0} icon={Trophy} tone="premium" />
+        </div>
+      </Surface>
 
       {/* Play style summary */}
       <PlayStyleSummary profile={profile} />
@@ -197,7 +160,8 @@ export default function PlayerProfile() {
       <div className="flex justify-center pt-2">
         <LogoutButton variant="standalone" />
       </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 }
 

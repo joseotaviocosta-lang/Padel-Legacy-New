@@ -3,8 +3,8 @@ import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ShoppingBag, Coins, Check, Lock, Package, Search, SlidersHorizontal, TrendingUp, TrendingDown, Flame } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
-import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
-import { CoinBadge } from '@/components/padel/GameShared';
+import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, CardGrid, StatCard, Surface, StatusBadge, EmptyState } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import EquippedView from '@/components/shop/EquippedView';
 import ItemDetailModal from '@/components/shop/ItemDetailModal';
@@ -250,13 +250,31 @@ export default function Shop() {
   }
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={ShoppingBag} title="Loja de Equipamentos" subtitle={`${progressionStats.marketAvailable} itens na rotação mensal · ${progressionStats.unlocked} liberados para sua carreira`} accent="amber">
-        <CoinBadge coins={profile?.coins || 0} size="md" />
-        <Link to="/game/inventory" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-          <Package className="h-3.5 w-3.5" /> Inventário
-        </Link>
-      </PageHeader>
+    <Page size="default" className="animate-fade-in">
+      <PageContent>
+        <PageHeader
+          eyebrow="Equipamentos e performance"
+          icon={ShoppingBag}
+          title="Loja de Equipamentos"
+          description="Compare melhorias, acompanhe a rotação mensal e invista apenas no que combina com sua evolução."
+          tone="premium"
+          breadcrumb={['Desenvolvimento', 'Loja']}
+          action={<>
+            <div className="inline-flex items-center gap-2 rounded-xl border border-premium/25 bg-premium/10 px-3 py-2 text-sm font-black text-premium"><Coins className="h-4 w-4" />{Number(profile?.coins || 0).toLocaleString('pt-BR')}</div>
+            <Link to="/game/inventory" className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-secondary/50 px-3 py-2 text-xs font-extrabold text-muted-foreground transition hover:text-foreground"><Package className="h-4 w-4" />Inventário</Link>
+          </>}
+          stats={[
+            <StatusBadge key="rotation" tone="premium">Rotação mensal</StatusBadge>,
+            <StatusBadge key="catalog" tone="info">{items.length} itens no catálogo</StatusBadge>,
+          ]}
+        />
+
+        <CardGrid columns={4}>
+          <StatCard label="Disponíveis agora" value={progressionStats.marketAvailable} detail="rotação atual" icon={ShoppingBag} tone="premium" />
+          <StatCard label="Liberados" value={progressionStats.unlocked} detail="para sua carreira" icon={Check} tone="success" />
+          <StatCard label="Acessíveis" value={progressionStats.affordable} detail="cabem no orçamento" icon={Coins} tone="warning" />
+          <StatCard label="Bloqueados" value={progressionStats.locked} detail="objetivos futuros" icon={Lock} tone="neutral" />
+        </CardGrid>
 
       {/* Live Market Events Banner */}
       {marketEvents.length > 0 && (
@@ -264,7 +282,7 @@ export default function Shop() {
       )}
 
       {/* View toggle */}
-      <div className="flex gap-2">
+      <Surface padding="compact" className="flex gap-2">
         <button
           onClick={() => setView('shop')}
           className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all ${view === 'shop' ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground'}`}
@@ -277,14 +295,14 @@ export default function Shop() {
         >
           <Check className="h-4 w-4 inline mr-1.5" /> Equipados ({equippedItems.length})
         </button>
-      </div>
+      </Surface>
 
       {view === 'equipped' ? (
         <EquippedView equippedItems={equippedItems} items={items} />
       ) : (
         <>
           {/* Search + filters toggle */}
-          <div className="flex gap-2">
+          <Surface padding="compact" className="flex gap-2">
             <div className="flex-1 relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <input
@@ -301,7 +319,7 @@ export default function Shop() {
             >
               <SlidersHorizontal className="h-4 w-4" />
             </button>
-          </div>
+          </Surface>
 
           {/* Category filter */}
           <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none">
@@ -320,7 +338,7 @@ export default function Shop() {
 
           {/* Advanced filters */}
           {showFilters && (
-            <div className="glass rounded-2xl p-4 space-y-3 animate-slide-up">
+            <Surface className="space-y-3 animate-slide-up">
               {/* Rarity */}
               <div>
                 <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1.5">Raridade</p>
@@ -399,7 +417,7 @@ export default function Shop() {
                   ))}
                 </select>
               </div>
-            </div>
+            </Surface>
           )}
 
           {/* Results count */}
@@ -409,7 +427,7 @@ export default function Shop() {
 
           {/* Items grid */}
           {filtered.length === 0 ? (
-            <EmptyStateCard icon={ShoppingBag} message="Nenhum item encontrado com esses filtros." />
+            <EmptyState icon={ShoppingBag} title="Nenhum equipamento encontrado" description="Altere os filtros ou consulte o catálogo completo para encontrar outras opções." />
           ) : (
             <>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 animate-stagger">
@@ -535,6 +553,7 @@ export default function Shop() {
           pricing={priceMap[detailItem.id]}
         />
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

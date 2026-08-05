@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Check, AlertCircle, Users } from 'lucide-react';
-import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, MAX_ENERGY, DAILY_TRAINING_LIMIT } from '@/lib/padel';
+import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { advanceDay } from '@/lib/career';
-import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
+import { SectionCard, EmptyState, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
@@ -14,6 +14,15 @@ import TrainingActivityCard from '@/components/training/TrainingActivityCard';
 import WeeklyPlanner from '@/components/training/WeeklyPlanner';
 import AttributeEvolution from '@/components/training/AttributeEvolution';
 import DevelopmentGoals from '@/components/training/DevelopmentGoals';
+import {
+  Page,
+  PageContent,
+  PageHeader,
+  StatCard as PremiumStatCard,
+  StatusBadge,
+  Surface,
+  SurfaceHeader,
+} from '@/components/design-system';
 
 const TABS = [
   { id: 'treino', label: 'Treino', icon: Dumbbell },
@@ -151,9 +160,9 @@ export default function Training() {
 
   if (!profile) {
     return (
-      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto">
-        <EmptyStateCard icon={Dumbbell} title="Perfil não encontrado" message="Não foi possível carregar seu perfil. Tente recarregar a página." />
-      </div>
+      <Page><PageContent>
+      <EmptyStateCard icon={Dumbbell} title="Perfil não encontrado" message="Não foi possível carregar seu perfil. Tente recarregar a página." />
+    </PageContent></Page>
     );
   }
 
@@ -161,53 +170,30 @@ export default function Training() {
   const conditionScore = getConditionScore(profile);
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-6 grid-bg">
-        <div className="absolute -top-10 -right-10 h-36 w-36 bg-primary/20 rounded-full blur-3xl" />
-        <div className="relative flex items-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-primary/20 flex items-center justify-center shrink-0">
-            <Dumbbell className="h-7 w-7 text-primary" />
-          </div>
-          <div className="flex-1">
-            <h1 className="text-xl md:text-2xl font-black tracking-tight">Centro de Treino</h1>
-            <p className="text-sm text-muted-foreground">Escolha grupo, foco e intensidade. Cada sessão distribui progresso entre atributos relacionados.</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handleAdvanceDay}
-              disabled={advancing}
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary/15 text-primary font-bold text-xs hover:bg-primary/25 transition-colors disabled:opacity-50"
-            >
-              <FastForward className="h-3.5 w-3.5" /> {advancing ? '...' : 'Avançar Dia'}
-            </button>
-            <CoinBadge coins={profile?.coins || 0} size="md" />
-          </div>
+    <Page>
+      <PageContent className="max-w-6xl space-y-5">
+        <PageHeader
+          eyebrow="Desenvolvimento"
+          title="Centro de treino"
+          description="Planeje a semana, execute sessões e acompanhe a evolução com energia, fadiga e limite diário sempre visíveis."
+          icon={Dumbbell}
+          tone="brand"
+          breadcrumb={['Desenvolvimento', 'Treinos']}
+          stats={<>
+            <StatusBadge tone={isInjured(profile) ? 'danger' : overtraining.level === 'none' ? 'success' : 'warning'}>
+              {isInjured(profile) ? `Lesionado · ${injuryRecoveryDays(profile)} dias` : overtraining.label || 'Condição estável'}
+            </StatusBadge>
+            <StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>
+            {coach && <StatusBadge tone="info">Treinador: {coach.name || 'principal'}</StatusBadge>}
+          </>}
+          action={<button onClick={handleAdvanceDay} disabled={advancing} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground hover:brightness-110 disabled:opacity-50"><FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : 'Avançar dia'}</button>}
+        />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <PremiumStatCard label="Treinos hoje" value={`${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`} detail="Sessões principais" icon={Dumbbell} tone="brand" />
+          <PremiumStatCard label="Energia" value={`${profile.energy ?? 100}%`} detail="Disponibilidade imediata" icon={Zap} tone={(profile.energy ?? 100) < 30 ? 'danger' : 'success'} />
+          <PremiumStatCard label="Fadiga" value={`${profile.fatigue ?? 0}%`} detail="Desgaste acumulado" icon={Activity} tone={(profile.fatigue ?? 0) > 65 ? 'danger' : (profile.fatigue ?? 0) > 40 ? 'warning' : 'success'} />
+          <PremiumStatCard label="Condição" value={`${conditionScore}/100`} detail={overtraining.label || 'Pronto para evoluir'} icon={Heart} tone={conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success'} />
         </div>
-        <div className="relative mt-4 grid grid-cols-3 gap-4">
-          <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-muted-foreground">Treinos</span>
-              <span className="font-bold tabular-nums">{profile.trainings_today || 0}/{DAILY_TRAINING_LIMIT}</span>
-            </div>
-            <ProgressBar value={profile.trainings_today || 0} max={DAILY_TRAINING_LIMIT} />
-          </div>
-          <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-muted-foreground">Energia</span>
-              <span className="font-bold tabular-nums">{profile.energy ?? 100}/{MAX_ENERGY}</span>
-            </div>
-            <ProgressBar value={profile.energy ?? 100} max={MAX_ENERGY} />
-          </div>
-          <div>
-            <div className="flex justify-between text-xs mb-1">
-              <span className="text-muted-foreground">Condição</span>
-              <span className={`font-bold ${overtraining.color}`}>{conditionScore}</span>
-            </div>
-            <ProgressBar value={conditionScore} max={100} />
-          </div>
-        </div>
-      </div>
 
       {/* Overtraining alert */}
       {overtraining.level !== 'none' && (
@@ -247,7 +233,8 @@ export default function Training() {
 
 
       {/* Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+      <Surface padding="compact" className="sticky top-2 z-20 bg-background/90 backdrop-blur-xl">
+        <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
         {TABS.map(t => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
@@ -257,7 +244,8 @@ export default function Training() {
             </button>
           );
         })}
-      </div>
+        </div>
+      </Surface>
 
       {/* Tab content */}
       {activeTab === 'treino' && (
@@ -266,10 +254,8 @@ export default function Training() {
           <ConditionPanel profile={profile} />
 
           {/* Recuperação automática e equipe técnica */}
-          <div>
-            <h2 className="font-bold text-sm mb-3 px-1 flex items-center gap-2">
-              <Heart className="h-4 w-4 text-accent" /> Recuperação
-            </h2>
+          <Surface>
+            <SurfaceHeader title="Recuperação e suporte" description="Dias livres recuperam energia automaticamente; a comissão cuida da prevenção no longo prazo." icon={Heart} />
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               <div className="glass rounded-2xl p-4 border border-emerald-500/20">
                 <div className="flex items-start gap-3">
@@ -292,11 +278,11 @@ export default function Training() {
                 <Link to="/staff" className="mt-3 flex w-full items-center justify-center py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors">Gerenciar comissão técnica</Link>
               </div>
             </div>
-          </div>
+          </Surface>
 
           {/* Category filter */}
-          <div>
-            <h2 className="font-bold text-sm mb-3 px-1">Atividades de Treino</h2>
+          <Surface>
+            <SurfaceHeader title="Atividades de treino" description="Escolha uma categoria e compare as sessões disponíveis para o estado atual do atleta." icon={Dumbbell} />
             <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1 mb-4">
               {CATEGORY_ORDER.map(catId => {
                 const cat = TRAINING_CATEGORIES[catId];
@@ -335,7 +321,7 @@ export default function Training() {
                 );
               })}
             </div>
-          </div>
+          </Surface>
         </>
       )}
 
@@ -390,6 +376,7 @@ export default function Training() {
           onCancel={() => setActiveTraining(null)}
         />
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

@@ -3,8 +3,9 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock, AlertTriangle } from 'lucide-react';
 import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
-import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
+import { SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge, Surface } from '@/components/design-system';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
@@ -264,7 +265,15 @@ export default function Missions() {
   const remaining = tab === 'tutorial' ? null : daysRemaining(careerDate, missionPeriodEndsAt(tab, careerDate));
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <Page>
+      <PageContent className="max-w-6xl space-y-5">
+        <PageHeader eyebrow="Carreira" title="Missões e tutorial" description="Aprenda os sistemas em sequência e acompanhe objetivos recorrentes sem perder o próximo passo." icon={Target} tone="premium" breadcrumb={['Carreira', 'Missões']} stats={<><StatusBadge tone={tutorialStatus === 'completed' ? 'success' : 'brand'}>{tutorialStatus === 'completed' ? 'Tutorial concluído' : `Tutorial ${tutorialDone}/${tutorialMissions.length}`}</StatusBadge><StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>{remaining != null && <StatusBadge tone="info">{remaining === 0 ? 'Renova hoje' : `${remaining} dias restantes`}</StatusBadge>}</>} />
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          <PremiumStatCard label="Objetivos" value={summary.total} detail={tab === 'tutorial' ? 'Etapas desta jornada' : 'Ciclo atual'} icon={Target} tone="brand" />
+          <PremiumStatCard label="Finalizados" value={summary.completed} detail="Recompensas processadas" icon={Check} tone="success" />
+          <PremiumStatCard label="Em andamento" value={Math.max(0, summary.total - summary.completed)} detail="Ainda disponíveis" icon={Clock} tone="warning" />
+          <PremiumStatCard label="Recompensa" value="Automática" detail="XP e moedas ao concluir" icon={Award} tone="premium" />
+        </div>
       {loadError && (
         <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100 flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 shrink-0" />
@@ -272,14 +281,6 @@ export default function Missions() {
           <button onClick={load} className="rounded-lg border border-amber-400/40 px-3 py-1.5 font-bold">Tentar novamente</button>
         </div>
       )}
-      <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-6 grid-bg">
-        <div className="relative flex items-center gap-4">
-          <div className="h-14 w-14 rounded-2xl bg-amber-500/20 flex items-center justify-center shrink-0"><Target className="h-7 w-7 text-amber-400" /></div>
-          <div className="flex-1"><h1 className="text-xl md:text-2xl font-black tracking-tight">Missões e Tutorial</h1><p className="text-sm text-muted-foreground">Aprenda o jogo passo a passo e receba recompensas automaticamente</p></div>
-          <CoinBadge coins={profile?.coins || 0} size="md" />
-        </div>
-      </div>
-
       {inlineAction && onboardingStage !== 'completed' && <div id="tutorial-primary-action" className="glass rounded-3xl border border-primary/50 p-5 md:p-7 bg-primary/5 space-y-5">
         {nextTutorial?.objective_type === 'set_player_name' && <form onSubmit={saveAthleteName} className="space-y-4">
           <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Identidade do atleta</p><h2 className="text-2xl font-black mt-2">Como seu atleta será conhecido?</h2><p className="text-muted-foreground mt-2">Este nome aparece em partidas e notícias. O nome do save continua separado.</p></div>
@@ -321,13 +322,7 @@ export default function Missions() {
         </div>
       </div> : !nextTutorial && tutorialStatus === 'completed' ? <div className="glass rounded-2xl border border-primary/40 p-5 flex items-center gap-4"><Award className="h-9 w-9 text-primary" /><div><p className="font-black">Tutorial concluído!</p><p className="text-sm text-muted-foreground">Você conheceu os principais sistemas do Padel Legacy.</p></div></div> : null}
 
-      <div className="grid grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-3"><p className="text-[10px] uppercase text-muted-foreground">Objetivos</p><p className="text-xl font-black">{summary.total}</p></div>
-        <div className="glass rounded-2xl p-3"><p className="text-[10px] uppercase text-muted-foreground">Finalizados</p><p className="text-xl font-black text-primary">{summary.completed}</p></div>
-        <div className="glass rounded-2xl p-3"><p className="text-[10px] uppercase text-muted-foreground">Recompensa</p><p className="text-sm font-black">Automática</p></div>
-      </div>
-
-      <div className="flex gap-2 overflow-x-auto pb-1">{TABS.map(t => <button key={t.key} onClick={() => setTab(t.key)} className={`min-w-[125px] flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm ${tab === t.key ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground hover:text-foreground'}`}><t.icon className="h-4 w-4" />{t.label}</button>)}</div>
+      <Surface padding="compact" className="sticky top-2 z-20 bg-background/90 backdrop-blur-xl"><div className="flex gap-2 overflow-x-auto pb-1">{TABS.map(t => <button key={t.key} onClick={() => setTab(t.key)} className={`min-w-[125px] flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm ${tab === t.key ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground hover:text-foreground'}`}><t.icon className="h-4 w-4" />{t.label}</button>)}</div></Surface>
 
       <div className="glass rounded-xl px-4 py-3 flex items-center gap-3 text-xs text-muted-foreground">
         <RotateCcw className="h-4 w-4 text-primary shrink-0" />
@@ -340,7 +335,7 @@ export default function Missions() {
           const status = missionStatus(pr,{locked:tab==='tutorial'&&!pr?.claimed&&nextTutorial?.id!==m.id}); const done = status === 'rewarded';
           const current = Number(pr?.progress || 0);
           const locked = status === 'locked';
-          return <div key={m.id} className={`glass rounded-2xl p-4 ${done ? 'opacity-60' : ''} ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id ? 'border-primary/40' : ''}`}>
+          return <div key={m.id} className={`pl-surface rounded-2xl border p-4 ${done ? 'opacity-60' : ''} ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id ? 'border-primary/40' : ''}`}>
             <div className="flex items-start gap-3">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${done ? 'bg-primary/20' : locked ? 'bg-secondary/60' : 'bg-amber-500/15'}`}>{done ? <Check className="h-5 w-5 text-primary" /> : locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Target className="h-5 w-5 text-amber-400" />}</div>
               <div className="flex-1 min-w-0">
@@ -355,6 +350,7 @@ export default function Missions() {
           </div>;
         })}
       </div>}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

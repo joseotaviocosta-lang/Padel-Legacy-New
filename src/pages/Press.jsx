@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import { CardGrid, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
@@ -178,17 +179,24 @@ export default function Press() {
   const unreadCount = articles.filter(a => !a.is_read).length;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Newspaper} title="Imprensa Esportiva" subtitle="Entrevistas, coletivas, rumores e repercussões — suas respostas moldam sua reputação" accent="primary" />
+    <Page size="default">
+      <PageContent>
+      <PageHeader
+        eyebrow="Relacionamento com a mídia"
+        title="Imprensa Esportiva"
+        description="Entrevistas, coletivas, rumores e repercussões. Suas respostas moldam reputação, fãs e patrocinadores."
+        icon={Newspaper}
+        tone="brand"
+        breadcrumb={['Mundo', 'Imprensa']}
+      />
 
-      {/* Reputation Summary */}
-      <div className="grid grid-cols-3 gap-3">
-        <RepCard icon={Star} label="Apego dos Fãs" value={fanAppeal} color="text-primary" />
-        <RepCard icon={TrendingUp} label="Apego Patrocinadores" value={sponsorAppeal} color="text-yellow-400" />
-        <RepCard icon={Sparkles} label="Moral" value={morale} color="text-purple-400" />
-      </div>
+      <CardGrid columns={3}>
+        <StatCard label="Apego dos fãs" value={fanAppeal} detail="Popularidade com o público" icon={Star} tone="brand" />
+        <StatCard label="Patrocinadores" value={sponsorAppeal} detail="Atratividade comercial" icon={TrendingUp} tone="premium" />
+        <StatCard label="Moral" value={morale} detail="Momento emocional" icon={Sparkles} tone="info" />
+      </CardGrid>
 
-      {/* Tabs */}
+      <Surface padding="compact">
       <div className="flex gap-2">
         {[
           { id: 'feed', label: 'Feed', icon: Newspaper, badge: unreadCount },
@@ -212,6 +220,7 @@ export default function Press() {
           );
         })}
       </div>
+      </Surface>
 
       {/* Feed Tab */}
       {activeTab === 'feed' && (
@@ -363,16 +372,7 @@ export default function Press() {
           </div>
         </div>
       )}
-    </div>
-  );
-}
-
-function RepCard({ icon: Icon, label, value, color }) {
-  return (
-    <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1">
-      <Icon className={`h-4 w-4 ${color}`} />
-      <span className="text-xl font-black tabular-nums">{value}</span>
-      <span className="text-[9px] text-muted-foreground uppercase tracking-wide text-center leading-tight">{label}</span>
-    </div>
+      </PageContent>
+    </Page>
   );
 }

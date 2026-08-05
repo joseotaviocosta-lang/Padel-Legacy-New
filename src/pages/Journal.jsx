@@ -1,16 +1,30 @@
 import React, { useEffect, useState } from 'react';
-import { Newspaper, Trophy, Swords, TrendingUp, Crown, Calendar, Globe } from 'lucide-react';
+import { Calendar, Crown, Globe, Newspaper, Swords, TrendingUp, Trophy } from 'lucide-react';
 import { generateJournal } from '@/lib/journal';
 import { LoadingScreen, TabBar } from '@/components/padel/ui';
 import { ensureMyProfile } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 import WorldFeed from '@/components/world/WorldFeed';
+import {
+  CardGrid,
+  EmptyState,
+  Page,
+  PageContent,
+  PageHeader,
+  StatCard,
+  StatusBadge,
+  Surface,
+  SurfaceHeader,
+} from '@/components/design-system';
 
 const MONTHS = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
-const TIER_BADGE = {
-  Silver:'bg-slate-500/15 text-slate-300', Gold:'bg-yellow-500/15 text-yellow-300',
-  Platinum:'bg-cyan-500/15 text-cyan-300', Masters:'bg-purple-500/15 text-purple-300',
-  Elite:'bg-fuchsia-500/15 text-fuchsia-300', Crown:'bg-amber-500/15 text-amber-300',
+const TIER_TONE = {
+  Silver: 'neutral',
+  Gold: 'premium',
+  Platinum: 'info',
+  Masters: 'brand',
+  Elite: 'premium',
+  Crown: 'premium',
 };
 
 export default function Journal() {
@@ -23,140 +37,143 @@ export default function Journal() {
     (async () => {
       try {
         const user = await localGame.auth.me();
-        const p = await ensureMyProfile(user);
-        setProfile(p);
-      } catch {}
-      const j = await generateJournal();
-      setJournal(j);
+        const currentProfile = await ensureMyProfile(user);
+        setProfile(currentProfile);
+      } catch {
+        // O jornal mundial pode ser exibido mesmo sem perfil carregado.
+      }
+      const nextJournal = await generateJournal();
+      setJournal(nextJournal);
       setLoading(false);
     })();
   }, []);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  if (loading) return <LoadingScreen />;
 
-  const TABS = [
+  const tabs = [
     { key: 'jornal', label: 'Jornal', icon: Newspaper },
     { key: 'mundo', label: 'Mundo', icon: Globe },
   ];
 
-  if (!journal?.hasContent) {
-    return (
-      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto">
-        <div className="glass rounded-2xl p-10 text-center">
-          <Newspaper className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">Ainda não há notícias do circuito.</p>
-          <p className="text-xs text-muted-foreground mt-1">Jogue algumas partidas para ver o jornal em ação!</p>
-        </div>
-      </div>
-    );
-  }
+  const championCount = journal?.champions?.length || 0;
+  const rivalryCount = journal?.rivalries?.length || 0;
+  const resultCount = journal?.recentResults?.length || 0;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <TabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} variant="buttons" />
+    <Page size="default">
+      <PageContent>
+        <PageHeader
+          eyebrow="Cobertura oficial"
+          title="Jornal do Circuito"
+          description={journal?.summary || 'Resultados, campeões, rivalidades e histórias do mundo profissional do padel.'}
+          icon={Newspaper}
+          tone="brand"
+          breadcrumb={['Mundo', 'Notícias']}
+          stats={journal?.hasContent ? [
+            <StatusBadge key="champions" tone="premium" icon={Crown}>{championCount} campeões</StatusBadge>,
+            <StatusBadge key="results" tone="info" icon={Calendar}>{resultCount} resultados</StatusBadge>,
+          ] : undefined}
+        />
 
-      {activeTab === 'mundo' && <WorldFeed profile={profile} />}
+        <CardGrid columns={3}>
+          <StatCard label="Campeões recentes" value={championCount} detail="Títulos registrados" icon={Trophy} tone="premium" />
+          <StatCard label="Rivalidades" value={rivalryCount} detail="Confrontos em destaque" icon={Swords} tone="danger" />
+          <StatCard label="Resultados" value={resultCount} detail="Últimas partidas do circuito" icon={Calendar} tone="info" />
+        </CardGrid>
 
-      {activeTab === 'jornal' && (
-      <>
-      {/* Newspaper header */}
-      <div className="glass rounded-2xl p-6 grid-bg relative overflow-hidden">
-        <div className="absolute -top-12 -right-12 h-40 w-40 bg-primary/15 rounded-full blur-3xl" />
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-2">
-            <Newspaper className="h-6 w-6 text-primary" />
-            <span className="text-[10px] uppercase tracking-[0.3em] text-primary font-bold">Jornal do Circuito</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight leading-tight">{journal.headline}</h1>
-          {journal.summary && <p className="text-sm text-muted-foreground mt-2 leading-relaxed">{journal.summary}</p>}
-        </div>
-      </div>
+        <Surface padding="compact">
+          <TabBar tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} variant="buttons" />
+        </Surface>
 
-      <div className="grid md:grid-cols-2 gap-5">
-        {/* Champions */}
-        {journal.champions.length > 0 && (
-          <div className="glass rounded-2xl p-5">
-            <h2 className="font-bold text-sm mb-3 flex items-center gap-2"><Crown className="h-4 w-4 text-amber-400" /> Campeões Recentes</h2>
-            <div className="space-y-2">
-              {journal.champions.slice(0, 6).map((c, i) => (
-                <div key={i} className="flex items-center gap-3 py-1.5 border-b border-border/40 last:border-0">
-                  <Trophy className="h-4 w-4 text-amber-400 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate">{c.team}</p>
-                    <p className="text-[10px] text-muted-foreground truncate">
-                      {c.month ? `${MONTHS[c.month - 1]} · ` : ''}{c.tournament}
-                    </p>
-                  </div>
-                  {c.tier && (
-                    <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded shrink-0 ${TIER_BADGE[c.tier] || TIER_BADGE.Silver}`}>
-                      {c.tier}
-                    </span>
-                  )}
-                </div>
-              ))}
-            </div>
-          </div>
+        {activeTab === 'mundo' && <WorldFeed profile={profile} />}
+
+        {activeTab === 'jornal' && !journal?.hasContent && (
+          <EmptyState
+            icon={Newspaper}
+            title="Ainda não há notícias do circuito"
+            description="Avance o calendário e dispute partidas para que o jornal acompanhe a evolução do mundo."
+          />
         )}
 
-        {/* Top Teams */}
-        {journal.topTeams.length > 0 && (
-          <div className="glass rounded-2xl p-5">
-            <h2 className="font-bold text-sm mb-3 flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Top Duplas</h2>
-            <div className="space-y-2">
-              {journal.topTeams.map((t, i) => (
-                <div key={i} className="flex items-center gap-3 py-1.5 border-b border-border/40 last:border-0">
-                  <div className={`text-lg font-black w-5 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold truncate">{t.team}</p>
-                    <p className="text-[10px] text-muted-foreground">{t.titles} título(s)</p>
-                  </div>
-                  <span className="text-sm font-black text-primary tabular-nums">{t.points}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+        {activeTab === 'jornal' && journal?.hasContent && (
+          <>
+            <Surface variant="premium" padding="spacious">
+              <SurfaceHeader title={journal.headline} description="A principal manchete do circuito neste momento." icon={Newspaper} />
+              {journal.summary && <p className="text-sm leading-relaxed text-muted-foreground">{journal.summary}</p>}
+            </Surface>
 
-        {/* Rivalries */}
-        {journal.rivalries.length > 0 && (
-          <div className="glass rounded-2xl p-5">
-            <h2 className="font-bold text-sm mb-3 flex items-center gap-2"><Swords className="h-4 w-4 text-red-400" /> Rivalidades</h2>
-            <div className="space-y-3">
-              {journal.rivalries.slice(0, 3).map((r, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs">
-                  <span className="font-bold truncate flex-1 text-right">{r.teamA}</span>
-                  <span className="text-[10px] font-bold text-muted-foreground bg-secondary px-2 py-0.5 rounded shrink-0">{r.count}x</span>
-                  <span className="font-bold truncate flex-1">{r.teamB}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
+            <div className="grid gap-4 lg:grid-cols-2">
+              {journal.champions.length > 0 && (
+                <Surface>
+                  <SurfaceHeader title="Campeões recentes" description="Últimos vencedores do circuito." icon={Crown} />
+                  <div className="space-y-2">
+                    {journal.champions.slice(0, 6).map((champion, index) => (
+                      <div key={`${champion.team}-${champion.tournament}-${index}`} className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/25 px-3 py-2.5">
+                        <Trophy className="h-4 w-4 shrink-0 text-amber-400" />
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold">{champion.team}</p>
+                          <p className="truncate text-[10px] text-muted-foreground">
+                            {champion.month ? `${MONTHS[champion.month - 1]} · ` : ''}{champion.tournament}
+                          </p>
+                        </div>
+                        {champion.tier && <StatusBadge tone={TIER_TONE[champion.tier] || 'neutral'}>{champion.tier}</StatusBadge>}
+                      </div>
+                    ))}
+                  </div>
+                </Surface>
+              )}
 
-        {/* Recent Results */}
-        {journal.recentResults.length > 0 && (
-          <div className="glass rounded-2xl p-5">
-            <h2 className="font-bold text-sm mb-3 flex items-center gap-2"><Calendar className="h-4 w-4 text-cyan-400" /> Resultados Recentes</h2>
-            <div className="space-y-2">
-              {journal.recentResults.slice(0, 5).map((r, i) => (
-                <div key={i} className="flex items-center gap-2 text-xs py-1.5 border-b border-border/40 last:border-0">
-                  <div className="flex-1 min-w-0 text-right">
-                    <p className={`font-bold truncate ${r.winner === r.teamA ? 'text-primary' : 'text-muted-foreground'}`}>{r.teamA}</p>
+              {journal.topTeams.length > 0 && (
+                <Surface>
+                  <SurfaceHeader title="Top duplas" description="Equipes com maior destaque na temporada." icon={TrendingUp} />
+                  <div className="space-y-2">
+                    {journal.topTeams.map((team, index) => (
+                      <div key={`${team.team}-${index}`} className="flex items-center gap-3 rounded-xl border border-border/50 bg-secondary/25 px-3 py-2.5">
+                        <span className={`w-7 text-center text-lg font-black ${index === 0 ? 'text-amber-400' : 'text-muted-foreground'}`}>#{index + 1}</span>
+                        <div className="min-w-0 flex-1">
+                          <p className="truncate text-sm font-bold">{team.team}</p>
+                          <p className="text-[10px] text-muted-foreground">{team.titles} título(s)</p>
+                        </div>
+                        <span className="text-sm font-black tabular-nums text-primary">{team.points}</span>
+                      </div>
+                    ))}
                   </div>
-                  <span className="text-[10px] font-black bg-secondary px-2 py-0.5 rounded tabular-nums shrink-0">{r.scoreA}-{r.scoreB}</span>
-                  <div className="flex-1 min-w-0">
-                    <p className={`font-bold truncate ${r.winner === r.teamB ? 'text-primary' : 'text-muted-foreground'}`}>{r.teamB}</p>
+                </Surface>
+              )}
+
+              {journal.rivalries.length > 0 && (
+                <Surface>
+                  <SurfaceHeader title="Rivalidades" description="Confrontos que estão marcando o circuito." icon={Swords} />
+                  <div className="space-y-3">
+                    {journal.rivalries.slice(0, 4).map((rivalry, index) => (
+                      <div key={`${rivalry.teamA}-${rivalry.teamB}-${index}`} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl border border-border/50 bg-secondary/25 px-3 py-3 text-xs">
+                        <span className="truncate text-right font-bold">{rivalry.teamA}</span>
+                        <StatusBadge tone="danger">{rivalry.count}x</StatusBadge>
+                        <span className="truncate font-bold">{rivalry.teamB}</span>
+                      </div>
+                    ))}
                   </div>
-                </div>
-              ))}
+                </Surface>
+              )}
+
+              {journal.recentResults.length > 0 && (
+                <Surface>
+                  <SurfaceHeader title="Resultados recentes" description="Placar das últimas partidas relevantes." icon={Calendar} />
+                  <div className="space-y-2">
+                    {journal.recentResults.slice(0, 6).map((result, index) => (
+                      <div key={`${result.teamA}-${result.teamB}-${index}`} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl border border-border/50 bg-secondary/25 px-3 py-2.5 text-xs">
+                        <span className={`truncate text-right font-bold ${result.winner === result.teamA ? 'text-primary' : 'text-muted-foreground'}`}>{result.teamA}</span>
+                        <span className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-black tabular-nums">{result.scoreA}-{result.scoreB}</span>
+                        <span className={`truncate font-bold ${result.winner === result.teamB ? 'text-primary' : 'text-muted-foreground'}`}>{result.teamB}</span>
+                      </div>
+                    ))}
+                  </div>
+                </Surface>
+              )}
             </div>
-          </div>
+          </>
         )}
-      </div>
-      </>
-      )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

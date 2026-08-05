@@ -13,6 +13,7 @@ import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
 import { useToast } from '@/components/ui/use-toast';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
+import { Surface, StatusBadge, ProgressBar } from '@/components/design-system';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
@@ -120,15 +121,22 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   }
 
   const playerOvr = overallRating(profile);
+  const readiness = Math.max(0, Math.min(100, Math.round(((Number(profile?.energy) || 0) * 0.7) + ((100 - (Number(profile?.fatigue) || 0)) * 0.3))));
+  const phaseLabel = phase === 'config' ? 'Preparação' : phase === 'live' ? 'Ao vivo' : 'Resumo';
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/65 backdrop-blur-sm md:items-center md:p-3" onClick={onClose}>
-      <div className={`glass flex w-full max-w-xl flex-col overflow-hidden rounded-t-2xl md:rounded-2xl ${phase === 'live' ? 'h-[100dvh] max-h-[100dvh] md:h-[min(46rem,92dvh)] md:max-h-[92dvh]' : 'max-h-[94dvh]'}`} onClick={(e) => e.stopPropagation()}>
-        <div className="flex shrink-0 items-center justify-between border-b border-border/40 px-4 py-3">
-          <h2 className="flex items-center gap-2 text-sm font-black">
-            <Cpu className="h-5 w-5 text-primary" /> Partida Treino
-          </h2>
-          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Fechar partida">
+      <div className={`pl-surface-elevated flex w-full max-w-xl flex-col overflow-hidden rounded-t-2xl border border-border/60 bg-background/95 shadow-2xl md:rounded-2xl ${phase === 'live' ? 'h-[100dvh] max-h-[100dvh] md:h-[min(46rem,92dvh)] md:max-h-[92dvh]' : 'max-h-[94dvh]'}`} onClick={(e) => e.stopPropagation()}>
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/40 px-3 py-2.5 sm:px-4">
+          <div className="flex min-w-0 items-center gap-2.5">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Cpu className="h-4.5 w-4.5" /></span>
+            <div className="min-w-0">
+              <h2 className="truncate text-sm font-black">Partida treino</h2>
+              <p className="truncate text-[10px] text-muted-foreground">Simulação narrada · melhor de 3 sets</p>
+            </div>
+            <StatusBadge tone={phase === 'live' ? 'danger' : phase === 'result' ? 'success' : 'info'}>{phaseLabel}</StatusBadge>
+          </div>
+          <button onClick={onClose} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-secondary hover:text-foreground" aria-label="Fechar partida">
             <X className="h-5 w-5" />
           </button>
         </div>
@@ -137,27 +145,30 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         {/* Config */}
         {phase === 'config' && (
           <div className="space-y-4">
-            <div className="glass rounded-xl p-3 flex items-center gap-3">
-              <div className="h-11 w-11 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
-                <span className="font-black text-primary text-lg">{(profile?.sport_name || '?')[0]?.toUpperCase()}</span>
+            <Surface variant="premium" padding="compact">
+              <div className="flex items-center gap-3">
+                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-lg font-black text-primary">{(profile?.sport_name || '?')[0]?.toUpperCase()}</div>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-extrabold">{profile?.sport_name || 'Você'}</p>
+                  <p className="text-[10px] text-muted-foreground">Prontidão para competir</p>
+                  <ProgressBar value={readiness} tone={readiness < 45 ? 'danger' : readiness < 70 ? 'warning' : 'success'} className="mt-2" />
+                </div>
+                <div className="text-right">
+                  <p className="text-[9px] font-bold uppercase tracking-wider text-muted-foreground">Overall</p>
+                  <p className="text-2xl font-black text-primary tabular-nums">{playerOvr}</p>
+                </div>
               </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{profile?.sport_name || 'Você'}</p>
-                <p className="text-[10px] text-muted-foreground">Seu overall</p>
-              </div>
-              <div className="text-right">
-                <p className="text-2xl font-black text-primary tabular-nums">{playerOvr}</p>
-              </div>
-            </div>
+            </Surface>
 
-            <p className="text-xs text-muted-foreground">Melhor de 3 sets. Sets até 6 jogos. Em 6-6, tiebreak até 7. 3º set: super tiebreak até 10!</p>
-
-            <div className="glass rounded-xl p-3 flex items-center gap-3 border border-primary/20">
-              <Scale className="h-4 w-4 text-primary shrink-0" />
-              <p className="text-xs text-muted-foreground flex-1">
-                Bots equilibrados ao seu nível (<span className="text-primary font-semibold">{profile?.level || 'Iniciante'}</span>)
-              </p>
-            </div>
+            <Surface variant="subtle" padding="compact">
+              <div className="flex items-start gap-3">
+                <Scale className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+                <div>
+                  <p className="text-xs font-bold">Adversários equilibrados</p>
+                  <p className="mt-0.5 text-[10px] leading-relaxed text-muted-foreground">Bots ajustados ao estágio <span className="font-semibold text-foreground">{profile?.level || 'Iniciante'}</span>. Sets até 6 jogos, tie-break em 6–6 e super tie-break no set decisivo.</p>
+                </div>
+              </div>
+            </Surface>
 
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 flex items-center gap-1">
@@ -182,7 +193,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
               <p className="text-[10px] text-muted-foreground mt-2">{MATCH_TACTICS.find(t => t.id === initialTacticId)?.desc}. Você pode mudar a tática durante o jogo!</p>
             </div>
 
-            <div className="glass rounded-xl p-3 space-y-2"><div className="flex items-center justify-between gap-3"><div><p className="text-xs font-bold">Treinador ao vivo</p><p className="text-[10px] text-muted-foreground">{coach?`${coach.name} · ${coach.specialty}`:'Sem treinador: apenas métricas básicas'}</p></div><button aria-pressed={liveCoachSettings.liveCoachEnabled} onClick={()=>changeLiveCoachSettings({liveCoachEnabled:!liveCoachSettings.liveCoachEnabled})} className={`rounded-full px-3 py-1 text-[10px] font-bold ${liveCoachSettings.liveCoachEnabled?'bg-primary text-primary-foreground':'bg-secondary'}`}>{liveCoachSettings.liveCoachEnabled?'Ativo':'Desativado'}</button></div><select aria-label="Frequência das sugestões" value={liveCoachSettings.suggestionFrequency} onChange={event=>changeLiveCoachSettings({suggestionFrequency:event.target.value})} className="w-full rounded-lg bg-secondary/60 px-2 py-2 text-xs"><option value="minimal">Mínima</option><option value="normal">Normal</option><option value="frequent">Frequente</option><option value="sets_only">Apenas entre sets</option><option value="disabled">Desativada</option></select><label className="flex items-center gap-2 text-[10px] text-muted-foreground"><input type="checkbox" checked={liveCoachSettings.allowMinorAutoAdjustments} onChange={event=>changeLiveCoachSettings({allowMinorAutoAdjustments:event.target.checked})}/>Permitir somente ajustes automáticos leves</label></div>
+            <Surface variant="elevated" padding="compact" className="space-y-2"><div className="flex items-center justify-between gap-3"><div><p className="text-xs font-bold">Treinador ao vivo</p><p className="text-[10px] text-muted-foreground">{coach?`${coach.name} · ${coach.specialty}`:'Sem treinador: apenas métricas básicas'}</p></div><button aria-pressed={liveCoachSettings.liveCoachEnabled} onClick={()=>changeLiveCoachSettings({liveCoachEnabled:!liveCoachSettings.liveCoachEnabled})} className={`rounded-full px-3 py-1 text-[10px] font-bold ${liveCoachSettings.liveCoachEnabled?'bg-primary text-primary-foreground':'bg-secondary'}`}>{liveCoachSettings.liveCoachEnabled?'Ativo':'Desativado'}</button></div><select aria-label="Frequência das sugestões" value={liveCoachSettings.suggestionFrequency} onChange={event=>changeLiveCoachSettings({suggestionFrequency:event.target.value})} className="w-full rounded-lg bg-secondary/60 px-2 py-2 text-xs"><option value="minimal">Mínima</option><option value="normal">Normal</option><option value="frequent">Frequente</option><option value="sets_only">Apenas entre sets</option><option value="disabled">Desativada</option></select><label className="flex items-center gap-2 text-[10px] text-muted-foreground"><input type="checkbox" checked={liveCoachSettings.allowMinorAutoAdjustments} onChange={event=>changeLiveCoachSettings({allowMinorAutoAdjustments:event.target.checked})}/>Permitir somente ajustes automáticos leves</label></Surface>
 
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Modo da partida</p>
@@ -191,7 +202,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
             <button
               onClick={startMatch}
-              className="w-full py-3 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors shadow-[0_0_20px_rgba(34,197,94,0.3)] flex items-center justify-center gap-2"
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg transition hover:brightness-110"
             >
               <Play className="h-4 w-4" /> Iniciar Partida
             </button>
