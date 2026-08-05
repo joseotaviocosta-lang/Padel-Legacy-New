@@ -43,7 +43,8 @@
     "test:match-playback": "node scripts/test-match-playback-tactics.mjs",
     "test:vite-config": "node scripts/test-vite-config.mjs",
     "test:live-coach": "node scripts/test-live-coach.mjs",
-    "test:beta": "node scripts/test-beta-readiness.mjs"
+    "test:beta": "node scripts/test-beta-readiness.mjs",
+    "test:tutorial-engine": "node scripts/test-tutorial-engine-v2.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

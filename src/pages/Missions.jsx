@@ -9,6 +9,7 @@ import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
+import { completeTutorialStep, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
 import { TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
 import { deterministicMissionSelection, missionStatus, requirementsMet } from '@/missions/missionSystem.js';
@@ -210,55 +211,37 @@ export default function Missions() {
   }
 
   async function confirmUnderstanding() {
-    if (!nextTutorial?.id || !nextTutorial?.objective_type || savingChoice || !profile?.id) return;
+    if (!tutorialStep?.id || savingChoice || !profile?.id) return;
 
     setSavingChoice(true);
     setActionError('');
     setActionFeedback('Confirmando etapa...');
 
     try {
-      // Confirma exatamente a missão exibida. Filtrar somente pelo objective_type
-      // podia atingir uma missão antiga/duplicada do catálogo e deixar a etapa atual parada.
-      await incrementMissionProgress(
-        profile.id,
-        nextTutorial.objective_type,
-        1,
-        profile.career_date,
-        {
-          missionId: nextTutorial.id,
-          onlyMissionTypes: ['tutorial'],
-          triggerEventId: `confirm:${profile.id}:${nextTutorial.id}`,
-          allowDuringHydration: true,
-          throwOnError: true,
-        },
-      );
-
-      // Confirma no armazenamento antes de atualizar a interface. Assim, um erro
-      // silencioso nunca deixa o botão parecendo funcionar sem avançar o tutorial.
-      const rows = await localGame.entities.MissionProgress.filter({
-        profile_id: profile.id,
-        mission_id: nextTutorial.id,
+      const result = await completeTutorialStep({
+        profile,
+        stepId: tutorialStep.id,
+        triggerSource: 'mission-center',
       });
-      const confirmed = rows.some(row => row.claimed || row.reward_delivered || row.completed);
-      if (!confirmed) throw new Error('A etapa não foi registrada. Tente novamente.');
-
-      setActionFeedback('Etapa concluída. Carregando o próximo passo...');
+      setProfile(result.profile);
+      setProgress(Object.fromEntries((result.progressRows || []).map(row => [row.mission_id, row])));
+      setActionFeedback('Etapa concluída. O próximo passo já está disponível.');
+      window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: tutorialStep.id } }));
       await load();
     } catch (error) {
       console.error('[tutorial] Falha ao confirmar entendimento.', {
-        missionId: nextTutorial.id,
-        objectiveType: nextTutorial.objective_type,
+        stepId: tutorialStep.id,
         error,
       });
       setActionFeedback('');
-      setActionError(error.message || 'Não foi possível confirmar esta etapa. Tente novamente.');
+      setActionError(error?.message || 'Não foi possível confirmar esta etapa. Tente novamente.');
     } finally {
       setSavingChoice(false);
     }
   }
 
-  const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial').sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
-  const nextTutorial = tutorialStatus === 'in_progress' ? tutorialMissions.find(m => m.objective_type === tutorialStep?.objectiveType) : null;
+  const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial' && m.is_active !== false).sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
+  const nextTutorial = tutorialStatus === 'in_progress' ? resolveTutorialMission(tutorialStep, tutorialMissions) : null;
   const tutorialDone = getTutorialProgress(profile?.tutorial_onboarding).completed;
   const inlineAction = ['set_player_name', 'choose_court_side', 'choose_play_style'].includes(nextTutorial?.objective_type);
   const currentStepIndex = TUTORIAL_STEPS.findIndex(step => step.id === tutorialStep?.id);

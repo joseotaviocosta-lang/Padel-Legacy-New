@@ -1,4 +1,4 @@
-export const TUTORIAL_VERSION = 5;
+export const TUTORIAL_VERSION = 6;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,

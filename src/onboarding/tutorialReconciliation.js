@@ -8,7 +8,10 @@ export async function reconcilePersistedTutorial(profile, facts = {}, missions =
   if (!profile?.id) return { profile, state: null, progressRows, changed: false, autoCompletedStepIds: [] };
   const previous = profile.tutorial_onboarding || {};
   const missionById = new Map(missions.map(mission => [mission.id, mission]));
-  const completedObjectiveTypes = progressRows.filter(row => row.claimed || row.completed).map(row => missionById.get(row.mission_id)?.objective_type).filter(Boolean);
+  const completedObjectiveTypes = progressRows
+    .filter(row => row.claimed || row.completed || row.reward_delivered)
+    .map(row => missionById.get(row.mission_id)?.objective_type)
+    .filter(Boolean);
   const state = reconcileTutorialProgress(profile, previous, { ...facts, completedObjectiveTypes });
   const previousCompleted = new Set(previous.completedStepIds || previous.completedSteps || []);
   const autoCompletedStepIds = state.completedStepIds.filter(id => !previousCompleted.has(id));
@@ -26,7 +29,11 @@ export async function reconcilePersistedTutorial(profile, facts = {}, missions =
   // recompensa nem emite notificações durante a hidratação.
   for (const step of TUTORIAL_STEPS) {
     if (!state.completedStepIds.includes(step.id) || !step.objectiveType) continue;
-    const mission = missions.find(item => item.objective_type === step.objectiveType);
+    const expectedKey = `tutorial-${step.id}`;
+    const expectedOrder = TUTORIAL_STEPS.findIndex(item => item.id === step.id) + 1;
+    const mission = missions.find(item => item.mission_type === 'tutorial' && item.is_active !== false && item.catalog_key === expectedKey)
+      || missions.find(item => item.mission_type === 'tutorial' && item.is_active !== false && item.objective_type === step.objectiveType && Number(item.tutorial_order || 0) === expectedOrder)
+      || missions.find(item => item.mission_type === 'tutorial' && item.is_active !== false && item.objective_type === step.objectiveType);
     const row = mission && progressRows.find(item => item.mission_id === mission.id);
     if (mission && !row?.claimed) {
       const timestamp = new Date().toISOString();
