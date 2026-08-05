@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { LoadingScreen, PageHeader } from '@/components/padel/ui';
-import { Users } from 'lucide-react';
+import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, StatCard, StatusBadge } from '@/components/design-system';
+import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { hireStaff, fireStaff, renewStaffContract } from '@/lib/economy';
@@ -56,14 +57,28 @@ export default function Staff() {
   if (loading) return <LoadingScreen />;
   if (!profile) return <div className="p-6 text-center text-muted-foreground">Crie seu perfil primeiro.</div>;
 
+  const activeStaff = staff.filter((member) => member.status !== 'encerrado' && member.contract_status !== 'expired');
+  const monthlyPayroll = activeStaff.reduce((sum, member) => sum + (Number(member.monthly_salary ?? member.salary) || 0), 0);
+  const maxSlots = Number(profile.staff_slots ?? profile.max_staff_slots ?? 2);
+  const synergy = Number(profile.staff_synergy ?? profile.team_synergy ?? 0);
+
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <Page size="wide" className="animate-fade-in">
+      <PageContent>
       <PageHeader
+        eyebrow="Equipe técnica"
         icon={Users}
         title="Comissão técnica"
-        subtitle="O treinador principal lidera a equipe, enquanto os especialistas ocupam vagas próprias de apoio."
-        accent="primary"
+        description="Especialistas de apoio que trabalham sob liderança do treinador principal. O treinador não consome vaga da comissão."
+        tone="brand"
+        stats={<><StatusBadge tone="success">Treinador separado</StatusBadge><StatusBadge tone="info">{activeStaff.length}/{maxSlots} vagas</StatusBadge></>}
       />
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Profissionais" value={`${activeStaff.length}/${maxSlots}`} detail="vagas de apoio" icon={BriefcaseBusiness} tone="brand" />
+        <StatCard label="Folha mensal" value={monthlyPayroll.toLocaleString('pt-BR')} detail="sem contar o treinador" icon={Wallet} tone="premium" />
+        <StatCard label="Sinergia" value={`${synergy}%`} detail="integração da equipe" icon={Sparkles} tone={synergy >= 70 ? 'success' : 'info'} />
+        <StatCard label="Liderança" value={profile.coach_name || 'Treinador'} detail="comando técnico" icon={UserRoundCog} tone="info" />
+      </div>
       <StaffPanel
         profile={profile}
         staff={staff}
@@ -85,6 +100,7 @@ export default function Staff() {
         }, `${facility.name} melhorada!`)}
         busy={busy}
       />
-    </div>
+      </PageContent>
+    </Page>
   );
 }

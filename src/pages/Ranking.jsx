@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays } from 'lucide-react';
+import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays, Medal, Activity } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
-import { LoadingScreen, PageHeader, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
+import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 
 const LIST_PAGE_SIZE = 50;
@@ -216,7 +217,21 @@ export default function Ranking() {
 
   return (
     <PageContainer>
-      <PageHeader icon={Trophy} title="Ranking" subtitle="Os melhores do circuito mundial" accent="amber" />
+      <PageHeader
+        eyebrow="Circuito mundial"
+        icon={Trophy}
+        title="Ranking"
+        description="Acompanhe posições, pontos, tendências e a corrida da temporada em um painel único."
+        tone="premium"
+        stats={<><StatusBadge tone="premium">{circuitAthletes.length} atletas</StatusBadge><StatusBadge tone="info">{teams.length} duplas</StatusBadge></>}
+      />
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Líder mundial" value={circuitAthletes[0]?.name || '—'} detail={`${Number(circuitAthletes[0]?.world_ranking_points ?? circuitAthletes[0]?.ranking_points) || 0} pontos`} icon={Crown} tone="premium" />
+        <StatCard label="Líder da Race" value={raceAthletes[0]?.name || '—'} detail={`${Number(raceAthletes[0]?.race_points) || 0} pontos`} icon={Activity} tone="info" />
+        <StatCard label="Melhor dupla" value={teams[0] ? `${teams[0].player1_name} & ${teams[0].player2_name}` : '—'} detail={`${Number(teams[0]?.ranking_points) || 0} pontos`} icon={Users} tone="brand" />
+        <StatCard label="Circuito" value={`${countries.length} países`} detail={`${clubs.length} clubes ativos`} icon={Medal} tone="success" />
+      </div>
 
       <TabBar tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" />
 

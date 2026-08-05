@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Search, Users, UserCheck, Info } from 'lucide-react';
+import { Search, Users, UserCheck, Info, Brain, Handshake, CalendarDays } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, ProgressBar } from '@/components/design-system';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
 import { COACH_TIERS, COACH_SPECIALTY_INFO, calculateAffinity } from '@/lib/coaches';
@@ -99,12 +100,35 @@ export default function Coaches() {
 
   if (loading) return <LoadingScreen />;
 
+  const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : null;
+  const trust = Number(profile?.coach_trust ?? 55);
+  const tactical = Number(profile?.coach_tactical_understanding ?? 20);
+
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Users} title="Treinador principal" subtitle="O líder técnico da dupla, integrado à comissão e responsável por treinos, táticas e orientação durante as partidas" accent="primary" />
+    <Page size="wide" className="animate-fade-in">
+      <PageContent>
+      <PageHeader
+        eyebrow="Equipe técnica"
+        icon={Users}
+        title="Treinador principal"
+        description="O comandante esportivo da dupla: define filosofia, conduz treinos e orienta decisões durante as partidas."
+        tone="brand"
+        stats={hiredCoach ? <>
+          <StatusBadge tone="success">Obrigatório</StatusBadge>
+          <StatusBadge tone="info">{COACH_TIERS[hiredCoach.tier]?.label || hiredCoach.tier}</StatusBadge>
+          <StatusBadge tone="premium">{profile?.coach_paid_by_club ? 'Pago pelo clube' : `${profile?.coach_monthly_salary || hiredCoach.monthly_cost || 0}/mês`}</StatusBadge>
+        </> : null}
+      />
+
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatCard label="Confiança" value={`${trust}%`} detail="relação profissional" icon={Handshake} tone={trust >= 70 ? 'success' : 'warning'} />
+        <StatCard label="Entendimento" value={`${tactical}%`} detail="leitura da dupla" icon={Brain} tone="info" />
+        <StatCard label="Afinidade" value={`${affinityCurrent?.score ?? affinityCurrent ?? 0}%`} detail="compatibilidade atual" icon={UserCheck} tone="brand" />
+        <StatCard label="Contrato" value={profile?.coach_paid_by_club ? 'Clube' : `${profile?.coach_monthly_salary || hiredCoach?.monthly_cost || 0}`} detail={profile?.coach_contract_end_date || 'temporário'} icon={CalendarDays} tone="premium" />
+      </div>
 
       <div className="grid gap-3 md:grid-cols-[1.3fr_1fr]">
-        <div className="glass rounded-2xl border border-primary/20 p-4">
+        <Surface tone="brand" className="p-4">
           <div className="flex items-start gap-3">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div>
@@ -112,12 +136,12 @@ export default function Coaches() {
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">O treinador principal lidera a comissão técnica, recebe salário mensal e influencia treinos, confiança, entrosamento e decisões táticas durante as partidas. O treinador de formação fornecido pelo clube não tem custo para o atleta.</p>
             </div>
           </div>
-        </div>
-        <div className="glass rounded-2xl p-4">
+        </Surface>
+        <Surface className="p-4">
           <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Mercado disponível</p>
           <p className="mt-1 text-2xl font-black">{coaches.length} treinadores</p>
           <p className="text-xs text-muted-foreground">{availableCount} exibidos com o filtro atual</p>
-        </div>
+        </Surface>
       </div>
 
       <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
@@ -131,7 +155,7 @@ export default function Coaches() {
 
       {/* Current Coach */}
       {hiredCoach && (
-        <div className="glass rounded-2xl p-4 border border-primary/30 bg-primary/5">
+        <Surface tone="brand" className="p-4">
           <div className="flex items-center gap-2 mb-1">
             <UserCheck className="h-4 w-4 text-primary" />
             <span className="text-[10px] uppercase tracking-wide text-primary font-bold">Treinador Atual</span>
@@ -146,7 +170,11 @@ export default function Coaches() {
             </div>
             <div className="flex gap-2"><button onClick={handleRenew} className="text-[11px] font-bold text-foreground px-3 py-1.5 rounded-lg bg-secondary/60">Renovar</button><button onClick={() => setSelected(hiredCoach)} className="text-[11px] font-bold text-primary hover:opacity-80 px-3 py-1.5 rounded-lg bg-primary/10">Ver detalhes</button></div>
           </div>
-        </div>
+          <div className="mt-4 grid gap-3 sm:grid-cols-2">
+            <div><p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">Confiança</p><ProgressBar value={trust} tone={trust >= 70 ? 'success' : 'warning'} /></div>
+            <div><p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">Entendimento tático</p><ProgressBar value={tactical} tone="info" /></div>
+          </div>
+        </Surface>
       )}
 
       {/* Search */}
@@ -193,6 +221,7 @@ export default function Coaches() {
           onFire={handleFire}
         />
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

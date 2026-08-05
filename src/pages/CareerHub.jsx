@@ -4,16 +4,16 @@ import {
   Activity, AlertCircle, ArrowRight, Bell, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, Gamepad2, GraduationCap,
   Inbox, MessageCircle, Newspaper, Target, Trophy, TrendingUp, Users, Zap, Globe2,
-  Clock3, HeartPulse, Coins, Sparkles,
+  Clock3, HeartPulse, Sparkles,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
   ensureMyProfile, incrementMissionProgress, careerExperienceSummary, overallRating, winRate,
-  getWorldRank, topAttributes, calculateAge, isRetired,
+  getWorldRank, topAttributes, isRetired,
 } from '@/lib/padel';
-import { LevelBadge, StatCard, getAttributeIcon } from '@/components/padel/Shared';
+import { StatCard, getAttributeIcon } from '@/components/padel/Shared';
 import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge } from '@/components/design-system';
-import { CoinBadge, XpBar, SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
+import { SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import CareerCalendar from '@/components/career/CareerCalendar';
 import PartnerSelection from '@/components/career/PartnerSelection';
