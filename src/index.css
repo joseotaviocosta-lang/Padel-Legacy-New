@@ -341,3 +341,15 @@
     flex: 0 0 2.75rem !important;
   }
 }
+
+/* v31 — listas extensas permanecem leves sem alterar a ordem ou os dados. */
+.render-window > * {
+  content-visibility: auto;
+  contain-intrinsic-size: 76px;
+}
+
+@media (max-width: 640px) {
+  .render-window > * {
+    contain-intrinsic-size: 96px;
+  }
+}

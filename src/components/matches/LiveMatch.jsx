@@ -10,7 +10,6 @@ import {
   FastForward,
   MessageSquareText,
   ClipboardList,
-  Gauge,
   ChevronRight,
 } from 'lucide-react';
 import {

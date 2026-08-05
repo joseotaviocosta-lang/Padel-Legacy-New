@@ -11,7 +11,7 @@ import ItemDetailModal from '@/components/shop/ItemDetailModal';
 import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
 import { RARITY_STYLES, RARITY_ORDER, CATEGORY_META } from '@/lib/equipmentCatalog';
 import { computeItemPrice, BADGE_COLORS, seedMarket } from '@/lib/marketEngine';
-import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess, SHOP_PROGRESSION } from '@/lib/storeCatalog';
+import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 import { getEquipmentMarketState } from '@/lib/sportsEconomyV26';
 

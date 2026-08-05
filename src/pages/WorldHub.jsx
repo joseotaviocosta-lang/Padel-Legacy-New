@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Activity, CalendarDays, Clock3, Globe2, History, Newspaper, RefreshCw, Swords, TrendingUp, Trophy, Users } from 'lucide-react';
+import { Activity, CalendarDays, Clock3, Globe2, History, Newspaper, RefreshCw, Trophy, Users } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel.js';
 import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';

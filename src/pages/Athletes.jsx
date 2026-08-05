@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { Users, Search, SlidersHorizontal } from 'lucide-react';
 import { ensureMyProfile } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
@@ -8,6 +8,8 @@ import AthleteCard from '@/components/athletes/AthleteCard';
 import AthleteDetail from '@/components/athletes/AthleteDetail';
 import { useCareer } from '@/careers/useCareer.js';
 import { spectatorStore } from '@/gameplay/replay/spectator/SpectatorStore.js';
+
+const PAGE_SIZE = 60;
 
 const PHASE_FILTERS = [
   { id: 'all', label: 'Todas' },
@@ -29,6 +31,8 @@ export default function Athletes() {
   const [styleFilter, setStyleFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('ranking');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const deferredSearch = useDeferredValue(search.trim().toLowerCase());
 
   useEffect(() => {
     (async () => {
@@ -47,19 +51,21 @@ export default function Athletes() {
   useEffect(()=>{if(activeCareer?.career_id)spectatorStore.load(activeCareer.career_id).then((state)=>setFollowedPlayers(new Set(state.followed_player_ids)));},[activeCareer?.career_id]);
   async function toggleFollow(id){const next=await spectatorStore.toggle(activeCareer.career_id,'followed_player_ids',id);setFollowedPlayers(new Set(next.followed_player_ids));}
 
-  if (loading) return <LoadingScreen />;
+  useEffect(() => {
+    setVisibleCount(PAGE_SIZE);
+  }, [phaseFilter, persFilter, styleFilter, deferredSearch, sortBy]);
 
-  const filtered = athletes
+  const filtered = useMemo(() => athletes
     .filter(a => phaseFilter === 'all' || a.career_phase === phaseFilter)
     .filter(a => persFilter === 'all' || a.personality === persFilter)
     .filter(a => styleFilter === 'all' || a.play_style === styleFilter)
-    .filter(a => !search.trim() || `${a.name || ''} ${a.country || ''}`.toLowerCase().includes(search.trim().toLowerCase()))
+    .filter(a => !deferredSearch || `${a.name || ''} ${a.country || ''}`.toLowerCase().includes(deferredSearch))
     .sort((a, b) => {
       if (sortBy === 'form') return Number(b.form || b.current_form || 0) - Number(a.form || a.current_form || 0);
       if (sortBy === 'clutch') return Number(b.behavior_axes?.clutch || 0) - Number(a.behavior_axes?.clutch || 0);
       if (sortBy === 'overall') return Number(b.overall_rating || 0) - Number(a.overall_rating || 0);
       return Number(a.ranking_position || 9999) - Number(b.ranking_position || 9999);
-    });
+    }), [athletes, phaseFilter, persFilter, styleFilter, deferredSearch, sortBy]);
 
   const PERS_FILTERS = [{ id: 'all', label: 'Todas' }, ...PERSONALITIES.map(p => ({ id: p.id, label: p.label }))];
   const STYLE_FILTERS = [
@@ -70,6 +76,8 @@ export default function Athletes() {
     { id: 'Tático', label: 'Tático' },
     { id: 'Potência', label: 'Potência' },
   ];
+
+  if (loading) return <LoadingScreen />;
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
@@ -101,9 +109,15 @@ export default function Athletes() {
           <p className="text-sm text-muted-foreground">Nenhum atleta encontrado com esses filtros.</p>
         </div>
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
-          {filtered.map(a => <AthleteCard key={a.id} athlete={a} onClick={() => setSelected(a)} />)}
+        <div className="render-window grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+          {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} onClick={() => setSelected(a)} />)}
         </div>
+      )}
+
+      {filtered.length > visibleCount && (
+        <button type="button" onClick={() => setVisibleCount(value => value + PAGE_SIZE)} className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary">
+          Carregar mais atletas ({Math.min(PAGE_SIZE, filtered.length - visibleCount)})
+        </button>
       )}
 
       {selected && <AthleteDetail athlete={selected} followed={followedPlayers.has(selected.id)} onToggleFollow={toggleFollow} onClose={() => setSelected(null)} />}

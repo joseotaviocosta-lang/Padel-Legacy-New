@@ -1,10 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
 import { LoadingScreen, PageHeader, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
 import { loadModuleTasks } from '@/lib/moduleLoading';
+
+const LIST_PAGE_SIZE = 50;
 
 const TABS = [
   { key: 'circuit', label: 'Circuito', icon: Trophy },
@@ -22,6 +24,7 @@ export default function Ranking() {
   const [athletes, setAthletes] = useState([]);
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [visibleCount, setVisibleCount] = useState(LIST_PAGE_SIZE);
 
   useEffect(() => {
     (async () => {
@@ -41,105 +44,105 @@ export default function Ranking() {
     })();
   }, []);
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  useEffect(() => { setVisibleCount(LIST_PAGE_SIZE); }, [tab]);
 
-  // Country ranking aggregate
-  const countryMap = {};
-  (players || []).forEach(p => {
-    const c = p.country || 'Outros';
-    if (!countryMap[c]) countryMap[c] = { name: c, players: 0, totalXp: 0, totalOvr: 0 };
-    countryMap[c].players++;
-    countryMap[c].totalXp += (p.xp || 0);
-    countryMap[c].totalOvr += overallRating(p);
-  });
-  const countries = Object.values(countryMap).map(c => ({ ...c, avgOvr: Math.round(c.totalOvr / c.players) })).sort((a, b) => b.totalXp - a.totalXp);
+  const { countries, circuitAthletes, raceAthletes } = useMemo(() => {
+    const countryMap = {};
+    (players || []).forEach(p => {
+      const country = p.country || 'Outros';
+      if (!countryMap[country]) countryMap[country] = { name: country, players: 0, totalXp: 0, totalOvr: 0 };
+      countryMap[country].players++;
+      countryMap[country].totalXp += (p.xp || 0);
+      countryMap[country].totalOvr += overallRating(p);
+    });
+    const countryRanking = Object.values(countryMap)
+      .map(country => ({ ...country, avgOvr: Math.round(country.totalOvr / Math.max(1, country.players)) }))
+      .sort((a, b) => b.totalXp - a.totalXp);
 
+    const normalizeName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
+    const activeAthletes = (athletes || []).filter(a => !a.retired && a.career_phase !== 'Aposentado');
+    const teamAthleteMap = new Map();
 
-  const normalizeName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
-  const activeAthletes = (athletes || []).filter(a => !a.retired && a.career_phase !== 'Aposentado');
-
-  // O elenco profissional real vive principalmente em TeamRanking. Convertemos cada
-  // integrante das duplas em uma entrada individual para Circuito, Race e Jogadores.
-  // Assim, as três abas usam o mesmo universo da aba Duplas e continuam atualizando
-  // quando os torneios alteram os pontos das equipes.
-  const teamAthleteMap = new Map();
-  for (const team of teams || []) {
-    const teamPoints = Math.max(0, Number(team.ranking_points ?? team.rank_points) || 0);
-    const teamRace = Math.max(0, Number(team.race_points ?? team.season_points ?? teamPoints) || 0);
-    const members = [
-      { name: team.player1_name, id: team.player1_id, country: team.player1_country },
-      { name: team.player2_name, id: team.player2_id, country: team.player2_country },
-    ];
-    for (const member of members) {
-      const key = normalizeName(member.name);
-      if (!key) continue;
-      const current = teamAthleteMap.get(key);
-      const candidate = {
-        id: member.id || `team-athlete-${key.replace(/[^a-z0-9]+/g, '-')}`,
-        name: member.name,
-        sport_name: member.name,
-        country: member.country || team.country || team.nationality || 'Internacional',
-        circuit_category: team.circuit_category || 'Profissional',
-        overall_rating: Number(team.overall_rating ?? team.overall) || 70,
-        world_ranking_points: teamPoints,
-        ranking_points: teamPoints,
-        race_points: teamRace,
-        source_team: true,
-      };
-      if (!current || candidate.world_ranking_points > current.world_ranking_points) {
-        teamAthleteMap.set(key, candidate);
+    for (const team of teams || []) {
+      const teamPoints = Math.max(0, Number(team.ranking_points ?? team.rank_points) || 0);
+      const teamRace = Math.max(0, Number(team.race_points ?? team.season_points ?? teamPoints) || 0);
+      const members = [
+        { name: team.player1_name, id: team.player1_id, country: team.player1_country },
+        { name: team.player2_name, id: team.player2_id, country: team.player2_country },
+      ];
+      for (const member of members) {
+        const key = normalizeName(member.name);
+        if (!key) continue;
+        const current = teamAthleteMap.get(key);
+        const candidate = {
+          id: member.id || `team-athlete-${key.replace(/[^a-z0-9]+/g, '-')}`,
+          name: member.name,
+          sport_name: member.name,
+          country: member.country || team.country || team.nationality || 'Internacional',
+          circuit_category: team.circuit_category || 'Profissional',
+          overall_rating: Number(team.overall_rating ?? team.overall) || 70,
+          world_ranking_points: teamPoints,
+          ranking_points: teamPoints,
+          race_points: teamRace,
+          source_team: true,
+        };
+        if (!current || candidate.world_ranking_points > current.world_ranking_points) teamAthleteMap.set(key, candidate);
       }
     }
-  }
 
-  const mergedAthleteMap = new Map();
-  for (const athlete of [...activeAthletes, ...teamAthleteMap.values()]) {
-    const key = normalizeName(athlete.name || athlete.sport_name);
-    if (!key) continue;
-    const current = mergedAthleteMap.get(key);
-    if (!current) {
-      mergedAthleteMap.set(key, athlete);
-      continue;
+    const mergedAthleteMap = new Map();
+    for (const athlete of [...activeAthletes, ...teamAthleteMap.values()]) {
+      const key = normalizeName(athlete.name || athlete.sport_name);
+      if (!key) continue;
+      const current = mergedAthleteMap.get(key);
+      if (!current) {
+        mergedAthleteMap.set(key, athlete);
+        continue;
+      }
+      mergedAthleteMap.set(key, {
+        ...athlete,
+        ...current,
+        id: current.id || athlete.id,
+        name: current.name || athlete.name,
+        sport_name: current.sport_name || athlete.sport_name,
+        country: current.country || athlete.country,
+        overall_rating: Math.max(Number(current.overall_rating ?? current.overall) || 0, Number(athlete.overall_rating ?? athlete.overall) || 0),
+        world_ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
+        ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
+        race_points: Math.max(Number(current.race_points) || 0, Number(athlete.race_points) || 0),
+      });
     }
-    mergedAthleteMap.set(key, {
-      ...athlete,
-      ...current,
-      id: current.id || athlete.id,
-      name: current.name || athlete.name,
-      sport_name: current.sport_name || athlete.sport_name,
-      country: current.country || athlete.country,
-      overall_rating: Math.max(Number(current.overall_rating ?? current.overall) || 0, Number(athlete.overall_rating ?? athlete.overall) || 0),
-      world_ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
-      ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
-      race_points: Math.max(Number(current.race_points) || 0, Number(athlete.race_points) || 0),
-    });
-  }
-  const rankingAthletes = [...mergedAthleteMap.values()];
 
-  const playerEntries = (players || []).map(p => ({
-    ...p,
-    name: p.sport_name || p.name || 'Jogador',
-    sport_name: p.sport_name || p.name || 'Jogador',
-    country: p.country || 'Brasil',
-    overall_rating: overallRating(p),
-    world_ranking_points: Number(p.rank_points ?? p.ranking_points ?? p.world_ranking_points) || 0,
-    race_points: Number(p.race_points) || 0,
-    is_player_profile: true,
-  }));
+    const rankingAthletes = [...mergedAthleteMap.values()];
+    const playerEntries = (players || []).map(player => ({
+      ...player,
+      name: player.sport_name || player.name || 'Jogador',
+      sport_name: player.sport_name || player.name || 'Jogador',
+      country: player.country || 'Brasil',
+      overall_rating: overallRating(player),
+      world_ranking_points: Number(player.rank_points ?? player.ranking_points ?? player.world_ranking_points) || 0,
+      race_points: Number(player.race_points) || 0,
+      is_player_profile: true,
+    }));
 
-  const dedupedCircuit = [...rankingAthletes];
-  for (const player of playerEntries) {
-    const alreadyIncluded = dedupedCircuit.some(a => a.id === player.id || (
-      String(a.name || '').toLowerCase() === String(player.name || '').toLowerCase() &&
-      String(a.country || '').toLowerCase() === String(player.country || '').toLowerCase()
-    ));
-    if (!alreadyIncluded) dedupedCircuit.push(player);
-  }
+    const dedupedCircuit = [...rankingAthletes];
+    const included = new Set(dedupedCircuit.map(a => `${a.id || ''}|${normalizeName(a.name)}|${normalizeName(a.country)}`));
+    for (const player of playerEntries) {
+      const identity = `${player.id || ''}|${normalizeName(player.name)}|${normalizeName(player.country)}`;
+      if (!included.has(identity)) {
+        included.add(identity);
+        dedupedCircuit.push(player);
+      }
+    }
 
-  const circuitAthletes = [...dedupedCircuit].sort((a, b) => (Number(b.world_ranking_points ?? b.ranking_points) || 0) - (Number(a.world_ranking_points ?? a.ranking_points) || 0));
-  const raceAthletes = [...dedupedCircuit].sort((a, b) => (Number(b.race_points) || 0) - (Number(a.race_points) || 0));
+    return {
+      countries: countryRanking,
+      circuitAthletes: [...dedupedCircuit].sort((a, b) => (Number(b.world_ranking_points ?? b.ranking_points) || 0) - (Number(a.world_ranking_points ?? a.ranking_points) || 0)),
+      raceAthletes: [...dedupedCircuit].sort((a, b) => (Number(b.race_points) || 0) - (Number(a.race_points) || 0)),
+    };
+  }, [players, athletes, teams]);
+
+  if (loading) return <LoadingScreen />;
 
   function CircuitList({ items, race = false }) {
     if (!items.length) return <EmptyStateCard icon={Trophy} message="O circuito será preenchido após o próximo avanço semanal." />;
@@ -150,7 +153,7 @@ export default function Ranking() {
           renderName={a => a.name || 'Atleta'}
           renderSub={a => `${Number(race ? a.race_points : (a.world_ranking_points ?? a.ranking_points)) || 0} pts`}
         />
-        {items.slice(0, 100).map((a, i) => {
+        {items.slice(0, visibleCount).map((a, i) => {
           const points = Number(race ? a.race_points : (a.world_ranking_points ?? a.ranking_points)) || 0;
           const previous = Number(a.ranking_previous_position) || i + 1;
           const movement = previous - (i + 1);
@@ -173,6 +176,11 @@ export default function Ranking() {
             </div>
           );
         })}
+        {visibleCount < items.length && (
+          <button type="button" onClick={() => setVisibleCount(value => value + LIST_PAGE_SIZE)} className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary">
+            Carregar mais posições ({Math.min(LIST_PAGE_SIZE, items.length - visibleCount)})
+          </button>
+        )}
       </>
     );
   }
@@ -213,7 +221,7 @@ export default function Ranking() {
       <TabBar tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" />
 
       {/* Lists */}
-      <div className="space-y-2">
+      <div className="render-window space-y-2">
         {tab === 'circuit' && <CircuitList items={circuitAthletes} />}
         {tab === 'race' && <CircuitList items={raceAthletes} race />}
 
@@ -228,7 +236,7 @@ export default function Ranking() {
                 renderName={t => `${t.player1_name} & ${t.player2_name}`}
                 renderSub={t => `${t.ranking_points} pts`}
               />
-              {teams.map((t, i) => (
+              {teams.slice(0, visibleCount).map((t, i) => (
                 <div key={t.id} className="glass rounded-2xl p-3 flex items-center gap-3">
                   <div className={`text-2xl font-black w-6 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
                   <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
@@ -261,7 +269,7 @@ export default function Ranking() {
           </div>
           {clubs.length === 0 ? (
             <EmptyStateCard icon={Users} message="Nenhum clube cadastrado." />
-          ) : clubs.map((c, i) => (
+          ) : clubs.slice(0, visibleCount).map((c, i) => (
             <div key={c.id} className="glass rounded-2xl p-3 flex items-center gap-3">
               <div className={`text-2xl font-black w-6 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
               <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center overflow-hidden">
@@ -281,7 +289,7 @@ export default function Ranking() {
         )}
 
         {/* Countries */}
-        {tab === 'countries' && countries.map((c, i) => (
+        {tab === 'countries' && countries.slice(0, visibleCount).map((c, i) => (
           <div key={c.name} className="glass rounded-2xl p-3 flex items-center gap-3">
             <div className={`text-2xl font-black w-6 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
             <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-accent/30 to-secondary flex items-center justify-center">
@@ -297,6 +305,14 @@ export default function Ranking() {
             </div>
           </div>
         ))}
+
+        {((tab === 'teams' && visibleCount < teams.length) ||
+          (tab === 'clubs' && visibleCount < clubs.length) ||
+          (tab === 'countries' && visibleCount < countries.length)) && (
+          <button type="button" onClick={() => setVisibleCount(value => value + LIST_PAGE_SIZE)} className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary">
+            Carregar mais
+          </button>
+        )}
       </div>
     </PageContainer>
   );

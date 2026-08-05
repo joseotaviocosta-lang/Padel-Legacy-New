@@ -4,6 +4,7 @@ import path from 'node:path';
 import { buildInitialPartnerOffers, partnerOfferId, validatePartnerOfferAcceptance } from '../src/lib/partnerOfferRules.js';
 import { evaluatePartnerCompatibility } from '../src/players/teamCompatibility.js';
 import { migrateCareer } from '../src/careers/CareerMigration.js';
+import { CAREER_SAVE_SCHEMA_VERSION } from '../src/careers/careerSchema.js';
 
 const player = { id:'career-1', name:'José', career_date:'2026-01-02', preferred_side:'right', court_side:'direita', handedness:'right', tactical_role:'controlador', overall:52, ranking_position:900, reputation:55 };
 const candidates = [
@@ -29,7 +30,7 @@ assert.equal(validatePartnerOfferAcceptance(player, offers[0], [{...offers[1],st
 
 const legacy = { save_schema_version:13, player:{...player,partner_id:'a'}, entities:{CareerMessage:[{id:'m1',profile_id:'career-1',message_type:'proposta_parceria',sender_name:'Martín',related_entity_id:'a',related_entity_name:'Martín',status:'decisao_pendente',actions:[{id:'accept',payload:{bot:candidates[0],duration:60,split:50}}]}]} };
 const migrated = migrateCareer(legacy).data;
-assert.equal(migrated.save_schema_version,14);
+assert.equal(migrated.save_schema_version, CAREER_SAVE_SCHEMA_VERSION);
 assert.equal(migrated.entities.PartnerOffer[0].status,'accepted');
 assert.equal(migrated.entities.CareerMessage[0].related_entity_type,'partner_offer');
 assert.equal(migrateCareer(migrated).data.entities.PartnerOffer.length,1);

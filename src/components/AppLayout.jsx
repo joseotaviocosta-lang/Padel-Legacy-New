@@ -5,7 +5,7 @@ import { BriefcaseBusiness, ChevronDown, Menu, PanelLeftClose, PanelLeftOpen, X 
 import BottomNav from './BottomNav';
 import LogoutButton from './LogoutButton';
 import { motion, AnimatePresence } from 'framer-motion';
-import { preloadRoute } from '@/lib/routeModules';
+import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
 import BetaTools from '@/components/system/BetaTools';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
@@ -104,6 +104,17 @@ export default function AppLayout() {
 
   useEffect(() => { localStorage.setItem(EXPANDED_AREA_KEY, expandedArea); }, [expandedArea]);
   useEffect(() => { localStorage.setItem(COLLAPSED_SIDEBAR_KEY, String(sidebarCollapsed)); }, [sidebarCollapsed]);
+
+  useEffect(() => {
+    const commonRoutes = ['/game/training', '/game/calendar', '/tournaments', '/ranking', '/partners'];
+    const run = () => preloadRoutes(commonRoutes);
+    if ('requestIdleCallback' in window) {
+      const idleId = window.requestIdleCallback(run, { timeout: 1800 });
+      return () => window.cancelIdleCallback?.(idleId);
+    }
+    const timerId = window.setTimeout(run, 900);
+    return () => window.clearTimeout(timerId);
+  }, []);
 
   return (
     <div className="app-shell min-h-screen bg-background">

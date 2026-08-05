@@ -1,0 +1,139 @@
+{
+  "generatedAt": "2026-08-05T18:09:45.651Z",
+  "version": "v30-rc2",
+  "total": 18,
+  "passed": 18,
+  "failed": 0,
+  "suites": [
+    {
+      "name": "Missões",
+      "file": "scripts/test-mission-system-v2.mjs",
+      "ok": true,
+      "durationMs": 131,
+      "output": "MissionSystemV2Test: hydration, estados, recompensas, seleção, catálogo e migration aprovados."
+    },
+    {
+      "name": "Onboarding",
+      "file": "scripts/test-onboarding-v2.mjs",
+      "ok": true,
+      "durationMs": 139,
+      "output": "OnboardingV2Test: estado, migration, recomendações e introduções aprovados."
+    },
+    {
+      "name": "Tutorial",
+      "file": "scripts/test-tutorial-engine-v2.mjs",
+      "ok": true,
+      "durationMs": 93,
+      "output": "TutorialEngineV2Test: 57 etapas canônicas e rotas validadas."
+    },
+    {
+      "name": "Cronologia",
+      "file": "scripts/test-tutorial-chronology.mjs",
+      "ok": true,
+      "durationMs": 121,
+      "output": "TutorialChronologyTest: cronologia v6, capítulos, ações antecipadas, idempotência e retomada aprovados."
+    },
+    {
+      "name": "Jogadores",
+      "file": "scripts/test-player-system.mjs",
+      "ok": true,
+      "durationMs": 432,
+      "output": "{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 211,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}"
+    },
+    {
+      "name": "Motor de partidas",
+      "file": "scripts/test-match-integrity.mjs",
+      "ok": true,
+      "durationMs": 563,
+      "output": "{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 101,\n  \"games\": 15,\n  \"breaks\": 7,\n  \"deterministic\": true\n}"
+    },
+    {
+      "name": "Ritmo da carreira",
+      "file": "scripts/test-career-pace-v17.mjs",
+      "ok": true,
+      "durationMs": 96,
+      "output": "{\n  \"status\": \"ok\",\n  \"maxCareerXp\": 180000,\n  \"level20Xp\": 31196,\n  \"level40Xp\": 117999,\n  \"tournamentsPerYear\": 32,\n  \"tournamentWeeks\": 24,\n  \"automaticTraining\": true,\n  \"potentialCeilings\": true\n}"
+    },
+    {
+      "name": "Lesões",
+      "file": "scripts/test-injury-balance-v21.mjs",
+      "ok": true,
+      "durationMs": 251,
+      "output": "{\n  \"trainingCases\": [\n    {\n      \"name\": \"leve-descansado\",\n      \"intensityId\": \"leve\",\n      \"fatigue\": 15,\n      \"energy\": 90,\n      \"expectedMax\": 0.001,\n      \"risk\": 0.0005\n    },\n    {\n      \"name\": \"normal-descansado\",\n      \"intensityId\": \"moderado\",\n      \"fatigue\": 25,\n      \"energy\": 85,\n      \"expectedMax\": 0.0025,\n      \"risk\": 0.0015\n    },\n    {\n      \"name\": \"intenso-descansado\",\n      \"intensityId\": \"intenso\",\n      \"fatigue\": 30,\n      \"energy\": 90,\n      \"expectedMax\": 0.006,\n      \"risk\": 0.0045\n    },\n    {\n      \"name\": \"normal-fadiga-alta\",\n      \"intensityId\": \"moderado\",\n      \"fatigue\": 72,\n      \"energy\": 55,\n      \"expectedMin\": 0.002,\n      \"expectedMax\": 0.006,\n      \"risk\": 0.00235\n    },\n    {\n      \"name\": \"intenso-sobrecarga\",\n      \"intensityId\": \"intenso\",\n      \"fatigue\": 88,\n      \"energy\": 35,\n      \"secondSession\": true,\n      \"expectedMin\": 0.006,\n      \"expectedMax\": 0.018,\n      \"risk\": 0.009049999999999999\n    },\n    {\n      \"name\": \"intenso-sobrecarga-medico\",\n      \"intensityId\": \"intenso\",\n      \"fatigue\": 88,\n      \"energy\": 35,\n      \"secondSession\": true,\n      \"staffMultiplier\": 0.55,\n      \"expectedMax\": 0.01,\n      \"risk\": 0.0049775\n    }\n  ],\n  \"tournamentCases\": [\n    {\n      \"name\": \"partida-normal\",\n      \"profile\": {\n        \"energy\": 72,\n        \"fatigue\": 28,\n        \"condition\": 75\n      },\n      \"load\": {\n        \"energyCost\": 16\n      },\n      \"expectedMax\": 0.004,\n      \"risk\": 0.0007\n    },\n    {\n      \"name\": \"partida-cansado\",\n      \"profile\": {\n        \"energy\": 38,\n        \"fatigue\": 63,\n        \"condition\": 68\n      },\n      \"load\": {\n        \"energyCost\": 20\n      },\n      \"expectedMin\": 0.002,\n      \"expectedMax\": 0.012,\n      \"risk\": 0.0035199999999999997\n    },\n    {\n      \"name\": \"partida-sobrecarga\",\n      \"profile\": {\n        \"energy\": 18,\n        \"fatigue\": 88,\n        \"condition\": 55\n      },\n      \"load\": {\n        \"energyCost\": 25\n      },\n      \"expectedMin\": 0.015,\n      \"expectedMax\": 0.05,\n      \"risk\": 0.02024\n    },\n    {\n      \"name\": \"partida-sobrecarga-medico\",\n      \"profile\": {\n        \"energy\": 18,\n        \"fatigue\": 88,\n        \"condition\": 55,\n        \"medical_staff_ids\": [\n          \"physio_senior\",\n          \"doctor_sports\"\n        ]\n      },\n      \"load\": {\n        \"energyCost\": 25\n      },\n      \"expectedMax\": 0.035,\n      \"risk\": 0.013358400000000001\n    }\n  ],\n  \"summaries\": [\n    {\n      \"name\": \"casual\",\n      \"sessionsPerWeek\": 2.5,\n      \"intenseShare\": 0.08,\n      \"matchesPerSeason\": 18,\n      \"disciplined\": true,\n      \"staffMultiplier\": 1,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 2.5,\n      \"injuriesPerSeason\": 0.24999999999999992\n    },\n    {\n      \"name\": \"eficiente\",\n      \"sessionsPerWeek\": 4,\n      \"intenseShare\": 0.18,\n      \"matchesPerSeason\": 24,\n      \"disciplined\": true,\n      \"staffMultiplier\": 0.82,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 5.375,\n      \"injuriesPerSeason\": 0.5374999999999999\n    },\n    {\n      \"name\": \"agressivo\",\n      \"sessionsPerWeek\": 5,\n      \"intenseShare\": 0.42,\n      \"matchesPerSeason\": 28,\n      \"disciplined\": true,\n      \"staffMultiplier\": 0.9,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 10.5,\n      \"injuriesPerSeason\": 1.0500000000000003\n    },\n    {\n      \"name\": \"excesso\",\n      \"sessionsPerWeek\": 7,\n      \"intenseShare\": 0.7,\n      \"matchesPerSeason\": 30,\n      \"disciplined\": false,\n      \"staffMultiplier\": 1,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 40.2875,\n      \"injuriesPerSeason\": 4.0287500000000005\n    }\n  ]\n}"
+    },
+    {
+      "name": "Universo Vivo",
+      "file": "scripts/test-living-world-v23.mjs",
+      "ok": true,
+      "durationMs": 87,
+      "output": "LivingWorldV23Test: PASS\n✓ Motor diário centralizado\n✓ Notícias contextuais e idempotentes\n✓ Boletim semanal por carreira\n✓ Linha do tempo mundial\n✓ Central Mundo com 4 abas\n✓ Dashboard integrado"
+    },
+    {
+      "name": "Calendário",
+      "file": "scripts/test-calendar-advance-v24.mjs",
+      "ok": true,
+      "durationMs": 92,
+      "output": "CalendarAdvanceV24Test: PASS\n✓ atalhos ignoram torneios passivos e atividades automáticas\n✓ torneios inscritos continuam bloqueando o avanço normal\n✓ lesão resolve torneios e treinos automaticamente\n✓ decisões administrativas continuam protegidas"
+    },
+    {
+      "name": "Mercado mundial",
+      "file": "scripts/test-global-market-v25.mjs",
+      "ok": true,
+      "durationMs": 90,
+      "output": "✓ mercado garante iniciantes\n✓ snapshot reúne atletas, duplas e técnicos\n✓ processamento mensal centralizado\n✓ página possui quatro áreas\n✓ negociação de atletas preservada\n✓ scouting preservado\n✓ export público disponível\nGlobalMarketV25Test: PASS"
+    },
+    {
+      "name": "Economia esportiva",
+      "file": "scripts/test-sports-economy-v26.mjs",
+      "ok": true,
+      "durationMs": 102,
+      "output": "SportsEconomyV26Test: PASS\n✓ 4 patrocinadores adequados à fase iniciante\n✓ 72 clubes mundiais determinísticos\n✓ Rotação mensal de equipamentos e lançamentos futuros"
+    },
+    {
+      "name": "Treinadores",
+      "file": "scripts/test-coach-system-v28.mjs",
+      "ok": true,
+      "durationMs": 98,
+      "output": "✓ catálogo ampliado\n✓ competências sem bônus negativos\n✓ treinador inicial obrigatório\n✓ contrato e salário mensal\n✓ demissão mantém treinador\n✓ integração com comissão\n✓ mercado completo\n✓ impacto real em partidas\nCoachSystemV28Test: PASS"
+    },
+    {
+      "name": "Duplas vivas",
+      "file": "scripts/test-living-partnerships-v29.mjs",
+      "ok": true,
+      "durationMs": 95,
+      "output": "LivingPartnershipsV29Test: PASS\n✓ química, confiança e moral separadas\n✓ conversas alteram vínculo\n✓ identidade da dupla é derivada do histórico\n✓ bônus esportivo é pequeno e limitado"
+    },
+    {
+      "name": "Comissão técnica",
+      "file": "scripts/test-staff-architecture-v29-1.mjs",
+      "ok": true,
+      "durationMs": 97,
+      "output": "StaffArchitectureV29_1Test: PASS\n✓ treinador principal não ocupa vaga\n✓ contador usa somente profissionais de apoio\n✓ comissão possui rota própria\n✓ navegação esportiva atualizada\n✓ economia mantém apenas gestão financeira"
+    },
+    {
+      "name": "Ofertas de parceria",
+      "file": "scripts/test-partner-offers-v2.mjs",
+      "ok": true,
+      "durationMs": 126,
+      "output": "partner-offers-v2: navegação, geração, compatibilidade, concorrência lógica e migration OK"
+    },
+    {
+      "name": "Configuração Vite/Tauri",
+      "file": "scripts/test-vite-config.mjs",
+      "ok": true,
+      "durationMs": 95,
+      "output": "ViteConfigTest: host, porta, HMR, Tauri, imports e protecao de processo aprovados."
+    },
+    {
+      "name": "Técnico ao vivo",
+      "file": "scripts/test-live-coach.mjs",
+      "ok": true,
+      "durationMs": 132,
+      "output": "PadelLiveCoachTest: {\n  ok: true,\n  patternDetected: true,\n  confidenceCalculated: true,\n  suggestionGenerated: true,\n  partialAdjustmentApplied: true,\n  futureEventsOnly: true,\n  partnerFeedbackWorking: true,\n  aiAdaptationWorking: true,\n  cooldownRespected: true,\n  deterministic: true,\n  postMatchReportGenerated: true,\n  fallbackWorking: true,\n  replayWorking: true,\n  performanceWorking: true\n}"
+    }
+  ],
+  "limitations": [
+    "Testes que importam Vite/React exigem node_modules e não fazem parte desta suíte portátil.",
+    "O build completo deve ser executado no computador de desenvolvimento após npm install."
+  ]
+}

@@ -39,3 +39,8 @@ export function preloadRoute(pathname) {
   if (!preloadRequests.has(moduleName)) preloadRequests.set(moduleName, loader());
   return preloadRequests.get(moduleName);
 }
+
+
+export function preloadRoutes(pathnames = []) {
+  return Promise.allSettled(pathnames.map((pathname) => preloadRoute(pathname)));
+}
