@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Wallet, Star, Building2, TrendingUp, Receipt, ClipboardCheck } from 'lucide-react';
+import { Wallet, Star, Building2, TrendingUp, Receipt, ClipboardCheck, Coins, Users } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
+import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
@@ -130,10 +131,32 @@ export default function Economy() {
   if (loading) return <LoadingScreen />;
   if (!profile) return <div className="p-6 text-center text-muted-foreground">Crie seu perfil primeiro.</div>;
 
+  const activeStaff = staff.filter((member) => member.is_active !== false && member.contract_status !== 'expired');
+  const monthlyStaffCost = activeStaff.reduce((sum, member) => sum + (Number(member.monthly_salary) || 0), 0);
+  const monthlySponsorIncome = contracts.reduce((sum, contract) => sum + (Number(contract.monthly_payment || contract.monthly_value) || 0), 0);
+  const investmentTotal = investments.reduce((sum, investment) => sum + (Number(investment.current_value || investment.amount) || 0), 0);
+
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <div className="px-4 md:px-8 py-5 md:py-6 max-w-6xl mx-auto space-y-5 animate-fade-in">
+      <PageHeader
+        icon={Wallet}
+        eyebrow="Gestão da carreira"
+        title="Economia e patrimônio"
+        description="Acompanhe caixa, contratos, equipe, investimentos e oportunidades sem perder o controle da carreira esportiva."
+        tone="premium"
+        breadcrumb={['Gestão', 'Economia']}
+        action={<StatusBadge tone={(Number(profile.coins) || 0) >= monthlyStaffCost ? 'success' : 'warning'} icon={Coins}>{(Number(profile.coins) || 0).toLocaleString('pt-BR')} moedas</StatusBadge>}
+      />
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard label="Saldo" value={(Number(profile.coins) || 0).toLocaleString('pt-BR')} detail="Disponível para decisões" icon={Coins} tone="premium" />
+        <StatCard label="Patrocínios/mês" value={monthlySponsorIncome.toLocaleString('pt-BR')} detail={`${contracts.length} contrato(s) ativo(s)`} icon={Star} tone="success" />
+        <StatCard label="Equipe/mês" value={monthlyStaffCost.toLocaleString('pt-BR')} detail={`${activeStaff.length} profissional(is)`} icon={Users} tone="warning" />
+        <StatCard label="Investimentos" value={investmentTotal.toLocaleString('pt-BR')} detail={`${investments.length} posição(ões)`} icon={TrendingUp} tone="info" />
+      </div>
+
       {/* Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+      <div className="sticky top-0 z-20 -mx-1 flex gap-1.5 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-1.5 shadow-sm backdrop-blur-xl scrollbar-none">
         {TABS.map(t => {
           const Icon = t.icon;
           const isActive = tab === t.id;

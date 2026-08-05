@@ -11,7 +11,8 @@ import {
   sendMessage,
 } from '@/lib/partnershipSystem';
 import { getAvailablePartners } from '@/lib/career';
-import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import PartnerOverview from '@/components/partner/PartnerOverview';
 import PartnerSearch from '@/components/partner/PartnerSearch';
@@ -254,20 +255,31 @@ export default function PartnerHub() {
     }
   }
 
+  const chemistry = activePartnership?.chemistry ?? profile?.partner_chemistry ?? 0;
+  const confidence = activePartnership?.trust ?? activePartnership?.confidence ?? 0;
+  const sharedMatches = activePartnership?.shared_matches ?? 0;
+  const offerCount = proposals.filter((offer) => offer.status === 'pendente' || !offer.status).length;
+
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+    <div className="px-4 md:px-8 py-5 md:py-6 max-w-6xl mx-auto space-y-5 animate-fade-in">
       <PageHeader
         icon={Handshake}
-        title="Gestão de Dupla"
-        subtitle="Parcerias, propostas, assessores e decisões de carreira"
-        accent="primary"
-      >
-        {inboxCount > 0 && (
-          <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-primary/15 text-primary text-[10px] font-bold">
-            <Inbox className="h-3 w-3" /> {inboxCount}
-          </span>
-        )}
-      </PageHeader>
+        eyebrow="Dupla e relações"
+        title={activePartnership ? `Você e ${activePartnership.partner_name}` : 'Construa sua próxima dupla'}
+        description={activePartnership
+          ? 'Acompanhe vínculo, contrato, conversas e decisões esportivas da parceria.'
+          : 'Analise propostas e encontre um parceiro compatível com seu lado e estilo de jogo.'}
+        tone="brand"
+        breadcrumb={['Carreira', 'Dupla e relações']}
+        action={inboxCount > 0 ? <StatusBadge tone="info" icon={Inbox}>{inboxCount} não lida(s)</StatusBadge> : null}
+      />
+
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <StatCard label="Situação" value={activePartnership ? 'Dupla ativa' : 'Sem dupla'} detail={activePartnership?.partner_name || 'Escolha uma proposta'} icon={Users} tone={activePartnership ? 'success' : 'warning'} />
+        <StatCard label="Entrosamento" value={`${Math.round(chemistry)}/100`} detail={sharedMatches > 0 ? `${sharedMatches} partidas juntos` : 'Construído com jogos e treinos'} icon={Handshake} tone="brand" />
+        <StatCard label="Confiança" value={`${Math.round(confidence)}/100`} detail="Relação profissional da dupla" icon={Lightbulb} tone="info" />
+        <StatCard label="Propostas" value={offerCount} detail={inboxCount > 0 ? `${inboxCount} mensagem(ns) nova(s)` : 'Mercado atualizado'} icon={Inbox} tone="premium" />
+      </div>
 
       {/* Instability banner */}
       {switchCount >= 2 && (
@@ -281,7 +293,7 @@ export default function PartnerHub() {
       )}
 
       {/* Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+      <div className="sticky top-0 z-20 -mx-1 flex gap-1.5 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-1.5 shadow-sm backdrop-blur-xl scrollbar-none">
         {TABS.map(t => {
           const Icon = t.icon;
           const isActive = activeTab === t.id;
