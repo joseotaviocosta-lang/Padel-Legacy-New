@@ -97,16 +97,20 @@ export async function addTeamRankingPoints(profile, partner, points) {
 
 export async function getTeamRankings(limit = 50) {
   try {
-    return await localGame.entities.TeamRanking.list('-ranking_points', limit);
+    return await localGame.entities.TeamRanking.list('-ranking_points', Math.max(limit, 600));
   } catch (e) { return []; }
 }
 
 export async function getTeamRank(profile, partner) {
-  if (!profile?.id || !partner?.id) return { rank: 0, total: 0 };
-  const rankings = await getTeamRankings(500);
+  if (!profile?.id || !partner?.id) return { rank: 0, total: 0, points: 0, unranked: true };
+  const rankings = await getTeamRankings(600);
   const key = teamKey(profile.id, partner.id);
-  const idx = rankings.findIndex(t => t.team_key === key);
-  return { rank: idx >= 0 ? idx + 1 : 0, total: rankings.length };
+  const own = rankings.find(t => t.team_key === key);
+  const points = Math.max(0, Number(own?.ranking_points) || 0);
+  const rankedCompetitors = rankings.filter(t => t.team_key !== key && Math.max(0, Number(t.ranking_points) || 0) > 0);
+  const rank = rankedCompetitors.filter(t => Number(t.ranking_points || 0) > points).length + 1;
+  const unranked = points <= 0 || Math.max(0, Number(own?.matches_played) || 0) <= 0;
+  return { rank, total: rankedCompetitors.length + 1, points, unranked, displayRank: String(rank) };
 }
 
 export async function simulateProRankingWeek() {

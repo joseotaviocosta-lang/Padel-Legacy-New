@@ -13,7 +13,7 @@ export default function RankingCards({ profile, worldRank, teamRank }) {
           <ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-foreground transition-colors" />
         </div>
         <div>
-          <p className="text-2xl font-black text-cyan-400 tabular-nums">#{worldRank?.rank || '—'}</p>
+          <p className="text-2xl font-black text-cyan-400 tabular-nums">#{worldRank?.displayRank || worldRank?.rank || '—'}</p>
           <p className="text-[10px] text-muted-foreground uppercase tracking-wide">Mundial · {worldRank?.total || 0} jogadores</p>
         </div>
       </Link>

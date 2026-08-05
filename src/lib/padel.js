@@ -387,60 +387,40 @@ export async function ensureMyProfile(user) {
 }
 
 export async function getWorldRank(profile) {
-  if (!profile) return { rank: 0, total: 0 };
+  if (!profile) return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '1000+' };
   try {
-    const [athletes, teams] = await Promise.all([
-      localGame.entities.AthleteProfile.list('-world_ranking_points', 500),
-      localGame.entities.TeamRanking.list('-ranking_points', 300),
-    ]);
-
+    const athletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1500);
     const active = (athletes || []).filter(
       athlete => !athlete.retired && athlete.career_phase !== 'Aposentado'
     );
-    const playerPoints = Math.max(
-      0,
-      Number(profile.rank_points ?? profile.ranking_points ?? profile.world_ranking_points) || 0
-    );
-    const normalizeName = value =>
-      String(value || '').trim().toLocaleLowerCase('pt-BR');
+    const playerPoints = Math.max(0, Number(profile.rank_points ?? profile.ranking_points ?? profile.world_ranking_points) || 0);
+    const officialMatches = Math.max(0, Number(profile.matches_played) || 0);
+    const officialTournaments = Math.max(0, Number(profile.tournaments_played) || 0);
+    const normalizeName = value => String(value || '').trim().toLocaleLowerCase('pt-BR');
     const profileName = normalizeName(profile.sport_name || profile.name);
-
-    // Usa a mesma população da página Ranking: atletas cadastrados e jogadores
-    // encontrados nas duplas profissionais. Mantém a maior pontuação por nome.
     const pointsByName = new Map();
 
     for (const athlete of active) {
       const name = normalizeName(athlete.name || athlete.sport_name);
       if (!name || name === profileName || athlete.id === profile.id) continue;
-      const points = Math.max(
-        0,
-        Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0
-      );
+      const points = Math.max(0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0);
       pointsByName.set(name, Math.max(pointsByName.get(name) || 0, points));
     }
 
-    for (const team of teams || []) {
-      const points = Math.max(
-        0,
-        Number(team.ranking_points ?? team.rank_points) || 0
-      );
-      for (const rawName of [team.player1_name, team.player2_name]) {
-        const name = normalizeName(rawName);
-        if (!name || name === profileName) continue;
-        pointsByName.set(name, Math.max(pointsByName.get(name) || 0, points));
-      }
-    }
-
     const competitors = [...pointsByName.values()];
-    if (competitors.length === 0) {
-      return { rank: 0, total: 0, points: playerPoints };
-    }
-
+    const total = competitors.length + 1;
+    const unranked = playerPoints <= 0 || (officialMatches <= 0 && officialTournaments <= 0);
     const rank = competitors.filter(points => points > playerPoints).length + 1;
-    return { rank, total: competitors.length + 1, points: playerPoints };
+    return {
+      rank,
+      total,
+      points: playerPoints,
+      unranked,
+      displayRank: unranked && rank > 1000 ? '1000+' : String(rank),
+    };
   } catch (error) {
     console.error('getWorldRank', error);
-    return { rank: 0, total: 0 };
+    return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '1000+' };
   }
 }
 

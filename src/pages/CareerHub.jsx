@@ -24,6 +24,7 @@ import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { useToast } from '@/components/ui/use-toast';
+import { getTeamRank } from '@/lib/teamRanking.js';
 
 const safe = (promise, fallback = []) => promise.catch((error) => {
   console.warn('[CareerControlCenter] módulo secundário indisponível', error);
@@ -114,7 +115,7 @@ export default function CareerHub() {
           safe(getWorldRank(p), { rank: 0, total: 0 }),
           p ? safe(localGame.entities.TrainingSession.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(localGame.entities.MissionProgress.filter({ profile_id: p.id })) : [],
-          p?.partner_id ? safe(localGame.entities.TeamRanking.list('-ranking_points', 500)) : [],
+          p?.partner_id ? safe(localGame.entities.AthleteProfile.filter({ id: p.partner_id }), []) : [],
           safe(localGame.entities.Tournament.filter({ status: 'inscricoes' })),
           safe(localGame.entities.Post.list('-created_date', 5)),
           p ? safe(localGame.entities.CareerMessage.filter({ profile_id: p.id }, '-created_date', 8)) : [],
@@ -134,10 +135,10 @@ export default function CareerHub() {
         (prog || []).forEach((row) => { progressMap[row.mission_id] = row; });
         setProgress(progressMap);
 
-        if (teamRankings?.length && p?.partner_id) {
-          const teamKey = [p.id, p.partner_id].sort().join('_');
-          const idx = teamRankings.findIndex((team) => team.team_key === teamKey);
-          setTeamRank({ rank: idx >= 0 ? idx + 1 : 0, total: teamRankings.length });
+        if (p?.partner_id) {
+          const partner = Array.isArray(teamRankings) ? teamRankings[0] : null;
+          const resolvedTeamRank = partner ? await safe(getTeamRank(p, partner), { rank: 0, total: 0, unranked: true }) : { rank: 0, total: 0, unranked: true };
+          if (mounted) setTeamRank(resolvedTeamRank);
         }
 
         const careerDate = p?.career_date || '2026-01-01';
@@ -227,7 +228,7 @@ function CareerCommandHeader({ profile, careerExperience, overall, worldRank, ne
         </div>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:w-[520px]">
           <HeaderMetric label="Overall" value={overall} icon={Zap} accent="text-primary" />
-          <HeaderMetric label="Ranking" value={worldRank.rank ? `#${worldRank.rank}` : '—'} icon={Crown} accent="text-amber-400" />
+          <HeaderMetric label="Ranking" value={worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '—'} icon={Crown} accent="text-amber-400" />
           <HeaderMetric label="Próximo torneio" value={nextTournament ? formatShortDate(nextTournament.start_date) : 'Livre'} icon={Trophy} accent="text-cyan-400" />
           <HeaderMetric label="Pendências" value={unreadCount} icon={Bell} accent={unreadCount ? 'text-rose-400' : 'text-muted-foreground'} />
         </div>
@@ -270,7 +271,7 @@ function ActiveMissionPanel({ missions, progress }) {
 }
 
 function CareerSnapshot({ profile, worldRank, teamRank }) {
-  return <div className="grid grid-cols-2 gap-3"><StatCard icon={Gamepad2} label="Partidas" value={profile.matches_played || 0} /><StatCard icon={Trophy} label="Vitórias" value={profile.wins || 0} accent="text-amber-400" /><StatCard icon={Target} label="Aproveit." value={`${winRate(profile)}%`} accent="text-cyan-400" /><StatCard icon={Crown} label="Ranking dupla" value={teamRank.rank ? `#${teamRank.rank}` : '—'} accent="text-purple-400" /><Link to="/ranking" className="col-span-2 flex items-center justify-between rounded-2xl border border-border/60 bg-card/50 p-3 text-xs font-bold hover:border-primary/30"><span>Ranking mundial: {worldRank.rank ? `#${worldRank.rank} de ${worldRank.total}` : 'ainda sem posição'}</span><ChevronRight className="h-4 w-4 text-primary" /></Link></div>;
+  return <div className="grid grid-cols-2 gap-3"><StatCard icon={Gamepad2} label="Partidas" value={profile.matches_played || 0} /><StatCard icon={Trophy} label="Vitórias" value={profile.wins || 0} accent="text-amber-400" /><StatCard icon={Target} label="Aproveit." value={`${winRate(profile)}%`} accent="text-cyan-400" /><StatCard icon={Crown} label="Ranking dupla" value={teamRank.rank ? `#${teamRank.rank}` : '—'} accent="text-purple-400" /><Link to="/ranking" className="col-span-2 flex items-center justify-between rounded-2xl border border-border/60 bg-card/50 p-3 text-xs font-bold hover:border-primary/30"><span>Ranking mundial: {worldRank.rank ? `#${worldRank.displayRank || worldRank.rank} de ${worldRank.total}` : 'ainda sem posição'}</span><ChevronRight className="h-4 w-4 text-primary" /></Link></div>;
 }
 
 function TournamentAndNews({ tournaments, posts, careerDate }) {

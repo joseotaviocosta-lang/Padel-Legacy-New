@@ -29,8 +29,8 @@ export default function Ranking() {
         const { p, c, t, a } = await loadModuleTasks({
           p: { task: () => localGame.entities.PlayerProfile.list('-xp', 100), fallback: [], label: 'perfis do ranking' },
           c: { task: () => localGame.entities.Club.list('-club_points', 100), fallback: [], label: 'clubes do ranking' },
-          t: { task: () => localGame.entities.TeamRanking.list('-ranking_points', 100), fallback: [], label: 'ranking de duplas' },
-          a: { task: () => localGame.entities.AthleteProfile.list('ranking_position', 200), fallback: [], label: 'atletas do ranking' },
+          t: { task: () => localGame.entities.TeamRanking.list('-ranking_points', 600), fallback: [], label: 'ranking de duplas' },
+          a: { task: () => localGame.entities.AthleteProfile.list('ranking_position', 1200), fallback: [], label: 'atletas do ranking' },
         });
         setPlayers(p || []);
         setClubs(c || []);
