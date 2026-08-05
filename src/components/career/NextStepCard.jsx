@@ -88,7 +88,7 @@ export function getNextStep(profile, upcomingTournaments) {
     return {
       icon: Heart,
       title: 'Energia baixa',
-      description: 'Recupere energia com fisioterapia ou descanso antes de continuar.',
+      description: 'Avance um dia sem atividade para recuperar energia. Para recuperação contínua, contrate um fisioterapeuta na equipe.',
       to: '/game/training',
       cta: 'Recuperar',
       accent: 'red',

@@ -66,7 +66,7 @@ export default function ConditionPanel({ profile }) {
           <Shield className="h-5 w-5 text-red-400 shrink-0" />
           <div className="flex-1">
             <p className="text-sm font-bold text-red-300">Lesionado</p>
-            <p className="text-xs text-red-400/70">Recupera em {injuryRecoveryDays(profile)} dias. Use fisioterapia ou avance o calendário.</p>
+            <p className="text-xs text-red-400/70">Recupera em {injuryRecoveryDays(profile)} dias. Avance o calendário; um fisioterapeuta contratado reduz a fadiga diária e o risco de recaída.</p>
           </div>
         </div>
       )}

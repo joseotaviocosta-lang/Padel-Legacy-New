@@ -11,7 +11,7 @@ import ItemDetailModal from '@/components/shop/ItemDetailModal';
 import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
 import { RARITY_STYLES, RARITY_ORDER, CATEGORY_META } from '@/lib/equipmentCatalog';
 import { computeItemPrice, BADGE_COLORS, seedMarket } from '@/lib/marketEngine';
-import { ensureExpandedShopCatalog, normalizeShopItem } from '@/lib/storeCatalog';
+import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess, SHOP_PROGRESSION } from '@/lib/storeCatalog';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 
 const PAGE_SIZE = 24;
@@ -44,6 +44,7 @@ const RARITIES = [
 ];
 
 const SORTS = [
+  { id: 'recommended', label: 'Recomendados para mim' },
   { id: 'price_asc', label: 'Menor preço' },
   { id: 'price_desc', label: 'Maior preço' },
   { id: 'discount', label: 'Maior desconto' },
@@ -62,7 +63,7 @@ export default function Shop() {
   const [manufacturer, setManufacturer] = useState('all');
   const [subcategory, setSubcategory] = useState('all');
   const [ownership, setOwnership] = useState('all');
-  const [sort, setSort] = useState('price_asc');
+  const [sort, setSort] = useState('recommended');
   const [search, setSearch] = useState('');
   const [showFilters, setShowFilters] = useState(false);
   const [page, setPage] = useState(1);
@@ -85,7 +86,7 @@ export default function Shop() {
         const p = await ensureMyProfile(user);
         setProfile(p);
         const { shopItems, inventory, events, histories, contracts } = await loadModuleTasks({
-          shopItems: { task: () => localGame.entities.ShopItem.filter({ is_available: true }, '-created_date', 500), fallback: [], label: 'itens da loja' },
+          shopItems: { task: () => localGame.entities.ShopItem.filter({ is_available: true }, 'catalog_order', 1000), fallback: [], label: 'itens da loja' },
           inventory: { task: () => p ? localGame.entities.PlayerInventory.filter({ profile_id: p.id }) : [], fallback: [], label: 'inventário' },
           events: { task: () => localGame.entities.MarketEvent.filter({ is_active: true }, '-priority', 20), fallback: [], label: 'eventos do mercado' },
           histories: { task: () => localGame.entities.MarketPriceHistory.filter({}, '-last_updated_date', 200), fallback: [], label: 'histórico de preços' },
@@ -113,6 +114,18 @@ export default function Shop() {
     return map;
   }, [items, marketEvents, priceHistories, playerSponsors]);
 
+  const accessMap = useMemo(() => {
+    const map = {};
+    items.forEach(item => { map[item.id] = getShopItemAccess(profile, item); });
+    return map;
+  }, [items, profile]);
+
+  const progressionStats = useMemo(() => {
+    const unlocked = items.filter(item => accessMap[item.id]?.unlocked).length;
+    const affordable = items.filter(item => accessMap[item.id]?.unlocked && (priceMap[item.id]?.currentPrice ?? item.price) <= (profile?.coins || 0)).length;
+    return { unlocked, locked: Math.max(0, items.length - unlocked), affordable };
+  }, [items, accessMap, priceMap, profile?.coins]);
+
   const manufacturers = useMemo(() => {
     const set = new Set(items.map(i => String(i.manufacturer || '').trim()).filter(Boolean));
     return ['all', ...Array.from(set).sort((a, b) => a.localeCompare(b, 'pt-BR'))];
@@ -132,12 +145,23 @@ export default function Shop() {
     if (subcategory !== 'all') result = result.filter(i => i.subcategory === subcategory);
     if (ownership === 'owned') result = result.filter(i => ownedIds.has(i.id));
     if (ownership === 'not_owned') result = result.filter(i => !ownedIds.has(i.id));
-    if (ownership === 'affordable') result = result.filter(i => (priceMap[i.id]?.currentPrice ?? i.price) <= (profile?.coins || 0));
+    if (ownership === 'affordable') result = result.filter(i => accessMap[i.id]?.unlocked && (priceMap[i.id]?.currentPrice ?? i.price) <= (profile?.coins || 0));
+    if (ownership === 'unlocked') result = result.filter(i => accessMap[i.id]?.unlocked);
+    if (ownership === 'locked') result = result.filter(i => !accessMap[i.id]?.unlocked);
     if (search) result = result.filter(i => i.name.toLowerCase().includes(search.toLowerCase()) || (i.description || '').toLowerCase().includes(search.toLowerCase()));
 
     const rarityVal = (r) => RARITY_ORDER.indexOf(r);
     const getPrice = (item) => safePrice(priceMap[item.id]?.currentPrice, safePrice(item?.price));
     switch (sort) {
+      case 'recommended': result = [...result].sort((a, b) => {
+        const accessA = accessMap[a.id]?.unlocked ? 0 : 1;
+        const accessB = accessMap[b.id]?.unlocked ? 0 : 1;
+        if (accessA !== accessB) return accessA - accessB;
+        const ownedA = ownedIds.has(a.id) ? 1 : 0;
+        const ownedB = ownedIds.has(b.id) ? 1 : 0;
+        if (ownedA !== ownedB) return ownedA - ownedB;
+        return RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity) || getPrice(a) - getPrice(b);
+      }); break;
       case 'price_asc': result = [...result].sort((a, b) => getPrice(a) - getPrice(b)); break;
       case 'price_desc': result = [...result].sort((a, b) => getPrice(b) - getPrice(a)); break;
       case 'discount': result = [...result].sort((a, b) => (priceMap[b.id]?.discount || 0) - (priceMap[a.id]?.discount || 0)); break;
@@ -147,7 +171,7 @@ export default function Shop() {
       case 'name_asc': result = [...result].sort((a, b) => a.name.localeCompare(b.name)); break;
     }
     return result;
-  }, [items, category, rarity, manufacturer, subcategory, ownership, sort, search, priceMap, ownedIds, profile?.coins]);
+  }, [items, category, rarity, manufacturer, subcategory, ownership, sort, search, priceMap, accessMap, ownedIds, profile?.coins]);
 
   const paged = filtered.slice(0, page * PAGE_SIZE);
   const hasMore = filtered.length > paged.length;
@@ -157,6 +181,11 @@ export default function Shop() {
 
   async function buy(item) {
     if (!profile) return;
+    const access = getShopItemAccess(profile, item);
+    if (!access.unlocked) {
+      toast({ title: 'Equipamento ainda bloqueado', description: `Você precisa de ${access.reasons.join(', ')}.`, variant: 'destructive' });
+      return;
+    }
     const pricing = priceMap[item.id];
     const currentPrice = safePrice(pricing?.currentPrice, safePrice(item?.price));
     if ((profile.coins || 0) < currentPrice) {
@@ -206,7 +235,7 @@ export default function Shop() {
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={ShoppingBag} title="Loja de Equipamentos" subtitle={`${items.length} itens disponíveis`} accent="amber">
+      <PageHeader icon={ShoppingBag} title="Loja de Equipamentos" subtitle={`${items.length} itens no catálogo · ${progressionStats.unlocked} liberados para sua carreira`} accent="amber">
         <CoinBadge coins={profile?.coins || 0} size="md" />
         <Link to="/game/inventory" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-secondary/50 text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
           <Package className="h-3.5 w-3.5" /> Inventário
@@ -321,6 +350,8 @@ export default function Shop() {
                   <option value="not_owned" className="bg-card">Ainda não adquiridos</option>
                   <option value="owned" className="bg-card">Já adquiridos</option>
                   <option value="affordable" className="bg-card">Posso comprar agora</option>
+                  <option value="unlocked" className="bg-card">Liberados para minha carreira</option>
+                  <option value="locked" className="bg-card">Bloqueados / objetivos futuros</option>
                 </select>
               </div>
 
@@ -371,7 +402,8 @@ export default function Shop() {
                   const owned = ownedIds.has(item.id);
                   const pricing = priceMap[item.id];
                   const currentPrice = safePrice(pricing?.currentPrice, safePrice(item?.price));
-                  const canAfford = (profile?.coins || 0) >= currentPrice;
+                  const access = accessMap[item.id] || getShopItemAccess(profile, item);
+                  const canAfford = access.unlocked && (profile?.coins || 0) >= currentPrice;
                   const hist = priceHistories.find(h => h.item_id === item.id);
                   const isLimited = hist?.is_limited_stock && hist?.stock_remaining >= 0;
                   const stockLeft = hist?.stock_remaining || 0;
@@ -379,8 +411,13 @@ export default function Shop() {
                     <button
                       key={item.id}
                       onClick={() => setDetailItem(item)}
-                      className={`glass rounded-2xl p-3 flex flex-col gap-2 text-left bg-gradient-to-br ${rarityStyle.card} hover:border-primary/40 hover:scale-[1.02] transition-all press-scale relative overflow-hidden`}
+                      className={`glass rounded-2xl p-3 flex flex-col gap-2 text-left bg-gradient-to-br ${rarityStyle.card} hover:border-primary/40 hover:scale-[1.02] transition-all press-scale relative overflow-hidden ${!access.unlocked ? 'opacity-75' : ''}`}
                     >
+                      {!access.unlocked && (
+                        <span className="absolute inset-x-2 bottom-2 z-20 rounded-lg bg-background/90 border border-border px-2 py-1.5 text-[8px] font-bold text-muted-foreground flex items-center gap-1">
+                          <Lock className="h-3 w-3" /> {access.reasons[0]}
+                        </span>
+                      )}
                       {/* Event badge */}
                       {pricing?.badge && (
                         <span className={`absolute top-2 right-2 z-10 inline-flex items-center rounded-full border px-1.5 py-0.5 text-[7px] font-black uppercase ${BADGE_COLORS[pricing.badge.color] || BADGE_COLORS.primary}`}>
@@ -473,7 +510,8 @@ export default function Shop() {
         <ItemDetailModal
           item={detailItem}
           owned={ownedIds.has(detailItem.id)}
-          canAfford={(profile?.coins || 0) >= safePrice(priceMap[detailItem.id]?.currentPrice, safePrice(detailItem.price))}
+          access={accessMap[detailItem.id] || getShopItemAccess(profile, detailItem)}
+          canAfford={(accessMap[detailItem.id]?.unlocked ?? false) && (profile?.coins || 0) >= safePrice(priceMap[detailItem.id]?.currentPrice, safePrice(detailItem.price))}
           buying={buying === detailItem.id}
           onBuy={() => buy(detailItem)}
           onClose={() => setDetailItem(null)}

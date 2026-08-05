@@ -207,3 +207,123 @@
     to { opacity: 1; filter: blur(0); transform: scale(1); }
   }
 }
+
+@layer base {
+  html {
+    background: hsl(var(--background));
+    scroll-behavior: smooth;
+  }
+
+  body {
+    min-width: 320px;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  button,
+  a,
+  [role="button"] {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  button:focus-visible,
+  a:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .app-shell {
+    position: relative;
+    isolation: isolate;
+  }
+
+  .app-shell::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -2;
+    pointer-events: none;
+    background:
+      radial-gradient(circle at 82% -10%, hsl(var(--primary) / 0.075), transparent 34rem),
+      radial-gradient(circle at 10% 90%, hsl(var(--accent) / 0.045), transparent 32rem),
+      linear-gradient(180deg, hsl(230 35% 6%), hsl(var(--background)) 24rem);
+  }
+
+  .app-shell::after {
+    content: '';
+    position: fixed;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.22;
+    background-image:
+      linear-gradient(hsl(var(--border) / 0.13) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--border) / 0.13) 1px, transparent 1px);
+    background-size: 56px 56px;
+    mask-image: linear-gradient(to bottom, black, transparent 58%);
+  }
+
+  .app-route-stage {
+    min-height: calc(100vh - 4rem);
+  }
+
+  .app-route-stage > :not([data-layout-fullbleed]) {
+    width: 100%;
+  }
+
+  .app-desktop-bar {
+    box-shadow: 0 10px 30px hsl(230 35% 2% / 0.16);
+  }
+
+  .page-surface {
+    border: 1px solid hsl(var(--border) / 0.7);
+    background: linear-gradient(145deg, hsl(var(--card) / 0.82), hsl(var(--card) / 0.56));
+    box-shadow: 0 18px 50px hsl(230 35% 2% / 0.24), inset 0 1px 0 hsl(0 0% 100% / 0.025);
+    backdrop-filter: blur(16px);
+  }
+
+  .interactive-card {
+    transition: transform 180ms ease, border-color 180ms ease, background-color 180ms ease, box-shadow 180ms ease;
+  }
+
+  .interactive-card:hover {
+    border-color: hsl(var(--primary) / 0.25);
+    box-shadow: 0 14px 36px hsl(230 35% 2% / 0.28);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .interactive-card:hover {
+      transform: translateY(-2px);
+    }
+  }
+
+  @media (max-width: 767px) {
+    .app-route-stage {
+      min-height: calc(100vh - 7.9rem);
+    }
+
+    .glass,
+    .glass-premium {
+      backdrop-filter: blur(16px) saturate(150%);
+    }
+
+    .hover-lift:hover,
+    .glass-hover:hover {
+      transform: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      scroll-behavior: auto !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}

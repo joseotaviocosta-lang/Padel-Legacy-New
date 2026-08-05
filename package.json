@@ -1,11 +1,11 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.6.6-alpha.1",
+  "version": "0.7.0-beta.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:tauri": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/free-dev-port.ps1 -Port 5174 -LaunchVite",
+    "dev:tauri": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/free-dev-port.ps1 -Port 5174 && vite --mode desktop",
     "build": "vite build",
     "analyze": "npm run build && node scripts/analyze-build.mjs",
     "lint": "eslint . --quiet",
@@ -16,7 +16,6 @@
     "tauri": "tauri",
     "app:dev": "tauri dev",
     "app:build": "tauri build",
-    "diagnose:dev-port": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File ./scripts/free-dev-port.ps1 -Port 5174 -DiagnoseOnly",
     "android:init": "tauri android init",
     "android:dev": "tauri android dev",
     "android:build": "tauri android build",
@@ -43,7 +42,8 @@
     "test:partner-offers": "node scripts/test-partner-offers-v2.mjs",
     "test:match-playback": "node scripts/test-match-playback-tactics.mjs",
     "test:vite-config": "node scripts/test-vite-config.mjs",
-    "test:live-coach": "node scripts/test-live-coach.mjs"
+    "test:live-coach": "node scripts/test-live-coach.mjs",
+    "test:beta": "node scripts/test-beta-readiness.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

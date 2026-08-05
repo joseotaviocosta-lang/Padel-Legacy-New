@@ -4,7 +4,7 @@ import { Wallet, Star, Users, Building2, TrendingUp, Receipt, ClipboardCheck } f
 import { LoadingScreen } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
-import { hireStaff, fireStaff, buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
+import { hireStaff, fireStaff, renewStaffContract, buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
 import { signSponsorContract, renewContract, terminateSponsorContract } from '@/lib/sponsors';
 import EconomyDashboard from '@/components/economy/EconomyDashboard';
 import SponsorPanel from '@/components/economy/SponsorPanel';
@@ -15,11 +15,13 @@ import FinancialFlow from '@/components/economy/FinancialFlow';
 import OpportunityPanel from '@/components/economy/OpportunityPanel';
 import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
 import { evaluateSponsorContracts, getSponsorEvaluationStatus, completeCareerOpportunity } from '@/game-core';
+import { syncStaffEffects } from '@/game-core/staffLifecycle';
+import { upgradeStaffFacility } from '@/lib/staffFacilities';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: Wallet },
   { id: 'sponsors', label: 'Patrocinadores', icon: Star },
-  { id: 'staff', label: 'Equipe', icon: Users },
+  { id: 'staff', label: 'Comissão', icon: Users },
   { id: 'properties', label: 'Imóveis', icon: Building2 },
   { id: 'investments', label: 'Investimentos', icon: TrendingUp },
   { id: 'flow', label: 'Fluxo', icon: Receipt },
@@ -210,9 +212,12 @@ export default function Economy() {
       )}
       {tab === 'staff' && (
         <StaffPanel
+          profile={profile}
           staff={staff}
-          onHire={(st) => handle('hire', () => hireStaff(profile, st), `${st.name} contratado!`)}
-          onFire={(s) => handle('fire', () => fireStaff(s), `${s.staff_name} demitido`)}
+          onHire={(st) => handle('hire', async () => { await hireStaff(profile, st); return syncStaffEffects(profile); }, `${st.name} contratado!`)}
+          onFire={(s) => handle('fire', async () => { const updated = await fireStaff(s, profile); return syncStaffEffects(updated); }, `${s.staff_name} demitido`)}
+          onRenew={(s, months) => handle(`renew-${s.id}`, async () => { await renewStaffContract(s, profile, months); return syncStaffEffects(profile); }, `Contrato de ${s.staff_name} renovado!`)}
+          onUpgradeFacility={(facility) => handle(`facility-${facility.id}`, async () => { const updated = await upgradeStaffFacility(profile, facility.id); return syncStaffEffects(updated); }, `${facility.name} melhorada!`)}
           busy={busy}
         />
       )}

@@ -4,7 +4,7 @@ import { RARITY_STYLES, CATEGORY_META, SUBCATEGORY_LABELS } from '@/lib/equipmen
 import { ATTRIBUTES } from '@/lib/padel';
 import { BADGE_COLORS } from '@/lib/marketEngine';
 
-export default function ItemDetailModal({ item, owned, canAfford, onBuy, buying, onClose, pricing }) {
+export default function ItemDetailModal({ item, owned, canAfford, access, onBuy, buying, onClose, pricing }) {
   const rarity = RARITY_STYLES[item.rarity] || RARITY_STYLES.comum;
   const cat = CATEGORY_META[item.category] || CATEGORY_META.acessorio;
   const subLabel = SUBCATEGORY_LABELS[item.subcategory] || item.subcategory;
@@ -158,6 +158,20 @@ export default function ItemDetailModal({ item, owned, canAfford, onBuy, buying,
           </div>
         )}
 
+        {access && !access.unlocked && (
+          <div className="glass rounded-xl p-3 mb-4 border border-amber-500/30 bg-amber-500/5">
+            <p className="text-[9px] uppercase text-amber-400 font-bold mb-2 flex items-center gap-1">
+              <Lock className="h-3 w-3" /> Requisitos para desbloquear
+            </p>
+            <div className="space-y-1">
+              {access.reasons.map(reason => (
+                <p key={reason} className="text-[11px] text-muted-foreground">• {reason}</p>
+              ))}
+            </div>
+            <p className="text-[10px] text-muted-foreground mt-2">Este item continuará visível como objetivo de evolução, mas não pode ser comprado antecipadamente.</p>
+          </div>
+        )}
+
         {/* Buy button */}
         {owned ? (
           <div className="w-full py-2.5 rounded-xl bg-secondary/50 text-foreground/50 text-xs font-bold flex items-center justify-center gap-1.5">
@@ -166,13 +180,15 @@ export default function ItemDetailModal({ item, owned, canAfford, onBuy, buying,
         ) : (
           <button
             onClick={onBuy}
-            disabled={!canAfford || buying}
+            disabled={!canAfford || buying || (access && !access.unlocked)}
             className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-              canAfford ? 'bg-primary text-primary-foreground hover:opacity-90 glow-primary' : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
+              canAfford && access?.unlocked !== false ? 'bg-primary text-primary-foreground hover:opacity-90 glow-primary' : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
             }`}
           >
             {buying ? (
               <><div className="h-4 w-4 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Comprando</>
+            ) : access && !access.unlocked ? (
+              <><Lock className="h-4 w-4" /> Bloqueado pela progressão</>
             ) : canAfford ? (
               <>
                 <Coins className="h-4 w-4" />

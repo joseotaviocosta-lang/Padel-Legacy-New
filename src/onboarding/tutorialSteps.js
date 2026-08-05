@@ -88,8 +88,8 @@ export const TUTORIAL_STEPS = [
     explanation: 'Confira a energia antes e depois das atividades e veja como intensidade e repetição geram desgaste.',
     whyItMatters: 'Um atleta cansado treina pior e pode chegar sem condições para competir.',
   }),
-  step('first-recovery', 'use_recovery', 'Use uma ação de recuperação', '/game/training', 'Desenvolvimento do atleta', 'domain_event', {
-    explanation: 'Faça uma recuperação quando a energia estiver baixa ou antes de um compromisso importante.',
+  step('first-recovery', 'visit_recovery', 'Entenda a recuperação automática', '/game/training', 'Desenvolvimento do atleta', 'confirm_understanding', {
+    explanation: 'Dias sem treino ou partida recuperam energia e reduzem fadiga automaticamente ao avançar o calendário.',
     whyItMatters: 'Recuperação faz parte do planejamento; descansar no momento certo também melhora resultados.',
   }),
   step('training-center-known', 'visit_training_center', 'Conheça o centro de treinamento', '/training-center', 'Desenvolvimento do atleta', 'confirm_understanding', {
@@ -304,8 +304,8 @@ export const CORE_GAME_LOOP = ['Planejar', 'Treinar', 'Recuperar', 'Formar dupla
 
 export const GLOSSARY = {
   Atributo: 'Habilidade técnica, física, tática ou mental do atleta.',
-  Energia: 'Recurso consumido por treinos e partidas e recuperado com descanso.',
-  Fadiga: 'Desgaste acumulado que pode reduzir rendimento e recuperação.',
+  Energia: 'Recurso consumido por treinos e partidas e recuperado automaticamente em dias livres.',
+  Fadiga: 'Desgaste acumulado. Dias livres e a equipe técnica ajudam a controlá-lo.',
   Confiança: 'Momento mental que influencia decisões e execução sob pressão.',
   Entrosamento: 'Coordenação construída por uma dupla ao jogar e treinar junta.',
   Reputação: 'Reconhecimento público e esportivo conquistado ao longo da carreira.',

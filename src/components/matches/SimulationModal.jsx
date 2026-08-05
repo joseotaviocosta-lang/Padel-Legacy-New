@@ -116,20 +116,21 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const playerOvr = overallRating(profile);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={onClose}>
-      <div className="glass rounded-t-3xl md:rounded-3xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-5" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-black flex items-center gap-2">
+    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/65 backdrop-blur-sm md:items-center md:p-3" onClick={onClose}>
+      <div className={`glass flex w-full max-w-xl flex-col overflow-hidden rounded-t-2xl md:rounded-2xl ${phase === 'live' ? 'h-[100dvh] md:h-auto md:max-h-[94vh]' : 'max-h-[94vh]'}`} onClick={(e) => e.stopPropagation()}>
+        <div className="flex shrink-0 items-center justify-between border-b border-border/40 px-4 py-3">
+          <h2 className="flex items-center gap-2 text-sm font-black">
             <Cpu className="h-5 w-5 text-primary" /> Partida Treino
           </h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
+          <button onClick={onClose} className="flex h-8 w-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Fechar partida">
             <X className="h-5 w-5" />
           </button>
         </div>
 
+        <div className={`min-h-0 flex-1 ${phase === 'live' ? 'overflow-hidden p-2 md:p-3' : 'overflow-y-auto p-4'}`}>
         {/* Config */}
         {phase === 'config' && (
-          <div className="space-y-5">
+          <div className="space-y-4">
             <div className="glass rounded-xl p-3 flex items-center gap-3">
               <div className="h-11 w-11 rounded-xl bg-primary/20 flex items-center justify-center shrink-0">
                 <span className="font-black text-primary text-lg">{(profile?.sport_name || '?')[0]?.toUpperCase()}</span>
@@ -255,6 +256,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             </button>
           </div>
         )}
+        </div>
       </div>
     </div>
   );

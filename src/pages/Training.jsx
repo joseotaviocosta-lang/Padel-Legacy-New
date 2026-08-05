@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Dumbbell, FastForward, Heart, Moon, Activity, Calendar, TrendingUp, Target, Check, AlertCircle } from 'lucide-react';
-import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, RECOVERY_TYPES, applyRecovery, canDoPhysio, MAX_ENERGY, DAILY_TRAINING_LIMIT } from '@/lib/padel';
+import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Check, AlertCircle, Users } from 'lucide-react';
+import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, MAX_ENERGY, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE, advanceDay } from '@/lib/career';
 import { simulateProRankingWeek } from '@/lib/teamRanking';
 import { SectionCard, EmptyState, ProgressBar, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
+import { Link } from 'react-router-dom';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
 import ConditionPanel from '@/components/training/ConditionPanel';
 import TrainingActivityCard from '@/components/training/TrainingActivityCard';
@@ -32,7 +33,6 @@ export default function Training() {
   const [busy, setBusy] = useState(null);
   const [result, setResult] = useState(null);
   const [activeTraining, setActiveTraining] = useState(null);
-  const [recovering, setRecovering] = useState(null);
   const [advancing, setAdvancing] = useState(false);
   const [activeTab, setActiveTab] = useState('treino');
   const [activeCategory, setActiveCategory] = useState('court');
@@ -147,48 +147,6 @@ export default function Training() {
     }
   }
 
-  async function handleRecovery(r) {
-    if (!profile) return;
-    if (r.isTrainingSlot) {
-      const physioCheck = canDoPhysio(profile);
-      if (!physioCheck.dailyOk) {
-        toast({ title: 'Limite atingido', description: 'Limite diário de treino atingido.', variant: 'destructive' });
-        return;
-      }
-    }
-    if (r.advanceDays) {
-      const hasActivity = (profile?.trainings_today || 0) > 0 || (profile?.practice_matches_today || 0) > 0;
-      if (hasActivity) {
-        toast({ title: 'Bloqueado', description: 'Você já treinou ou jogou hoje. Não pode descansar.', variant: 'destructive' });
-        return;
-      }
-    }
-    if ((profile?.energy ?? 100) >= MAX_ENERGY) {
-      toast({ title: 'Energia cheia', description: 'Sua energia já está no máximo.', variant: 'destructive' });
-      return;
-    }
-    setRecovering(r.id);
-    try {
-      const updated = await applyRecovery(profile, r);
-      if (updated) {
-        setProfile(updated);
-        setResult({ type: 'recovery', success: r });
-        toast({ title: r.label, description: `+${r.energyGain} energia` });
-        if (r.advanceDays) {
-          const totalDays = daysBetween(CAREER_START_DATE, updated.career_date);
-          if (totalDays > 0 && totalDays % 7 === 0) {
-            try { await simulateProRankingWeek(); } catch (e) { console.error(e); }
-          }
-        }
-      } else {
-        toast({ title: 'Indisponível', description: 'Não disponível hoje.', variant: 'destructive' });
-      }
-    } catch (e) {
-      toast({ title: 'Erro', description: 'Erro ao usar recuperação.', variant: 'destructive' });
-    } finally {
-      setRecovering(null);
-    }
-  }
 
   if (loading) return <LoadingScreen />;
 
@@ -262,7 +220,7 @@ export default function Training() {
       {/* Injury warning */}
       {isInjured(profile) && (
         <InfoBanner variant="error" icon={AlertCircle}>
-          Você está lesionado! Recupera em {injuryRecoveryDays(profile)} dias. Use fisioterapia ou avance o calendário.
+          Você está lesionado! Recupera em {injuryRecoveryDays(profile)} dias. Avance o calendário; um fisioterapeuta contratado acelera o controle de fadiga e reduz o risco de novas lesões.
         </InfoBanner>
       )}
 
@@ -286,18 +244,8 @@ export default function Training() {
           <button onClick={() => setResult(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
         </div>
       )}
-      {result?.type === 'recovery' && (
-        <div className="glass rounded-2xl p-4 border border-accent/40 flex items-center gap-3 bg-accent/5 animate-slide-up">
-          <div className="h-10 w-10 rounded-full bg-accent/20 flex items-center justify-center shrink-0">
-            <Heart className="h-5 w-5 text-accent" />
-          </div>
-          <div className="flex-1">
-            <p className="font-bold text-sm">{result.success.label} concluído!</p>
-            <p className="text-xs text-muted-foreground">+{result.success.energyGain} energia{result.success.advanceDays ? ` · ${result.success.advanceDays} dia(s) avançado(s)` : ''}</p>
-          </div>
-          <button onClick={() => setResult(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
-        </div>
-      )}
+
+
 
       {/* Tabs */}
       <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
@@ -318,52 +266,32 @@ export default function Training() {
           {/* Condition panel */}
           <ConditionPanel profile={profile} />
 
-          {/* Recovery section */}
+          {/* Recuperação automática e equipe técnica */}
           <div>
             <h2 className="font-bold text-sm mb-3 px-1 flex items-center gap-2">
               <Heart className="h-4 w-4 text-accent" /> Recuperação
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              {RECOVERY_TYPES.map(r => {
-                const Icon = r.icon === 'Heart' ? Heart : Moon;
-                const fullEnergy = (profile?.energy ?? 100) >= MAX_ENERGY;
-                const isRecovering = recovering === r.id;
-                const physioCheck = canDoPhysio(profile);
-                const hasActivityToday = (profile?.trainings_today || 0) > 0 || (profile?.practice_matches_today || 0) > 0;
-                const restBlocked = r.isTrainingSlot ? (!physioCheck.allowed) : hasActivityToday;
-                const blockedReason = r.isTrainingSlot
-                  ? (!physioCheck.dailyOk ? 'Limite diário' : null)
-                  : (hasActivityToday ? 'Já ativou hoje' : null);
-                const disabled = fullEnergy || isRecovering || restBlocked;
-                return (
-                  <div key={r.id} className="glass rounded-2xl p-4 flex flex-col gap-3">
-                    <div className="flex items-center gap-3">
-                      <div className="h-10 w-10 rounded-xl bg-accent/15 flex items-center justify-center shrink-0">
-                        <Icon className="h-5 w-5 text-accent" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-semibold text-sm">{r.label}</p>
-                        <p className="text-[10px] text-muted-foreground">{r.description}</p>
-                      </div>
-                    </div>
-                    <button
-                      onClick={() => handleRecovery(r)}
-                      disabled={disabled}
-                      className="w-full py-2 rounded-xl bg-accent/15 text-accent font-semibold text-sm hover:bg-accent/25 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                    >
-                      {isRecovering ? (
-                        <><div className="w-4 h-4 border-2 border-accent/30 border-t-accent rounded-full animate-spin" /> Recuperando...</>
-                      ) : fullEnergy ? (
-                        'Energia cheia'
-                      ) : blockedReason ? (
-                        blockedReason
-                      ) : (
-                        <>Usar</>
-                      )}
-                    </button>
+              <div className="glass rounded-2xl p-4 border border-emerald-500/20">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0"><FastForward className="h-5 w-5 text-emerald-400" /></div>
+                  <div>
+                    <p className="font-semibold text-sm">Descanso automático</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">Avance um dia sem treinar ou jogar para recuperar cerca de 32 de energia e reduzir 10 de fadiga. Não é mais necessário escolher “Descanso total”.</p>
                   </div>
-                );
-              })}
+                </div>
+                <button onClick={handleAdvanceDay} disabled={advancing} className="mt-3 w-full py-2 rounded-xl bg-emerald-500/15 text-emerald-300 font-semibold text-sm hover:bg-emerald-500/25 transition-colors disabled:opacity-40">{advancing ? 'Avançando...' : 'Avançar dia'}</button>
+              </div>
+              <div className="glass rounded-2xl p-4 border border-primary/20">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0"><Users className="h-5 w-5 text-primary" /></div>
+                  <div>
+                    <p className="font-semibold text-sm">Fisioterapia pela equipe</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">A fisioterapia deixou de ser uma ação diária. Contrate o profissional mensalmente para reduzir fadiga todos os dias e diminuir o risco de lesões.</p>
+                  </div>
+                </div>
+                <Link to="/game/economy" className="mt-3 flex w-full items-center justify-center py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors">Gerenciar equipe técnica</Link>
+              </div>
             </div>
           </div>
 

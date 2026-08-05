@@ -94,18 +94,21 @@ export async function advanceDay(profile) {
   const oldMonth = (profile.career_date || CAREER_START_DATE).slice(0, 7);
   const newMonth = newCareerDate.slice(0, 7);
 
-  // Fatigued if played a practice match today — recovers less
-  const fatigued = (profile.practice_matches_today || 0) > 0;
-  const recovery = (fatigued ? ENERGY_RECOVERY_FATIGUED : ENERGY_RECOVERY_PER_DAY) + Math.max(0, Number(profile.club_recovery_bonus) || 0);
+  // A recuperação acontece automaticamente ao avançar o dia.
+  // Um dia sem treino ou partida funciona como descanso completo, sem exigir
+  // uma ação manual na tela de treinos.
+  const hadTraining = (profile.trainings_today || 0) > 0;
+  const hadMatch = (profile.practice_matches_today || 0) > 0;
+  const restedFully = !hadTraining && !hadMatch;
+  const baseRecovery = restedFully ? 32 : (hadMatch ? (hadTraining ? 8 : 10) : 16);
+  const recovery = baseRecovery + Math.max(0, Number(profile.club_recovery_bonus) || 0);
 
   // ── Process calendar events for the new day ──
   const calendarResult = await processCalendarEvents(profile, newCareerDate);
 
-  // ── Condition recovery on day advance ──
-  // Fatigue decreases, morale and form recover slightly. If the player
-  // didn't train at all yesterday (no trainings_today), they get bonus recovery.
-  const restedFully = (profile.trainings_today || 0) === 0 && (profile.practice_matches_today || 0) === 0;
-  const fatigueRecovery = restedFully ? 20 : (fatigued ? 8 : 14);
+  // A fadiga representa desgaste acumulado, não uma punição diária.
+  // Dias livres recuperam mais; dias com atividade ainda geram recuperação parcial.
+  const fatigueRecovery = restedFully ? 10 : (hadMatch ? (hadTraining ? 2 : 3) : 4);
   const moraleRecovery = restedFully ? 4 : 2;
   const formRecovery = restedFully ? 3 : 1;
 
@@ -114,6 +117,9 @@ export async function advanceDay(profile) {
     trainings_today: 0,
     practice_matches_today: 0,
     did_physio_today: false,
+    last_day_was_rest: restedFully,
+    last_day_energy_recovery: recovery,
+    last_day_fatigue_recovery: fatigueRecovery,
     energy: Math.min(MAX_ENERGY, (profile.energy || 0) + recovery),
     fatigue: Math.max(0, (profile.fatigue || 0) - fatigueRecovery),
     morale: Math.max(0, Math.min(100, (profile.morale || 70) + moraleRecovery)),

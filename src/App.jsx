@@ -17,6 +17,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import GlobalDayAdvanceSummary from '@/components/calendar/GlobalDayAdvanceSummary';
 import SaveFoundationBootstrap from '@/components/system/SaveFoundationBootstrap';
 import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
+import BetaErrorBoundary from '@/components/system/BetaErrorBoundary';
 
 const lazyPage = (name) => lazy(PAGE_LOADERS[name]);
 const SpritePreview = lazy(() => import('@/pages/dev/SpritePreview.jsx'));
@@ -137,6 +138,7 @@ const AuthenticatedApp = () => {
 
 function App() {
   return (
+    <BetaErrorBoundary>
     <AuthProvider>
       <QueryClientProvider client={queryClientInstance}>
         <CareerProvider>
@@ -151,6 +153,7 @@ function App() {
         </CareerProvider>
       </QueryClientProvider>
     </AuthProvider>
+    </BetaErrorBoundary>
   )
 }
 

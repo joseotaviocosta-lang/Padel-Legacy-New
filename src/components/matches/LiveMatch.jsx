@@ -1,16 +1,52 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Scale, Flame, Shield, Hammer, Brain, Play, Pause, FastForward } from 'lucide-react';
-import { createMatch, playPoint, applyMatchTactic, decideLiveCoachSuggestion, askLiveMatchPartner, formatPoints, MATCH_TACTICS } from '@/lib/matchEngine';
+import {
+  Scale,
+  Flame,
+  Shield,
+  Hammer,
+  Brain,
+  Play,
+  Pause,
+  FastForward,
+  MessageSquareText,
+  ClipboardList,
+  Gauge,
+  ChevronRight,
+} from 'lucide-react';
+import {
+  createMatch,
+  playPoint,
+  applyMatchTactic,
+  decideLiveCoachSuggestion,
+  askLiveMatchPartner,
+  formatPoints,
+  MATCH_TACTICS,
+} from '@/lib/matchEngine';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
+const PANELS = [
+  { id: 'match', label: 'Jogo', icon: MessageSquareText },
+  { id: 'tactics', label: 'Tática', icon: ClipboardList },
+  { id: 'coach', label: 'Técnico', icon: Brain },
+];
 
-export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null, liveCoachSettings, onFinished, displayMode = 'text', onDisplayModeChange }) {
+export default function LiveMatch({
+  teamA,
+  teamB,
+  initialTacticId,
+  coach = null,
+  liveCoachSettings,
+  onFinished,
+  displayMode = 'text',
+  onDisplayModeChange,
+}) {
   const [state, setState] = useState(() => createMatch(teamA, teamB, { initialTacticId, coach, liveCoachSettings }));
   const [tactic, setTactic] = useState(
-    () => MATCH_TACTICS.find(t => t.id === initialTacticId) || MATCH_TACTICS[0]
+    () => MATCH_TACTICS.find((item) => item.id === initialTacticId) || MATCH_TACTICS[0],
   );
   const [autoPlay, setAutoPlay] = useState(true);
   const [speed, setSpeed] = useState(1);
+  const [activePanel, setActivePanel] = useState('match');
   const [tacticFeedback, setTacticFeedback] = useState('');
   const finishedRef = useRef(false);
   const narrationRef = useRef(null);
@@ -19,25 +55,26 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null,
     if (displayMode !== 'quick') return;
     setAutoPlay(false);
     setState((current) => {
-      let next = current; let safety = 3000;
+      let next = current;
+      let safety = 3000;
       while (!next.finished && safety-- > 0) next = playPoint(next);
       return next;
     });
   }, [displayMode]);
 
   useEffect(() => {
-    if (state.finished || !autoPlay) return;
-    const timer = setTimeout(() => {
-      setState(prev => playPoint(prev));
-    }, (displayMode === '2d' ? 3200 : 1000) / speed);
-    return () => clearTimeout(timer);
-  }, [state, autoPlay, speed, displayMode]);
+    if (state.finished || !autoPlay) return undefined;
+    const timer = window.setTimeout(() => {
+      setState((previous) => playPoint(previous));
+    }, 1000 / speed);
+    return () => window.clearTimeout(timer);
+  }, [state, autoPlay, speed]);
 
   useEffect(() => {
-    if (narrationRef.current) {
+    if (activePanel === 'match' && narrationRef.current) {
       narrationRef.current.scrollTop = narrationRef.current.scrollHeight;
     }
-  }, [state.narration.length]);
+  }, [state.narration.length, activePanel]);
 
   useEffect(() => {
     if (state.finished && !finishedRef.current) {
@@ -45,156 +82,423 @@ export default function LiveMatch({ teamA, teamB, initialTacticId, coach = null,
       setAutoPlay(false);
       onFinished(state);
     }
-  }, [state.finished]);
+  }, [state.finished, state, onFinished]);
 
   function advanceUntil(predicate) {
     setAutoPlay(false);
-    setState(prev => { let next = prev; let safety = 3000; while (!next.finished && !predicate(next, prev) && safety-- > 0) next = playPoint(next); return next; });
-  }
-  function changeTactic(nextTactic) {
-    setTactic(nextTactic);
-    setState(prev => applyMatchTactic(prev, nextTactic, 'A'));
-    setTacticFeedback(`Tática alterada para ${nextTactic.label}. ${nextTactic.desc}`);
+    setState((previous) => {
+      let next = previous;
+      let safety = 3000;
+      while (!next.finished && !predicate(next, previous) && safety-- > 0) next = playPoint(next);
+      return next;
+    });
   }
 
-  const pts = formatPoints(state);
+  function changeTactic(nextTactic) {
+    setTactic(nextTactic);
+    setState((previous) => applyMatchTactic(previous, nextTactic, 'A'));
+    setTacticFeedback(`${nextTactic.label}: ${nextTactic.desc}`);
+    setActivePanel('match');
+  }
+
+  const points = formatPoints(state);
   const coachSuggestion = state.liveCoach?.pendingSuggestion;
   const partnerFeedback = state.liveCoach?.partnerFeedback?.at(-1);
   const recent = state.liveCoach?.analytics?.points?.slice(-5) || [];
+  const matchStatus = state.finished
+    ? 'Finalizada'
+    : state.superTiebreak
+      ? 'Super tie-break'
+      : state.inTiebreak
+        ? `Tie-break · set ${state.currentSet}`
+        : `Set ${state.currentSet}`;
 
   return (
-    <div className="space-y-3">
-      <div className="grid grid-cols-2 gap-1">{[['text','Texto'],['quick','Rápido']].map(([id,label])=><button key={id} onClick={()=>onDisplayModeChange?.(id)} className={`rounded-lg px-1 py-1.5 text-[10px] font-bold ${displayMode===id?'bg-primary text-primary-foreground':'bg-secondary/60'}`}>{label}</button>)}</div>
-      {/* Scoreboard */}
-      <div className="glass rounded-2xl p-4">
-        <div className="grid grid-cols-[1fr_2rem_2rem_2.5rem] gap-2 items-center text-[9px] uppercase text-muted-foreground mb-2 px-0.5">
-          <span>Jogadores</span>
-          <span className="text-center">SET</span>
-          <span className="text-center">JG</span>
-          <span className="text-center">PTS</span>
-        </div>
-        {/* Team A */}
-        <div className="grid grid-cols-[1fr_2rem_2rem_2.5rem] gap-2 items-center py-2 border-t border-border/40">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="h-2 w-2 rounded-full bg-primary shrink-0" />
-            <span className="text-xs font-bold truncate">{state.teamANames.join(' & ')}</span>
-          </div>
-          <span className="text-center text-xl font-black tabular-nums text-primary">{state.setsA}</span>
-          <span className="text-center text-xl font-black tabular-nums">{state.gamesA}</span>
-          <span className="text-center text-xl font-black tabular-nums">{pts.a}</span>
-        </div>
-        {/* Team B */}
-        <div className="grid grid-cols-[1fr_2rem_2rem_2.5rem] gap-2 items-center py-2 border-t border-border/40">
-          <div className="flex items-center gap-2 min-w-0">
-            <div className="h-2 w-2 rounded-full bg-amber-400 shrink-0" />
-            <span className="text-xs font-bold truncate">{state.teamBNames.join(' & ')}</span>
-          </div>
-          <span className="text-center text-xl font-black tabular-nums text-amber-400">{state.setsB}</span>
-          <span className="text-center text-xl font-black tabular-nums">{state.gamesB}</span>
-          <span className="text-center text-xl font-black tabular-nums">{pts.b}</span>
-        </div>
-        {/* Status */}
-        <div className="mt-2 pt-2 border-t border-border/40 text-center text-[10px] text-muted-foreground">
-          {state.finished ? 'Partida finalizada' : state.superTiebreak ? 'Super Tiebreak · 3º Set' : state.inTiebreak ? `Tiebreak · Set ${state.currentSet}` : `Set ${state.currentSet}`}
-        </div>
+    <div className="flex min-h-0 flex-col gap-2">
+      <CompactScoreboard state={state} points={points} status={matchStatus} />
+
+      <div className="grid grid-cols-3 gap-1 rounded-xl bg-secondary/40 p-1" role="tablist" aria-label="Painéis da partida">
+        {PANELS.map(({ id, label, icon: Icon }) => {
+          const active = activePanel === id;
+          const hasAlert = id === 'coach' && Boolean(coachSuggestion);
+          return (
+            <button
+              key={id}
+              type="button"
+              role="tab"
+              aria-selected={active}
+              onClick={() => setActivePanel(id)}
+              className={`relative flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-colors ${
+                active ? 'bg-background text-foreground shadow-sm' : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <Icon className="h-3.5 w-3.5" />
+              {label}
+              {hasAlert && <span className="absolute right-2 top-1.5 h-1.5 w-1.5 rounded-full bg-cyan-400" />}
+            </button>
+          );
+        })}
       </div>
 
+      <div className="min-h-[12rem] flex-1 overflow-hidden rounded-xl border border-border/50 bg-background/35">
+        {activePanel === 'match' && (
+          <MatchFeed
+            state={state}
+            narrationRef={narrationRef}
+            displayMode={displayMode}
+            onDisplayModeChange={onDisplayModeChange}
+            tactic={tactic}
+            tacticFeedback={tacticFeedback}
+            coachSuggestion={coachSuggestion}
+            onOpenCoach={() => setActivePanel('coach')}
+          />
+        )}
 
-      <div className="glass rounded-2xl p-3 border border-cyan-500/20 space-y-2" aria-label="Treinador ao vivo">
-        <div className="flex items-center justify-between gap-2"><div><p className="text-[10px] uppercase tracking-wider text-cyan-300 font-bold">Treinador ao vivo</p><p className="text-xs font-semibold">{coach?.name || 'Sem treinador contratado'}</p></div><span className="text-[10px] text-muted-foreground">Próxima janela: fim do game</span></div>
-        {!coach && <p className="text-[10px] text-muted-foreground">Métricas básicas disponíveis; recomendações especializadas desativadas.</p>}
-        {state.liveCoach?.settings?.showLiveMetrics && <div className="grid grid-cols-3 gap-2 text-center"><div className="rounded-lg bg-secondary/40 p-2"><b className="text-sm">{recent.filter(p=>p.winnerTeamId==='A').length}/{recent.length}</b><p className="text-[9px] text-muted-foreground">pontos recentes</p></div><div className="rounded-lg bg-secondary/40 p-2"><b className="text-sm">{state.activeTactics.A?.label}</b><p className="text-[9px] text-muted-foreground">plano atual</p></div><div className="rounded-lg bg-secondary/40 p-2"><b className="text-sm">{Math.round(Math.min(...state.teams.A.map(p=>p.energy)))}</b><p className="text-[9px] text-muted-foreground">energia mínima</p></div></div>}
-        {coachSuggestion && <div className="rounded-xl bg-cyan-500/10 border border-cyan-500/30 p-3 space-y-2"><p className="text-xs font-bold">{coachSuggestion.observation}</p><p className="text-[10px] text-muted-foreground">{coachSuggestion.expectedImpact}</p><p className="text-[10px]">Confiança: <b>{coachSuggestion.confidence}</b> · custo físico: <b>{coachSuggestion.physicalCost}</b></p><div className="grid grid-cols-2 gap-1.5"><button onClick={()=>setState(prev=>decideLiveCoachSuggestion(prev,'apply'))} className="rounded-lg bg-primary px-2 py-1.5 text-[10px] font-bold text-primary-foreground">Aplicar</button><button onClick={()=>setState(prev=>decideLiveCoachSuggestion(prev,'partial',Object.keys(coachSuggestion.suggestedAdjustment?.components||{}).slice(0,1)))} className="rounded-lg bg-secondary px-2 py-1.5 text-[10px] font-bold">Aplicar parcialmente</button><button onClick={()=>setState(prev=>askLiveMatchPartner(prev))} className="rounded-lg bg-secondary px-2 py-1.5 text-[10px] font-bold">Ouvir parceiro</button><button onClick={()=>setState(prev=>decideLiveCoachSuggestion(prev,'ignore'))} className="rounded-lg bg-secondary px-2 py-1.5 text-[10px] font-bold">Manter plano</button></div></div>}
-        {partnerFeedback && <p role="status" className="text-[10px] italic text-muted-foreground">Parceiro: “{partnerFeedback.response}”</p>}
-        {coach && !coachSuggestion && state.pointNumber<4 && <p className="text-[10px] text-muted-foreground">Ainda não há dados suficientes para recomendar uma mudança.</p>}
+        {activePanel === 'tactics' && (
+          <TacticsPanel tactic={tactic} state={state} onChange={changeTactic} />
+        )}
+
+        {activePanel === 'coach' && (
+          <CoachPanel
+            state={state}
+            coach={coach}
+            coachSuggestion={coachSuggestion}
+            partnerFeedback={partnerFeedback}
+            recent={recent}
+            onApply={() => setState((previous) => decideLiveCoachSuggestion(previous, 'apply'))}
+            onPartial={() =>
+              setState((previous) =>
+                decideLiveCoachSuggestion(
+                  previous,
+                  'partial',
+                  Object.keys(coachSuggestion?.suggestedAdjustment?.components || {}).slice(0, 1),
+                ),
+              )
+            }
+            onPartner={() => setState((previous) => askLiveMatchPartner(previous))}
+            onIgnore={() => setState((previous) => decideLiveCoachSuggestion(previous, 'ignore'))}
+          />
+        )}
       </div>
 
-      {/* Narration */}
-      <div className={`glass rounded-2xl p-3 ${displayMode === '2d' ? 'hidden' : ''}`}>
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Narração</p>
-        <div ref={narrationRef} className="h-48 overflow-y-auto space-y-1.5 pr-1">
-          {state.narration.length === 0 && (
-            <p className="text-xs text-muted-foreground/50 text-center py-8">Iniciando partida...</p>
-          )}
-          {state.narration.map((ev, i) => (
-            <NarrationEntry key={i} event={ev} />
+      <PlaybackControls
+        state={state}
+        autoPlay={autoPlay}
+        speed={speed}
+        onTogglePlay={() => setAutoPlay((current) => !current)}
+        onSpeed={setSpeed}
+        onNextPoint={() => advanceUntil((next) => next.pointNumber > state.pointNumber)}
+        onEndGame={() =>
+          advanceUntil(
+            (next, start) =>
+              next.gamesA !== start.gamesA || next.gamesB !== start.gamesB || next.currentSet !== start.currentSet,
+          )
+        }
+        onEndSet={() => advanceUntil((next, start) => next.setsA !== start.setsA || next.setsB !== start.setsB)}
+        onEndMatch={() => {
+          if (window.confirm('Simular até o fim da partida? Você não poderá alterar as próximas decisões táticas.')) {
+            advanceUntil((next) => next.finished);
+          }
+        }}
+      />
+    </div>
+  );
+}
+
+function CompactScoreboard({ state, points, status }) {
+  const teams = [
+    { id: 'A', names: state.teamANames, sets: state.setsA, games: state.gamesA, points: points.a, accent: 'bg-primary', text: 'text-primary' },
+    { id: 'B', names: state.teamBNames, sets: state.setsB, games: state.gamesB, points: points.b, accent: 'bg-amber-400', text: 'text-amber-400' },
+  ];
+
+  return (
+    <section className="overflow-hidden rounded-xl border border-border/50 bg-background/45" aria-label="Placar da partida">
+      <div className="grid grid-cols-[minmax(0,1fr)_2rem_2rem_2.5rem] items-center gap-1 border-b border-border/40 px-3 py-1 text-[8px] font-bold uppercase tracking-wider text-muted-foreground">
+        <span>{status}</span>
+        <span className="text-center">Set</span>
+        <span className="text-center">Jg</span>
+        <span className="text-center">Pts</span>
+      </div>
+      {teams.map((team) => (
+        <div
+          key={team.id}
+          className="grid grid-cols-[minmax(0,1fr)_2rem_2rem_2.5rem] items-center gap-1 border-b border-border/30 px-3 py-1.5 last:border-b-0"
+        >
+          <div className="flex min-w-0 items-center gap-2">
+            <span className={`h-1.5 w-1.5 shrink-0 rounded-full ${team.accent}`} />
+            <span className="truncate text-[11px] font-bold">{team.names.join(' / ')}</span>
+          </div>
+          <strong className={`text-center text-base tabular-nums ${team.text}`}>{team.sets}</strong>
+          <strong className="text-center text-base tabular-nums">{team.games}</strong>
+          <strong className="text-center text-lg tabular-nums">{team.points}</strong>
+        </div>
+      ))}
+    </section>
+  );
+}
+
+function MatchFeed({
+  state,
+  narrationRef,
+  displayMode,
+  onDisplayModeChange,
+  tactic,
+  tacticFeedback,
+  coachSuggestion,
+  onOpenCoach,
+}) {
+  return (
+    <div className="flex h-full min-h-[12rem] flex-col">
+      <div className="flex items-center justify-between gap-2 border-b border-border/40 px-3 py-2">
+        <div className="min-w-0">
+          <p className="truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Narração</p>
+          <p className="truncate text-[10px] text-muted-foreground">Tática: <span className="text-foreground">{tactic.label}</span></p>
+        </div>
+        <div className="flex shrink-0 rounded-lg bg-secondary/50 p-0.5">
+          {[['text', 'Detalhado'], ['quick', 'Rápido']].map(([id, label]) => (
+            <button
+              key={id}
+              type="button"
+              onClick={() => onDisplayModeChange?.(id)}
+              className={`rounded-md px-2 py-1 text-[9px] font-bold ${displayMode === id ? 'bg-primary text-primary-foreground' : 'text-muted-foreground'}`}
+            >
+              {label}
+            </button>
           ))}
         </div>
       </div>
 
-      {/* Tactics */}
-      <div className="glass rounded-2xl p-3">
-        <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Táticas</p>
-        <div className="flex gap-1.5">
-          {MATCH_TACTICS.map(t => {
-            const Icon = TACTIC_ICONS[t.icon] || Scale;
-            const active = tactic.id === t.id;
-            return (
-              <button
-                key={t.id}
-                onClick={() => changeTactic(t)}
-                disabled={state.finished}
-                className={`flex-1 flex flex-col items-center gap-1 py-2 rounded-xl transition-all ${
-                  active
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-                } disabled:opacity-40`}
-              >
-                <Icon className="h-4 w-4" />
-                <span className="text-[9px] font-bold leading-none">{t.label}</span>
-              </button>
-            );
-          })}
-        </div>
-        <p className="text-[10px] text-muted-foreground mt-2 text-center">{tactic.desc}</p>
-        {tacticFeedback && <p role="status" aria-live="polite" className="mt-2 rounded-lg bg-primary/10 px-2 py-1.5 text-center text-[10px] text-primary">{tacticFeedback}</p>}
+      {coachSuggestion && (
+        <button
+          type="button"
+          onClick={onOpenCoach}
+          className="mx-2 mt-2 flex items-center gap-2 rounded-lg border border-cyan-500/30 bg-cyan-500/10 px-2.5 py-2 text-left"
+        >
+          <Brain className="h-3.5 w-3.5 shrink-0 text-cyan-300" />
+          <span className="min-w-0 flex-1 truncate text-[10px] font-semibold">Nova sugestão do técnico</span>
+          <ChevronRight className="h-3.5 w-3.5 shrink-0 text-cyan-300" />
+        </button>
+      )}
+
+      <div ref={narrationRef} className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-2">
+        {state.narration.length === 0 && (
+          <p className="py-10 text-center text-xs text-muted-foreground/60">Iniciando partida...</p>
+        )}
+        {state.narration.map((event, index) => (
+          <NarrationEntry key={`${event.type || 'event'}-${index}`} event={event} />
+        ))}
       </div>
 
-      {/* Controls */}
-      <div className="flex gap-2">
-        {!state.finished ? (
-          <>
-            <button
-              onClick={() => setAutoPlay(p => !p)}
-              className="flex-1 py-2.5 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
-            >
-              {autoPlay ? <><Pause className="h-4 w-4" /> Pausar</> : <><Play className="h-4 w-4" /> Continuar</>}
-            </button>
-            <div className="flex rounded-xl bg-secondary/50 p-1" aria-label="Velocidade">{[1,2,5,10].map(value=><button key={value} onClick={()=>setSpeed(value)} aria-pressed={speed===value} className={`rounded-lg px-2 py-1.5 text-xs font-bold ${speed===value?'bg-primary text-primary-foreground':''}`}>{value}x</button>)}</div>
-          </>
-        ) : (
-          <div className="flex-1 py-2.5 rounded-xl bg-primary/10 text-primary font-bold text-sm flex items-center justify-center gap-2">
-            <div className="w-4 h-4 border-2 border-primary/30 border-t-primary rounded-full animate-spin" />
-            Salvando partida...
-          </div>
-        )}
-      </div>
-      {!state.finished && <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        <button onClick={()=>advanceUntil(next=>next.pointNumber>state.pointNumber)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold">Próximo ponto</button>
-        <button onClick={()=>advanceUntil((next,start)=>next.gamesA!==start.gamesA||next.gamesB!==start.gamesB||next.currentSet!==start.currentSet)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold">Fim do game</button>
-        <button onClick={()=>advanceUntil((next,start)=>next.setsA!==start.setsA||next.setsB!==start.setsB)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold">Fim do set</button>
-        <button onClick={()=>confirm('Simular até o fim da partida? As decisões táticas futuras não poderão ser alteradas.')&&advanceUntil(next=>next.finished)} className="rounded-xl bg-secondary/50 px-2 py-2 text-xs font-bold"><FastForward className="mr-1 inline h-3.5 w-3.5"/>Fim da partida</button>
-      </div>}
+      {tacticFeedback && (
+        <p role="status" aria-live="polite" className="border-t border-border/40 px-3 py-1.5 text-[9px] text-primary">
+          {tacticFeedback}
+        </p>
+      )}
     </div>
+  );
+}
+
+function TacticsPanel({ tactic, state, onChange }) {
+  return (
+    <div className="h-full overflow-y-auto p-3">
+      <p className="mb-2 text-[10px] text-muted-foreground">A mudança passa a valer no próximo ponto.</p>
+      <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {MATCH_TACTICS.map((item) => {
+          const Icon = TACTIC_ICONS[item.icon] || Scale;
+          const active = tactic.id === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => onChange(item)}
+              disabled={state.finished}
+              className={`flex items-center gap-3 rounded-xl border p-3 text-left transition-colors ${
+                active
+                  ? 'border-primary/60 bg-primary/10 text-foreground'
+                  : 'border-border/50 bg-secondary/25 text-muted-foreground hover:text-foreground'
+              } disabled:opacity-40`}
+            >
+              <span className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${active ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+                <Icon className="h-4 w-4" />
+              </span>
+              <span className="min-w-0">
+                <strong className="block text-xs">{item.label}</strong>
+                <span className="mt-0.5 block text-[9px] leading-relaxed">{item.desc}</span>
+              </span>
+            </button>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function CoachPanel({
+  state,
+  coach,
+  coachSuggestion,
+  partnerFeedback,
+  recent,
+  onApply,
+  onPartial,
+  onPartner,
+  onIgnore,
+}) {
+  const minimumEnergy = Math.round(Math.min(...state.teams.A.map((player) => player.energy)));
+
+  return (
+    <div className="h-full overflow-y-auto p-3">
+      <div className="mb-3 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate text-xs font-bold">{coach?.name || 'Sem técnico contratado'}</p>
+          <p className="truncate text-[9px] text-muted-foreground">{coach?.specialty || 'Somente métricas básicas'}</p>
+        </div>
+        <span className="shrink-0 rounded-full bg-secondary/60 px-2 py-1 text-[9px] text-muted-foreground">Fim do game</span>
+      </div>
+
+      {state.liveCoach?.settings?.showLiveMetrics && (
+        <div className="mb-3 grid grid-cols-3 gap-1.5">
+          <Metric value={`${recent.filter((point) => point.winnerTeamId === 'A').length}/${recent.length}`} label="Pontos recentes" />
+          <Metric value={state.activeTactics.A?.label || '—'} label="Plano" />
+          <Metric value={minimumEnergy} label="Energia mínima" />
+        </div>
+      )}
+
+      {coachSuggestion ? (
+        <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
+          <p className="text-xs font-bold">{coachSuggestion.observation}</p>
+          <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">{coachSuggestion.expectedImpact}</p>
+          <p className="mt-2 text-[9px] text-muted-foreground">
+            Confiança: <b className="text-foreground">{coachSuggestion.confidence}</b> · custo físico:{' '}
+            <b className="text-foreground">{coachSuggestion.physicalCost}</b>
+          </p>
+          <div className="mt-3 grid grid-cols-2 gap-1.5">
+            <SmallAction primary onClick={onApply}>Aplicar</SmallAction>
+            <SmallAction onClick={onPartial}>Parcial</SmallAction>
+            <SmallAction onClick={onPartner}>Ouvir dupla</SmallAction>
+            <SmallAction onClick={onIgnore}>Manter plano</SmallAction>
+          </div>
+        </div>
+      ) : (
+        <div className="rounded-xl bg-secondary/30 px-3 py-5 text-center text-[10px] text-muted-foreground">
+          {coach ? 'O técnico ainda está analisando a partida.' : 'Contrate um técnico para receber recomendações especializadas.'}
+        </div>
+      )}
+
+      {partnerFeedback && (
+        <p role="status" className="mt-2 rounded-lg bg-secondary/30 px-3 py-2 text-[10px] italic text-muted-foreground">
+          Parceiro: “{partnerFeedback.response}”
+        </p>
+      )}
+    </div>
+  );
+}
+
+function Metric({ value, label }) {
+  return (
+    <div className="rounded-lg bg-secondary/35 p-2 text-center">
+      <b className="block truncate text-xs">{value}</b>
+      <span className="block truncate text-[8px] text-muted-foreground">{label}</span>
+    </div>
+  );
+}
+
+function SmallAction({ children, primary = false, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`rounded-lg px-2 py-2 text-[10px] font-bold ${primary ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground'}`}
+    >
+      {children}
+    </button>
+  );
+}
+
+function PlaybackControls({
+  state,
+  autoPlay,
+  speed,
+  onTogglePlay,
+  onSpeed,
+  onNextPoint,
+  onEndGame,
+  onEndSet,
+  onEndMatch,
+}) {
+  if (state.finished) {
+    return (
+      <div className="flex min-h-11 items-center justify-center gap-2 rounded-xl bg-primary/10 text-xs font-bold text-primary">
+        <span className="h-4 w-4 animate-spin rounded-full border-2 border-primary/30 border-t-primary" />
+        Salvando partida...
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-1.5 rounded-xl border border-border/50 bg-background/65 p-2 shadow-lg backdrop-blur">
+      <div className="flex items-center gap-1.5">
+        <button
+          type="button"
+          onClick={onTogglePlay}
+          className="flex min-h-9 flex-1 items-center justify-center gap-1.5 rounded-lg bg-primary px-3 text-xs font-bold text-primary-foreground"
+        >
+          {autoPlay ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+          {autoPlay ? 'Pausar' : 'Continuar'}
+        </button>
+        <div className="flex rounded-lg bg-secondary/60 p-0.5" aria-label="Velocidade da partida">
+          {[1, 2, 5, 10].map((value) => (
+            <button
+              key={value}
+              type="button"
+              onClick={() => onSpeed(value)}
+              aria-pressed={speed === value}
+              className={`min-h-8 min-w-8 rounded-md px-1 text-[10px] font-bold ${speed === value ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground'}`}
+            >
+              {value}x
+            </button>
+          ))}
+        </div>
+      </div>
+      <div className="grid grid-cols-4 gap-1">
+        <SkipButton onClick={onNextPoint} label="Ponto" />
+        <SkipButton onClick={onEndGame} label="Game" />
+        <SkipButton onClick={onEndSet} label="Set" />
+        <SkipButton onClick={onEndMatch} label="Fim" icon />
+      </div>
+    </div>
+  );
+}
+
+function SkipButton({ onClick, label, icon = false }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="min-h-8 rounded-lg bg-secondary/45 px-1 text-[9px] font-bold text-muted-foreground hover:bg-secondary hover:text-foreground"
+    >
+      {icon && <FastForward className="mr-0.5 inline h-3 w-3" />}
+      {label}
+    </button>
   );
 }
 
 function NarrationEntry({ event }) {
   if (event.type === 'set' || event.type === 'match') {
     return (
-      <div className={`py-1.5 px-2.5 rounded-lg ${event.type === 'match' ? 'bg-amber-500/10 border border-amber-500/30' : 'bg-primary/10 border border-primary/20'}`}>
-        <p className={`text-sm font-black ${event.type === 'match' ? 'text-amber-400' : 'text-primary'}`}>{event.msg}</p>
+      <div className={`rounded-lg px-2.5 py-1.5 ${event.type === 'match' ? 'border border-amber-500/30 bg-amber-500/10' : 'border border-primary/20 bg-primary/10'}`}>
+        <p className={`text-[11px] font-black ${event.type === 'match' ? 'text-amber-400' : 'text-primary'}`}>{event.msg}</p>
       </div>
     );
   }
 
-  const isGame = event.type === 'game' || event.type === 'tiebreak_end' || event.type === 'tiebreak_start';
+  const highlighted = event.type === 'game' || event.type === 'tiebreak_end' || event.type === 'tiebreak_start';
   const dotColor = event.scorer === 'A' ? 'bg-primary' : 'bg-amber-400';
 
   return (
-    <div className="flex items-start gap-2">
-      {event.scorer && <div className={`h-1.5 w-1.5 rounded-full ${dotColor} shrink-0 mt-1.5`} />}
-      <span className={`text-xs ${isGame ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>{event.msg}</span>
+    <div className={`flex items-start gap-2 rounded-md px-1.5 py-1 ${highlighted ? 'bg-secondary/25' : ''}`}>
+      {event.scorer && <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`} />}
+      <span className={`text-[10px] leading-relaxed ${highlighted ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>{event.msg}</span>
     </div>
   );
 }

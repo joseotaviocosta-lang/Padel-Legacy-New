@@ -54,8 +54,18 @@ export function calculateTrainingGainBudget({ profile, training, intensityId = '
   const clubMultiplier = 1 + clamp(profile?.club_training_bonus, 0, 0.2);
   const coachValues = Object.entries(weights).map(([key, weight]) => Math.max(0, Number(coachBonus?.[key]) || 0) * weight);
   const coachMultiplier = 1 + Math.min(0.15, coachValues.reduce((a, b) => a + b, 0) * 0.012);
-  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier;
-  return { budget: round(Math.max(0.08, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, repetitionMultiplier, affinity, coachMultiplier, intensity };
+  const groupMultiplier = training.groupId === 'court'
+    ? Number(profile?.staff_court_training_multiplier || 1)
+    : training.groupId === 'physical'
+      ? Number(profile?.staff_physical_training_multiplier || 1)
+      : training.groupId === 'mental'
+        ? Number(profile?.staff_mental_training_multiplier || 1)
+        : training.groupId === 'tactical'
+          ? Number(profile?.staff_tactical_training_multiplier || 1)
+          : 1;
+  const staffMultiplier = Math.max(1, Number(profile?.staff_training_gain_multiplier || 1)) * Math.max(1, groupMultiplier);
+  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier;
+  return { budget: round(Math.max(0.08, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, repetitionMultiplier, affinity, coachMultiplier, staffMultiplier, intensity };
 }
 
 export function distributeTrainingGain(profile, training, budget) {
@@ -69,9 +79,12 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
   const training = getTrainingFocus(activity?.id) || activity;
   const calculation = calculateTrainingGainBudget({ profile, training, intensityId, repetitionCount, coachBonus });
   const secondSessionMultiplier = (profile?.trainings_today || 0) > 0 ? 1.5 : 1;
-  const energyCost = Math.round(calculation.intensity.energyCost * secondSessionMultiplier);
+  const staffEnergyMultiplier = Math.max(0.72, Math.min(1, Number(profile?.staff_training_energy_multiplier || 1)));
+  const energyCost = Math.max(1, Math.round(calculation.intensity.energyCost * secondSessionMultiplier * staffEnergyMultiplier));
   const fatigueCost = calculation.intensity.fatigueCost + (training.fatigueExtra || 0);
-  return { ...calculation, gains: distributeTrainingGain(profile, training, calculation.budget), energyCost, energyAfter: Math.max(0, Number(profile?.energy ?? 100) - energyCost), fatigueCost, duration: Math.round(training.duration * calculation.intensity.durationMult), injuryRisk: calculation.intensity.injuryRisk + Math.max(0, clamp(profile?.fatigue) - 35) * 0.001 };
+  const staffInjuryMultiplier = Math.max(0.42, Math.min(1, Number(profile?.staff_injury_risk_multiplier || 1)));
+  const injuryRisk = (calculation.intensity.injuryRisk + Math.max(0, clamp(profile?.fatigue) - 35) * 0.001) * staffInjuryMultiplier;
+  return { ...calculation, gains: distributeTrainingGain(profile, training, calculation.budget), energyCost, energyAfter: Math.max(0, Number(profile?.energy ?? 100) - energyCost), fatigueCost, duration: Math.round(training.duration * calculation.intensity.durationMult), injuryRisk };
 }
 
 export function getPredictedGain(profile, activity, intensityId, weeklyCount = 0, coachBonus = {}) {

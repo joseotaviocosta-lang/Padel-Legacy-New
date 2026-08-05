@@ -1,139 +1,130 @@
-import React, { useMemo } from 'react';
-import { Users, Check, Calculator, Briefcase, HeartPulse, Apple, Brain, Wallet, Activity, Sparkles } from 'lucide-react';
+import React, { useMemo, useState } from 'react';
+import {
+  BadgeCheck, BriefcaseBusiness, Building2, ChartNoAxesCombined, CircleDollarSign,
+  Dumbbell, FileText, HeartPulse, LockKeyhole, PanelsTopLeft, RefreshCw,
+  Sparkles, TrendingUp, Users, WandSparkles, Zap,
+} from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
-import { STAFF_TYPES } from '@/lib/economy';
+import {
+  STAFF_ROLE_DEFINITIONS, getStaffIcon, getStaffMarketForMonth, getStaffSlots,
+  normalizeStaffMember,
+} from '@/lib/staffCatalog';
+import {
+  getActiveStaffSynergies, getFacilitySummary,
+} from '@/lib/staffFacilities';
+import { getStaffWeeklyRecommendations } from '@/game-core/staffLifecycle';
 
-const ICON_MAP = { Calculator, Briefcase, HeartPulse, Apple, Brain };
-
-function safeNumber(value, fallback = 0) {
-  const number = Number(value);
-  return Number.isFinite(number) ? number : fallback;
+function n(value, fallback = 0) { const parsed = Number(value); return Number.isFinite(parsed) ? parsed : fallback; }
+function coins(value) { return n(value).toLocaleString('pt-BR'); }
+function daysUntil(date, currentDate) {
+  if (!date) return null;
+  return Math.ceil((new Date(`${date}T12:00:00`) - new Date(`${currentDate || '2026-01-01'}T12:00:00`)) / 86400000);
 }
 
-function formatCoins(value) {
-  return safeNumber(value).toLocaleString('pt-BR');
+const TIER_CLASS = {
+  Formação: 'text-slate-300 bg-slate-500/10 border-slate-500/20',
+  Regional: 'text-cyan-300 bg-cyan-500/10 border-cyan-500/20',
+  Profissional: 'text-purple-300 bg-purple-500/10 border-purple-500/20',
+  Elite: 'text-amber-300 bg-amber-500/10 border-amber-500/20',
+};
+const EFFECT_LABELS = {
+  allTraining: 'Todos os treinos', courtTraining: 'Quadra', physicalTraining: 'Físico', mentalTraining: 'Mental', tacticalTraining: 'Tático',
+  dailyEnergy: 'Energia diária', dailyFatigue: 'Redução de fadiga', injuryReduction: 'Prevenção', trainingEnergyReduction: 'Economia de energia',
+  sponsorBonus: 'Negociação', expenseReduction: 'Despesas', dailyConfidence: 'Confiança', dailyMorale: 'Moral', analysisLevel: 'Análise', scoutLevel: 'Scout',
+};
+const FACILITY_ICONS = { courts: PanelsTopLeft, gym: Dumbbell, recovery: HeartPulse, analysis: ChartNoAxesCombined, office: Building2 };
+
+function QualityBar({ value, potential }) {
+  return <div className="space-y-1"><div className="flex justify-between text-[10px]"><span>Qualidade</span><span className="font-black">{value}{potential ? ` / ${potential}` : ''}</span></div><div className="h-1.5 rounded-full bg-secondary/60 overflow-hidden"><div className="h-full bg-primary rounded-full" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} /></div></div>;
+}
+function EffectPills({ effects = {} }) {
+  return <div className="flex flex-wrap gap-1.5">{Object.entries(effects).map(([key, value]) => {
+    const direct = ['dailyEnergy', 'dailyFatigue', 'dailyConfidence', 'dailyMorale', 'analysisLevel', 'scoutLevel'].includes(key);
+    return <span key={key} className="rounded-full border border-primary/20 bg-primary/5 px-2 py-1 text-[9px] text-primary">{EFFECT_LABELS[key] || key} {direct ? `+${n(value)}` : `+${Math.round(n(value) * 100)}%`}</span>;
+  })}</div>;
 }
 
-export default function StaffPanel({ staff, onHire, onFire, busy }) {
-  const validStaff = useMemo(() => (staff || []).filter(Boolean), [staff]);
-  const hiredTypes = validStaff.map((member) => member.staff_type);
-  const monthlyCost = validStaff.reduce((sum, member) => sum + Math.max(0, safeNumber(member.monthly_cost)), 0);
+export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, onUpgradeFacility, busy }) {
+  const [view, setView] = useState('team');
+  const [roleFilter, setRoleFilter] = useState('all');
+  const activeStaff = useMemo(() => (staff || []).filter(Boolean).map(normalizeStaffMember).filter(member => !['terminated', 'expired'].includes(member.contract_status)), [staff]);
+  const principalCoachActive = Boolean(profile?.coach_id && profile?.coach_contract_status !== 'terminated');
+  const totalSlots = getStaffSlots(profile?.career_level || 1);
+  const occupiedSlots = activeStaff.length + (principalCoachActive ? 1 : 0);
+  const monthlyCost = activeStaff.reduce((sum, member) => sum + n(member.monthly_cost), 0) + (principalCoachActive ? n(profile?.coach_monthly_salary) : 0);
+  const market = useMemo(() => getStaffMarketForMonth(profile?.career_date, profile), [profile?.career_date, profile?.career_level, profile?.id]);
+  const hiredRoles = new Set(activeStaff.map(member => member.staff_type));
+  const available = market.filter(candidate => (roleFilter === 'all' || candidate.roleId === roleFilter) && !hiredRoles.has(candidate.roleId));
+  const facilities = useMemo(() => getFacilitySummary(profile), [profile?.staff_facilities, profile?.career_level, profile?.coins]);
+  const synergies = useMemo(() => getActiveStaffSynergies(profile, activeStaff), [profile?.staff_facilities, activeStaff]);
+  const snapshot = { staff: activeStaff, types: activeStaff.map(s => s.staff_type), monthlyCost, synergies, facilityEffects: {} };
+  const recommendations = getStaffWeeklyRecommendations(profile, snapshot);
+  const activeSynergies = synergies.filter(item => item.active);
 
-  const activeBonuses = STAFF_TYPES.filter((type) => hiredTypes.includes(type.id));
+  const tabs = [
+    ['team', 'Minha comissão', Users], ['market', 'Mercado mensal', BriefcaseBusiness],
+    ['facilities', 'Instalações', Building2], ['synergies', 'Sinergias', Zap], ['reports', 'Relatórios', FileText],
+  ];
 
-  return (
-    <div className="space-y-4">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-4 border border-border/40">
-          <Users className="h-4 w-4 text-primary mb-2" />
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Profissionais</p>
-          <p className="text-xl font-black">{validStaff.length}/5</p>
-        </div>
-        <div className="glass rounded-2xl p-4 border border-border/40">
-          <Wallet className="h-4 w-4 text-amber-400 mb-2" />
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Folha mensal</p>
-          <p className="text-xl font-black">{formatCoins(monthlyCost)}</p>
-        </div>
-        <div className="glass rounded-2xl p-4 border border-border/40">
-          <Activity className="h-4 w-4 text-emerald-400 mb-2" />
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground">Bônus ativos</p>
-          <p className="text-xl font-black">{activeBonuses.length}</p>
+  return <div className="space-y-5">
+    <GlassCard className="relative overflow-hidden">
+      <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
+      <div className="relative flex flex-col lg:flex-row lg:items-center gap-5">
+        <div className="flex-1"><p className="text-[10px] uppercase tracking-[0.24em] text-primary font-bold">Comissão técnica · Fase 3</p><h2 className="text-2xl font-black mt-1">Estrutura de alta performance</h2><p className="text-sm text-muted-foreground mt-2 max-w-2xl">Profissionais, instalações e especialidades agora trabalham em conjunto. Monte uma estrutura com identidade própria e ganhos reais.</p></div>
+        <div className="grid grid-cols-4 gap-2 min-w-[420px]">
+          <div className="rounded-xl bg-secondary/30 p-3"><Users className="h-4 w-4 text-primary" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Vagas</p><p className="font-black text-lg">{occupiedSlots}/{totalSlots}</p></div>
+          <div className="rounded-xl bg-secondary/30 p-3"><CircleDollarSign className="h-4 w-4 text-amber-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Folha</p><p className="font-black text-lg">{coins(monthlyCost)}</p></div>
+          <div className="rounded-xl bg-secondary/30 p-3"><Building2 className="h-4 w-4 text-cyan-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Estrutura</p><p className="font-black text-lg">{facilities.reduce((sum, item) => sum + item.level, 0)}</p></div>
+          <div className="rounded-xl bg-secondary/30 p-3"><Zap className="h-4 w-4 text-purple-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Sinergias</p><p className="font-black text-lg">{activeSynergies.length}</p></div>
         </div>
       </div>
+    </GlassCard>
 
-      {activeBonuses.length > 0 && (
-        <GlassCard>
-          <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
-            <Sparkles className="h-4 w-4 text-primary" /> Impacto na carreira
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-            {activeBonuses.map((bonus) => {
-              const Icon = ICON_MAP[bonus.icon] || Users;
-              return (
-                <div key={bonus.id} className="rounded-xl bg-primary/5 border border-primary/20 p-3 flex gap-3">
-                  <Icon className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                  <div>
-                    <p className="text-xs font-bold">{bonus.name}</p>
-                    <p className="text-[10px] text-muted-foreground">{bonus.description}</p>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-        </GlassCard>
-      )}
+    <div className="flex gap-2 overflow-x-auto">{tabs.map(([id, label, Icon]) => <button key={id} onClick={() => setView(id)} className={`inline-flex items-center gap-2 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap ${view === id ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}><Icon className="h-4 w-4" />{label}</button>)}</div>
 
-      <GlassCard>
-        <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
-          <Check className="h-4 w-4 text-green-400" /> Equipe contratada
-        </h2>
-        {validStaff.length === 0 ? (
-          <EmptyStateCard icon={Users} message="Nenhum profissional contratado ainda." />
-        ) : (
-          <div className="space-y-2">
-            {validStaff.map((member, index) => {
-              const catalog = STAFF_TYPES.find((type) => type.id === member.staff_type);
-              const Icon = ICON_MAP[catalog?.icon] || Users;
-              return (
-                <div key={member.id || `${member.staff_type}-${index}`} className="flex items-center gap-3 rounded-xl bg-secondary/30 p-3">
-                  <div className="h-9 w-9 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold">{member.staff_name || catalog?.name || 'Profissional'}</p>
-                    <p className="text-[10px] text-muted-foreground">{formatCoins(member.monthly_cost || catalog?.monthly_cost)}/mês</p>
-                    <p className="text-[10px] text-primary mt-0.5">{catalog?.description || 'Bônus ativo na carreira'}</p>
-                  </div>
-                  <button
-                    onClick={() => onFire(member)}
-                    disabled={busy === 'fire'}
-                    className="text-[10px] text-red-400 hover:text-red-300 font-semibold px-2 py-1 rounded-lg hover:bg-red-500/10 transition-colors disabled:opacity-50"
-                  >
-                    Demitir
-                  </button>
-                </div>
-              );
-            })}
-          </div>
-        )}
-      </GlassCard>
+    {view === 'team' && <GlassCard>
+      <div className="mb-4"><h3 className="font-black flex items-center gap-2"><WandSparkles className="h-4 w-4 text-primary" /> Sua comissão</h3><p className="text-[10px] text-muted-foreground mt-1">Acompanhe evolução, satisfação e vencimento dos contratos.</p></div>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {principalCoachActive && <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4"><div className="flex items-center gap-3"><div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center"><WandSparkles className="h-5 w-5 text-primary" /></div><div><p className="font-bold">{profile.coach_name || 'Técnico principal'}</p><p className="text-[10px] text-muted-foreground">Técnico principal · ocupa uma vaga</p></div></div></div>}
+        {activeStaff.map(member => {
+          const role = STAFF_ROLE_DEFINITIONS[member.staff_type]; const Icon = getStaffIcon(role?.icon); const remaining = daysUntil(member.contract_end_date, profile?.career_date);
+          return <div key={member.id || member.staff_id} className="rounded-2xl border border-border/50 bg-secondary/20 p-4 space-y-3">
+            <div className="flex items-start gap-3"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Icon className="h-5 w-5 text-primary" /></div><div className="flex-1 min-w-0"><p className="font-bold text-sm truncate">{member.staff_name}</p><p className="text-[10px] text-muted-foreground">{member.role_name} · {member.specialty_name}</p><p className="text-[9px] text-muted-foreground">{member.personality} · {member.age} anos</p></div><span className="text-[9px] px-2 py-1 rounded-full bg-secondary/50">Nv. {member.staff_level}</span></div>
+            <QualityBar value={member.quality} potential={member.potential} />
+            <div className="grid grid-cols-3 gap-2 text-[9px]"><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Satisfação</p><p className="font-bold">{member.satisfaction}/100</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Salário</p><p className="font-bold">{coins(member.monthly_cost)}</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Contrato</p><p className={`font-bold ${remaining != null && remaining <= 45 ? 'text-amber-400' : ''}`}>{remaining == null ? 'Sem data' : remaining < 0 ? 'Vencido' : `${remaining} dias`}</p></div></div>
+            <EffectPills effects={member.effects} />
+            <div className="flex gap-2"><button disabled={busy || !onRenew} onClick={() => onRenew?.(member, 12)} className="flex-1 py-2 rounded-xl bg-primary/15 text-primary text-xs font-bold disabled:opacity-50">Renovar 12 meses</button><button disabled={busy} onClick={() => onFire(member)} className="px-3 py-2 rounded-xl border border-red-500/20 text-red-400 text-xs disabled:opacity-50">Demitir</button></div>
+          </div>;
+        })}
+      </div>
+      {!principalCoachActive && activeStaff.length === 0 && <EmptyStateCard icon={Users} title="Comissão vazia" description="Contrate profissionais no mercado mensal." />}
+    </GlassCard>}
 
-      <GlassCard>
-        <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
-          <Users className="h-4 w-4 text-primary" /> Mercado de profissionais
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
-          {STAFF_TYPES.map((type) => {
-            const Icon = ICON_MAP[type.icon] || Users;
-            const isHired = hiredTypes.includes(type.id);
-            return (
-              <div key={type.id} className={`rounded-xl border p-3 ${isHired ? 'border-primary/30 bg-primary/5' : 'border-border/40 bg-secondary/20'}`}>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="h-8 w-8 rounded-lg bg-secondary/40 flex items-center justify-center">
-                    <Icon className="h-4 w-4 text-primary" />
-                  </div>
-                  <span className="text-sm font-bold">{type.name}</span>
-                </div>
-                <p className="text-[10px] text-muted-foreground mb-3 min-h-[28px]">{type.description}</p>
-                <div className="flex items-center justify-between gap-2">
-                  <span className="text-[10px] text-amber-400 font-bold">{formatCoins(type.monthly_cost)}/mês</span>
-                  {isHired ? (
-                    <span className="text-[10px] font-bold text-primary flex items-center gap-1"><Check className="h-3 w-3" /> Contratado</span>
-                  ) : (
-                    <button
-                      onClick={() => onHire(type)}
-                      disabled={busy === 'hire'}
-                      className="text-[10px] font-bold px-3 py-1.5 rounded-lg bg-primary text-primary-foreground disabled:opacity-50"
-                    >
-                      Contratar
-                    </button>
-                  )}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </GlassCard>
-    </div>
-  );
+    {view === 'market' && <div className="space-y-4">
+      <GlassCard><div className="flex flex-col md:flex-row md:items-center gap-3"><div className="flex-1"><h3 className="font-black">Mercado de profissionais</h3><p className="text-xs text-muted-foreground mt-1">A disponibilidade e os salários mudam a cada mês da carreira.</p></div><select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="glass rounded-xl px-3 py-2 text-xs"><option value="all">Todas as funções</option>{Object.values(STAFF_ROLE_DEFINITIONS).map(role => <option key={role.id} value={role.id}>{role.name}</option>)}</select></div></GlassCard>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">{available.map(candidate => {
+        const role = STAFF_ROLE_DEFINITIONS[candidate.roleId]; const Icon = getStaffIcon(role?.icon); const locked = n(profile?.career_level, 1) < candidate.minCareerLevel; const noSlot = occupiedSlots >= totalSlots;
+        return <GlassCard key={candidate.id} className={!candidate.available ? 'opacity-60' : ''}><div className="space-y-3"><div className="flex items-start gap-3"><div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center"><Icon className="h-5 w-5 text-primary" /></div><div className="flex-1"><div className="flex items-center gap-2"><p className="font-black text-sm">{candidate.name}</p>{candidate.recommended && <Sparkles className="h-3.5 w-3.5 text-amber-400" />}</div><p className="text-[10px] text-muted-foreground">{candidate.roleName} · {candidate.specialtyName}</p><p className="text-[9px] text-muted-foreground">{candidate.personality} · {candidate.age} anos</p></div><span className={`text-[9px] border rounded-full px-2 py-1 ${TIER_CLASS[candidate.tier]}`}>{candidate.tier}</span></div><QualityBar value={candidate.quality} potential={candidate.potential} /><p className="text-xs text-muted-foreground">{candidate.summary}</p><EffectPills effects={candidate.effects} /><div className="flex items-center justify-between text-xs"><span className="font-bold">{coins(candidate.monthlyCost)} / mês</span><span className="text-muted-foreground">Demanda {candidate.demand}%</span></div>{!candidate.available && <p className="text-[10px] text-amber-400">{candidate.unavailableReason}</p>}<button disabled={busy || locked || noSlot || !candidate.available} onClick={() => onHire(candidate)} className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-xs disabled:opacity-40">{locked ? <><LockKeyhole className="inline h-3 w-3 mr-1" /> Experiência {candidate.minCareerLevel}</> : noSlot ? 'Sem vagas disponíveis' : candidate.available ? 'Contratar por 12 meses' : 'Indisponível'}</button></div></GlassCard>;
+      })}</div>
+    </div>}
+
+    {view === 'facilities' && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {facilities.map(facility => {
+        const Icon = FACILITY_ICONS[facility.id] || Building2;
+        const maxed = facility.level >= facility.maxLevel;
+        const canAfford = n(profile?.coins) >= n(facility.upgradeCost);
+        return <GlassCard key={facility.id}><div className="space-y-4"><div className="flex items-start gap-3"><div className="h-11 w-11 rounded-xl bg-cyan-500/10 flex items-center justify-center"><Icon className="h-5 w-5 text-cyan-300" /></div><div className="flex-1"><h3 className="font-black text-sm">{facility.name}</h3><p className="text-[10px] text-muted-foreground mt-1">{facility.description}</p></div><span className="rounded-full bg-secondary/50 px-2 py-1 text-[9px] font-bold">Nível {facility.level}/{facility.maxLevel}</span></div><div className="grid grid-cols-5 gap-1">{Array.from({ length: facility.maxLevel }).map((_, index) => <div key={index} className={`h-2 rounded-full ${index < facility.level ? 'bg-cyan-400' : 'bg-secondary/60'}`} />)}</div><EffectPills effects={Object.fromEntries(Object.entries(facility.effectsPerLevel || {}).map(([key, value]) => [key, value * Math.max(1, facility.level)]))} /><button disabled={busy || maxed || !facility.unlocked || !canAfford} onClick={() => onUpgradeFacility?.(facility)} className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground text-xs font-black disabled:opacity-40">{maxed ? 'Nível máximo' : !facility.unlocked ? `Experiência ${facility.minCareerLevel}` : !canAfford ? `Faltam moedas · ${coins(facility.upgradeCost)}` : `Melhorar por ${coins(facility.upgradeCost)}`}</button></div></GlassCard>;
+      })}
+    </div>}
+
+    {view === 'synergies' && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+      {synergies.map(synergy => <GlassCard key={synergy.id} className={synergy.active ? 'border border-purple-400/30 bg-purple-500/5' : 'opacity-75'}><div className="space-y-3"><div className="flex items-center gap-3"><div className={`h-10 w-10 rounded-xl flex items-center justify-center ${synergy.active ? 'bg-purple-500/15' : 'bg-secondary/40'}`}><Zap className={`h-5 w-5 ${synergy.active ? 'text-purple-300' : 'text-muted-foreground'}`} /></div><div><p className="font-black text-sm">{synergy.name}</p><p className={`text-[10px] font-bold ${synergy.active ? 'text-purple-300' : 'text-muted-foreground'}`}>{synergy.active ? 'ATIVA' : 'INCOMPLETA'}</p></div></div><p className="text-xs text-muted-foreground">{synergy.description}</p><EffectPills effects={synergy.effects} />{!synergy.active && synergy.missing.length > 0 && <div className="rounded-xl bg-secondary/25 p-3"><p className="text-[9px] uppercase font-bold text-muted-foreground">Falta para ativar</p><p className="text-[10px] mt-1">{synergy.missing.join(' · ')}</p></div>}</div></GlassCard>)}
+    </div>}
+
+    {view === 'reports' && <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
+      <GlassCard><h3 className="font-black flex items-center gap-2"><FileText className="h-4 w-4 text-primary" /> Recomendações da semana</h3><div className="mt-4 space-y-3">{recommendations.map((item, index) => <div key={`${item.title}-${index}`} className="rounded-xl bg-secondary/25 p-3"><div className="flex gap-2"><BadgeCheck className={`h-4 w-4 shrink-0 ${item.priority === 'high' ? 'text-red-400' : item.priority === 'medium' ? 'text-amber-400' : 'text-primary'}`} /><div><p className="text-xs font-bold">{item.title}</p><p className="text-[10px] text-muted-foreground mt-1">{item.body}</p></div></div></div>)}</div></GlassCard>
+      <GlassCard><h3 className="font-black flex items-center gap-2"><TrendingUp className="h-4 w-4 text-primary" /> Evolução profissional</h3><p className="text-xs text-muted-foreground mt-2">A cada virada de mês, profissionais ativos acumulam experiência e podem aumentar a qualidade até o potencial individual.</p><div className="mt-4 space-y-2">{activeStaff.map(member => <div key={member.id} className="flex items-center justify-between rounded-xl bg-secondary/25 p-3"><div><p className="text-xs font-bold">{member.staff_name}</p><p className="text-[9px] text-muted-foreground">{member.staff_xp} XP profissional</p></div><div className="text-right"><p className="text-xs font-black">Nv. {member.staff_level}</p><p className="text-[9px] text-muted-foreground">Potencial {member.potential}</p></div></div>)}</div></GlassCard>
+      <GlassCard className="lg:col-span-2"><h3 className="font-black flex items-center gap-2"><RefreshCw className="h-4 w-4 text-primary" /> Poder de negociação</h3><div className="mt-3 grid grid-cols-1 md:grid-cols-3 gap-3"><div className="rounded-xl bg-secondary/25 p-3"><p className="text-[9px] uppercase text-muted-foreground">Bônus comercial</p><p className="text-xl font-black text-primary">+{Math.round(n(profile?.staff_bonus_manager) * 100)}%</p></div><div className="rounded-xl bg-secondary/25 p-3"><p className="text-[9px] uppercase text-muted-foreground">Redução de despesas</p><p className="text-xl font-black text-primary">-{Math.round(n(profile?.staff_bonus_accountant) * 100)}%</p></div><div className="rounded-xl bg-secondary/25 p-3"><p className="text-[9px] uppercase text-muted-foreground">Força de negociação</p><p className="text-xl font-black text-primary">{Math.round(n(profile?.staff_negotiation_power) * 100)}%</p></div></div></GlassCard>
+    </div>}
+  </div>;
 }

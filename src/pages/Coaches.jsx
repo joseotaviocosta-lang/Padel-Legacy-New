@@ -6,6 +6,8 @@ import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
 import { COACHES_DATA, COACH_TIERS, calculateAffinity, canHireCoach } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
+import { getStaffSlots } from '@/lib/staffCatalog';
+import { syncStaffEffects } from '@/game-core/staffLifecycle';
 
 const TIER_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -67,6 +69,13 @@ export default function Coaches() {
 
   async function handleHire(coach) {
     if (!profile) return;
+    const supportStaff = await localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id });
+    const slots = getStaffSlots(profile.career_level || 1);
+    const occupied = (supportStaff || []).length + (profile.coach_id && profile.coach_contract_status !== 'terminated' ? 1 : 0);
+    if (!profile.coach_id && occupied >= slots) {
+      toast({ title: 'Comissão completa', description: `Todas as ${slots} vagas estão ocupadas. Libere uma vaga em Economia → Comissão.`, variant: 'destructive' });
+      return;
+    }
     const check = canHireCoach(coach, profile);
     if (!check.allowed) {
       toast({ title: 'Não disponível', description: check.reason, variant: 'destructive' });
@@ -82,7 +91,8 @@ export default function Coaches() {
       coach_signing_cost: coach.sign_on_bonus || 0,
       coach_contract_status: 'active',
     });
-    setProfile(updated);
+    const synced = await syncStaffEffects(updated);
+    setProfile(synced);
     setHiredCoach(coach);
     setSelected(null);
     toast({ title: 'Contratado!', description: `${coach.name} é seu novo treinador.` });
@@ -96,7 +106,8 @@ export default function Coaches() {
       coach_monthly_salary: 0,
       coach_contract_status: 'terminated',
     });
-    setProfile(updated);
+    const synced = await syncStaffEffects(updated);
+    setProfile(synced);
     setHiredCoach(null);
     setSelected(null);
     toast({ title: 'Demitido', description: `${hiredCoach.name} não é mais seu treinador.` });

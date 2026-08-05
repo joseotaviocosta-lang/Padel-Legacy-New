@@ -537,9 +537,11 @@ function calculateAge(profile) {
 export function negotiateOffer(sponsor, profile) {
   const match = calculateProfileMatch(sponsor, profile);
   const matchMultiplier = 0.7 + (match.score / 100) * 0.6; // 0.7x to 1.3x
+  const negotiationPower = Math.max(0, Math.min(0.45, Number(profile?.staff_negotiation_power || profile?.staff_bonus_manager || 0)));
+  const negotiatedMultiplier = matchMultiplier * (1 + negotiationPower);
 
-  const monthlySalary = Math.round(sponsor.base_monthly_value * matchMultiplier);
-  const signBonus = Math.round(sponsor.base_sign_bonus * matchMultiplier);
+  const monthlySalary = Math.round(sponsor.base_monthly_value * negotiatedMultiplier);
+  const signBonus = Math.round(sponsor.base_sign_bonus * negotiatedMultiplier);
 
   return {
     monthly_salary: monthlySalary,
@@ -548,6 +550,8 @@ export function negotiateOffer(sponsor, profile) {
     match_score: match.score,
     match_reasons: match.reasons,
     match_multiplier: matchMultiplier,
+    negotiation_power: negotiationPower,
+    negotiated_multiplier: negotiatedMultiplier,
   };
 }
 

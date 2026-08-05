@@ -5,7 +5,7 @@ import { TUTORIAL_CHAPTERS, TUTORIAL_STEPS, TUTORIAL_VERSION } from '../src/onbo
 import { getCurrentTutorialStep, getTutorialProgress, normalizeTutorialState, reconcileTutorialProgress } from '../src/onboarding/tutorialState.js';
 
 const fresh = createDefaultCareerData({ saveName: 'Fluxo E2E', playerName: 'Novo Atleta', careerType: 'normal' });
-assert.equal(TUTORIAL_VERSION, 4);
+assert.equal(TUTORIAL_VERSION, 5);
 assert.equal(getCurrentTutorialStep(fresh.tutorial).id, 'career-created', 'new career starts with an explicit dashboard explanation');
 assert(TUTORIAL_CHAPTERS.length >= 6 && TUTORIAL_STEPS.length >= 40, 'tutorial covers the complete career in progressive chapters');
 assert.equal(new Set(TUTORIAL_STEPS.map(step => step.id)).size, TUTORIAL_STEPS.length, 'step IDs are stable and unique');
@@ -45,4 +45,4 @@ assert(!missionsSource.includes('onboarding_completed: true'), 'style selection 
 assert.match(hubSource, /Começar carreira livre/); assert.match(hubSource, /finishingTutorial/);
 assert(!bridgeSource.includes("visit_career_after_intro"), 'visiting the dashboard does not complete the tutorial');
 
-console.log('TutorialChronologyTest: cronologia v4, capítulos, ações antecipadas, idempotência e retomada aprovados.');
+console.log('TutorialChronologyTest: cronologia v5, capítulos, ações antecipadas, idempotência e retomada aprovados.');

@@ -13,24 +13,22 @@ const navItems = [
 
 export default function BottomNav() {
   return (
-    <nav className="fixed bottom-0 inset-x-0 z-50 md:hidden glass border-t border-border/60">
-      <div className="flex items-center justify-around px-1 py-1.5 max-w-md mx-auto">
+    <nav aria-label="Navegação rápida" className="fixed inset-x-0 bottom-0 z-50 border-t border-border/55 bg-card/88 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_hsl(230_35%_2%/0.48)] backdrop-blur-xl md:hidden">
+      <div className="mx-auto grid h-[4.35rem] max-w-md grid-cols-5 items-center px-1.5">
         {navItems.map((item) => (
-          <NavLink key={item.to} to={item.to} className="relative">
+          <NavLink key={item.to} to={item.to} className="relative flex h-full items-center justify-center">
             {({ isActive }) => (
-              <div className={`relative flex flex-col items-center gap-0.5 px-3 py-1.5 rounded-lg transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground'}`}>
+              <div className={`relative flex min-w-[3.6rem] flex-col items-center justify-center gap-1 rounded-2xl px-2 py-1.5 transition-colors ${isActive ? 'text-primary' : 'text-muted-foreground active:text-foreground'}`}>
                 {isActive && (
                   <motion.div
                     layoutId="bottomNavPill"
-                    className="absolute inset-0 bg-primary/15 rounded-lg"
-                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                    className="absolute inset-x-1 inset-y-1 rounded-2xl border border-primary/10 bg-primary/10"
+                    transition={{ type: 'spring', stiffness: 420, damping: 32 }}
                   />
                 )}
-                <item.icon
-                  className={`relative h-5 w-5 transition-transform duration-300 ${isActive ? 'scale-110' : ''}`}
-                  strokeWidth={isActive ? 2.5 : 2}
-                />
-                <span className="relative text-[10px] font-medium leading-none">{item.label}</span>
+                <item.icon className={`relative h-5 w-5 transition-transform duration-200 ${isActive ? '-translate-y-0.5 scale-110' : ''}`} strokeWidth={isActive ? 2.5 : 2} />
+                <span className={`relative text-[9px] font-bold leading-none ${isActive ? 'opacity-100' : 'opacity-80'}`}>{item.label}</span>
+                {isActive && <span className="absolute bottom-0.5 h-0.5 w-4 rounded-full bg-primary" />}
               </div>
             )}
           </NavLink>

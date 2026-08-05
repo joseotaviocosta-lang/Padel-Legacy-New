@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { STAFF_MARKET, STAFF_ROLE_DEFINITIONS, createStaffContract, getStaffSlots, normalizeStaffMember } from '@/lib/staffCatalog';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 
@@ -13,13 +14,10 @@ export const SPONSORS = [
   { id: 'head', name: 'Head', tier: 'Ouro', monthly_salary: 6000, sign_bonus: 2500, min_xp: 5000, min_titles: 3 },
 ];
 
-export const STAFF_TYPES = [
-  { id: 'accountant', name: 'Contador', icon: 'Calculator', monthly_cost: 800, bonus_type: 'tax_reduction', bonus_value: 0.15, description: 'Reduz 15% de despesas mensais' },
-  { id: 'manager', name: 'Empresário', icon: 'Briefcase', monthly_cost: 1500, bonus_type: 'sponsor_bonus', bonus_value: 0.25, description: 'Aumenta 25% da renda de patrocínios' },
-  { id: 'physio', name: 'Fisioterapeuta', icon: 'HeartPulse', monthly_cost: 1200, bonus_type: 'injury_reduction', bonus_value: 0.50, description: 'Reduz 50% do risco de lesão' },
-  { id: 'nutritionist', name: 'Nutricionista', icon: 'Apple', monthly_cost: 900, bonus_type: 'energy_bonus', bonus_value: 10, description: '+10 energia máxima' },
-  { id: 'mental_coach', name: 'Treinador Mental', icon: 'Brain', monthly_cost: 1100, bonus_type: 'xp_bonus', bonus_value: 0.20, description: '+20% XP de treinos' },
-];
+export const STAFF_TYPES = Object.values(STAFF_ROLE_DEFINITIONS).map((role) => ({
+  id: role.id, name: role.name, icon: role.icon, description: role.purpose,
+}));
+export { STAFF_MARKET, STAFF_ROLE_DEFINITIONS, getStaffSlots };
 
 export const PROPERTIES = [
   { id: 'apartment', name: 'Apartamento', type: 'residencial', price: 50000, monthly_maintenance: 500, bonus_type: 'morale', bonus_value: 5, description: '+5 moral' },
@@ -95,9 +93,10 @@ function getRiskFactor(riskLevel) {
 
 // ── Calculations ──────────────────────────────────────────────────────────
 
-export function calculateMonthlyIncome(contracts, investments, properties, hasManager) {
+export function calculateMonthlyIncome(contracts, investments, properties, managerBonus = 0) {
   let sponsorIncome = (contracts || []).reduce((sum, c) => sum + (c.monthly_salary || 0), 0);
-  if (hasManager) sponsorIncome = Math.round(sponsorIncome * 1.25);
+  const resolvedManagerBonus = managerBonus === true ? 0.25 : Math.max(0, Number(managerBonus) || 0);
+  if (resolvedManagerBonus > 0) sponsorIncome = Math.round(sponsorIncome * (1 + resolvedManagerBonus));
 
   const investmentIncome = (investments || []).filter(Boolean).reduce((sum, rawInvestment) => {
     const inv = normalizePlayerInvestment(rawInvestment);
@@ -112,11 +111,12 @@ export function calculateMonthlyIncome(contracts, investments, properties, hasMa
   return { sponsors: sponsorIncome, investments: investmentIncome, passive: passiveIncome, total: sponsorIncome + investmentIncome + passiveIncome };
 }
 
-export function calculateMonthlyExpenses(staff, properties, hasAccountant) {
-  const staffCost = (staff || []).reduce((sum, s) => sum + (s.monthly_cost || 0), 0);
+export function calculateMonthlyExpenses(staff, properties, accountantReduction = 0) {
+  const staffCost = (staff || []).filter(s => !['terminated', 'expired'].includes(s.contract_status)).reduce((sum, s) => sum + (s.monthly_cost || 0), 0);
   const maintenanceCost = (properties || []).reduce((sum, p) => sum + (p.monthly_maintenance || 0), 0);
   let total = staffCost + maintenanceCost;
-  if (hasAccountant) total = Math.round(total * 0.85);
+  const resolvedReduction = accountantReduction === true ? 0.15 : Math.max(0, Math.min(0.25, Number(accountantReduction) || 0));
+  if (resolvedReduction > 0) total = Math.round(total * (1 - resolvedReduction));
   return { staff: staffCost, maintenance: maintenanceCost, total };
 }
 
@@ -141,11 +141,11 @@ export async function processMonthlyFinances(profile) {
     } else contracts.push(contract);
   }
 
-  const hasManager = hasStaff(staff, 'manager');
-  const hasAccountant = hasStaff(staff, 'accountant');
+  const managerBonus = Number(profile.staff_bonus_manager) || (hasStaff(staff, 'manager') ? 0.18 : 0);
+  const accountantReduction = Number(profile.staff_bonus_accountant) || (hasStaff(staff, 'accountant') ? 0.12 : 0);
 
-  const income = calculateMonthlyIncome(contracts, investments, properties, hasManager);
-  const expenses = calculateMonthlyExpenses(staff, properties, hasAccountant);
+  const income = calculateMonthlyIncome(contracts, investments, properties, managerBonus);
+  const expenses = calculateMonthlyExpenses(staff, properties, accountantReduction);
   const coachSalary = profile.coach_id && profile.coach_contract_status !== 'terminated' ? Math.max(0, Number(profile.coach_monthly_salary) || 0) : 0;
   const clubFee = profile.club_id ? Math.max(0, Number(profile.club_monthly_fee) || 0) : 0;
   expenses.coach = coachSalary;
@@ -214,19 +214,71 @@ export async function terminateContract(contract) {
   await localGame.entities.PlayerContract.update(contract.id, { is_active: false });
 }
 
-export async function hireStaff(profile, staffType) {
+export async function hireStaff(profile, staffCandidate) {
+  if (!profile?.id || !staffCandidate?.id) throw new Error('Profissional inválido.');
+  const current = await localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id });
+  const normalized = (current || []).map(normalizeStaffMember).filter(member => !['terminated', 'expired'].includes(member.contract_status));
+  const principalCoachCount = profile.coach_id && profile.coach_contract_status !== 'terminated' ? 1 : 0;
+  const slots = getStaffSlots(profile.career_level || 1);
+  if (normalized.length + principalCoachCount >= slots) throw new Error(`Todas as ${slots} vagas da comissão estão ocupadas.`);
+  if (normalized.some(member => member.staff_type === staffCandidate.roleId)) {
+    throw new Error(`Você já possui ${STAFF_ROLE_DEFINITIONS[staffCandidate.roleId]?.name || 'um profissional'} nessa função.`);
+  }
+  if ((Number(profile.career_level) || 1) < (staffCandidate.minCareerLevel || 1)) {
+    throw new Error(`Requer Experiência de carreira ${staffCandidate.minCareerLevel}.`);
+  }
+  if (staffCandidate.available === false) throw new Error(staffCandidate.unavailableReason || 'Profissional indisponível neste mês.');
+  const contract = createStaffContract(staffCandidate, profile.career_date, staffCandidate.contractDurationMonths || 12);
   await localGame.entities.PlayerStaffHire.create({
     profile_id: profile.id,
-    staff_type: staffType.id,
-    staff_name: staffType.name,
-    monthly_cost: staffType.monthly_cost,
-    bonus_type: staffType.bonus_type,
-    bonus_value: staffType.bonus_value,
+    staff_id: staffCandidate.id,
+    staff_type: staffCandidate.roleId,
+    staff_name: staffCandidate.name,
+    specialty_id: staffCandidate.specialtyId,
+    specialty_name: staffCandidate.specialtyName,
+    quality: staffCandidate.quality,
+    potential: staffCandidate.potential,
+    age: staffCandidate.age,
+    personality: staffCandidate.personality,
+    monthly_cost: staffCandidate.monthlyCost,
+    base_monthly_cost: staffCandidate.monthlyCost,
+    effects: staffCandidate.effects,
+    hired_date: profile.career_date,
+    ...contract,
   });
 }
 
-export async function fireStaff(staffRecord) {
-  await localGame.entities.PlayerStaffHire.delete(staffRecord.id);
+export async function renewStaffContract(staffRecord, profile, durationMonths = 12) {
+  if (!staffRecord?.id) throw new Error('Profissional inválido.');
+  const member = normalizeStaffMember(staffRecord);
+  const duration = Math.max(3, Math.min(36, Number(durationMonths) || 12));
+  const loyaltyDiscount = Math.min(0.08, Math.max(0, member.satisfaction - 70) / 500);
+  const qualityPremium = Math.max(0, member.quality - 75) / 250;
+  const newSalary = Math.max(300, Math.round(member.monthly_cost * (1 + qualityPremium - loyaltyDiscount) / 50) * 50);
+  const contract = createStaffContract({ ...member, monthlyCost: newSalary }, profile?.career_date, duration);
+  await localGame.entities.PlayerStaffHire.update(member.id, {
+    monthly_cost: newSalary,
+    contract_started_date: contract.contract_started_date,
+    contract_end_date: contract.contract_end_date,
+    contract_duration_months: duration,
+    contract_status: 'active',
+    renewal_requested: false,
+    satisfaction: Math.min(100, member.satisfaction + 6),
+  });
+}
+
+export async function fireStaff(staffRecord, profile) {
+  if (!staffRecord?.id) throw new Error('Profissional inválido.');
+  const member = normalizeStaffMember(staffRecord);
+  const penalty = member.contract_end_date && member.contract_end_date > String(profile?.career_date || '').slice(0, 10)
+    ? Math.round(member.monthly_cost * 0.5) : 0;
+  if (penalty > 0 && Number(profile?.coins || 0) < penalty) throw new Error(`A rescisão custa ${penalty.toLocaleString('pt-BR')} moedas.`);
+  await localGame.entities.PlayerStaffHire.update(staffRecord.id, {
+    contract_status: 'terminated', terminated_date: profile?.career_date || new Date().toISOString().slice(0, 10),
+    termination_penalty: penalty,
+  });
+  if (penalty > 0) return await localGame.entities.PlayerProfile.update(profile.id, { coins: Number(profile.coins || 0) - penalty });
+  return profile;
 }
 
 export async function buyProperty(profile, property) {
