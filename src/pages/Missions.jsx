@@ -210,11 +210,51 @@ export default function Missions() {
   }
 
   async function confirmUnderstanding() {
-    if (!nextTutorial?.objective_type || savingChoice || !profile?.id) return;
-    setSavingChoice(true); setActionError('');
-    try { await incrementMissionProgress(profile.id, nextTutorial.objective_type, 1, profile.career_date, { triggerEventId: `confirm:${nextTutorial.id}` }); await load(); }
-    catch (error) { setActionError(error.message || 'Não foi possível confirmar esta etapa.'); }
-    finally { setSavingChoice(false); }
+    if (!nextTutorial?.id || !nextTutorial?.objective_type || savingChoice || !profile?.id) return;
+
+    setSavingChoice(true);
+    setActionError('');
+    setActionFeedback('Confirmando etapa...');
+
+    try {
+      // Confirma exatamente a missão exibida. Filtrar somente pelo objective_type
+      // podia atingir uma missão antiga/duplicada do catálogo e deixar a etapa atual parada.
+      await incrementMissionProgress(
+        profile.id,
+        nextTutorial.objective_type,
+        1,
+        profile.career_date,
+        {
+          missionId: nextTutorial.id,
+          onlyMissionTypes: ['tutorial'],
+          triggerEventId: `confirm:${profile.id}:${nextTutorial.id}`,
+          allowDuringHydration: true,
+          throwOnError: true,
+        },
+      );
+
+      // Confirma no armazenamento antes de atualizar a interface. Assim, um erro
+      // silencioso nunca deixa o botão parecendo funcionar sem avançar o tutorial.
+      const rows = await localGame.entities.MissionProgress.filter({
+        profile_id: profile.id,
+        mission_id: nextTutorial.id,
+      });
+      const confirmed = rows.some(row => row.claimed || row.reward_delivered || row.completed);
+      if (!confirmed) throw new Error('A etapa não foi registrada. Tente novamente.');
+
+      setActionFeedback('Etapa concluída. Carregando o próximo passo...');
+      await load();
+    } catch (error) {
+      console.error('[tutorial] Falha ao confirmar entendimento.', {
+        missionId: nextTutorial.id,
+        objectiveType: nextTutorial.objective_type,
+        error,
+      });
+      setActionFeedback('');
+      setActionError(error.message || 'Não foi possível confirmar esta etapa. Tente novamente.');
+    } finally {
+      setSavingChoice(false);
+    }
   }
 
   const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial').sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);

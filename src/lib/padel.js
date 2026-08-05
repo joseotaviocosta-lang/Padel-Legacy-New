@@ -691,6 +691,7 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
       const missions = (allMissions || []).filter(m =>
         m.is_active !== false
         && m.objective_type === type
+        && (!options.missionId || m.id === options.missionId)
         && !excludedMissionTypes.has(m.mission_type)
         && (!allowedMissionTypes || allowedMissionTypes.has(m.mission_type))
       );
@@ -715,7 +716,10 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
         }
       }
     }
-  } catch (e) { console.error('mission progress', e); }
+  } catch (e) {
+    console.error('mission progress', e);
+    if (options.throwOnError) throw e;
+  }
   return completedNow;
 }
 
