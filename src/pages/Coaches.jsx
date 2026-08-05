@@ -4,10 +4,9 @@ import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
-import { COACHES_DATA, COACH_TIERS, COACH_SPECIALTY_INFO, calculateAffinity, canHireCoach } from '@/lib/coaches';
+import { COACH_TIERS, COACH_SPECIALTY_INFO, calculateAffinity } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
-import { getStaffSlots } from '@/lib/staffCatalog';
-import { syncStaffEffects } from '@/game-core/staffLifecycle';
+import { ensureStarterCoach, hirePrimaryCoach, replaceWithStarterCoach, renewPrimaryCoach } from '@/game-core/coachLifecycle';
 
 const TIER_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -36,32 +35,21 @@ export default function Coaches() {
     setLoading(true);
     try {
       const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
-      if (profiles && profiles[0]) setProfile(profiles[0]);
-
-      // Sincroniza o catálogo completo. Saves antigos costumavam ter apenas 2 treinadores.
-      let dbCoaches = await localGame.entities.Coach.list('-reputation', 100);
-      const normalizeName = value => String(value || '').trim().toLocaleLowerCase('pt-BR');
-      const existingNames = new Set((dbCoaches || []).map(coach => normalizeName(coach.name)));
-      const missingCoaches = COACHES_DATA.filter(coach => !existingNames.has(normalizeName(coach.name)));
-      if (missingCoaches.length > 0) {
-        await localGame.entities.Coach.bulkCreate(missingCoaches.map(coach => ({ ...coach })));
-        dbCoaches = await localGame.entities.Coach.list('-reputation', 100);
-      }
+      const rawProfile = profiles?.[0] || null;
+      const starterResult = rawProfile ? await ensureStarterCoach(rawProfile) : { profile: rawProfile, coach: null };
+      const activeProfile = starterResult.profile || rawProfile;
+      setProfile(activeProfile);
+      const dbCoaches = await localGame.entities.Coach.list('-reputation', 500);
       setCoaches(dbCoaches || []);
-
-      // Find hired coach
-      const profile = profiles?.[0];
-      if (profile?.coach_id) {
-        const hired = (dbCoaches || []).find(c => c.id === profile.coach_id);
-        if (hired) setHiredCoach(hired);
-      }
+      const hired = starterResult.coach || (dbCoaches || []).find(c => c.id === activeProfile?.coach_id) || null;
+      setHiredCoach(hired);
     } catch (e) { console.error(e); }
     setLoading(false);
   }
 
   const filtered = useMemo(() => {
     return coaches.filter(c => {
-      if (activeFilter !== 'all' && c.tier !== activeFilter) return false;
+      if (activeFilter !== 'all' && String(c.tier || '').toLowerCase() !== activeFilter) return false;
       if (search) {
         const s = search.toLowerCase();
         return (c.name || '').toLowerCase().includes(s) || (c.city || '').toLowerCase().includes(s) || (c.specialty || '').toLowerCase().includes(s) || (COACH_SPECIALTY_INFO[c.specialty]?.label || '').toLowerCase().includes(s) || (c.specializations || []).some(item => String(item).toLowerCase().includes(s));
@@ -72,48 +60,39 @@ export default function Coaches() {
 
   async function handleHire(coach) {
     if (!profile) return;
-    const supportStaff = await localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id });
-    const slots = getStaffSlots(profile.career_level || 1);
-    const occupied = (supportStaff || []).length + (profile.coach_id && profile.coach_contract_status !== 'terminated' ? 1 : 0);
-    if (!profile.coach_id && occupied >= slots) {
-      toast({ title: 'Comissão completa', description: `Todas as ${slots} vagas estão ocupadas. Libere uma vaga em Economia → Comissão.`, variant: 'destructive' });
-      return;
+    try {
+      const updated = await hirePrimaryCoach(profile, coach, 12);
+      setProfile(updated);
+      setHiredCoach(coach);
+      setSelected(null);
+      toast({ title: 'Treinador contratado', description: `${coach.name} assume a dupla por 12 meses, com salário mensal de ${updated.coach_monthly_salary} moedas.` });
+    } catch (error) {
+      toast({ title: 'Não foi possível contratar', description: error?.message || 'Verifique os requisitos e o saldo.', variant: 'destructive' });
     }
-    const check = canHireCoach(coach, profile);
-    if (!check.allowed) {
-      toast({ title: 'Não disponível', description: check.reason, variant: 'destructive' });
-      return;
-    }
-    const totalCost = (coach.monthly_cost || 0) + (coach.sign_on_bonus || 0);
-    const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-      coins: (profile.coins || 0) - totalCost,
-      coach_id: coach.id,
-      coach_name: coach.name,
-      coach_hired_date: profile.career_date,
-      coach_monthly_salary: coach.monthly_cost || 0,
-      coach_signing_cost: coach.sign_on_bonus || 0,
-      coach_contract_status: 'active',
-    });
-    const synced = await syncStaffEffects(updated);
-    setProfile(synced);
-    setHiredCoach(coach);
-    setSelected(null);
-    toast({ title: 'Contratado!', description: `${coach.name} é seu novo treinador.` });
   }
 
   async function handleFire() {
     if (!profile || !hiredCoach) return;
-    const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-      coach_id: null,
-      coach_name: null,
-      coach_monthly_salary: 0,
-      coach_contract_status: 'terminated',
-    });
-    const synced = await syncStaffEffects(updated);
-    setProfile(synced);
-    setHiredCoach(null);
-    setSelected(null);
-    toast({ title: 'Demitido', description: `${hiredCoach.name} não é mais seu treinador.` });
+    try {
+      const result = await replaceWithStarterCoach(profile);
+      setProfile(result.profile);
+      setHiredCoach(result.coach);
+      setSelected(null);
+      toast({ title: 'Treinador substituído', description: `${hiredCoach.name} deixou a equipe. ${result.coach?.name || 'O treinador de formação do clube'} assume temporariamente.` });
+    } catch (error) {
+      toast({ title: 'Falha ao substituir', description: error?.message || 'Tente novamente.', variant: 'destructive' });
+    }
+  }
+
+  async function handleRenew() {
+    if (!profile || !hiredCoach) return;
+    try {
+      const updated = await renewPrimaryCoach(profile, hiredCoach, 12);
+      setProfile(updated);
+      toast({ title: 'Contrato renovado', description: `${hiredCoach.name} permanece por mais 12 meses.` });
+    } catch (error) {
+      toast({ title: 'Falha na renovação', description: error?.message || 'Tente novamente.', variant: 'destructive' });
+    }
   }
 
   const availableCount = filtered.length;
@@ -122,15 +101,15 @@ export default function Coaches() {
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Users} title="Treinadores" subtitle="Escolha uma filosofia que complemente seu estilo e acelere sua evolução" accent="primary" />
+      <PageHeader icon={Users} title="Treinador principal" subtitle="O líder técnico da dupla, integrado à comissão e responsável por treinos, táticas e orientação durante as partidas" accent="primary" />
 
       <div className="grid gap-3 md:grid-cols-[1.3fr_1fr]">
         <div className="glass rounded-2xl border border-primary/20 p-4">
           <div className="flex items-start gap-3">
             <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             <div>
-              <p className="text-sm font-black">O treinador define como você evolui</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Ele não aumenta o Overall instantaneamente. Seus bônus melhoram a eficiência dos treinos, a preparação física, a confiança ou a leitura tática conforme a especialidade e a afinidade com seu atleta.</p>
+              <p className="text-sm font-black">A dupla sempre possui um treinador</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">O treinador principal lidera a comissão técnica, recebe salário mensal e influencia treinos, confiança, entrosamento e decisões táticas durante as partidas. O treinador de formação fornecido pelo clube não tem custo para o atleta.</p>
             </div>
           </div>
         </div>
@@ -163,11 +142,9 @@ export default function Coaches() {
             </div>
             <div className="flex-1">
               <p className="font-bold text-sm">{hiredCoach.name}</p>
-              <p className="text-[10px] text-muted-foreground">{hiredCoach.specialty} · {COACH_TIERS[hiredCoach.tier]?.label}</p>
+              <p className="text-[10px] text-muted-foreground">{COACH_SPECIALTY_INFO[hiredCoach.specialty]?.label || hiredCoach.specialty} · {COACH_TIERS[hiredCoach.tier]?.label} · {profile?.coach_paid_by_club ? 'pago pelo clube' : `${profile?.coach_monthly_salary || hiredCoach.monthly_cost} moedas/mês`}</p><p className="text-[9px] text-muted-foreground">Confiança {profile?.coach_trust ?? 55}/100 · contrato até {profile?.coach_contract_end_date || 'fim da temporada'}</p>
             </div>
-            <button onClick={() => setSelected(hiredCoach)} className="text-[11px] font-bold text-primary hover:opacity-80 px-3 py-1.5 rounded-lg bg-primary/10">
-              Ver Detalhes
-            </button>
+            <div className="flex gap-2"><button onClick={handleRenew} className="text-[11px] font-bold text-foreground px-3 py-1.5 rounded-lg bg-secondary/60">Renovar</button><button onClick={() => setSelected(hiredCoach)} className="text-[11px] font-bold text-primary hover:opacity-80 px-3 py-1.5 rounded-lg bg-primary/10">Ver detalhes</button></div>
           </div>
         </div>
       )}

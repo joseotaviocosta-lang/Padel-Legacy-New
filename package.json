@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.8.0-beta.1",
+  "version": "0.9.0-beta.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -50,7 +50,9 @@
     "test:living-world": "node scripts/test-living-world-v23.mjs",
     "test:calendar-advance": "node scripts/test-calendar-advance-v24.mjs",
     "test:global-market": "node scripts/test-global-market-v25.mjs",
-    "test:sports-economy": "node scripts/test-sports-economy-v26.mjs"
+    "test:sports-economy": "node scripts/test-sports-economy-v26.mjs",
+    "test:coaches-v28": "node scripts/test-coach-system-v28.mjs",
+    "test:partnerships-v29": "node scripts/test-living-partnerships-v29.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

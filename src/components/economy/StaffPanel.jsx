@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import {
-  BadgeCheck, BriefcaseBusiness, Building2, ChartNoAxesCombined, CircleDollarSign,
+  BadgeCheck, BriefcaseBusiness, Building2, ChartNoAxesCombined, CircleDollarSign, GraduationCap,
   Dumbbell, FileText, HeartPulse, LockKeyhole, PanelsTopLeft, RefreshCw,
   Sparkles, TrendingUp, Users, WandSparkles, Zap,
 } from 'lucide-react';
@@ -50,7 +51,7 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
   const activeStaff = useMemo(() => (staff || []).filter(Boolean).map(normalizeStaffMember).filter(member => !['terminated', 'expired'].includes(member.contract_status)), [staff]);
   const principalCoachActive = Boolean(profile?.coach_id && profile?.coach_contract_status !== 'terminated');
   const totalSlots = getStaffSlots(profile?.career_level || 1);
-  const occupiedSlots = activeStaff.length + (principalCoachActive ? 1 : 0);
+  const occupiedSlots = activeStaff.length;
   const monthlyCost = activeStaff.reduce((sum, member) => sum + n(member.monthly_cost), 0) + (principalCoachActive ? n(profile?.coach_monthly_salary) : 0);
   const market = useMemo(() => getStaffMarketForMonth(profile?.career_date, profile), [profile?.career_date, profile?.career_level, profile?.id]);
   const hiredRoles = new Set(activeStaff.map(member => member.staff_type));
@@ -85,7 +86,7 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
     {view === 'team' && <GlassCard>
       <div className="mb-4"><h3 className="font-black flex items-center gap-2"><WandSparkles className="h-4 w-4 text-primary" /> Sua comissão</h3><p className="text-[10px] text-muted-foreground mt-1">Acompanhe evolução, satisfação e vencimento dos contratos.</p></div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {principalCoachActive && <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4"><div className="flex items-center gap-3"><div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center"><WandSparkles className="h-5 w-5 text-primary" /></div><div><p className="font-bold">{profile.coach_name || 'Técnico principal'}</p><p className="text-[10px] text-muted-foreground">Técnico principal · ocupa uma vaga</p></div></div></div>}
+        {principalCoachActive && <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3"><div className="flex items-start gap-3"><div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center"><GraduationCap className="h-5 w-5 text-primary" /></div><div className="flex-1"><p className="font-bold">{profile.coach_name || 'Treinador principal'}</p><p className="text-[10px] text-muted-foreground">Líder da comissão · orientação técnica da dupla</p><p className="text-[9px] text-muted-foreground mt-1">{profile?.coach_paid_by_club ? 'Custeado pelo clube' : `${coins(profile?.coach_monthly_salary)} moedas/mês`} · contrato até {profile?.coach_contract_end_date || 'fim da temporada'}</p></div><span className="rounded-full bg-primary/15 px-2 py-1 text-[9px] font-bold text-primary">Obrigatório</span></div><div className="grid grid-cols-3 gap-2 text-[9px]"><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Confiança</p><p className="font-bold">{profile?.coach_trust ?? 55}/100</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Afinidade</p><p className="font-bold">{profile?.coach_affinity ?? 50}/100</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Entendimento</p><p className="font-bold">{profile?.coach_tactical_understanding ?? 25}/100</p></div></div><Link to="/coaches" className="block w-full rounded-xl bg-primary/15 py-2 text-center text-xs font-bold text-primary">Gerenciar treinador principal</Link></div>}
         {activeStaff.map(member => {
           const role = STAFF_ROLE_DEFINITIONS[member.staff_type]; const Icon = getStaffIcon(role?.icon); const remaining = daysUntil(member.contract_end_date, profile?.career_date);
           return <div key={member.id || member.staff_id} className="rounded-2xl border border-border/50 bg-secondary/20 p-4 space-y-3">

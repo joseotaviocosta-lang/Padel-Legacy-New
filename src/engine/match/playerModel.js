@@ -8,6 +8,8 @@ function overallRating(profile) {
   let rating = Math.round(sum / ATTRIBUTE_KEYS.length);
   if (profile._chemistryBonus) rating += Number(profile._chemistryBonus) || 0;
   if (profile._energyPenalty) rating += Number(profile._energyPenalty) || 0;
+  if (profile._coachMatchBonus) rating += Math.max(0, Math.min(3, Number(profile._coachMatchBonus) || 0));
+  if (profile._partnerBondBonus) rating += Math.max(0, Math.min(2.5, Number(profile._partnerBondBonus) || 0));
   return Math.max(1, Math.min(100, rating));
 }
 

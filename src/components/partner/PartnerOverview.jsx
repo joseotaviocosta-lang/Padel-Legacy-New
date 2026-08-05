@@ -1,8 +1,9 @@
 import React from 'react';
-import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle } from 'lucide-react';
+import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
 import { formatDate } from '@/lib/padel';
+import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 
 export default function PartnerOverview({ partnership, profile, onEnd, onNegotiate, onConverse }) {
   if (!partnership) {
@@ -17,6 +18,11 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
 
   const chem = partnership.chemistry || 50;
   const chemLabel = compatibilityLabel(chem);
+  const trust = partnership.partner_trust ?? 55;
+  const morale = partnership.partner_morale ?? 70;
+  const trustLabel = getPartnerBondLabel(trust);
+  const moraleLabel = getPartnerBondLabel(morale);
+  const identity = partnership.partnership_identity || derivePartnershipIdentity(partnership);
   const daysLeft = partnership.scheduled_end_date
     ? daysBetween(profile?.career_date, partnership.scheduled_end_date)
     : 0;
@@ -41,14 +47,18 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           </div>
         </div>
 
-        {/* Chemistry bar */}
-        <div className="mt-4">
-          <div className="flex justify-between text-xs mb-1">
-            <span className="text-muted-foreground">Entrosamento</span>
-            <span className={`font-bold tabular-nums ${chemLabel.color}`}>{chem}/100</span>
-          </div>
-          <div className="h-2 rounded-full bg-secondary overflow-hidden">
-            <div className="h-full rounded-full bg-gradient-to-r from-primary/60 to-primary transition-all duration-500" style={{ width: `${chem}%` }} />
+        {/* Partnership bond */}
+        <div className="mt-4 grid gap-3 md:grid-cols-3">
+          <BondBar label="Entrosamento" value={chem} meta={chemLabel} icon={Sparkles} />
+          <BondBar label="Confiança" value={trust} meta={trustLabel} icon={ShieldCheck} />
+          <BondBar label="Moral" value={morale} meta={moraleLabel} icon={Smile} />
+        </div>
+
+        <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3 flex items-start gap-3">
+          <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+          <div>
+            <p className="text-xs font-black">Identidade: {identity.name}</p>
+            <p className="text-[10px] text-muted-foreground mt-0.5">{identity.description}</p>
           </div>
         </div>
 
@@ -124,6 +134,23 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
         </div>
       )}
 
+      {(partnership.conversations || []).length > 0 && (
+        <div className="glass rounded-2xl p-4">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-3">Conversas recentes</p>
+          <div className="space-y-2">
+            {partnership.conversations.slice(-3).reverse().map((conversation, index) => (
+              <div key={`${conversation.date}-${index}`} className="rounded-xl bg-secondary/40 px-3 py-2">
+                <div className="flex justify-between gap-2">
+                  <p className="text-[10px] font-bold">{conversation.speaker}</p>
+                  <span className="text-[9px] text-muted-foreground">{conversation.date}</span>
+                </div>
+                <p className="text-xs mt-1 text-foreground/90">{conversation.text}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
       {/* Recent conflicts */}
       {(partnership.conflicts || []).filter(c => !c.resolved).length > 0 && (
         <div className="glass rounded-2xl p-4 border border-amber-500/30 bg-amber-500/5">
@@ -138,6 +165,21 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function BondBar({ label, value, meta, icon: Icon }) {
+  return (
+    <div className="rounded-xl bg-secondary/40 p-3">
+      <div className="flex items-center justify-between gap-2 mb-1.5">
+        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"><Icon className="h-3 w-3" /> {label}</span>
+        <span className={`text-[10px] font-black ${meta.color}`}>{value}/100</span>
+      </div>
+      <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
+        <div className="h-full rounded-full bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" style={{ width: `${value}%` }} />
+      </div>
+      <p className={`text-[9px] font-bold mt-1 ${meta.color}`}>{meta.label}</p>
     </div>
   );
 }

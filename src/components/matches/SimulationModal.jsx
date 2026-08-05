@@ -5,11 +5,14 @@ import { X, Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame,
 import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
 import { getPartnerBot } from '@/lib/career';
 import { overallRating, canPlayMatchToday, getChemistryBonus, isInjured, injuryRecoveryDays, getEnergyPenalty } from '@/lib/padel';
+import { getCoachEffects } from '@/lib/coaches';
 import { finalizePracticeMatch } from '@/game-core';
 import { MATCH_TACTICS, getSetScoreString } from '@/lib/matchEngine';
 import { processMatchRelationships } from '@/lib/relationships';
+import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
 import { useToast } from '@/components/ui/use-toast';
+import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
@@ -23,7 +26,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
   const savedRef = useRef(false);
   const { toast } = useToast();
-  useEffect(()=>{if(!profile?.coach_id){setCoach(null);return;}localGame.entities.Coach.get(profile.coach_id).then(setCoach).catch(()=>setCoach(null));},[profile?.coach_id]);
+  useEffect(()=>{let active=true;(async()=>{if(!profile?.id)return;const result=await ensureStarterCoach(profile);if(!active)return;if(result.profile?.id&&result.profile.coach_id!==profile.coach_id){setProfile(result.profile);onProfileUpdate?.(result.profile);}setCoach(result.coach||null);})().catch(()=>{if(active)setCoach(null);});return()=>{active=false;};},[profile?.id,profile?.coach_id]);
   const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
   const changeDisplayMode=(mode)=>setDisplayMode(mode);
 
@@ -45,7 +48,10 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     const opponents = getRandomBots(getDifficultyForPlayer(profile), 2, [partner.id]);
     const chemistryBonus = getChemistryBonus(profile.partner_chemistry || 50);
     const energyPenalty = getEnergyPenalty(profile.energy || 100);
-    const playerForMatch = { ...profile, _chemistryBonus: chemistryBonus, _energyPenalty: energyPenalty };
+    const coachEffects = getCoachEffects(coach, profile);
+    const coachMatchBonus = coach ? Math.min(3, ((coachEffects?.strategyBonus || 0) + (coachEffects?.partnershipBonus || 0)) * 0.35) : 0;
+    const partnerBondBonus = calculatePartnershipPerformanceBonus({ chemistry: profile.partner_chemistry, partner_trust: profile.partner_trust, partner_morale: profile.partner_morale, natural_chemistry: profile.partner_chemistry, shared_matches: profile.matches_played || 0 }) * 40;
+    const playerForMatch = { ...profile, _chemistryBonus: chemistryBonus, _energyPenalty: energyPenalty, _coachMatchBonus: coachMatchBonus, _partnerBondBonus: partnerBondBonus };
     setTeams({ partner, opponents, teamA: [playerForMatch, partner], teamB: opponents });
     savedRef.current = false;
     setPhase('live');
@@ -85,7 +91,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         score: getSetScoreString(matchState),
       });
       let updated = coreResult.updatedProfile;
-      if(matchState.liveCoachReport){updated=await localGame.entities.PlayerProfile.update(updated.id,{live_coach_settings:liveCoachSettings,live_coach_history:[...(updated.live_coach_history||[]),matchState.liveCoachReport].slice(-100),coach_match_observations:[...(updated.coach_match_observations||[]),...(matchState.liveCoach?.observations||[])].slice(-500),tactical_adjustment_history:[...(updated.tactical_adjustment_history||[]),...(matchState.liveCoach?.adjustments||[])].slice(-300)});}
+      if(matchState.liveCoachReport){const applied=Number(matchState.liveCoachReport.suggestionsApplied)||0;updated=await localGame.entities.PlayerProfile.update(updated.id,{live_coach_settings:liveCoachSettings,live_coach_history:[...(updated.live_coach_history||[]),matchState.liveCoachReport].slice(-100),coach_match_observations:[...(updated.coach_match_observations||[]),...(matchState.liveCoach?.observations||[])].slice(-500),tactical_adjustment_history:[...(updated.tactical_adjustment_history||[]),...(matchState.liveCoach?.adjustments||[])].slice(-300),coach_trust:Math.min(100,(Number(updated.coach_trust)||50)+(won?1:0)+(applied>0?1:0)),coach_tactical_understanding:Math.min(100,(Number(updated.coach_tactical_understanding)||20)+1)});}
       setProfile(updated);
       onProfileUpdate?.(updated);
       // Update relationships with partner and opponents (non-blocking)

@@ -5,10 +5,10 @@ export const NAVIGATION_AREAS = [
     { to: '/profile', icon: User, label: 'Perfil do atleta' }, { to: '/game/missions', icon: Target, label: 'Objetivos e missões' }, { to: '/character', icon: Palette, label: 'Aparência' }, { to: '/achievements', icon: Medal, label: 'Conquistas' }, { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' }, { to: '/game/legacy', icon: Crown, label: 'Legado' },
   ]},
   { id: 'development', label: 'Desenvolvimento', description: 'Treino, recuperação, equipe e equipamentos.', to: '/development', icon: Dumbbell, items: [
-    { to: '/game/training', icon: Dumbbell, label: 'Treinos' }, { to: '/training-center', icon: Building2, label: 'Centro de treinamento' }, { to: '/coaches', icon: GraduationCap, label: 'Treinadores' }, { to: '/game/inventory', icon: Package, label: 'Equipamentos' }, { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
+    { to: '/game/training', icon: Dumbbell, label: 'Treinos' }, { to: '/training-center', icon: Building2, label: 'Centro de treinamento' }, { to: '/game/inventory', icon: Package, label: 'Equipamentos' }, { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
   ]},
   { id: 'team', label: 'Dupla e relações', description: 'Parceiros, propostas, contratos e reputação.', to: '/team-hub', icon: Handshake, items: [
-    { to: '/partners', icon: Handshake, label: 'Minha dupla e propostas' }, { to: '/relationships', icon: Heart, label: 'Relacionamentos' }, { to: '/press', icon: Mic, label: 'Imprensa' }, { to: '/fans', icon: Users, label: 'Fãs e torcidas' },
+    { to: '/partners', icon: Handshake, label: 'Minha dupla e propostas' }, { to: '/coaches', icon: GraduationCap, label: 'Treinador principal' }, { to: '/relationships', icon: Heart, label: 'Relacionamentos' }, { to: '/press', icon: Mic, label: 'Imprensa' }, { to: '/fans', icon: Users, label: 'Fãs e torcidas' },
   ]},
   { id: 'competition', label: 'Competições', description: 'Agenda competitiva, jogos, resultados e ranking.', to: '/competitions', icon: Trophy, items: [
     { to: '/tournaments', icon: Award, label: 'Torneios' }, { to: '/game/calendar', icon: Calendar, label: 'Calendário' }, { to: '/matches', icon: Swords, label: 'Partidas' }, { to: '/ranking', icon: Trophy, label: 'Ranking' }, { to: '/game/season', icon: BarChart3, label: 'Temporada' }, { to: '/world-tour/live', icon: Radio, label: 'Circuito ao vivo' },

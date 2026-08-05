@@ -215,16 +215,15 @@ export default function PartnerHub() {
 
   async function handleConverse(text, tone) {
     if (!activePartnership) return;
-    await addConversation(activePartnership.id, profile.sport_name || 'Você', text, tone);
-    // Positive conversation boosts chemistry slightly
-    const chemBoost = tone === 'positivo' ? 2 : tone === 'negativo' ? -3 : 0;
-    if (chemBoost !== 0) {
-      const newChem = Math.max(0, Math.min(100, (activePartnership.chemistry || 50) + chemBoost));
-      const updated = await localGame.entities.Partnership.update(activePartnership.id, { chemistry: newChem });
-      setActivePartnership(updated);
-    }
+    const updated = await addConversation(activePartnership.id, profile.sport_name || 'Você', text, tone);
+    if (updated) setActivePartnership(updated);
     setShowConverse(false);
-    toast({ title: 'Conversa registrada', description: chemBoost > 0 ? 'Entrosamento melhorou!' : chemBoost < 0 ? 'Entrosamento caiu.' : 'Conversa registrada.' });
+    const description = tone === 'positivo' || tone === 'apoio'
+      ? 'A confiança e a moral da dupla melhoraram.'
+      : tone === 'negativo'
+        ? 'A conversa gerou tensão na parceria.'
+        : 'A conversa foi registrada no histórico da dupla.';
+    toast({ title: 'Conversa registrada', description });
     await load();
   }
 

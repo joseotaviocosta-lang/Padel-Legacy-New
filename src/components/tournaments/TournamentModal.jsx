@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { X, Crown, Trophy, Coins, Zap, Star, Play, ChevronRight, Bot, CheckCircle, XCircle, Shield } from 'lucide-react';
 import { overallRating, applyMatchRewards, levelForXp, getChemistryBonus, isInjured, injuryRecoveryDays, getEnergyPenalty, incrementMissionProgress, TOURNAMENT_ENERGY_COST } from '@/lib/padel';
+import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { getTournamentRounds, generateTournamentOpponent, getPartnerBot, getTournamentRewards } from '@/lib/career';
 import { getActivePartnership, recordPartnershipMatch, recordPartnershipTitle } from '@/lib/partnershipSystem';
 import { updateTeamRanking, addTeamTitle, getTeamRank, addTeamRankingPoints } from '@/lib/teamRanking';
@@ -470,7 +471,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         {/* Match */}
         {phase === 'match' && opponent && (
           <LiveMatch
-            teamA={[{ ...profile, _chemistryBonus: getChemistryBonus(profile.partner_chemistry || 50), _energyPenalty: getEnergyPenalty(profile.energy || 100) }, partner].filter(Boolean)}
+            teamA={[{ ...profile, _chemistryBonus: getChemistryBonus(profile.partner_chemistry || 50), _energyPenalty: getEnergyPenalty(profile.energy || 100), _partnerBondBonus: calculatePartnershipPerformanceBonus({ chemistry: profile.partner_chemistry, partner_trust: profile.partner_trust, partner_morale: profile.partner_morale, natural_chemistry: profile.partner_chemistry, shared_matches: profile.matches_played || 0 }) * 40 }, partner].filter(Boolean)}
             teamB={opponent}
             initialTacticId="equilibrado"
             onFinished={handleMatchFinished}

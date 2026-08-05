@@ -84,7 +84,7 @@ export function getCoachImpactSummary(coach, profile) {
   return { title: info.label, summary: info.summary, highlights: highlights.slice(0, 3), benefits: info.benefits };
 }
 
-export const COACHES_DATA = [
+const BASE_COACHES_DATA = [
   {
     name: 'Rafael "Rafa" Mendez',
     nationality: 'Espanha', city: 'Madrid', age: 52,
@@ -708,6 +708,104 @@ export const COACHES_DATA = [
   },
 ];
 
+
+const GENERATED_FIRST_NAMES = ['Lucas','Mateo','Santiago','Thiago','Nicolás','Bruno','Diego','Martín','Pablo','André','João','Caio','Enzo','Hugo','Miguel','Rafael','Tomás','Álvaro','Sergio','Daniel','Marina','Lucía','Camila','Valentina','Clara','Ana','Laura','Paula','Sofia','Elena'];
+const GENERATED_LAST_NAMES = ['Silva','Costa','Mendez','Romero','García','Pereira','Alonso','Navarro','Ferreira','Torres','Vega','Ramos','Santos','Moreira','López','Martínez','Ruiz','Castro','Molina','Suárez'];
+const GENERATED_COUNTRIES = [['Brasil','São Paulo'],['Argentina','Buenos Aires'],['Espanha','Madrid'],['Portugal','Lisboa'],['Itália','Roma'],['França','Paris'],['México','Cidade do México'],['Chile','Santiago'],['Uruguai','Montevidéu']];
+const GENERATED_SPECIALTIES = ['tecnico','estratega','motivacional','fisico','mental'];
+const GENERATED_STYLES = ['colaborativo','analitico','inspirador','tradicional','inovador'];
+const GENERATED_TIER_PLAN = [
+  ['iniciante', 24], ['regional', 28], ['profissional', 24], ['elite', 14], ['lendario', 4],
+];
+const TIER_PROFILE = {
+  iniciante: { rep:[28,49], age:[27,43], monthly:[180,480], signing:[0,250], experience:[2,8] },
+  regional: { rep:[45,64], age:[31,50], monthly:[500,950], signing:[250,900], experience:[6,14] },
+  profissional: { rep:[62,79], age:[35,57], monthly:[1000,2100], signing:[900,3500], experience:[10,22] },
+  elite: { rep:[78,92], age:[40,63], monthly:[2300,4300], signing:[4000,9000], experience:[18,32] },
+  lendario: { rep:[91,99], age:[49,69], monthly:[4800,7500], signing:[10000,20000], experience:[28,42] },
+};
+const SPECIALTY_COMPETENCIES = {
+  tecnico: { technical: 18, tactical: 8, mental: 5, physical: 3, partnership: 8 },
+  estratega: { technical: 7, tactical: 20, mental: 8, physical: 2, partnership: 10 },
+  motivacional: { technical: 4, tactical: 7, mental: 20, physical: 3, partnership: 14 },
+  fisico: { technical: 3, tactical: 4, mental: 6, physical: 20, partnership: 5 },
+  mental: { technical: 4, tactical: 8, mental: 19, physical: 3, partnership: 10 },
+};
+function generatedNumber(seed, min, max) { let h=2166136261; for (const c of String(seed)) { h ^= c.charCodeAt(0); h=Math.imul(h,16777619); } return min + (Math.abs(h>>>0) % (max-min+1)); }
+function buildGeneratedCoach(index, tier) {
+  const profile=TIER_PROFILE[tier];
+  const specialty=GENERATED_SPECIALTIES[index%GENERATED_SPECIALTIES.length];
+  const [nationality,city]=GENERATED_COUNTRIES[index%GENERATED_COUNTRIES.length];
+  const name=`${GENERATED_FIRST_NAMES[index%GENERATED_FIRST_NAMES.length]} ${GENERATED_LAST_NAMES[(index*7+3)%GENERATED_LAST_NAMES.length]}${index>=60?' Filho':''}`;
+  const reputation=generatedNumber(`${name}:rep`,profile.rep[0],profile.rep[1]);
+  const base=Math.max(32,Math.min(96,reputation));
+  const emphasis=SPECIALTY_COMPETENCIES[specialty];
+  const competencies={};
+  for (const key of ['technical','tactical','mental','physical','partnership']) competencies[key]=Math.max(25,Math.min(99,Math.round(base*.72+(emphasis[key]||0))));
+  const specs=specialty==='tecnico'?['forehand','backhand','volley']:specialty==='estratega'?['strategy','lob','positioning']:specialty==='fisico'?['agility','stamina','recovery']:specialty==='mental'?['emotional_control','pressure','focus']:['confidence','communication','resilience'];
+  return {
+    name,nationality,city,
+    age:generatedNumber(`${name}:age`,profile.age[0],profile.age[1]),
+    specialty,coaching_style:GENERATED_STYLES[index%GENERATED_STYLES.length],
+    philosophy:`Desenvolvimento ${COACH_SPECIALTY_INFO[specialty]?.label?.toLowerCase() || 'completo'} com metas claras e evolução sustentável da dupla.`,
+    personality:index%3===0?'Formador':index%3===1?'Metódico':'Motivador',
+    personality_traits:index%3===0?['formador','paciente','trabalhador']:index%3===1?['analitico','disciplinado']:['carismatico','lider'],
+    training_methods:['simulacao_partida', specialty==='fisico'?'condicionamento_fisico':specialty==='estratega'?'video_analise':'repeticao_tecnica','periodizacao'],
+    specializations:specs,
+    preferred_styles:specialty==='estratega'?['Tático','Controle']:specialty==='fisico'?['Agressivo','Potência']:specialty==='motivacional'?['Equilibrado','Defensivo']:['Controle','Equilibrado'],
+    preferred_personalities:['disciplinado','trabalhador','resiliente'],
+    experience_years:generatedNumber(`${name}:exp`,profile.experience[0],profile.experience[1]),
+    reputation,tier,
+    monthly_cost:generatedNumber(`${name}:salary`,profile.monthly[0],profile.monthly[1]),
+    sign_on_bonus:generatedNumber(`${name}:sign`,profile.signing[0],profile.signing[1]),
+    performance_bonus_pct:generatedNumber(`${name}:perf`,0,tier==='iniciante'?1:4),
+    demands:{ min_level:tier==='iniciante'?'Iniciante':tier==='regional'?'Amador':tier==='profissional'?'Competitivo':tier==='elite'?'Avançado':'Elite', min_reputation:tier==='iniciante'?0:tier==='regional'?8:tier==='profissional'?25:tier==='elite'?50:75 },
+    track_record:{ athletes_coached:generatedNumber(`${name}:ath`,2,80), titles_won:generatedNumber(`${name}:titles`,0,tier==='iniciante'?2:tier==='regional'?6:tier==='profissional'?14:tier==='elite'?28:45), top_ranking_achieved:generatedNumber(`${name}:rank`,1,tier==='iniciante'?500:tier==='regional'?250:tier==='profissional'?80:tier==='elite'?20:5), grand_slams:tier==='elite'||tier==='lendario'?generatedNumber(`${name}:gs`,0,5):0 },
+    training_bonus:Object.fromEntries(specs.map((key,idx)=>[key,Math.max(1,Math.round((competencies.technical+competencies.tactical)/(45+idx*15)))])),
+    competencies,
+    overall:Math.round(Object.values(competencies).reduce((a,b)=>a+b,0)/5),
+    potential:Math.min(99,base+generatedNumber(`${name}:pot`,4,16)),
+    is_generated:true,
+    signature_quote:'Consistência, leitura e confiança constroem uma dupla vencedora.',
+    bio:`Treinador ${COACH_TIERS[tier]?.label?.toLowerCase() || tier} com foco em ${COACH_SPECIALTY_INFO[specialty]?.label?.toLowerCase() || specialty}.`,
+  };
+}
+const GENERATED_COACHES = (() => { const rows=[]; let index=0; for (const [tier,count] of GENERATED_TIER_PLAN) for(let i=0;i<count;i+=1) rows.push(buildGeneratedCoach(index++,tier)); return rows; })();
+
+export const COACHES_DATA = [...BASE_COACHES_DATA, ...GENERATED_COACHES].map((coach,index) => {
+  const tier=COACH_TIERS[coach.tier]?coach.tier:'regional';
+  const minMonthly={iniciante:180,regional:500,profissional:1000,elite:2300,lendario:4800}[tier];
+  const specialty=COACH_SPECIALTY_INFO[coach.specialty]?coach.specialty:'tecnico';
+  const rep=Math.max(20,Math.min(99,Number(coach.reputation)||50));
+  const defaultCompetencies=SPECIALTY_COMPETENCIES[specialty]||SPECIALTY_COMPETENCIES.tecnico;
+  const competencies=coach.competencies || Object.fromEntries(Object.entries(defaultCompetencies).map(([key,value])=>[key,Math.max(25,Math.min(99,Math.round(rep*.72+value)))]));
+  return {
+    ...coach,
+    catalog_key:coach.catalog_key || `coach-${String(index+1).padStart(3,'0')}`,
+    tier,specialty,competencies,
+    overall:Number(coach.overall)||Math.round(Object.values(competencies).reduce((a,b)=>a+Number(b||0),0)/Object.keys(competencies).length),
+    potential:Math.max(Number(coach.overall)||rep,Number(coach.potential)||Math.min(99,rep+8)),
+    monthly_cost:Math.max(minMonthly,Number(coach.monthly_cost)||minMonthly),
+    sign_on_bonus:Math.max(0,Number(coach.sign_on_bonus)||0),
+    performance_bonus_pct:Math.max(0,Number(coach.performance_bonus_pct)||0),
+    training_bonus:Object.fromEntries(Object.entries(coach.training_bonus||{}).map(([key,value])=>[key,Math.max(0,Number(value)||0)])),
+  };
+});
+
+export function getCoachCompetencies(coach) {
+  return coach?.competencies || { technical:50,tactical:50,mental:50,physical:50,partnership:50 };
+}
+export function getCoachCompatibilityReasons(coach, profile) {
+  if (!coach || !profile) return [];
+  const reasons=[];
+  if ((coach.preferred_styles||[]).includes(profile.play_style)) reasons.push('filosofia compatível com seu estilo');
+  if (coach.specialty==='tecnico') reasons.push('fortalece evolução técnica');
+  if (coach.specialty==='estratega') reasons.push('melhora leitura tática da dupla');
+  if (coach.specialty==='motivacional'||coach.specialty==='mental') reasons.push('protege confiança em momentos decisivos');
+  if (coach.specialty==='fisico') reasons.push('organiza carga e recuperação');
+  return reasons.slice(0,3);
+}
+
 // ─── Coach Engine: Affinity & Bonuses ────────────────────────────────────────
 
 export function calculateAffinity(coach, profile, athletePersonality) {
@@ -784,10 +882,10 @@ export function canHireCoach(coach, profile) {
     return { allowed: false, reason: `Exige nível ${coach.demands.min_level}` };
   }
 
-  const coins = profile.coins || 0;
-  const totalCost = (coach.monthly_cost || 0) + (coach.sign_on_bonus || 0);
-  if (coins < totalCost) {
-    return { allowed: false, reason: `Precisa de ${totalCost} moedas (mensal + bônus)` };
+  const coins = Number(profile.coins) || 0;
+  const signingCost = Math.max(0, Number(coach.market_signing_bonus ?? coach.sign_on_bonus) || 0);
+  if (coins < signingCost) {
+    return { allowed: false, reason: `Precisa de ${signingCost} moedas para o bônus de assinatura` };
   }
 
   return { allowed: true };
@@ -795,31 +893,18 @@ export function canHireCoach(coach, profile) {
 
 export function getCoachEffects(coach, profile) {
   if (!coach) return null;
-
   const affinity = calculateAffinity(coach, profile);
   const affinityLabel = getAffinityLabel(affinity);
   const specMatch = getCoachSpecializationMatch(coach, profile);
-
-  // Training gain boost based on affinity
-  const trainingBoost = Math.round((affinity - 50) / 10); // -5 to +5
-  // Energy recovery bonus from physical coaches
-  const energyBonus = coach.specialty === 'fisico' ? Math.round(affinity / 20) : 0;
-  // Morale bonus from motivational coaches
-  const moraleBonus = coach.specialty === 'motivacional' ? Math.round(affinity / 15) : 0;
-  // Injury reduction from physical coaches with high affinity
-  const injuryReduction = coach.specialty === 'fisico' && affinity > 60 ? Math.round((affinity - 60) / 10) : 0;
-  // Strategy bonus
-  const strategyBonus = coach.specialty === 'estratega' ? Math.round(affinity / 25) : 0;
-
-  return {
-    affinity,
-    affinityLabel,
-    specMatch,
-    trainingBoost,
-    energyBonus,
-    moraleBonus,
-    injuryReduction,
-    strategyBonus,
-    totalBonus: trainingBoost + energyBonus + moraleBonus + strategyBonus,
-  };
+  const competencies = getCoachCompetencies(coach);
+  const relationshipTrust = Math.max(0, Math.min(100, Number(profile?.coach_trust) || 50));
+  const relationshipMonths = Math.max(0, Number(profile?.coach_relationship_months) || 0);
+  const relationshipBonus = Math.min(4, Math.floor(relationshipMonths / 12)) + Math.max(0, Math.floor((relationshipTrust - 50) / 20));
+  const trainingBoost = Math.max(1, Math.round((competencies.technical * 0.55 + affinity * 0.45) / 12) + relationshipBonus);
+  const energyBonus = coach.specialty === 'fisico' ? Math.max(1, Math.round(competencies.physical / 25)) : 0;
+  const moraleBonus = ['motivacional','mental'].includes(coach.specialty) ? Math.max(1, Math.round(competencies.mental / 22)) : 0;
+  const injuryReduction = coach.specialty === 'fisico' ? Math.max(1, Math.round(competencies.physical / 22)) : 0;
+  const strategyBonus = coach.specialty === 'estratega' ? Math.max(1, Math.round(competencies.tactical / 20)) : Math.max(0, Math.round(competencies.tactical / 40));
+  const partnershipBonus = Math.max(0, Math.round(competencies.partnership / 35)) + Math.min(3, Math.floor(relationshipMonths / 18));
+  return { affinity, affinityLabel, specMatch, competencies, relationshipTrust, relationshipMonths, trainingBoost, energyBonus, moraleBonus, injuryReduction, strategyBonus, partnershipBonus, totalBonus: trainingBoost + energyBonus + moraleBonus + strategyBonus + partnershipBonus };
 }

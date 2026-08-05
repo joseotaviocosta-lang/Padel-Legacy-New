@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
-import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, canHireCoach, calculateAffinity } from '@/lib/coaches';
+import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, canHireCoach, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons } from '@/lib/coaches';
 
 export default function CoachDetail({ coach, profile, onHire, onFire, onClose, isHired }) {
   if (!coach) return null;
@@ -8,6 +8,8 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
   const tier = COACH_TIERS[coach.tier] || COACH_TIERS.regional;
   const style = COACHING_STYLES[coach.coaching_style] || {};
   const effects = getCoachEffects(coach, profile);
+  const competencies = getCoachCompetencies(coach);
+  const compatibilityReasons = getCoachCompatibilityReasons(coach, profile);
   const hireCheck = canHireCoach(coach, profile);
   const affinity = calculateAffinity(coach, profile);
   const impact = getCoachImpactSummary(coach, profile);
@@ -46,6 +48,16 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
               {impact.highlights.map(item => <p key={item} className="text-[10px] text-muted-foreground">• {item}</p>)}
             </div>
             <p className="mt-2 text-[10px] text-muted-foreground"><strong>Importante:</strong> os efeitos são maiores quando a afinidade é boa e quando você escolhe treinos ligados às especializações do treinador.</p>
+          </div>
+
+          <div className="glass rounded-xl p-3 mb-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Competências do treinador</p>
+            <div className="grid grid-cols-2 gap-2">
+              {Object.entries({Técnica:competencies.technical,Tática:competencies.tactical,Mental:competencies.mental,Físico:competencies.physical,Dupla:competencies.partnership}).map(([label,value]) => (
+                <div key={label} className="rounded-lg bg-secondary/30 p-2"><div className="flex justify-between text-[10px]"><span>{label}</span><strong>{value}</strong></div><div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden"><div className="h-full rounded-full bg-primary" style={{width:`${value}%`}} /></div></div>
+              ))}
+            </div>
+            {compatibilityReasons.length > 0 && <div className="mt-3 rounded-lg bg-primary/5 p-2"><p className="text-[9px] font-bold uppercase text-primary">Por que combina com sua dupla</p>{compatibilityReasons.map(item => <p key={item} className="text-[10px] text-muted-foreground mt-1">• {item}</p>)}</div>}
           </div>
 
           {/* Philosophy */}
@@ -159,9 +171,9 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
           <div className="glass rounded-xl p-3 mb-3 border border-amber-500/20 bg-amber-500/5">
             <p className="text-[10px] uppercase tracking-wide text-amber-400 font-bold mb-2">Exigências Financeiras</p>
             <div className="grid grid-cols-3 gap-2">
-              <Stat label="Mensal" value={coach.monthly_cost} icon={Coins} color="text-yellow-400" />
-              <Stat label="Assinatura" value={coach.sign_on_bonus} icon={Coins} color="text-yellow-400" />
-              <Stat label="% Vitória" value={`${coach.performance_bonus_pct}%`} color="text-green-400" />
+              <Stat label="Mensal" value={coach.market_salary || coach.monthly_cost} icon={Coins} color="text-yellow-400" />
+              <Stat label="Assinatura" value={coach.market_signing_bonus ?? coach.sign_on_bonus ?? 0} icon={Coins} color="text-yellow-400" />
+              <Stat label="% Vitória" value={`${Math.max(0, Number(coach.performance_bonus_pct) || 0)}%`} color="text-green-400" />
             </div>
             {coach.demands && (
               <div className="mt-2 pt-2 border-t border-border/40">
@@ -192,7 +204,7 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
               }`}
             >
               {hireCheck.allowed ? (
-                <><CheckCircle className="h-4 w-4" /> Contratar por {(coach.monthly_cost || 0) + (coach.sign_on_bonus || 0)} moedas</>
+                <><CheckCircle className="h-4 w-4" /> Contratar · {coach.market_salary || coach.monthly_cost} / mês{(coach.market_signing_bonus ?? coach.sign_on_bonus) > 0 ? ` + ${coach.market_signing_bonus ?? coach.sign_on_bonus} de assinatura` : ''}</>
               ) : (
                 <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>
               )}

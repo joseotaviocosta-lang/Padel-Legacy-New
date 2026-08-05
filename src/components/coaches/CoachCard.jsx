@@ -1,6 +1,6 @@
 import React from 'react';
 import { Star, Coins, Award, MapPin } from 'lucide-react';
-import { COACH_TIERS, COACH_SPECIALTY_INFO, getAffinityLabel, getCoachImpactSummary } from '@/lib/coaches';
+import { COACH_TIERS, COACH_SPECIALTY_INFO, getAffinityLabel, getCoachImpactSummary, getCoachCompetencies } from '@/lib/coaches';
 
 export default function CoachCard({ coach, profile, affinity, onClick, isHired }) {
   if (!coach) return null;
@@ -8,6 +8,7 @@ export default function CoachCard({ coach, profile, affinity, onClick, isHired }
   const aff = affinity != null ? getAffinityLabel(affinity) : null;
   const impact = getCoachImpactSummary(coach, profile);
   const specialty = COACH_SPECIALTY_INFO[coach.specialty];
+  const competencies = getCoachCompetencies(coach);
 
   return (
     <button onClick={onClick} className={`glass glass-hover rounded-2xl p-4 text-left w-full border ${tier.border} hover-lift ${isHired ? 'ring-1 ring-primary/40' : ''}`}>
@@ -48,13 +49,21 @@ export default function CoachCard({ coach, profile, affinity, onClick, isHired }
         </div>
         <div className="flex items-center gap-1">
           <Coins className="h-3 w-3 text-yellow-400" />
-          <span className="text-xs font-bold tabular-nums">{coach.monthly_cost}</span>
+          <span className="text-xs font-bold tabular-nums">{coach.market_salary || coach.monthly_cost}/mês</span>
         </div>
         {aff && (
           <div className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${aff.bg} ${aff.color}`}>
             {aff.label}
           </div>
         )}
+      </div>
+
+      <div className="grid grid-cols-3 gap-1.5 mt-3">
+        {[['Técnica', competencies.technical], ['Tática', competencies.tactical], ['Dupla', competencies.partnership]].map(([label,value]) => (
+          <div key={label} className="rounded-lg bg-secondary/35 px-2 py-1.5">
+            <p className="text-[8px] uppercase text-muted-foreground">{label}</p><p className="text-xs font-black">{value}</p>
+          </div>
+        ))}
       </div>
 
       {/* Specializations */}
