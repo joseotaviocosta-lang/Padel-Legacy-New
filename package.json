@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.12",
+  "version": "0.9.0-beta.13",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -65,7 +65,8 @@
     "test:premium-gameplay-v33": "node scripts/test-premium-gameplay-v33-5.mjs",
     "test:premium-world-v33": "node scripts/test-premium-world-v33.mjs",
     "test:premium-development-v33": "node scripts/test-premium-development-v33-7.mjs",
-    "test:premium-relations-v33": "node scripts/test-premium-relations-v33-8.mjs"
+    "test:premium-relations-v33": "node scripts/test-premium-relations-v33-8.mjs",
+    "test:premium-competition-v33": "node tests/PremiumCompetitionV33_9Test.js"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

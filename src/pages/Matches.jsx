@@ -5,7 +5,8 @@ import { useCareer } from '@/careers/useCareer.js';
 import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import { LoadingScreen, PageHeader, EmptyStateCard, InfoBanner } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard, InfoBanner } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, SurfaceHeader, StatCard, EmptyState } from '@/components/design-system';
 
 export default function Matches() {
   const { activeCareer } = useCareer();
@@ -40,18 +41,21 @@ export default function Matches() {
     );
   }
 
+  const wins = matches.filter(match => match.winner === 'A').length;
+  const winRate = matches.length ? Math.round((wins / matches.length) * 100) : 0;
+  const playStatus = canPlayMatchToday(profile);
+
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Swords} title="Partidas Treino" subtitle="Pratique sem afetar o ranking. Apenas torneios contam pontos." accent="cyan">
-        <span className="text-xs text-muted-foreground tabular-nums">{(profile?.practice_matches_today || 0)}/{DAILY_MATCH_LIMIT} jogo</span>
-        <button
-          onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)}
-          disabled={!canPlayMatchToday(profile).allowed}
-          className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-green-500 text-white font-bold text-sm hover:bg-green-600 transition-colors shadow-[0_0_20px_rgba(34,197,94,0.3)] disabled:opacity-40 disabled:cursor-not-allowed"
-        >
-          <Play className="h-4 w-4" /> Jogar
-        </button>
-      </PageHeader>
+    <Page>
+      <PageContent>
+        <PageHeader eyebrow="Preparação competitiva" title="Partidas de treino" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} action={<button onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-40"><Play className="h-4 w-4" /> Jogar agora</button>} />
+
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <StatCard icon={Swords} label="Hoje" value={`${profile?.practice_matches_today || 0}/${DAILY_MATCH_LIMIT}`} />
+          <StatCard icon={Trophy} label="Vitórias" value={wins} tone="success" />
+          <StatCard icon={AlertCircle} label="Aproveitamento" value={`${winRate}%`} tone={winRate >= 50 ? 'success' : 'warning'} />
+          <StatCard icon={Bot} label="Histórico" value={matches.length} tone="info" />
+        </div>
 
       {isInjured(profile) && (
         <InfoBanner variant="error" icon={AlertCircle}>
@@ -59,10 +63,11 @@ export default function Matches() {
         </InfoBanner>
       )}
 
-      {/* Match list */}
-      <div className="space-y-3">
+      <Surface>
+        <SurfaceHeader title="Histórico recente" description="Resultados mais recentes das partidas de preparação." icon={Calendar} />
+        <div className="space-y-3">
         {matches.length === 0 ? (
-          <EmptyStateCard icon={Swords} message="Nenhuma partida registrada ainda. Clique em Jogar para começar sua jornada." />
+          <EmptyState icon={Swords} title="Nenhuma partida registrada" description="Jogue uma partida de treino para iniciar o histórico da dupla." />
         ) : (
           matches.map((m) => {
             const wonA = m.winner === 'A';
@@ -100,7 +105,8 @@ export default function Matches() {
             );
           })
         )}
-      </div>
+        </div>
+      </Surface>
 
       {showSimulation && (
         <SimulationModal
@@ -122,6 +128,7 @@ export default function Matches() {
           onPartnerSelected={(p) => { setProfile(p); setShowPartner(false); }}
         />
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

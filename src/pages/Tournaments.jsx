@@ -14,6 +14,7 @@ import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
 import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader as PremiumPageHeader, Surface, StatCard, EmptyState } from '@/components/design-system';
 import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -245,30 +246,30 @@ export default function Tournaments() {
   }
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      {/* Header */}
-      <div className="glass rounded-2xl p-5 grid-bg relative overflow-hidden">
-        <div className="absolute -top-12 -right-12 h-40 w-40 bg-amber-500/15 rounded-full blur-3xl" />
-        <div className="relative">
-          <div className="flex items-center gap-2 mb-1">
-            <Trophy className="h-5 w-5 text-amber-400" />
-            <span className="text-[10px] uppercase tracking-[0.3em] text-amber-400 font-bold">Padel Legacy World Tour</span>
-          </div>
-          <h1 className="text-2xl md:text-3xl font-black tracking-tight">{season?.name || 'Temporada 2026'}</h1>
-          <p className="text-xs text-cyan-300/80 mt-2">Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Sua dupla só pode disputar um torneio por período; datas sobrepostas geram conflito.</p>
-          <p className="text-sm text-muted-foreground mt-1">{season?.description || 'Calendário completo de torneios'}</p>
+    <Page width="wide">
+      <PageContent>
+        <PremiumPageHeader
+          eyebrow="Padel Legacy World Tour"
+          title={season?.name || 'Temporada 2026'}
+          description={season?.description || 'Escolha os torneios certos, administre inscrições e acompanhe a evolução do circuito.'}
+          icon={Trophy}
+          tone="premium"
+          breadcrumb={['Competições', 'Torneios']}
+          action={<Link to="/world-tour/live" className="inline-flex items-center gap-2 rounded-xl bg-red-500/15 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-500/25"><Radio className="h-4 w-4"/>Ao vivo</Link>}
+        />
 
-          <div className="flex gap-3 mt-4 flex-wrap">
-            <SummaryStat icon={Crown} label="Crown" value={counts.Crown} color="text-amber-400" />
-            <SummaryStat icon={Flame} label="Elite" value={counts.Elite} color="text-fuchsia-400" />
-            <SummaryStat icon={Trophy} label="Masters" value={counts.Masters} color="text-purple-400" />
-            <SummaryStat icon={Star} label="Platinum" value={counts.Platinum} color="text-cyan-400" />
-            <SummaryStat icon={Award} label="Gold" value={counts.Gold} color="text-yellow-400" />
-            <SummaryStat icon={Shield} label="Silver" value={counts.Silver} color="text-slate-300" />
-          </div>
-          <Link to="/world-tour/live" className="mt-4 inline-flex items-center gap-2 rounded-xl bg-red-500/15 text-red-300 px-3 py-2 text-xs font-bold"><Radio className="h-4 w-4"/>Ao vivo e jogos recomendados</Link>
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
+          <StatCard icon={Crown} label="Crown" value={counts.Crown} tone="premium" />
+          <StatCard icon={Flame} label="Elite" value={counts.Elite} tone="danger" />
+          <StatCard icon={Trophy} label="Masters" value={counts.Masters} tone="info" />
+          <StatCard icon={Star} label="Platinum" value={counts.Platinum} tone="brand" />
+          <StatCard icon={Award} label="Gold" value={counts.Gold} tone="warning" />
+          <StatCard icon={Shield} label="Silver" value={counts.Silver} />
         </div>
-      </div>
+
+        <Surface variant="subtle" padding="compact" className="text-xs text-muted-foreground">
+          Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla.
+        </Surface>
 
       <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
 
@@ -335,12 +336,7 @@ export default function Tournaments() {
 
       {/* Tournament list */}
       {filtered.length === 0 ? (
-        <div className="glass rounded-2xl p-10 text-center">
-          <Trophy className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">
-            {view === 'upcoming' ? 'Nenhum torneio futuro disponível.' : 'Nenhum torneio passado encontrado.'}
-          </p>
-        </div>
+        <EmptyState icon={Trophy} title="Nenhum torneio encontrado" description={view === 'upcoming' ? 'Não há torneios futuros disponíveis para os filtros atuais.' : 'Não há torneios passados nos filtros atuais.'} />
       ) : (
         <div className="space-y-4">
           {Object.keys(byMonth).sort((a, b) => view === 'past' ? b.localeCompare(a) : a.localeCompare(b)).map(m => {
@@ -430,19 +426,8 @@ export default function Tournaments() {
           onRegistered={handleRegistered}
         />
       )}
-    </div>
-  );
-}
-
-function SummaryStat({ icon: Icon, label, value, color }) {
-  return (
-    <div className="glass rounded-xl px-3 py-2 flex items-center gap-2">
-      <Icon className={`h-4 w-4 ${color}`} />
-      <div>
-        <p className="text-lg font-black leading-none">{value}</p>
-        <p className="text-[9px] text-muted-foreground uppercase tracking-wide">{label}</p>
-      </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 }
 

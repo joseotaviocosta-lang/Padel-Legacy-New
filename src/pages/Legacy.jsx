@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Crown, Trophy, Medal, Star, TrendingUp, Flame, Swords, Lock, Check, Award, Target, Zap, Calendar, GraduationCap, Flag, UserPlus } from 'lucide-react';
-import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen, InfoBanner, PrimaryButton } from '@/components/padel/ui';
-import { StatCard } from '@/components/padel/Shared';
+import { PageContainer, GlassCard, EmptyStateCard, LoadingScreen, InfoBanner, PrimaryButton } from '@/components/padel/ui';
+import { PageHeader as PremiumPageHeader, StatCard } from '@/components/design-system';
 import { calculateAge, isRetired, RETIREMENT_AGE, STARTING_AGE, overallRating } from '@/lib/padel';
 import { computeLegacyScore, computeLegacyBonuses, retireProfile, startNewCareer, getUserLegacies, getCoachLegacy } from '@/lib/legacy';
 import RetirementModal from '@/components/legacy/RetirementModal';
@@ -117,7 +117,7 @@ export default function Legacy() {
 
   return (
     <PageContainer>
-      <PageHeader icon={Crown} title="Sistema de Legado" subtitle="Sua dinastia no padel" />
+      <PremiumPageHeader eyebrow="Dinastia esportiva" title="Sistema de Legado" description="Transforme temporadas, títulos e relações construídas em uma história que continua além da aposentadoria." icon={Crown} tone="premium" breadcrumb={['Carreira', 'Legado']} />
 
       <div className="space-y-5">
         {/* Generation badge */}
@@ -189,10 +189,10 @@ export default function Legacy() {
 
         {/* Legacy score + stats */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-stagger">
-          <StatCard icon={Award} label="Legado" value={legacyScore.toLocaleString('pt-BR')} accent="text-amber-400" />
-          <StatCard icon={Crown} label="Títulos" value={profile.tournaments_won || 0} accent="text-amber-400" />
-          <StatCard icon={Trophy} label="Vitórias" value={profile.wins || 0} />
-          <StatCard icon={TrendingUp} label="Overall" value={overallRating(profile)} accent="text-cyan-400" />
+          <StatCard icon={Award} label="Legado" value={legacyScore.toLocaleString('pt-BR')} tone="premium" />
+          <StatCard icon={Crown} label="Títulos" value={profile.tournaments_won || 0} tone="premium" />
+          <StatCard icon={Trophy} label="Vitórias" value={profile.wins || 0} tone="success" />
+          <StatCard icon={TrendingUp} label="Overall" value={overallRating(profile)} tone="info" />
         </div>
 
         {/* Hall of Fame */}

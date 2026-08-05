@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Lock, HelpCircle, Star, Search, Filter } from 'lucide-react';
-import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, ProgressBar, StatCard, EmptyState } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { CATEGORY_META } from '@/lib/achievementsData';
@@ -88,31 +89,16 @@ export default function Achievements() {
   if (loading) return <LoadingScreen />;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Trophy} title="Conquistas" subtitle={`${stats.unlocked} de ${stats.total} desbloqueadas`} accent="amber">
-        <div className="text-right">
-          <p className="text-[10px] text-muted-foreground uppercase">Pontos</p>
-          <p className="text-lg font-black text-primary">{stats.totalPoints.toLocaleString('pt-BR')}</p>
+    <Page>
+      <PageContent>
+        <PageHeader eyebrow="Sala de conquistas" title="Conquistas" description="Registre marcos, desafios secretos e feitos históricos da carreira." icon={Trophy} tone="premium" breadcrumb={['Carreira', 'Conquistas']} />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <StatCard icon={Trophy} label="Desbloqueadas" value={`${stats.unlocked}/${stats.total}`} tone="premium" />
+          <StatCard icon={Star} label="Pontos" value={stats.totalPoints.toLocaleString('pt-BR')} tone="brand" />
+          <StatCard icon={Lock} label="Restantes" value={stats.total - stats.unlocked} />
+          <StatCard icon={HelpCircle} label="Conclusão" value={`${stats.pct}%`} tone="info" />
         </div>
-      </PageHeader>
-
-      {/* Progress bar */}
-      <div className="glass rounded-2xl p-4">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-xs font-bold text-muted-foreground">Progresso Total</span>
-          <span className="text-sm font-black text-primary">{stats.pct}%</span>
-        </div>
-        <div className="h-3 rounded-full bg-secondary/60 overflow-hidden">
-          <div
-            className="h-full bg-gradient-to-r from-primary/60 to-primary rounded-full transition-all duration-700 glow-primary"
-            style={{ width: `${stats.pct}%` }}
-          />
-        </div>
-        <div className="flex items-center justify-between mt-2 text-[10px] text-muted-foreground">
-          <span>{stats.unlocked} desbloqueadas</span>
-          <span>{stats.total - stats.unlocked} restantes</span>
-        </div>
-      </div>
+        <Surface variant="premium"><ProgressBar label="Progresso total" value={stats.pct} helper={`${stats.unlocked} desbloqueadas · ${stats.total - stats.unlocked} restantes`} tone="premium" /></Surface>
 
       {/* Visibility tabs */}
       <div className="flex gap-1.5 overflow-x-auto pb-1 scrollbar-none">
@@ -201,7 +187,7 @@ export default function Achievements() {
 
       {/* Grid */}
       {filtered.length === 0 ? (
-        <EmptyStateCard icon={Trophy} message="Nenhuma conquista encontrada com esses filtros." />
+        <EmptyState icon={Trophy} title="Nenhuma conquista encontrada" description="Ajuste a busca ou os filtros para localizar outros desafios." />
       ) : (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 animate-stagger">
           {filtered.map(ach => (
@@ -213,6 +199,7 @@ export default function Achievements() {
           ))}
         </div>
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

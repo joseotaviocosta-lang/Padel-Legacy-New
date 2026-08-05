@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { ScrollText, Search, BookOpen, Calendar } from 'lucide-react';
 import { HISTORY_ENTRIES, CATEGORY_CONFIG, IMPORTANCE_CONFIG, DECADES } from '@/lib/historyData';
-import { PageHeader, TabBar, FilterPills, EmptyStateCard } from '@/components/padel/ui';
+import { TabBar, FilterPills } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, StatCard, EmptyState } from '@/components/design-system';
 import HistoryEntryCard from '@/components/history/HistoryEntryCard';
 import HistoryEntryModal from '@/components/history/HistoryEntryModal';
 
@@ -30,10 +31,16 @@ export default function History() {
   const categories = [{ id: 'all', label: 'Tudo' }, ...Object.entries(CATEGORY_CONFIG).map(([id, c]) => ({ id, label: c.label }))];
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={ScrollText} title="História do Padel" subtitle="Da fundação em 1962 aos dias atuais" accent="amber" />
+    <Page>
+      <PageContent>
+        <PageHeader eyebrow="Memória do esporte" title="História do Padel" description="Explore os acontecimentos que moldaram o esporte desde sua origem até o circuito moderno." icon={ScrollText} tone="premium" breadcrumb={['Mundo', 'História']} />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
+          <StatCard icon={Calendar} label="Período" value="1962–Hoje" tone="premium" />
+          <StatCard icon={BookOpen} label="Eventos" value={HISTORY_ENTRIES.length} tone="info" />
+          <StatCard icon={ScrollText} label="Resultados" value={filtered.length} />
+        </div>
 
-      <div className="glass rounded-2xl p-3 flex items-center gap-2">
+      <Surface padding="compact" className="flex items-center gap-2">
         <Search className="h-4 w-4 text-muted-foreground shrink-0" />
         <input
           value={search}
@@ -41,7 +48,7 @@ export default function History() {
           placeholder="Buscar na história do padel..."
           className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
-      </div>
+      </Surface>
 
       <FilterPills filters={categories} activeFilter={activeCategory} onFilterChange={setActiveCategory} />
 
@@ -56,7 +63,7 @@ export default function History() {
       />
 
       {filtered.length === 0 ? (
-        <EmptyStateCard icon={Search} title="Nada encontrado" message="Tente outra busca ou filtro." />
+        <EmptyState icon={Search} title="Nada encontrado" description="Tente outra busca ou categoria histórica." />
       ) : activeTab === 'timeline' ? (
         <TimelineView entries={filtered} onSelect={setSelectedEntry} />
       ) : (
@@ -73,7 +80,8 @@ export default function History() {
         onSelectRelated={setSelectedEntry}
         onClose={() => setSelectedEntry(null)}
       />
-    </div>
+      </PageContent>
+    </Page>
   );
 }
 
