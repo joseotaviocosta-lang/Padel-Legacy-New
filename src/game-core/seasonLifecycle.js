@@ -1,7 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { ensureFutureTournaments } from '@/lib/career';
 import { levelForXp } from '@/lib/padel';
-import { addTeamRankingPoints } from '@/lib/teamRanking';
+import { applyTeamRankingSeasonCarryover } from '@/lib/teamRanking';
 import { safeName } from './utils';
 
 const number = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
@@ -139,11 +139,19 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     bonus_rank_points: totals.rankPoints,
   });
 
+  const previousRankPoints = number(profile.rank_points ?? profile.world_ranking_points, 0);
+  const carriedRankPoints = Math.max(0, Math.round(previousRankPoints * 0.80));
+  const nextRankPoints = carriedRankPoints + totals.rankPoints;
+
   const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     career_date: nextDate,
     coins: number(profile.coins) + totals.coins,
     xp: newXp,
     level: levelForXp(newXp),
+    rank_points: nextRankPoints,
+    world_ranking_points: nextRankPoints,
+    previous_season_rank_points: previousRankPoints,
+    ranking_carryover_rate: 0.80,
     season_year: nextYear,
     seasons_completed: number(profile.seasons_completed) + 1,
     season_awards: [...(profile.season_awards || []), ...snapshot.awards.map((award) => `${year}: ${award.label}`)],
@@ -152,8 +160,8 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     morale: Math.max(70, number(profile.morale, 70)),
   });
 
-  if (partner && totals.rankPoints > 0) {
-    await addTeamRankingPoints(profile, partner, totals.rankPoints);
+  if (partner) {
+    await applyTeamRankingSeasonCarryover(profile, partner, 0.80, totals.rankPoints);
   }
 
   const seasons = await localGame.entities.Season.list('-start_date', 100);

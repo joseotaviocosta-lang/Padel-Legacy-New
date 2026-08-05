@@ -9,7 +9,7 @@ export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite
 // Experiência de carreira é uma progressão de longo prazo separada da força do atleta.
 // A habilidade esportiva continua sendo representada pelos atributos e pelo Overall.
 export const CAREER_EXPERIENCE_MAX_LEVEL = 50;
-export const CAREER_EXPERIENCE_MAX_XP = 180000;
+export const CAREER_EXPERIENCE_MAX_XP = 100000;
 export const CAREER_EXPERIENCE_CURVE = 1.85;
 
 export const CAREER_EXPERIENCE_TITLES = Object.freeze([

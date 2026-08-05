@@ -95,6 +95,26 @@ export async function addTeamRankingPoints(profile, partner, points) {
   } catch (e) { console.error('addTeamRankingPoints', e); }
 }
 
+
+export async function applyTeamRankingSeasonCarryover(profile, partner, carryoverRate = 0.65, bonusPoints = 0) {
+  if (!profile?.id || !partner?.id) return null;
+  const key = teamKey(profile.id, partner.id);
+  try {
+    const existing = await localGame.entities.TeamRanking.filter({ team_key: key });
+    if (!existing?.length) return null;
+    const team = existing[0];
+    const carried = Math.max(0, Math.round((Number(team.ranking_points) || 0) * carryoverRate));
+    return await localGame.entities.TeamRanking.update(team.id, {
+      ranking_points: carried + Math.max(0, Number(bonusPoints) || 0),
+      previous_season_points: Number(team.ranking_points) || 0,
+      ranking_carryover_rate: carryoverRate,
+    });
+  } catch (error) {
+    console.error('applyTeamRankingSeasonCarryover', error);
+    return null;
+  }
+}
+
 export async function getTeamRankings(limit = 50) {
   try {
     return await localGame.entities.TeamRanking.list('-ranking_points', Math.max(limit, 600));

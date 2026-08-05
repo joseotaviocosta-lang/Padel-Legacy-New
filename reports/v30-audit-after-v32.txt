@@ -1,0 +1,20 @@
+✓ Missões
+✓ Onboarding
+✓ Tutorial
+✓ Cronologia
+✓ Jogadores
+✓ Motor de partidas
+✓ Ritmo da carreira
+✓ Lesões
+✓ Universo Vivo
+✓ Calendário
+✓ Mercado mundial
+✓ Economia esportiva
+✓ Treinadores
+✓ Duplas vivas
+✓ Comissão técnica
+✓ Ofertas de parceria
+✓ Configuração Vite/Tauri
+✓ Técnico ao vivo
+
+Auditoria v30 aprovada: 18/18 suítes essenciais.

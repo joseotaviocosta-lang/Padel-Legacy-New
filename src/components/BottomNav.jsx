@@ -1,10 +1,10 @@
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Gamepad2, Dumbbell, Handshake, Trophy, Globe2 } from 'lucide-react';
+import { Home, Dumbbell, Handshake, Trophy, Globe2 } from 'lucide-react';
 
 const navItems = [
-  { to: '/game', icon: Gamepad2, label: 'Início' },
+  { to: '/game', icon: Home, label: 'Carreira' },
   { to: '/development', icon: Dumbbell, label: 'Evoluir' },
   { to: '/team-hub', icon: Handshake, label: 'Dupla' },
   { to: '/competitions', icon: Trophy, label: 'Competir' },
@@ -13,8 +13,8 @@ const navItems = [
 
 export default function BottomNav() {
   return (
-    <nav aria-label="Navegação rápida" className="fixed inset-x-0 bottom-0 z-50 border-t border-border/55 bg-card/88 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_hsl(230_35%_2%/0.48)] backdrop-blur-xl md:hidden">
-      <div className="mx-auto grid h-[4.35rem] max-w-md grid-cols-5 items-center px-1.5">
+    <nav aria-label="Navegação rápida" className="fixed inset-x-0 bottom-0 z-50 border-t border-primary/10 bg-card/92 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_hsl(230_35%_2%/0.48)] backdrop-blur-xl md:hidden">
+      <div className="mx-auto grid h-[4.35rem] max-w-lg grid-cols-5 items-center px-1.5">
         {navItems.map((item) => (
           <NavLink key={item.to} to={item.to} className="relative flex h-full items-center justify-center">
             {({ isActive }) => (

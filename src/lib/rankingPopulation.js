@@ -15,9 +15,24 @@ function hash(value = '') {
   return Math.abs(h >>> 0);
 }
 
-function pointsForRank(rank, total = WORLD_RANKING_TARGET) {
-  const normalized = Math.max(0, (total - rank) / Math.max(1, total - 1));
-  return Math.max(1, Math.round(8 + 12992 * Math.pow(normalized, 2.35)));
+const RANKING_POINT_ANCHORS = Object.freeze([
+  [1, 13000], [10, 9130], [24, 3110], [50, 2050], [100, 1200],
+  [200, 650], [350, 340], [500, 200], [750, 65], [1000, 1],
+]);
+
+export function pointsForRank(rank, total = WORLD_RANKING_TARGET) {
+  const safeRank = Math.max(1, Math.min(total, Math.round(Number(rank) || total)));
+  const scaledRank = total === WORLD_RANKING_TARGET
+    ? safeRank
+    : 1 + ((safeRank - 1) / Math.max(1, total - 1)) * (WORLD_RANKING_TARGET - 1);
+  for (let index = 0; index < RANKING_POINT_ANCHORS.length - 1; index += 1) {
+    const [rankA, pointsA] = RANKING_POINT_ANCHORS[index];
+    const [rankB, pointsB] = RANKING_POINT_ANCHORS[index + 1];
+    if (scaledRank < rankA || scaledRank > rankB) continue;
+    const ratio = (scaledRank - rankA) / Math.max(1, rankB - rankA);
+    return Math.max(1, Math.round(pointsA + (pointsB - pointsA) * ratio));
+  }
+  return 1;
 }
 
 export function buildSupplementalRankingPopulation(existingAthletes = [], existingTeams = []) {

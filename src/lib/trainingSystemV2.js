@@ -34,13 +34,13 @@ function getProfileStyleKey(profile) {
 
 export function getAttributeDevelopmentCeiling(profile, attribute) {
   const potential = clamp(profile?.potential ?? 72, 45, 99);
-  const base = 58 + potential * 0.42;
+  const base = 47 + potential * 0.48;
   const styleKey = getProfileStyleKey(profile);
   const preferred = STYLE_ATTRIBUTE_BONUSES[styleKey]?.has(attribute);
   const initial = Number(profile?.initial_attributes?.[attribute]);
   const initialModifier = Number.isFinite(initial) ? clamp((initial - 10) * 0.18, -2, 2) : 0;
   const specialization = styleKey === 'balanced' ? 0 : preferred ? 2.5 : -1.5;
-  return Math.round(clamp(base + specialization + initialModifier, 68, 99));
+  return Math.round(clamp(base + specialization + initialModifier, 65, 98));
 }
 
 export function getDevelopmentWindow(profile, attributes = ATTRIBUTE_KEYS) {

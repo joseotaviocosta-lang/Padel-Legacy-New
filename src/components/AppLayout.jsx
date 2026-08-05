@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
 import BetaTools from '@/components/system/BetaTools';
+import CareerHud from '@/components/career/CareerHud';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
@@ -126,6 +127,7 @@ export default function AppLayout() {
           <p className="truncate text-[10px] font-bold uppercase tracking-[0.16em] text-primary/80">{activeArea?.label || 'Carreira'}</p>
           <p className="truncate text-sm font-extrabold leading-tight">{currentTitle}</p>
         </div>
+        <CareerHud compact className="mr-1 hidden min-[430px]:flex" />
         <button type="button" onClick={openCareerManager} aria-label="Gerenciar carreiras" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
           <BriefcaseBusiness className="h-5 w-5" />
         </button>
@@ -185,9 +187,9 @@ export default function AppLayout() {
             </div>
             <p className="mt-0.5 truncate text-lg font-black leading-tight">{currentTitle}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex min-w-0 items-center gap-2">
+            <CareerHud className="hidden xl:flex" />
             <BetaTools />
-            <span className="hidden max-w-[28rem] truncate text-xs text-muted-foreground xl:block">{activeArea?.description}</span>
             <button type="button" onClick={openCareerManager} className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/70 px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/25 hover:text-foreground">
               <BriefcaseBusiness className="h-4 w-4" /> Carreiras
             </button>
@@ -195,7 +197,7 @@ export default function AppLayout() {
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} className="app-route-stage min-w-0" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
             <OnboardingGuide />
             <Outlet />
           </motion.div>

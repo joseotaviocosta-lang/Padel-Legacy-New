@@ -4,6 +4,7 @@ import {
   Activity, AlertCircle, ArrowRight, Bell, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, Gamepad2, GraduationCap,
   Inbox, MessageCircle, Newspaper, Target, Trophy, TrendingUp, Users, Zap, Globe2,
+  Clock3, HeartPulse, Coins, Sparkles,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
@@ -11,6 +12,7 @@ import {
   getWorldRank, topAttributes, calculateAge, isRetired,
 } from '@/lib/padel';
 import { LevelBadge, StatCard, getAttributeIcon } from '@/components/padel/Shared';
+import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge } from '@/components/design-system';
 import { CoinBadge, XpBar, SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import CareerCalendar from '@/components/career/CareerCalendar';
@@ -175,9 +177,11 @@ export default function CareerHub() {
   const nextTournament = upcomingTournaments[0];
 
   return (
-    <div className="mx-auto max-w-[1480px] space-y-5 px-4 py-5 md:px-6 lg:px-8 animate-fade-in">
-      <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
-      <StatusStrip profile={profile} />
+    <Page size="wide" className="animate-fade-in">
+      <PageContent>
+        <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
+        <PremiumQuickStats profile={profile} worldRank={worldRank} teamRank={teamRank} nextTournament={nextTournament} />
+        <StatusStrip profile={profile} />
 
       {finalTutorialStep && (
         <section className="rounded-3xl border border-primary/35 bg-gradient-to-r from-primary/10 via-card to-card p-5" aria-labelledby="tutorial-finish-title">
@@ -210,49 +214,48 @@ export default function CareerHub() {
       {isRetired(profile) && <div className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm text-amber-200">Você encerrou sua carreira como atleta. Continue acompanhando seu legado, conquistas e história.</div>}
       <CareerStatusBar profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />
 
-      {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
-    </div>
+        {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
+      </PageContent>
+    </Page>
   );
 }
 
 function CareerCommandHeader({ profile, careerExperience, overall, worldRank, nextTournament, unreadCount }) {
+  const daysToTournament = nextTournament ? daysUntil(profile.career_date, nextTournament.start_date) : null;
+  const primaryContext = profile.injury_status === 'injured' || profile.is_injured
+    ? { eyebrow: 'Recuperação prioritária', title: 'Cuide do corpo antes de voltar à quadra', description: 'Seu calendário e plano automático respeitarão o período de recuperação.', tone: 'danger', icon: HeartPulse }
+    : nextTournament
+      ? { eyebrow: 'Próximo grande objetivo', title: nextTournament.name, description: `${daysToTournament} dia${daysToTournament === 1 ? '' : 's'} para preparar a dupla`, tone: 'premium', icon: Trophy }
+      : { eyebrow: 'Semana de desenvolvimento', title: 'Construa a próxima evolução', description: 'Aproveite a agenda livre para treinar, recuperar e planejar.', tone: 'brand', icon: Sparkles };
+
   return (
-    <header className="relative overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-card via-card to-primary/[0.08] p-5 shadow-2xl shadow-black/20 md:p-7">
-      <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-primary/15 blur-3xl" />
-      <div className="relative flex flex-col gap-5 lg:flex-row lg:items-center">
-        <div className="flex min-w-0 flex-1 items-center gap-4">
-          <div className="flex h-20 w-20 shrink-0 items-center justify-center overflow-hidden rounded-3xl border border-primary/30 bg-primary/15 text-3xl font-black text-primary md:h-24 md:w-24">
-            {profile.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : (profile.sport_name || 'J')[0]?.toUpperCase()}
-          </div>
-          <div className="min-w-0">
-            <div className="flex flex-wrap items-center gap-2"><p className="text-[10px] font-bold uppercase tracking-[.28em] text-primary">Centro de controle da carreira</p><LevelBadge level={`Experiência ${careerExperience.level}/${careerExperience.maxLevel}`} size="md" /></div>
-            <h1 className="mt-1 truncate text-2xl font-black tracking-tight md:text-4xl">{profile.sport_name || 'Jogador'}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">{profile.city || '—'}, {profile.country || '—'} · {calculateAge(profile)} anos · {profile.career_date || '—'}</p>
-            <div className="mt-3 max-w-sm"><XpBar xp={profile.xp || 0} /></div>
-          </div>
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:w-[520px]">
-          <HeaderMetric label="Overall" value={overall} icon={Zap} accent="text-primary" />
-          <HeaderMetric label="Ranking" value={worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '—'} icon={Crown} accent="text-amber-400" />
-          <HeaderMetric label="Próximo torneio" value={nextTournament ? formatShortDate(nextTournament.start_date) : 'Livre'} icon={Trophy} accent="text-cyan-400" />
-          <HeaderMetric label="Pendências" value={unreadCount} icon={Bell} accent={unreadCount ? 'text-rose-400' : 'text-muted-foreground'} />
-        </div>
-      </div>
-      <div className="relative mt-5 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-4">
-        <CoinBadge coins={profile.coins || 0} size="md" />
-        <div className="flex flex-wrap gap-2">
-          <CommandLink to="/game/training" icon={Dumbbell}>Treinar</CommandLink>
-          <CommandLink to="/tournaments" icon={Trophy}>Torneios</CommandLink>
-          <CommandLink to="/partners" icon={Users}>Dupla</CommandLink>
-          <CommandLink to="/game/calendar" icon={CalendarDays}>Calendário</CommandLink>
-        </div>
-      </div>
-    </header>
+    <PageHeader
+      eyebrow={primaryContext.eyebrow}
+      title={primaryContext.title}
+      description={`${profile.sport_name || 'Atleta'} · OVR ${overall} · Experiência ${careerExperience.level}/${careerExperience.maxLevel}. ${primaryContext.description}`}
+      icon={primaryContext.icon}
+      tone={primaryContext.tone}
+      breadcrumb={['Carreira', 'Centro de controle']}
+      stats={[
+        <StatusBadge key="ranking" tone="premium" icon={Crown}>Ranking {worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+'}</StatusBadge>,
+        <StatusBadge key="date" tone="info" icon={CalendarDays}>{profile.career_date || '—'}</StatusBadge>,
+        unreadCount > 0 ? <StatusBadge key="pending" tone="danger" icon={Bell}>{unreadCount} pendência{unreadCount === 1 ? '' : 's'}</StatusBadge> : null,
+      ].filter(Boolean)}
+      action={<div className="flex flex-wrap gap-2"><CommandLink to="/game/training" icon={Dumbbell}>Treinar</CommandLink><CommandLink to="/game/calendar" icon={CalendarDays}>Agenda</CommandLink><CommandLink to="/tournaments" icon={Trophy}>Competir</CommandLink></div>}
+    />
   );
 }
 
-function HeaderMetric({ label, value, icon: Icon, accent }) {
-  return <div className="rounded-2xl border border-white/8 bg-black/15 p-3"><Icon className={`h-4 w-4 ${accent}`} /><p className="mt-2 truncate text-xl font-black tabular-nums">{value}</p><p className="text-[9px] uppercase tracking-wider text-muted-foreground">{label}</p></div>;
+function PremiumQuickStats({ profile, worldRank, teamRank, nextTournament }) {
+  return (
+    <div className="grid grid-cols-2 gap-3 lg:grid-cols-5">
+      <PremiumStatCard label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} detail="disponível hoje" icon={Zap} tone={(Number(profile.energy) || 0) < 35 ? 'danger' : 'success'} />
+      <PremiumStatCard label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} detail="carga acumulada" icon={HeartPulse} tone={(Number(profile.fatigue) || 0) > 65 ? 'danger' : 'warning'} />
+      <PremiumStatCard label="Ranking individual" value={worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+'} detail={`${worldRank.total || 1000} atletas`} icon={Crown} tone="premium" />
+      <PremiumStatCard label="Ranking da dupla" value={teamRank.rank ? `#${teamRank.rank}` : 'Sem ranking'} detail="circuito de duplas" icon={Users} tone="info" />
+      <PremiumStatCard label="Próximo marco" value={nextTournament ? formatShortDate(nextTournament.start_date) : 'Semana livre'} detail={nextTournament?.name || 'foco em evolução'} icon={nextTournament ? Trophy : Clock3} tone="brand" className="col-span-2 lg:col-span-1" />
+    </div>
+  );
 }
 
 function CommandLink({ to, icon: Icon, children }) {

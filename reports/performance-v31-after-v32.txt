@@ -1,0 +1,11 @@
+✓ cache de consultas configurado
+✓ pré-carregamento em lote disponível
+✓ rotas principais pré-carregadas em tempo ocioso
+✓ atletas usam busca adiada e memoização
+✓ atletas usam carregamento progressivo
+✓ ranking usa memoização pesada
+✓ ranking limita renderização inicial
+✓ mercado limita todas as listas extensas
+✓ itens fora da tela usam content-visibility
+
+PerformanceV31Test: PASS (9/9)
