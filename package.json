@@ -52,7 +52,8 @@
     "test:global-market": "node scripts/test-global-market-v25.mjs",
     "test:sports-economy": "node scripts/test-sports-economy-v26.mjs",
     "test:coaches-v28": "node scripts/test-coach-system-v28.mjs",
-    "test:partnerships-v29": "node scripts/test-living-partnerships-v29.mjs"
+    "test:partnerships-v29": "node scripts/test-living-partnerships-v29.mjs",
+    "test:staff-architecture": "node scripts/test-staff-architecture-v29-1.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

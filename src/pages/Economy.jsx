@@ -1,27 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Wallet, Star, Users, Building2, TrendingUp, Receipt, ClipboardCheck } from 'lucide-react';
+import { Wallet, Star, Building2, TrendingUp, Receipt, ClipboardCheck } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
-import { hireStaff, fireStaff, renewStaffContract, buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
+import { buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
 import { signSponsorContract, renewContract, terminateSponsorContract } from '@/lib/sponsors';
 import EconomyDashboard from '@/components/economy/EconomyDashboard';
 import SponsorPanel from '@/components/economy/SponsorPanel';
-import StaffPanel from '@/components/economy/StaffPanel';
 import PropertyPanel from '@/components/economy/PropertyPanel';
 import InvestmentPanel from '@/components/economy/InvestmentPanel';
 import FinancialFlow from '@/components/economy/FinancialFlow';
 import OpportunityPanel from '@/components/economy/OpportunityPanel';
 import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
 import { evaluateSponsorContracts, getSponsorEvaluationStatus, completeCareerOpportunity } from '@/game-core';
-import { syncStaffEffects } from '@/game-core/staffLifecycle';
-import { upgradeStaffFacility } from '@/lib/staffFacilities';
 
 const TABS = [
   { id: 'dashboard', label: 'Dashboard', icon: Wallet },
   { id: 'sponsors', label: 'Patrocinadores', icon: Star },
-  { id: 'staff', label: 'Comissão', icon: Users },
   { id: 'properties', label: 'Imóveis', icon: Building2 },
   { id: 'investments', label: 'Investimentos', icon: TrendingUp },
   { id: 'flow', label: 'Fluxo', icon: Receipt },
@@ -209,17 +205,6 @@ export default function Economy() {
           busy={busy}
           /></ModuleErrorBoundary>
         </div>
-      )}
-      {tab === 'staff' && (
-        <StaffPanel
-          profile={profile}
-          staff={staff}
-          onHire={(st) => handle('hire', async () => { await hireStaff(profile, st); return syncStaffEffects(profile); }, `${st.name} contratado!`)}
-          onFire={(s) => handle('fire', async () => { const updated = await fireStaff(s, profile); return syncStaffEffects(updated); }, `${s.staff_name} demitido`)}
-          onRenew={(s, months) => handle(`renew-${s.id}`, async () => { await renewStaffContract(s, profile, months); return syncStaffEffects(profile); }, `Contrato de ${s.staff_name} renovado!`)}
-          onUpgradeFacility={(facility) => handle(`facility-${facility.id}`, async () => { const updated = await upgradeStaffFacility(profile, facility.id); return syncStaffEffects(updated); }, `${facility.name} melhorada!`)}
-          busy={busy}
-        />
       )}
       {tab === 'properties' && (
         <PropertyPanel

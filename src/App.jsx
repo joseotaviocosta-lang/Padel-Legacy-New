@@ -25,12 +25,12 @@ const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPasswo
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
   Relationships, Coaches, TrainingCenter, Press, Social, Fans, Achievements, WorldEvents, WorldMarket, Weather,
-  Encyclopedia, PartnerHub, Community, WorldSpectator, NavigationHub, WorldHub] = [
+  Encyclopedia, PartnerHub, Community, WorldSpectator, NavigationHub, WorldHub, Staff] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
   'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Social', 'Fans',
-  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'WorldSpectator', 'NavigationHub', 'WorldHub',
+  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'WorldSpectator', 'NavigationHub', 'WorldHub', 'Staff',
 ].map(lazyPage);
 
 const RouteLoadingFallback = () => (
@@ -41,7 +41,7 @@ const RouteLoadingFallback = () => (
 
 const RuntimeServices = () => {
   const location = useLocation();
-  if (!location.pathname.startsWith('/game') && location.pathname !== '/profile' && !['/matches','/tournaments','/journal','/ranking','/clubs','/athletes','/character','/admin','/database','/history','/hall-of-fame','/relationships','/coaches','/training-center','/press','/social','/fans','/achievements','/world','/world-events','/world-market','/weather','/encyclopedia','/partners','/community'].some(p => location.pathname.startsWith(p))) return null;
+  if (!location.pathname.startsWith('/game') && location.pathname !== '/profile' && !['/matches','/tournaments','/journal','/ranking','/clubs','/athletes','/character','/admin','/database','/history','/hall-of-fame','/relationships','/coaches','/training-center','/press','/social','/fans','/achievements','/world','/world-events','/world-market','/weather','/encyclopedia','/partners','/staff','/community'].some(p => location.pathname.startsWith(p))) return null;
   return <><SaveFoundationBootstrap /><GlobalDayAdvanceSummary /><MissionNotificationBridge /></>;
 };
 
@@ -118,6 +118,7 @@ const AuthenticatedApp = () => {
           <Route path="/hall-of-fame" element={<HallOfFame />} />
           <Route path="/relationships" element={<Relationships />} />
           <Route path="/coaches" element={<Coaches />} />
+          <Route path="/staff" element={<ModuleErrorBoundary moduleName="Comissão técnica"><Staff /></ModuleErrorBoundary>} />
           <Route path="/training-center" element={<TrainingCenter />} />
           <Route path="/press" element={<Press />} />
           <Route path="/social" element={<Social />} />

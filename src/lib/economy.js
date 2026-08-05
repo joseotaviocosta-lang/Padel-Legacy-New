@@ -218,9 +218,10 @@ export async function hireStaff(profile, staffCandidate) {
   if (!profile?.id || !staffCandidate?.id) throw new Error('Profissional inválido.');
   const current = await localGame.entities.PlayerStaffHire.filter({ profile_id: profile.id });
   const normalized = (current || []).map(normalizeStaffMember).filter(member => !['terminated', 'expired'].includes(member.contract_status));
-  const principalCoachCount = profile.coach_id && profile.coach_contract_status !== 'terminated' ? 1 : 0;
+  // O treinador principal é um cargo obrigatório e independente.
+  // Ele lidera a comissão, mas nunca consome uma vaga dos profissionais de apoio.
   const slots = getStaffSlots(profile.career_level || 1);
-  if (normalized.length + principalCoachCount >= slots) throw new Error(`Todas as ${slots} vagas da comissão estão ocupadas.`);
+  if (normalized.length >= slots) throw new Error(`Todas as ${slots} vagas da comissão técnica estão ocupadas.`);
   if (normalized.some(member => member.staff_type === staffCandidate.roleId)) {
     throw new Error(`Você já possui ${STAFF_ROLE_DEFINITIONS[staffCandidate.roleId]?.name || 'um profissional'} nessa função.`);
   }

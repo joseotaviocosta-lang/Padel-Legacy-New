@@ -290,7 +290,7 @@ export default function Training() {
                     <p className="text-[10px] text-muted-foreground mt-1">A fisioterapia deixou de ser uma ação diária. Contrate o profissional mensalmente para reduzir fadiga todos os dias e diminuir o risco de lesões.</p>
                   </div>
                 </div>
-                <Link to="/game/economy" className="mt-3 flex w-full items-center justify-center py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors">Gerenciar equipe técnica</Link>
+                <Link to="/staff" className="mt-3 flex w-full items-center justify-center py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors">Gerenciar comissão técnica</Link>
               </div>
             </div>
           </div>
