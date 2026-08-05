@@ -98,22 +98,16 @@ export const WORLD_TOUR_CITIES = Object.freeze([
 ]);
 
 const WEEK_PROGRAM = Object.freeze([
-  [2,['Silver','Gold']], [3,['Silver','Silver']], [4,['Gold','Platinum']],
-  [5,['Silver','Masters']], [6,['Silver','Gold','Platinum']], [7,['Silver','Gold']],
-  [8,['Silver','Elite']], [9,['Gold','Platinum']], [10,['Silver','Silver']],
-  [11,['Gold','Masters']], [12,['Silver','Platinum','Elite']], [13,['Silver','Gold']],
-  [14,['Gold','Crown']], [15,['Silver','Platinum']], [16,['Silver','Gold','Masters']],
-  [17,['Silver','Gold']], [18,['Platinum','Elite']], [19,['Silver','Silver']],
-  [20,['Gold','Masters']], [21,['Silver','Platinum']], [22,['Silver','Gold','Elite']],
-  [23,['Silver','Gold']], [24,['Platinum','Crown']], [25,['Silver','Masters']],
-  [26,['Silver','Gold','Platinum']], [27,['Silver','Gold']], [28,['Gold','Elite']],
-  [29,['Silver','Platinum']], [30,['Silver','Gold','Masters']], [31,['Silver','Gold']],
-  [32,['Platinum','Elite']], [33,['Silver','Silver']], [34,['Gold','Masters']],
-  [35,['Silver','Platinum','Crown']], [36,['Silver','Gold']], [37,['Gold','Elite']],
-  [38,['Silver','Platinum']], [39,['Silver','Gold','Masters']], [40,['Silver','Gold']],
-  [41,['Platinum','Elite']], [42,['Silver','Silver']], [43,['Gold','Masters']],
-  [44,['Silver','Platinum','Crown']], [45,['Silver','Gold']], [46,['Gold','Elite']],
-  [47,['Silver','Platinum']], [48,['Gold','Masters']],
+  // Calendário mais enxuto: os torneios passam a ser marcos da temporada,
+  // deixando blocos reais para treino, recuperação e evolução do atleta.
+  [2,['Silver']], [4,['Gold']], [6,['Silver','Platinum']],
+  [8,['Masters']], [10,['Gold']], [12,['Silver','Elite']],
+  [14,['Crown']], [16,['Platinum']], [18,['Gold','Masters']],
+  [20,['Silver']], [22,['Elite']], [24,['Platinum','Crown']],
+  [26,['Gold']], [28,['Masters']], [30,['Silver','Elite']],
+  [32,['Platinum']], [34,['Gold','Masters']], [36,['Crown']],
+  [38,['Silver']], [40,['Elite']], [42,['Gold','Platinum']],
+  [44,['Masters']], [46,['Silver']], [48,['Platinum','Crown']],
 ]);
 
 const EVENT_BRANDS = Object.freeze({

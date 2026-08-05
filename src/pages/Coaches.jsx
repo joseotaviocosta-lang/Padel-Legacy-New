@@ -1,10 +1,10 @@
 import React, { useMemo, useState, useEffect } from 'react';
-import { Search, Users, UserCheck } from 'lucide-react';
+import { Search, Users, UserCheck, Info } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
-import { COACHES_DATA, COACH_TIERS, calculateAffinity, canHireCoach } from '@/lib/coaches';
+import { COACHES_DATA, COACH_TIERS, COACH_SPECIALTY_INFO, calculateAffinity, canHireCoach } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
 import { getStaffSlots } from '@/lib/staffCatalog';
 import { syncStaffEffects } from '@/game-core/staffLifecycle';
@@ -38,11 +38,14 @@ export default function Coaches() {
       const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
       if (profiles && profiles[0]) setProfile(profiles[0]);
 
-      // Load coaches from DB (or seed if empty)
-      let dbCoaches = await localGame.entities.Coach.list('-reputation', 50);
-      if (!dbCoaches || dbCoaches.length === 0) {
-        await localGame.entities.Coach.bulkCreate(COACHES_DATA.map(c => ({ ...c })));
-        dbCoaches = await localGame.entities.Coach.list('-reputation', 50);
+      // Sincroniza o catálogo completo. Saves antigos costumavam ter apenas 2 treinadores.
+      let dbCoaches = await localGame.entities.Coach.list('-reputation', 100);
+      const normalizeName = value => String(value || '').trim().toLocaleLowerCase('pt-BR');
+      const existingNames = new Set((dbCoaches || []).map(coach => normalizeName(coach.name)));
+      const missingCoaches = COACHES_DATA.filter(coach => !existingNames.has(normalizeName(coach.name)));
+      if (missingCoaches.length > 0) {
+        await localGame.entities.Coach.bulkCreate(missingCoaches.map(coach => ({ ...coach })));
+        dbCoaches = await localGame.entities.Coach.list('-reputation', 100);
       }
       setCoaches(dbCoaches || []);
 
@@ -61,7 +64,7 @@ export default function Coaches() {
       if (activeFilter !== 'all' && c.tier !== activeFilter) return false;
       if (search) {
         const s = search.toLowerCase();
-        return (c.name || '').toLowerCase().includes(s) || (c.city || '').toLowerCase().includes(s) || (c.specialty || '').toLowerCase().includes(s);
+        return (c.name || '').toLowerCase().includes(s) || (c.city || '').toLowerCase().includes(s) || (c.specialty || '').toLowerCase().includes(s) || (COACH_SPECIALTY_INFO[c.specialty]?.label || '').toLowerCase().includes(s) || (c.specializations || []).some(item => String(item).toLowerCase().includes(s));
       }
       return true;
     });
@@ -113,11 +116,39 @@ export default function Coaches() {
     toast({ title: 'Demitido', description: `${hiredCoach.name} não é mais seu treinador.` });
   }
 
+  const availableCount = filtered.length;
+
   if (loading) return <LoadingScreen />;
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Users} title="Treinadores" subtitle="Contrate o mentor perfeito para sua carreira" accent="primary" />
+      <PageHeader icon={Users} title="Treinadores" subtitle="Escolha uma filosofia que complemente seu estilo e acelere sua evolução" accent="primary" />
+
+      <div className="grid gap-3 md:grid-cols-[1.3fr_1fr]">
+        <div className="glass rounded-2xl border border-primary/20 p-4">
+          <div className="flex items-start gap-3">
+            <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            <div>
+              <p className="text-sm font-black">O treinador define como você evolui</p>
+              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">Ele não aumenta o Overall instantaneamente. Seus bônus melhoram a eficiência dos treinos, a preparação física, a confiança ou a leitura tática conforme a especialidade e a afinidade com seu atleta.</p>
+            </div>
+          </div>
+        </div>
+        <div className="glass rounded-2xl p-4">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Mercado disponível</p>
+          <p className="mt-1 text-2xl font-black">{coaches.length} treinadores</p>
+          <p className="text-xs text-muted-foreground">{availableCount} exibidos com o filtro atual</p>
+        </div>
+      </div>
+
+      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
+        {Object.entries(COACH_SPECIALTY_INFO).map(([key, info]) => (
+          <button key={key} type="button" onClick={() => setSearch(key)} className="rounded-xl border border-border/60 bg-card/60 p-3 text-left transition hover:border-primary/35 hover:bg-primary/5">
+            <p className="text-xs font-black">{info.label}</p>
+            <p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{info.summary}</p>
+          </button>
+        ))}
+      </div>
 
       {/* Current Coach */}
       {hiredCoach && (
@@ -147,7 +178,7 @@ export default function Coaches() {
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar por nome, cidade ou especialidade..."
+          placeholder="Buscar por nome, cidade, especialidade ou estilo..."
           className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
       </div>
@@ -165,6 +196,7 @@ export default function Coaches() {
                 key={coach.id}
                 coach={coach}
                 affinity={affinity}
+                profile={profile}
                 isHired={hiredCoach?.id === coach.id}
                 onClick={() => setSelected(coach)}
               />

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Calendar, Trash2, Activity, Zap, AlertTriangle, Save } from 'lucide-react';
+import { Calendar, Trash2, Activity, Zap, AlertTriangle, Save, Play, Pause, Sparkles } from 'lucide-react';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, INTENSITY_LEVELS, WEEKDAYS, getPlanSummary, saveWeeklyPlan } from '@/lib/trainingSystemV2';
 import { getAttributeIcon } from '@/components/padel/Shared';
 
@@ -10,17 +10,19 @@ export default function WeeklyPlanner({ profile, onPlanSaved }) {
   const [plan, setPlan] = useState(profile?.weekly_training_plan || {});
   const [saving, setSaving] = useState(false);
   const [editingDay, setEditingDay] = useState(null);
+  const [enabled, setEnabled] = useState(Boolean(profile?.weekly_training_enabled));
 
   useEffect(() => {
     setPlan(profile?.weekly_training_plan || {});
-  }, [profile?.id]);
+    setEnabled(Boolean(profile?.weekly_training_enabled));
+  }, [profile?.id, profile?.weekly_training_enabled]);
 
   const summary = getPlanSummary(plan);
 
   async function handleSave() {
     setSaving(true);
     try {
-      const updated = await saveWeeklyPlan(profile, plan);
+      const updated = await saveWeeklyPlan(profile, plan, enabled);
       onPlanSaved?.(updated);
     } catch (e) {
       console.error('saveWeeklyPlan', e);
@@ -39,6 +41,40 @@ export default function WeeklyPlanner({ profile, onPlanSaved }) {
       delete next[dayId];
       return next;
     });
+  }
+
+
+  const PRESETS = {
+    equilibrado: {
+      seg: { activity_id: 'court-groundstrokes', intensity: 'moderado' },
+      ter: { activity_id: 'physical-conditioning', intensity: 'moderado' },
+      qua: { activity_id: 'court-net-control', intensity: 'moderado' },
+      sex: { activity_id: 'tactical-strategy', intensity: 'leve' },
+      sab: { activity_id: 'mental-concentration', intensity: 'leve' },
+    },
+    evolucao: {
+      seg: { activity_id: 'court-groundstrokes', intensity: 'intenso' },
+      ter: { activity_id: 'physical-agility', intensity: 'moderado' },
+      qua: { activity_id: 'court-aerials', intensity: 'moderado' },
+      sex: { activity_id: 'court-defense-transition', intensity: 'moderado' },
+      sab: { activity_id: 'tactical-strategy', intensity: 'leve' },
+    },
+    torneio: {
+      seg: { activity_id: 'court-groundstrokes', intensity: 'moderado' },
+      ter: { activity_id: 'tactical-strategy', intensity: 'moderado' },
+      qua: { activity_id: 'court-net-control', intensity: 'leve' },
+      sex: { activity_id: 'mental-pressure', intensity: 'leve' },
+    },
+    recuperacao: {
+      ter: { activity_id: 'mental-concentration', intensity: 'leve' },
+      qui: { activity_id: 'tactical-strategy', intensity: 'leve' },
+      sab: { activity_id: 'court-groundstrokes', intensity: 'leve' },
+    },
+  };
+
+  function applyPreset(id) {
+    setPlan(PRESETS[id] || {});
+    setEnabled(true);
   }
 
   return (
@@ -71,6 +107,25 @@ export default function WeeklyPlanner({ profile, onPlanSaved }) {
             <span>Carga de fadiga muito alta! Considere dias de descanso.</span>
           </div>
         )}
+      </div>
+
+      <div className="glass rounded-2xl border border-primary/20 p-4 space-y-3">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-sm font-bold flex items-center gap-2"><Sparkles className="h-4 w-4 text-primary" /> Treino automático</p>
+            <p className="text-[10px] text-muted-foreground">Ao avançar os dias, o jogo executa o plano. Dias vazios viram descanso automático.</p>
+          </div>
+          <button onClick={() => setEnabled(value => !value)} className={`inline-flex items-center justify-center gap-2 rounded-xl px-3 py-2 text-xs font-bold ${enabled ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>
+            {enabled ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
+            {enabled ? 'Automação ativa' : 'Ativar automação'}
+          </button>
+        </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <PresetButton label="Equilibrado" onClick={() => applyPreset('equilibrado')} />
+          <PresetButton label="Evolução" onClick={() => applyPreset('evolucao')} />
+          <PresetButton label="Pré-torneio" onClick={() => applyPreset('torneio')} />
+          <PresetButton label="Recuperação" onClick={() => applyPreset('recuperacao')} />
+        </div>
       </div>
 
       {/* Week grid */}
@@ -185,6 +240,10 @@ export default function WeeklyPlanner({ profile, onPlanSaved }) {
       )}
     </div>
   );
+}
+
+function PresetButton({ label, onClick }) {
+  return <button onClick={onClick} className="rounded-xl border border-border/50 bg-secondary/25 px-2 py-2 text-[10px] font-bold hover:border-primary/40 hover:text-primary transition-colors">{label}</button>;
 }
 
 function SummaryStat({ icon: Icon, label, value, color }) {

@@ -290,8 +290,16 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
     profile.full_name,
   ].filter(Boolean).map(normalizeName));
 
-  const ownMatches = (recentMatches || [])
-    .filter(match => isPlayerMatch(match, profile, playerNames))
+  const recordedMatchCount = Math.max(
+    0,
+    Number(profile.matches_played || 0),
+    Number(profile.wins || 0) + Number(profile.losses || 0)
+  );
+
+  const ownMatches = recordedMatchCount > 0
+    ? (recentMatches || [])
+      .filter(match => isCompletedPlayerMatch(match, profile, playerNames, careerDate))
+    : []
     .sort((a, b) => String(b.date || b.created_date || '').localeCompare(String(a.date || a.created_date || '')));
 
   // Entrevistas pós-jogo só existem quando uma partida real do jogador foi registrada.
@@ -321,7 +329,12 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
   }
 
   // Coletiva pré-torneio apenas quando há um torneio realmente agendado e próximo.
-  const nextTournament = findNextTournament(context.calendarEvents || [], careerDate);
+  const nextTournament = findNextTournament(
+    context.calendarEvents || [],
+    context.registrations || [],
+    profile.id,
+    careerDate
+  );
   if (nextTournament) {
     const eventKey = nextTournament.id || `${nextTournament.start_date || nextTournament.event_date}-${nextTournament.title || nextTournament.name}`;
     pending.push({
@@ -406,6 +419,29 @@ function isPlayerMatch(match, profile, playerNames) {
   return names.some(name => playerNames.has(name));
 }
 
+function isCompletedPlayerMatch(match, profile, playerNames, careerDate) {
+  if (!isPlayerMatch(match, profile, playerNames)) return false;
+
+  const status = normalizeName(match.status);
+  const completedStatus = ['completed', 'finished', 'played', 'concluido', 'concluído', 'finalizado'].includes(status);
+  const hasOfficialResult = Boolean(
+    match.winner ||
+    match.winner_id ||
+    match.winner_name ||
+    match.result ||
+    match.score ||
+    (Array.isArray(match.sets) && match.sets.length > 0)
+  );
+  if (!completedStatus && !hasOfficialResult) return false;
+
+  const dateValue = match.played_date || match.match_date || match.date || match.completed_at || match.created_date;
+  if (!dateValue) return false;
+  const matchDate = String(dateValue).slice(0, 10);
+  if (matchDate > String(careerDate).slice(0, 10)) return false;
+
+  return resolvePlayerOutcome(match, playerNames) !== null;
+}
+
 function resolvePlayerOutcome(match, playerNames) {
   const explicit = normalizeName(match.result);
   if (['vitória', 'vitoria', 'win', 'won'].includes(explicit)) return 'win';
@@ -437,17 +473,33 @@ function resolveOpponentName(match, playerNames) {
     match.opponent_name || match.winner_name || match.loser_name || 'o adversário';
 }
 
-function findNextTournament(events, careerDate) {
+function findNextTournament(events, registrations, profileId, careerDate) {
   const today = new Date(`${careerDate}T00:00:00`);
   const limit = new Date(today);
   limit.setDate(limit.getDate() + 7);
+
+  const confirmedRegistrations = new Map(
+    (registrations || [])
+      .filter(item => item?.profile_id === profileId && item.status === 'confirmed')
+      .map(item => [item.tournament_id, item])
+  );
+
   return (events || [])
     .filter(event => {
       const type = normalizeName(event.event_type || event.type);
       const status = normalizeName(event.status);
       const dateValue = event.start_date || event.event_date || event.date;
-      if (!dateValue || !type.includes('tournament') && !type.includes('torneio')) return false;
+      if (!dateValue || (!type.includes('tournament') && !type.includes('torneio'))) return false;
       if (['completed', 'concluido', 'concluído', 'cancelled', 'cancelado'].includes(status)) return false;
+
+      const tournamentId = event.tournament_id || event.related_id;
+      const registrationId = event.metadata?.registration_id;
+      const explicitlyRegistered = Boolean(
+        event.is_mandatory === true &&
+        (registrationId || confirmedRegistrations.has(tournamentId))
+      );
+      if (!explicitlyRegistered) return false;
+
       const date = new Date(`${String(dateValue).slice(0, 10)}T00:00:00`);
       return date >= today && date <= limit;
     })

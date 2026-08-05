@@ -270,33 +270,6 @@
     min-height: calc(100vh - 4rem);
   }
 
-  /* Compact, scroll-safe application layout */
-  .app-route-stage {
-    min-width: 0;
-    overflow-x: clip;
-    padding-bottom: 1.5rem;
-  }
-
-  .app-route-stage > * {
-    min-width: 0;
-  }
-
-  .app-route-stage button,
-  .app-route-stage a,
-  .app-route-stage input,
-  .app-route-stage select,
-  .app-route-stage textarea {
-    min-width: 0;
-  }
-
-  .safe-page-scroll {
-    min-height: 0;
-    overflow-y: auto;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-
   .app-route-stage > :not([data-layout-fullbleed]) {
     width: 100%;
   }
@@ -332,34 +305,6 @@
       min-height: calc(100vh - 7.9rem);
     }
 
-    .app-route-stage {
-      padding-bottom: 1rem;
-    }
-
-    .app-route-stage > :not([data-layout-fullbleed]) {
-      max-width: 100%;
-    }
-
-    .app-route-stage .glass,
-    .app-route-stage .glass-premium,
-    .app-route-stage .page-surface {
-      border-radius: 1rem;
-    }
-
-    .app-route-stage h1 {
-      font-size: clamp(1.35rem, 6vw, 1.75rem);
-      line-height: 1.15;
-    }
-
-    .app-route-stage h2 {
-      line-height: 1.2;
-    }
-
-    .app-route-stage table {
-      font-size: 0.75rem;
-    }
-
-
     .glass,
     .glass-premium {
       backdrop-filter: blur(16px) saturate(150%);
@@ -380,5 +325,19 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+
+/* Botão flutuante do Guia da carreira.
+   A largura explícita impede que a regra dos filhos da área de rotas
+   transforme o atalho em uma barra de rodapé inteira. */
+@layer utilities {
+  .career-help-fab {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    max-width: 2.75rem !important;
+    min-width: 2.75rem !important;
+    flex: 0 0 2.75rem !important;
   }
 }

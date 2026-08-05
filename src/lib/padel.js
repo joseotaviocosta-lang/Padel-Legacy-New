@@ -9,8 +9,8 @@ export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite
 // Experiência de carreira é uma progressão de longo prazo separada da força do atleta.
 // A habilidade esportiva continua sendo representada pelos atributos e pelo Overall.
 export const CAREER_EXPERIENCE_MAX_LEVEL = 50;
-export const CAREER_EXPERIENCE_MAX_XP = 500000;
-export const CAREER_EXPERIENCE_CURVE = 2.15;
+export const CAREER_EXPERIENCE_MAX_XP = 180000;
+export const CAREER_EXPERIENCE_CURVE = 1.85;
 
 export const CAREER_EXPERIENCE_TITLES = Object.freeze([
   { level: 1, title: 'Novato' },
@@ -19,7 +19,7 @@ export const CAREER_EXPERIENCE_TITLES = Object.freeze([
   { level: 20, title: 'Profissional' },
   { level: 30, title: 'Destaque do circuito' },
   { level: 40, title: 'Elite' },
-  { level: 50, title: 'Lenda da carreira' },
+  { level: 50, title: 'Auge profissional' },
 ]);
 
 export function careerExperienceXpForLevel(level) {
@@ -89,7 +89,7 @@ export const CAREER_EXPERIENCE_UNLOCKS = Object.freeze([
   { level: 20, title: 'Carreira profissional', description: 'Oportunidades profissionais e análises competitivas ampliadas.' },
   { level: 30, title: 'Influência no circuito', description: 'Mais peso em negociações, eventos e decisões de carreira.' },
   { level: 40, title: 'Recursos de elite', description: 'Relatórios e oportunidades reservados a atletas experientes.' },
-  { level: 50, title: 'Legado máximo', description: 'Marco de auge da carreira e reconhecimento de uma trajetória lendária.' },
+  { level: 50, title: 'Auge profissional', description: 'Marco de maturidade competitiva. Títulos, recordes e legado continuam evoluindo depois dele.' },
 ]);
 
 export function careerExperienceUnlocks(levelOrXp, isXp = false) {

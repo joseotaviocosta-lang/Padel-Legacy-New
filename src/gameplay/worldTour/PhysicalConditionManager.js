@@ -10,9 +10,9 @@ const ROUND_LOAD = {
 };
 
 const SEVERITIES = [
-  { key: 'leve', label: 'Leve', minDays: 2, maxDays: 4, weight: 55 },
-  { key: 'moderada', label: 'Moderada', minDays: 5, maxDays: 10, weight: 32 },
-  { key: 'grave', label: 'Grave', minDays: 11, maxDays: 24, weight: 13 },
+  { key: 'leve', label: 'Leve', minDays: 2, maxDays: 4, weight: 72 },
+  { key: 'moderada', label: 'Moderada', minDays: 5, maxDays: 9, weight: 24 },
+  { key: 'grave', label: 'Grave', minDays: 10, maxDays: 20, weight: 4 },
 ];
 
 const INJURY_TYPES = {
@@ -58,18 +58,20 @@ export function calculateInjuryRisk(profile, load, won = false) {
   const energyAfter = clamp(profile?.energy, 0, 100);
   const fatigue = clamp(profile?.fatigue ?? (100 - energyAfter), 0, 100);
   const condition = clamp(profile?.condition ?? 70, 0, 100);
-  const base = 0.006;
-  const lowEnergy = Math.max(0, 45 - energyAfter) * 0.0014;
-  const highFatigue = Math.max(0, fatigue - 45) * 0.0012;
-  const loadRisk = Math.max(0, Number(load?.energyCost || 0) - 14) * 0.0011;
-  const conditionProtection = Math.max(0, condition - 60) * 0.00045;
-  const extraRound = won ? 0.001 : 0;
+  const base = 0.0015;
+  const lowEnergy = energyAfter >= 35 ? 0 : (35 - energyAfter) * 0.00032;
+  const highFatigue = fatigue <= 55 ? 0 : fatigue <= 75
+    ? (fatigue - 55) * 0.00022
+    : 0.0044 + (fatigue - 75) * 0.00055;
+  const loadRisk = Math.max(0, Number(load?.energyCost || 0) - 18) * 0.00025;
+  const conditionProtection = Math.max(0, condition - 65) * 0.00008;
+  const extraRound = won ? 0.0002 : 0;
   const medical = getMedicalModifiers(profile);
   const relapse = Number(profile?.early_return_relapse_risk || 0);
-  return clamp((base + lowEnergy + highFatigue + loadRisk + extraRound - conditionProtection) * (1 - medical.injuryReduction) + relapse, 0.003, 0.28);
+  return clamp((base + lowEnergy + highFatigue + loadRisk + extraRound - conditionProtection) * (1 - medical.injuryReduction) + relapse, 0.0005, 0.08);
 }
 function chooseSeverity(seed, risk) {
-  const adjusted = risk > 0.16 ? [35, 40, 25] : risk > 0.08 ? [48, 37, 15] : SEVERITIES.map(x => x.weight);
+  const adjusted = risk > 0.05 ? [58, 34, 8] : risk > 0.025 ? [66, 29, 5] : SEVERITIES.map(x => x.weight);
   const roll = hash(`${seed}:severity`) * adjusted.reduce((a,b)=>a+b,0);
   let acc=0;
   return SEVERITIES.find((item,i)=>{ acc+=adjusted[i]; return roll<=acc; }) || SEVERITIES[0];

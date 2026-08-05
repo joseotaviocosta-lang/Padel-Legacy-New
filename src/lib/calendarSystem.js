@@ -161,6 +161,43 @@ export async function scheduleRecurringActivities(profile, input, weeks = 1) {
   return { created, skipped };
 }
 
+
+const WEEKDAY_IDS = ['dom', 'seg', 'ter', 'qua', 'qui', 'sex', 'sab'];
+
+export function getWeeklyPlanEntry(profile, date) {
+  const parsed = new Date(`${String(date || profile?.career_date || CAREER_START_DATE).slice(0, 10)}T00:00:00Z`);
+  if (Number.isNaN(parsed.getTime())) return null;
+  const dayId = WEEKDAY_IDS[parsed.getUTCDay()];
+  const raw = profile?.weekly_training_plan?.[dayId];
+  if (!raw?.activity_id) return null;
+  const activityId = normalizeTrainingId(raw.activity_id);
+  const activity = TRAINING_ACTIVITIES.find((item) => item.id === activityId);
+  if (!activity) return null;
+  const intensity = INTENSITY_LEVELS.find((item) => item.id === raw.intensity) || INTENSITY_LEVELS[1];
+  return { dayId, activity, intensity, raw };
+}
+
+export async function executeWeeklyTrainingPlan(profile, date, { alreadyExecuted = false } = {}) {
+  if (!profile?.weekly_training_enabled || alreadyExecuted) return { profile, status: 'disabled' };
+  const planEntry = getWeeklyPlanEntry(profile, date);
+  if (!planEntry) return { profile, status: 'rest' };
+
+  const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
+  const blockingEvent = (events || []).find((event) => {
+    const end = event.end_date || event.start_date;
+    const occurs = event.start_date <= date && end >= date;
+    return occurs && (event.event_type === 'tournament' || event.requires_decision || event.is_mandatory);
+  });
+  if (blockingEvent) return { profile, status: 'blocked', reason: blockingEvent.title };
+
+  const sessions = await localGame.entities.TrainingSession.filter({ profile_id: profile.id });
+  if ((sessions || []).some((session) => session.date === date)) return { profile, status: 'already-trained' };
+
+  const result = await executeTraining(profile, planEntry.activity, planEntry.intensity.id);
+  if (result.error) return { profile, status: 'skipped', reason: result.error, planEntry };
+  return { profile: result.profile, status: 'completed', result, planEntry };
+}
+
 export async function executePlannedActivities(profile, date) {
   const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
   const due = (events || []).filter((event) => event.start_date === date && event.metadata?.planner_created);

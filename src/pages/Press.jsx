@@ -16,6 +16,7 @@ export default function Press() {
   const [recentMatches, setRecentMatches] = useState([]);
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [partnership, setPartnership] = useState(null);
+  const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('feed');
   const [activeInterview, setActiveInterview] = useState(null);
@@ -33,16 +34,18 @@ export default function Press() {
       setProfile(p);
 
       if (p) {
-        const [arts, mats, events, partnerships] = await Promise.all([
+        const [arts, mats, events, partnerships, tournamentRegistrations] = await Promise.all([
           localGame.entities.PressArticle.filter({ profile_id: p.id }, '-created_date', 50),
           localGame.entities.Match.filter({ profile_id: p.id }, '-created_date', 20),
           localGame.entities.CalendarEvent.filter({ profile_id: p.id }, 'start_date', 100),
           localGame.entities.Partnership.filter({ profile_id: p.id }, '-created_date', 20).catch(() => []),
+          localGame.entities.TournamentRegistration.filter({ profile_id: p.id }, '-registered_at', 100).catch(() => []),
         ]);
         setArticles(arts || []);
         setRecentMatches(mats || []);
         setCalendarEvents(events || []);
         setPartnership((partnerships || []).find(item => item.is_active || item.status === 'active') || null);
+        setRegistrations(tournamentRegistrations || []);
 
         // Load or seed journalists for this profile
         const existing = await localGame.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
@@ -59,7 +62,7 @@ export default function Press() {
   }
 
   const pendingInterviews = profile
-    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership }).filter(interview => {
+    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership, registrations }).filter(interview => {
         return !articles.some(article =>
           (article.source_event_id === interview.sourceId || article.related_event === interview.relatedEvent) &&
           (

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Star, Coins, Award, MapPin } from 'lucide-react';
-import { COACH_TIERS } from '@/lib/coaches';
-import { getAffinityLabel } from '@/lib/coaches';
+import { COACH_TIERS, COACH_SPECIALTY_INFO, getAffinityLabel, getCoachImpactSummary } from '@/lib/coaches';
 
-export default function CoachCard({ coach, affinity, onClick, isHired }) {
+export default function CoachCard({ coach, profile, affinity, onClick, isHired }) {
   if (!coach) return null;
   const tier = COACH_TIERS[coach.tier] || COACH_TIERS.regional;
   const aff = affinity != null ? getAffinityLabel(affinity) : null;
+  const impact = getCoachImpactSummary(coach, profile);
+  const specialty = COACH_SPECIALTY_INFO[coach.specialty];
 
   return (
     <button onClick={onClick} className={`glass glass-hover rounded-2xl p-4 text-left w-full border ${tier.border} hover-lift ${isHired ? 'ring-1 ring-primary/40' : ''}`}>
@@ -22,7 +23,7 @@ export default function CoachCard({ coach, affinity, onClick, isHired }) {
           <div className="flex items-center gap-1.5 mt-0.5">
             <span className={`text-[9px] font-bold uppercase tracking-wide ${tier.color}`}>{tier.label}</span>
             <span className="text-muted-foreground text-[9px]">·</span>
-            <span className="text-[9px] text-muted-foreground capitalize">{coach.specialty}</span>
+            <span className="text-[9px] text-muted-foreground">{specialty?.label || coach.specialty}</span>
           </div>
         </div>
         {isHired && (
@@ -30,7 +31,11 @@ export default function CoachCard({ coach, affinity, onClick, isHired }) {
         )}
       </div>
 
-      <p className="text-[11px] text-muted-foreground italic line-clamp-2 mb-3">"{coach.philosophy}"</p>
+      <div className="mb-3 rounded-xl border border-border/50 bg-background/35 p-2.5">
+        <p className="text-[9px] font-bold uppercase tracking-wider text-primary">Como ajuda seu atleta</p>
+        <p className="mt-1 line-clamp-2 text-[11px] leading-relaxed text-muted-foreground">{impact.summary}</p>
+        {impact.highlights[0] && <p className="mt-1.5 text-[10px] font-semibold text-foreground/85">{impact.highlights[0]}</p>}
+      </div>
 
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-1">

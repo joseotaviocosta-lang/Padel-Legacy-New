@@ -1,6 +1,6 @@
 import React from 'react';
 import { X, Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
-import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, getCoachEffects, canHireCoach, calculateAffinity } from '@/lib/coaches';
+import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, canHireCoach, calculateAffinity } from '@/lib/coaches';
 
 export default function CoachDetail({ coach, profile, onHire, onFire, onClose, isHired }) {
   if (!coach) return null;
@@ -10,6 +10,8 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
   const effects = getCoachEffects(coach, profile);
   const hireCheck = canHireCoach(coach, profile);
   const affinity = calculateAffinity(coach, profile);
+  const impact = getCoachImpactSummary(coach, profile);
+  const specialtyInfo = COACH_SPECIALTY_INFO[coach.specialty];
 
   return (
     <>
@@ -35,6 +37,15 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
                 <X className="h-5 w-5 text-muted-foreground" />
               </button>
             )}
+          </div>
+
+          <div className="mb-3 rounded-xl border border-primary/25 bg-primary/5 p-3">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Impacto no atleta · {specialtyInfo?.label || coach.specialty}</p>
+            <p className="mt-1 text-xs leading-relaxed">{impact.summary}</p>
+            <div className="mt-2 space-y-1">
+              {impact.highlights.map(item => <p key={item} className="text-[10px] text-muted-foreground">• {item}</p>)}
+            </div>
+            <p className="mt-2 text-[10px] text-muted-foreground"><strong>Importante:</strong> os efeitos são maiores quando a afinidade é boa e quando você escolhe treinos ligados às especializações do treinador.</p>
           </div>
 
           {/* Philosophy */}
@@ -70,12 +81,12 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
 
           {/* Effects */}
           <div className="grid grid-cols-2 gap-2 mb-3">
-            <EffectRow icon={Zap} label="Bônus Treino" value={effects.trainingBoost > 0 ? `+${effects.trainingBoost}` : effects.trainingBoost} color="text-primary" />
-            <EffectRow icon={Heart} label="Bônus Moral" value={effects.moraleBonus > 0 ? `+${effects.moraleBonus}` : '—'} color="text-pink-400" />
-            <EffectRow icon={TrendingUp} label="Energia" value={effects.energyBonus > 0 ? `+${effects.energyBonus}` : '—'} color="text-green-400" />
-            <EffectRow icon={Shield} label="Anti-Lesão" value={effects.injuryReduction > 0 ? `-${effects.injuryReduction}%` : '—'} color="text-cyan-400" />
-            <EffectRow icon={Brain} label="Estratégia" value={effects.strategyBonus > 0 ? `+${effects.strategyBonus}` : '—'} color="text-purple-400" />
-            <EffectRow icon={Sparkles} label="Match Specs" value={`${effects.specMatch}/${(coach.specializations || []).length}`} color="text-amber-400" />
+            <EffectRow icon={Zap} label="Eficiência treino" value={effects.trainingBoost > 0 ? `+${effects.trainingBoost}` : effects.trainingBoost} color="text-primary" />
+            <EffectRow icon={Heart} label="Confiança" value={effects.moraleBonus > 0 ? `+${effects.moraleBonus}` : '—'} color="text-pink-400" />
+            <EffectRow icon={TrendingUp} label="Recuperação" value={effects.energyBonus > 0 ? `+${effects.energyBonus}` : '—'} color="text-green-400" />
+            <EffectRow icon={Shield} label="Prevenção" value={effects.injuryReduction > 0 ? `-${effects.injuryReduction}%` : '—'} color="text-cyan-400" />
+            <EffectRow icon={Brain} label="Leitura tática" value={effects.strategyBonus > 0 ? `+${effects.strategyBonus}` : '—'} color="text-purple-400" />
+            <EffectRow icon={Sparkles} label="Focos compatíveis" value={`${effects.specMatch}/${(coach.specializations || []).length}`} color="text-amber-400" />
           </div>
 
           {/* Training Methods */}

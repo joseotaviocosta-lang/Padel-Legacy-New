@@ -8,7 +8,7 @@ import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 import { maybeGenerateMacroEvent, expireMacroEvents } from '@/lib/worldEvents';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
-import { canAdvanceDay, processCalendarEvents, executePlannedActivities } from '@/lib/calendarSystem';
+import { canAdvanceDay, processCalendarEvents, executePlannedActivities, executeWeeklyTrainingPlan } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js';
 
@@ -181,6 +181,15 @@ export async function advanceDay(profile) {
   let updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   const plannedResult = await executePlannedActivities(updated, newCareerDate);
   updated = plannedResult.profile || updated;
+  const plannedTrainingExecuted = (plannedResult.results || []).some((item) => item.event?.metadata?.planned_activity_kind === 'training' && item.status === 'completed');
+  const weeklyPlanResult = await executeWeeklyTrainingPlan(updated, newCareerDate, { alreadyExecuted: plannedTrainingExecuted });
+  updated = weeklyPlanResult.profile || updated;
+  if (weeklyPlanResult.status === 'completed') {
+    updated = await localGame.entities.PlayerProfile.update(updated.id, {
+      last_automatic_training_date: newCareerDate,
+      last_automatic_training_label: weeklyPlanResult.planEntry?.activity?.label || null,
+    });
+  }
   // Aguarde efeitos globais antes de concluir o dia. Isso garante que avanço
   // manual e avanço em lote tenham exatamente a mesma ordem e persistência.
   if (oldMonth !== newMonth) {
@@ -348,6 +357,8 @@ async function ensureFutureTournamentsInternal(careerDate) {
 
     let created = 0;
     let repaired = 0;
+    let removedObsolete = 0;
+    const desiredTournamentKeys = new Set();
     const pendingTournamentUpserts = [];
     for (let year = careerD.getFullYear(); year <= horizon.getFullYear(); year += 1) {
       let season = seasonByYear.get(year);
@@ -373,6 +384,7 @@ async function ensureFutureTournamentsInternal(careerDate) {
         if (dateObj < careerD || dateObj > horizon) continue;
 
         const key = `${year}:${payload.circuit_code}`;
+        desiredTournamentKeys.add(key);
         const existing = existingByCodeAndYear.get(key);
         if (existing?.id) {
             const { id: _generatedId, ...updatePayload } = payload;
@@ -395,7 +407,19 @@ async function ensureFutureTournamentsInternal(careerDate) {
     if (pendingTournamentUpserts.length) {
       await localGame.entities.Tournament.bulkUpdate(pendingTournamentUpserts);
     }
-    return { created, repaired };
+    // Remove edições futuras do calendário mundial antigo que não fazem mais
+    // parte da temporada enxuta. Resultados, inscrições e torneios iniciados
+    // permanecem preservados.
+    for (const tournament of activeTournaments) {
+      const year = Number(tournament?.year || String(tournament?.start_date || '').slice(0, 4));
+      const key = tournament?.circuit_code && year ? `${year}:${tournament.circuit_code}` : null;
+      const removable = tournament?.world_tour_event && tournament?.start_date >= careerDate && key && !desiredTournamentKeys.has(key)
+        && tournament?.status !== 'finalizado' && !tournament?.champion && !(tournament?.participants || []).length;
+      if (!removable) continue;
+      try { await localGame.entities.Tournament.delete(tournament.id); removedObsolete += 1; }
+      catch (error) { console.warn('Torneio obsoleto não removido', tournament.id, error); }
+    }
+    return { created, repaired, removedObsolete };
   } catch (error) {
     console.error('ensureFutureTournaments', error);
     return { created: 0, repaired: 0, error };

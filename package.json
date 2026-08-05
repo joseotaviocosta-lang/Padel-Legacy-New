@@ -44,7 +44,9 @@
     "test:vite-config": "node scripts/test-vite-config.mjs",
     "test:live-coach": "node scripts/test-live-coach.mjs",
     "test:beta": "node scripts/test-beta-readiness.mjs",
-    "test:tutorial-engine": "node scripts/test-tutorial-engine-v2.mjs"
+    "test:tutorial-engine": "node scripts/test-tutorial-engine-v2.mjs",
+    "test:career-pace": "node scripts/test-career-pace-v17.mjs",
+    "test:injuries": "node scripts/test-injury-balance-v21.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

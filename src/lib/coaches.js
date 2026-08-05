@@ -35,6 +35,55 @@ export const TRAINING_METHODS = {
   periodizacao: { label: 'Periodização', desc: 'Ciclos de carga e recuperação', icon: 'Calendar' },
 };
 
+
+
+export const COACH_SPECIALTY_INFO = {
+  tecnico: {
+    label: 'Técnico',
+    summary: 'Acelera a evolução técnica e melhora golpes específicos trabalhados nos treinos.',
+    benefits: ['mais progresso técnico', 'especialização de golpes', 'melhor aproveitamento dos treinos'],
+  },
+  motivacional: {
+    label: 'Motivador',
+    summary: 'Protege a confiança e ajuda o atleta a reagir melhor a derrotas e momentos de pressão.',
+    benefits: ['mais confiança', 'moral mais estável', 'melhor resposta sob pressão'],
+  },
+  estratega: {
+    label: 'Estrategista',
+    summary: 'Melhora a leitura de jogo, a preparação tática e a qualidade das decisões em quadra.',
+    benefits: ['mais estratégia', 'melhores escolhas de golpe', 'análise de adversários'],
+  },
+  fisico: {
+    label: 'Preparação física',
+    summary: 'Aumenta a eficiência física, auxilia a recuperação e reduz desgaste e risco de lesão.',
+    benefits: ['mais energia', 'menor risco de lesão', 'melhor rendimento físico'],
+  },
+  mental: {
+    label: 'Mental',
+    summary: 'Desenvolve foco, controle emocional e desempenho em pontos decisivos.',
+    benefits: ['mais foco', 'controle emocional', 'desempenho decisivo'],
+  },
+};
+
+export function getCoachImpactSummary(coach, profile) {
+  if (!coach) return { title: 'Sem especialidade', summary: 'Nenhum efeito disponível.', highlights: [] };
+  const info = COACH_SPECIALTY_INFO[coach.specialty] || {
+    label: String(coach.specialty || 'Treinador'),
+    summary: 'Contribui para o desenvolvimento do atleta conforme suas especializações.',
+    benefits: [],
+  };
+  const effects = getCoachEffects(coach, profile);
+  const highlights = [];
+  if (effects?.trainingBoost) highlights.push(`${effects.trainingBoost > 0 ? '+' : ''}${effects.trainingBoost}% eficiência geral de treino`);
+  if (effects?.energyBonus) highlights.push(`+${effects.energyBonus} recuperação de energia`);
+  if (effects?.moraleBonus) highlights.push(`+${effects.moraleBonus} estabilidade de confiança`);
+  if (effects?.injuryReduction) highlights.push(`-${effects.injuryReduction}% risco de lesão`);
+  if (effects?.strategyBonus) highlights.push(`+${effects.strategyBonus} leitura tática`);
+  const specs = (coach.specializations || []).slice(0, 3).map(item => String(item).replaceAll('_', ' '));
+  if (specs.length) highlights.push(`Foco: ${specs.join(', ')}`);
+  return { title: info.label, summary: info.summary, highlights: highlights.slice(0, 3), benefits: info.benefits };
+}
+
 export const COACHES_DATA = [
   {
     name: 'Rafael "Rafa" Mendez',

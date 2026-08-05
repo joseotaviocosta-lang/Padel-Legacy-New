@@ -1,0 +1,163 @@
+{
+  "trainingCases": [
+    {
+      "name": "leve-descansado",
+      "intensityId": "leve",
+      "fatigue": 15,
+      "energy": 90,
+      "expectedMax": 0.001,
+      "risk": 0.0005
+    },
+    {
+      "name": "normal-descansado",
+      "intensityId": "moderado",
+      "fatigue": 25,
+      "energy": 85,
+      "expectedMax": 0.0025,
+      "risk": 0.0015
+    },
+    {
+      "name": "intenso-descansado",
+      "intensityId": "intenso",
+      "fatigue": 30,
+      "energy": 90,
+      "expectedMax": 0.006,
+      "risk": 0.0045
+    },
+    {
+      "name": "normal-fadiga-alta",
+      "intensityId": "moderado",
+      "fatigue": 72,
+      "energy": 55,
+      "expectedMin": 0.002,
+      "expectedMax": 0.006,
+      "risk": 0.00235
+    },
+    {
+      "name": "intenso-sobrecarga",
+      "intensityId": "intenso",
+      "fatigue": 88,
+      "energy": 35,
+      "secondSession": true,
+      "expectedMin": 0.006,
+      "expectedMax": 0.018,
+      "risk": 0.009049999999999999
+    },
+    {
+      "name": "intenso-sobrecarga-medico",
+      "intensityId": "intenso",
+      "fatigue": 88,
+      "energy": 35,
+      "secondSession": true,
+      "staffMultiplier": 0.55,
+      "expectedMax": 0.01,
+      "risk": 0.0049775
+    }
+  ],
+  "tournamentCases": [
+    {
+      "name": "partida-normal",
+      "profile": {
+        "energy": 72,
+        "fatigue": 28,
+        "condition": 75
+      },
+      "load": {
+        "energyCost": 16
+      },
+      "expectedMax": 0.004,
+      "risk": 0.0007
+    },
+    {
+      "name": "partida-cansado",
+      "profile": {
+        "energy": 38,
+        "fatigue": 63,
+        "condition": 68
+      },
+      "load": {
+        "energyCost": 20
+      },
+      "expectedMin": 0.002,
+      "expectedMax": 0.012,
+      "risk": 0.0035199999999999997
+    },
+    {
+      "name": "partida-sobrecarga",
+      "profile": {
+        "energy": 18,
+        "fatigue": 88,
+        "condition": 55
+      },
+      "load": {
+        "energyCost": 25
+      },
+      "expectedMin": 0.015,
+      "expectedMax": 0.05,
+      "risk": 0.02024
+    },
+    {
+      "name": "partida-sobrecarga-medico",
+      "profile": {
+        "energy": 18,
+        "fatigue": 88,
+        "condition": 55,
+        "medical_staff_ids": [
+          "physio_senior",
+          "doctor_sports"
+        ]
+      },
+      "load": {
+        "energyCost": 25
+      },
+      "expectedMax": 0.035,
+      "risk": 0.013358400000000001
+    }
+  ],
+  "summaries": [
+    {
+      "name": "casual",
+      "sessionsPerWeek": 2.5,
+      "intenseShare": 0.08,
+      "matchesPerSeason": 18,
+      "disciplined": true,
+      "staffMultiplier": 1,
+      "runs": 80,
+      "avgInjuries10Seasons": 2.5,
+      "injuriesPerSeason": 0.24999999999999992
+    },
+    {
+      "name": "eficiente",
+      "sessionsPerWeek": 4,
+      "intenseShare": 0.18,
+      "matchesPerSeason": 24,
+      "disciplined": true,
+      "staffMultiplier": 0.82,
+      "runs": 80,
+      "avgInjuries10Seasons": 5.375,
+      "injuriesPerSeason": 0.5374999999999999
+    },
+    {
+      "name": "agressivo",
+      "sessionsPerWeek": 5,
+      "intenseShare": 0.42,
+      "matchesPerSeason": 28,
+      "disciplined": true,
+      "staffMultiplier": 0.9,
+      "runs": 80,
+      "avgInjuries10Seasons": 10.5,
+      "injuriesPerSeason": 1.0500000000000003
+    },
+    {
+      "name": "excesso",
+      "sessionsPerWeek": 7,
+      "intenseShare": 0.7,
+      "matchesPerSeason": 30,
+      "disciplined": false,
+      "staffMultiplier": 1,
+      "runs": 80,
+      "avgInjuries10Seasons": 40.2875,
+      "injuriesPerSeason": 4.0287500000000005
+    }
+  ]
+}

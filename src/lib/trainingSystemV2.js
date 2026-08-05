@@ -16,6 +16,41 @@ const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(
 const round = (value, precision = 3) => Number(Number(value).toFixed(precision));
 const parseDate = value => { const date = new Date(`${String(value || todayStr()).slice(0, 10)}T00:00:00Z`); return Number.isNaN(date.getTime()) ? new Date() : date; };
 
+
+const STYLE_ATTRIBUTE_BONUSES = Object.freeze({
+  offensive: new Set(['smash', 'volley', 'bandeja', 'serve']),
+  defensive: new Set(['defense', 'agility', 'backhand', 'emotional_control']),
+  control: new Set(['strategy', 'forehand', 'backhand', 'volley']),
+  balanced: new Set(ATTRIBUTE_KEYS),
+});
+
+function getProfileStyleKey(profile) {
+  const value = `${profile?.play_style || ''} ${profile?.tactical_role || ''}`.toLowerCase();
+  if (/ofens|finaliz|pot[eê]ncia|agress/.test(value)) return 'offensive';
+  if (/defens|contra/.test(value)) return 'defensive';
+  if (/control|construtor|t[aá]tic/.test(value)) return 'control';
+  return 'balanced';
+}
+
+export function getAttributeDevelopmentCeiling(profile, attribute) {
+  const potential = clamp(profile?.potential ?? 72, 45, 99);
+  const base = 58 + potential * 0.42;
+  const styleKey = getProfileStyleKey(profile);
+  const preferred = STYLE_ATTRIBUTE_BONUSES[styleKey]?.has(attribute);
+  const initial = Number(profile?.initial_attributes?.[attribute]);
+  const initialModifier = Number.isFinite(initial) ? clamp((initial - 10) * 0.18, -2, 2) : 0;
+  const specialization = styleKey === 'balanced' ? 0 : preferred ? 2.5 : -1.5;
+  return Math.round(clamp(base + specialization + initialModifier, 68, 99));
+}
+
+export function getDevelopmentWindow(profile, attributes = ATTRIBUTE_KEYS) {
+  const current = attributes.reduce((sum, key) => sum + clamp(profile?.[key]), 0) / Math.max(1, attributes.length);
+  const ceiling = attributes.reduce((sum, key) => sum + getAttributeDevelopmentCeiling(profile, key), 0) / Math.max(1, attributes.length);
+  const remaining = Math.max(0, ceiling - current);
+  const multiplier = remaining >= 15 ? 1 : remaining >= 8 ? 0.82 : remaining >= 4 ? 0.58 : remaining >= 1 ? 0.3 : 0.08;
+  return { current, ceiling, remaining, multiplier };
+}
+
 function isSameCareerWeek(session, date) {
   const reference = parseDate(date); const candidate = parseDate(session?.date || session?.created_date);
   const day = reference.getUTCDay() || 7; reference.setUTCDate(reference.getUTCDate() - day + 1);
@@ -46,9 +81,12 @@ export function calculateTrainingGainBudget({ profile, training, intensityId = '
   const weightedLevel = Object.entries(weights).reduce((sum, [key, weight]) => sum + clamp(profile?.[key]) * weight, 0) / Math.max(1, Object.values(weights).reduce((a, b) => a + b, 0));
   const levelMultiplier = clamp(1.18 - weightedLevel * 0.0065, 0.42, 1.12);
   const fatigueMultiplier = clamp(1 - clamp(profile?.fatigue) * 0.006, 0.45, 1);
-  const potentialMultiplier = clamp(0.9 + (Number(profile?.potential) || 60) / 600, 0.9, 1.08);
+  const potentialMultiplier = clamp(0.9 + (Number(profile?.potential) || 60) / 520, 0.92, 1.11);
   const age = profile?.birth_date ? Math.max(16, Math.floor((parseDate(profile.career_date) - parseDate(profile.birth_date)) / 31557600000)) : 25;
-  const ageMultiplier = age <= 23 ? 1.08 : age <= 30 ? 1 : age <= 35 ? 0.9 : 0.78;
+  // A maior janela de evolução acontece dos 16 aos 22 anos. O auge chega
+  // entre 23 e 26; depois disso a progressão vira manutenção e especialização.
+  const ageMultiplier = age <= 18 ? 1.34 : age <= 22 ? 1.24 : age <= 26 ? 1.06 : age <= 30 ? 0.86 : age <= 35 ? 0.68 : 0.48;
+  const development = getDevelopmentWindow(profile, Object.keys(weights));
   const repetitionMultiplier = getDiminishingMultiplier(repetitionCount + 1);
   const affinity = getStyleAffinity(profile, training);
   const clubMultiplier = 1 + clamp(profile?.club_training_bonus, 0, 0.2);
@@ -64,8 +102,8 @@ export function calculateTrainingGainBudget({ profile, training, intensityId = '
           ? Number(profile?.staff_tactical_training_multiplier || 1)
           : 1;
   const staffMultiplier = Math.max(1, Number(profile?.staff_training_gain_multiplier || 1)) * Math.max(1, groupMultiplier);
-  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier;
-  return { budget: round(Math.max(0.08, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, repetitionMultiplier, affinity, coachMultiplier, staffMultiplier, intensity };
+  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * development.multiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier;
+  return { budget: round(Math.max(0.03, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, development, repetitionMultiplier, affinity, coachMultiplier, staffMultiplier, intensity };
 }
 
 export function distributeTrainingGain(profile, training, budget) {
@@ -83,7 +121,16 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
   const energyCost = Math.max(1, Math.round(calculation.intensity.energyCost * secondSessionMultiplier * staffEnergyMultiplier));
   const fatigueCost = calculation.intensity.fatigueCost + (training.fatigueExtra || 0);
   const staffInjuryMultiplier = Math.max(0.42, Math.min(1, Number(profile?.staff_injury_risk_multiplier || 1)));
-  const injuryRisk = (calculation.intensity.injuryRisk + Math.max(0, clamp(profile?.fatigue) - 35) * 0.001) * staffInjuryMultiplier;
+  const fatigue = clamp(profile?.fatigue);
+  const energyAfter = Math.max(0, Number(profile?.energy ?? 100) - energyCost);
+  // Treinos normais devem ser seguros. O risco cresce de forma não linear apenas
+  // quando o atleta insiste em treinar com fadiga alta ou energia muito baixa.
+  const fatigueRisk = fatigue <= 55 ? 0 : fatigue <= 75
+    ? (fatigue - 55) * 0.00005
+    : 0.001 + (fatigue - 75) * 0.00014;
+  const lowEnergyRisk = energyAfter >= 30 ? 0 : (30 - energyAfter) * 0.00007;
+  const secondSessionRisk = (profile?.trainings_today || 0) > 0 ? 0.0004 : 0;
+  const injuryRisk = Math.min(0.022, (calculation.intensity.injuryRisk + fatigueRisk + lowEnergyRisk + secondSessionRisk) * staffInjuryMultiplier);
   return { ...calculation, gains: distributeTrainingGain(profile, training, calculation.budget), energyCost, energyAfter: Math.max(0, Number(profile?.energy ?? 100) - energyCost), fatigueCost, duration: Math.round(training.duration * calculation.intensity.durationMult), injuryRisk };
 }
 
@@ -123,11 +170,15 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   const updates = {};
   const appliedGains = {};
   for (const [attribute, gain] of Object.entries(preview.gains)) {
-    const total = (Number(progress[attribute]) || 0) + gain;
-    const levelGain = Math.floor(total + 1e-9);
-    progress[attribute] = round(total - levelGain);
-    updates[attribute] = Math.min(100, (Number(profile[attribute]) || 0) + levelGain);
-    appliedGains[attribute] = { progress: gain, levels: updates[attribute] - (Number(profile[attribute]) || 0) };
+    const current = Number(profile[attribute]) || 0;
+    const ceiling = getAttributeDevelopmentCeiling(profile, attribute);
+    const remainingLevels = Math.max(0, ceiling - current);
+    const effectiveGain = remainingLevels <= 0 ? 0 : gain * clamp(remainingLevels / 6, 0.15, 1);
+    const total = (Number(progress[attribute]) || 0) + effectiveGain;
+    const levelGain = Math.min(remainingLevels, Math.floor(total + 1e-9));
+    progress[attribute] = remainingLevels <= 0 ? 0 : round(total - levelGain);
+    updates[attribute] = Math.min(ceiling, current + levelGain);
+    appliedGains[attribute] = { progress: round(effectiveGain), levels: updates[attribute] - current, ceiling };
   }
   const conditionBefore = { energy: Number(profile.energy ?? 100), fatigue: Number(profile.fatigue || 0), morale: Number(profile.morale ?? 70), confidence: Number(profile.confidence ?? 50), form: Number(profile.form ?? 50) };
   const injured = Math.random() < preview.injuryRisk;
@@ -167,9 +218,9 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   return { profile: updated, gain: preview.budget, gains: appliedGains, injured, recoveryDays, activity: { ...training, category: training.groupId, attribute: Object.keys(training.primaryAttributes)[0] }, intensity: preview.intensity, conditionBefore, conditionAfter, diminishing: preview.repetitionMultiplier, fatiguePenalty: preview.fatigueMultiplier < 1 ? round((preview.fatigueMultiplier - 1) * 100) : 0 };
 }
 
-export async function saveWeeklyPlan(profile, plan) {
+export async function saveWeeklyPlan(profile, plan, enabled = true) {
   const normalized = Object.fromEntries(Object.entries(plan || {}).map(([day, entry]) => [day, migrateTrainingReference(entry)]));
-  return localGame.entities.PlayerProfile.update(profile.id, { weekly_training_plan: normalized, training_schema_version: 2 });
+  return localGame.entities.PlayerProfile.update(profile.id, { weekly_training_plan: normalized, weekly_training_enabled: Boolean(enabled), training_schema_version: 2 });
 }
 
 export function getPlanSummary(plan) {

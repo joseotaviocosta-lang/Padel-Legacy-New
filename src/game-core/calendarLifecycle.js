@@ -28,6 +28,40 @@ export async function advanceCareerDay(profile) {
   return result.profile || advancedProfile;
 }
 
+
+export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalEvent = true } = {}) {
+  const target = Math.max(1, Math.min(28, Number(days) || 1));
+  let current = profile;
+  let daysAdvanced = 0;
+  const daily = [];
+  let blockedBy = null;
+
+  while (daysAdvanced < target) {
+    if (stopBeforeCriticalEvent) {
+      blockedBy = await getCriticalEventBeforeAdvance(current);
+      if (blockedBy) break;
+    }
+    try {
+      const before = current;
+      current = await advanceCareerDay(current);
+      daysAdvanced += 1;
+      daily.push({
+        date: current.career_date,
+        energy: current.energy,
+        fatigue: current.fatigue,
+        automaticTraining: current.last_automatic_training_date === current.career_date ? current.last_automatic_training_label : null,
+        rested: Boolean(current.last_day_was_rest),
+        xpGained: Math.max(0, Number(current.xp || 0) - Number(before.xp || 0)),
+      });
+    } catch (error) {
+      blockedBy = { title: error?.message || 'Decisão obrigatória', error: true };
+      break;
+    }
+  }
+
+  return { profile: current, daysAdvanced, blockedBy, daily };
+}
+
 export function hasActiveInjury(profile) {
   return getInjuryStatus(profile).injured || isInjured(profile);
 }

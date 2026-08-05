@@ -4,7 +4,7 @@ import { Calendar as CalendarIcon, Trophy } from 'lucide-react';
 import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { ensureMyProfile } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
-import { advanceCareerDay, advanceCareerUntilRecovered, hasActiveInjury } from '@/game-core';
+import { advanceCareerDay, advanceCareerDays, advanceCareerUntilRecovered, hasActiveInjury } from '@/game-core';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
@@ -34,6 +34,7 @@ export default function CalendarPage() {
   const [pendingDecisions, setPendingDecisions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
+  const [advancingBatch, setAdvancingBatch] = useState(null);
   const [planning, setPlanning] = useState(false);
   const [viewMode, setViewMode] = useState('week');
   const [visibleMonth, setVisibleMonth] = useState(new Date('2026-01-01T00:00:00'));
@@ -131,6 +132,35 @@ const updated = await advanceCareerDay(profile);
       toast({ title: 'Não é possível avançar', description: e.message, variant: 'destructive' });
     } finally {
       setAdvancing(false);
+    }
+  }
+
+  async function handleAdvancePeriod(days) {
+    if (!profile) return;
+    setAdvancingBatch(days);
+    try {
+      const result = await advanceCareerDays(profile, days);
+      const updated = result.profile;
+      setProfile(updated);
+      const { events, pending, tr } = await loadModuleTasks({
+        events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço em lote' },
+        pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço em lote' },
+        tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: [], label: 'treinos após avanço em lote' },
+      });
+      setCalendarEvents(events || []);
+      setPendingDecisions(pending || []);
+      setTrainings(tr || []);
+      const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
+      setSelectedDay(cd);
+      setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
+      setVisibleMonth(cd);
+      const trainingsDone = (result.daily || []).filter((day) => day.automaticTraining).length;
+      const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
+      toast({ title: `${result.daysAdvanced} dia(s) processado(s)`, description: `${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}` });
+    } catch (error) {
+      toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
+    } finally {
+      setAdvancingBatch(null);
     }
   }
 
@@ -242,6 +272,19 @@ const updated = await advanceCareerDay(profile);
       <PageHeader icon={CalendarIcon} title="Calendário da Carreira" subtitle="Gerencie sua agenda, inscrições e compromissos" accent="cyan" />
 
       <div className="flex rounded-xl bg-secondary/30 p-1"><button onClick={() => setViewMode('week')} className={`flex-1 rounded-lg py-2 text-xs font-bold ${viewMode === 'week' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Visão semanal</button><button onClick={() => setViewMode('month')} className={`flex-1 rounded-lg py-2 text-xs font-bold ${viewMode === 'month' ? 'bg-primary/20 text-primary' : 'text-muted-foreground'}`}>Visão mensal</button></div>
+
+      <div className="glass rounded-2xl border border-primary/15 p-3">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-bold">Avanço rápido com planejamento</p>
+            <p className="text-[10px] text-muted-foreground">Executa o plano semanal, descansa nos dias livres e para antes de torneios ou decisões obrigatórias.</p>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:flex">
+            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(3)} className="rounded-xl bg-secondary px-3 py-2 text-xs font-bold disabled:opacity-40">{advancingBatch === 3 ? 'Processando...' : '+3 dias'}</button>
+            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(7)} className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground disabled:opacity-40">{advancingBatch === 7 ? 'Processando...' : '+1 semana'}</button>
+          </div>
+        </div>
+      </div>
 
       {/* Pending decisions — blocks day advance */}
       {pendingDecisions.length > 0 && (

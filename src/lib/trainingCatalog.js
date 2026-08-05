@@ -10,9 +10,9 @@ export const TRAINING_GROUPS = {
 export const TRAINING_GROUP_ORDER = ['court', 'physical', 'mental', 'tactical'];
 
 export const TRAINING_INTENSITIES = [
-  { id: 'leve', label: 'Leve', energyCost: 6, fatigueCost: 3, gainMult: 0.72, durationMult: 0.75, injuryRisk: 0.006, moraleImpact: 2, color: 'text-green-400', description: 'Carga baixa e recuperação rápida.' },
-  { id: 'moderado', label: 'Normal', energyCost: 10, fatigueCost: 7, gainMult: 1, durationMult: 1, injuryRisk: 0.02, moraleImpact: 0, color: 'text-primary', description: 'Equilíbrio entre evolução e desgaste.' },
-  { id: 'intenso', label: 'Intensa', energyCost: 16, fatigueCost: 12, gainMult: 1.28, durationMult: 1.35, injuryRisk: 0.05, moraleImpact: -3, color: 'text-red-400', description: 'Mais progresso, fadiga e risco reais.' },
+  { id: 'leve', label: 'Leve', energyCost: 6, fatigueCost: 3, gainMult: 0.72, durationMult: 0.75, injuryRisk: 0.0005, moraleImpact: 2, color: 'text-green-400', description: 'Carga baixa e recuperação rápida.' },
+  { id: 'moderado', label: 'Normal', energyCost: 10, fatigueCost: 7, gainMult: 1, durationMult: 1, injuryRisk: 0.0015, moraleImpact: 0, color: 'text-primary', description: 'Equilíbrio entre evolução e desgaste.' },
+  { id: 'intenso', label: 'Intensa', energyCost: 16, fatigueCost: 12, gainMult: 1.28, durationMult: 1.35, injuryRisk: 0.0045, moraleImpact: -3, color: 'text-red-400', description: 'Mais progresso, fadiga e risco reais.' },
 ];
 
 const focus = (definition) => ({ duration: 50, xp: 18, coins: 10, baseGainBudget: 0.9, ...definition });
