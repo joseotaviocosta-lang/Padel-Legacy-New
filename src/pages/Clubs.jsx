@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Plus, MapPin, Users, Trophy, X, Crown, Star } from 'lucide-react';
 import { ensureMyProfile } from '@/lib/padel';
-import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, EmptyState } from '@/components/design-system';
 import { createClub } from '@/lib/clubs';
 import { ensureWorldClubCatalog } from '@/lib/sportsEconomyV26';
 
@@ -46,23 +47,35 @@ export default function Clubs() {
     return <LoadingScreen />;
   }
 
-  return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Users} title="Clubes" subtitle={`${clubs.length} clubes ativos no circuito mundial`} accent="primary">
-        <button
-          onClick={() => setShowForm(true)}
-          className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity glow-primary"
-        >
-          <Plus className="h-4 w-4" /> Criar
-        </button>
-      </PageHeader>
+  const topClub = clubs[0] || null;
+  const totalMembers = clubs.reduce((sum, club) => sum + Number(club.member_count || 0), 0);
+  const countries = new Set(clubs.map(club => club.country).filter(Boolean)).size;
 
-      {clubs.length === 0 ? (
-        <EmptyStateCard icon={Users} message="Nenhum clube ainda. Crie o primeiro clube do universo." />
-      ) : (
-        <div className="grid md:grid-cols-2 gap-3">
+  return (
+    <Page>
+      <PageContent>
+        <PageHeader
+          eyebrow="Rede mundial de desenvolvimento"
+          title="Clubes do circuito"
+          description="Conheça estruturas, benefícios e comunidades capazes de acelerar a evolução da sua carreira."
+          icon={Users}
+          tone="brand"
+          action={<button onClick={() => setShowForm(true)} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:opacity-90"><Plus className="h-4 w-4" /> Criar clube</button>}
+          stats={[<StatusBadge key="clubs" tone="info">{clubs.length} clubes ativos</StatusBadge>, <StatusBadge key="countries" tone="success">{countries} países</StatusBadge>]}
+        />
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <StatCard label="Clubes ativos" value={clubs.length} detail="Circuito mundial" icon={Users} tone="brand" />
+          <StatCard label="Associados" value={totalMembers.toLocaleString('pt-BR')} detail="Comunidade global" icon={Users} tone="info" />
+          <StatCard label="Clube líder" value={topClub?.name || '—'} detail={topClub ? `${topClub.club_points || 0} pontos` : 'Sem classificação'} icon={Crown} tone="premium" />
+        </div>
+
+        {clubs.length === 0 ? (
+          <EmptyState icon={Users} title="Nenhum clube disponível" description="Crie o primeiro clube do universo e comece a construir uma comunidade esportiva." />
+        ) : (
+          <div className="grid gap-3 md:grid-cols-2">
           {clubs.map((c, i) => (
-            <div key={c.id} onClick={() => navigate(`/clubs/${c.id}`)} className="glass rounded-2xl p-4 relative overflow-hidden cursor-pointer glass-hover">
+            <Surface key={c.id} variant="interactive" padding="default" onClick={() => navigate(`/clubs/${c.id}`)} className="relative cursor-pointer overflow-hidden">
               {i === 0 && <div className="absolute top-3 right-3"><Crown className="h-4 w-4 text-amber-400" /></div>}
               <div className="flex items-center gap-3 mb-3">
                 <div className="h-14 w-14 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center overflow-hidden">
@@ -81,10 +94,10 @@ export default function Clubs() {
                 <div className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-amber-400" /><span className="text-xs font-bold">{c.trophies || 0}</span></div>
                 <div className="flex-1 text-right"><span className="text-sm font-black text-primary tabular-nums">{c.club_points || 0}</span><span className="text-[10px] text-muted-foreground ml-1">pts</span></div>
               </div>
-            </div>
+            </Surface>
           ))}
-        </div>
-      )}
+          </div>
+        )}
 
       {/* Create modal */}
       {showForm && (
@@ -108,14 +121,15 @@ export default function Clubs() {
           </div>
         </div>
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }
 
 function Field({ label, children }) {
   return (
     <div>
-      <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">{label}</label>
+      <label className="mb-1 block text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{label}</label>
       {children}
     </div>
   );

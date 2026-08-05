@@ -4,7 +4,8 @@ import {
   BarChart3, Trophy, Swords, Target, Flame, TrendingUp, Percent, Activity,
   CalendarDays, Medal, Crown, ShieldCheck, Gauge, Users, MapPin
 } from 'lucide-react';
-import { PageContainer, PageHeader, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { PageContainer, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { PageHeader as PremiumHeader, Surface, StatCard as PremiumStatCard, StatusBadge } from '@/components/design-system';
 import { StatCard } from '@/components/padel/Shared';
 import { ATTRIBUTES, formatDate, overallRating, careerExperienceSummary, careerExperienceUnlocks } from '@/lib/padel';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
@@ -194,23 +195,35 @@ export default function CareerStats() {
 
   return (
     <PageContainer>
-      <PageHeader icon={BarChart3} title="Estatísticas" subtitle="Central de desempenho e memória da carreira" />
+      <PremiumHeader
+        eyebrow="Performance e memória"
+        title="Estatísticas da carreira"
+        description="Analise evolução, resultados, atributos e os principais marcos construídos ao longo da sua trajetória."
+        icon={BarChart3}
+        tone="info"
+        stats={[
+          <StatusBadge key="period" tone="info">{period === 'career' ? 'Carreira completa' : `Temporada ${analytics?.seasonYear}`}</StatusBadge>,
+          <StatusBadge key="level" tone="premium">Experiência {careerExperience.level}/{careerExperience.maxLevel}</StatusBadge>,
+        ]}
+      />
 
       <div className="space-y-5">
-        <div className="glass rounded-2xl p-1.5 flex gap-1 max-w-sm">
+        <Surface padding="compact" className="max-w-sm">
+          <div className="flex gap-1">
           <button onClick={() => setPeriod('career')} className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${period === 'career' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
             Carreira completa
           </button>
           <button onClick={() => setPeriod('season')} className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${period === 'season' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
             Temporada {analytics?.seasonYear}
           </button>
-        </div>
+          </div>
+        </Surface>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 animate-stagger">
-          <StatCard icon={Swords} label="Partidas" value={analytics?.filtered.length || 0} />
-          <StatCard icon={Percent} label="Aproveit." value={`${analytics?.winPct || 0}%`} accent="text-cyan-400" />
-          <StatCard icon={Flame} label="Sequência atual" value={`${analytics?.streaks.currentWin || 0} V`} accent="text-amber-400" />
-          <StatCard icon={Activity} label="Overall" value={overallRating(profile)} accent="text-purple-400" />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 animate-stagger">
+          <PremiumStatCard icon={Swords} label="Partidas" value={analytics?.filtered.length || 0} detail="No período selecionado" tone="brand" />
+          <PremiumStatCard icon={Percent} label="Aproveitamento" value={`${analytics?.winPct || 0}%`} detail={`${wins} vitórias`} tone="info" />
+          <PremiumStatCard icon={Flame} label="Sequência atual" value={`${analytics?.streaks.currentWin || 0} V`} detail={`Recorde: ${analytics?.streaks.best || 0}`} tone="premium" />
+          <PremiumStatCard icon={Activity} label="Overall" value={overallRating(profile)} detail="Força esportiva atual" tone="success" />
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">

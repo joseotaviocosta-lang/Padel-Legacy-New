@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ChevronLeft, Building2, Users, Calendar, Briefcase, Star, MapPin } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { joinClub, leaveClub, hireClubStaff, fireClubStaff, hostEvent, addCourt, buildFacility } from '@/lib/clubs';
@@ -88,35 +89,34 @@ export default function ClubDetail() {
   const isMember = !!myMembership;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      {/* Back + Header */}
-      <button onClick={() => navigate('/clubs')} className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground">
-        <ChevronLeft className="h-4 w-4" /> Voltar
-      </button>
+    <Page>
+      <PageContent>
+        <button onClick={() => navigate('/clubs')} className="inline-flex items-center gap-1 text-xs font-bold text-muted-foreground transition hover:text-foreground">
+          <ChevronLeft className="h-4 w-4" /> Voltar aos clubes
+        </button>
 
-      <div className="relative overflow-hidden rounded-3xl glass p-5 md:p-6 grid-bg">
-        <div className="absolute -top-10 -right-10 h-36 w-36 bg-primary/20 rounded-full blur-3xl" />
-        <div className="relative flex items-center gap-4">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/40 to-secondary flex items-center justify-center overflow-hidden shrink-0">
-            {club.logo_url ? <img src={club.logo_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary text-2xl">{(club.name || '?')[0]?.toUpperCase()}</span>}
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1 className="text-xl md:text-2xl font-black tracking-tight">{club.name}</h1>
-              <span className="text-[10px] font-bold uppercase px-2 py-0.5 rounded-full bg-primary/15 text-primary">Nível {club.level || 1}</span>
-            </div>
-            <p className="text-sm text-muted-foreground flex items-center gap-1"><MapPin className="h-3 w-3" />{club.city || '—'}, {club.country || '—'}</p>
-            {club.description && <p className="text-xs text-muted-foreground mt-1 line-clamp-1">{club.description}</p>}
-          </div>
-          <div className="text-right">
-            <p className="text-3xl font-black text-amber-400 tabular-nums flex items-center gap-1 justify-end"><Star className="h-5 w-5" />{club.reputation || 50}</p>
-            <p className="text-[10px] text-muted-foreground uppercase">Reputação</p>
-          </div>
+        <PageHeader
+          eyebrow="Estrutura esportiva"
+          title={club.name}
+          description={club.description || `${club.city || '—'}, ${club.country || '—'} • centro de desenvolvimento do circuito.`}
+          icon={Building2}
+          tone="brand"
+          stats={[
+            <StatusBadge key="level" tone="info">Nível {club.level || 1}</StatusBadge>,
+            <StatusBadge key="location" tone="neutral"><MapPin className="h-3 w-3" /> {club.city || '—'}, {club.country || '—'}</StatusBadge>,
+            isOwner ? <StatusBadge key="owner" tone="premium">Seu clube</StatusBadge> : isMember ? <StatusBadge key="member" tone="success">Associado</StatusBadge> : null,
+          ].filter(Boolean)}
+        />
+
+        <div className="grid gap-3 sm:grid-cols-4">
+          <StatCard label="Reputação" value={club.reputation || 50} detail="Prestígio no circuito" icon={Star} tone="premium" />
+          <StatCard label="Associados" value={members.length} detail="Comunidade ativa" icon={Users} tone="brand" />
+          <StatCard label="Eventos" value={events.length} detail="Agenda do clube" icon={Calendar} tone="info" />
+          <StatCard label="Equipe" value={staff.length} detail="Profissionais contratados" icon={Briefcase} tone="success" />
         </div>
-      </div>
 
-      {/* Tabs */}
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
+        <Surface padding="compact" className="sticky top-2 z-20 backdrop-blur-xl">
+          <div className="flex gap-1.5 overflow-x-auto scrollbar-none">
         {TABS.map(t => {
           const Icon = t.icon;
           const isActive = tab === t.id;
@@ -126,7 +126,8 @@ export default function ClubDetail() {
             </button>
           );
         })}
-      </div>
+          </div>
+        </Surface>
 
       {tab === 'overview' && (
         <ClubOverview club={club} profile={profile} isOwner={isOwner}
@@ -155,6 +156,7 @@ export default function ClubDetail() {
           busy={busy}
         />
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

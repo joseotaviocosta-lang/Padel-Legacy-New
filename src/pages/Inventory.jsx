@@ -4,7 +4,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { Package, ShoppingBag, Check, Disc, Crown, Circle, Target, Shirt, Briefcase, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
 import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
-import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, SurfaceHeader, StatCard, StatusBadge, EmptyState } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 
 const ICON_MAP = { Disc, Crown, Circle, Target, Shirt, Briefcase, Zap };
@@ -140,26 +141,38 @@ export default function Inventory() {
   }
 
   const categories = [...new Set(inventory.map(i => i.category))];
+  const equippedCount = inventory.filter(item => item.equipped).length;
+  const totalBonus = inventory.filter(item => item.equipped).reduce((sum, item) => {
+    const bonus = shopMap[item.item_id]?.attribute_bonus || {};
+    return sum + Object.values(bonus).reduce((subtotal, value) => subtotal + Number(value || 0), 0);
+  }, 0);
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Package} title="Inventário" subtitle="Equipe itens para ganhar bônus de atributos" accent="primary">
-        <Link to="/game/shop" className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary text-primary-foreground text-xs font-semibold hover:opacity-90 transition-opacity glow-primary">
-          <ShoppingBag className="h-3.5 w-3.5" /> Loja
-        </Link>
-      </PageHeader>
+    <Page>
+      <PageContent>
+        <PageHeader
+          eyebrow="Equipamentos da carreira"
+          title="Inventário"
+          description="Gerencie seus itens, monte o equipamento ideal e acompanhe os bônus ativos no atleta."
+          icon={Package}
+          tone="info"
+          action={<Link to="/game/shop" className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground transition hover:opacity-90"><ShoppingBag className="h-4 w-4" /> Abrir loja</Link>}
+          stats={[<StatusBadge key="items" tone="info">{inventory.length} itens</StatusBadge>, <StatusBadge key="equipped" tone="success">{equippedCount} equipados</StatusBadge>]}
+        />
 
-      {inventory.length === 0 ? (
-        <EmptyStateCard icon={Package} message="Seu inventário está vazio." action={
-          <Link to="/game/shop" className="inline-flex items-center gap-2 mt-4 px-4 py-2.5 rounded-xl bg-primary text-primary-foreground font-semibold text-sm hover:opacity-90 transition-opacity glow-primary">
-            <ShoppingBag className="h-4 w-4" /> Ir para a Loja
-          </Link>
-        } />
-      ) : (
+        <div className="grid gap-3 sm:grid-cols-3">
+          <StatCard label="Itens possuídos" value={inventory.length} detail={`${categories.length} categorias`} icon={Package} tone="brand" />
+          <StatCard label="Equipados" value={equippedCount} detail="Bônus ativos" icon={Check} tone="success" />
+          <StatCard label="Bônus total" value={`+${totalBonus}`} detail="Soma dos atributos ativos" icon={Zap} tone="premium" />
+        </div>
+
+        {inventory.length === 0 ? (
+          <EmptyState icon={Package} title="Seu inventário está vazio" description="Visite a loja para comprar seu primeiro equipamento e começar a personalizar o atleta." action={<Link to="/game/shop" className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"><ShoppingBag className="h-4 w-4" /> Ir para a loja</Link>} />
+        ) : (
         categories.map(cat => (
-          <div key={cat} className="space-y-2">
-            <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-bold">{CATEGORY_LABELS[cat] || cat}</h2>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+          <Surface key={cat} variant="elevated" padding="default">
+            <SurfaceHeader title={CATEGORY_LABELS[cat] || cat} description={`${inventory.filter(item => item.category === cat).length} itens nesta categoria`} />
+            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {inventory.filter(i => i.category === cat).map(invItem => {
                 const shopItem = shopMap[invItem.item_id];
                 const Icon = (shopItem && ICON_MAP[shopItem.icon]) || Package;
@@ -224,9 +237,10 @@ export default function Inventory() {
                 );
               })}
             </div>
-          </div>
+          </Surface>
         ))
       )}
-    </div>
+      </PageContent>
+    </Page>
   );
 }

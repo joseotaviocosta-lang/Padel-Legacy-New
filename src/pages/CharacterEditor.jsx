@@ -1,8 +1,9 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { Palette, Shirt, Disc, Sparkles, User, BookOpen, Save, RotateCcw, AlertTriangle } from 'lucide-react';
+import { Palette, Shirt, Disc, Sparkles, User, BookOpen, Save, RotateCcw, AlertTriangle, Eye } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { LoadingScreen, PageHeader, TabBar, PrimaryButton } from '@/components/padel/ui';
+import { LoadingScreen, TabBar, PrimaryButton } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import CharacterPreview from '@/components/character/CharacterPreview';
 import AppearanceEditor from '@/components/character/AppearanceEditor';
@@ -40,14 +41,10 @@ export default function CharacterEditor() {
       const p = await ensureMyProfile(user);
       setProfile(p);
       const existing = await localGame.entities.CharacterCustomization.filter({ profile_id: p.id }, null, 1);
-      if (existing && existing.length > 0) {
-        setCustomization(normalizeCharacterCustomization(existing[0], p.id));
-      } else {
-        setCustomization(normalizeCharacterCustomization(null, p.id));
-      }
+      setCustomization(normalizeCharacterCustomization(existing?.[0] || null, p.id));
       setDirty(false);
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error(error);
       setLoadError('Não foi possível carregar a aparência desta carreira.');
     } finally {
       setLoading(false);
@@ -57,7 +54,7 @@ export default function CharacterEditor() {
   useEffect(() => { load(); }, [load]);
 
   const update = useCallback((key, value) => {
-    setCustomization(prev => prev ? applyCharacterCustomizationChange(prev, key, value) : prev);
+    setCustomization(previous => previous ? applyCharacterCustomizationChange(previous, key, value) : previous);
     setDirty(true);
   }, []);
 
@@ -66,16 +63,14 @@ export default function CharacterEditor() {
     setSaving(true);
     try {
       const payload = normalizeCharacterCustomization(customization, profile?.id);
-      let saved;
-      if (payload.id) {
-        saved = await localGame.entities.CharacterCustomization.update(payload.id, payload);
-      } else {
-        saved = await localGame.entities.CharacterCustomization.create(payload);
-      }
+      const saved = payload.id
+        ? await localGame.entities.CharacterCustomization.update(payload.id, payload)
+        : await localGame.entities.CharacterCustomization.create(payload);
       setCustomization(normalizeCharacterCustomization(saved, profile?.id));
       setDirty(false);
       toast({ title: 'Personagem salvo!', description: 'Suas customizações foram aplicadas.' });
-    } catch (e) {
+    } catch (error) {
+      console.error(error);
       toast({ title: 'Erro ao salvar', description: 'Tente novamente.', variant: 'destructive' });
     } finally {
       setSaving(false);
@@ -92,7 +87,7 @@ export default function CharacterEditor() {
 
   if (loading) return <LoadingScreen />;
   if (loadError || !customization) return (
-    <div role="alert" className="m-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-5 flex items-center gap-3">
+    <div role="alert" className="m-6 flex items-center gap-3 rounded-2xl border border-destructive/30 bg-destructive/10 p-5">
       <AlertTriangle className="h-5 w-5 text-destructive" />
       <span className="flex-1">{loadError || 'A aparência não está disponível.'}</span>
       <button type="button" onClick={load} className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">Tentar novamente</button>
@@ -100,43 +95,59 @@ export default function CharacterEditor() {
   );
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader
-        icon={Palette}
-        title="Editor de Personagem"
-        subtitle="Personalize cada detalhe do seu atleta"
-        accent="purple"
-      >
-        <button type="button" onClick={handleReset} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-          <RotateCcw className="h-3.5 w-3.5" /> Resetar
-        </button>
-      </PageHeader>
+    <Page>
+      <PageContent>
+        <PageHeader
+          eyebrow="Identidade do atleta"
+          title="Aparência e personalidade"
+          description="Personalize o visual, a identidade e a história que acompanham sua carreira dentro e fora das quadras."
+          icon={Palette}
+          tone="premium"
+          action={(
+            <button type="button" onClick={handleReset} className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-background/40 px-3 py-2 text-xs font-bold text-muted-foreground transition hover:text-foreground">
+              <RotateCcw className="h-3.5 w-3.5" /> Restaurar padrão
+            </button>
+          )}
+          stats={[
+            <StatusBadge key="status" tone={dirty ? 'warning' : 'success'}>{dirty ? 'Alterações pendentes' : 'Tudo salvo'}</StatusBadge>,
+            <StatusBadge key="tab" tone="info">{TABS.find(tab => tab.key === activeTab)?.label}</StatusBadge>,
+          ]}
+        />
 
-      <div className="grid lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-1">
-          <CharacterPreview data={customization} profile={profile} />
-        </div>
-
-        <div className="lg:col-span-2 space-y-4">
-          <TabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} variant="segmented" />
-
-          <div className="glass rounded-2xl p-4">
-            {activeTab === 'appearance' && <AppearanceEditor data={customization} update={update} />}
-            {activeTab === 'clothing' && <ClothingEditor data={customization} update={update} />}
-            {activeTab === 'equipment' && <EquipmentEditor data={customization} update={update} />}
-            {activeTab === 'style' && <StyleEditor data={customization} update={update} />}
-            {activeTab === 'identity' && <IdentityEditor data={customization} update={update} />}
-            {activeTab === 'history' && <HistoryEditor data={customization} update={update} />}
+        <div className="grid gap-5 lg:grid-cols-[minmax(250px,0.78fr)_minmax(0,1.7fr)]">
+          <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
+            <Surface variant="premium" padding="compact">
+              <CharacterPreview data={customization} profile={profile} />
+            </Surface>
+            <div className="grid grid-cols-2 gap-3">
+              <StatCard label="Nome em quadra" value={profile?.name || 'Atleta'} detail="Identidade pública" icon={User} tone="brand" />
+              <StatCard label="Prévia" value="Ao vivo" detail="Atualização imediata" icon={Eye} tone="info" />
+            </div>
           </div>
 
-          <div className="sticky bottom-20 md:bottom-4 z-30">
-            <PrimaryButton onClick={handleSave} disabled={saving} className="w-full">
-              <Save className="h-4 w-4" />
-              {saving ? 'Salvando...' : dirty ? 'Salvar alterações' : 'Personagem salvo'}
-            </PrimaryButton>
+          <div className="min-w-0 space-y-4">
+            <Surface padding="compact" className="sticky top-2 z-20 backdrop-blur-xl">
+              <TabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} variant="segmented" />
+            </Surface>
+
+            <Surface variant="elevated" padding="default" className="min-h-[420px]">
+              {activeTab === 'appearance' && <AppearanceEditor data={customization} update={update} />}
+              {activeTab === 'clothing' && <ClothingEditor data={customization} update={update} />}
+              {activeTab === 'equipment' && <EquipmentEditor data={customization} update={update} />}
+              {activeTab === 'style' && <StyleEditor data={customization} update={update} />}
+              {activeTab === 'identity' && <IdentityEditor data={customization} update={update} />}
+              {activeTab === 'history' && <HistoryEditor data={customization} update={update} />}
+            </Surface>
+
+            <div className="sticky bottom-20 z-30 md:bottom-4">
+              <PrimaryButton onClick={handleSave} disabled={saving || !dirty} className="w-full shadow-2xl">
+                <Save className="h-4 w-4" />
+                {saving ? 'Salvando...' : dirty ? 'Salvar alterações' : 'Personagem salvo'}
+              </PrimaryButton>
+            </div>
           </div>
         </div>
-      </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 }
