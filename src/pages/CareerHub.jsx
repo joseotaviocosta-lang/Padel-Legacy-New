@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import {
   Activity, AlertCircle, ArrowRight, Bell, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, Gamepad2, GraduationCap,
-  Inbox, MessageCircle, Newspaper, Target, Trophy, TrendingUp, Users, Zap,
+  Inbox, MessageCircle, Newspaper, Target, Trophy, TrendingUp, Users, Zap, Globe2,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
@@ -25,6 +25,7 @@ import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tuto
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
+import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';
 
 const safe = (promise, fallback = []) => promise.catch((error) => {
   console.warn('[CareerControlCenter] módulo secundário indisponível', error);
@@ -43,6 +44,7 @@ export default function CareerHub() {
   const [posts, setPosts] = useState([]);
   const [messages, setMessages] = useState([]);
   const [partnerOffers, setPartnerOffers] = useState([]);
+  const [worldSnapshot, setWorldSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
   const [skippingInjury, setSkippingInjury] = useState(false);
@@ -109,7 +111,7 @@ export default function CareerHub() {
         if (!mounted) return;
         setProfile(p);
 
-        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows] = await Promise.all([
+        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows, livingSnapshot] = await Promise.all([
           safe(localGame.entities.Match.list('-created_date', 6)),
           safe(localGame.entities.Mission.filter({ is_active: true })),
           safe(getWorldRank(p), { rank: 0, total: 0 }),
@@ -120,6 +122,7 @@ export default function CareerHub() {
           safe(localGame.entities.Post.list('-created_date', 5)),
           p ? safe(localGame.entities.CareerMessage.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(localGame.entities.PartnerOffer.filter({ profile_id: p.id }, '-created_date', 8)) : [],
+          p ? safe(getLivingWorldSnapshot(p, 8), null) : null,
         ]);
         if (!mounted) return;
 
@@ -130,6 +133,7 @@ export default function CareerHub() {
         setPosts(latestPosts || []);
         setMessages(inboxRows || []);
         setPartnerOffers(offerRows || []);
+        setWorldSnapshot(livingSnapshot || null);
 
         const progressMap = {};
         (prog || []).forEach((row) => { progressMap[row.mission_id] = row; });
@@ -190,6 +194,7 @@ export default function CareerHub() {
         <div className="space-y-5">
           <NextStepCard profile={profile} upcomingTournaments={upcomingTournaments} />
           {!isRetired(profile) && <CareerCalendar profile={profile} onAdvanceDay={setProfile} />}
+          <WorldPulse snapshot={worldSnapshot} />
           <TournamentAndNews tournaments={upcomingTournaments} posts={posts} careerDate={profile.career_date} />
           <RecentActivity matches={recentMatches} trainings={recentTrainings} />
         </div>
@@ -272,6 +277,24 @@ function ActiveMissionPanel({ missions, progress }) {
 
 function CareerSnapshot({ profile, worldRank, teamRank }) {
   return <div className="grid grid-cols-2 gap-3"><StatCard icon={Gamepad2} label="Partidas" value={profile.matches_played || 0} /><StatCard icon={Trophy} label="Vitórias" value={profile.wins || 0} accent="text-amber-400" /><StatCard icon={Target} label="Aproveit." value={`${winRate(profile)}%`} accent="text-cyan-400" /><StatCard icon={Crown} label="Ranking dupla" value={teamRank.rank ? `#${teamRank.rank}` : '—'} accent="text-purple-400" /><Link to="/ranking" className="col-span-2 flex items-center justify-between rounded-2xl border border-border/60 bg-card/50 p-3 text-xs font-bold hover:border-primary/30"><span>Ranking mundial: {worldRank.rank ? `#${worldRank.displayRank || worldRank.rank} de ${worldRank.total}` : 'ainda sem posição'}</span><ChevronRight className="h-4 w-4 text-primary" /></Link></div>;
+}
+
+
+function WorldPulse({ snapshot }) {
+  const featured = snapshot?.bulletin || snapshot?.breaking;
+  if (!featured) return null;
+  return (
+    <section className="rounded-2xl border border-primary/20 bg-gradient-to-br from-card to-primary/[0.055] p-4">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-primary"><Globe2 className="h-4 w-4" />Mundo em movimento</div>
+          <h2 className="mt-2 text-base font-black">{featured.title}</h2>
+          <p className="mt-1 line-clamp-3 whitespace-pre-line text-xs leading-relaxed text-muted-foreground">{featured.content || featured.description}</p>
+        </div>
+        <Link to="/world" className="inline-flex shrink-0 items-center gap-1 rounded-xl bg-secondary px-3 py-2 text-xs font-bold hover:bg-secondary/80">Abrir <ArrowRight className="h-3.5 w-3.5" /></Link>
+      </div>
+    </section>
+  );
 }
 
 function TournamentAndNews({ tournaments, posts, careerDate }) {

@@ -3,16 +3,14 @@ import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getRandomBots, getDifficultyForPl
 import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, ATTRIBUTE_KEYS, ageAtDate, RETIREMENT_AGE, incrementMissionProgress } from '@/lib/padel';
 import { processMonthlyFinances } from '@/lib/economy';
 import { processAllClubsMonthly } from '@/lib/clubs';
-import { generateWorldEvents } from '@/lib/world';
 import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
-import { maybeGenerateMacroEvent, expireMacroEvents } from '@/lib/worldEvents';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents, executePlannedActivities, executeWeeklyTrainingPlan } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
-import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
+import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
 export const CAREER_START_DATE = '2026-01-01';
 export const PARTNER_LOCK_DAYS = 60;
 export const MATCH_ADVANCE_DAYS = 7;
@@ -206,10 +204,7 @@ export async function advanceDay(profile) {
   if (totalDays > 0 && totalDays % 7 === 0) {
     await simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e));
   }
-  await processWorldTourDay(newCareerDate).catch(e => console.error('world tour day', e));
-  await generateWorldEvents(newCareerDate, 1 + Math.floor(Math.random() * 2)).catch(e => console.error('world events', e));
-  await expireMacroEvents(newCareerDate).catch(e => console.error('expire macro events', e));
-  await maybeGenerateMacroEvent(newCareerDate).catch(e => console.error('macro event', e));
+  await processLivingWorldDay(updated, newCareerDate).catch(e => console.error('living world day', e));
   await incrementMissionProgress(updated.id, 'advance_days').catch(() => {});
   emitDayAdvanced(profile, updated);
   return updated;

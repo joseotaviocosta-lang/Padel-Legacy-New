@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.7.0-beta.1",
+  "version": "0.8.0-beta.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -46,7 +46,8 @@
     "test:beta": "node scripts/test-beta-readiness.mjs",
     "test:tutorial-engine": "node scripts/test-tutorial-engine-v2.mjs",
     "test:career-pace": "node scripts/test-career-pace-v17.mjs",
-    "test:injuries": "node scripts/test-injury-balance-v21.mjs"
+    "test:injuries": "node scripts/test-injury-balance-v21.mjs",
+    "test:living-world": "node scripts/test-living-world-v23.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
