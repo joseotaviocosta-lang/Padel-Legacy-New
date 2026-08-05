@@ -166,7 +166,7 @@ export default function AppLayout() {
         </div>
       </aside>
 
-      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen pb-[calc(4.6rem+env(safe-area-inset-bottom))] pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border/50 bg-background/80 px-5 backdrop-blur-xl md:flex lg:px-7">
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
@@ -184,7 +184,7 @@ export default function AppLayout() {
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} className="app-route-stage" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div key={location.pathname} className="app-route-stage min-w-0" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
             <OnboardingGuide />
             <Outlet />
           </motion.div>

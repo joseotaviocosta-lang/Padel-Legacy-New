@@ -17,7 +17,7 @@ function PageIntroduction({ pathname, state, onStateChange }) {
   const collapsedIntroductions = state?.collapsedIntroductions || [];
   const collapsed = collapsedIntroductions.includes(pathname);
   return (
-    <section className="mx-4 md:mx-8 mt-5 rounded-2xl border border-border/60 bg-card/70 px-4 py-3" aria-label={`Introdução: ${intro.title}`}>
+    <section className="mx-3 mt-3 rounded-xl border border-border/60 bg-card/70 px-3 py-2.5 sm:mx-4 md:mx-6 md:mt-4 md:rounded-2xl md:px-4 md:py-3" aria-label={`Introdução: ${intro.title}`}>
       <div className="flex items-center gap-3">
         <BookOpen className="h-4 w-4 text-primary shrink-0" />
         <div className="flex-1 min-w-0"><h2 className="text-sm font-bold">{intro.title}</h2>{collapsed && <p className="text-xs text-muted-foreground truncate">{intro.description}</p>}</div>
@@ -32,8 +32,8 @@ function PageIntroduction({ pathname, state, onStateChange }) {
 
 function HelpCenter({ open, onClose, state, onRestart }) {
   if (!open) return null;
-  return <div className="fixed inset-0 z-[80] bg-black/70 p-3 md:p-8 flex justify-end" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={event => event.target === event.currentTarget && onClose()}>
-    <div className="w-full max-w-2xl h-full overflow-y-auto rounded-3xl border border-border bg-background p-5 md:p-7 shadow-2xl">
+  return <div className="fixed inset-0 z-[80] flex justify-end overflow-hidden bg-black/70 p-2 sm:p-3 md:p-6" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={event => event.target === event.currentTarget && onClose()}>
+    <div className="scrollbar-premium h-full w-full max-w-2xl overflow-y-auto overscroll-contain rounded-2xl border border-border bg-background p-4 shadow-2xl md:rounded-3xl md:p-6">
       <div className="flex items-start gap-3"><CircleHelp className="h-7 w-7 text-primary"/><div className="flex-1"><h2 id="help-title" className="text-2xl font-black">Guia da carreira</h2><p className="text-sm text-muted-foreground">Reveja o tutorial quando quiser.</p></div><button onClick={onClose} className="rounded-xl p-2 hover:bg-secondary" aria-label="Fechar ajuda"><X className="h-5 w-5"/></button></div>
       <section className="mt-6"><h3 className="font-black">Ciclo principal</h3><div className="mt-3 flex flex-wrap gap-2">{CORE_GAME_LOOP.map((item, index) => <span key={item} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">{index + 1}. {item}</span>)}</div></section>
       <section className="mt-7"><div className="flex items-center justify-between"><h3 className="font-black">Tutorial</h3><button onClick={onRestart} className="inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-bold"><RotateCcw className="h-3.5 w-3.5"/> Reiniciar explicações</button></div><div className="mt-3 space-y-2">{TUTORIAL_STEPS.map(step => <div key={step.id} className="flex gap-3 rounded-xl bg-secondary/35 p-3"><span className={`mt-0.5 h-5 w-5 rounded-full flex items-center justify-center ${state?.completedSteps?.includes(step.id) ? 'bg-emerald-500 text-white' : 'border border-border'}`}>{state?.completedSteps?.includes(step.id) && <Check className="h-3 w-3"/>}</span><div><p className="text-sm font-bold">{step.title}</p><p className="text-xs text-muted-foreground">{step.explanation}</p></div></div>)}</div></section>
@@ -118,9 +118,9 @@ export default function OnboardingGuide() {
 
   return <>
     {!isMissionCenter && <PageIntroduction pathname={location.pathname} state={state} onStateChange={persist}/>}
-    {!isMissionCenter && !state.minimized && state.status === 'in_progress' && step && <aside className="mx-4 md:mx-8 mt-3 rounded-2xl border border-primary/40 bg-primary/10 p-4" aria-label="Orientação contextual do tutorial">
+    {!isMissionCenter && !state.minimized && state.status === 'in_progress' && step && <aside className="mx-3 mt-2 rounded-xl border border-primary/40 bg-primary/10 p-3 sm:mx-4 md:mx-6 md:mt-3 md:rounded-2xl md:p-4" aria-label="Orientação contextual do tutorial">
       {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
         <GraduationCap className="h-7 w-7 text-primary shrink-0"/>
         <div className="flex-1">
           <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p>
@@ -140,9 +140,9 @@ export default function OnboardingGuide() {
       </div>
       {confirmationError && <p role="alert" className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{confirmationError}</p>}
     </aside>}
-    {!isMissionCenter && state.minimized && state.status === 'in_progress' && step && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-24 right-4 z-40 rounded-full bg-primary px-4 py-2 text-xs font-bold text-primary-foreground shadow-xl">Próximo passo: {step.title}</button>}
+    {!isMissionCenter && state.minimized && state.status === 'in_progress' && step && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-3 z-40 max-w-[calc(100vw-1.5rem)] truncate rounded-full bg-primary px-3 py-2 text-xs font-bold text-primary-foreground shadow-xl md:bottom-20 md:right-5">Próximo passo: {step.title}</button>}
     {state.status !== 'in_progress' && recommendation && <div className="mx-4 md:mx-8 mt-3 flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-xs"><span className="rounded-full bg-primary/15 px-2 py-1 font-bold text-primary">{recommendation.importance}</span><div className="flex-1"><strong>{recommendation.title}</strong><span className="text-muted-foreground"> · {recommendation.explanation}</span></div><Link to={recommendation.route} className="font-bold text-primary">{recommendation.actionLabel}</Link></div>}
-    <button onClick={() => setHelpOpen(true)} className="fixed bottom-20 left-4 md:bottom-5 md:left-auto md:right-5 z-50 rounded-full border border-primary/30 bg-background p-3 text-primary shadow-xl" aria-label="Abrir guia e glossário"><CircleHelp className="h-5 w-5"/></button>
+    <button onClick={() => setHelpOpen(true)} className="fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] left-3 z-50 rounded-full border border-primary/30 bg-background p-2.5 text-primary shadow-xl md:bottom-5 md:left-auto md:right-5 md:p-3" aria-label="Abrir guia e glossário"><CircleHelp className="h-5 w-5"/></button>
     <HelpCenter open={helpOpen} onClose={() => setHelpOpen(false)} state={state} onRestart={() => persist(current => ({ ...current, status: 'in_progress', tutorialSkipped: false, minimized: false, welcomeSeen: false, pageIntroductionsSeen: [], collapsedIntroductions: [] }))}/>
   </>;
 }

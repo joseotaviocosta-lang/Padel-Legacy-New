@@ -114,10 +114,10 @@ export default function LiveMatch({
         : `Set ${state.currentSet}`;
 
   return (
-    <div className="flex min-h-0 flex-col gap-2">
-      <CompactScoreboard state={state} points={points} status={matchStatus} />
+    <div data-live-match className="flex h-full min-h-0 max-h-full flex-col gap-1.5 overflow-hidden">
+      <div className="shrink-0"><CompactScoreboard state={state} points={points} status={matchStatus} /></div>
 
-      <div className="grid grid-cols-3 gap-1 rounded-xl bg-secondary/40 p-1" role="tablist" aria-label="Painéis da partida">
+      <div className="grid shrink-0 grid-cols-3 gap-1 rounded-xl bg-secondary/40 p-1" role="tablist" aria-label="Painéis da partida">
         {PANELS.map(({ id, label, icon: Icon }) => {
           const active = activePanel === id;
           const hasAlert = id === 'coach' && Boolean(coachSuggestion);
@@ -140,7 +140,7 @@ export default function LiveMatch({
         })}
       </div>
 
-      <div className="min-h-[12rem] flex-1 overflow-hidden rounded-xl border border-border/50 bg-background/35">
+      <div className="min-h-0 flex-1 overflow-hidden rounded-xl border border-border/50 bg-background/35">
         {activePanel === 'match' && (
           <MatchFeed
             state={state}
@@ -181,6 +181,7 @@ export default function LiveMatch({
         )}
       </div>
 
+      <div className="shrink-0">
       <PlaybackControls
         state={state}
         autoPlay={autoPlay}
@@ -201,6 +202,7 @@ export default function LiveMatch({
           }
         }}
       />
+      </div>
     </div>
   );
 }
@@ -247,8 +249,14 @@ function MatchFeed({
   coachSuggestion,
   onOpenCoach,
 }) {
+  const filteredNarration = displayMode === 'quick'
+    ? state.narration.filter((event) => ['game', 'set', 'match', 'tiebreak_start', 'tiebreak_end'].includes(event.type))
+    : state.narration;
+  const visibleNarration = filteredNarration.slice(-120);
+  const hiddenNarrationCount = Math.max(0, filteredNarration.length - visibleNarration.length);
+
   return (
-    <div className="flex h-full min-h-[12rem] flex-col">
+    <div className="flex h-full min-h-0 flex-col overflow-hidden">
       <div className="flex items-center justify-between gap-2 border-b border-border/40 px-3 py-2">
         <div className="min-w-0">
           <p className="truncate text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Narração</p>
@@ -280,12 +288,17 @@ function MatchFeed({
         </button>
       )}
 
-      <div ref={narrationRef} className="min-h-0 flex-1 space-y-1 overflow-y-auto px-3 py-2">
-        {state.narration.length === 0 && (
+      <div ref={narrationRef} className="scrollbar-premium min-h-0 flex-1 space-y-1 overflow-y-auto overscroll-contain px-3 py-2">
+        {filteredNarration.length === 0 && (
           <p className="py-10 text-center text-xs text-muted-foreground/60">Iniciando partida...</p>
         )}
-        {state.narration.map((event, index) => (
-          <NarrationEntry key={`${event.type || 'event'}-${index}`} event={event} />
+        {hiddenNarrationCount > 0 && (
+          <p className="sticky top-0 z-10 rounded-md bg-background/90 px-2 py-1 text-center text-[9px] text-muted-foreground backdrop-blur">
+            {hiddenNarrationCount} eventos anteriores foram recolhidos para manter a partida leve.
+          </p>
+        )}
+        {visibleNarration.map((event, index) => (
+          <NarrationEntry key={`${event.type || 'event'}-${hiddenNarrationCount + index}`} event={event} />
         ))}
       </div>
 
@@ -300,7 +313,7 @@ function MatchFeed({
 
 function TacticsPanel({ tactic, state, onChange }) {
   return (
-    <div className="h-full overflow-y-auto p-3">
+    <div className="scrollbar-premium h-full min-h-0 overflow-y-auto overscroll-contain p-3">
       <p className="mb-2 text-[10px] text-muted-foreground">A mudança passa a valer no próximo ponto.</p>
       <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
         {MATCH_TACTICS.map((item) => {
@@ -347,7 +360,7 @@ function CoachPanel({
   const minimumEnergy = Math.round(Math.min(...state.teams.A.map((player) => player.energy)));
 
   return (
-    <div className="h-full overflow-y-auto p-3">
+    <div className="scrollbar-premium h-full min-h-0 overflow-y-auto overscroll-contain p-3">
       <div className="mb-3 flex items-center justify-between gap-2">
         <div className="min-w-0">
           <p className="truncate text-xs font-bold">{coach?.name || 'Sem técnico contratado'}</p>

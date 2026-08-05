@@ -117,7 +117,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/65 backdrop-blur-sm md:items-center md:p-3" onClick={onClose}>
-      <div className={`glass flex w-full max-w-xl flex-col overflow-hidden rounded-t-2xl md:rounded-2xl ${phase === 'live' ? 'h-[100dvh] md:h-auto md:max-h-[94vh]' : 'max-h-[94vh]'}`} onClick={(e) => e.stopPropagation()}>
+      <div className={`glass flex w-full max-w-xl flex-col overflow-hidden rounded-t-2xl md:rounded-2xl ${phase === 'live' ? 'h-[100dvh] max-h-[100dvh] md:h-[min(46rem,92dvh)] md:max-h-[92dvh]' : 'max-h-[94dvh]'}`} onClick={(e) => e.stopPropagation()}>
         <div className="flex shrink-0 items-center justify-between border-b border-border/40 px-4 py-3">
           <h2 className="flex items-center gap-2 text-sm font-black">
             <Cpu className="h-5 w-5 text-primary" /> Partida Treino
@@ -127,7 +127,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
           </button>
         </div>
 
-        <div className={`min-h-0 flex-1 ${phase === 'live' ? 'overflow-hidden p-2 md:p-3' : 'overflow-y-auto p-4'}`}>
+        <div className={`min-h-0 flex-1 ${phase === 'live' ? 'overflow-hidden p-1.5 sm:p-2 md:p-3' : 'scrollbar-premium overflow-y-auto overscroll-contain p-3 sm:p-4'}`}>
         {/* Config */}
         {phase === 'config' && (
           <div className="space-y-4">
