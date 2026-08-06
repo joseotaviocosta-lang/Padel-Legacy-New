@@ -11,6 +11,7 @@ import BetaTools from '@/components/system/BetaTools';
 import CareerHud from '@/components/career/CareerHud';
 import CommunicationBell from '@/components/communications/CommunicationBell';
 import CareerAssistant from '@/components/career/CareerAssistant';
+import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
@@ -129,6 +130,7 @@ export default function AppLayout() {
           <p className="truncate text-[10px] font-bold uppercase tracking-[0.16em] text-primary/80">{activeArea?.label || 'Carreira'}</p>
           <p className="truncate text-sm font-extrabold leading-tight">{currentTitle}</p>
         </div>
+        <CareerHeaderContext compact />
         <CareerHud compact className="mr-1 hidden min-[430px]:flex" />
         <CommunicationBell compact />
         <button type="button" onClick={openCareerManager} aria-label="Gerenciar carreiras" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
@@ -188,7 +190,7 @@ export default function AppLayout() {
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <span>{activeArea?.label || 'Carreira'}</span><span className="text-border">/</span><span className="truncate text-primary/85">{currentTitle}</span>
             </div>
-            <p className="mt-0.5 truncate text-lg font-black leading-tight">{currentTitle}</p>
+            <div className="mt-0.5 flex min-w-0 items-center gap-3"><p className="truncate text-lg font-black leading-tight">{currentTitle}</p><CareerHeaderContext /></div>
           </div>
           <div className="flex min-w-0 items-center gap-2">
             <CareerHud className="hidden xl:flex" />

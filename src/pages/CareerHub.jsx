@@ -4,11 +4,11 @@ import {
   Activity, AlertCircle, ArrowRight, Bell, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, Gamepad2, GraduationCap,
   Inbox, MessageCircle, Newspaper, Target, Trophy, TrendingUp, Users, Zap, Globe2,
-  Clock3, HeartPulse, Sparkles,
+  Clock3, HeartPulse, Sparkles, Flag, UserRound, ClipboardList, Radio,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
-  ensureMyProfile, incrementMissionProgress, careerExperienceSummary, overallRating, winRate,
+  ensureMyProfile, incrementMissionProgress, careerExperienceSummary, overallRating, winRate, calculateAge,
   getWorldRank, topAttributes, isRetired,
 } from '@/lib/padel';
 import { StatCard, getAttributeIcon } from '@/components/padel/Shared';
@@ -233,6 +233,23 @@ export default function CareerHub() {
     <Page size="wide" className="animate-fade-in">
       <PageContent>
         <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
+        <MyJourneyPanel
+          profile={profile}
+          worldRank={worldRank}
+          teamRank={teamRank}
+          nextTournament={nextTournament}
+          recentMatches={recentMatches}
+          recentTrainings={recentTrainings}
+          messages={messages}
+          posts={posts}
+        />
+        <CareerFeed
+          recentMatches={recentMatches}
+          recentTrainings={recentTrainings}
+          messages={messages}
+          posts={posts}
+          partnerOffers={partnerOffers}
+        />
         <CareerMomentBanner moment={careerMoment} />
         <DailyCareerBriefing briefing={dailyBriefing} />
         <CareerDecisionCenter center={decisionCenter} />
@@ -277,6 +294,98 @@ export default function CareerHub() {
         {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
       </PageContent>
     </Page>
+  );
+}
+
+
+function MyJourneyPanel({ profile, worldRank, teamRank, nextTournament, recentMatches, recentTrainings, messages, posts }) {
+  const age = calculateAge(profile);
+  const country = profile.country || profile.nationality || profile.country_name || 'Brasil';
+  const objective = worldRank.rank && worldRank.rank <= 1
+    ? 'Defender a liderança mundial'
+    : worldRank.rank && worldRank.rank <= 10
+      ? 'Chegar ao número 1'
+      : worldRank.rank && worldRank.rank <= 20
+        ? 'Entrar no Top 10'
+        : worldRank.rank && worldRank.rank <= 100
+          ? 'Entrar no Top 20'
+          : worldRank.rank && worldRank.rank <= 500
+            ? 'Entrar no Top 100'
+            : 'Entrar no Top 500';
+  const recentEvents = [
+    ...recentMatches.slice(0, 2).map((match) => ({ id: `journey-match-${match.id}`, icon: Trophy, text: match.winner === 'A' || match.player_won ? 'Vitória registrada na última partida' : 'Última partida concluída', tone: 'text-amber-400' })),
+    ...recentTrainings.slice(0, 2).map((training) => ({ id: `journey-training-${training.id}`, icon: Dumbbell, text: `${training.training_label || training.training_type || 'Treino'} concluído`, tone: 'text-cyan-400' })),
+    ...messages.slice(0, 1).map((message) => ({ id: `journey-message-${message.id}`, icon: MessageCircle, text: message.title || message.subject || 'Nova comunicação da equipe', tone: 'text-primary' })),
+    ...posts.slice(0, 1).map((post) => ({ id: `journey-post-${post.id}`, icon: Newspaper, text: post.title || 'Nova notícia no circuito', tone: 'text-violet-400' })),
+  ].slice(0, 4);
+
+  return (
+    <section className="overflow-hidden rounded-3xl border border-primary/20 bg-gradient-to-br from-card via-card to-primary/[0.06] shadow-lg" aria-labelledby="my-journey-title">
+      <div className="grid gap-0 xl:grid-cols-[minmax(0,1.35fr)_minmax(300px,.65fr)]">
+        <div className="p-5 sm:p-6">
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.18em] text-primary"><Flag className="h-4 w-4" />Minha jornada</div>
+              <h2 id="my-journey-title" className="mt-2 text-2xl font-black sm:text-3xl">{profile.sport_name || profile.full_name || 'Seu atleta'}</h2>
+              <p className="mt-1 text-sm text-muted-foreground">{country}{age ? ` · ${age} anos` : ''} · OVR {overallRating(profile)}</p>
+            </div>
+            <Link to="/profile" className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-background/55 px-3 py-2 text-xs font-bold hover:border-primary/30 hover:text-primary"><UserRound className="h-4 w-4" />Ver perfil</Link>
+          </div>
+
+          <div className="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-4">
+            <JourneyMetric label="Ranking" value={worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+'} detail="individual" />
+            <JourneyMetric label="Dupla" value={profile.partner_name || 'A definir'} detail={teamRank.rank ? `ranking #${teamRank.rank}` : 'sem ranking'} />
+            <JourneyMetric label="Treinador" value={profile.coach_name || 'Formação'} detail="comando técnico" />
+            <JourneyMetric label="Objetivo" value={objective} detail="próximo marco" />
+          </div>
+
+          <div className="mt-4 rounded-2xl border border-border/60 bg-background/35 p-4">
+            <div className="flex items-center justify-between gap-3">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.16em] text-muted-foreground">Próximo evento</p>
+                <p className="mt-1 text-sm font-black">{nextTournament?.name || 'Semana de desenvolvimento'}</p>
+                <p className="mt-1 text-xs text-muted-foreground">{nextTournament ? `${daysUntil(profile.career_date, nextTournament.start_date)} dias · ${formatShortDate(nextTournament.start_date)}` : 'Treine, recupere e organize sua agenda.'}</p>
+              </div>
+              <Link to={nextTournament ? '/tournaments' : '/game/training'} className="inline-flex shrink-0 items-center gap-1.5 rounded-xl bg-primary px-3 py-2 text-xs font-black text-primary-foreground">{nextTournament ? 'Preparar' : 'Treinar'}<ArrowRight className="h-3.5 w-3.5" /></Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="border-t border-border/55 bg-background/25 p-5 xl:border-l xl:border-t-0">
+          <div className="flex items-center justify-between">
+            <div><p className="text-[10px] font-black uppercase tracking-[0.16em] text-primary">Aconteceu recentemente</p><p className="mt-1 text-sm font-black">Resumo da jornada</p></div>
+            <Link to="/game/legacy" className="text-xs font-bold text-primary">Linha do tempo</Link>
+          </div>
+          <div className="mt-4 space-y-2.5">
+            {recentEvents.length ? recentEvents.map((event) => { const Icon = event.icon; return <div key={event.id} className="flex gap-3 rounded-xl bg-card/60 p-3"><Icon className={`mt-0.5 h-4 w-4 shrink-0 ${event.tone}`} /><p className="text-xs font-semibold leading-relaxed">{event.text}</p></div>; }) : <div className="rounded-xl border border-dashed border-border p-4 text-center text-xs text-muted-foreground">Sua história está começando. O primeiro marco aparecerá aqui.</div>}
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function JourneyMetric({ label, value, detail }) {
+  return <div className="min-w-0 rounded-2xl border border-border/55 bg-background/35 p-3"><p className="text-[9px] font-black uppercase tracking-[0.14em] text-muted-foreground">{label}</p><p className="mt-1 truncate text-sm font-black">{value}</p><p className="mt-0.5 truncate text-[10px] text-muted-foreground">{detail}</p></div>;
+}
+
+function CareerFeed({ recentMatches, recentTrainings, messages, posts, partnerOffers }) {
+  const items = [
+    ...partnerOffers.slice(0, 2).map((offer) => ({ id: `feed-offer-${offer.id}`, icon: Users, title: offer.candidate_name || offer.player_name || 'Proposta de dupla', description: 'Um atleta quer conversar sobre uma parceria.', to: '/partners?view=offers', priority: 4, time: offer.created_date })),
+    ...messages.slice(0, 4).map((message) => ({ id: `feed-message-${message.id}`, icon: MessageCircle, title: message.title || message.subject || message.sender_name || 'Comunicação', description: message.content || message.body || message.message || 'Sua equipe enviou uma atualização.', to: message.action_route || '/communications', priority: message.requires_action ? 5 : 3, time: message.created_date })),
+    ...recentMatches.slice(0, 3).map((match) => ({ id: `feed-match-${match.id}`, icon: Gamepad2, title: match.winner === 'A' || match.player_won ? 'Vitória da dupla' : 'Partida concluída', description: `${(match.team_a || []).join(' & ') || 'Sua dupla'} ${match.score_a ?? ''}-${match.score_b ?? ''} ${(match.team_b || []).join(' & ') || 'Adversários'}`.trim(), to: '/game/stats', priority: 2, time: match.created_date })),
+    ...recentTrainings.slice(0, 3).map((training) => ({ id: `feed-training-${training.id}`, icon: Dumbbell, title: training.training_label || training.training_type || 'Treino concluído', description: `+${training.attribute_gain || 0} ${training.attribute_target || 'progresso'} · +${training.xp_reward || 0} XP`, to: '/game/training', priority: 1, time: training.created_date })),
+    ...posts.slice(0, 2).map((post) => ({ id: `feed-post-${post.id}`, icon: Newspaper, title: post.title || 'Notícia do circuito', description: post.content || post.body || 'Confira a atualização do mundo do padel.', to: '/journal', priority: 1, time: post.created_date })),
+  ].sort((a, b) => (new Date(b.time || 0) - new Date(a.time || 0)) || b.priority - a.priority).slice(0, 8);
+
+  return (
+    <section className="rounded-3xl border border-border/60 bg-card/55 p-4 sm:p-5" aria-labelledby="career-feed-title">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div><div className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.16em] text-primary"><Radio className="h-4 w-4" />Feed da carreira</div><h2 id="career-feed-title" className="mt-1 text-lg font-black">Tudo que importa, em ordem</h2></div>
+        <div className="flex gap-2"><Link to="/communications" className="rounded-xl bg-secondary px-3 py-2 text-xs font-bold">Comunicações</Link><Link to="/world" className="rounded-xl bg-secondary px-3 py-2 text-xs font-bold">Mundo</Link></div>
+      </div>
+      {items.length ? <div className="mt-4 grid gap-2 md:grid-cols-2">{items.map((item) => { const Icon = item.icon; return <Link key={item.id} to={item.to} className="group flex min-w-0 gap-3 rounded-2xl border border-transparent bg-secondary/25 p-3 transition hover:border-primary/20 hover:bg-secondary/50"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Icon className="h-4 w-4" /></div><div className="min-w-0 flex-1"><p className="truncate text-xs font-black">{item.title}</p><p className="mt-1 line-clamp-2 text-[10px] leading-relaxed text-muted-foreground">{item.description}</p></div><ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground transition group-hover:text-primary" /></Link>; })}</div> : <div className="mt-4 rounded-2xl border border-dashed border-border p-5 text-center"><ClipboardList className="mx-auto h-7 w-7 text-muted-foreground/50" /><p className="mt-2 text-xs font-bold">Nenhum acontecimento recente</p><p className="mt-1 text-[10px] text-muted-foreground">Avance a carreira, treine ou jogue para alimentar seu feed.</p></div>}
+    </section>
   );
 }
 

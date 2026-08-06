@@ -2,7 +2,8 @@ import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { Users, Search, SlidersHorizontal } from 'lucide-react';
 import { ensureMyProfile } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
-import { LoadingScreen, PageHeader, FilterPills } from '@/components/padel/ui';
+import { PageHeader, FilterPills } from '@/components/padel/ui';
+import { PageSkeleton } from '@/components/design-system';
 import { ensureAthleteProfiles, generateRelationships, getAthletes, PERSONALITIES } from '@/lib/athleteBehavior';
 import AthleteCard from '@/components/athletes/AthleteCard';
 import AthleteDetail from '@/components/athletes/AthleteDetail';
@@ -77,7 +78,7 @@ export default function Athletes() {
     { id: 'Potência', label: 'Potência' },
   ];
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={6} />;
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">

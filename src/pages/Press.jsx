@@ -3,8 +3,8 @@ import { useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
-import { CardGrid, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
+
+import { CardGrid, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard, Surface, TooltipHint } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
@@ -173,7 +173,7 @@ export default function Press() {
     setSelectedArticle(article);
   }
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="dashboard" rows={4} />;
 
   const fanAppeal = profile?.fan_appeal || 50;
   const sponsorAppeal = profile?.sponsor_appeal || 50;
@@ -185,7 +185,7 @@ export default function Press() {
       <PageContent>
       <PageHeader
         eyebrow="Relacionamento com a mídia"
-        title="Imprensa Esportiva"
+        title={<span className="inline-flex items-center gap-2">Imprensa Esportiva <TooltipHint content="Entrevistas surgem após acontecimentos reais da carreira. Suas respostas afetam reputação, torcida, moral e patrocinadores." /></span>}
         description="Entrevistas, coletivas, rumores e repercussões. Suas respostas moldam reputação, fãs e patrocinadores."
         icon={Newspaper}
         tone="brand"

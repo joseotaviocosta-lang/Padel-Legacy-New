@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Search, RefreshCw, Globe2, Users, Eye, Star, X, Handshake, Send, UserRoundCog, BriefcaseBusiness, Info, ShieldCheck } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { LoadingScreen } from '@/components/padel/ui';
+import { PageSkeleton } from '@/components/design-system';
 import { Page, PageContent, PageHeader, CardGrid, StatCard, Surface, StatusBadge, EmptyState } from '@/components/design-system';
 import { getGlobalMarketSnapshot, processGlobalMarketMonth, getPlayerScoutingReports, getScoutingLevels, scoutAthlete, toggleShortlist, getNegotiationPreview, submitPartnerOffer } from '@/game-core';
 import { COACH_TIERS, COACH_SPECIALTY_INFO } from '@/lib/coaches';
@@ -120,7 +120,7 @@ export default function WorldMarket() {
     finally { setNegotiating(false); }
   }
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={6} />;
   const athlete = selected?.type === 'athlete' ? selected.data : null;
   const report = athlete ? reportMap[athlete.id] : null;
   const preview = athlete ? getNegotiationPreview(profile, athlete, report, offerTerms) : null;

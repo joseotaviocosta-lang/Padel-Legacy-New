@@ -3,7 +3,8 @@ import { Users, Search, Heart, Swords, Handshake, Zap, TrendingUp, MessageCircle
 import { localGame } from '@/api/localGameClient.js';
 import { getPlayerRelationships, getRelationshipEffects, interactSocially, checkSpecialRelationshipEvents, generateRelationshipInterview } from '@/lib/relationships';
 import { ensurePlayerRelationships } from '@/game-core/relationshipLifecycle';
-import { PageHeader, FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { PageHeader, FilterPills } from '@/components/padel/ui';
+import { EmptyState, PageSkeleton } from '@/components/design-system';
 import RelationshipCard from '@/components/relationships/RelationshipCard';
 import InteractionPanel from '@/components/relationships/InteractionPanel';
 
@@ -65,7 +66,7 @@ export default function Relationships() {
     { id: 'parceiro', label: 'Parceiros' }, { id: 'inimigo', label: 'Inimigos' }, { id: 'respeito', label: 'Respeito' }, { id: 'mentor', label: 'Mentores' },
   ];
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={4} />;
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
@@ -96,7 +97,7 @@ export default function Relationships() {
       </div>
 
       <FilterPills filters={filters} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-      {filtered.length === 0 ? <EmptyStateCard icon={Users} title="Sem relacionamentos" message="Use Sincronizar para conhecer atletas do circuito ou jogue partidas para criar novas histórias." /> : <div className="grid sm:grid-cols-2 gap-3 animate-stagger">{filtered.map(rel => <RelationshipCard key={rel.id || rel.target_athlete_id} relationship={rel} onClick={() => { setSelected(rel); setInterviewQuote(''); }} />)}</div>}
+      {filtered.length === 0 ? <EmptyState icon={Users} eyebrow="Rede do circuito" title="Sem relacionamentos" description="Use Sincronizar para conhecer atletas do circuito ou jogue partidas para criar novas histórias." /> : <div className="grid sm:grid-cols-2 gap-3 animate-stagger">{filtered.map(rel => <RelationshipCard key={rel.id || rel.target_athlete_id} relationship={rel} onClick={() => { setSelected(rel); setInterviewQuote(''); }} />)}</div>}
 
       {selected && <><div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-sm" onClick={() => setSelected(null)} /><div className="fixed bottom-0 inset-x-0 z-50 md:absolute md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg p-4"><div className="glass-premium rounded-3xl p-4 max-h-[80vh] overflow-y-auto scrollbar-none animate-slide-up"><div className="flex items-center justify-between mb-3"><div><p className="text-[10px] uppercase tracking-wide text-muted-foreground">Relacionamento</p><h2 className="text-lg font-black">{selected.target_name}</h2></div><button onClick={() => setSelected(null)} className="p-1.5 rounded-lg hover:bg-secondary/60"><X className="h-5 w-5" /></button></div><InteractionPanel relationship={selected} onInteract={handleInteract} onClose={() => setSelected(null)} /><div className="glass rounded-2xl p-3 mt-3"><div className="flex items-center justify-between mb-2"><p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold flex items-center gap-1.5"><MessageCircle className="h-3 w-3" /> Entrevista</p><button onClick={() => setInterviewQuote(generateRelationshipInterview(selected, 'neutral'))} className="text-[10px] font-bold text-primary">Gerar frase</button></div>{interviewQuote ? <p className="text-xs italic">“{interviewQuote}”</p> : <p className="text-[10px] text-muted-foreground">Gere uma declaração sobre este atleta.</p>}</div>{(selected.history || []).length > 0 && <div className="glass rounded-2xl p-3 mt-3"><p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Histórico</p><div className="space-y-1.5 max-h-40 overflow-y-auto">{[...(selected.history || [])].reverse().map((h, i) => <div key={i} className="flex gap-2 text-[10px]"><span className={h.score_change > 0 ? 'text-green-400' : h.score_change < 0 ? 'text-red-400' : 'text-muted-foreground'}>{h.score_change > 0 ? '+' : ''}{h.score_change}</span><div><p>{h.description}</p><p className="text-muted-foreground">{h.date}</p></div></div>)}</div></div>}</div></div></>}
     </div>

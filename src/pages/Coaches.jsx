@@ -1,7 +1,8 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { Search, Users, UserCheck, Info, Brain, Handshake, CalendarDays } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { FilterPills, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { FilterPills } from '@/components/padel/ui';
+import { EmptyState, PageSkeleton } from '@/components/design-system';
 import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, ProgressBar } from '@/components/design-system';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
@@ -98,7 +99,7 @@ export default function Coaches() {
 
   const availableCount = filtered.length;
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={6} />;
 
   const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : null;
   const trust = Number(profile?.coach_trust ?? 55);
@@ -191,7 +192,7 @@ export default function Coaches() {
       <FilterPills filters={TIER_FILTERS} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
 
       {filtered.length === 0 ? (
-        <EmptyStateCard icon={Users} title="Nenhum treinador" message="Nenhum treinador encontrado com esses filtros." />
+        <EmptyState icon={Users} eyebrow="Mercado de treinadores" title="Nenhum treinador encontrado" description="Ajuste os filtros ou avance o calendário para atualizar a disponibilidade mensal do mercado." compact />
       ) : (
         <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
           {filtered.map(coach => {
