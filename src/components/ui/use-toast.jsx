@@ -1,5 +1,6 @@
 // Inspired by react-hot-toast library
 import { useState, useEffect } from "react";
+import { emitUiSound } from "@/lib/uiSound.js";
 
 const TOAST_LIMIT = 20;
 const TOAST_REMOVE_DELAY = 300;
@@ -112,6 +113,8 @@ function dispatch(action) {
 
 function toast({ ...props }) {
   const id = genId();
+  const soundType = props.variant === "destructive" ? "error" : props.variant === "warning" ? "warning" : "success";
+  emitUiSound(soundType, "toast");
 
   const update = (props) =>
     dispatch({

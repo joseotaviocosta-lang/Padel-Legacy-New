@@ -29,7 +29,7 @@ export function PageContent({ children, className, ...props }) {
 }
 
 export function PageSection({ children, className, ...props }) {
-  return <section className={cn('pl-section-enter min-w-0 space-y-3', className)} {...props}>{children}</section>;
+  return <section className={cn('pl-section-enter pl-auto-contain min-w-0 space-y-3', className)} {...props}>{children}</section>;
 }
 
 export function CardGrid({ children, className, columns = 3, ...props }) {

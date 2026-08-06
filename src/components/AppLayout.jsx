@@ -13,6 +13,8 @@ import CommunicationBell from '@/components/communications/CommunicationBell';
 import CareerAssistant from '@/components/career/CareerAssistant';
 import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
+import { useAdaptivePerformance } from '@/hooks/useAdaptivePerformance';
+import FeedbackSoundController from '@/components/system/FeedbackSoundController';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -91,6 +93,7 @@ async function openCareerManager() {
 
 export default function AppLayout() {
   const location = useLocation();
+  const performanceProfile = useAdaptivePerformance();
   const activeArea = areaForPath(location.pathname);
   const currentItem = useMemo(
     () => ALL_NAVIGATION_ITEMS.find(item => item.to === location.pathname),
@@ -110,7 +113,10 @@ export default function AppLayout() {
   useEffect(() => { localStorage.setItem(COLLAPSED_SIDEBAR_KEY, String(sidebarCollapsed)); }, [sidebarCollapsed]);
 
   useEffect(() => {
-    const commonRoutes = ['/game/training', '/game/calendar', '/tournaments', '/ranking', '/partners'];
+    if (!performanceProfile.allowRoutePreload) return undefined;
+    const commonRoutes = performanceProfile.lowPower
+      ? ['/game/training', '/game/calendar']
+      : ['/game/training', '/game/calendar', '/tournaments', '/ranking', '/partners'];
     const run = () => preloadRoutes(commonRoutes);
     if ('requestIdleCallback' in window) {
       const idleId = window.requestIdleCallback(run, { timeout: 1800 });
@@ -118,7 +124,7 @@ export default function AppLayout() {
     }
     const timerId = window.setTimeout(run, 900);
     return () => window.clearTimeout(timerId);
-  }, []);
+  }, [performanceProfile.allowRoutePreload, performanceProfile.lowPower]);
 
   return (
     <div className="app-shell min-h-screen bg-background">
@@ -143,7 +149,7 @@ export default function AppLayout() {
         {mobileOpen && (
           <>
             <motion.button aria-label="Fechar navegação" className="fixed inset-0 z-[60] bg-black/60 backdrop-blur-[2px] md:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} />
-            <motion.aside id="mobile-navigation-drawer" aria-label="Navegação principal" className="glass fixed inset-y-0 left-0 z-[70] flex w-[min(88vw,20rem)] flex-col border-r border-border md:hidden" initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={{ type: 'spring', stiffness: 380, damping: 36 }}>
+            <motion.aside id="mobile-navigation-drawer" aria-label="Navegação principal" className="glass fixed inset-y-0 left-0 z-[70] flex w-[min(88vw,20rem)] flex-col border-r border-border md:hidden" initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={performanceProfile.lowPower ? { duration: 0.16 } : { type: 'spring', stiffness: 380, damping: 36 }}>
               <div className="flex h-16 items-center justify-between border-b border-border/50 px-4">
                 <NavLink to="/game" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
                   <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary text-base font-black text-primary-foreground shadow-[0_0_22px_hsl(var(--primary)/0.22)]">P</span>
@@ -184,6 +190,8 @@ export default function AppLayout() {
         </div>
       </aside>
 
+      <FeedbackSoundController />
+
       <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border/50 bg-background/80 px-5 backdrop-blur-xl md:flex lg:px-7">
           <div className="min-w-0">
@@ -202,13 +210,21 @@ export default function AppLayout() {
           </div>
         </div>
 
-        <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>
+        {performanceProfile.allowDecorativeMotion ? (
+          <AnimatePresence mode="wait">
+            <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>
+              <OnboardingGuide />
+              <CareerAssistant />
+              <Outlet />
+            </motion.div>
+          </AnimatePresence>
+        ) : (
+          <div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full">
             <OnboardingGuide />
             <CareerAssistant />
             <Outlet />
-          </motion.div>
-        </AnimatePresence>
+          </div>
+        )}
       </main>
 
       <BottomNav />

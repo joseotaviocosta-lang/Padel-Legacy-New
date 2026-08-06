@@ -765,3 +765,65 @@
   .pl-motion-reveal { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
   .pl-surface-motion, .pl-change-pulse, button, [role='button'] { transition: none !important; transform: none !important; }
 }
+
+/* ================================================================
+   v36.4.3 — Performance & Responsiveness
+   Conteúdo fora da viewport não precisa ser pintado imediatamente.
+   ================================================================ */
+@supports (content-visibility: auto) {
+  .pl-auto-contain {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 360px;
+  }
+
+  .design-system-page-host .render-window > *,
+  .design-system-page-host [data-performance-list] > * {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 84px;
+  }
+}
+
+@media (max-width: 767px) {
+  .design-system-page-host {
+    overflow-x: clip;
+  }
+
+  .pl-page {
+    padding-inline: 0.625rem;
+  }
+
+  .pl-surface,
+  .pl-surface-subtle {
+    border-radius: 0.875rem;
+  }
+
+  .app-route-stage :is(button, a, [role="button"]) {
+    touch-action: manipulation;
+  }
+}
+
+@media (max-height: 720px) and (min-width: 768px) {
+  .pl-page {
+    padding-block: 0.75rem;
+  }
+
+  .pl-content-enter {
+    gap: 0.75rem;
+  }
+
+  .app-desktop-bar {
+    height: 3.5rem;
+  }
+}
+
+@media (prefers-reduced-data: reduce) {
+  .app-shell::before,
+  .app-shell::after {
+    background: hsl(var(--background));
+  }
+
+  .glass,
+  .glass-premium {
+    backdrop-filter: none;
+  }
+}

@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarDays, Coins, Crown, HeartPulse, Zap } from 'lucide-react';
+import { CalendarDays, Coins, Crown, HeartPulse, Volume2, VolumeX, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 import { cn } from '@/lib/utils';
+import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/lib/uiSound.js';
 
 const EMPTY = { energy: 0, fatigue: 0, coins: 0, date: '—', rank: '—' };
 
 export default function CareerHud({ compact = false, className }) {
   const [data, setData] = useState(EMPTY);
+  const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
 
   useEffect(() => {
     let mounted = true;
@@ -50,6 +52,13 @@ export default function CareerHud({ compact = false, className }) {
     { label: 'Data', value: data.date, icon: CalendarDays, tone: 'text-info' },
   ];
 
+  const toggleSound = () => {
+    const next = !soundEnabled;
+    setSoundEnabled(next);
+    saveUiSoundPreferences({ enabled: next });
+    if (next) window.setTimeout(() => playUiSound('notification'), 20);
+  };
+
   return (
     <div className={cn('pl-career-hud flex min-w-0 items-center gap-1.5', compact && 'gap-1', className)} aria-label="Status rápido da carreira">
       {items.map(({ label, value, icon: Icon, tone }, index) => (
@@ -61,6 +70,9 @@ export default function CareerHud({ compact = false, className }) {
           </div>
         </div>
       ))}
+      <button type="button" onClick={toggleSound} title={soundEnabled ? 'Desativar sons da interface' : 'Ativar sons da interface'} aria-label={soundEnabled ? 'Desativar sons da interface' : 'Ativar sons da interface'} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card/62 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}
+      </button>
     </div>
   );
 }
