@@ -203,7 +203,7 @@ export default function AppLayout() {
         </div>
 
         <AnimatePresence mode="wait">
-          <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
+          <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>
             <OnboardingGuide />
             <CareerAssistant />
             <Outlet />

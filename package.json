@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.34",
+  "version": "0.9.0-beta.37",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -87,7 +87,9 @@
     "test:beta-integration-v35": "node scripts/test-beta-integration-v35-5.mjs",
     "test:beta-rc": "node scripts/test-beta-rc-v36.mjs",
     "test:ux-home-v36": "node scripts/test-ux-home-v36-3-1.mjs",
-    "test:ux-interfaces-v36": "node scripts/test-ux-interfaces-v36-3-2.mjs"
+    "test:ux-interfaces-v36": "node scripts/test-ux-interfaces-v36-3-2.mjs",
+    "test:polish-ui-v36": "node scripts/test-polish-ui-v36-4-1.mjs",
+    "test:motion-v36": "node scripts/test-motion-system-v36-4-2.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

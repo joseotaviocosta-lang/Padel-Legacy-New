@@ -13,7 +13,7 @@ export function Page({ children, className, size = 'wide', ...props }) {
   return (
     <div
       className={cn(
-        'pl-page mx-auto w-full min-w-0 px-3 py-3 sm:px-4 sm:py-4 lg:px-6 lg:py-5',
+        'pl-page pl-page-enter mx-auto w-full min-w-0 px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-5',
         sizes[size] || sizes.wide,
         className,
       )}
@@ -25,11 +25,11 @@ export function Page({ children, className, size = 'wide', ...props }) {
 }
 
 export function PageContent({ children, className, ...props }) {
-  return <div className={cn('min-w-0 space-y-4 lg:space-y-5', className)} {...props}>{children}</div>;
+  return <div className={cn('pl-content-enter min-w-0 space-y-4 lg:space-y-5', className)} {...props}>{children}</div>;
 }
 
 export function PageSection({ children, className, ...props }) {
-  return <section className={cn('min-w-0 space-y-3', className)} {...props}>{children}</section>;
+  return <section className={cn('pl-section-enter min-w-0 space-y-3', className)} {...props}>{children}</section>;
 }
 
 export function CardGrid({ children, className, columns = 3, ...props }) {
@@ -38,5 +38,5 @@ export function CardGrid({ children, className, columns = 3, ...props }) {
     3: 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3',
     4: 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-4',
   };
-  return <div className={cn('grid min-w-0 gap-3 lg:gap-4', layouts[columns] || layouts[3], className)} {...props}>{children}</div>;
+  return <div className={cn('pl-stagger-grid grid min-w-0 gap-3 lg:gap-4', layouts[columns] || layouts[3], className)} {...props}>{children}</div>;
 }

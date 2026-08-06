@@ -40,10 +40,14 @@ export const radius = Object.freeze({
 });
 
 export const motion = Object.freeze({
+  instant: 90,
   fast: 150,
-  normal: 250,
-  slow: 350,
+  normal: 220,
+  slow: 360,
+  deliberate: 520,
   easing: [0.22, 1, 0.36, 1],
+  easingCss: 'cubic-bezier(0.22, 1, 0.36, 1)',
+  stagger: 45,
 });
 
 export const breakpoints = Object.freeze({
