@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
@@ -19,7 +20,8 @@ export default function Press() {
   const [partnership, setPartnership] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('feed');
+  const [searchParams] = useSearchParams();
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') === 'interviews' ? 'interviews' : 'feed');
   const [activeInterview, setActiveInterview] = useState(null);
   const [activeJournalist, setActiveJournalist] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);

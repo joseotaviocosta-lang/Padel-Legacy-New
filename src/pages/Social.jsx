@@ -20,7 +20,7 @@ const POST_TYPE_META = {
   motivacional: { label: 'Motivacional', color: 'text-blue-400 bg-blue-500/10' },
 };
 
-export default function Social() {
+export default function Social({ embedded = false }) {
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -173,10 +173,9 @@ export default function Social() {
     ? posts.filter(p => p.trend_tag === activeTrend)
     : posts;
 
-  return (
-    <Page size="default">
-      <PageContent>
-        <PageHeader
+  const contentView = (
+    <>
+        {!embedded && <PageHeader
           eyebrow="Presença digital"
           title="Rede Social"
           description="Atletas, clubes, patrocinadores e torcedores comentam o circuito em tempo real."
@@ -187,7 +186,7 @@ export default function Social() {
             <StatusBadge key="feed" tone="brand" icon={Sparkles}>{posts.length} posts no feed</StatusBadge>,
             <StatusBadge key="viral" tone="premium" icon={TrendingUp}>{posts.filter((post) => post.is_viral).length} virais</StatusBadge>,
           ]}
-        />
+        />}
 
         <CardGrid columns={3}>
           <StatCard label="Seguidores" value={followers.toLocaleString('pt-BR')} detail="Alcance da carreira" icon={Users} tone="brand" />
@@ -287,6 +286,15 @@ export default function Social() {
           </Surface>
         </div>
       </div>
+    </>
+  );
+
+  if (embedded) return contentView;
+
+  return (
+    <Page size="default">
+      <PageContent>
+        {contentView}
       </PageContent>
     </Page>
   );

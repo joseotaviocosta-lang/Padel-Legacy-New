@@ -1,3 +1,4 @@
+import { getPendingInterviews } from '@/lib/pressData.js';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerMemory, getCareerAgent } from '@/lib/careerMemory.js';
 
@@ -161,6 +162,34 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         { id: 'prioritize_fit', label: 'Priorizar marcas compatíveis', description: 'Fortalece a relação de longo prazo.', effect: { agentTrust: 2 } },
       ],
       metadata: { memory_type: 'agent_strategy', agent_personality: agent.personality },
+    });
+  }
+
+  // A imprensa passa a procurar o jogador quando existe uma entrevista
+  // realmente disponível. A comunicação leva diretamente à ferramenta e usa
+  // o ID do fato gerador para não reaparecer após ser respondida.
+  const pendingInterviews = getPendingInterviews(profile, context.matches || [], {
+    calendarEvents: context.calendarEvents || [],
+    partnership: context.partnership || null,
+    registrations: context.registrations || [],
+  });
+  const answeredSources = new Set((context.pressArticles || []).map(article => article.source_event_id).filter(Boolean));
+  for (const interview of pendingInterviews.filter(item => !answeredSources.has(item.sourceId)).slice(0, 3)) {
+    await createOnce(`press-interview:${interview.sourceId}`, {
+      sender_type: 'imprensa',
+      sender_name: 'Assessoria de Imprensa',
+      title: `Entrevista disponível: ${interview.title}`,
+      content: `${interview.description} Esta é uma oportunidade de influenciar sua reputação, a torcida e futuros patrocinadores.`,
+      priority: interview.questionCategory === 'post_win' || interview.questionCategory === 'post_loss' ? 'alta' : 'normal',
+      related_entity_type: 'PressInterview',
+      related_entity_id: interview.id,
+      related_entity_name: interview.title,
+      metadata: {
+        route: '/press?tab=interviews',
+        interview_id: interview.id,
+        interview_source_id: interview.sourceId,
+        memory_type: 'press_opportunity',
+      },
     });
   }
 

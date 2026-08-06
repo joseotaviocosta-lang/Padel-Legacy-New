@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Flame, Heart, MessageCircle, Send, Share2, Sparkles, Swords, Trophy } from 'lucide-react';
+import { Flame, Heart, MessageCircle, Send, Share2, Sparkles, Swords, Trophy, Users } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { LevelBadge } from '@/components/padel/Shared';
 import { EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { CardGrid, Page, PageContent, PageHeader, PageSection, StatCard, StatusBadge, Surface } from '@/components/design-system';
+import Social from '@/pages/Social.jsx';
 
 const POST_TYPE_META = {
   resultado: { icon: Swords, color: 'text-cyan-400 bg-cyan-500/10', label: 'Resultado' },
@@ -20,6 +21,7 @@ export default function Community() {
   const [content, setContent] = useState('');
   const [postType, setPostType] = useState('geral');
   const [submitting, setSubmitting] = useState(false);
+  const [section, setSection] = useState('community');
 
   useEffect(() => {
     (async () => {
@@ -76,8 +78,8 @@ export default function Community() {
       <PageContent>
         <PageHeader
           eyebrow="Comunidade do circuito"
-          title="Comunidade"
-          description="Compartilhe sua trajetória, acompanhe resultados e participe da conversa do padel."
+          title="Comunidade e rede do circuito"
+          description="Um único espaço para publicações da comunidade, bastidores, tendências e presença digital."
           icon={Sparkles}
           tone="brand"
           breadcrumb={['Mundo', 'Comunidade']}
@@ -93,6 +95,18 @@ export default function Community() {
           <StatCard label="Conquistas" value={achievementPosts} detail="Marcos celebrados" icon={Trophy} tone="premium" />
         </CardGrid>
 
+        <Surface padding="compact">
+          <div className="grid grid-cols-2 gap-2">
+            <button type="button" onClick={() => setSection('community')} className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition-colors ${section === 'community' ? 'bg-primary text-primary-foreground' : 'bg-secondary/55 text-muted-foreground hover:text-foreground'}`}>
+              <MessageCircle className="h-4 w-4" /> Comunidade
+            </button>
+            <button type="button" onClick={() => setSection('social')} className={`flex items-center justify-center gap-2 rounded-xl px-3 py-2.5 text-sm font-bold transition-colors ${section === 'social' ? 'bg-primary text-primary-foreground' : 'bg-secondary/55 text-muted-foreground hover:text-foreground'}`}>
+              <Users className="h-4 w-4" /> Rede do circuito
+            </button>
+          </div>
+        </Surface>
+
+        {section === 'social' ? <Social embedded /> : <>
         <Surface variant="elevated">
           <div className="flex gap-3">
             <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/30 to-secondary">
@@ -145,6 +159,7 @@ export default function Community() {
             </div>
           )}
         </PageSection>
+        </>}
       </PageContent>
     </Page>
   );

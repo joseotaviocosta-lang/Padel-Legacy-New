@@ -140,9 +140,10 @@ export const TUTORIAL_STEPS = [
     explanation: 'Acompanhe relações com atletas, profissionais e personagens importantes da carreira.',
     whyItMatters: 'Boas relações podem abrir oportunidades e reduzir conflitos.',
   }),
-  step('press-known', 'visit_press', 'Conheça a imprensa', '/press', 'Dupla e relações', 'confirm_understanding', {
-    explanation: 'Veja entrevistas, perguntas e repercussões das suas respostas.',
-    whyItMatters: 'A comunicação pública influencia reputação, narrativa e relacionamentos.',
+  step('press-known', 'visit_press', 'Responda à imprensa', '/press?tab=interviews', 'Dupla e relações', 'confirm_understanding', {
+    explanation: 'Quando uma entrevista estiver disponível, o sino e a Central de Comunicações avisarão. Abra a oportunidade, responda e acompanhe a repercussão.',
+    whyItMatters: 'Entrevistas influenciam reputação, torcida, patrocinadores e a narrativa da sua carreira.',
+    actionLabel: 'Abrir imprensa',
   }),
   step('fans-known', 'visit_fans', 'Conheça fãs e torcidas', '/fans', 'Dupla e relações', 'confirm_understanding', {
     explanation: 'Acompanhe apoio, popularidade e reações do público.',

@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Inbox, Mail, Megaphone, Newspaper, Search, Shield, Sparkles, X } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
@@ -26,14 +27,17 @@ export default function Communications() {
     const activeProfile = await ensureMyProfile(user);
     setProfile(activeProfile);
     if (activeProfile) {
-      const [tournaments, matches, partnerships, sponsorContracts] = await Promise.all([
+      const [tournaments, matches, partnerships, sponsorContracts, calendarEvents, registrations, pressArticles] = await Promise.all([
         localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
         localGame.entities.Match.filter({ profile_id: activeProfile.id }, '-created_date', 40).catch(() => []),
         localGame.entities.Partnership.filter({ profile_id: activeProfile.id, status: 'ativa' }, '-started_career_date', 1).catch(() => []),
         localGame.entities.PlayerContract.filter({ profile_id: activeProfile.id, is_active: true }, '-created_date', 20).catch(() => []),
+        localGame.entities.CalendarEvent.filter({ profile_id: activeProfile.id }, 'start_date', 100).catch(() => []),
+        localGame.entities.TournamentRegistration.filter({ profile_id: activeProfile.id }, '-registered_at', 100).catch(() => []),
+        localGame.entities.PressArticle.filter({ profile_id: activeProfile.id }, '-created_date', 100).catch(() => []),
       ]);
       const nextTournament = (tournaments || []).filter((item) => item.start_date >= activeProfile.career_date).sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
-      const context = { nextTournament, matches, partnership: partnerships?.[0] || null, sponsorContracts, partnerName: activeProfile.partner_name };
+      const context = { nextTournament, matches, partnership: partnerships?.[0] || null, sponsorContracts, partnerName: activeProfile.partner_name, calendarEvents, registrations, pressArticles };
       const memory = buildCareerMemory(activeProfile, context);
       setAgent(getCareerAgent(activeProfile));
       setMemoryHighlights(getMemoryHighlights(activeProfile, memory));
@@ -128,7 +132,7 @@ export default function Communications() {
         })}</div>}
       </PageContent>
 
-      {selected && <><button type="button" aria-label="Fechar mensagem" onClick={() => setSelected(null)} className="fixed inset-0 z-[80] bg-black/65 backdrop-blur-sm" /><div className="fixed inset-x-3 bottom-3 z-[90] mx-auto max-h-[88vh] max-w-xl overflow-y-auto rounded-3xl border border-border/70 bg-card p-5 shadow-2xl sm:inset-x-6 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">{selected.sender_name}</p><h2 className="mt-1 text-xl font-black">{selected.title}</h2></div><button type="button" onClick={() => setSelected(null)} className="rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button></div><p className="mt-5 whitespace-pre-line text-sm leading-7 text-foreground/90">{selected.content}</p>{selected.actions?.length > 0 && selected.status === 'decisao_pendente' && <div className="mt-5 space-y-2">{selected.actions.map((action, index) => <button key={action.id} type="button" onClick={() => handleAction(action)} className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${index === 0 ? 'border-primary/30 bg-primary text-primary-foreground' : 'border-border/70 bg-secondary/55 hover:bg-secondary'}`}><span className="block text-sm font-bold">{action.label}</span>{action.description && <span className={`mt-1 block text-[10px] ${index === 0 ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>{action.description}</span>}</button>)}<button type="button" onClick={handleDismiss} className="w-full rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-muted-foreground">Decidir depois</button></div>}</div></>}
+      {selected && <><button type="button" aria-label="Fechar mensagem" onClick={() => setSelected(null)} className="fixed inset-0 z-[80] bg-black/65 backdrop-blur-sm" /><div className="fixed inset-x-3 bottom-3 z-[90] mx-auto max-h-[88vh] max-w-xl overflow-y-auto rounded-3xl border border-border/70 bg-card p-5 shadow-2xl sm:inset-x-6 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">{selected.sender_name}</p><h2 className="mt-1 text-xl font-black">{selected.title}</h2></div><button type="button" onClick={() => setSelected(null)} className="rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button></div><p className="mt-5 whitespace-pre-line text-sm leading-7 text-foreground/90">{selected.content}</p>{selected.metadata?.route && <Link to={selected.metadata.route} onClick={() => setSelected(null)} className="mt-5 flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground">Abrir recurso</Link>}{selected.actions?.length > 0 && selected.status === 'decisao_pendente' && <div className="mt-5 space-y-2">{selected.actions.map((action, index) => <button key={action.id} type="button" onClick={() => handleAction(action)} className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${index === 0 ? 'border-primary/30 bg-primary text-primary-foreground' : 'border-border/70 bg-secondary/55 hover:bg-secondary'}`}><span className="block text-sm font-bold">{action.label}</span>{action.description && <span className={`mt-1 block text-[10px] ${index === 0 ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>{action.description}</span>}</button>)}<button type="button" onClick={handleDismiss} className="w-full rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-muted-foreground">Decidir depois</button></div>}</div></>}
     </Page>
   );
 }

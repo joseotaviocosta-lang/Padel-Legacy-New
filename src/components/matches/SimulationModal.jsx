@@ -197,7 +197,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
             <div>
               <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2">Modo da partida</p>
-              <div className="grid grid-cols-2 gap-2">{[['text','Texto'],['quick','Rápido']].map(([id,label]) => <button key={id} onClick={() => changeDisplayMode(id)} className={`rounded-xl px-2 py-2 text-xs font-bold ${displayMode === id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50'}`}>{label}</button>)}</div>
+              <div className="grid grid-cols-3 gap-2">{[['text','Completa'],['summary','Resumida'],['important','Momentos']].map(([id,label]) => <button key={id} onClick={() => changeDisplayMode(id)} className={`rounded-xl px-2 py-2 text-xs font-bold ${displayMode === id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50'}`}>{label}</button>)}</div>
             </div>
 
             <button

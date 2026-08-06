@@ -48,18 +48,6 @@ export default function Ranking() {
   useEffect(() => { setVisibleCount(LIST_PAGE_SIZE); }, [tab]);
 
   const { countries, circuitAthletes, raceAthletes } = useMemo(() => {
-    const countryMap = {};
-    (players || []).forEach(p => {
-      const country = p.country || 'Outros';
-      if (!countryMap[country]) countryMap[country] = { name: country, players: 0, totalXp: 0, totalOvr: 0 };
-      countryMap[country].players++;
-      countryMap[country].totalXp += (p.xp || 0);
-      countryMap[country].totalOvr += overallRating(p);
-    });
-    const countryRanking = Object.values(countryMap)
-      .map(country => ({ ...country, avgOvr: Math.round(country.totalOvr / Math.max(1, country.players)) }))
-      .sort((a, b) => b.totalXp - a.totalXp);
-
     const normalizeName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
     const activeAthletes = (athletes || []).filter(a => !a.retired && a.career_phase !== 'Aposentado');
     const teamAthleteMap = new Map();
@@ -106,7 +94,7 @@ export default function Ranking() {
         id: current.id || athlete.id,
         name: current.name || athlete.name,
         sport_name: current.sport_name || athlete.sport_name,
-        country: current.country || athlete.country,
+        country: current.country || current.nationality || athlete.country || athlete.nationality || 'Internacional',
         overall_rating: Math.max(Number(current.overall_rating ?? current.overall) || 0, Number(athlete.overall_rating ?? athlete.overall) || 0),
         world_ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
         ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
@@ -119,7 +107,7 @@ export default function Ranking() {
       ...player,
       name: player.sport_name || player.name || 'Jogador',
       sport_name: player.sport_name || player.name || 'Jogador',
-      country: player.country || 'Brasil',
+      country: player.country || player.nationality || 'Brasil',
       overall_rating: overallRating(player),
       world_ranking_points: Number(player.rank_points ?? player.ranking_points ?? player.world_ranking_points) || 0,
       race_points: Number(player.race_points) || 0,
@@ -135,6 +123,21 @@ export default function Ranking() {
         dedupedCircuit.push(player);
       }
     }
+
+    // O ranking de países precisa considerar todo o circuito, não apenas os
+    // perfis controlados pelo usuário. Atletas reais, bots e membros de duplas
+    // passam a contribuir com país, pontos e Overall.
+    const countryMap = {};
+    for (const athlete of dedupedCircuit) {
+      const country = athlete.country || athlete.nationality || 'Internacional';
+      if (!countryMap[country]) countryMap[country] = { name: country, players: 0, totalXp: 0, totalOvr: 0 };
+      countryMap[country].players += 1;
+      countryMap[country].totalXp += Number(athlete.world_ranking_points ?? athlete.ranking_points ?? athlete.xp) || 0;
+      countryMap[country].totalOvr += Number(athlete.overall_rating ?? athlete.overall) || 0;
+    }
+    const countryRanking = Object.values(countryMap)
+      .map(country => ({ ...country, avgOvr: Math.round(country.totalOvr / Math.max(1, country.players)) }))
+      .sort((a, b) => b.totalXp - a.totalXp || b.players - a.players || a.name.localeCompare(b.name, 'pt-BR'));
 
     return {
       countries: countryRanking,

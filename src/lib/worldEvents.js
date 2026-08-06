@@ -450,6 +450,7 @@ export function generateMacroEventObject(date) {
     event_date: date,
     likes: randInt(500, 15000),
     tags: [type, 'macro'],
+    source_event_id: `macro:${date}:${type}:${Math.random().toString(36).slice(2, 10)}`,
     is_macro: true,
     impact_level: tpl.impact || 'medio',
     effects: tpl.effects || {},
@@ -471,7 +472,9 @@ export async function generateMacroEvents(date, count = 1) {
 
   const prepared = normalizeWorldEventIds(createWorldEventObjects(events));
   if (import.meta.env.DEV) validateWorldEventIds(prepared);
-  return await localGame.entities.WorldEvent.bulkCreate(prepared);
+  // Upsert torna a inicialização idempotente e também repara saves antigos
+  // que já contenham um ID canônico gerado por versões anteriores.
+  return await localGame.entities.WorldEvent.bulkUpdate(prepared);
 }
 
 // Expire macro events whose end_date has passed

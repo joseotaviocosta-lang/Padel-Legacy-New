@@ -11,6 +11,8 @@ import {
   MessageSquareText,
   ClipboardList,
   ChevronRight,
+  BarChart3,
+  Activity,
 } from 'lucide-react';
 import {
   createMatch,
@@ -27,6 +29,7 @@ const PANELS = [
   { id: 'match', label: 'Jogo', icon: MessageSquareText },
   { id: 'tactics', label: 'Tática', icon: ClipboardList },
   { id: 'coach', label: 'Técnico', icon: Brain },
+  { id: 'stats', label: 'Ao vivo', icon: BarChart3 },
 ];
 
 export default function LiveMatch({
@@ -112,11 +115,13 @@ export default function LiveMatch({
         ? `Tie-break · set ${state.currentSet}`
         : `Set ${state.currentSet}`;
 
+  const importantMoment = getImportantMoment(state);
+
   return (
     <div data-live-match className="flex h-full min-h-0 max-h-full flex-col gap-2 overflow-hidden">
-      <div className="shrink-0"><CompactScoreboard state={state} points={points} status={matchStatus} /></div>
+      <div className="shrink-0"><CompactScoreboard state={state} points={points} status={matchStatus} importantMoment={importantMoment} /></div>
 
-      <div className="grid shrink-0 grid-cols-3 gap-1 rounded-xl border border-border/40 bg-secondary/30 p-1" role="tablist" aria-label="Painéis da partida">
+      <div className="grid shrink-0 grid-cols-4 gap-1 rounded-xl border border-border/40 bg-secondary/30 p-1" role="tablist" aria-label="Painéis da partida">
         {PANELS.map(({ id, label, icon: Icon }) => {
           const active = activePanel === id;
           const hasAlert = id === 'coach' && Boolean(coachSuggestion);
@@ -178,6 +183,8 @@ export default function LiveMatch({
             onIgnore={() => setState((previous) => decideLiveCoachSuggestion(previous, 'ignore'))}
           />
         )}
+
+        {activePanel === 'stats' && <LiveStatsPanel state={state} />}
       </div>
 
       <div className="shrink-0">
@@ -206,7 +213,7 @@ export default function LiveMatch({
   );
 }
 
-function CompactScoreboard({ state, points, status }) {
+function CompactScoreboard({ state, points, status, importantMoment }) {
   const teams = [
     { id: 'A', names: state.teamANames, sets: state.setsA, games: state.gamesA, points: points.a, accent: 'bg-primary', text: 'text-primary' },
     { id: 'B', names: state.teamBNames, sets: state.setsB, games: state.gamesB, points: points.b, accent: 'bg-amber-400', text: 'text-amber-400' },
@@ -234,6 +241,12 @@ function CompactScoreboard({ state, points, status }) {
           <strong className="text-center text-lg tabular-nums">{team.points}</strong>
         </div>
       ))}
+      {importantMoment && (
+        <div className={`flex items-center justify-center gap-2 border-t px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.12em] ${importantMoment.tone}`}>
+          <Activity className="h-3.5 w-3.5" />
+          {importantMoment.label}
+        </div>
+      )}
     </section>
   );
 }
@@ -248,9 +261,12 @@ function MatchFeed({
   coachSuggestion,
   onOpenCoach,
 }) {
-  const filteredNarration = displayMode === 'quick'
-    ? state.narration.filter((event) => ['game', 'set', 'match', 'tiebreak_start', 'tiebreak_end'].includes(event.type))
-    : state.narration;
+  const keyTypes = ['game', 'set', 'match', 'tiebreak_start', 'tiebreak_end'];
+  const filteredNarration = displayMode === 'important'
+    ? state.narration.filter((event) => keyTypes.includes(event.type))
+    : displayMode === 'summary'
+      ? state.narration.filter((event, index) => keyTypes.includes(event.type) || index >= state.narration.length - 8)
+      : state.narration;
   const visibleNarration = filteredNarration.slice(-120);
   const hiddenNarrationCount = Math.max(0, filteredNarration.length - visibleNarration.length);
 
@@ -262,7 +278,7 @@ function MatchFeed({
           <p className="truncate text-[10px] text-muted-foreground">Tática: <span className="text-foreground">{tactic.label}</span></p>
         </div>
         <div className="flex shrink-0 rounded-lg bg-secondary/50 p-0.5">
-          {[['text', 'Detalhado'], ['quick', 'Rápido']].map(([id, label]) => (
+          {[['text', 'Completa'], ['summary', 'Resumida'], ['important', 'Momentos']].map(([id, label]) => (
             <button
               key={id}
               type="button"
@@ -404,6 +420,79 @@ function CoachPanel({
       )}
     </div>
   );
+}
+
+
+function LiveStatsPanel({ state }) {
+  const teamA = state.stats?.teams?.A || {};
+  const teamB = state.stats?.teams?.B || {};
+  const recent = (state.pointEvents || []).slice(-10);
+  const recentA = recent.filter((event) => event.winnerTeamId === 'A').length;
+  const momentumA = recent.length ? Math.round((recentA / recent.length) * 100) : 50;
+  const avgEnergy = (teamId) => {
+    const players = state.teams?.[teamId] || [];
+    if (!players.length) return 0;
+    return Math.round(players.reduce((sum, player) => sum + Number(player.energy || 0), 0) / players.length);
+  };
+  const rows = [
+    { label: 'Winners', a: teamA.winners || 0, b: teamB.winners || 0 },
+    { label: 'Erros', a: teamA.errors || 0, b: teamB.errors || 0 },
+    { label: 'Break points', a: `${teamA.breakPointsConverted || 0}/${teamA.breakPointsCreated || 0}`, b: `${teamB.breakPointsConverted || 0}/${teamB.breakPointsCreated || 0}` },
+    { label: 'Pontos na rede', a: formatRate(teamA.netPointsWon, teamA.netPointsPlayed), b: formatRate(teamB.netPointsWon, teamB.netPointsPlayed) },
+    { label: 'Pontos decisivos', a: formatRate(teamA.decisivePointsWon, teamA.decisivePointsPlayed), b: formatRate(teamB.decisivePointsWon, teamB.decisivePointsPlayed) },
+    { label: 'Energia média', a: `${avgEnergy('A')}%`, b: `${avgEnergy('B')}%` },
+  ];
+
+  return (
+    <div className="scrollbar-premium h-full min-h-0 overflow-y-auto overscroll-contain p-3">
+      <div className="mb-3 rounded-xl border border-border/50 bg-secondary/20 p-3">
+        <div className="mb-2 flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
+          <span>Sua dupla</span><span>Momento dos últimos {recent.length || 0} pontos</span><span>Rivais</span>
+        </div>
+        <div className="flex h-2 overflow-hidden rounded-full bg-amber-400/70">
+          <div className="bg-primary transition-all duration-300" style={{ width: `${momentumA}%` }} />
+        </div>
+        <div className="mt-1 flex justify-between text-[9px] font-bold"><span>{momentumA}%</span><span>{100 - momentumA}%</span></div>
+      </div>
+
+      <div className="overflow-hidden rounded-xl border border-border/50">
+        <div className="grid grid-cols-[4.5rem_1fr_4.5rem] bg-secondary/35 px-3 py-2 text-center text-[9px] font-black uppercase tracking-wider text-muted-foreground">
+          <span>Você</span><span>Estatística</span><span>Rivais</span>
+        </div>
+        {rows.map((row) => (
+          <div key={row.label} className="grid grid-cols-[4.5rem_1fr_4.5rem] items-center border-t border-border/35 px-3 py-2 text-center">
+            <strong className="text-xs tabular-nums text-primary">{row.a}</strong>
+            <span className="text-[9px] font-semibold text-muted-foreground">{row.label}</span>
+            <strong className="text-xs tabular-nums text-amber-400">{row.b}</strong>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-center text-[9px] leading-relaxed text-muted-foreground">As métricas são atualizadas a cada ponto e ajudam a interpretar as orientações do treinador.</p>
+    </div>
+  );
+}
+
+function formatRate(won = 0, played = 0) {
+  return played > 0 ? `${Math.round((won / played) * 100)}%` : '—';
+}
+
+function getImportantMoment(state) {
+  if (state.finished) return { label: 'Fim de partida', tone: 'border-amber-500/30 bg-amber-500/10 text-amber-300' };
+  if (state.superTiebreak) return { label: 'Super tie-break decisivo', tone: 'border-rose-500/30 bg-rose-500/10 text-rose-300' };
+  if (state.inTiebreak) return { label: 'Tie-break', tone: 'border-violet-500/30 bg-violet-500/10 text-violet-300' };
+  const aAdvantage = state.pointsA >= 3 && state.pointsA > state.pointsB;
+  const bAdvantage = state.pointsB >= 3 && state.pointsB > state.pointsA;
+  const leader = aAdvantage ? 'A' : bAdvantage ? 'B' : null;
+  if (!leader) return null;
+  const leaderSets = leader === 'A' ? state.setsA : state.setsB;
+  const leaderGames = leader === 'A' ? state.gamesA : state.gamesB;
+  const opponentGames = leader === 'A' ? state.gamesB : state.gamesA;
+  const canCloseSet = leaderGames >= 5 && leaderGames - opponentGames >= 1;
+  if (leaderSets === 1 && canCloseSet) return { label: leader === 'A' ? 'Match point para sua dupla' : 'Match point para os rivais', tone: 'border-rose-500/30 bg-rose-500/10 text-rose-300' };
+  if (canCloseSet) return { label: leader === 'A' ? 'Set point para sua dupla' : 'Set point para os rivais', tone: 'border-violet-500/30 bg-violet-500/10 text-violet-300' };
+  const receivingTeam = state.servingTeam === 'A' ? 'B' : 'A';
+  if (leader === receivingTeam) return { label: leader === 'A' ? 'Break point para sua dupla' : 'Break point para os rivais', tone: 'border-cyan-500/30 bg-cyan-500/10 text-cyan-300' };
+  return null;
 }
 
 function Metric({ value, label }) {

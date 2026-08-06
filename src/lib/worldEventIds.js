@@ -1,4 +1,4 @@
-﻿function safeSlug(value) {
+function safeSlug(value) {
   if (value === undefined || value === null) return '';
   return String(value)
     .normalize('NFD')
@@ -8,18 +8,42 @@
     .toLowerCase();
 }
 
+function shortHash(value) {
+  const input = String(value ?? '');
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < input.length; index += 1) {
+    hash ^= input.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(36).padStart(7, '0').slice(-7);
+}
+
 function createWorldEventId(event = {}, sequence = 0) {
   const datePart = String(event.event_date || event.start_date || event.created_date || 'unknown')
     .replace(/[:.]/g, '-')
     .replace(/[^0-9-]/g, '')
     .slice(0, 16);
   const typePart = safeSlug(event.event_type || 'noticia').slice(0, 24) || 'noticia';
-  const titlePart = safeSlug(event.title || event.content || event.source_event_id || event.author_name || 'evento').slice(0, 24) || 'evento';
-  const sourcePart = safeSlug(event.source_event_id || event.id || '').slice(0, 12);
+  const titlePart = safeSlug(event.title || event.content || event.source_event_id || event.author_name || 'evento').slice(0, 34) || 'evento';
+  const fingerprint = shortHash(
+    event.source_event_id
+      || event.id
+      || JSON.stringify({
+        title: event.title,
+        content: event.content,
+        event_date: event.event_date,
+        start_date: event.start_date,
+        event_type: event.event_type,
+        sequence,
+      }),
+  );
   const suffix = sequence > 0 ? `-${String(sequence).padStart(3, '0')}` : '';
-  const parts = ['worldevent', datePart, typePart, titlePart];
-  if (sourcePart) parts.push(sourcePart);
-  return parts.join('-').replace(/--+/g, '-').slice(0, 128) + suffix;
+  const ending = `-${fingerprint}${suffix}`;
+  const prefix = ['worldevent', datePart, typePart, titlePart].join('-').replace(/--+/g, '-');
+
+  // O fingerprint sempre fica no fim do ID. Antes, o slice(0, 128) removia a
+  // parte aleatória de source_event_id e eventos com o mesmo título colidiam.
+  return `${prefix.slice(0, Math.max(1, 128 - ending.length))}${ending}`;
 }
 
 function areWorldEventsEquivalent(a = {}, b = {}) {

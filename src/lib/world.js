@@ -272,7 +272,9 @@ export async function generateWorldEvents(date, count = 3) {
 
   const prepared = normalizeWorldEventIds(createWorldEventObjects(events));
   if (import.meta.env.DEV) validateWorldEventIds(prepared);
-  return await localGame.entities.WorldEvent.bulkCreate(prepared);
+  // Upsert torna a inicialização idempotente e também repara saves antigos
+  // que já contenham um ID canônico gerado por versões anteriores.
+  return await localGame.entities.WorldEvent.bulkUpdate(prepared);
 }
 
 async function initializeWorldEvents(date, minCount) {

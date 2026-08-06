@@ -24,12 +24,12 @@ const SpritePreview = lazy(() => import('@/pages/dev/SpritePreview.jsx'));
 const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPassword, CareerHub, Training, Missions,
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
-  Relationships, Coaches, TrainingCenter, Press, Social, Fans, Achievements, WorldEvents, WorldMarket, Weather,
+  Relationships, Coaches, TrainingCenter, Press, Fans, Achievements, WorldEvents, WorldMarket, Weather,
   Encyclopedia, PartnerHub, Community, WorldSpectator, NavigationHub, WorldHub, Staff, Communications] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
-  'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Social', 'Fans',
+  'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Fans',
   'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'WorldSpectator', 'NavigationHub', 'WorldHub', 'Staff', 'Communications',
 ].map(lazyPage);
 
@@ -121,7 +121,7 @@ const AuthenticatedApp = () => {
           <Route path="/staff" element={<ModuleErrorBoundary moduleName="Comissão técnica"><Staff /></ModuleErrorBoundary>} />
           <Route path="/training-center" element={<TrainingCenter />} />
           <Route path="/press" element={<Press />} />
-          <Route path="/social" element={<Social />} />
+          <Route path="/social" element={<Navigate to="/community" replace />} />
           <Route path="/fans" element={<Fans />} />
           <Route path="/achievements" element={<Achievements />} />
           <Route path="/world-events" element={<WorldEvents />} />
