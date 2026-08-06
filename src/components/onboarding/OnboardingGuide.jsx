@@ -146,7 +146,7 @@ export default function OnboardingGuide() {
       type="button"
       data-layout-fullbleed
       onClick={() => setHelpOpen(true)}
-      className="career-help-fab fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] left-3 z-50 flex h-11 w-11 min-w-0 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-background p-0 text-primary shadow-xl md:bottom-5 md:left-5 md:right-auto"
+      className="career-help-fab fixed bottom-[calc(8.75rem+env(safe-area-inset-bottom))] right-3 z-50 flex h-11 w-11 min-w-0 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-background p-0 text-primary shadow-xl md:bottom-20 md:right-5"
       aria-label="Abrir guia e glossário"
       title="Guia da carreira"
     ><CircleHelp className="h-5 w-5"/></button>

@@ -11,7 +11,10 @@ export function eventOccursOn(event, date) {
 export function isActionableCalendarDecision(event) {
   if (!event || event.status !== 'scheduled') return false;
   if (event.metadata?.planner_created) return false;
-  return Boolean(event.requires_decision || (event.is_mandatory && event.decision_type));
+  // Somente eventos que declaram explicitamente uma decisão pendente podem
+  // interromper avanços em lote. Campos legados como is_mandatory e
+  // decision_type, isoladamente, não significam que o jogador precise agir.
+  return event.requires_decision === true;
 }
 
 export function shouldBlockBeforeAdvance(event, date) {

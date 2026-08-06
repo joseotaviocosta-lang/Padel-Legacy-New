@@ -527,3 +527,15 @@
     flex: 0 0 3rem !important;
   }
 }
+
+
+/* Living Career v34.8.3 — FABs sempre visíveis e independentes do layout. */
+@layer utilities {
+  .career-help-fab {
+    width: 2.75rem !important;
+    height: 2.75rem !important;
+    max-width: 2.75rem !important;
+    min-width: 2.75rem !important;
+    flex: 0 0 2.75rem !important;
+  }
+}

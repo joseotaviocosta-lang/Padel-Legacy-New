@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
 import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
@@ -36,6 +36,8 @@ export default function CalendarPage() {
   const [loading, setLoading] = useState(true);
   const [advancing, setAdvancing] = useState(false);
   const [advancingBatch, setAdvancingBatch] = useState(null);
+  const [advanceProgress, setAdvanceProgress] = useState(null);
+  const advanceLockRef = useRef(false);
   const [planning, setPlanning] = useState(false);
   const [viewMode, setViewMode] = useState('week');
   const [visibleMonth, setVisibleMonth] = useState(new Date('2026-01-01T00:00:00'));
@@ -110,50 +112,78 @@ export default function CalendarPage() {
       .slice(0, 5);
   }, [tournaments, careerDate]);
 
-  async function refreshAfterAdvance(updated) {
-    const { events, pending, tr } = await loadModuleTasks({
-      events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos após avanço do calendário' },
-      pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], label: 'decisões após avanço do calendário' },
-      tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: [], label: 'treinos após avanço do calendário' },
-    });
-    setCalendarEvents(events || []);
-    setPendingDecisions(pending || []);
-    setTrainings(tr || []);
+  function applyAdvancedDate(updated) {
+    if (!updated) return;
+    setProfile(updated);
     const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
     setSelectedDay(cd);
     setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
     setVisibleMonth(cd);
+    window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profileId: updated.id, careerDate: updated.career_date } }));
+  }
+
+  async function refreshAfterAdvance(updated) {
+    // A data e os indicadores são atualizados imediatamente. As listas pesadas
+    // são recarregadas em segundo plano e nunca mantêm os botões bloqueados.
+    applyAdvancedDate(updated);
+    const { events, pending, tr } = await loadModuleTasks({
+      events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: calendarEvents, timeoutMs: 2500, label: 'eventos após avanço do calendário' },
+      pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], timeoutMs: 2500, label: 'decisões após avanço do calendário' },
+      tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: updated.id }), fallback: trainings, timeoutMs: 2500, label: 'treinos após avanço do calendário' },
+    }, { timeoutMs: 2500 });
+    setCalendarEvents(events || []);
+    setPendingDecisions(pending || []);
+    setTrainings(tr || []);
+  }
+
+  async function getFreshProfile() {
+    if (!profile?.id) return profile;
+    return localGame.entities.PlayerProfile.get(profile.id).catch(() => profile);
   }
 
   async function handleAdvanceDay() {
-    if (!profile) return;
+    if (!profile || advanceLockRef.current) return;
+    advanceLockRef.current = true;
     setAdvancing(true);
     try {
-const updated = await advanceCareerDay(profile);
-      setProfile(updated);
-      await refreshAfterAdvance(updated);
+      const current = await getFreshProfile();
+      const updated = await advanceCareerDay(current);
+      applyAdvancedDate(updated);
+      // Não aguarda consultas secundárias para liberar o próximo avanço.
+      void refreshAfterAdvance(updated).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
     } catch (e) {
       toast({ title: 'Não é possível avançar', description: e.message, variant: 'destructive' });
     } finally {
+      advanceLockRef.current = false;
       setAdvancing(false);
     }
   }
 
   async function handleAdvancePeriod(days) {
-    if (!profile) return;
+    if (!profile || advanceLockRef.current) return;
+    advanceLockRef.current = true;
     setAdvancingBatch(days);
+    setAdvanceProgress({ current: 0, total: days });
     try {
-      const result = await advanceCareerDays(profile, days);
+      const current = await getFreshProfile();
+      const result = await advanceCareerDays(current, days, {
+        onProgress: ({ current: processed, total, profile: progressedProfile }) => {
+          setAdvanceProgress({ current: processed, total });
+          applyAdvancedDate(progressedProfile);
+        },
+      });
       const updated = result.profile;
-      setProfile(updated);
-      await refreshAfterAdvance(updated);
+      applyAdvancedDate(updated);
+      void refreshAfterAdvance(updated).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
       const trainingsDone = (result.daily || []).filter((day) => day.automaticTraining).length;
       const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
       toast({ title: `${result.daysAdvanced} dia(s) processado(s)`, description: `${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}` });
     } catch (error) {
       toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
     } finally {
+      advanceLockRef.current = false;
       setAdvancingBatch(null);
+      setAdvanceProgress(null);
     }
   }
 
@@ -199,13 +229,18 @@ const updated = await advanceCareerDay(profile);
   }
 
   async function handleSkipInjury() {
+    if (!profile || advanceLockRef.current) return;
     const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysBetween(careerDate, profile.injured_until) : 0);
-    if (!window.confirm(`Avançar ${days} dia(s) até a recuperação?\n\nTodos os sistemas diários serão processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.`)) return;
+    if (!window.confirm(`Avançar ${days} dia(s) até a recuperação?
+
+Todos os sistemas diários serão processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.`)) return;
+    advanceLockRef.current = true;
     setSkippingInjury(true);
     try {
-      const result = await advanceCareerUntilRecovered(profile);
-      setProfile(result.profile);
-      await refreshAfterAdvance(result.profile);
+      const current = await getFreshProfile();
+      const result = await advanceCareerUntilRecovered(current);
+      applyAdvancedDate(result.profile);
+      void refreshAfterAdvance(result.profile).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
       if (result.blockedBy) {
         toast({ title: 'Avanço interrompido com segurança', description: `Compromisso: ${result.blockedBy.title}${result.blockedBy.start_date ? ` em ${result.blockedBy.start_date}` : ''}.` });
       } else {
@@ -222,7 +257,10 @@ const updated = await advanceCareerDay(profile);
       }
     } catch (error) {
       toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
-    } finally { setSkippingInjury(false); }
+    } finally {
+      advanceLockRef.current = false;
+      setSkippingInjury(false);
+    }
   }
 
   async function handleResolveDecision(event, action) {
@@ -317,8 +355,8 @@ const updated = await advanceCareerDay(profile);
             </div>
           </div>
           <div className="grid shrink-0 grid-cols-2 gap-2">
-            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(3)} className="min-h-10 rounded-xl border border-border/60 bg-secondary px-4 text-xs font-extrabold disabled:opacity-40">{advancingBatch === 3 ? 'Processando…' : '+3 dias'}</button>
-            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(7)} className="min-h-10 rounded-xl bg-primary px-4 text-xs font-extrabold text-primary-foreground disabled:opacity-40">{advancingBatch === 7 ? 'Processando…' : '+1 semana'}</button>
+            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(3)} className="min-h-10 rounded-xl border border-border/60 bg-secondary px-4 text-xs font-extrabold disabled:opacity-40">{advancingBatch === 3 ? `Processando ${advanceProgress?.current || 0}/3…` : '+3 dias'}</button>
+            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(7)} className="min-h-10 rounded-xl bg-primary px-4 text-xs font-extrabold text-primary-foreground disabled:opacity-40">{advancingBatch === 7 ? `Processando ${advanceProgress?.current || 0}/7…` : '+1 semana'}</button>
           </div>
         </div>
       </Surface>

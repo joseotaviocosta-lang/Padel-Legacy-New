@@ -50,7 +50,7 @@ export async function advanceCareerDay(profile) {
 }
 
 
-export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalEvent = true } = {}) {
+export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalEvent = true, onProgress } = {}) {
   const target = Math.max(1, Math.min(28, Number(days) || 1));
   let current = profile;
   let daysAdvanced = 0;
@@ -58,13 +58,22 @@ export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalE
   let blockedBy = null;
 
   while (daysAdvanced < target) {
+    // Recarrega o perfil antes de cada passo. Isso evita trabalhar com uma
+    // cópia antiga após os sistemas diários persistirem energia, lesão, data
+    // ou decisões no repositório da carreira.
+    current = await localGame.entities.PlayerProfile.get(current.id).catch(() => current);
     if (stopBeforeCriticalEvent) {
       blockedBy = await getCriticalEventBeforeAdvance(current);
       if (blockedBy) break;
     }
     try {
       const before = current;
-      current = await advanceCareerDay(current);
+      const next = await advanceCareerDay(current);
+      if (!next?.career_date || next.career_date === before?.career_date) {
+        blockedBy = { title: 'O calendário não avançou; recarregue a carreira e tente novamente.', error: true };
+        break;
+      }
+      current = await localGame.entities.PlayerProfile.get(next.id).catch(() => next);
       daysAdvanced += 1;
       daily.push({
         date: current.career_date,
@@ -74,6 +83,7 @@ export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalE
         rested: Boolean(current.last_day_was_rest),
         xpGained: Math.max(0, Number(current.xp || 0) - Number(before.xp || 0)),
       });
+      onProgress?.({ current: daysAdvanced, total: target, profile: current, day: daily[daily.length - 1] });
     } catch (error) {
       blockedBy = { title: error?.message || 'Decisão obrigatória', error: true };
       break;
@@ -94,6 +104,7 @@ export async function advanceCareerUntilRecovered(profile, { maxDays = MAX_INJUR
   const initialEvents = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id });
   const autoResolved = [];
   while (hasActiveInjury(current) && daysAdvanced < maxDays) {
+    current = await localGame.entities.PlayerProfile.get(current.id).catch(() => current);
     // Durante uma lesão, treinos planejados são cancelados e torneios são
     // marcados como perdidos automaticamente. Apenas decisões não esportivas
     // realmente obrigatórias continuam interrompendo o avanço.
@@ -103,7 +114,18 @@ export async function advanceCareerUntilRecovered(profile, { maxDays = MAX_INJUR
     if (blockingEvent) {
       return { profile: current, daysAdvanced, recovered: false, blockedBy: blockingEvent, autoResolved };
     }
-    current = await advanceCareerDay(current);
+    const beforeDate = current?.career_date;
+    const next = await advanceCareerDay(current);
+    if (!next?.career_date || next.career_date === beforeDate) {
+      return {
+        profile: current,
+        daysAdvanced,
+        recovered: false,
+        blockedBy: { title: 'O calendário não avançou; recarregue a carreira e tente novamente.', error: true },
+        autoResolved,
+      };
+    }
+    current = await localGame.entities.PlayerProfile.get(next.id).catch(() => next);
     daysAdvanced += 1;
   }
   const finalEvents = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id });

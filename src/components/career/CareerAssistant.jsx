@@ -20,6 +20,7 @@ export default function CareerAssistant() {
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState(null);
   const [context, setContext] = useState({ unreadCount: 0, nextTournament: null, activeMission: null });
+  const [dismissedInsights, setDismissedInsights] = useState(() => new Set());
 
   const load = useCallback(async () => {
     try {
@@ -62,6 +63,32 @@ export default function CareerAssistant() {
   }, [load]);
 
   const insights = useMemo(() => buildCareerAssistantInsights(profile, context), [profile, context]);
+  const insightSignature = useCallback((insight) => `${insight.id}::${insight.title}::${insight.description}`, []);
+  const visibleInsights = useMemo(
+    () => insights.filter((insight) => !dismissedInsights.has(insightSignature(insight))),
+    [insights, dismissedInsights, insightSignature],
+  );
+
+  useEffect(() => {
+    if (!profile?.id) return;
+    try {
+      const saved = JSON.parse(localStorage.getItem(`padel:assistant-seen:${profile.id}`) || '[]');
+      setDismissedInsights(new Set(Array.isArray(saved) ? saved : []));
+    } catch {
+      setDismissedInsights(new Set());
+    }
+  }, [profile?.id]);
+
+  const dismissInsight = useCallback((insight) => {
+    if (!profile?.id || !insight) return;
+    const signature = insightSignature(insight);
+    setDismissedInsights((current) => {
+      const next = new Set(current);
+      next.add(signature);
+      try { localStorage.setItem(`padel:assistant-seen:${profile.id}`, JSON.stringify([...next])); } catch {}
+      return next;
+    });
+  }, [profile?.id, insightSignature]);
   if (!profile || location.pathname === '/careers') return null;
 
   return (
@@ -74,7 +101,7 @@ export default function CareerAssistant() {
         title="Assistente da carreira"
       >
         <Bot className="h-5 w-5" />
-        {insights.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-black">{insights.length}</span>}
+        {visibleInsights.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-black">{visibleInsights.length > 99 ? '99+' : visibleInsights.length}</span>}
       </button>
 
       {open && (
@@ -93,8 +120,8 @@ export default function CareerAssistant() {
             </header>
 
             <div className="scrollbar-premium flex-1 space-y-3 overflow-y-auto p-4">
-              {insights.length ? insights.map((insight, index) => (
-                <Link key={insight.id} to={insight.route} onClick={() => setOpen(false)} className={`block rounded-2xl border p-4 transition-transform hover:-translate-y-0.5 ${toneClasses[insight.tone] || toneClasses.neutral}`}>
+              {visibleInsights.length ? visibleInsights.map((insight, index) => (
+                <Link key={`${insight.id}-${insight.title}`} to={insight.route} onClick={() => { dismissInsight(insight); setOpen(false); }} className={`block rounded-2xl border p-4 transition-transform hover:-translate-y-0.5 ${toneClasses[insight.tone] || toneClasses.neutral}`}>
                   <div className="flex items-center justify-between gap-2">
                     <StatusBadge tone={insight.tone === 'premium' ? 'premium' : insight.tone === 'neutral' ? 'neutral' : insight.tone}>{index === 0 ? 'Prioridade' : 'Sugestão'}</StatusBadge>
                     <ChevronRight className="h-4 w-4 text-muted-foreground" />

@@ -110,7 +110,7 @@ export default function Communications() {
             <div className="flex gap-2"><StatusBadge tone="premium">Confiança {agent.trust}</StatusBadge><StatusBadge tone="info">Negociação {agent.negotiation}</StatusBadge></div>
           </div>
           {memoryHighlights.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-3">{memoryHighlights.map((highlight) => <div key={highlight} className="rounded-xl bg-secondary/45 px-3 py-2 text-xs font-semibold text-muted-foreground">{highlight}</div>)}</div>}
-        </Surface>
+        </Surface>}
 
         <Surface className="p-3 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
