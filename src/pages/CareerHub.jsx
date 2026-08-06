@@ -32,6 +32,12 @@ import { ensureContextualCareerCommunications, normalizeCareerMessage } from '@/
 import SmartAgenda from '@/components/career/SmartAgenda';
 import CareerMomentBanner from '@/components/career/CareerMomentBanner';
 import { deriveCareerMoment } from '@/lib/careerMoments.js';
+import { buildDailyCareerBriefing } from '@/lib/dailyCareerBriefing.js';
+import DailyCareerBriefing from '@/components/career/DailyCareerBriefing';
+import CareerDecisionCenter from '@/components/career/CareerDecisionCenter';
+import { buildCareerDecisionCenter } from '@/lib/careerDecisionCenter.js';
+import WeeklyCareerReview from '@/components/career/WeeklyCareerReview';
+import { buildWeeklyCareerReview } from '@/lib/weeklyCareerReview.js';
 
 const safe = (promise, fallback = []) => promise.catch((error) => {
   console.warn('[CareerControlCenter] módulo secundário indisponível', error);
@@ -193,12 +199,30 @@ export default function CareerHub() {
   const recommendations = getCareerRecommendations(profile, { trainings: recentTrainings, registrations: upcomingTournaments, matches: recentMatches }).slice(0, 4);
   const nextTournament = upcomingTournaments[0];
   const careerMoment = deriveCareerMoment(profile, { matches: recentMatches, nextTournament, worldRank, teamRank });
+  const dailyBriefing = buildDailyCareerBriefing(profile, {
+    recentMatches,
+    nextTournament,
+    unreadCount: unreadMessages.length + pendingOffers.length,
+  });
+  const decisionCenter = buildCareerDecisionCenter(profile, {
+    messages,
+    partnerOffers,
+    nextTournament,
+  });
+  const weeklyReview = buildWeeklyCareerReview(profile, {
+    matches: recentMatches,
+    trainings: recentTrainings,
+    messages,
+  });
 
   return (
     <Page size="wide" className="animate-fade-in">
       <PageContent>
         <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
         <CareerMomentBanner moment={careerMoment} />
+        <DailyCareerBriefing briefing={dailyBriefing} />
+        <CareerDecisionCenter center={decisionCenter} />
+        <WeeklyCareerReview review={weeklyReview} />
         <PremiumQuickStats profile={profile} worldRank={worldRank} teamRank={teamRank} nextTournament={nextTournament} />
         <StatusStrip profile={profile} />
 

@@ -60,6 +60,8 @@ export default function Communications() {
     if (normalized.status === 'nao_lida') {
       await markMessageRead(normalized.id);
       setMessages((current) => current.map((row) => row.id === normalized.id ? { ...row, status: 'lida' } : row));
+      window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+      window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
     }
   }
 
@@ -67,6 +69,8 @@ export default function Communications() {
     if (!profile?.id) return;
     await markAllCommunicationsRead(profile.id);
     setMessages((current) => current.map((row) => row.status === 'nao_lida' ? { ...row, status: 'lida' } : row));
+    window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+    window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
   }
 
   async function handleAction(action) {
@@ -76,6 +80,8 @@ export default function Communications() {
     await resolveMessage(selected.id, action.id);
     setSelected(null);
     await load();
+    window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+    window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
   }
 
   async function handleDismiss() {
@@ -83,6 +89,8 @@ export default function Communications() {
     await dismissMessage(selected.id);
     setSelected(null);
     await load();
+    window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+    window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
   }
 
   if (loading) return <LoadingState label="Carregando comunicações" />;
@@ -102,7 +110,7 @@ export default function Communications() {
             <div className="flex gap-2"><StatusBadge tone="premium">Confiança {agent.trust}</StatusBadge><StatusBadge tone="info">Negociação {agent.negotiation}</StatusBadge></div>
           </div>
           {memoryHighlights.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-3">{memoryHighlights.map((highlight) => <div key={highlight} className="rounded-xl bg-secondary/45 px-3 py-2 text-xs font-semibold text-muted-foreground">{highlight}</div>)}</div>}
-        </Surface>}
+        </Surface>
 
         <Surface className="p-3 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">

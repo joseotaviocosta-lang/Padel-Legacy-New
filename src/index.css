@@ -514,3 +514,16 @@
   .pl-page-hero { border-radius: 1rem; }
   .pl-page-hero .pl-title-display { white-space: normal; }
 }
+
+/* Living Career v34.8.1 — o assistente é um FAB, nunca uma barra de rodapé.
+   A área de rotas aplica width:100% aos filhos diretos; estas dimensões
+   explícitas protegem o botão flutuante contra essa regra global. */
+@layer utilities {
+  .career-assistant-fab {
+    width: 3rem !important;
+    height: 3rem !important;
+    max-width: 3rem !important;
+    min-width: 3rem !important;
+    flex: 0 0 3rem !important;
+  }
+}

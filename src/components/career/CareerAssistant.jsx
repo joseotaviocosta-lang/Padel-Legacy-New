@@ -69,7 +69,7 @@ export default function CareerAssistant() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-3 z-50 flex h-12 w-12 items-center justify-center rounded-full border border-primary/35 bg-primary text-primary-foreground shadow-[0_14px_40px_hsl(var(--primary)/0.28)] transition-transform hover:scale-105 md:bottom-5 md:right-5"
+        className="career-assistant-fab fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-3 z-50 flex h-12 w-12 min-w-0 shrink-0 items-center justify-center rounded-full border border-primary/35 bg-primary p-0 text-primary-foreground shadow-[0_14px_40px_hsl(var(--primary)/0.28)] transition-transform hover:scale-105 md:bottom-5 md:right-5"
         aria-label="Abrir assistente da carreira"
         title="Assistente da carreira"
       >
