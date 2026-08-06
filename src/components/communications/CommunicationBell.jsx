@@ -3,7 +3,7 @@ import { Bell, ChevronRight, Inbox } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { listCareerCommunications, markAllCommunicationsRead } from '@/lib/careerCommunications.js';
+import { ensureContextualCareerCommunications, listCareerCommunications, markAllCommunicationsRead } from '@/lib/careerCommunications.js';
 
 export default function CommunicationBell({ compact = false }) {
   const [open, setOpen] = useState(false);
@@ -15,8 +15,37 @@ export default function CommunicationBell({ compact = false }) {
     const profile = user ? await ensureMyProfile(user).catch(() => null) : null;
     if (!profile?.id) return;
     setProfileId(profile.id);
+
+    // O sino também executa a reconciliação contextual. Assim novas mensagens
+    // aparecem mesmo quando o jogador avança o calendário sem voltar à Home.
+    const [tournaments, matches, partnerships, sponsorContracts] = await Promise.all([
+      localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
+      localGame.entities.Match.filter({ profile_id: profile.id }, '-created_date', 40).catch(() => []),
+      localGame.entities.Partnership.filter({ profile_id: profile.id, status: 'ativa' }, '-started_career_date', 1).catch(() => []),
+      localGame.entities.PlayerContract.filter({ profile_id: profile.id, is_active: true }, '-created_date', 20).catch(() => []),
+    ]);
+    const nextTournament = (tournaments || [])
+      .filter((item) => item.start_date && item.start_date >= (profile.career_date || '2026-01-01'))
+      .sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
+    const recentWins = (matches || []).slice(0, 8).filter((match) => (
+      match.winner_id === profile.id
+      || match.winner_player_id === profile.id
+      || match.player_won === true
+      || match.is_winner === true
+    )).length;
+
+    const created = await ensureContextualCareerCommunications(profile, {
+      nextTournament,
+      matches,
+      partnership: partnerships?.[0] || null,
+      sponsorContracts,
+      recentWins,
+      partnerName: profile.partner_name,
+    }).catch(() => []);
+
     const rows = await listCareerCommunications(profile.id, 8);
     setMessages(rows);
+    if (created.length) window.dispatchEvent(new CustomEvent('padel:communications-created', { detail: { count: created.length } }));
   }, []);
 
   useEffect(() => {
@@ -28,10 +57,16 @@ export default function CommunicationBell({ compact = false }) {
     safeLoad();
     window.addEventListener('padel:communications-refresh', safeLoad);
     window.addEventListener('padel:communications-updated', safeLoad);
+    window.addEventListener('padel:profile-updated', safeLoad);
+    window.addEventListener('focus', safeLoad);
+    const intervalId = window.setInterval(safeLoad, 15000);
     return () => {
       active = false;
+      window.clearInterval(intervalId);
       window.removeEventListener('padel:communications-refresh', safeLoad);
       window.removeEventListener('padel:communications-updated', safeLoad);
+      window.removeEventListener('padel:profile-updated', safeLoad);
+      window.removeEventListener('focus', safeLoad);
     };
   }, [load]);
 

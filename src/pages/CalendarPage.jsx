@@ -120,6 +120,7 @@ export default function CalendarPage() {
     setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
     setVisibleMonth(cd);
     window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profileId: updated.id, careerDate: updated.career_date } }));
+    window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
   }
 
   async function refreshAfterAdvance(updated) {

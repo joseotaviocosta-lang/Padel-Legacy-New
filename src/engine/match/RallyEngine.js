@@ -86,6 +86,24 @@ export class RallyEngine {
       memory.record({ team: activeTeam, playerId: player.id, targetPlayerId: targetPlayer?.id || null, shot, pressure, execution, difficulty, zone: player.position.zone });
 
       if (execution < difficulty) {
+        // No padel, duplas faltas são extremamente raras. Um atributo de saque
+        // baixo deve produzir um saque pouco agressivo, não games inteiros
+        // entregues por erros diretos. A primeira execução fraca é tratada como
+        // segundo saque seguro e o rally continua.
+        if (shot === 'serve' && rallyLength === 1) {
+          const fatigueFactor = Math.max(0, (100 - Number(player.energy || 100)) / 100);
+          const doubleFaultChance = Math.min(0.001, 0.0001 + fatigueFactor * 0.0004);
+          if (random.next() >= doubleFaultChance) {
+            const movement = this.position.afterShot(player, 'serve');
+            const otherTeam = activeTeam === 'A' ? 'B' : 'A';
+            this.position.applyOpponentZone(teams[otherTeam], movement.opponentZone);
+            activeTeam = otherTeam;
+            playerIndex += 1;
+            pressure = 16;
+            continue;
+          }
+        }
+
         const winner = activeTeam === 'A' ? 'B' : 'A';
         const forcedError = this.isForcedError({ pressure, execution, difficulty, rallyLength, memory });
         recordPoint(stats, winner, player, 'error', rallyLength, teams, {
