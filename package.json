@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.31",
+  "version": "0.9.0-beta.32",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -84,7 +84,8 @@
     "test:beta-safety-v35": "node scripts/test-beta-safety-v35.mjs",
     "test:simulation-health-v35": "node test-simulation-health-v35.3.mjs",
     "test:world-auditor-v35": "node test-world-auditor-v35.4.mjs",
-    "test:beta-integration-v35": "node scripts/test-beta-integration-v35-5.mjs"
+    "test:beta-integration-v35": "node scripts/test-beta-integration-v35-5.mjs",
+    "test:beta-rc": "node scripts/test-beta-rc-v36.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

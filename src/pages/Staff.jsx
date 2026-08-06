@@ -9,12 +9,15 @@ import { hireStaff, fireStaff, renewStaffContract } from '@/lib/economy';
 import StaffPanel from '@/components/economy/StaffPanel';
 import { syncStaffEffects } from '@/game-core/staffLifecycle';
 import { upgradeStaffFacility } from '@/lib/staffFacilities';
+import StaffLivePanel from '@/components/staff/StaffLivePanel';
+import { buildStaffMeeting, ensureWeeklyStaffMeeting } from '@/lib/livingStaff.js';
 
 export default function Staff() {
   const [profile, setProfile] = useState(null);
   const [staff, setStaff] = useState([]);
   const [loading, setLoading] = useState(true);
   const [busy, setBusy] = useState(null);
+  const [meeting, setMeeting] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { load(); }, []);
@@ -27,6 +30,9 @@ export default function Staff() {
       if (currentProfile) {
         const records = await localGame.entities.PlayerStaffHire.filter({ profile_id: currentProfile.id });
         setStaff(records || []);
+        const liveMeeting = buildStaffMeeting(currentProfile, records || []);
+        setMeeting(liveMeeting);
+        ensureWeeklyStaffMeeting(currentProfile, records || []).catch((error) => console.warn('[Staff] reunião semanal indisponível', error));
       }
     } catch (error) {
       console.error('[Staff] Falha ao carregar comissão técnica:', error);
@@ -79,6 +85,7 @@ export default function Staff() {
         <StatCard label="Sinergia" value={`${synergy}%`} detail="integração da equipe" icon={Sparkles} tone={synergy >= 70 ? 'success' : 'info'} />
         <StatCard label="Liderança" value={profile.coach_name || 'Treinador'} detail="comando técnico" icon={UserRoundCog} tone="info" />
       </div>
+      <StaffLivePanel meeting={meeting} />
       <StaffPanel
         profile={profile}
         staff={staff}

@@ -1,0 +1,141 @@
+{
+  "version": "v36.1",
+  "generated_at": "2026-08-06T18:55:50.762Z",
+  "summary": {
+    "total": 18,
+    "passed": 0,
+    "failed": 18
+  },
+  "results": [
+    {
+      "name": "test:beta",
+      "ok": false,
+      "code": null,
+      "duration_ms": 3,
+      "output": ""
+    },
+    {
+      "name": "test:missions",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:tutorial-engine",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:calendar-advance",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:living-world",
+      "ok": false,
+      "code": null,
+      "duration_ms": 3,
+      "output": ""
+    },
+    {
+      "name": "test:global-market",
+      "ok": false,
+      "code": null,
+      "duration_ms": 2,
+      "output": ""
+    },
+    {
+      "name": "test:sports-economy",
+      "ok": false,
+      "code": null,
+      "duration_ms": 2,
+      "output": ""
+    },
+    {
+      "name": "test:coaches-v28",
+      "ok": false,
+      "code": null,
+      "duration_ms": 2,
+      "output": ""
+    },
+    {
+      "name": "test:partnerships-v29",
+      "ok": false,
+      "code": null,
+      "duration_ms": 2,
+      "output": ""
+    },
+    {
+      "name": "test:staff-architecture",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:performance-v31",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:ranking-carryover-v32",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:career-ai-v34",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:match-integrity",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:match-experience-v34",
+      "ok": false,
+      "code": null,
+      "duration_ms": 3,
+      "output": ""
+    },
+    {
+      "name": "test:simulation-health-v35",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:world-auditor-v35",
+      "ok": false,
+      "code": null,
+      "duration_ms": 1,
+      "output": ""
+    },
+    {
+      "name": "test:beta-integration-v35",
+      "ok": false,
+      "code": null,
+      "duration_ms": 2,
+      "output": ""
+    }
+  ],
+  "notes": [
+    "Testes de replay legados não fazem parte do Beta RC porque o replay foi removido.",
+    "lint, typecheck e build devem ser executados localmente com node_modules instalado."
+  ]
+}
