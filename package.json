@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.14",
+  "version": "0.9.0-beta.20",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -67,7 +67,13 @@
     "test:premium-development-v33": "node scripts/test-premium-development-v33-7.mjs",
     "test:premium-relations-v33": "node scripts/test-premium-relations-v33-8.mjs",
     "test:premium-competition-v33": "node tests/PremiumCompetitionV33_9Test.js",
-    "test:premium-athlete-v33": "node src/gameplay/tests/PremiumAthleteV33_10Test.js"
+    "test:premium-athlete-v33": "node src/gameplay/tests/PremiumAthleteV33_10Test.js",
+    "test:premium-community-v33": "node src/gameplay/tests/PremiumCommunityV33_11Test.js",
+    "test:living-career-v34": "node tests/LivingCareerV34_1Test.js",
+    "test:living-career-v34-2": "node src/gameplay/tests/LivingCareerV34_2Test.js",
+    "test:living-career-v34-3": "node src/gameplay/tests/LivingCareerV34_3Test.js",
+    "test:living-career-v34-4": "node scripts/test-living-career-v34-4.mjs",
+    "test:living-career-v34-5": "node scripts/test-living-career-v34-5.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

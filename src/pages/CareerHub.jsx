@@ -28,6 +28,10 @@ import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js'
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
 import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';
+import { ensureContextualCareerCommunications, normalizeCareerMessage } from '@/lib/careerCommunications.js';
+import SmartAgenda from '@/components/career/SmartAgenda';
+import CareerMomentBanner from '@/components/career/CareerMomentBanner';
+import { deriveCareerMoment } from '@/lib/careerMoments.js';
 
 const safe = (promise, fallback = []) => promise.catch((error) => {
   console.warn('[CareerControlCenter] módulo secundário indisponível', error);
@@ -133,9 +137,22 @@ export default function CareerHub() {
         setWorldRank(rank || { rank: 0, total: 0 });
         setRecentTrainings((trainings || []).slice(0, 6));
         setPosts(latestPosts || []);
-        setMessages(inboxRows || []);
+        const normalizedMessages = (inboxRows || []).map(normalizeCareerMessage);
+        setMessages(normalizedMessages);
         setPartnerOffers(offerRows || []);
         setWorldSnapshot(livingSnapshot || null);
+
+        const recentWins = (matches || []).filter((match) => {
+          const completed = ['completed', 'finished', 'concluida', 'concluido'].includes(String(match.status || '').toLowerCase()) || Boolean(match.winner_id || match.winner_team_id);
+          if (!completed) return false;
+          return match.winner_id === p.id || match.winner_player_id === p.id || match.player_won === true || match.is_winner === true;
+        }).length;
+        const contextual = await ensureContextualCareerCommunications(p, {
+          nextTournament: (upcoming || []).filter((item) => item.start_date >= (p.career_date || '2026-01-01')).sort((a, b) => a.start_date.localeCompare(b.start_date))[0],
+          recentWins,
+          partnerName: p.partner_name,
+        });
+        if (mounted && contextual.length) setMessages([...contextual, ...normalizedMessages]);
 
         const progressMap = {};
         (prog || []).forEach((row) => { progressMap[row.mission_id] = row; });
@@ -175,11 +192,13 @@ export default function CareerHub() {
   const finalTutorialStep = profile.tutorial_onboarding?.status === 'in_progress' && getCurrentTutorialStep(profile.tutorial_onboarding)?.id === 'autonomy';
   const recommendations = getCareerRecommendations(profile, { trainings: recentTrainings, registrations: upcomingTournaments, matches: recentMatches }).slice(0, 4);
   const nextTournament = upcomingTournaments[0];
+  const careerMoment = deriveCareerMoment(profile, { matches: recentMatches, nextTournament, worldRank, teamRank });
 
   return (
     <Page size="wide" className="animate-fade-in">
       <PageContent>
         <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
+        <CareerMomentBanner moment={careerMoment} />
         <PremiumQuickStats profile={profile} worldRank={worldRank} teamRank={teamRank} nextTournament={nextTournament} />
         <StatusStrip profile={profile} />
 
@@ -197,6 +216,7 @@ export default function CareerHub() {
       <div className="grid gap-5 xl:grid-cols-[minmax(0,1.65fr)_minmax(330px,0.85fr)]">
         <div className="space-y-5">
           <NextStepCard profile={profile} upcomingTournaments={upcomingTournaments} />
+          <SmartAgenda profile={profile} tournaments={upcomingTournaments} />
           {!isRetired(profile) && <CareerCalendar profile={profile} onAdvanceDay={setProfile} />}
           <WorldPulse snapshot={worldSnapshot} />
           <TournamentAndNews tournaments={upcomingTournaments} posts={posts} careerDate={profile.career_date} />
@@ -263,8 +283,8 @@ function CommandLink({ to, icon: Icon, children }) {
 }
 
 function InboxControl({ messages, pendingOffers, profile, onChoosePartner }) {
-  const rows = [...pendingOffers.map((offer) => ({ id: `offer-${offer.id}`, title: offer.candidate_name || offer.player_name || 'Nova proposta de dupla', body: 'Um atleta demonstrou interesse em jogar com você.', type: 'offer' })), ...messages.map((message) => ({ id: `message-${message.id}`, title: message.subject || message.sender_name || 'Nova mensagem', body: message.body || message.message || '', type: 'message' }))].slice(0, 5);
-  return <GlassCard className="overflow-hidden p-0"><div className="flex items-center justify-between border-b border-border/60 p-4"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Comunicação</p><h2 className="font-black">Mensagens e dupla</h2></div><span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-black text-primary">{rows.length}</span></div><div className="p-3">{rows.length ? <div className="space-y-2">{rows.map((row) => <Link key={row.id} to={row.type === 'offer' ? '/partners?view=offers' : '/partners?view=inbox'} className="group flex gap-3 rounded-xl bg-secondary/30 p-3 hover:bg-secondary/60"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">{row.type === 'offer' ? <Users className="h-4 w-4 text-primary" /> : <Inbox className="h-4 w-4 text-cyan-400" />}</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">{row.title}</p><p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{row.body}</p></div><ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" /></Link>)}</div> : <div className="py-5 text-center"><MessageCircle className="mx-auto h-7 w-7 text-muted-foreground/50" /><p className="mt-2 text-xs font-semibold">Nenhuma pendência nova</p><p className="mt-1 text-[10px] text-muted-foreground">Sua caixa de entrada está organizada.</p></div>}<div className="mt-3 grid grid-cols-2 gap-2"><Link to="/partners?view=inbox" className="rounded-xl bg-secondary px-3 py-2 text-center text-xs font-bold">Caixa de entrada</Link><button type="button" onClick={onChoosePartner} className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">{profile.partner_id ? 'Gerenciar dupla' : 'Escolher dupla'}</button></div></div></GlassCard>;
+  const rows = [...pendingOffers.map((offer) => ({ id: `offer-${offer.id}`, title: offer.candidate_name || offer.player_name || 'Nova proposta de dupla', body: 'Um atleta demonstrou interesse em jogar com você.', type: 'offer' })), ...messages.map((message) => ({ id: `message-${message.id}`, title: message.title || message.subject || message.sender_name || 'Nova mensagem', body: message.content || message.body || message.message || '', type: 'message' }))].slice(0, 5);
+  return <GlassCard className="overflow-hidden p-0"><div className="flex items-center justify-between border-b border-border/60 p-4"><div><p className="text-[10px] font-bold uppercase tracking-wider text-primary">Comunicação</p><h2 className="font-black">Mensagens e dupla</h2></div><span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-black text-primary">{rows.length}</span></div><div className="p-3">{rows.length ? <div className="space-y-2">{rows.map((row) => <Link key={row.id} to={row.type === 'offer' ? '/partners?view=offers' : '/communications'} className="group flex gap-3 rounded-xl bg-secondary/30 p-3 hover:bg-secondary/60"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">{row.type === 'offer' ? <Users className="h-4 w-4 text-primary" /> : <Inbox className="h-4 w-4 text-cyan-400" />}</div><div className="min-w-0 flex-1"><p className="truncate text-xs font-bold">{row.title}</p><p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{row.body}</p></div><ChevronRight className="h-4 w-4 text-muted-foreground group-hover:text-primary" /></Link>)}</div> : <div className="py-5 text-center"><MessageCircle className="mx-auto h-7 w-7 text-muted-foreground/50" /><p className="mt-2 text-xs font-semibold">Nenhuma pendência nova</p><p className="mt-1 text-[10px] text-muted-foreground">Sua caixa de entrada está organizada.</p></div>}<div className="mt-3 grid grid-cols-2 gap-2"><Link to="/communications" className="rounded-xl bg-secondary px-3 py-2 text-center text-xs font-bold">Comunicações</Link><button type="button" onClick={onChoosePartner} className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">{profile.partner_id ? 'Gerenciar dupla' : 'Escolher dupla'}</button></div></div></GlassCard>;
 }
 
 function EvolutionPanel({ profile, attributes, trainings }) {

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
+import { Flame, Heart, MessageCircle, Send, Share2, Sparkles, Swords, Trophy } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { Heart, MessageCircle, Share2, Send, Trophy, Flame, Swords, Sparkles } from 'lucide-react';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { LevelBadge } from '@/components/padel/Shared';
-import { LoadingScreen, PageHeader, EmptyStateCard } from '@/components/padel/ui';
+import { EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
+import { CardGrid, Page, PageContent, PageHeader, PageSection, StatCard, StatusBadge, Surface } from '@/components/design-system';
 
 const POST_TYPE_META = {
   resultado: { icon: Swords, color: 'text-cyan-400 bg-cyan-500/10', label: 'Resultado' },
@@ -24,11 +25,11 @@ export default function Community() {
     (async () => {
       try {
         const user = await localGame.auth.me();
-        const p = await ensureMyProfile(user);
-        setProfile(p);
+        const playerProfile = await ensureMyProfile(user);
+        setProfile(playerProfile);
         const list = await localGame.entities.Post.list('-created_date', 50);
         setPosts(list || []);
-      } catch (e) { console.error(e); }
+      } catch (error) { console.error(error); }
       finally { setLoading(false); }
     })();
   }, []);
@@ -50,106 +51,101 @@ export default function Community() {
       setPostType('geral');
       const list = await localGame.entities.Post.list('-created_date', 50);
       setPosts(list || []);
-    } catch (e) { console.error(e); }
+    } catch (error) { console.error(error); }
     finally { setSubmitting(false); }
   }
 
   async function toggleLike(post) {
     const userId = profile?.id || 'me';
     const liked = (post.liked_by || []).includes(userId);
-    const liked_by = liked ? (post.liked_by || []).filter(u => u !== userId) : [...(post.liked_by || []), userId];
+    const likedBy = liked ? (post.liked_by || []).filter((id) => id !== userId) : [...(post.liked_by || []), userId];
     try {
-      const updated = await localGame.entities.Post.update(post.id, { liked_by, likes: liked_by.length });
-      setPosts(prev => prev.map(p => p.id === post.id ? updated : p));
-    } catch (e) { console.error(e); }
+      const updated = await localGame.entities.Post.update(post.id, { liked_by: likedBy, likes: likedBy.length });
+      setPosts((previous) => previous.map((item) => item.id === post.id ? updated : item));
+    } catch (error) { console.error(error); }
   }
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+  if (loading) return <LoadingScreen />;
+
+  const totalLikes = posts.reduce((sum, post) => sum + Number(post.likes || 0), 0);
+  const resultPosts = posts.filter((post) => post.post_type === 'resultado').length;
+  const achievementPosts = posts.filter((post) => post.post_type === 'conquista').length;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-2xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Sparkles} title="Comunidade" subtitle="Feed esportivo do padel" accent="primary" />
+    <Page size="compact">
+      <PageContent>
+        <PageHeader
+          eyebrow="Comunidade do circuito"
+          title="Comunidade"
+          description="Compartilhe sua trajetória, acompanhe resultados e participe da conversa do padel."
+          icon={Sparkles}
+          tone="brand"
+          breadcrumb={['Mundo', 'Comunidade']}
+          stats={[
+            <StatusBadge key="posts" tone="brand" icon={MessageCircle}>{posts.length} publicações</StatusBadge>,
+            <StatusBadge key="likes" tone="danger" icon={Heart}>{totalLikes} curtidas</StatusBadge>,
+          ]}
+        />
 
-      {/* Composer */}
-      <div className="glass rounded-2xl p-4">
-        <div className="flex gap-3">
-          <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0 overflow-hidden">
-            {profile?.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>}
-          </div>
-          <div className="flex-1 space-y-2">
-            <textarea
-              rows={2}
-              className="padel-input resize-none"
-              value={content}
-              onChange={e => setContent(e.target.value)}
-              placeholder="Compartilhe sua jornada no padel..."
-            />
-            <div className="flex items-center justify-between">
-              <div className="flex gap-1">
-                {Object.entries(POST_TYPE_META).map(([key, meta]) => (
-                  <button
-                    key={key}
-                    onClick={() => setPostType(key)}
-                    className={`px-2.5 py-1 rounded-lg text-[10px] font-semibold transition-all ${postType === key ? `${meta.color}` : 'text-muted-foreground hover:text-foreground'}`}
-                  >
-                    {meta.label}
-                  </button>
-                ))}
+        <CardGrid columns={3}>
+          <StatCard label="Publicações" value={posts.length} detail="Feed da comunidade" icon={MessageCircle} tone="brand" />
+          <StatCard label="Resultados" value={resultPosts} detail="Partidas compartilhadas" icon={Swords} tone="info" />
+          <StatCard label="Conquistas" value={achievementPosts} detail="Marcos celebrados" icon={Trophy} tone="premium" />
+        </CardGrid>
+
+        <Surface variant="elevated">
+          <div className="flex gap-3">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/30 to-secondary">
+              {profile?.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>}
+            </div>
+            <div className="min-w-0 flex-1 space-y-3">
+              <textarea rows={3} className="padel-input resize-none" value={content} onChange={(event) => setContent(event.target.value)} placeholder="Compartilhe sua jornada no padel..." />
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div className="flex gap-1 overflow-x-auto scrollbar-none">
+                  {Object.entries(POST_TYPE_META).map(([key, meta]) => (
+                    <button key={key} onClick={() => setPostType(key)} className={`whitespace-nowrap rounded-lg px-2.5 py-1.5 text-[10px] font-semibold transition-all ${postType === key ? meta.color : 'text-muted-foreground hover:text-foreground'}`}>{meta.label}</button>
+                  ))}
+                </div>
+                <button onClick={publish} disabled={submitting || !content.trim()} className="pl-button pl-button-primary inline-flex items-center justify-center gap-2 disabled:opacity-50">
+                  <Send className="h-4 w-4" />{submitting ? 'Publicando...' : 'Publicar'}
+                </button>
               </div>
-              <button
-                onClick={publish}
-                disabled={submitting || !content.trim()}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-primary text-primary-foreground font-semibold text-xs hover:opacity-90 transition-opacity disabled:opacity-50"
-              >
-                <Send className="h-3.5 w-3.5" /> Publicar
-              </button>
             </div>
           </div>
-        </div>
-      </div>
+        </Surface>
 
-      {/* Feed */}
-      <div className="space-y-3">
-        {posts.length === 0 ? (
-          <EmptyStateCard icon={MessageCircle} message="Nenhuma publicação ainda. Seja o primeiro a compartilhar!" />
-        ) : (
-          posts.map((post) => {
-            const meta = POST_TYPE_META[post.post_type] || POST_TYPE_META.geral;
-            const liked = (post.liked_by || []).includes(profile?.id || 'me');
-            return (
-              <div key={post.id} className="glass rounded-2xl p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center overflow-hidden shrink-0">
-                    {post.author_avatar ? <img src={post.author_avatar} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary">{(post.author_name || '?')[0]?.toUpperCase()}</span>}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{post.author_name}</p>
-                    {post.author_level && <LevelBadge level={post.author_level} size="sm" />}
-                  </div>
-                  <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-lg text-[10px] font-semibold ${meta.color}`}>
-                    <meta.icon className="h-3 w-3" /> {meta.label}
-                  </span>
-                </div>
-                <p className="text-sm text-foreground/90 leading-relaxed whitespace-pre-wrap mb-3">{post.content}</p>
-                {post.image_url && <img src={post.image_url} alt="" className="rounded-xl w-full mb-3" />}
-                <div className="flex items-center gap-4 pt-2 border-t border-border/40">
-                  <button onClick={() => toggleLike(post)} className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${liked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'}`}>
-                    <Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} /> {post.likes || 0}
-                  </button>
-                  <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <MessageCircle className="h-4 w-4" /> Comentários
-                  </button>
-                  <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
-                    <Share2 className="h-4 w-4" /> Compartilhar
-                  </button>
-                </div>
-              </div>
-            );
-          })
-        )}
-      </div>
-    </div>
+        <PageSection>
+          {posts.length === 0 ? (
+            <EmptyStateCard icon={MessageCircle} message="Nenhuma publicação ainda. Seja o primeiro a compartilhar!" />
+          ) : (
+            <div className="space-y-3">
+              {posts.map((post) => {
+                const meta = POST_TYPE_META[post.post_type] || POST_TYPE_META.geral;
+                const liked = (post.liked_by || []).includes(profile?.id || 'me');
+                const TypeIcon = meta.icon;
+                return (
+                  <Surface key={post.id} variant="interactive" className="p-4">
+                    <div className="mb-3 flex items-center gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/30 to-secondary">
+                        {post.author_avatar ? <img src={post.author_avatar} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary">{(post.author_name || '?')[0]?.toUpperCase()}</span>}
+                      </div>
+                      <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{post.author_name}</p>{post.author_level && <LevelBadge level={post.author_level} size="sm" />}</div>
+                      <span className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold ${meta.color}`}><TypeIcon className="h-3 w-3" />{meta.label}</span>
+                    </div>
+                    <p className="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-foreground/90">{post.content}</p>
+                    {post.image_url && <img src={post.image_url} alt="" className="mb-3 w-full rounded-xl" />}
+                    <div className="flex flex-wrap items-center gap-4 border-t border-border/40 pt-3">
+                      <button onClick={() => toggleLike(post)} className={`flex items-center gap-1.5 text-xs font-medium transition-colors ${liked ? 'text-destructive' : 'text-muted-foreground hover:text-destructive'}`}><Heart className={`h-4 w-4 ${liked ? 'fill-current' : ''}`} />{post.likes || 0}</button>
+                      <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"><MessageCircle className="h-4 w-4" />Comentários</button>
+                      <button className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground"><Share2 className="h-4 w-4" />Compartilhar</button>
+                    </div>
+                  </Surface>
+                );
+              })}
+            </div>
+          )}
+        </PageSection>
+      </PageContent>
+    </Page>
   );
 }

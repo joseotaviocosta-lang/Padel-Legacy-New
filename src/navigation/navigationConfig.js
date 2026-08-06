@@ -1,8 +1,8 @@
-import { Activity, Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Crown, Database, Dumbbell, Gamepad2, Globe, GraduationCap, Handshake, Heart, History, LayoutDashboard, Medal, MessageCircle, Mic, Newspaper, Package, Palette, Radio, ShoppingBag, Sparkles, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { Activity, Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Crown, Database, Dumbbell, Gamepad2, Globe, GraduationCap, Handshake, Heart, History, Inbox, LayoutDashboard, Medal, MessageCircle, Mic, Newspaper, Package, Palette, Radio, ShoppingBag, Sparkles, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
 
 export const NAVIGATION_AREAS = [
   { id: 'career', label: 'Início', description: 'Resumo, identidade e progresso da carreira.', to: '/game', icon: Gamepad2, items: [
-    { to: '/profile', icon: User, label: 'Perfil do atleta' }, { to: '/game/missions', icon: Target, label: 'Objetivos e missões' }, { to: '/character', icon: Palette, label: 'Aparência' }, { to: '/achievements', icon: Medal, label: 'Conquistas' }, { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' }, { to: '/game/legacy', icon: Crown, label: 'Legado' },
+    { to: '/communications', icon: Inbox, label: 'Comunicações' }, { to: '/profile', icon: User, label: 'Perfil do atleta' }, { to: '/game/missions', icon: Target, label: 'Objetivos e missões' }, { to: '/character', icon: Palette, label: 'Aparência' }, { to: '/achievements', icon: Medal, label: 'Conquistas' }, { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' }, { to: '/game/legacy', icon: Crown, label: 'Legado' },
   ]},
   { id: 'development', label: 'Desenvolvimento', description: 'Treino, recuperação, equipe e equipamentos.', to: '/development', icon: Dumbbell, items: [
     { to: '/game/training', icon: Dumbbell, label: 'Treinos' }, { to: '/training-center', icon: Building2, label: 'Centro de treinamento' }, { to: '/game/inventory', icon: Package, label: 'Equipamentos' }, { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },

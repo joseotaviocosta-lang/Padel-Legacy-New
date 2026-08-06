@@ -9,6 +9,8 @@ import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
 import BetaTools from '@/components/system/BetaTools';
 import CareerHud from '@/components/career/CareerHud';
+import CommunicationBell from '@/components/communications/CommunicationBell';
+import CareerAssistant from '@/components/career/CareerAssistant';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
@@ -128,6 +130,7 @@ export default function AppLayout() {
           <p className="truncate text-sm font-extrabold leading-tight">{currentTitle}</p>
         </div>
         <CareerHud compact className="mr-1 hidden min-[430px]:flex" />
+        <CommunicationBell compact />
         <button type="button" onClick={openCareerManager} aria-label="Gerenciar carreiras" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
           <BriefcaseBusiness className="h-5 w-5" />
         </button>
@@ -189,6 +192,7 @@ export default function AppLayout() {
           </div>
           <div className="flex min-w-0 items-center gap-2">
             <CareerHud className="hidden xl:flex" />
+            <CommunicationBell />
             <BetaTools />
             <button type="button" onClick={openCareerManager} className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/70 px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/25 hover:text-foreground">
               <BriefcaseBusiness className="h-4 w-4" /> Carreiras
@@ -199,6 +203,7 @@ export default function AppLayout() {
         <AnimatePresence mode="wait">
           <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}>
             <OnboardingGuide />
+            <CareerAssistant />
             <Outlet />
           </motion.div>
         </AnimatePresence>

@@ -10,6 +10,7 @@ import NewAthleteModal from '@/components/legacy/NewAthleteModal';
 import HallOfFame from '@/components/legacy/HallOfFame';
 import FamilyTree from '@/components/legacy/FamilyTree';
 import CareerTimeline from '@/components/legacy/CareerTimeline';
+import SeasonRetrospective from '@/components/legacy/SeasonRetrospective';
 import LegacyBonusesCard from '@/components/legacy/LegacyBonusesCard';
 
 const ICON_MAP = { Crown, Trophy, Medal, Star, TrendingUp, Flame, Swords, Award, Target, Zap, Calendar };
@@ -56,6 +57,7 @@ export default function Legacy() {
   const [achievements, setAchievements] = useState([]);
   const [legacies, setLegacies] = useState([]);
   const [coachLegacy, setCoachLegacy] = useState(null);
+  const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRetirement, setShowRetirement] = useState(false);
   const [showNewAthlete, setShowNewAthlete] = useState(false);
@@ -68,6 +70,8 @@ export default function Legacy() {
         const p = profiles?.[0];
         if (p) {
           setProfile(p);
+          const careerMatches = await localGame.entities.Match.filter({ profile_id: p.id }, '-created_date', 500).catch(() => []);
+          setMatches(careerMatches || []);
           const userLegacies = await getUserLegacies(user.id);
           setLegacies(userLegacies);
           if (p.coach_legacy_id) {
@@ -202,7 +206,9 @@ export default function Legacy() {
         <FamilyTree legacies={legacies} currentGeneration={generation} />
 
         {/* Career Timeline */}
-        <CareerTimeline profile={profile} legacies={legacies} />
+        <CareerTimeline profile={profile} matches={matches} />
+
+        <SeasonRetrospective profile={profile} matches={matches} />
 
         {/* Trophy Room */}
         <GlassCard>

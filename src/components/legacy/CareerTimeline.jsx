@@ -1,113 +1,25 @@
-import React from 'react';
-import { Scroll, Swords, Trophy, Crown, Star, TrendingUp, Flame, Calendar, Flag } from 'lucide-react';
-import { GlassCard } from '@/components/padel/ui';
-import { careerExperienceXpForLevel, formatDate } from '@/lib/padel';
+import React, { useMemo } from 'react';
+import { Calendar, Crown, Flag, GraduationCap, Medal, Swords, Target, Trophy, UserRoundCog } from 'lucide-react';
+import { Surface, SurfaceHeader, StatusBadge, EmptyState } from '@/components/design-system';
+import { buildCareerTimeline } from '@/lib/careerStory';
 
-export default function CareerTimeline({ profile, legacies }) {
+const ICONS = { start: Calendar, match: Swords, win: Trophy, title: Crown, ranking: Target, experience: GraduationCap, partnership: Medal, coach: UserRoundCog, retirement: Flag };
+const TONES = { title: 'premium', ranking: 'info', win: 'success', retirement: 'warning', partnership: 'success', coach: 'info' };
+
+export default function CareerTimeline({ profile, matches = [] }) {
+  const events = useMemo(() => buildCareerTimeline(profile, matches), [profile, matches]);
   if (!profile) return null;
-
-  const events = [];
-
-  // Career start
-  events.push({
-    icon: Calendar,
-    title: 'Início da Carreira',
-    description: `Geração ${profile.legacy_generation || 1} · ${formatDate(profile.career_date || '2026-01-01')}`,
-    accent: 'text-primary',
-    done: true,
-  });
-
-  // Inherited legacy
-  if (profile.legacy_generation > 1) {
-    events.push({
-      icon: Crown,
-      title: 'Herança Recebida',
-      description: `Bônus de legado aplicados pelo treinador`,
-      accent: 'text-amber-400',
-      done: true,
-    });
-  }
-
-  // First match
-  events.push({
-    icon: Swords,
-    title: 'Primeira Partida',
-    description: 'A estreia oficial no circuito',
-    accent: 'text-cyan-400',
-    done: (profile.matches_played || 0) >= 1,
-  });
-
-  // First win
-  events.push({
-    icon: Trophy,
-    title: 'Primeira Vitória',
-    description: 'A vitória que iniciou a lenda',
-    accent: 'text-green-400',
-    done: (profile.wins || 0) >= 1,
-  });
-
-  // Level milestones
-  const levelEvents = [
-    { threshold: careerExperienceXpForLevel(5), label: 'Experiência 5 · Aprendiz', icon: Star },
-    { threshold: careerExperienceXpForLevel(10), label: 'Experiência 10 · Competidor', icon: TrendingUp },
-    { threshold: careerExperienceXpForLevel(20), label: 'Experiência 20 · Profissional', icon: Flame },
-    { threshold: careerExperienceXpForLevel(30), label: 'Experiência 30 · Destaque do circuito', icon: Flame },
-    { threshold: careerExperienceXpForLevel(40), label: 'Experiência 40 · Elite', icon: Flame },
-    { threshold: careerExperienceXpForLevel(50), label: 'Experiência 50 · Lenda da carreira', icon: Crown },
-  ];
-  levelEvents.forEach(le => {
-    events.push({
-      icon: le.icon,
-      title: le.label,
-      description: `${(profile.xp || 0).toLocaleString('pt-BR')} XP de carreira`,
-      accent: 'text-purple-400',
-      done: (profile.xp || 0) >= le.threshold,
-    });
-  });
-
-  // First title
-  events.push({
-    icon: Crown,
-    title: 'Primeiro Título',
-    description: 'O primeiro torneio conquistado',
-    accent: 'text-amber-400',
-    done: (profile.tournaments_won || 0) >= 1,
-  });
-
-  // Retirement
-  if (profile.retired) {
-    events.push({
-      icon: Flag,
-      title: 'Aposentadoria',
-      description: 'Carreira encerrada · legado consolidado',
-      accent: 'text-amber-400',
-      done: true,
-    });
-  }
-
   return (
-    <GlassCard>
-      <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
-        <Scroll className="h-4 w-4 text-primary" /> Cronologia da Carreira
-      </h2>
-      <div className="relative">
-        {events.map((event, i) => {
-          const isLast = i === events.length - 1;
-          const Icon = event.icon;
-          return (
-            <div key={i} className="relative flex gap-3 pb-3 last:pb-0">
-              {!isLast && <div className="absolute left-4 top-9 bottom-0 w-0.5 bg-border" />}
-              <div className={`relative z-10 h-8 w-8 rounded-lg flex items-center justify-center shrink-0 ${event.done ? 'bg-secondary/40' : 'bg-secondary/20'}`}>
-                <Icon className={`h-4 w-4 ${event.done ? event.accent : 'text-muted-foreground/40'}`} />
-              </div>
-              <div className="flex-1 pt-1">
-                <p className={`text-xs font-bold ${event.done ? 'text-foreground' : 'text-muted-foreground/60'}`}>{event.title}</p>
-                <p className="text-[10px] text-muted-foreground">{event.description}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-    </GlassCard>
+    <Surface>
+      <SurfaceHeader title="Linha do tempo da carreira" description="Marcos construídos a partir dos acontecimentos reais da sua jornada." icon={Calendar} />
+      {events.length ? <div className="relative mt-4 space-y-3 pl-5">
+        <div className="absolute bottom-2 left-[0.45rem] top-2 w-px bg-border/70" />
+        {events.map((event) => { const Icon = ICONS[event.type] || Calendar; return <article key={event.id} className="relative rounded-2xl border border-border/60 bg-card/55 p-3.5">
+          <span className="absolute -left-[1.35rem] top-4 flex h-7 w-7 items-center justify-center rounded-xl border border-border bg-background"><Icon className="h-3.5 w-3.5 text-primary" /></span>
+          <div className="flex flex-wrap items-center justify-between gap-2"><h3 className="text-sm font-black">{event.title}</h3><StatusBadge tone={TONES[event.type] || 'neutral'}>{event.year || 'Carreira'}</StatusBadge></div>
+          <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{event.description}</p>
+        </article>; })}
+      </div> : <EmptyState icon={Calendar} title="Sua história está começando" description="Partidas, títulos, rankings e relações importantes aparecerão aqui." />}
+    </Surface>
   );
 }

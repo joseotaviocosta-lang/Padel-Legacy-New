@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Sparkles, Send, Users, TrendingUp, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
-import { PageHeader, LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
+import { CardGrid, Page, PageContent, PageHeader, StatCard, StatusBadge, Surface } from '@/components/design-system';
 import SocialPost from '@/components/social/SocialPost';
 import TrendPanel from '@/components/social/TrendPanel';
 import { generateBatchAutoPosts, generateAutoPost, calculateFollowerGain, getViralStatus, AUTHOR_TYPES } from '@/lib/socialNetwork';
@@ -173,33 +174,32 @@ export default function Social() {
     : posts;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Sparkles} title="Rede Social" subtitle="Atletas, clubes, patrocinadores e torcedores postam em tempo real" accent="primary" />
+    <Page size="default">
+      <PageContent>
+        <PageHeader
+          eyebrow="Presença digital"
+          title="Rede Social"
+          description="Atletas, clubes, patrocinadores e torcedores comentam o circuito em tempo real."
+          icon={Sparkles}
+          tone="brand"
+          breadcrumb={['Mundo', 'Rede Social']}
+          stats={[
+            <StatusBadge key="feed" tone="brand" icon={Sparkles}>{posts.length} posts no feed</StatusBadge>,
+            <StatusBadge key="viral" tone="premium" icon={TrendingUp}>{posts.filter((post) => post.is_viral).length} virais</StatusBadge>,
+          ]}
+        />
 
-      {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1">
-          <Users className="h-4 w-4 text-primary" />
-          <span className="text-xl font-black tabular-nums">{followers.toLocaleString('pt-BR')}</span>
-          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Seguidores</span>
-        </div>
-        <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1">
-          <TrendingUp className="h-4 w-4 text-amber-400" />
-          <span className="text-xl font-black tabular-nums">{posts.filter(p => p.is_viral).length}</span>
-          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Posts Virais</span>
-        </div>
-        <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1">
-          <Zap className="h-4 w-4 text-cyan-400" />
-          <span className="text-xl font-black tabular-nums">{posts.filter(p => p.post_type === 'critica').length}</span>
-          <span className="text-[9px] text-muted-foreground uppercase tracking-wide">Críticas</span>
-        </div>
-      </div>
+        <CardGrid columns={3}>
+          <StatCard label="Seguidores" value={followers.toLocaleString('pt-BR')} detail="Alcance da carreira" icon={Users} tone="brand" />
+          <StatCard label="Posts virais" value={posts.filter((post) => post.is_viral).length} detail="Conteúdos em destaque" icon={TrendingUp} tone="premium" />
+          <StatCard label="Críticas" value={posts.filter((post) => post.post_type === 'critica').length} detail="Debates do circuito" icon={Zap} tone="warning" />
+        </CardGrid>
 
       <div className="grid lg:grid-cols-3 gap-5">
         {/* Left: Feed + Composer */}
         <div className="lg:col-span-2 space-y-4">
           {/* Composer */}
-          <div className="glass rounded-2xl p-4">
+          <Surface variant="elevated">
             <div className="flex gap-3">
               <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0 overflow-hidden">
                 {profile?.avatar_url ? (
@@ -238,7 +238,7 @@ export default function Social() {
                 </div>
               </div>
             </div>
-          </div>
+          </Surface>
 
           {/* Active trend filter */}
           {activeTrend && (
@@ -272,7 +272,7 @@ export default function Social() {
           <TrendPanel activeTrend={activeTrend} onTrendClick={setActiveTrend} />
 
           {/* Author types info */}
-          <div className="glass rounded-2xl p-4">
+          <Surface>
             <h2 className="font-bold text-sm mb-3">Quem posta aqui?</h2>
             <div className="space-y-2">
               {Object.entries(AUTHOR_TYPES).map(([key, meta]) => (
@@ -284,9 +284,10 @@ export default function Social() {
                 </div>
               ))}
             </div>
-          </div>
+          </Surface>
         </div>
       </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 }

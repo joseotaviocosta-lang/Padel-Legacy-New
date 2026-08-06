@@ -6,7 +6,6 @@ import {
 } from 'lucide-react';
 import { PageContainer, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { PageHeader as PremiumHeader, Surface, StatCard as PremiumStatCard, StatusBadge } from '@/components/design-system';
-import { StatCard } from '@/components/padel/Shared';
 import { ATTRIBUTES, formatDate, overallRating, careerExperienceSummary, careerExperienceUnlocks } from '@/lib/padel';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 

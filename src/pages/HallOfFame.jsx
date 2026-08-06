@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
-import { Crown, Search, Trophy, Award, FileText } from 'lucide-react';
-import { HOF_LEGENDS, HOF_CRITERIA, HOF_TYPE_CONFIG } from '@/lib/hallOfFameData';
-import { PageHeader, TabBar, FilterPills, EmptyStateCard } from '@/components/padel/ui';
+import { Award, Crown, FileText, Search, Trophy, Users } from 'lucide-react';
+import { HOF_CRITERIA, HOF_LEGENDS, HOF_TYPE_CONFIG } from '@/lib/hallOfFameData';
+import { EmptyStateCard, FilterPills, TabBar } from '@/components/padel/ui';
+import { CardGrid, Page, PageContent, PageHeader, PageSection, StatCard, StatusBadge, Surface } from '@/components/design-system';
 import HallOfFameCard from '@/components/hof/HallOfFameCard';
 import HallOfFameDetail from '@/components/hof/HallOfFameDetail';
 import LegendComparison from '@/components/hof/LegendComparison';
@@ -12,63 +13,81 @@ export default function HallOfFame() {
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
 
-  const filtered = useMemo(() => {
-    return HOF_LEGENDS.filter(e => {
-      if (activeType !== 'all' && e.entity_type !== activeType) return false;
-      if (search) {
-        const s = search.toLowerCase();
-        return e.name.toLowerCase().includes(s) || (e.bio || '').toLowerCase().includes(s) || (e.nationality || '').toLowerCase().includes(s);
-      }
-      return true;
-    }).sort((a, b) => (b.rating || 0) - (a.rating || 0));
-  }, [activeType, search]);
+  const filtered = useMemo(() => HOF_LEGENDS.filter((entry) => {
+    if (activeType !== 'all' && entry.entity_type !== activeType) return false;
+    if (!search) return true;
+    const term = search.toLowerCase();
+    return entry.name.toLowerCase().includes(term) || (entry.bio || '').toLowerCase().includes(term) || (entry.nationality || '').toLowerCase().includes(term);
+  }).sort((a, b) => (b.rating || 0) - (a.rating || 0)), [activeType, search]);
 
-  const types = [{ id: 'all', label: 'Todos' }, ...Object.entries(HOF_TYPE_CONFIG).map(([id, t]) => ({ id, label: t.label }))];
+  const types = [{ id: 'all', label: 'Todos' }, ...Object.entries(HOF_TYPE_CONFIG).map(([id, type]) => ({ id, label: type.label }))];
+  const averageRating = HOF_LEGENDS.length ? Math.round(HOF_LEGENDS.reduce((sum, legend) => sum + Number(legend.rating || 0), 0) / HOF_LEGENDS.length) : 0;
+  const countries = new Set(HOF_LEGENDS.map((legend) => legend.nationality).filter(Boolean)).size;
+  const entityTypes = new Set(HOF_LEGENDS.map((legend) => legend.entity_type).filter(Boolean)).size;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Crown} title="Hall da Fama" subtitle="As maiores lendas da história do padel" accent="amber" />
+    <Page size="default">
+      <PageContent>
+        <PageHeader
+          eyebrow="Memória do circuito"
+          title="Hall da Fama"
+          description="As maiores lendas, duplas e profissionais que construíram a história do padel."
+          icon={Crown}
+          tone="premium"
+          breadcrumb={['Mundo', 'História', 'Hall da Fama']}
+          stats={[
+            <StatusBadge key="legends" tone="premium" icon={Crown}>{HOF_LEGENDS.length} homenageados</StatusBadge>,
+            <StatusBadge key="types" tone="info" icon={Users}>{entityTypes} categorias</StatusBadge>,
+          ]}
+        />
 
-      <TabBar
-        tabs={[
-          { key: 'legends', label: 'Lendas', icon: Crown },
-          { key: 'criteria', label: 'Critérios', icon: FileText },
-          { key: 'compare', label: 'Comparações', icon: Award },
-        ]}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        variant="segmented"
-      />
+        <CardGrid columns={3}>
+          <StatCard label="Lendas registradas" value={HOF_LEGENDS.length} detail="Histórias preservadas" icon={Crown} tone="premium" />
+          <StatCard label="Nota média" value={averageRating} detail="Avaliação histórica" icon={Award} tone="brand" />
+          <StatCard label="Países representados" value={countries} detail="Alcance internacional" icon={Trophy} tone="info" />
+        </CardGrid>
 
-      {activeTab === 'legends' && (
-        <>
-          <div className="glass rounded-2xl p-3 flex items-center gap-2">
-            <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-            <input
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              placeholder="Buscar lendas..."
-              className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
-            />
-          </div>
-          <FilterPills filters={types} activeFilter={activeType} onFilterChange={setActiveType} />
-          {filtered.length === 0 ? (
-            <EmptyStateCard icon={Crown} title="Nenhuma lenda encontrada" message="Tente outra busca ou filtro." />
-          ) : (
-            <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
-              {filtered.map(entry => (
-                <HallOfFameCard key={entry.name} entry={entry} onClick={() => setSelected(entry)} />
-              ))}
-            </div>
-          )}
-        </>
-      )}
+        <Surface padding="compact" className="sticky top-2 z-10 backdrop-blur-xl">
+          <TabBar
+            tabs={[
+              { key: 'legends', label: 'Lendas', icon: Crown },
+              { key: 'criteria', label: 'Critérios', icon: FileText },
+              { key: 'compare', label: 'Comparações', icon: Award },
+            ]}
+            activeTab={activeTab}
+            onTabChange={setActiveTab}
+            variant="segmented"
+          />
+        </Surface>
 
-      {activeTab === 'criteria' && <CriteriaView />}
-      {activeTab === 'compare' && <LegendComparison legends={HOF_LEGENDS} />}
+        {activeTab === 'legends' && (
+          <PageSection>
+            <Surface padding="compact">
+              <div className="flex flex-col gap-3">
+                <div className="flex items-center gap-2 rounded-xl bg-secondary/55 px-3 py-2.5">
+                  <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+                  <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Buscar lendas, países ou histórias..." className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+                </div>
+                <FilterPills filters={types} activeFilter={activeType} onFilterChange={setActiveType} />
+              </div>
+            </Surface>
 
-      <HallOfFameDetail entry={selected} onClose={() => setSelected(null)} />
-    </div>
+            {filtered.length === 0 ? (
+              <EmptyStateCard icon={Crown} title="Nenhuma lenda encontrada" message="Tente outra busca ou filtro." />
+            ) : (
+              <div className="grid gap-3 sm:grid-cols-2 animate-stagger">
+                {filtered.map((entry) => <HallOfFameCard key={entry.name} entry={entry} onClick={() => setSelected(entry)} />)}
+              </div>
+            )}
+          </PageSection>
+        )}
+
+        {activeTab === 'criteria' && <CriteriaView />}
+        {activeTab === 'compare' && <LegendComparison legends={HOF_LEGENDS} />}
+
+        <HallOfFameDetail entry={selected} onClose={() => setSelected(null)} />
+      </PageContent>
+    </Page>
   );
 }
 
@@ -78,27 +97,25 @@ function CriteriaView() {
       {Object.entries(HOF_CRITERIA).map(([type, criteria]) => {
         const typeConfig = HOF_TYPE_CONFIG[type] || {};
         return (
-          <div key={type} className="glass rounded-2xl p-4">
-            <h3 className="text-sm font-black mb-1 capitalize">{typeConfig.label || type}</h3>
-            <p className="text-[11px] text-muted-foreground mb-3">Critérios para indução ao Hall da Fama como {typeConfig.label || type}</p>
+          <Surface key={type} variant="elevated">
+            <div className="mb-4">
+              <StatusBadge tone="premium">{typeConfig.label || type}</StatusBadge>
+              <h3 className="mt-2 text-lg font-black">Critérios de indução</h3>
+              <p className="mt-1 text-xs text-muted-foreground">Requisitos utilizados para reconhecer uma carreira histórica nesta categoria.</p>
+            </div>
             <div className="space-y-2">
-              {criteria.map(c => (
-                <div key={c.id} className="flex items-start gap-3 p-2.5 rounded-xl bg-secondary/30">
-                  <div className="h-7 w-7 rounded-lg bg-primary/15 flex items-center justify-center shrink-0">
-                    <Trophy className="h-3.5 w-3.5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2 mb-0.5">
-                      <p className="text-xs font-bold">{c.label}</p>
-                      <span className="text-[10px] font-black text-primary">{c.weight}%</span>
-                    </div>
-                    <p className="text-[11px] text-muted-foreground">{c.description}</p>
-                    <p className="text-[10px] text-amber-400 mt-0.5">Mínimo: {c.min}</p>
+              {criteria.map((criterion) => (
+                <div key={criterion.id} className="flex items-start gap-3 rounded-xl border border-border/60 bg-secondary/35 p-3">
+                  <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary"><Trophy className="h-4 w-4" /></div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center justify-between gap-2"><p className="text-sm font-bold">{criterion.label}</p><strong className="text-xs text-primary">{criterion.weight}%</strong></div>
+                    <p className="mt-1 text-xs text-muted-foreground">{criterion.description}</p>
+                    <p className="mt-1 text-[11px] font-semibold text-premium">Mínimo: {criterion.min}</p>
                   </div>
                 </div>
               ))}
             </div>
-          </div>
+          </Surface>
         );
       })}
     </div>

@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Megaphone, Users, Star, Activity, RefreshCw, TrendingUp } from 'lucide-react';
+import { Activity, Megaphone, RefreshCw, Star, TrendingUp, Users } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { PageHeader, LoadingScreen, EmptyStateCard, FilterPills } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard, FilterPills } from '@/components/padel/ui';
+import { CardGrid, Page, PageContent, PageHeader, PageSection, ProgressBar, StatCard, StatusBadge, Surface, SurfaceHeader } from '@/components/design-system';
 import FanBaseCard from '@/components/fans/FanBaseCard';
 import FanBaseDetail from '@/components/fans/FanBaseDetail';
 import { BEHAVIOR_TYPES } from '@/lib/fanBase';
@@ -71,50 +72,86 @@ export default function Fans() {
   }, [fanBases, typeFilter, behaviorFilter, sort]);
 
   const totalFans = fanBases.reduce((sum, f) => sum + Number(f.total_fans || 0), 0);
-  const avgMorale = fanBases.length ? Math.round(fanBases.reduce((s, f) => s + Number(f.morale || 0), 0) / fanBases.length) : 0;
   const viralClubs = fanBases.filter((f) => f.trend === 'subindo').length;
   const status = getFanEvaluationStatus(playerFanBase, profile?.career_date);
+  const playerFans = Number(playerFanBase?.total_fans || 0);
+  const playerMorale = Number(playerFanBase?.morale || 0);
+  const playerPopularity = Number(playerFanBase?.popularity || 0);
 
   if (loading) return <LoadingScreen />;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Megaphone} title="Torcidas" subtitle="Popularidade, moral e crescimento da sua base de fãs" accent="primary" />
-
-      {profile && playerFanBase && (
-        <div className="glass rounded-2xl p-4 space-y-3 border border-primary/20">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-            <div>
-              <p className="text-xs uppercase tracking-wider text-muted-foreground">Sua torcida</p>
-              <h2 className="text-lg font-black">{playerFanBase.total_fans?.toLocaleString('pt-BR')} fãs</h2>
-              <p className="text-xs text-muted-foreground">Moral {playerFanBase.morale}/100 · Popularidade {playerFanBase.popularity}/100 · Tendência {playerFanBase.trend}</p>
-            </div>
-            <button onClick={evaluate} disabled={evaluating || status.isComplete} className="px-4 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-sm disabled:opacity-50 flex items-center justify-center gap-2">
+    <Page size="default">
+      <PageContent>
+        <PageHeader
+          eyebrow="Universo e comunidade"
+          title="Torcidas"
+          description="Acompanhe popularidade, moral, crescimento e o comportamento das bases de fãs do circuito."
+          icon={Megaphone}
+          tone="info"
+          breadcrumb={['Mundo', 'Torcidas']}
+          action={profile && playerFanBase ? (
+            <button onClick={evaluate} disabled={evaluating || status.isComplete} className="pl-button pl-button-primary inline-flex items-center gap-2 disabled:opacity-50">
               <RefreshCw className={`h-4 w-4 ${evaluating ? 'animate-spin' : ''}`} />
-              {status.isComplete ? 'Mês já avaliado' : evaluating ? 'Avaliando...' : 'Avaliar mês'}
+              {status.isComplete ? 'Mês avaliado' : evaluating ? 'Avaliando...' : 'Avaliar mês'}
             </button>
-          </div>
-          {playerFanBase.monthly_fan_change !== undefined && (
-            <div className="flex items-center gap-2 text-sm"><TrendingUp className="h-4 w-4 text-green-400" /><span>Última variação: {playerFanBase.monthly_fan_change >= 0 ? '+' : ''}{Number(playerFanBase.monthly_fan_change).toLocaleString('pt-BR')} fãs</span></div>
+          ) : null}
+          stats={[
+            <StatusBadge key="bases" tone="info" icon={Users}>{fanBases.length} bases monitoradas</StatusBadge>,
+            <StatusBadge key="trend" tone={viralClubs > 0 ? 'success' : 'neutral'} icon={TrendingUp}>{viralClubs} em alta</StatusBadge>,
+          ]}
+        />
+
+        <CardGrid columns={4}>
+          <StatCard label="Sua torcida" value={playerFans.toLocaleString('pt-BR')} detail="Seguidores da carreira" icon={Users} tone="brand" />
+          <StatCard label="Popularidade" value={playerPopularity} detail="Reconhecimento público" icon={Star} tone="premium" />
+          <StatCard label="Moral da torcida" value={playerMorale} detail="Humor atual dos fãs" icon={Activity} tone={playerMorale >= 65 ? 'success' : playerMorale >= 40 ? 'warning' : 'danger'} />
+          <StatCard label="Circuito monitorado" value={totalFans.toLocaleString('pt-BR')} detail="Fãs em todas as bases" icon={Megaphone} tone="info" />
+        </CardGrid>
+
+        {profile && playerFanBase && (
+          <Surface variant="elevated">
+            <SurfaceHeader title="Sua base de fãs" description="A evolução da torcida influencia popularidade, patrocínios e presença no Universo Vivo." icon={Users} />
+            <div className="grid gap-4 md:grid-cols-2">
+              <ProgressBar value={playerMorale} label="Moral" valueLabel={`${playerMorale}/100`} tone={playerMorale >= 65 ? 'success' : 'warning'} />
+              <ProgressBar value={playerPopularity} label="Popularidade" valueLabel={`${playerPopularity}/100`} tone="premium" />
+            </div>
+            <div className="mt-4 flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
+              <StatusBadge tone={playerFanBase.trend === 'subindo' ? 'success' : playerFanBase.trend === 'caindo' ? 'danger' : 'neutral'}>
+                Tendência: {playerFanBase.trend || 'estável'}
+              </StatusBadge>
+              {playerFanBase.monthly_fan_change !== undefined && (
+                <span className="inline-flex items-center gap-1.5"><TrendingUp className="h-3.5 w-3.5 text-success" />Última variação: {playerFanBase.monthly_fan_change >= 0 ? '+' : ''}{Number(playerFanBase.monthly_fan_change).toLocaleString('pt-BR')} fãs</span>
+              )}
+            </div>
+            {notice && <p className="mt-3 text-xs text-muted-foreground">{notice}</p>}
+          </Surface>
+        )}
+
+        <PageSection>
+          <Surface padding="compact">
+            <div className="space-y-3">
+              <FilterPills filters={FILTERS} activeFilter={typeFilter} onFilterChange={setTypeFilter} />
+              <FilterPills filters={BEHAVIOR_FILTERS} activeFilter={behaviorFilter} onFilterChange={setBehaviorFilter} />
+              <div className="flex flex-wrap gap-2">
+                {[{ id: 'fans', label: 'Mais fãs' }, { id: 'popularity', label: 'Popularidade' }, { id: 'morale', label: 'Moral' }].map((item) => (
+                  <button key={item.id} onClick={() => setSort(item.id)} className={`rounded-xl px-3 py-2 text-xs font-bold transition-colors ${sort === item.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/65 text-muted-foreground hover:text-foreground'}`}>{item.label}</button>
+                ))}
+              </div>
+            </div>
+          </Surface>
+
+          {filtered.length === 0 ? (
+            <EmptyStateCard icon={Megaphone} message="Nenhuma torcida encontrada com esses filtros." />
+          ) : (
+            <div className="grid gap-3 md:grid-cols-2 animate-stagger">
+              {filtered.slice(0, 40).map((fanBase) => <FanBaseCard key={fanBase.id} fanBase={fanBase} onClick={() => setSelected(fanBase)} />)}
+            </div>
           )}
-          {notice && <p className="text-xs text-muted-foreground">{notice}</p>}
-        </div>
-      )}
+        </PageSection>
 
-      <div className="grid grid-cols-3 gap-3">
-        <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1"><Users className="h-4 w-4 text-primary" /><span className="text-lg font-black tabular-nums">{totalFans.toLocaleString('pt-BR')}</span><span className="text-[9px] uppercase text-muted-foreground">Total Fãs</span></div>
-        <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1"><Activity className="h-4 w-4 text-green-400" /><span className="text-lg font-black tabular-nums">{avgMorale}</span><span className="text-[9px] uppercase text-muted-foreground">Moral Média</span></div>
-        <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1"><Star className="h-4 w-4 text-amber-400" /><span className="text-lg font-black tabular-nums">{viralClubs}</span><span className="text-[9px] uppercase text-muted-foreground">Em Alta</span></div>
-      </div>
-
-      <div className="space-y-2">
-        <FilterPills filters={FILTERS} activeFilter={typeFilter} onFilterChange={setTypeFilter} />
-        <FilterPills filters={BEHAVIOR_FILTERS} activeFilter={behaviorFilter} onFilterChange={setBehaviorFilter} />
-        <div className="flex gap-2">{[{ id: 'fans', label: 'Mais Fãs' }, { id: 'popularity', label: 'Popularidade' }, { id: 'morale', label: 'Moral' }].map((s) => <button key={s.id} onClick={() => setSort(s.id)} className={`px-3 py-1.5 rounded-lg text-[11px] font-bold ${sort === s.id ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground'}`}>{s.label}</button>)}</div>
-      </div>
-
-      {filtered.length === 0 ? <EmptyStateCard icon={Megaphone} message="Nenhuma torcida encontrada com esses filtros." /> : <div className="grid md:grid-cols-2 gap-3 animate-stagger">{filtered.slice(0, 40).map((fb) => <FanBaseCard key={fb.id} fanBase={fb} onClick={() => setSelected(fb)} />)}</div>}
-      {selected && <FanBaseDetail fanBase={selected} onClose={() => setSelected(null)} onUpdate={(updated) => { setSelected(updated); setFanBases((prev) => prev.map((f) => f.id === updated.id ? updated : f)); }} />}
-    </div>
+        {selected && <FanBaseDetail fanBase={selected} onClose={() => setSelected(null)} onUpdate={(updated) => { setSelected(updated); setFanBases((prev) => prev.map((fanBase) => fanBase.id === updated.id ? updated : fanBase)); }} />}
+      </PageContent>
+    </Page>
   );
 }
