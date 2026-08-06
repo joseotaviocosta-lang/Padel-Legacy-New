@@ -3,9 +3,9 @@ import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
 import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
 import { Page, PageHeader, StatCard, Surface, StatusBadge } from '@/components/design-system';
-import { ensureMyProfile } from '@/lib/padel';
+import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
-import { advanceCareerDay, advanceCareerDays, advanceCareerUntilRecovered, hasActiveInjury } from '@/game-core';
+import { advanceCareerDay, advanceCareerDays, advanceCareerUntilRecovered, finalizeCareerAdvanceRange, hasActiveInjury } from '@/game-core';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
@@ -174,7 +174,11 @@ export default function CalendarPage() {
       });
       const updated = result.profile;
       applyAdvancedDate(updated);
-      void refreshAfterAdvance(updated).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
+      // Libera os controles assim que as datas essenciais forem persistidas.
+      // Universo Vivo, IA e relatórios são sincronizados uma vez em segundo plano.
+      void finalizeCareerAdvanceRange(updated, result.rangeStartDate, updated.career_date)
+        .then((finalProfile) => refreshAfterAdvance(finalProfile || updated))
+        .catch((error) => console.warn('[Calendar] finalização global do avanço falhou', error));
       const trainingsDone = (result.daily || []).filter((day) => day.automaticTraining).length;
       const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
       toast({ title: `${result.daysAdvanced} dia(s) processado(s)`, description: `${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}` });
@@ -197,6 +201,11 @@ export default function CalendarPage() {
     try {
       const result = await scheduleRecurringActivities(profile, input, input.repeatWeeks);
       await refreshCalendarEvents();
+      if (result.created.length) {
+        await incrementMissionProgress(profile.id, 'schedule_calendar_activity', 1, profile.career_date, {
+          triggerEventId: `calendar-plan:${profile.id}:${result.created[0]?.id || input.date}`,
+        });
+      }
       const skipped = result.skipped.length ? ` ${result.skipped.length} data(s) com conflito foram ignoradas.` : '';
       toast({ title: `${result.created.length} atividade(s) programada(s)`, description: `Serão processadas automaticamente.${skipped}` });
     } catch (error) {
@@ -240,7 +249,9 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
       const current = await getFreshProfile();
       const result = await advanceCareerUntilRecovered(current);
       applyAdvancedDate(result.profile);
-      void refreshAfterAdvance(result.profile).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
+      void finalizeCareerAdvanceRange(result.profile, result.rangeStartDate, result.profile.career_date)
+        .then((finalProfile) => refreshAfterAdvance(finalProfile || result.profile))
+        .catch((error) => console.warn('[Calendar] finalização global da recuperação falhou', error));
       if (result.blockedBy) {
         toast({ title: 'Avanço interrompido com segurança', description: `Compromisso: ${result.blockedBy.title}${result.blockedBy.start_date ? ` em ${result.blockedBy.start_date}` : ''}.` });
       } else {

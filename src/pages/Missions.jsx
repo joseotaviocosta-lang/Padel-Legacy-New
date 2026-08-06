@@ -25,7 +25,7 @@ const TABS = [
 
 const EXTRA_MISSIONS = [
   { id:'daily-training',title:'Movimente-se',description:'Complete 1 treino leve ou normal.',mission_type:'diaria',objective_type:'complete_training',target_count:1,xp_reward:20,coins_reward:25,difficulty:'baixa',cycle_scope:'career-day' },
-  { id:'daily-calendar',title:'Planeje o dia',description:'Revise o calendário da carreira.',mission_type:'diaria',objective_type:'visit_calendar',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
+  { id:'daily-calendar',title:'Planeje o dia',description:'Programe uma atividade futura no calendário.',mission_type:'diaria',objective_type:'schedule_calendar_activity',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
   { id:'daily-news',title:'Informe-se',description:'Leia uma notícia do circuito.',mission_type:'diaria',objective_type:'visit_journal',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
   { id:'daily-match',title:'Entre em quadra',description:'Jogue ou simule 1 partida.',mission_type:'diaria',objective_type:'play_matches',target_count:1,xp_reward:30,coins_reward:35,difficulty:'baixa',cycle_scope:'career-day' },
   { id:'weekly-training',title:'Semana de evolução',description:'Complete 4 treinos.',mission_type:'semanal',objective_type:'complete_training',target_count:4,xp_reward:100,coins_reward:90,difficulty:'média',cycle_scope:'career-week' },

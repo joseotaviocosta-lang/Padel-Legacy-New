@@ -76,7 +76,7 @@ export async function selectPartner(profile, bot) {
   return updated;
 }
 
-export async function advanceDay(profile) {
+export async function advanceDay(profile, { deferGlobalProcessing = false } = {}) {
   // Libera espaço antes de qualquer evento do novo dia tentar gravar no banco.
   // ── Block advance if there's a pending mandatory decision ──
   const careerDateNow = profile.career_date || CAREER_START_DATE;
@@ -204,7 +204,9 @@ export async function advanceDay(profile) {
   if (totalDays > 0 && totalDays % 7 === 0) {
     await simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e));
   }
-  await processLivingWorldDay(updated, newCareerDate).catch(e => console.error('living world day', e));
+  if (!deferGlobalProcessing) {
+    await processLivingWorldDay(updated, newCareerDate).catch(e => console.error('living world day', e));
+  }
   await incrementMissionProgress(updated.id, 'advance_days').catch(() => {});
   emitDayAdvanced(profile, updated);
   return updated;
