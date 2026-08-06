@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Activity, AlertTriangle, BarChart3, Bug, CheckCircle2, Copy, Download, HardDrive, ListChecks, Play, RefreshCw, RotateCcw, ShieldCheck, Wrench, X } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, Bug, CheckCircle2, Clock3, Copy, Download, HardDrive, ListChecks, Play, RefreshCw, RotateCcw, ShieldCheck, Trash2, Wrench, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useCareer } from '@/careers/useCareer.js';
 import { buildBetaDiagnosticReport, downloadBetaDiagnosticReport, installBetaDiagnostics } from '@/lib/betaDiagnostics.js';
@@ -8,6 +8,7 @@ import { buildBetaFeedbackReport, downloadBetaFeedbackReport } from '@/lib/betaF
 import { CareerRepository } from '@/careers/CareerRepository.js';
 import { BETA_CHECKLIST, buildBetaChecklistReport, downloadJsonFile, loadBetaChecklist, resetBetaChecklist, saveBetaChecklist } from '@/lib/betaReadiness.js';
 import { applyWorldRepairPlan, buildWorldRepairPlan, collectWorldHealth, projectWorldHealth } from '@/lib/simulationHealth.js';
+import { buildBetaAnalyticsExport, clearBetaAnalytics, getBetaAnalyticsSnapshot, getBetaTesterInsights } from '@/lib/betaAnalytics.js';
 
 const INITIAL_FEEDBACK = {
   severity: 'medium',
@@ -40,8 +41,17 @@ export default function BetaTools({ compact = false }) {
   const [repairPlan, setRepairPlan] = useState(null);
   const [repairResult, setRepairResult] = useState(null);
   const [repairing, setRepairing] = useState(false);
+  const [analytics, setAnalytics] = useState(() => getBetaAnalyticsSnapshot());
+  const testerInsights = useMemo(() => getBetaTesterInsights(analytics), [analytics]);
 
   useEffect(() => installBetaDiagnostics(), []);
+
+  useEffect(() => {
+    const refresh = () => setAnalytics(getBetaAnalyticsSnapshot());
+    window.addEventListener('padel:beta-analytics-updated', refresh);
+    const timer = window.setInterval(refresh, 5000);
+    return () => { window.removeEventListener('padel:beta-analytics-updated', refresh); window.clearInterval(timer); };
+  }, []);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -202,6 +212,8 @@ export default function BetaTools({ compact = false }) {
                 ['checklist', 'Checklist'],
                 ['save', 'Proteção do save'],
                 ['health', 'Saúde do mundo'],
+                ['tester', 'Estatísticas'],
+                ['analytics', 'Sessão atual'],
                 ['diagnostic', 'Diagnóstico'],
               ].map(([value, label]) => (
                 <button key={value} type="button" onClick={() => setMode(value)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold ${mode === value ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>{label}</button>
@@ -357,6 +369,81 @@ export default function BetaTools({ compact = false }) {
                       </div>
                     </>
                   )}
+                </div>
+              )}
+
+              {mode === 'tester' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-violet-500/20 bg-violet-500/5 p-4">
+                    <p className="flex items-center gap-2 text-sm font-black text-violet-200"><BarChart3 className="h-4 w-4" /> Cobertura do testador</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Resume como esta carreira explorou os sistemas do jogo. Os dados permanecem locais e servem para interpretar melhor o feedback da beta.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                      ['Perfil', testerInsights.testerLevel],
+                      ['Cobertura', `${testerInsights.coverage}%`],
+                      ['Sessões', testerInsights.sessions],
+                      ['Tempo total', `${Math.max(1, Math.round(testerInsights.totalDurationMs / 60000))} min`],
+                    ].map(([label, value]) => <div key={label} className="rounded-2xl border border-border bg-secondary/35 p-3"><p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-lg font-black">{value}</p></div>)}
+                  </div>
+
+                  <div className="rounded-2xl border border-border p-4">
+                    <div className="mb-3 flex items-center justify-between gap-3"><div><h3 className="text-sm font-black">Uso dos sistemas</h3><p className="text-[11px] text-muted-foreground">Tempo e visitas acumulados em todas as sessões.</p></div><span className="rounded-full bg-violet-500/15 px-2.5 py-1 text-[10px] font-black text-violet-200">Score {testerInsights.testerScore}/100</span></div>
+                    <div className="space-y-2">{testerInsights.features.slice(0, 14).map(feature => { const maxTime = Math.max(1, ...testerInsights.features.map(item => item.timeMs)); return <div key={feature.id} className="grid grid-cols-[minmax(105px,1fr)_2fr_65px] items-center gap-2 text-xs"><span className={`truncate font-bold ${feature.discovered ? '' : 'text-muted-foreground'}`}>{feature.label}</span><div className="h-2 overflow-hidden rounded-full bg-secondary"><div className={`h-full rounded-full ${feature.discovered ? 'bg-violet-400' : 'bg-muted-foreground/20'}`} style={{ width: `${feature.discovered ? Math.max(4, feature.timeMs / maxTime * 100) : 0}%` }} /></div><span className="text-right text-[11px] text-muted-foreground">{feature.visits} visitas</span></div>; })}</div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-border p-4">
+                      <h3 className="text-sm font-black">Ainda não descoberto</h3>
+                      <p className="mt-1 text-xs text-muted-foreground">Sistemas que não foram abertos nesta instalação.</p>
+                      {testerInsights.unusedFeatures.length ? <div className="mt-3 flex flex-wrap gap-2">{testerInsights.unusedFeatures.map(feature => <span key={feature.id} className="rounded-full bg-secondary px-2.5 py-1 text-[11px] font-bold text-muted-foreground">{feature.label}</span>)}</div> : <p className="mt-3 rounded-xl bg-emerald-500/10 p-3 text-xs font-bold text-emerald-200">Todos os sistemas principais já foram explorados.</p>}
+                    </div>
+                    <div className="rounded-2xl border border-border p-4">
+                      <h3 className="text-sm font-black">Indicadores de uso</h3>
+                      <div className="mt-3 space-y-2">{testerInsights.missed.map(item => <div key={item.id} className="flex items-center justify-between rounded-xl bg-secondary/40 px-3 py-2 text-xs"><span className="font-bold">{item.label}</span><strong className={item.positive ? 'text-emerald-300' : item.value > 0 ? 'text-amber-300' : ''}>{item.value}</strong></div>)}</div>
+                    </div>
+                  </div>
+
+                  <button type="button" onClick={() => downloadJsonFile({ ...buildBetaAnalyticsExport(), testerInsights }, `padel-legacy-estatisticas-testador-${Date.now()}.json`)} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Download className="h-4 w-4" /> Exportar estatísticas completas</button>
+                </div>
+              )}
+
+              {mode === 'analytics' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-violet-500/20 bg-violet-500/5 p-4">
+                    <p className="flex items-center gap-2 text-sm font-black text-violet-200"><BarChart3 className="h-4 w-4" /> Estatísticas do testador</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Telemetria local e opcional. Nenhum dado é enviado pela internet e o arquivo exportado não inclui nomes, e-mails, caminhos locais ou o conteúdo integral do save.</p>
+                  </div>
+
+                  {analytics.currentSession ? (
+                    <>
+                      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                        {[
+                          ['Sessão', `${Math.max(1, Math.round((analytics.currentSession.durationMs || 0) / 60000))} min`],
+                          ['Telas abertas', analytics.events.filter(item => item.sessionId === analytics.currentSession.id && item.type === 'SCREEN_VIEW').length],
+                          ['Dias avançados', analytics.currentSession.counters?.CALENDAR_ADVANCED || 0],
+                          ['Eventos', analytics.currentSession.eventCount || 0],
+                        ].map(([label, value]) => <div key={label} className="rounded-2xl border border-border bg-secondary/35 p-3"><p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-lg font-black">{value}</p></div>)}
+                      </div>
+
+                      <div className="rounded-2xl border border-border p-4">
+                        <div className="mb-3 flex items-center gap-2"><Clock3 className="h-4 w-4 text-violet-300" /><h3 className="text-sm font-black">Tempo por tela</h3></div>
+                        {Object.entries(analytics.currentSession.screenTimeMs || {}).length === 0 ? <p className="text-xs text-muted-foreground">Navegue pelo jogo para começar a formar o relatório.</p> : <div className="space-y-2">{Object.entries(analytics.currentSession.screenTimeMs || {}).sort((a,b) => b[1]-a[1]).slice(0,10).map(([screen, ms]) => { const max = Math.max(1, ...Object.values(analytics.currentSession.screenTimeMs || {})); return <div key={screen} className="grid grid-cols-[minmax(90px,1fr)_2fr_54px] items-center gap-2 text-xs"><span className="truncate" title={screen}>{screen}</span><div className="h-2 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-violet-400" style={{ width: `${Math.max(3, ms/max*100)}%` }} /></div><strong className="text-right">{Math.max(1, Math.round(ms/60000))}m</strong></div>; })}</div>}
+                      </div>
+
+                      <div className="rounded-2xl border border-border p-4">
+                        <div className="mb-3 flex items-center justify-between gap-3"><h3 className="text-sm font-black">Timeline da sessão</h3><span className="rounded-full bg-secondary px-2 py-1 text-[10px] font-black">últimos 20</span></div>
+                        <div className="max-h-72 space-y-2 overflow-y-auto pr-1">{analytics.events.filter(item => item.sessionId === analytics.currentSession.id).slice(-20).reverse().map(item => <div key={item.id} className="flex items-start gap-3 rounded-xl bg-secondary/40 p-3"><span className="mt-0.5 text-[10px] font-black text-violet-300">{new Date(item.at).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</span><div className="min-w-0"><p className="truncate text-xs font-black">{item.type.replaceAll('_', ' ')}</p><p className="truncate text-[11px] text-muted-foreground">{item.screen}</p></div></div>)}</div>
+                      </div>
+                    </>
+                  ) : <p className="rounded-xl bg-secondary/55 p-3 text-xs text-muted-foreground">A sessão será iniciada automaticamente ao navegar pelo jogo.</p>}
+
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <button type="button" onClick={() => downloadJsonFile(buildBetaAnalyticsExport(), `padel-legacy-sessao-beta-${Date.now()}.json`)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Download className="h-4 w-4" /> Exportar sessão</button>
+                    <button type="button" onClick={() => { if (window.confirm('Apagar as estatísticas locais da beta neste dispositivo?')) { clearBetaAnalytics(); setAnalytics(getBetaAnalyticsSnapshot()); } }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary"><Trash2 className="h-4 w-4" /> Limpar dados locais</button>
+                  </div>
+                  <p className="text-[11px] text-muted-foreground">Armazenamento limitado às últimas 50 sessões e 2.000 eventos para evitar crescimento indefinido.</p>
                 </div>
               )}
 

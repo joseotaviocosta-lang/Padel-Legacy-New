@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
 import BetaTools from '@/components/system/BetaTools';
+import BetaAnalyticsTracker from '@/components/system/BetaAnalyticsTracker.jsx';
 import CareerHud from '@/components/career/CareerHud';
 import CommunicationBell from '@/components/communications/CommunicationBell';
 import CareerAssistant from '@/components/career/CareerAssistant';
@@ -190,6 +191,7 @@ export default function AppLayout() {
         </div>
       </aside>
 
+      <BetaAnalyticsTracker />
       <FeedbackSoundController />
 
       <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
