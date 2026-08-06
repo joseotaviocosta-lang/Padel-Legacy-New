@@ -38,6 +38,8 @@ import CareerDecisionCenter from '@/components/career/CareerDecisionCenter';
 import { buildCareerDecisionCenter } from '@/lib/careerDecisionCenter.js';
 import WeeklyCareerReview from '@/components/career/WeeklyCareerReview';
 import { buildWeeklyCareerReview } from '@/lib/weeklyCareerReview.js';
+import SeasonCareerPlan from '@/components/career/SeasonCareerPlan';
+import { buildSeasonCareerPlan } from '@/lib/seasonCareerPlan.js';
 
 const safe = (promise, fallback = []) => promise.catch((error) => {
   console.warn('[CareerControlCenter] módulo secundário indisponível', error);
@@ -214,6 +216,11 @@ export default function CareerHub() {
     trainings: recentTrainings,
     messages,
   });
+  const seasonPlan = buildSeasonCareerPlan(profile, {
+    worldRank,
+    matches: recentMatches,
+    trainings: recentTrainings,
+  });
 
   return (
     <Page size="wide" className="animate-fade-in">
@@ -223,6 +230,7 @@ export default function CareerHub() {
         <DailyCareerBriefing briefing={dailyBriefing} />
         <CareerDecisionCenter center={decisionCenter} />
         <WeeklyCareerReview review={weeklyReview} />
+        <SeasonCareerPlan plan={seasonPlan} />
         <PremiumQuickStats profile={profile} worldRank={worldRank} teamRank={teamRank} nextTournament={nextTournament} />
         <StatusStrip profile={profile} />
 

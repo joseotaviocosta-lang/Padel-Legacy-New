@@ -7,6 +7,8 @@ import { getTournamentRounds, generateTournamentOpponent, getPartnerBot, getTour
 import { getActivePartnership, recordPartnershipMatch, recordPartnershipTitle } from '@/lib/partnershipSystem';
 import { updateTeamRanking, addTeamTitle, getTeamRank, addTeamRankingPoints } from '@/lib/teamRanking';
 import { getSetScoreString } from '@/lib/matchEngine';
+import { getCoachEffects } from '@/lib/coaches';
+import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
 import { useToast } from '@/components/ui/use-toast';
 import { createQualifyingState, recordQualifyingResult, buildQualifyingBracketHistory } from '@/gameplay/worldTour/QualifyingManager.js';
@@ -35,6 +37,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   const [physicalReport, setPhysicalReport] = useState(null);
   const [registration, setRegistration] = useState(null);
   const [registrationChecked, setRegistrationChecked] = useState(false);
+  const [coach, setCoach] = useState(null);
+  const [liveCoachSettings, setLiveCoachSettings] = useState(() => ({
+    liveCoachEnabled: true,
+    suggestionFrequency: 'normal',
+    allowMinorAutoAdjustments: false,
+    showLiveMetrics: true,
+    showConfidence: true,
+    pauseOnImportantSuggestion: true,
+    ...(initialProfile?.live_coach_settings || {}),
+  }));
   const savedRef = useRef(false);
   const tournamentHistoryRef = useRef([]);
   const { toast } = useToast();
@@ -46,6 +58,30 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   const currentRound = rounds[roundIdx];
   const tierStyle = TIER_STYLES[tournament?.tier] || TIER_STYLES.Silver;
   const TierIcon = tierStyle.icon;
+
+  // Tournament matches must use the same primary coach as practice matches.
+  // This also repairs older saves that do not yet have a starter coach linked.
+  useEffect(() => {
+    let active = true;
+    (async () => {
+      if (!profile?.id) return;
+      const result = await ensureStarterCoach(profile);
+      if (!active) return;
+      if (result.profile?.id && result.profile.coach_id !== profile.coach_id) {
+        setProfile(result.profile);
+        onProfileUpdate?.(result.profile);
+      }
+      setCoach(result.coach || null);
+      setLiveCoachSettings((current) => ({
+        ...current,
+        ...(result.profile?.live_coach_settings || profile.live_coach_settings || {}),
+      }));
+    })().catch((error) => {
+      console.error('[TournamentModal] Falha ao carregar treinador principal', error);
+      if (active) setCoach(null);
+    });
+    return () => { active = false; };
+  }, [profile?.id, profile?.coach_id]);
 
   // Load the registration and restore a pending qualifying bracket.
   useEffect(() => {
@@ -352,8 +388,15 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
 
   return (
     <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={onClose}>
-      <div className="glass rounded-t-3xl md:rounded-3xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-5" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-3">
+      <div
+        className={`glass flex w-full max-w-lg flex-col rounded-t-3xl md:rounded-3xl ${
+          phase === 'match'
+            ? 'h-[100dvh] max-h-[100dvh] overflow-hidden p-3 md:h-[min(46rem,92dvh)] md:max-h-[92dvh]'
+            : 'max-h-[92vh] overflow-y-auto p-5'
+        }`}
+        onClick={e => e.stopPropagation()}
+      >
+        <div className="mb-3 flex shrink-0 items-center justify-between">
           <h2 className="text-base font-black flex items-center gap-2">
             <TierIcon className={`h-5 w-5 ${tierStyle.color}`} /> {tournament.name}
           </h2>
@@ -363,13 +406,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         </div>
 
         {/* Round progress */}
-        <div className="flex items-center gap-1 mb-4">
+        <div className="mb-4 flex shrink-0 items-center gap-1">
           {rounds.map((r, i) => (
             <div key={i} className={`flex-1 h-1.5 rounded-full transition-all ${i < roundIdx ? 'bg-primary' : i === roundIdx ? 'bg-primary/50' : 'bg-secondary'}`} />
           ))}
         </div>
 
-        <div className="mb-3 flex items-center justify-between rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-3 py-2">
+        <div className="mb-3 flex shrink-0 items-center justify-between rounded-xl border border-cyan-500/20 bg-cyan-500/5 px-3 py-2">
           <span className="text-[10px] uppercase font-bold text-muted-foreground">Etapa atual</span>
           <span className="text-xs font-black text-cyan-300">{tournamentStage === 'qualifying' ? 'Qualifying' : 'Chave principal'}</span>
         </div>
@@ -469,14 +512,38 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         )}
 
         {/* Match */}
-        {phase === 'match' && opponent && (
-          <LiveMatch
-            teamA={[{ ...profile, _chemistryBonus: getChemistryBonus(profile.partner_chemistry || 50), _energyPenalty: getEnergyPenalty(profile.energy || 100), _partnerBondBonus: calculatePartnershipPerformanceBonus({ chemistry: profile.partner_chemistry, partner_trust: profile.partner_trust, partner_morale: profile.partner_morale, natural_chemistry: profile.partner_chemistry, shared_matches: profile.matches_played || 0 }) * 40 }, partner].filter(Boolean)}
-            teamB={opponent}
-            initialTacticId="equilibrado"
-            onFinished={handleMatchFinished}
-          />
-        )}
+        {phase === 'match' && opponent && (() => {
+          const coachEffects = getCoachEffects(coach, profile);
+          const coachMatchBonus = coach
+            ? Math.min(3, ((coachEffects?.strategyBonus || 0) + (coachEffects?.partnershipBonus || 0)) * 0.35)
+            : 0;
+          const playerForMatch = {
+            ...profile,
+            _chemistryBonus: getChemistryBonus(profile.partner_chemistry || 50),
+            _energyPenalty: getEnergyPenalty(profile.energy || 100),
+            _coachMatchBonus: coachMatchBonus,
+            _partnerBondBonus: calculatePartnershipPerformanceBonus({
+              chemistry: profile.partner_chemistry,
+              partner_trust: profile.partner_trust,
+              partner_morale: profile.partner_morale,
+              natural_chemistry: profile.partner_chemistry,
+              shared_matches: profile.matches_played || 0,
+            }) * 40,
+          };
+
+          return (
+            <div className="min-h-0 flex-1 overflow-hidden">
+              <LiveMatch
+                teamA={[playerForMatch, partner].filter(Boolean)}
+                teamB={opponent}
+                initialTacticId="equilibrado"
+                coach={coach}
+                liveCoachSettings={liveCoachSettings}
+                onFinished={handleMatchFinished}
+              />
+            </div>
+          );
+        })()}
 
         {/* Round result */}
         {phase === 'round_result' && lastResult && (
