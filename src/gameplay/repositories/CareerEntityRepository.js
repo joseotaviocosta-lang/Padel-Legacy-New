@@ -3,6 +3,7 @@ import { seedCollection } from '../services/CareerInitialDataService.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
+  if (typeof structuredClone === 'function') return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
 }
 
@@ -59,7 +60,10 @@ export class CareerEntityRepository {
       return clone(transaction.result);
     }
 
-    const career = await this.repository.ensureActiveCareer({ fresh: true });
+    // Leituras de entidades usam o snapshot quente da carreira. Persistência
+    // continua sendo a autoridade ao abrir/recarregar a carreira, mas não há
+    // motivo para reler e parsear o mesmo arquivo para cada card da mesma tela.
+    const career = await this.repository.ensureActiveCareer({ fresh: false, cloneResult: false });
     if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
     return clone(await mutator(career));
   }

@@ -153,20 +153,28 @@ export class CareerManager {
     return careerData;
   }
 
-  async saveCareer(careerId, careerData, { backup = true } = {}) {
-    const index = await this.loadFreshIndex();
-    const entry = index.careers.find((item) => item.id === careerId);
-    if (!entry) throw new Error('Carreira não encontrada no índice.');
-
+  async saveCareer(careerId, careerData, { backup = true, updateIndex = true } = {}) {
     const validated = validateCareerData(careerData);
     if (validated.career_id !== careerId) {
       throw new Error('career_id no conteúdo não pode ser alterado.');
     }
     validated.updated_at = new Date().toISOString();
+
+    // Gravações rotineiras de entidades não precisam reler + regravar o índice
+    // de carreiras em toda pequena alteração. O índice é sincronizado de forma
+    // periódica pelo ActiveCareerAdapter e continua obrigatório em saves
+    // explícitos/gerenciamento de carreira.
+    if (!updateIndex) {
+      await this.repository.writeCareer(careerId, validated, { backup });
+      return validated;
+    }
+
+    const index = await this.loadFreshIndex();
+    const entry = index.careers.find((item) => item.id === careerId);
+    if (!entry) throw new Error('Carreira não encontrada no índice.');
     const summary = createSummaryFromCareer(validated);
 
     await this.repository.writeCareer(careerId, validated, { backup });
-
     Object.assign(entry, summary);
     await this.repository.writeIndex(index);
 

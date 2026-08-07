@@ -78,11 +78,13 @@ export default function BetaTools({ compact = false }) {
   useEffect(() => installBetaDiagnostics(), []);
 
   useEffect(() => {
+    if (!open) return undefined;
     const refresh = () => setAnalytics(getBetaAnalyticsSnapshot());
+    refresh();
     window.addEventListener('padel:beta-analytics-updated', refresh);
-    const timer = window.setInterval(refresh, 5000);
+    const timer = window.setInterval(refresh, 15000);
     return () => { window.removeEventListener('padel:beta-analytics-updated', refresh); window.clearInterval(timer); };
-  }, []);
+  }, [open]);
 
   useEffect(() => {
     if (!open) return undefined;

@@ -3,8 +3,12 @@ import { initializeCareerInitialData } from '../services/CareerInitialDataServic
 
 function clone(value) {
   if (value === undefined || value === null) return value;
+  if (typeof structuredClone === 'function') return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
 }
+
+const ROUTINE_BACKUP_INTERVAL_MS = 5 * 60 * 1000;
+const INDEX_SYNC_INTERVAL_MS = 15 * 1000;
 
 export class ActiveCareerAdapter {
   constructor(careerManager = new CareerManager()) {
@@ -12,6 +16,8 @@ export class ActiveCareerAdapter {
     this.activeCareer = null;
     this.activeCareerId = null;
     this.writeChain = Promise.resolve();
+    this.lastRoutineBackupAt = 0;
+    this.lastIndexSyncAt = 0;
   }
 
   setActiveCareer(career) {
@@ -24,7 +30,7 @@ export class ActiveCareerAdapter {
     this.activeCareerId = null;
   }
 
-  async getActiveCareer({ fresh = false, waitForWrites = true } = {}) {
+  async getActiveCareer({ fresh = false, waitForWrites = true, cloneResult = true } = {}) {
     // Leituras externas aguardam gravações anteriores. Operações que já estão
     // dentro da própria fila usam waitForWrites=false para não aguardarem a si
     // mesmas (deadlock).
@@ -32,10 +38,15 @@ export class ActiveCareerAdapter {
       await this.writeChain.catch(() => {});
     }
 
-    const memoryCareer = (
+    const hasMemoryCareer = Boolean(
       this.activeCareer?.career_id
       && this.activeCareerId === this.activeCareer.career_id
-    ) ? clone(this.activeCareer) : null;
+    );
+    // O modo interno cloneResult=false existe justamente para consultas quentes
+    // de entidades. Não clone o save inteiro antes de decidir usar a referência.
+    const memoryCareer = hasMemoryCareer
+      ? (cloneResult ? clone(this.activeCareer) : this.activeCareer)
+      : null;
 
     if (!fresh && memoryCareer) return memoryCareer;
 
@@ -52,7 +63,7 @@ export class ActiveCareerAdapter {
         ? await this.careerManager.readCareer(careerId)
         : await this.careerManager.loadCareer(careerId);
       this.setActiveCareer(career);
-      return clone(this.activeCareer);
+      return cloneResult ? clone(this.activeCareer) : this.activeCareer;
     } catch (error) {
       // Durante a primeira montagem, a referência em memória já representa a
       // carreira recém-criada e validada. Caso o sistema de arquivos ainda não
@@ -81,7 +92,7 @@ export class ActiveCareerAdapter {
   }
 
   async getPlayerProfile() {
-    const career = await this.getActiveCareer();
+    const career = await this.getActiveCareer({ fresh: false, cloneResult: false });
     return career?.player?.id ? clone(career.player) : null;
   }
 
@@ -167,22 +178,34 @@ export class ActiveCareerAdapter {
   }
 
   async mutateActiveCareer(mutator) {
-    // Capture a fila anterior antes de criar a nova operação. Assim, a operação
-    // atual aguarda somente trabalhos anteriores e nunca aguarda a si mesma.
+    // A carreira ativa em memória é a fonte quente durante a sessão. Ler o JSON
+    // inteiro do disco antes de CADA entidade tornava páginas com 5-10 consultas
+    // perceptivelmente lentas no desktop. A fila garante que o snapshot em
+    // memória já contém todas as gravações anteriores.
     const previousWrites = this.writeChain.catch(() => {});
     const operation = previousWrites.then(async () => {
-      const career = await this.ensureActiveCareer({
-        fresh: true,
+      const current = await this.ensureActiveCareer({
+        fresh: false,
         waitForWrites: false,
+        cloneResult: false,
       });
+      // O mutator recebe um draft isolado. Assim uma falha de persistência não
+      // deixa o estado quente parcialmente alterado.
+      const career = clone(current);
       const result = await mutator(career);
-      const saved = await this.careerManager.saveCareer(career.career_id, career);
+      const now = Date.now();
+      const shouldBackup = now - this.lastRoutineBackupAt >= ROUTINE_BACKUP_INTERVAL_MS;
+      const shouldSyncIndex = now - this.lastIndexSyncAt >= INDEX_SYNC_INTERVAL_MS;
+      const saved = await this.careerManager.saveCareer(career.career_id, career, {
+        backup: shouldBackup,
+        updateIndex: shouldSyncIndex,
+      });
+      if (shouldBackup) this.lastRoutineBackupAt = now;
+      if (shouldSyncIndex) this.lastIndexSyncAt = now;
       this.setActiveCareer(saved);
       return { result: clone(result), career: clone(saved) };
     });
 
-    // A fila permanece resolvível mesmo quando uma operação falha, permitindo
-    // que gravações futuras continuem. O chamador ainda recebe o erro original.
     this.writeChain = operation.then(() => undefined, () => undefined);
     return operation;
   }

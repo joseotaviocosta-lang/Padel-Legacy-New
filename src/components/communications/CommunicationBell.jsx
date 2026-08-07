@@ -57,7 +57,7 @@ export default function CommunicationBell({ compact = false }) {
   useEffect(() => {
     let active = true;
     const safeLoad = async () => {
-      if (!active) return;
+      if (!active || document.hidden) return;
       await load();
     };
     safeLoad();
@@ -65,7 +65,9 @@ export default function CommunicationBell({ compact = false }) {
     window.addEventListener('padel:communications-updated', safeLoad);
     window.addEventListener('padel:profile-updated', safeLoad);
     window.addEventListener('focus', safeLoad);
-    const intervalId = window.setInterval(safeLoad, 15000);
+    // A reconciliação continua orientada a eventos; o polling é apenas uma
+    // rede de segurança e não precisa consultar sete coleções a cada 15 s.
+    const intervalId = window.setInterval(safeLoad, 60000);
     return () => {
       active = false;
       window.clearInterval(intervalId);

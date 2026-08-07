@@ -2,6 +2,9 @@ const STORAGE_KEY = 'padel-legacy-beta-analytics-v1';
 const MAX_SESSIONS = 50;
 const MAX_EVENTS = 2000;
 const SESSION_IDLE_MS = 30 * 60 * 1000;
+const ANALYTICS_WRITE_DELAY_MS = 900;
+let cachedState = null;
+let pendingWriteTimer = null;
 
 function nowIso() { return new Date().toISOString(); }
 function safeParse(value, fallback) { try { return JSON.parse(value) ?? fallback; } catch { return fallback; } }
@@ -13,13 +16,46 @@ function anonCareerId(careerId) {
 }
 function emptyState() { return { schemaVersion: 1, sessions: [], currentSession: null, events: [], totals: { screenTimeMs: {}, counters: {} } }; }
 function loadState() {
-  if (typeof localStorage === 'undefined') return emptyState();
-  return { ...emptyState(), ...safeParse(localStorage.getItem(STORAGE_KEY), emptyState()) };
+  if (cachedState) return cachedState;
+  if (typeof localStorage === 'undefined') {
+    cachedState = emptyState();
+    return cachedState;
+  }
+  cachedState = { ...emptyState(), ...safeParse(localStorage.getItem(STORAGE_KEY), emptyState()) };
+  return cachedState;
 }
-function saveState(state) {
-  if (typeof localStorage === 'undefined') return;
-  const next = { ...state, sessions: (state.sessions || []).slice(-MAX_SESSIONS), events: (state.events || []).slice(-MAX_EVENTS) };
+function persistStateNow() {
+  if (typeof localStorage === 'undefined' || !cachedState) return;
+  const next = {
+    ...cachedState,
+    sessions: (cachedState.sessions || []).slice(-MAX_SESSIONS),
+    events: (cachedState.events || []).slice(-MAX_EVENTS),
+  };
+  cachedState = next;
   localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+}
+function saveState(state, { immediate = false } = {}) {
+  cachedState = state;
+  if (typeof localStorage === 'undefined') return;
+  if (pendingWriteTimer) clearTimeout(pendingWriteTimer);
+  if (immediate) {
+    pendingWriteTimer = null;
+    persistStateNow();
+    return;
+  }
+  // localStorage é síncrono. Serializar até 2.000 eventos em toda troca de rota
+  // travava o thread principal. Agrupamos várias ações próximas em uma escrita.
+  pendingWriteTimer = setTimeout(() => {
+    pendingWriteTimer = null;
+    persistStateNow();
+  }, ANALYTICS_WRITE_DELAY_MS);
+}
+export function flushBetaAnalytics() {
+  if (pendingWriteTimer) {
+    clearTimeout(pendingWriteTimer);
+    pendingWriteTimer = null;
+  }
+  persistStateNow();
 }
 function createSession({ careerId, pathname, version } = {}) {
   const startedAt = nowIso();
@@ -104,7 +140,7 @@ export function trackBetaEvent(type, detail = {}, context = {}) {
   saveState(state);
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:beta-analytics-updated'));
 }
-export function finishBetaAnalyticsSession() { finalizeCurrentSession(); }
+export function finishBetaAnalyticsSession() { finalizeCurrentSession(); flushBetaAnalytics(); }
 export function getBetaAnalyticsSnapshot() {
   const state = loadState();
   const current = state.currentSession ? JSON.parse(JSON.stringify(state.currentSession)) : null;
@@ -119,7 +155,7 @@ export function getBetaAnalyticsSnapshot() {
   });
   return { schemaVersion: 1, generatedAt: nowIso(), currentSession: current, sessions: state.sessions || [], events: state.events || [], totals: { screenTimeMs, counters } };
 }
-export function clearBetaAnalytics() { saveState(emptyState()); if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:beta-analytics-updated')); }
+export function clearBetaAnalytics() { cachedState = emptyState(); saveState(cachedState, { immediate: true }); if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:beta-analytics-updated')); }
 export function buildBetaAnalyticsExport() {
   const snapshot = getBetaAnalyticsSnapshot();
   return {
