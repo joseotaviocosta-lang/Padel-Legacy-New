@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.41",
+  "version": "0.9.0-beta.43",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -93,7 +93,9 @@
     "test:performance-responsive-v36": "node scripts/test-performance-responsive-v36-4-3.mjs",
     "test:sound-feedback-v36": "node scripts/test-sound-feedback-v36.mjs",
     "test:beta-analytics": "node scripts/test-beta-analytics-v36.mjs",
-    "test:beta-analytics-pro": "node scripts/test-beta-analytics-pro-v36.mjs"
+    "test:beta-analytics-pro": "node scripts/test-beta-analytics-pro-v36.mjs",
+    "test:rc-gameplay-balance": "node scripts/test-rc-gameplay-balance-v36.mjs",
+    "test:rc-world-ai": "node scripts/test-rc-world-ai-v36.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

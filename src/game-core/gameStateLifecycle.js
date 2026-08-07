@@ -5,6 +5,7 @@ import { tickWorldAfterMatch } from './world';
 import { processPartnerDay } from './partnerLifecycle';
 import { simulateWorldDay } from './worldSimulationLifecycle';
 import { processAiPartnershipMarket } from './aiPartnershipLifecycle';
+import { processAiCareerStrategyMonth } from './aiCareerStrategyLifecycle';
 import { processWorldCircuit } from './circuitLifecycle';
 import { processAthletePersonalityWeek } from './athletePersonalityLifecycle';
 import { processInjuryRecoveryDay } from './injuryRecoveryLifecycle';
@@ -39,6 +40,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
     partner: null,
     world: null,
     aiPartnerships: null,
+    aiCareerStrategy: null,
     circuit: null,
     circuitLife: null,
     athleteIntelligence: null,
@@ -71,6 +73,14 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
   } catch (error) {
     report.aiPartnerships = { formed: 0, dissolved: 0, error: error?.message || String(error) };
     console.warn('[Game Core] Mercado de duplas da IA não processado:', error);
+  }
+
+  try {
+    report.aiCareerStrategy = await processAiCareerStrategyMonth(updatedProfile, previousDate, currentDate);
+    updatedProfile = report.aiCareerStrategy?.profile || updatedProfile;
+  } catch (error) {
+    report.aiCareerStrategy = { processed: 0, error: error?.message || String(error) };
+    console.warn('[Game Core] Estratégia de carreira da IA não processada:', error);
   }
 
   try {

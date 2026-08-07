@@ -81,6 +81,13 @@ function collectMatchMetrics(state) {
   const loveGames = completedGames.filter(event => Math.min(event.scoreBefore.pointsA, event.scoreBefore.pointsB) === 0).length;
   const deucePoints = (state.pointEvents || []).filter(event => !event.scoreBefore.inTiebreak && event.scoreBefore.pointsA >= 3 && event.scoreBefore.pointsB >= 3).length;
   const tiebreakEnds = state.narration.filter(event => event.type === 'tiebreak_end').map(event => `${event.pointsA}-${event.pointsB}`);
+  const doubleFaults = (state.pointEvents || []).filter(event => event.shot === 'serve' && event.reason === 'error' && Number(event.rallyLength || 0) <= 1).length;
+  const servicePoints = (state.pointEvents || []).filter(event => Boolean(event.servingTeamId)).length;
+  const servicePointsWon = (state.pointEvents || []).filter(event => event.winnerTeamId === event.servingTeamId).length;
+  const bagelSets = state.setScores.filter(set => Math.min(set.gamesA, set.gamesB) === 0 && Math.max(set.gamesA, set.gamesB) >= 6).length;
+  const lopsidedSets = state.setScores.filter(set => Math.abs(set.gamesA - set.gamesB) >= 5).length;
+  const straightSets = state.setScores.length === 2;
+  const decidingSet = state.setScores.length >= 3;
   return {
     winner: state.winner,
     points: state.stats.rallies,
@@ -101,6 +108,13 @@ function collectMatchMetrics(state) {
     deucePoints,
     sixAllSets: state.setScores.filter(set => (set.gamesA === 7 && set.gamesB === 6) || (set.gamesB === 7 && set.gamesA === 6)).length,
     tiebreakEnds,
+    doubleFaults,
+    servicePoints,
+    servicePointsWon,
+    bagelSets,
+    lopsidedSets,
+    straightSets,
+    decidingSet,
   };
 }
 
@@ -145,6 +159,9 @@ export function runBalanceBatch(options = {}) {
   const loveGames = results.reduce((sum, row) => sum + row.loveGames, 0);
   const allSets = results.reduce((sum, row) => sum + row.sets, 0);
   const tiebreakScores = results.flatMap(row => row.tiebreakEnds);
+  const totalServicePoints = results.reduce((sum, row) => sum + row.servicePoints, 0);
+  const totalDoubleFaults = results.reduce((sum, row) => sum + row.doubleFaults, 0);
+  const totalSets = results.reduce((sum, row) => sum + row.sets, 0);
 
   const summary = {
     engineVersion: '0.4.0-alpha.7',
@@ -171,6 +188,12 @@ export function runBalanceBatch(options = {}) {
     loveGameRate: round(completedGames ? loveGames / completedGames * 100 : 0),
     sixAllSetRate: round(allSets ? results.reduce((sum, row) => sum + row.sixAllSets, 0) / allSets * 100 : 0),
     averageDeucePoints: round(average(results.map(row => row.deucePoints))),
+    servePointWinRate: round(totalServicePoints ? results.reduce((sum, row) => sum + row.servicePointsWon, 0) / totalServicePoints * 100 : 0),
+    doubleFaultRate: round(totalServicePoints ? totalDoubleFaults / totalServicePoints * 100 : 0, 3),
+    straightSetRate: round(results.filter(row => row.straightSets).length / matches * 100),
+    decidingSetRate: round(results.filter(row => row.decidingSet).length / matches * 100),
+    bagelSetRate: round(totalSets ? results.reduce((sum, row) => sum + row.bagelSets, 0) / totalSets * 100 : 0),
+    lopsidedSetRate: round(totalSets ? results.reduce((sum, row) => sum + row.lopsidedSets, 0) / totalSets * 100 : 0),
     tiebreakScoreDistribution: Object.fromEntries([...new Set(tiebreakScores)].sort().map(score => [score, tiebreakScores.filter(value => value === score).length])),
   };
 
@@ -189,6 +212,11 @@ export function evaluateBalanceGates(summary, custom = {}) {
     minAverageRally: custom?.minAverageRally ?? 2,
     maxAverageRally: custom?.maxAverageRally ?? 20,
     minCoordinationEvents: custom?.minCoordinationEvents ?? 1,
+    maxDoubleFaultRate: custom?.maxDoubleFaultRate ?? 0.2,
+    minServiceHoldRate: custom?.minServiceHoldRate ?? 60,
+    maxServiceHoldRate: custom?.maxServiceHoldRate ?? 90,
+    maxBagelSetRate: custom?.maxBagelSetRate ?? 12,
+    maxLopsidedSetRate: custom?.maxLopsidedSetRate ?? 28,
   };
   return {
     fairSides: summary.sideBias <= limits.maxSideBias,
@@ -197,6 +225,9 @@ export function evaluateBalanceGates(summary, custom = {}) {
     matchLengthControlled: summary.p95Points <= limits.maxP95Points,
     rallyLengthCoherent: summary.averageRally >= limits.minAverageRally && summary.averageRally <= limits.maxAverageRally,
     coordinationActive: summary.averageCoordinationEvents >= limits.minCoordinationEvents,
+    doubleFaultsRare: summary.doubleFaultRate <= limits.maxDoubleFaultRate,
+    serviceBalance: summary.serviceHoldRate >= limits.minServiceHoldRate && summary.serviceHoldRate <= limits.maxServiceHoldRate,
+    scorelinesCompetitive: summary.bagelSetRate <= limits.maxBagelSetRate && summary.lopsidedSetRate <= limits.maxLopsidedSetRate,
   };
 }
 

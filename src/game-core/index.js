@@ -40,3 +40,5 @@ export { processStaffDay, getStaffSnapshot, getStaffCatalog } from './staffLifec
 
 export { processCircuitLifeWeek, getCircuitLifeSnapshot } from './circuitLifeLifecycle';
 export { getGlobalMarketSnapshot, processGlobalMarketMonth, TIER_MINIMUMS } from './globalMarketLifecycle';
+
+export { processAiCareerStrategyMonth, getAiCareerStrategySnapshot, decideAiCareerStrategy, deriveAiCareerArchetype } from './aiCareerStrategyLifecycle';
