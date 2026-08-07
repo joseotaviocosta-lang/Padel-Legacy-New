@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
@@ -11,6 +12,7 @@ import { getPendingInterviews, pickJournalist, applyReputationEffects, reconcile
 import { useToast } from '@/components/ui/use-toast';
 
 export default function Press() {
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
   const [articles, setArticles] = useState([]);
   const [journalists, setJournalists] = useState([]);
@@ -19,13 +21,20 @@ export default function Press() {
   const [partnership, setPartnership] = useState(null);
   const [registrations, setRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('feed');
+  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') === 'interviews' ? 'interviews' : searchParams.get('tab') === 'journalists' ? 'journalists' : 'feed');
   const [activeInterview, setActiveInterview] = useState(null);
   const [activeJournalist, setActiveJournalist] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    const requestedTab = searchParams.get('tab');
+    if (requestedTab === 'interviews' || requestedTab === 'journalists' || requestedTab === 'feed') {
+      setActiveTab(requestedTab);
+    }
+  }, [searchParams]);
 
   async function load() {
     setLoading(true);

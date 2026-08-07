@@ -11,7 +11,7 @@ const betaTools = fs.readFileSync('src/components/system/BetaTools.jsx', 'utf8')
 const insights = fs.readFileSync('src/lib/betaInsights.js', 'utf8');
 const inspector = fs.readFileSync('src/lib/saveInspector.js', 'utf8');
 
-check(pkg.version === '0.9.0-beta.45', 'versão beta.45');
+check(/^0\.9\.0-beta\.(?:4[5-9]|[5-9]\d|\d{3,})$/.test(pkg.version), 'versão beta.45 ou superior');
 check(pkg.scripts['test:rc-beta-intelligence']?.includes('test-rc-beta-intelligence-v36.mjs'), 'script de teste registrado');
 check(betaTools.includes("['insights', 'Insights']"), 'aba Insights presente');
 check(betaTools.includes("['inspector', 'Save Inspector']"), 'aba Save Inspector presente');

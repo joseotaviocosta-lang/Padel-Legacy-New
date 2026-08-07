@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
+import process from 'node:process';
 
 const ROOT = process.cwd();
 const pkg = JSON.parse(fs.readFileSync(path.join(ROOT, 'package.json'), 'utf8'));
@@ -39,13 +40,51 @@ for (let i=0;i<unique.length;i++) {
     results.push({name,status:'SKIP',durationMs:0});
     continue;
   }
-  const run = spawnSync(process.platform === 'win32' ? 'npm.cmd' : 'npm', ['run', name], {
-    cwd: ROOT, encoding:'utf8', stdio:['ignore','pipe','pipe'], env:{...process.env, FORCE_COLOR:'0'}
+  // Do not spawn `npm.cmd` directly on Windows. Depending on the Node/Windows
+  // combination, spawnSync can return EINVAL before npm is even started. When
+  // this runner is itself launched by npm, npm_execpath points to npm-cli.js;
+  // invoking that script through the current Node executable is portable and
+  // preserves the same package environment.
+  const npmExecPath = process.env.npm_execpath;
+  const command = npmExecPath ? process.execPath : (process.platform === 'win32' ? 'cmd.exe' : 'npm');
+  const commandArgs = npmExecPath
+    ? [npmExecPath, 'run', name]
+    : process.platform === 'win32'
+      ? ['/d', '/s', '/c', `npm run ${name}`]
+      : ['run', name];
+
+  const run = spawnSync(command, commandArgs, {
+    cwd: ROOT,
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'pipe'],
+    env: { ...process.env, FORCE_COLOR: '0' },
+    windowsHide: true,
   });
   const durationMs = Date.now()-started;
-  const ok = run.status === 0;
+  const launchError = run.error ? `${run.error.name || 'Error'}: ${run.error.message || String(run.error)}` : '';
+  const ok = !run.error && run.status === 0;
   console.log(`${ok ? 'PASS' : 'FAIL'} (${(durationMs/1000).toFixed(1)}s)`);
-  results.push({name,status:ok?'PASS':'FAIL',durationMs,exitCode:run.status,stdout:(run.stdout||'').slice(-5000),stderr:(run.stderr||'').slice(-5000)});
+
+  const stdout = (run.stdout || '').slice(-12000);
+  const stderr = (run.stderr || '').slice(-12000);
+  const diagnostic = [launchError, stderr, stdout].filter(Boolean).join('\n').trim();
+  if (!ok) {
+    console.log('');
+    console.log(`--- ${name} diagnostic ---`);
+    console.log(diagnostic || `Processo terminou sem saída (exitCode=${run.status ?? 'null'}, signal=${run.signal ?? 'none'}).`);
+    console.log(`--- fim ${name} ---\n`);
+  }
+
+  results.push({
+    name,
+    status: ok ? 'PASS' : 'FAIL',
+    durationMs,
+    exitCode: run.status,
+    signal: run.signal || null,
+    launchError: launchError || null,
+    stdout,
+    stderr,
+  });
 }
 
 const passed = results.filter(r=>r.status==='PASS').length;

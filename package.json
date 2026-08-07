@@ -102,7 +102,8 @@
     "test:rc-qa:smoke": "node scripts/rc-qa-suite-v36.mjs --smoke",
     "test:rc-qa:full": "node scripts/rc-qa-suite-v36.mjs --full",
     "test:rc-qa:dry": "node scripts/rc-qa-suite-v36.mjs --dry-run",
-    "test:rc-qa-manager": "node scripts/test-rc-qa-manager-v36.mjs"
+    "test:rc-qa-manager": "node scripts/test-rc-qa-manager-v36.mjs",
+    "test:hotfix-v36.9.1": "node scripts/test-hotfix-v36-9-1.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

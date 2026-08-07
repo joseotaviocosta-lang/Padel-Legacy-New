@@ -7,6 +7,12 @@ import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/l
 
 const EMPTY = { energy: 0, fatigue: 0, coins: 0, date: '—', rank: '—' };
 
+function formatCareerDate(value) {
+  if (!value || value === '—') return '—';
+  const match = String(value).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  return match ? `${match[3]}/${match[2]}/${match[1]}` : String(value);
+}
+
 export default function CareerHud({ compact = false, className }) {
   const [data, setData] = useState(EMPTY);
   const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
@@ -49,7 +55,7 @@ export default function CareerHud({ compact = false, className }) {
     { label: 'Fadiga', value: `${data.fatigue}%`, icon: HeartPulse, tone: data.fatigue > 70 ? 'text-destructive' : data.fatigue > 45 ? 'text-warning' : 'text-success' },
     { label: 'Ranking', value: data.rank, icon: Crown, tone: 'text-premium' },
     { label: 'Moedas', value: data.coins.toLocaleString('pt-BR'), icon: Coins, tone: 'text-premium' },
-    { label: 'Data', value: data.date, icon: CalendarDays, tone: 'text-info' },
+    { label: 'Data', value: formatCareerDate(data.date), icon: CalendarDays, tone: 'text-info', wide: true },
   ];
 
   const toggleSound = () => {
@@ -61,12 +67,16 @@ export default function CareerHud({ compact = false, className }) {
 
   return (
     <div className={cn('pl-career-hud flex min-w-0 items-center gap-1.5', compact && 'gap-1', className)} aria-label="Status rápido da carreira">
-      {items.map(({ label, value, icon: Icon, tone }, index) => (
-        <div key={label} className={cn('flex min-w-0 items-center gap-2 rounded-xl border border-border/55 bg-card/62 px-2.5 py-1.5', compact && index > 2 && 'hidden sm:flex')}>
+      {items.map(({ label, value, icon: Icon, tone, wide }, index) => (
+        <div key={label} className={cn(
+          'flex min-w-0 items-center gap-2 rounded-xl border border-border/55 bg-card/62 px-2.5 py-1.5',
+          wide && 'shrink-0 min-w-[7.35rem]',
+          compact && index > 2 && 'hidden sm:flex',
+        )}>
           <Icon className={cn('h-3.5 w-3.5 shrink-0', tone)} />
           <div className="min-w-0">
             {!compact && <p className="text-[8px] font-extrabold uppercase tracking-[0.13em] text-muted-foreground">{label}</p>}
-            <p className={cn('truncate text-[11px] font-black tabular-nums', compact && 'text-[10px]')}>{value}</p>
+            <p className={cn('text-[11px] font-black tabular-nums', !wide && 'truncate', compact && 'text-[10px]')}>{value}</p>
           </div>
         </div>
       ))}
