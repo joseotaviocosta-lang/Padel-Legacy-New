@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { LoadingScreen } from '@/components/padel/ui';
+import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
 import { CardGrid, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';

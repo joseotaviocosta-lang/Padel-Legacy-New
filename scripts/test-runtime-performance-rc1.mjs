@@ -1,0 +1,14 @@
+import fs from 'node:fs';
+const read = p => fs.readFileSync(p,'utf8');
+const checks=[]; const check=(name,ok)=>{if(!ok) throw new Error(`FAIL: ${name}`); checks.push(name); console.log(`PASS: ${name}`)};
+const press=read('src/pages/Press.jsx');
+const layout=read('src/components/AppLayout.jsx');
+const pkg=JSON.parse(read('package.json'));
+check('Press imports EmptyStateCard', /import\s*\{[^}]*EmptyStateCard[^}]*\}\s*from\s*['"]@\/components\/padel\/ui['"]/.test(press));
+check('route transition no longer waits for exit', !layout.includes('AnimatePresence mode="wait"'));
+check('persistent onboarding outside keyed route stage', layout.indexOf('<OnboardingGuide />') < layout.indexOf('key={location.pathname}'));
+check('persistent career assistant outside keyed route stage', layout.indexOf('<CareerAssistant />') < layout.indexOf('key={location.pathname}'));
+check('route transition shortened', layout.includes('duration: 0.08'));
+check('heavy eager preload removed', !layout.includes("'/ranking', '/partners'"));
+check('release version bumped', pkg.version === '0.9.0-rc.1.6');
+console.log(`RuntimePerformanceRC1Test: PASS (${checks.length}/7)`);

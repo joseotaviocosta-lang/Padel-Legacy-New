@@ -117,14 +117,14 @@ export default function AppLayout() {
   useEffect(() => {
     if (!performanceProfile.allowRoutePreload) return undefined;
     const commonRoutes = performanceProfile.lowPower
-      ? ['/game/training', '/game/calendar']
-      : ['/game/training', '/game/calendar', '/tournaments', '/ranking', '/partners'];
+      ? ['/game/training']
+      : ['/game/training', '/game/calendar'];
     const run = () => preloadRoutes(commonRoutes);
     if ('requestIdleCallback' in window) {
-      const idleId = window.requestIdleCallback(run, { timeout: 1800 });
+      const idleId = window.requestIdleCallback(run, { timeout: 3500 });
       return () => window.cancelIdleCallback?.(idleId);
     }
-    const timerId = window.setTimeout(run, 900);
+    const timerId = window.setTimeout(run, 2500);
     return () => window.clearTimeout(timerId);
   }, [performanceProfile.allowRoutePreload, performanceProfile.lowPower]);
 
@@ -214,18 +214,14 @@ export default function AppLayout() {
           </div>
         </div>
 
+        <OnboardingGuide />
+        <CareerAssistant />
         {performanceProfile.allowDecorativeMotion ? (
-          <AnimatePresence mode="wait">
-            <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full" initial={{ opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -3 }} transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}>
-              <OnboardingGuide />
-              <CareerAssistant />
-              <Outlet />
-            </motion.div>
-          </AnimatePresence>
+          <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.08 }}>
+            <Outlet />
+          </motion.div>
         ) : (
-          <div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full">
-            <OnboardingGuide />
-            <CareerAssistant />
+          <div className="app-route-stage design-system-page-host min-w-0 max-w-full">
             <Outlet />
           </div>
         )}
