@@ -109,7 +109,8 @@
     "test:hotfix-rc1.0.2": "node scripts/test-hotfix-rc1-press-v2.mjs",
     "test:hotfix-rc1.0.3": "node scripts/test-hotfix-rc1-ssr-missions.mjs",
     "test:hotfix-rc1.0.4": "node scripts/test-hotfix-rc1-ssr-utils.mjs",
-    "test:hotfix-rc1.0.5": "node scripts/test-hotfix-rc1-qa-compat.mjs"
+    "test:hotfix-rc1.0.5": "node scripts/test-hotfix-rc1-qa-compat.mjs",
+    "test:release-packaging": "node scripts/test-release-packaging-rc1.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

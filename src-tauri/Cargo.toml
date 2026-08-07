@@ -1,6 +1,6 @@
 [package]
 name = "padel-legacy"
-version = "0.2.0"
+version = "0.9.0"
 description = "Padel Legacy - simulador de carreira de padel offline"
 authors = ["Padel Legacy"]
 edition = "2021"
