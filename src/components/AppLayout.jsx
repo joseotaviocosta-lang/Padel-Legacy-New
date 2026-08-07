@@ -16,6 +16,7 @@ import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
 import { useAdaptivePerformance } from '@/hooks/useAdaptivePerformance';
 import FeedbackSoundController from '@/components/system/FeedbackSoundController';
+import BetaWelcome from '@/components/system/BetaWelcome.jsx';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -193,6 +194,7 @@ export default function AppLayout() {
 
       <BetaAnalyticsTracker />
       <FeedbackSoundController />
+      <BetaWelcome />
 
       <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border/50 bg-background/80 px-5 backdrop-blur-xl md:flex lg:px-7">

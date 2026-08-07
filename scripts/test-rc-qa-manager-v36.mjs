@@ -2,7 +2,7 @@ import fs from 'node:fs';
 const p=JSON.parse(fs.readFileSync('package.json','utf8'));
 const runner=fs.readFileSync('scripts/rc-qa-suite-v36.mjs','utf8');
 const checks=[
- ['beta version',/^0\.9\.0-beta\.\d+$/.test(p.version)],
+ ['candidate version',/^0\.9\.0-(?:beta\.\d+|rc\.\d+)$/.test(p.version)],
  ['rc qa command',!!p.scripts['test:rc-qa']],
  ['smoke command',!!p.scripts['test:rc-qa:smoke']],
  ['full command',!!p.scripts['test:rc-qa:full']],

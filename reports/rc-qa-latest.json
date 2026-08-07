@@ -1,6 +1,6 @@
 {
-  "generatedAt": "2026-08-07T13:23:14.225Z",
-  "version": "0.9.0-beta.46",
+  "generatedAt": "2026-08-07T13:33:05.180Z",
+  "version": "0.9.0-rc.1",
   "profile": "smoke",
   "status": "READY",
   "score": 100,
@@ -16,61 +16,61 @@
     {
       "name": "test:match-integrity",
       "status": "PASS",
-      "durationMs": 2647,
+      "durationMs": 1167,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-beta.46 test:match-integrity\n> node scripts/test-match-integrity.mjs\n\n{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 114,\n  \"games\": 16,\n  \"breaks\": 6,\n  \"deterministic\": true\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:match-integrity\n> node scripts/test-match-integrity.mjs\n\n{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 114,\n  \"games\": 16,\n  \"breaks\": 6,\n  \"deterministic\": true\n}\n",
       "stderr": ""
     },
     {
       "name": "test:calendar-advance",
       "status": "PASS",
-      "durationMs": 701,
+      "durationMs": 571,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-beta.46 test:calendar-advance\n> node scripts/test-calendar-advance-v24.mjs\n\nCalendarAdvanceV24Test: PASS\n✓ atalhos ignoram torneios passivos e atividades automáticas\n✓ torneios inscritos continuam bloqueando o avanço normal\n✓ lesão resolve torneios e treinos automaticamente\n✓ decisões administrativas continuam protegidas\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:calendar-advance\n> node scripts/test-calendar-advance-v24.mjs\n\nCalendarAdvanceV24Test: PASS\n✓ atalhos ignoram torneios passivos e atividades automáticas\n✓ torneios inscritos continuam bloqueando o avanço normal\n✓ lesão resolve torneios e treinos automaticamente\n✓ decisões administrativas continuam protegidas\n",
       "stderr": ""
     },
     {
       "name": "test:tournament-registration",
       "status": "PASS",
-      "durationMs": 10551,
+      "durationMs": 3851,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-beta.46 test:tournament-registration\n> node scripts/test-tournament-registration-v2.mjs\n\n{\n  \"firstTournament\": {\n    \"allowed\": true,\n    \"reasons\": [],\n    \"warnings\": [],\n    \"registrationWindow\": {\n      \"opensAt\": \"2025-12-09\",\n      \"closesAt\": \"2026-01-07\"\n    },\n    \"interval\": {\n      \"start\": \"2026-01-08\",\n      \"end\": \"2026-01-10\"\n    },\n    \"entry\": {\n      \"path\": \"direct\",\n      \"eligible\": true,\n      \"reason\": \"Legacy Silver aberto a atletas sem ranking.\"\n    }\n  },\n  \"overlapBlocked\": [\n    \"DATE_CONFLICT\"\n  ],\n  \"migrationRegistrations\": 1,\n  \"scenarios\": [\n    \"registered-reload-play-gate\",\n    \"unregistered-play-blocked\",\n    \"overlap-cancel-reselect\"\n  ]\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:tournament-registration\n> node scripts/test-tournament-registration-v2.mjs\n\n{\n  \"firstTournament\": {\n    \"allowed\": true,\n    \"reasons\": [],\n    \"warnings\": [],\n    \"registrationWindow\": {\n      \"opensAt\": \"2025-12-09\",\n      \"closesAt\": \"2026-01-07\"\n    },\n    \"interval\": {\n      \"start\": \"2026-01-08\",\n      \"end\": \"2026-01-10\"\n    },\n    \"entry\": {\n      \"path\": \"direct\",\n      \"eligible\": true,\n      \"reason\": \"Legacy Silver aberto a atletas sem ranking.\"\n    }\n  },\n  \"overlapBlocked\": [\n    \"DATE_CONFLICT\"\n  ],\n  \"migrationRegistrations\": 1,\n  \"scenarios\": [\n    \"registered-reload-play-gate\",\n    \"unregistered-play-blocked\",\n    \"overlap-cancel-reselect\"\n  ]\n}\n",
       "stderr": ""
     },
     {
       "name": "test:rc-match-experience",
       "status": "PASS",
-      "durationMs": 1611,
+      "durationMs": 1147,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-beta.46 test:rc-match-experience\n> node scripts/test-rc-match-experience-pack.mjs\n\nRCMatchExperiencePackTest: PASS (9/9)\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:rc-match-experience\n> node scripts/test-rc-match-experience-pack.mjs\n\nRCMatchExperiencePackTest: PASS (9/9)\n",
       "stderr": ""
     },
     {
       "name": "test:rc-beta-intelligence",
       "status": "PASS",
-      "durationMs": 908,
+      "durationMs": 560,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-beta.46 test:rc-beta-intelligence\n> node scripts/test-rc-beta-intelligence-v36.mjs\n\nRCBetaIntelligenceV36Test: PASS (11/11)\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:rc-beta-intelligence\n> node scripts/test-rc-beta-intelligence-v36.mjs\n\nRCBetaIntelligenceV36Test: PASS (11/11)\n",
       "stderr": ""
     },
     {
       "name": "test:beta-rc",
       "status": "PASS",
-      "durationMs": 24932,
+      "durationMs": 14018,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-beta.46 test:beta-rc\n> node scripts/test-beta-rc-v36.mjs\n\nPASS test:beta\nPASS test:missions\nPASS test:tutorial-engine\nPASS test:calendar-advance\nPASS test:living-world\nPASS test:global-market\nPASS test:sports-economy\nPASS test:coaches-v28\nPASS test:partnerships-v29\nPASS test:staff-architecture\nPASS test:performance-v31\nPASS test:ranking-carryover-v32\nPASS test:career-ai-v34\nPASS test:match-integrity\nPASS test:match-experience-v34\nPASS test:simulation-health-v35\nPASS test:world-auditor-v35\nPASS test:beta-integration-v35\nBetaAuditV36_1: PASS (18/18)\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:beta-rc\n> node scripts/test-beta-rc-v36.mjs\n\nPASS test:beta\nPASS test:missions\nPASS test:tutorial-engine\nPASS test:calendar-advance\nPASS test:living-world\nPASS test:global-market\nPASS test:sports-economy\nPASS test:coaches-v28\nPASS test:partnerships-v29\nPASS test:staff-architecture\nPASS test:performance-v31\nPASS test:ranking-carryover-v32\nPASS test:career-ai-v34\nPASS test:match-integrity\nPASS test:match-experience-v34\nPASS test:simulation-health-v35\nPASS test:world-auditor-v35\nPASS test:beta-integration-v35\nBetaAuditV36_1: PASS (18/18)\n",
       "stderr": ""
     }
   ]

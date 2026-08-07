@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
-import { Activity, AlertTriangle, BarChart3, Bug, CheckCircle2, Clock3, Copy, Download, HardDrive, ListChecks, Play, RefreshCw, RotateCcw, ShieldCheck, Trash2, Wrench, X } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, BookOpen, Bug, CheckCircle2, Clock3, Copy, Download, HardDrive, ListChecks, MessageSquarePlus, Play, RefreshCw, RotateCcw, ShieldCheck, Star, Trash2, Wrench, X } from 'lucide-react';
 import { useLocation } from 'react-router-dom';
 import { useCareer } from '@/careers/useCareer.js';
 import { buildBetaDiagnosticReport, downloadBetaDiagnosticReport, installBetaDiagnostics } from '@/lib/betaDiagnostics.js';
@@ -11,6 +11,7 @@ import { applyWorldRepairPlan, buildWorldRepairPlan, collectWorldHealth, project
 import { buildBetaAnalyticsExport, clearBetaAnalytics, getBetaAnalyticsSnapshot, getBetaTesterInsights } from '@/lib/betaAnalytics.js';
 import { buildBetaInsights } from '@/lib/betaInsights.js';
 import { buildSaveInspectorExport, inspectCareerSave } from '@/lib/saveInspector.js';
+import { CLOSED_BETA_CHANGELOG, buildBetaRatingReport, buildBetaSuggestionReport, getLocalBetaRatings, saveLocalBetaRating } from '@/lib/betaCandidate.js';
 
 const INITIAL_FEEDBACK = {
   severity: 'medium',
@@ -22,6 +23,25 @@ const INITIAL_FEEDBACK = {
   notes: '',
   includeDiagnostic: true,
 };
+
+
+const INITIAL_SUGGESTION = {
+  category: 'Experiência geral',
+  title: '',
+  problem: '',
+  idea: '',
+  impact: '',
+};
+
+const RATING_AREAS = [
+  ['match_engine', 'Partidas'],
+  ['interface', 'Interface'],
+  ['progression', 'Progressão'],
+  ['economy', 'Economia'],
+  ['press', 'Imprensa'],
+  ['staff', 'Comissão técnica'],
+  ['tutorial', 'Tutorial'],
+];
 
 const careerRepository = new CareerRepository();
 
@@ -48,6 +68,12 @@ export default function BetaTools({ compact = false }) {
   const betaInsights = useMemo(() => buildBetaInsights(analytics), [analytics]);
   const [saveInspection, setSaveInspection] = useState(null);
   const [inspectorStatus, setInspectorStatus] = useState('');
+  const [suggestion, setSuggestion] = useState(INITIAL_SUGGESTION);
+  const [ratings, setRatings] = useState(() => Object.fromEntries(RATING_AREAS.map(([id]) => [id, 4])));
+  const [continuePlaying, setContinuePlaying] = useState('maybe');
+  const [ratingNotes, setRatingNotes] = useState('');
+  const [ratingStatus, setRatingStatus] = useState('');
+  const [ratingCount, setRatingCount] = useState(() => getLocalBetaRatings().length);
 
   useEffect(() => installBetaDiagnostics(), []);
 
@@ -216,6 +242,46 @@ export default function BetaTools({ compact = false }) {
   }
 
 
+  function updateSuggestion(field, value) {
+    setSuggestion(current => ({ ...current, [field]: value }));
+  }
+
+  function downloadObject(data, filename) {
+    downloadJsonFile(data, filename);
+  }
+
+  function exportSuggestion() {
+    const report = buildBetaSuggestionReport({
+      careerId: activeCareer?.career_id,
+      pathname: location.pathname,
+      suggestion,
+    });
+    downloadObject(report, `padel-legacy-sugestao-${Date.now()}.json`);
+  }
+
+  function saveRating() {
+    const report = buildBetaRatingReport({
+      careerId: activeCareer?.career_id,
+      ratings,
+      continuePlaying,
+      notes: ratingNotes,
+    });
+    saveLocalBetaRating(report);
+    setRatingCount(getLocalBetaRatings().length);
+    setRatingStatus('Avaliação salva localmente. Você também pode exportá-la para compartilhar.');
+  }
+
+  function exportRating() {
+    const report = buildBetaRatingReport({
+      careerId: activeCareer?.career_id,
+      ratings,
+      continuePlaying,
+      notes: ratingNotes,
+    });
+    downloadObject(report, `padel-legacy-avaliacao-beta-${Date.now()}.json`);
+  }
+
+
   return (
     <>
       <button type="button" onClick={() => setOpen(true)} title="Relatar problema da versão beta" className={`inline-flex items-center justify-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 font-black text-amber-300 transition-colors hover:bg-amber-400/15 ${compact ? 'h-9 w-9 p-0' : 'px-3 py-2 text-xs'}`}>
@@ -232,6 +298,9 @@ export default function BetaTools({ compact = false }) {
             <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border bg-card px-4 py-3 sm:px-5">
               {[
                 ['feedback', 'Relatar problema'],
+                ['suggestion', 'Sugerir melhoria'],
+                ['rating', 'Avaliar sistemas'],
+                ['changelog', 'Changelog'],
                 ['checklist', 'Checklist'],
                 ['save', 'Proteção do save'],
                 ['health', 'Saúde do mundo'],
@@ -295,6 +364,81 @@ export default function BetaTools({ compact = false }) {
                     <button type="button" disabled={!canExportFeedback} onClick={copyFeedback} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary disabled:cursor-not-allowed disabled:opacity-40"><Copy className="h-4 w-4" /> {copied ? 'Copiado' : 'Copiar relato'}</button>
                     <button type="button" disabled={!canExportFeedback} onClick={() => downloadBetaFeedbackReport({ career: activeCareer, pathname: location.pathname, feedback })} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-40"><Download className="h-4 w-4" /> Baixar relato</button>
                   </div>
+                </div>
+              )}
+
+              {mode === 'suggestion' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/5 p-4">
+                    <p className="flex items-center gap-2 font-black text-fuchsia-200"><MessageSquarePlus className="h-5 w-5" /> Sugerir melhoria</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Separe ideias de bugs. Conte qual problema de experiência você percebeu e como imagina uma solução melhor.</p>
+                  </div>
+                  <label className="block space-y-1 text-xs font-bold">Área
+                    <select value={suggestion.category} onChange={event => updateSuggestion('category', event.target.value)} className={FIELD_CLASS}>
+                      {['Experiência geral', 'Partidas', 'Progressão', 'Treinos', 'Torneios', 'Ranking', 'Imprensa', 'Comissão', 'Economia', 'Interface', 'Tutorial', 'Outro'].map(item => <option key={item}>{item}</option>)}
+                    </select>
+                  </label>
+                  <label className="block space-y-1 text-xs font-bold">Título da ideia
+                    <input value={suggestion.title} onChange={event => updateSuggestion('title', event.target.value)} placeholder="Ex.: tornar a preparação pré-torneio mais clara" className={FIELD_CLASS} />
+                  </label>
+                  <label className="block space-y-1 text-xs font-bold">Qual problema você percebeu?
+                    <textarea rows={3} value={suggestion.problem} onChange={event => updateSuggestion('problem', event.target.value)} className={FIELD_CLASS} />
+                  </label>
+                  <label className="block space-y-1 text-xs font-bold">Sua sugestão
+                    <textarea rows={4} value={suggestion.idea} onChange={event => updateSuggestion('idea', event.target.value)} className={FIELD_CLASS} />
+                  </label>
+                  <label className="block space-y-1 text-xs font-bold">Impacto esperado
+                    <textarea rows={2} value={suggestion.impact} onChange={event => updateSuggestion('impact', event.target.value)} placeholder="Por que isso deixaria o jogo melhor?" className={FIELD_CLASS} />
+                  </label>
+                  <button type="button" disabled={suggestion.title.trim().length < 4 || suggestion.idea.trim().length < 6} onClick={exportSuggestion} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground disabled:opacity-40"><Download className="h-4 w-4" /> Exportar sugestão</button>
+                </div>
+              )}
+
+              {mode === 'rating' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-amber-500/20 bg-amber-500/5 p-4">
+                    <p className="flex items-center gap-2 font-black text-amber-200"><Star className="h-5 w-5" /> Avaliar sistemas</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Dê uma nota rápida de 1 a 5. Estas avaliações ficam locais até você decidir exportá-las.</p>
+                  </div>
+                  <div className="space-y-2">
+                    {RATING_AREAS.map(([id, label]) => (
+                      <div key={id} className="flex items-center justify-between gap-3 rounded-xl border border-border bg-background/35 p-3">
+                        <span className="text-sm font-bold">{label}</span>
+                        <div className="flex gap-1" aria-label={`Nota de ${label}`}>
+                          {[1,2,3,4,5].map(value => <button key={value} type="button" onClick={() => setRatings(current => ({ ...current, [id]: value }))} className={`rounded-lg p-1.5 ${value <= ratings[id] ? 'text-amber-300' : 'text-muted-foreground/35'}`}><Star className="h-4 w-4" fill={value <= ratings[id] ? 'currentColor' : 'none'} /></button>)}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  <div className="rounded-2xl border border-border p-4">
+                    <p className="text-sm font-black">Você jogaria mais uma hora agora?</p>
+                    <div className="mt-3 grid grid-cols-3 gap-2">
+                      {[['yes','Sim'],['maybe','Talvez'],['no','Não']].map(([value,label]) => <button key={value} type="button" onClick={() => setContinuePlaying(value)} className={`rounded-xl px-3 py-2 text-xs font-black ${continuePlaying === value ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>{label}</button>)}
+                    </div>
+                  </div>
+                  <label className="block space-y-1 text-xs font-bold">Comentário opcional
+                    <textarea rows={3} value={ratingNotes} onChange={event => setRatingNotes(event.target.value)} className={FIELD_CLASS} placeholder="O que mais influenciou suas notas?" />
+                  </label>
+                  <div className="grid gap-2 sm:grid-cols-2">
+                    <button type="button" onClick={saveRating} className="rounded-xl border border-border px-4 py-3 text-sm font-black hover:bg-secondary">Salvar localmente</button>
+                    <button type="button" onClick={exportRating} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground"><Download className="h-4 w-4" /> Exportar avaliação</button>
+                  </div>
+                  {ratingStatus && <p className="rounded-xl bg-secondary/55 p-3 text-xs text-muted-foreground">{ratingStatus} · {ratingCount} avaliação(ões) salva(s).</p>}
+                </div>
+              )}
+
+              {mode === 'changelog' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+                    <p className="flex items-center gap-2 font-black text-primary"><BookOpen className="h-5 w-5" /> Changelog da Closed Beta</p>
+                    <p className="mt-1 text-xs text-muted-foreground">A RC1 está em feature freeze. A partir daqui entram apenas correções, balanceamento e ajustes de UX.</p>
+                  </div>
+                  {CLOSED_BETA_CHANGELOG.map(entry => (
+                    <section key={entry.version} className="rounded-2xl border border-border p-4">
+                      <div className="flex items-center justify-between gap-3"><h3 className="font-black">{entry.title}</h3><span className="rounded-full bg-secondary px-2.5 py-1 text-[10px] font-black uppercase">{entry.version}</span></div>
+                      <ul className="mt-3 space-y-2">{entry.items.map(item => <li key={item} className="flex gap-2 text-xs text-muted-foreground"><CheckCircle2 className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" /> <span>{item}</span></li>)}</ul>
+                    </section>
+                  ))}
                 </div>
               )}
 

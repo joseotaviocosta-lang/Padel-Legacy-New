@@ -30,6 +30,6 @@ assert.match(app, /BetaErrorBoundary/);
 assert(!app.includes('ReplayLibrary'), 'Replay não deve voltar às rotas públicas da versão beta.');
 
 const packageJson = JSON.parse(await readFile('package.json', 'utf8'));
-assert.match(packageJson.version, /beta/i, 'A versão deve estar identificada como beta.');
+assert.match(packageJson.version, /(?:beta|rc)/i, 'A versão deve estar identificada como beta ou release candidate.');
 
 console.log(`BetaReadiness: ${checks.length} suítes essenciais aprovadas; versão ${packageJson.version}.`);

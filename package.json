@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.46",
+  "version": "0.9.0-rc.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -103,7 +103,8 @@
     "test:rc-qa:full": "node scripts/rc-qa-suite-v36.mjs --full",
     "test:rc-qa:dry": "node scripts/rc-qa-suite-v36.mjs --dry-run",
     "test:rc-qa-manager": "node scripts/test-rc-qa-manager-v36.mjs",
-    "test:hotfix-v36.9.1": "node scripts/test-hotfix-v36-9-1.mjs"
+    "test:hotfix-v36.9.1": "node scripts/test-hotfix-v36-9-1.mjs",
+    "test:closed-beta-candidate": "node scripts/test-closed-beta-candidate-rc1.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",
