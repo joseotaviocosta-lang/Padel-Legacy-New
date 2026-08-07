@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 import assert from 'node:assert/strict';
@@ -9,7 +10,7 @@ const betaTools = read('src/components/system/BetaTools.jsx');
 const feedback = read('src/lib/betaFeedback.js');
 
 const checks = [
-  ['versão beta.27', () => assert.equal(pkg.version, '0.9.0-beta.27')],
+  ['versão beta.27', () => assert.ok(isAtLeastBetaOrRC(pkg.version, 27))],
   ['script fechado', () => assert.equal(pkg.scripts['test:closed-beta-v35'], 'node scripts/test-closed-beta-v35.mjs')],
   ['formulário de relato', () => assert.match(betaTools, /Passos para reproduzir/)],
   ['classificação de gravidade', () => assert.match(betaTools, /Bloqueador — impede jogar/)],

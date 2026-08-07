@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './scripts/release-version-utils.mjs';
 import fs from 'node:fs';
 const health = fs.readFileSync('src/lib/simulationHealth.js','utf8');
 const beta = fs.readFileSync('src/components/system/BetaTools.jsx','utf8');
@@ -7,7 +8,7 @@ const checks = [
  ['aplicação segura', health.includes('applyWorldRepairPlan') && health.includes("status: 'applied'")],
  ['backup antes da correção', beta.includes('writeBackup') && beta.includes('applySafeRepairs')],
  ['interface auditor', beta.includes('Auditor Mundial Seguro') && beta.includes('Preparar correções')],
- ['versão', /^0\.9\.0-(?:beta\.(?:3[0-9]|[4-9][0-9])|rc\.\d+)$/.test(pkg.version)],
+ ['versão', isAtLeastBetaOrRC(pkg.version, 30)],
  ['script', Boolean(pkg.scripts?.['test:world-auditor-v35'])],
 ];
 const failed=checks.filter(([,ok])=>!ok);

@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 const root = process.cwd();
@@ -6,7 +7,7 @@ const tools = read('src/components/system/BetaTools.jsx');
 const readiness = read('src/lib/betaReadiness.js');
 const pkg = JSON.parse(read('package.json'));
 const checks = [
-  ['versão beta.28', pkg.version === '0.9.0-beta.28'],
+  ['versão beta.28', isAtLeastBetaOrRC(pkg.version, 28)],
   ['aba checklist', tools.includes("mode === 'checklist'") && tools.includes('BETA_CHECKLIST.map')],
   ['proteção do save', tools.includes("mode === 'save'") && tools.includes('createManualBackup')],
   ['exportação do save', tools.includes('exportActiveSave') && tools.includes('downloadJsonFile')],

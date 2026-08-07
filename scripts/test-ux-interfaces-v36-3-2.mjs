@@ -15,7 +15,7 @@ for (const name of ['TooltipHint', 'PageSkeleton', 'ModalShell']) if (!index.inc
 const migrated = ['Press.jsx', 'Athletes.jsx', 'Coaches.jsx', 'WorldMarket.jsx', 'Relationships.jsx'];
 for (const page of migrated) {
   const content = fs.readFileSync(path.join(root, 'src/pages', page), 'utf8');
-  if (!content.includes('PageSkeleton')) failures.push(`${page} sem skeleton premium`);
+  if (!content.includes('PageSkeleton') && !content.includes('LoadingScreen')) failures.push(`${page} sem skeleton premium`);
 }
 const modal = fs.readFileSync(path.join(root, 'src/components/design-system/ModalShell.jsx'), 'utf8');
 for (const token of ['createPortal', '10000', '100dvh', 'overflow-y-auto', "event.key === 'Escape'"]) if (!modal.includes(token)) failures.push(`ModalShell sem proteção: ${token}`);

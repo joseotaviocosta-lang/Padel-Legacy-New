@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -24,6 +25,6 @@ expect('CSS possui sistema de modal', css.includes('.pl-modal-panel'));
 expect('CSS protege overflow horizontal', css.includes('.pl-no-horizontal-overflow'));
 expect('CSS possui ações fixas seguras', css.includes('.pl-sticky-actions'));
 expect('Script registrado', pkg.scripts?.['test:polish-ui-v36']);
-expect('Versão atualizada', pkg.version === '0.9.0-beta.36');
+expect('Versão atualizada', isAtLeastBetaOrRC(pkg.version, 36));
 
 console.log(`PolishUIV36_4_1Test: PASS (${checks.length}/${checks.length})`);

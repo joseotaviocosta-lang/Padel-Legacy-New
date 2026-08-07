@@ -24,8 +24,12 @@ try {
   assert(getPendingInterviews(profile, [], {}).length === 0, 'Carreira nova gerou entrevista.');
   const win = { id: 'win-1', profile_id: profile.id, date: '2026-01-02', tournament_name: 'Teste Open', team_a: ['Teste', 'Dupla'], team_b: ['Rival A', 'Rival B'], winner: 'A' };
   const loss = { ...win, id: 'loss-1', winner: 'B' };
-  assert(getPendingInterviews(profile, [win], {})[0]?.questionCategory === 'post_win', 'Vitória real não gerou entrevista única.');
-  assert(getPendingInterviews(profile, [loss], {})[0]?.questionCategory === 'post_loss', 'Derrota real não gerou entrevista única.');
+  const profileAfterWin = { ...profile, career_date: '2026-01-02', wins: 1, matches_played: 1 };
+  const profileAfterLoss = { ...profile, career_date: '2026-01-02', losses: 1, matches_played: 1 };
+  const winInterviews = getPendingInterviews(profileAfterWin, [win], {});
+  const lossInterviews = getPendingInterviews(profileAfterLoss, [loss], {});
+  assert(winInterviews.length === 1 && winInterviews[0]?.questionCategory === 'post_win', 'Vitória real não gerou entrevista única.');
+  assert(lossInterviews.length === 1 && lossInterviews[0]?.questionCategory === 'post_loss', 'Derrota real não gerou entrevista única.');
   assert(getPendingInterviews(profile, [{ ...win, profile_id: 'other-career' }], {}).length === 0, 'Resultado de outra carreira vazou.');
   const coach = COACHES_DATA[0];
   assert(coach.monthly_cost > 0 && coach.sign_on_bonus > 0, 'Treinador sem custo ou salário.');

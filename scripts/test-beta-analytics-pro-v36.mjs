@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 import path from 'node:path';
 
@@ -14,7 +15,7 @@ const checks = [
   ['usage panel', betaTools.includes('Uso dos sistemas')],
   ['unused features', betaTools.includes('Ainda não descoberto')],
   ['complete export', betaTools.includes('Exportar estatísticas completas')],
-  ['version', pkg.version === '0.9.0-beta.41'],
+  ['version', isAtLeastBetaOrRC(pkg.version, 41)],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

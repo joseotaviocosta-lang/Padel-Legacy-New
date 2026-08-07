@@ -1,14 +1,17 @@
 import fs from 'node:fs';
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 
 const checks = [
   ['src/hooks/useAdaptivePerformance.js', ['allowDecorativeMotion', 'allowRoutePreload', 'visibilitychange']],
   ['src/components/AppLayout.jsx', ['useAdaptivePerformance', 'performanceProfile.allowDecorativeMotion', 'performanceProfile.allowRoutePreload']],
   ['src/components/design-system/Page.jsx', ['pl-auto-contain']],
   ['src/index.css', ['v36.4.3 — Performance & Responsiveness', 'content-visibility: auto', 'max-height: 720px']],
-  ['package.json', ['0.9.0-beta.38', 'test:performance-responsive-v36']],
+  ['package.json', ['test:performance-responsive-v36']],
 ];
 
 const failures = [];
+const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+if (!isAtLeastBetaOrRC(pkg.version, 38)) failures.push(`package.json: versão incompatível ${pkg.version}`);
 for (const [file, fragments] of checks) {
   if (!fs.existsSync(file)) {
     failures.push(`${file}: ausente`);

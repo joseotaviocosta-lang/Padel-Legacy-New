@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 const required = [
   ['src/lib/betaAnalytics.js', ['MAX_SESSIONS = 50', 'MAX_EVENTS = 2000', 'trackBetaScreen', 'trackBetaEvent', 'buildBetaAnalyticsExport']],
@@ -15,5 +16,5 @@ for (const [file, needles] of required) {
 }
 const pkg = JSON.parse(fs.readFileSync('package.json','utf8'));
 if (!pkg.scripts['test:beta-analytics']) throw new Error('script test:beta-analytics ausente');
-if (pkg.version !== '0.9.0-beta.40') throw new Error(`versão inesperada: ${pkg.version}`);
+if (!isAtLeastBetaOrRC(pkg.version, 40)) throw new Error(`versão inesperada: ${pkg.version}`);
 console.log(`BetaAnalyticsV36Test: PASS (${passed + 2}/${passed + 2})`);

@@ -296,11 +296,14 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
     Number(profile.wins || 0) + Number(profile.losses || 0)
   );
 
-  const ownMatches = recordedMatchCount > 0
-    ? (recentMatches || [])
-      .filter(match => isCompletedPlayerMatch(match, profile, playerNames, careerDate))
+  const ownMatches = (recordedMatchCount > 0
+    ? (recentMatches || []).filter(match => isCompletedPlayerMatch(match, profile, playerNames, careerDate))
     : []
-    .sort((a, b) => String(b.date || b.created_date || '').localeCompare(String(a.date || a.created_date || '')));
+  ).sort((a, b) => String(
+    b.played_date || b.match_date || b.date || b.completed_at || b.created_date || ''
+  ).localeCompare(String(
+    a.played_date || a.match_date || a.date || a.completed_at || a.created_date || ''
+  )));
 
   // Entrevistas pós-jogo só existem quando uma partida real do jogador foi registrada.
   const lastMatch = ownMatches[0];

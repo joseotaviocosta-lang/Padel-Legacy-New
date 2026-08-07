@@ -227,7 +227,9 @@ export default function Missions() {
       setProfile(result.profile);
       setProgress(Object.fromEntries((result.progressRows || []).map(row => [row.mission_id, row])));
       setActionFeedback('Etapa concluída. O próximo passo já está disponível.');
-      window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: tutorialStep.id } }));
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: tutorialStep.id } }));
+      }
       await load();
     } catch (error) {
       console.error('[tutorial] Falha ao confirmar entendimento.', {

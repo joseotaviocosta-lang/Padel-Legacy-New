@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 
 const careerHub = fs.readFileSync('src/pages/CareerHub.jsx', 'utf8');
@@ -12,7 +13,7 @@ const checks = [
   ['Atalhos diretos', careerHub.includes('to="/communications"') && careerHub.includes('to="/tournaments"')],
   ['Header inteligente', layout.includes('CareerHeaderContext') && header.includes('padel:day-advanced')],
   ['Contextos do header', header.includes('Recuperação') && header.includes('Fadiga alta') && header.includes('Semana de desenvolvimento')],
-  ['Versão da entrega', pkg.version === '0.9.0-beta.33'],
+  ['Versão da entrega', isAtLeastBetaOrRC(pkg.version, 33)],
 ];
 
 const failed = checks.filter(([, ok]) => !ok);

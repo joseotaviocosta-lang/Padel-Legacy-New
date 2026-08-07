@@ -1,3 +1,4 @@
+import { isAtLeastBetaOrRC } from './release-version-utils.mjs';
 import fs from 'node:fs';
 
 const checks = [];
@@ -11,7 +12,7 @@ const betaTools = fs.readFileSync('src/components/system/BetaTools.jsx', 'utf8')
 const insights = fs.readFileSync('src/lib/betaInsights.js', 'utf8');
 const inspector = fs.readFileSync('src/lib/saveInspector.js', 'utf8');
 
-check(/^0\.9\.0-(?:beta\.(?:4[5-9]|[5-9]\d|\d{3,})|rc\.\d+)$/.test(pkg.version), 'versão beta.45+ ou RC');
+check(isAtLeastBetaOrRC(pkg.version, 45), 'versão beta.45+ ou RC');
 check(pkg.scripts['test:rc-beta-intelligence']?.includes('test-rc-beta-intelligence-v36.mjs'), 'script de teste registrado');
 check(betaTools.includes("['insights', 'Insights']"), 'aba Insights presente');
 check(betaTools.includes("['inspector', 'Save Inspector']"), 'aba Save Inspector presente');

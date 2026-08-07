@@ -1,12 +1,12 @@
 {
-  "generatedAt": "2026-08-07T13:33:05.180Z",
-  "version": "0.9.0-rc.1",
-  "profile": "smoke",
+  "generatedAt": "2026-08-07T17:08:19.227Z",
+  "version": "0.9.0-rc.1.5",
+  "profile": "core",
   "status": "READY",
   "score": 100,
   "summary": {
-    "total": 6,
-    "passed": 6,
+    "total": 36,
+    "passed": 36,
     "failed": 0,
     "skipped": 0,
     "missing": 0
@@ -14,63 +14,363 @@
   "missingScripts": [],
   "results": [
     {
+      "name": "validate:architecture",
+      "status": "PASS",
+      "durationMs": 849,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 validate:architecture\n> node scripts/validate-architecture.mjs\n\nArquitetura Sprint 2.5 validada.\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:vite-config",
+      "status": "PASS",
+      "durationMs": 575,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:vite-config\n> node scripts/test-vite-config.mjs\n\nViteConfigTest: host, porta, HMR, Tauri, imports e protecao de processo aprovados.\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:career-systems",
+      "status": "PASS",
+      "durationMs": 14194,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:career-systems\n> node scripts/test-career-systems.mjs\n\nCareerSystemsAuditTest: persistência, migration e Missions aprovadas.\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:players",
+      "status": "PASS",
+      "durationMs": 1098,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 264,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:player-builds",
+      "status": "PASS",
+      "durationMs": 464903,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:player-builds\n> node scripts/test-player-builds.mjs\n\n{\n  \"success\": true,\n  \"builds\": 42,\n  \"budget\": 115,\n  \"complementaryCompatibility\": 97,\n  \"duplicateRoleCompatibility\": 88,\n  \"simulations\": [\n    {\n      \"id\": \"direita-controle\",\n      \"winRate\": 55,\n      \"attackIntent\": 62.4,\n      \"constructionIntent\": 100.1,\n      \"safeIntent\": 65.7,\n      \"winners\": 8.8,\n      \"errors\": 77.2\n    },\n    {\n      \"id\": \"direita-defensivo\",\n      \"winRate\": 63.8,\n      \"attackIntent\": 56.8,\n      \"constructionIntent\": 84.4,\n      \"safeIntent\": 74.1,\n      \"winners\": 9.4,\n      \"errors\": 76.6\n    },\n    {\n      \"id\": \"direita-ofensivo-destro\",\n      \"winRate\": 60.6,\n      \"attackIntent\": 94.8,\n      \"constructionIntent\": 65,\n      \"safeIntent\": 52.6,\n      \"winners\": 9.5,\n      \"errors\": 77.8\n    },\n    {\n      \"id\": \"direita-ofensivo-canhoto\",\n      \"winRate\": 52.5,\n      \"attackIntent\": 93.8,\n      \"constructionIntent\": 61.5,\n      \"safeIntent\": 51.2,\n      \"winners\": 9.2,\n      \"errors\": 78.7\n    },\n    {\n      \"id\": \"esquerda-finalizador\",\n      \"winRate\": 61.9,\n      \"attackIntent\": 89.6,\n      \"constructionIntent\": 58.4,\n      \"safeIntent\": 50.6,\n      \"winners\": 9.3,\n      \"errors\": 78.1\n    },\n    {\n      \"id\": \"esquerda-controle\",\n      \"winRate\": 53.1,\n      \"attackIntent\": 56.3,\n      \"constructionIntent\": 94.7,\n      \"safeIntent\": 63,\n      \"winners\": 9.3,\n      \"errors\": 76.6\n    },\n    {\n      \"id\": \"esquerda-defensivo\",\n      \"winRate\": 58.1,\n      \"attackIntent\": 57.8,\n      \"constructionIntent\": 89,\n      \"safeIntent\": 76.3,\n      \"winners\": 9.5,\n      \"errors\": 77.3\n    },\n    {\n      \"id\": \"versatil-equilibrado\",\n      \"winRate\": 49.4,\n      \"attackIntent\": 61.2,\n      \"constructionIntent\": 68.3,\n      \"safeIntent\": 55,\n      \"winners\": 9.5,\n      \"errors\": 78.4\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
       "name": "test:match-integrity",
       "status": "PASS",
-      "durationMs": 1167,
+      "durationMs": 1465,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:match-integrity\n> node scripts/test-match-integrity.mjs\n\n{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 114,\n  \"games\": 16,\n  \"breaks\": 6,\n  \"deterministic\": true\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:match-integrity\n> node scripts/test-match-integrity.mjs\n\n{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 114,\n  \"games\": 16,\n  \"breaks\": 6,\n  \"deterministic\": true\n}\n",
       "stderr": ""
     },
     {
-      "name": "test:calendar-advance",
+      "name": "test:match-playback",
       "status": "PASS",
-      "durationMs": 571,
+      "durationMs": 1163,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:calendar-advance\n> node scripts/test-calendar-advance-v24.mjs\n\nCalendarAdvanceV24Test: PASS\n✓ atalhos ignoram torneios passivos e atividades automáticas\n✓ torneios inscritos continuam bloqueando o avanço normal\n✓ lesão resolve torneios e treinos automaticamente\n✓ decisões administrativas continuam protegidas\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:match-playback\n> node scripts/test-match-playback-tactics.mjs\n\n{\n  \"ok\": true,\n  \"matchFinished\": true,\n  \"pointEvents\": 94,\n  \"tacticChangeRecorded\": true,\n  \"tacticDecisionSignatures\": 5,\n  \"shotMetrics\": {\n    \"equilibrado\": {\n      \"total\": 41,\n      \"attacks\": 17,\n      \"smash\": 6,\n      \"lob\": 7,\n      \"safe\": 19,\n      \"tactical\": 20,\n      \"finalEnergy\": 90.8\n    },\n    \"agressivo\": {\n      \"total\": 40,\n      \"attacks\": 24,\n      \"smash\": 9,\n      \"lob\": 5,\n      \"safe\": 12,\n      \"tactical\": 13,\n      \"finalEnergy\": 90\n    },\n    \"defensivo\": {\n      \"total\": 46,\n      \"attacks\": 11,\n      \"smash\": 3,\n      \"lob\": 10,\n      \"safe\": 27,\n      \"tactical\": 29,\n      \"finalEnergy\": 92.1\n    },\n    \"potencia\": {\n      \"total\": 41,\n      \"attacks\": 25,\n      \"smash\": 6,\n      \"lob\": 3,\n      \"safe\": 12,\n      \"tactical\": 11,\n      \"finalEnergy\": 87.5\n    },\n    \"tatico\": {\n      \"total\": 46,\n      \"attacks\": 13,\n      \"smash\": 3,\n      \"lob\": 10,\n      \"safe\": 27,\n      \"tactical\": 29,\n      \"finalEnergy\": 89.5\n    }\n  }\n}\n",
       "stderr": ""
     },
     {
-      "name": "test:tournament-registration",
+      "name": "test:live-coach",
       "status": "PASS",
-      "durationMs": 3851,
+      "durationMs": 593,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:tournament-registration\n> node scripts/test-tournament-registration-v2.mjs\n\n{\n  \"firstTournament\": {\n    \"allowed\": true,\n    \"reasons\": [],\n    \"warnings\": [],\n    \"registrationWindow\": {\n      \"opensAt\": \"2025-12-09\",\n      \"closesAt\": \"2026-01-07\"\n    },\n    \"interval\": {\n      \"start\": \"2026-01-08\",\n      \"end\": \"2026-01-10\"\n    },\n    \"entry\": {\n      \"path\": \"direct\",\n      \"eligible\": true,\n      \"reason\": \"Legacy Silver aberto a atletas sem ranking.\"\n    }\n  },\n  \"overlapBlocked\": [\n    \"DATE_CONFLICT\"\n  ],\n  \"migrationRegistrations\": 1,\n  \"scenarios\": [\n    \"registered-reload-play-gate\",\n    \"unregistered-play-blocked\",\n    \"overlap-cancel-reselect\"\n  ]\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:live-coach\n> node scripts/test-live-coach.mjs\n\nPadelLiveCoachTest: {\n  ok: true,\n  patternDetected: true,\n  confidenceCalculated: true,\n  suggestionGenerated: true,\n  partialAdjustmentApplied: true,\n  futureEventsOnly: true,\n  partnerFeedbackWorking: true,\n  aiAdaptationWorking: true,\n  cooldownRespected: true,\n  deterministic: true,\n  postMatchReportGenerated: true,\n  fallbackWorking: true,\n  replayWorking: true,\n  performanceWorking: true\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:rc-gameplay-balance",
+      "status": "PASS",
+      "durationMs": 55811,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:rc-gameplay-balance\n> node scripts/test-rc-gameplay-balance-v36.mjs\n\n{\n  \"success\": true,\n  \"configuration\": {\n    \"matchesPerScenario\": 30,\n    \"totalMatchSimulations\": 150,\n    \"careerRuns\": 10,\n    \"seasons\": 10,\n    \"totalCareerSimulations\": 100\n  },\n  \"matchReports\": [\n    {\n      \"id\": \"equal-teams\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 43.33,\n        \"B\": 56.67\n      },\n      \"serviceHoldRate\": 78.65,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 4.62\n    },\n    {\n      \"id\": \"moderate-skill-gap\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 60,\n        \"B\": 40\n      },\n      \"serviceHoldRate\": 80.22,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 7.69\n    },\n    {\n      \"id\": \"elite-skill-gap\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 73.33,\n        \"B\": 26.67\n      },\n      \"serviceHoldRate\": 75.59,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 12.9\n    },\n    {\n      \"id\": \"low-serve-not-double-faults\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 33.33,\n        \"B\": 66.67\n      },\n      \"serviceHoldRate\": 74.75,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 10.94\n    },\n    {\n      \"id\": \"aggressive-tactic\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 50,\n        \"B\": 50\n      },\n      \"serviceHoldRate\": 80.52,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 1.59\n    }\n  ],\n  \"careerGates\": {\n    \"top500Reachable\": true,\n    \"top100InCareerWindow\": true,\n    \"overallControlled\": true,\n    \"injuriesControlled\": true,\n    \"partnerStability\": true,\n    \"bankruptcyControlled\": true\n  },\n  \"observations\": [\n    {\n      \"severity\": \"attention\",\n      \"code\": \"TOP10_NOT_REACHED_IN_APPROX_SIM\",\n      \"message\": \"O simulador aproximado v32 não leva integralmente em conta os pontos atuais do World Tour; não usar isoladamente para recalibrar o ranking real.\"\n    }\n  ]\n}\n",
       "stderr": ""
     },
     {
       "name": "test:rc-match-experience",
       "status": "PASS",
-      "durationMs": 1147,
+      "durationMs": 1150,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:rc-match-experience\n> node scripts/test-rc-match-experience-pack.mjs\n\nRCMatchExperiencePackTest: PASS (9/9)\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:rc-match-experience\n> node scripts/test-rc-match-experience-pack.mjs\n\nRCMatchExperiencePackTest: PASS (9/9)\n",
       "stderr": ""
     },
     {
-      "name": "test:rc-beta-intelligence",
+      "name": "test:training-v2",
       "status": "PASS",
-      "durationMs": 560,
+      "durationMs": 3767,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:rc-beta-intelligence\n> node scripts/test-rc-beta-intelligence-v36.mjs\n\nRCBetaIntelligenceV36Test: PASS (11/11)\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:training-v2\n> node scripts/test-training-system-v2.mjs\n\n{\n  \"catalog\": 15,\n  \"groups\": 4,\n  \"scenarios\": [\n    {\n      \"level\": 20,\n      \"plan\": \"balanced\",\n      \"progress\": 39.34,\n      \"energy\": 312\n    },\n    {\n      \"level\": 20,\n      \"plan\": \"repeated\",\n      \"progress\": 35.72,\n      \"energy\": 312\n    },\n    {\n      \"level\": 50,\n      \"plan\": \"balanced\",\n      \"progress\": 38.46,\n      \"energy\": 312\n    },\n    {\n      \"level\": 50,\n      \"plan\": \"repeated\",\n      \"progress\": 30.4,\n      \"energy\": 312\n    },\n    {\n      \"level\": 80,\n      \"plan\": \"balanced\",\n      \"progress\": 37.58,\n      \"energy\": 312\n    },\n    {\n      \"level\": 80,\n      \"plan\": \"repeated\",\n      \"progress\": 25.04,\n      \"energy\": 312\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:tournament-registration",
+      "status": "PASS",
+      "durationMs": 3758,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:tournament-registration\n> node scripts/test-tournament-registration-v2.mjs\n\n{\n  \"firstTournament\": {\n    \"allowed\": true,\n    \"reasons\": [],\n    \"warnings\": [],\n    \"registrationWindow\": {\n      \"opensAt\": \"2025-12-09\",\n      \"closesAt\": \"2026-01-07\"\n    },\n    \"interval\": {\n      \"start\": \"2026-01-08\",\n      \"end\": \"2026-01-10\"\n    },\n    \"entry\": {\n      \"path\": \"direct\",\n      \"eligible\": true,\n      \"reason\": \"Legacy Silver aberto a atletas sem ranking.\"\n    }\n  },\n  \"overlapBlocked\": [\n    \"DATE_CONFLICT\"\n  ],\n  \"migrationRegistrations\": 1,\n  \"scenarios\": [\n    \"registered-reload-play-gate\",\n    \"unregistered-play-blocked\",\n    \"overlap-cancel-reselect\"\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:partner-offers",
+      "status": "PASS",
+      "durationMs": 600,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:partner-offers\n> node scripts/test-partner-offers-v2.mjs\n\npartner-offers-v2: navegação, geração, compatibilidade, concorrência lógica e migration OK\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:career-pace",
+      "status": "PASS",
+      "durationMs": 657,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:career-pace\n> node scripts/test-career-pace-v17.mjs\n\n{\n  \"status\": \"ok\",\n  \"maxCareerXp\": 100000,\n  \"level20Xp\": 17331,\n  \"level40Xp\": 65555,\n  \"tournamentsPerYear\": 32,\n  \"tournamentWeeks\": 24,\n  \"automaticTraining\": true,\n  \"potentialCeilings\": true\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:injuries",
+      "status": "PASS",
+      "durationMs": 717,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:injuries\n> node scripts/test-injury-balance-v21.mjs\n\n{\n  \"trainingCases\": [\n    {\n      \"name\": \"leve-descansado\",\n      \"intensityId\": \"leve\",\n      \"fatigue\": 15,\n      \"energy\": 90,\n      \"expectedMax\": 0.001,\n      \"risk\": 0.0005\n    },\n    {\n      \"name\": \"normal-descansado\",\n      \"intensityId\": \"moderado\",\n      \"fatigue\": 25,\n      \"energy\": 85,\n      \"expectedMax\": 0.0025,\n      \"risk\": 0.0015\n    },\n    {\n      \"name\": \"intenso-descansado\",\n      \"intensityId\": \"intenso\",\n      \"fatigue\": 30,\n      \"energy\": 90,\n      \"expectedMax\": 0.006,\n      \"risk\": 0.0045\n    },\n    {\n      \"name\": \"normal-fadiga-alta\",\n      \"intensityId\": \"moderado\",\n      \"fatigue\": 72,\n      \"energy\": 55,\n      \"expectedMin\": 0.002,\n      \"expectedMax\": 0.006,\n      \"risk\": 0.00235\n    },\n    {\n      \"name\": \"intenso-sobrecarga\",\n      \"intensityId\": \"intenso\",\n      \"fatigue\": 88,\n      \"energy\": 35,\n      \"secondSession\": true,\n      \"expectedMin\": 0.006,\n      \"expectedMax\": 0.018,\n      \"risk\": 0.009049999999999999\n    },\n    {\n      \"name\": \"intenso-sobrecarga-medico\",\n      \"intensityId\": \"intenso\",\n      \"fatigue\": 88,\n      \"energy\": 35,\n      \"secondSession\": true,\n      \"staffMultiplier\": 0.55,\n      \"expectedMax\": 0.01,\n      \"risk\": 0.0049775\n    }\n  ],\n  \"tournamentCases\": [\n    {\n      \"name\": \"partida-normal\",\n      \"profile\": {\n        \"energy\": 72,\n        \"fatigue\": 28,\n        \"condition\": 75\n      },\n      \"load\": {\n        \"energyCost\": 16\n      },\n      \"expectedMax\": 0.004,\n      \"risk\": 0.0007\n    },\n    {\n      \"name\": \"partida-cansado\",\n      \"profile\": {\n        \"energy\": 38,\n        \"fatigue\": 63,\n        \"condition\": 68\n      },\n      \"load\": {\n        \"energyCost\": 20\n      },\n      \"expectedMin\": 0.002,\n      \"expectedMax\": 0.012,\n      \"risk\": 0.0035199999999999997\n    },\n    {\n      \"name\": \"partida-sobrecarga\",\n      \"profile\": {\n        \"energy\": 18,\n        \"fatigue\": 88,\n        \"condition\": 55\n      },\n      \"load\": {\n        \"energyCost\": 25\n      },\n      \"expectedMin\": 0.015,\n      \"expectedMax\": 0.05,\n      \"risk\": 0.02024\n    },\n    {\n      \"name\": \"partida-sobrecarga-medico\",\n      \"profile\": {\n        \"energy\": 18,\n        \"fatigue\": 88,\n        \"condition\": 55,\n        \"medical_staff_ids\": [\n          \"physio_senior\",\n          \"doctor_sports\"\n        ]\n      },\n      \"load\": {\n        \"energyCost\": 25\n      },\n      \"expectedMax\": 0.035,\n      \"risk\": 0.013358400000000001\n    }\n  ],\n  \"summaries\": [\n    {\n      \"name\": \"casual\",\n      \"sessionsPerWeek\": 2.5,\n      \"intenseShare\": 0.08,\n      \"matchesPerSeason\": 18,\n      \"disciplined\": true,\n      \"staffMultiplier\": 1,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 2.5,\n      \"injuriesPerSeason\": 0.24999999999999992\n    },\n    {\n      \"name\": \"eficiente\",\n      \"sessionsPerWeek\": 4,\n      \"intenseShare\": 0.18,\n      \"matchesPerSeason\": 24,\n      \"disciplined\": true,\n      \"staffMultiplier\": 0.82,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 5.375,\n      \"injuriesPerSeason\": 0.5374999999999999\n    },\n    {\n      \"name\": \"agressivo\",\n      \"sessionsPerWeek\": 5,\n      \"intenseShare\": 0.42,\n      \"matchesPerSeason\": 28,\n      \"disciplined\": true,\n      \"staffMultiplier\": 0.9,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 10.5,\n      \"injuriesPerSeason\": 1.0500000000000003\n    },\n    {\n      \"name\": \"excesso\",\n      \"sessionsPerWeek\": 7,\n      \"intenseShare\": 0.7,\n      \"matchesPerSeason\": 30,\n      \"disciplined\": false,\n      \"staffMultiplier\": 1,\n      \"runs\": 80,\n      \"avgInjuries10Seasons\": 40.2875,\n      \"injuriesPerSeason\": 4.0287500000000005\n    }\n  ]\n}\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:calendar-advance",
+      "status": "PASS",
+      "durationMs": 578,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:calendar-advance\n> node scripts/test-calendar-advance-v24.mjs\n\nCalendarAdvanceV24Test: PASS\n✓ atalhos ignoram torneios passivos e atividades automáticas\n✓ torneios inscritos continuam bloqueando o avanço normal\n✓ lesão resolve torneios e treinos automaticamente\n✓ decisões administrativas continuam protegidas\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:living-world",
+      "status": "PASS",
+      "durationMs": 688,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:living-world\n> node scripts/test-living-world-v23.mjs\n\nLivingWorldV23Test: PASS\n✓ Motor diário centralizado\n✓ Notícias contextuais e idempotentes\n✓ Boletim semanal por carreira\n✓ Linha do tempo mundial\n✓ Central Mundo com 4 abas\n✓ Dashboard integrado\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:global-market",
+      "status": "PASS",
+      "durationMs": 640,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:global-market\n> node scripts/test-global-market-v25.mjs\n\n✓ mercado garante iniciantes\n✓ snapshot reúne atletas, duplas e técnicos\n✓ processamento mensal centralizado\n✓ página possui quatro áreas\n✓ negociação de atletas preservada\n✓ scouting preservado\n✓ export público disponível\nGlobalMarketV25Test: PASS\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:sports-economy",
+      "status": "PASS",
+      "durationMs": 589,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:sports-economy\n> node scripts/test-sports-economy-v26.mjs\n\nSportsEconomyV26Test: PASS\n✓ 4 patrocinadores adequados à fase iniciante\n✓ 72 clubes mundiais determinísticos\n✓ Rotação mensal de equipamentos e lançamentos futuros\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:coaches-v28",
+      "status": "PASS",
+      "durationMs": 577,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:coaches-v28\n> node scripts/test-coach-system-v28.mjs\n\n✓ catálogo ampliado\n✓ competências sem bônus negativos\n✓ treinador inicial obrigatório\n✓ contrato e salário mensal\n✓ demissão mantém treinador\n✓ integração com comissão\n✓ mercado completo\n✓ impacto real em partidas\nCoachSystemV28Test: PASS\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:partnerships-v29",
+      "status": "PASS",
+      "durationMs": 605,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:partnerships-v29\n> node scripts/test-living-partnerships-v29.mjs\n\nLivingPartnershipsV29Test: PASS\n✓ química, confiança e moral separadas\n✓ conversas alteram vínculo\n✓ identidade da dupla é derivada do histórico\n✓ bônus esportivo é pequeno e limitado\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:rc-world-ai",
+      "status": "PASS",
+      "durationMs": 561,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:rc-world-ai\n> node scripts/test-rc-world-ai-v36.mjs\n\nRCWorldAIV36Test: PASS (12/12)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:simulation-health-v35",
+      "status": "PASS",
+      "durationMs": 660,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:simulation-health-v35\n> node test-simulation-health-v35.3.mjs\n\nSimulationHealthV35Test: PASS (6/6)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:world-auditor-v35",
+      "status": "PASS",
+      "durationMs": 644,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:world-auditor-v35\n> node test-world-auditor-v35.4.mjs\n\nWorldAuditorV35Test: PASS (6/6)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:ui-quality",
+      "status": "PASS",
+      "durationMs": 754,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:ui-quality\n> node scripts/audit-ui-quality.mjs\n\nAuditoria de interface aprovada: 629 arquivos UTF-8 verificados.\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:closed-beta-v35",
+      "status": "PASS",
+      "durationMs": 580,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:closed-beta-v35\n> node scripts/test-closed-beta-v35.mjs\n\n✓ versão beta.27\n✓ script fechado\n✓ formulário de relato\n✓ classificação de gravidade\n✓ diagnóstico opcional\n✓ relato seguro\n✓ sanitização de texto\n✓ download dedicado\nClosedBetaV35Test: PASS (8/8)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:beta-safety-v35",
+      "status": "PASS",
+      "durationMs": 676,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:beta-safety-v35\n> node scripts/test-beta-safety-v35.mjs\n\nBetaSafetyV35Test: PASS (6/6)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:beta-integration-v35",
+      "status": "PASS",
+      "durationMs": 576,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:beta-integration-v35\n> node scripts/test-beta-integration-v35-5.mjs\n\n✓ ranking usa circuito completo\n✓ comunidade incorpora rede\n✓ menu social removido\n✓ rota antiga redireciona\n✓ entrevista gera comunicação\n✓ comunicação abre recurso\n✓ imprensa abre entrevistas\nBetaIntegrationV35_5Test: PASS (7/7)\n",
       "stderr": ""
     },
     {
       "name": "test:beta-rc",
       "status": "PASS",
-      "durationMs": 14018,
+      "durationMs": 13473,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1 test:beta-rc\n> node scripts/test-beta-rc-v36.mjs\n\nPASS test:beta\nPASS test:missions\nPASS test:tutorial-engine\nPASS test:calendar-advance\nPASS test:living-world\nPASS test:global-market\nPASS test:sports-economy\nPASS test:coaches-v28\nPASS test:partnerships-v29\nPASS test:staff-architecture\nPASS test:performance-v31\nPASS test:ranking-carryover-v32\nPASS test:career-ai-v34\nPASS test:match-integrity\nPASS test:match-experience-v34\nPASS test:simulation-health-v35\nPASS test:world-auditor-v35\nPASS test:beta-integration-v35\nBetaAuditV36_1: PASS (18/18)\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:beta-rc\n> node scripts/test-beta-rc-v36.mjs\n\nPASS test:beta\nPASS test:missions\nPASS test:tutorial-engine\nPASS test:calendar-advance\nPASS test:living-world\nPASS test:global-market\nPASS test:sports-economy\nPASS test:coaches-v28\nPASS test:partnerships-v29\nPASS test:staff-architecture\nPASS test:performance-v31\nPASS test:ranking-carryover-v32\nPASS test:career-ai-v34\nPASS test:match-integrity\nPASS test:match-experience-v34\nPASS test:simulation-health-v35\nPASS test:world-auditor-v35\nPASS test:beta-integration-v35\nBetaAuditV36_1: PASS (18/18)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:ux-home-v36",
+      "status": "PASS",
+      "durationMs": 569,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:ux-home-v36\n> node scripts/test-ux-home-v36-3-1.mjs\n\n✓ Painel Minha Jornada\n✓ Feed da carreira\n✓ Objetivo dinâmico\n✓ Atalhos diretos\n✓ Header inteligente\n✓ Contextos do header\n✓ Versão da entrega\nUXHomeV36_3_1Test: PASS (7/7)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:ux-interfaces-v36",
+      "status": "PASS",
+      "durationMs": 622,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:ux-interfaces-v36\n> node scripts/test-ux-interfaces-v36-3-2.mjs\n\nUXInterfacesV36_3_2Test: PASS (5 páginas migradas + 3 componentes base)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:polish-ui-v36",
+      "status": "PASS",
+      "durationMs": 652,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:polish-ui-v36\n> node scripts/test-polish-ui-v36-4-1.mjs\n\nPolishUIV36_4_1Test: PASS (11/11)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:performance-responsive-v36",
+      "status": "PASS",
+      "durationMs": 563,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:performance-responsive-v36\n> node scripts/test-performance-responsive-v36-4-3.mjs\n\nPerformanceResponsiveV36_4_3Test: PASS (5/5)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:beta-analytics",
+      "status": "PASS",
+      "durationMs": 572,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:beta-analytics\n> node scripts/test-beta-analytics-v36.mjs\n\nBetaAnalyticsV36Test: PASS (14/14)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:beta-analytics-pro",
+      "status": "PASS",
+      "durationMs": 586,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:beta-analytics-pro\n> node scripts/test-beta-analytics-pro-v36.mjs\n\nBetaAnalyticsProV36Test: PASS (8/8)\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:rc-beta-intelligence",
+      "status": "PASS",
+      "durationMs": 655,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.5 test:rc-beta-intelligence\n> node scripts/test-rc-beta-intelligence-v36.mjs\n\nRCBetaIntelligenceV36Test: PASS (11/11)\n",
       "stderr": ""
     }
   ]
