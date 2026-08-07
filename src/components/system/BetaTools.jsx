@@ -9,6 +9,8 @@ import { CareerRepository } from '@/careers/CareerRepository.js';
 import { BETA_CHECKLIST, buildBetaChecklistReport, downloadJsonFile, loadBetaChecklist, resetBetaChecklist, saveBetaChecklist } from '@/lib/betaReadiness.js';
 import { applyWorldRepairPlan, buildWorldRepairPlan, collectWorldHealth, projectWorldHealth } from '@/lib/simulationHealth.js';
 import { buildBetaAnalyticsExport, clearBetaAnalytics, getBetaAnalyticsSnapshot, getBetaTesterInsights } from '@/lib/betaAnalytics.js';
+import { buildBetaInsights } from '@/lib/betaInsights.js';
+import { buildSaveInspectorExport, inspectCareerSave } from '@/lib/saveInspector.js';
 
 const INITIAL_FEEDBACK = {
   severity: 'medium',
@@ -43,6 +45,9 @@ export default function BetaTools({ compact = false }) {
   const [repairing, setRepairing] = useState(false);
   const [analytics, setAnalytics] = useState(() => getBetaAnalyticsSnapshot());
   const testerInsights = useMemo(() => getBetaTesterInsights(analytics), [analytics]);
+  const betaInsights = useMemo(() => buildBetaInsights(analytics), [analytics]);
+  const [saveInspection, setSaveInspection] = useState(null);
+  const [inspectorStatus, setInspectorStatus] = useState('');
 
   useEffect(() => installBetaDiagnostics(), []);
 
@@ -179,6 +184,24 @@ export default function BetaTools({ compact = false }) {
     }
   }
 
+  async function runSaveInspector() {
+    if (!activeCareer?.career_id) {
+      setInspectorStatus('Nenhuma carreira ativa para inspecionar.');
+      return;
+    }
+    setInspectorStatus('Lendo e validando o save…');
+    try {
+      const career = await careerRepository.readCareer(activeCareer.career_id);
+      const report = inspectCareerSave(career);
+      setSaveInspection(report);
+      setInspectorStatus(`Inspeção concluída: ${report.status} (${report.score}/100).`);
+    } catch (error) {
+      console.error('Falha no Save Inspector', error);
+      setSaveInspection(null);
+      setInspectorStatus(`Falha ao inspecionar o save: ${error?.message || 'erro desconhecido'}`);
+    }
+  }
+
   async function exportActiveSave() {
     if (!activeCareer?.career_id) return;
     setSaveStatus('Preparando exportação…');
@@ -213,6 +236,8 @@ export default function BetaTools({ compact = false }) {
                 ['save', 'Proteção do save'],
                 ['health', 'Saúde do mundo'],
                 ['tester', 'Estatísticas'],
+                ['insights', 'Insights'],
+                ['inspector', 'Save Inspector'],
                 ['analytics', 'Sessão atual'],
                 ['diagnostic', 'Diagnóstico'],
               ].map(([value, label]) => (
@@ -406,6 +431,88 @@ export default function BetaTools({ compact = false }) {
                   </div>
 
                   <button type="button" onClick={() => downloadJsonFile({ ...buildBetaAnalyticsExport(), testerInsights }, `padel-legacy-estatisticas-testador-${Date.now()}.json`)} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Download className="h-4 w-4" /> Exportar estatísticas completas</button>
+                </div>
+              )}
+
+              {mode === 'insights' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-fuchsia-500/20 bg-fuchsia-500/5 p-4">
+                    <p className="flex items-center gap-2 text-sm font-black text-fuchsia-200"><BarChart3 className="h-4 w-4" /> Beta Insights Engine</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Interpreta a telemetria local para destacar descobribilidade, fricção de navegação e oportunidades de UX. Nenhum dado sai do dispositivo.</p>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    {[
+                      ['UX Score', `${betaInsights.uxScore}/100`],
+                      ['Situação', betaInsights.grade],
+                      ['Perfil', betaInsights.behaviorProfile],
+                      ['Fricções', betaInsights.friction.length],
+                    ].map(([label, value]) => <div key={label} className="rounded-2xl border border-border bg-secondary/35 p-3"><p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-lg font-black">{value}</p></div>)}
+                  </div>
+
+                  <div className="rounded-2xl border border-border p-4">
+                    <h3 className="text-sm font-black">Saúde da experiência</h3>
+                    <div className="mt-3 grid gap-3 sm:grid-cols-2">
+                      {Object.entries({ Descoberta: betaInsights.metrics.discovery, Engajamento: betaInsights.metrics.engagement, Navegação: betaInsights.metrics.navigation, Continuidade: betaInsights.metrics.continuity }).map(([label, value]) => <div key={label}><div className="mb-1 flex justify-between text-xs"><span className="font-bold">{label}</span><strong>{value}%</strong></div><div className="h-2 overflow-hidden rounded-full bg-secondary"><div className={`h-full rounded-full ${value >= 85 ? 'bg-emerald-400' : value >= 65 ? 'bg-amber-400' : 'bg-rose-400'}`} style={{ width: `${value}%` }} /></div></div>)}
+                    </div>
+                  </div>
+
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="rounded-2xl border border-border p-4">
+                      <h3 className="text-sm font-black">Cobertura por área</h3>
+                      <div className="mt-3 space-y-2">{betaInsights.categories.map(item => <div key={item.label} className="flex items-center justify-between rounded-xl bg-secondary/40 px-3 py-2 text-xs"><span className="font-bold">{item.label}</span><span><strong>{item.coverage}%</strong> · {item.discovered}/{item.total}</span></div>)}</div>
+                    </div>
+                    <div className="rounded-2xl border border-border p-4">
+                      <h3 className="text-sm font-black">Recomendações</h3>
+                      {betaInsights.recommendations.length ? <div className="mt-3 space-y-2">{betaInsights.recommendations.slice(0, 6).map(item => <div key={item.id} className={`rounded-xl p-3 text-xs ${item.priority === 'attention' ? 'bg-amber-500/10' : 'bg-secondary/40'}`}><p className="font-black">{item.title}</p><p className="mt-1 text-muted-foreground">{item.detail}</p></div>)}</div> : <p className="mt-3 rounded-xl bg-emerald-500/10 p-3 text-xs font-bold text-emerald-200">Nenhuma recomendação importante no momento.</p>}
+                    </div>
+                  </div>
+
+                  <div className="rounded-2xl border border-border p-4">
+                    <div className="flex items-center justify-between gap-3"><div><h3 className="text-sm font-black">Possíveis pontos de fricção</h3><p className="text-[11px] text-muted-foreground">São indícios de UX para investigação, não bugs confirmados.</p></div><span className="rounded-full bg-secondary px-2 py-1 text-[10px] font-black">{betaInsights.friction.length}</span></div>
+                    {betaInsights.friction.length ? <div className="mt-3 space-y-2">{betaInsights.friction.map(item => <div key={item.id} className="flex gap-3 rounded-xl border border-amber-500/15 bg-amber-500/5 p-3"><AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-amber-300" /><div><p className="text-xs font-black">{item.title}</p><p className="mt-1 text-[11px] text-muted-foreground">{item.detail}</p></div></div>)}</div> : <p className="mt-3 rounded-xl bg-emerald-500/10 p-3 text-xs font-bold text-emerald-200">Nenhum padrão forte de fricção detectado.</p>}
+                  </div>
+
+                  <button type="button" onClick={() => downloadJsonFile({ ...buildBetaAnalyticsExport(), betaInsights }, `padel-legacy-beta-insights-${Date.now()}.json`)} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Download className="h-4 w-4" /> Exportar insights</button>
+                </div>
+              )}
+
+              {mode === 'inspector' && (
+                <div className="space-y-4">
+                  <div className="rounded-2xl border border-sky-500/20 bg-sky-500/5 p-4">
+                    <p className="flex items-center gap-2 text-sm font-black text-sky-200"><HardDrive className="h-4 w-4" /> Save Inspector Pro</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Inspeciona a estrutura do save sem alterar nada: schema, IDs, países, duplas, missões, inscrições, contratos, comunicações e ranking.</p>
+                  </div>
+
+                  <button type="button" onClick={runSaveInspector} disabled={!activeCareer?.career_id} className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-40"><RefreshCw className="h-4 w-4" /> Inspecionar carreira ativa</button>
+                  {inspectorStatus && <p className="rounded-xl bg-secondary/55 p-3 text-xs text-muted-foreground">{inspectorStatus}</p>}
+
+                  {saveInspection && <>
+                    <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                      {[
+                        ['Saúde', `${saveInspection.score}/100`],
+                        ['Status', saveInspection.status],
+                        ['Registros', saveInspection.counts.records],
+                        ['Problemas', saveInspection.issues.length],
+                      ].map(([label, value]) => <div key={label} className="rounded-2xl border border-border bg-secondary/35 p-3"><p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">{label}</p><p className="mt-1 text-lg font-black">{value}</p></div>)}
+                    </div>
+
+                    <div className="rounded-2xl border border-border p-4">
+                      <h3 className="text-sm font-black">Resumo estrutural</h3>
+                      <div className="mt-3 grid grid-cols-2 gap-2 text-xs sm:grid-cols-3">{Object.entries(saveInspection.counts).map(([key, value]) => <div key={key} className="rounded-xl bg-secondary/40 p-2.5"><p className="truncate text-[10px] uppercase tracking-wide text-muted-foreground">{key.replaceAll(/([A-Z])/g, ' $1')}</p><p className="mt-0.5 font-black">{value}</p></div>)}</div>
+                    </div>
+
+                    <div className="rounded-2xl border border-border p-4">
+                      <h3 className="text-sm font-black">Inconsistências encontradas</h3>
+                      {saveInspection.issues.length ? <div className="mt-3 space-y-2">{saveInspection.issues.map(item => <div key={item.id} className={`rounded-xl border p-3 ${item.severity === 'blocker' || item.severity === 'high' ? 'border-rose-500/20 bg-rose-500/5' : 'border-amber-500/15 bg-amber-500/5'}`}><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-black">{item.area} · {item.title}</p><p className="mt-1 text-[11px] text-muted-foreground">{item.detail}</p></div><span className="rounded-full bg-background/60 px-2 py-1 text-[10px] font-black uppercase">{item.severity} · {item.count}</span></div></div>)}</div> : <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3 text-xs font-bold text-emerald-200"><CheckCircle2 className="h-4 w-4" /> Nenhuma inconsistência estrutural detectada.</p>}
+                    </div>
+
+                    <div className="grid gap-2 sm:grid-cols-2">
+                      <button type="button" onClick={() => downloadJsonFile(buildSaveInspectorExport(saveInspection), `padel-legacy-save-inspector-${Date.now()}.json`)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Download className="h-4 w-4" /> Exportar diagnóstico</button>
+                      <button type="button" onClick={createManualBackup} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary"><ShieldCheck className="h-4 w-4" /> Criar backup agora</button>
+                    </div>
+                    <p className="text-[11px] text-muted-foreground">O Inspector é somente leitura. Correções automáticas de baixo risco continuam disponíveis em “Saúde do mundo”, sempre com backup prévio.</p>
+                  </>}
                 </div>
               )}
 

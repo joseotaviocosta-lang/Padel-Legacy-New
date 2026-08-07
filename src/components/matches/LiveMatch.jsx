@@ -261,7 +261,7 @@ function MatchFeed({
   coachSuggestion,
   onOpenCoach,
 }) {
-  const keyTypes = ['game', 'set', 'match', 'tiebreak_start', 'tiebreak_end'];
+  const keyTypes = ['game', 'set', 'match', 'tiebreak_start', 'tiebreak_end', 'moment'];
   const filteredNarration = displayMode === 'important'
     ? state.narration.filter((event) => keyTypes.includes(event.type))
     : displayMode === 'summary'
@@ -427,8 +427,9 @@ function LiveStatsPanel({ state }) {
   const teamA = state.stats?.teams?.A || {};
   const teamB = state.stats?.teams?.B || {};
   const recent = (state.pointEvents || []).slice(-10);
-  const recentA = recent.filter((event) => event.winnerTeamId === 'A').length;
-  const momentumA = recent.length ? Math.round((recentA / recent.length) * 100) : 50;
+  const rawMomentum = Number(state.momentum?.value || 0);
+  const momentumA = Math.round(Math.max(0, Math.min(100, 50 + rawMomentum / 2)));
+  const momentumLabel = rawMomentum >= 55 ? 'Sua dupla domina' : rawMomentum >= 20 ? 'Sua dupla cresce' : rawMomentum <= -55 ? 'Rivais dominam' : rawMomentum <= -20 ? 'Rivais crescem' : 'Equilibrado';
   const avgEnergy = (teamId) => {
     const players = state.teams?.[teamId] || [];
     if (!players.length) return 0;
@@ -447,12 +448,13 @@ function LiveStatsPanel({ state }) {
     <div className="scrollbar-premium h-full min-h-0 overflow-y-auto overscroll-contain p-3">
       <div className="mb-3 rounded-xl border border-border/50 bg-secondary/20 p-3">
         <div className="mb-2 flex items-center justify-between text-[9px] font-bold uppercase tracking-wider text-muted-foreground">
-          <span>Sua dupla</span><span>Momento dos últimos {recent.length || 0} pontos</span><span>Rivais</span>
+          <span>Sua dupla</span><span>Momento dos últimos {recent.length || 0} pontos · {momentumLabel}</span><span>Rivais</span>
         </div>
         <div className="flex h-2 overflow-hidden rounded-full bg-amber-400/70">
           <div className="bg-primary transition-all duration-300" style={{ width: `${momentumA}%` }} />
         </div>
         <div className="mt-1 flex justify-between text-[9px] font-bold"><span>{momentumA}%</span><span>{100 - momentumA}%</span></div>
+        <p className="mt-1 text-center text-[8px] text-muted-foreground">Momentum emocional · não substitui os atributos técnicos</p>
       </div>
 
       <div className="overflow-hidden rounded-xl border border-border/50">
@@ -593,13 +595,14 @@ function NarrationEntry({ event }) {
     );
   }
 
-  const highlighted = event.type === 'game' || event.type === 'tiebreak_end' || event.type === 'tiebreak_start';
+  const isMoment = event.type === 'moment';
+  const highlighted = isMoment || event.type === 'game' || event.type === 'tiebreak_end' || event.type === 'tiebreak_start';
   const dotColor = event.scorer === 'A' ? 'bg-primary' : 'bg-amber-400';
 
   return (
-    <div className={`flex items-start gap-2 rounded-md px-1.5 py-1 ${highlighted ? 'bg-secondary/25' : ''}`}>
+    <div className={`flex items-start gap-2 rounded-md px-1.5 py-1 ${isMoment ? 'border border-primary/15 bg-primary/5' : highlighted ? 'bg-secondary/25' : ''}`}>
       {event.scorer && <span className={`mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full ${dotColor}`} />}
-      <span className={`text-[10px] leading-relaxed ${highlighted ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>{event.msg}</span>
+      <span className={`text-[10px] leading-relaxed ${isMoment ? 'font-black text-foreground' : highlighted ? 'font-bold text-foreground' : 'text-muted-foreground'}`}>{event.msg}</span>
     </div>
   );
 }

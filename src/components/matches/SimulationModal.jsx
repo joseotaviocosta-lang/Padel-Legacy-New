@@ -11,6 +11,7 @@ import { MATCH_TACTICS, getSetScoreString } from '@/lib/matchEngine';
 import { processMatchRelationships } from '@/lib/relationships';
 import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
+import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { useToast } from '@/components/ui/use-toast';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { Surface, StatusBadge, ProgressBar } from '@/components/design-system';
@@ -263,6 +264,11 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
                 </div>
               </div>
             )}
+            <MatchRecapPremium
+              matchState={result.matchState}
+              title={result.won ? 'Vitória no jogo treino' : 'Resumo do jogo treino'}
+              rewards={{ XP: `+${result.won ? 10 : 5}`, Moedas: `+${result.won ? 8 : 3}`, Ranking: 'Sem impacto' }}
+            />
             {result.matchState.liveCoachReport && <div className="glass rounded-2xl p-4"><p className="text-xs font-black mb-2">Decisões durante a partida</p><p className="text-[11px] text-muted-foreground">{result.matchState.liveCoachReport.suggestionsReceived} sugestões · {result.matchState.liveCoachReport.suggestionsApplied} aplicadas · {result.matchState.liveCoachReport.suggestionsIgnored} ignoradas</p><p className="mt-2 text-[9px] text-muted-foreground">{result.matchState.liveCoachReport.disclaimer}</p></div>}
 
             <button

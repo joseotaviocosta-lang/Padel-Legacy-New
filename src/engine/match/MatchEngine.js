@@ -8,6 +8,7 @@ import { createStatistics, buildStatisticsSummary } from './StatisticsEngine.js'
 import { buildMatchAnalysis } from './MatchAnalysis.js';
 import { MATCH_TACTICS, chooseBotTactic, getMatchTactic } from './MatchTactics.js';
 import { CoachCommunicationManager, LiveCoachObserver, LiveTacticalAdjustmentManager, OpponentAdaptationTracker, buildLiveCoachReport, createLiveCoachState } from '../live-coach/index.js';
+import { buildContextualMoment, createMatchMomentum, getPressureMoment, updateMatchMomentumState } from '../../lib/matchExperience.js';
 
 export { MATCH_TACTICS };
 
@@ -42,6 +43,7 @@ export function createMatch(teamA, teamB, options = {}) {
     activeTactics: { A: getMatchTactic(options.initialTacticId), B: getMatchTactic('equilibrado') }, tacticsTimeline: [],
     pointEvents: [], serverPlayerIndices: { A: 0, B: 0 }, tiebreakFirstServingTeam: null, tiebreakFirstServerPlayerIndices: null, tiebreakPointsPlayed: 0,
     liveCoach:createLiveCoachState({coach:options.coach||null,settings:options.liveCoachSettings,initialPlan:getMatchTactic(options.initialTacticId)}), aiCoach:{lastAdjustmentPoint:-99,adjustments:0},
+    momentum: createMatchMomentum(),
   };
   return state;
 }
@@ -60,6 +62,7 @@ function cloneState(prev) {
     stats: JSON.parse(JSON.stringify(prev.stats)),
     activeTactics: { ...prev.activeTactics }, tacticsTimeline: [...(prev.tacticsTimeline || [])],
     liveCoach: prev.liveCoach ? JSON.parse(JSON.stringify(prev.liveCoach)) : null, aiCoach: {...(prev.aiCoach||{})},
+    momentum: { ...(prev.momentum || createMatchMomentum()) },
   };
 }
 
@@ -105,6 +108,7 @@ export function playPoint(prev, tactic) {
     : state.serverPlayerIndices[servingTeam];
   const serverPlayerId = state.teams[servingTeam][serverPlayerIndex]?.id;
   const scoreBefore = snapshot(state);
+  const pressureBefore = getPressureMoment({ ...state, servingTeam });
   const pointContext = createPointContext(state);
   const result = rally.play({ teams: state.teams, servingTeam, serverPlayerId, tactics: state.activeTactics, random, stats: state.stats, match: pointContext });
   if (!['A', 'B'].includes(result?.winnerTeamId || result?.winner)) throw new Error('Ponto encerrado sem winnerTeamId válido.');
@@ -118,7 +122,20 @@ export function playPoint(prev, tactic) {
   const narrative = commentary.describe({ ...result, random, stats: state.stats, match: pointContext });
   awardPoint(state, result.winnerTeamId, narrative.message, { ...result, narrative }, fatigue);
   if (scoreBefore.inTiebreak) state.tiebreakPointsPlayed += 1;
-  state.pointEvents.push({ type: 'point_completed', pointNumber: state.pointNumber, servingTeamId: servingTeam, serverPlayerId, winnerTeamId: result.winnerTeamId, loserTeamId: result.loserTeamId, reason: result.result, shot: result.shot || null, forcedError: Boolean(result.forcedError), rallyLength: Number(result.rallyLength || 0), finalShotPlayerId: result.finisher?.id || null, scoreBefore, scoreAfter: snapshot(state), rngStateAfter: state.randomState });
+  const scoreAfter = { ...snapshot(state), finished: state.finished };
+  state.momentum = updateMatchMomentumState(state.momentum, {
+    winnerTeamId: result.winnerTeamId,
+    scoreBefore,
+    scoreAfter,
+    servingTeamId: servingTeam,
+    rallyLength: result.rallyLength,
+    importantBefore: pressureBefore,
+  });
+  const contextualMoment = buildContextualMoment({ scoreBefore, scoreAfter, result, momentum: state.momentum, pressureBefore });
+  if (contextualMoment) {
+    state.narration.push({ type: 'moment', msg: contextualMoment.message, scorer: contextualMoment.team || result.winnerTeamId, importance: contextualMoment.importance, momentKind: contextualMoment.kind, ...snapshot(state) });
+  }
+  state.pointEvents.push({ type: 'point_completed', pointNumber: state.pointNumber, servingTeamId: servingTeam, serverPlayerId, winnerTeamId: result.winnerTeamId, loserTeamId: result.loserTeamId, reason: result.result, shot: result.shot || null, forcedError: Boolean(result.forcedError), rallyLength: Number(result.rallyLength || 0), finalShotPlayerId: result.finisher?.id || null, scoreBefore, scoreAfter: snapshot(state), pressureBefore, momentumAfter: { ...state.momentum }, contextualMoment, rngStateAfter: state.randomState });
   const safeWindow=scoreBefore.gamesA!==state.gamesA||scoreBefore.gamesB!==state.gamesB||scoreBefore.setsA!==state.setsA||scoreBefore.setsB!==state.setsB;
   const previousSuggestionCount=state.liveCoach.suggestions.length;state.liveCoach=new LiveCoachObserver().observe(state.liveCoach,{pointNumber:state.pointNumber,result,teams:state.teams,scoreBefore,scoreAfter:snapshot(state),setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB,finished:state.finished},{safeWindow});
   if(state.liveCoach.pendingSuggestion&&state.liveCoach.settings.allowMinorAutoAdjustments){const allowed=Object.keys(state.liveCoach.pendingSuggestion.suggestedAdjustment?.components||{}).filter(key=>['riskModifier','energyModifier','safeWeight'].includes(key)).slice(0,1);if(allowed.length)state=decideLiveCoachSuggestion(state,'auto',allowed);}

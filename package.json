@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-beta.43",
+  "version": "0.9.0-beta.46",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -95,7 +95,14 @@
     "test:beta-analytics": "node scripts/test-beta-analytics-v36.mjs",
     "test:beta-analytics-pro": "node scripts/test-beta-analytics-pro-v36.mjs",
     "test:rc-gameplay-balance": "node scripts/test-rc-gameplay-balance-v36.mjs",
-    "test:rc-world-ai": "node scripts/test-rc-world-ai-v36.mjs"
+    "test:rc-world-ai": "node scripts/test-rc-world-ai-v36.mjs",
+    "test:rc-match-experience": "node scripts/test-rc-match-experience-pack.mjs",
+    "test:rc-beta-intelligence": "node scripts/test-rc-beta-intelligence-v36.mjs",
+    "test:rc-qa": "node scripts/rc-qa-suite-v36.mjs",
+    "test:rc-qa:smoke": "node scripts/rc-qa-suite-v36.mjs --smoke",
+    "test:rc-qa:full": "node scripts/rc-qa-suite-v36.mjs --full",
+    "test:rc-qa:dry": "node scripts/rc-qa-suite-v36.mjs --dry-run",
+    "test:rc-qa-manager": "node scripts/test-rc-qa-manager-v36.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

@@ -1,0 +1,65 @@
+{
+  "generatedAt": "2026-08-07T12:51:02.899Z",
+  "version": "0.9.0-beta.46",
+  "profile": "smoke",
+  "status": "BLOCKED",
+  "score": 0,
+  "summary": {
+    "total": 6,
+    "passed": 0,
+    "failed": 6,
+    "skipped": 0,
+    "missing": 0
+  },
+  "missingScripts": [],
+  "results": [
+    {
+      "name": "test:match-integrity",
+      "status": "FAIL",
+      "durationMs": 3,
+      "exitCode": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "test:calendar-advance",
+      "status": "FAIL",
+      "durationMs": 1,
+      "exitCode": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "test:tournament-registration",
+      "status": "FAIL",
+      "durationMs": 2,
+      "exitCode": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "test:rc-match-experience",
+      "status": "FAIL",
+      "durationMs": 3,
+      "exitCode": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "test:rc-beta-intelligence",
+      "status": "FAIL",
+      "durationMs": 2,
+      "exitCode": null,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "test:beta-rc",
+      "status": "FAIL",
+      "durationMs": 1,
+      "exitCode": null,
+      "stdout": "",
+      "stderr": ""
+    }
+  ]
+}

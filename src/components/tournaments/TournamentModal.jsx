@@ -10,6 +10,7 @@ import { getSetScoreString } from '@/lib/matchEngine';
 import { getCoachEffects } from '@/lib/coaches';
 import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
+import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { useToast } from '@/components/ui/use-toast';
 import { createQualifyingState, recordQualifyingResult, buildQualifyingBracketHistory } from '@/gameplay/worldTour/QualifyingManager.js';
 import { createMainDrawState, recordMainDrawResult, buildMainDrawBracketHistory } from '@/gameplay/worldTour/MainDrawManager.js';
@@ -556,6 +557,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
               </p>
               {physicalReport && <p className="text-xs text-muted-foreground mt-2">Energia: {profile.energy}% · Fadiga: {profile.fatigue || 0}%{physicalReport.injury?.injured ? ` · Lesão: ${physicalReport.injury.type}` : ''}</p>}
             </div>
+            <MatchRecapPremium
+              matchState={lastResult.matchState}
+              title={`Vitória · ${currentRound?.label || 'Torneio'}`}
+              rewards={tournamentRewards ? { Moedas: `+${tournamentRewards.coins}`, XP: `+${tournamentRewards.xp}`, Ranking: `+${tournamentRewards.rankPoints}` } : null}
+            />
             <button
               onClick={nextRound}
               className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:bg-primary/90 transition-colors flex items-center justify-center gap-2"
@@ -593,6 +599,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
                 <Reward icon={Star} value={`+${tournamentRewards.rankPoints}`} color="text-cyan-400" label="Pontos" />
               </div>
             )}
+            {lastResult?.matchState && (
+              <MatchRecapPremium
+                matchState={lastResult.matchState}
+                title={`Campeão · ${tournament.name}`}
+                rewards={tournamentRewards ? { Moedas: `+${tournamentRewards.coins}`, XP: `+${tournamentRewards.xp}`, Ranking: `+${tournamentRewards.rankPoints}` } : null}
+              />
+            )}
             <button onClick={onClose} className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors">
               Fechar
             </button>
@@ -617,6 +630,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
                 <Reward icon={Star} value={`+${tournamentRewards.rankPoints}`} color="text-cyan-400" label="Pontos" />
               </div>
             )}
+            <MatchRecapPremium
+              matchState={lastResult.matchState}
+              title={`Eliminação · ${currentRound?.label || 'Torneio'}`}
+              rewards={tournamentRewards ? { Moedas: `+${tournamentRewards.coins}`, XP: `+${tournamentRewards.xp}`, Ranking: `+${tournamentRewards.rankPoints}` } : null}
+            />
             <button onClick={onClose} className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors">
               Fechar
             </button>
