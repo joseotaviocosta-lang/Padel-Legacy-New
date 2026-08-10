@@ -39,7 +39,6 @@ assert.equal(selectionA.length, 3);
 assert.equal(getMissionDifficultyTier({ level: 1, matches_played: 0 }), 'iniciante');
 assert.equal(getMissionDifficultyTier({ level: 31 }), 'elite');
 assert.equal(requirementsMet({ requirements: ['has-partner'] }, { partner_id: 'p2' }), true);
-assert.equal(requirementsMet({ requirements: ['has-replay'] }, {}, { hasReplay: false }), false);
 
 const routes = [...new Set(TUTORIAL_STEPS.map(step => step.route.split('?')[0]))];
 const catalogValidation = validateMissionCatalog(TUTORIAL_MISSION_CATALOG, routes);

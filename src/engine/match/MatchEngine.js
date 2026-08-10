@@ -4,11 +4,11 @@ import { RallyEngine } from './RallyEngine.js';
 import { MomentumEngine } from './MomentumEngine.js';
 import { FatigueEngine } from './FatigueEngine.js';
 import { CommentaryEngine } from './CommentaryEngine.js';
-import { createStatistics, buildStatisticsSummary, synchronizePointStatistics } from './StatisticsEngine.js';
+import { createStatistics, buildStatisticsSummary } from './StatisticsEngine.js';
 import { buildMatchAnalysis } from './MatchAnalysis.js';
 import { MATCH_TACTICS, chooseBotTactic, getMatchTactic } from './MatchTactics.js';
 import { CoachCommunicationManager, LiveCoachObserver, LiveTacticalAdjustmentManager, OpponentAdaptationTracker, buildLiveCoachReport, createLiveCoachState } from '../live-coach/index.js';
-import { buildContextualMoment, createMatchMomentum, getPressureMoment, updateMatchMomentumState } from '../../lib/matchExperience.js';
+import { buildContextualMoment, buildMatchRecap, createMatchMomentum, getPressureMoment, updateMatchMomentumState } from '../../lib/matchExperience.js';
 import { getPointContext, POINT_OUTCOMES } from './PointContext.js';
 
 export { MATCH_TACTICS };
@@ -183,9 +183,10 @@ export function playPoint(prev, tactic) {
   if (state.liveCoach?.coach && state.liveCoach.settings.liveCoachEnabled) state.liveCoach=new LiveCoachObserver().observe(state.liveCoach,{pointNumber:state.pointNumber,result,teams:state.teams,scoreBefore,scoreAfter:snapshot(state),setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB,finished:state.finished},{safeWindow});
   if(state.liveCoach.pendingSuggestion&&state.liveCoach.settings.allowMinorAutoAdjustments){const allowed=Object.keys(state.liveCoach.pendingSuggestion.suggestedAdjustment?.components||{}).filter(key=>['riskModifier','energyModifier','safeWeight'].includes(key)).slice(0,1);if(allowed.length)state=decideLiveCoachSuggestion(state,'auto',allowed);}
   if (state.finished) {
-    state.stats = buildStatisticsSummary(synchronizePointStatistics(state.stats, state.pointEvents));
+    state.stats = buildStatisticsSummary(state.stats);
     state.analysis = buildMatchAnalysis(state);
     state.liveCoachReport = buildLiveCoachReport(state);
+    state.matchRecapSnapshot = buildMatchRecap(state);
   }
   return state;
 }

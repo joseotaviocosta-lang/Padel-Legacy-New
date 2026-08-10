@@ -127,11 +127,11 @@ export function recordPoint(stats, winner, finisher, result, rallyLength, teams,
   stats.longestRally = Math.max(stats.longestRally, rallyLength);
   stats.averageRally = Math.round((stats.rallyShots / stats.rallies) * 10) / 10;
   winnerTeam.pointsWon += 1;
+  if (winnerPlayer) stats.players[winnerPlayer.id].pointsWon += 1;
 
   if (outcome === 'WINNER' && winnerPlayer) {
     const winnerRow = stats.players[winnerPlayer.id];
     winnerRow.winners += 1;
-    winnerRow.pointsWon += 1;
     winnerRow.shotWinners[metadata.endingShot || metadata.shot || 'drive'] = (winnerRow.shotWinners[metadata.endingShot || metadata.shot || 'drive'] || 0) + 1;
     winnerTeam.winners += 1;
   } else {
@@ -146,7 +146,6 @@ export function recordPoint(stats, winner, finisher, result, rallyLength, teams,
       winnerTeam.forcedErrorsDrawn += 1;
       if (winnerPlayer) {
         const winnerRow = stats.players[winnerPlayer.id];
-        winnerRow.pointsWon += 1;
         winnerRow.shotForcedErrorsDrawn[metadata.endingShot || 'drive'] = (winnerRow.shotForcedErrorsDrawn[metadata.endingShot || 'drive'] || 0) + 1;
       }
     } else {

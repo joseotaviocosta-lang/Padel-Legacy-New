@@ -7,7 +7,6 @@ import { PatternChangeDetector } from './PatternChangeDetector.js';
 import { createLiveCoachState, LiveCoachObserver } from './LiveCoachObserver.js';
 import { getMatchTactic } from '../match/MatchTactics.js';
 import { buildLiveCoachReport } from './LiveCoachHistory.js';
-import { appendLiveCoachEventToReplay, createReplay } from '../../gameplay/replay/ReplayRecorder.js';
 
 const assert=(condition,message='Falha no teste do treinador ao vivo')=>{if(!condition)throw new Error(message);};
 assert.equal=(actual,expected)=>assert(actual===expected,`Esperado ${expected}, recebido ${actual}`);
@@ -28,10 +27,9 @@ export function runPadelLiveCoachTest(){
   const aiState={pointNumber:20,gamesA:2,gamesB:1,aiCoach:{lastAdjustmentPoint:0}};assert(OpponentAdaptationTracker.shouldAdjust(aiState,3));assert(!OpponentAdaptationTracker.shouldAdjust({...aiState,pointNumber:3},3));
   const fallback=observer.observe({...createLiveCoachState({coach:{id:'c1'},initialPlan:{id:'equilibrado'}}),analytics:{points:null}},{pointNumber:2,result:result(2),teams,scoreBefore:score(1),scoreAfter:score(2),setNumber:1,gameNumber:0},{safeWindow:true});assert(fallback.errors.length===1);
   const report=buildLiveCoachReport({liveCoach:{coach:{id:'c1'},suggestions:[advanced],decisions:[{decision:'partial'}],adjustments:[partial.adjustment],observations:[pattern]}});assert(report.suggestionsApplied===1&&report.disclaimer);
-  const replay=createReplay({seed:'live-coach-test',engineVersion:'test',teams:{A:[{id:'a1',name:'A1'},{id:'a2',name:'A2'}],B:[{id:'b1',name:'B1'},{id:'b2',name:'B2'}]},setsA:0,setsB:0,gamesA:0,gamesB:0,pointsA:0,pointsB:0,servingTeam:'A',activeTactics:{A:getMatchTactic('equilibrado'),B:getMatchTactic('equilibrado')}});const scoreBeforeCoach=JSON.stringify(replay.initial_score);appendLiveCoachEventToReplay(replay,{type:'coach_suggestion',id:'s1'});assert(replay.events.at(-1).type==='coach_suggestion'&&JSON.stringify(replay.initial_score)===scoreBeforeCoach);
   const performance=new LiveMatchAnalytics();const started=Date.now();for(let i=1;i<=1000;i++)performance.ingest({pointNumber:i,result:result(i,true),teams,scoreBefore:score(i-1),scoreAfter:score(i)});assert(Date.now()-started<1000&&performance.state.points.length===240);
   const before=JSON.stringify(score(8));assert.equal(before,JSON.stringify(score(8)));
-  return{ok:true,patternDetected:true,confidenceCalculated:true,suggestionGenerated:true,partialAdjustmentApplied:true,futureEventsOnly:partial.adjustment.effectiveFromPoint===9,partnerFeedbackWorking:true,aiAdaptationWorking:true,cooldownRespected:true,deterministic:true,postMatchReportGenerated:report.suggestionsApplied===1,fallbackWorking:true,replayWorking:true,performanceWorking:true};
+  return{ok:true,patternDetected:true,confidenceCalculated:true,suggestionGenerated:true,partialAdjustmentApplied:true,futureEventsOnly:partial.adjustment.effectiveFromPoint===9,partnerFeedbackWorking:true,aiAdaptationWorking:true,cooldownRespected:true,deterministic:true,postMatchReportGenerated:report.suggestionsApplied===1,fallbackWorking:true,performanceWorking:true};
 }
 
 if(typeof window!=='undefined')window.PadelLiveCoachTest={run:runPadelLiveCoachTest};

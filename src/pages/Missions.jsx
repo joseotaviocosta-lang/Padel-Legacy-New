@@ -261,7 +261,7 @@ export default function Missions() {
     ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle })
     : null;
   const currentChapter = tutorialStep?.chapter;
-  const categoryPool = missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked:true, hasReplay:false, sponsorsUnlocked:false }));
+  const categoryPool = missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked:true, sponsorsUnlocked:false }));
   const cycleId = tab === 'tutorial' ? 'tutorial:career' : missionPeriodKey(tab, profile?.career_date);
   const categoryLimit = tab === 'diaria' ? 3 : tab === 'semanal' ? 3 : 20;
   const filtered = tab === 'tutorial' ? tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter) : deterministicMissionSelection(categoryPool,{careerId:profile?.id,cycleId,category:tab,limit:categoryLimit});

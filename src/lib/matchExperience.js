@@ -105,32 +105,36 @@ export function buildContextualMoment({ scoreBefore, scoreAfter, result, momentu
 
 export function buildMatchRecap(matchState) {
   if (!matchState) return null;
-  const events = matchState.pointEvents || [];
+  if (matchState.matchRecapSnapshot) return matchState.matchRecapSnapshot;
   const stats = matchState.stats || {};
   const teamA = stats.teams?.A || {};
   const teamB = stats.teams?.B || {};
   const winnerTeam = matchState.winner || (matchState.setsA > matchState.setsB ? 'A' : 'B');
   const players = Object.values(stats.players || {});
+  const summarizePlayer = (player) => player ? {
+    id: player.id,
+    name: player.name,
+    team: player.team,
+    winners: Number(player.winners || 0),
+    pointsWon: Number(player.pointsWon || 0),
+    decisivePointsWon: Number(player.decisivePointsWon || 0),
+    unforcedErrors: Number(player.unforcedErrors || 0),
+  } : null;
   const mvp = players
     .map((player) => ({
-      ...player,
+      ...summarizePlayer(player),
       _score: Number(player.winners || 0) * 3 + Number(player.pointsWon || 0) + Number(player.decisivePointsWon || 0) * 2 - Number(player.unforcedErrors || 0) * 1.5,
     }))
     .sort((a, b) => b._score - a._score)[0] || null;
 
-  const longestRally = events.reduce((best, event) => Number(event.rallyLength || 0) > Number(best?.rallyLength || 0) ? event : best, null);
-  const smashes = events.filter((event) => event.shot === 'smash' && event.reason === 'winner');
-  const breakMoments = events.filter((event) => {
-    const before = event.scoreBefore || {};
-    const after = event.scoreAfter || {};
-    return (before.gamesA !== after.gamesA || before.gamesB !== after.gamesB) && event.winnerTeamId !== event.servingTeamId;
-  });
+  const winningSmashes = players.reduce((sum, player) => sum + Number(player.shotWinners?.smash || 0), 0);
+  const convertedBreaks = Number(teamA.breakPointsConverted || 0) + Number(teamB.breakPointsConverted || 0);
   const streakA = Number(stats.longestTeamStreak?.A || teamA.maxPointStreak || 0);
   const streakB = Number(stats.longestTeamStreak?.B || teamB.maxPointStreak || 0);
   const comeback = matchState.setScores?.length >= 3 && matchState.setScores[0]?.winner !== winnerTeam;
   const percent = (made, total) => total > 0 ? Math.round((made / total) * 100) : 0;
-  const topWinner = [...players].sort((a, b) => Number(b.winners || 0) - Number(a.winners || 0))[0] || null;
-  const topError = [...players].sort((a, b) => Number(b.unforcedErrors || 0) - Number(a.unforcedErrors || 0))[0] || null;
+  const topWinner = summarizePlayer([...players].sort((a, b) => Number(b.winners || 0) - Number(a.winners || 0))[0]);
+  const topError = summarizePlayer([...players].sort((a, b) => Number(b.unforcedErrors || 0) - Number(a.unforcedErrors || 0))[0]);
   const shotTypes = ['serve', 'drive', 'backhand', 'lob', 'volley', 'bandeja', 'smash', 'chiquita'];
   const shotImpact = Object.fromEntries(['A', 'B'].map((team) => [team, shotTypes.map((shot) => {
     const teamPlayers = players.filter((player) => player.team === team);
@@ -144,9 +148,9 @@ export function buildMatchRecap(matchState) {
   }).filter((row) => row.attempts > 0)]));
 
   const highlights = [];
-  if (longestRally) highlights.push({ icon: 'rally', title: 'Rally mais longo', value: `${longestRally.rallyLength} golpes`, pointNumber: longestRally.pointNumber });
-  if (smashes.length) highlights.push({ icon: 'smash', title: 'Smashes vencedores', value: String(smashes.length) });
-  if (breakMoments.length) highlights.push({ icon: 'break', title: 'Quebras de saque', value: String(breakMoments.length) });
+  if (stats.longestRally) highlights.push({ icon: 'rally', title: 'Rally mais longo', value: `${stats.longestRally} golpes` });
+  if (winningSmashes) highlights.push({ icon: 'smash', title: 'Smashes vencedores', value: String(winningSmashes) });
+  if (convertedBreaks) highlights.push({ icon: 'break', title: 'Quebras de saque', value: String(convertedBreaks) });
   highlights.push({ icon: 'streak', title: 'Maior sequência', value: `${Math.max(streakA, streakB)} pontos` });
   if (comeback) highlights.push({ icon: 'comeback', title: 'Virada', value: 'Vitória após perder o 1º set' });
   if (mvp) highlights.push({ icon: 'mvp', title: 'MVP da partida', value: mvp.name });
@@ -165,7 +169,7 @@ export function buildMatchRecap(matchState) {
     stats: {
       A: { winners: teamA.winners || 0, forcedErrorsDrawn: teamA.forcedErrorsDrawn || 0, unforcedErrors: teamA.unforcedErrorsCommitted || 0, netPointWinShare: percent(teamA.netPointsWon, teamA.pointsWon), breaks: teamA.breakPointsConverted || 0, breakChances: teamA.breakPointsCreated || 0, breakPointsSaved: teamA.breakPointsSaved || 0 },
       B: { winners: teamB.winners || 0, forcedErrorsDrawn: teamB.forcedErrorsDrawn || 0, unforcedErrors: teamB.unforcedErrorsCommitted || 0, netPointWinShare: percent(teamB.netPointsWon, teamB.pointsWon), breaks: teamB.breakPointsConverted || 0, breakChances: teamB.breakPointsCreated || 0, breakPointsSaved: teamB.breakPointsSaved || 0 },
-      longestRally: Number(stats.longestRally || longestRally?.rallyLength || 0),
+      longestRally: Number(stats.longestRally || 0),
       averageRally: Number(stats.averageRally || 0),
     },
   };

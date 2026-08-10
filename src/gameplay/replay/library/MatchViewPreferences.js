@@ -1,5 +1,0 @@
-import { TauriStorage } from '../../../storage/TauriStorage.js';
-export const DEFAULT_REPLAY_PREFERENCES = Object.freeze({ default_match_view_mode:'ask_every_match', remember_last_match_mode:true, last_match_mode:'text', automatic_replay_storage:'important_only', automatic_highlights:true, storage_limit_bytes:524288000, cleanup_policy:'never' });
-const memory=new Map();
-export class MatchViewPreferences { constructor(storage=new TauriStorage()){this.storage=storage;} path(careerId){return `replays/${String(careerId).replace(/[^a-zA-Z0-9_-]/g,'_')}/preferences.json`;} async load(careerId){try{const raw=this.storage.isSupported()?await this.storage.readText(this.path(careerId)):memory.get(this.path(careerId));return {...DEFAULT_REPLAY_PREFERENCES,...(raw?JSON.parse(raw):{})};}catch{return {...DEFAULT_REPLAY_PREFERENCES};}} async save(careerId,changes){const next={...await this.load(careerId),...changes};const raw=JSON.stringify(next);if(this.storage.isSupported())await this.storage.writeText(this.path(careerId),raw);else memory.set(this.path(careerId),raw);return next;} }
-export const matchViewPreferences=new MatchViewPreferences();

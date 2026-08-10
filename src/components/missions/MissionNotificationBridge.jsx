@@ -33,7 +33,6 @@ const ROUTE_OBJECTIVES = {
   '/matches': 'visit_matches',
   '/ranking': 'visit_ranking',
   '/game/season': 'visit_season',
-  '/world-tour/live': 'visit_live_circuit',
   '/world': 'visit_world_hub',
   '/journal': 'visit_journal',
   '/world-events': 'visit_world_events',

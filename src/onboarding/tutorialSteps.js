@@ -1,4 +1,4 @@
-export const TUTORIAL_VERSION = 6;
+export const TUTORIAL_VERSION = 7;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,
@@ -198,11 +198,6 @@ export const TUTORIAL_STEPS = [
     explanation: 'Consulte objetivos, desempenho acumulado e andamento do calendário anual.',
     whyItMatters: 'A visão da temporada ajuda a avaliar progresso de médio prazo, não apenas o último resultado.',
   }),
-  step('live-circuit-known', 'visit_live_circuit', 'Acompanhe o circuito ao vivo', '/world-tour/live', 'Competições', 'confirm_understanding', {
-    explanation: 'Observe partidas e resultados do mundo do jogo sem interferir na sua carreira.',
-    whyItMatters: 'Acompanhar rivais e estrelas deixa o circuito mais vivo e ajuda a entender o cenário competitivo.',
-  }),
-
   step('world-hub-known', 'visit_world_hub', 'Abra o Mundo do padel', '/world', 'Mundo do padel', 'confirm_understanding', {
     explanation: 'Este hub reúne notícias, mercado, atletas, clubes, clima, comunidade e história.',
     whyItMatters: 'O mundo continua evoluindo ao redor do seu atleta e cria oportunidades e desafios.',

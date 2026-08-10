@@ -11,9 +11,9 @@ export const PAGE_LOADERS = {
   CharacterEditor: () => import('@/pages/CharacterEditor'), Admin: () => import('@/pages/Admin'), DatabaseManager: () => import('@/pages/DatabaseManager'),
   History: () => import('@/pages/History'), HallOfFame: () => import('@/pages/HallOfFame'), Relationships: () => import('@/pages/Relationships'),
   Coaches: () => import('@/pages/Coaches'), TrainingCenter: () => import('@/pages/TrainingCenter'), Press: () => import('@/pages/Press'),
-  Social: () => import('@/pages/Social'), Fans: () => import('@/pages/Fans'), Achievements: () => import('@/pages/Achievements'),
+  Fans: () => import('@/pages/Fans'), Achievements: () => import('@/pages/Achievements'),
   WorldEvents: () => import('@/pages/WorldEvents'), WorldMarket: () => import('@/pages/WorldMarket'), Weather: () => import('@/pages/Weather'),
-  Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'), WorldSpectator: () => import('@/pages/WorldSpectator'),
+  Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'),
   NavigationHub: () => import('@/pages/NavigationHub'), WorldHub: () => import('@/pages/WorldHub'), Staff: () => import('@/pages/Staff'), Communications: () => import('@/pages/Communications'), MonthlyReports: () => import('@/pages/MonthlyReports'),
 };
 
@@ -24,8 +24,8 @@ const ROUTE_MODULES = {
   '/tournaments': 'Tournaments', '/journal': 'Journal', '/ranking': 'Ranking', '/clubs': 'Clubs', '/athletes': 'Athletes',
   '/character': 'CharacterEditor', '/admin': 'Admin', '/database': 'DatabaseManager', '/history': 'History',
   '/hall-of-fame': 'HallOfFame', '/relationships': 'Relationships', '/coaches': 'Coaches', '/training-center': 'TrainingCenter',
-  '/press': 'Press', '/social': 'Social', '/fans': 'Fans', '/achievements': 'Achievements', '/world-events': 'WorldEvents',
-  '/world-market': 'WorldMarket', '/weather': 'Weather', '/encyclopedia': 'Encyclopedia', '/partners': 'PartnerHub', '/community': 'Community', '/world-tour/live': 'WorldSpectator',
+  '/press': 'Press', '/fans': 'Fans', '/achievements': 'Achievements', '/world-events': 'WorldEvents',
+  '/world-market': 'WorldMarket', '/weather': 'Weather', '/encyclopedia': 'Encyclopedia', '/partners': 'PartnerHub', '/community': 'Community',
   '/development': 'NavigationHub', '/team-hub': 'NavigationHub', '/staff': 'Staff', '/communications': 'Communications', '/game/monthly-reports': 'MonthlyReports', '/competitions': 'NavigationHub', '/world': 'WorldHub', '/management': 'NavigationHub',
 };
 

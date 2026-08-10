@@ -2,14 +2,19 @@
  * Coordena uma operação assíncrona global com uma única Promise em voo.
  * A liberação acontece no finally da operação real, em sucesso ou erro.
  */
-export function createSingleFlightCoordinator(execute) {
+export function createSingleFlightCoordinator(execute, { onStateChange = null, source = 'SingleFlight' } = {}) {
   let activeRequest = null;
   let processing = false;
   const listeners = new Set();
 
   const publish = (next) => {
+    const previous = processing;
     processing = next;
-    listeners.forEach((listener) => listener(next));
+    onStateChange?.({ previous, next, source });
+    listeners.forEach((listener) => {
+      try { listener(next); }
+      catch (error) { console.error(`[${source}] listener de estado falhou`, error); }
+    });
   };
 
   const run = (...args) => {
@@ -35,4 +40,3 @@ export function createSingleFlightCoordinator(execute) {
     },
   };
 }
-

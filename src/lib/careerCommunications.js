@@ -36,6 +36,17 @@ export function isCareerMessageUnread(message = {}) {
   return !normalizeCareerMessage(message).is_read;
 }
 
+export const TOURNAMENT_REMINDER_MILESTONES = Object.freeze([7, 3, 1, 0]);
+
+export function getTournamentReminderMilestone(daysUntilTournament) {
+  const days = Number(daysUntilTournament);
+  return TOURNAMENT_REMINDER_MILESTONES.includes(days) ? days : null;
+}
+
+export function tournamentReminderContextKey(tournamentId, milestone) {
+  return `federation-tournament:${tournamentId}:upcoming:${milestone}-days`;
+}
+
 export async function listCareerCommunications(profileId, limit = 120) {
   if (!profileId) return [];
   const rows = await localGame.entities.CareerMessage.filter({ profile_id: profileId }, '-created_date', limit).catch(() => []);
@@ -74,6 +85,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     const row = await localGame.entities.CareerMessage.create({
       profile_id: profile.id,
       message_type: payload.message_type || 'mensagem',
+      notification_type: payload.notification_type,
       sender_name: payload.sender_name || senderLabel(payload.sender_type),
       sender_type: payload.sender_type || 'sistema',
       title: payload.title,
@@ -122,12 +134,17 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   const nextTournament = context.nextTournament;
   if (nextTournament?.id && nextTournament.start_date) {
     const days = daysBetween(careerDate, nextTournament.start_date);
-    if (days >= 0 && days <= 7) {
-      await createOnce(`federation-tournament:${nextTournament.id}:${careerDate}`, {
+    const milestone = getTournamentReminderMilestone(days);
+    if (milestone !== null) {
+      await createOnce(tournamentReminderContextKey(nextTournament.id, milestone), {
+        message_type: 'tournament_upcoming',
+        notification_type: 'TOURNAMENT_UPCOMING',
         sender_type: 'federacao', sender_name: 'Federação do Circuito',
         title: `${nextTournament.name || 'Próximo torneio'} se aproxima`,
         content: days === 0 ? 'A competição começa hoje. Confira sua inscrição, energia e planejamento.' : `Faltam ${days} dia${days === 1 ? '' : 's'} para o início. Revise sua preparação e os compromissos no calendário.`,
         related_entity_type: 'Tournament', related_entity_id: nextTournament.id, related_entity_name: nextTournament.name,
+        destination: { type: 'TOURNAMENT_DETAILS', route: '/tournaments', params: { tournament: nextTournament.id, mode: 'details' } },
+        metadata: { tournament_id: nextTournament.id, reminder_milestone_days: milestone, notification_type: 'TOURNAMENT_UPCOMING' },
       });
     }
   }

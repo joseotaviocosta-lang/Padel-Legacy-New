@@ -1,7 +1,7 @@
 import { careerDataStore } from './careerDataStore.js';
 import { LOCAL_USER } from './localSeed';
 import { PlayerAdapter } from '@/gameplay/adapters/PlayerAdapter.js';
-import { createEntityAdapter } from '@/gameplay/adapters/EntityAdapter.js';
+import { batchEntities, createEntityAdapter } from '@/gameplay/adapters/EntityAdapter.js';
 
 export const LOCAL_DEV_MODE = true;
 
@@ -59,4 +59,5 @@ export const localGame = {
   functions,
   integrations,
   storage: careerDataStore,
+  batch: batchEntities,
 };

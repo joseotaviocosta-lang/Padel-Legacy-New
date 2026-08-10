@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, Radio } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield } from 'lucide-react';
+import { useSearchParams } from 'react-router-dom';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
 import { simulatePastTournaments } from '@/lib/teamRanking';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import PartnerSelection from '@/components/career/PartnerSelection';
 import TournamentModal from '@/components/tournaments/TournamentModal';
+import TournamentDetailsModal from '@/components/tournaments/TournamentDetailsModal';
 import TournamentRegistrationModal from '@/components/calendar/TournamentRegistrationModal';
 import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
@@ -23,8 +24,7 @@ import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelecti
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
 import { cancelTournamentRegistration, isPlayerRegisteredForTournament, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
-import { useCareer } from '@/careers/useCareer.js';
-import { spectatorStore } from '@/gameplay/replay/spectator/SpectatorStore.js';
+import { resolveTournamentOpenMode, TOURNAMENT_DEEP_LINK_MODES } from '@/lib/tournamentDeepLink.js';
 
 const TIER_CONFIG = {
   Crown:{label:'Legacy Crown',badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',card:'border-amber-500/25 hover:border-amber-500/50',glow:'shadow-[0_0_24px_rgba(245,158,11,0.12)]',icon:Crown,diffLabel:'Lendário',diffColor:'text-red-400'},
@@ -56,8 +56,6 @@ function prepareTournamentList(items) {
 export default function Tournaments() {
   const [searchParams] = useSearchParams();
   const openedTournamentRef = useRef(null);
-  const {activeCareer}=useCareer();
-  const [followedTournaments,setFollowedTournaments]=useState(new Set());
   const [tournaments, setTournaments] = useState([]);
   const [season, setSeason] = useState(null);
   const [profile, setProfile] = useState(null);
@@ -67,6 +65,7 @@ export default function Tournaments() {
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
   const [activeTournament, setActiveTournament] = useState(null);
+  const [detailsTournament, setDetailsTournament] = useState(null);
   const [activeTab, setActiveTab] = useState('calendar');
   const [matches, setMatches] = useState([]);
   const [bracketTournament, setBracketTournament] = useState(null);
@@ -134,15 +133,18 @@ export default function Tournaments() {
       finally { setLoading(false); }
     })();
   }, []);
-  useEffect(()=>{if(activeCareer?.career_id)spectatorStore.load(activeCareer.career_id).then((state)=>setFollowedTournaments(new Set(state.followed_tournament_ids)));},[activeCareer?.career_id]);
   useEffect(() => {
     const requestedId = searchParams.get('tournament');
-    if (!requestedId || loading || openedTournamentRef.current === requestedId) return;
-    openedTournamentRef.current = requestedId;
+    const requestedMode = searchParams.get('mode') || TOURNAMENT_DEEP_LINK_MODES.DETAILS;
+    const requestKey = requestedId ? `${requestedId}:${requestedMode}` : null;
+    if (!requestedId || loading || openedTournamentRef.current === requestKey) return;
+    openedTournamentRef.current = requestKey;
     const requested = tournaments.find((tournament) => String(tournament.id) === requestedId);
-    if (requested) setActiveTournament(requested);
-  }, [loading, searchParams, tournaments]);
-  async function toggleTournamentFollow(id){const next=await spectatorStore.toggle(activeCareer.career_id,'followed_tournament_ids',id);setFollowedTournaments(new Set(next.followed_tournament_ids));}
+    if (!requested) return;
+    const mode = resolveTournamentOpenMode(requestedMode, activeRunEvents.has(requested.id));
+    if (mode === TOURNAMENT_DEEP_LINK_MODES.RUN) setActiveTournament(requested);
+    else setDetailsTournament(requested);
+  }, [activeRunEvents, loading, searchParams, tournaments]);
 
   async function refreshProfile() {
     const user = await localGame.auth.me();
@@ -272,7 +274,7 @@ export default function Tournaments() {
           icon={Trophy}
           tone="premium"
           breadcrumb={['Competições', 'Torneios']}
-          action={<Link to="/world-tour/live" className="inline-flex items-center gap-2 rounded-xl bg-red-500/15 px-3 py-2 text-xs font-bold text-red-300 hover:bg-red-500/25"><Radio className="h-4 w-4"/>Ao vivo</Link>}
+          action={null}
         />
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
@@ -384,12 +386,11 @@ export default function Tournaments() {
                     hasEnergy={hasEnergyForTournament}
                     onPlay={() => handlePlay(t)}
                     onCancel={() => handleCancelRegistration(t)}
+                    onViewDetails={() => setDetailsTournament(t)}
                     onViewBracket={() => setBracketTournament(t)}
                     careerDate={profile?.career_date}
                     profile={profile}
                     teamRank={teamRank}
-                    followed={followedTournaments.has(t.id)}
-                    onToggleFollow={()=>toggleTournamentFollow(t.id)}
                     activeRun={activeRunEvents.get(t.id) || null}
                   />
                 ))}
@@ -435,6 +436,30 @@ export default function Tournaments() {
         />
       )}
 
+      {detailsTournament && (
+        <TournamentDetailsModal
+          tournament={detailsTournament}
+          profile={profile}
+          teamRank={teamRank}
+          registration={registrationRecords.get(detailsTournament.id) || null}
+          activeRun={activeRunEvents.get(detailsTournament.id) || null}
+          canRegister={canRegisterForTournament(detailsTournament)}
+          onClose={() => setDetailsTournament(null)}
+          onRegister={() => {
+            setDetailsTournament(null);
+            setRegistrationTournament(detailsTournament);
+          }}
+          onContinue={() => {
+            setDetailsTournament(null);
+            setActiveTournament(detailsTournament);
+          }}
+          onViewBracket={() => {
+            setDetailsTournament(null);
+            setBracketTournament(detailsTournament);
+          }}
+        />
+      )}
+
       {registrationTournament && (
         <TournamentRegistrationModal
           tournament={registrationTournament}
@@ -449,7 +474,7 @@ export default function Tournaments() {
   );
 }
 
-function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewBracket, careerDate, profile, teamRank, followed, onToggleFollow, activeRun }) {
+function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewDetails, onViewBracket, careerDate, profile, teamRank, activeRun }) {
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
   const coach = !isPast ? evaluateTournamentChoice(tournament, {
@@ -494,7 +519,7 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
           </div>
         ) : null}
       </div>
-      <div className="mb-3 flex gap-2"><button onClick={onToggleFollow} className={`text-[10px] font-bold rounded-lg px-2 py-1 ${followed?'bg-primary/15 text-primary':'bg-secondary text-muted-foreground'}`}>{followed?'Torneio acompanhado':'Acompanhar torneio'}</button><button onClick={onViewBracket} className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-bold text-cyan-300">Ver chave</button></div>
+      <div className="mb-3 flex gap-2"><button onClick={onViewDetails} className="rounded-lg bg-primary/10 px-2 py-1 text-[10px] font-bold text-primary">Ver detalhes</button><button onClick={onViewBracket} className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-bold text-cyan-300">Ver chave</button></div>
 
       {tournament.description && (
         <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 line-clamp-2">{tournament.description}</p>

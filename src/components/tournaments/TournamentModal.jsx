@@ -6,17 +6,18 @@ import {
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
-  TOURNAMENT_ENERGY_COST, applyMatchRewards, getChemistryBonus, getEnergyPenalty,
-  isInjured, injuryRecoveryDays, overallRating,
+  TOURNAMENT_ENERGY_COST, buildMatchRewardsPatch, getChemistryBonus, getEnergyPenalty,
+  incrementMissionProgress, isInjured, injuryRecoveryDays, overallRating,
 } from '@/lib/padel';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { generateTournamentOpponent, getPartnerBot, getTournamentRounds } from '@/lib/career';
-import { getActivePartnership, recordPartnershipMatch } from '@/lib/partnershipSystem';
-import { getTeamRank, updateTeamRanking } from '@/lib/teamRanking';
+import { buildPartnershipMatchPatch, getActivePartnership } from '@/lib/partnershipSystem';
+import { getTeamRank, teamKey } from '@/lib/teamRanking';
 import { getSetScoreString } from '@/lib/matchEngine';
 import { getCoachEffects } from '@/lib/coaches';
 import { ensureStarterCoach } from '@/game-core/coachLifecycle';
-import { finalizeTournamentRun } from '@/game-core/tournamentLifecycle.js';
+import { finalizeTournamentRun, prepareTournamentFinalization } from '@/game-core/tournamentLifecycle.js';
+import { createMatchEndProfiler, scheduleSecondaryMatchWork } from '@/game-core/matchFinalization.js';
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import LiveMatch from '@/components/matches/LiveMatch';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
@@ -200,7 +201,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
     const freshEvent = await localGame.entities.CalendarEvent.get(event.id).catch(() => event);
     const nextMatch = getCurrentTournamentMatch(nextRun);
     const terminal = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
-    const savedEvent = await localGame.entities.CalendarEvent.update(freshEvent.id, {
+    const eventData = {
       title: terminal ? tournament.name : `${tournament.name} — ${nextMatch?.round || 'Torneio'}`,
       start_date: nextMatch?.date || freshEvent.start_date,
       end_date: nextMatch?.date || freshEvent.end_date,
@@ -208,12 +209,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       requires_decision: !terminal,
       ...eventPatch,
       metadata: { ...(freshEvent.metadata || {}), ...(eventPatch.metadata || {}), tournament_run: nextRun, tournament_run_schema_version: 2 },
-    });
+    };
     const bracket = buildTournamentBracketHistory(nextRun, teamName(profile, partner));
-    await localGame.entities.Tournament.update(tournament.id, {
-      bracket_history: bracket,
-      current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status,
-    }).catch((error) => console.warn('[TournamentModal] chave não sincronizada', error));
+    const persisted = await localGame.batch([
+      { type: 'update', entityName: 'CalendarEvent', id: freshEvent.id, data: eventData },
+      { type: 'update', entityName: 'Tournament', id: tournament.id, data: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status } },
+    ]);
+    const savedEvent = persisted.records?.[0] || { ...freshEvent, ...eventData };
     setEvent(savedEvent);
     setRun(nextRun);
     return { savedEvent, bracket };
@@ -251,15 +253,15 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
     }
   }
 
-  async function publishRoundMedia(match, won, nextRun) {
+  function buildRoundMediaOperations(match, won, nextRun) {
     const importance = nextRun.matches.find((item) => item.id === match.id)?.pressImportance || 'simple';
     const safeMatchId = match.id.replace(/[^a-zA-Z0-9_-]/g, '-');
     const next = getCurrentTournamentMatch(nextRun);
     const headline = won
       ? `${teamName(profile, partner)} avança no ${tournament.name}`
       : `${teamName(profile, partner)} se despede do ${tournament.name}`;
-    await Promise.allSettled([
-      localGame.entities.PressArticle.upsert(`round-news-${safeMatchId}`, {
+    return [
+      { type: 'upsert', entityName: 'PressArticle', id: `round-news-${safeMatchId}`, data: {
         profile_id: profile.id,
         title: headline,
         content: won
@@ -268,8 +270,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         article_type: 'noticia', sentiment: won ? 'positivo' : 'neutro', outlet: 'Padel Legacy News',
         journalist_name: 'Redação PL', published_date: profile.career_date,
         related_tournament_id: tournament.id, round_importance: importance,
-      }),
-      localGame.entities.CareerMessage.upsert(`round-interview-${safeMatchId}`, {
+      } },
+      { type: 'upsert', entityName: 'CareerMessage', id: `round-interview-${safeMatchId}`, data: {
         profile_id: profile.id, sender_type: 'imprensa', sender_name: 'Assessoria de Imprensa',
         title: nextRun.status === 'champion' ? 'Entrevista especial de campeão' : won ? 'Entrevista pós-vitória disponível' : 'Entrevista pós-eliminação disponível',
         content: `A imprensa quer repercutir ${match.round}. A importância desta rodada foi classificada como ${importance}.`,
@@ -278,20 +280,21 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         is_read: false, is_new: true,
         destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: `interview_match_${match.id}`, source: match.id } },
         metadata: { route: `/press?tab=interviews&interview=interview_match_${encodeURIComponent(match.id)}&source=${encodeURIComponent(match.id)}`, interview_id: `interview_match_${match.id}`, interview_source_id: match.id, match_id: match.id, tournament_id: tournament.id, round: match.round },
-      }),
-      localGame.entities.Post.upsert(`round-post-${safeMatchId}`, {
+      } },
+      { type: 'upsert', entityName: 'Post', id: `round-post-${safeMatchId}`, data: {
         author_name: 'Padel Legacy News', author_type: 'media', content: headline,
         likes: importance === 'global' ? 180 : importance === 'high' ? 90 : importance === 'medium' ? 42 : 18,
         comments_count: importance === 'global' ? 35 : importance === 'high' ? 18 : 6,
         created_date: new Date().toISOString(),
-      }),
-    ]);
+      } },
+    ];
   }
 
   async function handleMatchFinished(matchState) {
     if (savedRef.current || !event?.id || !currentMatch) return;
     savedRef.current = true;
     const won = matchState.winner === 'A';
+    const profiler = createMatchEndProfiler();
     try {
       const [freshEvent, freshProfile] = await Promise.all([
         localGame.entities.CalendarEvent.get(event.id),
@@ -305,8 +308,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         return;
       }
 
-      const score = getSetScoreString(matchState);
-      const stats = summarizeTournamentMatch(matchState);
+      const score = await profiler.measure('finalizeScore', async () => getSetScoreString(matchState));
+      const stats = await profiler.measure('aggregateStats', async () => summarizeTournamentMatch(matchState));
       const transition = recordTournamentMatchResult(freshRun, {
         matchId: freshMatch.id,
         won,
@@ -318,7 +321,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
       const nextRun = transition.run;
       const completedMatch = nextRun.matches.find((item) => item.id === freshMatch.id);
 
-      await localGame.entities.Match.upsert(freshMatch.id, {
+      const matchRecord = {
         id: freshMatch.id,
         profile_id: profile.id,
         career_date: profile.career_date,
@@ -340,38 +343,85 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         tournament_outcome: nextRun.status === 'champion' ? 'champion' : nextRun.status === 'eliminated' ? 'eliminated' : 'advanced',
         press_importance: completedMatch.pressImportance,
         stats_summary: stats,
+        recap_snapshot: matchState.matchRecapSnapshot || null,
+        point_event_count: Number(matchState.pointEvents?.length || matchState.stats?.rallies || 0),
         notes: `${freshMatch.round} | ${score}`,
-      });
+      };
 
       const rewardAlreadyApplied = (freshProfile.processed_match_keys || []).includes(freshMatch.id);
-      let updated = await applyMatchRewards(freshProfile, won, {
+      const reward = buildMatchRewardsPatch(freshProfile, won, {
         skipPhysical: true,
         idempotencyKey: freshMatch.id,
         officialTournament: true,
       });
-      const physicalKeys = Array.isArray(updated.processed_tournament_physical_keys) ? updated.processed_tournament_physical_keys : [];
+      let updatedDraft = { ...freshProfile, ...reward.updates };
+      const physicalKeys = Array.isArray(updatedDraft.processed_tournament_physical_keys) ? updatedDraft.processed_tournament_physical_keys : [];
       let physical = null;
       if (!physicalKeys.includes(freshMatch.id)) {
         physical = buildPhysicalPatch({
-          profile: updated, tournament, roundLabel: freshMatch.round, won,
-          matchesThisWeek: Number(updated.matches_this_week) || 0, date: profile.career_date,
+          profile: updatedDraft, tournament, roundLabel: freshMatch.round, won,
+          matchesThisWeek: Number(updatedDraft.matches_this_week) || 0, date: profile.career_date,
         });
-        updated = await localGame.entities.PlayerProfile.update(updated.id, {
+        updatedDraft = { ...updatedDraft,
           ...physical.patch,
           processed_tournament_physical_keys: [...physicalKeys, freshMatch.id].slice(-100),
-        });
+        };
       }
 
+      const rankingKey = partner?.id ? teamKey(freshProfile.id, partner.id) : null;
+      const [rankingRows, activePartnership] = rewardAlreadyApplied ? [[], null] : await Promise.all([
+        rankingKey ? localGame.entities.TeamRanking.filter({ team_key: rankingKey }) : Promise.resolve([]),
+        getActivePartnership(profile.id),
+      ]);
+      /** @type {any[]} */
+      const operations = [{ type: 'upsert', entityName: 'Match', id: freshMatch.id, data: matchRecord }];
       if (!rewardAlreadyApplied) {
-        await updateTeamRanking(freshProfile, partner, won);
-        const activePartnership = await getActivePartnership(profile.id);
-        if (activePartnership) await recordPartnershipMatch(activePartnership.id, won, tournament.name);
+        const ranking = rankingRows?.[0];
+        if (rankingKey && partner) {
+          const sortedPlayers = [freshProfile, partner].sort((a, b) => a.id.localeCompare(b.id));
+          operations.push({ type: 'upsert', entityName: 'TeamRanking', id: ranking?.id || `team-ranking-${rankingKey}`, data: {
+            team_key: rankingKey,
+            player1_id: sortedPlayers[0].id,
+            player1_name: sortedPlayers[0].sport_name || sortedPlayers[0].name,
+            player2_id: sortedPlayers[1].id,
+            player2_name: sortedPlayers[1].sport_name || sortedPlayers[1].name,
+            ranking_points: (Number(ranking?.ranking_points) || 0) + (won ? 50 : 20),
+            matches_played: (Number(ranking?.matches_played) || 0) + 1,
+            wins: (Number(ranking?.wins) || 0) + (won ? 1 : 0),
+            losses: (Number(ranking?.losses) || 0) + (won ? 0 : 1),
+            titles: ranking?.titles || [],
+          } });
+        }
+        if (activePartnership) {
+          const partnershipPatch = buildPartnershipMatchPatch(activePartnership, won, tournament.name, profile.career_date);
+          operations.push({ type: 'update', entityName: 'Partnership', id: activePartnership.id, data: partnershipPatch });
+          updatedDraft = { ...updatedDraft, partner_chemistry: partnershipPatch.chemistry, partner_trust: partnershipPatch.partner_trust, partner_morale: partnershipPatch.partner_morale };
+        }
       }
+
+      const bracket = buildTournamentBracketHistory(nextRun, teamName(updatedDraft, partner));
+      const nextScheduledMatch = getCurrentTournamentMatch(nextRun);
+      const terminalStatus = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
+      operations.push(
+        { type: 'playerUpdate', id: freshProfile.id, data: { ...reward.updates, ...(physical?.patch || {}), partner_chemistry: updatedDraft.partner_chemistry, partner_trust: updatedDraft.partner_trust, partner_morale: updatedDraft.partner_morale, processed_tournament_physical_keys: updatedDraft.processed_tournament_physical_keys } },
+        { type: 'update', entityName: 'CalendarEvent', id: freshEvent.id, data: {
+          title: terminalStatus ? tournament.name : `${tournament.name} — ${nextScheduledMatch?.round || 'Torneio'}`,
+          start_date: nextScheduledMatch?.date || freshEvent.start_date,
+          end_date: nextScheduledMatch?.date || freshEvent.end_date,
+          status: terminalStatus ? 'completed' : 'scheduled',
+          requires_decision: !terminalStatus,
+          metadata: { ...(freshEvent.metadata || {}), tournament_run: nextRun, tournament_run_schema_version: 2, last_completed_match_id: freshMatch.id, next_round_date: transition.nextMatch?.date || null },
+        } },
+        { type: 'update', entityName: 'Tournament', id: tournament.id, data: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status } },
+      );
+      const coreResult = await profiler.measure('persistSave', async () => localGame.batch(operations, { idempotencyKey: `tournament:${freshMatch.id}` }));
+      let updated = coreResult.player || updatedDraft;
+      setEvent(coreResult.records?.find((record) => record?.id === freshEvent.id) || freshEvent);
+      setRun(nextRun);
 
       let completion = null;
-      const bracket = buildTournamentBracketHistory(nextRun, teamName(updated, partner));
       if (transition.terminal) {
-        completion = await finalizeTournamentRun({
+        completion = await profiler.measure('tournament', async () => prepareTournamentFinalization({
           profile: updated,
           tournament,
           partner,
@@ -380,17 +430,35 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
           runId: `${tournament.id}:${nextRun.createdAt}`,
           bracketHistory: bracket,
           runnerUp: won ? opponent.map((item) => item.name).join(' & ') : teamName(updated, partner),
-        });
+        }));
         updated = completion.updatedProfile;
         setTournamentRewards(completion.rewards);
       }
 
-      await persistRun(nextRun, transition.terminal ? { status: 'completed', requires_decision: false } : {
-        status: 'scheduled',
-        requires_decision: true,
-        metadata: { last_completed_match_id: freshMatch.id, next_round_date: transition.nextMatch?.date || null },
-      });
-      await publishRoundMedia(freshMatch, won, nextRun);
+      const mediaOperations = buildRoundMediaOperations(freshMatch, won, nextRun);
+      const missionObjectives = [
+        ...(won ? ['win_matches'] : []),
+        'play_matches',
+        ...(nextRun.status === 'champion' ? ['win_tournament'] : []),
+      ];
+      const secondaryOperations = transition.terminal ? [...completion.operations, ...mediaOperations] : mediaOperations;
+      const secondaryTask = () => rewardAlreadyApplied && !transition.terminal
+        ? localGame.batch(secondaryOperations)
+        : incrementMissionProgress(
+          profile.id,
+          missionObjectives,
+          1,
+          profile.career_date,
+          {
+            triggerEventId: freshMatch.id,
+            batchWrites: true,
+            additionalOperations: secondaryOperations,
+            playerPatch: transition.terminal && !completion.idempotent ? completion.playerPatch : null,
+          },
+        );
+      if (transition.terminal) await profiler.measure('missions', secondaryTask);
+      else scheduleSecondaryMatchWork(secondaryTask);
+      profiler.finish();
       setProfile(updated);
       onProfileUpdate?.(updated);
       setPhysicalReport(physical);

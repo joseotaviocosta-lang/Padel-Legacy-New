@@ -10,6 +10,7 @@ export function buildMatchAnalysis(state) {
   const topWinner = topBy(players, (row) => row.winners);
   const mostConsistent = topBy(players, (row) => row.shots && (Object.values(row.shots).reduce((a, b) => a + b, 0) - row.unforcedErrors));
   const keyMoments = state.narration
+    .slice(-48)
     .filter((event) => Number(event.narrative?.importance || 0) >= 3 || ['set', 'match', 'tiebreak_end'].includes(event.type))
     .slice(-8)
     .map((event) => ({

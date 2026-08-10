@@ -1,8 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { X, Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
-import { useCareer } from '@/careers/useCareer.js';
-import { spectatorStore } from '@/gameplay/replay/spectator/SpectatorStore.js';
-import { SpectatorReservationManager } from '@/gameplay/replay/spectator/SpectatorReservationManager.js';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
@@ -96,11 +93,6 @@ function normalizeHistory(tournament) {
 }
 
 export default function TournamentBracket({ tournament, onClose }) {
-  const {activeCareer}=useCareer();
-  const reservations=new SpectatorReservationManager(spectatorStore);
-  const [reserved,setReserved]=useState(new Set());
-  const [followedTeams,setFollowedTeams]=useState(new Set());
-  useEffect(()=>{if(activeCareer?.career_id)spectatorStore.load(activeCareer.career_id).then((state)=>{setReserved(new Set(state.spectator_reservations.map((x)=>x.match_id)));setFollowedTeams(new Set(state.followed_team_ids));});},[activeCareer?.career_id]);
   const tier = TIER_STYLES[tournament.tier] || TIER_STYLES.Silver;
   const history = useMemo(() => normalizeHistory(tournament), [tournament]);
   const [activeRound, setActiveRound] = useState(Math.max(0, history.length - 1));
@@ -147,7 +139,7 @@ export default function TournamentBracket({ tournament, onClose }) {
 
         <div className="space-y-2">
           {(history[activeRound]?.matches || []).map((match, index) => (
-            <MatchCard key={`${activeRound}-${index}`} match={match} number={index + 1} reserved={reserved.has(match.match_id)} followedTeams={followedTeams} onFollowTeam={async(teamId)=>{const next=await spectatorStore.toggle(activeCareer.career_id,'followed_team_ids',teamId);setFollowedTeams(new Set(next.followed_team_ids));}} onReserve={async()=>{await reservations.reserve(activeCareer.career_id,{...match,status:'scheduled',tournament_id:tournament.id});setReserved((old)=>new Set([...old,match.match_id]));}} />
+            <MatchCard key={`${activeRound}-${index}`} match={match} number={index + 1} />
           ))}
         </div>
 
@@ -165,7 +157,7 @@ function Info({ icon: Icon, value, color }) {
   return <div className="text-center rounded-xl bg-secondary/30 p-2"><Icon className={`h-3.5 w-3.5 mx-auto mb-0.5 ${color}`} /><p className="text-[9px] font-bold truncate">{value}</p></div>;
 }
 
-function MatchCard({ match, number, reserved, onReserve, followedTeams, onFollowTeam }) {
+function MatchCard({ match, number }) {
   const aWon = match.winner === match.team_a;
   const bWon = match.winner === match.team_b;
   return (
@@ -173,8 +165,7 @@ function MatchCard({ match, number, reserved, onReserve, followedTeams, onFollow
       <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score || (match.status === 'scheduled' ? 'Agendada' : '—')}</span></div>
       <TeamLine name={match.team_a} winner={aWon} />
       <TeamLine name={match.team_b} winner={bWon} />
-      <div className="mt-2 text-right">{match.canonical&&match.match_id&&!match.winner?<button onClick={onReserve} className="text-[10px] font-bold text-primary">{reserved?'Reservada':'Reservar para assistir'}</button>:match.winner?<span className="text-[9px] text-muted-foreground">{match.replay_id?'Replay disponível':'Ver resultado'}</span>:null}</div>
-      {match.canonical&&Array.isArray(match.team_ids)&&<div className="mt-2 flex gap-2">{match.team_ids.map((id,index)=><button key={id} onClick={()=>onFollowTeam(id)} className="text-[9px] text-cyan-300">{followedTeams.has(id)?`Deixar dupla ${index+1}`:`Seguir dupla ${index+1}`}</button>)}</div>}
+      {match.winner && <div className="mt-2 text-right"><span className="text-[9px] text-muted-foreground">Ver resultado</span></div>}
     </div>
   );
 }

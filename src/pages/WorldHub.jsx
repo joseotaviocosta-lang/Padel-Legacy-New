@@ -224,7 +224,6 @@ export default function WorldHub() {
                 <div className="flex flex-wrap gap-2">
                   <Link to="/ranking" className="rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Ranking</Link>
                   <Link to="/tournaments" className="rounded-xl bg-secondary px-3 py-2 text-xs font-bold">Torneios</Link>
-                  <Link to="/world-tour/live" className="rounded-xl bg-secondary px-3 py-2 text-xs font-bold">Ao vivo</Link>
                 </div>
               )}
             />

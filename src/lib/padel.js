@@ -652,8 +652,19 @@ export async function syncMissionProgressPeriods(profile, missions = null, rows 
 
 export async function incrementMissionProgress(profileId, objectiveTypes, count = 1, careerDateOverride = null, options = {}) {
   const completedNow = [];
+  const additionalOperations = Array.isArray(options.additionalOperations) ? options.additionalOperations : [];
+  let batchAttempted = false;
+  const persistFallbackBatch = async () => {
+    if (!options.batchWrites) return;
+    const operations = [...additionalOperations];
+    if (options.playerPatch) operations.push({ type: 'playerUpdate', id: profileId, data: options.playerPatch });
+    if (operations.length) await localGame.batch(operations);
+  };
   try {
-    if (!options.allowDuringHydration && !missionRuntime.canProcessEvents()) return completedNow;
+    if (!options.allowDuringHydration && !missionRuntime.canProcessEvents()) {
+      await persistFallbackBatch();
+      return completedNow;
+    }
     const careerDate = careerDateOverride || await missionCareerDate(profileId);
     const types = Array.isArray(objectiveTypes) ? objectiveTypes : [objectiveTypes];
     const allMissions = await ensureTutorialMissionCatalog();
@@ -661,11 +672,16 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
     const selectionProfile = profilesForSelection?.[0] || {};
     const selectedPeriodicIds = new Set();
     for (const category of ['diaria','semanal','mensal','sazonal']) {
-      const pool = allMissions.filter(m => m.mission_type === category && requirementsMet(m, selectionProfile, { tournamentsUnlocked:true, hasReplay:false, sponsorsUnlocked:false }));
+      const pool = allMissions.filter(m => m.mission_type === category && requirementsMet(m, selectionProfile, { tournamentsUnlocked:true, sponsorsUnlocked:false }));
       const limit = category === 'diaria' || category === 'semanal' ? 3 : 20;
       deterministicMissionSelection(pool,{careerId:profileId,cycleId:missionPeriodKey(category,careerDate),category,limit}).forEach(m => selectedPeriodicIds.add(m.id));
     }
     let progressRows = await localGame.entities.MissionProgress.filter({ profile_id: profileId });
+    /** @type {any[]} */
+    const batchedOperations = [];
+    const batchedCompletionEvents = [];
+    let batchedProfile = options.playerPatch ? { ...selectionProfile, ...options.playerPatch } : selectionProfile;
+    let batchedPlayerChanged = Boolean(options.playerPatch);
     for (const type of types) {
       const excludedMissionTypes = new Set(options.excludeMissionTypes || []);
       const allowedMissionTypes = options.onlyMissionTypes ? new Set(options.onlyMissionTypes) : null;
@@ -687,17 +703,53 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
         const newProgress = Math.min(Number(m.target_count || 1), baseProgress + count);
         let updated;
         const completed = newProgress >= Number(m.target_count || 1); const status = completed ? 'completed' : 'in_progress';
-        if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, { status, progress: newProgress, completed, claimed: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate), last_trigger_event_id: options.triggerEventId || null });
-        else updated = await localGame.entities.MissionProgress.create({ mission_id: m.id, profile_id: profileId, status, progress: newProgress, completed, claimed: false, reward_delivered: false, period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate), last_trigger_event_id: options.triggerEventId || null });
+        const progressId = prog?.id || `mission-progress-${profileId}-${m.id}-${periodKey}`.replace(/[^a-zA-Z0-9_-]/g, '-');
+        const progressPatch = { mission_id: m.id, profile_id: profileId, status, progress: newProgress, completed, claimed: false, reward_delivered: Boolean(prog?.reward_delivered), period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate), last_trigger_event_id: options.triggerEventId || null };
+        if (options.batchWrites) {
+          updated = { ...prog, ...progressPatch, id: progressId };
+          batchedOperations.push({ type: 'upsert', entityName: 'MissionProgress', id: progressId, data: progressPatch });
+        } else if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, progressPatch);
+        else updated = await localGame.entities.MissionProgress.create(progressPatch);
         progressRows = [...progressRows.filter(p => p.id !== updated.id), updated];
         if (newProgress >= Number(m.target_count || 1)) {
-          const claimed = options.silent || options.noReward ? await localGame.entities.MissionProgress.update(updated.id, { status: 'rewarded', claimed: true, reward_delivered: true, completed: true, completed_at: new Date().toISOString(), reward_claimed_at: new Date().toISOString(), completion_notified_at: new Date().toISOString(), migration_recognized: true }) : await rewardMissionAutomatically(profileId, m, updated);
+          let claimed;
+          if (options.batchWrites) {
+            const completedAt = new Date().toISOString();
+            const rewardPatch = { status: 'rewarded', claimed: true, reward_delivered: true, completed: true, completed_at: completedAt, reward_claimed_at: completedAt, completion_notified_at: completedAt, ...(options.silent || options.noReward ? { migration_recognized: true } : {}) };
+            Object.assign(batchedOperations.at(-1).data, rewardPatch);
+            claimed = { ...updated, ...rewardPatch };
+            if (!options.silent && !options.noReward) {
+              const rewardValidation = validateMissionReward(m);
+              if (!rewardValidation.valid) throw new Error(rewardValidation.errors.join('; '));
+              const medal = m.medal_reward;
+              batchedProfile = {
+                ...batchedProfile,
+                xp: Number(batchedProfile.xp || 0) + Number(m.xp_reward || 0),
+                coins: Number(batchedProfile.coins || 0) + Number(m.coins_reward || 0),
+                medals: medal && !(batchedProfile.medals || []).includes(medal) ? [...(batchedProfile.medals || []), medal] : (batchedProfile.medals || []),
+              };
+              batchedPlayerChanged = true;
+              batchedCompletionEvents.push({ mission: m, completedAt, cycleId: periodKey, medal });
+            }
+          } else {
+            claimed = options.silent || options.noReward ? await localGame.entities.MissionProgress.update(updated.id, { status: 'rewarded', claimed: true, reward_delivered: true, completed: true, completed_at: new Date().toISOString(), reward_claimed_at: new Date().toISOString(), completion_notified_at: new Date().toISOString(), migration_recognized: true }) : await rewardMissionAutomatically(profileId, m, updated);
+          }
           progressRows = [...progressRows.filter(p => p.mission_id !== m.id), claimed];
           completedNow.push(m);
         }
       }
     }
+    if (options.batchWrites) {
+      batchedOperations.push(...additionalOperations);
+      if (batchedPlayerChanged) batchedOperations.push({ type: 'playerUpdate', id: profileId, data: { ...(options.playerPatch || {}), xp: batchedProfile.xp, coins: batchedProfile.coins, medals: batchedProfile.medals } });
+      if (batchedOperations.length) {
+        batchAttempted = true;
+        await localGame.batch(batchedOperations);
+      }
+      batchedCompletionEvents.forEach(({ mission, completedAt, cycleId, medal }) => emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial', cycleId, completedAt, notificationKey: `mission-completed:${profileId}:${mission.id}:${cycleId}` }));
+    }
   } catch (e) {
+    if (options.batchWrites && !batchAttempted) await persistFallbackBatch();
     console.error('mission progress', e);
     if (options.throwOnError) throw e;
   }
@@ -740,10 +792,10 @@ export async function reconcileCourtSideTutorial(profile, missions = null, rows 
   return { profile, changed: false };
 }
 
-export async function applyMatchRewards(profile, won, options = {}) {
+export function buildMatchRewardsPatch(profile, won, options = {}) {
   const idempotencyKey = options.idempotencyKey ? String(options.idempotencyKey) : null;
   const processedKeys = Array.isArray(profile?.processed_match_keys) ? profile.processed_match_keys : [];
-  if (idempotencyKey && processedKeys.includes(idempotencyKey)) return profile;
+  if (idempotencyKey && processedKeys.includes(idempotencyKey)) return { alreadyProcessed: true, updates: {} };
   const xpGain = won ? 50 : 20;
   const coinsGain = won ? 30 : 10;
   const newXp = (profile.xp || 0) + xpGain;
@@ -779,7 +831,13 @@ export async function applyMatchRewards(profile, won, options = {}) {
     updates.injured_until = recoveryDate.toISOString().slice(0, 10);
     updates.energy = 0;
   }
-  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
+  return { alreadyProcessed: false, updates };
+}
+
+export async function applyMatchRewards(profile, won, options = {}) {
+  const reward = buildMatchRewardsPatch(profile, won, options);
+  if (reward.alreadyProcessed) return profile;
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, reward.updates);
   await incrementMissionProgress(profile.id, won ? ['win_matches', 'play_matches'] : ['play_matches']);
   return updated;
 }

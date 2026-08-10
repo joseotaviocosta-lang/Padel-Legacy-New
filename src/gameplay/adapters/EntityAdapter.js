@@ -2,6 +2,10 @@ import { CareerEntityRepository } from '../repositories/CareerEntityRepository.j
 
 const repository = new CareerEntityRepository();
 
+export function batchEntities(operations, options) {
+  return repository.batch(operations, options);
+}
+
 export function createEntityAdapter(entityName) {
   return {
     list: (sort, limit) => repository.list(entityName, sort, limit),

@@ -1,6 +1,10 @@
+import { getTournamentNotificationMode, TOURNAMENT_DEEP_LINK_MODES } from './tournamentDeepLink.js';
+
 export const NOTIFICATION_DESTINATION_TYPES = Object.freeze({
   PRESS_INTERVIEW: 'PRESS_INTERVIEW',
   TOURNAMENT: 'TOURNAMENT',
+  TOURNAMENT_DETAILS: 'TOURNAMENT_DETAILS',
+  TOURNAMENT_RUN: 'TOURNAMENT_RUN',
   PARTNER_OFFER: 'PARTNER_OFFER',
   COACH: 'COACH',
   STAFF: 'STAFF',
@@ -32,6 +36,11 @@ function classifyNotification(notification = {}) {
   const metadata = notification.metadata || {};
   const explicitType = notification.destination?.type || metadata.destination?.type || notification.notification_type;
   const declaredType = String(explicitType || '').trim().toUpperCase();
+  const tournamentMode = getTournamentNotificationMode(notification);
+  if (tournamentMode === TOURNAMENT_DEEP_LINK_MODES.RUN) return NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN;
+  if (['TOURNAMENT_UPCOMING', 'TOURNAMENT_REMINDER', 'TOURNAMENT_AVAILABLE'].includes(declaredType)) {
+    return NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_DETAILS;
+  }
   const knownTypes = /** @type {string[]} */ (Object.values(NOTIFICATION_DESTINATION_TYPES));
   if (knownTypes.includes(declaredType)) return declaredType;
   const token = [explicitType, notification.message_type, notification.related_entity_type, metadata.type]
@@ -40,7 +49,7 @@ function classifyNotification(notification = {}) {
     .join(' ');
 
   if (/press|interview|imprensa/.test(token)) return NOTIFICATION_DESTINATION_TYPES.PRESS_INTERVIEW;
-  if (/tournament|torneio|competition/.test(token)) return NOTIFICATION_DESTINATION_TYPES.TOURNAMENT;
+  if (/tournament|torneio|competition/.test(token)) return NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_DETAILS;
   if (/partner_offer|partnership_proposal|proposta_parceria|partner_proposal/.test(token)) return NOTIFICATION_DESTINATION_TYPES.PARTNER_OFFER;
   if (/mission|missao|missão/.test(token)) return NOTIFICATION_DESTINATION_TYPES.MISSION;
   if (/injury|medical|lesao|lesão|fisioter/.test(token)) return NOTIFICATION_DESTINATION_TYPES.INJURY;
@@ -74,7 +83,14 @@ export function resolveNotificationDestination(notification = {}) {
       });
       break;
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT:
-      route = withParams(explicitRoute || metadata.route || '/tournaments', { tournament: metadata.tournament_id || entityId });
+    case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_DETAILS:
+    case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN:
+      route = withParams(explicitRoute || metadata.route || '/tournaments', {
+        tournament: metadata.tournament_id || entityId,
+        mode: type === NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN
+          ? TOURNAMENT_DEEP_LINK_MODES.RUN
+          : TOURNAMENT_DEEP_LINK_MODES.DETAILS,
+      });
       break;
     case NOTIFICATION_DESTINATION_TYPES.PARTNER_OFFER:
       route = withParams(explicitRoute || metadata.route || '/partners', { view: 'offers', offer: metadata.offer_id || entityId });

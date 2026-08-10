@@ -249,6 +249,77 @@ export class CareerEntityRepository {
     }, { save: true });
   }
 
+  /**
+   * Aplica um conjunto heterogêneo de alterações em uma única gravação do save.
+   * A operação playerUpdate atualiza o perfil raiz; as demais atuam nas coleções.
+   */
+  async batch(operations = [], options = {}) {
+    if (!Array.isArray(operations) || operations.length === 0) {
+      return { records: [], player: null, skipped: false, writes: 0 };
+    }
+    if (options.idempotencyKey) {
+      const alreadyProcessed = await this.withCareer((career) => (
+        Array.isArray(career.player?.processed_match_finalizations)
+        && career.player.processed_match_finalizations.includes(options.idempotencyKey)
+      ), { save: false });
+      if (alreadyProcessed) {
+        const player = await this.withCareer((career) => clone(career.player), { save: false });
+        return { records: [], player, skipped: true, writes: 0 };
+      }
+    }
+    const touched = new Set(operations.map((operation) => operation?.entityName).filter(Boolean));
+    touched.forEach((entityName) => this.invalidate(entityName));
+    const result = await this.withCareer(async (career) => {
+      const processedKeys = new Set(career.player?.processed_match_finalizations || []);
+      if (options.idempotencyKey && processedKeys.has(options.idempotencyKey)) {
+        return { records: [], player: career.player, skipped: true, writes: 0 };
+      }
+
+      const timestamp = new Date().toISOString();
+      const records = [];
+      for (const operation of operations) {
+        if (!operation || typeof operation !== 'object') continue;
+        if (operation.type === 'playerUpdate') {
+          if (!career.player || (operation.id && career.player.id !== operation.id)) {
+            throw new Error(`PlayerProfile não encontrado para atualização: ${operation.id || 'sem id'}`);
+          }
+          career.player = { ...career.player, ...clone(operation.data || {}), id: career.player.id, updated_date: timestamp };
+          records.push(career.player);
+          continue;
+        }
+
+        const entityName = operation.entityName;
+        if (!entityName) throw new Error('entityName obrigatório em operação batch.');
+        const rows = this.ensureCollection(entityName, career, { persist: true });
+        const id = operation.id || operation.data?.id || makeId(entityName.toLowerCase());
+        const index = rows.findIndex((row) => row?.id === id);
+        if (operation.type === 'delete') {
+          if (index >= 0) rows.splice(index, 1);
+          records.push({ id, success: true });
+          continue;
+        }
+        if (operation.type === 'create' && index >= 0) throw new Error(`${entityName} já existe com o id: ${id}`);
+        if (operation.type === 'update' && index < 0) throw new Error(`${entityName} não encontrado para atualização: ${id}`);
+        const data = clone(operation.data || {});
+        if (index < 0) {
+          const record = { ...data, id, created_date: data.created_date || timestamp, updated_date: timestamp };
+          rows.push(record);
+          records.push(record);
+        } else {
+          rows[index] = { ...rows[index], ...data, id, updated_date: timestamp };
+          records.push(rows[index]);
+        }
+      }
+
+      if (options.idempotencyKey) {
+        const nextKeys = [...processedKeys, options.idempotencyKey].slice(-250);
+        career.player = { ...career.player, processed_match_finalizations: nextKeys, updated_date: timestamp };
+      }
+      return { records, player: career.player, skipped: false, writes: 1 };
+    }, { save: true });
+    return result;
+  }
+
   async count(entityName, query = {}) {
     const rows = await this.filter(entityName, query);
     return rows.length;

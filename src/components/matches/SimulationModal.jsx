@@ -64,36 +64,14 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     savedRef.current = true;
     try {
       const won = matchState.winner === 'A';
-      await localGame.entities.Match.create({
-        profile_id: profile.id,
-        career_date: profile.career_date,
-        date: profile.career_date || new Date().toISOString().slice(0, 10),
-        location: 'Arena Virtual',
-        tournament_name: 'Partida Treino',
-        team_a: [profile.sport_name, teams.partner.name],
-        team_b: teams.opponents.map(b => b.name),
-        score_a: matchState.setsA,
-        score_b: matchState.setsB,
-        winner: matchState.winner,
-        engine_version: matchState.engineVersion,
-        seed: String(matchState.seed),
-        set_scores: matchState.setScores,
-        point_events: matchState.pointEvents,
-        live_coach_report: matchState.liveCoachReport || null,
-        tactical_adjustment_history: matchState.liveCoach?.adjustments || [],
-        result: won ? 'vitória' : 'derrota',
-        match_type: 'simulada',
-        notes: `Sets: ${getSetScoreString(matchState)} | Força: ${Math.round(matchState.strA)} vs ${Math.round(matchState.strB)}`,
-      });
       const coreResult = await finalizePracticeMatch({
         profile,
-        won,
+        matchState,
         partnerName: teams.partner.name,
         opponents: teams.opponents.map(b => b.name),
-        score: getSetScoreString(matchState),
+        liveCoachSettings,
       });
-      let updated = coreResult.updatedProfile;
-      if(matchState.liveCoachReport){const applied=Number(matchState.liveCoachReport.suggestionsApplied)||0;updated=await localGame.entities.PlayerProfile.update(updated.id,{live_coach_settings:liveCoachSettings,live_coach_history:[...(updated.live_coach_history||[]),matchState.liveCoachReport].slice(-100),coach_match_observations:[...(updated.coach_match_observations||[]),...(matchState.liveCoach?.observations||[])].slice(-500),tactical_adjustment_history:[...(updated.tactical_adjustment_history||[]),...(matchState.liveCoach?.adjustments||[])].slice(-300),coach_trust:Math.min(100,(Number(updated.coach_trust)||50)+(won?1:0)+(applied>0?1:0)),coach_tactical_understanding:Math.min(100,(Number(updated.coach_tactical_understanding)||20)+1)});}
+      const updated = coreResult.updatedProfile;
       setProfile(updated);
       onProfileUpdate?.(updated);
       // Update relationships with partner and opponents (non-blocking)

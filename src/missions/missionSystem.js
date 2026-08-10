@@ -30,7 +30,6 @@ export function requirementsMet(mission, profile = {}, context = {}) {
   return (mission.requirements || []).every(requirement => ({
     'has-partner': Boolean(profile.partner_id || profile.current_partner_id),
     'tournaments-unlocked': context.tournamentsUnlocked !== false,
-    'has-replay': Boolean(context.hasReplay),
     'sponsors-unlocked': Boolean(context.sponsorsUnlocked),
   }[requirement] ?? false));
 }

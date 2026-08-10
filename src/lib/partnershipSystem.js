@@ -202,46 +202,64 @@ export async function endPartnership(partnershipId, endStatus, reason) {
   } catch (e) { console.error('endPartnership', e); return null; }
 }
 
+export function buildPartnershipMatchPatch(partnership, won, tournamentName, date = new Date().toISOString().slice(0, 10)) {
+  const p = partnership || {};
+  const eventEffect = won
+    ? { chemistry: 2, trust: 2, morale: 3 }
+    : { chemistry: 1, trust: 0, morale: -2 };
+  const bond = applyPartnerBondEvent(p, eventEffect);
+  const sharedMatches = (p.shared_matches || 0) + 1;
+  const sharedWins = won ? (p.shared_wins || 0) + 1 : (p.shared_wins || 0);
+  const sharedLosses = !won ? (p.shared_losses || 0) + 1 : (p.shared_losses || 0);
+  return {
+    chemistry: bond.chemistry,
+    partner_trust: bond.trust,
+    partner_morale: bond.morale,
+    partnership_identity: derivePartnershipIdentity({ ...p, ...bond, shared_matches: sharedMatches, shared_wins: sharedWins, shared_losses: sharedLosses }),
+    shared_matches: sharedMatches,
+    shared_wins: sharedWins,
+    shared_losses: sharedLosses,
+    shared_tournaments: tournamentName ? (p.shared_tournaments || 0) + 1 : p.shared_tournaments,
+    chemistry_history: [...(p.chemistry_history || []), {
+      date,
+      chemistry: bond.chemistry,
+      trust: bond.trust,
+      morale: bond.morale,
+      event: won ? 'Vitória juntos' : 'Derrota juntos',
+    }].slice(-40),
+  };
+}
+
 export async function recordPartnershipMatch(partnershipId, won, tournamentName) {
   if (!partnershipId) return null;
   try {
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    const eventEffect = won
-      ? { chemistry: 2, trust: 2, morale: 3 }
-      : { chemistry: 1, trust: 0, morale: -2 };
-    const bond = applyPartnerBondEvent(p, eventEffect);
-    const sharedMatches = (p.shared_matches || 0) + 1;
-    const sharedWins = won ? (p.shared_wins || 0) + 1 : (p.shared_wins || 0);
-    const sharedLosses = !won ? (p.shared_losses || 0) + 1 : (p.shared_losses || 0);
-    const identity = derivePartnershipIdentity({ ...p, ...bond, shared_matches: sharedMatches, shared_wins: sharedWins, shared_losses: sharedLosses });
-    const history = [...(p.chemistry_history || []), {
-      date: new Date().toISOString().slice(0, 10),
-      chemistry: bond.chemistry,
-      trust: bond.trust,
-      morale: bond.morale,
-      event: won ? 'Vitória juntos' : 'Derrota juntos',
-    }].slice(-40);
-    const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, {
-      chemistry: bond.chemistry,
-      partner_trust: bond.trust,
-      partner_morale: bond.morale,
-      partnership_identity: identity,
-      shared_matches: sharedMatches,
-      shared_wins: sharedWins,
-      shared_losses: sharedLosses,
-      shared_tournaments: tournamentName ? (p.shared_tournaments || 0) + 1 : p.shared_tournaments,
-      chemistry_history: history,
-    });
+    const patch = buildPartnershipMatchPatch(p, won, tournamentName);
+    const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, patch);
     if (p.profile_id) {
       await localGame.entities.PlayerProfile.update(p.profile_id, {
-        partner_chemistry: bond.chemistry,
-        partner_trust: bond.trust,
-        partner_morale: bond.morale,
+        partner_chemistry: patch.chemistry,
+        partner_trust: patch.partner_trust,
+        partner_morale: patch.partner_morale,
       }).catch(() => {});
     }
     return updatedPartnership;
   } catch (e) { console.error('recordPartnershipMatch', e); return null; }
+}
+
+export function buildPartnershipTitlePatch(partnership, date = new Date().toISOString().slice(0, 10)) {
+  const p = partnership || {};
+  const bond = applyPartnerBondEvent(p, { chemistry: 5, trust: 6, morale: 8 });
+  const sharedTitles = (p.shared_titles || 0) + 1;
+  return {
+    chemistry: bond.chemistry,
+    partner_trust: bond.trust,
+    partner_morale: bond.morale,
+    shared_titles: sharedTitles,
+    partnership_identity: derivePartnershipIdentity({ ...p, ...bond, shared_titles: sharedTitles }),
+    chemistry_history: [...(p.chemistry_history || []), { date, chemistry: bond.chemistry, trust: bond.trust, morale: bond.morale, event: 'Título conquistado!' }].slice(-40),
+  };
 }
 
 export async function recordPartnershipTitle(partnershipId) {
@@ -249,21 +267,13 @@ export async function recordPartnershipTitle(partnershipId) {
   try {
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    const bond = applyPartnerBondEvent(p, { chemistry: 5, trust: 6, morale: 8 });
-    const sharedTitles = (p.shared_titles || 0) + 1;
-    const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, {
-      chemistry: bond.chemistry,
-      partner_trust: bond.trust,
-      partner_morale: bond.morale,
-      shared_titles: sharedTitles,
-      partnership_identity: derivePartnershipIdentity({ ...p, ...bond, shared_titles: sharedTitles }),
-      chemistry_history: [...(p.chemistry_history || []), { date: new Date().toISOString().slice(0, 10), chemistry: bond.chemistry, trust: bond.trust, morale: bond.morale, event: 'Título conquistado!' }].slice(-40),
-    });
+    const patch = buildPartnershipTitlePatch(p);
+    const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, patch);
     if (p.profile_id) {
       await localGame.entities.PlayerProfile.update(p.profile_id, {
-        partner_chemistry: bond.chemistry,
-        partner_trust: bond.trust,
-        partner_morale: bond.morale,
+        partner_chemistry: patch.chemistry,
+        partner_trust: patch.partner_trust,
+        partner_morale: patch.partner_morale,
       }).catch(() => {});
     }
     return updatedPartnership;

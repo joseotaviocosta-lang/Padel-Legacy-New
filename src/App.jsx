@@ -20,17 +20,16 @@ import ModuleErrorBoundary from '@/components/system/ModuleErrorBoundary';
 import BetaErrorBoundary from '@/components/system/BetaErrorBoundary';
 
 const lazyPage = (name) => lazy(PAGE_LOADERS[name]);
-const SpritePreview = lazy(() => import('@/pages/dev/SpritePreview.jsx'));
 const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPassword, CareerHub, Training, Missions,
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
   Relationships, Coaches, TrainingCenter, Press, Fans, Achievements, WorldEvents, WorldMarket, Weather,
-  Encyclopedia, PartnerHub, Community, WorldSpectator, NavigationHub, WorldHub, Staff, Communications, MonthlyReports] = [
+  Encyclopedia, PartnerHub, Community, NavigationHub, WorldHub, Staff, Communications, MonthlyReports] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
   'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Fans',
-  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'WorldSpectator', 'NavigationHub', 'WorldHub', 'Staff', 'Communications', 'MonthlyReports',
+  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'NavigationHub', 'WorldHub', 'Staff', 'Communications', 'MonthlyReports',
 ].map(lazyPage);
 
 const RouteLoadingFallback = () => (
@@ -82,7 +81,6 @@ const AuthenticatedApp = () => {
       <Route path="/register" element={<Register />} />
       <Route path="/forgot-password" element={<ForgotPassword />} />
       <Route path="/reset-password" element={<ResetPassword />} />
-      <Route path="/dev/sprite-preview" element={import.meta.env.DEV ? <SpritePreview /> : <PageNotFound />} />
       {/* Public landing */}
       {/* Protected app with layout */}
       <Route element={<ProtectedRoute unauthenticatedElement={<Navigate to="/login" replace />} />}>
@@ -105,7 +103,8 @@ const AuthenticatedApp = () => {
           <Route path="/game/economy" element={<ModuleErrorBoundary moduleName="Economia"><Economy /></ModuleErrorBoundary>} />
           <Route path="/profile" element={<PlayerProfile />} />
           <Route path="/matches" element={<Matches />} />
-          <Route path="/world-tour/live" element={<WorldSpectator />} />
+          <Route path="/world-tour/live" element={<Navigate to="/tournaments" replace />} />
+          <Route path="/live-circuit" element={<Navigate to="/tournaments" replace />} />
           <Route path="/tournaments" element={<Tournaments />} />
           <Route path="/journal" element={<Journal />} />
           <Route path="/ranking" element={<Ranking />} />

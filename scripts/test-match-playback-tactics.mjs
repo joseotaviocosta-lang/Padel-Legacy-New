@@ -5,7 +5,7 @@ import { getMatchTactic } from '../src/engine/match/MatchTactics.js';
 
 const teams = createDefaultBalanceTeams();
 function complete(tacticId, seed = `tactic-${tacticId}`) {
-  let state = createMatch(teams.teamA, teams.teamB, { seed, replayEnabled: true, initialTacticId: tacticId });
+  let state = createMatch(teams.teamA, teams.teamB, { seed, initialTacticId: tacticId });
   let safety = 3000;
   while (!state.finished && safety-- > 0) state = playPoint(state);
   assert(state.finished, `${tacticId} não concluiu a partida`);
@@ -16,7 +16,7 @@ const original = complete('equilibrado', 'playback-contract');
 assert(original.finished, 'Partida completa inválida');
 assert(original.pointEvents.length > 0, 'Timeline de pontos ausente');
 
-let changed = createMatch(teams.teamA, teams.teamB, { seed: 'tactic-change', replayEnabled: true });
+let changed = createMatch(teams.teamA, teams.teamB, { seed: 'tactic-change' });
 changed = applyMatchTactic(changed, 'agressivo');
 assert.equal(changed.activeTactics.A.id, 'agressivo');
 assert.equal(changed.tacticsTimeline[0].effectiveFromPoint, 1);
