@@ -5,7 +5,7 @@ import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui'
 import { Page, PageHeader, StatCard, Surface, StatusBadge } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
-import { advanceCareerDay, advanceCareerDays, advanceCareerUntilRecovered, finalizeCareerAdvanceRange, hasActiveInjury } from '@/game-core';
+import { advanceCareerDayOnce, advanceCareerDays, advanceCareerUntilRecovered, finalizeCareerAdvanceRange, hasActiveInjury } from '@/game-core';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
@@ -112,21 +112,23 @@ export default function CalendarPage() {
       .slice(0, 5);
   }, [tournaments, careerDate]);
 
-  function applyAdvancedDate(updated) {
+  function applyAdvancedDate(updated, { broadcast = true } = {}) {
     if (!updated) return;
     setProfile(updated);
     const cd = new Date((updated.career_date || CAREER_START_DATE) + 'T00:00:00');
     setSelectedDay(cd);
     setWeekStart(startOfWeek(cd, { weekStartsOn: 0 }));
     setVisibleMonth(cd);
-    window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profileId: updated.id, careerDate: updated.career_date } }));
-    window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
+    if (broadcast) {
+      window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile: updated, profileId: updated.id, careerDate: updated.career_date } }));
+      window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
+    }
   }
 
-  async function refreshAfterAdvance(updated) {
+  async function refreshAfterAdvance(updated, { broadcast = true } = {}) {
     // A data e os indicadores são atualizados imediatamente. As listas pesadas
     // são recarregadas em segundo plano e nunca mantêm os botões bloqueados.
-    applyAdvancedDate(updated);
+    applyAdvancedDate(updated, { broadcast });
     const { events, pending, tr } = await loadModuleTasks({
       events: { task: () => getEventsForRange(updated.id, '2026-01-01', '2027-12-31'), fallback: calendarEvents, timeoutMs: 2500, label: 'eventos após avanço do calendário' },
       pending: { task: () => getPendingDecisions(updated.id, updated.career_date || CAREER_START_DATE), fallback: [], timeoutMs: 2500, label: 'decisões após avanço do calendário' },
@@ -148,10 +150,10 @@ export default function CalendarPage() {
     setAdvancing(true);
     try {
       const current = await getFreshProfile();
-      const updated = await advanceCareerDay(current);
-      applyAdvancedDate(updated);
+      const updated = await advanceCareerDayOnce(current);
+      applyAdvancedDate(updated, { broadcast: false });
       // Não aguarda consultas secundárias para liberar o próximo avanço.
-      void refreshAfterAdvance(updated).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
+      void refreshAfterAdvance(updated, { broadcast: false }).catch((error) => console.warn('[Calendar] atualização secundária falhou', error));
     } catch (e) {
       toast({ title: 'Não é possível avançar', description: e.message, variant: 'destructive' });
     } finally {
@@ -170,7 +172,7 @@ export default function CalendarPage() {
       const result = await advanceCareerDays(current, days, {
         onProgress: ({ current: processed, total, profile: progressedProfile }) => {
           setAdvanceProgress({ current: processed, total });
-          applyAdvancedDate(progressedProfile);
+          applyAdvancedDate(progressedProfile, { broadcast: false });
         },
       });
       const updated = result.profile;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Check, AlertCircle, Users, Zap } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
-import { advanceDay } from '@/lib/career';
+import { advanceCareerDayOnce } from '@/game-core';
 import { SectionCard, EmptyState, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
@@ -137,7 +137,7 @@ export default function Training() {
     if (!profile) return;
     setAdvancing(true);
     try {
-      const updated = await advanceDay(profile);
+      const updated = await advanceCareerDayOnce(profile);
       setProfile(updated);
       const [sessions, counts] = await Promise.all([
         localGame.entities.TrainingSession.filter({ profile_id: updated.id }),

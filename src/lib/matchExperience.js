@@ -128,6 +128,20 @@ export function buildMatchRecap(matchState) {
   const streakA = Number(stats.longestTeamStreak?.A || teamA.maxPointStreak || 0);
   const streakB = Number(stats.longestTeamStreak?.B || teamB.maxPointStreak || 0);
   const comeback = matchState.setScores?.length >= 3 && matchState.setScores[0]?.winner !== winnerTeam;
+  const percent = (made, total) => total > 0 ? Math.round((made / total) * 100) : 0;
+  const topWinner = [...players].sort((a, b) => Number(b.winners || 0) - Number(a.winners || 0))[0] || null;
+  const topError = [...players].sort((a, b) => Number(b.unforcedErrors || 0) - Number(a.unforcedErrors || 0))[0] || null;
+  const shotTypes = ['serve', 'drive', 'backhand', 'lob', 'volley', 'bandeja', 'smash', 'chiquita'];
+  const shotImpact = Object.fromEntries(['A', 'B'].map((team) => [team, shotTypes.map((shot) => {
+    const teamPlayers = players.filter((player) => player.team === team);
+    return {
+      shot,
+      attempts: teamPlayers.reduce((sum, player) => sum + Number(player.shots?.[shot] || 0), 0),
+      winners: teamPlayers.reduce((sum, player) => sum + Number(player.shotWinners?.[shot] || 0), 0),
+      forcedErrorsDrawn: teamPlayers.reduce((sum, player) => sum + Number(player.shotForcedErrorsDrawn?.[shot] || 0), 0),
+      errors: teamPlayers.reduce((sum, player) => sum + Number(player.shotErrors?.[shot] || 0), 0),
+    };
+  }).filter((row) => row.attempts > 0)]));
 
   const highlights = [];
   if (longestRally) highlights.push({ icon: 'rally', title: 'Rally mais longo', value: `${longestRally.rallyLength} golpes`, pointNumber: longestRally.pointNumber });
@@ -142,11 +156,15 @@ export function buildMatchRecap(matchState) {
     wonByPlayer: winnerTeam === 'A',
     score: (matchState.setScores || []).map((set) => `${set.gamesA}-${set.gamesB}`).join(' · '),
     mvp,
+    topWinner,
+    topError,
+    shotImpact,
+    coachImpact: matchState.liveCoachReport?.impactEvaluations?.filter((item) => item.completeWindow).at(-1) || null,
     highlights: highlights.slice(0, 6),
     momentum: matchState.momentum || createMatchMomentum(),
     stats: {
-      A: { winners: teamA.winners || 0, errors: teamA.errors || 0, breaks: teamA.breakPointsConverted || 0, breakChances: teamA.breakPointsCreated || 0 },
-      B: { winners: teamB.winners || 0, errors: teamB.errors || 0, breaks: teamB.breakPointsConverted || 0, breakChances: teamB.breakPointsCreated || 0 },
+      A: { winners: teamA.winners || 0, forcedErrorsDrawn: teamA.forcedErrorsDrawn || 0, unforcedErrors: teamA.unforcedErrorsCommitted || 0, netPointWinShare: percent(teamA.netPointsWon, teamA.pointsWon), breaks: teamA.breakPointsConverted || 0, breakChances: teamA.breakPointsCreated || 0, breakPointsSaved: teamA.breakPointsSaved || 0 },
+      B: { winners: teamB.winners || 0, forcedErrorsDrawn: teamB.forcedErrorsDrawn || 0, unforcedErrors: teamB.unforcedErrorsCommitted || 0, netPointWinShare: percent(teamB.netPointsWon, teamB.pointsWon), breaks: teamB.breakPointsConverted || 0, breakChances: teamB.breakPointsCreated || 0, breakPointsSaved: teamB.breakPointsSaved || 0 },
       longestRally: Number(stats.longestRally || longestRally?.rallyLength || 0),
       averageRally: Number(stats.averageRally || 0),
     },

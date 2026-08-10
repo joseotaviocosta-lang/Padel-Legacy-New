@@ -14,6 +14,7 @@ export { AdaptiveTactics } from './AdaptiveTactics.js';
 export { NarrativeEngine } from './NarrativeEngine.js';
 export { buildStatisticsSummary } from './StatisticsEngine.js';
 export { buildMatchAnalysis } from './MatchAnalysis.js';
+export { getPointContext, isNormalGamePoint, POINT_OUTCOMES } from './PointContext.js';
 
 export { TeamCoordinationEngine, communicationScore, chemistryScore } from './TeamCoordinationEngine.js';
 

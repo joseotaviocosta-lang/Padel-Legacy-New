@@ -1,20 +1,17 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { ensureMyProfile } from '@/lib/padel.js';
 
 function daysUntil(from, to) {
   if (!from || !to) return null;
   return Math.max(0, Math.ceil((new Date(`${to}T00:00:00`) - new Date(`${from}T00:00:00`)) / 86400000));
 }
 
-export default function CareerHeaderContext({ compact = false }) {
+export default function CareerHeaderContext({ profile, compact = false }) {
   const [context, setContext] = useState(null);
 
   const load = useCallback(async () => {
     try {
-      const user = await localGame.auth.me();
-      const profile = await ensureMyProfile(user);
       if (!profile) return;
       const tournaments = await localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []);
       const next = (tournaments || [])
@@ -37,17 +34,13 @@ export default function CareerHeaderContext({ compact = false }) {
     } catch (error) {
       console.warn('[CareerHeaderContext] contexto indisponível', error);
     }
-  }, []);
+  }, [profile]);
 
   useEffect(() => {
     load();
     const refresh = () => load();
-    window.addEventListener('padel:profile-updated', refresh);
-    window.addEventListener('padel:day-advanced', refresh);
     window.addEventListener('focus', refresh);
     return () => {
-      window.removeEventListener('padel:profile-updated', refresh);
-      window.removeEventListener('padel:day-advanced', refresh);
       window.removeEventListener('focus', refresh);
     };
   }, [load]);

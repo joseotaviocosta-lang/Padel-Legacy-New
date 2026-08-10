@@ -1,5 +1,5 @@
 import { careerManager } from '@/local/careerDataStore.js';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { BriefcaseBusiness, ChevronDown, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import BottomNav from './BottomNav';
@@ -13,10 +13,13 @@ import CareerHud from '@/components/career/CareerHud';
 import CommunicationBell from '@/components/communications/CommunicationBell';
 import CareerAssistant from '@/components/career/CareerAssistant';
 import CareerHeaderContext from '@/components/career/CareerHeaderContext';
+import CareerDayControl from '@/components/career/CareerDayControl';
 import { ALL_NAVIGATION_ITEMS, NAVIGATION_AREAS, areaForPath } from '@/navigation/navigationConfig.js';
 import { useAdaptivePerformance } from '@/hooks/useAdaptivePerformance';
 import FeedbackSoundController from '@/components/system/FeedbackSoundController';
 import BetaWelcome from '@/components/system/BetaWelcome.jsx';
+import { localGame } from '@/api/localGameClient.js';
+import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -93,6 +96,45 @@ async function openCareerManager() {
   window.location.href = '/careers';
 }
 
+function useCareerHeaderData() {
+  const [profile, setProfile] = useState(null);
+  const [ranking, setRanking] = useState(null);
+
+  const applyProfile = useCallback((nextProfile) => {
+    if (!nextProfile) return;
+    setProfile(nextProfile);
+    void getWorldRank(nextProfile).then(setRanking).catch(() => setRanking(null));
+  }, []);
+
+  const load = useCallback(async () => {
+    try {
+      const user = await localGame.auth.me();
+      const nextProfile = await ensureMyProfile(user);
+      applyProfile(nextProfile);
+    } catch {
+      // O cabeçalho é complementar e nunca deve impedir o carregamento da rota.
+    }
+  }, [applyProfile]);
+
+  useEffect(() => {
+    void load();
+    const refresh = (event) => {
+      if (event?.detail?.profile) applyProfile(event.detail.profile);
+      else void load();
+    };
+    window.addEventListener('padel:profile-updated', refresh);
+    window.addEventListener('padel:career-advanced', refresh);
+    window.addEventListener('padel:onboarding-refresh', refresh);
+    return () => {
+      window.removeEventListener('padel:profile-updated', refresh);
+      window.removeEventListener('padel:career-advanced', refresh);
+      window.removeEventListener('padel:onboarding-refresh', refresh);
+    };
+  }, [applyProfile, load]);
+
+  return { profile, ranking, applyProfile };
+}
+
 export default function AppLayout() {
   const location = useLocation();
   const performanceProfile = useAdaptivePerformance();
@@ -105,6 +147,7 @@ export default function AppLayout() {
   const [expandedArea, setExpandedArea] = useState(() => localStorage.getItem(EXPANDED_AREA_KEY) || activeArea?.id || 'career');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem(COLLAPSED_SIDEBAR_KEY) === 'true');
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { profile: headerProfile, ranking: headerRanking } = useCareerHeaderData();
 
   useEffect(() => {
     if (activeArea?.id) setExpandedArea(activeArea.id);
@@ -138,8 +181,9 @@ export default function AppLayout() {
           <p className="truncate text-[10px] font-bold uppercase tracking-[0.16em] text-primary/80">{activeArea?.label || 'Carreira'}</p>
           <p className="truncate text-sm font-extrabold leading-tight">{currentTitle}</p>
         </div>
-        <CareerHeaderContext compact />
-        <CareerHud compact className="mr-1 hidden min-[430px]:flex" />
+        <div className="hidden min-[540px]:block min-[680px]:hidden"><CareerHeaderContext compact profile={headerProfile} /></div>
+        <CareerHud profile={headerProfile} ranking={headerRanking} compact className="mr-1 hidden min-[680px]:flex" />
+        <CareerDayControl profile={headerProfile} compact />
         <CommunicationBell compact />
         <button type="button" onClick={openCareerManager} aria-label="Gerenciar carreiras" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
           <BriefcaseBusiness className="h-5 w-5" />
@@ -202,10 +246,11 @@ export default function AppLayout() {
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <span>{activeArea?.label || 'Carreira'}</span><span className="text-border">/</span><span className="truncate text-primary/85">{currentTitle}</span>
             </div>
-            <div className="mt-0.5 flex min-w-0 items-center gap-3"><p className="truncate text-lg font-black leading-tight">{currentTitle}</p><CareerHeaderContext /></div>
+            <div className="mt-0.5 flex min-w-0 items-center gap-3"><p className="truncate text-lg font-black leading-tight">{currentTitle}</p><CareerHeaderContext profile={headerProfile} /></div>
           </div>
           <div className="flex min-w-0 items-center gap-2">
-            <CareerHud className="hidden xl:flex" />
+            <CareerHud profile={headerProfile} ranking={headerRanking} className="hidden xl:flex" />
+            <CareerDayControl profile={headerProfile} />
             <CommunicationBell />
             <BetaTools />
             <button type="button" onClick={openCareerManager} className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/70 px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/25 hover:text-foreground">

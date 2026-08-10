@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Trophy, Lock } from 'lucide-react';
-import { careerDateLabel, careerMonthLabel, advanceDay, daysBetween } from '@/lib/career';
+import { careerDateLabel, careerMonthLabel, daysBetween } from '@/lib/career';
+import { advanceCareerDayOnce } from '@/game-core';
 import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, isInjured, injuryRecoveryDays, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
 import { getPendingDecisions } from '@/lib/calendarSystem';
 
@@ -46,7 +47,7 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
     if (pendingDecisions.length > 0) return;
     setAdvancing(true);
     try {
-      const updated = await advanceDay(profile);
+      const updated = await advanceCareerDayOnce(profile);
       onAdvanceDay?.(updated);
     } catch (e) { console.error(e); }
     finally { setAdvancing(false); }

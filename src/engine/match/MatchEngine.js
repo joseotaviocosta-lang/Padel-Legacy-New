@@ -4,11 +4,12 @@ import { RallyEngine } from './RallyEngine.js';
 import { MomentumEngine } from './MomentumEngine.js';
 import { FatigueEngine } from './FatigueEngine.js';
 import { CommentaryEngine } from './CommentaryEngine.js';
-import { createStatistics, buildStatisticsSummary } from './StatisticsEngine.js';
+import { createStatistics, buildStatisticsSummary, synchronizePointStatistics } from './StatisticsEngine.js';
 import { buildMatchAnalysis } from './MatchAnalysis.js';
 import { MATCH_TACTICS, chooseBotTactic, getMatchTactic } from './MatchTactics.js';
 import { CoachCommunicationManager, LiveCoachObserver, LiveTacticalAdjustmentManager, OpponentAdaptationTracker, buildLiveCoachReport, createLiveCoachState } from '../live-coach/index.js';
 import { buildContextualMoment, createMatchMomentum, getPressureMoment, updateMatchMomentumState } from '../../lib/matchExperience.js';
+import { getPointContext, POINT_OUTCOMES } from './PointContext.js';
 
 export { MATCH_TACTICS };
 
@@ -61,7 +62,13 @@ function cloneState(prev) {
     tiebreakFirstServerPlayerIndices: prev.tiebreakFirstServerPlayerIndices ? { ...prev.tiebreakFirstServerPlayerIndices } : null,
     stats: JSON.parse(JSON.stringify(prev.stats)),
     activeTactics: { ...prev.activeTactics }, tacticsTimeline: [...(prev.tacticsTimeline || [])],
-    liveCoach: prev.liveCoach ? JSON.parse(JSON.stringify(prev.liveCoach)) : null, aiCoach: {...(prev.aiCoach||{})},
+    liveCoach: prev.liveCoach ? {
+      ...prev.liveCoach,
+      observations: [...(prev.liveCoach.observations || [])], suggestions: [...(prev.liveCoach.suggestions || [])],
+      decisions: [...(prev.liveCoach.decisions || [])], adjustments: [...(prev.liveCoach.adjustments || [])],
+      lastSuggestionByPattern: { ...(prev.liveCoach.lastSuggestionByPattern || {}) }, suggestionsBySet: { ...(prev.liveCoach.suggestionsBySet || {}) },
+      errors: [...(prev.liveCoach.errors || [])],
+    } : null, aiCoach: {...(prev.aiCoach||{})},
     momentum: { ...(prev.momentum || createMatchMomentum()) },
   };
 }
@@ -82,7 +89,7 @@ export function applyMatchTactic(prev, tacticValue, teamId = 'A') {
 }
 
 export function decideLiveCoachSuggestion(prev, decision='ignore', components=[]) {
-  const suggestion=prev.liveCoach?.pendingSuggestion;if(!suggestion||prev.finished)return prev;const state=cloneState(prev);const record={type:'player_tactical_decision',suggestionId:suggestion.id,decision,components,effectiveFromPoint:state.pointNumber+1};state.liveCoach.decisions.push(record);state.liveCoach.pendingSuggestion=null;
+  const suggestion=prev.liveCoach?.pendingSuggestion;if(!suggestion||prev.finished)return prev;const state=cloneState(prev);const accepted=['apply','partial','auto'].includes(decision);const record={type:'player_tactical_decision',suggestionId:suggestion.id,patternId:suggestion.patternId,decision,accepted,components,createdAtPoint:suggestion.createdAtPoint,decidedAtPoint:state.pointNumber,createdAtGame:suggestion.createdAtGame,scoreBefore:snapshot(state),confidenceScore:suggestion.confidenceScore,reason:suggestion.observation,effectiveFromPoint:state.pointNumber+1};state.liveCoach.decisions.push(record);state.liveCoach.pendingSuggestion=null;
   const applied=new LiveTacticalAdjustmentManager().apply({currentPlan:state.activeTactics.A,suggestion,decision,components,pointNumber:state.pointNumber,setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB});if(applied.adjustment){state.activeTactics.A=applied.plan;state.liveCoach.adjustments.push(applied.adjustment);const change={type:'tactic_changed',teamId:'A',tacticId:applied.plan.id,effectiveFromPoint:state.pointNumber+1,source:'coach_suggestion'};state.tacticsTimeline.push(change);}return state;
 }
 
@@ -109,7 +116,7 @@ export function playPoint(prev, tactic) {
   const serverPlayerId = state.teams[servingTeam][serverPlayerIndex]?.id;
   const scoreBefore = snapshot(state);
   const pressureBefore = getPressureMoment({ ...state, servingTeam });
-  const pointContext = createPointContext(state);
+  const pointContext = getPointContext(state, servingTeam);
   const result = rally.play({ teams: state.teams, servingTeam, serverPlayerId, tactics: state.activeTactics, random, stats: state.stats, match: pointContext });
   if (!['A', 'B'].includes(result?.winnerTeamId || result?.winner)) throw new Error('Ponto encerrado sem winnerTeamId válido.');
   result.winnerTeamId = result.winnerTeamId || result.winner;
@@ -118,7 +125,7 @@ export function playPoint(prev, tactic) {
   result.serverPlayerId = serverPlayerId;
   state.randomState = random.state();
   state.pointNumber += 1;
-  momentum.update(state.teams, result.winnerTeamId, result.loserTeamId, { breakPoint: isBreakPoint(state, result.winnerTeamId) });
+  momentum.update(state.teams, result.winnerTeamId, result.loserTeamId, { breakPoint: pointContext.isBreakPoint });
   const narrative = commentary.describe({ ...result, random, stats: state.stats, match: pointContext });
   awardPoint(state, result.winnerTeamId, narrative.message, { ...result, narrative }, fatigue);
   if (scoreBefore.inTiebreak) state.tiebreakPointsPlayed += 1;
@@ -135,32 +142,52 @@ export function playPoint(prev, tactic) {
   if (contextualMoment) {
     state.narration.push({ type: 'moment', msg: contextualMoment.message, scorer: contextualMoment.team || result.winnerTeamId, importance: contextualMoment.importance, momentKind: contextualMoment.kind, ...snapshot(state) });
   }
-  state.pointEvents.push({ type: 'point_completed', pointNumber: state.pointNumber, servingTeamId: servingTeam, serverPlayerId, winnerTeamId: result.winnerTeamId, loserTeamId: result.loserTeamId, reason: result.result, shot: result.shot || null, forcedError: Boolean(result.forcedError), rallyLength: Number(result.rallyLength || 0), finalShotPlayerId: result.finisher?.id || null, scoreBefore, scoreAfter: snapshot(state), pressureBefore, momentumAfter: { ...state.momentum }, contextualMoment, rngStateAfter: state.randomState });
+  state.pointEvents.push({
+    type: 'point_completed',
+    pointNumber: state.pointNumber,
+    servingTeamId: servingTeam,
+    serverPlayerId,
+    winnerTeamId: result.winnerTeamId,
+    loserTeamId: result.loserTeamId,
+    reason: result.result,
+    outcome: result.outcome || (result.result === 'winner' ? POINT_OUTCOMES.WINNER : result.forcedError ? POINT_OUTCOMES.FORCED_ERROR : POINT_OUTCOMES.UNFORCED_ERROR),
+    shot: result.shot || null,
+    errorShot: result.errorShot || null,
+    forcedError: Boolean(result.forcedError),
+    winnerPlayerId: result.winnerPlayer?.id || (result.result === 'winner' ? result.finisher?.id : null) || null,
+    errorPlayerId: result.errorPlayer?.id || (result.result === 'error' ? result.finisher?.id : null) || null,
+    finalShotPlayerId: result.finisher?.id || null,
+    winnerPosition: result.winnerPosition || 'BASELINE',
+    pointEndingContext: result.pointEndingContext || 'BASELINE_ATTACK',
+    shots: (result.rallyMemory || []).map((entry) => ({ team: entry.team, playerId: entry.playerId, targetPlayerId: entry.targetPlayerId || null, shot: entry.shot, zone: entry.zone })),
+    coordinationEvents: result.coordinationEvents || [],
+    isBreakPoint: pointContext.isBreakPoint,
+    breakPointTeam: pointContext.breakPointTeam,
+    breakPointConverted: pointContext.isBreakPoint && result.winnerTeamId === pointContext.breakPointTeam,
+    breakPointSaved: pointContext.isBreakPoint && result.winnerTeamId === servingTeam,
+    isGamePoint: pointContext.isGamePoint,
+    gamePointTeam: pointContext.gamePointTeam,
+    isSetPoint: pointContext.isSetPoint,
+    setPointTeam: pointContext.setPointTeam,
+    isMatchPoint: pointContext.isMatchPoint,
+    matchPointTeam: pointContext.matchPointTeam,
+    rallyLength: Number(result.rallyLength || 0),
+    scoreBefore,
+    scoreAfter: { ...snapshot(state), finished: state.finished },
+    pressureBefore,
+    momentumAfter: { ...state.momentum },
+    contextualMoment,
+    rngStateAfter: state.randomState,
+  });
   const safeWindow=scoreBefore.gamesA!==state.gamesA||scoreBefore.gamesB!==state.gamesB||scoreBefore.setsA!==state.setsA||scoreBefore.setsB!==state.setsB;
-  const previousSuggestionCount=state.liveCoach.suggestions.length;state.liveCoach=new LiveCoachObserver().observe(state.liveCoach,{pointNumber:state.pointNumber,result,teams:state.teams,scoreBefore,scoreAfter:snapshot(state),setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB,finished:state.finished},{safeWindow});
+  if (state.liveCoach?.coach && state.liveCoach.settings.liveCoachEnabled) state.liveCoach=new LiveCoachObserver().observe(state.liveCoach,{pointNumber:state.pointNumber,result,teams:state.teams,scoreBefore,scoreAfter:snapshot(state),setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB,finished:state.finished},{safeWindow});
   if(state.liveCoach.pendingSuggestion&&state.liveCoach.settings.allowMinorAutoAdjustments){const allowed=Object.keys(state.liveCoach.pendingSuggestion.suggestedAdjustment?.components||{}).filter(key=>['riskModifier','energyModifier','safeWeight'].includes(key)).slice(0,1);if(allowed.length)state=decideLiveCoachSuggestion(state,'auto',allowed);}
-  if(state.finished)state.liveCoachReport=buildLiveCoachReport(state);
+  if (state.finished) {
+    state.stats = buildStatisticsSummary(synchronizePointStatistics(state.stats, state.pointEvents));
+    state.analysis = buildMatchAnalysis(state);
+    state.liveCoachReport = buildLiveCoachReport(state);
+  }
   return state;
-}
-
-function createPointContext(state) {
-  const breakPoint = state.pointsA >= 3 || state.pointsB >= 3;
-  return {
-    pointsA: state.pointsA,
-    pointsB: state.pointsB,
-    gamesA: state.gamesA,
-    gamesB: state.gamesB,
-    setsA: state.setsA,
-    setsB: state.setsB,
-    inTiebreak: state.inTiebreak,
-    superTiebreak: state.superTiebreak,
-    breakPoint,
-    importantPoint: Boolean(state.inTiebreak || breakPoint),
-  };
-}
-
-function isBreakPoint(state, winner) {
-  return state.pointsA >= 3 || state.pointsB >= 3 || (winner === 'A' ? state.pointsB : state.pointsA) >= 3;
 }
 
 function awardPoint(state, winner, msg, detail, fatigue) {
@@ -210,9 +237,7 @@ function finishSet(state, winner) {
   state.narration.push({ type: 'set', msg: `Set ${state.currentSet}: ${state.gamesA}-${state.gamesB}.`, scorer: winner, ...snapshot(state) });
   if (state.setsA === 2 || state.setsB === 2) {
     state.finished = true; state.winner = state.setsA > state.setsB ? 'A' : 'B';
-    state.stats = buildStatisticsSummary(state.stats);
     state.narration.push({ type: 'match', msg: `Fim de jogo! ${state.winner === 'A' ? state.teamANames.join(' & ') : state.teamBNames.join(' & ')} vencem por ${state.setsA}-${state.setsB}.`, scorer: state.winner, ...snapshot(state) });
-    state.analysis = buildMatchAnalysis(state);
     return;
   }
   state.currentSet += 1; state.gamesA = 0; state.gamesB = 0;
@@ -242,6 +267,9 @@ export function validateCompletedMatch(state) {
   if (state?.winner === 'B' && state.setsB <= state.setsA) errors.push('Vencedor B incompatível com os sets.');
   for (const event of state?.pointEvents || []) {
     if (!['A', 'B'].includes(event.winnerTeamId) || event.winnerTeamId === event.loserTeamId) errors.push(`Evento ${event.pointNumber} possui equipes inválidas.`);
+    if (!Object.values(POINT_OUTCOMES).includes(event.outcome)) errors.push(`Evento ${event.pointNumber} possui outcome inválido.`);
+    if (event.isBreakPoint && event.breakPointConverted === event.breakPointSaved) errors.push(`Evento ${event.pointNumber} possui estado de break point inconsistente.`);
   }
+  if (Number(state?.stats?.rallies || 0) !== Number(state?.pointEvents?.length || 0)) errors.push('Total de rallies diverge dos eventos de ponto.');
   return { valid: errors.length === 0, errors };
 }
