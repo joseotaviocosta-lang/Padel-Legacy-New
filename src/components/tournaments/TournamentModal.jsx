@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import {
   Bot, Brain, CalendarDays, CheckCircle, ChevronRight, Coins, Crown,
-  Dumbbell, HeartPulse, Mic, Play, Shield, Star, Trophy, Users, X,
+  Dumbbell, HeartPulse, Mic, Play, Shield, Star, Trophy, Users,
   XCircle, Zap,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
@@ -20,6 +20,7 @@ import { finalizeTournamentRun } from '@/game-core/tournamentLifecycle.js';
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import LiveMatch from '@/components/matches/LiveMatch';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
+import { ModalShell } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { getQualifyingRoundLabels } from '@/gameplay/worldTour/QualifyingManager.js';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
@@ -274,7 +275,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         content: `A imprensa quer repercutir ${match.round}. A importância desta rodada foi classificada como ${importance}.`,
         status: 'nao_lida', priority: ['global', 'high'].includes(importance) ? 'alta' : 'normal',
         related_entity_type: 'PressInterview', related_entity_id: `interview_match_${match.id}`,
-        metadata: { route: '/press?tab=interviews', match_id: match.id, tournament_id: tournament.id, round: match.round },
+        is_read: false, is_new: true,
+        destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: `interview_match_${match.id}`, source: match.id } },
+        metadata: { route: `/press?tab=interviews&interview=interview_match_${encodeURIComponent(match.id)}&source=${encodeURIComponent(match.id)}`, interview_id: `interview_match_${match.id}`, interview_source_id: match.id, match_id: match.id, tournament_id: tournament.id, round: match.round },
       }),
       localGame.entities.Post.upsert(`round-post-${safeMatchId}`, {
         author_name: 'Padel Legacy News', author_type: 'media', content: headline,
@@ -440,12 +443,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/60 p-0 backdrop-blur-sm md:items-center md:p-4" onClick={onClose}>
-      <div className={`glass flex w-full max-w-xl flex-col rounded-t-3xl md:rounded-3xl ${phase === 'match' ? 'h-[100dvh] max-h-[100dvh] overflow-hidden p-3 md:h-[min(46rem,92dvh)] md:max-h-[92dvh]' : 'max-h-[92vh] overflow-y-auto p-5'}`} onClick={(event_) => event_.stopPropagation()}>
-        <div className="mb-3 flex shrink-0 items-center justify-between gap-3">
-          <div><p className="text-[9px] font-black uppercase tracking-wider text-muted-foreground">Campanha de torneio</p><h2 className="flex items-center gap-2 text-base font-black"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{tournament.name}</h2></div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
-        </div>
+    <ModalShell
+      open
+      onClose={onClose}
+      title={tournament.name}
+      description="Campanha de torneio"
+      size="md"
+      className={phase === 'match' ? 'h-[calc(100dvh-1rem)] sm:h-[min(48rem,calc(100dvh-2rem))]' : ''}
+    >
+      <div className={`flex min-h-0 flex-col ${phase === 'match' ? 'h-full' : ''}`}>
+        <div className="mb-3 flex items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
 
         {run && <RoundTimeline run={run} />}
 
@@ -501,7 +508,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={onClose} profile={profile} />}
         {phase === 'withdrawn' && <StateMessage icon={Shield} title="Torneio encerrado por abandono" body="A comissão priorizou sua recuperação. A participação, premiação aplicável e calendário foram encerrados sem criar outra rodada." tone="orange" action={<button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

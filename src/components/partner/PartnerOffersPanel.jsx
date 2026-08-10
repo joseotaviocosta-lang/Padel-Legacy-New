@@ -1,13 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { AlertTriangle, Check, GitCompare, Inbox, RefreshCw, Search, Star, Users, X } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
 import { compatibilityLabel, offerCandidate } from '@/lib/partnerOffers';
 import { evaluatePartnerCompatibility, calculatePartnershipInterest } from '@/players/teamCompatibility.js';
+import { ModalShell } from '@/components/design-system';
 
 const sideName = side => side === 'left' || side === 'esquerda' ? 'esquerda' : side === 'right' || side === 'direita' ? 'direita' : 'versátil';
 
 export default function PartnerOffersPanel({ profile, offers, loading, error, busyOfferId, focusOfferId, onRetry, onAccept, onReject, onSearch }) {
   const [compared, setCompared] = useState([]);
+  const [selectedOfferId, setSelectedOfferId] = useState(null);
   const pending = useMemo(() => (offers || []).filter(offer => offer.status === 'pending'), [offers]);
   const invalidOffers = useMemo(() => pending.filter(offer => !offerCandidate(offer)?.id), [pending]);
   const analyses = useMemo(() => pending.filter(offer => offerCandidate(offer)?.id).map(offer => {
@@ -16,6 +18,11 @@ export default function PartnerOffersPanel({ profile, offers, loading, error, bu
     return { offer, candidate, compatibility, interest: calculatePartnershipInterest(profile, candidate, compatibility) };
   }), [pending, profile]);
   const comparedRows = analyses.filter(row => compared.includes(row.offer.id));
+  const selectedAnalysis = analyses.find(row => row.offer.id === selectedOfferId) || null;
+
+  useEffect(() => {
+    if (focusOfferId && analyses.some(row => row.offer.id === focusOfferId)) setSelectedOfferId(focusOfferId);
+  }, [analyses, focusOfferId]);
 
   if (loading) return <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">Carregando propostas...</div>;
   if (error) return <div className="glass rounded-2xl p-8 text-center"><AlertTriangle className="mx-auto h-8 w-8 text-red-400"/><p className="mt-3 font-bold">Não foi possível carregar as propostas.</p><button onClick={onRetry} className="mt-4 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground"><RefreshCw className="mr-2 inline h-3 w-3"/>Tentar novamente</button></div>;
@@ -32,16 +39,30 @@ export default function PartnerOffersPanel({ profile, offers, loading, error, bu
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
       {analyses.map(({ offer, candidate, compatibility, interest }, index) => {
         const selected = compared.includes(offer.id); const busy = busyOfferId === offer.id;
-        return <article key={offer.id} tabIndex="0" className={`glass rounded-2xl border p-4 ${offer.id === focusOfferId || index === 0 ? 'border-primary/50' : 'border-transparent'}`}>
+        return <article key={offer.id} tabIndex={0} className={`glass rounded-2xl border p-4 ${offer.id === focusOfferId || index === 0 ? 'border-primary/50' : 'border-transparent'}`}>
           <div className="flex items-start justify-between gap-3"><div><div className="flex flex-wrap items-center gap-2"><h3 className="font-black">{candidate.name}</h3>{offer.recommended && <span className="rounded-full bg-amber-500/15 px-2 py-1 text-[9px] font-bold text-amber-300"><Star className="mr-1 inline h-3 w-3"/>Recomendado para sua primeira dupla</span>}</div><p className="text-xs text-muted-foreground">{candidate.country || 'Nacionalidade não informada'} · OVR {overallRating(candidate)} · {candidate.level || 'iniciante'}</p></div><div className="text-right"><p className="text-xl font-black text-primary">{compatibility.total}</p><p className="text-[9px] font-bold uppercase text-primary">{compatibilityLabel(compatibility.total)}</p></div></div>
           <div className="mt-3 grid grid-cols-2 gap-2 text-xs"><Metric label="Lado" value={sideName(candidate.preferred_side || candidate.position)}/><Metric label="Estilo" value={candidate.play_style || candidate.tactical_role || 'equilibrado'}/><Metric label="Ranking" value={candidate.world_rank || candidate.ranking_position || '—'}/><Metric label="Interesse" value={`${interest.level} (${interest.score})`}/></div>
           <div className="mt-3 rounded-xl bg-secondary/35 p-3 text-xs"><p className="font-bold">Formação sugerida</p><p className="mt-1 text-muted-foreground">Você: {sideName(compatibility.sideResolution.assignments.playerA)} · {candidate.name}: {sideName(compatibility.sideResolution.assignments.playerB)}</p>{compatibility.sideResolution.penalties.total > 0 && <p className="mt-1 text-amber-400">Impacto estimado: -{compatibility.sideResolution.penalties.total}% durante a adaptação.</p>}</div>
           <div className="mt-3 grid gap-2 sm:grid-cols-2"><div><p className="text-[10px] font-bold uppercase text-green-400">Pontos fortes</p>{compatibility.strengths.slice(0,3).map(item=><p key={item} className="mt-1 text-xs text-muted-foreground"><Check className="mr-1 inline h-3 w-3 text-green-400"/>{item}</p>)}</div><div><p className="text-[10px] font-bold uppercase text-amber-400">Atenção</p>{compatibility.warnings.length ? compatibility.warnings.slice(0,2).map(item=><p key={item} className="mt-1 text-xs text-muted-foreground"><AlertTriangle className="mr-1 inline h-3 w-3 text-amber-400"/>{item}</p>) : <p className="mt-1 text-xs text-muted-foreground">Nenhuma limitação relevante.</p>}</div></div>
           <p className="mt-3 text-[11px] text-muted-foreground">Parceria temporária · {offer.contract?.durationDays || 60} dias · divisão {offer.contract?.prizeSplit || 50}%/{100-(offer.contract?.prizeSplit || 50)}%</p>
-          <div className="mt-4 grid grid-cols-3 gap-2"><button aria-pressed={selected} onClick={()=>toggleCompare(offer.id)} className={`rounded-xl py-2 text-xs font-bold ${selected ? 'bg-cyan-500/20 text-cyan-300' : 'glass'}`}><GitCompare className="mr-1 inline h-3 w-3"/>Comparar</button><button disabled={busyOfferId} onClick={()=>onReject(offer)} className="rounded-xl bg-red-500/15 py-2 text-xs font-bold text-red-400 disabled:opacity-50"><X className="mr-1 inline h-3 w-3"/>Recusar</button><button disabled={busyOfferId} onClick={()=>onAccept(offer)} className="rounded-xl bg-primary py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"><Users className="mr-1 inline h-3 w-3"/>{busy ? 'Confirmando...' : 'Aceitar'}</button></div>
+          <div className="mt-4 grid grid-cols-2 gap-2"><button aria-pressed={selected} onClick={()=>toggleCompare(offer.id)} className={`rounded-xl py-2 text-xs font-bold ${selected ? 'bg-cyan-500/20 text-cyan-300' : 'glass'}`}><GitCompare className="mr-1 inline h-3 w-3"/>Comparar</button><button disabled={busyOfferId} onClick={()=>setSelectedOfferId(offer.id)} className="rounded-xl bg-primary py-2 text-xs font-bold text-primary-foreground disabled:opacity-50"><Users className="mr-1 inline h-3 w-3"/>{busy ? 'Confirmando...' : 'Analisar proposta'}</button></div>
         </article>;
       })}
     </div>
+    <ModalShell
+      open={Boolean(selectedAnalysis)}
+      onClose={() => setSelectedOfferId(null)}
+      title={selectedAnalysis ? `Proposta de ${selectedAnalysis.candidate.name}` : 'Proposta de parceria'}
+      description={selectedAnalysis ? `Compatibilidade ${selectedAnalysis.compatibility.total} · ${compatibilityLabel(selectedAnalysis.compatibility.total)}` : null}
+      size="sm"
+      footer={selectedAnalysis && <div className="grid grid-cols-2 gap-2"><button disabled={busyOfferId} onClick={() => onReject(selectedAnalysis.offer)} className="rounded-xl bg-red-500/15 px-4 py-3 text-sm font-bold text-red-400 disabled:opacity-50"><X className="mr-1 inline h-4 w-4"/>Recusar</button><button disabled={busyOfferId} onClick={() => onAccept(selectedAnalysis.offer)} className="rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"><Users className="mr-1 inline h-4 w-4"/>{busyOfferId === selectedAnalysis.offer.id ? 'Confirmando...' : 'Aceitar proposta'}</button></div>}
+    >
+      {selectedAnalysis && <div className="space-y-4">
+        <div className="grid grid-cols-2 gap-2 text-xs"><Metric label="Lado" value={sideName(selectedAnalysis.candidate.preferred_side || selectedAnalysis.candidate.position)}/><Metric label="Estilo" value={selectedAnalysis.candidate.play_style || selectedAnalysis.candidate.tactical_role || 'equilibrado'}/><Metric label="Ranking" value={selectedAnalysis.candidate.world_rank || selectedAnalysis.candidate.ranking_position || '—'}/><Metric label="Interesse" value={`${selectedAnalysis.interest.level} (${selectedAnalysis.interest.score})`}/></div>
+        <div className="rounded-xl bg-secondary/35 p-3 text-sm"><p className="font-bold">Formação sugerida</p><p className="mt-1 text-muted-foreground">Você: {sideName(selectedAnalysis.compatibility.sideResolution.assignments.playerA)} · {selectedAnalysis.candidate.name}: {sideName(selectedAnalysis.compatibility.sideResolution.assignments.playerB)}</p></div>
+        <p className="text-sm text-muted-foreground">Parceria temporária · {selectedAnalysis.offer.contract?.durationDays || 60} dias · divisão {selectedAnalysis.offer.contract?.prizeSplit || 50}%/{100-(selectedAnalysis.offer.contract?.prizeSplit || 50)}%</p>
+      </div>}
+    </ModalShell>
   </div>;
 }
 

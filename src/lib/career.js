@@ -12,6 +12,7 @@ import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
+import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
 export const CAREER_START_DATE = '2026-01-01';
 export const PARTNER_LOCK_DAYS = 60;
 export const MATCH_ADVANCE_DAYS = 7;
@@ -80,6 +81,7 @@ export async function selectPartner(profile, bot) {
 export async function advanceDay(profile, { deferGlobalProcessing = false } = {}) {
   // Libera espaço antes de qualquer evento do novo dia tentar gravar no banco.
   // ── Block advance if there's a pending mandatory decision ──
+  profile = await ensureMonthlyReportCycle(profile);
   const careerDateNow = profile.career_date || CAREER_START_DATE;
   const advanceCheck = await canAdvanceDay(profile.id, careerDateNow);
   if (!advanceCheck.canAdvance) {
@@ -201,6 +203,10 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
     } catch (e) { console.error('processMonthlyFinances', e); }
     await processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e));
     await evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e));
+    try {
+      const monthlyReport = await finalizeClosedCareerMonth(profile, updated);
+      updated = monthlyReport.profile || updated;
+    } catch (e) { console.error('finalizeClosedCareerMonth', e); }
   }
   const totalDays = daysBetween(CAREER_START_DATE, newCareerDate);
   if (totalDays > 0 && totalDays % 7 === 0) {

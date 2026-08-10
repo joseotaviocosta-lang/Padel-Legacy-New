@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
@@ -13,6 +13,7 @@ import { useToast } from '@/components/ui/use-toast';
 
 export default function Press() {
   const [searchParams] = useSearchParams();
+  const openedResourceRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [articles, setArticles] = useState([]);
   const [journalists, setJournalists] = useState([]);
@@ -95,6 +96,22 @@ export default function Press() {
     setActiveInterview(interview);
     setActiveJournalist(saved);
   }
+
+  useEffect(() => {
+    const interviewId = searchParams.get('interview');
+    const sourceId = searchParams.get('source');
+    const requestKey = interviewId || sourceId;
+    if (!requestKey || loading || openedResourceRef.current === requestKey) return;
+    const interview = pendingInterviews.find((item) => item.id === interviewId || item.sourceId === sourceId || item.sourceId === interviewId);
+    openedResourceRef.current = requestKey;
+    setActiveTab('interviews');
+    if (interview) {
+      void handleStartInterview(interview);
+      return;
+    }
+    const resolvedArticle = articles.find((article) => article.source_event_id === sourceId || article.source_event_id === interviewId || article.id === interviewId);
+    if (resolvedArticle) setSelectedArticle(resolvedArticle);
+  }, [articles, journalists, loading, pendingInterviews, searchParams]);
 
   async function handleCompleteInterview(result) {
     const { headline, content, tone, effects, journalist, interview } = result;

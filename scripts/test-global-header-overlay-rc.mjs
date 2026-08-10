@@ -18,6 +18,12 @@ const migratedSources = [
   'src/components/shop/ItemDetailModal.jsx',
   'src/components/press/InterviewModal.jsx',
   'src/pages/Press.jsx',
+  'src/pages/Communications.jsx',
+  'src/pages/WorldMarket.jsx',
+  'src/components/partner/PartnerOffersPanel.jsx',
+  'src/components/fans/FanBaseDetail.jsx',
+  'src/components/calendar/DayAdvanceSummary.jsx',
+  'src/components/tournaments/TournamentModal.jsx',
 ].map(read);
 
 const checks = [

@@ -1,4 +1,5 @@
-import React, { useMemo, useState, useEffect } from 'react';
+import React, { useMemo, useState, useEffect, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Search, Users, UserCheck, Info, Brain, Handshake, CalendarDays } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { FilterPills } from '@/components/padel/ui';
@@ -20,6 +21,8 @@ const TIER_FILTERS = [
 ];
 
 export default function Coaches() {
+  const [searchParams] = useSearchParams();
+  const openedCoachRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [hiredCoach, setHiredCoach] = useState(null);
   const [coaches, setCoaches] = useState([]);
@@ -32,6 +35,14 @@ export default function Coaches() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    const requestedId = searchParams.get('coach');
+    if (!requestedId || loading || openedCoachRef.current === requestedId) return;
+    openedCoachRef.current = requestedId;
+    const requested = coaches.find((coach) => String(coach.id) === requestedId);
+    if (requested) setSelected(requested);
+  }, [coaches, loading, searchParams]);
 
   async function load() {
     setLoading(true);

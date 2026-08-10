@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { X, Users, Heart, Star, Eye, Zap, Calendar, Activity } from 'lucide-react';
+import { Users, Heart, Star, Eye, Zap, Calendar, Activity } from 'lucide-react';
 import { BEHAVIOR_TYPES, getFanBaseStatus, getTrendIcon, FAN_EVENTS, reactToEvent } from '@/lib/fanBase';
 import { localGame } from '@/api/localGameClient.js';
 import { formatDate } from '@/lib/padel';
+import { ModalShell } from '@/components/design-system';
 
 function MetricRow({ icon: Icon, label, value, color }) {
   return (
@@ -47,27 +48,9 @@ export default function FanBaseDetail({ fanBase, onClose, onUpdate }) {
   const quickEvents = ['match_win', 'match_loss', 'title_win', 'injury', 'good_interview', 'bad_interview', 'ranking_up', 'good_performance'];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="glass rounded-3xl p-5 max-w-lg w-full max-h-[90vh] overflow-y-auto scrollbar-premium">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className={`h-14 w-14 rounded-2xl ${behavior.bg} flex items-center justify-center`}>
-              <span className="text-2xl">{behavior.emoji}</span>
-            </div>
-            <div>
-              <h2 className="font-black text-lg">{fanBase.entity_name}</h2>
-              <div className="flex items-center gap-2">
-                <span className={`text-[10px] font-bold ${behavior.color}`}>{behavior.label}</span>
-                <span className="text-[10px] text-muted-foreground">·</span>
-                <span className={`text-[10px] font-bold ${trend.color}`}>{trend.icon} {fanBase.trend}</span>
-              </div>
-            </div>
-          </div>
-          <button onClick={onClose} aria-label="Fechar detalhes da torcida" title="Fechar" className="p-1.5 rounded-lg hover:bg-secondary/50">
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
+    <ModalShell open onClose={onClose} title={fanBase.entity_name} description={`${behavior.label} · ${trend.icon} ${fanBase.trend}`} size="sm">
+      <div>
+        <div className={`mb-4 flex h-14 w-14 items-center justify-center rounded-2xl ${behavior.bg}`}><span className="text-2xl">{behavior.emoji}</span></div>
 
         {/* Description */}
         <p className="text-xs text-muted-foreground mb-4 italic">{behavior.desc}</p>
@@ -145,6 +128,6 @@ export default function FanBaseDetail({ fanBase, onClose, onUpdate }) {
           </div>
         )}
       </div>
-    </div>
+    </ModalShell>
   );
 }

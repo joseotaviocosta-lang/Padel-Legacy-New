@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, Radio } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
 import { simulatePastTournaments } from '@/lib/teamRanking';
@@ -54,6 +54,8 @@ function prepareTournamentList(items) {
 }
 
 export default function Tournaments() {
+  const [searchParams] = useSearchParams();
+  const openedTournamentRef = useRef(null);
   const {activeCareer}=useCareer();
   const [followedTournaments,setFollowedTournaments]=useState(new Set());
   const [tournaments, setTournaments] = useState([]);
@@ -133,6 +135,13 @@ export default function Tournaments() {
     })();
   }, []);
   useEffect(()=>{if(activeCareer?.career_id)spectatorStore.load(activeCareer.career_id).then((state)=>setFollowedTournaments(new Set(state.followed_tournament_ids)));},[activeCareer?.career_id]);
+  useEffect(() => {
+    const requestedId = searchParams.get('tournament');
+    if (!requestedId || loading || openedTournamentRef.current === requestedId) return;
+    openedTournamentRef.current = requestedId;
+    const requested = tournaments.find((tournament) => String(tournament.id) === requestedId);
+    if (requested) setActiveTournament(requested);
+  }, [loading, searchParams, tournaments]);
   async function toggleTournamentFollow(id){const next=await spectatorStore.toggle(activeCareer.career_id,'followed_tournament_ids',id);setFollowedTournaments(new Set(next.followed_tournament_ids));}
 
   async function refreshProfile() {

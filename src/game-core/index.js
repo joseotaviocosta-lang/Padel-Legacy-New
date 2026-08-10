@@ -43,3 +43,4 @@ export { processCircuitLifeWeek, getCircuitLifeSnapshot } from './circuitLifeLif
 export { getGlobalMarketSnapshot, processGlobalMarketMonth, TIER_MINIMUMS } from './globalMarketLifecycle';
 
 export { processAiCareerStrategyMonth, getAiCareerStrategySnapshot, decideAiCareerStrategy, deriveAiCareerArchetype } from './aiCareerStrategyLifecycle';
+export { ensureMonthlyReportCycle, finalizeClosedCareerMonth, listMonthlyCareerReports, getMonthlyCareerReport } from './monthlyCareerReportLifecycle';

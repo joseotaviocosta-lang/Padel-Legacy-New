@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
 import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
@@ -27,6 +28,8 @@ const TIER_DOT = {
 };
 
 export default function CalendarPage() {
+  const [searchParams] = useSearchParams();
+  const openedEventRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [tournaments, setTournaments] = useState([]);
   const [matches, setMatches] = useState([]);
@@ -89,6 +92,18 @@ export default function CalendarPage() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  useEffect(() => {
+    const requestedId = searchParams.get('event');
+    if (!requestedId || loading || openedEventRef.current === requestedId) return;
+    openedEventRef.current = requestedId;
+    const requested = calendarEvents.find((event) => String(event.id) === requestedId);
+    if (!requested?.start_date) return;
+    const date = new Date(`${requested.start_date}T00:00:00`);
+    setSelectedDay(date);
+    setWeekStart(startOfWeek(date, { weekStartsOn: 0 }));
+    setVisibleMonth(date);
+  }, [calendarEvents, loading, searchParams]);
 
   // Update selected day data when day or data changes
   useEffect(() => {

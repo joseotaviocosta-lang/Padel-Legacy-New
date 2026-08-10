@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link as RouterLink } from 'react-router-dom';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays, Medal, Activity } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
@@ -20,6 +20,8 @@ const TABS = [
 ];
 
 export default function Ranking() {
+  const [searchParams] = useSearchParams();
+  const openedAthleteRef = useRef(null);
   const [tab, setTab] = useState('circuit');
   const [players, setPlayers] = useState([]);
   const [clubs, setClubs] = useState([]);
@@ -147,6 +149,17 @@ export default function Ranking() {
       raceAthletes: [...dedupedCircuit].sort((a, b) => (Number(b.race_points) || 0) - (Number(a.race_points) || 0)),
     };
   }, [players, athletes, teams]);
+
+  useEffect(() => {
+    const requestedId = searchParams.get('athlete');
+    if (!requestedId || loading || openedAthleteRef.current === requestedId) return;
+    openedAthleteRef.current = requestedId;
+    const requested = circuitAthletes.find((athlete) => String(athlete.id) === requestedId);
+    if (requested) {
+      setTab('circuit');
+      setSelectedAthlete(requested);
+    }
+  }, [circuitAthletes, loading, searchParams]);
 
   if (loading) return <LoadingScreen />;
 

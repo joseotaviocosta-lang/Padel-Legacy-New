@@ -15,15 +15,25 @@ export const COMMUNICATION_CATEGORIES = [
 ];
 
 export function normalizeCareerMessage(message = {}) {
+  const status = message.status || (message.is_read ? 'lida' : 'nao_lida');
+  const isRead = message.is_read === true
+    || message.is_new === false
+    || ['lida', 'resolvida', 'ignorada'].includes(status);
   return {
     ...message,
     title: message.title || message.subject || message.sender_name || 'Nova comunicação',
     content: message.content || message.body || message.message || '',
     sender_name: message.sender_name || senderLabel(message.sender_type),
     sender_type: message.sender_type || 'sistema',
-    status: message.status || (message.is_read ? 'lida' : 'nao_lida'),
+    status,
+    is_read: isRead,
+    is_new: !isRead,
     priority: message.priority || 'normal',
   };
+}
+
+export function isCareerMessageUnread(message = {}) {
+  return !normalizeCareerMessage(message).is_read;
 }
 
 export async function listCareerCommunications(profileId, limit = 120) {
@@ -34,9 +44,20 @@ export async function listCareerCommunications(profileId, limit = 120) {
 
 export async function markAllCommunicationsRead(profileId) {
   const rows = await listCareerCommunications(profileId, 200);
-  const unread = rows.filter((row) => row.status === 'nao_lida');
-  await Promise.all(unread.map((row) => localGame.entities.CareerMessage.update(row.id, { status: 'lida', is_new: false }).catch(() => null)));
+  const unread = rows.filter(isCareerMessageUnread);
+  await Promise.all(unread.map((row) => markCareerCommunicationRead(row).catch(() => null)));
   return unread.length;
+}
+
+export async function markCareerCommunicationRead(message) {
+  if (!message?.id || !isCareerMessageUnread(message)) return normalizeCareerMessage(message);
+  const patch = {
+    is_read: true,
+    is_new: false,
+    ...(message.status === 'nao_lida' || !message.status ? { status: 'lida' } : {}),
+  };
+  const updated = await localGame.entities.CareerMessage.update(message.id, patch);
+  return normalizeCareerMessage({ ...message, ...updated, ...patch });
 }
 
 export async function ensureContextualCareerCommunications(profile, context = {}) {
@@ -58,12 +79,15 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       title: payload.title,
       content: payload.content,
       status: payload.status || 'nao_lida',
+      is_read: false,
+      is_new: true,
       priority: payload.priority || 'normal',
       career_date: careerDate,
       related_entity_type: payload.related_entity_type,
       related_entity_id: payload.related_entity_id,
       related_entity_name: payload.related_entity_name,
       actions: payload.actions || [],
+      destination: payload.destination,
       metadata: { ...(payload.metadata || {}), context_key: contextKey },
     }).catch(() => null);
     if (row) {
@@ -84,6 +108,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
           ? `Sua fadiga chegou a ${Math.round(fatigue)}. Recomendo priorizar recuperação e evitar treinos intensos nos próximos dias.`
           : `Sua energia está em ${Math.round(energy)}. Um dia livre agora pode melhorar a qualidade dos próximos treinos.`,
         priority: fatigue >= 80 || energy <= 15 ? 'alta' : 'normal',
+        related_entity_type: 'Coach', related_entity_id: profile.coach_id, related_entity_name: profile.coach_name,
         status: 'decisao_pendente',
         actions: [
           { id: 'follow_recovery', label: 'Seguir recomendação', description: 'Fortalece a confiança com o treinador.', effect: { coachTrust: 2 } },
@@ -146,6 +171,8 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         title: 'Contrato do treinador perto do fim',
         content: `O vínculo com ${profile.coach_name || 'seu treinador'} termina em ${days} dia${days === 1 ? '' : 's'}. Planeje a renovação ou avalie o mercado.`,
         priority: days <= 7 ? 'alta' : 'normal',
+        related_entity_type: 'CoachContract', related_entity_id: profile.coach_id, related_entity_name: profile.coach_name,
+        metadata: { coach_id: profile.coach_id, contract_end_date: contractEnd },
       });
     }
   }
@@ -162,6 +189,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         { id: 'prioritize_fit', label: 'Priorizar marcas compatíveis', description: 'Fortalece a relação de longo prazo.', effect: { agentTrust: 2 } },
       ],
       metadata: { memory_type: 'agent_strategy', agent_personality: agent.personality },
+      related_entity_type: 'Sponsor',
     });
   }
 
@@ -185,7 +213,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       related_entity_id: interview.id,
       related_entity_name: interview.title,
       metadata: {
-        route: '/press?tab=interviews',
+        route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`,
         interview_id: interview.id,
         interview_source_id: interview.sourceId,
         memory_type: 'press_opportunity',

@@ -382,8 +382,8 @@ export async function getInbox(profileId, statusFilter = null) {
 export async function getUnreadCount(profileId) {
   if (!profileId) return 0;
   try {
-    const msgs = await localGame.entities.CareerMessage.filter({ profile_id: profileId, status: 'nao_lida' }, null, 50);
-    return msgs?.length || 0;
+    const msgs = await localGame.entities.CareerMessage.filter({ profile_id: profileId }, null, 100);
+    return (msgs || []).filter((message) => message.is_read !== true && message.is_new !== false && !['lida', 'resolvida', 'ignorada'].includes(message.status)).length;
   } catch { return 0; }
 }
 
@@ -409,18 +409,27 @@ export async function sendMessage(profileId, msg) {
       related_entity_id: msg.related_entity_id,
       related_entity_name: msg.related_entity_name,
       status: msg.status || 'nao_lida',
+      is_read: false,
+      is_new: true,
       priority: msg.priority || 'normal',
       career_date: msg.career_date,
       expires_career_date: msg.expires_career_date,
       actions: msg.actions || [],
       metadata: msg.metadata,
+      destination: msg.destination,
     });
   } catch (e) { console.error('sendMessage', e); return null; }
 }
 
 export async function markMessageRead(messageId) {
   try {
-    return await localGame.entities.CareerMessage.update(messageId, { status: 'lida', is_new: false });
+    const rows = await localGame.entities.CareerMessage.filter({ id: messageId }, null, 1).catch(() => []);
+    const current = rows?.[0];
+    return await localGame.entities.CareerMessage.update(messageId, {
+      is_read: true,
+      is_new: false,
+      ...(!current?.status || current.status === 'nao_lida' ? { status: 'lida' } : {}),
+    });
   } catch { return null; }
 }
 

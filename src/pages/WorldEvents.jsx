@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { Globe, Sparkles, RefreshCw, Flame } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
@@ -7,6 +8,7 @@ import WorldEventCard from '@/components/world/WorldEventCard';
 import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
 import { ensureMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
 import { loadModuleTasks } from '@/lib/moduleLoading';
+import { ModalShell } from '@/components/design-system';
 
 const ALL_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -28,6 +30,7 @@ const EFFECT_SUMMARY = [
 ];
 
 export default function WorldEventsPage() {
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
   const [events, setEvents] = useState([]);
   const [macroEvents, setMacroEvents] = useState([]);
@@ -35,6 +38,7 @@ export default function WorldEventsPage() {
   const [filter, setFilter] = useState('all');
   const [generating, setGenerating] = useState(false);
   const [initializationError, setInitializationError] = useState('');
+  const [selectedEvent, setSelectedEvent] = useState(null);
   const careerDate = profile?.career_date || new Date().toISOString().slice(0, 10);
 
   useEffect(() => { load(); }, []);
@@ -74,6 +78,13 @@ export default function WorldEventsPage() {
   const activeMacros = macroEvents.filter(e => e.is_active !== false);
   const combined = computeCombinedEffects(activeMacros);
   const allEvents = [...activeMacros, ...macroEvents.filter(e => e.is_active === false), ...events];
+
+  useEffect(() => {
+    const requestedId = searchParams.get('event');
+    if (!requestedId || loading) return;
+    const requested = allEvents.find((event) => String(event.id) === requestedId);
+    if (requested) setSelectedEvent(requested);
+  }, [events, loading, macroEvents, searchParams]);
 
   let filtered;
   if (filter === 'all') filtered = allEvents;
@@ -153,6 +164,9 @@ export default function WorldEventsPage() {
           {filtered.map(e => <WorldEventCard key={e.id} event={e} />)}
         </div>
       )}
+      <ModalShell open={Boolean(selectedEvent)} onClose={() => setSelectedEvent(null)} title={selectedEvent?.title} description="Evento do universo" size="sm">
+        {selectedEvent && <WorldEventCard event={selectedEvent} />}
+      </ModalShell>
     </div>
   );
 }

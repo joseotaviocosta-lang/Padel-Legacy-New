@@ -52,6 +52,7 @@ export async function ensureWeeklyStaffMeeting(profile, staff = [], context = {}
     profile_id: profile.id,
     message_type: 'reuniao_comissao', sender_type: 'treinador', sender_name: profile.coach_name || 'Comissão técnica',
     title: 'Reunião semanal da comissão', content, status: 'nao_lida', priority: meeting.moral < 45 ? 'alta' : 'normal', career_date: profile.career_date,
+    is_read: false, is_new: true, related_entity_type: 'staff', destination: { type: 'STAFF', route: '/staff' },
     actions: [{ id: 'open_training_plan', label: 'Revisar planejamento', route: '/game/training' }],
     metadata: { context_key: contextKey, meeting_week: meeting.week, synergy: meeting.synergy, moral: meeting.moral, proposed_plan: meeting.plan.plan },
   }).catch(() => null);

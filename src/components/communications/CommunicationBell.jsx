@@ -1,20 +1,20 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Bell, ChevronRight, Inbox } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { ensureContextualCareerCommunications, listCareerCommunications, markAllCommunicationsRead } from '@/lib/careerCommunications.js';
+import { ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markCareerCommunicationRead } from '@/lib/careerCommunications.js';
+import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 
 export default function CommunicationBell({ compact = false }) {
+  const navigate = useNavigate();
   const [open, setOpen] = useState(false);
-  const [profileId, setProfileId] = useState(null);
   const [messages, setMessages] = useState([]);
 
   const load = useCallback(async () => {
     const user = await localGame.auth.me().catch(() => null);
     const profile = user ? await ensureMyProfile(user).catch(() => null) : null;
     if (!profile?.id) return;
-    setProfileId(profile.id);
 
     // O sino também executa a reconciliação contextual. Assim novas mensagens
     // aparecem mesmo quando o jogador avança o calendário sem voltar à Home.
@@ -78,21 +78,28 @@ export default function CommunicationBell({ compact = false }) {
     };
   }, [load]);
 
-  const unread = messages.filter((item) => item.status === 'nao_lida').length;
+  const unread = messages.filter(isCareerMessageUnread).length;
 
-  async function handleToggle() {
-    const nextOpen = !open;
-    setOpen(nextOpen);
-    if (!nextOpen || !profileId || unread === 0) return;
+  function handleToggle() {
+    setOpen((current) => !current);
+  }
 
-    // Abrir o painel equivale a visualizar as notificações. Decisões pendentes
-    // continuam pendentes, mas deixam de manter o badge do sino aceso.
-    setMessages((current) => current.map((item) => (
-      item.status === 'nao_lida' ? { ...item, status: 'lida', is_new: false } : item
-    )));
-    await markAllCommunicationsRead(profileId).catch(() => null);
-    window.dispatchEvent(new CustomEvent('padel:communications-updated'));
-    window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
+  async function handleMessageClick(message) {
+    const destination = resolveNotificationDestination(message);
+    if (isCareerMessageUnread(message)) {
+      setMessages((current) => current.map((item) => item.id === message.id
+        ? { ...item, is_read: true, is_new: false, ...(item.status === 'nao_lida' ? { status: 'lida' } : {}) }
+        : item));
+      void markCareerCommunicationRead(message)
+        .then(() => {
+          window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+          window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
+        })
+        .catch(() => load());
+    }
+    setOpen(false);
+
+    navigate(destination.route);
   }
 
   return (
@@ -125,14 +132,14 @@ export default function CommunicationBell({ compact = false }) {
 
             <div className="max-h-[min(32rem,65vh)] overflow-y-auto p-2 scrollbar-premium">
               {messages.length ? messages.slice(0, 8).map((message) => (
-                <Link key={message.id} to="/communications" onClick={() => setOpen(false)} className="flex gap-3 rounded-xl p-3 hover:bg-secondary/60">
+                <button type="button" key={message.id} onClick={() => handleMessageClick(message)} className="flex w-full gap-3 rounded-xl p-3 text-left hover:bg-secondary/60">
                   <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10"><Inbox className="h-4 w-4 text-primary" /></div>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-xs font-bold">{message.title}</p>
                     <p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{message.content}</p>
                   </div>
                   {message.status === 'decisao_pendente' && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-amber-400" title="Decisão pendente" />}
-                </Link>
+                </button>
               )) : <div className="p-8 text-center text-xs text-muted-foreground">Nenhuma comunicação nova.</div>}
             </div>
 

@@ -24,7 +24,9 @@ async function createOfferMessage(profile, offer) {
     status: 'decisao_pendente', priority: offer.recommended ? 'alta' : 'normal', career_date: profile.career_date,
     expires_career_date: offer.expires_career_date,
     actions: [{ id: 'view_offer', label: 'Analisar na área de Parceiros', type: 'view_partner_offer', payload: { offerId: offer.id } }],
-    metadata: { offer_id: offer.id }, is_new: true,
+    metadata: { offer_id: offer.id, route: `/partners?view=offers&offer=${encodeURIComponent(offer.id)}` },
+    destination: { type: 'PARTNER_OFFER', route: '/partners', params: { view: 'offers', offer: offer.id } },
+    is_read: false, is_new: true,
   });
 }
 

@@ -7,7 +7,7 @@ import { SectionCard, EmptyState, CoinBadge } from '@/components/padel/GameShare
 import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
 import ConditionPanel from '@/components/training/ConditionPanel';
 import TrainingActivityCard from '@/components/training/TrainingActivityCard';
@@ -33,6 +33,7 @@ const TABS = [
 ];
 
 export default function Training() {
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
   const [coach, setCoach] = useState(null);
   const [history, setHistory] = useState([]);
@@ -47,6 +48,9 @@ export default function Training() {
   const { toast } = useToast();
 
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    if (searchParams.get('training')) setActiveTab('historico');
+  }, [searchParams]);
 
   async function load() {
     try {

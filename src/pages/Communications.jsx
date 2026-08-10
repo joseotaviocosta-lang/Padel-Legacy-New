@@ -1,17 +1,20 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Inbox, Mail, Megaphone, Newspaper, Search, Shield, Sparkles, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
+import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Inbox, Mail, Megaphone, Newspaper, Search, Shield, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
-import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, ensureContextualCareerCommunications, listCareerCommunications, markAllCommunicationsRead, normalizeCareerMessage } from '@/lib/careerCommunications.js';
+import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage } from '@/lib/careerCommunications.js';
 import { buildCareerMemory, getCareerAgent, getMemoryHighlights } from '@/lib/careerMemory.js';
-import { markMessageRead, resolveMessage, dismissMessage } from '@/lib/partnershipSystem.js';
-import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, LoadingState, Surface } from '@/components/design-system';
+import { resolveMessage, dismissMessage } from '@/lib/partnershipSystem.js';
+import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
+import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 
 const SENDER_ICONS = { treinador: GraduationCap, atleta: Handshake, empresario: BriefcaseBusiness, federacao: Shield, patrocinador: Sparkles, clube: Building2, imprensa: Newspaper, sistema: Bell };
 const SENDER_TONES = { treinador: 'primary', atleta: 'success', empresario: 'premium', federacao: 'info', patrocinador: 'premium', clube: 'info', imprensa: 'warning', sistema: 'neutral' };
 
 export default function Communications() {
+  const [searchParams] = useSearchParams();
+  const openedMessageRef = useRef(null);
   const [profile, setProfile] = useState(null);
   const [messages, setMessages] = useState([]);
   const [selected, setSelected] = useState(null);
@@ -49,7 +52,17 @@ export default function Communications() {
 
   useEffect(() => { load(); }, []);
 
-  const unread = messages.filter((item) => item.status === 'nao_lida').length;
+  useEffect(() => {
+    const requestedId = searchParams.get('message');
+    if (!requestedId || !messages.length || openedMessageRef.current === requestedId) return;
+    const requested = messages.find((message) => String(message.id) === requestedId);
+    if (requested) {
+      openedMessageRef.current = requestedId;
+      void openMessage(requested);
+    }
+  }, [messages, searchParams]);
+
+  const unread = messages.filter(isCareerMessageUnread).length;
   const pending = messages.filter((item) => item.status === 'decisao_pendente').length;
   const senders = new Set(messages.map((item) => item.sender_type)).size;
   const filtered = useMemo(() => messages.filter((item) => {
@@ -61,9 +74,9 @@ export default function Communications() {
   async function openMessage(message) {
     const normalized = normalizeCareerMessage(message);
     setSelected(normalized);
-    if (normalized.status === 'nao_lida') {
-      await markMessageRead(normalized.id);
-      setMessages((current) => current.map((row) => row.id === normalized.id ? { ...row, status: 'lida' } : row));
+    if (isCareerMessageUnread(normalized)) {
+      setMessages((current) => current.map((row) => row.id === normalized.id ? { ...row, is_read: true, is_new: false, ...(row.status === 'nao_lida' ? { status: 'lida' } : {}) } : row));
+      await markCareerCommunicationRead(normalized);
       window.dispatchEvent(new CustomEvent('padel:communications-updated'));
       window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
     }
@@ -72,7 +85,7 @@ export default function Communications() {
   async function markAll() {
     if (!profile?.id) return;
     await markAllCommunicationsRead(profile.id);
-    setMessages((current) => current.map((row) => row.status === 'nao_lida' ? { ...row, status: 'lida' } : row));
+    setMessages((current) => current.map((row) => isCareerMessageUnread(row) ? { ...row, is_read: true, is_new: false, ...(row.status === 'nao_lida' ? { status: 'lida' } : {}) } : row));
     window.dispatchEvent(new CustomEvent('padel:communications-updated'));
     window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
   }
@@ -127,12 +140,29 @@ export default function Communications() {
 
         {filtered.length === 0 ? <EmptyState icon={Inbox} title="Nenhuma comunicação encontrada" description={query || category !== 'all' ? 'Altere os filtros ou a busca.' : 'Quando algo importante acontecer na carreira, aparecerá aqui.'} /> : <div className="grid gap-2 lg:grid-cols-2">{filtered.map((message) => {
           const Icon = SENDER_ICONS[message.sender_type] || Bell;
-          const isUnread = message.status === 'nao_lida';
+          const isUnread = isCareerMessageUnread(message);
           return <button type="button" key={message.id} onClick={() => openMessage(message)} className={`group rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:bg-card/80 ${isUnread ? 'border-primary/35 bg-primary/[0.045]' : 'border-border/65 bg-card/55'}`}><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/70"><Icon className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className={`truncate text-sm ${isUnread ? 'font-black' : 'font-bold'}`}>{message.title}</p>{isUnread && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}</div><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{message.sender_name}</p><p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{message.content}</p><div className="mt-3 flex items-center gap-2"><StatusBadge tone={SENDER_TONES[message.sender_type] || 'neutral'}>{COMMUNICATION_CATEGORIES.find((item) => item.id === message.sender_type)?.label || 'Sistema'}</StatusBadge>{message.career_date && <span className="text-[10px] text-muted-foreground">{formatDate(message.career_date)}</span>}{message.status === 'decisao_pendente' && <StatusBadge tone="warning">Decisão pendente</StatusBadge>}</div></div></div></button>;
         })}</div>}
       </PageContent>
 
-      {selected && <><button type="button" aria-label="Fechar mensagem" onClick={() => setSelected(null)} className="fixed inset-0 z-[80] bg-black/65 backdrop-blur-sm" /><div className="fixed inset-x-3 bottom-3 z-[90] mx-auto max-h-[88vh] max-w-xl overflow-y-auto rounded-3xl border border-border/70 bg-card p-5 shadow-2xl sm:inset-x-6 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2"><div className="flex items-start justify-between gap-3"><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-primary">{selected.sender_name}</p><h2 className="mt-1 text-xl font-black">{selected.title}</h2></div><button type="button" onClick={() => setSelected(null)} className="rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button></div><p className="mt-5 whitespace-pre-line text-sm leading-7 text-foreground/90">{selected.content}</p>{selected.metadata?.route && <Link to={selected.metadata.route} onClick={() => setSelected(null)} className="mt-5 flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground">Abrir recurso</Link>}{selected.actions?.length > 0 && selected.status === 'decisao_pendente' && <div className="mt-5 space-y-2">{selected.actions.map((action, index) => <button key={action.id} type="button" onClick={() => handleAction(action)} className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${index === 0 ? 'border-primary/30 bg-primary text-primary-foreground' : 'border-border/70 bg-secondary/55 hover:bg-secondary'}`}><span className="block text-sm font-bold">{action.label}</span>{action.description && <span className={`mt-1 block text-[10px] ${index === 0 ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>{action.description}</span>}</button>)}<button type="button" onClick={handleDismiss} className="w-full rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-muted-foreground">Decidir depois</button></div>}</div></>}
+      <ModalShell
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        title={selected?.title}
+        description={selected?.sender_name}
+        size="sm"
+      >
+        {selected && <div className="space-y-5">
+          <p className="whitespace-pre-line text-sm leading-7 text-foreground/90">{selected.content}</p>
+          {resolveNotificationDestination(selected).actionable && (
+            <Link to={resolveNotificationDestination(selected).route} onClick={() => setSelected(null)} className="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground">Abrir recurso</Link>
+          )}
+          {selected.actions?.length > 0 && selected.status === 'decisao_pendente' && <div className="space-y-2">
+            {selected.actions.map((action, index) => <button key={action.id} type="button" onClick={() => handleAction(action)} className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${index === 0 ? 'border-primary/30 bg-primary text-primary-foreground' : 'border-border/70 bg-secondary/55 hover:bg-secondary'}`}><span className="block text-sm font-bold">{action.label}</span>{action.description && <span className={`mt-1 block text-[10px] ${index === 0 ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>{action.description}</span>}</button>)}
+            <button type="button" onClick={handleDismiss} className="w-full rounded-xl bg-secondary px-4 py-3 text-sm font-bold text-muted-foreground">Decidir depois</button>
+          </div>}
+        </div>}
+      </ModalShell>
     </Page>
   );
 }

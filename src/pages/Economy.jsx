@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Wallet, Star, Building2, TrendingUp, Receipt, ClipboardCheck, Coins, Users } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
@@ -26,6 +27,7 @@ const TABS = [
 ];
 
 export default function Economy() {
+  const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
   const [contracts, setContracts] = useState([]);
   const [staff, setStaff] = useState([]);
@@ -33,12 +35,16 @@ export default function Economy() {
   const [investments, setInvestments] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('dashboard');
+  const [tab, setTab] = useState(() => TABS.some((item) => item.id === searchParams.get('view')) ? searchParams.get('view') : 'dashboard');
   const [busy, setBusy] = useState(null);
   const [sponsorReport, setSponsorReport] = useState(null);
   const { toast } = useToast();
 
   useEffect(() => { load(); }, []);
+  useEffect(() => {
+    const requestedView = searchParams.get('view');
+    if (TABS.some((item) => item.id === requestedView)) setTab(requestedView);
+  }, [searchParams]);
 
   async function load() {
     try {

@@ -181,9 +181,13 @@ export async function createWeeklyWorldBulletin(profile, date) {
         content: bulletin.content,
         sender_name: 'Central do Circuito',
         status: 'nao_lida',
+        is_read: false,
+        is_new: true,
         priority: 'normal',
         career_date: date,
-        related_id: bulletin.id,
+        related_entity_type: 'world_event',
+        related_entity_id: bulletin.id,
+        destination: { type: 'WORLD_EVENT', route: '/world-events', params: { event: bulletin.id } },
       });
     } catch { /* mensagem é complementar */ }
   }

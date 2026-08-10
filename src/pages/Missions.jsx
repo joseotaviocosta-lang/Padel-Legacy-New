@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock, AlertTriangle } from 'lucide-react';
 import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
@@ -72,6 +72,8 @@ function ensureExtendedMissionCatalog() {
 export default function Missions() {
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const requestedMissionId = searchParams.get('mission');
   const [profile, setProfile] = useState(null);
   const [missions, setMissions] = useState([]);
   const [progress, setProgress] = useState({});
@@ -87,6 +89,12 @@ export default function Missions() {
   const [draftStyle, setDraftStyle] = useState('');
 
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    if (!requestedMissionId || !missions.length) return;
+    const requested = missions.find((mission) => String(mission.id) === requestedMissionId);
+    if (requested?.mission_type) setTab(requested.mission_type);
+  }, [missions, requestedMissionId]);
 
   async function load() {
     setLoading(true);
@@ -337,7 +345,7 @@ export default function Missions() {
           const status = missionStatus(pr,{locked:tab==='tutorial'&&!pr?.claimed&&nextTutorial?.id!==m.id}); const done = status === 'rewarded';
           const current = Number(pr?.progress || 0);
           const locked = status === 'locked';
-          return <div key={m.id} className={`pl-surface rounded-2xl border p-4 ${done ? 'opacity-60' : ''} ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id ? 'border-primary/40' : ''}`}>
+          return <div key={m.id} aria-current={String(m.id) === requestedMissionId ? 'true' : undefined} className={`pl-surface rounded-2xl border p-4 ${done ? 'opacity-60' : ''} ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id || String(m.id) === requestedMissionId ? 'border-primary/60 ring-2 ring-primary/15' : ''}`}>
             <div className="flex items-start gap-3">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${done ? 'bg-primary/20' : locked ? 'bg-secondary/60' : 'bg-amber-500/15'}`}>{done ? <Check className="h-5 w-5 text-primary" /> : locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Target className="h-5 w-5 text-amber-400" />}</div>
               <div className="flex-1 min-w-0">
