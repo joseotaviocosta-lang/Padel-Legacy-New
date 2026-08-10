@@ -171,7 +171,12 @@ export class GameStorage {
 
   async writeJsonUnlocked(normalizedPath, data, options = {}) {
     const validatedData = options.validate === false ? data : validateStoragePayload(data, { requireObject: true });
-    const serialized = `${JSON.stringify(validatedData, null, 2)}\n`;
+    // Saves de carreira podem ser grandes. JSON indentado aumenta bastante o
+    // volume escrito/lido e o custo de comparação. Por padrão persistimos em
+    // formato compacto; relatórios/exportações continuam livres para formatar.
+    const serialized = options.pretty === true
+      ? `${JSON.stringify(validatedData, null, 2)}\n`
+      : `${JSON.stringify(validatedData)}\n`;
     const tempPath = pathJoin(TEMP_DIRECTORY, `${getFileName(normalizedPath)}-${formatTimestamp()}.tmp.json`);
 
     try {

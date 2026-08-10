@@ -766,6 +766,23 @@
   .pl-surface-motion, .pl-change-pulse, button, [role='button'] { transition: none !important; transform: none !important; }
 }
 
+
+/* RC1.0.9 — Viewport overlay safety
+   content-visibility creates a containing block for fixed descendants.
+   Legacy dialogs rendered inside long lists/sections must stay attached to the viewport. */
+.pl-auto-contain:has(.fixed.inset-0),
+.render-window > *:has(.fixed.inset-0),
+[data-performance-list] > *:has(.fixed.inset-0) {
+  content-visibility: visible !important;
+  contain: none !important;
+}
+
+/* Prevent page-entry containment from changing the coordinate system of open overlays. */
+.app-route-stage:has(.fixed.inset-0),
+.pl-page:has(.fixed.inset-0) {
+  transform: none !important;
+}
+
 /* ================================================================
    v36.4.3 — Performance & Responsiveness
    Conteúdo fora da viewport não precisa ser pintado imediatamente.

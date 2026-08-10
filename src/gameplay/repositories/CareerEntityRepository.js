@@ -49,6 +49,33 @@ function sortRows(items, sort) {
 export class CareerEntityRepository {
   constructor(gameRepository = repository) {
     this.repository = gameRepository;
+    this.queryCache = new Map();
+    this.cacheCareerRef = null;
+  }
+
+  syncCacheCareer(career) {
+    if (this.cacheCareerRef !== career) {
+      this.cacheCareerRef = career;
+      this.queryCache.clear();
+    }
+  }
+
+  invalidate(entityName = null) {
+    if (!entityName) {
+      this.queryCache.clear();
+      return;
+    }
+    const prefix = `${entityName}|`;
+    for (const key of this.queryCache.keys()) {
+      if (key.startsWith(prefix)) this.queryCache.delete(key);
+    }
+  }
+
+  copyRows(rows) {
+    // Entidades do jogo são majoritariamente objetos planos. Um clone raso
+    // protege a lista do cache sem structuredClone de centenas/milhares de
+    // registros em toda montagem de tela.
+    return rows.map((row) => (row && typeof row === 'object' ? { ...row } : row));
   }
 
   async withCareer(mutator, { save = false } = {}) {
@@ -65,7 +92,8 @@ export class CareerEntityRepository {
     // motivo para reler e parsear o mesmo arquivo para cada card da mesma tela.
     const career = await this.repository.ensureActiveCareer({ fresh: false, cloneResult: false });
     if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
-    return clone(await mutator(career));
+    this.syncCacheCareer(career);
+    return mutator(career);
   }
 
   seedFor(entityName, career) {
@@ -83,30 +111,46 @@ export class CareerEntityRepository {
 
   async list(entityName, sort = null, limit = null) {
     return this.withCareer(async (career) => {
+      const key = `${entityName}|list|${sort || ''}|${limit || ''}`;
+      const cached = this.queryCache.get(key);
+      if (cached) return this.copyRows(cached);
       const rows = this.ensureCollection(entityName, career);
-      const out = sortRows(rows, sort);
-      return limit ? out.slice(0, limit) : out;
+      const sorted = sortRows(rows, sort);
+      const out = limit ? sorted.slice(0, limit) : sorted;
+      this.queryCache.set(key, out);
+      return this.copyRows(out);
     }, { save: false });
   }
 
   async filter(entityName, query = {}, sort = null, limit = null) {
     return this.withCareer(async (career) => {
+      const queryKey = JSON.stringify(query || {});
+      const key = `${entityName}|filter|${queryKey}|${sort || ''}|${limit || ''}`;
+      const cached = this.queryCache.get(key);
+      if (cached) return this.copyRows(cached);
       const rows = this.ensureCollection(entityName, career);
-      const out = sortRows(rows.filter((row) => matches(row, query)), sort);
-      return limit ? out.slice(0, limit) : out;
+      const sorted = sortRows(rows.filter((row) => matches(row, query)), sort);
+      const out = limit ? sorted.slice(0, limit) : sorted;
+      this.queryCache.set(key, out);
+      return this.copyRows(out);
     }, { save: false });
   }
 
   async get(entityName, id) {
     return this.withCareer(async (career) => {
+      const key = `${entityName}|get|${id}`;
+      const cached = this.queryCache.get(key);
+      if (cached) return { ...cached };
       const rows = this.ensureCollection(entityName, career);
       const found = rows.find((row) => row.id === id);
       if (!found) throw new Error(`${entityName} não encontrado: ${id}`);
-      return found;
+      this.queryCache.set(key, found);
+      return { ...found };
     }, { save: false });
   }
 
   async create(entityName, data = {}) {
+    this.invalidate(entityName);
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const timestamp = new Date().toISOString();
@@ -120,6 +164,7 @@ export class CareerEntityRepository {
   }
 
   async update(entityName, id, data = {}) {
+    this.invalidate(entityName);
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const index = rows.findIndex((row) => row.id === id);
@@ -135,6 +180,7 @@ export class CareerEntityRepository {
    */
   async upsert(entityName, id, data = {}) {
     if (!id) throw new Error(`ID obrigatório para upsert de ${entityName}.`);
+    this.invalidate(entityName);
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const index = rows.findIndex((row) => row?.id === id);
@@ -150,6 +196,7 @@ export class CareerEntityRepository {
   }
 
   async delete(entityName, id) {
+    this.invalidate(entityName);
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const index = rows.findIndex((row) => row.id === id);
@@ -160,6 +207,7 @@ export class CareerEntityRepository {
 
   async bulkCreate(entityName, data = []) {
     if (!Array.isArray(data) || data.length === 0) return [];
+    this.invalidate(entityName);
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const knownIds = new Set(rows.map(row => row?.id).filter(Boolean));
@@ -178,6 +226,7 @@ export class CareerEntityRepository {
 
   async bulkUpdate(entityName, updates = []) {
     if (!Array.isArray(updates) || updates.length === 0) return [];
+    this.invalidate(entityName);
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const indexById = new Map(rows.map((row, index) => [row?.id, index]).filter(([id]) => id));

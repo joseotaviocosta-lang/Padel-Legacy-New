@@ -90,13 +90,20 @@ export class CareerRepository {
     return validated;
   }
 
-  async writeCareer(careerId, data) {
+  async writeCareer(careerId, data, options = {}) {
     const path = await this.getCareerPath(careerId);
     const validated = validateCareerData(data);
     if (validated.career_id !== careerId) {
       throw new Error('career_id no conteúdo difere do careerId solicitado.');
     }
-    return this.storage.writeJson(path, validated, { backup: true, validate: false });
+    // Gravações rotineiras não devem criar backup físico em toda pequena
+    // alteração de entidade. O ActiveCareerAdapter decide quando um backup
+    // completo é necessário (por padrão, no máximo uma vez a cada 5 min).
+    return this.storage.writeJson(path, validated, {
+      backup: options.backup !== false,
+      validate: false,
+      pretty: options.pretty === true,
+    });
   }
 
   async deleteCareerFile(careerId) {

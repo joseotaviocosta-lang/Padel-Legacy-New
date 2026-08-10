@@ -1,7 +1,7 @@
 {
   "name": "padel-legacy",
   "private": true,
-  "version": "0.9.0-rc.1.7",
+  "version": "0.9.0-rc.1.9",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -112,7 +112,9 @@
     "test:hotfix-rc1.0.5": "node scripts/test-hotfix-rc1-qa-compat.mjs",
     "test:release-packaging": "node scripts/test-release-packaging-rc1.mjs",
     "test:runtime-performance-rc1": "node scripts/test-runtime-performance-rc1.mjs",
-    "test:performance-deep-rc1": "node scripts/test-performance-deep-rc1.mjs"
+    "test:performance-deep-rc1": "node scripts/test-performance-deep-rc1.mjs",
+    "test:performance-cache-rc1": "node scripts/test-performance-cache-rc1.mjs",
+    "test:viewport-overlays-rc1": "node scripts/test-viewport-overlays-rc1.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

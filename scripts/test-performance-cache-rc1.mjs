@@ -1,0 +1,17 @@
+import fs from 'node:fs';
+const read = (p) => fs.readFileSync(p, 'utf8');
+const checks = [];
+const check = (name, ok) => { if (!ok) throw new Error(`FAIL: ${name}`); checks.push(name); console.log(`PASS: ${name}`); };
+const pkg = JSON.parse(read('package.json'));
+const repo = read('src/careers/CareerRepository.js');
+const storage = read('src/storage/GameStorage.js');
+const entities = read('src/gameplay/repositories/CareerEntityRepository.js');
+check('version rc.1.8+', /^0\.9\.0-rc\.1\.(?:[89]|[1-9]\d+)$/.test(pkg.version));
+check('writeCareer respects backup=false', repo.includes('backup: options.backup !== false'));
+check('routine career JSON is compact', storage.includes('options.pretty === true'));
+check('entity query cache exists', entities.includes('this.queryCache = new Map()'));
+check('cache invalidates after writes', entities.includes('this.invalidate(entityName)'));
+check('reads avoid whole-career deep clone', entities.includes('return mutator(career)'));
+check('cached lists use shallow copy', entities.includes('copyRows(rows)'));
+check('test command registered', pkg.scripts?.['test:performance-cache-rc1']?.includes('test-performance-cache-rc1.mjs'));
+console.log(`PerformanceCacheRC1Test: PASS (${checks.length}/8)`);
