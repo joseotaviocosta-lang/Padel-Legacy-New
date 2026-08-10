@@ -1,24 +1,34 @@
-import React, { useMemo, useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, Users, UserCheck, Info, Brain, Handshake, CalendarDays } from 'lucide-react';
+import { Banknote, Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { FilterPills } from '@/components/padel/ui';
-import { EmptyState, PageSkeleton } from '@/components/design-system';
-import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, ProgressBar } from '@/components/design-system';
+import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatCard, StatusBadge, Surface } from '@/components/design-system';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
-import { COACH_TIERS, COACH_SPECIALTY_INFO, calculateAffinity } from '@/lib/coaches';
+import {
+  buildCoachDiscovery,
+  calculateAffinity,
+  COACH_SPECIALTY_INFO,
+  COACH_TIERS,
+  evaluateCoachForCareer,
+  filterCoachDiscovery,
+  getDefaultCoachDiscoveryFilter,
+  sortCoachDiscovery,
+} from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
-import { ensureStarterCoach, hirePrimaryCoach, replaceWithStarterCoach, renewPrimaryCoach } from '@/game-core/coachLifecycle';
+import { ensureStarterCoach, hirePrimaryCoach, renewPrimaryCoach, replaceWithStarterCoach } from '@/game-core/coachLifecycle';
 
-const TIER_FILTERS = [
-  { id: 'all', label: 'Todos' },
-  { id: 'iniciante', label: 'Iniciante' },
-  { id: 'regional', label: 'Regional' },
-  { id: 'profissional', label: 'Profissional' },
-  { id: 'elite', label: 'Elite' },
-  { id: 'lendario', label: 'Lendário' },
+const STATUS_FILTERS = [
+  ['all', 'Todos'],
+  ['available', 'Disponíveis'],
+  ['recommended', 'Recomendados'],
+  ['budget', 'Dentro do orçamento'],
+  ['blocked', 'Bloqueados'],
 ];
+
+function currency(value) {
+  return `${Math.max(0, Number(value) || 0).toLocaleString('pt-BR')} moedas`;
+}
 
 export default function Coaches() {
   const [searchParams] = useSearchParams();
@@ -26,15 +36,16 @@ export default function Coaches() {
   const [profile, setProfile] = useState(null);
   const [hiredCoach, setHiredCoach] = useState(null);
   const [coaches, setCoaches] = useState([]);
+  const [monthlyIncome, setMonthlyIncome] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeFilter, setActiveFilter] = useState('all');
+  const [statusFilter, setStatusFilter] = useState('available');
+  const [specialtyFilter, setSpecialtyFilter] = useState('all');
+  const [sortOrder, setSortOrder] = useState('recommendation');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
   const { toast } = useToast();
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   useEffect(() => {
     const requestedId = searchParams.get('coach');
@@ -51,25 +62,56 @@ export default function Coaches() {
       const rawProfile = profiles?.[0] || null;
       const starterResult = rawProfile ? await ensureStarterCoach(rawProfile) : { profile: rawProfile, coach: null };
       const activeProfile = starterResult.profile || rawProfile;
+      const [dbCoaches, transactions] = activeProfile ? await Promise.all([
+        localGame.entities.Coach.list('-reputation', 500),
+        localGame.entities.FinancialTransaction.filter({ profile_id: activeProfile.id }),
+      ]) : [[], []];
+      const latestClose = (transactions || [])
+        .filter((entry) => entry.type === 'monthly_close')
+        .sort((a, b) => String(b.month || '').localeCompare(String(a.month || '')))[0];
+      const hired = starterResult.coach || (dbCoaches || []).find((coach) => coach.id === activeProfile?.coach_id) || null;
       setProfile(activeProfile);
-      const dbCoaches = await localGame.entities.Coach.list('-reputation', 500);
       setCoaches(dbCoaches || []);
-      const hired = starterResult.coach || (dbCoaches || []).find(c => c.id === activeProfile?.coach_id) || null;
       setHiredCoach(hired);
-    } catch (e) { console.error(e); }
-    setLoading(false);
+      setMonthlyIncome(Number(latestClose?.income) > 0 ? Number(latestClose.income) : null);
+      setStatusFilter(getDefaultCoachDiscoveryFilter(activeProfile));
+    } catch (error) {
+      console.error(error);
+      toast({ title: 'Não foi possível abrir o mercado', description: 'Tente novamente em instantes.', variant: 'destructive' });
+    } finally {
+      setLoading(false);
+    }
   }
 
-  const filtered = useMemo(() => {
-    return coaches.filter(c => {
-      if (activeFilter !== 'all' && String(c.tier || '').toLowerCase() !== activeFilter) return false;
-      if (search) {
-        const s = search.toLowerCase();
-        return (c.name || '').toLowerCase().includes(s) || (c.city || '').toLowerCase().includes(s) || (c.specialty || '').toLowerCase().includes(s) || (COACH_SPECIALTY_INFO[c.specialty]?.label || '').toLowerCase().includes(s) || (c.specializations || []).some(item => String(item).toLowerCase().includes(s));
-      }
-      return true;
-    });
-  }, [coaches, activeFilter, search]);
+  const discovery = useMemo(() => buildCoachDiscovery(
+    coaches.filter((coach) => coach.id !== hiredCoach?.id),
+    profile,
+    { monthlyIncome },
+  ), [coaches, hiredCoach?.id, monthlyIncome, profile]);
+
+  const visible = useMemo(() => sortCoachDiscovery(filterCoachDiscovery(discovery, {
+    status: statusFilter,
+    specialty: specialtyFilter,
+    search,
+  }), sortOrder), [discovery, search, sortOrder, specialtyFilter, statusFilter]);
+
+  const sections = useMemo(() => {
+    if (statusFilter !== 'all') return [{
+      id: statusFilter,
+      title: statusFilter === 'blocked' ? 'Ainda não disponíveis' : statusFilter === 'recommended' ? 'Recomendados para sua carreira' : 'Disponíveis para você',
+      description: statusFilter === 'blocked' ? 'Veja exatamente o que falta para liberar cada profissional.' : 'Opções que atendem às regras atuais da sua carreira.',
+      items: visible,
+    }];
+    return [
+      { id: 'available', title: 'Disponíveis para você', description: 'Profissionais que podem ser contratados agora.', items: visible.filter((item) => item.availability.available) },
+      { id: 'blocked', title: 'Ainda não disponíveis', description: 'Continuam visíveis para orientar sua progressão.', items: visible.filter((item) => !item.availability.available) },
+    ];
+  }, [statusFilter, visible]);
+
+  const selectedEvaluation = useMemo(() => {
+    if (!selected || !profile) return null;
+    return discovery.find((item) => item.coach.id === selected.id) || evaluateCoachForCareer(selected, profile, { monthlyIncome });
+  }, [discovery, monthlyIncome, profile, selected]);
 
   async function handleHire(coach) {
     if (!profile) return;
@@ -108,131 +150,114 @@ export default function Coaches() {
     }
   }
 
-  const availableCount = filtered.length;
-
   if (loading) return <PageSkeleton variant="grid" rows={6} />;
 
-  const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : null;
+  const availableCount = discovery.filter((item) => item.availability.available).length;
+  const beginnerAvailableCount = discovery.filter((item) => item.availability.available && item.coach.tier === 'iniciante').length;
+  const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : 0;
   const trust = Number(profile?.coach_trust ?? 55);
   const tactical = Number(profile?.coach_tactical_understanding ?? 20);
 
   return (
     <Page size="wide" className="animate-fade-in">
       <PageContent>
-      <PageHeader
-        eyebrow="Equipe técnica"
-        icon={Users}
-        title="Treinador principal"
-        description="O comandante esportivo da dupla: define filosofia, conduz treinos e orienta decisões durante as partidas."
-        tone="brand"
-        stats={hiredCoach ? <>
-          <StatusBadge tone="success">Obrigatório</StatusBadge>
-          <StatusBadge tone="info">{COACH_TIERS[hiredCoach.tier]?.label || hiredCoach.tier}</StatusBadge>
-          <StatusBadge tone="premium">{profile?.coach_paid_by_club ? 'Pago pelo clube' : `${profile?.coach_monthly_salary || hiredCoach.monthly_cost || 0}/mês`}</StatusBadge>
-        </> : null}
-      />
-
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Confiança" value={`${trust}%`} detail="relação profissional" icon={Handshake} tone={trust >= 70 ? 'success' : 'warning'} />
-        <StatCard label="Entendimento" value={`${tactical}%`} detail="leitura da dupla" icon={Brain} tone="info" />
-        <StatCard label="Afinidade" value={`${affinityCurrent?.score ?? affinityCurrent ?? 0}%`} detail="compatibilidade atual" icon={UserCheck} tone="brand" />
-        <StatCard label="Contrato" value={profile?.coach_paid_by_club ? 'Clube' : `${profile?.coach_monthly_salary || hiredCoach?.monthly_cost || 0}`} detail={profile?.coach_contract_end_date || 'temporário'} icon={CalendarDays} tone="premium" />
-      </div>
-
-      <div className="grid gap-3 md:grid-cols-[1.3fr_1fr]">
-        <Surface tone="brand" className="p-4">
-          <div className="flex items-start gap-3">
-            <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-            <div>
-              <p className="text-sm font-black">A dupla sempre possui um treinador</p>
-              <p className="mt-1 text-xs leading-relaxed text-muted-foreground">O treinador principal lidera a comissão técnica, recebe salário mensal e influencia treinos, confiança, entrosamento e decisões táticas durante as partidas. O treinador de formação fornecido pelo clube não tem custo para o atleta.</p>
-            </div>
-          </div>
-        </Surface>
-        <Surface className="p-4">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">Mercado disponível</p>
-          <p className="mt-1 text-2xl font-black">{coaches.length} treinadores</p>
-          <p className="text-xs text-muted-foreground">{availableCount} exibidos com o filtro atual</p>
-        </Surface>
-      </div>
-
-      <div className="grid gap-2 sm:grid-cols-2 lg:grid-cols-5">
-        {Object.entries(COACH_SPECIALTY_INFO).map(([key, info]) => (
-          <button key={key} type="button" onClick={() => setSearch(key)} className="rounded-xl border border-border/60 bg-card/60 p-3 text-left transition hover:border-primary/35 hover:bg-primary/5">
-            <p className="text-xs font-black">{info.label}</p>
-            <p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{info.summary}</p>
-          </button>
-        ))}
-      </div>
-
-      {/* Current Coach */}
-      {hiredCoach && (
-        <Surface tone="brand" className="p-4">
-          <div className="flex items-center gap-2 mb-1">
-            <UserCheck className="h-4 w-4 text-primary" />
-            <span className="text-[10px] uppercase tracking-wide text-primary font-bold">Treinador Atual</span>
-          </div>
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center">
-              <span className="font-black text-primary">{(hiredCoach.name || '?')[0]}</span>
-            </div>
-            <div className="flex-1">
-              <p className="font-bold text-sm">{hiredCoach.name}</p>
-              <p className="text-[10px] text-muted-foreground">{COACH_SPECIALTY_INFO[hiredCoach.specialty]?.label || hiredCoach.specialty} · {COACH_TIERS[hiredCoach.tier]?.label} · {profile?.coach_paid_by_club ? 'pago pelo clube' : `${profile?.coach_monthly_salary || hiredCoach.monthly_cost} moedas/mês`}</p><p className="text-[9px] text-muted-foreground">Confiança {profile?.coach_trust ?? 55}/100 · contrato até {profile?.coach_contract_end_date || 'fim da temporada'}</p>
-            </div>
-            <div className="flex gap-2"><button onClick={handleRenew} className="text-[11px] font-bold text-foreground px-3 py-1.5 rounded-lg bg-secondary/60">Renovar</button><button onClick={() => setSelected(hiredCoach)} className="text-[11px] font-bold text-primary hover:opacity-80 px-3 py-1.5 rounded-lg bg-primary/10">Ver detalhes</button></div>
-          </div>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2">
-            <div><p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">Confiança</p><ProgressBar value={trust} tone={trust >= 70 ? 'success' : 'warning'} /></div>
-            <div><p className="mb-1 text-[10px] font-bold uppercase text-muted-foreground">Entendimento tático</p><ProgressBar value={tactical} tone="info" /></div>
-          </div>
-        </Surface>
-      )}
-
-      {/* Search */}
-      <div className="glass rounded-2xl p-3 flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground shrink-0" />
-        <input
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          placeholder="Buscar por nome, cidade, especialidade ou estilo..."
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+        <PageHeader
+          eyebrow="Equipe técnica"
+          icon={Users}
+          title="Técnicos principais"
+          description="Compare profissionais, entenda os requisitos e descubra quem pode assumir sua dupla agora."
+          tone="brand"
+          stats={<>
+            <StatusBadge tone="success">{availableCount} disponíveis</StatusBadge>
+            <StatusBadge tone="info">{beginnerAvailableCount} de formação</StatusBadge>
+          </>}
         />
-      </div>
 
-      <FilterPills filters={TIER_FILTERS} activeFilter={activeFilter} onFilterChange={setActiveFilter} />
-
-      {filtered.length === 0 ? (
-        <EmptyState icon={Users} eyebrow="Mercado de treinadores" title="Nenhum treinador encontrado" description="Ajuste os filtros ou avance o calendário para atualizar a disponibilidade mensal do mercado." compact />
-      ) : (
-        <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
-          {filtered.map(coach => {
-            const affinity = profile ? calculateAffinity(coach, profile) : null;
-            return (
-              <CoachCard
-                key={coach.id}
-                coach={coach}
-                affinity={affinity}
-                profile={profile}
-                isHired={hiredCoach?.id === coach.id}
-                onClick={() => setSelected(coach)}
-              />
-            );
-          })}
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <StatCard label="Caixa atual" value={currency(profile?.coins)} detail="saldo para assinatura" icon={Wallet} tone="brand" />
+          <StatCard label="Receita mensal" value={monthlyIncome ? currency(monthlyIncome) : '—'} detail={monthlyIncome ? 'último fechamento' : 'ainda sem fechamento'} icon={Banknote} tone="success" />
+          <StatCard label="Confiança" value={`${trust}%`} detail="relação com o técnico" icon={Handshake} tone={trust >= 70 ? 'success' : 'warning'} />
+          <StatCard label="Afinidade atual" value={`${affinityCurrent}%`} detail="compatibilidade esportiva" icon={Brain} tone="info" />
         </div>
-      )}
 
-      {/* Detail Modal */}
-      {selected && (
-        <CoachDetail
-          coach={selected}
-          profile={profile}
-          isHired={hiredCoach?.id === selected.id}
-          onClose={() => setSelected(null)}
-          onHire={hiredCoach?.id === selected.id ? handleFire : () => handleHire(selected)}
-          onFire={handleFire}
-        />
-      )}
+        {hiredCoach && (
+          <Surface tone="brand" className="p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 font-black text-primary">{(hiredCoach.name || '?')[0]}</div>
+              <div className="min-w-0 flex-1">
+                <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide text-primary"><UserCheck className="h-3.5 w-3.5" /> Técnico atual</p>
+                <p className="mt-0.5 truncate text-base font-black">{hiredCoach.name}</p>
+                <p className="text-[10px] text-muted-foreground">{COACH_SPECIALTY_INFO[hiredCoach.specialty]?.label || hiredCoach.specialty} · {COACH_TIERS[hiredCoach.tier]?.label || hiredCoach.tier} · {profile?.coach_paid_by_club ? 'pago pelo clube' : `${currency(profile?.coach_monthly_salary || hiredCoach.monthly_cost)}/mês`}</p>
+              </div>
+              <div className="flex gap-2">
+                <button type="button" onClick={handleRenew} className="rounded-xl bg-secondary/60 px-3 py-2 text-[11px] font-bold hover:bg-secondary">Renovar</button>
+                <button type="button" onClick={() => setSelected(hiredCoach)} className="rounded-xl bg-primary/10 px-3 py-2 text-[11px] font-black text-primary hover:bg-primary/15">Ver detalhes</button>
+              </div>
+            </div>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <div><p className="mb-1 text-[9px] font-bold uppercase text-muted-foreground">Confiança</p><ProgressBar value={trust} tone={trust >= 70 ? 'success' : 'warning'} /></div>
+              <div><p className="mb-1 text-[9px] font-bold uppercase text-muted-foreground">Entendimento tático</p><ProgressBar value={tactical} tone="info" /></div>
+            </div>
+          </Surface>
+        )}
+
+        <Surface className="space-y-3 p-4">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-primary" />
+            <div><p className="text-sm font-black">Encontre seu próximo técnico</p><p className="text-[10px] text-muted-foreground">O mercado é calculado apenas quando os dados carregam ou os filtros mudam.</p></div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {STATUS_FILTERS.map(([id, label]) => (
+              <button key={id} type="button" onClick={() => setStatusFilter(id)} className={`rounded-full border px-3 py-1.5 text-[10px] font-bold transition ${statusFilter === id ? 'border-primary/40 bg-primary/15 text-primary' : 'border-border/60 bg-secondary/30 text-muted-foreground hover:text-foreground'}`}>{label}</button>
+            ))}
+          </div>
+          <div className="grid gap-2 md:grid-cols-[1fr_190px_190px]">
+            <label className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/35 px-3">
+              <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Nome, cidade ou especialidade..." className="min-h-10 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+            </label>
+            <select value={specialtyFilter} onChange={(event) => setSpecialtyFilter(event.target.value)} aria-label="Filtrar especialidade" className="min-h-10 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
+              <option value="all">Todas as especialidades</option>
+              {Object.entries(COACH_SPECIALTY_INFO).map(([id, info]) => <option key={id} value={id}>{info.label}</option>)}
+            </select>
+            <select value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} aria-label="Ordenar técnicos" className="min-h-10 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
+              <option value="recommendation">Mais relevantes</option>
+              <option value="quality">Maior OVR</option>
+              <option value="salary">Menor salário</option>
+              <option value="value">Custo-benefício</option>
+              <option value="name">Nome</option>
+            </select>
+          </div>
+        </Surface>
+
+        {visible.length === 0 ? (
+          <EmptyState icon={Users} eyebrow="Mercado de técnicos" title="Nenhum profissional neste recorte" description="Ajuste os filtros para ver outras opções. Técnicos bloqueados continuam acessíveis no filtro correspondente." compact />
+        ) : sections.map((section) => section.items.length > 0 && (
+          <section key={section.id} className="space-y-3">
+            <div>
+              <h2 className="text-lg font-black">{section.title}</h2>
+              <p className="text-xs text-muted-foreground">{section.description} · {section.items.length} resultado{section.items.length === 1 ? '' : 's'}</p>
+            </div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {section.items.map((evaluation) => (
+                <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
+              ))}
+            </div>
+          </section>
+        ))}
+
+        {selected && (
+          <CoachDetail
+            coach={selected}
+            profile={profile}
+            evaluation={selectedEvaluation}
+            currentCoach={hiredCoach}
+            isHired={hiredCoach?.id === selected.id}
+            onClose={() => setSelected(null)}
+            onHire={() => handleHire(selected)}
+            onFire={handleFire}
+          />
+        )}
       </PageContent>
     </Page>
   );

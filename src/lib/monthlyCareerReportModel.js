@@ -122,7 +122,7 @@ function performanceFromMatches(matches) {
     winners: ['winners', 'winner_shots'], errors: ['unforced_errors', 'errors'], aces: ['aces'],
     smashes: ['smash_winners', 'smashes'], lobs: ['successful_lobs', 'lobs'], netWon: ['net_points_won'], netPlayed: ['net_points_played', 'net_approaches'],
   };
-  const totals = {};
+  const totals = { winners: null, errors: null, aces: null, smashes: null, lobs: null, netWon: null, netPlayed: null };
   let available = false;
   Object.entries(fields).forEach(([field, keys]) => {
     const values = matches.map((match) => pick(match, keys)).filter((value) => value !== null);
@@ -145,7 +145,7 @@ function buildInsights({ wins, losses, trainings, balance, rankingDelta, energyD
   return insights.slice(0, 4);
 }
 
-export function buildMonthlyCareerReport({ profile, periodKey, startSnapshot, endSnapshot, data = {}, generatedDate }) {
+export function buildMonthlyCareerReport({ profile, periodKey, startSnapshot, endSnapshot, data = { matches: [], trainings: [], transactions: [], pressArticles: [], achievements: [], missions: [], staff: [], contracts: [] }, generatedDate }) {
   const period = monthlyReportPeriod(periodKey);
   const matches = (data.matches || []).filter((row) => belongsToProfile(row, profile) && inPeriod(row, periodKey));
   const wins = matches.filter((match) => matchWon(match, profile)).length;

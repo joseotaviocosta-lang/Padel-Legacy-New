@@ -26,6 +26,7 @@ const cases = [
   [{ id: 'n5', message_type: 'injury_report', related_entity_id: 'injury-1' }, '/game/calendar?focus=recovery&injury=injury-1'],
   [{ id: 'n6', message_type: 'ranking_update', related_entity_id: 'athlete-2' }, '/ranking?athlete=athlete-2'],
   [{ id: 'n7', message_type: 'sponsor_contract', related_entity_id: 'contract-2' }, '/game/economy?view=sponsors&contract=contract-2'],
+  [{ id: 'n8', notification_type: 'MONTHLY_REPORT', related_entity_id: 'monthly-career-report:player-1:2026-01' }, '/game/monthly-reports?report=monthly-career-report%3Aplayer-1%3A2026-01'],
   [{ id: 'legacy', message_type: 'mensagem' }, '/communications?message=legacy'],
 ];
 

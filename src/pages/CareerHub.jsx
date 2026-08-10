@@ -142,7 +142,7 @@ export default function CareerHub() {
           p ? safe(localGame.entities.PartnerOffer.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(getLivingWorldSnapshot(p, 8), null) : null,
           p ? safe(localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }), []) : [],
-          p ? safe(localGame.entities.MonthlyCareerReport.filter({ profileId: p.id, status: 'finalized' }, '-periodKey', 1), []) : [],
+          p ? safe(localGame.entities['MonthlyCareerReport'].filter({ profileId: p.id, status: 'finalized' }, '-periodKey', 1), []) : [],
         ]);
         if (!mounted) return;
 

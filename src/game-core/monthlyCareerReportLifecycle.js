@@ -17,7 +17,7 @@ export async function ensureMonthlyReportCycle(profile) {
   if (!profile?.id || !profile?.career_date) return profile;
   const currentMonth = monthlyReportMonthKey(profile.career_date);
   if (profile.monthly_report_state?.periodKey === currentMonth && profile.monthly_report_state?.startSnapshot) return profile;
-  return localGame.entities.PlayerProfile.update(profile.id, {
+  return localGame.entities['PlayerProfile'].update(profile.id, {
     monthly_report_state: {
       periodKey: currentMonth,
       startSnapshot: createMonthlyCareerSnapshot(profile),
@@ -30,24 +30,24 @@ export async function ensureMonthlyReportCycle(profile) {
 async function collectReportData(profileId) {
   const safe = (promise) => promise.catch(() => []);
   const [matches, trainings, transactions, pressArticles, achievements, missions, staff, contracts] = await Promise.all([
-    safe(localGame.entities.Match.list('-date', 1500)),
-    safe(localGame.entities.TrainingSession.filter({ profile_id: profileId }, '-date', 1500)),
-    safe(localGame.entities.FinancialTransaction.filter({ profile_id: profileId }, '-date', 1500)),
-    safe(localGame.entities.PressArticle.filter({ profile_id: profileId }, '-published_date', 1000)),
-    safe(localGame.entities.PlayerAchievement.filter({ profile_id: profileId }, '-unlocked_date', 1000)),
-    safe(localGame.entities.MissionProgress.filter({ profile_id: profileId }, '-completed_at', 1000)),
-    safe(localGame.entities.PlayerStaffHire.filter({ profile_id: profileId }, null, 100)),
-    safe(localGame.entities.PlayerContract.filter({ profile_id: profileId }, null, 200)),
+    safe(localGame.entities['Match'].list('-date', 1500)),
+    safe(localGame.entities['TrainingSession'].filter({ profile_id: profileId }, '-date', 1500)),
+    safe(localGame.entities['FinancialTransaction'].filter({ profile_id: profileId }, '-date', 1500)),
+    safe(localGame.entities['PressArticle'].filter({ profile_id: profileId }, '-published_date', 1000)),
+    safe(localGame.entities['PlayerAchievement'].filter({ profile_id: profileId }, '-unlocked_date', 1000)),
+    safe(localGame.entities['MissionProgress'].filter({ profile_id: profileId }, '-completed_at', 1000)),
+    safe(localGame.entities['PlayerStaffHire'].filter({ profile_id: profileId }, null, 100)),
+    safe(localGame.entities['PlayerContract'].filter({ profile_id: profileId }, null, 200)),
   ]);
   return { matches, trainings, transactions, pressArticles, achievements, missions, staff, contracts };
 }
 
 async function createReportNotification(profile, report) {
   const id = `monthly-career-report-notification:${profile.id}:${report.periodKey}`;
-  const existing = await localGame.entities.CareerMessage.get(id).catch(() => null);
+  const existing = await localGame.entities['CareerMessage'].get(id).catch(() => null);
   if (existing) return existing;
   const body = `${report.competition.wins} vitória(s), ${report.training.sessions} treino(s) e saldo mensal de ${report.finances.net.toLocaleString('pt-BR')} moedas. Abra o relatório completo para revisar sua evolução.`;
-  return localGame.entities.CareerMessage.upsert(id, {
+  return localGame.entities['CareerMessage'].upsert(id, {
     profile_id: profile.id,
     sender_name: 'Equipe Padel Legacy',
     subject: `Relatório mensal · ${report.periodKey}`,
@@ -96,7 +96,7 @@ export async function finalizeClosedCareerMonth(previousProfile, currentProfile)
   }
 
   const nextMonth = monthlyReportMonthKey(currentProfile.career_date);
-  const profile = await localGame.entities.PlayerProfile.update(currentProfile.id, {
+  const profile = await localGame.entities['PlayerProfile'].update(currentProfile.id, {
     monthly_report_state: {
       periodKey: nextMonth,
       startSnapshot: createMonthlyCareerSnapshot(currentProfile),

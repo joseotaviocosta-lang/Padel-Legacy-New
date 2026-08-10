@@ -1,9 +1,9 @@
 import React from 'react';
-import { Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
-import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, canHireCoach, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons } from '@/lib/coaches';
+import { Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain, AlertTriangle, ArrowRightLeft } from 'lucide-react';
+import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, evaluateCoachForCareer, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons } from '@/lib/coaches';
 import { ModalShell } from '@/components/design-system';
 
-export default function CoachDetail({ coach, profile, onHire, onFire, onClose, isHired }) {
+export default function CoachDetail({ coach, profile, evaluation: providedEvaluation, currentCoach, onHire, onFire, onClose, isHired }) {
   if (!coach) return null;
 
   const tier = COACH_TIERS[coach.tier] || COACH_TIERS.regional;
@@ -11,20 +11,30 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
   const effects = getCoachEffects(coach, profile);
   const competencies = getCoachCompetencies(coach);
   const compatibilityReasons = getCoachCompatibilityReasons(coach, profile);
-  const hireCheck = canHireCoach(coach, profile);
+  const evaluation = providedEvaluation || evaluateCoachForCareer(coach, profile);
+  const hireCheck = evaluation.availability;
   const affinity = calculateAffinity(coach, profile);
   const impact = getCoachImpactSummary(coach, profile);
   const specialtyInfo = COACH_SPECIALTY_INFO[coach.specialty];
 
   return (
-    <ModalShell open={Boolean(coach)} onClose={onClose} title={coach.name} description={`${tier.label} · ${coach.specialty}`} size="sm" footer={isHired ? (
+    <ModalShell open={Boolean(coach)} onClose={onClose} title={coach.name} description={`${tier.label} · ${specialtyInfo?.label || coach.specialty}`} size="sm" footer={isHired ? (
       <button onClick={onFire} className="w-full rounded-xl bg-red-500/15 py-3 text-sm font-bold text-red-400 hover:bg-red-500/25">Demitir treinador</button>
     ) : (
       <button disabled={!hireCheck.allowed} onClick={onHire} className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold ${hireCheck.allowed ? 'bg-primary text-primary-foreground hover:opacity-90' : 'cursor-not-allowed bg-secondary/50 text-muted-foreground'}`}>
-        {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar · {coach.market_salary || coach.monthly_cost} / mês{(coach.market_signing_bonus ?? coach.sign_on_bonus) > 0 ? ` + ${coach.market_signing_bonus ?? coach.sign_on_bonus} de assinatura` : ''}</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
+        {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar · {evaluation.salary} / mês{evaluation.signingCost > 0 ? ` + ${evaluation.signingCost} de assinatura` : ''}</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
       </button>
     )}>
       <div className="space-y-3">
+          <div className={`rounded-xl border p-3 ${isHired || hireCheck.allowed ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-amber-500/25 bg-amber-500/5'}`}>
+            <p className={`flex items-center gap-1.5 text-xs font-black ${isHired || hireCheck.allowed ? 'text-emerald-400' : 'text-amber-400'}`}>
+              {isHired || hireCheck.allowed ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
+              {isHired ? 'Técnico principal ativo' : hireCheck.allowed ? 'Pode ser contratado agora' : 'Contratação bloqueada'}
+            </p>
+            {!isHired && !hireCheck.allowed && <div className="mt-2 space-y-1">{hireCheck.reasons.map((reason) => <p key={reason} className="text-[10px] text-muted-foreground">• {reason}</p>)}</div>}
+            {!isHired && hireCheck.allowed && evaluation.recommendationReason && <p className="mt-1 text-[10px] text-muted-foreground">{evaluation.recommendationReason}</p>}
+            {isHired && <p className="mt-1 text-[10px] text-muted-foreground">Contrato atual da dupla; sua disponibilidade no mercado não interfere no vínculo vigente.</p>}
+          </div>
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -59,6 +69,10 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
             </div>
             {compatibilityReasons.length > 0 && <div className="mt-3 rounded-lg bg-primary/5 p-2"><p className="text-[9px] font-bold uppercase text-primary">Por que combina com sua dupla</p>{compatibilityReasons.map(item => <p key={item} className="text-[10px] text-muted-foreground mt-1">• {item}</p>)}</div>}
           </div>
+
+          {currentCoach && currentCoach.id !== coach.id && (
+            <CoachComparison candidate={coach} current={currentCoach} candidateSalary={evaluation.salary} currentSalary={profile?.coach_paid_by_club ? 0 : profile?.coach_monthly_salary} />
+          )}
 
           {/* Philosophy */}
           <div className="glass rounded-xl p-3 mb-3 border border-primary/20">
@@ -186,10 +200,36 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
                 </div>
               </div>
             )}
+            {hireCheck.affordability?.salaryShare !== null && (
+              <div className={`mt-2 flex items-start gap-2 rounded-lg p-2 ${hireCheck.affordability.salaryShare >= 30 ? 'bg-amber-500/10 text-amber-300' : 'bg-emerald-500/10 text-emerald-300'}`}>
+                {hireCheck.affordability.salaryShare >= 30 && <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
+                <p className="text-[10px]">Este salário representa {hireCheck.affordability.salaryShare}% da sua última receita mensal. Isso é um alerta de planejamento, não um bloqueio.</p>
+              </div>
+            )}
           </div>
 
       </div>
     </ModalShell>
+  );
+}
+
+function CoachComparison({ candidate, current, candidateSalary, currentSalary }) {
+  const next = getCoachCompetencies(candidate);
+  const active = getCoachCompetencies(current);
+  const rows = [
+    ['Técnica', 'technical'], ['Tática', 'tactical'], ['Mental', 'mental'], ['Físico', 'physical'], ['Dupla', 'partnership'],
+  ];
+  return (
+    <div className="glass rounded-xl border border-primary/20 p-3">
+      <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide text-primary"><ArrowRightLeft className="h-3.5 w-3.5" /> Comparação com {current.name}</p>
+      <div className="mt-2 divide-y divide-border/35">
+        {rows.map(([label, key]) => {
+          const delta = Number(next[key] || 0) - Number(active[key] || 0);
+          return <div key={key} className="grid grid-cols-[1fr_auto_auto] items-center gap-2 py-1.5 text-[10px]"><span className="text-muted-foreground">{label}</span><strong>{next[key]}</strong><span className={`w-9 text-right font-bold ${delta > 0 ? 'text-emerald-400' : delta < 0 ? 'text-red-400' : 'text-muted-foreground'}`}>{delta > 0 ? `+${delta}` : delta}</span></div>;
+        })}
+        <div className="grid grid-cols-[1fr_auto_auto] items-center gap-2 py-1.5 text-[10px]"><span className="text-muted-foreground">Salário/mês</span><strong>{candidateSalary}</strong><span className="w-9 text-right font-bold text-muted-foreground">vs {Math.max(0, Number(currentSalary) || 0)}</span></div>
+      </div>
+    </div>
   );
 }
 

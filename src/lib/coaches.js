@@ -871,24 +871,104 @@ export function getCoachSpecializationMatch(coach, profile) {
   return matches;
 }
 
-export function canHireCoach(coach, profile) {
-  if (!coach || !profile) return { allowed: false, reason: 'Dados insuficientes' };
+const COACH_CAREER_LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
-  const levels = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
-  const playerLevelIdx = levels.indexOf(profile.level || 'Iniciante');
-  const minLevelIdx = levels.indexOf(coach.demands?.min_level || 'Iniciante');
+function coachSalary(coach) { return Math.max(1, Number(coach?.market_salary ?? coach?.monthly_cost ?? coach?.monthly_salary) || 1); }
+function coachSigningCost(coach) { return Math.max(0, Number(coach?.market_signing_bonus ?? coach?.sign_on_bonus) || 0); }
 
-  if (playerLevelIdx < minLevelIdx) {
-    return { allowed: false, reason: `Exige nível ${coach.demands.min_level}` };
-  }
+/** Fonte única de verdade para descoberta e contratação. */
+export function getCoachAvailability(coach, profile, { monthlyIncome = null } = {}) {
+  if (!coach || !profile) return { available: false, allowed: false, reasons: ['Dados insuficientes'], reason: 'Dados insuficientes', affordability: null };
+  const reasons = [];
+  const demands = coach.demands || {};
+  const playerLevelIdx = Math.max(0, COACH_CAREER_LEVELS.indexOf(profile.level || 'Iniciante'));
+  const minLevel = demands.min_level || 'Iniciante';
+  const minLevelIdx = Math.max(0, COACH_CAREER_LEVELS.indexOf(minLevel));
+  const coins = Math.max(0, Number(profile.coins) || 0);
+  const salary = coachSalary(coach);
+  const signingCost = coachSigningCost(coach);
+  const reputation = Math.max(0, Number(profile.reputation ?? ((Number(profile.xp) || 0) / 500)) || 0);
+  const ranking = Number(profile.ranking_position) || null;
+  const clubLevel = Math.max(0, Number(profile.club_level ?? profile.training_center_level) || 0);
 
-  const coins = Number(profile.coins) || 0;
-  const signingCost = Math.max(0, Number(coach.market_signing_bonus ?? coach.sign_on_bonus) || 0);
-  if (coins < signingCost) {
-    return { allowed: false, reason: `Precisa de ${signingCost} moedas para o bônus de assinatura` };
-  }
+  if (playerLevelIdx < minLevelIdx) reasons.push(`Seu nível precisa ser ${minLevel} ou superior.`);
+  if (Number(demands.min_reputation) > reputation) reasons.push(`Exige reputação ${Number(demands.min_reputation)}; você possui ${Math.floor(reputation)}.`);
+  if (Number(demands.min_club_level) > clubLevel) reasons.push(`Exige clube nível ${Number(demands.min_club_level)}.`);
+  const requiredRanking = Number(demands.max_ranking ?? demands.ranking_requirement ?? demands.min_ranking);
+  if (requiredRanking > 0 && (!ranking || ranking > requiredRanking)) reasons.push(`Seu ranking precisa estar no Top ${requiredRanking}.`);
+  if (Array.isArray(demands.allowed_regions) && demands.allowed_regions.length && !demands.allowed_regions.includes(profile.region || profile.country)) reasons.push(`Disponível apenas em ${demands.allowed_regions.join(', ')}.`);
+  if (coach.market_available === false || coach.is_available === false) reasons.push('Fora do mercado neste mês.');
+  if (coins < signingCost) reasons.push(`Precisa de ${signingCost.toLocaleString('pt-BR')} moedas para o bônus de assinatura.`);
 
-  return { allowed: true };
+  const resolvedIncome = Number.isFinite(Number(monthlyIncome)) && Number(monthlyIncome) > 0 ? Number(monthlyIncome) : null;
+  const salaryShare = resolvedIncome ? Math.round((salary / resolvedIncome) * 100) : null;
+  const affordability = {
+    coins, salary, signingCost, canPaySigning: coins >= signingCost,
+    withinBudget: coins >= signingCost + salary,
+    monthlyIncome: resolvedIncome, salaryShare,
+    risk: salaryShare !== null ? (salaryShare >= 50 ? 'high' : salaryShare >= 30 ? 'medium' : 'low') : (salary > Math.max(1, coins) * 0.35 ? 'medium' : 'low'),
+  };
+  return { available: reasons.length === 0, allowed: reasons.length === 0, reasons, reason: reasons[0] || null, affordability };
+}
+
+export function canHireCoach(coach, profile, context = {}) {
+  const availability = getCoachAvailability(coach, profile, context);
+  return { allowed: availability.available, reason: availability.reason, reasons: availability.reasons, affordability: availability.affordability };
+}
+
+function coachRecommendationReason(coach, profile, availability, affinity) {
+  if (!availability.available) return availability.reason;
+  const compatibility = getCoachCompatibilityReasons(coach, profile);
+  if (compatibility[0]) return `${compatibility[0][0].toUpperCase()}${compatibility[0].slice(1)}.`;
+  if (coach.tier === 'iniciante') return 'Boa opção para desenvolver a base da carreira com custo controlado.';
+  if (affinity >= 70) return 'Filosofia e métodos combinam com o momento atual do atleta.';
+  return 'Qualidade compatível com seu nível e seu orçamento atual.';
+}
+
+export function evaluateCoachForCareer(coach, profile, context = {}) {
+  const availability = getCoachAvailability(coach, profile, context);
+  const affinity = calculateAffinity(coach, profile);
+  const salary = availability.affordability?.salary || coachSalary(coach);
+  const overall = Math.max(1, Number(coach?.overall ?? coach?.reputation) || 1);
+  const costBenefit = Math.round((overall * 10000) / Math.max(100, salary));
+  const tierFit = coach?.tier === 'iniciante' && (profile?.level || 'Iniciante') === 'Iniciante' ? 12 : 0;
+  const budgetFit = availability.affordability?.withinBudget ? 10 : 0;
+  const recommendationScore = availability.available ? Math.round(affinity * 0.45 + overall * 0.35 + Math.min(20, costBenefit / 3) + tierFit + budgetFit) : -1000;
+  return { coach, availability, affinity, overall, salary, signingCost: availability.affordability?.signingCost || 0, costBenefit, recommendationScore, recommendationReason: coachRecommendationReason(coach, profile, availability, affinity), recommended: false, bestValue: false };
+}
+
+export function buildCoachDiscovery(coaches, profile, context = {}) {
+  const evaluated = (coaches || []).map((coach) => evaluateCoachForCareer(coach, profile, context));
+  const available = evaluated.filter((item) => item.availability.available).sort((a, b) => b.recommendationScore - a.recommendationScore || b.overall - a.overall || a.salary - b.salary);
+  const recommendedIds = new Set(available.slice(0, 5).map((item) => item.coach.id));
+  const valueIds = new Set([...available].sort((a, b) => b.costBenefit - a.costBenefit || b.overall - a.overall).slice(0, 3).map((item) => item.coach.id));
+  return evaluated.map((item) => ({ ...item, recommended: recommendedIds.has(item.coach.id), bestValue: valueIds.has(item.coach.id) }));
+}
+
+export function filterCoachDiscovery(items, { status = 'all', specialty = 'all', search = '' } = {}) {
+  const term = String(search || '').trim().toLocaleLowerCase('pt-BR');
+  return (items || []).filter((item) => {
+    if (status === 'available' && !item.availability.available) return false;
+    if (status === 'recommended' && !item.recommended) return false;
+    if (status === 'budget' && (!item.availability.available || !item.availability.affordability?.withinBudget)) return false;
+    if (status === 'blocked' && item.availability.available) return false;
+    if (specialty !== 'all' && item.coach.specialty !== specialty) return false;
+    if (term && ![item.coach.name, item.coach.city, item.coach.nationality, item.coach.specialty, COACH_SPECIALTY_INFO[item.coach.specialty]?.label, ...(item.coach.specializations || [])].some((value) => String(value || '').toLocaleLowerCase('pt-BR').includes(term))) return false;
+    return true;
+  });
+}
+
+export function sortCoachDiscovery(items, order = 'recommendation') {
+  const rows = [...(items || [])];
+  if (order === 'salary') return rows.sort((a, b) => a.salary - b.salary || b.overall - a.overall);
+  if (order === 'quality') return rows.sort((a, b) => b.overall - a.overall || a.salary - b.salary);
+  if (order === 'value') return rows.sort((a, b) => b.costBenefit - a.costBenefit || b.overall - a.overall);
+  if (order === 'name') return rows.sort((a, b) => String(a.coach.name).localeCompare(String(b.coach.name), 'pt-BR'));
+  return rows.sort((a, b) => Number(b.availability.available) - Number(a.availability.available) || Number(b.recommended) - Number(a.recommended) || b.recommendationScore - a.recommendationScore || a.salary - b.salary);
+}
+
+export function getDefaultCoachDiscoveryFilter(profile) {
+  return profile?.coach_id && profile?.coach_paid_by_club === false ? 'recommended' : 'available';
 }
 
 export function getCoachEffects(coach, profile) {
