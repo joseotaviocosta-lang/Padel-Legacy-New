@@ -1,6 +1,9 @@
 /**
  * Coordena uma operação assíncrona global com uma única Promise em voo.
  * A liberação acontece no finally da operação real, em sucesso ou erro.
+ * @template T
+ * @param {(...args: any[]) => Promise<T> | T} execute
+ * @param {{ onStateChange?: ((change: { previous: boolean, next: boolean, source: string }) => void) | null, source?: string }} [options]
  */
 export function createSingleFlightCoordinator(execute, { onStateChange = null, source = 'SingleFlight' } = {}) {
   let activeRequest = null;

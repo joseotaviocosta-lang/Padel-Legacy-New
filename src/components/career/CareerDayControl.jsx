@@ -14,7 +14,6 @@ export default function CareerDayControl({ profile = null, compact = false, clas
 
   async function handleAdvance() {
     if (!profile?.id || processing) return;
-    if (import.meta.env.DEV) console.debug('[GlobalAdvance] click', { source: 'CareerDayControl', profileId: profile.id, careerDate: profile.career_date });
     try {
       await advanceCareerDayOnce(profile);
     } catch (error) {

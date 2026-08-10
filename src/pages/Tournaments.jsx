@@ -54,7 +54,7 @@ function prepareTournamentList(items) {
 }
 
 export default function Tournaments() {
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const openedTournamentRef = useRef(null);
   const [tournaments, setTournaments] = useState([]);
   const [season, setSeason] = useState(null);
@@ -264,6 +264,15 @@ export default function Tournaments() {
     if (result.success) await handleRegistered(result.profile);
   }
 
+  function clearTournamentDeepLink() {
+    openedTournamentRef.current = null;
+    if (!searchParams.has('tournament') && !searchParams.has('mode')) return;
+    const next = new URLSearchParams(searchParams);
+    next.delete('tournament');
+    next.delete('mode');
+    setSearchParams(next, { replace: true });
+  }
+
   return (
     <Page width="wide">
       <PageContent>
@@ -430,7 +439,7 @@ export default function Tournaments() {
         <TournamentModal
           tournament={activeTournament}
           profile={profile}
-          onClose={() => setActiveTournament(null)}
+          onClose={() => { setActiveTournament(null); clearTournamentDeepLink(); }}
           onProfileUpdate={setProfile}
           onComplete={refreshProfile}
         />
@@ -444,17 +453,20 @@ export default function Tournaments() {
           registration={registrationRecords.get(detailsTournament.id) || null}
           activeRun={activeRunEvents.get(detailsTournament.id) || null}
           canRegister={canRegisterForTournament(detailsTournament)}
-          onClose={() => setDetailsTournament(null)}
+          onClose={() => { setDetailsTournament(null); clearTournamentDeepLink(); }}
           onRegister={() => {
             setDetailsTournament(null);
+            clearTournamentDeepLink();
             setRegistrationTournament(detailsTournament);
           }}
           onContinue={() => {
             setDetailsTournament(null);
+            clearTournamentDeepLink();
             setActiveTournament(detailsTournament);
           }}
           onViewBracket={() => {
             setDetailsTournament(null);
+            clearTournamentDeepLink();
             setBracketTournament(detailsTournament);
           }}
         />

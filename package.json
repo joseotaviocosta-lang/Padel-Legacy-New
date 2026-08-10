@@ -115,6 +115,8 @@
     "test:viewport-overlays-rc1": "node scripts/test-viewport-overlays-rc1.mjs",
     "test:global-header-overlay": "node scripts/test-global-header-overlay-rc.mjs",
     "test:notification-deep-links": "node scripts/test-notification-deep-links-rc.mjs",
+    "test:tournament-notification-deeplink": "node scripts/test-tournament-notification-deeplink-rc.mjs",
+    "test:global-advance-release": "node scripts/test-global-advance-release-rc.mjs",
     "test:monthly-career-report": "node scripts/test-monthly-career-report-rc.mjs",
     "test:coach-discovery": "node scripts/test-coach-discovery-rc.mjs",
     "test:match-finalization-performance": "node scripts/benchmark-match-finalization-rc.mjs",

@@ -6,6 +6,7 @@ const read = (path) => fs.readFileSync(new URL(`../${path}`, import.meta.url), '
 const layout = read('src/components/AppLayout.jsx');
 const control = read('src/components/career/CareerDayControl.jsx');
 const coordinator = read('src/game-core/dayAdvanceCoordinator.js');
+const controller = read('src/game-core/dayAdvanceController.js');
 const lifecycle = read('src/game-core/calendarLifecycle.js');
 const calendarPage = read('src/pages/CalendarPage.jsx');
 const trainingPage = read('src/pages/Training.jsx');
@@ -22,8 +23,8 @@ const checks = [
   ['data derivada do perfil já carregado', control.includes('profile?.career_date') && !control.includes('localGame')],
   ['locale pt-BR centralizado', read('src/lib/careerDatePresentation.js').includes("Intl.DateTimeFormat('pt-BR'")],
   ['ação Avançar visível', control.includes("'Avançar'") && !control.includes('+1 DIA')],
-  ['coordenador reutiliza a porta oficial', coordinator.includes("import { advanceCareerDay } from './calendarLifecycle'") && coordinator.includes('await advanceCareerDay(profile)')],
-  ['single-flight impede processamento duplicado', coordinator.includes('createSingleFlightCoordinator')],
+  ['coordenador reutiliza a porta oficial', coordinator.includes("import { advanceCareerDay } from './calendarLifecycle'") && coordinator.includes('advanceCareerDay(profile, { deferGameState: true, deferGlobalProcessing: true })')],
+  ['single-flight impede processamento duplicado', controller.includes('createSingleFlightCoordinator')],
   ['estado sempre limpo após sucesso ou erro', read('src/game-core/singleFlightCoordinator.js').includes('.finally(() =>')],
   ['feedback de erro e desbloqueio preservados', control.includes("variant: 'destructive'") && control.includes('subscribeCareerDayAdvance')],
   ['bloqueios oficiais permanecem no fluxo', lifecycle.includes('advanceDay(currentProfile') && lifecycle.includes('processGameStateDay')],

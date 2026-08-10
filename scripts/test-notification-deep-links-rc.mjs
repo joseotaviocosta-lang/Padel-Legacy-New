@@ -20,7 +20,7 @@ const pkg = JSON.parse(read('package.json'));
 
 const cases = [
   [{ id: 'n1', related_entity_type: 'PressInterview', related_entity_id: 'interview-9', metadata: { interview_source_id: 'match-4' } }, '/press?tab=interviews&interview=interview-9&source=match-4'],
-  [{ id: 'n2', related_entity_type: 'Tournament', related_entity_id: 'tour-2' }, '/tournaments?tournament=tour-2'],
+  [{ id: 'n2', related_entity_type: 'Tournament', related_entity_id: 'tour-2' }, '/tournaments?tournament=tour-2&mode=details'],
   [{ id: 'n3', message_type: 'proposta_parceria', related_entity_id: 'offer-3' }, '/partners?view=offers&offer=offer-3'],
   [{ id: 'n4', message_type: 'mission_completed', related_entity_id: 'mission-7' }, '/game/missions?mission=mission-7'],
   [{ id: 'n5', message_type: 'injury_report', related_entity_id: 'injury-1' }, '/game/calendar?focus=recovery&injury=injury-1'],

@@ -1,6 +1,7 @@
 import { getPendingInterviews } from '@/lib/pressData.js';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerMemory, getCareerAgent } from '@/lib/careerMemory.js';
+import { getTournamentReminderMilestone, tournamentReminderContextKey } from '@/lib/tournamentNotifications.js';
 
 export const COMMUNICATION_CATEGORIES = [
   { id: 'all', label: 'Todas' },
@@ -34,17 +35,6 @@ export function normalizeCareerMessage(message = {}) {
 
 export function isCareerMessageUnread(message = {}) {
   return !normalizeCareerMessage(message).is_read;
-}
-
-export const TOURNAMENT_REMINDER_MILESTONES = Object.freeze([7, 3, 1, 0]);
-
-export function getTournamentReminderMilestone(daysUntilTournament) {
-  const days = Number(daysUntilTournament);
-  return TOURNAMENT_REMINDER_MILESTONES.includes(days) ? days : null;
-}
-
-export function tournamentReminderContextKey(tournamentId, milestone) {
-  return `federation-tournament:${tournamentId}:upcoming:${milestone}-days`;
 }
 
 export async function listCareerCommunications(profileId, limit = 120) {
@@ -82,7 +72,9 @@ export async function ensureContextualCareerCommunications(profile, context = {}
 
   const createOnce = async (contextKey, payload) => {
     if (!contextKey || existingKeys.has(contextKey)) return null;
-    const row = await localGame.entities.CareerMessage.create({
+    const stableId = `career-message-${profile.id}-${contextKey}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
+    const row = await localGame.entities.CareerMessage.upsert(stableId, {
+      id: stableId,
       profile_id: profile.id,
       message_type: payload.message_type || 'mensagem',
       notification_type: payload.notification_type,

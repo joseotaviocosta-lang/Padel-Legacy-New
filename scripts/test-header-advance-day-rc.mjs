@@ -104,14 +104,16 @@ assert.deepEqual(transitions.slice(0, 3), [false, true, false], 'assinatura deve
 
 const control = read('src/components/career/CareerDayControl.jsx');
 const dayCoordinator = read('src/game-core/dayAdvanceCoordinator.js');
+const dayController = read('src/game-core/dayAdvanceController.js');
 const gameState = read('src/game-core/gameStateLifecycle.js');
 const calendar = read('src/game-core/calendarLifecycle.js');
 
 const sourceChecks = [
   ['botão usa o estado operacional central', control.includes('subscribeCareerDayAdvance(setProcessing)')],
   ['botão normal volta para Avançar', control.includes("'Avançar'") && control.includes('processing ?')],
-  ['header não cria outro advanceDay', dayCoordinator.includes('await advanceCareerDay(profile)')],
-  ['coordenador é single-flight', dayCoordinator.includes('createSingleFlightCoordinator')],
+  ['header reutiliza advanceCareerDay com core explícito', dayCoordinator.includes('advanceCareerDay(profile, { deferGameState: true, deferGlobalProcessing: true })')],
+  ['pós-processamento não alimenta o lock do botão', dayController.includes('queueMicrotask(() => scheduleSecondary(descriptor))')],
+  ['coordenador é single-flight', dayController.includes('createSingleFlightCoordinator')],
   ['relatório final é compactado', gameState.includes('game_state_last_report: persistedReport')],
   ['save antigo contaminado é reparado', calendar.includes('compacted.changed') && calendar.includes('game_state_last_report: compacted.report')],
   ['sem timeout artificial', !control.includes('setTimeout') && !dayCoordinator.includes('setTimeout')],
@@ -127,4 +129,3 @@ console.log('HeaderAdvanceDayRCTest: PASS');
 console.log('✓ 10 avanços consecutivos: 11/02/2026 → 21/02/2026');
 console.log('✓ sucesso, erro, clique duplo, eventos especiais e torneio liberam processing');
 console.log('✓ relatório do GameState permanece compacto e sem snapshots recursivos do perfil');
-
