@@ -1,4 +1,4 @@
-export const TUTORIAL_VERSION = 7;
+export const TUTORIAL_VERSION = 8;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,
@@ -42,6 +42,11 @@ export const TUTORIAL_STEPS = [
     actionLabel: 'Escolher mão e lado',
     explanation: 'Defina se o atleta é destro ou canhoto e em qual lado da quadra prefere atuar.',
     whyItMatters: 'Essas escolhas influenciam posicionamento e combinações de dupla, mas não bloqueiam estilos.',
+  }),
+  step('difficulty-selected', 'choose_career_difficulty', 'Escolha a dificuldade da carreira', '/game/missions', 'Identidade e carreira', 'perform_action', {
+    actionLabel: 'Escolher dificuldade',
+    explanation: 'A dificuldade muda o ritmo da evolução — mais rápido no Fácil, tradicional no Difícil — sem alterar o teto final de atributos nem o equilíbrio das partidas.',
+    whyItMatters: 'Você pode jogar no seu ritmo preferido; a dificuldade pode ser trocada depois no perfil.',
   }),
   step('style-selected', 'choose_play_style', 'Escolha o estilo de jogo', '/game/missions', 'Identidade e carreira', 'perform_action', {
     actionLabel: 'Escolher estilo',

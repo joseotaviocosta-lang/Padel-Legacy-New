@@ -365,6 +365,7 @@ export async function ensureMyProfile(user) {
       defense: 10, agility: 10, strategy: 10, emotional_control: 10,
       court_side: null,
       play_style: null,
+      career_difficulty: null,
       onboarding_completed: false,
       onboarding_stage: 'welcome',
       unspent_attribute_points: 0,

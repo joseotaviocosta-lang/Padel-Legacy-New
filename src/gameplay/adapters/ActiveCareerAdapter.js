@@ -157,6 +157,9 @@ export class ActiveCareerAdapter {
         career.metadata.court_side = updates.court_side;
         career.metadata.side_selected = Boolean(updates.court_side);
       }
+      if (Object.prototype.hasOwnProperty.call(updates, 'career_difficulty')) {
+        career.metadata.career_difficulty = updates.career_difficulty;
+      }
       if (Object.prototype.hasOwnProperty.call(updates, 'sport_name')) {
         career.metadata.player_name = String(updates.sport_name || '').trim() || career.metadata.player_name;
       }

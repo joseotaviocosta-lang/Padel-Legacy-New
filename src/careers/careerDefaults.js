@@ -57,6 +57,7 @@ export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName
       player_name: normalizedPlayerName,
       court_side: null,
       play_style: null,
+      career_difficulty: null,
       career_date: careerDate,
       ranking_position: null,
       season: new Date().getFullYear(),

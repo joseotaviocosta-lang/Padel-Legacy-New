@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { STAFF_MARKET, STAFF_ROLE_DEFINITIONS, createStaffContract, getStaffSlots, normalizeStaffMember } from '@/lib/staffCatalog';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 
@@ -151,6 +152,17 @@ export async function processMonthlyFinances(profile) {
   expenses.coach = coachSalary;
   expenses.club = clubFee;
   expenses.total += coachSalary + clubFee;
+  // Custos mensais (equipe técnica, treinador, clube) ficam mais leves em
+  // dificuldades mais fáceis, permitindo contratar equipe cedo sem tornar a
+  // economia infinita (§12 do plano de dificuldade).
+  const costMultiplier = getDifficultyModifier(profile, 'costMultiplier');
+  if (costMultiplier !== 1) {
+    expenses.staff = Math.round(expenses.staff * costMultiplier);
+    expenses.maintenance = Math.round(expenses.maintenance * costMultiplier);
+    expenses.coach = Math.round(expenses.coach * costMultiplier);
+    expenses.club = Math.round(expenses.club * costMultiplier);
+    expenses.total = Math.round(expenses.total * costMultiplier);
+  }
   const net = income.total - expenses.total;
   const newBalance = (profile.coins || 0) + net;
 

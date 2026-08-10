@@ -41,6 +41,8 @@
     "test:beta": "node scripts/test-beta-readiness.mjs",
     "test:tutorial-engine": "node scripts/test-tutorial-engine-v2.mjs",
     "test:career-pace": "node scripts/test-career-pace-v17.mjs",
+    "test:career-difficulty": "node scripts/test-career-difficulty.mjs",
+    "test:career-difficulty-pace": "node scripts/test-career-difficulty-pace.mjs",
     "test:injuries": "node scripts/test-injury-balance-v21.mjs",
     "test:living-world": "node scripts/test-living-world-v23.mjs",
     "test:calendar-advance": "node scripts/test-calendar-advance-v24.mjs",

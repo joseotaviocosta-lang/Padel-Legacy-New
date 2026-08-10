@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { calculateDailyRecovery } from '@/gameplay/worldTour/PhysicalConditionManager.js';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 
 const INJURIES = [
   { type: 'Sobrecarga muscular', severity: 'leve', days: [2, 4], risk: 1.0 },
@@ -106,7 +107,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
   const energyRisk = Math.max(0, 45 - energy) * 0.0015;
   const conditionProtection = Math.max(0, condition - 60) * 0.00035;
   const medical = (await import('@/gameplay/worldTour/MedicalCenterManager.js')).getMedicalModifiers(profile);
-  const risk = Math.min(0.18, Math.max(0.006, (baseRisk + fatigueRisk + energyRisk - conditionProtection) * (1 - medical.injuryReduction) + Number(profile?.early_return_relapse_risk || 0)));
+  const risk = Math.min(0.18, Math.max(0.006, (baseRisk + fatigueRisk + energyRisk - conditionProtection) * (1 - medical.injuryReduction) * getDifficultyModifier(profile, 'injuryRiskMultiplier') + Number(profile?.early_return_relapse_risk || 0)));
   const roll = hash(`${profile.id}:${currentDate}:injury`);
 
   if (roll >= risk) {

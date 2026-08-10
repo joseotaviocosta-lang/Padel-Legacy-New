@@ -8,6 +8,7 @@ import { LoadingScreen } from '@/components/padel/ui';
 import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge, Surface } from '@/components/design-system';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
+import { CAREER_DIFFICULTY_OPTIONS, DEFAULT_NEW_CAREER_DIFFICULTY } from '@/lib/careerDifficultyLabels.js';
 import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { completeTutorialStep, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
@@ -86,6 +87,7 @@ export default function Missions() {
   const [actionError, setActionError] = useState('');
   const [draftHandedness, setDraftHandedness] = useState('right');
   const [draftSide, setDraftSide] = useState('');
+  const [draftDifficulty, setDraftDifficulty] = useState(DEFAULT_NEW_CAREER_DIFFICULTY);
   const [draftStyle, setDraftStyle] = useState('');
 
   useEffect(() => { load(); }, []);
@@ -156,12 +158,34 @@ export default function Missions() {
         onboarding_stage: 'style-selected',
       });
       await incrementMissionProgress(updated.id, 'choose_court_side', 1, updated.career_date);
-      await localGame.entities.PlayerProfile.update(updated.id, { onboarding_stage: 'style' });
-      setActionFeedback('Lado salvo. Próximo passo: escolha seu estilo.');
+      await localGame.entities.PlayerProfile.update(updated.id, { onboarding_stage: 'difficulty' });
+      setActionFeedback('Lado salvo. Próximo passo: escolha a dificuldade da carreira.');
       await load();
     } catch (error) {
       console.error('[tutorial] Falha ao salvar lado.', error);
       setActionError('Não foi possível salvar o lado. Tente novamente.');
+      setActionFeedback('');
+    } finally {
+      setSavingChoice(false);
+    }
+  }
+
+  async function chooseDifficulty(difficultyId) {
+    if (!CAREER_DIFFICULTY_OPTIONS.some(option => option.id === difficultyId) || !profile?.id) return;
+    if (savingChoice) return;
+    setSavingChoice(true);
+    setActionError(''); setActionFeedback('Salvando dificuldade...');
+    try {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+        career_difficulty: difficultyId,
+        onboarding_stage: 'style',
+      });
+      await incrementMissionProgress(updated.id, 'choose_career_difficulty', 1, updated.career_date);
+      setActionFeedback('Dificuldade salva. Próximo passo: escolha seu estilo.');
+      await load();
+    } catch (error) {
+      console.error('[tutorial] Falha ao salvar dificuldade.', error);
+      setActionError('Não foi possível salvar a dificuldade. Tente novamente.');
       setActionFeedback('');
     } finally {
       setSavingChoice(false);
@@ -191,7 +215,7 @@ export default function Missions() {
     const side = profile?.court_side;
     if (!side || !PLAY_STYLE_OPTIONS.some(option => option.id === style)) return;
     if (savingChoice) return;
-    const build = buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: side, playStyle: style });
+    const build = buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: side, playStyle: style, careerDifficultyId: profile.career_difficulty || 'hard' });
     setSavingChoice(true);
     setActionError(''); setActionFeedback('Salvando estilo...');
     try {
@@ -254,11 +278,11 @@ export default function Missions() {
   const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial' && m.is_active !== false).sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
   const nextTutorial = tutorialStatus === 'in_progress' ? resolveTutorialMission(tutorialStep, tutorialMissions) : null;
   const tutorialDone = getTutorialProgress(profile?.tutorial_onboarding).completed;
-  const inlineAction = ['set_player_name', 'choose_court_side', 'choose_play_style'].includes(nextTutorial?.objective_type);
+  const inlineAction = ['set_player_name', 'choose_court_side', 'choose_career_difficulty', 'choose_play_style'].includes(nextTutorial?.objective_type);
   const currentStepIndex = TUTORIAL_STEPS.findIndex(step => step.id === tutorialStep?.id);
   const anticipatedCompleted = TUTORIAL_STEPS.filter((step, index) => index > currentStepIndex && profile?.tutorial_onboarding?.completedStepIds?.includes(step.id));
   const buildPreview = draftStyle && profile?.court_side
-    ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle })
+    ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle, careerDifficultyId: profile.career_difficulty || 'hard' })
     : null;
   const currentChapter = tutorialStep?.chapter;
   const categoryPool = missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked:true, sponsorsUnlocked:false }));
@@ -303,6 +327,18 @@ export default function Missions() {
           <fieldset><legend className="text-sm font-black mb-2">1. Mão dominante</legend><div className="grid md:grid-cols-2 gap-3">{DOMINANT_HANDS.map(hand => <button type="button" key={hand.id} disabled={savingChoice} onClick={() => setDraftHandedness(hand.id)} aria-pressed={draftHandedness === hand.id} className={`rounded-2xl border p-4 text-left ${draftHandedness === hand.id ? 'border-primary bg-primary/10' : 'border-border/70'}`}><strong>{hand.label}</strong><p className="mt-1 text-xs text-muted-foreground">{hand.description}</p></button>)}</div></fieldset>
           <fieldset><legend className="text-sm font-black mb-2">2. Lado preferencial</legend><div className="grid md:grid-cols-3 gap-3">{COURT_SIDE_OPTIONS.map(side => <button type="button" key={side.id} disabled={savingChoice} onClick={() => setDraftSide(side.id)} aria-pressed={draftSide === side.id} className={`rounded-2xl border p-4 text-left ${draftSide === side.id ? 'border-primary bg-primary/10' : 'border-border/70'}`}><strong>{side.label}</strong><p className="mt-1 text-xs text-muted-foreground">{side.description}</p></button>)}</div></fieldset>
           <button type="button" disabled={savingChoice || !draftSide} onClick={chooseSide} className="rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Salvando...' : 'Confirmar mão e lado'}</button>
+        </>}
+
+        {nextTutorial?.objective_type === 'choose_career_difficulty' && <>
+          <div><p className="text-xs uppercase tracking-[0.2em] font-bold text-primary">Missão · Dificuldade da carreira</p><h2 className="text-2xl font-black mt-2">Como você quer evoluir?</h2><p className="text-muted-foreground mt-2">A dificuldade muda o ritmo da sua evolução — não deixa as partidas mais fáceis nem altera seu potencial final, só quanto tempo leva para chegar lá. Você pode trocar depois no perfil.</p></div>
+          <div className="grid md:grid-cols-3 gap-3">{CAREER_DIFFICULTY_OPTIONS.map(option => <button type="button" key={option.id} disabled={savingChoice} onClick={() => setDraftDifficulty(option.id)} aria-pressed={draftDifficulty === option.id} className={`rounded-2xl border p-4 text-left relative ${draftDifficulty === option.id ? 'border-primary bg-primary/10' : 'border-border/70'}`}>
+            {option.recommended && <span className="absolute -top-2 right-3 rounded-full bg-primary px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide text-primary-foreground">Recomendado</span>}
+            <strong>{option.label}</strong>
+            <p className="mt-1 text-xs text-muted-foreground">{option.tagline}</p>
+            <p className="mt-2 text-[10px] font-bold text-primary">Auge esperado: {option.expectedPeakSeasons.min}–{option.expectedPeakSeasons.max} temporadas</p>
+            <ul className="mt-2 list-disc pl-4 text-[10px] text-muted-foreground space-y-0.5">{option.bullets.map(bullet => <li key={bullet}>{bullet}</li>)}</ul>
+          </button>)}</div>
+          <button type="button" disabled={savingChoice || !draftDifficulty} onClick={() => chooseDifficulty(draftDifficulty)} className="rounded-xl bg-primary px-5 py-3 font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Salvando...' : 'Confirmar dificuldade'}</button>
         </>}
 
         {nextTutorial?.objective_type === 'choose_play_style' && <>

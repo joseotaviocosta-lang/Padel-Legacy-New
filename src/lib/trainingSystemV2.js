@@ -4,6 +4,7 @@ import {
   TRAINING_GROUPS, TRAINING_GROUP_ORDER, TRAINING_INTENSITIES, TRAINING_FOCUSES,
   getTrainingFocus, getTrainingWeights, migrateTrainingReference,
 } from '@/lib/trainingCatalog';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 export { WEEKDAYS, createGoal, deleteGoal, checkGoalCompletion, getConditionScore, getConditionLabel, getOvertrainingStatus } from '@/lib/trainingSystem';
 
 const COLORS = { court: ['text-cyan-400', 'bg-cyan-500'], physical: ['text-amber-400', 'bg-amber-500'], mental: ['text-green-400', 'bg-green-500'], tactical: ['text-purple-400', 'bg-purple-500'] };
@@ -102,7 +103,8 @@ export function calculateTrainingGainBudget({ profile, training, intensityId = '
           ? Number(profile?.staff_tactical_training_multiplier || 1)
           : 1;
   const staffMultiplier = Math.max(1, Number(profile?.staff_training_gain_multiplier || 1)) * Math.max(1, groupMultiplier);
-  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * development.multiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier;
+  const difficultyMultiplier = getDifficultyModifier(profile, 'trainingGainMultiplier');
+  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * development.multiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier * difficultyMultiplier;
   return { budget: round(Math.max(0.03, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, development, repetitionMultiplier, affinity, coachMultiplier, staffMultiplier, intensity };
 }
 
@@ -119,7 +121,7 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
   const secondSessionMultiplier = (profile?.trainings_today || 0) > 0 ? 1.5 : 1;
   const staffEnergyMultiplier = Math.max(0.72, Math.min(1, Number(profile?.staff_training_energy_multiplier || 1)));
   const energyCost = Math.max(1, Math.round(calculation.intensity.energyCost * secondSessionMultiplier * staffEnergyMultiplier));
-  const fatigueCost = calculation.intensity.fatigueCost + (training.fatigueExtra || 0);
+  const fatigueCost = (calculation.intensity.fatigueCost + (training.fatigueExtra || 0)) * getDifficultyModifier(profile, 'fatigueGainMultiplier');
   const staffInjuryMultiplier = Math.max(0.42, Math.min(1, Number(profile?.staff_injury_risk_multiplier || 1)));
   const fatigue = clamp(profile?.fatigue);
   const energyAfter = Math.max(0, Number(profile?.energy ?? 100) - energyCost);
@@ -130,7 +132,7 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
     : 0.001 + (fatigue - 75) * 0.00014;
   const lowEnergyRisk = energyAfter >= 30 ? 0 : (30 - energyAfter) * 0.00007;
   const secondSessionRisk = (profile?.trainings_today || 0) > 0 ? 0.0004 : 0;
-  const injuryRisk = Math.min(0.022, (calculation.intensity.injuryRisk + fatigueRisk + lowEnergyRisk + secondSessionRisk) * staffInjuryMultiplier);
+  const injuryRisk = Math.min(0.022, (calculation.intensity.injuryRisk + fatigueRisk + lowEnergyRisk + secondSessionRisk) * staffInjuryMultiplier * getDifficultyModifier(profile, 'injuryRiskMultiplier'));
   return { ...calculation, gains: distributeTrainingGain(profile, training, calculation.budget), energyCost, energyAfter: Math.max(0, Number(profile?.energy ?? 100) - energyCost), fatigueCost, duration: Math.round(training.duration * calculation.intensity.durationMult), injuryRisk };
 }
 
@@ -184,9 +186,10 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   const conditionBefore = { energy: Number(profile.energy ?? 100), fatigue: Number(profile.fatigue || 0), morale: Number(profile.morale ?? 70), confidence: Number(profile.confidence ?? 50), form: Number(profile.form ?? 50) };
   const injured = Math.random() < preview.injuryRisk;
   const recoveryDays = injured ? 5 + Math.floor(Math.random() * 7) : 0;
+  const scaledXp = Math.round(training.xp * getDifficultyModifier(profile, 'careerXpMultiplier'));
   Object.assign(updates, {
     attribute_progress: progress,
-    xp: (Number(profile.xp) || 0) + training.xp,
+    xp: (Number(profile.xp) || 0) + scaledXp,
     coins: (Number(profile.coins) || 0) + training.coins,
     trainings_today: doneToday + 1,
     last_training_date: profile.career_date || todayStr(),
@@ -208,7 +211,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     group_id: training.groupId, focus_id: training.focusId, intensity: preview.intensity.id,
     attribute_target: Object.keys(training.primaryAttributes)[0], attribute_gain: preview.budget,
     attribute_gains: appliedGains, progress_before: oldProgress, progress_after: progress,
-    xp_reward: training.xp, coins_reward: training.coins, energy_cost: preview.energyCost, fatigue_cost: preview.fatigueCost,
+    xp_reward: scaledXp, coins_reward: training.coins, energy_cost: preview.energyCost, fatigue_cost: preview.fatigueCost,
     injury_risk: preview.injuryRisk, condition_before: conditionBefore, condition_after: conditionAfter,
     duration_min: preview.duration, date: profile.career_date || todayStr(), partner_id: training.requiresPartner ? profile.partner_id : null,
     coach_id: profile.coach_id || null, training_schema_version: 2,

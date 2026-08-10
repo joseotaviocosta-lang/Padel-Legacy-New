@@ -3,6 +3,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, Trophy, Coins } from 'lucide-react';
 import { ensureMyProfile, careerExperienceSummary, careerExperienceUnlocks, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
 import { PLAY_STYLE_OPTIONS } from '@/lib/initialCareerProfiles.js';
+import { CAREER_DIFFICULTY_OPTIONS, getCareerDifficultyOption } from '@/lib/careerDifficultyLabels.js';
 import LogoutButton from '@/components/LogoutButton';
 import { LevelBadge, AttributeBar } from '@/components/padel/Shared';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
@@ -31,6 +32,7 @@ export default function PlayerProfile() {
           country: p?.country || '',
           city: p?.city || '',
           play_style: p?.play_style || 'Equilibrado',
+          career_difficulty: p?.career_difficulty || 'hard',
           racket: p?.racket || '',
           bio: p?.bio || '',
         });
@@ -70,6 +72,7 @@ export default function PlayerProfile() {
             <StatusBadge tone="brand">Overall {overallRating(profile)}</StatusBadge>
             <StatusBadge tone="info">Experiência {careerExperience.level}/{careerExperience.maxLevel}</StatusBadge>
             <StatusBadge tone={isRetired(profile) ? 'neutral' : 'success'}>{isRetired(profile) ? 'Aposentado' : 'Carreira ativa'}</StatusBadge>
+            <StatusBadge tone="premium">Dificuldade: {getCareerDifficultyOption(profile?.career_difficulty)?.label || 'Difícil'}</StatusBadge>
           </>}
           action={<button onClick={() => editing ? save() : setEditing(true)} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground hover:brightness-110 disabled:opacity-50">{editing ? <><Check className="h-4 w-4" />Salvar perfil</> : <><Edit3 className="h-4 w-4" />Editar perfil</>}</button>}
         />
@@ -109,6 +112,12 @@ export default function PlayerProfile() {
               </select>
             </Field>
             <Field label="Raquete"><input className="padel-input" value={form.racket} onChange={e => setForm({ ...form, racket: e.target.value })} placeholder="Marca / modelo" /></Field>
+            <Field label="Dificuldade da carreira">
+              <select className="padel-input" value={form.career_difficulty} onChange={e => setForm({ ...form, career_difficulty: e.target.value })}>
+                {CAREER_DIFFICULTY_OPTIONS.map(option => <option key={option.id} value={option.id}>{option.label}</option>)}
+              </select>
+              <p className="mt-1 text-[10px] text-amber-300">Alterar dificuldade modifica o ritmo futuro da carreira. Atributos e progresso já conquistados não são alterados.</p>
+            </Field>
           </div>
           <Field label="Bio"><textarea rows={3} className="padel-input resize-none" value={form.bio} onChange={e => setForm({ ...form, bio: e.target.value })} placeholder="Conte sua história no padel..." /></Field>
         </div>

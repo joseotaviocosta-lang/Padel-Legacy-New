@@ -1,4 +1,5 @@
 import { getMedicalModifiers } from './MedicalCenterManager.js';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 const ROUND_LOAD = {
   qualifying: 12,
   first_round: 14,
@@ -52,7 +53,7 @@ export function calculateTournamentMatchLoad({ profile, tournament, roundLabel, 
   const ageLoad = Math.max(0, age - 30) * 0.25;
   const conditionProtection = Math.max(0, (Number(profile?.condition) || 70) - 60) * 0.06;
   const energyCost = Math.round(clamp(base + consecutive + ageLoad - conditionProtection, 8, 32));
-  return { key, energyCost, fatigueGain: Math.round(energyCost * 0.9), consecutiveLoad: consecutive };
+  return { key, energyCost, fatigueGain: Math.round(energyCost * 0.9 * getDifficultyModifier(profile, 'fatigueGainMultiplier')), consecutiveLoad: consecutive };
 }
 export function calculateInjuryRisk(profile, load, won = false) {
   const energyAfter = clamp(profile?.energy, 0, 100);
@@ -68,7 +69,7 @@ export function calculateInjuryRisk(profile, load, won = false) {
   const extraRound = won ? 0.0002 : 0;
   const medical = getMedicalModifiers(profile);
   const relapse = Number(profile?.early_return_relapse_risk || 0);
-  return clamp((base + lowEnergy + highFatigue + loadRisk + extraRound - conditionProtection) * (1 - medical.injuryReduction) + relapse, 0.0005, 0.08);
+  return clamp((base + lowEnergy + highFatigue + loadRisk + extraRound - conditionProtection) * (1 - medical.injuryReduction) * getDifficultyModifier(profile, 'injuryRiskMultiplier') + relapse, 0.0005, 0.08);
 }
 function chooseSeverity(seed, risk) {
   const adjusted = risk > 0.05 ? [58, 34, 8] : risk > 0.025 ? [66, 29, 5] : SEVERITIES.map(x => x.weight);
@@ -119,7 +120,7 @@ export function getCoachPhysicalRecommendation(profile, tournament, roundLabel =
 }
 export function calculateDailyRecovery(profile, { restDay = true } = {}) {
   const medical = getMedicalModifiers(profile);
-  const multiplier = 1 + medical.recoveryBonus;
+  const multiplier = (1 + medical.recoveryBonus) * getDifficultyModifier(profile, 'recoveryMultiplier');
   if (profile?.injury_status === 'lesionado') return { energyGain: Math.round(8 * multiplier), fatigueReduction: Math.round(10 * multiplier), injuryDayReduction: medical.recoveryBonus >= 0.3 ? 2 : 1 };
   const condition = Number(profile?.condition) || 70;
   const gain = restDay ? 10 + Math.floor(condition / 25) : 5;

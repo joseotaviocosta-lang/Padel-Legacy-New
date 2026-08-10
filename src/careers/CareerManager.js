@@ -18,6 +18,7 @@ function createSummaryFromCareer(career) {
     player_name: career.metadata.player_name,
     court_side: career.metadata.court_side,
     play_style: career.metadata.play_style,
+    career_difficulty: career.metadata.career_difficulty,
     career_type: career.career_type,
     career_date: career.metadata.career_date,
     ranking_position: career.metadata.ranking_position,

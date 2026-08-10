@@ -1,0 +1,132 @@
+{
+  "generatedAt": "2026-08-10T20:39:59.448Z",
+  "configuration": {
+    "runs": 15,
+    "seasons": 16,
+    "scenarios": 10,
+    "perDifficulty": 150
+  },
+  "byDifficulty": {
+    "easy": {
+      "difficultyId": "easy",
+      "careers": 150,
+      "peak": {
+        "median": 8,
+        "p25": 6,
+        "p75": 10,
+        "neverPeakedRate": 10.7
+      },
+      "top100Median": 4,
+      "top20Median": 8,
+      "top10Median": 11,
+      "top500Median": 1,
+      "finalOverall": 82.4,
+      "overallCeilingRatio": 0.934,
+      "coins": 373882,
+      "bankruptRate": 0,
+      "stagnationRate": 0,
+      "injuries": 2.7,
+      "avgFatigue": 26.9,
+      "outliers": {
+        "tooSlow": 90,
+        "tooFast": 0,
+        "tooSlowPct": 60,
+        "tooFastPct": 0
+      }
+    },
+    "normal": {
+      "difficultyId": "normal",
+      "careers": 150,
+      "peak": {
+        "median": 9,
+        "p25": 8,
+        "p75": 10,
+        "neverPeakedRate": 15.3
+      },
+      "top100Median": 4,
+      "top20Median": 9,
+      "top10Median": 13,
+      "top500Median": 2,
+      "finalOverall": 80.6,
+      "overallCeilingRatio": 0.914,
+      "coins": 326280,
+      "bankruptRate": 0,
+      "stagnationRate": 0,
+      "injuries": 3.3,
+      "avgFatigue": 36.4,
+      "outliers": {
+        "tooSlow": 44,
+        "tooFast": 0,
+        "tooSlowPct": 29.3,
+        "tooFastPct": 0
+      }
+    },
+    "hard": {
+      "difficultyId": "hard",
+      "careers": 150,
+      "peak": {
+        "median": 10,
+        "p25": 8,
+        "p75": 12,
+        "neverPeakedRate": 22
+      },
+      "top100Median": 4,
+      "top20Median": 10,
+      "top10Median": 15,
+      "top500Median": 1,
+      "finalOverall": 79.2,
+      "overallCeilingRatio": 0.901,
+      "coins": 279628,
+      "bankruptRate": 0,
+      "stagnationRate": 0,
+      "injuries": 3,
+      "avgFatigue": 44.7,
+      "outliers": {
+        "tooSlow": 25,
+        "tooFast": 0,
+        "tooSlowPct": 16.7,
+        "tooFastPct": 0
+      }
+    }
+  },
+  "findings": [
+    {
+      "severity": "high",
+      "code": "PEAK_MEDIAN_OUT_OF_RANGE",
+      "difficultyId": "easy",
+      "value": 8,
+      "target": "2-4"
+    },
+    {
+      "severity": "medium",
+      "code": "TOO_MANY_SLOW_OUTLIERS",
+      "difficultyId": "easy",
+      "value": 60
+    },
+    {
+      "severity": "high",
+      "code": "PEAK_MEDIAN_OUT_OF_RANGE",
+      "difficultyId": "normal",
+      "value": 9,
+      "target": "5-7"
+    },
+    {
+      "severity": "medium",
+      "code": "TOO_MANY_SLOW_OUTLIERS",
+      "difficultyId": "normal",
+      "value": 29.3
+    },
+    {
+      "severity": "medium",
+      "code": "TOO_MANY_SLOW_OUTLIERS",
+      "difficultyId": "hard",
+      "value": 16.7
+    }
+  ],
+  "hardVsNeutral": {
+    "hardPeakMedian": 10,
+    "neutralPeakMedian": 11,
+    "hardFinalOverall": 79.2,
+    "neutralFinalOverall": 78.9
+  }
+}

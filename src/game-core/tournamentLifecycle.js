@@ -15,7 +15,7 @@ function placementLabel(roundsWon, totalRounds, champion) {
 }
 
 export async function prepareTournamentFinalization({ profile, tournament, partner, roundsWon, totalRounds, runId = null, bracketHistory = null, runnerUp = null }) {
-  const rewards = getTournamentRewards(tournament.tier, roundsWon);
+  const rewards = getTournamentRewards(tournament.tier, roundsWon, profile);
   const champion = roundsWon >= totalRounds;
   const finalizationKey = String(runId || `${profile.id}:${tournament.id}:${tournament.start_date || 'edition'}`);
   const processedRuns = Array.isArray(profile.processed_tournament_runs) ? profile.processed_tournament_runs : [];

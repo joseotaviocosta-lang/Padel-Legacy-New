@@ -1,4 +1,4 @@
-import { CAREER_INDEX_SCHEMA_VERSION, CAREER_SAVE_SCHEMA_VERSION, ALLOWED_CAREER_TYPES, ALLOWED_COURT_SIDES, ALLOWED_PLAY_STYLES } from './careerSchema.js';
+import { CAREER_INDEX_SCHEMA_VERSION, CAREER_SAVE_SCHEMA_VERSION, ALLOWED_CAREER_TYPES, ALLOWED_COURT_SIDES, ALLOWED_PLAY_STYLES, ALLOWED_CAREER_DIFFICULTIES } from './careerSchema.js';
 
 function isObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -49,6 +49,7 @@ function validateSummaryItem(summary) {
   if (!isNonEmptyString(summary.player_name)) fail('Resumo de carreira inválido: player_name obrigatório.');
   if (summary.court_side !== null && !ALLOWED_COURT_SIDES.includes(summary.court_side)) fail('Resumo de carreira inválido: court_side inválido.');
   if (summary.play_style !== null && !ALLOWED_PLAY_STYLES.includes(summary.play_style)) fail('Resumo de carreira inválido: play_style inválido.');
+  if (summary.career_difficulty !== null && !ALLOWED_CAREER_DIFFICULTIES.includes(summary.career_difficulty)) fail('Resumo de carreira inválido: career_difficulty inválido.');
   if (!ALLOWED_CAREER_TYPES.includes(summary.career_type)) fail('Resumo de carreira inválido: career_type inválido.');
   if (!isValidIsoDate(summary.career_date)) fail('Resumo de carreira inválido: career_date deve ser uma data ISO.');
   if (summary.ranking_position !== null && typeof summary.ranking_position !== 'number') {
@@ -79,6 +80,7 @@ export function validateCareerData(career) {
   if (!isNonEmptyString(metadata.player_name)) fail('metadata.player_name obrigatório.');
   if (metadata.court_side !== null && !ALLOWED_COURT_SIDES.includes(metadata.court_side)) fail('metadata.court_side inválido.');
   if (metadata.play_style !== null && !ALLOWED_PLAY_STYLES.includes(metadata.play_style)) fail('metadata.play_style inválido.');
+  if (metadata.career_difficulty !== null && !ALLOWED_CAREER_DIFFICULTIES.includes(metadata.career_difficulty)) fail('metadata.career_difficulty inválido.');
   if (!isNonEmptyString(metadata.career_date) || !isValidIsoDate(`${metadata.career_date}T00:00:00`)) {
     fail('metadata.career_date deve ser uma data ISO válida (YYYY-MM-DD).');
   }

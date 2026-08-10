@@ -5,6 +5,7 @@ import { normalizeTutorialState } from '../onboarding/tutorialState.js';
 import { normalizeAthlete } from '../players/athleteSchema.js';
 import { buildInitialProfile } from '../lib/initialCareerProfiles.js';
 import { migrateTrainingReference } from '../lib/trainingCatalog.js';
+import { DEFAULT_MIGRATED_CAREER_DIFFICULTY } from '../gameplay/difficulty/difficultyConfig.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -314,6 +315,15 @@ export function migrateCareer(career) {
     data.player={...(data.player||{}),live_coach_settings:data.live_coach_settings};
     data.save_schema_version=16;version=16;
   }
+  if (version < 17) {
+    // O jogo atual representa aproximadamente o Difícil, então saves sem
+    // dificuldade definida migram para 'hard' sem alterar nenhum atributo
+    // já conquistado. Carreiras novas continuam null até o jogador escolher
+    // no tutorial (ver careerDefaults.js).
+    data.metadata = { ...(data.metadata || {}), career_difficulty: data.metadata?.career_difficulty || DEFAULT_MIGRATED_CAREER_DIFFICULTY };
+    data.player = { ...(data.player || {}), career_difficulty: data.player?.career_difficulty || data.metadata.career_difficulty };
+    data.save_schema_version = 17; version = 17;
+  }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }
 
@@ -330,6 +340,14 @@ export function migrateIndex(index) {
     }));
     data.schema_version = 2;
     version = 2;
+  }
+  if (version < 3) {
+    data.careers = (data.careers || []).map((item) => ({
+      ...item,
+      career_difficulty: item.career_difficulty ?? DEFAULT_MIGRATED_CAREER_DIFFICULTY,
+    }));
+    data.schema_version = 3;
+    version = 3;
   }
   return { migrated: version !== fromVersion, fromVersion, toVersion, data };
 }

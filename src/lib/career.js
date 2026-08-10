@@ -13,6 +13,7 @@ import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 import { emitDayAdvanced } from '@/lib/matchDay';
 import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
 import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 export const CAREER_START_DATE = '2026-01-01';
 export const PARTNER_LOCK_DAYS = 60;
 export const MATCH_ADVANCE_DAYS = 7;
@@ -101,7 +102,8 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
   const hadTraining = (profile.trainings_today || 0) > 0;
   const hadMatch = (profile.practice_matches_today || 0) > 0 || (profile.tournament_matches_today || 0) > 0;
   const restedFully = !hadTraining && !hadMatch;
-  const baseRecovery = restedFully ? 32 : (hadMatch ? (hadTraining ? 8 : 10) : 16);
+  const recoveryMultiplier = getDifficultyModifier(profile, 'recoveryMultiplier');
+  const baseRecovery = Math.round((restedFully ? 32 : (hadMatch ? (hadTraining ? 8 : 10) : 16)) * recoveryMultiplier);
   const recovery = baseRecovery + Math.max(0, Number(profile.club_recovery_bonus) || 0);
 
   // ── Process calendar events for the new day ──
@@ -109,7 +111,7 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
 
   // A fadiga representa desgaste acumulado, não uma punição diária.
   // Dias livres recuperam mais; dias com atividade ainda geram recuperação parcial.
-  const fatigueRecovery = restedFully ? 10 : (hadMatch ? (hadTraining ? 2 : 3) : 4);
+  const fatigueRecovery = Math.round((restedFully ? 10 : (hadMatch ? (hadTraining ? 2 : 3) : 4)) * recoveryMultiplier);
   const moraleRecovery = restedFully ? 4 : 2;
   const formRecovery = restedFully ? 3 : 1;
 
@@ -308,10 +310,15 @@ export function generateTournamentOpponent(tournament, profile, roundIdx, exclud
     .map((item) => item.bot);
 }
 
-export function getTournamentRewards(tier, roundsWon) {
+export function getTournamentRewards(tier, roundsWon, difficultySource = null) {
   const table = TIER_REWARD_TABLES[tier] || TIER_REWARD_TABLES.Silver;
   const idx = Math.max(0, Math.min(table.coins.length - 1, roundsWon));
-  return { coins:table.coins[idx], xp:table.xp[idx], rankPoints:table.rankPoints[idx] };
+  if (!difficultySource) return { coins:table.coins[idx], xp:table.xp[idx], rankPoints:table.rankPoints[idx] };
+  return {
+    coins: Math.round(table.coins[idx] * getDifficultyModifier(difficultySource, 'prizeMultiplier')),
+    xp: Math.round(table.xp[idx] * getDifficultyModifier(difficultySource, 'careerXpMultiplier')),
+    rankPoints: Math.round(table.rankPoints[idx] * getDifficultyModifier(difficultySource, 'rankingPointsMultiplier')),
+  };
 }
 
 // ── Future tournament generation ──────────────────────────────────────────

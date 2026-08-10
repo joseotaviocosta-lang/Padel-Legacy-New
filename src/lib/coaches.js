@@ -2,6 +2,7 @@
 // 24 treinadores fictícios com filosofias, métodos, personalidades e históricos únicos.
 
 import { PLAY_STYLES, ATTRIBUTES } from '@/lib/padel';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 
 export const COACH_TIERS = {
   iniciante: { label: 'Iniciante', color: 'text-slate-400', bg: 'bg-slate-500/15', border: 'border-slate-500/30', costMult: 1 },
@@ -891,11 +892,19 @@ export function getCoachAvailability(coach, profile, { monthlyIncome = null } = 
   const ranking = Number(profile.ranking_position) || null;
   const clubLevel = Math.max(0, Number(profile.club_level ?? profile.training_center_level) || 0);
 
+  // A dificuldade relaxa levemente reputação/nível de clube/ranking exigidos
+  // (não o nível de habilidade, que já acelera sozinho via XP mais rápido).
+  // Reputação e nível de clube são pisos (menor = mais fácil de cumprir);
+  // ranking exigido é um teto de "top N" (maior = mais fácil de cumprir).
+  const coachRequirementMultiplier = getDifficultyModifier(profile, 'coachRequirementMultiplier');
+  const effectiveMinReputation = Number(demands.min_reputation) * coachRequirementMultiplier;
+  const effectiveMinClubLevel = Number(demands.min_club_level) * coachRequirementMultiplier;
+
   if (playerLevelIdx < minLevelIdx) reasons.push(`Seu nível precisa ser ${minLevel} ou superior.`);
-  if (Number(demands.min_reputation) > reputation) reasons.push(`Exige reputação ${Number(demands.min_reputation)}; você possui ${Math.floor(reputation)}.`);
-  if (Number(demands.min_club_level) > clubLevel) reasons.push(`Exige clube nível ${Number(demands.min_club_level)}.`);
-  const requiredRanking = Number(demands.max_ranking ?? demands.ranking_requirement ?? demands.min_ranking);
-  if (requiredRanking > 0 && (!ranking || ranking > requiredRanking)) reasons.push(`Seu ranking precisa estar no Top ${requiredRanking}.`);
+  if (effectiveMinReputation > reputation) reasons.push(`Exige reputação ${Math.ceil(effectiveMinReputation)}; você possui ${Math.floor(reputation)}.`);
+  if (effectiveMinClubLevel > clubLevel) reasons.push(`Exige clube nível ${Math.ceil(effectiveMinClubLevel)}.`);
+  const requiredRanking = Number(demands.max_ranking ?? demands.ranking_requirement ?? demands.min_ranking) / coachRequirementMultiplier;
+  if (requiredRanking > 0 && (!ranking || ranking > requiredRanking)) reasons.push(`Seu ranking precisa estar no Top ${Math.floor(requiredRanking)}.`);
   if (Array.isArray(demands.allowed_regions) && demands.allowed_regions.length && !demands.allowed_regions.includes(profile.region || profile.country)) reasons.push(`Disponível apenas em ${demands.allowed_regions.join(', ')}.`);
   if (coach.market_available === false || coach.is_available === false) reasons.push('Fora do mercado neste mês.');
   if (coins < signingCost) reasons.push(`Precisa de ${signingCost.toLocaleString('pt-BR')} moedas para o bônus de assinatura.`);

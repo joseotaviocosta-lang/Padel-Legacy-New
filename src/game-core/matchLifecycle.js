@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { CORE_BALANCE } from './config';
 import { calculatePracticeProgress } from './progression';
 import { calculatePostMatchCondition } from './condition';
@@ -89,7 +90,7 @@ export async function finalizePracticeMatch({ profile, matchState, partnerName, 
   const playerPatch = {
     ...progress.updates,
     ...condition,
-    rank_points: (Number(profile.rank_points) || 0) + (won ? CORE_BALANCE.ranking.practiceWin : CORE_BALANCE.ranking.practiceLoss),
+    rank_points: (Number(profile.rank_points) || 0) + Math.round((won ? CORE_BALANCE.ranking.practiceWin : CORE_BALANCE.ranking.practiceLoss) * getDifficultyModifier(profile, 'rankingPointsMultiplier')),
     live_coach_settings: liveCoachSettings || profile.live_coach_settings,
     live_coach_history: matchState.liveCoachReport ? [...(profile.live_coach_history || []), matchState.liveCoachReport].slice(-100) : profile.live_coach_history,
     coach_match_observations: [...(profile.coach_match_observations || []), ...(matchState.liveCoach?.observations || [])].slice(-500),

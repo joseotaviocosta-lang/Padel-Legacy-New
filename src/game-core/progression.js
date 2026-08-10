@@ -1,8 +1,9 @@
 import { levelForXp } from '@/lib/padel';
+import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { clamp } from './utils';
 
 export function calculatePracticeProgress(profile, won, balance) {
-  const xpGain = won ? balance.winXp : balance.lossXp;
+  const xpGain = Math.round((won ? balance.winXp : balance.lossXp) * getDifficultyModifier(profile, 'careerXpMultiplier'));
   const coinsGain = won ? balance.winCoins : balance.lossCoins;
   const newXp = (Number(profile?.xp) || 0) + xpGain;
   return {

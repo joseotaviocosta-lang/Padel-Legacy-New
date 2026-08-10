@@ -1,3 +1,8 @@
+// Import relativo (não `@/...`): este módulo precisa continuar importável
+// diretamente por scripts Node puros (ex.: scripts/test-massive-careers-v32.mjs,
+// scripts/test-career-difficulty-pace.mjs), que não resolvem o alias Vite.
+import { getDifficultyModifier } from '../gameplay/difficulty/difficultyConfig.js';
+
 export const INITIAL_ATTRIBUTE_KEYS = [
   'serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash',
   'defense', 'agility', 'strategy', 'emotional_control',
@@ -41,6 +46,20 @@ function adjust(attributes, from, to, amount = 1) {
   attributes[from] -= amount; attributes[to] += amount;
 }
 
+// A dificuldade aplica um bônus leve e uniforme sobre a curva de pontos
+// inicial, preservando a identidade do build (a ordem de prioridade dos
+// atributos por estilo não muda, só a magnitude). O orçamento total esperado
+// é a soma real da curva já arredondada — não uma fórmula aproximada — para
+// que a validação nunca rejeite um build gerado por esta mesma função.
+function scaleScoreCurve(careerDifficultyId) {
+  const bonusPct = getDifficultyModifier(careerDifficultyId, 'initialAttributeBonusPct');
+  return SCORE_CURVE.map(value => Math.round(value * (1 + bonusPct)));
+}
+
+export function getExpectedInitialProfileBudget(careerDifficultyId = 'hard') {
+  return scaleScoreCurve(careerDifficultyId).reduce((sum, value) => sum + value, 0);
+}
+
 export function evaluateBuildAffinity({ handedness = 'right', preferredSide = 'direita', playStyle = 'equilibrado' } = {}) {
   let score = 72;
   const strengths = [];
@@ -56,10 +75,11 @@ export function evaluateBuildAffinity({ handedness = 'right', preferredSide = 'd
   return { score, level, strengths, challenges, recommendations: STYLE_DEFINITIONS[playStyle]?.strengths || [] };
 }
 
-export function buildInitialProfile({ handedness = 'right', preferredSide = 'direita', playStyle = 'equilibrado' } = {}) {
+export function buildInitialProfile({ handedness = 'right', preferredSide = 'direita', playStyle = 'equilibrado', careerDifficultyId = 'hard' } = {}) {
   const style = STYLE_DEFINITIONS[playStyle];
   if (!['right', 'left'].includes(handedness) || !COURT_SIDE_OPTIONS.some(side => side.id === preferredSide) || !style) throw new Error('Combinação inicial inválida.');
-  const attributes = Object.fromEntries(style.order.map((key, index) => [key, SCORE_CURVE[index]]));
+  const scaledCurve = scaleScoreCurve(careerDifficultyId);
+  const attributes = Object.fromEntries(style.order.map((key, index) => [key, scaledCurve[index]]));
   if (handedness === 'left' && preferredSide === 'direita' && ['ofensivo', 'finalizador'].includes(playStyle)) adjust(attributes, 'emotional_control', 'smash');
   if (preferredSide === 'versatil') adjust(attributes, style.strengths[0], 'strategy');
   const affinity = evaluateBuildAffinity({ handedness, preferredSide, playStyle });
@@ -75,8 +95,8 @@ export function buildInitialProfile({ handedness = 'right', preferredSide = 'dir
   };
 }
 
-export function buildInitialAttributes(side, style, handedness = 'right') {
-  return buildInitialProfile({ handedness, preferredSide: side, playStyle: style }).attributes;
+export function buildInitialAttributes(side, style, handedness = 'right', careerDifficultyId = 'hard') {
+  return buildInitialProfile({ handedness, preferredSide: side, playStyle: style, careerDifficultyId }).attributes;
 }
 
 export function calculateInitialProfileBudget(profile) {
@@ -84,7 +104,7 @@ export function calculateInitialProfileBudget(profile) {
   return INITIAL_ATTRIBUTE_KEYS.reduce((sum, key) => sum + Number(attributes[key] || 0), 0);
 }
 
-export function validatePlayerBuildProfile(profile) {
+export function validatePlayerBuildProfile(profile, careerDifficultyId = 'hard') {
   const errors = [];
   if (!profile?.id || !profile?.archetype_id) errors.push('arquétipo ausente');
   if (!['right', 'left'].includes(profile?.handedness)) errors.push('mão dominante inválida');
@@ -93,6 +113,6 @@ export function validatePlayerBuildProfile(profile) {
   if (!profile?.strengths?.length) errors.push('perfil sem pontos fortes');
   if (!profile?.weaknesses?.length) errors.push('perfil sem fraquezas');
   if (INITIAL_ATTRIBUTE_KEYS.some(key => !Number.isFinite(profile?.attributes?.[key]) || profile.attributes[key] < 1 || profile.attributes[key] > 100)) errors.push('atributo fora da escala');
-  if (calculateInitialProfileBudget(profile) !== INITIAL_PROFILE_BUDGET) errors.push('orçamento inicial desequilibrado');
+  if (calculateInitialProfileBudget(profile) !== getExpectedInitialProfileBudget(careerDifficultyId)) errors.push('orçamento inicial desequilibrado');
   return { valid: errors.length === 0, errors };
 }
