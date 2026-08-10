@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { incrementMissionProgress } from '@/lib/padel.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
+import { getTournamentCampaignDates } from '@/lib/tournamentSchedule.js';
 
 export const TOURNAMENT_REGISTRATION_RULES = Object.freeze({
   defaultOpenDaysBeforeStart: 30,
@@ -27,7 +28,9 @@ export function normalizeGameDate(value) {
 
 export function getTournamentEffectiveInterval(tournament) {
   const start = normalizeGameDate(tournament?.effective_start_date || tournament?.qualifying_start_date || tournament?.qualifyingStartDate || tournament?.start_date || tournament?.startDate);
-  const end = normalizeGameDate(tournament?.effective_end_date || tournament?.end_date || tournament?.endDate || start);
+  const campaign = getTournamentCampaignDates({ ...tournament, start_date: start, qualifying_start_date: null }, { qualifyingRequired: false });
+  const explicitEnd = normalizeGameDate(tournament?.effective_end_date || tournament?.end_date || tournament?.endDate);
+  const end = explicitEnd || campaign.end || start;
   return { start, end: end && start && end >= start ? end : start };
 }
 
@@ -108,7 +111,10 @@ export async function registerTournament({ player, partner, tournament, teamRank
   const partnerRegistrations = partner?.id ? await localGame.entities.TournamentRegistration.filter({ partner_id: partner.id }) : [];
   const validation = evaluateTournamentRegistration({ player, partner, tournament, currentDate: player.career_date, registrations: [...registrations, ...partnerRegistrations], tournaments, teamRank });
   if (!validation.allowed) return { success: false, reasons: validation.reasons, warnings: validation.warnings, validation };
-  const interval = validation.interval; const fee = Math.max(0, Number(tournament.entry_fee) || 0);
+  const qualifyingRequired = validation.entry.path === 'qualifying';
+  const planned = getTournamentCampaignDates(tournament, { qualifyingRequired });
+  const interval = { start: planned.start || validation.interval.start, end: planned.end || validation.interval.end };
+  const fee = Math.max(0, Number(tournament.entry_fee) || 0);
   const registration = await localGame.entities.TournamentRegistration.upsert(id, {
     id, profile_id: player.id, player_id: player.id, partner_id: partner.id, tournament_id: tournament.id, tournament_name: tournament.name,
     status: 'confirmed', registered_at: player.career_date, cancelled_at: null, effective_start_date: interval.start, effective_end_date: interval.end,
@@ -118,7 +124,18 @@ export async function registerTournament({ player, partner, tournament, teamRank
   await localGame.entities.CalendarEvent.upsert(`calendar-${id}`, {
     id: `calendar-${id}`, profile_id: player.id, event_type: 'tournament', title: tournament.name, start_date: interval.start, end_date: interval.end,
     related_id: tournament.id, related_name: tournament.name, status: 'scheduled', is_mandatory: true, requires_decision: true, decision_type: 'play_tournament',
-    coin_cost: fee, metadata: { registration_id: id, partner_id: partner.id, entry_path: validation.entry.path, registration_schema_version: 2 },
+    coin_cost: fee, metadata: {
+      registration_id: id,
+      partner_id: partner.id,
+      entry_path: validation.entry.path,
+      qualifying_required: qualifyingRequired,
+      qualifying_status: qualifyingRequired ? 'pending' : 'not_required',
+      team_rank: Number(teamRank || 0),
+      registration_schema_version: 2,
+      tournament_run_schema_version: 2,
+      original_start_date: interval.start,
+      planned_end_date: interval.end,
+    },
   });
   await incrementMissionProgress(player.id, 'join_tournament');
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));

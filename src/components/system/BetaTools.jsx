@@ -290,7 +290,7 @@ export default function BetaTools({ compact = false }) {
         <Bug className="h-4 w-4" /> {!compact && 'BETA'}
       </button>
       {open && typeof document !== 'undefined' && createPortal((
-        <div className="fixed inset-0 z-[9999] flex items-end justify-center overflow-hidden bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Ferramentas da versão beta">
+        <div className="fixed inset-0 z-[100] flex items-end justify-center overflow-hidden bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Ferramentas da versão beta">
           <section className="flex h-[calc(100dvh-0.75rem)] min-h-0 w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-border bg-card shadow-2xl sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl">
             <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border bg-card p-4 sm:p-5">
               <div><p className="text-[10px] font-black uppercase tracking-[.2em] text-amber-300">Padel Legacy Beta</p><h2 className="mt-1 text-lg font-black">Central de testes</h2></div>

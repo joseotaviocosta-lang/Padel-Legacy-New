@@ -12,6 +12,7 @@ import { processInjuryRecoveryDay } from './injuryRecoveryLifecycle';
 import { processRelationshipWeek } from './relationshipLifecycle';
 import { processStaffDay } from './staffLifecycle';
 import { processCircuitLifeWeek } from './circuitLifeLifecycle';
+import { compactGameStateReport } from './gameStateReport.js';
 
 function monthChanged(oldDate, newDate) {
   return String(oldDate || '').slice(0, 7) !== String(newDate || '').slice(0, 7);
@@ -26,6 +27,14 @@ async function createOptional(entityName, payload) {
     console.warn(`[Game Core] Falha não crítica em ${entityName}:`, error?.message || error);
     return null;
   }
+}
+
+function consumeLifecycleResult(result, fallbackProfile) {
+  const nextProfile = result?.profile || fallbackProfile;
+  return {
+    profile: nextProfile,
+    summary: compactGameStateReport(result).report,
+  };
 }
 
 /**
@@ -60,55 +69,83 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
   }
 
   try {
-    report.world = await simulateWorldDay(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.world?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await simulateWorldDay(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.world = result.summary;
   } catch (error) {
     report.world = { processed: 0, error: error?.message || String(error) };
     console.warn('[Game Core] Mundo não processado:', error);
   }
 
   try {
-    report.aiPartnerships = await processAiPartnershipMarket(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.aiPartnerships?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processAiPartnershipMarket(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.aiPartnerships = result.summary;
   } catch (error) {
     report.aiPartnerships = { formed: 0, dissolved: 0, error: error?.message || String(error) };
     console.warn('[Game Core] Mercado de duplas da IA não processado:', error);
   }
 
   try {
-    report.aiCareerStrategy = await processAiCareerStrategyMonth(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.aiCareerStrategy?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processAiCareerStrategyMonth(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.aiCareerStrategy = result.summary;
   } catch (error) {
     report.aiCareerStrategy = { processed: 0, error: error?.message || String(error) };
     console.warn('[Game Core] Estratégia de carreira da IA não processada:', error);
   }
 
   try {
-    report.circuit = await processWorldCircuit(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.circuit?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processWorldCircuit(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.circuit = result.summary;
   } catch (error) {
     report.circuit = { athletesProcessed: 0, error: error?.message || String(error) };
     console.warn('[Game Core] Circuito mundial não processado:', error);
   }
   try {
-    report.circuitLife = await processCircuitLifeWeek(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.circuitLife?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processCircuitLifeWeek(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.circuitLife = result.summary;
   } catch (error) {
     report.circuitLife = { processed: false, error: error?.message || String(error) };
     console.warn('[Game Core] Vida do circuito nao processada:', error);
   }
 
   try {
-    report.athleteIntelligence = await processAthletePersonalityWeek(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.athleteIntelligence?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processAthletePersonalityWeek(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.athleteIntelligence = result.summary;
   } catch (error) {
     report.athleteIntelligence = { processed: 0, error: error?.message || String(error) };
     console.warn('[Game Core] Inteligência dos atletas não processada:', error);
   }
 
   try {
-    report.medical = await processInjuryRecoveryDay(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.medical?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processInjuryRecoveryDay(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.medical = result.summary;
   } catch (error) {
     report.medical = { processed: false, error: error?.message || String(error) };
     console.warn('[Game Core] Sistema médico não processado:', error);
@@ -122,8 +159,12 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
   }
 
   try {
-    report.staff = await processStaffDay(updatedProfile, previousDate, currentDate);
-    updatedProfile = report.staff?.profile || updatedProfile;
+    const result = consumeLifecycleResult(
+      await processStaffDay(updatedProfile, previousDate, currentDate),
+      updatedProfile,
+    );
+    updatedProfile = result.profile;
+    report.staff = result.summary;
   } catch (error) {
     report.staff = { processed: false, error: error?.message || String(error) };
     console.warn('[Game Core] Equipe técnica não processada:', error);
@@ -164,10 +205,11 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   if (updatedProfile?.id) {
     try {
+      const persistedReport = compactGameStateReport(report).report;
       updatedProfile = await localGame.entities.PlayerProfile.update(updatedProfile.id, {
         game_state_version: '3.5.0',
         game_state_last_processed_date: currentDate,
-        game_state_last_report: report,
+        game_state_last_report: persistedReport,
       });
     } catch (error) {
       console.warn('[Game Core] Metadados do GameState não foram salvos:', error);

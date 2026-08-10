@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
+import { Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain } from 'lucide-react';
 import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, canHireCoach, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons } from '@/lib/coaches';
+import { ModalShell } from '@/components/design-system';
 
 export default function CoachDetail({ coach, profile, onHire, onFire, onClose, isHired }) {
   if (!coach) return null;
@@ -16,10 +17,14 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
   const specialtyInfo = COACH_SPECIALTY_INFO[coach.specialty];
 
   return (
-    <>
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={onClose} />
-      <div className="fixed inset-x-0 bottom-0 z-50 md:absolute md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg p-4">
-        <div className="glass-premium rounded-t-3xl md:rounded-3xl p-5 max-h-[88vh] overflow-y-auto scrollbar-none animate-slide-up">
+    <ModalShell open={Boolean(coach)} onClose={onClose} title={coach.name} description={`${tier.label} · ${coach.specialty}`} size="sm" footer={isHired ? (
+      <button onClick={onFire} className="w-full rounded-xl bg-red-500/15 py-3 text-sm font-bold text-red-400 hover:bg-red-500/25">Demitir treinador</button>
+    ) : (
+      <button disabled={!hireCheck.allowed} onClick={onHire} className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold ${hireCheck.allowed ? 'bg-primary text-primary-foreground hover:opacity-90' : 'cursor-not-allowed bg-secondary/50 text-muted-foreground'}`}>
+        {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar · {coach.market_salary || coach.monthly_cost} / mês{(coach.market_signing_bonus ?? coach.sign_on_bonus) > 0 ? ` + ${coach.market_signing_bonus ?? coach.sign_on_bonus} de assinatura` : ''}</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
+      </button>
+    )}>
+      <div className="space-y-3">
           {/* Header */}
           <div className="flex items-start justify-between mb-4">
             <div className="flex items-center gap-3">
@@ -34,11 +39,6 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
                 <span className={`text-[10px] font-bold uppercase tracking-wide ${tier.color}`}>{tier.label} · {coach.specialty}</span>
               </div>
             </div>
-            {onClose && (
-              <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary/60">
-                <X className="h-5 w-5 text-muted-foreground" />
-              </button>
-            )}
           </div>
 
           <div className="mb-3 rounded-xl border border-primary/25 bg-primary/5 p-3">
@@ -188,31 +188,8 @@ export default function CoachDetail({ coach, profile, onHire, onFire, onClose, i
             )}
           </div>
 
-          {/* Action */}
-          {isHired ? (
-            <button onClick={onFire} className="w-full py-3 rounded-xl bg-red-500/15 text-red-400 font-bold text-sm hover:bg-red-500/25 transition-colors">
-              Demitir Treinador
-            </button>
-          ) : (
-            <button
-              disabled={!hireCheck.allowed}
-              onClick={onHire}
-              className={`w-full py-3 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 ${
-                hireCheck.allowed
-                  ? 'bg-primary text-primary-foreground hover:opacity-90 glow-primary'
-                  : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
-              }`}
-            >
-              {hireCheck.allowed ? (
-                <><CheckCircle className="h-4 w-4" /> Contratar · {coach.market_salary || coach.monthly_cost} / mês{(coach.market_signing_bonus ?? coach.sign_on_bonus) > 0 ? ` + ${coach.market_signing_bonus ?? coach.sign_on_bonus} de assinatura` : ''}</>
-              ) : (
-                <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>
-              )}
-            </button>
-          )}
-        </div>
       </div>
-    </>
+    </ModalShell>
   );
 }
 
@@ -228,7 +205,7 @@ function EffectRow({ icon: Icon, label, value, color }) {
   );
 }
 
-function Stat({ label, value, icon: Icon, color = 'text-foreground' }) {
+function Stat({ label, value, icon: Icon = null, color = 'text-foreground' }) {
   return (
     <div className="flex items-center gap-1">
       {Icon && <Icon className={`h-3 w-3 ${color}`} />}

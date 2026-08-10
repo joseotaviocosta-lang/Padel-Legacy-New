@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
+import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getDifficultyForPlayer } from '@/lib/bots';
 import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, ATTRIBUTE_KEYS, ageAtDate, RETIREMENT_AGE, incrementMissionProgress } from '@/lib/padel';
 import { processMonthlyFinances } from '@/lib/economy';
 import { processAllClubsMonthly } from '@/lib/clubs';
@@ -8,6 +8,7 @@ import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents, executePlannedActivities, executeWeeklyTrainingPlan } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
@@ -96,7 +97,7 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
   // Um dia sem treino ou partida funciona como descanso completo, sem exigir
   // uma ação manual na tela de treinos.
   const hadTraining = (profile.trainings_today || 0) > 0;
-  const hadMatch = (profile.practice_matches_today || 0) > 0;
+  const hadMatch = (profile.practice_matches_today || 0) > 0 || (profile.tournament_matches_today || 0) > 0;
   const restedFully = !hadTraining && !hadMatch;
   const baseRecovery = restedFully ? 32 : (hadMatch ? (hadTraining ? 8 : 10) : 16);
   const recovery = baseRecovery + Math.max(0, Number(profile.club_recovery_bonus) || 0);
@@ -114,6 +115,7 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
     career_date: newCareerDate,
     trainings_today: 0,
     practice_matches_today: 0,
+    tournament_matches_today: 0,
     did_physio_today: false,
     last_day_was_rest: restedFully,
     last_day_energy_recovery: recovery,
@@ -244,35 +246,6 @@ export function getLockedPartners(profile) {
 }
 
 // Tournament helpers
-const TOURNAMENT_ROUNDS = {
-  Silver: [
-    { label: 'Oitavas de Final', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' },
-    { label: 'Semifinal', short: 'SF' },
-    { label: 'Final', short: 'F' },
-  ],
-  Gold: [
-    { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ],
-  Platinum: [
-    { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ],
-  Masters: [
-    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ],
-  Elite: [
-    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ],
-  Crown: [
-    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ],
-};
-
 const TIER_DIFFICULTY_PATHS = {
   Silver: ['iniciante','iniciante','amador','competitivo'],
   Gold: ['iniciante','amador','competitivo','competitivo','avancado'],
@@ -292,7 +265,7 @@ const TIER_REWARD_TABLES = {
 };
 
 export function getTournamentRounds(tournament) {
-  return TOURNAMENT_ROUNDS[tournament?.tier] || TOURNAMENT_ROUNDS.Silver;
+  return getTournamentRoundsForTier(tournament?.tier);
 }
 
 export function getTournamentDifficulty(tournament, profile, roundIdx = 0, teamRank = 0) {
@@ -311,9 +284,22 @@ export function getTournamentDifficulty(tournament, profile, roundIdx = 0, teamR
   return BOT_DIFFICULTIES[Math.max(0, Math.min(BOT_DIFFICULTIES.length - 1, idx))].id;
 }
 
-export function generateTournamentOpponent(tournament, profile, roundIdx, excludeIds = [], teamRank = 0) {
+function tournamentOpponentHash(value = '') {
+  let hash = 2166136261;
+  for (const char of String(value)) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
+  return hash >>> 0;
+}
+
+export function generateTournamentOpponent(tournament, profile, roundIdx, excludeIds = [], teamRank = 0, stage = 'main') {
   const diffId = getTournamentDifficulty(tournament, profile, roundIdx, teamRank);
-  return getRandomBots(diffId, 2, excludeIds);
+  const pool = BOTS_BY_DIFFICULTY[diffId] || BOTS_BY_DIFFICULTY.iniciante;
+  const seed = `${tournament?.id}:${tournament?.start_date}:${profile?.id}:${stage}:${roundIdx}:${teamRank}`;
+  return pool
+    .filter((bot) => !excludeIds.includes(bot.id))
+    .map((bot) => ({ bot, order: tournamentOpponentHash(`${seed}:${bot.id}`) }))
+    .sort((a, b) => a.order - b.order || String(a.bot.id).localeCompare(String(b.bot.id)))
+    .slice(0, 2)
+    .map((item) => item.bot);
 }
 
 export function getTournamentRewards(tier, roundsWon) {

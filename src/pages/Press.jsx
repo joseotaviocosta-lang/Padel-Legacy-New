@@ -4,7 +4,7 @@ import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react'
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
-import { CardGrid, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
+import { CardGrid, ModalShell, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
@@ -299,8 +299,8 @@ export default function Press() {
 
       {/* Article Detail Modal */}
       {selectedArticle && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setSelectedArticle(null)}>
-          <div className="glass rounded-2xl p-5 max-w-md w-full max-h-[80vh] overflow-y-auto scrollbar-premium animate-scale-in" onClick={e => e.stopPropagation()}>
+        <ModalShell open onClose={() => setSelectedArticle(null)} title={selectedArticle.title} description={`${selectedArticle.outlet} · ${selectedArticle.journalist_name}`} size="sm">
+          <div>
             <div className="flex items-start justify-between gap-2 mb-3">
               <div className="flex-1">
                 <p className="text-[9px] font-bold uppercase tracking-wide text-primary mb-1">{selectedArticle.outlet}</p>
@@ -337,13 +337,13 @@ export default function Press() {
               </div>
             )}
           </div>
-        </div>
+        </ModalShell>
       )}
 
       {/* Journalist Detail Modal */}
       {activeJournalist && !activeInterview && (
-        <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={() => setActiveJournalist(null)}>
-          <div className="glass rounded-2xl p-5 max-w-md w-full animate-scale-in" onClick={e => e.stopPropagation()}>
+        <ModalShell open onClose={() => setActiveJournalist(null)} title={activeJournalist.name} description={`${activeJournalist.outlet} · ${activeJournalist.nationality}`} size="sm">
+          <div>
             <div className="flex items-start gap-3 mb-4">
               <span className="text-4xl">{activeJournalist.avatar_emoji}</span>
               <div className="flex-1">
@@ -379,7 +379,7 @@ export default function Press() {
               </div>
             </div>
           </div>
-        </div>
+        </ModalShell>
       )}
       </PageContent>
     </Page>

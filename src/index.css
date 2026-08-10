@@ -43,6 +43,12 @@
     --sidebar-accent-foreground: 210 40% 98%;
     --sidebar-border: 228 20% 17%;
     --sidebar-ring: 84 81% 52%;
+    --z-header: 40;
+    --z-floating: 50;
+    --z-dropdown: 60;
+    --z-modal: 100;
+    --z-toast: 120;
+    --z-critical: 200;
   }
 
   .dark {
@@ -576,6 +582,9 @@
 }
 
 @layer components {
+  .pl-layer-header { z-index: var(--z-header); }
+  .pl-floating-utilities { z-index: var(--z-floating); }
+
   .pl-icon-frame {
     color: hsl(var(--tone-color, var(--primary)));
     border: 1px solid hsl(var(--tone-color, var(--primary)) / 0.14);
@@ -594,6 +603,7 @@
   }
 
   .pl-modal-backdrop {
+    z-index: var(--z-modal);
     background: hsl(var(--modal-overlay) / 0.82);
     backdrop-filter: blur(10px) saturate(125%);
     animation: pl-backdrop-in var(--motion-fast) ease-out both;

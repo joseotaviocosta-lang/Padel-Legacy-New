@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { X, Trophy, MapPin, Coins, Zap, Star, Calendar, Lock, CheckCircle, AlertCircle, Award, Shield } from 'lucide-react';
+import { Trophy, MapPin, Coins, Zap, Star, Calendar, Lock, CheckCircle, AlertCircle, Award, Shield } from 'lucide-react';
 import { formatDate } from '@/lib/padel';
 import { daysBetween } from '@/lib/career';
 import { SURFACE_META, PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen } from '@/lib/calendarSystem';
 import { useToast } from '@/components/ui/use-toast';
 import { getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
+import { ModalShell } from '@/components/design-system';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',icon:Trophy,label:'Legacy Crown'},
@@ -54,11 +55,31 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={onClose}>
-      <div className="glass rounded-t-3xl md:rounded-3xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-5" onClick={e => e.stopPropagation()}>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center gap-2">
+    <ModalShell
+      open={Boolean(tournament)}
+      onClose={onClose}
+      title="Inscrição no torneio"
+      description={tournament.name}
+      size="sm"
+      footer={(
+        <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
+          <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2.5 text-sm font-bold hover:bg-secondary">Cancelar</button>
+          <button
+            type="button"
+            onClick={() => handleRegister(conflicts.length > 0)}
+            disabled={!validation.canRegister || registering || !regOpen}
+            className="inline-flex min-w-[11rem] items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            {registering ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" /> Inscrevendo...</>
+              : !regOpen ? <><Lock className="h-4 w-4" /> Inscrições encerradas</>
+                : !validation.canRegister ? <><Lock className="h-4 w-4" /> Requisitos não atendidos</>
+                  : <><CheckCircle className="h-4 w-4" /> {conflicts.length ? 'Substituir e confirmar' : 'Confirmar inscrição'}</>}
+          </button>
+        </div>
+      )}
+    >
+      <div className="space-y-4">
+        <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-secondary/25 p-3">
             <div className="h-10 w-10 rounded-xl bg-amber-500/15 flex items-center justify-center">
               <TierIcon className={`h-5 w-5 ${
                 tierStyle.badge.includes('amber') ? 'text-amber-400'
@@ -74,10 +95,6 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
                 {tierStyle.label}
               </span>
             </div>
-          </div>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground">
-            <X className="h-5 w-5" />
-          </button>
         </div>
 
         {/* Info grid */}
@@ -120,7 +137,6 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
           <div className="glass rounded-xl p-3 mb-4 border border-amber-500/30 bg-amber-500/5">
             <p className="text-xs font-bold text-amber-300">Conflito de calendário</p>
             <p className="text-[11px] text-muted-foreground mt-1">Para disputar este torneio, sua inscrição em <strong>{conflicts[0].title}</strong> será cancelada.</p>
-            <button onClick={() => handleRegister(true)} disabled={registering} className="w-full mt-3 py-2.5 rounded-xl bg-amber-500 text-black font-bold text-xs disabled:opacity-40">Substituir inscrição e confirmar</button>
           </div>
         )}
 
@@ -149,24 +165,8 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
           </div>
         </div>
 
-        {/* Action button */}
-        <button
-          onClick={() => handleRegister(false)}
-          disabled={!validation.canRegister || registering || !regOpen}
-          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-        >
-          {registering ? (
-            <><div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> Inscrevendo...</>
-          ) : !regOpen ? (
-            <><Lock className="h-4 w-4" /> Inscrições Encerradas</>
-          ) : !validation.canRegister ? (
-            <><Lock className="h-4 w-4" /> Requisitos não atendidos</>
-          ) : (
-            <><CheckCircle className="h-4 w-4" /> Confirmar Inscrição</>
-          )}
-        </button>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

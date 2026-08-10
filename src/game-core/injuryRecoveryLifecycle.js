@@ -57,7 +57,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
 
   const current = getInjuryStatus(profile);
   if (current.injured) {
-    const recovery = calculateDailyRecovery(profile, { restDay: true });
+    const recovery = calculateDailyRecovery(profile, { restDay: Boolean(profile.last_day_was_rest) });
     const remaining = Math.max(0, current.daysRemaining - Math.max(1, Number(recovery.injuryDayReduction) || 1));
     const recovered = remaining === 0;
     const patch = recovered
@@ -83,7 +83,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
     return { profile: updated, injured: !recovered, recovered, newInjury: false };
   }
 
-  const recovery = calculateDailyRecovery(profile, { restDay: true });
+  const recovery = calculateDailyRecovery(profile, { restDay: Boolean(profile.last_day_was_rest) });
   let recoveredProfile = profile;
   if ((Number(profile.energy) || 0) < 100 || (Number(profile.fatigue) || 0) > 0 || (Number(profile.matches_this_week) || 0) > 0) {
     recoveredProfile = await localGame.entities.PlayerProfile.update(profile.id, {

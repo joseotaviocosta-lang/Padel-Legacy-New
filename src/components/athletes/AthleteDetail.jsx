@@ -1,9 +1,10 @@
 import React from 'react';
-import { X, Star, Eye, Flame, Waves, Zap, Crown, Target, TrendingUp, TrendingDown, Clock, Heart, Brain, Dumbbell, Users, Activity, Shield, Gauge, Swords, Handshake, Sparkles } from 'lucide-react';
+import { Star, Eye, Flame, Waves, Zap, Crown, Target, TrendingUp, TrendingDown, Clock, Heart, Brain, Dumbbell, Users, Activity, Shield, Gauge, Swords, Handshake, Sparkles } from 'lucide-react';
 import { getPersonalityMeta, getCoachMeta, getPhaseMeta } from '@/lib/athleteBehavior';
 import { TraitList } from '@/components/athletes/TraitBadge';
 import { getInterviewStyle, generateInterviewQuote } from '@/lib/personalityTraits';
 import { AttributeBar } from '@/components/padel/Shared';
+import { ModalShell } from '@/components/design-system';
 
 const PERSONALITY_ICONS = { Star, Eye, Flame, Waves, Zap, Crown, Target };
 const PHASE_ICONS = { TrendingUp, Star, TrendingDown, Clock };
@@ -20,7 +21,7 @@ const ATTR_ICONS = {
   strategy: Brain, emotional_control: Heart,
 };
 
-export default function AthleteDetail({ athlete, onClose, followed = false, onToggleFollow }) {
+export default function AthleteDetail({ athlete, onClose, followed = false, onToggleFollow = null }) {
   if (!athlete) return null;
   const personality = getPersonalityMeta(athlete.personality);
   const coach = getCoachMeta(athlete.coach_preference);
@@ -29,12 +30,8 @@ export default function AthleteDetail({ athlete, onClose, followed = false, onTo
   const PersonalityIcon = PERSONALITY_ICONS[personality.icon] || Star;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={onClose}>
-      <div className="glass rounded-t-3xl md:rounded-3xl w-full max-w-lg max-h-[92vh] overflow-y-auto p-5" onClick={e => e.stopPropagation()}>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-black">Perfil de Atleta</h2>
-          <button onClick={onClose} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
-        </div>
+    <ModalShell open={Boolean(athlete)} onClose={onClose} title="Perfil de atleta" description={`${athlete.name} · ${athlete.country || 'Circuito mundial'}`} size="sm">
+      <div className="space-y-3">
 
         {/* Identity */}
         <div className="flex items-center gap-3 mb-4">
@@ -180,7 +177,7 @@ export default function AthleteDetail({ athlete, onClose, followed = false, onTo
           </div>
         )}
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

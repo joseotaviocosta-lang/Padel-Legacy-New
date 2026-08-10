@@ -105,7 +105,7 @@ export default function CareerAssistant() {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[90] bg-black/55 backdrop-blur-[2px]" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
+        <div className="fixed inset-0 z-[100] bg-black/55 backdrop-blur-[2px]" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
           <aside className="absolute inset-y-0 right-0 flex w-[min(92vw,25rem)] flex-col border-l border-border/70 bg-background/97 shadow-2xl" aria-label="Assistente da carreira">
             <header className="border-b border-border/60 p-4">
               <div className="flex items-start gap-3">

@@ -315,16 +315,21 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
       const opponent = resolveOpponentName(lastMatch, playerNames);
       if (opponent && opponent !== 'o adversário') {
         const matchKey = lastMatch.id || `${lastMatch.date || careerDate}-${lastMatch.tournament_name || 'partida'}`;
+        const championInterview = lastMatch.tournament_outcome === 'champion';
+        const roundLabel = lastMatch.tournament_round || String(lastMatch.notes || '').split('|')[0]?.trim();
+        const importance = lastMatch.press_importance || 'simple';
         pending.push({
         id: `interview_match_${matchKey}`,
         sourceId: `match:${matchKey}`,
         type: 'interview',
-        title: outcome === 'win' ? 'Entrevista Pós-Vitória' : 'Entrevista Pós-Derrota',
-        description: `A imprensa quer repercutir sua partida contra ${opponent}.`,
+        title: championInterview ? 'Entrevista Especial de Campeão' : outcome === 'win' ? 'Entrevista Pós-Vitória' : 'Entrevista Pós-Derrota',
+        description: `A imprensa quer repercutir ${roundLabel || 'sua partida'} contra ${opponent}${['global', 'high'].includes(importance) ? ' em uma entrevista de grande repercussão' : ''}.`,
         questionCategory: outcome === 'win' ? 'post_win' : 'post_loss',
         opponent,
         relatedEvent: `Partida:${matchKey}`,
         eventLabel: lastMatch.tournament_name || 'Partida Oficial',
+        roundLabel,
+        importance,
         careerDate,
         });
       }

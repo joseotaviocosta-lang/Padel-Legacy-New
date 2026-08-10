@@ -4,6 +4,7 @@ import { getInjuryStatus } from './injuryRecoveryLifecycle';
 import { isInjured } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 import { shouldBlockBeforeAdvance, getInjuryAutoResolution } from './calendarAdvancePolicy';
+import { compactGameStateReport } from './gameStateReport.js';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
 
@@ -42,8 +43,16 @@ async function resolveInjuryCalendarConflicts(profile) {
  * A partir da versão 2.2, os demais sistemas são coordenados pelo GameState.
  */
 export async function advanceCareerDay(profile, { deferGameState = false, deferGlobalProcessing = false } = {}) {
-  const oldDate = profile?.career_date || CAREER_START_DATE;
-  const advancedProfile = await advanceDay(profile, { deferGlobalProcessing });
+  let currentProfile = profile;
+  const compacted = compactGameStateReport(profile?.game_state_last_report);
+  if (profile?.id && compacted.changed) {
+    currentProfile = await localGame.entities.PlayerProfile.update(profile.id, {
+      game_state_last_report: compacted.report,
+    });
+  }
+
+  const oldDate = currentProfile?.career_date || CAREER_START_DATE;
+  const advancedProfile = await advanceDay(currentProfile, { deferGlobalProcessing });
   const newDate = advancedProfile?.career_date || oldDate;
   if (deferGameState) return advancedProfile;
   const result = await processGameStateDay(advancedProfile, oldDate, newDate);

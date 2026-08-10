@@ -3,6 +3,7 @@ import { X, Coins, Lock, Shield, Weight, Calendar, Factory, BookOpen, TrendingUp
 import { RARITY_STYLES, CATEGORY_META, SUBCATEGORY_LABELS } from '@/lib/equipmentCatalog';
 import { ATTRIBUTES } from '@/lib/padel';
 import { BADGE_COLORS } from '@/lib/marketEngine';
+import { ModalShell } from '@/components/design-system';
 
 export default function ItemDetailModal({ item, owned, canAfford, access, onBuy, buying, onClose, pricing }) {
   const rarity = RARITY_STYLES[item.rarity] || RARITY_STYLES.comum;
@@ -10,8 +11,8 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
   const subLabel = SUBCATEGORY_LABELS[item.subcategory] || item.subcategory;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="glass rounded-3xl p-5 max-w-md w-full max-h-[90vh] overflow-y-auto scrollbar-premium">
+    <ModalShell open={Boolean(item)} onClose={onClose} title={item.name} description={`${rarity.label} · ${cat.label}`} size="sm">
+      <div>
         {/* Header */}
         <div className="flex items-start justify-between mb-4">
           <div className="flex items-center gap-3 flex-1 min-w-0">
@@ -203,6 +204,6 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
           </button>
         )}
       </div>
-    </div>
+    </ModalShell>
   );
 }

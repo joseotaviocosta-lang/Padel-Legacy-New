@@ -205,7 +205,8 @@ export function topAttributes(profile) {
 
 export function canTrainToday(profile) {
   const done = profile?.trainings_today || 0;
-  return { allowed: done < DAILY_TRAINING_LIMIT, remaining: Math.max(0, DAILY_TRAINING_LIMIT - done) };
+  const officialMatchPlayed = Number(profile?.tournament_matches_today || 0) > 0;
+  return { allowed: !officialMatchPlayed && done < DAILY_TRAINING_LIMIT, remaining: officialMatchPlayed ? 0 : Math.max(0, DAILY_TRAINING_LIMIT - done) };
 }
 
 export function daysSincePhysio(profile) {
@@ -227,7 +228,7 @@ export function canDoPhysio(profile) {
 }
 
 export function canPlayMatchToday(profile) {
-  const done = profile?.practice_matches_today || 0;
+  const done = (Number(profile?.practice_matches_today) || 0) + (Number(profile?.tournament_matches_today) || 0);
   return { allowed: done < DAILY_MATCH_LIMIT, remaining: Math.max(0, DAILY_MATCH_LIMIT - done) };
 }
 
@@ -740,6 +741,9 @@ export async function reconcileCourtSideTutorial(profile, missions = null, rows 
 }
 
 export async function applyMatchRewards(profile, won, options = {}) {
+  const idempotencyKey = options.idempotencyKey ? String(options.idempotencyKey) : null;
+  const processedKeys = Array.isArray(profile?.processed_match_keys) ? profile.processed_match_keys : [];
+  if (idempotencyKey && processedKeys.includes(idempotencyKey)) return profile;
   const xpGain = won ? 50 : 20;
   const coinsGain = won ? 30 : 10;
   const newXp = (profile.xp || 0) + xpGain;
@@ -751,6 +755,8 @@ export async function applyMatchRewards(profile, won, options = {}) {
     coins: (profile.coins || 0) + coinsGain,
     level: levelForXp(newXp),
   };
+  if (idempotencyKey) updates.processed_match_keys = [...processedKeys, idempotencyKey].slice(-200);
+  if (options.officialTournament) updates.tournament_matches_today = (Number(profile.tournament_matches_today) || 0) + 1;
   if (won) {
     const randomAttr = ATTRIBUTE_KEYS[Math.floor(Math.random() * ATTRIBUTE_KEYS.length)];
     const currentVal = Number(profile[randomAttr]) || 0;
@@ -812,7 +818,7 @@ export async function applyRecovery(profile, recoveryType) {
 
   // Rest: blocked if already trained or played a match today
   if (recoveryType.advanceDays) {
-    const hasActivity = (profile.trainings_today || 0) > 0 || (profile.practice_matches_today || 0) > 0;
+    const hasActivity = (profile.trainings_today || 0) > 0 || (profile.practice_matches_today || 0) > 0 || (profile.tournament_matches_today || 0) > 0;
     if (hasActivity) return null;
   }
 

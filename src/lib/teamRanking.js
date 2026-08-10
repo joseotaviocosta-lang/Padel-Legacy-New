@@ -214,8 +214,20 @@ export async function simulatePastTournaments(careerDate) {
   const currentMonth = new Date(careerDate + 'T00:00:00').getMonth() + 1;
 
   try {
-    const tournaments = await localGame.entities.Tournament.list('-created_date', 200);
+    const [tournaments, registrations, calendarEvents] = await Promise.all([
+      localGame.entities.Tournament.list('-created_date', 200),
+      localGame.entities.TournamentRegistration.list('-created_date', 300).catch(() => []),
+      localGame.entities.CalendarEvent.filter({ status: 'scheduled', event_type: 'tournament' }).catch(() => []),
+    ]);
+    const activeTournamentIds = new Set([
+      ...(registrations || []).filter((item) => ['pending', 'confirmed'].includes(item.status)).map((item) => item.tournament_id),
+      ...(calendarEvents || []).filter((event) => {
+        const status = event.metadata?.tournament_run?.status;
+        return !status || !['eliminated', 'champion', 'finished'].includes(status);
+      }).map((event) => event.related_id),
+    ].filter(Boolean));
     const needsSimulation = tournaments.filter(t => {
+      if (activeTournamentIds.has(t.id)) return false;
       if (t.champion) return false;
       if (t.status === 'finalizado') return false;
       if (t.start_date && t.start_date < careerDate) return true;

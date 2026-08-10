@@ -32,7 +32,7 @@ function PageIntroduction({ pathname, state, onStateChange }) {
 
 function HelpCenter({ open, onClose, state, onRestart }) {
   if (!open) return null;
-  return <div className="fixed inset-0 z-[80] flex justify-end overflow-hidden bg-black/55 p-0 sm:p-3 md:p-5" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={event => event.target === event.currentTarget && onClose()}>
+  return <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden bg-black/55 p-0 sm:p-3 md:p-5" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={event => event.target === event.currentTarget && onClose()}>
     <div className="scrollbar-premium h-full w-[min(88vw,24rem)] overflow-y-auto overscroll-contain border-l border-border bg-background p-4 shadow-2xl sm:h-[calc(100dvh-1.5rem)] sm:rounded-2xl sm:border md:w-[25rem] md:p-5">
       <div className="flex items-start gap-3"><CircleHelp className="h-7 w-7 text-primary"/><div className="flex-1"><h2 id="help-title" className="text-xl font-black">Guia da carreira</h2><p className="text-sm text-muted-foreground">Reveja o tutorial quando quiser.</p></div><button onClick={onClose} className="rounded-xl p-2 hover:bg-secondary" aria-label="Fechar ajuda"><X className="h-5 w-5"/></button></div>
       <section className="mt-6"><h3 className="font-black">Ciclo principal</h3><div className="mt-3 flex flex-wrap gap-2">{CORE_GAME_LOOP.map((item, index) => <span key={item} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">{index + 1}. {item}</span>)}</div></section>

@@ -26,7 +26,7 @@ export default function BetaWelcome() {
 
   if (!open || typeof document === 'undefined') return null;
   return createPortal(
-    <div className="fixed inset-0 z-[10020] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Bem-vindo à beta fechada">
+    <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/75 p-4 backdrop-blur-md" role="dialog" aria-modal="true" aria-label="Bem-vindo à beta fechada">
       <section className="w-full max-w-xl overflow-hidden rounded-3xl border border-primary/25 bg-card shadow-2xl">
         <div className="flex items-start justify-between gap-4 border-b border-border p-5 sm:p-6">
           <div>

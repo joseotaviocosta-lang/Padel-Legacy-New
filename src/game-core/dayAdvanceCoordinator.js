@@ -1,13 +1,5 @@
 import { advanceCareerDay } from './calendarLifecycle';
-
-let activeRequest = null;
-let processing = false;
-const listeners = new Set();
-
-function publishProcessing(next) {
-  processing = next;
-  listeners.forEach((listener) => listener(next));
-}
+import { createSingleFlightCoordinator } from './singleFlightCoordinator.js';
 
 function broadcastProfileUpdate(profile) {
   if (typeof window === 'undefined' || !profile) return;
@@ -27,28 +19,21 @@ function broadcastProfileUpdate(profile) {
  * Todos os atalhos de UI compartilham a mesma Promise para impedir que dois
  * cliques concorrentes processem calendário, missões ou eventos em duplicidade.
  */
-export function advanceCareerDayOnce(profile) {
-  if (activeRequest) return activeRequest;
-  if (!profile?.id) return Promise.reject(new Error('Perfil da carreira indisponível.'));
+const coordinator = createSingleFlightCoordinator(async (profile) => {
+  const updated = await advanceCareerDay(profile);
+  broadcastProfileUpdate(updated);
+  return updated;
+});
 
-  publishProcessing(true);
-  activeRequest = advanceCareerDay(profile)
-    .then((updated) => {
-      broadcastProfileUpdate(updated);
-      return updated;
-    })
-    .finally(() => {
-      activeRequest = null;
-      publishProcessing(false);
-    });
-  return activeRequest;
+export function advanceCareerDayOnce(profile) {
+  if (!profile?.id) return Promise.reject(new Error('Perfil da carreira indisponível.'));
+  return coordinator.run(profile);
 }
 
 export function isCareerDayAdvanceProcessing() {
-  return processing;
+  return coordinator.isProcessing();
 }
 
 export function subscribeCareerDayAdvance(listener) {
-  listeners.add(listener);
-  return () => { listeners.delete(listener); };
+  return coordinator.subscribe(listener);
 }

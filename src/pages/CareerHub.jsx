@@ -61,6 +61,7 @@ export default function CareerHub() {
   const [messages, setMessages] = useState([]);
   const [partnerOffers, setPartnerOffers] = useState([]);
   const [worldSnapshot, setWorldSnapshot] = useState(null);
+  const [activeTournamentEvent, setActiveTournamentEvent] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
   const [skippingInjury, setSkippingInjury] = useState(false);
@@ -127,7 +128,7 @@ export default function CareerHub() {
         if (!mounted) return;
         setProfile(p);
 
-        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows, livingSnapshot] = await Promise.all([
+        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows, livingSnapshot, tournamentEvents] = await Promise.all([
           safe(localGame.entities.Match.list('-created_date', 6)),
           safe(localGame.entities.Mission.filter({ is_active: true })),
           safe(getWorldRank(p), { rank: 0, total: 0 }),
@@ -139,6 +140,7 @@ export default function CareerHub() {
           p ? safe(localGame.entities.CareerMessage.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(localGame.entities.PartnerOffer.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(getLivingWorldSnapshot(p, 8), null) : null,
+          p ? safe(localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }), []) : [],
         ]);
         if (!mounted) return;
 
@@ -151,6 +153,7 @@ export default function CareerHub() {
         setMessages(normalizedMessages);
         setPartnerOffers(offerRows || []);
         setWorldSnapshot(livingSnapshot || null);
+        setActiveTournamentEvent((tournamentEvents || []).find((event) => event.metadata?.tournament_run) || null);
 
         const recentWins = (matches || []).filter((match) => {
           const completed = ['completed', 'finished', 'concluida', 'concluido'].includes(String(match.status || '').toLowerCase()) || Boolean(match.winner_id || match.winner_team_id);
@@ -233,6 +236,7 @@ export default function CareerHub() {
     <Page size="wide" className="animate-fade-in">
       <PageContent>
         <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
+        {activeTournamentEvent && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}
         <MyJourneyPanel
           profile={profile}
           worldRank={worldRank}
@@ -294,6 +298,24 @@ export default function CareerHub() {
         {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
       </PageContent>
     </Page>
+  );
+}
+
+function ActiveTournamentBanner({ event, careerDate }) {
+  const run = event?.metadata?.tournament_run;
+  const match = run?.matches?.[run.currentRound || 0];
+  if (!match) return null;
+  const opponent = (match.opponent || []).map((item) => item.name).filter(Boolean).join(' / ') || 'Adversário a definir';
+  const offset = daysUntil(careerDate, match.date);
+  const when = offset === 0 ? 'Hoje' : offset === 1 ? 'Amanhã' : formatShortDate(match.date);
+  return (
+    <section className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-primary/5 p-5" aria-label="Torneio em andamento">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-300"><Trophy className="h-6 w-6" /></span>
+        <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-300">Em torneio</p><h2 className="mt-1 text-lg font-black">{run.tournamentName || event.related_name || event.title}</h2><p className="mt-1 text-xs text-muted-foreground">Próxima partida: <strong className="text-foreground">{match.round}</strong> · {when} · vs {opponent}</p></div>
+        <Link to="/tournaments" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-black text-primary-foreground">{match.preparationCompleted ? 'Ver partida' : 'Preparar partida'} <ArrowRight className="h-3.5 w-3.5" /></Link>
+      </div>
+    </section>
   );
 }
 

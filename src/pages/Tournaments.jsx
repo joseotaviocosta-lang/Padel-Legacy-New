@@ -72,6 +72,7 @@ export default function Tournaments() {
   const [registrationRecords, setRegistrationRecords] = useState(new Map());
   const [registrationTournament, setRegistrationTournament] = useState(null);
   const [teamRank, setTeamRank] = useState(0);
+  const [activeRunEvents, setActiveRunEvents] = useState(new Map());
 
   useEffect(() => {
     (async () => {
@@ -115,6 +116,8 @@ export default function Tournaments() {
           const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
           setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
           setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
+          const runEvents = await localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }).catch(() => []);
+          setActiveRunEvents(new Map((runEvents || []).filter((event) => event.metadata?.tournament_run).map((event) => [event.related_id, event])));
 
           // Compute team rank if player has a partner
           if (p.partner_id) {
@@ -136,9 +139,10 @@ export default function Tournaments() {
     const user = await localGame.auth.me();
     const p = await ensureMyProfile(user);
     setProfile(p);
-    const [matches, tournamentList] = await Promise.all([
+    const [matches, tournamentList, runEvents] = await Promise.all([
       localGame.entities.Match.list('-created_date', 100),
       localGame.entities.Tournament.list('-start_date', 200),
+      localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled', event_type: 'tournament' }).catch(() => []),
     ]);
     setMatches(matches || []);
     setTournaments(prepareTournamentList(tournamentList));
@@ -154,6 +158,7 @@ export default function Tournaments() {
     const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
     setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
     setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
+    setActiveRunEvents(new Map((runEvents || []).filter((event) => event.metadata?.tournament_run).map((event) => [event.related_id, event])));
   }
 
   if (loading) {
@@ -175,11 +180,13 @@ export default function Tournaments() {
   const careerDate = profile?.career_date;
 
   function isTournamentPast(t) {
+    if (activeRunEvents.has(t.id)) return false;
     if (t.start_date && careerDate) return t.start_date < careerDate;
     return (t.month || 0) < currentMonth;
   }
 
   function isTournamentPlayable(t) {
+    if (activeRunEvents.has(t.id)) return true;
     return Boolean(t.start_date && careerDate && t.start_date === careerDate);
   }
 
@@ -197,7 +204,7 @@ export default function Tournaments() {
       if (Object.hasOwn(totals, tournament.tier)) totals[tournament.tier] += 1;
     });
     const inSelectedView = ordered.filter(tournament => {
-      const isPast = tournament.start_date && careerDate
+      const isPast = activeRunEvents.has(tournament.id) ? false : tournament.start_date && careerDate
         ? tournament.start_date < careerDate
         : (tournament.month || 0) < currentMonth;
       return view === 'upcoming' ? !isPast : isPast;
@@ -212,8 +219,9 @@ export default function Tournaments() {
   })();
 
   async function handlePlay(tournament) {
-    if (isTournamentPast(tournament)) return;
-    if (playedTournaments.has(tournament.name)) return;
+    const activeRun = activeRunEvents.get(tournament.id);
+    if (!activeRun && isTournamentPast(tournament)) return;
+    if (!activeRun && playedTournaments.has(tournament.name)) return;
     // If not registered yet, open registration modal first
     const persistedRegistration = await isPlayerRegisteredForTournament(profile.id, tournament.id);
     if (!persistedRegistration) {
@@ -373,6 +381,7 @@ export default function Tournaments() {
                     teamRank={teamRank}
                     followed={followedTournaments.has(t.id)}
                     onToggleFollow={()=>toggleTournamentFollow(t.id)}
+                    activeRun={activeRunEvents.get(t.id) || null}
                   />
                 ))}
               </div>
@@ -431,7 +440,7 @@ export default function Tournaments() {
   );
 }
 
-function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewBracket, careerDate, profile, teamRank, followed, onToggleFollow }) {
+function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewBracket, careerDate, profile, teamRank, followed, onToggleFollow, activeRun }) {
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
   const coach = !isPast ? evaluateTournamentChoice(tournament, {
@@ -442,6 +451,8 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
     nationality: profile?.nationality,
   }, {}) : null;
   const entry = !isPast ? evaluateTournamentEntry(tournament, buildAthleteEntryContext(profile, teamRank, tournament)) : null;
+  const activeMatch = activeRun?.metadata?.tournament_run?.matches?.[activeRun?.metadata?.tournament_run?.currentRound || 0] || null;
+  const displayDate = activeMatch?.date || tournament.start_date;
 
   return (
     <div className={`glass rounded-2xl p-4 border ${config.card} ${config.glow} transition-all ${isPlayed || isPast ? 'opacity-60' : 'hover:scale-[1.02]'}`}>
@@ -474,18 +485,18 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
           </div>
         ) : null}
       </div>
-      <button onClick={onToggleFollow} className={`mb-3 text-[10px] font-bold rounded-lg px-2 py-1 ${followed?'bg-primary/15 text-primary':'bg-secondary text-muted-foreground'}`}>{followed?'Torneio acompanhado':'Acompanhar torneio'}</button>
+      <div className="mb-3 flex gap-2"><button onClick={onToggleFollow} className={`text-[10px] font-bold rounded-lg px-2 py-1 ${followed?'bg-primary/15 text-primary':'bg-secondary text-muted-foreground'}`}>{followed?'Torneio acompanhado':'Acompanhar torneio'}</button><button onClick={onViewBracket} className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-bold text-cyan-300">Ver chave</button></div>
 
       {tournament.description && (
         <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 line-clamp-2">{tournament.description}</p>
       )}
 
-      {tournament.start_date && (
+      {displayDate && (
         <div className="flex items-center gap-1.5 mb-2">
           <Calendar className="h-3 w-3 text-muted-foreground" />
-          <span className="text-[10px] font-semibold text-foreground">{formatDate(tournament.start_date)}</span>
+          <span className="text-[10px] font-semibold text-foreground">{formatDate(displayDate)}</span>
           {careerDate && (() => {
-            const days = daysBetween(careerDate, tournament.start_date);
+            const days = daysBetween(careerDate, displayDate);
             return (
               <span className={`text-[10px] ${days === 0 ? 'text-primary font-bold' : days > 0 ? 'text-cyan-400' : 'text-muted-foreground'}`}>
                 {days === 0 ? '• Hoje!' : days > 0 ? `• em ${days}d` : `• há ${Math.abs(days)}d`}
@@ -494,6 +505,7 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
           })()}
         </div>
       )}
+      {activeMatch && <div className="mb-3 rounded-xl border border-primary/25 bg-primary/5 p-2.5"><p className="text-[9px] font-black uppercase tracking-wider text-primary">Em torneio</p><p className="mt-1 text-xs font-bold">{activeMatch.round} · {activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}</p></div>}
 
       {isPast && tournament.champion && (
         <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
@@ -549,7 +561,7 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
                     : 'bg-primary/15 text-primary hover:bg-primary/25'
             }`}
           >
-            {!hasPartner ? <><Lock className="h-3 w-3" /> Parceiro</> : !hasEnergy ? <><AlertCircle className="h-3 w-3" /> Sem energia</> : isRegistered && isPlayable ? <><Play className="h-3 w-3" /> Jogar</> : isRegistered ? <><CheckCircle className="h-3 w-3" /> Inscrito</> : <><CheckCircle className="h-3 w-3" /> Inscrever</>}
+            {!hasPartner ? <><Lock className="h-3 w-3" /> Parceiro</> : !hasEnergy && activeMatch?.date === careerDate ? <><AlertCircle className="h-3 w-3" /> Sem energia</> : activeMatch ? <><Play className="h-3 w-3" /> {activeMatch.date === careerDate && activeMatch.preparationCompleted ? 'Jogar' : 'Preparar'}</> : isRegistered && isPlayable ? <><Play className="h-3 w-3" /> Jogar</> : isRegistered ? <><CheckCircle className="h-3 w-3" /> Inscrito</> : <><CheckCircle className="h-3 w-3" /> Inscrever</>}
           </button>
         )}
         {isRegistered && !isPlayable && !isPast && <button onClick={onCancel} className="ml-auto text-[10px] font-bold text-red-300 hover:text-red-200">Cancelar inscrição</button>}

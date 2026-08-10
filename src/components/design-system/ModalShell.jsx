@@ -7,17 +7,18 @@ export function ModalShell({
   open,
   onClose,
   title,
-  description,
+  description = null,
   children,
-  footer,
+  footer = null,
   size = 'lg',
-  className,
+  className = '',
   closeOnBackdrop = true,
   closeOnEscape = true,
 }) {
   const titleId = useId();
   const descriptionId = useId();
   const closeRef = useRef(null);
+  const panelRef = useRef(null);
   const previousFocusRef = useRef(null);
 
   useEffect(() => {
@@ -32,7 +33,25 @@ export function ModalShell({
     const focusTimer = window.setTimeout(() => closeRef.current?.focus(), 0);
 
     const onKey = (event) => {
-      if (event.key === 'Escape' && closeOnEscape) onClose?.();
+      if (event.key === 'Escape' && closeOnEscape) {
+        event.preventDefault();
+        onClose?.();
+        return;
+      }
+      if (event.key !== 'Tab') return;
+      const focusable = [...(panelRef.current?.querySelectorAll(
+        'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
+      ) || [])].filter((element) => !element.hasAttribute('hidden'));
+      if (!focusable.length) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     };
     window.addEventListener('keydown', onKey);
 
@@ -50,7 +69,8 @@ export function ModalShell({
 
   return createPortal(
     <div
-      className="pl-modal-backdrop fixed inset-0 z-[10000] flex items-center justify-center p-2 sm:p-4"
+      className="pl-modal-backdrop fixed inset-0 flex items-center justify-center p-2 sm:p-4"
+      data-app-modal
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? titleId : undefined}
@@ -58,6 +78,7 @@ export function ModalShell({
     >
       {closeOnBackdrop && <button type="button" className="absolute inset-0 cursor-default" aria-label="Fechar janela" onClick={onClose} />}
       <section
+        ref={panelRef}
         data-layout-fullbleed
         className={cn('pl-modal-panel pl-modal-enter relative z-10 flex max-h-[calc(100dvh-1rem)] w-full min-w-0 flex-col overflow-hidden rounded-2xl border sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl', widths[size] || widths.lg, className)}
       >

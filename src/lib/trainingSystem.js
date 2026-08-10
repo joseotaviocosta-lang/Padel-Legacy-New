@@ -261,6 +261,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   // ── Validation ──
   if (isRetired(profile)) return { error: 'Você está aposentado! Sua carreira como jogador profissional terminou.' };
   if (isInjured(profile)) return { error: `Você está lesionado! Recupera em ${injuryRecoveryDays(profile)} dias.` };
+  if (Number(profile?.tournament_matches_today || 0) > 0) return { error: 'Dia de torneio: treinos ficam bloqueados após a partida oficial.' };
 
   const doneToday = profile.trainings_today || 0;
   if (doneToday >= DAILY_TRAINING_LIMIT) return { error: 'Limite diário de treino atingido. Avance o dia!' };

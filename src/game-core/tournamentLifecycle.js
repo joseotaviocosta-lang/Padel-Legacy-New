@@ -27,9 +27,19 @@ async function resolveTournamentCalendar(profileId, tournamentId) {
   });
 }
 
-export async function finalizeTournamentRun({ profile, tournament, partner, roundsWon, totalRounds }) {
+async function completeTournamentRegistration(profileId, tournamentId) {
+  const rows = await localGame.entities.TournamentRegistration.filter({ profile_id: profileId, tournament_id: tournamentId });
+  await Promise.all((rows || []).filter((item) => ['pending', 'confirmed'].includes(item.status)).map((item) => (
+    localGame.entities.TournamentRegistration.update(item.id, { status: 'completed', completed_at: new Date().toISOString() })
+  )));
+}
+
+export async function finalizeTournamentRun({ profile, tournament, partner, roundsWon, totalRounds, runId = null, bracketHistory = null, runnerUp = null }) {
   const rewards = getTournamentRewards(tournament.tier, roundsWon);
   const champion = roundsWon >= totalRounds;
+  const finalizationKey = String(runId || `${profile.id}:${tournament.id}:${tournament.start_date || 'edition'}`);
+  const processedRuns = Array.isArray(profile?.processed_tournament_runs) ? profile.processed_tournament_runs : [];
+  const alreadyProcessed = processedRuns.includes(finalizationKey);
   const newXp = (Number(profile?.xp) || 0) + rewards.xp;
   const updates = {
     coins: (Number(profile?.coins) || 0) + rewards.coins,
@@ -37,6 +47,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
     level: levelForXp(newXp),
     tournaments_played: (Number(profile?.tournaments_played) || 0) + 1,
     rank_points: (Number(profile?.rank_points) || 0) + rewards.rankPoints,
+    processed_tournament_runs: [...processedRuns, finalizationKey].slice(-100),
   };
 
   if (champion) {
@@ -46,28 +57,34 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
     updates.morale = Math.min(100, (Number(profile?.morale) || 70) + 10);
   }
 
-  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, updates);
-  await addTeamRankingPoints(profile, partner, rewards.rankPoints);
+  const updatedProfile = alreadyProcessed ? profile : await localGame.entities.PlayerProfile.update(profile.id, updates);
+  if (!alreadyProcessed) await addTeamRankingPoints(profile, partner, rewards.rankPoints);
 
   if (champion) {
-    await Promise.allSettled([
-      incrementMissionProgress(profile.id, 'win_tournament'),
-      addTeamTitle(profile, partner, tournament.name),
-      localGame.entities.Tournament.update(tournament.id, {
-        status: 'finalizado',
-        champion: `${safeName(profile)} & ${partner?.name || 'Parceiro'}`,
-        current_phase: 'concluido',
-      }),
-    ]);
-    const partnership = await getActivePartnership(profile.id);
-    if (partnership) await recordPartnershipTitle(partnership.id);
+    if (!alreadyProcessed) {
+      await Promise.allSettled([
+        incrementMissionProgress(profile.id, 'win_tournament'),
+        addTeamTitle(profile, partner, tournament.name),
+      ]);
+      const partnership = await getActivePartnership(profile.id);
+      if (partnership) await recordPartnershipTitle(partnership.id);
+    }
+    await localGame.entities.Tournament.update(tournament.id, {
+      status: 'finalizado',
+      champion: `${safeName(profile)} & ${partner?.name || 'Parceiro'}`,
+      runner_up: runnerUp || 'Dupla finalista',
+      ...(Array.isArray(bracketHistory) ? { bracket_history: bracketHistory } : {}),
+      current_phase: 'concluido',
+    });
   }
 
   const placement = placementLabel(roundsWon, totalRounds, champion);
   const date = todayForProfile(profile);
+  const recordKey = String(finalizationKey).replace(/[^a-zA-Z0-9_-]/g, '-');
   await Promise.allSettled([
     resolveTournamentCalendar(profile.id, tournament.id),
-    localGame.entities.FinancialTransaction.create({
+    completeTournamentRegistration(profile.id, tournament.id),
+    localGame.entities.FinancialTransaction.upsert(`tournament-prize-${recordKey}`, {
       profile_id: profile.id,
       date,
       type: 'income',
@@ -75,7 +92,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
       description: `${placement} — ${tournament.name}`,
       amount: rewards.coins,
     }),
-    localGame.entities.HistoryEntry.create({
+    localGame.entities.HistoryEntry.upsert(`tournament-history-${recordKey}`, {
       profile_id: profile.id,
       year: Number(date.slice(0, 4)),
       event_date: date,
@@ -83,7 +100,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
       description: `${safeName(profile)} e ${partner?.name || 'Parceiro'} encerraram o torneio como ${placement.toLowerCase()}.`,
       category: 'carreira',
     }),
-    localGame.entities.PressArticle.create({
+    localGame.entities.PressArticle.upsert(`tournament-press-${recordKey}`, {
       profile_id: profile.id,
       title: champion
         ? `${safeName(profile)} conquista o ${tournament.name}`
@@ -96,7 +113,7 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
       journalist_name: 'Redação PL',
       published_date: date,
     }),
-    localGame.entities.Post.create({
+    localGame.entities.Post.upsert(`tournament-post-${recordKey}`, {
       author_name: 'Padel Legacy News',
       author_type: 'media',
       content: champion
@@ -108,5 +125,5 @@ export async function finalizeTournamentRun({ profile, tournament, partner, roun
     }),
   ]);
 
-  return { updatedProfile, rewards, champion, placement };
+  return { updatedProfile, rewards, champion, placement, idempotent: alreadyProcessed };
 }

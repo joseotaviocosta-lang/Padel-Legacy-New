@@ -158,6 +158,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   if (!training) return { error: 'Treino inválido ou desatualizado.' };
   if (isRetired(profile)) return { error: 'Sua carreira como jogador terminou.' };
   if (isInjured(profile)) return { error: 'Você está lesionado e ainda não foi liberado para treinar.' };
+  if (Number(profile?.tournament_matches_today || 0) > 0) return { error: 'Dia de torneio: treinos ficam bloqueados após a partida oficial.' };
   if (training.requiresPartner && !profile?.partner_id) return { error: 'Este foco exige um parceiro ativo.' };
   const doneToday = Number(profile?.trainings_today) || 0;
   if (doneToday >= 2) return { error: 'Limite diário de treino atingido. Avance o dia.' };

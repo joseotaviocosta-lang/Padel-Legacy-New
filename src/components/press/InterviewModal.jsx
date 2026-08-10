@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
 import { QUESTION_BANKS, fillTemplate, generateHeadline, generateArticleContent, toneFromEffects } from '@/lib/pressData';
+import { ModalShell } from '@/components/design-system';
 
 const PERSONALITY_LABELS = {
   critico: 'Crítico', sensacionalista: 'Sensacionalista', tecnico: 'Técnico',
@@ -27,12 +28,12 @@ export default function InterviewModal({ interview, journalist, profile, onClose
 
   if (questions.length === 0) {
     return (
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-        <div className="glass rounded-2xl p-6 max-w-md w-full" onClick={e => e.stopPropagation()}>
+      <ModalShell open onClose={onClose} title="Entrevista" size="sm">
+        <div>
           <p className="text-sm text-muted-foreground">Nenhuma pergunta disponível.</p>
           <button onClick={onClose} className="mt-4 text-xs text-primary font-bold">Fechar</button>
         </div>
-      </div>
+      </ModalShell>
     );
   }
 
@@ -89,8 +90,8 @@ export default function InterviewModal({ interview, journalist, profile, onClose
 
   if (done) {
     return (
-      <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-        <div className="glass rounded-2xl p-6 max-w-md w-full animate-scale-in" onClick={e => e.stopPropagation()}>
+      <ModalShell open onClose={onClose} title="Entrevista publicada" description={journalist.name} size="sm">
+        <div>
           <div className="flex items-center gap-2 mb-3">
             <span className="text-2xl">{journalist.avatar_emoji}</span>
             <div>
@@ -113,13 +114,13 @@ export default function InterviewModal({ interview, journalist, profile, onClose
             <Check className="h-4 w-4" /> Concluir
           </button>
         </div>
-      </div>
+      </ModalShell>
     );
   }
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" onClick={onClose}>
-      <div className="glass rounded-2xl p-5 max-w-md w-full animate-scale-in" onClick={e => e.stopPropagation()}>
+    <ModalShell open onClose={onClose} title={interview.title || 'Entrevista'} description={`${journalist.name} · ${journalist.outlet}`} size="sm">
+      <div>
         {/* Journalist header */}
         <div className="flex items-center gap-3 mb-4 pb-4 border-b border-border/40">
           <span className="text-3xl">{journalist.avatar_emoji}</span>
@@ -181,7 +182,7 @@ export default function InterviewModal({ interview, journalist, profile, onClose
           Cancelar entrevista
         </button>
       </div>
-    </div>
+    </ModalShell>
   );
 }
 

@@ -7,7 +7,6 @@ import LogoutButton from './LogoutButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
-import BetaTools from '@/components/system/BetaTools';
 import BetaAnalyticsTracker from '@/components/system/BetaAnalyticsTracker.jsx';
 import CareerHud from '@/components/career/CareerHud';
 import CommunicationBell from '@/components/communications/CommunicationBell';
@@ -20,11 +19,12 @@ import FeedbackSoundController from '@/components/system/FeedbackSoundController
 import BetaWelcome from '@/components/system/BetaWelcome.jsx';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, getWorldRank } from '@/lib/padel';
+import FloatingUtilityRail from '@/components/system/FloatingUtilityRail.jsx';
 
 const EXPANDED_AREA_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
 
-function NavigationAreas({ expandedArea, onExpandedAreaChange, compact = false, onNavigate }) {
+function NavigationAreas({ expandedArea, onExpandedAreaChange, compact = false, onNavigate = undefined }) {
   return NAVIGATION_AREAS.map((area) => {
     const AreaIcon = area.icon;
     const expanded = expandedArea === area.id;
@@ -167,13 +167,13 @@ export default function AppLayout() {
       const idleId = window.requestIdleCallback(run, { timeout: 3500 });
       return () => window.cancelIdleCallback?.(idleId);
     }
-    const timerId = window.setTimeout(run, 2500);
-    return () => window.clearTimeout(timerId);
+    const timerId = globalThis.setTimeout(run, 2500);
+    return () => globalThis.clearTimeout(timerId);
   }, [performanceProfile.allowRoutePreload, performanceProfile.lowPower]);
 
   return (
     <div className="app-shell min-h-screen bg-background">
-      <header className="glass fixed inset-x-0 top-0 z-50 flex h-14 items-center border-b border-border/60 px-3 md:hidden">
+      <header className="glass pl-layer-header fixed inset-x-0 top-0 flex h-16 items-center border-b border-border/60 px-2.5 md:hidden">
         <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
@@ -181,14 +181,8 @@ export default function AppLayout() {
           <p className="truncate text-[10px] font-bold uppercase tracking-[0.16em] text-primary/80">{activeArea?.label || 'Carreira'}</p>
           <p className="truncate text-sm font-extrabold leading-tight">{currentTitle}</p>
         </div>
-        <div className="hidden min-[540px]:block min-[680px]:hidden"><CareerHeaderContext compact profile={headerProfile} /></div>
-        <CareerHud profile={headerProfile} ranking={headerRanking} compact className="mr-1 hidden min-[680px]:flex" />
         <CareerDayControl profile={headerProfile} compact />
         <CommunicationBell compact />
-        <button type="button" onClick={openCareerManager} aria-label="Gerenciar carreiras" className="rounded-xl p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-          <BriefcaseBusiness className="h-5 w-5" />
-        </button>
-        <BetaTools compact />
       </header>
 
       <AnimatePresence>
@@ -239,23 +233,20 @@ export default function AppLayout() {
       <BetaAnalyticsTracker />
       <FeedbackSoundController />
       <BetaWelcome />
+      <FloatingUtilityRail onOpenCareers={openCareerManager} />
 
-      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-14 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
-        <div className="app-desktop-bar sticky top-0 z-30 hidden h-16 items-center justify-between border-b border-border/50 bg-background/80 px-5 backdrop-blur-xl md:flex lg:px-7">
-          <div className="min-w-0">
+      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[17rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-16 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+        <div className="app-desktop-bar pl-layer-header sticky top-0 hidden h-16 items-center gap-3 border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl md:flex lg:px-5">
+          <div className="hidden min-w-0 flex-1 xl:block">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <span>{activeArea?.label || 'Carreira'}</span><span className="text-border">/</span><span className="truncate text-primary/85">{currentTitle}</span>
             </div>
             <div className="mt-0.5 flex min-w-0 items-center gap-3"><p className="truncate text-lg font-black leading-tight">{currentTitle}</p><CareerHeaderContext profile={headerProfile} /></div>
           </div>
-          <div className="flex min-w-0 items-center gap-2">
-            <CareerHud profile={headerProfile} ranking={headerRanking} className="hidden xl:flex" />
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 xl:flex-none">
+            <CareerHud profile={headerProfile} ranking={headerRanking} compact className="min-w-0" />
             <CareerDayControl profile={headerProfile} />
             <CommunicationBell />
-            <BetaTools />
-            <button type="button" onClick={openCareerManager} className="inline-flex items-center gap-2 rounded-xl border border-border/70 bg-card/70 px-3 py-2 text-xs font-bold text-muted-foreground transition-colors hover:border-primary/25 hover:text-foreground">
-              <BriefcaseBusiness className="h-4 w-4" /> Carreiras
-            </button>
           </div>
         </div>
 

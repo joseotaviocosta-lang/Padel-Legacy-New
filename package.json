@@ -39,6 +39,7 @@
     "test:player-builds": "node scripts/test-player-builds.mjs",
     "test:training-v2": "node scripts/test-training-system-v2.mjs",
     "test:tournament-registration": "node scripts/test-tournament-registration-v2.mjs",
+    "test:tournament-flow-rc": "node scripts/test-tournament-flow-rc.mjs",
     "test:partner-offers": "node scripts/test-partner-offers-v2.mjs",
     "test:match-playback": "node scripts/test-match-playback-tactics.mjs",
     "test:vite-config": "node scripts/test-vite-config.mjs",
@@ -50,6 +51,7 @@
     "test:living-world": "node scripts/test-living-world-v23.mjs",
     "test:calendar-advance": "node scripts/test-calendar-advance-v24.mjs",
     "test:global-header-calendar": "node scripts/test-global-header-calendar-rc.mjs",
+    "test:header-advance-day": "node scripts/test-header-advance-day-rc.mjs",
     "test:global-market": "node scripts/test-global-market-v25.mjs",
     "test:sports-economy": "node scripts/test-sports-economy-v26.mjs",
     "test:coaches-v28": "node scripts/test-coach-system-v28.mjs",
@@ -116,7 +118,8 @@
     "test:runtime-performance-rc1": "node scripts/test-runtime-performance-rc1.mjs",
     "test:performance-deep-rc1": "node scripts/test-performance-deep-rc1.mjs",
     "test:performance-cache-rc1": "node scripts/test-performance-cache-rc1.mjs",
-    "test:viewport-overlays-rc1": "node scripts/test-viewport-overlays-rc1.mjs"
+    "test:viewport-overlays-rc1": "node scripts/test-viewport-overlays-rc1.mjs",
+    "test:global-header-overlay": "node scripts/test-global-header-overlay-rc.mjs"
   },
   "dependencies": {
     "@hello-pangea/dnd": "^17.0.0",

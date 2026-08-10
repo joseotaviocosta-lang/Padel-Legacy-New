@@ -80,12 +80,16 @@ function normalizeHistory(tournament) {
 
   return raw.map((round) => ({
     round: round.round || round.label || 'Rodada',
+    date: round.date || null,
+    status: round.status || null,
     matches: (round.matches || []).map((match) => ({
       ...match,
       team_a: normalizeTeamName(match.team_a || match.a),
       team_b: normalizeTeamName(match.team_b || match.b),
-      winner: normalizeTeamName(match.winner),
-      score: match.score || '—',
+      winner: match.winner ? normalizeTeamName(match.winner) : null,
+      score: match.score || null,
+      date: match.date || round.date || null,
+      status: match.status || round.status || (match.winner ? 'completed' : 'scheduled'),
       canonical,
     })),
   }));
@@ -122,12 +126,12 @@ export default function TournamentBracket({ tournament, onClose }) {
           <Info icon={BarChart3} value={`${matches} partidas`} color="text-emerald-400" />
         </div>
 
-        <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 to-transparent p-4 mb-4 text-center">
+        {tournament.champion && <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 to-transparent p-4 mb-4 text-center">
           <Crown className="h-8 w-8 text-amber-400 mx-auto mb-2" />
           <p className="text-[10px] text-amber-400/70 uppercase font-bold tracking-wide">Campeões</p>
           <p className="text-lg font-black text-amber-300">{champion}</p>
           <p className="text-[10px] text-muted-foreground mt-1">Vice: {runnerUp}</p>
-        </div>
+        </div>}
 
         <div className="flex gap-2 overflow-x-auto pb-2 mb-3">
           {history.map((round, index) => (
@@ -136,7 +140,7 @@ export default function TournamentBracket({ tournament, onClose }) {
               onClick={() => setActiveRound(index)}
               className={`shrink-0 rounded-xl px-3 py-2 text-xs font-bold border transition-colors ${activeRound === index ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary/20 border-border/50 text-muted-foreground hover:text-foreground'}`}
             >
-              {round.round}
+              {round.round}{round.date && <span className="ml-1 text-[9px] opacity-70">{new Date(`${round.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>}
             </button>
           ))}
         </div>
@@ -166,7 +170,7 @@ function MatchCard({ match, number, reserved, onReserve, followedTeams, onFollow
   const bWon = match.winner === match.team_b;
   return (
     <div className="rounded-xl border border-border/40 bg-secondary/10 p-3">
-      <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score}</span></div>
+      <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score || (match.status === 'scheduled' ? 'Agendada' : '—')}</span></div>
       <TeamLine name={match.team_a} winner={aWon} />
       <TeamLine name={match.team_b} winner={bWon} />
       <div className="mt-2 text-right">{match.canonical&&match.match_id&&!match.winner?<button onClick={onReserve} className="text-[10px] font-bold text-primary">{reserved?'Reservada':'Reservar para assistir'}</button>:match.winner?<span className="text-[9px] text-muted-foreground">{match.replay_id?'Replay disponível':'Ver resultado'}</span>:null}</div>

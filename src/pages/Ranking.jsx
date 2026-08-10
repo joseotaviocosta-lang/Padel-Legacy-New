@@ -6,6 +6,7 @@ import { overallRating } from '@/lib/padel';
 import { LoadingScreen, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
 import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { loadModuleTasks } from '@/lib/moduleLoading';
+import AthleteDetail from '@/components/athletes/AthleteDetail.jsx';
 
 const LIST_PAGE_SIZE = 50;
 
@@ -26,6 +27,7 @@ export default function Ranking() {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(LIST_PAGE_SIZE);
+  const [selectedAthlete, setSelectedAthlete] = useState(null);
 
   useEffect(() => {
     (async () => {
@@ -162,7 +164,7 @@ export default function Ranking() {
           const previous = Number(a.ranking_previous_position) || i + 1;
           const movement = previous - (i + 1);
           return (
-            <div key={a.id || `${a.name}-${i}`} className="glass rounded-2xl p-3 flex items-center gap-3">
+            <button type="button" key={a.id || `${a.name}-${i}`} onClick={() => setSelectedAthlete(a)} className="glass flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors hover:border-primary/35">
               <div className={`text-2xl font-black w-8 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
               <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
                 <span className="font-black text-primary">{(a.name || '?')[0]?.toUpperCase()}</span>
@@ -177,7 +179,7 @@ export default function Ranking() {
                   <TrendingUp className={`h-3 w-3 ${movement < 0 ? 'rotate-180' : ''}`} /> {movement === 0 ? 'estável' : `${Math.abs(movement)} pos.`}
                 </p>
               </div>
-            </div>
+            </button>
           );
         })}
         {visibleCount < items.length && (
@@ -332,6 +334,7 @@ export default function Ranking() {
           </button>
         )}
       </div>
+      {selectedAthlete && <AthleteDetail athlete={selectedAthlete} onClose={() => setSelectedAthlete(null)} />}
     </PageContainer>
   );
 }
