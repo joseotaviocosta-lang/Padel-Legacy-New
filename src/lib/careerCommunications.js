@@ -256,7 +256,8 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   });
   const answeredSources = new Set((context.pressArticles || []).map(article => article.source_event_id).filter(Boolean));
   for (const interview of pendingInterviews.filter(item => !answeredSources.has(item.sourceId)).slice(0, 3)) {
-    if (interview.matchId && existingInterviewMatchIds.has(String(interview.matchId))) continue;
+    const interviewMatchId = /** @type {any} */ (interview).matchId;
+    if (interviewMatchId && existingInterviewMatchIds.has(String(interviewMatchId))) continue;
     await createOnce(`press-interview:${interview.sourceId}`, {
       sender_type: 'imprensa',
       sender_name: 'Assessoria de Imprensa',
@@ -266,11 +267,16 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       related_entity_type: 'PressInterview',
       related_entity_id: interview.id,
       related_entity_name: interview.title,
+      destination: {
+        type: 'PRESS_INTERVIEW',
+        route: '/press',
+        params: { tab: 'interviews', interview: interview.id, source: interview.sourceId },
+      },
       metadata: {
         route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`,
         interview_id: interview.id,
         interview_source_id: interview.sourceId,
-        match_id: interview.matchId || null,
+        match_id: interviewMatchId || null,
         memory_type: 'press_opportunity',
       },
     });

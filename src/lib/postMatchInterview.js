@@ -56,6 +56,7 @@ function normalizeToken(value) {
     .replace(/\s+/g, '_');
 }
 
+/** @param {Record<string, any>} match */
 function structuredMatchType(match = {}) {
   return normalizeToken(
     match.match_type
@@ -77,6 +78,7 @@ function structuredMatchType(match = {}) {
  * continuam aceitas para não quebrar saves, mas nomes/títulos nunca entram na
  * decisão.
  */
+/** @param {Record<string, any>} match */
 export function isOfficialTournamentMatch(match = {}) {
   if (!match || typeof match !== 'object') return false;
   if (match.is_official === false || match.isOfficial === false) return false;
@@ -97,6 +99,7 @@ export function isOfficialTournamentMatch(match = {}) {
   );
 }
 
+/** @param {Record<string, any>} match */
 export function resolveOfficialPlayerOutcome(match = {}) {
   const explicit = normalizeToken(match.result || match.player_result || match.playerResult || match.outcome);
   if (['vitoria', 'win', 'won'].includes(explicit)) return 'win';
@@ -108,6 +111,7 @@ export function resolveOfficialPlayerOutcome(match = {}) {
   return null;
 }
 
+/** @param {Record<string, any>} match */
 export function didOfficialMatchOccur(match = {}) {
   const status = normalizeToken(match.status);
   if (CANCELLED_MATCH_STATUSES.has(status) || match.match_occurred === false || match.matchOccurred === false) return false;
@@ -133,6 +137,10 @@ export function didOfficialMatchOccur(match = {}) {
   return hasRecordedResult && (COMPLETED_MATCH_STATUSES.has(status) || Boolean(status) === false || match.match_occurred === true || match.matchOccurred === true);
 }
 
+/**
+ * @param {Record<string, any>} match
+ * @param {Record<string, any>} profile
+ */
 export function isOfficialPlayerTournamentResult(match, profile) {
   if (!profile?.id || !match?.id) return false;
   return match.profile_id === profile.id
@@ -159,12 +167,14 @@ export function postMatchInterviewMessageId(profileId, matchId) {
     .slice(0, 180);
 }
 
+/** @param {Record<string, any>} interview */
 export function isPostMatchInterview(interview = {}) {
   return ['post_win', 'post_loss'].includes(interview.questionCategory)
     || String(interview.sourceId || '').startsWith('match:')
     || String(interview.id || '').startsWith('interview_match_');
 }
 
+/** @param {Record<string, any>} interview */
 export function matchIdFromInterview(interview = {}) {
   if (interview.matchId) return String(interview.matchId);
   if (String(interview.sourceId || '').startsWith('match:')) return String(interview.sourceId).slice(6);
@@ -172,6 +182,7 @@ export function matchIdFromInterview(interview = {}) {
   return null;
 }
 
+/** @param {Record<string, any>} message */
 export function matchIdFromInterviewMessage(message = {}) {
   const metadata = message.metadata || {};
   if (metadata.match_id) return String(metadata.match_id);
@@ -183,11 +194,17 @@ export function matchIdFromInterviewMessage(message = {}) {
   return null;
 }
 
+/** @param {Record<string, any>} message */
 export function isPostMatchInterviewMessage(message = {}) {
   return message.related_entity_type === 'PressInterview'
     && Boolean(matchIdFromInterviewMessage(message));
 }
 
+/**
+ * @param {Record<string, any>} interview
+ * @param {Record<string, any>[]} matches
+ * @param {Record<string, any>} profile
+ */
 export function findOfficialInterviewMatch(interview, matches = [], profile) {
   if (!isPostMatchInterview(interview)) return null;
   const matchId = matchIdFromInterview(interview);
@@ -195,6 +212,11 @@ export function findOfficialInterviewMatch(interview, matches = [], profile) {
   return isOfficialPlayerTournamentResult(match, profile) ? match : null;
 }
 
+/**
+ * @param {Record<string, any>} message
+ * @param {Record<string, any>[]} matches
+ * @param {Record<string, any>} profile
+ */
 export function isValidPostMatchInterviewMessage(message, matches = [], profile) {
   if (!isPostMatchInterviewMessage(message)) return true;
   const matchId = matchIdFromInterviewMessage(message);
@@ -205,6 +227,11 @@ export function isValidPostMatchInterviewMessage(message, matches = [], profile)
   return isOfficialPlayerTournamentResult(match, profile);
 }
 
+/**
+ * @param {Record<string, any>} profile
+ * @param {Record<string, any>} interview
+ * @param {Record<string, any>[]} matches
+ */
 export function buildOfficialInterviewProgressPatch(profile, interview, matches = []) {
   if (!findOfficialInterviewMatch(interview, matches, profile)) return {};
   if ((profile.processed_press_interview_sources || []).includes(interview.sourceId)) return {};

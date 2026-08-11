@@ -12,7 +12,7 @@ const checks = [
   ['post-loss coverage uses persisted stats', career.includes('profileAfterLoss') && career.includes('losses: 1, matches_played: 1')],
   ['unique interview assertion', career.includes('winInterviews.length === 1') && career.includes('lossInterviews.length === 1')],
   ['press communication dedupe', comms.includes('press-interview:${interview.sourceId}')],
-  ['press route preserved', comms.includes("route: '/press?tab=interviews'")],
+  ['press route preserved', comms.includes("type: 'PRESS_INTERVIEW'") && comms.includes("route: '/press'")],
 ];
 for (const [name, ok] of checks) { if (!ok) throw new Error(`FAIL: ${name}`); console.log(`PASS: ${name}`); }
 console.log(`HotfixRC1PressTest: PASS (${checks.length}/${checks.length})`);
