@@ -5,6 +5,7 @@ import {
   getTrainingFocus, getTrainingWeights, migrateTrainingReference,
 } from '@/lib/trainingCatalog';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
+import { normalizeFatigue } from '@/game-core/physicalStats.js';
 export { WEEKDAYS, createGoal, deleteGoal, checkGoalCompletion, getConditionScore, getConditionLabel, getOvertrainingStatus } from '@/lib/trainingSystem';
 
 const COLORS = { court: ['text-cyan-400', 'bg-cyan-500'], physical: ['text-amber-400', 'bg-amber-500'], mental: ['text-green-400', 'bg-green-500'], tactical: ['text-purple-400', 'bg-purple-500'] };
@@ -121,7 +122,7 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
   const secondSessionMultiplier = (profile?.trainings_today || 0) > 0 ? 1.5 : 1;
   const staffEnergyMultiplier = Math.max(0.72, Math.min(1, Number(profile?.staff_training_energy_multiplier || 1)));
   const energyCost = Math.max(1, Math.round(calculation.intensity.energyCost * secondSessionMultiplier * staffEnergyMultiplier));
-  const fatigueCost = (calculation.intensity.fatigueCost + (training.fatigueExtra || 0)) * getDifficultyModifier(profile, 'fatigueGainMultiplier');
+  const fatigueCost = normalizeFatigue((calculation.intensity.fatigueCost + (training.fatigueExtra || 0)) * getDifficultyModifier(profile, 'fatigueGainMultiplier'));
   const staffInjuryMultiplier = Math.max(0.42, Math.min(1, Number(profile?.staff_injury_risk_multiplier || 1)));
   const fatigue = clamp(profile?.fatigue);
   const energyAfter = Math.max(0, Number(profile?.energy ?? 100) - energyCost);
@@ -183,7 +184,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     updates[attribute] = Math.min(ceiling, current + levelGain);
     appliedGains[attribute] = { progress: round(effectiveGain), levels: updates[attribute] - current, ceiling };
   }
-  const conditionBefore = { energy: Number(profile.energy ?? 100), fatigue: Number(profile.fatigue || 0), morale: Number(profile.morale ?? 70), confidence: Number(profile.confidence ?? 50), form: Number(profile.form ?? 50) };
+  const conditionBefore = { energy: Number(profile.energy ?? 100), fatigue: normalizeFatigue(profile.fatigue), morale: Number(profile.morale ?? 70), confidence: Number(profile.confidence ?? 50), form: Number(profile.form ?? 50) };
   const injured = Math.random() < preview.injuryRisk;
   const recoveryDays = injured ? 5 + Math.floor(Math.random() * 7) : 0;
   const scaledXp = Math.round(training.xp * getDifficultyModifier(profile, 'careerXpMultiplier'));
@@ -194,7 +195,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     trainings_today: doneToday + 1,
     last_training_date: profile.career_date || todayStr(),
     energy: Math.max(0, conditionBefore.energy - preview.energyCost),
-    fatigue: Math.min(100, conditionBefore.fatigue + preview.fatigueCost),
+    fatigue: normalizeFatigue(conditionBefore.fatigue + preview.fatigueCost),
     morale: clamp(conditionBefore.morale + (preview.intensity.moraleImpact || 0) + (training.moraleBoost || 0)),
     confidence: clamp(conditionBefore.confidence + (training.confidenceBoost || 0)),
     form: clamp(conditionBefore.form + (training.formBoost || 0)),
@@ -203,7 +204,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   if (training.chemistryGain && profile.partner_id) updates.partner_chemistry = clamp((profile.partner_chemistry ?? 50) + training.chemistryGain);
   if (injured) {
     const release = parseDate(profile.career_date); release.setUTCDate(release.getUTCDate() + recoveryDays);
-    updates.injured_until = release.toISOString().slice(0, 10); updates.energy = 0; updates.fatigue = Math.min(100, updates.fatigue + 18);
+    updates.injured_until = release.toISOString().slice(0, 10); updates.energy = 0; updates.fatigue = normalizeFatigue(updates.fatigue + 18);
   }
   const conditionAfter = { energy: updates.energy, fatigue: updates.fatigue, morale: updates.morale, confidence: updates.confidence, form: updates.form };
   await localGame.entities.TrainingSession.create({

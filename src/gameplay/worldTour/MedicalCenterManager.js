@@ -1,3 +1,5 @@
+import { normalizeFatigue } from '../../game-core/physicalStats.js';
+
 const STAFF = {
   physio_junior: { id:'physio_junior', role:'Fisioterapeuta', name:'Fisioterapeuta Júnior', cost:2500, salary:450, recoveryBonus:0.15, injuryReduction:0.08, diagnosis:0.55, relapseReduction:0.04 },
   physio_senior: { id:'physio_senior', role:'Fisioterapeuta', name:'Fisioterapeuta Sênior', cost:8500, salary:1200, recoveryBonus:0.32, injuryReduction:0.18, diagnosis:0.78, relapseReduction:0.12 },
@@ -63,7 +65,7 @@ export function buildTreatmentPatch(profile,treatmentId){
   return {
     coins:(Number(profile?.coins)||0)-t.cost,
     energy:clamp((Number(profile?.energy)||0)+t.energy,0,100),
-    fatigue:clamp((Number(profile?.fatigue)||0)-t.fatigue,0,100),
+    fatigue:normalizeFatigue((Number(profile?.fatigue)||0)-t.fatigue),
     injury_days_remaining:days,
     injury_status:released?'apto':profile?.injury_status,
     injury_type:released?null:profile?.injury_type,

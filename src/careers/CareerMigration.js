@@ -6,6 +6,7 @@ import { normalizeAthlete } from '../players/athleteSchema.js';
 import { buildInitialProfile } from '../lib/initialCareerProfiles.js';
 import { migrateTrainingReference } from '../lib/trainingCatalog.js';
 import { DEFAULT_MIGRATED_CAREER_DIFFICULTY } from '../gameplay/difficulty/difficultyConfig.js';
+import { normalizeFatigue } from '../game-core/physicalStats.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -324,7 +325,19 @@ export function migrateCareer(career) {
     data.player = { ...(data.player || {}), career_difficulty: data.player?.career_difficulty || data.metadata.career_difficulty };
     data.save_schema_version = 17; version = 17;
   }
-  return { migrated: version !== fromVersion, fromVersion, toVersion, data };
+  const normalizedFatigue = normalizeFatigue(data.player?.fatigue);
+  let repairedFatigue = Boolean(data.player) && data.player.fatigue !== normalizedFatigue;
+  if (data.player) data.player = { ...data.player, fatigue: normalizedFatigue };
+  if (Array.isArray(data.entities?.AthleteProfile)) {
+    data.entities.AthleteProfile = data.entities.AthleteProfile.map((athlete) => {
+      if (!athlete || typeof athlete !== 'object' || !Object.prototype.hasOwnProperty.call(athlete, 'fatigue')) return athlete;
+      const fatigue = normalizeFatigue(athlete.fatigue);
+      if (athlete.fatigue === fatigue) return athlete;
+      repairedFatigue = true;
+      return { ...athlete, fatigue };
+    });
+  }
+  return { migrated: version !== fromVersion || repairedFatigue, fromVersion, toVersion, data };
 }
 
 export function migrateIndex(index) {

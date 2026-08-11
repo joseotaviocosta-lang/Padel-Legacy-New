@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating, ATTRIBUTE_KEYS } from '@/lib/padel';
 import { assignTraits, computeTraitEffects } from '@/lib/personalityTraits';
@@ -262,7 +263,7 @@ export async function evolveAthletesMonthly(date) {
         u.injury_recovery_days = randInt(7, 30);
         u.fatigue = 80;
       } else {
-        u.fatigue = Math.max(0, (p.fatigue || 0) - 20);
+        u.fatigue = normalizeFatigue((p.fatigue || 0) - 20);
       }
     } else {
       const remaining = Math.max(0, (p.injury_recovery_days || 0) - 30);

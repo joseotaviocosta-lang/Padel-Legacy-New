@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { STAFF_ROLE_DEFINITIONS, normalizeStaffMember, scaleStaffEffects } from '@/lib/staffCatalog.js';
 import { getFacilityEffects, getActiveStaffSynergies, getSynergyEffects } from '@/lib/staffFacilities.js';
+import { normalizeFatigue } from './physicalStats.js';
 
 function asNumber(value, fallback = 0) {
   const number = Number(value);
@@ -220,7 +221,7 @@ export async function processStaffDay(profile, previousDate, currentDate) {
   const dailyMorale = clamp(asNumber(effects.dailyMorale), 0, 4);
   const dailyConfidence = clamp(asNumber(effects.dailyConfidence), 0, 4);
   if (dailyEnergy > 0) patch.energy = clamp(asNumber(profile.energy, 100) + dailyEnergy, 0, 110);
-  if (dailyFatigue > 0) patch.fatigue = clamp(asNumber(profile.fatigue, 0) - dailyFatigue, 0, 100);
+  if (dailyFatigue > 0) patch.fatigue = normalizeFatigue(asNumber(profile.fatigue, 0) - dailyFatigue);
   if (dailyMorale > 0) patch.morale = clamp(asNumber(profile.morale, 70) + dailyMorale, 0, 100);
   if (dailyConfidence > 0) patch.confidence = clamp(asNumber(profile.confidence, 70) + dailyConfidence, 0, 100);
 

@@ -14,6 +14,7 @@ import { emitDayAdvanced } from '@/lib/matchDay';
 import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
 import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
+import { normalizeFatigue } from '@/game-core/physicalStats.js';
 export const CAREER_START_DATE = '2026-01-01';
 export const PARTNER_LOCK_DAYS = 60;
 export const MATCH_ADVANCE_DAYS = 7;
@@ -125,7 +126,7 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
     last_day_energy_recovery: recovery,
     last_day_fatigue_recovery: fatigueRecovery,
     energy: Math.min(MAX_ENERGY, (profile.energy || 0) + recovery),
-    fatigue: Math.max(0, (profile.fatigue || 0) - fatigueRecovery),
+    fatigue: normalizeFatigue((Number(profile.fatigue) || 0) - fatigueRecovery),
     morale: Math.max(0, Math.min(100, (profile.morale || 70) + moraleRecovery)),
     form: Math.max(0, Math.min(100, (profile.form || 50) + formRecovery)),
     ...calendarResult.updates,

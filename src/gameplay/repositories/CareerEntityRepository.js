@@ -1,5 +1,6 @@
 import { gameRepository as repository } from '../services/runtime.js';
 import { seedCollection } from '../services/CareerInitialDataService.js';
+import { normalizeFatiguePatch } from '../../game-core/physicalStats.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -283,7 +284,7 @@ export class CareerEntityRepository {
           if (!career.player || (operation.id && career.player.id !== operation.id)) {
             throw new Error(`PlayerProfile não encontrado para atualização: ${operation.id || 'sem id'}`);
           }
-          career.player = { ...career.player, ...clone(operation.data || {}), id: career.player.id, updated_date: timestamp };
+          career.player = { ...career.player, ...normalizeFatiguePatch(clone(operation.data || {})), id: career.player.id, updated_date: timestamp };
           records.push(career.player);
           continue;
         }

@@ -41,14 +41,18 @@ export const careerDataStore = {
   count: (entity, query = {}) => entityRepository.count(entity, query),
 
   async checkpoint(reason = 'manual') {
-    const career = await requireActiveCareer();
+    const career = await requireActiveCareer({ fresh: false });
+    const persisted = await manager.repository.careerExists(career.career_id);
+    if (!persisted) {
+      return { success: true, skipped: true, reason: 'first-save-not-persisted' };
+    }
     career.__save_meta = {
       ...(career.__save_meta || {}),
       checkpoint_reason: reason,
       checkpoint_at: new Date().toISOString(),
     };
     const saved = await gameRepository.saveActiveCareer(career);
-    return { success: true, saved_at: saved.updated_at, reason };
+    return { success: true, skipped: false, saved_at: saved.updated_at, reason };
   },
 
   async exportPersistent() {

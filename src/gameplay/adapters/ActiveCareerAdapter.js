@@ -1,5 +1,6 @@
 import { CareerManager } from '../../careers/CareerManager.js';
 import { initializeCareerInitialData } from '../services/CareerInitialDataService.js';
+import { normalizeFatiguePatch, normalizePlayerPhysicalStats } from '../../game-core/physicalStats.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -22,6 +23,9 @@ export class ActiveCareerAdapter {
 
   setActiveCareer(career) {
     this.activeCareer = career ? clone(career) : null;
+    if (this.activeCareer?.player) {
+      this.activeCareer.player = normalizePlayerPhysicalStats(this.activeCareer.player);
+    }
     this.activeCareerId = career?.career_id || null;
   }
 
@@ -100,14 +104,14 @@ export class ActiveCareerAdapter {
     const transaction = await this.mutateActiveCareer(async (career) => {
       // A criação é idempotente: montagens repetidas reutilizam o jogador.
       if (career.player?.id) {
-        const missingFields = Object.fromEntries(
+        const missingFields = normalizeFatiguePatch(Object.fromEntries(
           Object.entries(clone(profile) || {}).filter(([key, value]) => (
             key !== 'id'
             && value !== undefined
             && value !== null
             && (career.player[key] === undefined || career.player[key] === null)
           )),
-        );
+        ));
 
         if (Object.keys(missingFields).length > 0) {
           career.player = {
@@ -123,7 +127,7 @@ export class ActiveCareerAdapter {
 
       const now = new Date().toISOString();
       career.player = {
-        ...clone(profile),
+        ...normalizePlayerPhysicalStats(clone(profile)),
         id: profile.id || `playerprofile-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         created_date: profile.created_date || now,
         updated_date: now,
@@ -149,7 +153,7 @@ export class ActiveCareerAdapter {
       }
       career.player = {
         ...clone(player),
-        ...clone(updates),
+        ...normalizeFatiguePatch(clone(updates)),
         id: player.id,
         updated_date: new Date().toISOString(),
       };

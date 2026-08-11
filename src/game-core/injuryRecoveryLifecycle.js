@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { calculateDailyRecovery } from '@/gameplay/worldTour/PhysicalConditionManager.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
+import { normalizeFatigue } from './physicalStats.js';
 
 const INJURIES = [
   { type: 'Sobrecarga muscular', severity: 'leve', days: [2, 4], risk: 1.0 },
@@ -74,7 +75,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
       : {
           injury_days_remaining: remaining,
           energy: Math.min(100, (Number(profile.energy) || 0) + recovery.energyGain),
-          fatigue: Math.max(0, (Number(profile.fatigue) || 0) - recovery.fatigueReduction),
+          fatigue: normalizeFatigue((Number(profile.fatigue) || 0) - recovery.fatigueReduction),
         };
 
     const updated = await localGame.entities.PlayerProfile.update(profile.id, patch);
@@ -89,7 +90,7 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
   if ((Number(profile.energy) || 0) < 100 || (Number(profile.fatigue) || 0) > 0 || (Number(profile.matches_this_week) || 0) > 0) {
     recoveredProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       energy: Math.min(100, (Number(profile.energy) || 0) + recovery.energyGain),
-      fatigue: Math.max(0, (Number(profile.fatigue) || 0) - recovery.fatigueReduction),
+      fatigue: normalizeFatigue((Number(profile.fatigue) || 0) - recovery.fatigueReduction),
       matches_this_week: isWeeklyBoundary(previousDate, currentDate) ? 0 : (Number(profile.matches_this_week) || 0),
     });
   }

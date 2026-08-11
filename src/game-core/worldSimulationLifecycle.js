@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { normalizeFatigue } from './physicalStats.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'ativo', 'livre', 'contratado']);
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Suécia', 'México', 'Chile', 'Paraguai'];
@@ -131,7 +132,7 @@ function evolutionFor(athlete, activity, date) {
     overall: clamp(overall + overallDelta, 1, 99),
     form: clamp(form + formDelta, 0, 100),
     energy: clamp(energy + energyDelta, 0, 100),
-    fatigue: clamp(fatigue + fatigueDelta, 0, 100),
+    fatigue: normalizeFatigue(fatigue + fatigueDelta),
     reputation: Math.max(0, reputation + reputationDelta),
     wealth: Math.max(0, wealth + wealthDelta),
     overallDelta,

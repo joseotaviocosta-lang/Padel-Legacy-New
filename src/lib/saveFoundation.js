@@ -38,7 +38,8 @@ async function upsertBy(entity, existing, key, value, payload) {
 
 export async function createCriticalBackup() {
   try {
-    await localGame.storage.checkpoint('save-foundation-backup');
+    const checkpoint = await localGame.storage.checkpoint('save-foundation-backup');
+    if (checkpoint?.skipped) return null;
     return await localGame.storage.exportPersistent();
   } catch (error) {
     console.warn('[Save Foundation] backup nativo não criado', error);

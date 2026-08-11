@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import {
   ATTRIBUTES, ATTRIBUTE_KEYS, calculateTrainingGain, trainingGainChance,
   rollInjury, calculateAge, isInjured, isRetired,
@@ -300,7 +301,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   };
 
   const newEnergy = Math.max(0, conditionBefore.energy - energyCost);
-  const newFatigue = Math.min(100, fatigue + intensity.fatigueCost + (activity.fatigueExtra || 0) - (activity.fatigueReduction || 0));
+  const newFatigue = normalizeFatigue(fatigue + intensity.fatigueCost + (activity.fatigueExtra || 0) - (activity.fatigueReduction || 0));
   const moraleChange = (intensity.moraleImpact || 0) + (activity.moraleBoost || 0);
   const newMorale = Math.max(0, Math.min(100, conditionBefore.morale + moraleChange));
   const newConfidence = Math.max(0, Math.min(100, conditionBefore.confidence + (activity.confidenceBoost || 0)));
@@ -363,7 +364,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     recoveryDate.setDate(recoveryDate.getDate() + recoveryDays);
     updates.injured_until = recoveryDate.toISOString().slice(0, 10);
     updates.energy = 0;
-    updates.fatigue = Math.min(100, newFatigue + 20);
+    updates.fatigue = normalizeFatigue(newFatigue + 20);
   }
 
   const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);

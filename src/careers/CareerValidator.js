@@ -1,4 +1,5 @@
 import { CAREER_INDEX_SCHEMA_VERSION, CAREER_SAVE_SCHEMA_VERSION, ALLOWED_CAREER_TYPES, ALLOWED_COURT_SIDES, ALLOWED_PLAY_STYLES, ALLOWED_CAREER_DIFFICULTIES } from './careerSchema.js';
+import { normalizePlayerPhysicalStats } from '../game-core/physicalStats.js';
 
 function isObject(value) {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
@@ -95,7 +96,9 @@ export function validateCareerData(career) {
     if (!isObject(career[key])) fail(`${key} deve ser um objeto.`);
   }
 
-  return cloneDeep(career);
+  const validated = cloneDeep(career);
+  validated.player = normalizePlayerPhysicalStats(validated.player);
+  return validated;
 }
 
 export function validateCareerIndex(index) {

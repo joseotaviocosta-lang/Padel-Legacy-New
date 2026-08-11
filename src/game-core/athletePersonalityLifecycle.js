@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { normalizeFatigue } from './physicalStats.js';
 
 function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -146,7 +147,7 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
     const confidenceDelta = seeded(`${seed}:confidence`, -5, 5) + trendEffect * 0.5 + pressureShield;
     const fatigue = clamp(athlete.fatigue ?? 0);
     const recovery = Math.round((axes.training_focus + axes.emotional_stability) / 45);
-    const newFatigue = clamp(fatigue - recovery + seeded(`${seed}:fatigue`, 0, 4));
+    const newFatigue = normalizeFatigue(fatigue - recovery + seeded(`${seed}:fatigue`, 0, 4));
     const newForm = clamp(previousForm + formDelta);
     const newConfidence = clamp(previousConfidence + confidenceDelta);
     const momentum = clamp((newForm * 0.55) + (newConfidence * 0.45));

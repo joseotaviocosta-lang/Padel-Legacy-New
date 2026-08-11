@@ -3,6 +3,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Check, AlertCircle, Users, Zap } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { advanceCareerDayOnce } from '@/game-core';
+import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { SectionCard, EmptyState, CoinBadge } from '@/components/padel/GameShared';
 import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
@@ -150,7 +151,7 @@ export default function Training() {
       setHistory((sessions || []).sort((a, b) => (b.created_date || '').localeCompare(a.created_date || '')));
       setWeeklyCounts(counts);
       setResult(null);
-      toast({ title: 'Dia avançado', description: `${formatDate(updated.career_date)} · Energia: ${updated.energy}/100 · Fadiga: ${updated.fatigue}/100` });
+      toast({ title: 'Dia avançado', description: `${formatDate(updated.career_date)} · Energia: ${updated.energy}/100 · Fadiga: ${normalizeFatigue(updated.fatigue)}/100` });
     } catch (e) {
       console.error(e);
       toast({ title: 'Bloqueado', description: e.message || 'Não foi possível avançar o dia.', variant: 'destructive' });
@@ -195,7 +196,7 @@ export default function Training() {
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <PremiumStatCard label="Treinos hoje" value={`${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`} detail="Sessões principais" icon={Dumbbell} tone="brand" />
           <PremiumStatCard label="Energia" value={`${profile.energy ?? 100}%`} detail="Disponibilidade imediata" icon={Zap} tone={(profile.energy ?? 100) < 30 ? 'danger' : 'success'} />
-          <PremiumStatCard label="Fadiga" value={`${profile.fatigue ?? 0}%`} detail="Desgaste acumulado" icon={Activity} tone={(profile.fatigue ?? 0) > 65 ? 'danger' : (profile.fatigue ?? 0) > 40 ? 'warning' : 'success'} />
+          <PremiumStatCard label="Fadiga" value={`${normalizeFatigue(profile.fatigue)}%`} detail="Desgaste acumulado" icon={Activity} tone={normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success'} />
           <PremiumStatCard label="Condição" value={`${conditionScore}/100`} detail={overtraining.label || 'Pronto para evoluir'} icon={Heart} tone={conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success'} />
         </div>
 

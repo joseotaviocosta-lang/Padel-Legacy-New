@@ -5,6 +5,7 @@ import { TraitList } from '@/components/athletes/TraitBadge';
 import { getInterviewStyle, generateInterviewQuote } from '@/lib/personalityTraits';
 import { AttributeBar } from '@/components/padel/Shared';
 import { ModalShell } from '@/components/design-system';
+import { normalizeFatigue } from '@/game-core/physicalStats.js';
 
 const PERSONALITY_ICONS = { Star, Eye, Flame, Waves, Zap, Crown, Target };
 const PHASE_ICONS = { TrendingUp, Star, TrendingDown, Clock };
@@ -107,7 +108,7 @@ export default function AthleteDetail({ athlete, onClose }) {
           <TraitBar icon={Flame} label="Ambição" value={athlete.ambition} color="text-red-400" barColor="bg-red-400" />
           <TraitBar icon={Dumbbell} label="Disciplina" value={athlete.discipline} color="text-cyan-400" barColor="bg-cyan-400" />
           <TraitBar icon={Heart} label="Moral" value={athlete.morale} color="text-pink-400" barColor="bg-pink-400" />
-          <TraitBar icon={Activity} label="Fadiga" value={athlete.fatigue} color="text-orange-400" barColor="bg-orange-400" />
+          <TraitBar icon={Activity} label="Fadiga" value={normalizeFatigue(athlete.fatigue)} color="text-orange-400" barColor="bg-orange-400" />
         </div>
 
         {/* Game Core 2.5 — Athletic intelligence */}

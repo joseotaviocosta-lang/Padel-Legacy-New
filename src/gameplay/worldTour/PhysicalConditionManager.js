@@ -2,6 +2,7 @@ import { getMedicalModifiers } from './MedicalCenterManager.js';
 // Import relativo (não `@/...`): scripts/test-injury-balance-v21.mjs importa
 // este módulo diretamente em Node puro, sem resolver o alias Vite.
 import { getDifficultyModifier } from '../difficulty/difficultyConfig.js';
+import { normalizeFatigue } from '../../game-core/physicalStats.js';
 const ROUND_LOAD = {
   qualifying: 12,
   first_round: 14,
@@ -93,7 +94,7 @@ export function buildPhysicalPatch({ profile, tournament, roundLabel, won, match
   const load = calculateTournamentMatchLoad({ profile, tournament, roundLabel, matchesThisWeek });
   const travel = matchesThisWeek === 0 ? getTravelLoad(profile, tournament) : { energy: 0, fatigue: 0, label: 'Viagem já contabilizada' };
   const energy = clamp((Number(profile?.energy) || 100) - load.energyCost - travel.energy, 0, 100);
-  const fatigue = clamp((Number(profile?.fatigue) || 0) + load.fatigueGain + travel.fatigue, 0, 100);
+  const fatigue = normalizeFatigue((Number(profile?.fatigue) || 0) + load.fatigueGain + travel.fatigue);
   const injury = rollTournamentInjury({ profile: { ...profile, energy, fatigue }, tournament, roundLabel, load, won, date });
   const history = [...(Array.isArray(profile?.physical_history) ? profile.physical_history : []), {
     date, tournament_id: tournament?.id, tournament: tournament?.name, round: roundLabel,
@@ -111,7 +112,7 @@ export function getCoachPhysicalRecommendation(profile, tournament, roundLabel =
   const load = calculateTournamentMatchLoad({ profile, tournament, roundLabel, matchesThisWeek: profile?.matches_this_week || 0 });
   const travel = getTravelLoad(profile, tournament);
   const projectedEnergy = clamp((Number(profile?.energy) || 100) - load.energyCost - travel.energy, 0, 100);
-  const projectedFatigue = clamp((Number(profile?.fatigue) || 0) + load.fatigueGain + travel.fatigue, 0, 100);
+  const projectedFatigue = normalizeFatigue((Number(profile?.fatigue) || 0) + load.fatigueGain + travel.fatigue);
   const risk = calculateInjuryRisk({ ...profile, energy: projectedEnergy, fatigue: projectedFatigue }, load, true);
   let level='Apto', advice='Condição adequada para competir.';
   if (profile?.injury_status === 'lesionado') { level='Indisponível'; advice='O departamento médico não recomenda competir lesionado.'; }
