@@ -11,7 +11,6 @@ import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCa
 import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
-import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
 import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
@@ -80,10 +79,13 @@ export async function selectPartner(profile, bot) {
   return updated;
 }
 
-export async function advanceDay(profile, { deferGlobalProcessing = false } = {}) {
+export async function advanceDay(profile, { deferGlobalProcessing = false, profiler = null } = {}) {
+  // Estágio opcional: sem profiler (caso comum em produção), stage() só
+  // executa a task, sem custo extra de medição.
+  const stage = profiler ? profiler.measure : (_name, task) => task();
   // Libera espaço antes de qualquer evento do novo dia tentar gravar no banco.
   // ── Block advance if there's a pending mandatory decision ──
-  profile = await ensureMonthlyReportCycle(profile);
+  profile = await stage('validation', () => ensureMonthlyReportCycle(profile));
   const careerDateNow = profile.career_date || CAREER_START_DATE;
   const advanceCheck = await canAdvanceDay(profile.id, careerDateNow);
   if (!advanceCheck.canAdvance) {
@@ -108,7 +110,7 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
   const recovery = baseRecovery + Math.max(0, Number(profile.club_recovery_bonus) || 0);
 
   // ── Process calendar events for the new day ──
-  const calendarResult = await processCalendarEvents(profile, newCareerDate);
+  const calendarResult = await stage('calendar', () => processCalendarEvents(profile, newCareerDate));
 
   // A fadiga representa desgaste acumulado, não uma punição diária.
   // Dias livres recuperam mais; dias com atividade ainda geram recuperação parcial.
@@ -183,42 +185,50 @@ export async function advanceDay(profile, { deferGlobalProcessing = false } = {}
     updates.low_chemistry_days = 0;
   }
 
-  let updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
-  const plannedResult = await executePlannedActivities(updated, newCareerDate);
-  updated = plannedResult.profile || updated;
-  const plannedTrainingExecuted = (plannedResult.results || []).some((item) => item.event?.metadata?.planned_activity_kind === 'training' && item.status === 'completed');
-  const weeklyPlanResult = await executeWeeklyTrainingPlan(updated, newCareerDate, { alreadyExecuted: plannedTrainingExecuted });
-  updated = weeklyPlanResult.profile || updated;
-  if (weeklyPlanResult.status === 'completed') {
-    updated = await localGame.entities.PlayerProfile.update(updated.id, {
-      last_automatic_training_date: newCareerDate,
-      last_automatic_training_label: weeklyPlanResult.planEntry?.activity?.label || null,
-    });
-  }
+  let updated = await stage('recovery', () => localGame.entities.PlayerProfile.update(profile.id, updates));
+  updated = await stage('training', async () => {
+    const plannedResult = await executePlannedActivities(updated, newCareerDate);
+    let next = plannedResult.profile || updated;
+    const plannedTrainingExecuted = (plannedResult.results || []).some((item) => item.event?.metadata?.planned_activity_kind === 'training' && item.status === 'completed');
+    const weeklyPlanResult = await executeWeeklyTrainingPlan(next, newCareerDate, { alreadyExecuted: plannedTrainingExecuted });
+    next = weeklyPlanResult.profile || next;
+    if (weeklyPlanResult.status === 'completed') {
+      next = await localGame.entities.PlayerProfile.update(next.id, {
+        last_automatic_training_date: newCareerDate,
+        last_automatic_training_label: weeklyPlanResult.planEntry?.activity?.label || null,
+      });
+    }
+    return next;
+  });
   // Aguarde efeitos globais antes de concluir o dia. Isso garante que avanço
   // manual e avanço em lote tenham exatamente a mesma ordem e persistência.
   if (oldMonth !== newMonth) {
-    await simulatePastTournaments(newCareerDate).catch(e => console.error('simulatePastTournaments', e));
-    await ensureFutureTournaments(newCareerDate).catch(e => console.error('ensureFutureTournaments', e));
-    try {
-      const result = await processMonthlyFinances(updated);
-      if (result) updated.coins = result.newBalance;
-    } catch (e) { console.error('processMonthlyFinances', e); }
-    await processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e));
-    await evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e));
-    try {
-      const monthlyReport = await finalizeClosedCareerMonth(profile, updated);
-      updated = monthlyReport.profile || updated;
-    } catch (e) { console.error('finalizeClosedCareerMonth', e); }
+    await stage('monthlyBoundary:simulatePastTournaments', () => simulatePastTournaments(newCareerDate).catch(e => console.error('simulatePastTournaments', e)));
+    await stage('monthlyBoundary:ensureFutureTournaments', () => ensureFutureTournaments(newCareerDate).catch(e => console.error('ensureFutureTournaments', e)));
+    await stage('monthlyBoundary:processMonthlyFinances', async () => {
+      try {
+        const result = await processMonthlyFinances(updated);
+        if (result) updated.coins = result.newBalance;
+      } catch (e) { console.error('processMonthlyFinances', e); }
+    });
+    await stage('monthlyBoundary:processAllClubsMonthly', () => processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e)));
+    await stage('monthlyBoundary:evolveAthletesMonthly', () => evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e)));
+    await stage('monthlyBoundary:finalizeClosedCareerMonth', async () => {
+      try {
+        const monthlyReport = await finalizeClosedCareerMonth(profile, updated);
+        updated = monthlyReport.profile || updated;
+      } catch (e) { console.error('finalizeClosedCareerMonth', e); }
+    });
   }
   const totalDays = daysBetween(CAREER_START_DATE, newCareerDate);
   if (totalDays > 0 && totalDays % 7 === 0) {
-    await simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e));
+    await stage('ranking', () => simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e)));
   }
-  if (!deferGlobalProcessing) {
-    await processLivingWorldDay(updated, newCareerDate).catch(e => console.error('living world day', e));
-  }
-  await incrementMissionProgress(updated.id, 'advance_days').catch(() => {});
+  // O universo vivo (World Tour, notícias, boletim semanal) roda exclusivamente
+  // dentro de processGameStateDay agora — ver game-core/gameStateLifecycle.js.
+  // deferGlobalProcessing não controla mais nada aqui; é mantido no parâmetro
+  // só para não quebrar as três chamadas existentes que ainda o passam.
+  await stage('missions', () => incrementMissionProgress(updated.id, 'advance_days', 1, null, { batchWrites: true }).catch(() => {}));
   emitDayAdvanced(profile, updated);
   return updated;
 }

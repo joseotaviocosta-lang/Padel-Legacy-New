@@ -6,7 +6,7 @@ const read = relative => fs.readFileSync(path.join(root, relative), 'utf8');
 const assert = (condition, message) => { if (!condition) throw new Error(message); };
 
 const engine = read('src/lib/livingWorldEngine.js');
-const career = read('src/lib/career.js');
+const gameState = read('src/game-core/gameStateLifecycle.js');
 const app = read('src/App.jsx');
 const routes = read('src/lib/routeModules.js');
 const worldHub = read('src/pages/WorldHub.jsx');
@@ -19,8 +19,15 @@ assert(engine.includes("parseDate(date).getUTCDay() === 1"), 'Atualização sema
 assert(engine.includes('buildTournamentEvent'), 'Eventos contextuais de torneio ausentes.');
 assert(engine.includes('buildRankEvent'), 'Eventos contextuais de ranking ausentes.');
 assert(engine.includes('buildTeamEvent'), 'Eventos contextuais de duplas ausentes.');
-assert(career.includes('await processLivingWorldDay(updated, newCareerDate)'), 'Avanço diário não chama o Universo Vivo.');
-assert(!career.includes('await generateWorldEvents(newCareerDate'), 'Geração editorial antiga ainda está duplicada no avanço diário.');
+// A partir da auditoria de performance, o Universo Vivo passou a rodar
+// dentro de processGameStateDay (junto dos demais sistemas adiados), em vez
+// de uma chamada direta em advanceDay que nenhum chamador real acionava
+// (todo caller de advanceCareerDay/advanceDay passava deferGlobalProcessing:
+// true, então a chamada antiga nunca executava). Isso corrige o "Universo
+// Vivo" para rodar de fato tanto no avanço de 1 dia quanto no catch-up de
+// avanços em lote (finalizeCareerAdvanceRange), que já reutiliza
+// processGameStateDay.
+assert(gameState.includes("processLivingWorldDay(updatedProfile, currentDate)"), 'Avanço diário não chama o Universo Vivo.');
 assert(app.includes('<Route path="/world" element={<WorldHub />} />'), 'Nova Central do Mundo não está roteada.');
 assert(routes.includes("'/world': 'WorldHub'"), 'Pré-carregamento da Central do Mundo ausente.');
 assert(worldHub.includes("label: 'Hoje'"), 'Aba Hoje ausente.');

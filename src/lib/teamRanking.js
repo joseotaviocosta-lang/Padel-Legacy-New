@@ -237,13 +237,63 @@ export async function simulatePastTournaments(careerDate) {
 
     if (needsSimulation.length === 0) return;
 
+    // Antes, cada torneio pendente disparava seu próprio Tournament.update
+    // MAIS dois addTeamRankingPoints e um addTeamTitle individuais (cada um
+    // com sua própria leitura + escrita) — em meses com vários torneios
+    // acumulados isso chegava a dezenas de escritas completas do save.
+    // Acumula tudo (torneios e patches de dupla) e grava em no máximo duas
+    // transações ao final.
+    const existingTeams = (await localGame.entities.TeamRanking.list('-ranking_points', 500)) || [];
+    const teamsByKey = new Map(existingTeams.map((team) => [team.team_key, team]));
+    const teamPatches = new Map(); // team_key -> operação acumulada
+
+    const applyTeamPoints = (teamA, teamB, points) => {
+      if (!teamA?.id || !teamB?.id) return;
+      const key = teamKey(teamA.id, teamB.id);
+      const pending = teamPatches.get(key);
+      if (pending) {
+        pending.data.ranking_points = (pending.data.ranking_points || 0) + points;
+        return;
+      }
+      const existing = teamsByKey.get(key);
+      if (existing?.id) {
+        teamPatches.set(key, { type: 'update', entityName: 'TeamRanking', id: existing.id, data: { ranking_points: (existing.ranking_points || 0) + points } });
+      } else {
+        const [p1, p2] = [teamA, teamB].sort((a, b) => a.id.localeCompare(b.id));
+        teamPatches.set(key, {
+          type: 'create',
+          entityName: 'TeamRanking',
+          data: {
+            team_key: key, player1_id: p1.id, player1_name: p1.sport_name || p1.name,
+            player2_id: p2.id, player2_name: p2.sport_name || p2.name,
+            ranking_points: points, matches_played: 0, wins: 0, losses: 0, titles: [],
+          },
+        });
+      }
+    };
+    const applyTeamTitle = (teamA, teamB, title) => {
+      if (!teamA?.id || !teamB?.id) return;
+      const key = teamKey(teamA.id, teamB.id);
+      const pending = teamPatches.get(key);
+      if (pending) {
+        pending.data.titles = [...(pending.data.titles || teamsByKey.get(key)?.titles || []), title];
+        return;
+      }
+      const existing = teamsByKey.get(key);
+      if (existing?.id) {
+        teamPatches.set(key, { type: 'update', entityName: 'TeamRanking', id: existing.id, data: { titles: [...(existing.titles || []), title] } });
+      }
+    };
+
+    const tournamentUpdates = [];
     for (const t of needsSimulation) {
       const { champion: champTeam, runnerUp, history } = simulateTournamentBracket(PRO_TEAMS);
 
       const champName = `${champTeam[0].name} & ${champTeam[1].name}`;
       const mult = TIER_MULT[t.tier] || 1;
 
-      await localGame.entities.Tournament.update(t.id, {
+      tournamentUpdates.push({
+        id: t.id,
         status: 'finalizado',
         champion: champName,
         runner_up: teamName(runnerUp),
@@ -251,9 +301,15 @@ export async function simulatePastTournaments(careerDate) {
         current_phase: 'concluido',
       });
 
-      await addTeamRankingPoints(champTeam[0], champTeam[1], Math.round(CHAMP_RANK_POINTS * mult));
-      await addTeamRankingPoints(runnerUp[0], runnerUp[1], Math.round(RUNNER_RANK_POINTS * mult));
-      await addTeamTitle(champTeam[0], champTeam[1], t.name);
+      applyTeamPoints(champTeam[0], champTeam[1], Math.round(CHAMP_RANK_POINTS * mult));
+      applyTeamPoints(runnerUp[0], runnerUp[1], Math.round(RUNNER_RANK_POINTS * mult));
+      applyTeamTitle(champTeam[0], champTeam[1], t.name);
+    }
+    if (tournamentUpdates.length) {
+      await localGame.entities.Tournament.bulkUpdate(tournamentUpdates);
+    }
+    if (teamPatches.size) {
+      await localGame.batch([...teamPatches.values()]);
     }
   } catch (e) { console.error('simulatePastTournaments', e); }
 }

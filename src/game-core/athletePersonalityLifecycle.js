@@ -103,12 +103,16 @@ async function createWorldEvent(payload) {
 
 export async function ensureAthleteIntelligenceProfiles() {
   const athletes = (await localGame.entities.AthleteProfile.list('-overall_rating', 250)) || [];
-  let updated = 0;
+  // Uma gravação individual por atleta sem perfil de IA gerava até 250
+  // escritas completas do save na primeira vez que essa função rodava.
+  // Acumula os patches e grava tudo em uma única bulkUpdate.
+  const updates = [];
   for (const athlete of athletes) {
     const axes = personalityAxes(athlete);
     const missing = !athlete.ai_profile_version || !athlete.behavior_axes || !athlete.pressure_profile;
     if (!missing) continue;
-    await localGame.entities.AthleteProfile.update(athlete.id, {
+    updates.push({
+      id: athlete.id,
       behavior_axes: axes,
       preferred_side: athlete.preferred_side || preferredSide(athlete),
       pressure_profile: pressureProfile(axes),
@@ -119,9 +123,9 @@ export async function ensureAthleteIntelligenceProfiles() {
       partnership_patience: clamp(athlete.partnership_patience ?? seeded(`${athlete.id}:patience`, 35, 85)),
       ai_profile_version: '2.5.0',
     });
-    updated += 1;
   }
-  return { athletes: athletes.length, updated };
+  if (updates.length) await localGame.entities.AthleteProfile.bulkUpdate(updates);
+  return { athletes: athletes.length, updated: updates.length };
 }
 
 export async function processAthletePersonalityWeek(profile, previousDate, currentDate) {
@@ -133,6 +137,9 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
   await ensureAthleteIntelligenceProfiles();
   const athletes = (await localGame.entities.AthleteProfile.list('-overall_rating', 250)) || [];
   let stories = 0;
+  // Idem: acumula os patches semanais de todos os atletas e grava em uma
+  // única bulkUpdate, em vez de uma escrita completa do save por atleta.
+  const athleteUpdates = [];
 
   for (const athlete of athletes) {
     const axes = athlete.behavior_axes || personalityAxes(athlete);
@@ -152,7 +159,8 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
     const newConfidence = clamp(previousConfidence + confidenceDelta);
     const momentum = clamp((newForm * 0.55) + (newConfidence * 0.45));
 
-    await localGame.entities.AthleteProfile.update(athlete.id, {
+    athleteUpdates.push({
+      id: athlete.id,
       behavior_axes: axes,
       form: Math.round(newForm),
       current_form: Math.round(newForm),
@@ -191,6 +199,9 @@ export async function processAthletePersonalityWeek(profile, previousDate, curre
       });
       if (event) stories += 1;
     }
+  }
+  if (athleteUpdates.length) {
+    await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
   }
 
   const summary = { week: currentWeek, processed: athletes.length, stories };

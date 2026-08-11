@@ -49,7 +49,7 @@ export default function CommunicationBell({ compact = false }) {
       pressArticles,
     }).catch(() => []);
 
-    const rows = await listCareerCommunications(profile.id, 8);
+    const rows = await listCareerCommunications(profile.id, 8, { matches, profile });
     setMessages(rows);
     if (created.length) window.dispatchEvent(new CustomEvent('padel:communications-created', { detail: { count: created.length } }));
   }, []);
@@ -61,19 +61,28 @@ export default function CommunicationBell({ compact = false }) {
       await load();
     };
     safeLoad();
-    window.addEventListener('padel:communications-refresh', safeLoad);
-    window.addEventListener('padel:communications-updated', safeLoad);
-    window.addEventListener('padel:profile-updated', safeLoad);
+    // Um único avanço de dia dispara profile-updated + communications-refresh
+    // duas vezes (fase rápida + fase secundária), o que sem debounce chamava
+    // as sete consultas de reconciliação até quatro vezes por clique.
+    let timer = null;
+    const debouncedLoad = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { timer = null; safeLoad(); }, 150);
+    };
+    window.addEventListener('padel:communications-refresh', debouncedLoad);
+    window.addEventListener('padel:communications-updated', debouncedLoad);
+    window.addEventListener('padel:profile-updated', debouncedLoad);
     window.addEventListener('focus', safeLoad);
     // A reconciliação continua orientada a eventos; o polling é apenas uma
     // rede de segurança e não precisa consultar sete coleções a cada 15 s.
     const intervalId = window.setInterval(safeLoad, 60000);
     return () => {
       active = false;
+      if (timer) clearTimeout(timer);
       window.clearInterval(intervalId);
-      window.removeEventListener('padel:communications-refresh', safeLoad);
-      window.removeEventListener('padel:communications-updated', safeLoad);
-      window.removeEventListener('padel:profile-updated', safeLoad);
+      window.removeEventListener('padel:communications-refresh', debouncedLoad);
+      window.removeEventListener('padel:communications-updated', debouncedLoad);
+      window.removeEventListener('padel:profile-updated', debouncedLoad);
       window.removeEventListener('focus', safeLoad);
     };
   }, [load]);

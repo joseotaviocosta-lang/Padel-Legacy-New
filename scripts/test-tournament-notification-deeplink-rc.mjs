@@ -60,7 +60,11 @@ const sourceChecks = [
   ['campanha ainda valida inscrição quando realmente aberta', campaignSource.includes('isPlayerRegisteredForTournament')],
   ['aviso contextual declara details mode', communicationsSource.includes("notification_type: 'TOURNAMENT_UPCOMING'") && communicationsSource.includes("type: 'TOURNAMENT_DETAILS'")],
   ['dedupe não usa mais a data diária', !communicationsSource.includes('`federation-tournament:${nextTournament.id}:${careerDate}`')],
-  ['persistência resiste à corrida entre sinos mobile e desktop', communicationsSource.includes('CareerMessage.upsert(stableId') && communicationsSource.includes('profile.id}-${contextKey}')],
+  // A auditoria de performance trocou o upsert individual por chamada por um
+  // lote único via localGame.batch (menos escritas completas do save por
+  // reconciliação), mas manteve o id estável/determinístico por contextKey —
+  // a garantia de idempotência entre sinos concorrentes continua a mesma.
+  ['persistência resiste à corrida entre sinos mobile e desktop', communicationsSource.includes("type: 'upsert', entityName: 'CareerMessage', id: stableId") && communicationsSource.includes('profile.id}-${contextKey}')],
   ['clique marca individualmente como lida', bellSource.includes('markCareerCommunicationRead(message)') && bellSource.indexOf('markCareerCommunicationRead(message)') < bellSource.indexOf('navigate(destination.route)')],
   ['script npm registrado', pkg.scripts?.['test:tournament-notification-deeplink'] === 'node scripts/test-tournament-notification-deeplink-rc.mjs'],
 ];

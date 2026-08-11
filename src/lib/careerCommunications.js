@@ -2,6 +2,11 @@ import { getPendingInterviews } from '@/lib/pressData.js';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerMemory, getCareerAgent } from '@/lib/careerMemory.js';
 import { getTournamentReminderMilestone, tournamentReminderContextKey } from '@/lib/tournamentNotifications.js';
+import {
+  isPostMatchInterviewMessage,
+  isValidPostMatchInterviewMessage,
+  matchIdFromInterviewMessage,
+} from '@/lib/postMatchInterview.js';
 
 export const COMMUNICATION_CATEGORIES = [
   { id: 'all', label: 'Todas' },
@@ -37,10 +42,19 @@ export function isCareerMessageUnread(message = {}) {
   return !normalizeCareerMessage(message).is_read;
 }
 
-export async function listCareerCommunications(profileId, limit = 120) {
+export function isCareerCommunicationVisible(message, context = {}) {
+  if (message?.status === 'invalidada' || message?.metadata?.interview_invalidated === true) return false;
+  if (!isPostMatchInterviewMessage(message)) return true;
+  if (!Array.isArray(context.matches) || !context.profile) return true;
+  return isValidPostMatchInterviewMessage(message, context.matches, context.profile);
+}
+
+export async function listCareerCommunications(profileId, limit = 120, context = {}) {
   if (!profileId) return [];
   const rows = await localGame.entities.CareerMessage.filter({ profile_id: profileId }, '-created_date', limit).catch(() => []);
-  return (rows || []).map(normalizeCareerMessage);
+  return (rows || [])
+    .map(normalizeCareerMessage)
+    .filter((message) => isCareerCommunicationVisible(message, context));
 }
 
 export async function markAllCommunicationsRead(profileId) {
@@ -64,16 +78,22 @@ export async function markCareerCommunicationRead(message) {
 export async function ensureContextualCareerCommunications(profile, context = {}) {
   if (!profile?.id) return [];
   const created = [];
+  // Cada condição de comunicação gravava seu próprio upsert individual —
+  // até 8-9 escritas completas do save por chamada, disparada a cada
+  // montagem de tela/refresh do sino de notificações. Acumula as operações
+  // e grava tudo em uma única transação via localGame.batch ao final.
+  const operations = [];
   const careerDate = profile.career_date || '2026-01-01';
   const existing = await listCareerCommunications(profile.id, 200);
   const existingKeys = new Set(existing.map((row) => row.metadata?.context_key).filter(Boolean));
+  const existingInterviewMatchIds = new Set(existing.map(matchIdFromInterviewMessage).filter(Boolean));
   const memory = buildCareerMemory(profile, context);
   const agent = getCareerAgent(profile);
 
-  const createOnce = async (contextKey, payload) => {
+  const createOnce = (contextKey, payload) => {
     if (!contextKey || existingKeys.has(contextKey)) return null;
     const stableId = `career-message-${profile.id}-${contextKey}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
-    const row = await localGame.entities.CareerMessage.upsert(stableId, {
+    const data = {
       id: stableId,
       profile_id: profile.id,
       message_type: payload.message_type || 'mensagem',
@@ -93,13 +113,37 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       actions: payload.actions || [],
       destination: payload.destination,
       metadata: { ...(payload.metadata || {}), context_key: contextKey },
-    }).catch(() => null);
-    if (row) {
-      created.push(normalizeCareerMessage(row));
-      existingKeys.add(contextKey);
-    }
-    return row;
+    };
+    operations.push({ type: 'upsert', entityName: 'CareerMessage', id: stableId, data });
+    created.push(normalizeCareerMessage(data));
+    existingKeys.add(contextKey);
+    return data;
   };
+
+  // Saves antigos podiam conter mensagens pós-jogo derivadas de treino. Elas
+  // são invalidadas no mesmo lote de reconciliação e deixam de aparecer em
+  // qualquer UI, sem apagar artigos/histórico válido de torneios.
+  if (Array.isArray(context.matches)) {
+    for (const message of existing) {
+      if (!isPostMatchInterviewMessage(message)) continue;
+      if (isValidPostMatchInterviewMessage(message, context.matches, profile)) continue;
+      operations.push({
+        type: 'update',
+        entityName: 'CareerMessage',
+        id: message.id,
+        data: {
+          status: 'invalidada',
+          is_read: true,
+          is_new: false,
+          metadata: {
+            ...(message.metadata || {}),
+            interview_invalidated: true,
+            invalidation_reason: 'non_official_match',
+          },
+        },
+      });
+    }
+  }
 
   if (profile.coach_id) {
     const fatigue = Number(profile.fatigue) || 0;
@@ -212,6 +256,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   });
   const answeredSources = new Set((context.pressArticles || []).map(article => article.source_event_id).filter(Boolean));
   for (const interview of pendingInterviews.filter(item => !answeredSources.has(item.sourceId)).slice(0, 3)) {
+    if (interview.matchId && existingInterviewMatchIds.has(String(interview.matchId))) continue;
     await createOnce(`press-interview:${interview.sourceId}`, {
       sender_type: 'imprensa',
       sender_name: 'Assessoria de Imprensa',
@@ -225,6 +270,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`,
         interview_id: interview.id,
         interview_source_id: interview.sourceId,
+        match_id: interview.matchId || null,
         memory_type: 'press_opportunity',
       },
     });
@@ -240,6 +286,11 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         : `Já reunimos dados de ${milestone} partidas. O aproveitamento recente está em ${memory.recentWinRate}%, então vou reforçar decisões mais seguras no próximo plano semanal.`,
       metadata: { memory_type: 'match_milestone', matches: milestone, recent_win_rate: memory.recentWinRate },
     });
+  }
+
+  if (operations.length) {
+    try { await localGame.batch(operations); }
+    catch (error) { console.warn('[CareerCommunications] falha ao gravar comunicações em lote:', error?.message || error); }
   }
 
   return created;

@@ -26,11 +26,12 @@ export function createDayAdvanceController({
     secondaryTail = secondaryTail
       .catch(() => null)
       .then(async () => {
+        const startedAt = performance.now();
         log('[GlobalAdvance] postDayEvents:start');
         try {
           const secondaryProfile = await processSecondary(descriptor.profile, descriptor.previousDate, descriptor.currentDate);
           if (secondaryProfile) publishProfile(secondaryProfile, 'day-advance-secondary');
-          log('[GlobalAdvance] postDayEvents:done');
+          log(`[GlobalAdvance] postDayEvents:done (${(performance.now() - startedAt).toFixed(1)}ms)`);
           return secondaryProfile;
         } catch (error) {
           console.error('[GlobalAdvance] pós-processamento diário falhou', error);
@@ -43,9 +44,10 @@ export function createDayAdvanceController({
 
   const flight = createSingleFlightCoordinator(async (profile) => {
     const previousDate = profile?.career_date;
+    const startedAt = performance.now();
     log('[GlobalAdvance] advanceCareerDay:start');
     const updated = await advanceCore(profile);
-    log('[GlobalAdvance] advanceCareerDay:done');
+    log(`[GlobalAdvance] advanceCareerDay:done (${(performance.now() - startedAt).toFixed(1)}ms)`);
     log('[GlobalAdvance] persist:done');
     publishProfile(updated, 'day-advance-core');
     completedCore = { profile: updated, previousDate, currentDate: updated?.career_date };

@@ -168,6 +168,9 @@ export async function processAiCareerStrategyMonth(profile, previousDate, curren
   let strategyChanges = 0;
   let stories = 0;
   const highlights = [];
+  // Cada atleta processado gerava sua própria escrita completa do save
+  // mensalmente. Acumula os patches e grava tudo em uma única bulkUpdate.
+  const athleteUpdates = [];
 
   for (const athlete of athletes) {
     const strategy = decideAiCareerStrategy(athlete, currentDate);
@@ -212,8 +215,12 @@ export async function processAiCareerStrategyMonth(profile, previousDate, curren
       updates.coach_months = safeNumber(athlete.coach_months, 0) + 1;
     }
 
-    await safeUpdate('AthleteProfile', athlete.id, updates);
+    athleteUpdates.push({ id: athlete.id, ...updates });
     processed += 1;
+  }
+  if (athleteUpdates.length) {
+    try { await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates); }
+    catch (error) { console.warn('[Game Core 36.6] Falha ao atualizar AthleteProfile em lote:', error?.message || error); }
   }
 
   const summary = { month: currentMonth, processed, coachChanges, strategyChanges, stories, highlights };

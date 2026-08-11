@@ -23,8 +23,8 @@ try {
   const { createKeyedInitializer } = await server.ssrLoadModule('/src/lib/keyedInitialization.js');
   const profile = { id: 'career-a-player', sport_name: 'Teste', career_date: '2026-01-01', coins: 999999, level: 'Lenda', xp: 999999, fan_appeal: 100, tournaments_won: 20 };
   assert(getPendingInterviews(profile, [], {}).length === 0, 'Carreira nova gerou entrevista.');
-  const win = { id: 'win-1', profile_id: profile.id, date: '2026-01-02', tournament_name: 'Teste Open', team_a: ['Teste', 'Dupla'], team_b: ['Rival A', 'Rival B'], winner: 'A' };
-  const loss = { ...win, id: 'loss-1', winner: 'B' };
+  const win = { id: 'win-1', profile_id: profile.id, date: '2026-01-02', tournament_id: 'teste-open-2026', tournament_name: 'Teste Open', match_type: 'tournament', status: 'completed', result: 'vitória', team_a: ['Teste', 'Dupla'], team_b: ['Rival A', 'Rival B'], winner: 'A' };
+  const loss = { ...win, id: 'loss-1', result: 'derrota', winner: 'B' };
   const profileAfterWin = { ...profile, career_date: '2026-01-02', wins: 1, matches_played: 1 };
   const profileAfterLoss = { ...profile, career_date: '2026-01-02', losses: 1, matches_played: 1 };
   const winInterviews = getPendingInterviews(profileAfterWin, [win], {});

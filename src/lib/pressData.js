@@ -1,4 +1,9 @@
 import { localGame } from '@/api/localGameClient.js';
+import {
+  isOfficialPlayerTournamentResult,
+  postMatchInterviewIdentity,
+  resolveOfficialPlayerOutcome,
+} from '@/lib/postMatchInterview.js';
 
 // ─── Journalists ─────────────────────────────────────────────────────────────
 // 12 journalists with distinct personalities and specialties.
@@ -297,7 +302,7 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
   );
 
   const ownMatches = (recordedMatchCount > 0
-    ? (recentMatches || []).filter(match => isCompletedPlayerMatch(match, profile, playerNames, careerDate))
+    ? (recentMatches || []).filter(match => isEligibleOfficialMatch(match, profile, careerDate))
     : []
   ).sort((a, b) => String(
     b.played_date || b.match_date || b.date || b.completed_at || b.created_date || ''
@@ -308,25 +313,23 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
   // Entrevistas pós-jogo só existem quando uma partida real do jogador foi registrada.
   const lastMatch = ownMatches[0];
   if (lastMatch) {
-    const outcome = resolvePlayerOutcome(lastMatch, playerNames);
+    const outcome = resolveOfficialPlayerOutcome(lastMatch);
     const matchDate = lastMatch.date || lastMatch.played_date || lastMatch.match_date || lastMatch.created_date;
-    const matchContext = lastMatch.tournament_name || lastMatch.match_type || lastMatch.event_name;
-    if ((outcome === 'win' || outcome === 'loss') && matchDate && matchContext) {
+    if ((outcome === 'win' || outcome === 'loss') && matchDate) {
       const opponent = resolveOpponentName(lastMatch, playerNames);
       if (opponent && opponent !== 'o adversário') {
-        const matchKey = lastMatch.id || `${lastMatch.date || careerDate}-${lastMatch.tournament_name || 'partida'}`;
+        const identity = postMatchInterviewIdentity(lastMatch.id);
         const championInterview = lastMatch.tournament_outcome === 'champion';
         const roundLabel = lastMatch.tournament_round || String(lastMatch.notes || '').split('|')[0]?.trim();
         const importance = lastMatch.press_importance || 'simple';
         pending.push({
-        id: `interview_match_${matchKey}`,
-        sourceId: `match:${matchKey}`,
+        ...identity,
+        matchId: lastMatch.id,
         type: 'interview',
         title: championInterview ? 'Entrevista Especial de Campeão' : outcome === 'win' ? 'Entrevista Pós-Vitória' : 'Entrevista Pós-Derrota',
         description: `A imprensa quer repercutir ${roundLabel || 'sua partida'} contra ${opponent}${['global', 'high'].includes(importance) ? ' em uma entrevista de grande repercussão' : ''}.`,
         questionCategory: outcome === 'win' ? 'post_win' : 'post_loss',
         opponent,
-        relatedEvent: `Partida:${matchKey}`,
         eventLabel: lastMatch.tournament_name || 'Partida Oficial',
         roundLabel,
         importance,
@@ -415,61 +418,13 @@ function asTeamNames(team) {
   return [];
 }
 
-function isPlayerMatch(match, profile, playerNames) {
-  if (!match) return false;
-  if (match.profile_id) return match.profile_id === profile.id;
-  const names = [
-    ...asTeamNames(match.team_a),
-    ...asTeamNames(match.team_b),
-    match.winner_name,
-    match.loser_name,
-  ].filter(Boolean).map(normalizeName);
-  return names.some(name => playerNames.has(name));
-}
-
-function isCompletedPlayerMatch(match, profile, playerNames, careerDate) {
-  if (!isPlayerMatch(match, profile, playerNames)) return false;
-
-  const status = normalizeName(match.status);
-  const completedStatus = ['completed', 'finished', 'played', 'concluido', 'concluído', 'finalizado'].includes(status);
-  const hasOfficialResult = Boolean(
-    match.winner ||
-    match.winner_id ||
-    match.winner_name ||
-    match.result ||
-    match.score ||
-    (Array.isArray(match.sets) && match.sets.length > 0)
-  );
-  if (!completedStatus && !hasOfficialResult) return false;
-
+function isEligibleOfficialMatch(match, profile, careerDate) {
+  if (!isOfficialPlayerTournamentResult(match, profile)) return false;
   const dateValue = match.played_date || match.match_date || match.date || match.completed_at || match.created_date;
   if (!dateValue) return false;
   const matchDate = String(dateValue).slice(0, 10);
   if (matchDate > String(careerDate).slice(0, 10)) return false;
-
-  return resolvePlayerOutcome(match, playerNames) !== null;
-}
-
-function resolvePlayerOutcome(match, playerNames) {
-  const explicit = normalizeName(match.result);
-  if (['vitória', 'vitoria', 'win', 'won'].includes(explicit)) return 'win';
-  if (['derrota', 'loss', 'lost'].includes(explicit)) return 'loss';
-
-  const teamA = asTeamNames(match.team_a).map(normalizeName);
-  const teamB = asTeamNames(match.team_b).map(normalizeName);
-  const playerInA = teamA.some(name => playerNames.has(name));
-  const playerInB = teamB.some(name => playerNames.has(name));
-  const winner = normalizeName(match.winner);
-
-  if (winner === 'a' || winner === 'team_a') return playerInA ? 'win' : playerInB ? 'loss' : null;
-  if (winner === 'b' || winner === 'team_b') return playerInB ? 'win' : playerInA ? 'loss' : null;
-  if (winner && playerNames.has(winner)) return 'win';
-
-  const winnerName = normalizeName(match.winner_name);
-  const loserName = normalizeName(match.loser_name);
-  if (winnerName && playerNames.has(winnerName)) return 'win';
-  if (loserName && playerNames.has(loserName)) return 'loss';
-  return null;
+  return true;
 }
 
 function resolveOpponentName(match, playerNames) {

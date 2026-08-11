@@ -118,14 +118,27 @@ function useCareerHeaderData() {
 
   useEffect(() => {
     void load();
-    const refresh = (event) => {
-      if (event?.detail?.profile) applyProfile(event.detail.profile);
+    // O avanço de um único dia publica padel:profile-updated duas vezes (fase
+    // rápida + fase secundária em segundo plano). Um pequeno debounce evita
+    // duas rodadas de auth.me()/getWorldRank para o mesmo clique.
+    let pendingEvent = null;
+    let timer = null;
+    const flush = () => {
+      timer = null;
+      if (pendingEvent?.detail?.profile) applyProfile(pendingEvent.detail.profile);
       else void load();
+      pendingEvent = null;
+    };
+    const refresh = (event) => {
+      pendingEvent = event;
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(flush, 150);
     };
     window.addEventListener('padel:profile-updated', refresh);
     window.addEventListener('padel:career-advanced', refresh);
     window.addEventListener('padel:onboarding-refresh', refresh);
     return () => {
+      if (timer) clearTimeout(timer);
       window.removeEventListener('padel:profile-updated', refresh);
       window.removeEventListener('padel:career-advanced', refresh);
       window.removeEventListener('padel:onboarding-refresh', refresh);

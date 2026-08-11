@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { ensureMyProfile } from '@/lib/padel';
+import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
 import { CardGrid, ModalShell, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
@@ -10,6 +10,11 @@ import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
 import { getPendingInterviews, pickJournalist, applyReputationEffects, reconcileJournalistCatalog } from '@/lib/pressData';
 import { useToast } from '@/components/ui/use-toast';
+import {
+  buildOfficialInterviewProgressPatch,
+  findOfficialInterviewMatch,
+  isPostMatchInterview,
+} from '@/lib/postMatchInterview.js';
 
 export default function Press() {
   const [searchParams] = useSearchParams();
@@ -117,8 +122,31 @@ export default function Press() {
     const { headline, content, tone, effects, journalist, interview } = result;
 
     try {
+      const postMatch = isPostMatchInterview(interview);
+      const officialMatch = postMatch ? findOfficialInterviewMatch(interview, recentMatches, profile) : null;
+      if (postMatch && !officialMatch) {
+        toast({ title: 'Entrevista indisponível', description: 'Esta partida não é um resultado oficial de torneio.', variant: 'destructive' });
+        return false;
+      }
+
+      const processedSources = new Set(profile.processed_press_interview_sources || []);
+      const alreadyProcessed = processedSources.has(interview.sourceId);
+      const answered = articles.find((item) => item.source_event_id === interview.sourceId && item.interview_status === 'answered');
+      if (answered && alreadyProcessed) return true;
+
+      if (postMatch && !alreadyProcessed) {
+        await incrementMissionProgress(
+          profile.id,
+          ['complete_interview', 'give_interview', 'respond_interview'],
+          1,
+          profile.career_date,
+          { triggerEventId: interview.sourceId },
+        );
+      }
+
       // Create article
-      const article = await localGame.entities.PressArticle.create({
+      const articleId = `press-response-${interview.id}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
+      const article = await localGame.entities.PressArticle.upsert(articleId, {
         profile_id: profile.id,
         journalist_id: journalist.id,
         journalist_name: journalist.name,
@@ -144,15 +172,23 @@ export default function Press() {
         is_read: false,
       });
 
-      // Apply reputation effects to profile
-      const profileUpdates = applyReputationEffects(profile, effects);
-      if (Object.keys(profileUpdates).length > 0) {
+      // Efeitos e contadores são aplicados uma única vez por sourceId, mesmo
+      // após retry/reload. O artigo usa upsert com a mesma identidade.
+      if (!alreadyProcessed) {
+        const progressPatch = postMatch
+          ? buildOfficialInterviewProgressPatch(profile, interview, recentMatches)
+          : {};
+        const profileUpdates = {
+          ...applyReputationEffects(profile, effects),
+          ...progressPatch,
+          processed_press_interview_sources: [...processedSources, interview.sourceId].slice(-200),
+        };
         const updated = await localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
         setProfile(updated);
       }
 
       // Update journalist bias
-      if (journalist.id) {
+      if (journalist.id && !alreadyProcessed) {
         try {
           const newBias = Math.max(-100, Math.min(100, (journalist.bias_toward_player || 0) + (effects.journalist_bias || 0)));
           await localGame.entities.PressJournalist.update(journalist.id, {
@@ -164,7 +200,7 @@ export default function Press() {
 
       // Atualiza a interface localmente sem desmontar e remontar o modal.
       setArticles(prev => [article, ...prev].slice(0, 50));
-      setJournalists(prev => prev.map(item =>
+      if (!alreadyProcessed) setJournalists(prev => prev.map(item =>
         item.id === journalist.id
           ? {
               ...item,

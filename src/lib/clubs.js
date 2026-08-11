@@ -175,7 +175,7 @@ export async function buildFacility(club, facility, profile) {
 
 // ── Monthly Evolution ──────────────────────────────────────────────────────
 
-export async function processClubMonthlyUpdate(club) {
+export async function processClubMonthlyUpdate(club, { commit = true } = {}) {
   const [staff, members] = await Promise.all([
     localGame.entities.ClubStaff.filter({ club_id: club.id }),
     localGame.entities.ClubMember.filter({ club_id: club.id }),
@@ -212,15 +212,23 @@ export async function processClubMonthlyUpdate(club) {
 
   const clubPoints = memberCount * 5 + reputation * 3 + (club.trophies || 0) * 20;
   const level = clubPoints >= 2000 ? 5 : clubPoints >= 1000 ? 4 : clubPoints >= 500 ? 3 : clubPoints >= 200 ? 2 : 1;
+  const patch = { reputation, member_count: memberCount, club_points: clubPoints, level, staff_count: staff.length };
 
-  return await localGame.entities.Club.update(club.id, {
-    reputation, member_count: memberCount, club_points: clubPoints, level, staff_count: staff.length,
-  });
+  if (!commit) return { id: club.id, ...patch };
+  return await localGame.entities.Club.update(club.id, patch);
 }
 
 export async function processAllClubsMonthly() {
   try {
     const clubs = await localGame.entities.Club.list();
-    await Promise.all((clubs || []).map(c => processClubMonthlyUpdate(c).catch(() => {})));
+    // Cada clube gravava seu próprio Club.update individual todo mês — até
+    // 72 escritas completas do save. Calcula os patches em paralelo (o
+    // crescimento de sócios de cada clube já é resolvido aqui, via
+    // ClubMember.bulkCreate/delete) e grava os clubes em uma única bulkUpdate.
+    const patches = await Promise.all(
+      (clubs || []).map(c => processClubMonthlyUpdate(c, { commit: false }).catch(() => null)),
+    );
+    const validPatches = patches.filter(Boolean);
+    if (validPatches.length) await localGame.entities.Club.bulkUpdate(validPatches);
   } catch (e) { console.error('processAllClubsMonthly', e); }
 }

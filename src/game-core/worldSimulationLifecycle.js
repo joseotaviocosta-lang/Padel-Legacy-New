@@ -225,6 +225,9 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
   const dayBucket = integer(`${currentDate}:bucket`, 0, 4);
   const selected = activeAthletes.filter((athlete, index) => (hash(athlete.id || index) % 5) === dayBucket).slice(0, 80);
 
+  // Uma gravação por atleta selecionado gerava até 80 escritas completas do
+  // save por dia. Acumula os patches e grava tudo em uma única bulkUpdate.
+  const athleteUpdates = [];
   for (const athlete of selected) {
     const activity = activityFor(athlete, currentDate);
     const result = evolutionFor(athlete, activity, currentDate);
@@ -266,8 +269,12 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
 
     if (result.overallDelta > 0) improvements += 1;
     earnings += result.wealthDelta;
-    await localGame.entities.AthleteProfile.update(athlete.id, updates);
+    athleteUpdates.push({ id: athlete.id, ...updates });
     processed += 1;
+  }
+
+  if (athleteUpdates.length) {
+    await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
   }
 
   let prospect = null;

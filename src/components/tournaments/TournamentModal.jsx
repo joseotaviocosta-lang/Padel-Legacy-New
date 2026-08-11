@@ -28,6 +28,10 @@ import { getQualifyingRoundLabels } from '@/gameplay/worldTour/QualifyingManager
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
 import { isPlayerRegisteredForTournament } from '@/lib/tournamentRegistration.js';
 import {
+  postMatchInterviewIdentity,
+  postMatchInterviewMessageId,
+} from '@/lib/postMatchInterview.js';
+import {
   TOURNAMENT_STRATEGY_OPTIONS, buildOpponentAnalysis, buildTournamentBracketHistory,
   buildTournamentCoachSuggestion, completePreTournamentMeeting, completeRoundPreparation,
   countMainDrawWins, createTournamentRun, getCurrentTournamentMatch, getTournamentRunPhase,
@@ -257,6 +261,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
   function buildRoundMediaOperations(match, won, nextRun) {
     const importance = nextRun.matches.find((item) => item.id === match.id)?.pressImportance || 'simple';
     const safeMatchId = match.id.replace(/[^a-zA-Z0-9_-]/g, '-');
+    const interview = postMatchInterviewIdentity(match.id);
+    const interviewMessageId = postMatchInterviewMessageId(profile.id, match.id);
     const next = getCurrentTournamentMatch(nextRun);
     const headline = won
       ? `${teamName(profile, partner)} avança no ${tournament.name}`
@@ -272,15 +278,15 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         journalist_name: 'Redação PL', published_date: profile.career_date,
         related_tournament_id: tournament.id, round_importance: importance,
       } },
-      { type: 'upsert', entityName: 'CareerMessage', id: `round-interview-${safeMatchId}`, data: {
+      { type: 'upsert', entityName: 'CareerMessage', id: interviewMessageId, data: {
         profile_id: profile.id, sender_type: 'imprensa', sender_name: 'Assessoria de Imprensa',
         title: nextRun.status === 'champion' ? 'Entrevista especial de campeão' : won ? 'Entrevista pós-vitória disponível' : 'Entrevista pós-eliminação disponível',
         content: `A imprensa quer repercutir ${match.round}. A importância desta rodada foi classificada como ${importance}.`,
         status: 'nao_lida', priority: ['global', 'high'].includes(importance) ? 'alta' : 'normal',
-        related_entity_type: 'PressInterview', related_entity_id: `interview_match_${match.id}`,
+        related_entity_type: 'PressInterview', related_entity_id: interview.id,
         is_read: false, is_new: true,
-        destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: `interview_match_${match.id}`, source: match.id } },
-        metadata: { route: `/press?tab=interviews&interview=interview_match_${encodeURIComponent(match.id)}&source=${encodeURIComponent(match.id)}`, interview_id: `interview_match_${match.id}`, interview_source_id: match.id, match_id: match.id, tournament_id: tournament.id, round: match.round },
+        destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: interview.id, source: interview.sourceId } },
+        metadata: { route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`, context_key: interview.contextKey, interview_id: interview.id, interview_source_id: interview.sourceId, match_id: match.id, tournament_id: tournament.id, round: match.round },
       } },
       { type: 'upsert', entityName: 'Post', id: `round-post-${safeMatchId}`, data: {
         author_name: 'Padel Legacy News', author_type: 'media', content: headline,
@@ -341,6 +347,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, o
         result: won ? 'vitória' : 'derrota',
         status: 'completed',
         match_type: freshMatch.stage === 'qualifying' ? 'qualifying' : 'tournament',
+        competition_type: 'tournament',
+        is_official: true,
+        is_tournament: true,
+        match_occurred: true,
         tournament_outcome: nextRun.status === 'champion' ? 'champion' : nextRun.status === 'eliminated' ? 'eliminated' : 'advanced',
         press_importance: completedMatch.pressImportance,
         stats_summary: stats,

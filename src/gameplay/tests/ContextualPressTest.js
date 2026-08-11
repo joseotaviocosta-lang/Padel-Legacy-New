@@ -35,18 +35,22 @@ export function runContextualPressTest() {
     id: 'match-win',
     profile_id: profile.id,
     date: '2026-01-02',
+    tournament_id: 'legacy-silver-teste-2026',
     tournament_name: 'Legacy Silver Teste',
+    match_type: 'tournament',
+    status: 'completed',
+    result: 'vitória',
     team_a: ['Atleta Teste', 'Parceiro'],
     team_b: ['Rival A', 'Rival B'],
     winner: 'A',
   };
-  const experiencedProfile = { ...profile, wins: 1, matches_played: 1 };
+  const experiencedProfile = { ...profile, career_date: '2026-01-02', wins: 1, matches_played: 1 };
   const afterWin = getPendingInterviews(experiencedProfile, [winMatch], { calendarEvents: [], partnership: null, registrations: [] });
   assert(afterWin.length === 1, 'Uma vitória deve gerar somente a entrevista pós-vitória quando não há outros eventos.');
   assert(afterWin[0].questionCategory === 'post_win', 'A vitória foi interpretada incorretamente.');
 
-  const lossMatch = { ...winMatch, id: 'match-loss', winner: 'B' };
-  const afterLoss = getPendingInterviews({ ...profile, losses: 1, matches_played: 1 }, [lossMatch], { calendarEvents: [], partnership: null, registrations: [] });
+  const lossMatch = { ...winMatch, id: 'match-loss', result: 'derrota', winner: 'B' };
+  const afterLoss = getPendingInterviews({ ...profile, career_date: '2026-01-02', losses: 1, matches_played: 1 }, [lossMatch], { calendarEvents: [], partnership: null, registrations: [] });
   assert(afterLoss[0]?.questionCategory === 'post_loss', 'A derrota foi interpretada incorretamente.');
 
   const otherPlayerMatch = { ...lossMatch, id: 'other', profile_id: 'other-player', team_a: ['Outro', 'Parceiro'] };

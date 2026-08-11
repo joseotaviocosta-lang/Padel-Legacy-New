@@ -12,6 +12,13 @@ function makeId(prefix = 'entity') {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+// Contador de gravações completas do save (uma por chamada a
+// mutateActiveCareer). Usado por benchmarks/instrumentação de performance
+// para medir amplificação de escrita; sem custo em produção além de um
+// incremento de inteiro.
+export const careerWriteStats = { count: 0 };
+export function resetCareerWriteStats() { careerWriteStats.count = 0; }
+
 function matches(row, query = {}) {
   return Object.entries(query || {}).every(([key, expected]) => {
     const actual = row?.[key];
@@ -81,6 +88,7 @@ export class CareerEntityRepository {
 
   async withCareer(mutator, { save = false } = {}) {
     if (save) {
+      careerWriteStats.count += 1;
       const transaction = await this.repository.mutateActiveCareer(async (career) => {
         if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
         return mutator(career);

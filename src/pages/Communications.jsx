@@ -45,7 +45,7 @@ export default function Communications() {
       setAgent(getCareerAgent(activeProfile));
       setMemoryHighlights(getMemoryHighlights(activeProfile, memory));
       await ensureContextualCareerCommunications(activeProfile, context);
-      setMessages(await listCareerCommunications(activeProfile.id));
+      setMessages(await listCareerCommunications(activeProfile.id, 120, { matches, profile: activeProfile }));
     }
     setLoading(false);
   };

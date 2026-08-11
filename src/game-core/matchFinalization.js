@@ -83,6 +83,10 @@ export function buildCompactMatchRecord({ profile, matchState, partnerName, oppo
     tactical_adjustment_history: (matchState.liveCoach?.adjustments || []).slice(-20),
     result: matchState.winner === 'A' ? 'vitória' : 'derrota',
     match_type: matchType,
+    competition_type: 'practice',
+    is_official: false,
+    is_tournament: false,
+    match_occurred: true,
     notes: `Sets: ${(matchState.setScores || []).map((set) => `${set.gamesA}-${set.gamesB}`).join(', ')}`,
   };
 }

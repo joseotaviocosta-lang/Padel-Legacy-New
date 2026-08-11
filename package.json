@@ -127,7 +127,10 @@
     "test:coach-discovery": "node scripts/test-coach-discovery-rc.mjs",
     "test:match-finalization-performance": "node scripts/benchmark-match-finalization-rc.mjs",
     "test:project-cleanup": "node scripts/test-project-cleanup-rc.mjs",
-    "test:fatigue-integrity": "node scripts/test-fatigue-integrity-rc.mjs"
+    "test:fatigue-integrity": "node scripts/test-fatigue-integrity-rc.mjs",
+    "test:post-match-interviews": "node scripts/test-post-match-interviews-rc.mjs",
+    "benchmark:time-advance": "node scripts/benchmark-time-advance-rc.mjs",
+    "test:time-advance-performance": "node scripts/test-time-advance-performance-rc.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

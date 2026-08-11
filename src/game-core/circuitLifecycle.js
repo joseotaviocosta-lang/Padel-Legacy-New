@@ -99,7 +99,9 @@ async function updateTeamRankings(athletes, currentDate) {
   const existing = (await localGame.entities.TeamRanking.list('-ranking_points', 500)) || [];
   const byKey = new Map(existing.map((team) => [team.team_key, team]));
   const processed = new Set();
-  let count = 0;
+  // Cada par de dupla gerava seu próprio create/update individual. Acumula
+  // as operações e grava tudo em uma única transação via localGame.batch.
+  const operations = [];
 
   for (const athlete of athletes) {
     const partnerId = athlete.ai_partner_id;
@@ -123,11 +125,14 @@ async function updateTeamRankings(athletes, currentDate) {
       season_id: currentDate.slice(0, 4),
     };
     const current = byKey.get(key);
-    if (current?.id && localGame.entities.TeamRanking.update) await localGame.entities.TeamRanking.update(current.id, payload);
-    else await localGame.entities.TeamRanking.create(payload);
-    count += 1;
+    if (current?.id && localGame.entities.TeamRanking.update) {
+      operations.push({ type: 'update', entityName: 'TeamRanking', id: current.id, data: payload });
+    } else {
+      operations.push({ type: 'create', entityName: 'TeamRanking', data: payload });
+    }
   }
-  return { processed: count };
+  if (operations.length) await localGame.batch(operations);
+  return { processed: operations.length };
 }
 
 export async function processWorldCircuit(profile, previousDate, currentDate) {
@@ -160,6 +165,10 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
   const raceOrdered = [...results].sort((a, b) => b.racePoints - a.racePoints);
   const racePositions = new Map(raceOrdered.map((entry, index) => [entry.athlete.id, index + 1]));
 
+  // Uma gravação individual por atleta classificado gerava até 160 escritas
+  // completas do save toda semana. Acumula os patches e grava tudo em uma
+  // única bulkUpdate ao final do laço.
+  const athleteUpdates = [];
   for (let index = 0; index < ordered.length; index += 1) {
     const entry = ordered[index];
     const athlete = entry.athlete;
@@ -171,7 +180,8 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     else if (age >= 31) careerPhase = 'Declínio';
     else if (age >= safeNumber(athlete.peak_age, 28) - 1) careerPhase = 'Auge';
 
-    await localGame.entities.AthleteProfile.update(athlete.id, {
+    athleteUpdates.push({
+      id: athlete.id,
       world_ranking_points: entry.generalPoints,
       ranking_points: entry.generalPoints,
       race_points: entry.racePoints,
@@ -189,6 +199,9 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       career_phase: careerPhase,
       last_circuit_update: currentDate,
     });
+  }
+  if (athleteUpdates.length) {
+    await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
   }
 
   const events = [];

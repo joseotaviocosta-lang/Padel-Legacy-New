@@ -118,6 +118,9 @@ export async function processCircuitLifeWeek(profile, previousDate, currentDate)
   let stories = 0;
   let changes = 0;
   const highlights = [];
+  // Cada atleta com mudança gerava sua própria escrita completa do save.
+  // Acumula os patches esparsos e grava tudo em uma única bulkUpdate.
+  const athleteUpdates = [];
 
   for (let index = 0; index < athletes.length; index += 1) {
     const athlete = athletes[index];
@@ -201,8 +204,12 @@ export async function processCircuitLifeWeek(profile, previousDate, currentDate)
 
     if (Object.keys(updates).length > 0) {
       updates.last_circuit_life_week = currentWeek;
-      await safeUpdate('AthleteProfile', athlete.id, updates);
+      athleteUpdates.push({ id: athlete.id, ...updates });
     }
+  }
+  if (athleteUpdates.length) {
+    try { await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates); }
+    catch (error) { console.warn('[Game Core 3.5] Falha ao atualizar AthleteProfile em lote:', error?.message || error); }
   }
 
   if (stories === 0 && ranked.length > 0) {

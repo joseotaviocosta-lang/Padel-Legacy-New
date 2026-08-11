@@ -42,7 +42,7 @@ async function resolveInjuryCalendarConflicts(profile) {
  * Única porta de entrada para avançar o calendário do jogador.
  * A partir da versão 2.2, os demais sistemas são coordenados pelo GameState.
  */
-export async function advanceCareerDay(profile, { deferGameState = false, deferGlobalProcessing = false } = {}) {
+export async function advanceCareerDay(profile, { deferGameState = false, deferGlobalProcessing = false, profiler = null } = {}) {
   let currentProfile = profile;
   const compacted = compactGameStateReport(profile?.game_state_last_report);
   if (profile?.id && compacted.changed) {
@@ -52,10 +52,12 @@ export async function advanceCareerDay(profile, { deferGameState = false, deferG
   }
 
   const oldDate = currentProfile?.career_date || CAREER_START_DATE;
-  const advancedProfile = await advanceDay(currentProfile, { deferGlobalProcessing });
+  const advancedProfile = await advanceDay(currentProfile, { deferGlobalProcessing, profiler });
   const newDate = advancedProfile?.career_date || oldDate;
   if (deferGameState) return advancedProfile;
-  const result = await processGameStateDay(advancedProfile, oldDate, newDate);
+  const result = profiler
+    ? await profiler.measure('gameState', () => processGameStateDay(advancedProfile, oldDate, newDate))
+    : await processGameStateDay(advancedProfile, oldDate, newDate);
   return result.profile || advancedProfile;
 }
 

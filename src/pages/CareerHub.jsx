@@ -28,7 +28,7 @@ import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js'
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
 import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';
-import { ensureContextualCareerCommunications, normalizeCareerMessage } from '@/lib/careerCommunications.js';
+import { ensureContextualCareerCommunications, isCareerCommunicationVisible, normalizeCareerMessage } from '@/lib/careerCommunications.js';
 import SmartAgenda from '@/components/career/SmartAgenda';
 import CareerMomentBanner from '@/components/career/CareerMomentBanner';
 import { deriveCareerMoment } from '@/lib/careerMoments.js';
@@ -151,7 +151,9 @@ export default function CareerHub() {
         setWorldRank(rank || { rank: 0, total: 0 });
         setRecentTrainings((trainings || []).slice(0, 6));
         setPosts(latestPosts || []);
-        const normalizedMessages = (inboxRows || []).map(normalizeCareerMessage);
+        const normalizedMessages = (inboxRows || [])
+          .map(normalizeCareerMessage)
+          .filter((message) => isCareerCommunicationVisible(message, { matches, profile: p }));
         setMessages(normalizedMessages);
         setPartnerOffers(offerRows || []);
         setWorldSnapshot(livingSnapshot || null);
@@ -165,6 +167,7 @@ export default function CareerHub() {
         }).length;
         const contextual = await ensureContextualCareerCommunications(p, {
           nextTournament: (upcoming || []).filter((item) => item.start_date >= (p.career_date || '2026-01-01')).sort((a, b) => a.start_date.localeCompare(b.start_date))[0],
+          matches,
           recentWins,
           partnerName: p.partner_name,
         });

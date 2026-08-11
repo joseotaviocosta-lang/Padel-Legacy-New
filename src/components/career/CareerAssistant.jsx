@@ -5,6 +5,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { buildCareerAssistantInsights, assistantGreeting } from '@/lib/careerAssistant.js';
 import { StatusBadge } from '@/components/design-system';
+import { isCareerCommunicationVisible } from '@/lib/careerCommunications.js';
 
 const toneClasses = {
   danger: 'border-red-500/25 bg-red-500/8',
@@ -28,13 +29,16 @@ export default function CareerAssistant() {
       const current = await ensureMyProfile(user);
       if (!current?.id) return;
       setProfile(current);
-      const [messages, tournaments, missions, progressRows] = await Promise.all([
+      const [messages, tournaments, missions, progressRows, matches] = await Promise.all([
         localGame.entities.CareerMessage.filter({ profile_id: current.id }, '-created_date', 80).catch(() => []),
         localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
         localGame.entities.Mission.filter({ is_active: true }).catch(() => []),
         localGame.entities.MissionProgress.filter({ profile_id: current.id }).catch(() => []),
+        localGame.entities.Match.filter({ profile_id: current.id }, '-created_date', 40).catch(() => []),
       ]);
-      const unreadCount = (messages || []).filter((message) => ['nao_lida', 'decisao_pendente'].includes(message.status) || (!message.is_read && !message.status)).length;
+      const unreadCount = (messages || [])
+        .filter((message) => isCareerCommunicationVisible(message, { matches, profile: current }))
+        .filter((message) => ['nao_lida', 'decisao_pendente'].includes(message.status) || (!message.is_read && !message.status)).length;
       const nextTournament = (tournaments || [])
         .filter((tournament) => tournament.start_date && tournament.start_date >= (current.career_date || '2026-01-01'))
         .sort((a, b) => a.start_date.localeCompare(b.start_date))[0] || null;
@@ -51,11 +55,19 @@ export default function CareerAssistant() {
 
   useEffect(() => { load(); }, [load, location.pathname]);
   useEffect(() => {
-    const refresh = () => load();
+    // Um avanço de dia dispara profile-updated duas vezes (fase rápida +
+    // secundária); sem debounce isso repetia as quatro consultas em paralelo
+    // duas vezes para o mesmo clique.
+    let timer = null;
+    const refresh = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { timer = null; load(); }, 150);
+    };
     window.addEventListener('padel:profile-updated', refresh);
     window.addEventListener('padel:communications-updated', refresh);
     window.addEventListener('padel:mission-completed', refresh);
     return () => {
+      if (timer) clearTimeout(timer);
       window.removeEventListener('padel:profile-updated', refresh);
       window.removeEventListener('padel:communications-updated', refresh);
       window.removeEventListener('padel:mission-completed', refresh);

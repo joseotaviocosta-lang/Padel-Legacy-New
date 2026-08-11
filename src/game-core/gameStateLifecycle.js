@@ -1,7 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { CAREER_START_DATE, daysBetween } from '@/lib/career';
 import { safeName } from './utils';
-import { tickWorldAfterMatch } from './world';
+import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
 import { processPartnerDay } from './partnerLifecycle';
 import { simulateWorldDay } from './worldSimulationLifecycle';
 import { processAiPartnershipMarket } from './aiPartnershipLifecycle';
@@ -41,7 +41,8 @@ function consumeLifecycleResult(result, fallbackProfile) {
  * Processa todos os sistemas que devem reagir ao avanço de um dia.
  * Esta função é o ponto central do estado global do jogo a partir da versão 2.2.
  */
-export async function processGameStateDay(profile, previousDate, currentDate) {
+export async function processGameStateDay(profile, previousDate, currentDate, { profiler = null } = {}) {
+  const stage = profiler ? profiler.measure : (_name, task) => task();
   let updatedProfile = profile;
   const report = {
     previousDate,
@@ -61,7 +62,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
   };
 
   try {
-    updatedProfile = await processPartnerDay(updatedProfile, previousDate, currentDate);
+    updatedProfile = await stage('partner', () => processPartnerDay(updatedProfile, previousDate, currentDate));
     report.partner = { processed: true };
   } catch (error) {
     report.partner = { processed: false, error: error?.message || String(error) };
@@ -70,7 +71,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await simulateWorldDay(updatedProfile, previousDate, currentDate),
+      await stage('world', () => simulateWorldDay(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -82,7 +83,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await processAiPartnershipMarket(updatedProfile, previousDate, currentDate),
+      await stage('aiPartnerships', () => processAiPartnershipMarket(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -94,7 +95,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await processAiCareerStrategyMonth(updatedProfile, previousDate, currentDate),
+      await stage('aiCareerStrategy', () => processAiCareerStrategyMonth(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -106,7 +107,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await processWorldCircuit(updatedProfile, previousDate, currentDate),
+      await stage('circuit', () => processWorldCircuit(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -117,7 +118,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
   }
   try {
     const result = consumeLifecycleResult(
-      await processCircuitLifeWeek(updatedProfile, previousDate, currentDate),
+      await stage('circuitLife', () => processCircuitLifeWeek(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -129,7 +130,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await processAthletePersonalityWeek(updatedProfile, previousDate, currentDate),
+      await stage('athleteIntelligence', () => processAthletePersonalityWeek(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -141,7 +142,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await processInjuryRecoveryDay(updatedProfile, previousDate, currentDate),
+      await stage('medical', () => processInjuryRecoveryDay(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -152,7 +153,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
   }
 
   try {
-    report.relationships = await processRelationshipWeek(updatedProfile, previousDate, currentDate);
+    report.relationships = await stage('relationships', () => processRelationshipWeek(updatedProfile, previousDate, currentDate));
   } catch (error) {
     report.relationships = { processed: false, error: error?.message || String(error) };
     console.warn('[Game Core] Relacionamentos não processados:', error);
@@ -160,7 +161,7 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
 
   try {
     const result = consumeLifecycleResult(
-      await processStaffDay(updatedProfile, previousDate, currentDate),
+      await stage('staff', () => processStaffDay(updatedProfile, previousDate, currentDate)),
       updatedProfile,
     );
     updatedProfile = result.profile;
@@ -170,17 +171,18 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
     console.warn('[Game Core] Equipe técnica não processada:', error);
   }
 
-  // Mantém o sistema mundial já existente funcionando em paralelo durante a migração.
   try {
-    await tickWorldAfterMatch(updatedProfile);
+    const summary = await stage('livingWorld', () => processLivingWorldDay(updatedProfile, currentDate));
+    report.livingWorld = compactGameStateReport(summary).report;
   } catch (error) {
-    console.warn('[Game Core] Tick legado do mundo não processado:', error);
+    report.livingWorld = { processed: false, error: error?.message || String(error) };
+    console.warn('[Game Core] Universo vivo não processado:', error);
   }
 
   const elapsed = daysBetween(CAREER_START_DATE, currentDate);
   if (elapsed > 0 && elapsed % 7 === 0) {
     report.weeklySummary = true;
-    await createOptional('CareerMessage', {
+    await stage('notifications', () => createOptional('CareerMessage', {
       profile_id: updatedProfile.id,
       sender_name: 'Equipe Padel Legacy',
       subject: 'Resumo semanal do universo',
@@ -188,29 +190,29 @@ export async function processGameStateDay(profile, previousDate, currentDate) {
       status: 'nao_lida',
       message_type: 'weekly_summary',
       created_date: new Date().toISOString(),
-    });
+    }));
   }
 
   if (monthChanged(previousDate, currentDate)) {
     report.monthStarted = true;
-    await createOptional('HistoryEntry', {
+    await stage('notifications', () => createOptional('HistoryEntry', {
       profile_id: updatedProfile.id,
       year: Number(currentDate.slice(0, 4)),
       event_date: currentDate,
       title: `Novo mês da carreira — ${currentDate.slice(0, 7)}`,
       description: `${safeName(updatedProfile)} iniciou um novo mês. Mercado, atletas, contratos e tendências mundiais foram sincronizados pelo GameState.`,
       category: 'carreira',
-    });
+    }));
   }
 
   if (updatedProfile?.id) {
     try {
       const persistedReport = compactGameStateReport(report).report;
-      updatedProfile = await localGame.entities.PlayerProfile.update(updatedProfile.id, {
+      updatedProfile = await stage('persist', () => localGame.entities.PlayerProfile.update(updatedProfile.id, {
         game_state_version: '3.5.0',
         game_state_last_processed_date: currentDate,
         game_state_last_report: persistedReport,
-      });
+      }));
     } catch (error) {
       console.warn('[Game Core] Metadados do GameState não foram salvos:', error);
     }

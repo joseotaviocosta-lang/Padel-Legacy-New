@@ -5,9 +5,9 @@ const career = fs.readFileSync(new URL('./test-career-systems.mjs', import.meta.
 const comms = fs.readFileSync(new URL('../src/lib/careerCommunications.js', import.meta.url), 'utf8');
 const pkg = JSON.parse(fs.readFileSync(new URL('../package.json', import.meta.url), 'utf8'));
 const checks = [
-  ['RC hotfix version', pkg.version === '0.9.0-rc.1.1'],
+  ['RC version preserved', pkg.version.startsWith('0.9.0-rc.')],
   ['phantom guard preserved', press.includes('recordedMatchCount > 0')],
-  ['completed match validation preserved', press.includes('isCompletedPlayerMatch(match, profile, playerNames, careerDate)')],
+  ['official match validation centralized', press.includes('isOfficialPlayerTournamentResult(match, profile)')],
   ['post-win coverage uses persisted stats', career.includes('profileAfterWin') && career.includes('wins: 1, matches_played: 1')],
   ['post-loss coverage uses persisted stats', career.includes('profileAfterLoss') && career.includes('losses: 1, matches_played: 1')],
   ['unique interview assertion', career.includes('winInterviews.length === 1') && career.includes('lossInterviews.length === 1')],
