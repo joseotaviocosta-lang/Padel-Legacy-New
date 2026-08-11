@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { X, Check, Dumbbell } from 'lucide-react';
+import { Check, Dumbbell } from 'lucide-react';
+import { ModalShell } from '@/components/design-system';
 
 const DURATION = 0; // instantâneo
 
@@ -27,28 +28,17 @@ export default function TrainingTimerModal({ training, onComplete, onCancel }) {
   const done = seconds === 0;
 
   return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4"
+    <ModalShell
+      open
+      onClose={onCancel}
+      closeOnBackdrop={done}
+      closeOnEscape={done}
+      size="sm"
+      className="text-center"
     >
-      <motion.div
-        initial={{ scale: 0.92, y: 16 }}
-        animate={{ scale: 1, y: 0 }}
-        className="glass rounded-3xl p-8 max-w-sm w-full text-center relative overflow-hidden"
-      >
+      <div className="relative overflow-hidden -m-4 p-4 sm:-m-5 sm:p-5">
         {/* glow bg */}
         <div className="absolute -top-20 left-1/2 -translate-x-1/2 h-40 w-40 bg-primary/10 rounded-full blur-3xl pointer-events-none" />
-
-        {/* close */}
-        {!done && (
-          <button
-            onClick={onCancel}
-            className="absolute top-4 right-4 text-muted-foreground hover:text-foreground transition-colors z-10"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        )}
 
         {/* animation area */}
         <div className="relative h-48 flex items-end justify-center mb-6">
@@ -121,7 +111,7 @@ export default function TrainingTimerModal({ training, onComplete, onCancel }) {
             Cancelar treino
           </button>
         )}
-      </motion.div>
-    </motion.div>
+      </div>
+    </ModalShell>
   );
 }

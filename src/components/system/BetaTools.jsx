@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
-import { createPortal } from 'react-dom';
-import { Activity, AlertTriangle, BarChart3, BookOpen, Bug, CheckCircle2, Clock3, Copy, Download, HardDrive, ListChecks, MessageSquarePlus, Play, RefreshCw, RotateCcw, ShieldCheck, Star, Trash2, Wrench, X } from 'lucide-react';
+import { Activity, AlertTriangle, BarChart3, BookOpen, Bug, CheckCircle2, Clock3, Copy, Download, HardDrive, ListChecks, MessageSquarePlus, Play, RefreshCw, RotateCcw, ShieldCheck, Star, Trash2, Wrench } from 'lucide-react';
+import { ModalShell } from '@/components/design-system';
 import { useLocation } from 'react-router-dom';
 import { useCareer } from '@/careers/useCareer.js';
 import { buildBetaDiagnosticReport, downloadBetaDiagnosticReport, installBetaDiagnostics } from '@/lib/betaDiagnostics.js';
@@ -84,20 +84,6 @@ export default function BetaTools({ compact = false }) {
     window.addEventListener('padel:beta-analytics-updated', refresh);
     const timer = window.setInterval(refresh, 15000);
     return () => { window.removeEventListener('padel:beta-analytics-updated', refresh); window.clearInterval(timer); };
-  }, [open]);
-
-  useEffect(() => {
-    if (!open) return undefined;
-    const previousOverflow = document.body.style.overflow;
-    const handleKeyDown = event => {
-      if (event.key === 'Escape') setOpen(false);
-    };
-    document.body.style.overflow = 'hidden';
-    window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.body.style.overflow = previousOverflow;
-      window.removeEventListener('keydown', handleKeyDown);
-    };
   }, [open]);
 
   useEffect(() => {
@@ -289,15 +275,14 @@ export default function BetaTools({ compact = false }) {
       <button type="button" onClick={() => setOpen(true)} title="Relatar problema da versão beta" className={`inline-flex items-center justify-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 font-black text-amber-300 transition-colors hover:bg-amber-400/15 ${compact ? 'h-9 w-9 p-0' : 'px-3 py-2 text-xs'}`}>
         <Bug className="h-4 w-4" /> {!compact && 'BETA'}
       </button>
-      {open && typeof document !== 'undefined' && createPortal((
-        <div className="fixed inset-0 z-[100] flex items-end justify-center overflow-hidden bg-black/65 p-0 backdrop-blur-sm sm:items-center sm:p-4" role="dialog" aria-modal="true" aria-label="Ferramentas da versão beta">
-          <section className="flex h-[calc(100dvh-0.75rem)] min-h-0 w-full max-w-2xl flex-col overflow-hidden rounded-t-3xl border border-border bg-card shadow-2xl sm:h-auto sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl">
-            <div className="flex shrink-0 items-start justify-between gap-4 border-b border-border bg-card p-4 sm:p-5">
-              <div><p className="text-[10px] font-black uppercase tracking-[.2em] text-amber-300">Padel Legacy Beta</p><h2 className="mt-1 text-lg font-black">Central de testes</h2></div>
-              <button type="button" onClick={() => setOpen(false)} aria-label="Fechar" className="rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
-            </div>
-
-            <div className="flex shrink-0 gap-2 overflow-x-auto border-b border-border bg-card px-4 py-3 sm:px-5">
+      <ModalShell
+        open={open}
+        onClose={() => setOpen(false)}
+        title="Central de testes"
+        description="Padel Legacy Beta"
+        size="lg"
+      >
+            <div className="sticky -top-4 z-10 -mx-4 mb-4 flex gap-2 overflow-x-auto border-b border-border bg-card px-4 py-3 sm:-top-5 sm:-mx-5 sm:px-5">
               {[
                 ['feedback', 'Relatar problema'],
                 ['suggestion', 'Sugerir melhoria'],
@@ -316,7 +301,7 @@ export default function BetaTools({ compact = false }) {
               ))}
             </div>
 
-            <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:p-5">
+            <div>
               {mode === 'feedback' && (
                 <div className="space-y-4">
                   <div className="rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-3 text-xs text-muted-foreground">
@@ -715,9 +700,7 @@ export default function BetaTools({ compact = false }) {
                 </div>
               )}
             </div>
-          </section>
-        </div>
-      ), document.body)}
+      </ModalShell>
     </>
   );
 }

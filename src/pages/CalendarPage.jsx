@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
 import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
-import { Page, PageHeader, StatCard, Surface, StatusBadge } from '@/components/design-system';
+import { Page, PageHeader, StatCard, Surface, StatusBadge, ModalShell } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
 import { advanceCareerDayOnce, advanceCareerDays, advanceCareerUntilRecovered, finalizeCareerAdvanceRange, hasActiveInjury } from '@/game-core';
@@ -48,6 +48,7 @@ export default function CalendarPage() {
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:00:00'), { weekStartsOn: 0 }));
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDayData, setSelectedDayData] = useState({ events: [], matches: [], trainings: [] });
+  const [dayDetailsOpen, setDayDetailsOpen] = useState(false);
   const [registrationTournament, setRegistrationTournament] = useState(null);
   const [activeTournament, setActiveTournament] = useState(null);
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
@@ -103,6 +104,7 @@ export default function CalendarPage() {
     setSelectedDay(date);
     setWeekStart(startOfWeek(date, { weekStartsOn: 0 }));
     setVisibleMonth(date);
+    setDayDetailsOpen(true);
   }, [calendarEvents, loading, searchParams]);
 
   // Update selected day data when day or data changes
@@ -314,6 +316,7 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
 
   function handleDayClick(day, data) {
     setSelectedDay(day);
+    setDayDetailsOpen(true);
   }
 
   function handlePlayTournament(event) {
@@ -411,14 +414,19 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
       /> : <CalendarMonthView month={visibleMonth} onMonthChange={setVisibleMonth} careerDate={careerDate} events={calendarEvents} injuryReturnDate={profile.injury_return_date || profile.injured_until} onDayClick={handleDayClick} />}
 
       {/* Selected day details */}
-      {selectedDay && (
+      <ModalShell
+        open={dayDetailsOpen && Boolean(selectedDay)}
+        onClose={() => setDayDetailsOpen(false)}
+        title="Compromissos do dia"
+        size="sm"
+      >
         <DayEventList
           day={selectedDay}
           dayData={selectedDayData}
-          onResolve={handleResolveDecision}
-          onPlayTournament={handlePlayTournament}
+          onResolve={(event, action) => { handleResolveDecision(event, action); setDayDetailsOpen(false); }}
+          onPlayTournament={(event) => { handlePlayTournament(event); setDayDetailsOpen(false); }}
         />
-      )}
+      </ModalShell>
 
       <CalendarPlanner profile={profile} selectedDate={selectedDay ? format(selectedDay, 'yyyy-MM-dd') : careerDate} events={calendarEvents} onSchedule={handleScheduleActivity} onCancel={handleCancelActivity} onEdit={handleEditActivity} busy={planning} />
 

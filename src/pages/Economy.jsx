@@ -35,7 +35,12 @@ export default function Economy() {
   const [investments, setInvestments] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState(() => TABS.some((item) => item.id === searchParams.get('view')) ? searchParams.get('view') : 'dashboard');
+  const [tab, setTab] = useState(() => {
+    const requestedView = searchParams.get('view');
+    if (TABS.some((item) => item.id === requestedView)) return requestedView;
+    if (searchParams.get('sponsor') || searchParams.get('contract')) return 'sponsors';
+    return 'dashboard';
+  });
   const [busy, setBusy] = useState(null);
   const [sponsorReport, setSponsorReport] = useState(null);
   const { toast } = useToast();
@@ -43,7 +48,10 @@ export default function Economy() {
   useEffect(() => { load(); }, []);
   useEffect(() => {
     const requestedView = searchParams.get('view');
-    if (TABS.some((item) => item.id === requestedView)) setTab(requestedView);
+    if (TABS.some((item) => item.id === requestedView)) { setTab(requestedView); return; }
+    // Deep links de patrocínio/contrato (sino de notificações) não passam
+    // `view` explicitamente — inferimos a aba de patrocinadores nesse caso.
+    if (searchParams.get('sponsor') || searchParams.get('contract')) setTab('sponsors');
   }, [searchParams]);
 
   async function load() {

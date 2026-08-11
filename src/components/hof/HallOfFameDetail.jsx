@@ -1,6 +1,7 @@
 import React from 'react';
-import { X, Trophy, Calendar, Award, Video, Play, TrendingUp } from 'lucide-react';
+import { Trophy, Calendar, Award, Video, Play, TrendingUp } from 'lucide-react';
 import { HOF_CATEGORY_CONFIG } from '@/lib/hallOfFameData';
+import { ModalShell } from '@/components/design-system';
 
 export default function HallOfFameDetail({ entry, onClose }) {
   if (!entry) return null;
@@ -9,18 +10,11 @@ export default function HallOfFameDetail({ entry, onClose }) {
   const compStats = entry.comparison_stats || {};
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center p-0 md:p-4" onClick={onClose}>
-      <div className="absolute inset-0 bg-black/80 backdrop-blur-sm animate-fade-in" />
-      <div
-        className="relative w-full max-w-2xl glass-premium rounded-t-3xl md:rounded-3xl max-h-[90vh] overflow-y-auto scrollbar-none animate-slide-up"
-        onClick={e => e.stopPropagation()}
-      >
+    <ModalShell open onClose={onClose} size="md">
+      <div className="-m-4 sm:-m-5">
         {/* Hero header */}
         <div className="relative p-5 md:p-6 border-b border-border/40">
           <div className={`absolute -top-10 -right-10 h-40 w-40 ${cat.bg} rounded-full blur-3xl opacity-40`} />
-          <button onClick={onClose} className="absolute top-4 right-4 p-1.5 rounded-lg hover:bg-secondary/60 transition-colors z-10">
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
           <div className="relative flex items-start gap-4">
             <div className={`h-16 w-16 rounded-2xl ${cat.bg} flex items-center justify-center shrink-0 border ${cat.border}`}>
               <Trophy className={`h-8 w-8 ${cat.color}`} />
@@ -161,6 +155,6 @@ export default function HallOfFameDetail({ entry, onClose }) {
           )}
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }

@@ -3,6 +3,7 @@ import { Target, Plus, Trash2, CheckCircle, Clock, TrendingUp } from 'lucide-rea
 import { ATTRIBUTES } from '@/lib/padel';
 import { createGoal, deleteGoal } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
+import { ModalShell } from '@/components/design-system';
 
 // ── Development Goals ────────────────────────────────────────────────────
 // Players can set attribute targets with deadlines. The component shows
@@ -56,7 +57,7 @@ export default function DevelopmentGoals({ profile, onProfileUpdate }) {
           <p className="text-[10px] text-muted-foreground mt-0.5">Defina objetivos de atributos para acompanhar sua evolução</p>
         </div>
         <button
-          onClick={() => setShowForm(!showForm)}
+          onClick={() => setShowForm(true)}
           className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-all"
         >
           <Plus className="h-3.5 w-3.5" /> Nova Meta
@@ -64,63 +65,69 @@ export default function DevelopmentGoals({ profile, onProfileUpdate }) {
       </div>
 
       {/* Create form */}
-      {showForm && (
-        <div className="glass rounded-2xl p-4 border border-primary/30 animate-fade-in">
-          <div className="space-y-3">
-            <div>
-              <label className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Atributo</label>
-              <select
-                value={newAttr}
-                onChange={e => {
-                  setNewAttr(e.target.value);
-                  const current = Number(profile?.[e.target.value]) || 0;
-                  setNewTarget(Math.min(100, current + 10));
-                }}
-                className="w-full mt-1 bg-secondary/60 rounded-xl px-3 py-2 text-sm border border-border/40 focus:border-primary/40 outline-none"
-              >
-                {ATTRIBUTES.map(a => (
-                  <option key={a.key} value={a.key}>{a.label} (atual: {Number(profile?.[a.key]) || 0})</option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Alvo: {newTarget}/100</label>
-              <input
-                type="range"
-                min={Math.min(100, (Number(profile?.[newAttr]) || 0) + 1)}
-                max={100}
-                value={newTarget}
-                onChange={e => setNewTarget(Number(e.target.value))}
-                className="w-full mt-1 accent-primary"
-              />
-            </div>
-            <div>
-              <label className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Prazo (opcional)</label>
-              <input
-                type="date"
-                value={newDeadline}
-                onChange={e => setNewDeadline(e.target.value)}
-                className="w-full mt-1 bg-secondary/60 rounded-xl px-3 py-2 text-sm border border-border/40 focus:border-primary/40 outline-none"
-              />
-            </div>
-            <div className="flex gap-2">
-              <button
-                onClick={handleCreate}
-                disabled={busy}
-                className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all disabled:opacity-40"
-              >
-                {busy ? 'Criando...' : 'Criar Meta'}
-              </button>
-              <button
-                onClick={() => setShowForm(false)}
-                className="px-4 py-2.5 rounded-xl glass text-muted-foreground font-semibold text-sm hover:text-foreground transition-all"
-              >
-                Cancelar
-              </button>
-            </div>
+      <ModalShell
+        open={showForm}
+        onClose={() => setShowForm(false)}
+        title="Nova meta de desenvolvimento"
+        description="Defina um objetivo de atributo para acompanhar sua evolução."
+        size="sm"
+        footer={(
+          <div className="flex gap-2">
+            <button
+              onClick={handleCreate}
+              disabled={busy}
+              className="flex-1 py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-all disabled:opacity-40"
+            >
+              {busy ? 'Criando...' : 'Criar Meta'}
+            </button>
+            <button
+              onClick={() => setShowForm(false)}
+              className="px-4 py-2.5 rounded-xl glass text-muted-foreground font-semibold text-sm hover:text-foreground transition-all"
+            >
+              Cancelar
+            </button>
+          </div>
+        )}
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Atributo</label>
+            <select
+              value={newAttr}
+              onChange={e => {
+                setNewAttr(e.target.value);
+                const current = Number(profile?.[e.target.value]) || 0;
+                setNewTarget(Math.min(100, current + 10));
+              }}
+              className="w-full mt-1 bg-secondary/60 rounded-xl px-3 py-2 text-sm border border-border/40 focus:border-primary/40 outline-none"
+            >
+              {ATTRIBUTES.map(a => (
+                <option key={a.key} value={a.key}>{a.label} (atual: {Number(profile?.[a.key]) || 0})</option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Alvo: {newTarget}/100</label>
+            <input
+              type="range"
+              min={Math.min(100, (Number(profile?.[newAttr]) || 0) + 1)}
+              max={100}
+              value={newTarget}
+              onChange={e => setNewTarget(Number(e.target.value))}
+              className="w-full mt-1 accent-primary"
+            />
+          </div>
+          <div>
+            <label className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Prazo (opcional)</label>
+            <input
+              type="date"
+              value={newDeadline}
+              onChange={e => setNewDeadline(e.target.value)}
+              className="w-full mt-1 bg-secondary/60 rounded-xl px-3 py-2 text-sm border border-border/40 focus:border-primary/40 outline-none"
+            />
           </div>
         </div>
-      )}
+      </ModalShell>
 
       {/* Goals list */}
       {goals.length === 0 ? (

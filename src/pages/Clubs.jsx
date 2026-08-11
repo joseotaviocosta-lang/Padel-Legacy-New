@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Plus, MapPin, Users, Trophy, X, Crown, Star } from 'lucide-react';
+import { Plus, MapPin, Users, Trophy, Crown, Star } from 'lucide-react';
 import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, EmptyState } from '@/components/design-system';
+import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, EmptyState, ModalShell } from '@/components/design-system';
 import { createClub } from '@/lib/clubs';
 import { ensureWorldClubCatalog } from '@/lib/sportsEconomyV26';
 
@@ -100,27 +100,26 @@ export default function Clubs() {
         )}
 
       {/* Create modal */}
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={() => setShowForm(false)}>
-          <div className="glass rounded-t-3xl md:rounded-3xl w-full max-w-lg p-5" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-black">Criar clube</h2>
-              <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="space-y-3">
-              <Field label="Nome do clube"><input className="padel-input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ex: Padel Masters SP" /></Field>
-              <div className="grid grid-cols-2 gap-3">
-                <Field label="Cidade"><input className="padel-input" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} /></Field>
-                <Field label="País"><input className="padel-input" value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} /></Field>
-              </div>
-              <Field label="Descrição"><textarea rows={3} className="padel-input resize-none" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Sobre o clube..." /></Field>
-              <button onClick={submit} disabled={submitting || !form.name} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 glow-primary">
-                {submitting ? 'Criando...' : 'Criar clube'}
-              </button>
-            </div>
+      <ModalShell
+        open={showForm}
+        onClose={() => setShowForm(false)}
+        title="Criar clube"
+        size="sm"
+        footer={(
+          <button onClick={submit} disabled={submitting || !form.name} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity disabled:opacity-50 glow-primary">
+            {submitting ? 'Criando...' : 'Criar clube'}
+          </button>
+        )}
+      >
+        <div className="space-y-3">
+          <Field label="Nome do clube"><input className="padel-input" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ex: Padel Masters SP" /></Field>
+          <div className="grid grid-cols-2 gap-3">
+            <Field label="Cidade"><input className="padel-input" value={form.city} onChange={e => setForm({ ...form, city: e.target.value })} /></Field>
+            <Field label="País"><input className="padel-input" value={form.country} onChange={e => setForm({ ...form, country: e.target.value })} /></Field>
           </div>
+          <Field label="Descrição"><textarea rows={3} className="padel-input resize-none" value={form.description} onChange={e => setForm({ ...form, description: e.target.value })} placeholder="Sobre o clube..." /></Field>
         </div>
-      )}
+      </ModalShell>
       </PageContent>
     </Page>
   );

@@ -584,6 +584,8 @@
 @layer components {
   .pl-layer-header { z-index: var(--z-header); }
   .pl-floating-utilities { z-index: var(--z-floating); }
+  .pl-layer-dropdown { z-index: var(--z-dropdown); }
+  .pl-layer-toast { z-index: var(--z-toast); }
 
   .pl-icon-frame {
     color: hsl(var(--tone-color, var(--primary)));
@@ -751,6 +753,7 @@
 
   .pl-modal-enter { animation: pl-modal-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
   .pl-modal-backdrop { animation: pl-backdrop-enter 150ms ease-out both; }
+  .pl-drawer-enter { animation: pl-drawer-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
   .pl-feedback-enter { animation: pl-feedback-enter 220ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 
   .pl-change-pulse { display: inline-block; border-radius: 0.35rem; transition: color 180ms ease, background-color 180ms ease, transform 180ms cubic-bezier(0.22, 1, 0.36, 1); }
@@ -768,10 +771,11 @@
 @keyframes pl-content-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 @keyframes pl-modal-enter { from { opacity: 0; transform: translateY(10px) scale(0.985); } to { opacity: 1; transform: none; } }
 @keyframes pl-backdrop-enter { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pl-drawer-enter { from { opacity: 0; transform: translateX(16px); } to { opacity: 1; transform: none; } }
 @keyframes pl-feedback-enter { from { opacity: 0; transform: translateX(8px); } to { opacity: 1; transform: none; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .pl-page-enter, .pl-content-enter > *, .pl-section-enter, .pl-stagger-grid > *, .pl-modal-enter, .pl-modal-backdrop, .pl-feedback-enter { animation: none !important; }
+  .pl-page-enter, .pl-content-enter > *, .pl-section-enter, .pl-stagger-grid > *, .pl-modal-enter, .pl-modal-backdrop, .pl-drawer-enter, .pl-feedback-enter { animation: none !important; }
   .pl-motion-reveal { opacity: 1 !important; transform: none !important; filter: none !important; transition: none !important; }
   .pl-surface-motion, .pl-change-pulse, button, [role='button'] { transition: none !important; transform: none !important; }
 }

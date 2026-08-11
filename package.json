@@ -130,7 +130,8 @@
     "test:fatigue-integrity": "node scripts/test-fatigue-integrity-rc.mjs",
     "test:post-match-interviews": "node scripts/test-post-match-interviews-rc.mjs",
     "benchmark:time-advance": "node scripts/benchmark-time-advance-rc.mjs",
-    "test:time-advance-performance": "node scripts/test-time-advance-performance-rc.mjs"
+    "test:time-advance-performance": "node scripts/test-time-advance-performance-rc.mjs",
+    "test:global-overlays": "node scripts/test-global-overlays-audit.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

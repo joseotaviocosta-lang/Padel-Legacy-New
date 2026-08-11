@@ -4,14 +4,18 @@ import { createPortal } from 'react-dom';
 import { cn } from '@/lib/utils';
 import { useOverlayBehavior } from './useOverlayBehavior';
 
-export function ModalShell({
+// Right-side slide-in panel for secondary/extensive information (assistant
+// insights, help/glossary content, player detail). Shares ModalShell's
+// portal + scroll-lock + focus-trap + ESC guarantees via useOverlayBehavior,
+// so it isn't a second competing overlay system — just a different shape.
+export function DrawerShell({
   open,
   onClose,
   title,
   description = null,
   children,
   footer = null,
-  size = 'lg',
+  size = 'md',
   className = '',
   closeOnBackdrop = true,
   closeOnEscape = true,
@@ -21,22 +25,21 @@ export function ModalShell({
   const { closeRef, panelRef } = useOverlayBehavior({ open, onClose, closeOnEscape });
 
   if (!open || typeof document === 'undefined') return null;
-  const widths = { sm: 'max-w-md', md: 'max-w-2xl', lg: 'max-w-4xl', xl: 'max-w-6xl', full: 'max-w-[96rem]' };
+  const widths = { sm: 'max-w-xs', md: 'max-w-sm', lg: 'max-w-md', xl: 'max-w-lg' };
 
   return createPortal(
     <div
-      className="pl-modal-backdrop fixed inset-0 flex items-center justify-center p-2 sm:p-4"
-      data-app-modal
+      className="pl-modal-backdrop fixed inset-0 flex justify-end"
+      data-app-drawer
       role="dialog"
       aria-modal="true"
       aria-labelledby={title ? titleId : undefined}
       aria-describedby={description ? descriptionId : undefined}
     >
-      {closeOnBackdrop && <button type="button" className="absolute inset-0 cursor-default" aria-label="Fechar janela" onClick={onClose} />}
+      {closeOnBackdrop && <button type="button" className="absolute inset-0 cursor-default" aria-label="Fechar painel" onClick={onClose} />}
       <section
         ref={panelRef}
-        data-layout-fullbleed
-        className={cn('pl-modal-panel pl-modal-enter relative z-10 flex max-h-[calc(100dvh-1rem)] w-full min-w-0 flex-col overflow-hidden rounded-2xl border sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl', widths[size] || widths.lg, className)}
+        className={cn('pl-modal-panel pl-drawer-enter relative z-10 flex h-full w-full min-w-0 flex-col overflow-hidden border-l bg-background', widths[size] || widths.md, className)}
       >
         <header className="pl-modal-header flex shrink-0 items-start justify-between gap-4 border-b px-4 py-3 sm:px-5 sm:py-4">
           <div className="min-w-0">

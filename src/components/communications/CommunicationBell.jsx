@@ -129,8 +129,8 @@ export default function CommunicationBell({ compact = false }) {
 
       {open && (
         <>
-          <button type="button" aria-label="Fechar comunicações" className="fixed inset-0 z-[60]" onClick={() => setOpen(false)} />
-          <div className="absolute right-0 top-[calc(100%+0.6rem)] z-[60] w-[min(23rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border/70 bg-card shadow-2xl">
+          <button type="button" aria-label="Fechar comunicações" className="pl-layer-dropdown fixed inset-0" onClick={() => setOpen(false)} />
+          <div className="pl-layer-dropdown absolute right-0 top-[calc(100%+0.6rem)] w-[min(23rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border/70 bg-card shadow-2xl">
             <div className="flex items-center justify-between border-b border-border/60 p-4">
               <div>
                 <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Living Career</p>

@@ -1,6 +1,7 @@
 import React, { useMemo } from 'react';
-import { X, Clock, Globe, Calendar, Tag, Link2 } from 'lucide-react';
+import { Clock, Globe, Calendar, Tag, Link2 } from 'lucide-react';
 import { ENCYCLOPEDIA_CATEGORIES } from '@/lib/encyclopediaData';
+import { ModalShell } from '@/components/design-system';
 
 export default function EncyclopediaDetail({ entry, onRelated, onClose }) {
   const cat = ENCYCLOPEDIA_CATEGORIES[entry.category] || ENCYCLOPEDIA_CATEGORIES.historia;
@@ -11,27 +12,21 @@ export default function EncyclopediaDetail({ entry, onRelated, onClose }) {
   }, [entry.metadata]);
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm animate-fade-in p-0 md:p-4" onClick={onClose}>
-      <div
-        className="bg-card w-full md:max-w-2xl max-h-[90vh] md:max-h-[85vh] rounded-t-3xl md:rounded-3xl border border-border overflow-hidden flex flex-col animate-slide-up"
-        onClick={e => e.stopPropagation()}
-      >
+    <ModalShell open onClose={onClose} size="md">
+      <div className="-m-4 sm:-m-5">
         {/* Header */}
         <div className={`relative p-5 ${cat.bg} border-b border-border/40`}>
-          <button onClick={onClose} className="absolute top-4 right-4 h-8 w-8 rounded-full bg-secondary/60 flex items-center justify-center hover:bg-secondary transition-colors">
-            <X className="h-4 w-4" />
-          </button>
           <div className="flex items-center gap-2 mb-1">
             <span className={`text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full ${cat.bg} ${cat.color}`}>{cat.label}</span>
             {entry.is_featured && <span className="text-[10px] font-bold text-amber-400">★ Destaque</span>}
             {entry.source === 'universo_legacy' && <span className="text-[10px] font-bold text-purple-400">🎮 Legacy</span>}
           </div>
-          <h2 className="text-xl font-black leading-tight pr-8">{entry.name}</h2>
+          <h2 className="text-xl font-black leading-tight">{entry.name}</h2>
           {entry.subcategory && <p className="text-xs text-muted-foreground capitalize mt-0.5">{entry.subcategory}</p>}
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto scrollbar-premium p-5 space-y-4">
+        <div className="p-5 space-y-4">
           {entry.summary && (
             <div className="glass rounded-xl p-3 border-l-2 border-primary/40">
               <p className="text-sm font-semibold text-primary">{entry.summary}</p>
@@ -107,6 +102,6 @@ export default function EncyclopediaDetail({ entry, onRelated, onClose }) {
           )}
         </div>
       </div>
-    </div>
+    </ModalShell>
   );
 }

@@ -6,6 +6,7 @@ const layout = read('src/components/AppLayout.jsx');
 const dayControl = read('src/components/career/CareerDayControl.jsx');
 const floatingRail = read('src/components/system/FloatingUtilityRail.jsx');
 const modal = read('src/components/design-system/ModalShell.jsx');
+const overlayBehavior = read('src/components/design-system/useOverlayBehavior.js');
 const registration = read('src/components/calendar/TournamentRegistrationModal.jsx');
 const page = read('src/components/design-system/Page.jsx');
 const css = read('src/index.css');
@@ -40,7 +41,10 @@ const checks = [
   ['overlay global fica fixo na viewport', modal.includes('fixed inset-0') && modal.includes('data-app-modal')],
   ['painel respeita altura da viewport', modal.includes('max-h-[calc(100dvh-1rem)]')],
   ['conteúdo grande possui scroll interno', modal.includes('overflow-y-auto') && modal.includes('overscroll-contain')],
-  ['scroll de fundo e foco são restaurados', modal.includes("document.body.style.overflow = 'hidden'") && modal.includes('previousFocusRef.current?.focus')],
+  // O bloqueio de scroll e a restauração de foco foram extraídos para um hook
+  // compartilhado (useOverlayBehavior) reutilizado por ModalShell e DrawerShell,
+  // para não duplicar essa lógica entre os dois padrões de overlay.
+  ['scroll de fundo e foco são restaurados', modal.includes('useOverlayBehavior') && overlayBehavior.includes("document.body.style.overflow = 'hidden'") && overlayBehavior.includes('previousFocusRef.current?.focus')],
   ['z-index segue escala global', ['--z-header: 40', '--z-floating: 50', '--z-dropdown: 60', '--z-modal: 100', '--z-toast: 120', '--z-critical: 200'].every(token => css.includes(token))],
   ['PageSection não cria containing block', !page.includes('pl-auto-contain') && !page.includes('content-visibility') && !page.includes('transform')],
   ['principais fluxos usam o padrão global', migratedSources.every(source => source.includes('ModalShell'))],

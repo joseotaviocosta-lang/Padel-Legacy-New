@@ -1,7 +1,8 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { BookOpen, Check, ChevronDown, ChevronUp, CircleHelp, GraduationCap, RotateCcw, X } from 'lucide-react';
+import { BookOpen, Check, ChevronDown, ChevronUp, CircleHelp, GraduationCap, RotateCcw } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
+import { DrawerShell } from '@/components/design-system';
 import { ensureMyProfile } from '@/lib/padel.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getPageIntroduction } from '@/onboarding/pageIntroductions.js';
@@ -31,15 +32,24 @@ function PageIntroduction({ pathname, state, onStateChange }) {
 }
 
 function HelpCenter({ open, onClose, state, onRestart }) {
-  if (!open) return null;
-  return <div className="fixed inset-0 z-[100] flex justify-end overflow-hidden bg-black/55 p-0 sm:p-3 md:p-5" role="dialog" aria-modal="true" aria-labelledby="help-title" onMouseDown={event => event.target === event.currentTarget && onClose()}>
-    <div className="scrollbar-premium h-full w-[min(88vw,24rem)] overflow-y-auto overscroll-contain border-l border-border bg-background p-4 shadow-2xl sm:h-[calc(100dvh-1.5rem)] sm:rounded-2xl sm:border md:w-[25rem] md:p-5">
-      <div className="flex items-start gap-3"><CircleHelp className="h-7 w-7 text-primary"/><div className="flex-1"><h2 id="help-title" className="text-xl font-black">Guia da carreira</h2><p className="text-sm text-muted-foreground">Reveja o tutorial quando quiser.</p></div><button onClick={onClose} className="rounded-xl p-2 hover:bg-secondary" aria-label="Fechar ajuda"><X className="h-5 w-5"/></button></div>
-      <section className="mt-6"><h3 className="font-black">Ciclo principal</h3><div className="mt-3 flex flex-wrap gap-2">{CORE_GAME_LOOP.map((item, index) => <span key={item} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">{index + 1}. {item}</span>)}</div></section>
+  return (
+    <DrawerShell
+      open={open}
+      onClose={onClose}
+      title={(
+        <span className="flex items-center gap-3">
+          <CircleHelp className="h-6 w-6 text-primary shrink-0" />
+          <span>Guia da carreira</span>
+        </span>
+      )}
+      description="Reveja o tutorial quando quiser."
+      size="lg"
+    >
+      <section><h3 className="font-black">Ciclo principal</h3><div className="mt-3 flex flex-wrap gap-2">{CORE_GAME_LOOP.map((item, index) => <span key={item} className="rounded-full bg-primary/10 px-3 py-1.5 text-xs font-bold text-primary">{index + 1}. {item}</span>)}</div></section>
       <section className="mt-5"><div className="flex items-center justify-between gap-2"><h3 className="font-black">Tutorial</h3><button onClick={onRestart} className="inline-flex items-center gap-1 rounded-lg border px-2.5 py-1.5 text-[11px] font-bold"><RotateCcw className="h-3.5 w-3.5"/> Reiniciar explicações</button></div><div className="mt-3 space-y-1.5">{TUTORIAL_STEPS.map(step => <div key={step.id} className="flex gap-2 rounded-lg bg-secondary/35 p-2.5"><span className={`mt-0.5 h-5 w-5 rounded-full flex items-center justify-center ${state?.completedSteps?.includes(step.id) ? 'bg-emerald-500 text-white' : 'border border-border'}`}>{state?.completedSteps?.includes(step.id) && <Check className="h-3 w-3"/>}</span><div><p className="text-sm font-bold">{step.title}</p><p className="text-xs text-muted-foreground">{step.explanation}</p></div></div>)}</div></section>
       <section className="mt-7"><h3 className="font-black">Glossário</h3><dl className="mt-3 grid gap-3 sm:grid-cols-2">{Object.entries(GLOSSARY).map(([term, description]) => <div key={term} className="rounded-xl border border-border/60 p-3"><dt className="text-sm font-bold">{term}</dt><dd className="mt-1 text-xs text-muted-foreground">{description}</dd></div>)}</dl></section>
-    </div>
-  </div>;
+    </DrawerShell>
+  );
 }
 
 export default function OnboardingGuide() {

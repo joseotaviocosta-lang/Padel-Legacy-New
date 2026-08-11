@@ -9,6 +9,7 @@ export * from './LoadingState';
 export * from './TooltipHint';
 export * from './PageSkeleton';
 export * from './ModalShell';
+export * from './DrawerShell';
 export * from './ActionFeedback';
 export * from './IconFrame';
 

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Calendar, Trophy, GraduationCap, Star, Users, Plus, X } from 'lucide-react';
+import { Calendar, Trophy, GraduationCap, Star, Users, Plus } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
+import { ModalShell } from '@/components/design-system';
 import { EVENT_TYPES } from '@/lib/clubs';
 
 const TYPE_ICONS = { Users, Trophy, GraduationCap, Star };
@@ -73,39 +74,38 @@ export default function ClubEvents({ events, isOwner, onHost, busy }) {
         )}
       </GlassCard>
 
-      {showForm && (
-        <div className="fixed inset-0 z-50 flex items-end md:items-center justify-center bg-black/60 backdrop-blur-sm p-0 md:p-4" onClick={() => setShowForm(false)}>
-          <div className="glass rounded-t-3xl md:rounded-3xl w-full max-w-md p-5" onClick={e => e.stopPropagation()}>
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-black">Organizar Evento</h2>
-              <button onClick={() => setShowForm(false)} className="text-muted-foreground hover:text-foreground"><X className="h-5 w-5" /></button>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Nome</label>
-                <input className="w-full px-3 py-2.5 rounded-xl bg-secondary/50 border border-border/60 text-sm focus:outline-none focus:border-primary/50" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ex: Torneio Interno de Verão" />
-              </div>
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Tipo</label>
-                <div className="flex gap-2 flex-wrap">
-                  {EVENT_TYPES.map(t => (
-                    <button key={t.id} onClick={() => setForm({ ...form, event_type: t.id })} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${form.event_type === t.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/40 text-muted-foreground'}`}>
-                      {t.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Premiação (moedas)</label>
-                <input type="number" className="w-full px-3 py-2.5 rounded-xl bg-secondary/50 border border-border/60 text-sm focus:outline-none focus:border-primary/50" value={form.prize_coins} onChange={e => setForm({ ...form, prize_coins: e.target.value })} />
-              </div>
-              <button onClick={submit} disabled={busy === 'event' || !form.name} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 disabled:opacity-50">
-                {busy === 'event' ? 'Criando...' : 'Criar evento'}
-              </button>
+      <ModalShell
+        open={showForm}
+        onClose={() => setShowForm(false)}
+        title="Organizar Evento"
+        size="sm"
+        footer={(
+          <button onClick={submit} disabled={busy === 'event' || !form.name} className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 disabled:opacity-50">
+            {busy === 'event' ? 'Criando...' : 'Criar evento'}
+          </button>
+        )}
+      >
+        <div className="space-y-3">
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Nome</label>
+            <input className="w-full px-3 py-2.5 rounded-xl bg-secondary/50 border border-border/60 text-sm focus:outline-none focus:border-primary/50" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder="Ex: Torneio Interno de Verão" />
+          </div>
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Tipo</label>
+            <div className="flex gap-2 flex-wrap">
+              {EVENT_TYPES.map(t => (
+                <button key={t.id} onClick={() => setForm({ ...form, event_type: t.id })} className={`px-3 py-1.5 rounded-lg text-xs font-semibold ${form.event_type === t.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/40 text-muted-foreground'}`}>
+                  {t.name}
+                </button>
+              ))}
             </div>
           </div>
+          <div>
+            <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">Premiação (moedas)</label>
+            <input type="number" className="w-full px-3 py-2.5 rounded-xl bg-secondary/50 border border-border/60 text-sm focus:outline-none focus:border-primary/50" value={form.prize_coins} onChange={e => setForm({ ...form, prize_coins: e.target.value })} />
+          </div>
         </div>
-      )}
+      </ModalShell>
     </div>
   );
 }

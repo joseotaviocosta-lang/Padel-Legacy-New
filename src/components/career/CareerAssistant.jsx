@@ -1,10 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { Bot, ChevronRight, Sparkles, X } from 'lucide-react';
+import { Bot, ChevronRight, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { buildCareerAssistantInsights, assistantGreeting } from '@/lib/careerAssistant.js';
-import { StatusBadge } from '@/components/design-system';
+import { StatusBadge, DrawerShell } from '@/components/design-system';
 import { isCareerCommunicationVisible } from '@/lib/careerCommunications.js';
 
 const toneClasses = {
@@ -116,43 +116,30 @@ export default function CareerAssistant() {
         {visibleInsights.length > 0 && <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-amber-500 px-1 text-[10px] font-black text-black">{visibleInsights.length > 99 ? '99+' : visibleInsights.length}</span>}
       </button>
 
-      {open && (
-        <div className="fixed inset-0 z-[100] bg-black/55 backdrop-blur-[2px]" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) setOpen(false); }}>
-          <aside className="absolute inset-y-0 right-0 flex w-[min(92vw,25rem)] flex-col border-l border-border/70 bg-background/97 shadow-2xl" aria-label="Assistente da carreira">
-            <header className="border-b border-border/60 p-4">
-              <div className="flex items-start gap-3">
-                <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/15 text-primary"><Sparkles className="h-5 w-5" /></span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">Assistente da carreira</p>
-                  <h2 className="mt-1 text-lg font-black">{assistantGreeting(profile)}</h2>
-                  <p className="mt-1 text-xs text-muted-foreground">Estas são as prioridades mais relevantes para o momento atual.</p>
-                </div>
-                <button type="button" onClick={() => setOpen(false)} className="rounded-xl p-2 text-muted-foreground hover:bg-secondary hover:text-foreground" aria-label="Fechar assistente"><X className="h-5 w-5" /></button>
-              </div>
-            </header>
-
-            <div className="scrollbar-premium flex-1 space-y-3 overflow-y-auto p-4">
-              {visibleInsights.length ? visibleInsights.map((insight, index) => (
-                <Link key={`${insight.id}-${insight.title}`} to={insight.route} onClick={() => { dismissInsight(insight); setOpen(false); }} className={`block rounded-2xl border p-4 transition-transform hover:-translate-y-0.5 ${toneClasses[insight.tone] || toneClasses.neutral}`}>
-                  <div className="flex items-center justify-between gap-2">
-                    <StatusBadge tone={insight.tone === 'premium' ? 'premium' : insight.tone === 'neutral' ? 'neutral' : insight.tone}>{index === 0 ? 'Prioridade' : 'Sugestão'}</StatusBadge>
-                    <ChevronRight className="h-4 w-4 text-muted-foreground" />
-                  </div>
-                  <h3 className="mt-3 text-sm font-black">{insight.title}</h3>
-                  <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{insight.description}</p>
-                  <p className="mt-3 text-xs font-bold text-primary">{insight.actionLabel}</p>
-                </Link>
-              )) : (
-                <div className="rounded-2xl border border-border/70 bg-secondary/25 p-5 text-center">
-                  <Sparkles className="mx-auto h-7 w-7 text-primary" />
-                  <h3 className="mt-3 font-black">Tudo sob controle</h3>
-                  <p className="mt-1 text-xs text-muted-foreground">Não existe nenhuma urgência agora. Siga seu planejamento normalmente.</p>
-                </div>
-              )}
+      <DrawerShell
+        open={open}
+        onClose={() => setOpen(false)}
+        title={assistantGreeting(profile)}
+        description="Estas são as prioridades mais relevantes para o momento atual."
+      >
+        {visibleInsights.length ? visibleInsights.map((insight, index) => (
+          <Link key={`${insight.id}-${insight.title}`} to={insight.route} onClick={() => { dismissInsight(insight); setOpen(false); }} className={`block rounded-2xl border p-4 transition-transform hover:-translate-y-0.5 ${toneClasses[insight.tone] || toneClasses.neutral} ${index > 0 ? 'mt-3' : ''}`}>
+            <div className="flex items-center justify-between gap-2">
+              <StatusBadge tone={insight.tone === 'premium' ? 'premium' : insight.tone === 'neutral' ? 'neutral' : insight.tone}>{index === 0 ? 'Prioridade' : 'Sugestão'}</StatusBadge>
+              <ChevronRight className="h-4 w-4 text-muted-foreground" />
             </div>
-          </aside>
-        </div>
-      )}
+            <h3 className="mt-3 text-sm font-black">{insight.title}</h3>
+            <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{insight.description}</p>
+            <p className="mt-3 text-xs font-bold text-primary">{insight.actionLabel}</p>
+          </Link>
+        )) : (
+          <div className="rounded-2xl border border-border/70 bg-secondary/25 p-5 text-center">
+            <Sparkles className="mx-auto h-7 w-7 text-primary" />
+            <h3 className="mt-3 font-black">Tudo sob controle</h3>
+            <p className="mt-1 text-xs text-muted-foreground">Não existe nenhuma urgência agora. Siga seu planejamento normalmente.</p>
+          </div>
+        )}
+      </DrawerShell>
     </>
   );
 }

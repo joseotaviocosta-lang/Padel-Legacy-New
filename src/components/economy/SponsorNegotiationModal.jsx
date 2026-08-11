@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { X, Coins, TrendingUp, Calendar, Target, AlertTriangle, CheckCircle2, Handshake } from 'lucide-react';
+import { Coins, TrendingUp, Calendar, Target, AlertTriangle, CheckCircle2, Handshake } from 'lucide-react';
 import { getSponsorTierStyle, negotiateOffer, canSign, calculateProfileMatch, MARKETING_LABELS, GOAL_LABELS, getSponsorCategory } from '@/lib/sponsors';
+import { ModalShell } from '@/components/design-system';
 
 export default function SponsorNegotiationModal({ sponsor, profile, onSign, onClose, busy }) {
   const [step, setStep] = useState('overview'); // overview → offer → confirm
@@ -13,27 +14,25 @@ export default function SponsorNegotiationModal({ sponsor, profile, onSign, onCl
   const riskLabel = potential > offer.monthly_salary * 0.5 ? 'Contrato agressivo' : offer.duration_months >= 12 ? 'Contrato de longo prazo' : 'Contrato seguro';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="glass rounded-3xl p-5 max-w-md w-full max-h-[90vh] overflow-y-auto scrollbar-premium">
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3">
-            <div className="h-12 w-12 rounded-2xl bg-secondary/40 flex items-center justify-center text-2xl">
-              {sponsor.logo_emoji || '🏢'}
-            </div>
-            <div>
-              <h2 className="font-black text-lg">{sponsor.name}</h2>
-              <div className="flex items-center gap-1.5">
-                <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${tier.badge}`}>{tier.label}</span>
-                <span className="text-[10px] text-muted-foreground">{sponsor.industry} · {sponsor.country}</span>
-              </div>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary/50">
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
-
+    <ModalShell
+      open
+      onClose={onClose}
+      title={(
+        <span className="flex items-center gap-3">
+          <span className="h-10 w-10 shrink-0 rounded-2xl bg-secondary/40 flex items-center justify-center text-xl">
+            {sponsor.logo_emoji || '🏢'}
+          </span>
+          <span className="flex flex-col">
+            <span className="font-black text-base">{sponsor.name}</span>
+            <span className="flex items-center gap-1.5">
+              <span className={`text-[9px] font-bold uppercase px-1.5 py-0.5 rounded border ${tier.badge}`}>{tier.label}</span>
+              <span className="text-[10px] font-normal text-muted-foreground">{sponsor.industry} · {sponsor.country}</span>
+            </span>
+          </span>
+        </span>
+      )}
+      size="sm"
+    >
         <p className="text-xs text-muted-foreground mb-4 italic">{sponsor.description}</p>
         <div className="grid grid-cols-3 gap-2 mb-4 text-center"><div className="rounded-lg bg-secondary/30 p-2"><p className="text-[8px] text-muted-foreground uppercase">Slot</p><p className="text-[10px] font-bold capitalize">{category}</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-[8px] text-muted-foreground uppercase">Perfil</p><p className="text-[10px] font-bold">{riskLabel}</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-[8px] text-muted-foreground uppercase">Potencial</p><p className="text-[10px] font-bold text-green-400">+{potential}/mês</p></div></div>
 
@@ -205,7 +204,6 @@ export default function SponsorNegotiationModal({ sponsor, profile, onSign, onCl
             </div>
           </div>
         )}
-      </div>
-    </div>
+    </ModalShell>
   );
 }

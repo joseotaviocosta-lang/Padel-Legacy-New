@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { Inbox, Mail, Check, X, Clock, AlertCircle, UserCheck } from 'lucide-react';
 import { getInbox, markMessageRead, resolveMessage, dismissMessage } from '@/lib/partnershipSystem';
 import { LoadingScreen } from '@/components/padel/ui';
+import { ModalShell } from '@/components/design-system';
 import { formatDate } from '@/lib/padel';
 
 const TYPE_ICONS = {
@@ -137,71 +138,66 @@ export default function InboxPanel({ profile, onAction }) {
       )}
 
       {/* Message detail modal */}
-      {selected && (
-        <>
-          <div className="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm" onClick={() => setSelected(null)} />
-          <div className="fixed bottom-0 inset-x-0 z-50 md:absolute md:bottom-auto md:top-1/2 md:left-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-full md:max-w-lg p-4">
-            <div className="glass-premium rounded-3xl p-5 max-h-[85vh] overflow-y-auto scrollbar-none animate-slide-up">
-              <div className="flex items-center justify-between mb-3">
-                <div>
-                  <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{selected.sender_type}</p>
-                  <h3 className="font-black text-base">{selected.title}</h3>
-                </div>
-                <button onClick={() => setSelected(null)} aria-label="Fechar mensagem" title="Fechar" className="p-1.5 rounded-lg hover:bg-secondary/60">
-                  <X className="h-5 w-5 text-muted-foreground" />
-                </button>
+      <ModalShell
+        open={Boolean(selected)}
+        onClose={() => setSelected(null)}
+        title={selected?.title}
+        description={selected?.sender_type}
+        size="sm"
+        footer={selected && (
+          <div>
+            {selected.actions && selected.actions.length > 0 && selected.status === 'decisao_pendente' && (
+              <div className="space-y-2">
+                {selected.actions.map(action => (
+                  <button
+                    key={action.id}
+                    onClick={() => handleAction(selected, action)}
+                    className={`w-full py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 ${
+                      action.id === 'decline'
+                        ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
+                        : 'bg-primary text-primary-foreground hover:opacity-90'
+                    }`}
+                  >
+                    {action.id === 'decline' ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
+                    {action.label}
+                  </button>
+                ))}
               </div>
+            )}
 
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-semibold">{selected.sender_name}</span>
-                {selected.career_date && <span className="text-[10px] text-muted-foreground">· {formatDate(selected.career_date)}</span>}
-                <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full ${PRIORITY_COLORS[selected.priority] || ''}`}>{selected.priority}</span>
-              </div>
+            {selected.status !== 'decisao_pendente' && (
+              <button onClick={() => setSelected(null)} className="w-full py-2.5 rounded-xl glass text-xs font-semibold text-muted-foreground">
+                Fechar
+              </button>
+            )}
 
-              <p className="text-sm text-foreground/90 leading-relaxed mb-4">{selected.content}</p>
-
-              {selected.expires_career_date && (
-                <div className="glass rounded-xl p-2 flex items-center gap-2 mb-3">
-                  <Clock className="h-3.5 w-3.5 text-amber-400" />
-                  <p className="text-[10px] text-muted-foreground">Expira em {formatDate(selected.expires_career_date)}</p>
-                </div>
-              )}
-
-              {/* Actions */}
-              {selected.actions && selected.actions.length > 0 && selected.status === 'decisao_pendente' && (
-                <div className="space-y-2">
-                  {selected.actions.map(action => (
-                    <button
-                      key={action.id}
-                      onClick={() => handleAction(selected, action)}
-                      className={`w-full py-2.5 rounded-xl font-bold text-sm transition-colors flex items-center justify-center gap-2 ${
-                        action.id === 'decline'
-                          ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
-                          : 'bg-primary text-primary-foreground hover:opacity-90'
-                      }`}
-                    >
-                      {action.id === 'decline' ? <X className="h-4 w-4" /> : <Check className="h-4 w-4" />}
-                      {action.label}
-                    </button>
-                  ))}
-                </div>
-              )}
-
-              {selected.status !== 'decisao_pendente' && (
-                <button onClick={() => setSelected(null)} className="w-full py-2.5 rounded-xl glass text-xs font-semibold text-muted-foreground">
-                  Fechar
-                </button>
-              )}
-
-              {selected.status === 'decisao_pendente' && (
-                <button onClick={() => handleDismiss(selected)} className="w-full mt-2 py-2 text-[10px] text-muted-foreground hover:text-foreground">
-                  Ignorar
-                </button>
-              )}
-            </div>
+            {selected.status === 'decisao_pendente' && (
+              <button onClick={() => handleDismiss(selected)} className="w-full mt-2 py-2 text-[10px] text-muted-foreground hover:text-foreground">
+                Ignorar
+              </button>
+            )}
           </div>
-        </>
-      )}
+        )}
+      >
+        {selected && (
+          <>
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-semibold">{selected.sender_name}</span>
+              {selected.career_date && <span className="text-[10px] text-muted-foreground">· {formatDate(selected.career_date)}</span>}
+              <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded-full ${PRIORITY_COLORS[selected.priority] || ''}`}>{selected.priority}</span>
+            </div>
+
+            <p className="text-sm text-foreground/90 leading-relaxed mb-4">{selected.content}</p>
+
+            {selected.expires_career_date && (
+              <div className="glass rounded-xl p-2 flex items-center gap-2">
+                <Clock className="h-3.5 w-3.5 text-amber-400" />
+                <p className="text-[10px] text-muted-foreground">Expira em {formatDate(selected.expires_career_date)}</p>
+              </div>
+            )}
+          </>
+        )}
+      </ModalShell>
     </div>
   );
 }

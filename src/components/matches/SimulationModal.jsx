@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { X, Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain } from 'lucide-react';
+import { Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain } from 'lucide-react';
+import { ModalShell } from '@/components/design-system';
 
 import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
 import { getPartnerBot } from '@/lib/career';
@@ -104,23 +105,24 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const phaseLabel = phase === 'config' ? 'Preparação' : phase === 'live' ? 'Ao vivo' : 'Resumo';
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/65 backdrop-blur-sm md:items-center md:p-3" onClick={onClose}>
-      <div className={`pl-surface-elevated flex w-full max-w-xl flex-col overflow-hidden rounded-t-2xl border border-border/60 bg-background/95 shadow-2xl md:rounded-2xl ${phase === 'live' ? 'h-[100dvh] max-h-[100dvh] md:h-[min(46rem,92dvh)] md:max-h-[92dvh]' : 'max-h-[94dvh]'}`} onClick={(e) => e.stopPropagation()}>
-        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-border/40 px-3 py-2.5 sm:px-4">
-          <div className="flex min-w-0 items-center gap-2.5">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Cpu className="h-4.5 w-4.5" /></span>
-            <div className="min-w-0">
-              <h2 className="truncate text-sm font-black">Partida treino</h2>
-              <p className="truncate text-[10px] text-muted-foreground">Simulação narrada · melhor de 3 sets</p>
-            </div>
-            <StatusBadge tone={phase === 'live' ? 'danger' : phase === 'result' ? 'success' : 'info'}>{phaseLabel}</StatusBadge>
-          </div>
-          <button onClick={onClose} className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-muted-foreground transition hover:bg-secondary hover:text-foreground" aria-label="Fechar partida">
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-
-        <div className={`min-h-0 flex-1 ${phase === 'live' ? 'overflow-hidden p-1.5 sm:p-2 md:p-3' : 'scrollbar-premium overflow-y-auto overscroll-contain p-3 sm:p-4'}`}>
+    <ModalShell
+      open
+      onClose={onClose}
+      closeOnBackdrop={phase !== 'live'}
+      closeOnEscape={phase !== 'live'}
+      title={(
+        <span className="flex items-center gap-2.5">
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Cpu className="h-4.5 w-4.5" /></span>
+          <span className="min-w-0">
+            <span className="block truncate text-sm font-black">Partida treino</span>
+            <span className="block truncate text-[10px] font-normal text-muted-foreground">Simulação narrada · melhor de 3 sets</span>
+          </span>
+          <StatusBadge tone={phase === 'live' ? 'danger' : phase === 'result' ? 'success' : 'info'}>{phaseLabel}</StatusBadge>
+        </span>
+      )}
+      size="md"
+      className={phase === 'live' ? 'md:h-[min(46rem,92dvh)]' : ''}
+    >
         {/* Config */}
         {phase === 'config' && (
           <div className="space-y-4">
@@ -257,9 +259,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             </button>
           </div>
         )}
-        </div>
-      </div>
-    </div>
+    </ModalShell>
   );
 }
 
