@@ -13,7 +13,7 @@ import { TRAINING_FOCUSES, TRAINING_INTENSITIES, getTrainingWeights } from '../s
 import { generateFictionalAthletes } from '../src/players/athleteGenerator.js';
 import { evaluatePartnerCompatibility, calculatePartnershipInterest } from '../src/players/teamCompatibility.js';
 import { ALLOWED_CAREER_DIFFICULTIES, getDifficultyModifier } from '../src/gameplay/difficulty/difficultyConfig.js';
-import { detectPeakSeason } from '../src/gameplay/difficulty/careerPeak.js';
+import { detectPeakSeason, detectPeakGateSeasons } from '../src/gameplay/difficulty/careerPeak.js';
 
 const args = Object.fromEntries(process.argv.slice(2).map(v => v.replace(/^--/, '').split('=')));
 const runs = Math.max(1, Number(args.runs || 100));
@@ -178,7 +178,8 @@ function simulateDifficulty(difficultyId){
       p.seasonSnapshots.push({season,age:p.age,overall:overall(p),ceiling:p.avgCeiling,overallGain:overall(p)-startOv,careerLevel:lvl,rank:p.rank,rankGain:startRank-p.rank,points:p.rankingPoints,coins:Math.round(p.coins),coinDelta:Math.round(p.coins-startCoins),matches:seasonMatches,wins:seasonWins,winRate:seasonMatches?seasonWins/seasonMatches:0,trainings:seasonTraining,avgEnergy:samples?energySum/samples:0,avgFatigue:samples?fatigueSum/samples:0,injuries:p.injuries,partnerChanges:p.partnerChanges,coachQuality:p.coachQuality});
     }
     const peakSeason=detectPeakSeason(p.seasonSnapshots);
-    careers.push({...p,scenarioId:scenario.id,finalOverall:overall(p),careerLevel:levelForXp(p.xp),peakSeason});
+    const peakGates=detectPeakGateSeasons(p.seasonSnapshots);
+    careers.push({...p,scenarioId:scenario.id,finalOverall:overall(p),careerLevel:levelForXp(p.xp),peakSeason,peakGates});
   }}
   return careers;
 }
@@ -207,6 +208,11 @@ for(const difficultyId of ALLOWED_CAREER_DIFFICULTIES){
     difficultyId,
     careers:careers.length,
     peak:{median:peakMedian,p25:peakP25,p75:peakP75,neverPeakedRate:round(neverPeaked/careers.length*100,1)},
+    peakGateMedians:{
+      technicalReady:median(careers,c=>c.peakGates.technicalReady),
+      competitiveReady:median(careers,c=>c.peakGates.competitiveReady),
+      experienceReady:median(careers,c=>c.peakGates.experienceReady),
+    },
     top100Median:median(careers,'top100'),
     top20Median:median(careers,'top20'),
     top10Median:median(careers,'top10'),

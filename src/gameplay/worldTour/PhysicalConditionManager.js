@@ -1,5 +1,7 @@
 import { getMedicalModifiers } from './MedicalCenterManager.js';
-import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
+// Import relativo (não `@/...`): scripts/test-injury-balance-v21.mjs importa
+// este módulo diretamente em Node puro, sem resolver o alias Vite.
+import { getDifficultyModifier } from '../difficulty/difficultyConfig.js';
 const ROUND_LOAD = {
   qualifying: 12,
   first_round: 14,
