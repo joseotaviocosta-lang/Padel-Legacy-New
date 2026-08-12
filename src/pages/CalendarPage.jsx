@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Calendar as CalendarIcon, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
-import { GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
-import { Page, PageHeader, StatCard, Surface, StatusBadge, ModalShell } from '@/components/design-system';
+import { Calendar as CalendarIcon, FastForward, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
+import { Button, EmptyState, Page, PageHeader, PageSkeleton, StatCard, Surface, StatusBadge, ModalShell, Tabs } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
+import { getCareerDatePresentation } from '@/lib/careerDatePresentation.js';
 import { advanceCareerDayOnce, advanceCareerDays, advanceCareerUntilRecovered, finalizeCareerAdvanceRange, hasActiveInjury } from '@/game-core';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -339,11 +339,12 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
     setProfile(updatedProfile);
   }
 
-  if (loading) return <LoadingScreen />;
-  if (!profile) return <EmptyStateCard icon={CalendarIcon} message="Crie seu perfil para ver o calendário." />;
+  if (loading) return <PageSkeleton variant="dashboard" rows={3} />;
+  if (!profile) return <Page size="default"><EmptyState icon={CalendarIcon} title="Crie seu perfil" description="Crie seu perfil para ver o calendário." /></Page>;
 
   const nextTournament = upcomingTournaments[0] || null;
   const daysToNextTournament = nextTournament ? daysBetween(careerDate, nextTournament.start_date) : null;
+  const datePresentation = getCareerDatePresentation(careerDate);
 
   return (
     <Page>
@@ -363,6 +364,26 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
         }
       />
 
+      {/* Data grande e sempre legível (seção 9) — não depende só do header global */}
+      <Surface variant="premium" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-[10px] font-black uppercase tracking-[0.18em] text-premium">{datePresentation.weekday}</p>
+          <p className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{datePresentation.fullDate}</p>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          <Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
+            <FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : pendingDecisions.length > 0 ? 'Decisão pendente' : '+1 dia'}
+          </Button>
+          <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
+            {advancingBatch === 3 ? `${advanceProgress?.current || 0}/3…` : '+3 dias'}
+          </Button>
+          <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
+            {advancingBatch === 7 ? `${advanceProgress?.current || 0}/7…` : '+1 semana'}
+          </Button>
+        </div>
+      </Surface>
+      <p className="-mt-2 text-[11px] text-muted-foreground">Avanço inteligente: processa treinos automáticos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
+
       <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
         <StatCard label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} detail="Disponível hoje" icon={Battery} tone={Number(profile.energy) < 30 ? 'danger' : 'success'} />
         <StatCard label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} detail="Carga acumulada" icon={Zap} tone={Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info'} />
@@ -370,35 +391,14 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
         <StatCard label="Próximo torneio" value={nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament} dias` : 'Hoje') : 'Livre'} detail={nextTournament?.name || 'Janela para evolução'} icon={Trophy} tone="premium" />
       </div>
 
-      <Surface padding="compact" variant="subtle">
-        <div className="grid grid-cols-2 gap-1 rounded-xl bg-secondary/35 p-1">
-          <button type="button" onClick={() => setViewMode('week')} className={`min-h-10 rounded-lg px-3 text-xs font-bold transition ${viewMode === 'week' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Semana</button>
-          <button type="button" onClick={() => setViewMode('month')} className={`min-h-10 rounded-lg px-3 text-xs font-bold transition ${viewMode === 'month' ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:text-foreground'}`}>Mês</button>
-        </div>
-      </Surface>
-
-      <Surface variant="elevated" padding="compact">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex min-w-0 items-start gap-3">
-            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Zap className="h-4 w-4" /></span>
-            <div className="min-w-0">
-              <p className="text-sm font-extrabold">Avanço inteligente</p>
-              <p className="mt-0.5 text-xs leading-relaxed text-muted-foreground">Processa treinos automáticos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
-            </div>
-          </div>
-          <div className="grid shrink-0 grid-cols-2 gap-2">
-            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(3)} className="min-h-10 rounded-xl border border-border/60 bg-secondary px-4 text-xs font-extrabold disabled:opacity-40">{advancingBatch === 3 ? `Processando ${advanceProgress?.current || 0}/3…` : '+3 dias'}</button>
-            <button disabled={Boolean(advancingBatch) || advancing} onClick={() => handleAdvancePeriod(7)} className="min-h-10 rounded-xl bg-primary px-4 text-xs font-extrabold text-primary-foreground disabled:opacity-40">{advancingBatch === 7 ? `Processando ${advanceProgress?.current || 0}/7…` : '+1 semana'}</button>
-          </div>
-        </div>
-      </Surface>
+      <Tabs tabs={[{ key: 'week', label: 'Semana' }, { key: 'month', label: 'Mês' }]} activeTab={viewMode} onTabChange={setViewMode} variant="segmented" />
 
       {/* Pending decisions — blocks day advance */}
       {pendingDecisions.length > 0 && (
         <PendingDecisionBanner events={pendingDecisions} onResolve={handleResolveDecision} />
       )}
 
-      {hasActiveInjury(profile) && <Surface variant="elevated" padding="compact" className="border-rose-500/30 bg-rose-500/5"><div className="flex flex-col gap-3 md:flex-row md:items-center"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-300"><AlertTriangle className="h-5 w-5" /></span><div className="flex-1"><p className="text-sm font-bold text-rose-200">Período de recuperação</p><p className="text-xs text-muted-foreground">Retorno estimado em {Math.max(Number(profile.injury_days_remaining) || 0, profile.injured_until ? daysBetween(careerDate, profile.injured_until) : 0)} dia(s).</p></div><button onClick={handleSkipInjury} disabled={skippingInjury} className="rounded-xl bg-rose-500/15 px-4 py-2.5 text-xs font-bold text-rose-200 disabled:opacity-50">{skippingInjury ? 'Processando...' : 'Avançar até a recuperação'}</button></div></Surface>}
+      {hasActiveInjury(profile) && <Surface variant="elevated" padding="compact" className="border-rose-500/30 bg-rose-500/5"><div className="flex flex-col gap-3 md:flex-row md:items-center"><span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-rose-500/10 text-rose-300"><AlertTriangle className="h-5 w-5" /></span><div className="flex-1"><p className="text-sm font-bold text-rose-200">Período de recuperação</p><p className="text-xs text-muted-foreground">Retorno estimado em {Math.max(Number(profile.injury_days_remaining) || 0, profile.injured_until ? daysBetween(careerDate, profile.injured_until) : 0)} dia(s).</p></div><Button level="danger" size="sm" onClick={handleSkipInjury} disabled={skippingInjury} className="bg-rose-500/15 text-rose-200 hover:bg-rose-500/25">{skippingInjury ? 'Processando...' : 'Avançar até a recuperação'}</Button></div></Surface>}
 
       {/* Week view */}
       {viewMode === 'week' ? <CalendarWeekView
@@ -409,8 +409,6 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
         matches={matches}
         trainings={trainings}
         onDayClick={handleDayClick}
-        onAdvanceDay={handleAdvanceDay}
-        advancing={advancing}
       /> : <CalendarMonthView month={visibleMonth} onMonthChange={setVisibleMonth} careerDate={careerDate} events={calendarEvents} injuryReturnDate={profile.injury_return_date || profile.injured_until} onDayClick={handleDayClick} />}
 
       {/* Selected day details */}
@@ -431,12 +429,12 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
       <CalendarPlanner profile={profile} selectedDate={selectedDay ? format(selectedDay, 'yyyy-MM-dd') : careerDate} events={calendarEvents} onSchedule={handleScheduleActivity} onCancel={handleCancelActivity} onEdit={handleEditActivity} busy={planning} />
 
       {/* Upcoming tournament registrations */}
-      <GlassCard>
+      <Surface>
         <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
-          <Trophy className="h-4 w-4 text-amber-400" /> Inscrições Abertas
+          <Trophy className="h-4 w-4 text-amber-400" /> Inscrições abertas
         </h2>
         {upcomingTournaments.length === 0 ? (
-          <EmptyStateCard icon={CalendarIcon} message="Nenhuma inscrição aberta no momento." />
+          <EmptyState compact icon={CalendarIcon} title="Nenhuma inscrição aberta" description="Volte quando um novo torneio abrir inscrições." />
         ) : (
           <div className="space-y-2">
             {upcomingTournaments.map(t => {
@@ -469,7 +467,7 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
             })}
           </div>
         )}
-      </GlassCard>
+      </Surface>
 
       {/* Registration modal */}
       {registrationTournament && (

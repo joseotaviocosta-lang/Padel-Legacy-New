@@ -1,8 +1,7 @@
 import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Inbox, Mail, Check, X, Clock, AlertCircle, UserCheck } from 'lucide-react';
 import { dismissMessage, listCareerCommunications, markCareerCommunicationRead, resolveMessage } from '@/lib/careerCommunications.js';
-import { LoadingScreen } from '@/components/padel/ui';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, PageSkeleton } from '@/components/design-system';
 import { formatDate } from '@/lib/padel';
 
 const TYPE_ICONS = {
@@ -105,7 +104,7 @@ export default function InboxPanel({ profile, onAction }) {
     load();
   }
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="list" rows={3} />;
 
   const filters = [
     { id: 'all', label: 'Todas' },

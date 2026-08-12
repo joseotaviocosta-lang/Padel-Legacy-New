@@ -66,4 +66,42 @@ export const typography = Object.freeze({
   body: '0.9375rem',
   small: '0.8125rem',
   caption: '0.6875rem',
+  // Números esportivos grandes (ranking, dinheiro, XP, placar). Antes repetido
+  // manualmente como `text-xl font-black sm:text-2xl` em cada página.
+  statLarge: 'text-xl font-black tracking-[-0.035em] sm:text-2xl tabular-nums',
+  statHuge: 'text-3xl font-black tracking-[-0.035em] sm:text-4xl tabular-nums',
+});
+
+// Espelha as camadas de empilhamento definidas em src/index.css (:root).
+// Fonte de runtime = CSS custom properties (usadas via classes pl-layer-*);
+// este objeto existe para código JS que precisa do número bruto (ex.: z-index
+// inline de um portal ad hoc). Mantenha os dois em sincronia manualmente.
+export const zIndex = Object.freeze({
+  header: 40,
+  floating: 50,
+  dropdown: 60,
+  modal: 100,
+  toast: 120,
+  critical: 200,
+});
+
+// Espelha as variáveis de sombra/elevação usadas pelas classes `.pl-surface*`
+// e `.pl-modal-panel` em src/index.css. Documentado aqui para referência
+// JS-side (ex.: gráficos Recharts que precisam de um valor de sombra em vez
+// de uma classe utilitária).
+export const shadows = Object.freeze({
+  color: 'hsl(var(--shadow-color))',
+  card: '0 12px 34px hsl(var(--shadow-color) / 0.18)',
+  elevated: '0 18px 48px hsl(var(--shadow-color) / 0.25)',
+  modal: '0 30px 90px hsl(var(--shadow-color) / 0.62)',
+});
+
+// Espelha `--motion-*`/`--ease-premium` de src/index.css. Use `motion.fast`/
+// `motion.normal`/`motion.slow` (acima) para durações; isto documenta a
+// contrapartida CSS já aplicada globalmente aos componentes `pl-*`.
+export const transitions = Object.freeze({
+  fast: 'var(--motion-fast, 150ms)',
+  normal: 'var(--motion-normal, 250ms)',
+  slow: 'var(--motion-slow, 350ms)',
+  easing: 'var(--ease-premium, cubic-bezier(0.22, 1, 0.36, 1))',
 });

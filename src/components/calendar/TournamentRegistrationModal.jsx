@@ -5,7 +5,7 @@ import { daysBetween } from '@/lib/career';
 import { SURFACE_META, PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen } from '@/lib/calendarSystem';
 import { useToast } from '@/components/ui/use-toast';
 import { getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
-import { ModalShell } from '@/components/design-system';
+import { Button, ModalShell, Surface } from '@/components/design-system';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',icon:Trophy,label:'Legacy Crown'},
@@ -63,18 +63,19 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
       size="sm"
       footer={(
         <div className="flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
-          <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2.5 text-sm font-bold hover:bg-secondary">Cancelar</button>
-          <button
-            type="button"
+          <Button level="ghost" size="touch" onClick={onClose}>Cancelar</Button>
+          <Button
+            level="primary"
+            size="touch"
             onClick={() => handleRegister(conflicts.length > 0)}
             disabled={!validation.canRegister || registering || !regOpen}
-            className="inline-flex min-w-[11rem] items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+            className="min-w-[11rem]"
           >
             {registering ? <><span className="h-4 w-4 animate-spin rounded-full border-2 border-primary-foreground/30 border-t-primary-foreground" /> Inscrevendo...</>
               : !regOpen ? <><Lock className="h-4 w-4" /> Inscrições encerradas</>
                 : !validation.canRegister ? <><Lock className="h-4 w-4" /> Requisitos não atendidos</>
                   : <><CheckCircle className="h-4 w-4" /> {conflicts.length ? 'Substituir e confirmar' : 'Confirmar inscrição'}</>}
-          </button>
+          </Button>
         </div>
       )}
     >
@@ -107,16 +108,16 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
           <InfoCard icon={Trophy} label="Superfície" value={surface.label} sub={surface.desc} />
         </div>
 
-        <div className="glass rounded-xl p-3 mb-4 border border-primary/20 bg-primary/5">
+        <Surface padding="compact" className="border-primary/20 bg-primary/5">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Caminho de entrada</p>
           <div className="flex items-center justify-between gap-3">
             <p className={`text-sm font-black ${entry?.eligible ? 'text-primary' : 'text-red-400'}`}>{getEntryPathLabel(entry?.path)}</p>
             <span className="text-[10px] text-muted-foreground text-right">{entry?.reason}</span>
           </div>
-        </div>
+        </Surface>
 
         {/* Entry requirements */}
-        <div className="glass rounded-xl p-3 mb-4">
+        <Surface padding="compact">
           <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Requisitos de Entrada</p>
           <div className="space-y-1.5">
             <RequirementRow label="Nível mínimo" value={tournament.min_level || 'Iniciante'} met={validation.canRegister || !tournament.min_level} />
@@ -125,24 +126,18 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
             <RequirementRow label="Parceiro" value={profile?.partner_id ? 'Definido' : 'Necessário'} met={!!profile?.partner_id} />
             <RequirementRow label="Inscrições" value={regOpen ? (daysUntilDeadline >= 0 ? `Fecha em ${daysUntilDeadline}d` : 'Aberta') : 'Encerrada'} met={regOpen} />
           </div>
-        </div>
-
-        <div className="glass rounded-xl p-3 mb-4 border border-cyan-500/20">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Caminho de entrada</p>
-          <p className="text-sm font-bold text-cyan-300 mt-1">{entryPathLabel(validation.entry?.path)}</p>
-          <p className="text-[11px] text-muted-foreground mt-0.5">{validation.entry?.reason}</p>
-        </div>
+        </Surface>
 
         {conflicts.length > 0 && (
-          <div className="glass rounded-xl p-3 mb-4 border border-amber-500/30 bg-amber-500/5">
+          <Surface padding="compact" className="border-amber-500/30 bg-amber-500/5">
             <p className="text-xs font-bold text-amber-300">Conflito de calendário</p>
             <p className="text-[11px] text-muted-foreground mt-1">Para disputar este torneio, sua inscrição em <strong>{conflicts[0].title}</strong> será cancelada.</p>
-          </div>
+          </Surface>
         )}
 
         {/* Blocking reasons */}
         {!validation.canRegister && (
-          <div className="glass rounded-xl p-3 mb-4 border border-red-500/30 bg-red-500/5">
+          <Surface padding="compact" className="border-red-500/30 bg-red-500/5">
             <div className="flex items-center gap-2 mb-1">
               <AlertCircle className="h-4 w-4 text-red-400" />
               <p className="text-xs font-bold text-red-400">Não é possível inscrever</p>
@@ -150,11 +145,11 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
             <ul className="text-[11px] text-red-300 space-y-0.5 list-disc list-inside">
               {validation.reasons.map((r, i) => <li key={i}>{r}</li>)}
             </ul>
-          </div>
+          </Surface>
         )}
 
         {/* Status badge */}
-        <div className="glass rounded-xl p-3 mb-4 flex items-center justify-between">
+        <Surface padding="compact" className="flex items-center justify-between">
           <div>
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Fase atual</p>
             <p className="text-sm font-bold">{PHASE_LABELS[tournament.current_phase] || 'Inscrições Abertas'}</p>
@@ -163,8 +158,7 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
             <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Vagas</p>
             <p className="text-sm font-bold">{(tournament.participants || []).length}/{tournament.max_participants || 16}</p>
           </div>
-        </div>
-
+        </Surface>
       </div>
     </ModalShell>
   );
@@ -172,14 +166,14 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
 
 function InfoCard({ icon: Icon, label, value, sub }) {
   return (
-    <div className="glass rounded-xl p-3">
+    <Surface padding="compact">
       <div className="flex items-center gap-1.5 mb-1">
         <Icon className="h-3 w-3 text-muted-foreground" />
         <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold">{label}</p>
       </div>
       <p className="text-sm font-bold leading-tight">{value}</p>
       {sub && <p className="text-[10px] text-muted-foreground leading-tight">{sub}</p>}
-    </div>
+    </Surface>
   );
 }
 
@@ -193,16 +187,4 @@ function RequirementRow({ label, value, met }) {
       </span>
     </div>
   );
-}
-function entryPathLabel(path) {
-  return ({
-    direct: 'Chave principal — entrada direta',
-    qualifying: 'Qualifying — precisa se classificar',
-    wildcard: 'Wildcard',
-    protected_ranking: 'Ranking protegido',
-    special_exempt: 'Special Exempt',
-    junior_invite: 'Convite juvenil',
-    national_invite: 'Convite nacional',
-    ineligible: 'Sem vaga disponível',
-  })[path] || 'Entrada a confirmar';
 }

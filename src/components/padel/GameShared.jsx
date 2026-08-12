@@ -2,6 +2,19 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Coins } from 'lucide-react';
 import { careerExperienceSummary } from '@/lib/padel';
+import { EmptyState as DSEmptyState, ProgressBar as DSProgressBar, Section } from '@/components/design-system';
+import { cn } from '@/lib/utils';
+
+/**
+ * @deprecated parcial — ver docs/DESIGN_SYSTEM_V2.md. `ProgressBar`,
+ * `SectionCard` e `EmptyState` abaixo agora são adapters sobre
+ * `@/components/design-system`. `RarityBadge`/`CoinBadge` permanecem com
+ * implementação própria (semântica específica do jogo — tiers de raridade e
+ * moeda —, sem equivalente 1:1 no design-system), mas alinhados ao mesmo
+ * formato visual de pílula do `StatusBadge` oficial. `XpBar` e `QuickLink`
+ * não são duplicatas de nenhum componente oficial e ficam fora desta
+ * consolidação.
+ */
 
 export const RARITY_STYLES = {
   comum: { badge: 'bg-slate-500/15 text-slate-300 border-slate-500/30', card: 'from-slate-500/10 to-transparent', label: 'Comum' },
@@ -12,7 +25,7 @@ export const RARITY_STYLES = {
 
 export function RarityBadge({ rarity }) {
   const r = RARITY_STYLES[rarity] || RARITY_STYLES.comum;
-  return <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${r.badge}`}>{r.label}</span>;
+  return <span className={cn('inline-flex h-6 max-w-full items-center gap-1.5 rounded-full border px-2.5 text-[10px] font-extrabold uppercase tracking-[0.08em]', r.badge)}>{r.label}</span>;
 }
 
 export function CoinBadge({ coins, size = 'sm' }) {
@@ -25,13 +38,9 @@ export function CoinBadge({ coins, size = 'sm' }) {
   );
 }
 
-export function ProgressBar({ value, max, className = '', barClassName = '' }) {
-  const pct = max > 0 ? Math.min(100, Math.round((value / max) * 100)) : 0;
-  return (
-    <div className={`h-2 rounded-full bg-secondary overflow-hidden ${className}`}>
-      <div className={`h-full rounded-full bg-gradient-to-r from-primary/70 to-primary transition-all duration-500 ${barClassName}`} style={{ width: `${pct}%` }} />
-    </div>
-  );
+/** @deprecated Prefira `ProgressBar` do design-system em código novo. */
+export function ProgressBar({ value, max, className = '' }) {
+  return <DSProgressBar value={value} max={max} tone="brand" className={className} />;
 }
 
 export function XpBar({ xp }) {
@@ -44,34 +53,20 @@ export function XpBar({ xp }) {
           {experience.isMax ? 'Nível máximo' : `${experience.xp.toLocaleString('pt-BR')} / ${experience.nextXp.toLocaleString('pt-BR')} XP`}
         </span>
       </div>
-      <ProgressBar value={experience.progress} max={100} />
+      <DSProgressBar value={experience.progress} max={100} tone="brand" />
       <p className="mt-1 text-[9px] text-muted-foreground">{experience.title} · A força em quadra é definida pelos atributos e pelo Overall.</p>
     </div>
   );
 }
 
-export function SectionCard({ title, icon: Icon, children, action }) {
-  return (
-    <div className="glass rounded-2xl p-4 animate-slide-up">
-      <div className="flex items-center justify-between mb-3">
-        <h2 className="font-bold text-sm flex items-center gap-2">
-          {Icon && <Icon className="h-4 w-4 text-primary" />}
-          {title}
-        </h2>
-        {action}
-      </div>
-      {children}
-    </div>
-  );
+/** @deprecated Prefira `Section` do design-system em código novo. */
+export function SectionCard({ title, icon, children, action }) {
+  return <Section title={title} icon={icon} action={action}>{children}</Section>;
 }
 
-export function EmptyState({ icon: Icon, message }) {
-  return (
-    <div className="flex flex-col items-center gap-2 py-8 text-center">
-      {Icon && <Icon className="h-8 w-8 text-muted-foreground/40" />}
-      <p className="text-sm text-muted-foreground">{message}</p>
-    </div>
-  );
+/** @deprecated Prefira `EmptyState` do design-system em código novo. */
+export function EmptyState({ icon, message }) {
+  return <DSEmptyState icon={icon} title={message} compact />;
 }
 
 export function QuickLink({ to, icon: Icon, title, subtitle, accent = 'primary' }) {

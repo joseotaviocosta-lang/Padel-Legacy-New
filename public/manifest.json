@@ -1,0 +1,12 @@
+{
+  "name": "Padel Legacy",
+  "short_name": "Padel Legacy",
+  "description": "Padel Legacy — O universo digital do padel mundial. Construa sua carreira, seu ranking e seu legado.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0A0D14",
+  "theme_color": "#98E822",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

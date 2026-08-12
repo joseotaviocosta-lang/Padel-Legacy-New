@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Coins, Calendar, Check } from 'lucide-react';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, Button } from '@/components/design-system';
 
 export default function PartnerNegotiationModal({ partnership, profile, onClose, onConfirm }) {
   const [duration, setDuration] = useState(partnership?.negotiated_duration_days || 60);
@@ -15,12 +15,9 @@ export default function PartnerNegotiationModal({ partnership, profile, onClose,
       title="Negociar Parceria"
       size="sm"
       footer={(
-        <button
-          onClick={() => onConfirm({ duration, split })}
-          className="w-full py-3 rounded-xl bg-primary text-primary-foreground font-bold text-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2"
-        >
+        <Button level="primary" onClick={() => onConfirm({ duration, split })} className="w-full">
           <Check className="h-4 w-4" /> Confirmar Negociação
-        </button>
+        </Button>
       )}
     >
       <p className="text-xs text-muted-foreground mb-4">

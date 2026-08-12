@@ -14,8 +14,7 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader as PremiumPageHeader, Surface, StatCard, EmptyState } from '@/components/design-system';
+import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, Surface, StatCard, StatusBadge, EmptyState, Tabs, Button } from '@/components/design-system';
 import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -173,7 +172,7 @@ export default function Tournaments() {
   }
 
   if (loading) {
-    return <LoadingScreen />;
+    return <PageSkeleton variant="stats" rows={6} />;
   }
 
   if (!profile) {
@@ -302,65 +301,30 @@ export default function Tournaments() {
       <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
 
       {/* Top tabs */}
-      <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
-        {[
-          { id: 'calendar', label: 'Calendário', icon: Calendar },
-          { id: 'stats', label: 'Estatísticas', icon: BarChart3 },
-          { id: 'circuit', label: 'Circuito', icon: TrendingUp },
-          { id: 'news', label: 'Notícias', icon: Newspaper },
-        ].map(t => {
-          const Icon = t.icon;
-          const isActive = activeTab === t.id;
-          return (
-            <button key={t.id} onClick={() => setActiveTab(t.id)} className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}>
-              <Icon className="h-3.5 w-3.5" /> {t.label}
-            </button>
-          );
-        })}
-      </div>
+      <Tabs
+        tabs={[
+          { key: 'calendar', label: 'Calendário', icon: Calendar },
+          { key: 'stats', label: 'Estatísticas', icon: BarChart3 },
+          { key: 'circuit', label: 'Circuito', icon: TrendingUp },
+          { key: 'news', label: 'Notícias', icon: Newspaper },
+        ]}
+        activeTab={activeTab}
+        onTabChange={setActiveTab}
+        variant="segmented"
+      />
 
       {activeTab === 'calendar' && (
       <>
       {/* View toggle */}
-      <div className="flex gap-2">
-        <button
-          onClick={() => setView('upcoming')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            view === 'upcoming'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Futuros
-        </button>
-        <button
-          onClick={() => setView('past')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-            view === 'past'
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          Passados
-        </button>
-      </div>
+      <Tabs
+        tabs={[{ key: 'upcoming', label: 'Futuros' }, { key: 'past', label: 'Passados' }]}
+        activeTab={view}
+        onTabChange={setView}
+        variant="buttons"
+      />
 
       {/* Filter tabs */}
-      <div className="flex gap-2 overflow-x-auto">
-        {FILTERS.map(t => (
-          <button
-            key={t.id}
-            onClick={() => setFilter(t.id)}
-            className={`px-4 py-2 rounded-xl text-xs font-bold transition-all whitespace-nowrap ${
-              filter === t.id
-                ? 'bg-primary text-primary-foreground'
-                : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {t.label}
-          </button>
-        ))}
-      </div>
+      <Tabs tabs={FILTERS.map(t => ({ key: t.id, label: t.label }))} activeTab={filter} onTabChange={setFilter} variant="buttons" />
 
       {/* Tournament list */}
       {filtered.length === 0 ? (
@@ -513,25 +477,20 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
               {config.label}
             </span>
             {tournament.concurrent_events > 1 && (
-              <span className="ml-1 inline-flex items-center rounded-full bg-red-500/10 text-red-300 border border-red-500/20 px-2 py-0.5 text-[9px] font-bold uppercase">
-                Escolha estratégica · {tournament.concurrent_events} eventos
-              </span>
+              <StatusBadge tone="danger" className="mt-1">Escolha estratégica · {tournament.concurrent_events} eventos</StatusBadge>
             )}
           </div>
         </div>
         {isPlayed ? (
-          <div className="flex items-center gap-1 text-green-400 shrink-0">
-            <CheckCircle className="h-4 w-4" />
-            <span className="text-[9px] font-bold uppercase">Concluído</span>
-          </div>
+          <StatusBadge tone="success" icon={CheckCircle} className="shrink-0">Concluído</StatusBadge>
         ) : isPast ? (
-          <div className="flex items-center gap-1 text-muted-foreground shrink-0">
-            <Lock className="h-4 w-4" />
-            <span className="text-[9px] font-bold uppercase">Encerrado</span>
-          </div>
+          <StatusBadge tone="neutral" icon={Lock} className="shrink-0">Encerrado</StatusBadge>
         ) : null}
       </div>
-      <div className="mb-3 flex gap-2"><button onClick={onViewDetails} className="rounded-lg bg-primary/10 px-2 py-1 text-[10px] font-bold text-primary">Ver detalhes</button><button onClick={onViewBracket} className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-bold text-cyan-300">Ver chave</button></div>
+      <div className="mb-3 flex gap-2">
+        <Button type="button" level="ghost" size="sm" onClick={onViewDetails} className="h-7 rounded-lg bg-primary/10 px-2 text-[10px] text-primary hover:bg-primary/15">Ver detalhes</Button>
+        <Button type="button" level="ghost" size="sm" onClick={onViewBracket} className="h-7 rounded-lg bg-secondary px-2 text-[10px] text-cyan-300 hover:bg-secondary/80">Ver chave</Button>
+      </div>
 
       {tournament.description && (
         <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 line-clamp-2">{tournament.description}</p>

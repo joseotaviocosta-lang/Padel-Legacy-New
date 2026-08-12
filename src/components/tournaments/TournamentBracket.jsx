@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, Surface, Tabs } from '@/components/design-system';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
@@ -123,16 +123,13 @@ export default function TournamentBracket({ tournament, onClose }) {
         <p className="text-[10px] text-muted-foreground mt-1">Vice: {runnerUp}</p>
       </div>}
 
-      <div className="flex gap-2 overflow-x-auto pb-2 mb-3">
-        {history.map((round, index) => (
-          <button
-            key={`${round.round}-${index}`}
-            onClick={() => setActiveRound(index)}
-            className={`shrink-0 rounded-xl px-3 py-2 text-xs font-bold border transition-colors ${activeRound === index ? 'bg-primary text-primary-foreground border-primary' : 'bg-secondary/20 border-border/50 text-muted-foreground hover:text-foreground'}`}
-          >
-            {round.round}{round.date && <span className="ml-1 text-[9px] opacity-70">{new Date(`${round.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}</span>}
-          </button>
-        ))}
+      <div className="mb-3">
+        <Tabs
+          tabs={history.map((round, index) => ({ key: String(index), label: round.round }))}
+          activeTab={String(activeRound)}
+          onTabChange={(key) => setActiveRound(Number(key))}
+          variant="buttons"
+        />
       </div>
 
       <div className="space-y-2">
@@ -158,12 +155,11 @@ function MatchCard({ match, number }) {
   const aWon = match.winner === match.team_a;
   const bWon = match.winner === match.team_b;
   return (
-    <div className="rounded-xl border border-border/40 bg-secondary/10 p-3">
+    <Surface padding="compact">
       <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score || (match.status === 'scheduled' ? 'Agendada' : '—')}</span></div>
       <TeamLine name={match.team_a} winner={aWon} />
       <TeamLine name={match.team_b} winner={bWon} />
-      {match.winner && <div className="mt-2 text-right"><span className="text-[9px] text-muted-foreground">Ver resultado</span></div>}
-    </div>
+    </Surface>
   );
 }
 

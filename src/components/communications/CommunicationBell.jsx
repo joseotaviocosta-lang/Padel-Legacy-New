@@ -6,6 +6,7 @@ import { ensureMyProfile } from '@/lib/padel';
 import { ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markCareerCommunicationRead } from '@/lib/careerCommunications.js';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
+import { NotificationBadge } from '@/components/design-system';
 
 export default function CommunicationBell({ compact = false }) {
   const navigate = useNavigate();
@@ -116,16 +117,13 @@ export default function CommunicationBell({ compact = false }) {
     <div className="relative">
       <button
         type="button"
-        aria-label="Abrir comunicações"
+        aria-label={unread > 0 ? `Abrir comunicações — ${unread} não lida${unread === 1 ? '' : 's'}` : 'Abrir comunicações'}
+        title="Comunicações"
         onClick={handleToggle}
         className={`relative inline-flex items-center justify-center rounded-xl border border-border/70 bg-card/70 text-muted-foreground transition-colors hover:text-foreground ${compact ? 'h-9 w-9' : 'h-10 w-10'}`}
       >
         <Bell className="h-4.5 w-4.5" />
-        {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-5 min-w-5 items-center justify-center rounded-full bg-primary px-1 text-[9px] font-black text-primary-foreground">
-            {unread > 99 ? '99+' : unread}
-          </span>
-        )}
+        <NotificationBadge count={unread} />
       </button>
 
       {open && (

@@ -1,10 +1,12 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Trophy, Users, Globe, Crown, Link, Plus, TrendingUp, CalendarDays, Medal, Activity } from 'lucide-react';
+import { Trophy, Users, Globe, Crown, Link, Plus, CalendarDays, Medal, Activity } from 'lucide-react';
 import { overallRating } from '@/lib/padel';
-import { LoadingScreen, EmptyStateCard, TabBar, PageContainer } from '@/components/padel/ui';
-import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
+import {
+  CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
+  RankingPosition, StatCard, StatusBadge, Tabs,
+} from '@/components/design-system';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 import AthleteDetail from '@/components/athletes/AthleteDetail.jsx';
 
@@ -161,10 +163,10 @@ export default function Ranking() {
     }
   }, [circuitAthletes, loading, searchParams]);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="list" rows={8} />;
 
   function CircuitList({ items, race = false }) {
-    if (!items.length) return <EmptyStateCard icon={Trophy} message="O circuito será preenchido após o próximo avanço semanal." />;
+    if (!items.length) return <EmptyState compact icon={Trophy} title="Circuito vazio" description="O circuito será preenchido após o próximo avanço semanal." />;
     return (
       <>
         <Podium
@@ -176,22 +178,24 @@ export default function Ranking() {
           const points = Number(race ? a.race_points : (a.world_ranking_points ?? a.ranking_points)) || 0;
           const previous = Number(a.ranking_previous_position) || i + 1;
           const movement = previous - (i + 1);
+          const isPlayer = Boolean(a.is_player_profile);
           return (
-            <button type="button" key={a.id || `${a.name}-${i}`} onClick={() => setSelectedAthlete(a)} className="glass flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors hover:border-primary/35">
-              <div className={`text-2xl font-black w-8 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
-                <span className="font-black text-primary">{(a.name || '?')[0]?.toUpperCase()}</span>
-              </div>
+            <button
+              type="button"
+              key={a.id || `${a.name}-${i}`}
+              onClick={() => setSelectedAthlete(a)}
+              className={`glass flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors hover:border-primary/35 ${isPlayer ? 'border border-primary/40 bg-primary/5' : ''}`}
+            >
+              <RankingPosition position={i + 1} movement={movement} />
+              <PlayerAvatar name={a.name} shape="rounded" />
               <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{a.name || 'Atleta'}</p>
-                <p className="text-[10px] text-muted-foreground">{a.country || a.nationality || 'Internacional'} · {a.circuit_category || 'Future'} · {Number(a.overall_rating ?? a.overall) || 0} OVR</p>
+                <p className="font-semibold text-sm truncate">{a.name || 'Atleta'}{isPlayer && <span className="ml-1.5 text-[9px] font-black uppercase text-primary">Você</span>}</p>
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                  <CountryFlag country={a.country || a.nationality} />
+                  <span>{a.circuit_category || 'Future'} · {Number(a.overall_rating ?? a.overall) || 0} OVR</span>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="font-black text-primary tabular-nums">{points.toLocaleString('pt-BR')}</p>
-                <p className={`text-[9px] uppercase flex items-center justify-end gap-0.5 ${movement > 0 ? 'text-green-400' : movement < 0 ? 'text-red-400' : 'text-muted-foreground'}`}>
-                  <TrendingUp className={`h-3 w-3 ${movement < 0 ? 'rotate-180' : ''}`} /> {movement === 0 ? 'estável' : `${Math.abs(movement)} pos.`}
-                </p>
-              </div>
+              <p className="font-black text-primary tabular-nums">{points.toLocaleString('pt-BR')}</p>
             </button>
           );
         })}
@@ -234,7 +238,8 @@ export default function Ranking() {
   }
 
   return (
-    <PageContainer>
+    <Page size="wide">
+      <PageContent>
       <PageHeader
         eyebrow="Circuito mundial"
         icon={Trophy}
@@ -251,7 +256,7 @@ export default function Ranking() {
         <StatCard label="Circuito" value={`${countries.length} países`} detail={`${clubs.length} clubes ativos`} icon={Medal} tone="success" />
       </div>
 
-      <TabBar tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" />
+      <Tabs tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" />
 
       {/* Lists */}
       <div className="render-window space-y-2">
@@ -261,7 +266,7 @@ export default function Ranking() {
         {/* Teams (primary) */}
         {tab === 'teams' && (
           teams.length === 0 ? (
-            <EmptyStateCard icon={Link} message="Nenhuma dupla ranqueada ainda." />
+            <EmptyState compact icon={Link} title="Sem duplas" description="Nenhuma dupla ranqueada ainda." />
           ) : (
             <>
               <Podium
@@ -271,7 +276,7 @@ export default function Ranking() {
               />
               {teams.slice(0, visibleCount).map((t, i) => (
                 <div key={t.id} className="glass rounded-2xl p-3 flex items-center gap-3">
-                  <div className={`text-2xl font-black w-6 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
+                  <RankingPosition position={i + 1} movement={0} />
                   <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
                     <Users className="h-5 w-5 text-primary" />
                   </div>
@@ -301,16 +306,19 @@ export default function Ranking() {
             </RouterLink>
           </div>
           {clubs.length === 0 ? (
-            <EmptyStateCard icon={Users} message="Nenhum clube cadastrado." />
+            <EmptyState compact icon={Users} title="Sem clubes" description="Nenhum clube cadastrado." />
           ) : clubs.slice(0, visibleCount).map((c, i) => (
             <div key={c.id} className="glass rounded-2xl p-3 flex items-center gap-3">
-              <div className={`text-2xl font-black w-6 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
+              <RankingPosition position={i + 1} movement={0} />
               <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center overflow-hidden">
                 {c.logo_url ? <img src={c.logo_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary text-lg">{(c.name || '?')[0]?.toUpperCase()}</span>}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="font-semibold text-sm truncate">{c.name}</p>
-                <p className="text-[10px] text-muted-foreground">{c.city || ''}{c.city && c.country ? ', ' : ''}{c.country || ''} · {c.member_count || 0} membros</p>
+                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                  {c.country && <CountryFlag country={c.country} />}
+                  <span>{c.city || ''}{c.city && c.country ? ', ' : ''}{c.country || ''} · {c.member_count || 0} membros</span>
+                </div>
               </div>
               <div className="text-right">
                 <p className="font-black text-primary tabular-nums">{c.club_points || 0}</p>
@@ -324,9 +332,9 @@ export default function Ranking() {
         {/* Countries */}
         {tab === 'countries' && countries.slice(0, visibleCount).map((c, i) => (
           <div key={c.name} className="glass rounded-2xl p-3 flex items-center gap-3">
-            <div className={`text-2xl font-black w-6 text-center ${i === 0 ? 'text-amber-400' : 'text-muted-foreground/50'}`}>{i + 1}</div>
-            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-accent/30 to-secondary flex items-center justify-center">
-              <Globe className="h-5 w-5 text-accent" />
+            <RankingPosition position={i + 1} movement={0} />
+            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-accent/30 to-secondary flex items-center justify-center text-xl">
+              <CountryFlag country={c.name} />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-semibold text-sm truncate">{c.name}</p>
@@ -348,6 +356,7 @@ export default function Ranking() {
         )}
       </div>
       {selectedAthlete && <AthleteDetail athlete={selectedAthlete} onClose={() => setSelectedAthlete(null)} />}
-    </PageContainer>
+      </PageContent>
+    </Page>
   );
 }

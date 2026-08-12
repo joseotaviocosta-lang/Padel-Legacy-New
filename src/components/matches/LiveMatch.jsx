@@ -23,6 +23,7 @@ import {
   formatPoints,
   MATCH_TACTICS,
 } from '@/lib/matchEngine';
+import { Button } from '@/components/design-system';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 const PANELS = [
@@ -541,14 +542,14 @@ function PlaybackControls({
   return (
     <div className="space-y-1.5 rounded-2xl border border-border/60 bg-background/90 p-2 shadow-xl backdrop-blur">
       <div className="flex items-center gap-1.5">
-        <button
-          type="button"
+        <Button
+          level="primary"
           onClick={onTogglePlay}
-          className="flex min-h-10 flex-1 items-center justify-center gap-1.5 rounded-xl bg-primary px-3 text-xs font-extrabold text-primary-foreground shadow-sm transition hover:brightness-110"
+          className="min-h-10 flex-1 rounded-xl px-3 text-xs font-extrabold shadow-sm"
         >
           {autoPlay ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
           {autoPlay ? 'Pausar' : 'Continuar'}
-        </button>
+        </Button>
         <div className="flex rounded-lg bg-secondary/60 p-0.5" aria-label="Velocidade da partida">
           {[1, 2, 5, 10].map((value) => (
             <button

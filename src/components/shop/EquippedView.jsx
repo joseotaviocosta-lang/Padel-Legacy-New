@@ -2,6 +2,7 @@ import React from 'react';
 import { Check, Package, Disc, Crown, Circle, Target, Shirt, Briefcase, Zap } from 'lucide-react';
 import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
 import { ATTRIBUTES } from '@/lib/padel';
+import { EmptyState, Surface } from '@/components/design-system';
 
 const ICON_MAP = { Disc, Crown, Circle, Target, Shirt, Briefcase, Zap, Package };
 
@@ -19,25 +20,19 @@ export default function EquippedView({ equippedItems, items }) {
   (items || []).forEach(i => { shopMap[i.id] = i; });
 
   if (!equippedItems || equippedItems.length === 0) {
-    return (
-      <div className="glass rounded-2xl p-10 text-center">
-        <Package className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-        <p className="text-sm text-muted-foreground">Nenhum item equipado no momento.</p>
-        <p className="text-xs text-muted-foreground mt-1">Equipe itens no inventário para ver os bônus ativos aqui.</p>
-      </div>
-    );
+    return <EmptyState icon={Package} title="Nenhum item equipado no momento" description="Equipe itens no inventário para ver os bônus ativos aqui." />;
   }
 
   const categories = [...new Set(equippedItems.map(i => i.category))];
 
   return (
     <div className="space-y-4">
-      <div className="glass rounded-2xl p-3 border border-primary/20 bg-primary/5 flex items-center gap-2">
+      <Surface padding="compact" className="border border-primary/20 bg-primary/5 flex items-center gap-2">
         <Check className="h-4 w-4 text-primary shrink-0" />
         <p className="text-xs text-muted-foreground">
           Estes são os itens que você está usando agora. Consulte esta lista antes de comprar para evitar itens repetidos da mesma categoria.
         </p>
-      </div>
+      </Surface>
       {categories.map(cat => (
         <div key={cat} className="space-y-2">
           <h2 className="text-xs uppercase tracking-wider text-muted-foreground font-bold">{CATEGORY_LABELS[cat] || cat}</h2>

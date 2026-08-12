@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { cn } from '@/lib/utils';
+import { useMotionPolicy } from './MotionPolicy';
 
-/** Entrada visual reutilizável sem dependências externas. */
+/** Entrada visual reutilizável sem dependências externas. Respeita allowDecorativeMotion. */
 export function MotionReveal({
   as: Component = 'div',
   children,
@@ -11,10 +12,15 @@ export function MotionReveal({
   once = true,
   ...props
 }) {
+  const { allowDecorativeMotion } = useMotionPolicy();
   const ref = useRef(null);
-  const [visible, setVisible] = useState(false);
+  const [visible, setVisible] = useState(!allowDecorativeMotion);
 
   useEffect(() => {
+    if (!allowDecorativeMotion) {
+      setVisible(true);
+      return undefined;
+    }
     const node = ref.current;
     if (!node || typeof IntersectionObserver === 'undefined') {
       setVisible(true);
@@ -30,13 +36,13 @@ export function MotionReveal({
     }, { rootMargin: '40px', threshold: 0.08 });
     observer.observe(node);
     return () => observer.disconnect();
-  }, [once]);
+  }, [once, allowDecorativeMotion]);
 
   return (
     <Component
       ref={ref}
-      className={cn('pl-motion-reveal', `pl-motion-${variant}`, visible && 'is-visible', className)}
-      style={{ '--pl-motion-delay': `${Math.max(0, delay)}ms` }}
+      className={cn('pl-motion-reveal', allowDecorativeMotion && `pl-motion-${variant}`, visible && 'is-visible', className)}
+      style={allowDecorativeMotion ? { '--pl-motion-delay': `${Math.max(0, delay)}ms` } : undefined}
       {...props}
     >
       {children}
@@ -44,8 +50,9 @@ export function MotionReveal({
   );
 }
 
-/** Anima valores numéricos quando mudam, respeitando reduced-motion. */
+/** Anima valores numéricos quando mudam, respeitando reduced-motion e lowPower. */
 export function AnimatedNumber({ value, duration = 500, formatter, className, ...props }) {
+  const { allowDecorativeMotion } = useMotionPolicy();
   const numericValue = Number(value);
   const safeValue = Number.isFinite(numericValue) ? numericValue : 0;
   const previousRef = useRef(safeValue);
@@ -54,7 +61,7 @@ export function AnimatedNumber({ value, duration = 500, formatter, className, ..
   useEffect(() => {
     const from = previousRef.current;
     previousRef.current = safeValue;
-    if (typeof window === 'undefined' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || from === safeValue) {
+    if (!allowDecorativeMotion || typeof window === 'undefined' || window.matchMedia?.('(prefers-reduced-motion: reduce)').matches || from === safeValue) {
       setDisplay(safeValue);
       return undefined;
     }
@@ -68,7 +75,7 @@ export function AnimatedNumber({ value, duration = 500, formatter, className, ..
     };
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
-  }, [safeValue, duration]);
+  }, [safeValue, duration, allowDecorativeMotion]);
 
   const rendered = useMemo(() => (
     formatter ? formatter(display) : Math.round(display).toLocaleString('pt-BR')
@@ -79,16 +86,17 @@ export function AnimatedNumber({ value, duration = 500, formatter, className, ..
 
 /** Destaca alterações recentes de indicadores sem bloquear a interface. */
 export function ChangePulse({ value, children, className, tone = 'brand' }) {
+  const { allowDecorativeMotion } = useMotionPolicy();
   const previousRef = useRef(value);
   const [changed, setChanged] = useState(false);
 
   useEffect(() => {
-    if (previousRef.current === value) return undefined;
+    if (!allowDecorativeMotion || previousRef.current === value) { previousRef.current = value; return undefined; }
     previousRef.current = value;
     setChanged(true);
     const timer = window.setTimeout(() => setChanged(false), 700);
     return () => window.clearTimeout(timer);
-  }, [value]);
+  }, [value, allowDecorativeMotion]);
 
   return <span className={cn('pl-change-pulse', `pl-change-${tone}`, changed && 'is-changing', className)}>{children}</span>;
 }

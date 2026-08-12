@@ -1,18 +1,23 @@
 import React from 'react';
-import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles } from 'lucide-react';
+import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2 } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
 import { formatDate } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
+import { Surface, Button } from '@/components/design-system';
+
+function sideName(side) {
+  return side === 'left' || side === 'esquerda' ? 'esquerda' : side === 'right' || side === 'direita' ? 'direita' : 'versátil';
+}
 
 export default function PartnerOverview({ partnership, profile, onEnd, onNegotiate, onConverse }) {
   if (!partnership) {
     return (
-      <div className="glass rounded-2xl p-8 text-center">
+      <Surface className="p-8 text-center">
         <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
         <p className="font-bold text-sm mb-1">Sem parceiro ativo</p>
         <p className="text-xs text-muted-foreground">Busque atletas na aba "Buscar" ou aceite uma proposta na "Caixa de Entrada".</p>
-      </div>
+      </Surface>
     );
   }
 
@@ -26,26 +31,34 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
   const daysLeft = partnership.scheduled_end_date
     ? daysBetween(profile?.career_date, partnership.scheduled_end_date)
     : 0;
+  const positionScore = partnership.compatibility_breakdown?.position;
+  const sideOk = positionScore == null ? null : positionScore >= 70;
 
   return (
     <div className="space-y-4">
       {/* Partner card */}
-      <div className="glass rounded-2xl p-5">
+      <Surface variant="elevated">
         <div className="flex items-center gap-4">
           <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
             <span className="font-black text-primary text-2xl">{(partnership.partner_name || '?')[0]?.toUpperCase()}</span>
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-black text-lg">{partnership.partner_name}</h3>
-            <p className="text-xs text-muted-foreground">{partnership.partner_country} · {partnership.partner_level} · OVR {partnership.partner_overall}</p>
+            <p className="text-xs text-muted-foreground">{partnership.partner_country} · {partnership.partner_level} · OVR {partnership.partner_overall} · Lado {sideName(partnership.partner_position)}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${chemLabel.bg} ${chemLabel.color}`}>
                 Entrosamento {chem}
               </span>
-              <span className="text-[10px] text-muted-foreground">{partnership.partner_position}</span>
             </div>
           </div>
         </div>
+
+        {sideOk !== null && (
+          <div className={`mt-3 flex items-center gap-2 rounded-xl p-2.5 text-[11px] font-bold ${sideOk ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
+            {sideOk ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertTriangle className="h-4 w-4 shrink-0" />}
+            {sideOk ? 'Lados complementares na quadra' : 'Parceiro atua fora do lado ideal — pode reduzir o rendimento da dupla'}
+          </div>
+        )}
 
         {/* Partnership bond */}
         <div className="mt-4 grid gap-3 md:grid-cols-3">
@@ -69,10 +82,10 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           <Stat icon={Trophy} label="Títulos" value={partnership.shared_titles || 0} color="text-amber-400" />
           <Stat icon={Coins} label="Divisão" value={`${partnership.prize_split_pct}%`} color="text-cyan-400" />
         </div>
-      </div>
+      </Surface>
 
       {/* Contract info */}
-      <div className="glass rounded-2xl p-4 flex items-center gap-3">
+      <Surface padding="compact" className="flex items-center gap-3">
         <Calendar className="h-5 w-5 text-primary shrink-0" />
         <div className="flex-1">
           <p className="text-xs font-semibold">Contrato de parceria</p>
@@ -81,19 +94,19 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
             {daysLeft > 0 ? ` · Expira em ${daysLeft} dias` : ' · Expirado'}
           </p>
         </div>
-      </div>
+      </Surface>
 
-      {/* Actions */}
+      {/* Actions — "Gerenciar parceria" sem dominar a tela (seção 13) */}
       <div className="grid grid-cols-3 gap-2">
-        <button onClick={onConverse} className="py-2.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors flex flex-col items-center gap-1">
+        <Button level="ghost" onClick={onConverse} className="flex-col gap-1 py-2.5 h-auto">
           <Heart className="h-4 w-4 text-pink-400" /> Conversar
-        </button>
-        <button onClick={onNegotiate} className="py-2.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors flex flex-col items-center gap-1">
+        </Button>
+        <Button level="ghost" onClick={onNegotiate} className="flex-col gap-1 py-2.5 h-auto">
           <Coins className="h-4 w-4 text-cyan-400" /> Negociar
-        </button>
-        <button onClick={onEnd} className="py-2.5 rounded-xl bg-red-500/10 text-red-400 text-xs font-semibold hover:bg-red-500/20 transition-colors flex flex-col items-center gap-1">
+        </Button>
+        <Button level="ghost" onClick={onEnd} className="flex-col gap-1 py-2.5 h-auto bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300">
           <AlertTriangle className="h-4 w-4" /> Encerrar
-        </button>
+        </Button>
       </div>
 
       {/* Compatibility breakdown */}

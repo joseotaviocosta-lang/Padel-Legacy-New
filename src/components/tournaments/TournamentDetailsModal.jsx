@@ -3,7 +3,7 @@ import {
   CalendarDays, CheckCircle, Clock, Coins, ListTree, Lock, MapPin,
   Play, Star, Trophy, UserRoundCheck, Zap,
 } from 'lucide-react';
-import { ModalShell } from '@/components/design-system';
+import { Button, ModalShell, StatusBadge } from '@/components/design-system';
 import { formatDate } from '@/lib/padel';
 import {
   PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen,
@@ -62,11 +62,11 @@ export default function TournamentDetailsModal({
       size="md"
       footer={(
         <div className="flex flex-wrap justify-end gap-2">
-          <button type="button" onClick={onClose} className="rounded-xl border border-border px-4 py-2.5 text-sm font-bold hover:bg-secondary">Fechar</button>
-          <button type="button" onClick={onViewBracket} className="inline-flex items-center gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-bold"><ListTree className="h-4 w-4" />Ver chave</button>
-          {activeRun && <button type="button" onClick={onContinue} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"><Play className="h-4 w-4" />Preparar partida</button>}
+          <Button level="ghost" size="touch" onClick={onClose}>Fechar</Button>
+          <Button level="secondary" size="touch" onClick={onViewBracket}><ListTree className="h-4 w-4" />Ver chave</Button>
+          {activeRun && <Button level="primary" size="touch" onClick={onContinue}><Play className="h-4 w-4" />Preparar partida</Button>}
           {!activeRun && !registration && canRegister && validation.canRegister && registrationOpen && (
-            <button type="button" onClick={onRegister} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"><CheckCircle className="h-4 w-4" />Inscrever-se</button>
+            <Button level="primary" size="touch" onClick={onRegister}><CheckCircle className="h-4 w-4" />Inscrever-se</Button>
           )}
         </div>
       )}
@@ -77,7 +77,7 @@ export default function TournamentDetailsModal({
             <p className="text-[10px] font-black uppercase tracking-widest text-primary">{tournament.tier || tournament.category || 'Torneio oficial'}</p>
             <p className="mt-1 text-sm font-bold text-muted-foreground">{tournament.description || 'Evento oficial do circuito Padel Legacy.'}</p>
           </div>
-          <span className="shrink-0 rounded-full bg-secondary px-2.5 py-1 text-[10px] font-black">{status}</span>
+          <StatusBadge tone={activeRun ? 'premium' : registration ? 'success' : ended ? 'neutral' : registrationOpen ? 'info' : 'warning'} className="shrink-0">{status}</StatusBadge>
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">

@@ -5,8 +5,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import { LoadingScreen, EmptyStateCard, InfoBanner } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, Surface, SurfaceHeader, StatCard, EmptyState } from '@/components/design-system';
+import { ActionFeedback, Button, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard, Surface, SurfaceHeader } from '@/components/design-system';
 
 export default function Matches() {
   const { activeCareer } = useCareer();
@@ -30,14 +29,14 @@ export default function Matches() {
   }, []);
 
   if (loading) {
-    return <LoadingScreen />;
+    return <PageSkeleton variant="stats" rows={4} />;
   }
 
   if (!profile) {
     return (
-      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto">
-        <EmptyStateCard icon={Swords} title="Perfil não encontrado" message="Não foi possível carregar seu perfil. Tente recarregar a página." />
-      </div>
+      <Page size="default"><PageContent>
+        <EmptyState icon={Swords} title="Perfil não encontrado" description="Não foi possível carregar seu perfil. Tente recarregar a página." />
+      </PageContent></Page>
     );
   }
 
@@ -48,7 +47,7 @@ export default function Matches() {
   return (
     <Page>
       <PageContent>
-        <PageHeader eyebrow="Preparação competitiva" title="Partidas de treino" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} action={<button onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground disabled:cursor-not-allowed disabled:opacity-40"><Play className="h-4 w-4" /> Jogar agora</button>} />
+        <PageHeader eyebrow="Preparação competitiva" title="Partidas de treino" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} action={<Button level="primary" size="touch" onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed}><Play className="h-4 w-4" /> Jogar agora</Button>} />
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           <StatCard icon={Swords} label="Hoje" value={`${profile?.practice_matches_today || 0}/${DAILY_MATCH_LIMIT}`} />
@@ -58,9 +57,7 @@ export default function Matches() {
         </div>
 
       {isInjured(profile) && (
-        <InfoBanner variant="error" icon={AlertCircle}>
-          Você está lesionado! Recupera em {injuryRecoveryDays(profile)} dias. Avance o dia no calendário.
-        </InfoBanner>
+        <ActionFeedback state="error" title={`Lesionado · recupera em ${injuryRecoveryDays(profile)} dias`} description="Avance o dia no calendário para se recuperar." />
       )}
 
       <Surface>

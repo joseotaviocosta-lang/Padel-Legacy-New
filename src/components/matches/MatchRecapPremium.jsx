@@ -1,6 +1,7 @@
 import React from 'react';
 import { Activity, ArrowUpRight, Brain, Flame, Shield, Sparkles, Star, Trophy, Zap } from 'lucide-react';
 import { buildMatchRecap } from '@/lib/matchExperience.js';
+import { Button } from '@/components/design-system';
 
 const ICONS = { rally: Activity, smash: Zap, break: Shield, streak: Flame, comeback: ArrowUpRight, mvp: Star };
 
@@ -83,7 +84,7 @@ export default function MatchRecapPremium({ matchState, title, rewards = null, n
       )}
 
       {rewards && <div className="mx-3 mb-3 grid grid-cols-2 gap-2 sm:grid-cols-4">{Object.entries(rewards).filter(([, value]) => value !== null && value !== undefined).map(([label, value]) => <MetricCard key={label} label={label} value={value} centered />)}</div>}
-      {nextAction && onNextAction && <div className="border-t border-border/40 p-3"><button type="button" onClick={onNextAction} className="flex min-h-10 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-xs font-black text-primary-foreground">{nextAction} <ArrowUpRight className="h-3.5 w-3.5" /></button></div>}
+      {nextAction && onNextAction && <div className="border-t border-border/40 p-3"><Button level="primary" size="touch" onClick={onNextAction} className="w-full">{nextAction} <ArrowUpRight className="h-3.5 w-3.5" /></Button></div>}
     </section>
   );
 }

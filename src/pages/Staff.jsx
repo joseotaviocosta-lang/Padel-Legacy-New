@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, StatCard, StatusBadge } from '@/components/design-system';
+import { Page, PageContent, PageHeader, PageSkeleton, StatCard, StatusBadge } from '@/components/design-system';
 import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
@@ -60,7 +59,7 @@ export default function Staff() {
     }
   }
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="stats" rows={4} />;
   if (!profile) return <div className="p-6 text-center text-muted-foreground">Crie seu perfil primeiro.</div>;
 
   const activeStaff = staff.filter((member) => member.status !== 'encerrado' && member.contract_status !== 'expired');

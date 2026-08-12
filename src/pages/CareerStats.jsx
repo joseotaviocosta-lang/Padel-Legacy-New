@@ -4,8 +4,7 @@ import {
   BarChart3, Trophy, Swords, Target, Flame, TrendingUp, Percent, Activity,
   CalendarDays, Medal, Crown, ShieldCheck, Gauge, Users, MapPin
 } from 'lucide-react';
-import { PageContainer, GlassCard, EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
-import { PageHeader as PremiumHeader, Surface, StatCard as PremiumStatCard, StatusBadge } from '@/components/design-system';
+import { EmptyState, Page, PageContent, PageHeader as PremiumHeader, PageSkeleton, Surface, StatCard as PremiumStatCard, StatusBadge, Tabs } from '@/components/design-system';
 import { ATTRIBUTES, formatDate, overallRating, careerExperienceSummary, careerExperienceUnlocks } from '@/lib/padel';
 import { ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, Radar, PieChart, Pie, Cell, Tooltip } from 'recharts';
 
@@ -173,8 +172,8 @@ export default function CareerStats() {
     };
   }, [profile, matches, tournaments, period]);
 
-  if (loading) return <LoadingScreen />;
-  if (!profile) return <EmptyStateCard icon={BarChart3} message="Crie seu perfil para ver suas estatísticas." />;
+  if (loading) return <PageSkeleton variant="stats" rows={4} />;
+  if (!profile) return <Page><PageContent><EmptyState icon={BarChart3} title="Perfil não encontrado" description="Crie seu perfil para ver suas estatísticas." /></PageContent></Page>;
 
   const radarData = ATTRIBUTES.map(a => ({ attribute: a.label, value: Number(profile[a.key]) || 0, fullMark: 100 }));
   const wins = analytics?.wins || 0;
@@ -193,7 +192,8 @@ export default function CareerStats() {
     .sort((a, b) => b.value - a.value);
 
   return (
-    <PageContainer>
+    <Page size="wide" className="animate-fade-in">
+      <PageContent>
       <PremiumHeader
         eyebrow="Performance e memória"
         title="Estatísticas da carreira"
@@ -207,16 +207,16 @@ export default function CareerStats() {
       />
 
       <div className="space-y-5">
-        <Surface padding="compact" className="max-w-sm">
-          <div className="flex gap-1">
-          <button onClick={() => setPeriod('career')} className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${period === 'career' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
-            Carreira completa
-          </button>
-          <button onClick={() => setPeriod('season')} className={`flex-1 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${period === 'season' ? 'bg-primary text-primary-foreground' : 'text-muted-foreground hover:text-foreground'}`}>
-            Temporada {analytics?.seasonYear}
-          </button>
-          </div>
-        </Surface>
+        <div className="max-w-sm">
+          <Tabs
+            tabs={[
+              { key: 'career', label: 'Carreira completa' },
+              { key: 'season', label: `Temporada ${analytics?.seasonYear}` },
+            ]}
+            activeTab={period}
+            onTabChange={setPeriod}
+          />
+        </div>
 
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4 animate-stagger">
           <PremiumStatCard icon={Swords} label="Partidas" value={analytics?.filtered.length || 0} detail="No período selecionado" tone="brand" />
@@ -233,7 +233,7 @@ export default function CareerStats() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-4">
-          <GlassCard>
+          <Surface>
             <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><Target className="h-4 w-4 text-primary" /> Atributos</h2>
             <ResponsiveContainer width="100%" height={280}>
               <RadarChart data={radarData}>
@@ -243,11 +243,11 @@ export default function CareerStats() {
                 <Tooltip contentStyle={{ background: 'hsl(228 30% 9%)', border: '1px solid hsl(228 20% 17%)', borderRadius: '0.75rem', fontSize: '12px' }} />
               </RadarChart>
             </ResponsiveContainer>
-          </GlassCard>
+          </Surface>
 
-          <GlassCard>
+          <Surface>
             <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><Trophy className="h-4 w-4 text-amber-400" /> Vitórias e derrotas</h2>
-            {wins + losses === 0 ? <EmptyStateCard icon={Trophy} message="Nenhuma partida registrada neste período." /> : (
+            {wins + losses === 0 ? <EmptyState icon={Trophy} title="Sem partidas" description="Nenhuma partida registrada neste período." compact /> : (
               <>
                 <ResponsiveContainer width="100%" height={240}>
                   <PieChart>
@@ -260,18 +260,18 @@ export default function CareerStats() {
                 <div className="flex justify-center gap-5 text-xs"><span className="text-primary font-bold">{wins} vitórias</span><span className="text-red-400 font-bold">{losses} derrotas</span></div>
               </>
             )}
-          </GlassCard>
+          </Surface>
         </div>
 
-        <GlassCard>
+        <Surface>
           <h2 className="font-bold text-sm flex items-center gap-2 mb-4"><Gauge className="h-4 w-4 text-cyan-400" /> Leitura competitiva</h2>
           <div className="grid md:grid-cols-2 gap-3">
             <Insight icon={Users} label="Adversário mais frequente" value={analytics?.mostFaced?.name || 'Sem dados'} detail={analytics?.mostFaced ? `${analytics.mostFaced.games} confronto(s) · ${analytics.mostFaced.wins} vitória(s)` : ''} />
             <Insight icon={MapPin} label="Local mais jogado" value={analytics?.favoriteLocation?.[0] || 'Sem dados'} detail={analytics?.favoriteLocation ? `${analytics.favoriteLocation[1]} partida(s)` : ''} />
           </div>
-        </GlassCard>
+        </Surface>
 
-        <GlassCard>
+        <Surface>
           <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><TrendingUp className="h-4 w-4 text-primary" /> Experiência de carreira</h2>
           <div className="flex justify-between items-baseline mb-2"><span className="font-black text-primary text-lg">Experiência de carreira · Nível {careerExperience.level}/{careerExperience.maxLevel}</span><span className="text-xs text-muted-foreground tabular-nums">{(profile.xp || 0).toLocaleString('pt-BR')} XP de carreira</span></div>
           <div className="h-3 rounded-full bg-secondary overflow-hidden"><div className="h-full rounded-full bg-primary transition-all duration-700" style={{ width: `${xpPct}%` }} /></div>
@@ -282,11 +282,11 @@ export default function CareerStats() {
             {experienceUnlocks.next && <p className="mt-2 text-[10px] text-muted-foreground">Próximo marco no nível {experienceUnlocks.next.level}: {experienceUnlocks.next.title}.</p>}
           </div>
           <p className="mt-3 text-[10px] leading-relaxed text-muted-foreground">A Experiência de carreira representa sua trajetória e desbloqueia profundidade de gestão. Ela não aumenta sua força automaticamente: seu desempenho continua vindo dos atributos, do Overall, da forma e da qualidade da dupla.</p>
-        </GlassCard>
+        </Surface>
 
-        <GlassCard>
+        <Surface>
           <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><CalendarDays className="h-4 w-4 text-amber-400" /> Últimas partidas</h2>
-          {!analytics?.recent.length ? <EmptyStateCard icon={CalendarDays} message="Nenhuma partida sua registrada." /> : (
+          {!analytics?.recent.length ? <EmptyState icon={CalendarDays} title="Sem partidas recentes" description="Nenhuma partida sua registrada." compact /> : (
             <div className="space-y-2">
               {analytics.recent.map(({ match, result }, i) => (
                 <div key={match.id || i} className="rounded-xl border border-border/60 bg-secondary/20 p-3 flex items-center gap-3">
@@ -300,11 +300,11 @@ export default function CareerStats() {
               ))}
             </div>
           )}
-        </GlassCard>
+        </Surface>
 
-        <GlassCard>
+        <Surface>
           <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><Crown className="h-4 w-4 text-amber-400" /> Sala de troféus</h2>
-          {!analytics?.titles.length ? <EmptyStateCard icon={Crown} message="Seu primeiro título ainda está por vir." /> : (
+          {!analytics?.titles.length ? <EmptyState icon={Crown} title="Ainda não há estatísticas nesta categoria" description="Seu primeiro título ainda está por vir." compact /> : (
             <div className="grid sm:grid-cols-2 gap-2">
               {analytics.titles.map((title, i) => (
                 <div key={`${title}-${i}`} className="rounded-xl border border-amber-400/20 bg-amber-400/5 p-3 flex items-center gap-3">
@@ -314,9 +314,9 @@ export default function CareerStats() {
               ))}
             </div>
           )}
-        </GlassCard>
+        </Surface>
 
-        <GlassCard>
+        <Surface>
           <h2 className="font-bold text-sm flex items-center gap-2 mb-3"><Target className="h-4 w-4 text-primary" /> Ranking de atributos</h2>
           <div className="space-y-2">
             {topAttributes.map((attr, i) => (
@@ -328,9 +328,10 @@ export default function CareerStats() {
               </div>
             ))}
           </div>
-        </GlassCard>
+        </Surface>
       </div>
-    </PageContainer>
+      </PageContent>
+    </Page>
   );
 }
 

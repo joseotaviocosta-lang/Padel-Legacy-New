@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Building2, Zap, Heart, Shield, TrendingUp, Brain, Coins, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { PageHeader, LoadingScreen } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, PageSkeleton, Surface, Tabs } from '@/components/design-system';
 import FacilityCard from '@/components/training/FacilityCard';
 import { FACILITY_LIST, FACILITY_CATEGORIES, getCenterEffects, getCenterLevel, getCenterReputation, DEFAULT_FACILITIES } from '@/lib/trainingCenter';
 import { useToast } from '@/components/ui/use-toast';
@@ -93,7 +93,7 @@ export default function TrainingCenterPage() {
     }
   }
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={6} />;
 
   const effects = getCenterEffects(center);
   const centerLevel = getCenterLevel(center);
@@ -111,83 +111,72 @@ export default function TrainingCenterPage() {
     : FACILITY_LIST.filter(f => f.category === activeCategory);
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-5 animate-fade-in">
-      <PageHeader icon={Building2} title="Centro de Treinamento" subtitle="Construa e evolua instalações para maximizar seu desempenho" accent="primary" />
+    <Page size="default">
+      <PageContent>
+        <PageHeader icon={Building2} title="Centro de Treinamento" description="Construa e evolua instalações para maximizar seu desempenho" tone="brand" breadcrumb={['Desenvolvimento', 'Centro de treinamento']} />
 
-      {/* Center Summary */}
-      <div className="glass rounded-2xl p-4 grid-bg relative overflow-hidden">
-        <div className="absolute -top-8 -right-8 h-32 w-32 bg-primary/15 rounded-full blur-3xl" />
-        <div className="relative flex items-center justify-between gap-4">
-          <div>
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Nível do Centro</p>
-            <p className="text-3xl font-black text-primary">{centerLevel}</p>
+        {/* Center Summary */}
+        <Surface variant="elevated">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Nível do Centro</p>
+              <p className="text-3xl font-black text-primary">{centerLevel}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Reputação</p>
+              <p className="text-2xl font-black text-amber-400">+{centerRep}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Instalações</p>
+              <p className="text-2xl font-black">{totalFacilities}/{FACILITY_LIST.length * 5}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Investido</p>
+              <p className="text-lg font-black text-yellow-400">{(center?.total_invested || 0).toLocaleString('pt-BR')}</p>
+            </div>
           </div>
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Reputação</p>
-            <p className="text-2xl font-black text-amber-400">+{centerRep}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Instalações</p>
-            <p className="text-2xl font-black">{totalFacilities}/{FACILITY_LIST.length * 5}</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Investido</p>
-            <p className="text-lg font-black text-yellow-400">{(center?.total_invested || 0).toLocaleString('pt-BR')}</p>
-          </div>
-        </div>
-      </div>
+        </Surface>
 
-      {/* Active Effects */}
-      {activeEffects.length > 0 && (
-        <div className="glass rounded-2xl p-4 border border-primary/20 bg-primary/5">
-          <p className="text-[10px] uppercase tracking-wide text-primary font-bold mb-3 flex items-center gap-1.5">
-            <Sparkles className="h-3 w-3" /> Benefícios Ativos
-          </p>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-            {activeEffects.map(([key, config]) => {
-              const Icon = config.icon;
-              return (
-                <div key={key} className="flex items-center gap-2 glass rounded-xl p-2 bg-secondary/30">
-                  <Icon className={`h-3.5 w-3.5 ${config.color} shrink-0`} />
-                  <div className="min-w-0">
-                    <p className={`text-sm font-black ${config.color}`}>+{effects[key]}{key.includes('Pct') || key.includes('Reduction') ? '%' : ''}</p>
-                    <p className="text-[8px] text-muted-foreground uppercase tracking-wide truncate">{config.label}</p>
+        {/* Active Effects */}
+        {activeEffects.length > 0 && (
+          <Surface variant="default" className="border-primary/20 bg-primary/5">
+            <p className="text-[10px] uppercase tracking-wide text-primary font-bold mb-3 flex items-center gap-1.5">
+              <Sparkles className="h-3 w-3" /> Benefícios Ativos
+            </p>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
+              {activeEffects.map(([key, config]) => {
+                const Icon = config.icon;
+                return (
+                  <div key={key} className="flex items-center gap-2 glass rounded-xl p-2 bg-secondary/30">
+                    <Icon className={`h-3.5 w-3.5 ${config.color} shrink-0`} />
+                    <div className="min-w-0">
+                      <p className={`text-sm font-black ${config.color}`}>+{effects[key]}{key.includes('Pct') || key.includes('Reduction') ? '%' : ''}</p>
+                      <p className="text-[8px] text-muted-foreground uppercase tracking-wide truncate">{config.label}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })}
-          </div>
+                );
+              })}
+            </div>
+          </Surface>
+        )}
+
+        {/* Category Filter */}
+        <Tabs tabs={categories.map(c => ({ key: c.id, label: c.label }))} activeTab={activeCategory} onTabChange={setActiveCategory} variant="buttons" />
+
+        {/* Facilities Grid */}
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+          {filtered.map(f => (
+            <FacilityCard
+              key={f.id}
+              facilityId={f.id}
+              center={center}
+              profile={profile}
+              onUpgrade={handleUpgrade}
+              busy={busy}
+            />
+          ))}
         </div>
-      )}
-
-      {/* Category Filter */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
-        {categories.map(c => (
-          <button
-            key={c.id}
-            onClick={() => setActiveCategory(c.id)}
-            className={`px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-              activeCategory === c.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-            }`}
-          >
-            {c.label}
-          </button>
-        ))}
-      </div>
-
-      {/* Facilities Grid */}
-      <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
-        {filtered.map(f => (
-          <FacilityCard
-            key={f.id}
-            facilityId={f.id}
-            center={center}
-            profile={profile}
-            onUpgrade={handleUpgrade}
-            busy={busy}
-          />
-        ))}
-      </div>
-    </div>
+      </PageContent>
+    </Page>
   );
 }

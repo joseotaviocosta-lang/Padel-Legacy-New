@@ -1,6 +1,7 @@
 import React from 'react';
 import { ArrowRight, Coins, LockKeyhole, MapPin, Sparkles, Star, WalletCards } from 'lucide-react';
 import { COACH_SPECIALTY_INFO, COACH_TIERS } from '@/lib/coaches';
+import { Button } from '@/components/design-system';
 
 function Badge({ children, tone = 'brand' }) {
   const tones = {
@@ -66,11 +67,11 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
       </div>
 
       <div className="mt-3 flex gap-2">
-        <button type="button" onClick={onDetails} className="flex-1 rounded-xl bg-secondary/60 px-3 py-2 text-[11px] font-bold hover:bg-secondary">Ver detalhes</button>
+        <Button level="secondary" size="sm" onClick={onDetails} className="flex-1">Ver detalhes</Button>
         {available ? (
-          <button type="button" onClick={onHire} className="flex flex-1 items-center justify-center gap-1 rounded-xl bg-primary px-3 py-2 text-[11px] font-black text-primary-foreground hover:opacity-90">Contratar <ArrowRight className="h-3.5 w-3.5" /></button>
+          <Button level="primary" size="sm" onClick={onHire} className="flex-1">Contratar <ArrowRight className="h-3.5 w-3.5" /></Button>
         ) : (
-          <button type="button" onClick={onDetails} className="flex flex-1 items-center justify-center gap-1 rounded-xl border border-amber-500/25 bg-amber-500/10 px-3 py-2 text-[11px] font-bold text-amber-300">Ver requisitos</button>
+          <Button level="ghost" size="sm" onClick={onDetails} className="flex-1 border border-amber-500/25 bg-amber-500/10 text-amber-300">Ver requisitos</Button>
         )}
       </div>
     </article>

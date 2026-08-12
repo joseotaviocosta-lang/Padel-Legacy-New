@@ -1,6 +1,6 @@
 import React from 'react';
 import { Newspaper, Crown, Calendar, TrendingUp } from 'lucide-react';
-import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
+import { Surface, EmptyState } from '@/components/design-system';
 import { generateTournamentNews } from '@/lib/tournaments';
 
 const ICON_MAP = { Crown, Calendar, TrendingUp, Newspaper };
@@ -9,12 +9,12 @@ export default function TournamentNews({ tournaments, profile }) {
   const news = generateTournamentNews(tournaments, profile);
 
   return (
-    <GlassCard>
+    <Surface>
       <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
         <Newspaper className="h-4 w-4 text-cyan-400" /> Notícias do Circuito
       </h2>
       {news.length === 0 ? (
-        <EmptyStateCard icon={Newspaper} message="Nenhuma notícia disponível." />
+        <EmptyState compact icon={Newspaper} title="Sem notícias" description="Nenhuma notícia disponível no momento." />
       ) : (
         <div className="space-y-2">
           {news.map((n, i) => {
@@ -38,6 +38,6 @@ export default function TournamentNews({ tournaments, profile }) {
           })}
         </div>
       )}
-    </GlassCard>
+    </Surface>
   );
 }

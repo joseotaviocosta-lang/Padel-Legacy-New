@@ -1,11 +1,11 @@
 import React from 'react';
-import { X, Coins, Lock, Shield, Weight, Calendar, Factory, BookOpen, TrendingUp, TrendingDown } from 'lucide-react';
+import { Coins, Lock, Shield, Weight, Calendar, Factory, BookOpen, TrendingUp, TrendingDown, ArrowRightLeft } from 'lucide-react';
 import { RARITY_STYLES, CATEGORY_META, SUBCATEGORY_LABELS } from '@/lib/equipmentCatalog';
 import { ATTRIBUTES } from '@/lib/padel';
 import { BADGE_COLORS } from '@/lib/marketEngine';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, Button } from '@/components/design-system';
 
-export default function ItemDetailModal({ item, owned, canAfford, access, onBuy, buying, onClose, pricing }) {
+export default function ItemDetailModal({ item, owned, canAfford, access, onBuy, buying, onClose, pricing, currentEquipped = null }) {
   const rarity = RARITY_STYLES[item.rarity] || RARITY_STYLES.comum;
   const cat = CATEGORY_META[item.category] || CATEGORY_META.acessorio;
   const subLabel = SUBCATEGORY_LABELS[item.subcategory] || item.subcategory;
@@ -13,28 +13,6 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
   return (
     <ModalShell open={Boolean(item)} onClose={onClose} title={item.name} description={`${rarity.label} · ${cat.label}`} size="sm">
       <div>
-        {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex items-center gap-3 flex-1 min-w-0">
-            <div className={`h-12 w-12 rounded-2xl bg-secondary/60 flex items-center justify-center text-2xl shrink-0`}>
-              {cat.emoji}
-            </div>
-            <div className="min-w-0">
-              <h2 className="font-black text-base leading-tight">{item.name}</h2>
-              <div className="flex items-center gap-1.5 mt-0.5">
-                <span className={`text-[8px] font-bold uppercase px-1.5 py-0.5 rounded border ${rarity.badge}`}>{rarity.label}</span>
-                <span className="text-[10px] text-muted-foreground">{cat.label}</span>
-                {subLabel && subLabel !== item.subcategory && (
-                  <span className="text-[9px] text-muted-foreground">· {subLabel}</span>
-                )}
-              </div>
-            </div>
-          </div>
-          <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary/50 shrink-0">
-            <X className="h-5 w-5 text-muted-foreground" />
-          </button>
-        </div>
-
         <p className="text-xs text-muted-foreground mb-4">{item.description}</p>
 
         {/* Specs grid */}
@@ -110,6 +88,31 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
           </div>
         )}
 
+        {/* Comparação com o item equipado na mesma categoria (seção 21) */}
+        {!owned && currentEquipped && currentEquipped.id !== item.id && (
+          <div className="glass rounded-xl p-3 mb-4 border border-primary/20">
+            <p className="flex items-center gap-1.5 text-[9px] font-bold uppercase text-primary mb-2"><ArrowRightLeft className="h-3 w-3" /> Comparação com {currentEquipped.name}</p>
+            <div className="grid grid-cols-[1fr_auto_auto] items-center gap-1 text-[10px]">
+              <span className="text-muted-foreground">Atual</span>
+              <span className="text-right font-bold text-muted-foreground">Novo</span>
+              <span />
+              {[...new Set([...Object.keys(item.attribute_bonus || {}), ...Object.keys(currentEquipped.attribute_bonus || {})])].map(key => {
+                const attr = ATTRIBUTES.find(a => a.key === key);
+                const before = Number(currentEquipped.attribute_bonus?.[key] || 0);
+                const after = Number(item.attribute_bonus?.[key] || 0);
+                const delta = after - before;
+                return (
+                  <React.Fragment key={key}>
+                    <span className="text-muted-foreground">{attr?.label || key}</span>
+                    <span className="text-right font-bold tabular-nums">{before >= 0 ? `+${before}` : before} → {after >= 0 ? `+${after}` : after}</span>
+                    <span className={`text-right font-bold tabular-nums ${delta > 0 ? 'text-emerald-400' : delta < 0 ? 'text-red-400' : 'text-muted-foreground'}`}>{delta > 0 ? `+${delta}` : delta}</span>
+                  </React.Fragment>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         {/* History */}
         {item.history && (
           <div className="glass rounded-xl p-3 mb-4">
@@ -179,12 +182,11 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
             ✓ Adquirido
           </div>
         ) : (
-          <button
+          <Button
+            level="primary"
             onClick={onBuy}
             disabled={!canAfford || buying || (access && !access.unlocked)}
-            className={`w-full py-2.5 rounded-xl text-sm font-bold flex items-center justify-center gap-2 transition-all ${
-              canAfford && access?.unlocked !== false ? 'bg-primary text-primary-foreground hover:opacity-90 glow-primary' : 'bg-secondary/50 text-muted-foreground cursor-not-allowed'
-            }`}
+            className="w-full"
           >
             {buying ? (
               <><div className="h-4 w-4 border-2 border-current/30 border-t-current rounded-full animate-spin" /> Comprando</>
@@ -201,7 +203,7 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
             ) : (
               <><Lock className="h-4 w-4" /> {pricing?.currentPrice?.toLocaleString('pt-BR') ?? item.price.toLocaleString('pt-BR')}</>
             )}
-          </button>
+          </Button>
         )}
       </div>
     </ModalShell>

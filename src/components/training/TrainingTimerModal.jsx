@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Dumbbell } from 'lucide-react';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, useMotionPolicy } from '@/components/design-system';
 
 const DURATION = 0; // instantâneo
 
 export default function TrainingTimerModal({ training, onComplete, onCancel }) {
+  const { allowDecorativeMotion } = useMotionPolicy();
   const [seconds, setSeconds] = useState(DURATION);
 
   useEffect(() => {
@@ -45,10 +46,10 @@ export default function TrainingTimerModal({ training, onComplete, onCancel }) {
           {/* court floor line */}
           <div className="absolute bottom-0 left-6 right-6 h-px bg-gradient-to-r from-transparent via-border to-transparent" />
 
-          {/* swinging racket */}
+          {/* swinging racket — pausa em dispositivos de baixa performance ou reduced-motion */}
           <motion.div
-            animate={done ? { rotate: 0, y: -8, opacity: 0.5 } : { rotate: [-28, 28, -28] }}
-            transition={done ? {} : { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+            animate={done || !allowDecorativeMotion ? { rotate: 0, y: -8, opacity: 0.5 } : { rotate: [-28, 28, -28] }}
+            transition={done || !allowDecorativeMotion ? {} : { duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute top-0 origin-bottom"
           >
             <div className="h-14 w-14 rounded-2xl bg-primary/15 border border-primary/30 flex items-center justify-center">
@@ -58,8 +59,8 @@ export default function TrainingTimerModal({ training, onComplete, onCancel }) {
 
           {/* bouncing ball */}
           <motion.div
-            animate={done ? { y: 0, scale: 1.3 } : { y: [0, -105, 0] }}
-            transition={done ? {} : { duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
+            animate={done || !allowDecorativeMotion ? { y: 0, scale: 1.3 } : { y: [0, -105, 0] }}
+            transition={done || !allowDecorativeMotion ? {} : { duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
             className="relative z-10"
           >
             <div className="h-10 w-10 rounded-full bg-gradient-to-br from-yellow-300 to-amber-500 shadow-[0_0_24px_rgba(250,204,21,0.5)]" />
@@ -67,8 +68,8 @@ export default function TrainingTimerModal({ training, onComplete, onCancel }) {
 
           {/* ball shadow */}
           <motion.div
-            animate={done ? { scale: 1.6, opacity: 0 } : { scale: [1, 0.3, 1], opacity: [0.5, 0.1, 0.5] }}
-            transition={done ? {} : { duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
+            animate={done || !allowDecorativeMotion ? { scale: 1.6, opacity: 0 } : { scale: [1, 0.3, 1], opacity: [0.5, 0.1, 0.5] }}
+            transition={done || !allowDecorativeMotion ? {} : { duration: 0.85, repeat: Infinity, ease: 'easeInOut' }}
             className="absolute bottom-0 h-2.5 w-10 rounded-full bg-black/50"
           />
         </div>

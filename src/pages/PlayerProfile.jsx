@@ -1,17 +1,34 @@
 import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, Trophy, Coins, MapPin, Hand, Battery, Palette, ChevronRight } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, Trophy, Coins } from 'lucide-react';
 import { ensureMyProfile, careerExperienceSummary, careerExperienceUnlocks, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
-import { PLAY_STYLE_OPTIONS } from '@/lib/initialCareerProfiles.js';
+import { PLAY_STYLE_OPTIONS, DOMINANT_HANDS, COURT_SIDE_OPTIONS } from '@/lib/initialCareerProfiles.js';
 import { CAREER_DIFFICULTY_OPTIONS, getCareerDifficultyOption } from '@/lib/careerDifficultyLabels.js';
 import LogoutButton from '@/components/LogoutButton';
 import { LevelBadge, AttributeBar } from '@/components/padel/Shared';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import AttributeDistribution from '@/components/career/AttributeDistribution';
-import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge, Surface, SurfaceHeader, ProgressBar as PremiumProgressBar } from '@/components/design-system';
+import { Page, PageContent, PageHeader, PageSkeleton, StatCard as PremiumStatCard, StatusBadge, Surface, SurfaceHeader, ProgressBar as PremiumProgressBar, Button } from '@/components/design-system';
 
 const ICON_MAP = { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame };
+
+// Grupos de leitura rápida dos atributos reais do projeto (seção 5 do
+// redesign de Carreira) — não inventa atributos novos, só organiza os 10
+// existentes em ATTRIBUTES por natureza técnica/mental/física.
+const ATTRIBUTE_GROUPS = [
+  { id: 'tecnicos', label: 'Técnicos', keys: ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense'] },
+  { id: 'mentais', label: 'Mentais', keys: ['strategy', 'emotional_control'] },
+  { id: 'fisicos', label: 'Físicos', keys: ['agility'] },
+];
+
+function sideLabel(side) {
+  return COURT_SIDE_OPTIONS.find(option => option.id === side)?.label || 'Não definido';
+}
+
+function handLabel(hand) {
+  return DOMINANT_HANDS.find(option => option.id === hand)?.label || 'Não definido';
+}
 
 export default function PlayerProfile() {
   const [profile, setProfile] = useState(null);
@@ -42,7 +59,7 @@ export default function PlayerProfile() {
   }, []);
 
   if (loading) {
-    return <LoadingScreen />;
+    return <PageSkeleton variant="stats" rows={4} />;
   }
 
   const careerExperience = careerExperienceSummary(profile?.xp || 0);
@@ -74,11 +91,11 @@ export default function PlayerProfile() {
             <StatusBadge tone={isRetired(profile) ? 'neutral' : 'success'}>{isRetired(profile) ? 'Aposentado' : 'Carreira ativa'}</StatusBadge>
             <StatusBadge tone="premium">Dificuldade: {getCareerDifficultyOption(profile?.career_difficulty)?.label || 'Difícil'}</StatusBadge>
           </>}
-          action={<button onClick={() => editing ? save() : setEditing(true)} disabled={saving} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground hover:brightness-110 disabled:opacity-50">{editing ? <><Check className="h-4 w-4" />Salvar perfil</> : <><Edit3 className="h-4 w-4" />Editar perfil</>}</button>}
+          action={<Button level={editing ? 'primary' : 'secondary'} onClick={() => editing ? save() : setEditing(true)} disabled={saving}>{editing ? <><Check className="h-4 w-4" />Salvar perfil</> : <><Edit3 className="h-4 w-4" />Editar perfil</>}</Button>}
         />
         <Surface variant="elevated">
           <div className="grid gap-5 lg:grid-cols-[auto,1fr] lg:items-center">
-            <div className="mx-auto h-24 w-24 overflow-hidden rounded-3xl bg-gradient-to-br from-primary/35 to-secondary ring-4 ring-primary/15 lg:mx-0">
+            <div className="mx-auto h-24 w-24 shrink-0 overflow-hidden rounded-3xl bg-gradient-to-br from-primary/35 to-secondary ring-4 ring-primary/15 lg:mx-0">
               {profile?.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="flex h-full w-full items-center justify-center text-4xl font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>}
             </div>
             <div className="min-w-0">
@@ -91,6 +108,13 @@ export default function PlayerProfile() {
               <div className="mt-4"><div className="mb-1.5 flex justify-between text-xs"><span className="font-bold">{careerExperience.title}</span><span className="text-muted-foreground">{careerExperience.isMax ? 'Nível máximo' : `${careerExperience.nextXp.toLocaleString('pt-BR')} XP`}</span></div><PremiumProgressBar value={careerExperience.progress} max={100} tone="brand" /><p className="mt-2 text-[11px] text-muted-foreground">{experienceUnlocks.latest.title}: {experienceUnlocks.latest.description}</p></div>
             </div>
           </div>
+          <div className="mt-4 grid grid-cols-2 gap-2 border-t border-border/40 pt-4 sm:grid-cols-4">
+            <IdentityFact icon={MapPin} label="Origem" value={`${profile?.city || 'Cidade não definida'}, ${profile?.country || '—'}`} />
+            <IdentityFact icon={Hand} label="Lado" value={`${sideLabel(profile?.preferred_side)} · ${handLabel(profile?.handedness)}`} />
+            <IdentityFact icon={Trophy} label="Ranking" value={profile?.rank_points || profile?.ranking_points ? `${(profile.rank_points ?? profile.ranking_points).toLocaleString('pt-BR')} pts` : 'Sem pontos ainda'} />
+            <IdentityFact icon={Battery} label="Condição física" value={`${profile?.form ?? 50}/100`} />
+          </div>
+          <Link to="/character" className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"><Palette className="h-3.5 w-3.5" /> Personalizar aparência <ChevronRight className="h-3.5 w-3.5" /></Link>
         </Surface>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <PremiumStatCard label="Overall" value={overallRating(profile)} detail="Força esportiva atual" icon={Sword} tone="brand" />
@@ -146,15 +170,26 @@ export default function PlayerProfile() {
       {/* Attribute distribution */}
       <AttributeDistribution profile={profile} onDistribute={setProfile} />
 
-      {/* Attributes */}
-      <div className="glass rounded-2xl p-5">
-        <h2 className="font-bold text-sm mb-4 flex items-center gap-2"><Zap className="h-4 w-4 text-primary" /> Atributos</h2>
-        <div className="grid md:grid-cols-2 gap-4">
-          {ATTRIBUTES.map(attr => (
-            <AttributeBar key={attr.key} label={attr.label} value={profile?.[attr.key] || 0} icon={ICON_MAP[attr.icon]} />
-          ))}
+      {/* Attributes, organized by group for faster reading (seção 5/6) */}
+      <Surface>
+        <SurfaceHeader title="Atributos" description="Organizados por natureza técnica, mental e física." icon={Zap} />
+        <div className="space-y-5">
+          {ATTRIBUTE_GROUPS.map(group => {
+            const groupAttrs = ATTRIBUTES.filter(attr => group.keys.includes(attr.key));
+            if (!groupAttrs.length) return null;
+            return (
+              <div key={group.id}>
+                <p className="mb-3 text-[10px] font-black uppercase tracking-wider text-muted-foreground">{group.label}</p>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {groupAttrs.map(attr => (
+                    <AttributeBar key={attr.key} label={attr.label} value={profile?.[attr.key] || 0} icon={ICON_MAP[attr.icon]} />
+                  ))}
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
+      </Surface>
 
       {/* Retirement notice */}
       {isRetired(profile) && (
@@ -179,6 +214,18 @@ function Field({ label, children }) {
     <div>
       <label className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold block mb-1">{label}</label>
       {children}
+    </div>
+  );
+}
+
+function IdentityFact({ icon: Icon, label, value }) {
+  return (
+    <div className="flex items-center gap-2 rounded-xl bg-secondary/30 p-2.5">
+      <Icon className="h-3.5 w-3.5 shrink-0 text-primary" />
+      <div className="min-w-0">
+        <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className="truncate text-xs font-bold">{value}</p>
+      </div>
     </div>
   );
 }

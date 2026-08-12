@@ -1,6 +1,6 @@
 import React from 'react';
 import { BarChart3, Trophy, Crown, TrendingUp, Users, Coins, Star } from 'lucide-react';
-import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
+import { Surface, EmptyState } from '@/components/design-system';
 import { computePlayerTournamentStats, computeCircuitStats } from '@/lib/tournaments';
 
 export default function TournamentStats({ profile, tournaments, matches }) {
@@ -24,7 +24,7 @@ export default function TournamentStats({ profile, tournaments, matches }) {
   return (
     <div className="space-y-4">
       {/* Player stats */}
-      <GlassCard>
+      <Surface>
         <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
           <BarChart3 className="h-4 w-4 text-primary" /> Suas Estatísticas
         </h2>
@@ -40,10 +40,10 @@ export default function TournamentStats({ profile, tournaments, matches }) {
             );
           })}
         </div>
-      </GlassCard>
+      </Surface>
 
       {/* Circuit stats */}
-      <GlassCard>
+      <Surface>
         <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
           <TrendingUp className="h-4 w-4 text-cyan-400" /> Estatísticas do Circuito
         </h2>
@@ -59,15 +59,15 @@ export default function TournamentStats({ profile, tournaments, matches }) {
             );
           })}
         </div>
-      </GlassCard>
+      </Surface>
 
       {/* Top champions */}
-      <GlassCard>
+      <Surface>
         <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
           <Crown className="h-4 w-4 text-amber-400" /> Maiores Campeões
         </h2>
         {circuit.topChampions.length === 0 ? (
-          <EmptyStateCard icon={Crown} message="Nenhum campeão registrado ainda." />
+          <EmptyState compact icon={Crown} title="Sem campeões" description="Nenhum campeão registrado ainda." />
         ) : (
           <div className="space-y-2">
             {circuit.topChampions.map((c, i) => (
@@ -86,7 +86,7 @@ export default function TournamentStats({ profile, tournaments, matches }) {
             ))}
           </div>
         )}
-      </GlassCard>
+      </Surface>
     </div>
   );
 }

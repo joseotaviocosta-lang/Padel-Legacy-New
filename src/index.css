@@ -716,8 +716,9 @@
 }
 
 @media (max-width: 767px) {
+  /* v2 Design System — alvo de toque mínimo de 44px (auditoria UI/UX, seção 6). */
   .design-system-page-host :is(button, a[role="button"]):not([class*="w-"]):not([class*="h-"]) {
-    min-height: 2.5rem;
+    min-height: 2.75rem;
   }
 
   .pl-modal-content { padding: 0.875rem; }

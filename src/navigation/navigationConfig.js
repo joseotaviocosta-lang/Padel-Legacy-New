@@ -1,25 +1,130 @@
-import { Activity, Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Crown, Database, Dumbbell, Gamepad2, Globe, GraduationCap, Handshake, Heart, History, Inbox, LayoutDashboard, Medal, MessageCircle, Mic, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, Medal, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
 
-export const NAVIGATION_AREAS = [
-  { id: 'career', label: 'Início', description: 'Resumo, identidade e progresso da carreira.', to: '/game', icon: Gamepad2, items: [
-    { to: '/communications', icon: Inbox, label: 'Comunicações' }, { to: '/profile', icon: User, label: 'Perfil do atleta' }, { to: '/game/missions', icon: Target, label: 'Objetivos e missões' }, { to: '/character', icon: Palette, label: 'Aparência' }, { to: '/achievements', icon: Medal, label: 'Conquistas' }, { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' }, { to: '/game/legacy', icon: Crown, label: 'Legado' },
-  ]},
-  { id: 'development', label: 'Desenvolvimento', description: 'Treino, recuperação, equipe e equipamentos.', to: '/development', icon: Dumbbell, items: [
-    { to: '/game/training', icon: Dumbbell, label: 'Treinos' }, { to: '/training-center', icon: Building2, label: 'Centro de treinamento' }, { to: '/game/inventory', icon: Package, label: 'Equipamentos' }, { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
-  ]},
-  { id: 'team', label: 'Dupla e relações', description: 'Parceiros, propostas, contratos e reputação.', to: '/team-hub', icon: Handshake, items: [
-    { to: '/partners', icon: Handshake, label: 'Minha dupla e propostas' }, { to: '/coaches', icon: GraduationCap, label: 'Treinador principal' }, { to: '/staff', icon: Users, label: 'Comissão técnica' }, { to: '/relationships', icon: Heart, label: 'Relacionamentos' }, { to: '/press', icon: Mic, label: 'Imprensa' }, { to: '/fans', icon: Users, label: 'Fãs e torcidas' },
-  ]},
-  { id: 'competition', label: 'Competições', description: 'Agenda competitiva, jogos, resultados e ranking.', to: '/competitions', icon: Trophy, items: [
-    { to: '/tournaments', icon: Award, label: 'Torneios' }, { to: '/game/calendar', icon: Calendar, label: 'Calendário' }, { to: '/matches', icon: Swords, label: 'Partidas' }, { to: '/ranking', icon: Trophy, label: 'Ranking' }, { to: '/game/season', icon: BarChart3, label: 'Temporada' },
-  ]},
-  { id: 'world', label: 'Mundo', description: 'Circuito, notícias, atletas e comunidade.', to: '/world', icon: Globe, items: [
-    { to: '/journal', icon: Newspaper, label: 'Notícias' }, { to: '/world-events', icon: Globe, label: 'Eventos mundiais' }, { to: '/world-market', icon: TrendingUp, label: 'Mercado mundial' }, { to: '/weather', icon: CloudSun, label: 'Clima' }, { to: '/athletes', icon: UserCog, label: 'Atletas' }, { to: '/clubs', icon: Users, label: 'Clubes' }, { to: '/community', icon: MessageCircle, label: 'Comunidade e rede' }, { to: '/encyclopedia', icon: BookOpen, label: 'Enciclopédia' }, { to: '/history', icon: History, label: 'História do padel' }, { to: '/hall-of-fame', icon: Crown, label: 'Hall da fama' },
-  ]},
-  { id: 'management', label: 'Gestão', description: 'Finanças e ferramentas avançadas.', to: '/management', icon: Wallet, items: [
-    { to: '/game/economy', icon: Wallet, label: 'Economia' }, { to: '/admin', icon: LayoutDashboard, label: 'Administração' }, { to: '/database', icon: Database, label: 'Banco de dados' },
-  ]},
+/**
+ * Fonte única da navegação do shell (Fase 3 — docs/NAVIGATION_ARCHITECTURE.md).
+ * Substitui a antiga NAVIGATION_AREAS (6 macroáreas com paridade quebrada
+ * entre sidebar desktop e BottomNav mobile — ver docs/UI_UX_AUDIT.md seção 3).
+ *
+ * Nenhuma rota nova foi criada para esta reorganização: os grupos "Carreira"
+ * e "Mais" combinam itens que já existiam em outras áreas, sem depender de
+ * telas próprias. As páginas de hub antigas (`/development`, `/team-hub`)
+ * continuam existindo e funcionando (usadas pelo tutorial — ver
+ * src/onboarding/tutorialSteps.js), só deixam de ser o alvo direto do link
+ * de topo do grupo; `aliases` garante que o estado ativo do shell ainda as
+ * reconhece como parte do grupo "Carreira" quando visitadas diretamente.
+ */
+export const NAV_GROUPS = [
+  {
+    id: 'home',
+    label: 'Início',
+    description: 'Centro da carreira.',
+    to: '/game',
+    icon: Home,
+    items: [],
+  },
+  {
+    id: 'career',
+    label: 'Carreira',
+    description: 'Atleta, treinos, equipe e equipamentos.',
+    to: '/development',
+    aliases: ['/team-hub'],
+    icon: Dumbbell,
+    items: [
+      { to: '/profile', icon: User, label: 'Atleta' },
+      { to: '/character', icon: Palette, label: 'Aparência' },
+      { to: '/game/missions', icon: Target, label: 'Missões e objetivos' },
+      { to: '/game/training', icon: Dumbbell, label: 'Treinos' },
+      { to: '/training-center', icon: Building2, label: 'Centro de treinamento' },
+      { to: '/game/inventory', icon: Package, label: 'Equipamentos' },
+      { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
+      { to: '/partners', icon: Handshake, label: 'Minha dupla e propostas' },
+      { to: '/coaches', icon: GraduationCap, label: 'Treinador principal' },
+      { to: '/staff', icon: Users, label: 'Comissão técnica' },
+      { to: '/relationships', icon: Heart, label: 'Relacionamentos' },
+      { to: '/fans', icon: Users, label: 'Fãs e torcidas' },
+    ],
+  },
+  {
+    id: 'competition',
+    label: 'Competir',
+    description: 'Torneios, calendário, ranking e partidas.',
+    to: '/competitions',
+    icon: Trophy,
+    items: [
+      { to: '/tournaments', icon: Award, label: 'Torneios' },
+      { to: '/game/calendar', icon: Calendar, label: 'Calendário' },
+      { to: '/matches', icon: Swords, label: 'Partidas' },
+      { to: '/ranking', icon: Trophy, label: 'Ranking' },
+      { to: '/game/season', icon: BarChart3, label: 'Temporada' },
+    ],
+  },
+  {
+    id: 'world',
+    label: 'Mundo',
+    description: 'Notícias, comunidade, imprensa e o circuito ao vivo.',
+    to: '/world',
+    icon: Globe,
+    items: [
+      { to: '/journal', icon: Newspaper, label: 'Notícias' },
+      { to: '/world-events', icon: Globe, label: 'Eventos mundiais' },
+      { to: '/press', icon: Mic, label: 'Imprensa' },
+      { to: '/community', icon: MessageCircle, label: 'Comunidade e rede' },
+      { to: '/athletes', icon: UserCog, label: 'Atletas' },
+      { to: '/clubs', icon: Users, label: 'Clubes' },
+      { to: '/weather', icon: CloudSun, label: 'Clima' },
+    ],
+  },
+  {
+    id: 'management',
+    label: 'Gestão',
+    description: 'Economia, mercado e administração da carreira.',
+    to: '/management',
+    icon: Wallet,
+    items: [
+      { to: '/game/economy', icon: Wallet, label: 'Economia' },
+      { to: '/world-market', icon: TrendingUp, label: 'Mercado mundial' },
+      { to: '/admin', icon: LayoutDashboard, label: 'Administração' },
+      { to: '/database', icon: Database, label: 'Banco de dados' },
+    ],
+  },
+  {
+    id: 'more',
+    label: 'Mais',
+    description: 'Estatísticas, histórico e utilidades da carreira.',
+    // Sem rota própria — no desktop expande inline na sidebar, no mobile
+    // abre um BottomSheet (ver BottomNav.jsx). Nenhuma dessas páginas
+    // depende de um hub dedicado para funcionar.
+    to: null,
+    icon: MoreHorizontal,
+    items: [
+      { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' },
+      { to: '/game/legacy', icon: Crown, label: 'Legado' },
+      { to: '/achievements', icon: Medal, label: 'Conquistas' },
+      { to: '/communications', icon: Inbox, label: 'Comunicações' },
+      { to: '/history', icon: History, label: 'História do padel' },
+      { to: '/hall-of-fame', icon: Crown, label: 'Hall da fama' },
+      { to: '/encyclopedia', icon: BookOpen, label: 'Enciclopédia' },
+    ],
+  },
 ];
 
-export const ALL_NAVIGATION_ITEMS = NAVIGATION_AREAS.flatMap(area => [{ to: area.to, label: area.label, icon: area.icon }, ...area.items]);
-export const areaForPath = pathname => NAVIGATION_AREAS.find(area => pathname === area.to || area.items.some(item => pathname === item.to || (item.to !== '/game' && pathname.startsWith(`${item.to}/`))));
+export const ALL_SHELL_ITEMS = NAV_GROUPS.flatMap((group) => [
+  ...(group.to ? [{ to: group.to, label: group.label, icon: group.icon }] : []),
+  ...group.items,
+]);
+
+export const groupForPath = (pathname) => NAV_GROUPS.find((group) => (
+  pathname === group.to
+  || group.aliases?.includes(pathname)
+  || group.items.some((item) => pathname === item.to || (item.to !== '/game' && pathname.startsWith(`${item.to}/`)))
+));
+
+// Mapa usado só pelas 4 rotas de hub legadas (App.jsx passa `areaId`
+// inalterado — nenhuma rota foi renomeada nesta fase). Traduz o identificador
+// histórico da rota para o grupo correspondente na nova arquitetura.
+export const LEGACY_AREA_TO_GROUP = {
+  development: 'career',
+  team: 'career',
+  competition: 'competition',
+  management: 'management',
+};

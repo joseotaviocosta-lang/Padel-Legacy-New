@@ -1,6 +1,18 @@
 import React from 'react';
 import { Trophy, Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame } from 'lucide-react';
 import { careerExperienceSummary, overallRating } from '@/lib/padel';
+import { IconFrame, ProgressBar as DSProgressBar, StatCard as DSStatCard } from '@/components/design-system';
+
+/**
+ * @deprecated parcial — ver docs/DESIGN_SYSTEM_V2.md. `StatCard` e
+ * `AttributeBar` abaixo agora são adapters sobre `@/components/design-system`
+ * (resolve a duplicação de `StatCard` apontada na auditoria: CareerHub.jsx
+ * usava este `StatCard` simples lado a lado com o `StatCard` premium do
+ * design-system — agora os dois renderizam com o mesmo componente).
+ * `getAttributeIcon` é utilitário puro, não um componente visual — sem
+ * mudanças. `LevelBadge`, `ProfileMini` e `AchievementBadge` não duplicam
+ * nenhum componente oficial 1:1 e ficam fora desta consolidação.
+ */
 
 const ATTRIBUTE_ICONS = { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame };
 
@@ -24,34 +36,30 @@ export function LevelBadge({ level, size = 'sm' }) {
   );
 }
 
-export function StatCard({ icon: Icon, label, value, accent }) {
-  return (
-    <div className="glass rounded-2xl p-3 flex flex-col items-center gap-1">
-      <Icon className={`h-4 w-4 ${accent || 'text-primary'}`} />
-      <span className="text-xl font-black text-foreground">{value}</span>
-      <span className="text-[10px] text-muted-foreground uppercase tracking-wide">{label}</span>
-    </div>
-  );
+// Traduz a prop legada `accent` (classe de cor Tailwind livre, ex.:
+// "text-cyan-400") para o tom semântico mais próximo do design-system.
+function accentToTone(accent) {
+  if (!accent) return 'brand';
+  if (accent.includes('amber') || accent.includes('yellow')) return 'premium';
+  if (accent.includes('cyan') || accent.includes('sky') || accent.includes('blue')) return 'info';
+  if (accent.includes('purple') || accent.includes('violet') || accent.includes('fuchsia')) return 'team';
+  if (accent.includes('green') || accent.includes('emerald')) return 'success';
+  if (accent.includes('red') || accent.includes('rose')) return 'danger';
+  return 'brand';
 }
 
-export function AttributeBar({ label, value, icon: Icon }) {
-  const pct = Math.min(100, value);
+/** @deprecated Prefira `StatCard` do design-system em código novo. */
+export function StatCard({ icon, label, value, accent }) {
+  return <DSStatCard icon={icon} label={label} value={value} tone={accentToTone(accent)} />;
+}
+
+/** @deprecated Prefira `ProgressBar` do design-system em código novo (com `label`/`valueLabel`). */
+export function AttributeBar({ label, value, icon }) {
   return (
     <div className="flex items-center gap-3">
-      <div className="w-8 h-8 rounded-lg bg-secondary/60 flex items-center justify-center shrink-0">
-        {Icon && <Icon className="h-4 w-4 text-primary" />}
-      </div>
-      <div className="flex-1 min-w-0">
-        <div className="flex justify-between items-baseline mb-1">
-          <span className="text-xs font-medium text-foreground/90">{label}</span>
-          <span className="text-xs font-black text-primary tabular-nums">{value}</span>
-        </div>
-        <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-          <div
-            className="h-full rounded-full bg-gradient-to-r from-primary/70 to-primary transition-all duration-500"
-            style={{ width: `${pct}%` }}
-          />
-        </div>
+      <IconFrame icon={icon} tone="brand" size="sm" />
+      <div className="min-w-0 flex-1">
+        <DSProgressBar value={value} max={100} label={label} valueLabel={String(value)} tone="brand" size="sm" />
       </div>
     </div>
   );

@@ -1,6 +1,6 @@
 import React from 'react';
 import { TrendingUp, Trophy } from 'lucide-react';
-import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
+import { Surface, EmptyState } from '@/components/design-system';
 import { getCircuitEvolution } from '@/lib/tournaments';
 
 export default function CircuitEvolution({ tournaments }) {
@@ -8,12 +8,12 @@ export default function CircuitEvolution({ tournaments }) {
 
   return (
     <div className="space-y-4">
-      <GlassCard>
+      <Surface>
         <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
           <TrendingUp className="h-4 w-4 text-primary" /> Evolução Histórica do Circuito
         </h2>
         {evolution.length === 0 ? (
-          <EmptyStateCard icon={TrendingUp} message="Nenhum dado histórico disponível." />
+          <EmptyState compact icon={TrendingUp} title="Sem histórico" description="Nenhum dado histórico disponível ainda." />
         ) : (
           <div className="relative">
             {evolution.map((year, i) => {
@@ -55,10 +55,10 @@ export default function CircuitEvolution({ tournaments }) {
             })}
           </div>
         )}
-      </GlassCard>
+      </Surface>
 
       {evolution.length > 0 && (
-        <GlassCard>
+        <Surface>
           <h2 className="font-bold text-sm flex items-center gap-2 mb-3">
             <Trophy className="h-4 w-4 text-amber-400" /> Resumo do Circuito
           </h2>
@@ -80,7 +80,7 @@ export default function CircuitEvolution({ tournaments }) {
               <span className="font-bold text-purple-400">{evolution.reduce((max, y) => y.totalAudience > max.audience ? { audience: y.totalAudience, year: y.year } : max, { audience: 0, year: '—' }).year}</span>
             </div>
           </div>
-        </GlassCard>
+        </Surface>
       )}
     </div>
   );

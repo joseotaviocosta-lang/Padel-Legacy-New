@@ -1,12 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Check, AlertCircle, Users, Zap } from 'lucide-react';
+import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Users, Zap } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { advanceCareerDayOnce } from '@/game-core';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
-import { SectionCard, EmptyState, CoinBadge } from '@/components/padel/GameShared';
-import { LoadingScreen, InfoBanner, EmptyStateCard } from '@/components/padel/ui';
-import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore } from '@/lib/trainingSystemV2';
+import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore, getRecommendedTrainings } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
 import { Link, useSearchParams } from 'react-router-dom';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
@@ -16,21 +14,27 @@ import WeeklyPlanner from '@/components/training/WeeklyPlanner';
 import AttributeEvolution from '@/components/training/AttributeEvolution';
 import DevelopmentGoals from '@/components/training/DevelopmentGoals';
 import {
+  ActionFeedback,
+  Button,
+  EmptyState,
   Page,
   PageContent,
   PageHeader,
+  PageSkeleton,
+  Section,
   StatCard as PremiumStatCard,
   StatusBadge,
   Surface,
   SurfaceHeader,
+  Tabs,
 } from '@/components/design-system';
 
 const TABS = [
-  { id: 'treino', label: 'Treino', icon: Dumbbell },
-  { id: 'agenda', label: 'Agenda', icon: Calendar },
-  { id: 'evolucao', label: 'Evolução', icon: TrendingUp },
-  { id: 'metas', label: 'Metas', icon: Target },
-  { id: 'historico', label: 'Histórico', icon: Activity },
+  { key: 'treino', label: 'Treino', icon: Dumbbell },
+  { key: 'agenda', label: 'Agenda', icon: Calendar },
+  { key: 'evolucao', label: 'Evolução', icon: TrendingUp },
+  { key: 'metas', label: 'Metas', icon: Target },
+  { key: 'historico', label: 'Histórico', icon: Activity },
 ];
 
 export default function Training() {
@@ -161,13 +165,20 @@ export default function Training() {
   }
 
 
-  if (loading) return <LoadingScreen />;
+  // Recomendação já existente (usada hoje só para bots) — reaproveitada tal
+  // qual para destacar cards, sem criar nenhum algoritmo novo (seção 5).
+  const recommendedIds = useMemo(
+    () => (profile ? new Set(getRecommendedTrainings(profile, { recentCounts: weeklyCounts }).map((item) => item.training.id)) : new Set()),
+    [profile, weeklyCounts],
+  );
+
+  if (loading) return <PageSkeleton variant="dashboard" rows={4} />;
 
   if (!profile) {
     return (
       <Page><PageContent>
-      <EmptyStateCard icon={Dumbbell} title="Perfil não encontrado" message="Não foi possível carregar seu perfil. Tente recarregar a página." />
-    </PageContent></Page>
+        <EmptyState icon={Dumbbell} title="Perfil não encontrado" description="Não foi possível carregar seu perfil. Tente recarregar a página." />
+      </PageContent></Page>
     );
   }
 
@@ -191,7 +202,7 @@ export default function Training() {
             <StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>
             {coach && <StatusBadge tone="info">Treinador: {coach.name || 'principal'}</StatusBadge>}
           </>}
-          action={<button onClick={handleAdvanceDay} disabled={advancing} className="inline-flex items-center gap-1.5 rounded-xl bg-primary px-4 py-2.5 text-sm font-extrabold text-primary-foreground hover:brightness-110 disabled:opacity-50"><FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : 'Avançar dia'}</button>}
+          action={<Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing}><FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : 'Avançar dia'}</Button>}
         />
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <PremiumStatCard label="Treinos hoje" value={`${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`} detail="Sessões principais" icon={Dumbbell} tone="brand" />
@@ -202,55 +213,41 @@ export default function Training() {
 
       {/* Overtraining alert */}
       {overtraining.level !== 'none' && (
-        <InfoBanner variant={overtraining.level === 'critical' ? 'error' : 'warning'} icon={AlertCircle}>
-          <strong>{overtraining.label}:</strong> {overtraining.message}
-        </InfoBanner>
+        <ActionFeedback
+          state={overtraining.level === 'critical' ? 'error' : 'warning'}
+          title={overtraining.label}
+          description={overtraining.message}
+        />
       )}
 
       {/* Injury warning */}
       {isInjured(profile) && (
-        <InfoBanner variant="error" icon={AlertCircle}>
-          Você está lesionado! Recupera em {injuryRecoveryDays(profile)} dias. Avance o calendário; um fisioterapeuta contratado acelera o controle de fadiga e reduz o risco de novas lesões.
-        </InfoBanner>
+        <ActionFeedback
+          state="error"
+          title={`Lesionado · recupera em ${injuryRecoveryDays(profile)} dias`}
+          description="Avance o calendário; um fisioterapeuta contratado acelera o controle de fadiga e reduz o risco de novas lesões."
+        />
       )}
 
       {/* Result feedback */}
       {result?.type === 'training' && (
-        <div className="glass rounded-2xl p-4 border border-primary/40 flex items-center gap-3 bg-primary/5 animate-slide-up">
-          <div className="h-10 w-10 rounded-full bg-primary/20 flex items-center justify-center shrink-0">
-            <Check className="h-5 w-5 text-primary" />
-          </div>
-          <div className="flex-1">
-            <p className="font-bold text-sm">{result.activity.label} · {result.intensity.label}</p>
-            <p className="text-xs text-muted-foreground">
-              {result.gain > 0
-                ? `${Number(result.gain).toFixed(2)} de progresso distribuído · +${result.activity.xp} XP · +${result.activity.coins} moedas`
-                : `Sessão de manutenção · +${result.activity.xp} XP · +${result.activity.coins} moedas`}
-              {result.diminishing < 1 && ` · ${Math.round(result.diminishing * 100)}% eficiência`}
-              {result.fatiguePenalty < 0 && ` · fadiga: ${result.fatiguePenalty}`}
-            </p>
-            {result.gains && <p className="text-[10px] text-primary mt-1">{Object.entries(result.gains).map(([key, value]) => `${key}: +${Number(value.progress || 0).toFixed(2)}${value.levels ? ` (${value.levels} nível)` : ''}`).join(' · ')}</p>}
-          </div>
-          <button onClick={() => setResult(null)} className="text-xs text-muted-foreground hover:text-foreground">Fechar</button>
-        </div>
+        <ActionFeedback
+          state="success"
+          title={`${result.activity.label} · ${result.intensity.label}`}
+          description={[
+            result.gain > 0
+              ? `${Number(result.gain).toFixed(2)} de progresso distribuído · +${result.activity.xp} XP · +${result.activity.coins} moedas`
+              : `Sessão de manutenção · +${result.activity.xp} XP · +${result.activity.coins} moedas`,
+            result.diminishing < 1 ? `${Math.round(result.diminishing * 100)}% eficiência` : null,
+            result.fatiguePenalty < 0 ? `fadiga: ${result.fatiguePenalty}` : null,
+          ].filter(Boolean).join(' · ')}
+          action={<button type="button" onClick={() => setResult(null)} className="text-xs font-bold text-muted-foreground hover:text-foreground">Fechar</button>}
+        />
       )}
-
-
-
       {/* Tabs */}
-      <Surface padding="compact" className="sticky top-2 z-20 bg-background/90 backdrop-blur-xl">
-        <div className="flex gap-1.5 overflow-x-auto scrollbar-none pb-1">
-        {TABS.map(t => {
-          const Icon = t.icon;
-          const isActive = activeTab === t.id;
-          return (
-            <button key={t.id} onClick={() => setActiveTab(t.id)} className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${isActive ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}>
-              <Icon className="h-3.5 w-3.5" /> {t.label}
-            </button>
-          );
-        })}
-        </div>
-      </Surface>
+      <div className="sticky top-2 z-20">
+        <Tabs tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} variant="segmented" className="bg-background/90 backdrop-blur-xl" />
+      </div>
 
       {/* Tab content */}
       {activeTab === 'treino' && (
@@ -270,7 +267,7 @@ export default function Training() {
                     <p className="text-[10px] text-muted-foreground mt-1">Avance um dia sem treinar ou jogar para recuperar cerca de 32 de energia e reduzir 10 de fadiga. Não é mais necessário escolher “Descanso total”.</p>
                   </div>
                 </div>
-                <button onClick={handleAdvanceDay} disabled={advancing} className="mt-3 w-full py-2 rounded-xl bg-emerald-500/15 text-emerald-300 font-semibold text-sm hover:bg-emerald-500/25 transition-colors disabled:opacity-40">{advancing ? 'Avançando...' : 'Avançar dia'}</button>
+                <Button level="secondary" size="sm" onClick={handleAdvanceDay} disabled={advancing} className="mt-3 w-full bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25">{advancing ? 'Avançando...' : 'Avançar dia'}</Button>
               </div>
               <div className="glass rounded-2xl p-4 border border-primary/20">
                 <div className="flex items-start gap-3">
@@ -288,22 +285,13 @@ export default function Training() {
           {/* Category filter */}
           <Surface>
             <SurfaceHeader title="Atividades de treino" description="Escolha uma categoria e compare as sessões disponíveis para o estado atual do atleta." icon={Dumbbell} />
-            <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1 mb-4">
-              {CATEGORY_ORDER.map(catId => {
-                const cat = TRAINING_CATEGORIES[catId];
-                const isActive = activeCategory === catId;
-                return (
-                  <button
-                    key={catId}
-                    onClick={() => setActiveCategory(catId)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-                      isActive ? `bg-primary/20 ${cat.color} border border-primary/30` : 'glass text-muted-foreground hover:text-foreground border border-transparent'
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                );
-              })}
+            <div className="mb-4">
+              <Tabs
+                tabs={CATEGORY_ORDER.map((catId) => ({ key: catId, label: TRAINING_CATEGORIES[catId].label }))}
+                activeTab={activeCategory}
+                onTabChange={setActiveCategory}
+                variant="buttons"
+              />
             </div>
 
             {/* Activity cards */}
@@ -318,6 +306,7 @@ export default function Training() {
                     profile={profile}
                     weeklyCount={weeklyCount}
                     coachBonus={coachBonusVal}
+                    recommended={recommendedIds.has(activity.id)}
                     onExecute={handleExecute}
                     busy={busy === activity.id}
                     disabled={isInjured(profile) || isRetired(profile)}
@@ -343,9 +332,9 @@ export default function Training() {
       )}
 
       {activeTab === 'historico' && (
-        <SectionCard title="Histórico de Treinos" icon={Activity}>
+        <Section title="Histórico de treinos" icon={Activity}>
           {history.length === 0 ? (
-            <EmptyState icon={Dumbbell} message="Nenhum treino registrado ainda." />
+            <EmptyState compact icon={Dumbbell} title="Nenhum treino registrado" description="Seus treinos concluídos aparecerão aqui." />
           ) : (
             <div className="space-y-2">
               {history.slice(0, 20).map((t) => (
@@ -361,12 +350,12 @@ export default function Training() {
                       {t.intensity && ` · ${t.intensity}`}
                     </p>
                   </div>
-                  <CoinBadge coins={t.coins_reward} />
+                  <StatusBadge tone="premium">{Number(t.coins_reward || 0).toLocaleString('pt-BR')}</StatusBadge>
                 </div>
               ))}
             </div>
           )}
-        </SectionCard>
+        </Section>
       )}
 
       {/* Training timer modal */}

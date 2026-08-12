@@ -1,7 +1,7 @@
 import React from 'react';
 import { Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain, AlertTriangle, ArrowRightLeft } from 'lucide-react';
 import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, evaluateCoachForCareer, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons } from '@/lib/coaches';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, Button } from '@/components/design-system';
 
 export default function CoachDetail({ coach, profile, evaluation: providedEvaluation, currentCoach, onHire, onFire, onClose, isHired }) {
   if (!coach) return null;
@@ -19,11 +19,11 @@ export default function CoachDetail({ coach, profile, evaluation: providedEvalua
 
   return (
     <ModalShell open={Boolean(coach)} onClose={onClose} title={coach.name} description={`${tier.label} · ${specialtyInfo?.label || coach.specialty}`} size="sm" footer={isHired ? (
-      <button onClick={onFire} className="w-full rounded-xl bg-red-500/15 py-3 text-sm font-bold text-red-400 hover:bg-red-500/25">Demitir treinador</button>
+      <Button level="ghost" onClick={onFire} className="w-full bg-red-500/15 text-red-400 hover:bg-red-500/25">Demitir treinador</Button>
     ) : (
-      <button disabled={!hireCheck.allowed} onClick={onHire} className={`flex w-full items-center justify-center gap-2 rounded-xl py-3 text-sm font-bold ${hireCheck.allowed ? 'bg-primary text-primary-foreground hover:opacity-90' : 'cursor-not-allowed bg-secondary/50 text-muted-foreground'}`}>
+      <Button level="primary" disabled={!hireCheck.allowed} onClick={onHire} className="w-full">
         {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar · {evaluation.salary} / mês{evaluation.signingCost > 0 ? ` + ${evaluation.signingCost} de assinatura` : ''}</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
-      </button>
+      </Button>
     )}>
       <div className="space-y-3">
           <div className={`rounded-xl border p-3 ${isHired || hireCheck.allowed ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-amber-500/25 bg-amber-500/5'}`}>

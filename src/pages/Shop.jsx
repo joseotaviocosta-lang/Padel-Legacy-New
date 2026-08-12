@@ -3,8 +3,7 @@ import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ShoppingBag, Coins, Check, Lock, Package, Search, SlidersHorizontal, TrendingUp, TrendingDown, Flame } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
-import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, CardGrid, StatCard, Surface, StatusBadge, EmptyState } from '@/components/design-system';
+import { Page, PageContent, PageHeader, PageSkeleton, CardGrid, StatCard, Surface, StatusBadge, EmptyState, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import EquippedView from '@/components/shop/EquippedView';
 import ItemDetailModal from '@/components/shop/ItemDetailModal';
@@ -190,6 +189,12 @@ export default function Shop() {
   useEffect(() => { setPage(1); }, [category, rarity, manufacturer, subcategory, ownership, sort, search]);
   useEffect(() => { setSubcategory('all'); }, [category]);
 
+  function currentEquippedFor(item) {
+    if (!item) return null;
+    const equippedInCategory = equippedItems.find(inv => inv.category === item.category);
+    return equippedInCategory ? items.find(shopEntry => shopEntry.id === equippedInCategory.item_id) : null;
+  }
+
   async function buy(item) {
     if (!profile) return;
     const marketState = marketAvailabilityMap[item.id];
@@ -246,7 +251,7 @@ export default function Shop() {
   }
 
   if (loading) {
-    return <LoadingScreen />;
+    return <PageSkeleton variant="grid" rows={6} />;
   }
 
   return (
@@ -281,21 +286,15 @@ export default function Shop() {
         <MarketEventsBanner events={marketEvents} />
       )}
 
-      {/* View toggle */}
-      <Surface padding="compact" className="flex gap-2">
-        <button
-          onClick={() => setView('shop')}
-          className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all ${view === 'shop' ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground'}`}
-        >
-          <ShoppingBag className="h-4 w-4 inline mr-1.5" /> Loja
-        </button>
-        <button
-          onClick={() => setView('equipped')}
-          className={`flex-1 py-2.5 rounded-xl font-semibold text-sm transition-all ${view === 'equipped' ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground'}`}
-        >
-          <Check className="h-4 w-4 inline mr-1.5" /> Equipados ({equippedItems.length})
-        </button>
-      </Surface>
+      {/* View toggle — separa claramente Loja de Equipados (seção 23) */}
+      <Tabs
+        tabs={[
+          { key: 'shop', label: 'Loja', icon: ShoppingBag },
+          { key: 'equipped', label: 'Equipados', icon: Check, count: equippedItems.length },
+        ]}
+        activeTab={view}
+        onTabChange={setView}
+      />
 
       {view === 'equipped' ? (
         <EquippedView equippedItems={equippedItems} items={items} />
@@ -529,12 +528,9 @@ export default function Shop() {
 
               {/* Load more */}
               {hasMore && (
-                <button
-                  onClick={() => setPage(p => p + 1)}
-                  className="w-full py-3 rounded-xl glass text-sm font-semibold text-muted-foreground hover:text-foreground transition-colors"
-                >
+                <Button level="ghost" onClick={() => setPage(p => p + 1)} className="w-full">
                   Carregar mais ({filtered.length - paged.length} restantes)
-                </button>
+                </Button>
               )}
             </>
           )}
@@ -551,6 +547,7 @@ export default function Shop() {
           onBuy={() => buy(detailItem)}
           onClose={() => setDetailItem(null)}
           pricing={priceMap[detailItem.id]}
+          currentEquipped={currentEquippedFor(detailItem)}
         />
       )}
       </PageContent>

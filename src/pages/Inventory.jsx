@@ -4,8 +4,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { Package, ShoppingBag, Check, Disc, Crown, Circle, Target, Shirt, Briefcase, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
 import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
-import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, Surface, SurfaceHeader, StatCard, StatusBadge, EmptyState } from '@/components/design-system';
+import { Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader, StatCard, StatusBadge, EmptyState, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 
 const ICON_MAP = { Disc, Crown, Circle, Target, Shirt, Briefcase, Zap };
@@ -14,9 +13,21 @@ const CATEGORY_LABELS = {
   grip: 'Grips',
   bola: 'Bolas',
   roupa: 'Vestimenta',
+  tenis: 'Tênis',
   mochila: 'Mochilas',
+  acessorio_tec: 'Tecnologia',
+  colecionavel: 'Colecionáveis',
   acessorio: 'Acessórios',
 };
+// Slots principais do "locker" do atleta (seção 19/20 do redesign de
+// Carreira) — usados só para o resumo do topo; o inventário completo abaixo
+// continua agrupado por todas as categorias reais do catálogo.
+const EQUIPMENT_SLOTS = [
+  { category: 'raquete', label: 'Raquete' },
+  { category: 'tenis', label: 'Tênis' },
+  { category: 'roupa', label: 'Roupa' },
+  { category: 'acessorio', label: 'Acessório' },
+];
 
 export default function Inventory() {
   const [profile, setProfile] = useState(null);
@@ -137,7 +148,7 @@ export default function Inventory() {
   }
 
   if (loading) {
-    return <LoadingScreen />;
+    return <PageSkeleton variant="grid" rows={6} />;
   }
 
   const categories = [...new Set(inventory.map(i => i.category))];
@@ -169,7 +180,33 @@ export default function Inventory() {
         {inventory.length === 0 ? (
           <EmptyState icon={Package} title="Seu inventário está vazio" description="Visite a loja para comprar seu primeiro equipamento e começar a personalizar o atleta." action={<Link to="/game/shop" className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground"><ShoppingBag className="h-4 w-4" /> Ir para a loja</Link>} />
         ) : (
-        categories.map(cat => (
+        <>
+        <Surface variant="elevated">
+          <SurfaceHeader title="Equipado agora" description="O que o seu atleta está usando em cada slot principal." icon={Check} />
+          <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+            {EQUIPMENT_SLOTS.map(slot => {
+              const equippedItem = inventory.find(item => item.category === slot.category && item.equipped);
+              const shopItem = equippedItem ? shopMap[equippedItem.item_id] : null;
+              const bonus = shopItem?.attribute_bonus || {};
+              return (
+                <div key={slot.category} className="rounded-xl bg-secondary/30 p-3">
+                  <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{slot.label}</p>
+                  {equippedItem ? (
+                    <>
+                      <p className="mt-1 truncate text-xs font-bold">{equippedItem.item_name}</p>
+                      {Object.keys(bonus).length > 0 && (
+                        <p className="mt-0.5 truncate text-[9px] text-primary">{Object.entries(bonus).map(([key, val]) => `+${val} ${ATTRIBUTES.find(a => a.key === key)?.label || key}`).join(' · ')}</p>
+                      )}
+                    </>
+                  ) : (
+                    <p className="mt-1 text-xs text-muted-foreground">Vazio</p>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        </Surface>
+        {categories.map(cat => (
           <Surface key={cat} variant="elevated" padding="default">
             <SurfaceHeader title={CATEGORY_LABELS[cat] || cat} description={`${inventory.filter(item => item.category === cat).length} itens nesta categoria`} />
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
@@ -207,22 +244,22 @@ export default function Inventory() {
                       </div>
                     )}
                     <div className="mt-auto pt-2 flex gap-2">
-                      <button
+                      <Button
+                        level={invItem.equipped ? 'secondary' : 'primary'}
+                        size="sm"
                         onClick={() => toggleEquip(invItem)}
                         disabled={toggling === invItem.id}
-                        className={`flex-1 py-2 rounded-xl text-xs font-bold transition-all disabled:opacity-50 ${
-                          invItem.equipped
-                            ? 'bg-secondary/50 text-foreground hover:bg-secondary'
-                            : 'bg-primary text-primary-foreground hover:opacity-90 glow-primary'
-                        }`}
+                        className="flex-1"
                       >
                         {toggling === invItem.id ? '...' : invItem.equipped ? 'Desequipar' : 'Equipar'}
-                      </button>
+                      </Button>
                       {!invItem.equipped && (
-                        <button
+                        <Button
+                          level="ghost"
+                          size="sm"
                           onClick={() => sellItem(invItem)}
                           disabled={selling === invItem.id}
-                          className="px-3 py-2 rounded-xl bg-destructive/10 text-destructive text-xs font-bold hover:bg-destructive/20 transition-colors disabled:opacity-50 flex items-center gap-1"
+                          className="bg-destructive/10 text-destructive hover:bg-destructive/20"
                           title={`Vender por ${Math.floor((shopMap[invItem.item_id]?.price || 0) * 0.3)} moedas`}
                         >
                           {selling === invItem.id ? (
@@ -230,7 +267,7 @@ export default function Inventory() {
                           ) : (
                             <><Coins className="h-3 w-3" />{Math.floor((shopMap[invItem.item_id]?.price || 0) * 0.3)}</>
                           )}
-                        </button>
+                        </Button>
                       )}
                     </div>
                   </div>
@@ -238,7 +275,8 @@ export default function Inventory() {
               })}
             </div>
           </Surface>
-        ))
+        ))}
+        </>
       )}
       </PageContent>
     </Page>
