@@ -8,6 +8,7 @@ import {
   isRecognizedProjectViteProcess,
   parseWindowsNetstat,
 } from './dev-port-manager.mjs';
+import { resolveDevServerHost } from './vite-dev-host.mjs';
 
 const rootUrl = new URL('..', import.meta.url);
 const [viteConfig, packageJson, tauriConfig, manager, watchdog, appRunner, viteRunner, appSource] = await Promise.all([
@@ -22,7 +23,22 @@ const [viteConfig, packageJson, tauriConfig, manager, watchdog, appRunner, viteR
 ]);
 
 assert.equal(DEV_PORT, 5174);
-assert.match(viteConfig, /host:\s*['"]127\.0\.0\.1['"]/);
+assert.equal(
+  resolveDevServerHost({}),
+  '127.0.0.1',
+  'desktop deve continuar restrito ao loopback',
+);
+assert.equal(
+  resolveDevServerHost({ TAURI_DEV_HOST: '192.0.2.14' }),
+  '192.0.2.14',
+  'Tauri mobile deve definir o bind pela rede sem IP hardcoded',
+);
+assert.equal(
+  resolveDevServerHost({ TAURI_DEV_HOST: ' 192.0.2.15 ' }),
+  '192.0.2.15',
+  'TAURI_DEV_HOST deve ser normalizado antes do bind',
+);
+assert.match(viteConfig, /resolveDevServerHost\(\)/);
 assert.match(viteConfig, /port:\s*5174/);
 assert.match(viteConfig, /strictPort:\s*true/);
 assert.doesNotMatch(viteConfig, /hmr\s*:/, 'HMR local deve usar os padrões do Vite');
