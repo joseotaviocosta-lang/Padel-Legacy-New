@@ -69,10 +69,61 @@ export async function markCareerCommunicationRead(message) {
   const patch = {
     is_read: true,
     is_new: false,
+    read_at: new Date().toISOString(),
     ...(message.status === 'nao_lida' || !message.status ? { status: 'lida' } : {}),
   };
   const updated = await localGame.entities.CareerMessage.update(message.id, patch);
   return normalizeCareerMessage({ ...message, ...updated, ...patch });
+}
+
+// Encerra uma decisão pendente aplicando a ação escolhida pelo jogador. Uma
+// mensagem resolvida deixa de aparecer como pendência ativa no sino/inbox.
+export async function resolveMessage(messageId, chosenActionId) {
+  try {
+    return await localGame.entities.CareerMessage.update(messageId, { status: 'resolvida', chosen_action_id: chosenActionId, is_new: false });
+  } catch { return null; }
+}
+
+// Descarta uma decisão pendente sem aplicar nenhuma ação.
+export async function dismissMessage(messageId) {
+  try {
+    return await localGame.entities.CareerMessage.update(messageId, { status: 'ignorada', is_new: false });
+  } catch { return null; }
+}
+
+// Chave estável usada para upsert idempotente de CareerMessage: a mesma
+// contextKey nunca produz uma segunda linha, mesmo se chamada novamente após
+// reload ou após um avanço de calendário repetir a mesma condição.
+export function buildStableMessageId(profileId, contextKey) {
+  return `career-message-${profileId}-${contextKey}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
+}
+
+// Upsert de uma CareerMessage isolada (fora do lote de reconciliação
+// contextual) usando o mesmo esquema de id estável. Usado por geradores que
+// disparam fora do fluxo de ensureContextualCareerCommunications (ex.:
+// resumo semanal, relatórios de lesão) para que ganhem a mesma proteção
+// contra duplicação sem reimplementar a lógica de dedupe.
+export async function upsertCareerMessage(profileId, contextKey, payload = {}) {
+  if (!profileId || !contextKey) return null;
+  const id = buildStableMessageId(profileId, contextKey);
+  // Espalha o payload primeiro (preserva expires_career_date e qualquer outro
+  // campo específico de um gerador) e só então normaliza os campos que têm
+  // um valor padrão — nunca descarta um campo silenciosamente.
+  const data = {
+    ...payload,
+    id,
+    profile_id: profileId,
+    message_type: payload.message_type || 'mensagem',
+    sender_name: payload.sender_name || senderLabel(payload.sender_type),
+    sender_type: payload.sender_type || 'sistema',
+    status: payload.status || 'nao_lida',
+    is_read: false,
+    is_new: true,
+    priority: payload.priority || 'normal',
+    actions: payload.actions || [],
+    metadata: { ...(payload.metadata || {}), context_key: contextKey },
+  };
+  return localGame.entities.CareerMessage.upsert(id, data);
 }
 
 export async function ensureContextualCareerCommunications(profile, context = {}) {
@@ -92,26 +143,23 @@ export async function ensureContextualCareerCommunications(profile, context = {}
 
   const createOnce = (contextKey, payload) => {
     if (!contextKey || existingKeys.has(contextKey)) return null;
-    const stableId = `career-message-${profile.id}-${contextKey}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
+    const stableId = buildStableMessageId(profile.id, contextKey);
+    // Espalha o payload primeiro para nunca descartar silenciosamente um
+    // campo específico do gerador (ex.: expires_career_date), e só então
+    // normaliza os campos que têm um valor padrão.
     const data = {
+      ...payload,
       id: stableId,
       profile_id: profile.id,
       message_type: payload.message_type || 'mensagem',
-      notification_type: payload.notification_type,
       sender_name: payload.sender_name || senderLabel(payload.sender_type),
       sender_type: payload.sender_type || 'sistema',
-      title: payload.title,
-      content: payload.content,
       status: payload.status || 'nao_lida',
       is_read: false,
       is_new: true,
       priority: payload.priority || 'normal',
-      career_date: careerDate,
-      related_entity_type: payload.related_entity_type,
-      related_entity_id: payload.related_entity_id,
-      related_entity_name: payload.related_entity_name,
+      career_date: payload.career_date || careerDate,
       actions: payload.actions || [],
-      destination: payload.destination,
       metadata: { ...(payload.metadata || {}), context_key: contextKey },
     };
     operations.push({ type: 'upsert', entityName: 'CareerMessage', id: stableId, data });
@@ -143,6 +191,36 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         },
       });
     }
+  }
+
+  // Decisões pendentes com prazo vencido e lembretes de torneio cujo alvo já
+  // não é mais o próximo torneio relevante são marcados como expirados no
+  // mesmo lote — assim o clique em uma notificação obsoleta nunca tenta abrir
+  // um recurso que não existe mais (ver resolveNotificationDestination).
+  const activeTournamentId = context.nextTournament?.id || null;
+  for (const message of existing) {
+    if (['resolvida', 'ignorada', 'invalidada', 'expirada'].includes(message.status)) continue;
+    let shouldExpire = false;
+    if (message.status === 'decisao_pendente' && message.expires_career_date && message.expires_career_date < careerDate) {
+      shouldExpire = true;
+    } else if (message.metadata?.tournament_id && message.notification_type === 'TOURNAMENT_UPCOMING') {
+      // Só expira quando sabemos com certeza que existe um próximo torneio
+      // diferente — se a busca de torneios falhar/retornar vazia, o lembrete
+      // antigo permanece intacto em vez de ser expirado por engano.
+      shouldExpire = Boolean(activeTournamentId) && message.metadata.tournament_id !== activeTournamentId;
+    }
+    if (!shouldExpire) continue;
+    operations.push({
+      type: 'update',
+      entityName: 'CareerMessage',
+      id: message.id,
+      data: {
+        status: 'expirada',
+        is_read: true,
+        is_new: false,
+        metadata: { ...(message.metadata || {}), expired_reason: message.status === 'decisao_pendente' ? 'deadline_passed' : 'target_no_longer_relevant' },
+      },
+    });
   }
 
   if (profile.coach_id) {

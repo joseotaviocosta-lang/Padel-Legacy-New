@@ -24,12 +24,12 @@ const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPasswo
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
   Relationships, Coaches, TrainingCenter, Press, Fans, Achievements, WorldEvents, WorldMarket, Weather,
-  Encyclopedia, PartnerHub, Community, NavigationHub, WorldHub, Staff, Communications, MonthlyReports] = [
+  Encyclopedia, PartnerHub, Community, NavigationHub, WorldHub, Staff, Communications, MonthlyReports, AnnualReports] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
   'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Fans',
-  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'NavigationHub', 'WorldHub', 'Staff', 'Communications', 'MonthlyReports',
+  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'NavigationHub', 'WorldHub', 'Staff', 'Communications', 'MonthlyReports', 'AnnualReports',
 ].map(lazyPage);
 
 const RouteLoadingFallback = () => (
@@ -100,6 +100,7 @@ const AuthenticatedApp = () => {
           <Route path="/game/calendar" element={<CalendarPage />} />
           <Route path="/game/season" element={<Season />} />
           <Route path="/game/monthly-reports" element={<MonthlyReports />} />
+          <Route path="/game/annual-reports" element={<AnnualReports />} />
           <Route path="/game/economy" element={<ModuleErrorBoundary moduleName="Economia"><Economy /></ModuleErrorBoundary>} />
           <Route path="/profile" element={<PlayerProfile />} />
           <Route path="/matches" element={<Matches />} />

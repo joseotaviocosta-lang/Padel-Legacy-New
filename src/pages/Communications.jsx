@@ -3,11 +3,11 @@ import { Link, useSearchParams } from 'react-router-dom';
 import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Inbox, Mail, Megaphone, Newspaper, Search, Shield, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
-import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage } from '@/lib/careerCommunications.js';
+import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveMessage } from '@/lib/careerCommunications.js';
 import { buildCareerMemory, getCareerAgent, getMemoryHighlights } from '@/lib/careerMemory.js';
-import { resolveMessage, dismissMessage } from '@/lib/partnershipSystem.js';
 import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
+import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
 
 const SENDER_ICONS = { treinador: GraduationCap, atleta: Handshake, empresario: BriefcaseBusiness, federacao: Shield, patrocinador: Sparkles, clube: Building2, imprensa: Newspaper, sistema: Bell };
 const SENDER_TONES = { treinador: 'primary', atleta: 'success', empresario: 'premium', federacao: 'info', patrocinador: 'premium', clube: 'info', imprensa: 'warning', sistema: 'neutral' };
@@ -53,6 +53,33 @@ export default function Communications() {
   useEffect(() => { load(); }, []);
 
   useEffect(() => {
+    let active = true;
+    const safeLoad = async () => {
+      if (!active || document.hidden) return;
+      await load();
+    };
+    // Mesmo debounce do sino: um avanço de dia dispara profile-updated +
+    // communications-refresh duas vezes (fase rápida + secundária).
+    let timer = null;
+    const debouncedLoad = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { timer = null; safeLoad(); }, 150);
+    };
+    window.addEventListener('padel:communications-refresh', debouncedLoad);
+    window.addEventListener('padel:communications-updated', debouncedLoad);
+    window.addEventListener('padel:profile-updated', debouncedLoad);
+    window.addEventListener('focus', safeLoad);
+    return () => {
+      active = false;
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('padel:communications-refresh', debouncedLoad);
+      window.removeEventListener('padel:communications-updated', debouncedLoad);
+      window.removeEventListener('padel:profile-updated', debouncedLoad);
+      window.removeEventListener('focus', safeLoad);
+    };
+  }, []);
+
+  useEffect(() => {
     const requestedId = searchParams.get('message');
     if (!requestedId || !messages.length || openedMessageRef.current === requestedId) return;
     const requested = messages.find((message) => String(message.id) === requestedId);
@@ -62,8 +89,8 @@ export default function Communications() {
     }
   }, [messages, searchParams]);
 
-  const unread = messages.filter(isCareerMessageUnread).length;
-  const pending = messages.filter((item) => item.status === 'decisao_pendente').length;
+  const unread = countUnreadCareerMessages(messages);
+  const pending = selectPendingDecisions(messages).length;
   const senders = new Set(messages.map((item) => item.sender_type)).size;
   const filtered = useMemo(() => messages.filter((item) => {
     const matchesCategory = category === 'all' || item.sender_type === category;

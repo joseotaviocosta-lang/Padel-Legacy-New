@@ -5,6 +5,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markCareerCommunicationRead } from '@/lib/careerCommunications.js';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
+import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 
 export default function CommunicationBell({ compact = false }) {
   const navigate = useNavigate();
@@ -87,7 +88,7 @@ export default function CommunicationBell({ compact = false }) {
     };
   }, [load]);
 
-  const unread = messages.filter(isCareerMessageUnread).length;
+  const unread = countUnreadCareerMessages(messages);
 
   function handleToggle() {
     setOpen((current) => !current);

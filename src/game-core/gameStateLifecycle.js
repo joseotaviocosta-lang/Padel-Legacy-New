@@ -13,6 +13,7 @@ import { processRelationshipWeek } from './relationshipLifecycle';
 import { processStaffDay } from './staffLifecycle';
 import { processCircuitLifeWeek } from './circuitLifeLifecycle';
 import { compactGameStateReport } from './gameStateReport.js';
+import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 
 function monthChanged(oldDate, newDate) {
   return String(oldDate || '').slice(0, 7) !== String(newDate || '').slice(0, 7);
@@ -179,17 +180,25 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
     console.warn('[Game Core] Universo vivo não processado:', error);
   }
 
-  const elapsed = daysBetween(CAREER_START_DATE, currentDate);
-  if (elapsed > 0 && elapsed % 7 === 0) {
+  // Compara o índice de semana entre previousDate e currentDate (não apenas
+  // a data final) para que um avanço de vários dias que cruze 1+ fronteiras
+  // de semana não pule silenciosamente o resumo — e usa upsert por chave de
+  // contexto estável para nunca duplicar mesmo se chamado mais de uma vez
+  // para a mesma transição de data.
+  const previousWeekIndex = Math.floor(daysBetween(CAREER_START_DATE, previousDate) / 7);
+  const currentWeekIndex = Math.floor(daysBetween(CAREER_START_DATE, currentDate) / 7);
+  if (currentWeekIndex > previousWeekIndex) {
     report.weeklySummary = true;
-    await stage('notifications', () => createOptional('CareerMessage', {
-      profile_id: updatedProfile.id,
+    const summaryText = `${safeName(updatedProfile)}, você encerrou a semana com ${Number(updatedProfile.energy) || 0} de energia, ${(Number(updatedProfile.coins) || 0).toLocaleString('pt-BR')} moedas e ${Number(updatedProfile.xp) || 0} XP. O circuito mundial também foi atualizado.`;
+    await stage('notifications', () => upsertCareerMessage(updatedProfile.id, `weekly-summary:${currentWeekIndex}`, {
       sender_name: 'Equipe Padel Legacy',
-      subject: 'Resumo semanal do universo',
-      body: `${safeName(updatedProfile)}, você encerrou a semana com ${Number(updatedProfile.energy) || 0} de energia, ${(Number(updatedProfile.coins) || 0).toLocaleString('pt-BR')} moedas e ${Number(updatedProfile.xp) || 0} XP. O circuito mundial também foi atualizado.`,
+      sender_type: 'sistema',
+      title: 'Resumo semanal do universo',
+      content: summaryText,
       status: 'nao_lida',
       message_type: 'weekly_summary',
-      created_date: new Date().toISOString(),
+      notification_type: 'WEEKLY_SUMMARY',
+      career_date: currentDate,
     }));
   }
 

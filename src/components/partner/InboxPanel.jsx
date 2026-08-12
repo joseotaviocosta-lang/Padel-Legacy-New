@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect, useCallback, useRef } from 'react';
 import { Inbox, Mail, Check, X, Clock, AlertCircle, UserCheck } from 'lucide-react';
-import { getInbox, markMessageRead, resolveMessage, dismissMessage } from '@/lib/partnershipSystem';
+import { dismissMessage, listCareerCommunications, markCareerCommunicationRead, resolveMessage } from '@/lib/careerCommunications.js';
 import { LoadingScreen } from '@/components/padel/ui';
 import { ModalShell } from '@/components/design-system';
 import { formatDate } from '@/lib/padel';
@@ -34,16 +34,44 @@ export default function InboxPanel({ profile, onAction }) {
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [selected, setSelected] = useState(null);
+  const activeRef = useRef(true);
 
-  async function load() {
+  const load = useCallback(async () => {
     if (!profile) return;
-    setLoading(true);
-    const msgs = await getInbox(profile.id);
+    const msgs = await listCareerCommunications(profile.id, 100, { profile });
+    if (!activeRef.current) return;
     setMessages(msgs || []);
     setLoading(false);
-  }
+  }, [profile]);
 
-  React.useEffect(() => { load(); }, [profile?.id]);
+  useEffect(() => {
+    activeRef.current = true;
+    setLoading(true);
+    load();
+    return () => { activeRef.current = false; };
+  }, [load]);
+
+  useEffect(() => {
+    const safeLoad = () => { if (!document.hidden) load(); };
+    // Mesmo debounce do sino/Comunicações: um avanço de dia dispara
+    // profile-updated + communications-refresh duas vezes por clique.
+    let timer = null;
+    const debouncedLoad = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { timer = null; safeLoad(); }, 150);
+    };
+    window.addEventListener('padel:communications-refresh', debouncedLoad);
+    window.addEventListener('padel:communications-updated', debouncedLoad);
+    window.addEventListener('padel:profile-updated', debouncedLoad);
+    window.addEventListener('focus', safeLoad);
+    return () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('padel:communications-refresh', debouncedLoad);
+      window.removeEventListener('padel:communications-updated', debouncedLoad);
+      window.removeEventListener('padel:profile-updated', debouncedLoad);
+      window.removeEventListener('focus', safeLoad);
+    };
+  }, [load]);
 
   const filtered = useMemo(() => {
     if (filter === 'all') return messages;
@@ -55,22 +83,25 @@ export default function InboxPanel({ profile, onAction }) {
   async function handleSelect(msg) {
     setSelected(msg);
     if (msg.status === 'nao_lida') {
-      await markMessageRead(msg.id);
+      await markCareerCommunicationRead(msg);
+      window.dispatchEvent(new CustomEvent('padel:communications-updated'));
       load();
     }
   }
 
   async function handleAction(msg, action) {
     if (action.type !== 'view_partner_offer') await resolveMessage(msg.id, action.id);
-    else if (msg.status === 'nao_lida') await markMessageRead(msg.id);
+    else if (msg.status === 'nao_lida') await markCareerCommunicationRead(msg);
     setSelected(null);
     onAction?.(action, msg);
+    window.dispatchEvent(new CustomEvent('padel:communications-updated'));
     load();
   }
 
   async function handleDismiss(msg) {
     await dismissMessage(msg.id);
     setSelected(null);
+    window.dispatchEvent(new CustomEvent('padel:communications-updated'));
     load();
   }
 

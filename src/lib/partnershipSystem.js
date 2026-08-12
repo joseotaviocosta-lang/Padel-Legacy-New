@@ -380,29 +380,10 @@ export function getInstabilityPenalty(switchCount) {
 }
 
 // ─── Career Messages / Inbox ────────────────────────────────────────────────
-
-export async function getInbox(profileId, statusFilter = null) {
-  if (!profileId) return [];
-  try {
-    const query = statusFilter ? { profile_id: profileId, status: statusFilter } : { profile_id: profileId };
-    return await localGame.entities.CareerMessage.filter(query, '-created_date', 100);
-  } catch { return []; }
-}
-
-export async function getUnreadCount(profileId) {
-  if (!profileId) return 0;
-  try {
-    const msgs = await localGame.entities.CareerMessage.filter({ profile_id: profileId }, null, 100);
-    return (msgs || []).filter((message) => message.is_read !== true && message.is_new !== false && !['lida', 'resolvida', 'ignorada'].includes(message.status)).length;
-  } catch { return 0; }
-}
-
-export async function getPendingDecisions(profileId) {
-  if (!profileId) return [];
-  try {
-    return await localGame.entities.CareerMessage.filter({ profile_id: profileId, status: 'decisao_pendente' }, '-created_date', 20);
-  } catch { return []; }
-}
+// Leitura, marcação de lida e resolução/dispensa de CareerMessage vivem em
+// @/lib/careerCommunications.js (listCareerCommunications, markCareerCommunicationRead,
+// resolveMessage, dismissMessage) — fonte única para todas as caixas de
+// entrada da carreira (sino, Central de Comunicações e InboxPanel).
 
 export async function sendMessage(profileId, msg) {
   if (!profileId) return null;
@@ -429,30 +410,6 @@ export async function sendMessage(profileId, msg) {
       destination: msg.destination,
     });
   } catch (e) { console.error('sendMessage', e); return null; }
-}
-
-export async function markMessageRead(messageId) {
-  try {
-    const rows = await localGame.entities.CareerMessage.filter({ id: messageId }, null, 1).catch(() => []);
-    const current = rows?.[0];
-    return await localGame.entities.CareerMessage.update(messageId, {
-      is_read: true,
-      is_new: false,
-      ...(!current?.status || current.status === 'nao_lida' ? { status: 'lida' } : {}),
-    });
-  } catch { return null; }
-}
-
-export async function resolveMessage(messageId, chosenActionId) {
-  try {
-    return await localGame.entities.CareerMessage.update(messageId, { status: 'resolvida', chosen_action_id: chosenActionId, is_new: false });
-  } catch { return null; }
-}
-
-export async function dismissMessage(messageId) {
-  try {
-    return await localGame.entities.CareerMessage.update(messageId, { status: 'ignorada', is_new: false });
-  } catch { return null; }
 }
 
 // ─── Partner Proposal Generation ────────────────────────────────────────────

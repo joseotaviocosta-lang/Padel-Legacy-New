@@ -29,6 +29,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
 import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';
 import { ensureContextualCareerCommunications, isCareerCommunicationVisible, normalizeCareerMessage } from '@/lib/careerCommunications.js';
+import { selectUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import SmartAgenda from '@/components/career/SmartAgenda';
 import CareerMomentBanner from '@/components/career/CareerMomentBanner';
 import { deriveCareerMoment } from '@/lib/careerMoments.js';
@@ -63,6 +64,7 @@ export default function CareerHub() {
   const [worldSnapshot, setWorldSnapshot] = useState(null);
   const [activeTournamentEvent, setActiveTournamentEvent] = useState(null);
   const [latestMonthlyReport, setLatestMonthlyReport] = useState(null);
+  const [latestAnnualReport, setLatestAnnualReport] = useState(null);
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
   const [skippingInjury, setSkippingInjury] = useState(false);
@@ -129,7 +131,7 @@ export default function CareerHub() {
         if (!mounted) return;
         setProfile(p);
 
-        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows, livingSnapshot, tournamentEvents, monthlyReports] = await Promise.all([
+        const [matches, missionsData, rank, trainings, prog, teamRankings, upcoming, latestPosts, inboxRows, offerRows, livingSnapshot, tournamentEvents, monthlyReports, annualReports] = await Promise.all([
           safe(localGame.entities.Match.list('-created_date', 6)),
           safe(localGame.entities.Mission.filter({ is_active: true })),
           safe(getWorldRank(p), { rank: 0, total: 0 }),
@@ -143,6 +145,7 @@ export default function CareerHub() {
           p ? safe(getLivingWorldSnapshot(p, 8), null) : null,
           p ? safe(localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }), []) : [],
           p ? safe(localGame.entities['MonthlyCareerReport'].filter({ profileId: p.id, status: 'finalized' }, '-periodKey', 1), []) : [],
+          p ? safe(localGame.entities['AnnualCareerReport'].filter({ profileId: p.id, status: 'finalized' }, '-year', 1), []) : [],
         ]);
         if (!mounted) return;
 
@@ -159,6 +162,7 @@ export default function CareerHub() {
         setWorldSnapshot(livingSnapshot || null);
         setActiveTournamentEvent((tournamentEvents || []).find((event) => event.metadata?.tournament_run) || null);
         setLatestMonthlyReport((monthlyReports || [])[0] || null);
+        setLatestAnnualReport((annualReports || [])[0] || null);
 
         const recentWins = (matches || []).filter((match) => {
           const completed = ['completed', 'finished', 'concluida', 'concluido'].includes(String(match.status || '').toLowerCase()) || Boolean(match.winner_id || match.winner_team_id);
@@ -197,7 +201,13 @@ export default function CareerHub() {
     return () => { mounted = false; };
   }, []);
 
-  const unreadMessages = useMemo(() => messages.filter((message) => ['nao_lida', 'decisao_pendente'].includes(message.status)), [messages]);
+  // "Precisa de atenção" no hub combina não lidas (fonte única: isCareerMessageUnread
+  // via selectUnreadCareerMessages) com decisões pendentes ainda não resolvidas,
+  // mesmo que já vistas — mantém o comportamento do painel de inbox da Home.
+  const unreadMessages = useMemo(() => {
+    const unreadIds = new Set(selectUnreadCareerMessages(messages).map((message) => message.id));
+    return messages.filter((message) => unreadIds.has(message.id) || message.status === 'decisao_pendente');
+  }, [messages]);
   const pendingOffers = useMemo(() => partnerOffers.filter((offer) => offer.status === 'pending'), [partnerOffers]);
 
   if (loading) return <LoadingScreen />;
@@ -243,6 +253,7 @@ export default function CareerHub() {
       <PageContent>
         <CareerCommandHeader profile={profile} careerExperience={careerExperience} overall={ovr} worldRank={worldRank} nextTournament={nextTournament} unreadCount={unreadMessages.length + pendingOffers.length} />
         {activeTournamentEvent && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}
+        {latestAnnualReport && profile.career_date?.endsWith('-01-01') && latestAnnualReport.generatedDate === profile.career_date && <AnnualReportHomeCard report={latestAnnualReport} />}
         {latestMonthlyReport && profile.career_date?.endsWith('-01') && latestMonthlyReport.generatedDate === profile.career_date && <MonthlyReportHomeCard report={latestMonthlyReport} />}
         <MyJourneyPanel
           profile={profile}
@@ -316,6 +327,18 @@ function MonthlyReportHomeCard({ report }) {
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/15 text-primary"><ClipboardList className="h-6 w-6" /></span>
         <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-primary">Seu mês em resumo</p><h2 className="mt-1 text-lg font-black capitalize">{label}</h2><p className="mt-1 text-xs text-muted-foreground">{report.competition.wins}V · {report.competition.losses}D · {report.training.sessions} treinos · {report.finances.net >= 0 ? '+' : ''}{Number(report.finances.net || 0).toLocaleString('pt-BR')} moedas</p></div>
         <Link to={`/game/monthly-reports?report=${encodeURIComponent(report.id)}`} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-black text-primary-foreground">Ver relatório <ArrowRight className="h-3.5 w-3.5" /></Link>
+      </div>
+    </section>
+  );
+}
+
+function AnnualReportHomeCard({ report }) {
+  return (
+    <section className="rounded-3xl border border-amber-400/35 bg-gradient-to-r from-amber-500/15 via-card to-primary/10 p-5" aria-label="Temporada encerrada">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400"><Crown className="h-6 w-6" /></span>
+        <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-400">Temporada {report.year} encerrada</p><h2 className="mt-1 text-lg font-black">{report.playerSummary?.badge || 'Seu ano em números'}</h2><p className="mt-1 text-xs text-muted-foreground">Ranking final #{report.ranking?.endPosition || '—'} · {report.sportingResults?.titles || 0} títulos · {report.bestTournament?.name || `${report.sportingResults?.wins || 0} vitórias`}</p></div>
+        <Link to={`/game/annual-reports?report=${encodeURIComponent(report.id)}`} className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-3 text-xs font-black text-black">Ver relatório anual <ArrowRight className="h-3.5 w-3.5" /></Link>
       </div>
     </section>
   );

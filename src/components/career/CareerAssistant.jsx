@@ -5,7 +5,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { buildCareerAssistantInsights, assistantGreeting } from '@/lib/careerAssistant.js';
 import { StatusBadge, DrawerShell } from '@/components/design-system';
-import { isCareerCommunicationVisible } from '@/lib/careerCommunications.js';
+import { isCareerCommunicationVisible, normalizeCareerMessage } from '@/lib/careerCommunications.js';
+import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 
 const toneClasses = {
   danger: 'border-red-500/25 bg-red-500/8',
@@ -36,9 +37,11 @@ export default function CareerAssistant() {
         localGame.entities.MissionProgress.filter({ profile_id: current.id }).catch(() => []),
         localGame.entities.Match.filter({ profile_id: current.id }, '-created_date', 40).catch(() => []),
       ]);
-      const unreadCount = (messages || [])
-        .filter((message) => isCareerCommunicationVisible(message, { matches, profile: current }))
-        .filter((message) => ['nao_lida', 'decisao_pendente'].includes(message.status) || (!message.is_read && !message.status)).length;
+      const unreadCount = countUnreadCareerMessages(
+        (messages || [])
+          .map(normalizeCareerMessage)
+          .filter((message) => isCareerCommunicationVisible(message, { matches, profile: current }))
+      );
       const nextTournament = (tournaments || [])
         .filter((tournament) => tournament.start_date && tournament.start_date >= (current.career_date || '2026-01-01'))
         .sort((a, b) => a.start_date.localeCompare(b.start_date))[0] || null;

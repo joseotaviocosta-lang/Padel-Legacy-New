@@ -17,6 +17,7 @@ export const NOTIFICATION_DESTINATION_TYPES = Object.freeze({
   CALENDAR: 'CALENDAR',
   WORLD_EVENT: 'WORLD_EVENT',
   MONTHLY_REPORT: 'MONTHLY_REPORT',
+  ANNUAL_REPORT: 'ANNUAL_REPORT',
   COMMUNICATION_ONLY: 'COMMUNICATION_ONLY',
 });
 
@@ -57,6 +58,7 @@ function classifyNotification(notification = {}) {
   if (/ranking|rank/.test(token)) return NOTIFICATION_DESTINATION_TYPES.RANKING;
   if (/world_event|world_bulletin|evento_mundial/.test(token)) return NOTIFICATION_DESTINATION_TYPES.WORLD_EVENT;
   if (/monthly_career_report|monthly_report|relatorio_mensal|relatório_mensal/.test(token)) return NOTIFICATION_DESTINATION_TYPES.MONTHLY_REPORT;
+  if (/annual_career_report|annual_report|season_report|relatorio_anual|relatório_anual/.test(token)) return NOTIFICATION_DESTINATION_TYPES.ANNUAL_REPORT;
   if (/calendar|calendario|calendário/.test(token)) return NOTIFICATION_DESTINATION_TYPES.CALENDAR;
   if (/contract|contrato/.test(token)) return NOTIFICATION_DESTINATION_TYPES.CONTRACT;
   if (/sponsor|patrocin/.test(token)) return NOTIFICATION_DESTINATION_TYPES.SPONSOR;
@@ -66,11 +68,21 @@ function classifyNotification(notification = {}) {
 }
 
 export function resolveNotificationDestination(notification = {}) {
+  const messageId = notification.id || null;
+  // Notificações inválidas/expiradas nunca tentam abrir um recurso que já
+  // não existe mais — caem direto no histórico, com uma mensagem amigável,
+  // em vez de navegar para uma tela quebrada ou lançar erro.
+  if (['invalidada', 'expirada'].includes(notification.status)) {
+    return {
+      type: NOTIFICATION_DESTINATION_TYPES.COMMUNICATION_ONLY,
+      route: withParams('/communications', { message: messageId }),
+      actionable: false,
+    };
+  }
   const metadata = notification.metadata || {};
   const explicit = notification.destination || metadata.destination || null;
   const type = classifyNotification(notification);
   const entityId = notification.related_entity_id || metadata.entity_id || null;
-  const messageId = notification.id || null;
   const explicitRoute = typeof explicit === 'string' ? explicit : explicit?.route;
 
   let route;
@@ -134,6 +146,9 @@ export function resolveNotificationDestination(notification = {}) {
       break;
     case NOTIFICATION_DESTINATION_TYPES.MONTHLY_REPORT:
       route = withParams(explicitRoute || metadata.route || '/game/monthly-reports', { report: metadata.report_id || entityId });
+      break;
+    case NOTIFICATION_DESTINATION_TYPES.ANNUAL_REPORT:
+      route = withParams(explicitRoute || metadata.route || '/game/annual-reports', { report: metadata.report_id || entityId });
       break;
     default:
       route = withParams(explicitRoute || metadata.route || '/communications', { message: messageId });

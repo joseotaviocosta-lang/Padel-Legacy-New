@@ -63,8 +63,12 @@ const sourceChecks = [
   // A auditoria de performance trocou o upsert individual por chamada por um
   // lote único via localGame.batch (menos escritas completas do save por
   // reconciliação), mas manteve o id estável/determinístico por contextKey —
-  // a garantia de idempotência entre sinos concorrentes continua a mesma.
-  ['persistência resiste à corrida entre sinos mobile e desktop', communicationsSource.includes("type: 'upsert', entityName: 'CareerMessage', id: stableId") && communicationsSource.includes('profile.id}-${contextKey}')],
+  // a garantia de idempotência entre sinos concorrentes continua a mesma. O
+  // esquema de id foi extraído para buildStableMessageId (reaproveitado por
+  // geradores fora da reconciliação contextual), então o padrão de texto
+  // verificado passou de `profile.id}-${contextKey}` inline para a função
+  // nomeada, chamada com profile.id em cada contextKey.
+  ['persistência resiste à corrida entre sinos mobile e desktop', communicationsSource.includes("type: 'upsert', entityName: 'CareerMessage', id: stableId") && communicationsSource.includes('career-message-${profileId}-${contextKey}') && communicationsSource.includes('buildStableMessageId(profile.id, contextKey)')],
   ['clique marca individualmente como lida', bellSource.includes('markCareerCommunicationRead(message)') && bellSource.indexOf('markCareerCommunicationRead(message)') < bellSource.indexOf('navigate(destination.route)')],
   ['script npm registrado', pkg.scripts?.['test:tournament-notification-deeplink'] === 'node scripts/test-tournament-notification-deeplink-rc.mjs'],
 ];

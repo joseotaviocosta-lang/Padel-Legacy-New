@@ -12,6 +12,7 @@ import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
+import { ensureAnnualReportCycle, finalizeClosedCareerYear } from '@/game-core/annualCareerReportLifecycle.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 export const CAREER_START_DATE = '2026-01-01';
@@ -85,7 +86,8 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
   const stage = profiler ? profiler.measure : (_name, task) => task();
   // Libera espaço antes de qualquer evento do novo dia tentar gravar no banco.
   // ── Block advance if there's a pending mandatory decision ──
-  profile = await stage('validation', () => ensureMonthlyReportCycle(profile));
+  profile = await stage('validation:monthlyReport', () => ensureMonthlyReportCycle(profile));
+  profile = await stage('validation:annualReport', () => ensureAnnualReportCycle(profile));
   const careerDateNow = profile.career_date || CAREER_START_DATE;
   const advanceCheck = await canAdvanceDay(profile.id, careerDateNow);
   if (!advanceCheck.canAdvance) {
@@ -98,6 +100,8 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
   const newCareerDate = careerD.toISOString().slice(0, 10);
   const oldMonth = (profile.career_date || CAREER_START_DATE).slice(0, 7);
   const newMonth = newCareerDate.slice(0, 7);
+  const oldYear = (profile.career_date || CAREER_START_DATE).slice(0, 4);
+  const newYear = newCareerDate.slice(0, 4);
 
   // A recuperação acontece automaticamente ao avançar o dia.
   // Um dia sem treino ou partida funciona como descanso completo, sem exigir
@@ -203,6 +207,23 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
   // Aguarde efeitos globais antes de concluir o dia. Isso garante que avanço
   // manual e avanço em lote tenham exatamente a mesma ordem e persistência.
   if (oldMonth !== newMonth) {
+    // Na virada anual, dezembro precisa ser fechado antes do relatório anual,
+    // e ambos precisam ser persistidos antes de qualquer mutação do circuito
+    // de janeiro. Isso mantém 01/01 fora do snapshot de 31/12.
+    if (oldYear !== newYear) {
+      await stage('annualBoundary:finalizeClosedCareerMonth', async () => {
+        try {
+          const monthlyReport = await finalizeClosedCareerMonth(profile, updated);
+          updated = monthlyReport.profile || updated;
+        } catch (e) { console.error('finalizeClosedCareerMonth', e); }
+      });
+      await stage('annualBoundary:finalizeClosedCareerYear', async () => {
+        try {
+          const annualReport = await finalizeClosedCareerYear(profile, updated);
+          updated = annualReport.profile || updated;
+        } catch (e) { console.error('finalizeClosedCareerYear', e); }
+      });
+    }
     await stage('monthlyBoundary:simulatePastTournaments', () => simulatePastTournaments(newCareerDate).catch(e => console.error('simulatePastTournaments', e)));
     await stage('monthlyBoundary:ensureFutureTournaments', () => ensureFutureTournaments(newCareerDate).catch(e => console.error('ensureFutureTournaments', e)));
     await stage('monthlyBoundary:processMonthlyFinances', async () => {
@@ -213,12 +234,14 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
     });
     await stage('monthlyBoundary:processAllClubsMonthly', () => processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e)));
     await stage('monthlyBoundary:evolveAthletesMonthly', () => evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e)));
-    await stage('monthlyBoundary:finalizeClosedCareerMonth', async () => {
-      try {
-        const monthlyReport = await finalizeClosedCareerMonth(profile, updated);
-        updated = monthlyReport.profile || updated;
-      } catch (e) { console.error('finalizeClosedCareerMonth', e); }
-    });
+    if (oldYear === newYear) {
+      await stage('monthlyBoundary:finalizeClosedCareerMonth', async () => {
+        try {
+          const monthlyReport = await finalizeClosedCareerMonth(profile, updated);
+          updated = monthlyReport.profile || updated;
+        } catch (e) { console.error('finalizeClosedCareerMonth', e); }
+      });
+    }
   }
   const totalDays = daysBetween(CAREER_START_DATE, newCareerDate);
   if (totalDays > 0 && totalDays % 7 === 0) {

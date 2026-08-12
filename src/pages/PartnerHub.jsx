@@ -6,10 +6,12 @@ import { ensureMyProfile } from '@/lib/padel';
 import { getPlayerRelationships } from '@/lib/relationships';
 import {
   getActivePartnership, getPartnershipHistory, startPartnership, endPartnership,
-  getInbox, generateAdvisorTips,
+  generateAdvisorTips,
   getPartnerSwitchCount, getInstabilityPenalty, negotiatePrizeSplit, addConversation,
   sendMessage,
 } from '@/lib/partnershipSystem';
+import { listCareerCommunications } from '@/lib/careerCommunications.js';
+import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { getAvailablePartners } from '@/lib/career';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
 import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
@@ -65,12 +67,12 @@ export default function PartnerHub() {
       getActivePartnership(profile.id),
       getPartnershipHistory(profile.id),
       getPlayerRelationships(profile.id),
-      getInbox(profile.id),
+      listCareerCommunications(profile.id, 100, { profile }),
     ]);
     setActivePartnership(active);
     setHistory(hist || []);
     setRelationships(rels || []);
-    setInboxCount((msgs || []).filter(m => m.status === 'nao_lida').length);
+    setInboxCount(countUnreadCareerMessages(msgs || []));
 
     const switchCount = await getPartnerSwitchCount(profile.id);
     const advisorTips = await generateAdvisorTips(profile, active, proposalsRef.current, switchCount);

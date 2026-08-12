@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { calculateDailyRecovery } from '@/gameplay/worldTour/PhysicalConditionManager.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from './physicalStats.js';
+import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 
 const INJURIES = [
   { type: 'Sobrecarga muscular', severity: 'leve', days: [2, 4], risk: 1.0 },
@@ -25,17 +26,20 @@ function isWeeklyBoundary(previousDate, currentDate) {
   return previous.getUTCDay() !== current.getUTCDay() && current.getUTCDay() === 1;
 }
 
-async function createMessage(profile, subject, body, type) {
+// Upsert por chave de contexto (data + tipo) — protege o gerador contra
+// duplicação mesmo se processInjuryRecoveryDay for chamado mais de uma vez
+// para a mesma transição de data no futuro.
+async function createMessage(profile, contextKey, title, content, type) {
   try {
-    if (!localGame.entities?.CareerMessage?.create) return;
-    await localGame.entities.CareerMessage.create({
-      profile_id: profile.id,
+    await upsertCareerMessage(profile.id, contextKey, {
       sender_name: 'Departamento Médico',
-      subject,
-      body,
+      sender_type: 'sistema',
+      title,
+      content,
       status: 'nao_lida',
       message_type: type,
-      created_date: new Date().toISOString(),
+      notification_type: type === 'injury_report' ? 'INJURY' : 'INJURY_CLEARANCE',
+      destination: { type: 'INJURY', route: '/game/calendar', params: { focus: 'recovery' } },
     });
   } catch (error) {
     console.warn('[Game Core] Mensagem médica não criada:', error);
@@ -80,7 +84,13 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
 
     const updated = await localGame.entities.PlayerProfile.update(profile.id, patch);
     if (recovered) {
-      await createMessage(updated, 'Liberado para competir', 'A recuperação foi concluída. Você está novamente disponível para treinos e partidas.', 'medical_clearance');
+      await createMessage(
+        updated,
+        `injury-clearance:${profile.id}:${currentDate}`,
+        'Liberado para competir',
+        'A recuperação foi concluída. Você está novamente disponível para treinos e partidas.',
+        'medical_clearance',
+      );
     }
     return { profile: updated, injured: !recovered, recovered, newInjury: false };
   }
@@ -139,6 +149,12 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
     confidence: Math.max(20, (Number(profile.confidence) || 60) - 8),
   });
 
-  await createMessage(updated, `Lesão: ${injury.type}`, `O departamento médico estima ${days} dias de recuperação. Descanso e recuperação serão priorizados automaticamente.`, 'injury_report');
+  await createMessage(
+    updated,
+    `injury-report:${profile.id}:${currentDate}:${injury.type}`,
+    `Lesão: ${injury.type}`,
+    `O departamento médico estima ${days} dias de recuperação. Descanso e recuperação serão priorizados automaticamente.`,
+    'injury_report',
+  );
   return { profile: updated, injured: true, recovered: false, newInjury: true, risk, injury, days };
 }

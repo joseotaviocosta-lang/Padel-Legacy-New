@@ -146,8 +146,9 @@ async function processStaffMonthlyEvent(profile, snapshot, month) {
   }
   if (Object.keys(patch).length) await localGame.entities.PlayerStaffHire.update(member.id, patch);
   await safeCreate('CareerMessage', {
-    profile_id: profile.id, sender_name: 'Diretor de Performance', subject, body,
-    status: 'nao_lida', message_type: 'staff_event', created_date: new Date().toISOString(),
+    profile_id: profile.id, sender_name: 'Diretor de Performance', sender_type: 'sistema', subject, body, title: subject, content: body,
+    status: 'nao_lida', message_type: 'staff_event', notification_type: 'STAFF', destination: { type: 'STAFF', route: '/staff' },
+    created_date: new Date().toISOString(),
   });
   return { subject, memberId: member.id };
 }
@@ -183,9 +184,14 @@ export async function processStaffMonth(profile, currentDate) {
     await safeCreate('CareerMessage', {
       profile_id: profile.id,
       sender_name: 'Diretor de Performance',
+      sender_type: 'sistema',
       subject: `Evolução da comissão · ${month}`,
       body: parts.join(' '),
-      status: 'nao_lida', message_type: 'staff_monthly_report', created_date: new Date().toISOString(),
+      title: `Evolução da comissão · ${month}`,
+      content: parts.join(' '),
+      status: 'nao_lida', message_type: 'staff_monthly_report', notification_type: 'STAFF',
+      destination: { type: 'STAFF', route: '/staff' },
+      created_date: new Date().toISOString(),
     });
   }
   const refreshed = await getStaffSnapshot(profile);
@@ -239,12 +245,18 @@ export async function processStaffDay(profile, previousDate, currentDate) {
     const recommendations = getStaffWeeklyRecommendations(updatedProfile, snapshot);
     const mainBenefits = snapshot.bonuses.slice(0, 3).join('; ');
     const advice = recommendations.map(item => `${item.title}: ${item.body}`).join(' ');
+    const weeklyBody = `Equipe: ${snapshot.staff.length} profissional(is), folha de ${snapshot.monthlyCost.toLocaleString('pt-BR')} moedas. Benefícios: ${mainBenefits}. Recomendações: ${advice}`;
     await safeCreate('CareerMessage', {
       profile_id: profile.id,
       sender_name: 'Diretor de Performance',
+      sender_type: 'sistema',
       subject: 'Relatório semanal da comissão',
-      body: `Equipe: ${snapshot.staff.length} profissional(is), folha de ${snapshot.monthlyCost.toLocaleString('pt-BR')} moedas. Benefícios: ${mainBenefits}. Recomendações: ${advice}`,
-      status: 'nao_lida', message_type: 'staff_report', created_date: new Date().toISOString(),
+      body: weeklyBody,
+      title: 'Relatório semanal da comissão',
+      content: weeklyBody,
+      status: 'nao_lida', message_type: 'staff_report', notification_type: 'STAFF',
+      destination: { type: 'STAFF', route: '/staff' },
+      created_date: new Date().toISOString(),
       metadata: { recommendations },
     });
     try { updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, { staff_last_summary_week: currentWeek }); }

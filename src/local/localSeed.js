@@ -191,7 +191,7 @@ export const LOCAL_SEED = {
   ],
   PressArticle: [{ id: 'article-001', profile_id: LOCAL_PROFILE.id, title: 'Nova promessa inicia carreira profissional', content: 'José Costa inicia sua trajetória no circuito.', sentiment: 'positivo', outlet: 'Padel News Brasil', journalist_name: 'Ana Ribeiro', published_date: '2026-01-01' }],
   Relationship: athletes.slice(0, 3).map((athlete, index) => ({ id: `relationship-${index + 1}`, profile_id: LOCAL_PROFILE.id, target_athlete_id: athlete.id, target_name: athlete.name, relationship_type: index === 0 ? 'rivalidade' : 'respeito', score: index === 0 ? -10 : 20 + index * 5 })),
-  CareerMessage: [{ id: 'message-001', profile_id: LOCAL_PROFILE.id, sender_name: 'Carlos Mendes', subject: 'Bem-vindo ao circuito', body: 'Monte uma rotina equilibrada de treinos e descanso.', status: 'nao_lida', message_type: 'advice', created_date: '2026-01-01T08:00:00.000Z' }],
+  CareerMessage: [{ id: 'message-001', profile_id: LOCAL_PROFILE.id, sender_name: 'Carlos Mendes', sender_type: 'treinador', subject: 'Bem-vindo ao circuito', body: 'Monte uma rotina equilibrada de treinos e descanso.', title: 'Bem-vindo ao circuito', content: 'Monte uma rotina equilibrada de treinos e descanso.', status: 'nao_lida', message_type: 'advice', created_date: '2026-01-01T08:00:00.000Z' }],
   CareerLegacy: [],
   HallOfFameEntry: [{ id: 'hof-001', name: 'Alejandro Reyes', category: 'atleta', country: 'Espanha', induction_year: 2020, titles: 42, biography: 'Uma das maiores lendas do circuito.' }],
   HistoryEntry: [{ id: 'history-001', year: 1998, title: 'Fundação do Circuito Mundial', description: 'Primeira temporada organizada do universo Padel Legacy.', category: 'circuito' }],
