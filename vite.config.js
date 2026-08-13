@@ -17,7 +17,15 @@ export default defineConfig({
     host: resolveDevServerHost(),
     port: 5174,
     strictPort: true,
-    watch: { ignored: ['**/src-tauri/target/**', '**/target/**'] },
+    watch: {
+      ignored: [
+        '**/src-tauri/target/**',
+        '**/src-tauri/gen/android/app/build/**',
+        '**/src-tauri/gen/android/.gradle/**',
+        '**/src-tauri/gen/android/build/**',
+        '**/target/**',
+      ],
+    },
   },
   preview: {
     host: '127.0.0.1',

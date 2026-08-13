@@ -21,6 +21,12 @@ const [viteConfig, packageJson, tauriConfig, manager, watchdog, appRunner, viteR
   readFile(new URL('./run-vite-dev.mjs', import.meta.url), 'utf8'),
   readFile(new URL('../src/App.jsx', import.meta.url), 'utf8'),
 ]);
+const requiredNativeBuildIgnores = [
+  '**/src-tauri/target/**',
+  '**/src-tauri/gen/android/app/build/**',
+  '**/src-tauri/gen/android/.gradle/**',
+  '**/src-tauri/gen/android/build/**',
+];
 
 assert.equal(DEV_PORT, 5174);
 assert.equal(
@@ -41,6 +47,21 @@ assert.equal(
 assert.match(viteConfig, /resolveDevServerHost\(\)/);
 assert.match(viteConfig, /port:\s*5174/);
 assert.match(viteConfig, /strictPort:\s*true/);
+assert.ok(
+  /watch:\s*{\s*ignored:\s*\[/s.test(viteConfig),
+  'watcher do Vite deve declarar exclusoes sem ser desativado',
+);
+for (const ignoredPattern of requiredNativeBuildIgnores) {
+  assert.ok(
+    viteConfig.includes(`'${ignoredPattern}'`),
+    `watcher do Vite deve ignorar ${ignoredPattern}`,
+  );
+}
+assert.doesNotMatch(
+  viteConfig,
+  /usePolling\s*:/,
+  'watcher nativo deve ser preservado; polling nao e a solucao padrao',
+);
 assert.doesNotMatch(viteConfig, /hmr\s*:/, 'HMR local deve usar os padrões do Vite');
 assert.equal(tauriConfig.build.devUrl, 'http://127.0.0.1:5174');
 assert.equal(tauriConfig.build.beforeDevCommand, 'npm run dev:tauri');
