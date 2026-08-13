@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { ArrowRight, ArrowLeft, Users } from 'lucide-react';
 import { selectPosition } from '@/lib/career';
 import { useToast } from '@/components/ui/use-toast';
+import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
 
 const POSITIONS = [
   {
@@ -21,6 +22,11 @@ const POSITIONS = [
 export default function PositionSelection({ profile, onPositionSelected }) {
   const [saving, setSaving] = useState(false);
   const { toast } = useToast();
+  // Etapa obrigatória do onboarding, sem ação de fechar — por isso não usa
+  // ModalShell (que sempre expõe um X de fechar). Reaproveita o mesmo hook
+  // de segurança (scroll-lock/focus-trap/retorno de foco) que ModalShell usa,
+  // com ESC desativado (Fase 8 — auditoria de modais).
+  const { panelRef } = useOverlayBehavior({ open: true, onClose: () => {}, closeOnEscape: false });
 
   async function choose(position) {
     setSaving(true);
@@ -36,8 +42,8 @@ export default function PositionSelection({ profile, onPositionSelected }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[60] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="glass rounded-3xl w-full max-w-md p-6 space-y-4">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4" role="dialog" aria-modal="true" aria-label="Escolha sua posição">
+      <div ref={panelRef} className="glass max-h-[calc(100dvh-2rem)] w-full max-w-md space-y-4 overflow-y-auto rounded-3xl p-6">
         <div className="text-center">
           <div className="inline-flex h-12 w-12 rounded-2xl bg-primary/15 items-center justify-center mb-3">
             <Users className="h-6 w-6 text-primary" />

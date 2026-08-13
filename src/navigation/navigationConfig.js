@@ -1,4 +1,4 @@
-import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, Medal, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, Medal, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
 
 /**
  * Fonte única da navegação do shell (Fase 3 — docs/NAVIGATION_ARCHITECTURE.md).
@@ -104,6 +104,7 @@ export const NAV_GROUPS = [
       { to: '/history', icon: History, label: 'História do padel' },
       { to: '/hall-of-fame', icon: Crown, label: 'Hall da fama' },
       { to: '/encyclopedia', icon: BookOpen, label: 'Enciclopédia' },
+      { to: '/settings', icon: Cog, label: 'Configurações' },
     ],
   },
 ];

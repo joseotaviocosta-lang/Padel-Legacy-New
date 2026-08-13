@@ -3,7 +3,8 @@ import { LayoutDashboard, TrendingUp, Bot, Trophy, Building2, Users } from 'luci
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { fetchAdminStats } from '@/lib/adminStats';
-import { LoadingScreen, PageHeader, TabBar } from '@/components/padel/ui';
+import { TabBar } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, PageSkeleton, Surface } from '@/components/design-system';
 import OverviewTab from '@/components/admin/OverviewTab';
 import EconomyTab from '@/components/admin/EconomyTab';
 import GrowthTab from '@/components/admin/GrowthTab';
@@ -37,20 +38,30 @@ export default function Admin() {
     })();
   }, []);
 
-  if (loading || !stats) return <LoadingScreen />;
+  if (loading || !stats) return <PageSkeleton variant="dashboard" rows={4} />;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-6xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={LayoutDashboard} title="Painel Administrativo" subtitle="Indicadores globais do universo do jogo" accent="primary" />
+    <Page size="wide">
+      <PageContent>
+        <PageHeader
+          icon={LayoutDashboard}
+          title="Painel Administrativo"
+          description="Indicadores globais do universo do jogo — atletas, economia, torneios e clubes."
+          tone="neutral"
+          breadcrumb={['Gestão', 'Administração']}
+        />
 
-      <TabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} variant="segmented" />
+        <Surface padding="compact">
+          <TabBar tabs={TABS} activeTab={activeTab} onTabChange={setActiveTab} variant="segmented" />
+        </Surface>
 
-      {activeTab === 'overview' && <OverviewTab stats={stats} />}
-      {activeTab === 'economy' && <EconomyTab stats={stats} />}
-      {activeTab === 'growth' && <GrowthTab stats={stats} />}
-      {activeTab === 'tournaments' && <TournamentsTab stats={stats} />}
-      {activeTab === 'clubs' && <ClubsTab stats={stats} />}
-      {activeTab === 'personnel' && <PersonnelTab stats={stats} />}
-    </div>
+        {activeTab === 'overview' && <OverviewTab stats={stats} />}
+        {activeTab === 'economy' && <EconomyTab stats={stats} />}
+        {activeTab === 'growth' && <GrowthTab stats={stats} />}
+        {activeTab === 'tournaments' && <TournamentsTab stats={stats} />}
+        {activeTab === 'clubs' && <ClubsTab stats={stats} />}
+        {activeTab === 'personnel' && <PersonnelTab stats={stats} />}
+      </PageContent>
+    </Page>
   );
 }

@@ -23,7 +23,7 @@ import {
   formatPoints,
   MATCH_TACTICS,
 } from '@/lib/matchEngine';
-import { Button } from '@/components/design-system';
+import { Button, ConfirmDialog } from '@/components/design-system';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 const PANELS = [
@@ -51,6 +51,7 @@ export default function LiveMatch({
   const [speed, setSpeed] = useState(1);
   const [activePanel, setActivePanel] = useState('match');
   const [tacticFeedback, setTacticFeedback] = useState('');
+  const [confirmEndMatch, setConfirmEndMatch] = useState(false);
   const finishedRef = useRef(false);
   const narrationRef = useRef(null);
 
@@ -203,13 +204,18 @@ export default function LiveMatch({
           )
         }
         onEndSet={() => advanceUntil((next, start) => next.setsA !== start.setsA || next.setsB !== start.setsB)}
-        onEndMatch={() => {
-          if (window.confirm('Simular até o fim da partida? Você não poderá alterar as próximas decisões táticas.')) {
-            advanceUntil((next) => next.finished);
-          }
-        }}
+        onEndMatch={() => setConfirmEndMatch(true)}
       />
       </div>
+      <ConfirmDialog
+        open={confirmEndMatch}
+        onClose={() => setConfirmEndMatch(false)}
+        onConfirm={() => { setConfirmEndMatch(false); advanceUntil((next) => next.finished); }}
+        tone="default"
+        title="Simular até o fim da partida?"
+        description="Você não poderá alterar as próximas decisões táticas."
+        confirmLabel="Simular"
+      />
     </div>
   );
 }

@@ -252,6 +252,30 @@ export default function Press() {
         breadcrumb={['Mundo', 'Imprensa']}
       />
 
+      {pendingInterviews.length > 0 && (
+        <Surface variant="premium" padding="spacious" className="border-primary/30">
+          <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center sm:justify-between">
+            <div className="flex items-start gap-3">
+              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-primary/15">
+                <Mic className="h-5 w-5 text-primary" />
+              </div>
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.14em] text-primary">🎙 Entrevista disponível</p>
+                <p className="mt-1 text-sm font-bold leading-tight">A imprensa está esperando você{pendingInterviews.length > 1 ? ` — ${pendingInterviews.length} entrevistas pendentes` : ''}.</p>
+                <p className="mt-0.5 text-xs text-muted-foreground">{pendingInterviews[0]?.title}</p>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={() => handleStartInterview(pendingInterviews[0])}
+              className="pl-button pl-button-primary inline-flex w-full shrink-0 items-center justify-center gap-2 sm:w-auto"
+            >
+              <Mic className="h-4 w-4" /> Dar entrevista
+            </button>
+          </div>
+        </Surface>
+      )}
+
       <CardGrid columns={3}>
         <StatCard label="Apego dos fãs" value={fanAppeal} detail="Popularidade com o público" icon={Star} tone="brand" />
         <StatCard label="Patrocinadores" value={sponsorAppeal} detail="Atratividade comercial" icon={TrendingUp} tone="premium" />

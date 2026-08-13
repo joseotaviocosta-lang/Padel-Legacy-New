@@ -7,6 +7,7 @@ import { buildCareerAssistantInsights, assistantGreeting } from '@/lib/careerAss
 import { StatusBadge, DrawerShell } from '@/components/design-system';
 import { isCareerCommunicationVisible, normalizeCareerMessage } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
+import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 
 const toneClasses = {
   danger: 'border-red-500/25 bg-red-500/8',
@@ -21,7 +22,7 @@ export default function CareerAssistant() {
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [profile, setProfile] = useState(null);
-  const [context, setContext] = useState({ unreadCount: 0, nextTournament: null, activeMission: null });
+  const [context, setContext] = useState({ unreadCount: 0, nextTournament: null, activeMission: null, pressInterview: null });
   const [dismissedInsights, setDismissedInsights] = useState(() => new Set());
 
   const load = useCallback(async () => {
@@ -37,11 +38,15 @@ export default function CareerAssistant() {
         localGame.entities.MissionProgress.filter({ profile_id: current.id }).catch(() => []),
         localGame.entities.Match.filter({ profile_id: current.id }, '-created_date', 40).catch(() => []),
       ]);
-      const unreadCount = countUnreadCareerMessages(
-        (messages || [])
-          .map(normalizeCareerMessage)
-          .filter((message) => isCareerCommunicationVisible(message, { matches, profile: current }))
-      );
+      const normalizedMessages = (messages || [])
+        .map(normalizeCareerMessage)
+        .filter((message) => isCareerCommunicationVisible(message, { matches, profile: current }));
+      const unreadCount = countUnreadCareerMessages(normalizedMessages);
+      // Mesma fonte que a Home (CareerHub) e o sino usam para "Entrevista
+      // disponível" — nenhuma consulta nova, nenhuma lógica de entrevista
+      // duplicada, só o mesmo CareerMessage lido aqui também.
+      const interviewMessage = normalizedMessages.find((message) => message.related_entity_type === 'PressInterview' && !message.is_read);
+      const pressInterview = interviewMessage ? resolveNotificationDestination(interviewMessage) : null;
       const nextTournament = (tournaments || [])
         .filter((tournament) => tournament.start_date && tournament.start_date >= (current.career_date || '2026-01-01'))
         .sort((a, b) => a.start_date.localeCompare(b.start_date))[0] || null;
@@ -50,7 +55,7 @@ export default function CareerAssistant() {
         const progress = progressByMission.get(mission.id);
         return !progress || !['completed', 'claimed'].includes(progress.status);
       }) || null;
-      setContext({ unreadCount, nextTournament, activeMission });
+      setContext({ unreadCount, nextTournament, activeMission, pressInterview });
     } catch (error) {
       console.warn('[CareerAssistant] indisponível', error);
     }

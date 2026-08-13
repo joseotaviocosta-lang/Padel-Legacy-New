@@ -14,7 +14,7 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, Surface, StatCard, StatusBadge, EmptyState, Tabs, Button } from '@/components/design-system';
+import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, Surface, StatCard, StatusBadge, EmptyState, Tabs, Button, ConfirmDialog } from '@/components/design-system';
 import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -68,6 +68,7 @@ export default function Tournaments() {
   const [activeTab, setActiveTab] = useState('calendar');
   const [matches, setMatches] = useState([]);
   const [bracketTournament, setBracketTournament] = useState(null);
+  const [cancelTarget, setCancelTarget] = useState(null);
   const [registeredTournaments, setRegisteredTournaments] = useState(new Set());
   const [registrationRecords, setRegistrationRecords] = useState(new Map());
   const [registrationTournament, setRegistrationTournament] = useState(null);
@@ -256,9 +257,18 @@ export default function Tournaments() {
     setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
   }
 
-  async function handleCancelRegistration(tournament) {
+  function handleCancelRegistration(tournament) {
     const registration = registrationRecords.get(tournament.id);
-    if (!registration || !window.confirm(`Cancelar a inscrição em ${tournament.name}? A agenda será liberada.`)) return;
+    if (!registration) return;
+    setCancelTarget(tournament);
+  }
+
+  async function confirmCancelRegistration() {
+    const tournament = cancelTarget;
+    if (!tournament) return;
+    const registration = registrationRecords.get(tournament.id);
+    setCancelTarget(null);
+    if (!registration) return;
     const result = await cancelTournamentRegistration({ player: profile, registration, tournament, currentDate: careerDate });
     if (result.success) await handleRegistered(result.profile);
   }
@@ -445,6 +455,17 @@ export default function Tournaments() {
           onRegistered={handleRegistered}
         />
       )}
+
+      <ConfirmDialog
+        open={Boolean(cancelTarget)}
+        onClose={() => setCancelTarget(null)}
+        onConfirm={confirmCancelRegistration}
+        tone="danger"
+        title="Cancelar inscrição"
+        description={cancelTarget ? `Cancelar a inscrição em ${cancelTarget.name}? A agenda será liberada.` : ''}
+        confirmLabel="Cancelar inscrição"
+        cancelLabel="Manter inscrição"
+      />
       </PageContent>
     </Page>
   );

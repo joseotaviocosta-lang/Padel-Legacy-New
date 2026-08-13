@@ -140,7 +140,10 @@
     "test:post-match-interviews": "node scripts/test-post-match-interviews-rc.mjs",
     "benchmark:time-advance": "node scripts/benchmark-time-advance-rc.mjs",
     "test:time-advance-performance": "node scripts/test-time-advance-performance-rc.mjs",
-    "test:global-overlays": "node scripts/test-global-overlays-audit.mjs"
+    "test:global-overlays": "node scripts/test-global-overlays-audit.mjs",
+    "test:world-ui-v2": "node scripts/test-world-ui-v2.mjs",
+    "test:modal-safety": "node scripts/test-modal-safety.mjs",
+    "test:secondary-ui-v2": "node scripts/test-secondary-ui-v2.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

@@ -3,11 +3,13 @@ import { Sparkles, Send, Users, TrendingUp, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
-import { CardGrid, Page, PageContent, PageHeader, StatCard, StatusBadge, Surface } from '@/components/design-system';
+import { CardGrid, Page, PageContent, PageHeader, PlayerAvatar, StatCard, StatusBadge, Surface } from '@/components/design-system';
 import SocialPost from '@/components/social/SocialPost';
 import TrendPanel from '@/components/social/TrendPanel';
 import { generateBatchAutoPosts, generateAutoPost, calculateFollowerGain, getViralStatus, AUTHOR_TYPES } from '@/lib/socialNetwork';
 import { useToast } from '@/components/ui/use-toast';
+
+const PAGE_SIZE = 8;
 
 const POST_TYPE_META = {
   geral: { label: 'Geral', color: 'text-primary bg-primary/10' },
@@ -29,7 +31,10 @@ export default function Social({ embedded = false }) {
   const [submitting, setSubmitting] = useState(false);
   const [activeTrend, setActiveTrend] = useState(null);
   const [followers, setFollowers] = useState(0);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const { toast } = useToast();
+
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [activeTrend]);
 
   useEffect(() => { load(); }, []);
 
@@ -200,13 +205,7 @@ export default function Social({ embedded = false }) {
           {/* Composer */}
           <Surface variant="elevated">
             <div className="flex gap-3">
-              <div className="h-10 w-10 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0 overflow-hidden">
-                {profile?.avatar_url ? (
-                  <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" />
-                ) : (
-                  <span className="font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>
-                )}
-              </div>
+              <PlayerAvatar src={profile?.avatar_url} name={profile?.sport_name} size="sm" />
               <div className="flex-1 space-y-2">
                 <textarea
                   rows={2}
@@ -252,16 +251,27 @@ export default function Social({ embedded = false }) {
             {filteredPosts.length === 0 ? (
               <EmptyStateCard icon={Sparkles} message="Nenhuma publicação ainda. Seja o primeiro!" />
             ) : (
-              filteredPosts.map(post => (
-                <SocialPost
-                  key={post.id}
-                  post={post}
-                  profile={profile}
-                  onLike={handleLike}
-                  onComment={handleComment}
-                  onShare={handleShare}
-                />
-              ))
+              <>
+                {filteredPosts.slice(0, visibleCount).map(post => (
+                  <SocialPost
+                    key={post.id}
+                    post={post}
+                    profile={profile}
+                    onLike={handleLike}
+                    onComment={handleComment}
+                    onShare={handleShare}
+                  />
+                ))}
+                {visibleCount < filteredPosts.length && (
+                  <button
+                    type="button"
+                    onClick={() => setVisibleCount(value => value + PAGE_SIZE)}
+                    className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary"
+                  >
+                    Carregar mais
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>

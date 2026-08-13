@@ -19,7 +19,7 @@ import {
   Trophy,
   UserRound,
 } from 'lucide-react';
-import { Dialog, DialogContent, DialogDescription, DialogOverlay, DialogTitle } from '@/components/ui/dialog.jsx';
+import { ModalShell, ConfirmDialog, BrandMark, Select } from '@/components/design-system';
 import { useCareer } from '@/careers/useCareer.js';
 import { InfoBanner } from '@/components/padel/ui.jsx';
 
@@ -138,6 +138,8 @@ export default function CareerManager() {
   const [saveName, setSaveName] = useState('');
   const [search, setSearch] = useState('');
   const [sortBy, setSortBy] = useState('recent');
+  const [confirmTarget, setConfirmTarget] = useState(null);
+  const [confirming, setConfirming] = useState(false);
 
   const visibleCareers = useMemo(
     () => careers.filter((career) => !career.archived),
@@ -252,13 +254,20 @@ export default function CareerManager() {
 
   const duplicate = (career) => run(() => duplicateCareer(career.id, { careerType: 'experiment' }));
 
-  const archive = (career) => run(async () => {
-    if (window.confirm(`Arquivar “${career.save_name}”?`)) await archiveCareer(career.id);
-  });
+  const archive = (career) => setConfirmTarget({ type: 'archive', career });
+  const remove = (career) => setConfirmTarget({ type: 'delete', career });
 
-  const remove = (career) => run(async () => {
-    if (window.confirm(`Excluir definitivamente “${career.save_name}”?`)) await deleteCareer(career.id);
-  });
+  const confirmPendingAction = async () => {
+    if (!confirmTarget) return;
+    setConfirming(true);
+    try {
+      if (confirmTarget.type === 'archive') await run(() => archiveCareer(confirmTarget.career.id));
+      else await run(() => deleteCareer(confirmTarget.career.id));
+    } finally {
+      setConfirming(false);
+      setConfirmTarget(null);
+    }
+  };
 
   return (
     <div className="relative min-h-screen overflow-hidden bg-[#05070b] text-foreground">
@@ -271,9 +280,7 @@ export default function CareerManager() {
       <main className="relative mx-auto flex min-h-screen w-full max-w-[1480px] flex-col px-5 py-6 sm:px-8 lg:px-12 lg:py-10">
         <header className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary font-black text-primary-foreground shadow-lg shadow-primary/20">
-              P
-            </div>
+            <BrandMark size={48} />
             <div>
               <p className="text-lg font-black leading-none tracking-tight">PADEL</p>
               <p className="mt-1 text-[10px] font-black uppercase tracking-[0.45em] text-primary">Legacy</p>
@@ -450,27 +457,27 @@ export default function CareerManager() {
         </footer>
       </main>
 
-      <Dialog open={showLoad} onOpenChange={(open) => {
-        setShowLoad(open);
-        if (!open) {
-          setSearch('');
-          setSortBy('recent');
-        }
-      }}>
-        <DialogOverlay />
-        <DialogContent className="max-h-[88vh] w-[calc(100vw-2rem)] max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#090c12] p-0 shadow-2xl">
-          <div className="border-b border-white/10 p-5 sm:p-7">
-            <DialogTitle className="flex items-center gap-3 text-2xl font-black text-white">
-              <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-                <FolderOpen className="h-5 w-5" />
-              </span>
-              Carregar carreira
-            </DialogTitle>
-            <DialogDescription className="mt-2 text-sm text-muted-foreground">
-              Continue, organize ou remova seus saves locais.
-            </DialogDescription>
-
-            <div className="mt-5 grid gap-3 sm:grid-cols-[1fr_auto]">
+      <ModalShell
+        open={showLoad}
+        onClose={() => { setShowLoad(false); setSearch(''); setSortBy('recent'); }}
+        title="Carregar carreira"
+        description="Continue, organize ou remova seus saves locais."
+        size="xl"
+        className="bg-[#090c12]"
+        footer={(
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-xs text-muted-foreground">{filteredCareers.length} de {visibleCareers.length} carreira(s)</p>
+            <button
+              type="button"
+              onClick={() => { setShowLoad(false); setShowCreate(true); }}
+              className="inline-flex items-center gap-2 rounded-2xl border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/15"
+            >
+              <Plus className="h-4 w-4" /> Nova carreira
+            </button>
+          </div>
+        )}
+      >
+          <div className="sticky -top-4 z-10 -mx-4 mb-4 grid gap-3 border-b border-white/10 bg-[#090c12] px-4 pb-4 pt-1 sm:-top-5 sm:-mx-5 sm:grid-cols-[1fr_auto] sm:px-5">
               <label className="relative block">
                 <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                 <input
@@ -480,20 +487,21 @@ export default function CareerManager() {
                   className="h-12 w-full rounded-2xl border border-white/10 bg-black/25 pl-11 pr-4 text-sm text-white outline-none transition placeholder:text-muted-foreground focus:border-primary/40 focus:ring-2 focus:ring-primary/10"
                 />
               </label>
-              <select
+              <Select
                 value={sortBy}
-                onChange={(event) => setSortBy(event.target.value)}
-                className="h-12 rounded-2xl border border-white/10 bg-black/25 px-4 text-sm text-white outline-none transition focus:border-primary/40"
-              >
-                <option value="recent">Mais recentes</option>
-                <option value="oldest">Mais antigos</option>
-                <option value="name">Nome A–Z</option>
-                <option value="ranking">Melhor ranking</option>
-              </select>
-            </div>
+                onValueChange={setSortBy}
+                aria-label="Ordenar carreiras"
+                className="h-12 rounded-2xl border-white/10 bg-black/25 text-white focus:border-primary/40"
+                options={[
+                  { value: 'recent', label: 'Mais recentes' },
+                  { value: 'oldest', label: 'Mais antigos' },
+                  { value: 'name', label: 'Nome A–Z' },
+                  { value: 'ranking', label: 'Melhor ranking' },
+                ]}
+              />
           </div>
 
-          <div className="max-h-[58vh] overflow-y-auto p-4 sm:p-6">
+          <div>
             {loading ? (
               <div className="rounded-3xl border border-white/10 bg-white/[0.035] p-10 text-center text-sm text-muted-foreground">
                 Carregando carreiras...
@@ -556,37 +564,17 @@ export default function CareerManager() {
               </div>
             )}
           </div>
+      </ModalShell>
 
-          <div className="flex items-center justify-between gap-4 border-t border-white/10 p-4 sm:px-6">
-            <p className="text-xs text-muted-foreground">{filteredCareers.length} de {visibleCareers.length} carreira(s)</p>
-            <button
-              type="button"
-              onClick={() => { setShowLoad(false); setShowCreate(true); }}
-              className="inline-flex items-center gap-2 rounded-2xl border border-primary/25 bg-primary/10 px-4 py-2 text-sm font-bold text-primary transition hover:bg-primary/15"
-            >
-              <Plus className="h-4 w-4" /> Nova carreira
-            </button>
-          </div>
-        </DialogContent>
-      </Dialog>
-
-      <Dialog open={showCreate} onOpenChange={(open) => {
-        if (!open) {
-          setSaveName('');
-          setError('');
-        }
-        setShowCreate(open);
-      }}>
-        <DialogOverlay />
-        <DialogContent className="w-[calc(100vw-2rem)] max-w-lg rounded-[2rem] border border-white/10 bg-[#090c12] p-6 shadow-2xl sm:p-7">
-          <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-primary/10 text-primary">
-            <Plus className="h-5 w-5" />
-          </div>
-          <DialogTitle className="mt-5 text-2xl font-black text-white">Nova carreira</DialogTitle>
-          <DialogDescription className="mt-2 text-sm leading-relaxed text-muted-foreground">
-            Dê um nome ao save. A identidade e o perfil do atleta serão definidos no tutorial.
-          </DialogDescription>
-          <form onSubmit={create} className="mt-6 space-y-5">
+      <ModalShell
+        open={showCreate}
+        onClose={() => { setShowCreate(false); setSaveName(''); setError(''); }}
+        title="Nova carreira"
+        description="Dê um nome ao save. A identidade e o perfil do atleta serão definidos no tutorial."
+        size="sm"
+        className="bg-[#090c12]"
+      >
+          <form onSubmit={create} className="space-y-5">
             <div>
               <label htmlFor="save-name" className="block text-sm font-bold text-white">Nome da carreira</label>
               <input
@@ -606,7 +594,7 @@ export default function CareerManager() {
             <div className="flex items-center justify-end gap-3 pt-2">
               <button
                 type="button"
-                onClick={() => setShowCreate(false)}
+                onClick={() => { setShowCreate(false); setSaveName(''); setError(''); }}
                 className="rounded-2xl border border-white/10 bg-white/5 px-5 py-2.5 text-sm font-bold text-slate-300 transition hover:border-white/20 hover:text-white"
               >
                 Cancelar
@@ -620,8 +608,24 @@ export default function CareerManager() {
               </button>
             </div>
           </form>
-        </DialogContent>
-      </Dialog>
+      </ModalShell>
+
+      <ConfirmDialog
+        open={Boolean(confirmTarget)}
+        onClose={() => setConfirmTarget(null)}
+        onConfirm={confirmPendingAction}
+        confirming={confirming}
+        tone={confirmTarget?.type === 'delete' ? 'danger' : 'default'}
+        title={confirmTarget?.type === 'delete' ? 'Excluir carreira' : 'Arquivar carreira'}
+        description={confirmTarget?.type === 'delete'
+          ? `Excluir definitivamente “${confirmTarget?.career?.save_name}”?`
+          : `Arquivar “${confirmTarget?.career?.save_name}”?`}
+        confirmLabel={confirmTarget?.type === 'delete' ? 'Excluir' : 'Arquivar'}
+      >
+        {confirmTarget?.type === 'delete'
+          ? 'Esta ação não pode ser desfeita. Os backups internos desta carreira também serão removidos.'
+          : 'A carreira sai da lista principal, mas continua guardada e pode ser restaurada depois.'}
+      </ConfirmDialog>
     </div>
   );
 }

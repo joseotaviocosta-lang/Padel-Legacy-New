@@ -41,6 +41,18 @@ export function buildCareerAssistantInsights(profile, context = {}) {
     });
   }
 
+  if (context.pressInterview) {
+    insights.push({
+      id: 'press-interview',
+      priority: 82,
+      tone: 'premium',
+      title: 'Entrevista disponível',
+      description: 'A imprensa está esperando você após o último resultado.',
+      actionLabel: 'Dar entrevista',
+      route: context.pressInterview.route,
+    });
+  }
+
   if (tournamentDays !== null && tournamentDays >= 0 && tournamentDays <= 7) {
     insights.push({
       id: `tournament-${nextTournament.id || nextTournament.start_date}`,

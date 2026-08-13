@@ -34,7 +34,14 @@ assert(worldHub.includes("label: 'Hoje'"), 'Aba Hoje ausente.');
 assert(worldHub.includes("label: 'Circuito'"), 'Aba Circuito ausente.');
 assert(worldHub.includes("label: 'Mercado'"), 'Aba Mercado ausente.');
 assert(worldHub.includes("label: 'História'"), 'Aba História ausente.');
-assert(home.includes('<WorldPulse snapshot={worldSnapshot} />'), 'Painel inicial não mostra pulso do mundo.');
+// A Fase 4 (docs/HOME_REDESIGN.md) substituiu o antigo painel <WorldPulse>
+// por <WorldHighlights snapshot={worldSnapshot} .../> dentro da região
+// "6. Mundo + Ações rápidas" do novo CareerHub — mesmo dado (worldSnapshot,
+// de getLivingWorldSnapshot), mesma cobertura funcional ("home mostra o
+// pulso do mundo"), só o nome do componente e o layout mudaram
+// deliberadamente. Ver Fase 8, docs/SECONDARY_UI.md.
+assert(home.includes('<WorldHighlights snapshot={worldSnapshot}'), 'Painel inicial não mostra o resumo do mundo (WorldHighlights).');
+assert(home.includes('function WorldHighlights({ snapshot, posts })'), 'WorldHighlights não lê o snapshot do Universo Vivo.');
 
 console.log('LivingWorldV23Test: PASS');
 console.log('✓ Motor diário centralizado');

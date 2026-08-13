@@ -1,5 +1,5 @@
 import React from "react";
-import { Surface } from '@/components/design-system';
+import { BrandMark, Surface } from '@/components/design-system';
 
 // Pilot "simples" da consolidação Design System 2.0 (docs/DESIGN_SYSTEM_V2.md).
 // Antes: markup próprio (bg-card/shadow-sm), fora dos dois sistemas
@@ -11,6 +11,10 @@ export default function AuthLayout({ icon: Icon, title, subtitle, footer, childr
     <div className="app-shell relative flex min-h-screen items-center justify-center overflow-hidden bg-background px-4 py-10">
       <div className="w-full max-w-md">
         <div className="mb-8 text-center">
+          <div className="mb-5 flex items-center justify-center gap-2">
+            <BrandMark size={26} />
+            <span className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground">Padel Legacy</span>
+          </div>
           {Icon && (
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-primary shadow-[0_0_24px_hsl(var(--primary)/0.2)]">
               <Icon className="h-7 w-7 text-primary-foreground" aria-hidden="true" />

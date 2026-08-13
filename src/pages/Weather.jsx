@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Sun, TrendingUp, MapPin, BarChart3, CloudRain, Wind, Droplets } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
-import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
+import { GlassCard, FilterPills } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, PageSkeleton, EmptyState } from '@/components/design-system';
 import { getWeatherForecast, getWeatherStats, WEATHER_META, enrichTournamentWeather } from '@/lib/weather';
 import WeatherCard from '@/components/weather/WeatherCard';
 import { loadModuleTasks } from '@/lib/moduleLoading';
@@ -37,20 +38,27 @@ export default function Weather() {
     })();
   }, []);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={4} />;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Sun} title="Centro Meteorológico" subtitle="Clima, previsões e impacto no padel" accent="cyan">
-        <span className="text-xs text-muted-foreground">{formatDate(profile?.career_date)}</span>
-      </PageHeader>
+    <Page size="default">
+      <PageContent>
+        <PageHeader
+          icon={Sun}
+          title="Centro Meteorológico"
+          description="Clima, previsões e impacto no padel."
+          tone="info"
+          breadcrumb={['Mundo', 'Clima']}
+          stats={[<span key="date" className="text-xs text-muted-foreground">{formatDate(profile?.career_date)}</span>]}
+        />
 
-      <FilterPills filters={TABS} activeFilter={tab} onFilterChange={setTab} />
+        <FilterPills filters={TABS} activeFilter={tab} onFilterChange={setTab} />
 
-      {tab === 'previsao' && <ForecastTab forecast={forecast} />}
-      {tab === 'historico' && <HistoryTab stats={stats} />}
-      {tab === 'impacto' && <ImpactTab />}
-    </div>
+        {tab === 'previsao' && <ForecastTab forecast={forecast} />}
+        {tab === 'historico' && <HistoryTab stats={stats} />}
+        {tab === 'impacto' && <ImpactTab />}
+      </PageContent>
+    </Page>
   );
 }
 
@@ -58,7 +66,7 @@ export default function Weather() {
 
 function ForecastTab({ forecast }) {
   if (!forecast || forecast.length === 0) {
-    return <EmptyStateCard icon={Sun} title="Sem previsões" message="Nenhum torneio próximo no calendário." />;
+    return <EmptyState icon={Sun} title="Sem previsões" description="Nenhum torneio próximo no calendário." />;
   }
 
   return (
@@ -81,7 +89,7 @@ function ForecastTab({ forecast }) {
 
 function HistoryTab({ stats }) {
   if (!stats || stats.total === 0) {
-    return <EmptyStateCard icon={BarChart3} title="Sem dados históricos" message="Dados climáticos aparecerão conforme torneios forem finalizados." />;
+    return <EmptyState icon={BarChart3} title="Sem dados históricos" description="Dados climáticos aparecerão conforme torneios forem finalizados." />;
   }
 
   const conditionEntries = Object.entries(stats.conditions || {}).sort((a, b) => b[1] - a[1]);

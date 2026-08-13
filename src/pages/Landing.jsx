@@ -1,6 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { Trophy, Users, Swords, Flame, Zap, Globe, Crown, ArrowRight, Star, TrendingUp, Target } from 'lucide-react';
+import { BrandMark } from '@/components/design-system';
 
 export default function Landing() {
   return (
@@ -9,7 +10,7 @@ export default function Landing() {
       <nav className="fixed top-0 inset-x-0 z-50 glass border-b border-border/40">
         <div className="max-w-6xl mx-auto px-4 md:px-6 h-16 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-primary flex items-center justify-center"><span className="text-primary-foreground font-black text-lg">P</span></div>
+            <BrandMark size={36} />
             <div>
               <h1 className="font-black text-lg leading-none tracking-tight">PADEL</h1>
               <p className="text-primary font-bold text-[10px] tracking-[0.3em] leading-none mt-0.5">LEGACY</p>
@@ -130,7 +131,7 @@ export default function Landing() {
       <footer className="border-t border-border/40 py-8 px-4 md:px-6">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-2">
-            <div className="h-7 w-7 rounded-lg bg-primary flex items-center justify-center"><span className="text-primary-foreground font-black text-sm">P</span></div>
+            <BrandMark size={28} />
             <span className="font-black text-sm">PADEL <span className="text-primary">LEGACY</span></span>
           </div>
           <p className="text-xs text-muted-foreground">Sports Tech · Gaming · Community Platform</p>

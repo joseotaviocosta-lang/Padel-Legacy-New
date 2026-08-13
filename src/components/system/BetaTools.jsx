@@ -1,6 +1,6 @@
-import { useEffect, useMemo, useState } from 'react';
+import { Fragment, useEffect, useMemo, useState } from 'react';
 import { Activity, AlertTriangle, BarChart3, BookOpen, Bug, CheckCircle2, Clock3, Copy, Download, HardDrive, ListChecks, MessageSquarePlus, Play, RefreshCw, RotateCcw, ShieldCheck, Star, Trash2, Wrench } from 'lucide-react';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, ConfirmDialog, StatusBadge } from '@/components/design-system';
 import { useLocation } from 'react-router-dom';
 import { useCareer } from '@/careers/useCareer.js';
 import { buildBetaDiagnosticReport, downloadBetaDiagnosticReport, installBetaDiagnostics } from '@/lib/betaDiagnostics.js';
@@ -31,6 +31,42 @@ const INITIAL_SUGGESTION = {
   problem: '',
   idea: '',
   impact: '',
+};
+
+// Agrupamento puramente visual da barra de abas (Fase 8, seção 3) — os pares
+// [chave, rótulo] continuam exatamente os mesmos usados pelo `mode`, só a
+// ordem de exibição muda. Não renomeia nenhuma chave/rótulo existente
+// (protegido por test:beta-analytics / test:beta-analytics-pro / test:rc-beta-intelligence).
+const MODES = [
+  ['feedback', 'Relatar problema'],
+  ['suggestion', 'Sugerir melhoria'],
+  ['rating', 'Avaliar sistemas'],
+  ['changelog', 'Changelog'],
+  ['checklist', 'Checklist'],
+  ['save', 'Proteção do save'],
+  ['health', 'Saúde do mundo'],
+  ['tester', 'Estatísticas'],
+  ['insights', 'Insights'],
+  ['inspector', 'Save Inspector'],
+  ['analytics', 'Sessão atual'],
+  ['diagnostic', 'Diagnóstico'],
+];
+
+const MODE_GROUPS = [
+  { label: 'Visão geral', keys: ['tester', 'analytics', 'checklist', 'changelog'] },
+  { label: 'Feedback', keys: ['feedback', 'suggestion', 'rating'] },
+  { label: 'Diagnóstico', keys: ['health', 'inspector', 'insights', 'diagnostic'] },
+  { label: 'Exportação', keys: ['save'] },
+];
+
+// Classificação de severidade já existente (feedback.severity e
+// saveInspection.issues[].severity usam os mesmos quatro valores em inglês).
+// Só formata para StatusBadge — não cria uma escala nova (seção 7).
+const SEVERITY_META = {
+  blocker: { label: 'Crítica', tone: 'danger' },
+  high: { label: 'Alta', tone: 'danger' },
+  medium: { label: 'Média', tone: 'warning' },
+  low: { label: 'Baixa', tone: 'neutral' },
 };
 
 const RATING_AREAS = [
@@ -74,6 +110,7 @@ export default function BetaTools({ compact = false }) {
   const [ratingNotes, setRatingNotes] = useState('');
   const [ratingStatus, setRatingStatus] = useState('');
   const [ratingCount, setRatingCount] = useState(() => getLocalBetaRatings().length);
+  const [confirmClearAnalytics, setConfirmClearAnalytics] = useState(false);
 
   useEffect(() => installBetaDiagnostics(), []);
 
@@ -282,22 +319,18 @@ export default function BetaTools({ compact = false }) {
         description="Padel Legacy Beta"
         size="lg"
       >
-            <div className="sticky -top-4 z-10 -mx-4 mb-4 flex gap-2 overflow-x-auto border-b border-border bg-card px-4 py-3 sm:-top-5 sm:-mx-5 sm:px-5">
-              {[
-                ['feedback', 'Relatar problema'],
-                ['suggestion', 'Sugerir melhoria'],
-                ['rating', 'Avaliar sistemas'],
-                ['changelog', 'Changelog'],
-                ['checklist', 'Checklist'],
-                ['save', 'Proteção do save'],
-                ['health', 'Saúde do mundo'],
-                ['tester', 'Estatísticas'],
-                ['insights', 'Insights'],
-                ['inspector', 'Save Inspector'],
-                ['analytics', 'Sessão atual'],
-                ['diagnostic', 'Diagnóstico'],
-              ].map(([value, label]) => (
-                <button key={value} type="button" onClick={() => setMode(value)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold ${mode === value ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>{label}</button>
+            <div className="sticky -top-4 z-10 -mx-4 mb-4 flex items-center gap-2 overflow-x-auto border-b border-border bg-card px-4 py-3 sm:-top-5 sm:-mx-5 sm:px-5">
+              {MODE_GROUPS.map((group, groupIndex) => (
+                <Fragment key={group.label}>
+                  {groupIndex > 0 && <span className="mx-1 h-6 w-px shrink-0 bg-border" aria-hidden="true" />}
+                  <span className="shrink-0 text-[9px] font-black uppercase tracking-wider text-muted-foreground/60">{group.label}</span>
+                  {group.keys.map((key) => {
+                    const [value, label] = MODES.find(([modeKey]) => modeKey === key);
+                    return (
+                      <button key={value} type="button" onClick={() => setMode(value)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold ${mode === value ? 'bg-primary text-primary-foreground' : 'bg-secondary text-muted-foreground'}`}>{label}</button>
+                    );
+                  })}
+                </Fragment>
               ))}
             </div>
 
@@ -310,7 +343,10 @@ export default function BetaTools({ compact = false }) {
                   </div>
 
                   <div className="grid gap-3 sm:grid-cols-2">
-                    <label className="space-y-1 text-xs font-bold">Gravidade
+                    <label className="space-y-1 text-xs font-bold">
+                      <span className="flex items-center gap-2">Gravidade
+                        <StatusBadge tone={SEVERITY_META[feedback.severity]?.tone}>{SEVERITY_META[feedback.severity]?.label}</StatusBadge>
+                      </span>
                       <select value={feedback.severity} onChange={event => updateFeedback('severity', event.target.value)} className={FIELD_CLASS}>
                         <option value="blocker">Bloqueador — impede jogar</option>
                         <option value="high">Grave — quebra sistema importante</option>
@@ -635,7 +671,7 @@ export default function BetaTools({ compact = false }) {
 
                     <div className="rounded-2xl border border-border p-4">
                       <h3 className="text-sm font-black">Inconsistências encontradas</h3>
-                      {saveInspection.issues.length ? <div className="mt-3 space-y-2">{saveInspection.issues.map(item => <div key={item.id} className={`rounded-xl border p-3 ${item.severity === 'blocker' || item.severity === 'high' ? 'border-rose-500/20 bg-rose-500/5' : 'border-amber-500/15 bg-amber-500/5'}`}><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-black">{item.area} · {item.title}</p><p className="mt-1 text-[11px] text-muted-foreground">{item.detail}</p></div><span className="rounded-full bg-background/60 px-2 py-1 text-[10px] font-black uppercase">{item.severity} · {item.count}</span></div></div>)}</div> : <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3 text-xs font-bold text-emerald-200"><CheckCircle2 className="h-4 w-4" /> Nenhuma inconsistência estrutural detectada.</p>}
+                      {saveInspection.issues.length ? <div className="mt-3 space-y-2">{saveInspection.issues.map(item => <div key={item.id} className={`rounded-xl border p-3 ${item.severity === 'blocker' || item.severity === 'high' ? 'border-rose-500/20 bg-rose-500/5' : 'border-amber-500/15 bg-amber-500/5'}`}><div className="flex items-start justify-between gap-3"><div><p className="text-xs font-black">{item.area} · {item.title}</p><p className="mt-1 text-[11px] text-muted-foreground">{item.detail}</p></div><StatusBadge tone={SEVERITY_META[item.severity]?.tone || 'neutral'}>{SEVERITY_META[item.severity]?.label || item.severity} · {item.count}</StatusBadge></div></div>)}</div> : <p className="mt-3 flex items-center gap-2 rounded-xl bg-emerald-500/10 p-3 text-xs font-bold text-emerald-200"><CheckCircle2 className="h-4 w-4" /> Nenhuma inconsistência estrutural detectada.</p>}
                     </div>
 
                     <div className="grid gap-2 sm:grid-cols-2">
@@ -679,7 +715,7 @@ export default function BetaTools({ compact = false }) {
 
                   <div className="grid gap-2 sm:grid-cols-2">
                     <button type="button" onClick={() => downloadJsonFile(buildBetaAnalyticsExport(), `padel-legacy-sessao-beta-${Date.now()}.json`)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground"><Download className="h-4 w-4" /> Exportar sessão</button>
-                    <button type="button" onClick={() => { if (window.confirm('Apagar as estatísticas locais da beta neste dispositivo?')) { clearBetaAnalytics(); setAnalytics(getBetaAnalyticsSnapshot()); } }} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary"><Trash2 className="h-4 w-4" /> Limpar dados locais</button>
+                    <button type="button" onClick={() => setConfirmClearAnalytics(true)} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary"><Trash2 className="h-4 w-4" /> Limpar dados locais</button>
                   </div>
                   <p className="text-[11px] text-muted-foreground">Armazenamento limitado às últimas 50 sessões e 2.000 eventos para evitar crescimento indefinido.</p>
                 </div>
@@ -701,6 +737,16 @@ export default function BetaTools({ compact = false }) {
               )}
             </div>
       </ModalShell>
+
+      <ConfirmDialog
+        open={confirmClearAnalytics}
+        onClose={() => setConfirmClearAnalytics(false)}
+        onConfirm={() => { setConfirmClearAnalytics(false); clearBetaAnalytics(); setAnalytics(getBetaAnalyticsSnapshot()); }}
+        tone="danger"
+        title="Limpar dados locais"
+        description="Apagar as estatísticas locais da beta neste dispositivo?"
+        confirmLabel="Limpar"
+      />
     </>
   );
 }

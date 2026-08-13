@@ -3,7 +3,9 @@ import { Database, Users, Bot, Trophy, Building2, Briefcase, Package, RefreshCw,
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { generateDemoData, resetCareer } from '@/lib/demoData';
-import { LoadingScreen, PageHeader } from '@/components/padel/ui';
+import { CardGrid, Page, PageContent, PageHeader, PageSkeleton, StatCard, Surface } from '@/components/design-system';
+
+const TONES = { primary: 'brand', cyan: 'info', amber: 'warning', purple: 'premium', green: 'success', rose: 'danger' };
 
 export default function DatabaseManager() {
   const [counts, setCounts] = useState(null);
@@ -75,15 +77,23 @@ export default function DatabaseManager() {
   const LABELS = { AthleteProfile: 'Atletas', Coach: 'Treinadores', Sponsor: 'Patrocinadores', Club: 'Clubes', Tournament: 'Torneios', ShopItem: 'Equipamentos', WorldEvent: 'Eventos do Mundo', TeamRanking: 'Rankings de Duplas', CareerLegacy: 'Legados', Mission: 'Missões', Season: 'Temporadas' };
   const ACCENTS = { AthleteProfile: 'cyan', Coach: 'primary', Sponsor: 'amber', Club: 'green', Tournament: 'purple', ShopItem: 'rose', WorldEvent: 'primary', TeamRanking: 'amber', CareerLegacy: 'purple', Mission: 'cyan', Season: 'green' };
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={6} />;
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Database} title="Banco de Dados" subtitle="Visão geral e gerenciamento do universo do jogo" accent="primary">
-        <button onClick={loadCounts} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
-          <RefreshCw className="h-3.5 w-3.5" /> Atualizar
-        </button>
-      </PageHeader>
+    <Page size="default">
+      <PageContent>
+      <PageHeader
+        icon={Database}
+        title="Banco de Dados"
+        description="Visão geral e gerenciamento do universo do jogo."
+        tone="neutral"
+        breadcrumb={['Gestão', 'Banco de dados']}
+        action={(
+          <button onClick={loadCounts} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors">
+            <RefreshCw className="h-3.5 w-3.5" /> Atualizar
+          </button>
+        )}
+      />
 
       {/* Result feedback */}
       {resultMsg && (
@@ -95,28 +105,25 @@ export default function DatabaseManager() {
       )}
 
       {/* Entity counts */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 animate-stagger">
+      <CardGrid columns={3}>
         {(counts || []).map(({ name, count, error }) => {
           const Icon = ICONS[name] || Database;
-          const accent = ACCENTS[name] || 'primary';
-          const colors = { primary: 'bg-primary/15 text-primary', cyan: 'bg-cyan-500/15 text-cyan-400', amber: 'bg-amber-500/15 text-amber-400', purple: 'bg-purple-500/15 text-purple-400', green: 'bg-green-500/15 text-green-400', rose: 'bg-rose-500/15 text-rose-400' };
+          const tone = TONES[ACCENTS[name]] || 'brand';
           return (
-            <div key={name} className="glass rounded-2xl p-4">
-              <div className="flex items-center gap-2 mb-2">
-                <div className={`h-9 w-9 rounded-xl flex items-center justify-center ${colors[accent] || colors.primary}`}>
-                  <Icon className="h-4 w-4" />
-                </div>
-                <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">{LABELS[name] || name}</span>
-              </div>
-              <p className="text-2xl font-black tabular-nums">{error ? '—' : count.toLocaleString('pt-BR')}</p>
-              <p className="text-[10px] text-muted-foreground mt-0.5">{error ? 'Indisponível' : 'registros'}</p>
-            </div>
+            <StatCard
+              key={name}
+              icon={Icon}
+              tone={tone}
+              label={LABELS[name] || name}
+              value={error ? '—' : count.toLocaleString('pt-BR')}
+              detail={error ? 'Indisponível' : 'registros'}
+            />
           );
         })}
-      </div>
+      </CardGrid>
 
       {/* Actions */}
-      <div className="glass rounded-2xl p-5 space-y-4">
+      <Surface className="space-y-4">
         <h3 className="text-sm font-bold">Gerenciamento</h3>
 
         {/* Generate Demo Data */}
@@ -170,16 +177,17 @@ export default function DatabaseManager() {
             </button>
           )}
         </div>
-      </div>
+      </Surface>
 
-      <div className="glass rounded-2xl p-5">
+      <Surface>
         <h3 className="text-sm font-bold mb-2">Conteúdo do Banco de Dados</h3>
         <p className="text-xs text-muted-foreground leading-relaxed">
           O universo do Padel Legacy contém milhares de registros: atletas com personalidades, atributos e biografias únicas;
           treinadores especializados; patrocinadores de múltiplos setores; clubes em cidades reais; torneios com calendário
           anual; equipamentos de marcas reais; além de rankings, legados e eventos do mundo vivo.
         </p>
-      </div>
-    </div>
+      </Surface>
+      </PageContent>
+    </Page>
   );
 }

@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, FastForward, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
-import { Button, EmptyState, Page, PageHeader, PageSkeleton, StatCard, Surface, StatusBadge, ModalShell, Tabs } from '@/components/design-system';
+import { Button, EmptyState, Page, PageHeader, PageSkeleton, StatCard, Surface, StatusBadge, ModalShell, Tabs, ConfirmDialog } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
 import { getCareerDatePresentation } from '@/lib/careerDatePresentation.js';
@@ -45,6 +45,7 @@ export default function CalendarPage() {
   const [viewMode, setViewMode] = useState('week');
   const [visibleMonth, setVisibleMonth] = useState(new Date('2026-01-01T00:00:00'));
   const [skippingInjury, setSkippingInjury] = useState(false);
+  const [confirmSkipInjury, setConfirmSkipInjury] = useState(false);
   const [weekStart, setWeekStart] = useState(startOfWeek(new Date('2026-01-01T00:00:00'), { weekStartsOn: 0 }));
   const [selectedDay, setSelectedDay] = useState(null);
   const [selectedDayData, setSelectedDayData] = useState({ events: [], matches: [], trainings: [] });
@@ -257,12 +258,12 @@ export default function CalendarPage() {
     } finally { setPlanning(false); }
   }
 
-  async function handleSkipInjury() {
+  function handleSkipInjury() {
     if (!profile || advanceLockRef.current) return;
-    const days = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysBetween(careerDate, profile.injured_until) : 0);
-    if (!window.confirm(`Avançar ${days} dia(s) até a recuperação?
+    setConfirmSkipInjury(true);
+  }
 
-Todos os sistemas diários serão processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.`)) return;
+  async function runSkipInjury() {
     advanceLockRef.current = true;
     setSkippingInjury(true);
     try {
@@ -345,6 +346,7 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
   const nextTournament = upcomingTournaments[0] || null;
   const daysToNextTournament = nextTournament ? daysBetween(careerDate, nextTournament.start_date) : null;
   const datePresentation = getCareerDatePresentation(careerDate);
+  const injurySkipDays = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysBetween(careerDate, profile.injured_until) : 0);
 
   return (
     <Page>
@@ -425,6 +427,18 @@ Todos os sistemas diários serão processados. Treinos serão cancelados e torne
           onPlayTournament={(event) => { handlePlayTournament(event); setDayDetailsOpen(false); }}
         />
       </ModalShell>
+
+      <ConfirmDialog
+        open={confirmSkipInjury}
+        onClose={() => setConfirmSkipInjury(false)}
+        onConfirm={() => { setConfirmSkipInjury(false); runSkipInjury(); }}
+        tone="default"
+        title="Avançar até a recuperação"
+        description={`Avançar ${injurySkipDays} dia(s) até a recuperação?`}
+        confirmLabel="Avançar"
+      >
+        Todos os sistemas diários serão processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.
+      </ConfirmDialog>
 
       <CalendarPlanner profile={profile} selectedDate={selectedDay ? format(selectedDay, 'yyyy-MM-dd') : careerDate} events={calendarEvents} onSchedule={handleScheduleActivity} onCancel={handleCancelActivity} onEdit={handleEditActivity} busy={planning} />
 

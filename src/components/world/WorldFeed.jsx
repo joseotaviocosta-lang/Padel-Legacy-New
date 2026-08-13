@@ -11,13 +11,19 @@ const ALL_FILTERS = [
   ...MACRO_EVENT_TYPES.map(t => ({ id: t, label: MACRO_EVENT_META[t].label })),
 ];
 
+const PAGE_SIZE = 10;
+const TIER_RANK = { breaking: 0, destaque: 1, normal: 2 };
+
 export default function WorldFeed({ profile }) {
   const [events, setEvents] = useState([]);
   const [macroEvents, setMacroEvents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState('all');
   const [generating, setGenerating] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const careerDate = profile?.career_date || new Date().toISOString().slice(0, 10);
+
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filter]);
 
   useEffect(() => {
     (async () => {
@@ -49,6 +55,16 @@ export default function WorldFeed({ profile }) {
   const breakingCount = allEvents.filter(e => e.tier === 'breaking').length;
   const activeMacroCount = macroEvents.filter(e => e.is_active !== false).length;
 
+  // Destaque principal: a notícia não-macro de maior relevância (URGENTE >
+  // DESTAQUE > mais recente) ganha um cartão maior; o resto vira lista
+  // compacta paginada em vez de uma grade de cards idênticos (seção 4/9/30).
+  const nonMacroFiltered = filtered.filter(e => !e.is_macro);
+  const hero = nonMacroFiltered.length > 0
+    ? [...nonMacroFiltered].sort((a, b) => (TIER_RANK[a.tier] ?? 2) - (TIER_RANK[b.tier] ?? 2))[0]
+    : null;
+  const rest = filtered.filter(e => e.id !== hero?.id);
+  const visibleRest = rest.slice(0, visibleCount);
+
   return (
     <div className="space-y-4">
       {/* Active macro events banner */}
@@ -61,7 +77,7 @@ export default function WorldFeed({ profile }) {
           </div>
           <div className="grid sm:grid-cols-2 gap-3">
             {macroEvents.filter(e => e.is_active !== false).map(e => (
-              <WorldEventCard key={e.id} event={e} />
+              <WorldEventCard key={e.id} event={e} profile={profile} />
             ))}
           </div>
         </div>
@@ -104,10 +120,28 @@ export default function WorldFeed({ profile }) {
           <div className="w-6 h-6 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
         </div>
       ) : filtered.length === 0 ? (
-        <EmptyStateCard icon={Globe} title="Sem notícias" message="Nenhum evento disponível neste filtro." />
+        <EmptyStateCard
+          icon={Globe}
+          title="Sem notícias"
+          message={filter === 'all' ? 'Nenhuma notícia relevante hoje.' : 'Nenhum evento disponível neste filtro.'}
+        />
       ) : (
-        <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
-          {filtered.map(e => <WorldEventCard key={e.id} event={e} />)}
+        <div className="space-y-3 animate-stagger">
+          {hero && <WorldEventCard event={hero} profile={profile} variant="hero" />}
+          {visibleRest.length > 0 && (
+            <div className="grid sm:grid-cols-2 gap-3">
+              {visibleRest.map(e => <WorldEventCard key={e.id} event={e} profile={profile} />)}
+            </div>
+          )}
+          {visibleCount < rest.length && (
+            <button
+              type="button"
+              onClick={() => setVisibleCount(v => v + PAGE_SIZE)}
+              className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary"
+            >
+              Carregar mais
+            </button>
+          )}
         </div>
       )}
     </div>

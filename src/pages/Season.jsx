@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { CalendarDays, Loader2 } from 'lucide-react';
+import { CalendarDays } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, getWorldRank } from '@/lib/padel';
-import { PageContainer, PageHeader, GlassCard, EmptyStateCard } from '@/components/padel/ui';
+import { CardGrid, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard } from '@/components/design-system';
 import SeasonPanel from '@/components/home/SeasonPanel';
 import { getSeasonWindow } from '@/lib/seasonProgress';
 
@@ -32,47 +32,40 @@ export default function Season() {
     return () => { active = false; };
   }, []);
 
-  if (loading) {
-    return (
-      <div className="flex min-h-[45vh] items-center justify-center gap-2 text-sm text-muted-foreground">
-        <Loader2 className="h-5 w-5 animate-spin" /> Carregando temporada…
-      </div>
-    );
-  }
+  if (loading) return <PageSkeleton variant="stats" rows={3} />;
 
   if (!profile) {
-    return <EmptyStateCard icon={CalendarDays} message="Crie seu perfil para acompanhar a temporada." />;
+    return (
+      <Page size="default">
+        <PageContent>
+          <EmptyState icon={CalendarDays} title="Nenhum perfil encontrado" description="Crie seu perfil para acompanhar a temporada." />
+        </PageContent>
+      </Page>
+    );
   }
 
   const window = getSeasonWindow(profile.career_date);
 
   return (
-    <PageContainer>
-      <PageHeader
-        icon={CalendarDays}
-        title={`Temporada ${window.year}`}
-        subtitle="Acompanhe metas, desempenho e projeção do seu ano esportivo"
-      />
+    <Page size="default">
+      <PageContent>
+        <PageHeader
+          icon={CalendarDays}
+          title={`Temporada ${window.year}`}
+          description="Acompanhe metas, desempenho e projeção do seu ano esportivo."
+          tone="brand"
+          breadcrumb={['Competir', 'Temporada']}
+        />
 
-      <div className="space-y-5">
-        <div className="grid gap-3 sm:grid-cols-3">
-          <Summary label="Data da carreira" value={formatDate(profile.career_date)} />
-          <Summary label="Ranking mundial" value={worldRank.rank ? `#${worldRank.rank}` : '—'} />
-          <Summary label="Dias restantes" value={window.remaining.toLocaleString('pt-BR')} />
-        </div>
+        <CardGrid columns={3}>
+          <StatCard label="Data da carreira" value={formatDate(profile.career_date)} tone="neutral" />
+          <StatCard label="Ranking mundial" value={worldRank.rank ? `#${worldRank.rank}` : '—'} tone="brand" />
+          <StatCard label="Dias restantes" value={window.remaining.toLocaleString('pt-BR')} tone="info" />
+        </CardGrid>
 
         <SeasonPanel profile={profile} worldRank={worldRank} />
-      </div>
-    </PageContainer>
-  );
-}
-
-function Summary({ label, value }) {
-  return (
-    <GlassCard className="p-4">
-      <p className="text-[10px] uppercase tracking-wide text-muted-foreground">{label}</p>
-      <p className="mt-1 text-xl font-black tabular-nums">{value}</p>
-    </GlassCard>
+      </PageContent>
+    </Page>
   );
 }
 

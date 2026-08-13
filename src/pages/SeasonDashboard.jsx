@@ -3,6 +3,7 @@ import { CalendarRange, Trophy, Swords, TrendingUp, Wallet, Coins, Medal, ArrowR
 import { localGame } from '@/api/localGameClient.js';
 import { getSeasonSnapshot, getSeasonHistory, finalizeSeason } from '@/game-core';
 import { useToast } from '@/components/ui/use-toast';
+import { ConfirmDialog } from '@/components/design-system';
 
 
 function GlassCard({ children, className = '' }) {
@@ -60,6 +61,7 @@ export default function SeasonDashboard() {
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
   const [closing, setClosing] = useState(false);
+  const [confirmClose, setConfirmClose] = useState(false);
   const { toast } = useToast();
 
   const load = async () => {
@@ -80,8 +82,7 @@ export default function SeasonDashboard() {
   useEffect(() => { load(); }, []);
   const canClose = useMemo(() => String(profile?.career_date || '').slice(5) >= '12-15', [profile]);
 
-  const closeSeason = async (force = false) => {
-    if (!force && !window.confirm(`Encerrar a temporada ${snapshot.year} e iniciar ${snapshot.year + 1}?`)) return;
+  const runCloseSeason = async (force) => {
     setClosing(true);
     try {
       const outcome = await finalizeSeason({ profile, partner, force });
@@ -90,6 +91,11 @@ export default function SeasonDashboard() {
     } catch (error) {
       toast({ title: 'Não foi possível encerrar', description: error.message, variant: 'destructive' });
     } finally { setClosing(false); }
+  };
+
+  const closeSeason = (force = false) => {
+    if (!force) { setConfirmClose(true); return; }
+    runCloseSeason(true);
   };
 
   if (loading) return <LoadingScreen />;
@@ -119,5 +125,15 @@ export default function SeasonDashboard() {
     {snapshot.completed ? <InfoBanner variant="success">A temporada {snapshot.year} já possui relatório final salvo.</InfoBanner> : <GlassCard className="border border-amber-500/30"><div className="flex flex-col md:flex-row md:items-center justify-between gap-4"><div><h2 className="font-black">Encerramento anual</h2><p className="text-sm text-muted-foreground">Salva o relatório, entrega prêmios, encerra o ano atual e inicia automaticamente a próxima temporada.</p></div><div className="flex flex-wrap gap-2"><PrimaryButton onClick={() => closeSeason(false)} disabled={!canClose || closing}>{closing ? <Loader2 className="h-4 w-4 animate-spin" /> : <ArrowRight className="h-4 w-4" />} Encerrar temporada</PrimaryButton>{localMode && !canClose && <button onClick={() => closeSeason(true)} disabled={closing} className="px-4 py-2.5 rounded-xl bg-secondary font-bold text-sm flex items-center gap-2"><RotateCcw className="h-4 w-4" /> Simular encerramento</button>}</div></div>{!canClose && <p className="text-xs text-amber-300 mt-3">O encerramento normal abre em 15 de dezembro. No modo local, o botão de simulação permite testar agora.</p>}</GlassCard>}
 
     <GlassCard><h2 className="font-black mb-4">Histórico de temporadas</h2>{history.length ? <div className="space-y-2">{history.map((item) => <div key={item.id} className="grid grid-cols-2 md:grid-cols-5 gap-2 p-3 rounded-xl bg-secondary/30 text-sm"><strong>{item.season_year}</strong><span>{item.wins || 0} vitórias</span><span>{item.titles || 0} títulos</span><span>{item.win_rate || 0}%</span><span className="text-primary font-bold">+{item.bonus_xp || 0} XP</span></div>)}</div> : <p className="text-sm text-muted-foreground">A primeira temporada concluída aparecerá aqui.</p>}</GlassCard>
+
+    <ConfirmDialog
+      open={confirmClose}
+      onClose={() => setConfirmClose(false)}
+      onConfirm={() => { setConfirmClose(false); runCloseSeason(false); }}
+      tone="default"
+      title="Encerrar temporada"
+      description={snapshot ? `Encerrar a temporada ${snapshot.year} e iniciar ${snapshot.year + 1}?` : ''}
+      confirmLabel="Encerrar"
+    />
   </PageContainer>;
 }

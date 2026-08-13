@@ -4,12 +4,17 @@ import { ChevronUp, Sparkles, Rocket } from 'lucide-react';
 import { ATTRIBUTES } from '@/lib/padel';
 import { getAttributeIcon } from '@/components/padel/Shared';
 import { useToast } from '@/components/ui/use-toast';
+import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
 
 export default function OnboardingAttributes({ profile, onComplete }) {
   const [points, setPoints] = useState(profile?.unspent_attribute_points || 0);
   const [busy, setBusy] = useState(null);
   const [currentProfile, setCurrentProfile] = useState(profile);
   const { toast } = useToast();
+  // Mesma justificativa de PositionSelection.jsx: etapa obrigatória sem ação
+  // de fechar, então reaproveita useOverlayBehavior diretamente em vez de
+  // ModalShell (Fase 8 — auditoria de modais).
+  const { panelRef } = useOverlayBehavior({ open: true, onClose: () => {}, closeOnEscape: false });
 
   async function addPoint(attrKey) {
     if (points <= 0) return;
@@ -30,8 +35,8 @@ export default function OnboardingAttributes({ profile, onComplete }) {
   }
 
   return (
-    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="glass rounded-3xl w-full max-w-md p-6 space-y-4 my-8">
+    <div className="fixed inset-0 z-[var(--z-modal)] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Distribua seus atributos">
+      <div ref={panelRef} className="glass rounded-3xl w-full max-w-md p-6 space-y-4 my-8">
         <div className="text-center">
           <div className="inline-flex h-12 w-12 rounded-2xl bg-primary/15 items-center justify-center mb-3">
             <Sparkles className="h-6 w-6 text-primary" />

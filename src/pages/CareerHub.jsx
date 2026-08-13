@@ -13,7 +13,7 @@ import {
 } from '@/lib/padel';
 import {
   Page, PageContent, PageHeader, StatusBadge, Surface, SurfaceHeader,
-  ProgressBar, EmptyState, PageSkeleton, TooltipHint, Button,
+  ProgressBar, EmptyState, PageSkeleton, TooltipHint, Button, ConfirmDialog,
 } from '@/components/design-system';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import CareerCalendar from '@/components/career/CareerCalendar';
@@ -73,6 +73,7 @@ export default function CareerHub() {
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
   const [skippingInjury, setSkippingInjury] = useState(false);
+  const [confirmSkipInjury, setConfirmSkipInjury] = useState(false);
   const [injurySkipError, setInjurySkipError] = useState('');
   const [injurySkipSummary, setInjurySkipSummary] = useState(null);
   const [finishingTutorial, setFinishingTutorial] = useState(false);
@@ -101,15 +102,12 @@ export default function CareerHub() {
     }
   }
 
-  async function handleSkipInjury() {
-    const days = Math.max(
-      Number(profile?.injury_days_remaining) || 0,
-      profile?.injured_until
-        ? Math.ceil((new Date(`${profile.injured_until}T00:00:00`).getTime() - new Date(`${profile.career_date}T00:00:00`).getTime()) / 86400000)
-        : 0,
-    );
-    const warning = `Avançar ${days} dia${days === 1 ? '' : 's'} até a recuperação?\n\nTorneios, rankings, despesas, agenda, notícias, contratos e missões continuarão sendo processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.`;
-    if (!profile || !window.confirm(warning)) return;
+  function handleSkipInjury() {
+    if (!profile) return;
+    setConfirmSkipInjury(true);
+  }
+
+  async function runSkipInjury() {
     setSkippingInjury(true);
     setInjurySkipError('');
     setInjurySkipSummary(null);
@@ -280,6 +278,7 @@ export default function CareerHub() {
 
   const careerExperience = careerExperienceSummary(profile.xp || 0);
   const ovr = overallRating(profile);
+  const injurySkipDays = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysUntil(profile.career_date, profile.injured_until) : 0);
 
   return (
     <Page size="wide" className="animate-fade-in">
@@ -339,6 +338,18 @@ export default function CareerHub() {
         <CareerStatusBar profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />
 
         {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
+
+        <ConfirmDialog
+          open={confirmSkipInjury}
+          onClose={() => setConfirmSkipInjury(false)}
+          onConfirm={() => { setConfirmSkipInjury(false); runSkipInjury(); }}
+          tone="default"
+          title="Avançar até a recuperação"
+          description={`Avançar ${injurySkipDays} dia${injurySkipDays === 1 ? '' : 's'} até a recuperação?`}
+          confirmLabel="Avançar"
+        >
+          Torneios, rankings, despesas, agenda, notícias, contratos e missões continuarão sendo processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.
+        </ConfirmDialog>
       </PageContent>
     </Page>
   );

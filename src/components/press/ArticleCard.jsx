@@ -56,19 +56,37 @@ export default function ArticleCard({ article, onClick }) {
         </div>
       </div>
       <p className="text-[11px] text-muted-foreground leading-relaxed line-clamp-2 mb-2">{article.content}</p>
-      <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] text-muted-foreground">
         <span className="font-semibold text-foreground/70">{article.journalist_name}</span>
         <span>·</span>
         <span>{article.outlet}</span>
-        {article.reputation_change !== 0 && (
+        {article.career_date && (
           <>
             <span>·</span>
-            <span className={`font-bold ${article.reputation_change > 0 ? 'text-green-400' : 'text-red-400'}`}>
-              {article.reputation_change > 0 ? '+' : ''}{article.reputation_change} rep
-            </span>
+            <span>{article.career_date}</span>
           </>
         )}
       </div>
+      {(article.reputation_change !== 0 || article.fan_appeal_change !== 0 || article.sponsor_appeal_change !== 0) && (
+        <div className="mt-2 flex flex-wrap items-center gap-1.5 border-t border-border/40 pt-2">
+          <span className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground/80">Impacto</span>
+          {article.reputation_change !== 0 && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${article.reputation_change > 0 ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'}`}>
+              {article.reputation_change > 0 ? '+' : ''}{article.reputation_change} reputação
+            </span>
+          )}
+          {article.fan_appeal_change !== 0 && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${article.fan_appeal_change > 0 ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'}`}>
+              {article.fan_appeal_change > 0 ? '+' : ''}{article.fan_appeal_change} fãs
+            </span>
+          )}
+          {article.sponsor_appeal_change !== 0 && (
+            <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded ${article.sponsor_appeal_change > 0 ? 'text-green-400 bg-green-500/10' : 'text-red-400 bg-red-500/10'}`}>
+              {article.sponsor_appeal_change > 0 ? '+' : ''}{article.sponsor_appeal_change} patrocinadores
+            </span>
+          )}
+        </div>
+      )}
     </div>
   );
 }

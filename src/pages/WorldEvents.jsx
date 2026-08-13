@@ -3,12 +3,12 @@ import { useSearchParams } from 'react-router-dom';
 import { Globe, Sparkles, RefreshCw, Flame } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { LoadingScreen, PageHeader, EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
+import { EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import WorldEventCard from '@/components/world/WorldEventCard';
 import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
 import { ensureMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
 import { loadModuleTasks } from '@/lib/moduleLoading';
-import { ModalShell } from '@/components/design-system';
+import { Page, PageContent, PageHeader, PageSkeleton, ModalShell } from '@/components/design-system';
 
 const ALL_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -29,6 +29,8 @@ const EFFECT_SUMMARY = [
   { key: 'match_reward_modifier', label: 'Recomp. Partidas', icon: 'Trophy', color: 'text-purple-400', fmt: v => `${v >= 1 ? '+' : ''}${Math.round((v - 1) * 100)}%` },
 ];
 
+const PAGE_SIZE = 12;
+
 export default function WorldEventsPage() {
   const [searchParams] = useSearchParams();
   const [profile, setProfile] = useState(null);
@@ -39,7 +41,10 @@ export default function WorldEventsPage() {
   const [generating, setGenerating] = useState(false);
   const [initializationError, setInitializationError] = useState('');
   const [selectedEvent, setSelectedEvent] = useState(null);
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
   const careerDate = profile?.career_date || new Date().toISOString().slice(0, 10);
+
+  useEffect(() => { setVisibleCount(PAGE_SIZE); }, [filter]);
 
   useEffect(() => { load(); }, []);
 
@@ -91,19 +96,29 @@ export default function WorldEventsPage() {
   else if (filter === 'macro') filtered = macroEvents;
   else filtered = allEvents.filter(e => e.event_type === filter);
 
-  if (loading) return <LoadingScreen />;
+  if (loading) return <PageSkeleton variant="grid" rows={6} />;
+
+  const visible = filtered.slice(0, visibleCount);
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Globe} title="Eventos Mundiais" subtitle="O universo do padel em movimento" accent="primary">
-        <button
-          onClick={handleRefresh}
-          disabled={generating}
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
-        >
-          <RefreshCw className={`h-3.5 w-3.5 ${generating ? 'animate-spin' : ''}`} /> Atualizar
-        </button>
-      </PageHeader>
+    <Page size="default">
+    <PageContent>
+      <PageHeader
+        icon={Globe}
+        title="Eventos Mundiais"
+        description="O universo do padel em movimento — resultados, mercado e histórias do circuito."
+        tone="brand"
+        breadcrumb={['Mundo', 'Eventos mundiais']}
+        action={(
+          <button
+            onClick={handleRefresh}
+            disabled={generating}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl glass text-xs font-semibold text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50"
+          >
+            <RefreshCw className={`h-3.5 w-3.5 ${generating ? 'animate-spin' : ''}`} /> Atualizar
+          </button>
+        )}
+      />
 
       {initializationError && (
         <GlassCard className="border-red-500/30 bg-red-500/5 flex items-center gap-3">
@@ -136,7 +151,7 @@ export default function WorldEventsPage() {
           </div>
 
           <div className="grid sm:grid-cols-2 gap-3">
-            {activeMacros.map(e => <WorldEventCard key={e.id} event={e} />)}
+            {activeMacros.map(e => <WorldEventCard key={e.id} event={e} profile={profile} />)}
           </div>
         </GlassCard>
       )}
@@ -158,15 +173,27 @@ export default function WorldEventsPage() {
 
       {/* Feed */}
       {filtered.length === 0 ? (
-        <EmptyStateCard icon={Globe} title="Sem eventos" message="Nenhum evento disponível neste filtro." />
+        <EmptyStateCard icon={Globe} title="Sem eventos" message={filter === 'all' ? 'Nenhuma movimentação recente.' : 'Nenhum evento disponível neste filtro.'} />
       ) : (
-        <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
-          {filtered.map(e => <WorldEventCard key={e.id} event={e} />)}
+        <div className="space-y-3">
+          <div className="grid sm:grid-cols-2 gap-3 animate-stagger">
+            {visible.map(e => <WorldEventCard key={e.id} event={e} profile={profile} />)}
+          </div>
+          {visibleCount < filtered.length && (
+            <button
+              type="button"
+              onClick={() => setVisibleCount((value) => value + PAGE_SIZE)}
+              className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary"
+            >
+              Carregar mais
+            </button>
+          )}
         </div>
       )}
       <ModalShell open={Boolean(selectedEvent)} onClose={() => setSelectedEvent(null)} title={selectedEvent?.title} description="Evento do universo" size="sm">
-        {selectedEvent && <WorldEventCard event={selectedEvent} />}
+        {selectedEvent && <WorldEventCard event={selectedEvent} profile={profile} />}
       </ModalShell>
-    </div>
+    </PageContent>
+    </Page>
   );
 }

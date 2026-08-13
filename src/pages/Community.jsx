@@ -4,7 +4,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, levelForXp } from '@/lib/padel';
 import { LevelBadge } from '@/components/padel/Shared';
 import { EmptyStateCard, LoadingScreen } from '@/components/padel/ui';
-import { CardGrid, Page, PageContent, PageHeader, PageSection, StatCard, StatusBadge, Surface } from '@/components/design-system';
+import { CardGrid, Page, PageContent, PageHeader, PageSection, PlayerAvatar, StatCard, StatusBadge, Surface } from '@/components/design-system';
 import Social from '@/pages/Social.jsx';
 
 const POST_TYPE_META = {
@@ -14,6 +14,8 @@ const POST_TYPE_META = {
   geral: { icon: Sparkles, color: 'text-primary bg-primary/10', label: 'Geral' },
 };
 
+const PAGE_SIZE = 10;
+
 export default function Community() {
   const [posts, setPosts] = useState([]);
   const [profile, setProfile] = useState(null);
@@ -22,6 +24,7 @@ export default function Community() {
   const [postType, setPostType] = useState('geral');
   const [submitting, setSubmitting] = useState(false);
   const [section, setSection] = useState('community');
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
   useEffect(() => {
     (async () => {
@@ -109,9 +112,7 @@ export default function Community() {
         {section === 'social' ? <Social embedded /> : <>
         <Surface variant="elevated">
           <div className="flex gap-3">
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/30 to-secondary">
-              {profile?.avatar_url ? <img src={profile.avatar_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary">{(profile?.sport_name || 'J')[0]?.toUpperCase()}</span>}
-            </div>
+            <PlayerAvatar src={profile?.avatar_url} name={profile?.sport_name} />
             <div className="min-w-0 flex-1 space-y-3">
               <textarea rows={3} className="padel-input resize-none" value={content} onChange={(event) => setContent(event.target.value)} placeholder="Compartilhe sua jornada no padel..." />
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
@@ -133,16 +134,14 @@ export default function Community() {
             <EmptyStateCard icon={MessageCircle} message="Nenhuma publicação ainda. Seja o primeiro a compartilhar!" />
           ) : (
             <div className="space-y-3">
-              {posts.map((post) => {
+              {posts.slice(0, visibleCount).map((post) => {
                 const meta = POST_TYPE_META[post.post_type] || POST_TYPE_META.geral;
                 const liked = (post.liked_by || []).includes(profile?.id || 'me');
                 const TypeIcon = meta.icon;
                 return (
                   <Surface key={post.id} variant="interactive" className="p-4">
                     <div className="mb-3 flex items-center gap-3">
-                      <div className="flex h-10 w-10 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-gradient-to-br from-primary/30 to-secondary">
-                        {post.author_avatar ? <img src={post.author_avatar} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary">{(post.author_name || '?')[0]?.toUpperCase()}</span>}
-                      </div>
+                      <PlayerAvatar src={post.author_avatar} name={post.author_name} size="sm" />
                       <div className="min-w-0 flex-1"><p className="truncate text-sm font-semibold">{post.author_name}</p>{post.author_level && <LevelBadge level={post.author_level} size="sm" />}</div>
                       <span className={`inline-flex items-center gap-1 rounded-lg px-2 py-1 text-[10px] font-semibold ${meta.color}`}><TypeIcon className="h-3 w-3" />{meta.label}</span>
                     </div>
@@ -156,6 +155,15 @@ export default function Community() {
                   </Surface>
                 );
               })}
+              {visibleCount < posts.length && (
+                <button
+                  type="button"
+                  onClick={() => setVisibleCount((value) => value + PAGE_SIZE)}
+                  className="w-full rounded-xl border border-border/60 px-4 py-3 text-sm font-bold text-primary"
+                >
+                  Carregar mais
+                </button>
+              )}
             </div>
           )}
         </PageSection>
