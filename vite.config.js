@@ -2,7 +2,7 @@ import path from 'path';
 import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import packageJson from './package.json' with { type: 'json' };
-import { resolveDevServerHost } from './scripts/vite-dev-host.mjs';
+import { resolveDevServerHost, resolveHmrConfig } from './scripts/vite-dev-host.mjs';
 
 export default defineConfig({
   plugins: [react()],
@@ -17,6 +17,7 @@ export default defineConfig({
     host: resolveDevServerHost(),
     port: 5174,
     strictPort: true,
+    hmr: resolveHmrConfig(),
     watch: {
       ignored: [
         '**/src-tauri/target/**',

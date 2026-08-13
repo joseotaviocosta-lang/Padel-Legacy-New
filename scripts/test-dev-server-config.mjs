@@ -8,7 +8,7 @@ import {
   isRecognizedProjectViteProcess,
   parseWindowsNetstat,
 } from './dev-port-manager.mjs';
-import { resolveDevServerHost } from './vite-dev-host.mjs';
+import { resolveDevServerHost, resolveHmrConfig } from './vite-dev-host.mjs';
 
 const rootUrl = new URL('..', import.meta.url);
 const [viteConfig, packageJson, tauriConfig, manager, watchdog, appRunner, viteRunner, appSource] = await Promise.all([
@@ -44,7 +44,14 @@ assert.equal(
   '192.0.2.15',
   'TAURI_DEV_HOST deve ser normalizado antes do bind',
 );
+assert.equal(resolveHmrConfig({}), undefined, 'desktop deve manter o HMR padrao do Vite');
+assert.deepEqual(
+  resolveHmrConfig({ TAURI_DEV_HOST: ' 192.0.2.15 ' }),
+  { protocol: 'ws', host: '192.0.2.15', port: 5174 },
+  'HMR mobile deve usar o mesmo host dinamico fornecido pelo Tauri',
+);
 assert.match(viteConfig, /resolveDevServerHost\(\)/);
+assert.match(viteConfig, /hmr:\s*resolveHmrConfig\(\)/);
 assert.match(viteConfig, /port:\s*5174/);
 assert.match(viteConfig, /strictPort:\s*true/);
 assert.ok(
@@ -62,7 +69,6 @@ assert.doesNotMatch(
   /usePolling\s*:/,
   'watcher nativo deve ser preservado; polling nao e a solucao padrao',
 );
-assert.doesNotMatch(viteConfig, /hmr\s*:/, 'HMR local deve usar os padrões do Vite');
 assert.equal(tauriConfig.build.devUrl, 'http://127.0.0.1:5174');
 assert.equal(tauriConfig.build.beforeDevCommand, 'npm run dev:tauri');
 
