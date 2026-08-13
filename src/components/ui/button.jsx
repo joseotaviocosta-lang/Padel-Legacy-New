@@ -22,11 +22,14 @@ const buttonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
       },
       size: {
-        default: "h-10 px-4 py-2",
-        sm: "h-8 rounded-lg px-3 text-xs",
+        // pl-btn-tap (Fase M1): sob @media(max-width:767px) eleva a área de
+        // toque mínima para 44px sem afetar desktop nem os tamanhos que já
+        // são >=44px (lg/touch) — ver src/index.css.
+        default: "h-10 px-4 py-2 pl-btn-tap",
+        sm: "h-8 rounded-lg px-3 text-xs pl-btn-tap",
         lg: "h-11 rounded-xl px-6 text-sm",
         touch: "h-12 rounded-xl px-5 text-sm",
-        icon: "h-10 w-10",
+        icon: "h-10 w-10 pl-icon-tap",
         iconSm: "h-8 w-8 rounded-lg",
       },
     },

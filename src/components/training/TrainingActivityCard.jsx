@@ -77,11 +77,12 @@ export default function TrainingActivityCard({
         }) : <p className="text-xs text-muted-foreground">Sessão de manutenção</p>}
       </div>
 
-      {/* Duração / Fadiga / Energia — sempre visíveis (seção 4) */}
-      <div className="grid grid-cols-3 gap-2 mb-3">
-        <Stat icon={Clock} label="Duração" value={`${activity.duration}min`} color="text-muted-foreground" />
-        <Stat icon={TrendingDown} label="Fadiga" value={`+${fatigueCost}`} color={fatigueCost >= 12 ? 'text-red-400' : 'text-amber-400'} />
-        <Stat icon={Zap} label="Energia" value={`${energyCost}`} color={lowEnergy ? 'text-red-400' : 'text-primary'} />
+      {/* Duração / Fadiga / Energia — uma linha compacta em vez de 3 caixas
+          empilhadas (Polish 2, objetivo 3.2); mesmos valores/cores/rótulos. */}
+      <div className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-secondary/30 px-3 py-2 text-[11px] font-bold">
+        <span className="inline-flex items-center gap-1.5 text-muted-foreground"><Clock className="h-3.5 w-3.5" />Duração <span className="text-foreground">{activity.duration}min</span></span>
+        <span className={`inline-flex items-center gap-1.5 ${fatigueCost >= 12 ? 'text-red-400' : 'text-amber-400'}`}><TrendingDown className="h-3.5 w-3.5" />Fadiga +{fatigueCost}</span>
+        <span className={`inline-flex items-center gap-1.5 ${lowEnergy ? 'text-red-400' : 'text-primary'}`}><Zap className="h-3.5 w-3.5" />Energia {energyCost}</span>
       </div>
 
       {weeklyCount >= 2 && (
@@ -151,16 +152,6 @@ export default function TrainingActivityCard({
           <><Dumbbell className="h-4 w-4" /> Treinar</>
         )}
       </Button>
-    </div>
-  );
-}
-
-function Stat({ icon: Icon, label, value, color }) {
-  return (
-    <div className="glass rounded-lg p-2 text-center">
-      <Icon className={`h-3 w-3 ${color} mx-auto mb-0.5`} />
-      <p className="text-[9px] text-muted-foreground uppercase">{label}</p>
-      <p className={`text-xs font-bold ${color}`}>{value}</p>
     </div>
   );
 }

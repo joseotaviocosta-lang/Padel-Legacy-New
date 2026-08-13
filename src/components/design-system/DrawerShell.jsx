@@ -8,6 +8,13 @@ import { useOverlayBehavior } from './useOverlayBehavior';
 // insights, help/glossary content, player detail). Shares ModalShell's
 // portal + scroll-lock + focus-trap + ESC guarantees via useOverlayBehavior,
 // so it isn't a second competing overlay system — just a different shape.
+//
+// M1.1 (docs/MOBILE_M1_1_DEVICE_HOTFIX.md): the panel is edge-to-edge
+// (h-full, no centering margin like ModalShell), so without pl-safe-t/
+// pl-safe-b the header's close button rendered directly under the Android
+// status bar/notch. The safe-area padding lives on the panel itself so it
+// insets header, content and footer together without touching their own
+// padding.
 export function DrawerShell({
   open,
   onClose,
@@ -39,7 +46,7 @@ export function DrawerShell({
       {closeOnBackdrop && <button type="button" className="absolute inset-0 cursor-default" aria-label="Fechar painel" onClick={onClose} />}
       <section
         ref={panelRef}
-        className={cn('pl-modal-panel pl-drawer-enter relative z-10 flex h-full w-full min-w-0 flex-col overflow-hidden border-l bg-background', widths[size] || widths.md, className)}
+        className={cn('pl-modal-panel pl-drawer-enter pl-safe-t pl-safe-b relative z-10 flex h-full w-full min-w-0 flex-col overflow-hidden border-l bg-background', widths[size] || widths.md, className)}
       >
         <header className="pl-modal-header flex shrink-0 items-start justify-between gap-4 border-b px-4 py-3 sm:px-5 sm:py-4">
           <div className="min-w-0">

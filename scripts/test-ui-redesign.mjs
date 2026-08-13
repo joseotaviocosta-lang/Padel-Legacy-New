@@ -102,7 +102,10 @@ check('ui/sheet.jsx (SheetContent) sem max-height seguro', sheetSource.includes(
 // 6. Responsividade base — breakpoints centralizados e alvo de toque de 44px.
 check('breakpoints ausentes de src/design/tokens.js', tokens.includes('export const breakpoints'));
 const indexCss = read('src/index.css');
-check('alvo de toque mobile não atualizado para 44px (2.75rem)', indexCss.includes('min-height: 2.75rem'));
+// Fase M1: o valor de 44px foi centralizado num token CSS (--pl-touch-min)
+// em vez de repetido como literal — checa a definição do token e seu uso.
+check('token --pl-touch-min (44px) ausente de src/index.css', indexCss.includes('--pl-touch-min: 2.75rem'));
+check('alvo de toque mobile não usa o token --pl-touch-min', indexCss.includes('min-height: var(--pl-touch-min)'));
 
 // 7. Branding — fundação local, sem dependência do favicon de terceiros.
 for (const file of [

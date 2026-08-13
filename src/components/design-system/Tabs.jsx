@@ -30,7 +30,9 @@ export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', clas
               key={tab.key}
               value={tab.key}
               className={cn(
-                'min-w-max shrink-0 gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+                // pl-tab-trigger (Fase M1): eleva a área de toque mínima
+                // para 44px sob mobile — ver src/index.css.
+                'pl-tab-trigger min-w-max shrink-0 gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
                 variant === 'segmented' && 'flex-1',
                 variant === 'buttons' && 'bg-secondary/50 data-[state=active]:bg-primary/15 data-[state=active]:text-primary',
               )}

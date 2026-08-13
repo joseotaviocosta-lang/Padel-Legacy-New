@@ -16,18 +16,72 @@ function PageIntroduction({ pathname, state, onStateChange }) {
   const intro = getPageIntroduction(pathname);
   if (!intro) return null;
   const collapsedIntroductions = state?.collapsedIntroductions || [];
-  const collapsed = collapsedIntroductions.includes(pathname);
+  // Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.1): a introdução da
+  // página só precisa aparecer expandida a primeira vez — nas visitas
+  // seguintes (já registrada em pageIntroductionsSeen pelo efeito abaixo)
+  // ela começa recolhida por padrão, sem perder o conteúdo nem a opção de
+  // reabrir manualmente pelo mesmo chevron de sempre.
+  const alreadySeen = (state?.pageIntroductionsSeen || []).includes(pathname);
+  const manuallyToggled = collapsedIntroductions.includes(pathname) || collapsedIntroductions.includes(`!${pathname}`);
+  const collapsed = manuallyToggled
+    ? collapsedIntroductions.includes(pathname)
+    : alreadySeen;
   return (
     <section className="mx-3 mt-3 rounded-xl border border-border/60 bg-card/70 px-3 py-2.5 sm:mx-4 md:mx-6 md:mt-4 md:rounded-2xl md:px-4 md:py-3" aria-label={`Introdução: ${intro.title}`}>
       <div className="flex items-center gap-3">
         <BookOpen className="h-4 w-4 text-primary shrink-0" />
         <div className="flex-1 min-w-0"><h2 className="text-sm font-bold">{intro.title}</h2>{collapsed && <p className="text-xs text-muted-foreground truncate">{intro.description}</p>}</div>
-        <button type="button" onClick={() => onStateChange(current => ({ ...current, collapsedIntroductions: collapsed ? (current.collapsedIntroductions || []).filter(item => item !== pathname) : [...(current.collapsedIntroductions || []), pathname] }))} className="rounded-lg p-2 hover:bg-secondary" aria-expanded={!collapsed} aria-label={collapsed ? 'Expandir explicação' : 'Recolher explicação'}>
+        <button
+          type="button"
+          onClick={() => onStateChange(current => {
+            const rest = (current.collapsedIntroductions || []).filter(item => item !== pathname && item !== `!${pathname}`);
+            // Guarda uma preferência explícita (path = recolher, !path = expandir)
+            // em vez de só remover — senão a página voltaria a abrir sozinha na
+            // próxima visita mesmo depois de o jogador já ter fechado de propósito.
+            return { ...current, collapsedIntroductions: [...rest, collapsed ? `!${pathname}` : pathname] };
+          })}
+          className="rounded-lg p-2 hover:bg-secondary"
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? 'Expandir explicação' : 'Recolher explicação'}
+        >
           {collapsed ? <ChevronDown className="h-4 w-4" /> : <ChevronUp className="h-4 w-4" />}
         </button>
       </div>
       {!collapsed && <div className="mt-3 grid gap-2 text-xs md:grid-cols-3"><p>{intro.description}</p><p><strong>Por que importa:</strong> {intro.purpose}</p><p className="text-muted-foreground"><strong>Dica:</strong> {intro.tip}</p></div>}
     </section>
+  );
+}
+
+function NextStepCard({ state, step, isOnStepPage, confirmingStepId, confirmationError, onConfirm, onPersist }) {
+  // Polish 2 (objetivo 1.2): "Por que usar" era um parágrafo sempre visível
+  // — vira uma linha secundária expandível, sem remover a explicação.
+  const [showWhy, setShowWhy] = useState(false);
+  return (
+    <aside className="mx-3 mt-2 rounded-xl border border-primary/40 bg-primary/10 p-3 sm:mx-4 md:mx-6 md:mt-3 md:rounded-2xl md:p-4" aria-label="Orientação contextual do tutorial">
+      {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
+        <GraduationCap className="h-6 w-6 text-primary shrink-0 sm:h-7 sm:w-7"/>
+        <div className="flex-1 min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p>
+          <h2 className="font-black leading-tight">{step.title}</h2>
+          <p className="text-xs text-muted-foreground">{step.explanation}</p>
+          <button type="button" onClick={() => setShowWhy((value) => !value)} className="mt-1 text-[11px] font-bold text-primary/80 hover:text-primary" aria-expanded={showWhy}>
+            {showWhy ? 'Ocultar por que usar' : 'Por que usar?'}
+          </button>
+          {showWhy && <p className="mt-1 text-xs text-muted-foreground"><strong className="text-foreground">Por que usar:</strong> {step.whyItMatters}</p>}
+        </div>
+        {isOnStepPage && step.completionType === 'confirm_understanding' ? (
+          <button type="button" disabled={confirmingStepId === step.id} onClick={onConfirm} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground disabled:opacity-60">{confirmingStepId === step.id ? 'Confirmando...' : 'Entendi, continuar'}</button>
+        ) : isOnStepPage ? (
+          <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
+        ) : (
+          <Link to={step.route} onClick={() => onPersist(current => ({ ...current, welcomeSeen: true }))} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link>
+        )}
+        <button onClick={() => onPersist(current => ({ ...current, minimized: true, welcomeSeen: true }))} className="rounded-xl border px-3 py-2 text-xs font-bold">Minimizar</button>
+        <button onClick={() => onPersist(current => ({ ...current, status: 'skipped', tutorialSkipped: true, minimized: false, welcomeSeen: true }))} className="px-2 py-2 text-xs text-muted-foreground">Pular guia</button>
+      </div>
+      {confirmationError && <p role="alert" className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{confirmationError}</p>}
+    </aside>
   );
 }
 
@@ -87,6 +141,16 @@ export default function OnboardingGuide() {
     return () => { window.removeEventListener('padel:mission-completed', refresh); window.removeEventListener('padel:onboarding-refresh', refresh); };
   }, [load]);
 
+  // Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 4): o botão "?" próprio
+  // saiu daqui e passou a viver no dock de utilidades compartilhado
+  // (FloatingUtilityRail), que dispara este evento em vez de duplicar um
+  // segundo botão flutuante — o Drawer/estado do guia continuam 100% aqui.
+  useEffect(() => {
+    const openGuide = () => setHelpOpen(true);
+    window.addEventListener('padel:open-career-guide', openGuide);
+    return () => window.removeEventListener('padel:open-career-guide', openGuide);
+  }, []);
+
   const persist = useCallback(async updater => {
     const next = typeof updater === 'function' ? updater(state) : updater;
     setState(next);
@@ -128,38 +192,22 @@ export default function OnboardingGuide() {
 
   return <>
     {!isMissionCenter && <PageIntroduction pathname={location.pathname} state={state} onStateChange={persist}/>}
-    {!isMissionCenter && !state.minimized && state.status === 'in_progress' && step && <aside className="mx-3 mt-2 rounded-xl border border-primary/40 bg-primary/10 p-3 sm:mx-4 md:mx-6 md:mt-3 md:rounded-2xl md:p-4" aria-label="Orientação contextual do tutorial">
-      {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
-      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center">
-        <GraduationCap className="h-7 w-7 text-primary shrink-0"/>
-        <div className="flex-1">
-          <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p>
-          <h2 className="font-black">{step.title}</h2>
-          <p className="text-xs text-muted-foreground">{step.explanation}</p>
-          <p className="mt-1 text-xs"><strong>Por que usar:</strong> {step.whyItMatters}</p>
-        </div>
-        {isOnStepPage && step.completionType === 'confirm_understanding' ? (
-          <button type="button" disabled={confirmingStepId === step.id} onClick={confirmCurrentStep} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground disabled:opacity-60">{confirmingStepId === step.id ? 'Confirmando...' : 'Entendi, continuar'}</button>
-        ) : isOnStepPage ? (
-          <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
-        ) : (
-          <Link to={step.route} onClick={() => persist(current => ({ ...current, welcomeSeen: true }))} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link>
-        )}
-        <button onClick={() => persist(current => ({ ...current, minimized: true, welcomeSeen: true }))} className="rounded-xl border px-3 py-2 text-xs font-bold">Minimizar</button>
-        <button onClick={() => persist(current => ({ ...current, status: 'skipped', tutorialSkipped: true, minimized: false, welcomeSeen: true }))} className="px-2 py-2 text-xs text-muted-foreground">Pular guia</button>
-      </div>
-      {confirmationError && <p role="alert" className="mt-3 rounded-xl border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-300">{confirmationError}</p>}
-    </aside>}
-    {!isMissionCenter && state.minimized && state.status === 'in_progress' && step && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-[calc(5.2rem+env(safe-area-inset-bottom))] right-3 z-40 max-w-[calc(100vw-1.5rem)] truncate rounded-full bg-primary px-3 py-2 text-xs font-bold text-primary-foreground shadow-xl md:bottom-20 md:right-5">Próximo passo: {step.title}</button>}
+    {!isMissionCenter && !state.minimized && state.status === 'in_progress' && step && (
+      <NextStepCard
+        state={state}
+        step={step}
+        isOnStepPage={isOnStepPage}
+        confirmingStepId={confirmingStepId}
+        confirmationError={confirmationError}
+        onConfirm={confirmCurrentStep}
+        onPersist={persist}
+      />
+    )}
+    {/* Polish 2: assumiu o "slot" antes ocupado pelo fab "?" (removido daqui,
+        agora no dock) para não sobrepor o Assistente da carreira, que usa o
+        mesmo bottom-[5.2rem]/right-3 no mobile. */}
+    {!isMissionCenter && state.minimized && state.status === 'in_progress' && step && <button onClick={() => persist(current => ({ ...current, minimized: false }))} className="fixed bottom-[calc(8.75rem+env(safe-area-inset-bottom))] right-3 z-40 max-w-[calc(100vw-1.5rem)] truncate rounded-full bg-primary px-3 py-2 text-xs font-bold text-primary-foreground shadow-xl md:bottom-20 md:right-5">Próximo passo: {step.title}</button>}
     {state.status !== 'in_progress' && recommendation && <div className="mx-4 md:mx-8 mt-3 flex items-center gap-3 rounded-xl border border-border/60 bg-card/80 px-4 py-3 text-xs"><span className="rounded-full bg-primary/15 px-2 py-1 font-bold text-primary">{recommendation.importance}</span><div className="flex-1"><strong>{recommendation.title}</strong><span className="text-muted-foreground"> · {recommendation.explanation}</span></div><Link to={recommendation.route} className="font-bold text-primary">{recommendation.actionLabel}</Link></div>}
-    <button
-      type="button"
-      data-layout-fullbleed
-      onClick={() => setHelpOpen(true)}
-      className="career-help-fab fixed bottom-[calc(8.75rem+env(safe-area-inset-bottom))] right-3 z-50 flex h-11 w-11 min-w-0 shrink-0 items-center justify-center rounded-full border border-primary/30 bg-background p-0 text-primary shadow-xl md:bottom-20 md:right-5"
-      aria-label="Abrir guia e glossário"
-      title="Guia da carreira"
-    ><CircleHelp className="h-5 w-5"/></button>
     <HelpCenter open={helpOpen} onClose={() => setHelpOpen(false)} state={state} onRestart={() => persist(current => ({ ...current, status: 'in_progress', tutorialSkipped: false, minimized: false, welcomeSeen: false, pageIntroductionsSeen: [], collapsedIntroductions: [] }))}/>
   </>;
 }

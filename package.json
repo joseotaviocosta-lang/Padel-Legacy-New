@@ -144,7 +144,10 @@
     "test:world-ui-v2": "node scripts/test-world-ui-v2.mjs",
     "test:modal-safety": "node scripts/test-modal-safety.mjs",
     "test:secondary-ui-v2": "node scripts/test-secondary-ui-v2.mjs",
-    "test:visual-checkpoint-hotfix1": "node scripts/test-visual-checkpoint-hotfix1.mjs"
+    "test:visual-checkpoint-hotfix1": "node scripts/test-visual-checkpoint-hotfix1.mjs",
+    "test:mobile-foundation": "node scripts/test-mobile-foundation.mjs",
+    "test:mobile-m1-hotfix": "node scripts/test-mobile-m1-hotfix.mjs",
+    "test:redesign-polish2": "node scripts/test-redesign-polish2.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

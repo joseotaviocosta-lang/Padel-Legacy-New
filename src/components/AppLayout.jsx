@@ -222,7 +222,7 @@ export default function AppLayout() {
   return (
     <MotionPolicyProvider value={performanceProfile}>
     <div className="app-shell min-h-screen bg-background">
-      <header className="glass pl-layer-header fixed inset-x-0 top-0 flex h-16 items-center border-b border-border/60 px-2.5 md:hidden">
+      <header className="glass pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex min-h-16 items-center border-b border-border/60 px-2.5 md:hidden">
         <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
@@ -284,8 +284,8 @@ export default function AppLayout() {
       <BetaWelcome />
       <FloatingUtilityRail onOpenCareers={openCareerManager} />
 
-      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-16 transition-[padding] duration-300 md:pb-0 md:pt-0`}>
-        <div className="app-desktop-bar pl-layer-header sticky top-0 hidden h-16 items-center gap-3 border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl md:flex lg:px-5">
+      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-[calc(4rem+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+        <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl md:flex lg:px-5">
           <div className="hidden min-w-0 flex-1 xl:block">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <span>{activeGroup?.label || 'Carreira'}</span><span className="text-border">/</span><span className="truncate text-primary/85">{currentTitle}</span>

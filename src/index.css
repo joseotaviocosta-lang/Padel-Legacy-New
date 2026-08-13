@@ -49,6 +49,18 @@
     --z-modal: 100;
     --z-toast: 120;
     --z-critical: 200;
+
+    /* Fundação mobile (Fase M1 — docs/MOBILE_M1_FOUNDATION.md). Tokens
+       documentados para os números "mágicos" já usados em vários pontos do
+       shell (header/bottom nav/safe area/alvo de toque), reaproveitados por
+       CSS novo em vez de reescritos. Não mudam nenhum valor existente. */
+    --pl-header-h: 4rem; /* AppLayout: header mobile fixo e barra desktop, ambos h-16 */
+    --pl-bottom-nav-h: 4.35rem; /* BottomNav.jsx: h-[4.35rem] do conteúdo interno, sem contar safe-area */
+    --pl-touch-min: 2.75rem; /* 44px — alvo de toque mínimo confortável */
+    --pl-safe-t: env(safe-area-inset-top, 0px);
+    --pl-safe-b: env(safe-area-inset-bottom, 0px);
+    --pl-safe-l: env(safe-area-inset-left, 0px);
+    --pl-safe-r: env(safe-area-inset-right, 0px);
   }
 
   .dark {
@@ -223,13 +235,16 @@
   body {
     min-width: 320px;
     min-height: 100vh;
+    min-height: 100dvh; /* dvh > vh quando suportado — evita salto de layout com barras dinâmicas de sistema (Fase M1) */
     overflow-x: hidden;
+    overscroll-behavior-y: contain; /* evita bounce/pull-to-refresh do Android vazando do conteúdo do app */
   }
 
   button,
   a,
   [role="button"] {
     -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation; /* remove delay de 300ms e double-tap-zoom acidental em touch; sem efeito com mouse */
   }
 
   button:focus-visible,
@@ -274,6 +289,18 @@
 
   .app-route-stage {
     min-height: calc(100vh - 4rem);
+    min-height: calc(100dvh - var(--pl-header-h));
+  }
+
+  /* Tailwind h-screen/min-h-screen/max-h-screen compilam para 100vh — em todo
+     uso atual do projeto isso representa viewport real do app (shell, telas
+     de auth/erro, toast), não um valor decorativo. dvh evita salto de layout
+     com barra de sistema dinâmica; em desktop Windows (sem chrome dinâmico)
+     o valor computado é idêntico a vh, sem regressão visual. */
+  @supports (height: 100dvh) {
+    .min-h-screen { min-height: 100dvh; }
+    .h-screen { height: 100dvh; }
+    .max-h-screen { max-height: 100dvh; }
   }
 
   .app-route-stage > :not([data-layout-fullbleed]) {
@@ -309,6 +336,7 @@
   @media (max-width: 767px) {
     .app-route-stage {
       min-height: calc(100vh - 7.9rem);
+      min-height: calc(100dvh - 7.9rem);
     }
 
     .glass,
@@ -685,6 +713,17 @@
     outline: 2px solid hsl(var(--ring));
     outline-offset: 2px;
   }
+
+  /* Fase M1 — safe-area centralizada (docs/MOBILE_M1_FOUNDATION.md). Usar
+     estas classes em vez de escrever env(safe-area-inset-*) de novo em cada
+     componente novo; o header/bottom-nav/BottomSheet existentes já tinham
+     seu próprio env() correto e não precisaram ser tocados. */
+  .pl-safe-t { padding-top: var(--pl-safe-t); }
+  .pl-safe-b { padding-bottom: var(--pl-safe-b); }
+  .pl-safe-l { padding-left: var(--pl-safe-l); }
+  .pl-safe-r { padding-right: var(--pl-safe-r); }
+  .pl-safe-x { padding-left: var(--pl-safe-l); padding-right: var(--pl-safe-r); }
+  .pl-safe-y { padding-top: var(--pl-safe-t); padding-bottom: var(--pl-safe-b); }
 }
 
 @keyframes pl-backdrop-in {
@@ -716,10 +755,25 @@
 }
 
 @media (max-width: 767px) {
-  /* v2 Design System — alvo de toque mínimo de 44px (auditoria UI/UX, seção 6). */
-  .design-system-page-host :is(button, a[role="button"]):not([class*="w-"]):not([class*="h-"]) {
-    min-height: 2.75rem;
+  /* v2 Design System — alvo de toque mínimo de 44px (auditoria UI/UX, seção 6).
+     Rede de segurança para botões sem tamanho explícito, dentro de conteúdo
+     de página OU de qualquer overlay (ModalShell/BottomSheet/DrawerShell
+     compartilham a classe pl-modal-panel). */
+  .design-system-page-host :is(button, a[role="button"]):not([class*="w-"]):not([class*="h-"]),
+  .pl-modal-panel :is(button, a[role="button"]):not([class*="w-"]):not([class*="h-"]) {
+    min-height: var(--pl-touch-min);
   }
+
+  /* Fase M1 — marcadores estáveis aplicados pelos componentes oficiais
+     (Button/IconButton/Tabs, não CSS solto por página). Cobrem os tamanhos
+     que já têm h-/w- explícito (por isso escapam da regra acima) mas ainda
+     ficam abaixo de 44px: Button "default"/"sm"/"icon", IconButton
+     "default", TabsTrigger. Tamanhos já >=44px (lg/touch) não recebem o
+     marcador — não há aumento indiscriminado de todo botão do desktop,
+     isto só se aplica sob este breakpoint mobile. */
+  .pl-btn-tap { min-height: var(--pl-touch-min); }
+  .pl-icon-tap { min-height: var(--pl-touch-min); min-width: var(--pl-touch-min); }
+  .pl-tab-trigger { min-height: var(--pl-touch-min); }
 
   .pl-modal-content { padding: 0.875rem; }
   .pl-modal-header { padding: 0.75rem 0.875rem; }
@@ -827,10 +881,6 @@
   .pl-surface,
   .pl-surface-subtle {
     border-radius: 0.875rem;
-  }
-
-  .app-route-stage :is(button, a, [role="button"]) {
-    touch-action: manipulation;
   }
 }
 

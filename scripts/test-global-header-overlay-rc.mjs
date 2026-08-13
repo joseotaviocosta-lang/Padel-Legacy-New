@@ -46,7 +46,15 @@ const checks = [
   // para não duplicar essa lógica entre os dois padrões de overlay.
   ['scroll de fundo e foco são restaurados', modal.includes('useOverlayBehavior') && overlayBehavior.includes("document.body.style.overflow = 'hidden'") && overlayBehavior.includes('previousFocusRef.current?.focus')],
   ['z-index segue escala global', ['--z-header: 40', '--z-floating: 50', '--z-dropdown: 60', '--z-modal: 100', '--z-toast: 120', '--z-critical: 200'].every(token => css.includes(token))],
-  ['PageSection não cria containing block', !page.includes('pl-auto-contain') && !page.includes('content-visibility') && !page.includes('transform')],
+  // M1 Foundation (docs/MOBILE_M1_FOUNDATION.md) conectou pl-auto-contain a
+  // Page.jsx de propósito (era a causa raiz do baseline de
+  // test:performance-responsive-v36). O que este teste protege continua
+  // válido — overlays "fixed" não podem ficar presos por content-visibility
+  // — só que agora por dois mecanismos: o guard de CSS que descontém quando
+  // há um .fixed.inset-0 dentro do container, e o fato de ModalShell/
+  // DrawerShell usarem portal direto para document.body (fora da árvore de
+  // Page.jsx, então nunca ficam contidos por ela).
+  ['pl-auto-contain de Page.jsx não prende overlays fixed (guard CSS presente e modais usam portal, não renderização inline)', css.includes('.pl-auto-contain:has(.fixed.inset-0)') && css.includes('contain: none !important') && modal.includes('createPortal') && modal.includes('document.body')],
   ['principais fluxos usam o padrão global', migratedSources.every(source => source.includes('ModalShell'))],
   ['não existe correção por scrollIntoView', ![layout, registration, ...migratedSources].some(source => source.includes('scrollIntoView'))],
   ['script registrado', pkg.scripts?.['test:global-header-overlay'] === 'node scripts/test-global-header-overlay-rc.mjs'],

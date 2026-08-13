@@ -36,7 +36,7 @@ export function ModalShell({
       <section
         ref={panelRef}
         data-layout-fullbleed
-        className={cn('pl-modal-panel pl-modal-enter relative z-10 flex max-h-[calc(100dvh-1rem)] w-full min-w-0 flex-col overflow-hidden rounded-2xl border sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl', widths[size] || widths.lg, className)}
+        className={cn('pl-modal-panel pl-modal-enter pl-safe-t pl-safe-b relative z-10 flex max-h-[calc(100dvh-1rem)] w-full min-w-0 flex-col overflow-hidden rounded-2xl border sm:max-h-[calc(100dvh-2rem)] sm:rounded-3xl', widths[size] || widths.lg, className)}
       >
         <header className="pl-modal-header flex shrink-0 items-start justify-between gap-4 border-b px-4 py-3 sm:px-5 sm:py-4">
           <div className="min-w-0">

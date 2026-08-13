@@ -1,14 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { localGame } from '@/api/localGameClient.js';
-import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Trophy, Lock } from 'lucide-react';
-import { careerDateLabel, careerMonthLabel, daysBetween } from '@/lib/career';
+import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Lock } from 'lucide-react';
+import { careerDateLabel, careerMonthLabel } from '@/lib/career';
 import { advanceCareerDayOnce } from '@/game-core';
-import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, isInjured, injuryRecoveryDays, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
+import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
 import { getPendingDecisions } from '@/lib/calendarSystem';
 
+// Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.5): este widget mostrava
+// seus próprios avisos de "torneio chegando" e "lesionado" — a mesma
+// informação que NextEventCard/CareerMomentStrip/MedicalStatusPanel já
+// mostram, mais completa, na mesma viewport do Hub. Removidos aqui (e a
+// consulta de torneios que só alimentava esse aviso) para não duplicar
+// renderização nem rede; o essencial deste card — progresso diário, energia,
+// química e o botão de avançar — continua intacto.
 export default function CareerCalendar({ profile, onAdvanceDay }) {
   const [advancing, setAdvancing] = useState(false);
-  const [nextTournament, setNextTournament] = useState(null);
   const [pendingDecisions, setPendingDecisions] = useState([]);
   const dateLabel = careerDateLabel(profile);
   const monthLabel = careerMonthLabel(profile);
@@ -17,8 +22,6 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
   const energy = profile?.energy ?? 100;
   const chemistry = profile?.partner_chemistry || 50;
   const chemInfo = chemistryLabel(chemistry);
-  const injured = isInjured(profile);
-  const recoveryDays = injuryRecoveryDays(profile);
   const fatigued = matchesToday > 0;
   const recoveryAmount = fatigued ? ENERGY_RECOVERY_FATIGUED : ENERGY_RECOVERY_PER_DAY;
   const retired = isRetired(profile);
@@ -30,14 +33,7 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
     (async () => {
       try {
         const careerDate = profile?.career_date || '2026-01-01';
-        const [list, pending] = await Promise.all([
-          localGame.entities.Tournament.list('-start_date', 50),
-          getPendingDecisions(profile?.id, careerDate),
-        ]);
-        const upcoming = (list || [])
-          .filter(t => t.start_date && t.start_date >= careerDate)
-          .sort((a, b) => a.start_date.localeCompare(b.start_date));
-        setNextTournament(upcoming[0] || null);
+        const pending = await getPendingDecisions(profile?.id, careerDate);
         setPendingDecisions(pending || []);
       } catch (e) {}
     })();
@@ -53,8 +49,6 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
     finally { setAdvancing(false); }
   }
 
-  const tournamentDays = nextTournament ? daysBetween(profile?.career_date || '2026-01-01', nextTournament.start_date) : 0;
-
   return (
     <div className="glass rounded-2xl p-4 border border-primary/20 space-y-3">
       <div className="flex items-center gap-4">
@@ -67,26 +61,6 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
           <p className="text-xs text-primary font-bold">{monthLabel}</p>
         </div>
       </div>
-
-      {/* Upcoming tournament notification */}
-      {nextTournament && tournamentDays <= 14 && (
-        <div className="glass rounded-xl p-3 border border-amber-500/30 bg-amber-500/5 flex items-center gap-2">
-          <Trophy className="h-4 w-4 text-amber-400 shrink-0" />
-          <p className="text-xs flex-1">
-            <span className="font-bold text-amber-400">{nextTournament.name}</span> em {tournamentDays} dia{tournamentDays !== 1 ? 's' : ''}. Planeje sua semana!
-          </p>
-        </div>
-      )}
-
-      {/* Injury warning */}
-      {injured && (
-        <div className="glass rounded-xl p-3 border border-red-500/30 bg-red-500/5 flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-red-400 shrink-0" />
-          <p className="text-xs text-red-400 font-medium">
-            Lesionado! Recupera em {recoveryDays} dias. Avance o dia para se recuperar.
-          </p>
-        </div>
-      )}
 
       {/* Pending decision warning */}
       {pendingDecisions.length > 0 && (

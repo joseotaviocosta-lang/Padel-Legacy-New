@@ -245,14 +245,19 @@ export default function CareerHub() {
     [profile, recentMatches, nextTournament, worldRank],
   );
 
+  const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
   const heroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
   const nextEvent = useMemo(
     () => buildNextEvent({ profile, activeTournamentEvent, nextTournament }),
     [profile, activeTournamentEvent, nextTournament],
   );
+  // Polish 2 (objetivo 1.5): quando lesionado, o item "injury" do briefing
+  // diário repetiria o mesmo dado de dias restantes que NextEventCard e
+  // MedicalStatusPanel já mostram nesta mesma viewport — só esse item some
+  // da lista; decisões e demais prioridades continuam normalmente.
   const priorityActions = useMemo(
-    () => buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRoute: heroStep?.to }),
-    [dailyBriefing, decisionCenter, messages, heroStep?.to],
+    () => buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRoute: heroStep?.to, injured }),
+    [dailyBriefing, decisionCenter, messages, heroStep?.to, injured],
   );
   const attentionItems = useMemo(
     () => (decisionCenter.decisions || []).filter((decision) => !priorityActions.some((action) => action.route === decision.route)).slice(0, 4),
@@ -263,7 +268,6 @@ export default function CareerHub() {
     [recentMatches, recentTrainings, messages, posts, partnerOffers],
   );
   const rankingGoal = seasonPlan?.goals?.[0] || null;
-  const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
 
   const finalTutorialStep = profile?.tutorial_onboarding?.status === 'in_progress' && getCurrentTutorialStep(profile.tutorial_onboarding)?.id === 'autonomy';
   const recommendations = useMemo(
@@ -286,7 +290,13 @@ export default function CareerHub() {
         {latestAnnualReport && profile.career_date?.endsWith('-01-01') && latestAnnualReport.generatedDate === profile.career_date && <AnnualReportHomeCard report={latestAnnualReport} />}
         {latestMonthlyReport && profile.career_date?.endsWith('-01') && latestMonthlyReport.generatedDate === profile.career_date && <MonthlyReportHomeCard report={latestMonthlyReport} />}
         {activeTournamentEvent && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}
-        {careerMoment && <CareerMomentStrip moment={careerMoment} />}
+        {/* Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.5): 'tournament' e
+            'injury' repetiam exatamente a mesma informação que já aparece,
+            mais completa/acionável, em NextEventCard (sempre visível logo
+            abaixo) e em MedicalStatusPanel (quando lesionado). Os outros
+            tipos (título/ranking/sequência/dupla) não têm equivalente em
+            nenhum outro painel desta viewport — continuam aparecendo. */}
+        {careerMoment && !['tournament', 'injury'].includes(careerMoment.type) && <CareerMomentStrip moment={careerMoment} />}
 
         {/* 1. Identidade + contexto */}
         <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} />
@@ -404,7 +414,7 @@ function buildNextEvent({ profile, activeTournamentEvent, nextTournament }) {
 // Regra de prioridade simples e determinística (seção 8): entrevista > decisões
 // críticas/altas já computadas pelo Centro de Decisões > prioridades do
 // briefing diário. Sem pontuação nova nem IA — só ordena o que já existe.
-function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRoute }) {
+function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRoute, injured = false }) {
   const items = [];
 
   const interview = (messages || []).find((message) => message.related_entity_type === 'PressInterview' && !message.is_read);
@@ -422,6 +432,7 @@ function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRou
 
   for (const priority of dailyBriefing?.priorities || []) {
     if (items.length >= 5) break;
+    if (priority.id === 'injury' && injured) continue;
     if (priority.route === heroRoute || items.some((item) => item.route === priority.route)) continue;
     items.push({ id: priority.id, tone: priority.tone, title: priority.title, description: priority.description, route: priority.route });
   }

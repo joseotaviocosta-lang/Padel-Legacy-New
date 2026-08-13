@@ -366,32 +366,37 @@ export default function CalendarPage() {
         }
       />
 
-      {/* Data grande e sempre legível (seção 9) — não depende só do header global */}
-      <Surface variant="premium" className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
+      {/* Barra operacional compacta (Polish 2, objetivo 2.2): antes eram 3
+          blocos empilhados (data grande + texto auxiliar + grid de 4 StatCard)
+          — agora uma única Surface, para o calendário real aparecer bem mais
+          cedo na página. Mesmos StatCards, mesmos handlers/labels/estados de
+          disabled dos botões de avanço, nenhuma lógica de calendário tocada. */}
+      <Surface variant="premium" padding="compact" className="flex flex-col gap-3 lg:flex-row lg:items-center">
+        <div className="lg:shrink-0">
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-premium">{datePresentation.weekday}</p>
-          <p className="mt-1 text-3xl font-black tracking-tight sm:text-4xl">{datePresentation.fullDate}</p>
+          <p className="mt-0.5 text-2xl font-black tracking-tight sm:text-3xl">{datePresentation.fullDate}</p>
         </div>
-        <div className="flex flex-wrap gap-2">
-          <Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
-            <FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : pendingDecisions.length > 0 ? 'Decisão pendente' : '+1 dia'}
-          </Button>
-          <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
-            {advancingBatch === 3 ? `${advanceProgress?.current || 0}/3…` : '+3 dias'}
-          </Button>
-          <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
-            {advancingBatch === 7 ? `${advanceProgress?.current || 0}/7…` : '+1 semana'}
-          </Button>
+        <div className="grid grow grid-cols-2 gap-2 sm:grid-cols-4 lg:mx-2">
+          <StatCard label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} detail="Disponível hoje" icon={Battery} tone={Number(profile.energy) < 30 ? 'danger' : 'success'} />
+          <StatCard label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} detail="Carga acumulada" icon={Zap} tone={Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info'} />
+          <StatCard label="Agenda" value={calendarEvents.filter((event) => event.start_date >= careerDate).length} detail="Compromissos futuros" icon={Clock3} tone="brand" />
+          <StatCard label="Próximo torneio" value={nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament} dias` : 'Hoje') : 'Livre'} detail={nextTournament?.name || 'Janela para evolução'} icon={Trophy} tone="premium" />
+        </div>
+        <div className="flex flex-col items-start gap-1.5 lg:shrink-0 lg:items-end">
+          <div className="flex flex-wrap gap-2">
+            <Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
+              <FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : pendingDecisions.length > 0 ? 'Decisão pendente' : '+1 dia'}
+            </Button>
+            <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
+              {advancingBatch === 3 ? `${advanceProgress?.current || 0}/3…` : '+3 dias'}
+            </Button>
+            <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
+              {advancingBatch === 7 ? `${advanceProgress?.current || 0}/7…` : '+1 semana'}
+            </Button>
+          </div>
+          <p className="text-[10px] text-muted-foreground lg:text-right">Avanço inteligente: processa treinos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
         </div>
       </Surface>
-      <p className="-mt-2 text-[11px] text-muted-foreground">Avanço inteligente: processa treinos automáticos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
-
-      <div className="grid grid-cols-2 gap-2 lg:grid-cols-4">
-        <StatCard label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} detail="Disponível hoje" icon={Battery} tone={Number(profile.energy) < 30 ? 'danger' : 'success'} />
-        <StatCard label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} detail="Carga acumulada" icon={Zap} tone={Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info'} />
-        <StatCard label="Agenda" value={calendarEvents.filter((event) => event.start_date >= careerDate).length} detail="Compromissos futuros" icon={Clock3} tone="brand" />
-        <StatCard label="Próximo torneio" value={nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament} dias` : 'Hoje') : 'Livre'} detail={nextTournament?.name || 'Janela para evolução'} icon={Trophy} tone="premium" />
-      </div>
 
       <Tabs tabs={[{ key: 'week', label: 'Semana' }, { key: 'month', label: 'Mês' }]} activeTab={viewMode} onTabChange={setViewMode} variant="segmented" />
 

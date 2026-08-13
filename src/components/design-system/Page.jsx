@@ -13,7 +13,7 @@ export function Page({ children, className, size = 'wide', ...props }) {
   return (
     <div
       className={cn(
-        'pl-page pl-page-enter mx-auto w-full min-w-0 px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-5',
+        'pl-page pl-page-enter pl-auto-contain mx-auto w-full min-w-0 px-3 py-3 sm:px-4 sm:py-4 lg:px-5 lg:py-5',
         sizes[size] || sizes.wide,
         className,
       )}
