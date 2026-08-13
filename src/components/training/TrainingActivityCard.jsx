@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Dumbbell, Zap, Clock, AlertTriangle, TrendingDown, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
 import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/trainingSystemV2';
+import { ATTRIBUTE_LABELS } from '@/lib/initialCareerProfiles';
 import { getAttributeIcon } from '@/components/padel/Shared';
 import { Button, ProgressBar, StatusBadge } from '@/components/design-system';
 
@@ -58,14 +59,22 @@ export default function TrainingActivityCard({
         </button>
       </div>
 
-      {/* Ganho previsto — o que decide a escolha, sempre visível */}
+      {/* Ganho previsto — valor atual + ganho é o que decide a escolha, sempre visível.
+          Valor atual lido direto de `profile` (mesma fonte do gameplay, sem
+          estado duplicado) — só apresentação, não afeta o cálculo do ganho. */}
       <div className="mb-3 space-y-1 rounded-xl bg-primary/5 border border-primary/15 p-2.5">
-        {topGains.length ? topGains.map(([attribute, gain]) => (
-          <div key={attribute} className="flex items-center justify-between text-xs">
-            <span className="text-muted-foreground">{attribute}</span>
-            <span className="font-bold text-primary tabular-nums">+{gain.toFixed(2)}</span>
-          </div>
-        )) : <p className="text-xs text-muted-foreground">Sessão de manutenção</p>}
+        {topGains.length ? topGains.map(([attribute, gain]) => {
+          const currentAttrVal = Math.round(Number(profile?.[attribute]) || 0);
+          return (
+            <div key={attribute} className="flex items-center justify-between gap-2 text-xs">
+              <span className="min-w-0 truncate text-muted-foreground">{ATTRIBUTE_LABELS[attribute] || attribute}</span>
+              <span className="flex shrink-0 items-baseline gap-1.5 tabular-nums">
+                <span className="font-bold text-foreground">{currentAttrVal}</span>
+                <span className="font-bold text-primary">+{gain.toFixed(2)}</span>
+              </span>
+            </div>
+          );
+        }) : <p className="text-xs text-muted-foreground">Sessão de manutenção</p>}
       </div>
 
       {/* Duração / Fadiga / Energia — sempre visíveis (seção 4) */}

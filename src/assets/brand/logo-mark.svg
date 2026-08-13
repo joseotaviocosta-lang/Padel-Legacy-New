@@ -1,11 +1,16 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="pl-mark-title">
   <title id="pl-mark-title">Padel Legacy</title>
   <!--
-    Conceito: "P" geométrico (Padel Legacy) + bola no pé da haste.
-    Construído só com retângulos/arcos com raio fixo (sem curvas livres) para
-    permanecer nítido em 16/32/64/128/256/512px. Cor de fundo = --primary,
-    glifo = --primary-foreground (ver src/index.css :root). Atualize os dois
-    hex abaixo junto com os tokens se a cor da marca mudar.
+    Conceito: "P" geometrico (Padel Legacy) + bola no pe da haste.
+    Construido so com retangulos/arcos com raio fixo (sem curvas livres) para
+    permanecer nitido em 16/32/64/128/256/512px. Cor de fundo = token
+    primary, glifo = token primary-foreground (ver src/index.css :root).
+    Atualize os dois hex abaixo junto com os tokens se a cor da marca mudar.
+    Nota: manter este comentario em ASCII puro, sem acentos/hifen duplo/
+    travessao. Caracteres assim ja quebraram o gerador de icones do Tauri
+    (comentario XML invalido) e corromperam o data-URI gerado pelo Vite no
+    build de producao (renderiza normal no navegador/dev server, mas falha
+    especificamente no WebView2 do Tauri/Windows empacotado).
   -->
   <rect x="3" y="3" width="94" height="94" rx="22" fill="#98E822"/>
   <rect x="30" y="22" width="13" height="56" rx="4" fill="#0A0D14"/>

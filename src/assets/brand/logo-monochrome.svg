@@ -1,9 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="pl-mono-title">
   <title id="pl-mono-title">Padel Legacy</title>
   <!--
-    Versão monocromática — sem badge de fundo, herda a cor do contexto via
-    currentColor. Use sobre qualquer fundo (impressão, marca d'água,
-    documentos). Mesma geometria de logo-mark.svg, só sem o <rect> de fundo.
+    Versao monocromatica - sem badge de fundo, herda a cor do contexto via
+    currentColor. Use sobre qualquer fundo (impressao, marca d'agua,
+    documentos). Mesma geometria de logo-mark.svg, so sem o rect de fundo.
+    Manter este comentario em ASCII puro (ver logo-mark.svg para o motivo).
   -->
   <rect x="30" y="22" width="13" height="56" rx="4" fill="currentColor"/>
   <path
