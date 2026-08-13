@@ -433,6 +433,15 @@ function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRou
   for (const priority of dailyBriefing?.priorities || []) {
     if (items.length >= 5) break;
     if (priority.id === 'injury' && injured) continue;
+    // Polish 2.1 (docs/REDESIGN_POLISH_2_1.md, objetivo 3): o item "tournament"
+    // do briefing diário é puramente informativo ("Nome em X dias") — a mesma
+    // informação que NextEventCard já mostra, sempre, com mais contexto e um
+    // CTA. NextEventCard não está nesta lista (é renderizado à parte), então
+    // o dedup por rota abaixo não o alcança sozinho; aqui a regra é explícita:
+    // evento sem ação própria não duplica o card. Uma pendência real (decisão
+    // crítica/alta sobre o torneio) continua chegando por decisionCenter, com
+    // outro id, e não é afetada por este corte.
+    if (priority.id === 'tournament') continue;
     if (priority.route === heroRoute || items.some((item) => item.route === priority.route)) continue;
     items.push({ id: priority.id, tone: priority.tone, title: priority.title, description: priority.description, route: priority.route });
   }

@@ -33,7 +33,11 @@ const cases = [
 
 const checks = [
   ...cases.map(([notification, expected]) => [`destino ${notification.id}`, resolveNotificationDestination(notification).route === expected]),
-  ['clique usa resolver central e navega por SPA', bell.includes('resolveNotificationDestination(message)') && bell.includes('navigate(destination.route)')],
+  // Mobile M2 (docs/MOBILE_M2_SHELL.md): sino e Central de Comunicações
+  // compartilham resolveAndOpenNotification (careerCommunications.js) em vez
+  // de cada um resolver destino/navegar por conta própria — a mesma
+  // notificação produz o mesmo resultado nos dois lugares.
+  ['clique usa o handler central compartilhado e navega por SPA', bell.includes('resolveAndOpenNotification(message') && bell.includes('{ navigate }') && careerCommunications.includes('export async function resolveAndOpenNotification') && careerCommunications.includes('navigate(destination.route)')],
   ['abrir o sino não marca tudo como lido', !bell.includes('markAllCommunicationsRead') && bell.includes('setOpen((current) => !current)')],
   ['leitura individual preserva decisão pendente', careerCommunications.includes("message.status === 'nao_lida'") && careerCommunications.includes('is_read: true')],
   ['central usa a mesma leitura e o mesmo destino', communications.includes('markCareerCommunicationRead') && communications.includes('resolveNotificationDestination(selected)')],

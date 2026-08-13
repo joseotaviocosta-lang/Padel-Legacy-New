@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react'
 import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Calendar as CalendarIcon, FastForward, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
-import { Button, EmptyState, Page, PageHeader, PageSkeleton, StatCard, Surface, StatusBadge, ModalShell, Tabs, ConfirmDialog } from '@/components/design-system';
+import { Button, EmptyState, Page, PageHeader, PageSkeleton, Surface, StatusBadge, ModalShell, Tabs, ConfirmDialog } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
 import { getCareerDatePresentation } from '@/lib/careerDatePresentation.js';
@@ -366,24 +366,40 @@ export default function CalendarPage() {
         }
       />
 
-      {/* Barra operacional compacta (Polish 2, objetivo 2.2): antes eram 3
-          blocos empilhados (data grande + texto auxiliar + grid de 4 StatCard)
-          — agora uma única Surface, para o calendário real aparecer bem mais
-          cedo na página. Mesmos StatCards, mesmos handlers/labels/estados de
-          disabled dos botões de avanço, nenhuma lógica de calendário tocada. */}
-      <Surface variant="premium" padding="compact" className="flex flex-col gap-3 lg:flex-row lg:items-center">
-        <div className="lg:shrink-0">
+      {/* Faixa operacional (Polish 2.1, docs/REDESIGN_POLISH_2_1.md, objetivo 7):
+          o Polish 2 comprimiu Energia/Fadiga/Agenda/Torneio em 4 StatCards
+          estreitos disputando espaço com data+botões na mesma linha — o QA
+          real mostrou os rótulos e o nome do torneio truncados ("Dispo...",
+          "Los A..."). Substituído por 3 colunas (Data | Status do dia |
+          Ações) no desktop — cada uma com largura própria, sem competir por
+          espaço — mantendo o ganho de altura do Polish 2 sem sacrificar
+          legibilidade. Mesmos dados, mesmos handlers/labels/estados de
+          disabled dos botões de avanço; nenhuma lógica de calendário tocada. */}
+      <Surface variant="premium" className="grid gap-5 lg:grid-cols-[auto_1fr_auto] lg:items-start lg:gap-8">
+        <div>
           <p className="text-[10px] font-black uppercase tracking-[0.18em] text-premium">{datePresentation.weekday}</p>
           <p className="mt-0.5 text-2xl font-black tracking-tight sm:text-3xl">{datePresentation.fullDate}</p>
         </div>
-        <div className="grid grow grid-cols-2 gap-2 sm:grid-cols-4 lg:mx-2">
-          <StatCard label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} detail="Disponível hoje" icon={Battery} tone={Number(profile.energy) < 30 ? 'danger' : 'success'} />
-          <StatCard label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} detail="Carga acumulada" icon={Zap} tone={Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info'} />
-          <StatCard label="Agenda" value={calendarEvents.filter((event) => event.start_date >= careerDate).length} detail="Compromissos futuros" icon={Clock3} tone="brand" />
-          <StatCard label="Próximo torneio" value={nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament} dias` : 'Hoje') : 'Livre'} detail={nextTournament?.name || 'Janela para evolução'} icon={Trophy} tone="premium" />
+
+        <div>
+          <p className="mb-2 text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">Status do dia</p>
+          <div className="grid grid-cols-2 gap-x-5 gap-y-3 sm:grid-cols-3">
+            <DayStatusRow icon={Battery} label="Energia" value={`${Math.round(Number(profile.energy) || 0)}%`} tone={Number(profile.energy) < 30 ? 'danger' : 'success'} />
+            <DayStatusRow icon={Zap} label="Fadiga" value={`${Math.round(Number(profile.fatigue) || 0)}%`} tone={Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info'} />
+            <DayStatusRow icon={Clock3} label="Agenda" value={String(calendarEvents.filter((event) => event.start_date >= careerDate).length)} tone="brand" />
+            <DayStatusRow
+              icon={Trophy}
+              label="Próximo torneio"
+              value={nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament} dias` : 'Hoje') : 'Agenda livre'}
+              detail={nextTournament?.name}
+              tone="premium"
+              className="col-span-2 sm:col-span-3"
+            />
+          </div>
         </div>
-        <div className="flex flex-col items-start gap-1.5 lg:shrink-0 lg:items-end">
-          <div className="flex flex-wrap gap-2">
+
+        <div className="flex flex-col items-start gap-1.5 lg:items-stretch">
+          <div className="flex flex-wrap gap-2 lg:flex-col">
             <Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
               <FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : pendingDecisions.length > 0 ? 'Decisão pendente' : '+1 dia'}
             </Button>
@@ -394,7 +410,7 @@ export default function CalendarPage() {
               {advancingBatch === 7 ? `${advanceProgress?.current || 0}/7…` : '+1 semana'}
             </Button>
           </div>
-          <p className="text-[10px] text-muted-foreground lg:text-right">Avanço inteligente: processa treinos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
+          <p className="text-[10px] text-muted-foreground">Avanço inteligente: processa treinos, descanso e o Universo Vivo, parando diante de decisões obrigatórias.</p>
         </div>
       </Surface>
 
@@ -516,5 +532,26 @@ export default function CalendarPage() {
         />
       )}
     </Page>
+  );
+}
+
+// Linha de status do dia (Polish 2.1, objetivo 8) — sem truncate no valor
+// nem no detalhe (nome do torneio): quando falta largura, o texto quebra em
+// vez de virar "Los A...". Local a esta página (não é um primitive novo do
+// design-system) porque StatCard não coube bem neste layout de 3 colunas.
+function DayStatusRow({ icon: Icon, label, value, detail, tone = 'brand', className = '' }) {
+  const toneColor = {
+    danger: 'text-destructive', warning: 'text-warning', success: 'text-success',
+    info: 'text-info', brand: 'text-primary', premium: 'text-premium',
+  }[tone] || 'text-primary';
+  return (
+    <div className={`flex items-start gap-2 ${className}`}>
+      <Icon className={`mt-0.5 h-4 w-4 shrink-0 ${toneColor}`} />
+      <div className="min-w-0">
+        <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{label}</p>
+        <p className={`text-sm font-black leading-tight ${toneColor}`}>{value}</p>
+        {detail && <p className="text-[11px] leading-snug text-muted-foreground">{detail}</p>}
+      </div>
+    </div>
   );
 }

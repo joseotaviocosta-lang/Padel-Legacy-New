@@ -223,7 +223,7 @@ export default function AppLayout() {
     <MotionPolicyProvider value={performanceProfile}>
     <div className="app-shell min-h-screen bg-background">
       <header className="glass pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex min-h-16 items-center border-b border-border/60 px-2.5 md:hidden">
-        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
+        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
         <div className="min-w-0 flex-1 px-3">
@@ -244,7 +244,7 @@ export default function AppLayout() {
                   <BrandMark size={36} className="shadow-[0_0_22px_hsl(var(--primary)/0.22)]" />
                   <span className="font-heading font-black">PADEL <span className="text-primary">LEGACY</span></span>
                 </NavLink>
-                <button type="button" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} className="rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
+                <button type="button" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} className="pl-icon-tap rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
               </div>
               <nav className="scrollbar-premium flex-1 overflow-y-auto p-3"><NavigationGroups expandedGroup={expandedGroup} onExpandedGroupChange={setExpandedGroup} onNavigate={() => setMobileOpen(false)} /></nav>
               <div className="space-y-2 border-t border-border/50 p-3">

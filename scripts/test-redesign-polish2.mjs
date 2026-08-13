@@ -63,11 +63,19 @@ check('CTA "Treinar" removido do card', activityCard.includes('Treinar'));
 check('package.json ganhou uma dependência nova nesta fase (deveria só ter novos scripts de teste)', Object.keys(pkg.dependencies || {}).length > 0 && !('framer-motion-3d' in (pkg.dependencies || {})));
 
 // ── 16. Floating utilities têm aria-label ───────────────────────────────────
-check('gatilho do dock de utilidades sem aria-label', /aria-label="Abrir ferramentas"/.test(floatingRail));
+// Polish 2.1 (docs/REDESIGN_POLISH_2_1.md, objetivo 12-13): o QA visual real
+// rejeitou o dock único (gatilho "..." + BottomSheet "Ferramentas") — uma
+// ação que antes era 1 clique virou 2. Revertido para botões individuais
+// (Guia/Carreiras/Som/BETA), preservando as correções de posicionamento e
+// pointer-events do M1.1/M2 (agora protegendo 4 botões, não 1).
+check('botão do Guia sem aria-label', floatingRail.includes('aria-label="Abrir guia da carreira"'));
+check('botão de Carreiras sem aria-label', floatingRail.includes('aria-label="Gerenciar carreiras"'));
+check('botão de Som sem aria-label', /aria-label=\{soundEnabled[\s\S]{0,120}Desativar sons da interface[\s\S]{0,60}Ativar sons da interface/.test(floatingRail));
+check('FloatingUtilityRail voltou a ser um único gatilho (UX rejeitada pelo QA real)', !floatingRail.includes('aria-haspopup="dialog"') && !floatingRail.includes('MoreHorizontal'));
 
 // ── 17. Overlays continuam usando infraestrutura oficial ───────────────────
-check('Dock de utilidades não usa BottomSheet oficial (overlay bespoke)', floatingRail.includes('BottomSheet') && floatingRail.includes("from '@/components/design-system'"));
 check('Guia da carreira parou de usar DrawerShell oficial', onboardingGuide.includes('DrawerShell'));
+check('BETA (o único botão do rail que abre um overlay) parou de usar ModalShell oficial', read('src/components/system/BetaTools.jsx').includes('<ModalShell'));
 
 // ── 18. Safe-area mobile preservada ─────────────────────────────────────────
 check('Dock de utilidades perdeu safe-area-inset-right', floatingRail.includes('safe-area-inset-right'));

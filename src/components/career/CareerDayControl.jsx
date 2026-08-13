@@ -41,7 +41,7 @@ export default function CareerDayControl({ profile = null, compact = false, clas
         aria-label="Avançar carreira em um dia"
         aria-busy={processing}
         className={cn(
-          'inline-flex min-w-[4.8rem] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary px-2 text-[10px] font-black text-primary-foreground transition-[filter,opacity] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-55',
+          'pl-btn-tap inline-flex min-w-[4.8rem] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary px-2 text-[10px] font-black text-primary-foreground transition-[filter,opacity] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-55',
           !compact && 'sm:min-w-[6.6rem] sm:px-3 sm:text-xs',
         )}
       >

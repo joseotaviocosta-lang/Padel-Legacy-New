@@ -3,8 +3,7 @@ import { Bell, ChevronRight, Inbox } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
-import { ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markCareerCommunicationRead } from '@/lib/careerCommunications.js';
-import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
+import { ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, resolveAndOpenNotification } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { NotificationBadge } from '@/components/design-system';
 
@@ -95,22 +94,23 @@ export default function CommunicationBell({ compact = false }) {
     setOpen((current) => !current);
   }
 
+  // Mobile M2: usa o mesmo handler central que a Central de Comunicações
+  // (resolveAndOpenNotification) — marca como lida e navega em um único
+  // toque sempre que a notificação tiver destino, igual em qualquer lugar
+  // que a aciona. A atualização otimista da lista continua local (é só a
+  // linha desta lista, não faz parte da regra de negócio compartilhada).
   async function handleMessageClick(message) {
-    const destination = resolveNotificationDestination(message);
     if (isCareerMessageUnread(message)) {
       setMessages((current) => current.map((item) => item.id === message.id
         ? { ...item, is_read: true, is_new: false, ...(item.status === 'nao_lida' ? { status: 'lida' } : {}) }
         : item));
-      void markCareerCommunicationRead(message)
-        .then(() => {
-          window.dispatchEvent(new CustomEvent('padel:communications-updated'));
-          window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
-        })
-        .catch(() => load());
     }
     setOpen(false);
-
-    navigate(destination.route);
+    try {
+      await resolveAndOpenNotification(message, { navigate });
+    } catch {
+      load();
+    }
   }
 
   return (
@@ -120,7 +120,7 @@ export default function CommunicationBell({ compact = false }) {
         aria-label={unread > 0 ? `Abrir comunicações — ${unread} não lida${unread === 1 ? '' : 's'}` : 'Abrir comunicações'}
         title="Comunicações"
         onClick={handleToggle}
-        className={`relative inline-flex items-center justify-center rounded-xl border border-border/70 bg-card/70 text-muted-foreground transition-colors hover:text-foreground ${compact ? 'h-9 w-9' : 'h-10 w-10'}`}
+        className={`pl-icon-tap relative inline-flex items-center justify-center rounded-xl border border-border/70 bg-card/70 text-muted-foreground transition-colors hover:text-foreground ${compact ? 'h-9 w-9' : 'h-10 w-10'}`}
       >
         <Bell className="h-4.5 w-4.5" />
         <NotificationBadge count={unread} />

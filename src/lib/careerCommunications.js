@@ -2,6 +2,7 @@ import { getPendingInterviews } from '@/lib/pressData.js';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerMemory, getCareerAgent } from '@/lib/careerMemory.js';
 import { getTournamentReminderMilestone, tournamentReminderContextKey } from '@/lib/tournamentNotifications.js';
+import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import {
   isPostMatchInterviewMessage,
   isValidPostMatchInterviewMessage,
@@ -74,6 +75,34 @@ export async function markCareerCommunicationRead(message) {
   };
   const updated = await localGame.entities.CareerMessage.update(message.id, patch);
   return normalizeCareerMessage({ ...message, ...updated, ...patch });
+}
+
+// Mobile M2 (docs/MOBILE_M2_SHELL.md): fonte única para "o que acontece quando
+// o jogador toca em uma notificação com destino" — antes o sino navegava
+// imediatamente e a Central de Comunicações só marcava como lida e abria um
+// modal de detalhe (o jogador precisava de um segundo toque em "Abrir
+// recurso" para navegar), então o mesmo dado podia "não navegar" dependendo
+// de por onde foi acionado. markAsRead nunca substitui a navegação: mensagens
+// sem destino específico (actionable=false) só marcam como lida, mensagens já
+// lidas continuam navegando normalmente ao toque (estado de leitura e estado
+// de navegação são independentes), e destinos que já não existem mais caem no
+// fallback seguro que resolveNotificationDestination já define (rota de
+// comunicações, sem lançar exceção).
+export async function resolveAndOpenNotification(notification, { navigate, onBeforeNavigate } = {}) {
+  const normalized = normalizeCareerMessage(notification);
+  const destination = resolveNotificationDestination(normalized);
+  if (isCareerMessageUnread(normalized)) {
+    await markCareerCommunicationRead(normalized).catch(() => null);
+    if (typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+      window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
+    }
+  }
+  if (destination.actionable && typeof navigate === 'function') {
+    onBeforeNavigate?.();
+    navigate(destination.route);
+  }
+  return destination;
 }
 
 // Encerra uma decisão pendente aplicando a ação escolhida pelo jogador. Uma

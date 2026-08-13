@@ -147,7 +147,11 @@
     "test:visual-checkpoint-hotfix1": "node scripts/test-visual-checkpoint-hotfix1.mjs",
     "test:mobile-foundation": "node scripts/test-mobile-foundation.mjs",
     "test:mobile-m1-hotfix": "node scripts/test-mobile-m1-hotfix.mjs",
-    "test:redesign-polish2": "node scripts/test-redesign-polish2.mjs"
+    "test:redesign-polish2": "node scripts/test-redesign-polish2.mjs",
+    "test:mobile-m2-shell": "node scripts/test-mobile-m2-shell.mjs",
+    "test:redesign-polish21": "node scripts/test-redesign-polish21.mjs",
+    "test:app-icon-pipeline": "node scripts/test-app-icon-pipeline.mjs",
+    "verify:exe-icon": "node scripts/verify-exe-icon.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

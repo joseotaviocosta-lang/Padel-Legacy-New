@@ -22,6 +22,7 @@ try {
     ensureContextualCareerCommunications,
     listCareerCommunications,
     markCareerCommunicationRead,
+    resolveAndOpenNotification,
     resolveMessage,
     upsertCareerMessage,
   } = await server.ssrLoadModule('/src/lib/careerCommunications.js');
@@ -162,6 +163,44 @@ try {
   const newTournamentReminder = rowsAfterTournamentChange.find((m) => m.metadata?.tournament_id === 'tournament-rio');
   record('regra de expiração: lembrete do torneio anterior expira quando o próximo torneio muda', oldTournamentReminder?.status === 'expirada');
   record('regra de expiração: lembrete do novo torneio é criado normalmente', Boolean(newTournamentReminder) && afterTournamentChange.some((m) => m.metadata?.tournament_id === 'tournament-rio'));
+
+  // ── Mobile M2 (docs/MOBILE_M2_SHELL.md): comportamento real do handler
+  //    central, não só a string "resolveNotificationDestination" existindo em
+  //    algum arquivo. O bug real (marca como lida mas não navega) só seria
+  //    pego testando a FUNÇÃO executando, com um navigate falso capturando
+  //    chamadas — por isso os cenários 17-20 chamam resolveAndOpenNotification
+  //    de verdade em vez de só ler o código-fonte como texto. ───────────────
+  await upsertCareerMessage(PROFILE_ID, 'm2-mission-test', {
+    title: 'Missão concluída', content: 'Teste M2', message_type: 'mission_completed', related_entity_id: 'mission-m2',
+  });
+  const missionMessage = (await listCareerCommunications(PROFILE_ID, 50)).find((m) => m.metadata?.context_key === 'm2-mission-test');
+  const navCalls17 = [];
+  const dest17 = await resolveAndOpenNotification(missionMessage, { navigate: (route) => navCalls17.push(route) });
+  record('cenário 17: notificação com destino navega no primeiro toque (mesmo handler do sino e da Central)', navCalls17.length === 1 && navCalls17[0] === '/game/missions?mission=mission-m2' && dest17.route === '/game/missions?mission=mission-m2');
+  const afterMissionRead = await listCareerCommunications(PROFILE_ID, 50);
+  record('cenário 17b: markAsRead não substitui navigate — os dois acontecem no mesmo toque', afterMissionRead.find((m) => m.id === missionMessage.id)?.is_read === true);
+
+  const navCalls18 = [];
+  await resolveAndOpenNotification(missionMessage, { navigate: (route) => navCalls18.push(route) });
+  record('cenário 18: notificação já lida não perde a ação de navegar ao tocar de novo', navCalls18.length === 1 && navCalls18[0] === '/game/missions?mission=mission-m2');
+
+  await upsertCareerMessage(PROFILE_ID, 'm2-plain-test', { title: 'Aviso do sistema', content: 'Sem destino específico' });
+  const plainMessage = (await listCareerCommunications(PROFILE_ID, 50)).find((m) => m.metadata?.context_key === 'm2-plain-test');
+  const navCalls19 = [];
+  await resolveAndOpenNotification(plainMessage, { navigate: (route) => navCalls19.push(route) });
+  const afterPlainRead = await listCareerCommunications(PROFILE_ID, 50);
+  record('cenário 19: notificação sem destino específico não navega arbitrariamente (nem para Home)', navCalls19.length === 0);
+  record('cenário 19b: mesmo sem destino, ainda marca como lida', afterPlainRead.find((m) => m.id === plainMessage.id)?.is_read === true);
+
+  const navCalls20 = [];
+  let noCrashOnInvalid = true;
+  try {
+    await resolveAndOpenNotification({ id: 'n-m2-invalid', status: 'expirada' }, { navigate: (route) => navCalls20.push(route) });
+  } catch { noCrashOnInvalid = false; }
+  record('cenário 20: destino inválido/expirado não lança exceção (fallback seguro, sem tela branca)', noCrashOnInvalid);
+  record('cenário 20b: destino inválido/expirado não navega', navCalls20.length === 0);
+
+  record('sino e Central de Comunicações usam o mesmo handler central (resolveAndOpenNotification)', bell.includes('resolveAndOpenNotification') && communications.includes('resolveAndOpenNotification'));
 
   // ── Estrutural: 1 contador único (5 pontos de leitura usam o mesmo seletor) ─
   record('contador único: sino usa notificationSelectors.js', bell.includes("from '@/lib/notificationSelectors.js'") && bell.includes('countUnreadCareerMessages'));

@@ -1,9 +1,9 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Inbox, Mail, Megaphone, Newspaper, Search, Shield, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
-import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveMessage } from '@/lib/careerCommunications.js';
+import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
 import { buildCareerMemory, getCareerAgent, getMemoryHighlights } from '@/lib/careerMemory.js';
 import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
@@ -13,6 +13,7 @@ const SENDER_ICONS = { treinador: GraduationCap, atleta: Handshake, empresario: 
 const SENDER_TONES = { treinador: 'primary', atleta: 'success', empresario: 'premium', federacao: 'info', patrocinador: 'premium', clube: 'info', imprensa: 'warning', sistema: 'neutral' };
 
 export default function Communications() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const openedMessageRef = useRef(null);
   const [profile, setProfile] = useState(null);
@@ -98,11 +99,28 @@ export default function Communications() {
     return matchesCategory && haystack.includes(query.trim().toLowerCase());
   }), [messages, category, query]);
 
+  // Mobile M2 (docs/MOBILE_M2_SHELL.md): causa raiz do bug "marca como lida
+  // mas não navega" — esta função só abria o modal de detalhe e nunca
+  // chamava navigate; era preciso um segundo toque em "Abrir recurso"
+  // (dentro do modal) para sair da página. Mensagens com decisão pendente
+  // continuam abrindo o modal (o jogador precisa ler o conteúdo completo e
+  // escolher uma ação ali), mas uma mensagem com destino específico e sem
+  // decisão pendente agora navega direto no primeiro toque — igual ao sino
+  // — via o mesmo resolveAndOpenNotification compartilhado.
   async function openMessage(message) {
     const normalized = normalizeCareerMessage(message);
-    setSelected(normalized);
-    if (isCareerMessageUnread(normalized)) {
+    const needsDecisionReview = normalized.status === 'decisao_pendente';
+    const wasUnread = isCareerMessageUnread(normalized);
+    if (wasUnread) {
       setMessages((current) => current.map((row) => row.id === normalized.id ? { ...row, is_read: true, is_new: false, ...(row.status === 'nao_lida' ? { status: 'lida' } : {}) } : row));
+    }
+    const destination = resolveNotificationDestination(normalized);
+    if (destination.actionable && !needsDecisionReview) {
+      await resolveAndOpenNotification(normalized, { navigate });
+      return;
+    }
+    setSelected(normalized);
+    if (wasUnread) {
       await markCareerCommunicationRead(normalized);
       window.dispatchEvent(new CustomEvent('padel:communications-updated'));
       window.dispatchEvent(new CustomEvent('padel:communications-refresh'));

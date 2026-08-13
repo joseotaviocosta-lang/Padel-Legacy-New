@@ -46,10 +46,10 @@ check('toastVariants não reservou espaço extra (pr-12) para a hitbox maior do 
 
 const floatingRail = read('src/components/system/FloatingUtilityRail.jsx');
 check('FloatingUtilityRail ainda usa offset solto (top-[4.25rem]/md:top-20) em vez do token --pl-header-h', !/top-\[4\.25rem/.test(floatingRail) && !/md:top-20\b/.test(floatingRail));
-check('FloatingUtilityRail não deriva o offset de --pl-header-h (mesma altura real do header)', floatingRail.includes('top-[calc(var(--pl-header-h)+var(--pl-safe-t)+0.75rem)]'));
+check('FloatingUtilityRail não deriva o offset de --pl-header-h (mesma altura real do header)', /top-\[calc\(var\(--pl-header-h\)\+var\(--pl-safe-t\)\+[\d.]+rem\)\]/.test(floatingRail));
 check('FloatingUtilityRail sem safe-area-inset-right (regressão)', floatingRail.includes('safe-area-inset-right'));
 check('<aside> do FloatingUtilityRail sem pointer-events-none (espaço vazio ao redor pode roubar toque do header)', /<aside[\s\S]{0,200}pointer-events-none/.test(floatingRail));
-check('botão do FloatingUtilityRail perdeu pointer-events-auto (ficaria sem clique com o container pointer-events-none)', (floatingRail.match(/pointer-events-auto/g) || []).length >= 1);
+check('botão do FloatingUtilityRail perdeu pointer-events-auto (ficaria sem clique com o container pointer-events-none)', (floatingRail.match(/pointer-events-auto/g) || []).length >= 4);
 check('FloatingUtilityRail aplicou z-index como tentativa de correção (deveria ser causa raiz, não z-index)', floatingRail.includes('pl-floating-utilities'));
 
 // ── 4. DrawerShell — Guia da Carreira sem safe-area (X sob a status bar) ───
