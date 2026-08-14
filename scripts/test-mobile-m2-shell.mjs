@@ -60,11 +60,15 @@ check('Toast individual perdeu pointer-events-auto', toast.includes('group point
 check('<aside> do dock sem pointer-events-none', /<aside[\s\S]{0,200}pointer-events-none/.test(floatingRail));
 check('botão do dock perdeu pointer-events-auto', floatingRail.includes('pointer-events-auto'));
 
-// ── 6/7. Sino permanece acionável na estrutura landscape/breakpoints ───────
-// Hotfix M2: causa raiz era margem vertical insuficiente (0.75rem) entre o
-// dock e o header/barra — o sino, por ser o controle mais à direita (mesma
-// borda do dock), era o mais exposto. Aumentada para 1.5rem; a fórmula
-// continua derivada de --pl-header-h (não é número solto nem z-index).
+// ── 6/7. FloatingUtilityRail: folga com o header (regressão, não é o sino) ─
+// Hotfix M2: aumentou a margem vertical entre o dock (Guia/BETA/Carreiras/
+// Som) e o header de 0.75rem para 1.5rem. Isso é uma correção geométrica
+// legítima do dock e continua protegida aqui — mas o teste físico do M2.1
+// provou que essa mudança NUNCA poderia ter corrigido o sino em landscape,
+// porque o CommunicationBell não é renderizado dentro do FloatingUtilityRail
+// — ele vive no <header> do AppLayout, um componente diferente. A causa raiz
+// real (safe-area lateral ausente no header) e sua correção estão cobertas
+// em scripts/test-mobile-m2-1-device-hotfix.mjs, não aqui.
 check('folga do dock com o header não deriva mais de --pl-header-h', /top-\[calc\(var\(--pl-header-h\)\+var\(--pl-safe-t\)\+[\d.]+rem\)\]/.test(floatingRail));
 check('folga do dock com o header regrediu para 0.75rem (era o valor insuficiente encontrado no teste físico)', !/\+0\.75rem\)\]/.test(floatingRail));
 check('CommunicationBell não é renderizado no header mobile', (appLayout.match(/<CommunicationBell/g) || []).length === 2);

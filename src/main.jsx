@@ -2,6 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.jsx';
 import './index.css';
+import { initHitTestProbe } from '@/lib/hitTestProbe.js';
+
+initHitTestProbe();
 
 if (import.meta.env.DEV) {
   import('./dev/registerDevTests.js').catch((error) => {

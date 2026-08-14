@@ -22,6 +22,7 @@ import BetaWelcome from '@/components/system/BetaWelcome.jsx';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 import FloatingUtilityRail from '@/components/system/FloatingUtilityRail.jsx';
+import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
 
 const EXPANDED_GROUP_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -188,6 +189,17 @@ export default function AppLayout() {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem(COLLAPSED_SIDEBAR_KEY) === 'true');
   const [mobileOpen, setMobileOpen] = useState(false);
   const { profile: headerProfile, ranking: headerRanking } = useCareerHeaderData();
+  // M2.1 (docs/MOBILE_M2_1_DEVICE_HOTFIX.md): este drawer sempre foi uma
+  // implementação própria (motion.aside), nunca o DrawerShell do design
+  // system — por isso o safe-area/Android-Back que o DrawerShell ganhou no
+  // M1.1 nunca chegou aqui. Reaproveita o mesmo hook em vez de duplicar
+  // scroll-lock/focus-trap/Back — sem migrar para o DrawerShell em si, que é
+  // ancorado à direita e exigiria uma refatoração maior do componente
+  // compartilhado só para este consumidor à esquerda.
+  const { closeRef: mobileDrawerCloseRef, panelRef: mobileDrawerPanelRef } = useOverlayBehavior({
+    open: mobileOpen,
+    onClose: () => setMobileOpen(false),
+  });
 
   useEffect(() => {
     if (activeGroup?.id) setExpandedGroup(activeGroup.id);
@@ -222,7 +234,7 @@ export default function AppLayout() {
   return (
     <MotionPolicyProvider value={performanceProfile}>
     <div className="app-shell min-h-screen bg-background">
-      <header className="glass pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex min-h-16 items-center border-b border-border/60 px-2.5 md:hidden">
+      <header className="glass pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex min-h-16 items-center border-b border-border/60 pl-[calc(0.625rem+var(--pl-safe-l))] pr-[calc(0.625rem+var(--pl-safe-r))] md:hidden">
         <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
@@ -238,13 +250,13 @@ export default function AppLayout() {
         {mobileOpen && (
           <>
             <motion.button aria-label="Fechar navegação" className="pl-layer-dropdown fixed inset-0 bg-black/60 backdrop-blur-[2px] md:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} />
-            <motion.aside id="mobile-navigation-drawer" aria-label="Navegação principal" className="glass fixed inset-y-0 left-0 z-[70] flex w-[min(88vw,20rem)] flex-col border-r border-border md:hidden" initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={performanceProfile.lowPower ? { duration: 0.16 } : { type: 'spring', stiffness: 380, damping: 36 }}>
-              <div className="flex h-16 items-center justify-between border-b border-border/50 px-4">
+            <motion.aside ref={mobileDrawerPanelRef} id="mobile-navigation-drawer" role="dialog" aria-modal="true" aria-label="Navegação principal" className="glass pl-safe-t pl-safe-b fixed inset-y-0 left-0 z-[70] flex w-[min(88vw,20rem)] flex-col border-r border-border pl-[var(--pl-safe-l)] md:hidden" initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={performanceProfile.lowPower ? { duration: 0.16 } : { type: 'spring', stiffness: 380, damping: 36 }}>
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-border/50 px-4">
                 <NavLink to="/game" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
                   <BrandMark size={36} className="shadow-[0_0_22px_hsl(var(--primary)/0.22)]" />
                   <span className="font-heading font-black">PADEL <span className="text-primary">LEGACY</span></span>
                 </NavLink>
-                <button type="button" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} className="pl-icon-tap rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
+                <button ref={mobileDrawerCloseRef} type="button" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} className="pl-icon-tap rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
               </div>
               <nav className="scrollbar-premium flex-1 overflow-y-auto p-3"><NavigationGroups expandedGroup={expandedGroup} onExpandedGroupChange={setExpandedGroup} onNavigate={() => setMobileOpen(false)} /></nav>
               <div className="space-y-2 border-t border-border/50 p-3">
@@ -285,7 +297,7 @@ export default function AppLayout() {
       <FloatingUtilityRail onOpenCareers={openCareerManager} />
 
       <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-[calc(4rem+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
-        <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 px-4 backdrop-blur-xl md:flex lg:px-5">
+        <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 pl-[calc(1rem+var(--pl-safe-l))] pr-[calc(1rem+var(--pl-safe-r))] backdrop-blur-xl md:flex lg:pl-[calc(1.25rem+var(--pl-safe-l))] lg:pr-[calc(1.25rem+var(--pl-safe-r))]">
           <div className="hidden min-w-0 flex-1 xl:block">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
               <span>{activeGroup?.label || 'Carreira'}</span><span className="text-border">/</span><span className="truncate text-primary/85">{currentTitle}</span>

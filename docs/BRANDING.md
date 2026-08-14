@@ -2,6 +2,13 @@
 
 Data: 2026-08-12
 
+> **Fase 9 concluída** (2026-08-14): o pacote completo de app icons
+> (Windows/Android/iOS/favicon) foi gerado a partir de uma referência visual
+> fornecida pelo usuário — ver `docs/BRANDING_FINAL.md`. Esta página
+> descreve a fundação vetorial (Brand Mark/Wordmark) entregue na Fase 2, que
+> **continua em uso** dentro do app (sidebar, drawer, auth, Settings) — ela
+> não foi substituída pelo app icon novo, só complementada por ele.
+
 Esta fase entrega a **fundação** da identidade visual do Padel Legacy — o
 pacote completo de ícones exportados (Fase 9) ainda depende de ferramentas de
 geração de imagem que não fazem parte deste ambiente. Nada binário inválido
@@ -52,21 +59,17 @@ dois valores nos SVGs junto com os tokens.
   esse caso (foi desenhado para 16px desde o início), então uma "versão
   compacta" separada não agrega nada novo nesta fase.
 
-## Exportações pendentes para a Fase 9
+## Exportações da Fase 9 (concluídas)
 
-A partir do SVG mestre (`logo-mark.svg`), gerar e substituir:
-
-- `src-tauri/icons/32x32.png`, `128x128.png`, `128x128@2x.png` (256×256),
-  `icon.ico` (multi-resolução: 16/32/48/256) — pacote Windows/Tauri.
-- `512x512.png`, `1024x1024.png` — Android/iOS (splash, ícone de loja).
-- `apple-touch-icon.png` (180×180).
-- PNGs de fallback do `manifest.json` (`192x192`, `512x512`) para navegadores
-  que não suportam ícone SVG em PWA manifest.
-
-Ferramenta recomendada: qualquer exportador SVG→PNG determinístico
-(`@resvg/resvg-js`, `sharp`, ou o pipeline de ícone do próprio `tauri icon
-<path>`), rodando sobre `src/assets/brand/logo-mark.svg` como fonte única —
-não redesenhar a mão para cada resolução.
+A Fase 9 **não** exportou o `logo-mark.svg` para PNG — o app icon oficial
+passou a ser um asset fotorrealista fornecido pelo usuário (raquete + bola),
+tratado como uma peça separada do Brand Mark (ver seção acima e
+`docs/BRANDING_FINAL.md`). `src-tauri/icons/*`, os mipmaps Android e o
+conjunto iOS foram todos regenerados a partir desse novo master. O único
+item desta lista original que se manteve ligado ao SVG é `manifest.json`,
+que agora usa PNGs (`favicon.png`/`icon-192.png`/`icon-512.png`, gerados do
+app icon novo, não do `logo-mark.svg`) — detalhes completos em
+`docs/BRANDING_FINAL.md`.
 
 ## Uso no código
 
