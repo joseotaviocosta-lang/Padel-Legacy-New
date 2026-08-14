@@ -165,7 +165,12 @@ check('Tournaments.jsx perdeu a leitura do deep-link ?tournament=&mode=run para 
 check('resumeMatch() (treino) limpa o checkpoint antes de abrir o LiveMatch restaurado', !/function resumeMatch\(\) \{[\s\S]{0,200}clearCheckpoint/.test(simulationModal));
 check('resumeMatchCheckpoint() (torneio) limpa o checkpoint antes de abrir o LiveMatch restaurado', !/function resumeMatchCheckpoint\(\) \{[\s\S]{0,150}clear/.test(tournamentModal));
 check('inspectTournamentMatchCheckpoint (validação de checkpoint de torneio) foi removido', tournamentMatchLifecycle.includes('export function inspectTournamentMatchCheckpoint'));
-check('TournamentModal parou de validar o checkpoint (issues/diagnostic) antes de oferecer retomada', tournamentModal.includes('inspectTournamentMatchCheckpoint(checkpoint'));
+// M3.2: TournamentModal passou a validar o checkpoint através de
+// buildTournamentRecoverySession/probeTournamentRecoverySession (que chamam
+// inspectTournamentMatchCheckpoint internamente, mais o probe de
+// playPoint num clone) em vez de chamar inspectTournamentMatchCheckpoint
+// direto — mesma garantia, encapsulada numa API mais robusta.
+check('TournamentModal parou de validar o checkpoint (issues/diagnostic) antes de oferecer retomada', tournamentModal.includes('probeTournamentRecoverySession(buildTournamentRecoverySession(checkpoint'));
 check('checkpoint de torneio inválido/incompatível apaga o save principal da carreira em vez de só descartar o checkpoint', !/inspection\.valid[\s\S]{0,400}(deleteCareerFile|writeCareer)/.test(tournamentModal));
 
 // 22. finish continua limpando o checkpoint (idempotência preservada).

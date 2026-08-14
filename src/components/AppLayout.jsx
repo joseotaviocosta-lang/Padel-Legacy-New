@@ -14,6 +14,7 @@ import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import CareerDayControl from '@/components/career/CareerDayControl';
 import { ALL_SHELL_ITEMS, NAV_GROUPS, groupForPath } from '@/navigation/navigationConfig.js';
 import { useAdaptivePerformance } from '@/hooks/useAdaptivePerformance';
+import { useKeyboardInset } from '@/hooks/useKeyboardInset';
 import { MotionPolicyProvider } from '@/components/design-system/MotionPolicy';
 import { BrandMark } from '@/components/design-system/BrandMark';
 import FeedbackSoundController from '@/components/system/FeedbackSoundController';
@@ -178,6 +179,7 @@ function useCareerHeaderData() {
 export default function AppLayout() {
   const location = useLocation();
   const performanceProfile = useAdaptivePerformance();
+  const keyboardOpen = useKeyboardInset();
   const activeGroup = groupForPath(location.pathname);
   const currentItem = useMemo(
     () => ALL_SHELL_ITEMS.find(item => item.to === location.pathname),
@@ -295,7 +297,13 @@ export default function AppLayout() {
       <BetaWelcome />
       <FloatingUtilityRail onOpenCareers={openCareerManager} />
 
-      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(5.6rem+env(safe-area-inset-bottom))] pt-[calc(4rem+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+      {/* M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md, Problema D): a reserva
+          inferior agora deriva de --pl-bottom-nav-h (mesmo token que
+          BottomNav.jsx usa para sua própria altura) em vez de um "5.6rem"
+          solto — qualquer mudança futura na altura da nav não pode mais
+          descasar dos dois lugares. A folga sobre a altura real da nav subiu
+          de 1.25rem para 1.75rem como margem de segurança extra. */}
+      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+1.75rem)] pt-[calc(4rem+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 pl-[calc(1rem+var(--pl-safe-l))] pr-[calc(1rem+var(--pl-safe-r))] backdrop-blur-xl md:flex lg:pl-[calc(1.25rem+var(--pl-safe-l))] lg:pr-[calc(1.25rem+var(--pl-safe-r))]">
           <div className="hidden min-w-0 flex-1 xl:block">
             <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
@@ -322,7 +330,7 @@ export default function AppLayout() {
         )}
       </main>
 
-      <BottomNav />
+      <BottomNav hidden={keyboardOpen} />
     </div>
     </MotionPolicyProvider>
   );

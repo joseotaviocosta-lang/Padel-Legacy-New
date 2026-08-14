@@ -582,6 +582,7 @@ export default function CareerManager() {
                 autoFocus
                 value={saveName}
                 onChange={(event) => setSaveName(event.target.value)}
+                onFocus={(event) => event.target.scrollIntoView({ block: 'center', behavior: 'smooth' })}
                 maxLength={40}
                 placeholder="Ex.: Rumo ao topo"
                 className="mt-2 h-[3.25rem] w-full rounded-2xl border border-white/10 bg-black/25 px-4 py-3 text-white outline-none transition placeholder:text-muted-foreground focus:border-primary/45 focus:ring-2 focus:ring-primary/10"

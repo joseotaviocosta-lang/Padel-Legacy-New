@@ -51,7 +51,7 @@ function MoreSheet({ open, onClose }) {
   );
 }
 
-export default function BottomNav() {
+export default function BottomNav({ hidden = false }) {
   const location = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
   const activeGroupId = groupForPath(location.pathname)?.id;
@@ -59,8 +59,17 @@ export default function BottomNav() {
 
   return (
     <>
-      <nav aria-label="Navegação rápida" className="fixed inset-x-0 bottom-0 z-50 border-t border-primary/10 bg-card/92 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_hsl(230_35%_2%/0.48)] backdrop-blur-xl md:hidden">
-        <div className="mx-auto grid h-[4.35rem] max-w-lg grid-cols-5 items-center px-1.5">
+      {/* M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md, Problema E): oculta
+          (sem desmontar) enquanto o teclado Android está aberto, para
+          devolver a faixa inferior da tela ao formulário/onboarding em vez de
+          competir com o teclado por espaço. */}
+      <nav
+        aria-label="Navegação rápida"
+        aria-hidden={hidden}
+        inert={hidden ? '' : undefined}
+        className={`fixed inset-x-0 bottom-0 z-50 border-t border-primary/10 bg-card/92 pb-[env(safe-area-inset-bottom)] shadow-[0_-12px_40px_hsl(230_35%_2%/0.48)] backdrop-blur-xl transition-transform duration-200 md:hidden ${hidden ? 'translate-y-full' : 'translate-y-0'}`}
+      >
+        <div className="mx-auto grid h-[var(--pl-bottom-nav-h)] max-w-lg grid-cols-5 items-center px-1.5">
           {tabGroups.map((group) => (
             <NavLink
               key={group.id}

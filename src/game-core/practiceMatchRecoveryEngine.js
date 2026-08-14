@@ -1,5 +1,5 @@
 import { playPoint } from '@/lib/matchEngine';
-import { inspectResumableTournamentEngineState } from './tournamentMatchRecoveryEngine.js';
+import { inspectResumableTournamentEngineState } from './tournamentMatchLifecycle.js';
 
 // M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md, Problema A): a partida
 // treino nunca validava o engine_state restaurado antes de montar o
