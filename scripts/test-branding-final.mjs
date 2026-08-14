@@ -1,7 +1,7 @@
 // Fase 9 — Branding Final (docs/BRANDING_FINAL.md). Novo app icon oficial
 // (raquete + bola sobre fundo verde-limão, fornecido pelo usuário) propagado
-// para Windows/Android/iOS/favicon, mantendo o BrandMark vetorial in-app
-// (docs/BRANDING_FINAL.md explica por que ele foi mantido em vez de trocado).
+// para Windows/Android/iOS/favicon. Hotfix 9.1 também migra o BrandMark
+// vetorial in-app para a mesma identidade de raquete + bola.
 import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
@@ -36,7 +36,8 @@ const manifest = JSON.parse(read('src-tauri/icons-src/icon-manifest.json'));
 check('manifest do ícone não aponta para o master novo', manifest.default.includes('app-icon-master.png'));
 check('manifest do ícone perdeu android_bg/android_fg (adaptive icon)', typeof manifest.android_bg === 'string' && typeof manifest.android_fg === 'string');
 check('script patch-icon-small-frames.mjs (correção de legibilidade em 16/24/32px) ausente', exists('scripts/patch-icon-small-frames.mjs'));
-check('versão simplificada para tamanhos pequenos (app-icon-simplified.png) ausente', exists('src-tauri/icons-src/app-icon-simplified.png'));
+check('master manual para tamanhos pequenos (app-icon-small.svg) ausente', exists('src/assets/brand/app-icon-small.svg'));
+check('raster do master manual para tamanhos pequenos (app-icon-small.png) ausente', exists('src/assets/brand/app-icon-small.png'));
 
 // ── WINDOWS / TAURI ──────────────────────────────────────────────────────────
 
@@ -96,16 +97,17 @@ const manifestJson = JSON.parse(read('public/manifest.json'));
 check('manifest.json (PWA) ainda referencia favicon.svg', !JSON.stringify(manifestJson).includes('favicon.svg'));
 check('manifest.json (PWA) perdeu os ícones novos (192/512)', manifestJson.icons.some((i) => i.sizes === '192x192') && manifestJson.icons.some((i) => i.sizes === '512x512'));
 
-// ── BRAND MARK (in-app, mantido deliberadamente — ver docs/BRANDING_FINAL.md) ─
+// ── BRAND MARK (in-app, migrado no Hotfix 9.1) ───────────────────────────────
 
-check('logo-mark.svg (BrandMark in-app) foi removido — decisão desta fase foi mantê-lo', exists('src/assets/brand/logo-mark.svg'));
+check('novo logo-app-mark.svg para UI interna ausente', exists('src/assets/brand/logo-app-mark.svg'));
 const brandMark = read('src/components/design-system/BrandMark.jsx');
-check('BrandMark.jsx parou de referenciar logo-mark.svg', brandMark.includes('logo-mark.svg'));
-check('BrandMark virou um quadrado grande do novo app icon (Parte 17 pede para NÃO fazer isso)', !brandMark.includes('app-icon'));
+check('BrandMark.jsx não referencia logo-app-mark.svg', brandMark.includes('logo-app-mark.svg'));
+check('BrandMark ainda referencia o antigo logo-mark.svg', !brandMark.includes('logo-mark.svg'));
+check('BrandMark usa indevidamente o master detalhado de 1024px', !brandMark.includes('app-icon-master'));
 
 // ── ASSETS ANTIGOS / PLACEHOLDERS ────────────────────────────────────────────
 
-for (const brandFile of ['src/assets/brand/logo-mark.svg', 'index.html', 'src/components/design-system/BrandMark.jsx', 'public/manifest.json']) {
+for (const brandFile of ['src/assets/brand/logo-app-mark.svg', 'index.html', 'src/components/design-system/BrandMark.jsx', 'public/manifest.json']) {
   check(`${brandFile} ainda referencia um asset hospedado em base44.com`, !read(brandFile).includes('base44.com'));
 }
 

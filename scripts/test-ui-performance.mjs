@@ -68,9 +68,11 @@ check(`setInterval novo introduzido sem revisão: ${newIntervals.join(', ')}`, n
 //    seção 7: "zero imagens hoje"). Orçamento: cada SVG de marca < 15 KB.
 const BRAND_ASSETS = [
   'src/assets/brand/logo-mark.svg',
+  'src/assets/brand/logo-app-mark.svg',
   'src/assets/brand/logo-horizontal.svg',
   'src/assets/brand/logo-monochrome.svg',
-  'public/favicon.svg',
+  'public/favicon-16.png',
+  'public/favicon-32.png',
 ];
 const BUDGET_BYTES = 15 * 1024;
 for (const file of BRAND_ASSETS) {

@@ -110,16 +110,18 @@ check('alvo de toque mobile não usa o token --pl-touch-min', indexCss.includes(
 // 7. Branding — fundação local, sem dependência do favicon de terceiros.
 for (const file of [
   'src/assets/brand/logo-mark.svg',
+  'src/assets/brand/logo-app-mark.svg',
   'src/assets/brand/logo-horizontal.svg',
   'src/assets/brand/logo-monochrome.svg',
-  'public/favicon.svg',
+  'public/favicon-16.png',
+  'public/favicon-32.png',
   'public/manifest.json',
   'docs/BRANDING.md',
 ]) check(`asset de marca ausente: ${file}`, exists(file));
 
 const indexHtml = read('index.html');
 check('index.html ainda referencia o favicon externo da Base44', !indexHtml.includes('base44.com/logo_v2.svg'));
-check('index.html não referencia o favicon local', indexHtml.includes('/favicon.svg'));
+check('index.html não referencia os favicons locais', indexHtml.includes('/favicon-16.png') && indexHtml.includes('/favicon-32.png'));
 check('index.html sem theme-color', indexHtml.includes('theme-color'));
 
 const manifest = JSON.parse(read('public/manifest.json'));

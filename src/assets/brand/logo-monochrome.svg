@@ -1,17 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-labelledby="pl-mono-title">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="pl-mono-title" data-brand-symbol="padel-racket-ball">
   <title id="pl-mono-title">Padel Legacy</title>
-  <!--
-    Versao monocromatica - sem badge de fundo, herda a cor do contexto via
-    currentColor. Use sobre qualquer fundo (impressao, marca d'agua,
-    documentos). Mesma geometria de logo-mark.svg, so sem o rect de fundo.
-    Manter este comentario em ASCII puro (ver logo-mark.svg para o motivo).
-  -->
-  <rect x="30" y="22" width="13" height="56" rx="4" fill="currentColor"/>
-  <path
-    fill-rule="evenodd"
-    fill="currentColor"
-    d="M40,22 H56 A10,10 0 0 1 66,32 V44 A10,10 0 0 1 56,54 H40 A10,10 0 0 1 30,44 V32 A10,10 0 0 1 40,22 Z
-       M49,32 H53 A5,5 0 0 1 58,37 V39 A5,5 0 0 1 53,44 H49 A5,5 0 0 1 44,39 V37 A5,5 0 0 1 49,32 Z"
-  />
-  <circle cx="56" cy="78" r="9" fill="currentColor"/>
+  <!-- Monochrome racket and ball for print and watermarks. -->
+  <mask id="racket-holes">
+    <rect width="96" height="96" fill="black"/>
+    <g transform="rotate(-8 42 48)" fill="white">
+      <path d="M22 10C13 15 10 29 13 41c3 12 12 18 25 18 14 0 27-4 34-13 8-10 7-24-1-32C62 5 33 4 22 10Z"/>
+      <path d="M33 55h14l-2 12-2 19c0 4-3 6-7 5l-5-1c-4-1-5-4-3-8l6-18Z"/>
+    </g>
+    <g transform="rotate(-8 42 48)" fill="black">
+      <circle cx="27" cy="21" r="3.5"/><circle cx="41" cy="19" r="3.5"/><circle cx="55" cy="21" r="3.5"/>
+      <circle cx="24" cy="34" r="3.5"/><circle cx="39" cy="32" r="3.5"/><circle cx="54" cy="33" r="3.5"/>
+      <circle cx="29" cy="46" r="3.5"/><circle cx="43" cy="45" r="3.5"/><circle cx="57" cy="44" r="3.5"/>
+    </g>
+  </mask>
+  <rect width="96" height="96" fill="currentColor" mask="url(#racket-holes)"/>
+  <circle cx="70" cy="72" r="11" fill="currentColor"/>
 </svg>

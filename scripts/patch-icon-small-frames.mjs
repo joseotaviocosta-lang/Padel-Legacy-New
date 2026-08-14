@@ -1,20 +1,16 @@
 // Fase 9 — Branding Final (docs/BRANDING_FINAL.md).
 //
-// `tauri icon` downscala o master em alta definição (raquete perfurada por
-// ~30 furos) para todos os tamanhos automaticamente. Isso funciona bem a
-// partir de 48px, mas em 16/24/32px os furos viram ruído visual (confirmado
-// visualmente em src-tauri/icons-src/ico-frames-contact-sheet.png) — a
-// raquete perde legibilidade em vez de ganhar textura.
+// `tauri icon` downscala o master detalhado para todos os tamanhos. Isso
+// funciona bem a partir de 48px, mas não preserva furos legíveis em
+// 16/24/32px.
 //
 // Este script substitui SÓ os frames 16x16/24x24/32x32 dentro de
 // src-tauri/icons/icon.ico (e o 32x32.png standalone, que o tauri.conf.json
-// também referencia direto no bundle) pelas versões pré-renderizadas a
-// partir do master simplificado (furos fechados via morfologia — ver
-// scripts/build-app-icon-master.py) — mesma silhueta, mesmas cores, sem o
-// ruído. 48/64/256 continuam vindo do master em detalhe total.
+// também referencia direto no bundle) pelas versões pré-renderizadas do
+// master manual app-icon-small.svg: 4/6/9 furos explícitos, sem operações
+// morfológicas. 48/64/256 continuam vindo do master em detalhe total.
 //
-// Rodar depois de toda vez que `npx tauri icon <manifest>` regenerar os
-// ícones a partir de um master novo/alterado.
+// Rode após regenerar os assets com generate-branding-hotfix-9-1.py.
 //
 // Uso: node scripts/patch-icon-small-frames.mjs
 import fs from 'node:fs';

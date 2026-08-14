@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="pl-small-icon-title" data-brand-symbol="padel-racket-ball-small">
+  <title id="pl-small-icon-title">Padel Legacy small icon</title>
+  <!-- Manual small-size master. The holes are intentional and never morphed. -->
+  <rect x="2" y="2" width="92" height="92" rx="20" fill="#B4E605"/>
+  <g transform="rotate(-8 42 48)">
+    <path fill="#0A0D14" d="M22 10C13 15 10 29 13 41c3 12 12 18 25 18 14 0 27-4 34-13 8-10 7-24-1-32C62 5 33 4 22 10Z"/>
+    <path fill="#0A0D14" d="M33 55h14l-2 12-2 19c0 4-3 6-7 5l-5-1c-4-1-5-4-3-8l6-18Z"/>
+    <g fill="#B4E605" data-racket-holes="9">
+      <circle cx="27" cy="21" r="3.8"/><circle cx="41" cy="19" r="3.8"/><circle cx="55" cy="21" r="3.8"/>
+      <circle cx="24" cy="34" r="3.8"/><circle cx="39" cy="32" r="3.8"/><circle cx="54" cy="33" r="3.8"/>
+      <circle cx="29" cy="46" r="3.8"/><circle cx="43" cy="45" r="3.8"/><circle cx="57" cy="44" r="3.8"/>
+    </g>
+  </g>
+  <circle cx="70" cy="72" r="11" fill="#F5E500"/>
+  <path d="M61 70c5-3 12-4 18-2" fill="none" stroke="#FFF8B0" stroke-width="2.2" stroke-linecap="round"/>
+</svg>

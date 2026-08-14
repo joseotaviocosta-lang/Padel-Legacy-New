@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertCircle } from 'lucide-react';
 import {
   Button as DSButton,
+  BrandMark,
   EmptyState as DSEmptyState,
   IconFrame,
   Page as DSPage,
@@ -32,9 +33,7 @@ export function LoadingScreen() {
       <div className="relative">
         <div className="absolute inset-0 rounded-2xl bg-primary/25 pulse-ring" />
         <div className="absolute inset-0 rounded-2xl bg-primary/15 pulse-ring" style={{ animationDelay: '0.4s' }} />
-        <div className="relative h-14 w-14 rounded-2xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center glow-primary">
-          <span className="text-primary-foreground font-black text-2xl">P</span>
-        </div>
+        <BrandMark size={56} className="relative glow-primary" />
       </div>
       <div className="flex gap-1.5">
         <span className="h-1.5 w-1.5 rounded-full bg-primary animate-bounce" style={{ animationDelay: '0ms' }} />
