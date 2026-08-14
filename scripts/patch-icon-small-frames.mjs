@@ -1,16 +1,6 @@
-// Fase 9 — Branding Final (docs/BRANDING_FINAL.md).
-//
-// `tauri icon` downscala o master detalhado para todos os tamanhos. Isso
-// funciona bem a partir de 48px, mas não preserva furos legíveis em
-// 16/24/32px.
-//
-// Este script substitui SÓ os frames 16x16/24x24/32x32 dentro de
-// src-tauri/icons/icon.ico (e o 32x32.png standalone, que o tauri.conf.json
-// também referencia direto no bundle) pelas versões pré-renderizadas do
-// master manual app-icon-small.svg: 4/6/9 furos explícitos, sem operações
-// morfológicas. 48/64/256 continuam vindo do master em detalhe total.
-//
-// Rode após regenerar os assets com generate-branding-hotfix-9-1.py.
+// Compatibility utility for Branding Hotfix 9.2.
+// Every ICO frame is a technical downscale of app-icon-master.png generated
+// by generate-branding-hotfix-9-2.py. No size-specific artwork is accepted.
 //
 // Uso: node scripts/patch-icon-small-frames.mjs
 import fs from 'node:fs';
@@ -21,7 +11,14 @@ const root = process.cwd();
 const icoPath = path.join(root, 'src-tauri/icons/icon.ico');
 const png32Path = path.join(root, 'src-tauri/icons/32x32.png');
 const overridesDir = path.join(root, 'src-tauri/icons-src');
-const overrides = { 16: 'small-16.png', 24: 'small-24.png', 32: 'small-32.png' };
+const overrides = {
+  16: 'small-16.png',
+  24: 'small-24.png',
+  32: 'small-32.png',
+  48: 'small-48.png',
+  64: 'small-64.png',
+  256: 'small-256.png',
+};
 
 const ico = fs.readFileSync(icoPath);
 const count = ico.readUInt16LE(4);
@@ -91,7 +88,7 @@ for (const entry of entries) {
 
 const out = Buffer.concat([header, ...dirBuffers, ...entries.map((e) => e.data)]);
 fs.writeFileSync(icoPath, out);
-console.log(`icon.ico reescrito — ${patched} frames pequenos substituídos (16/24/32), ${entries.length} frames no total, ${out.length} bytes.`);
+console.log(`icon.ico reescrito — ${patched} frames oficiais substituídos, ${entries.length} frames no total, ${out.length} bytes.`);
 
 fs.copyFileSync(path.join(overridesDir, overrides[32]), png32Path);
-console.log('32x32.png standalone atualizado com a versão simplificada.');
+console.log('32x32.png standalone atualizado por downscale do master oficial.');

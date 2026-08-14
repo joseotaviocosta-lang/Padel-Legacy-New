@@ -226,7 +226,7 @@ export async function processStaffDay(profile, previousDate, currentDate) {
   const dailyFatigue = clamp(asNumber(effects.dailyFatigue), 0, 12);
   const dailyMorale = clamp(asNumber(effects.dailyMorale), 0, 4);
   const dailyConfidence = clamp(asNumber(effects.dailyConfidence), 0, 4);
-  if (dailyEnergy > 0) patch.energy = clamp(asNumber(profile.energy, 100) + dailyEnergy, 0, 110);
+  if (dailyEnergy > 0) patch.energy = clamp(asNumber(profile.energy, 100) + dailyEnergy, 0, 100);
   if (dailyFatigue > 0) patch.fatigue = normalizeFatigue(asNumber(profile.fatigue, 0) - dailyFatigue);
   if (dailyMorale > 0) patch.morale = clamp(asNumber(profile.morale, 70) + dailyMorale, 0, 100);
   if (dailyConfidence > 0) patch.confidence = clamp(asNumber(profile.confidence, 70) + dailyConfidence, 0, 100);

@@ -110,7 +110,7 @@ check('alvo de toque mobile não usa o token --pl-touch-min', indexCss.includes(
 // 7. Branding — fundação local, sem dependência do favicon de terceiros.
 for (const file of [
   'src/assets/brand/logo-mark.svg',
-  'src/assets/brand/logo-app-mark.svg',
+  'src/assets/brand/app-icon-master.png',
   'src/assets/brand/logo-horizontal.svg',
   'src/assets/brand/logo-monochrome.svg',
   'public/favicon-16.png',

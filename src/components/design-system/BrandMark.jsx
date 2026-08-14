@@ -1,17 +1,15 @@
 import React from 'react';
-import logoAppMarkUrl from '@/assets/brand/logo-app-mark.svg?url';
+import officialLogoUrl from '@/assets/brand/app-icon-master.png?url';
 import { cn } from '@/lib/utils';
 
 /**
- * Compact racket-and-ball brand mark for shared in-app surfaces.
- *
- * Keep brand SVG comments ASCII-only and free of double hyphens. The Vite
- * data URI must remain valid in the packaged Tauri WebView2 runtime.
+ * The shared in-app mark renders the canonical official raster asset.
+ * Do not replace it with a vector redraw or a small-size reinterpretation.
  */
 export function BrandMark({ size = 40, className }) {
   return (
     <img
-      src={logoAppMarkUrl}
+      src={officialLogoUrl}
       alt=""
       width={size}
       height={size}

@@ -88,8 +88,8 @@ for (const [label, source] of [['CareerHub', careerHub], ['CalendarPage', calend
 
 // ── 20-21. BrandMark e assets do logo intactos (Hotfix 1 não deve regredir) ─
 const brandMark = read('src/components/design-system/BrandMark.jsx');
-check('BrandMark parou de usar import ?url (regressão do Hotfix 1)', brandMark.includes("logo-app-mark.svg?url"));
-for (const asset of ['src/assets/brand/logo-app-mark.svg', 'src/assets/brand/logo-horizontal.svg', 'src/assets/brand/logo-monochrome.svg']) {
+check('BrandMark parou de usar o master oficial via ?url', brandMark.includes("app-icon-master.png?url"));
+for (const asset of ['src/assets/brand/app-icon-master.png', 'src/assets/brand/logo-horizontal.svg', 'src/assets/brand/logo-monochrome.svg']) {
   check(`${asset} ausente`, exists(asset));
 }
 

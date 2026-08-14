@@ -23,13 +23,11 @@ function check(label, condition) {
   if (!condition) throw new Error(`FALHA: ${label}`);
 }
 
-// ── Master SVG existe e não tem os problemas que já quebraram o gerador ────
-check('src/assets/brand/logo-mark.svg (master do ícone) ausente', exists('src/assets/brand/logo-mark.svg'));
-const masterSvg = read('src/assets/brand/logo-mark.svg').toString('utf8');
-const svgComments = masterSvg.match(/<!--([\s\S]*?)-->/g) || [];
-const hasDoubleHyphenInComment = svgComments.some((comment) => comment.slice(4, -3).includes('--'));
-check('master SVG contém hífen duplo dentro de comentário (já quebrou o gerador de ícones do Tauri: XML não permite -- dentro de <!-- -->)', !hasDoubleHyphenInComment);
-check('master SVG contém caracteres não-ASCII (já corrompeu o data-URI do Vite em produção)', /^[\x00-\x7F]*$/.test(masterSvg));
+// ── Master raster oficial existe e é grande o suficiente ──────────────────
+check('src/assets/brand/app-icon-master.png (master oficial) ausente', exists('src/assets/brand/app-icon-master.png'));
+const masterPng = read('src/assets/brand/app-icon-master.png');
+check('master oficial não é PNG válido', masterPng.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a])));
+check('master oficial não é 1024x1024', masterPng.readUInt32BE(16) === 1024 && masterPng.readUInt32BE(20) === 1024);
 
 // ── tauri.conf.json aponta para os assets corretos ──────────────────────────
 const tauriConf = JSON.parse(read('src-tauri/tauri.conf.json').toString('utf8'));

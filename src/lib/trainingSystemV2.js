@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { ATTRIBUTE_KEYS, isInjured, isRetired, incrementMissionProgress, todayStr } from '@/lib/padel';
+import { ATTRIBUTE_KEYS, DAILY_TRAINING_LIMIT, isInjured, isRetired, incrementMissionProgress, todayStr } from '@/lib/padel';
 import {
   TRAINING_GROUPS, TRAINING_GROUP_ORDER, TRAINING_INTENSITIES, TRAINING_FOCUSES,
   getTrainingFocus, getTrainingWeights, migrateTrainingReference,
@@ -164,7 +164,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   if (Number(profile?.tournament_matches_today || 0) > 0) return { error: 'Dia de torneio: treinos ficam bloqueados após a partida oficial.' };
   if (training.requiresPartner && !profile?.partner_id) return { error: 'Este foco exige um parceiro ativo.' };
   const doneToday = Number(profile?.trainings_today) || 0;
-  if (doneToday >= 2) return { error: 'Limite diário de treino atingido. Avance o dia.' };
+  if (doneToday >= DAILY_TRAINING_LIMIT) return { error: 'Limite diário de treino atingido. Avance o dia.' };
   const counts = await getWeeklyTrainingCounts(profile.id, profile.career_date);
   const preview = previewTraining(profile, training, intensityId, counts[training.id] || 0, coachBonus);
   if (Number(profile?.energy ?? 0) < preview.energyCost) return { error: `Energia insuficiente: são necessários ${preview.energyCost} pontos.` };

@@ -64,20 +64,20 @@ const intervalFiles = srcFiles.filter((file) => /setInterval\(/.test(read(file))
 const newIntervals = intervalFiles.filter((file) => !KNOWN_INTERVAL_FILES.has(file.replace(/\\/g, '/')));
 check(`setInterval novo introduzido sem revisão: ${newIntervals.join(', ')}`, newIntervals.length === 0);
 
-// 5. Assets gráficos — a marca é a primeira imagem real do projeto (auditoria
-//    seção 7: "zero imagens hoje"). Orçamento: cada SVG de marca < 15 KB.
+// 5. Assets gráficos — o master oficial raster pode ter até 1.1 MB; os
+//    assets auxiliares continuam sob orçamento pequeno.
 const BRAND_ASSETS = [
   'src/assets/brand/logo-mark.svg',
-  'src/assets/brand/logo-app-mark.svg',
+  'src/assets/brand/app-icon-master.png',
   'src/assets/brand/logo-horizontal.svg',
   'src/assets/brand/logo-monochrome.svg',
   'public/favicon-16.png',
   'public/favicon-32.png',
 ];
-const BUDGET_BYTES = 15 * 1024;
 for (const file of BRAND_ASSETS) {
   const size = fs.statSync(path.join(root, file)).size;
-  check(`asset de marca acima do orçamento de ${BUDGET_BYTES / 1024}KB: ${file} (${(size / 1024).toFixed(1)}KB)`, size <= BUDGET_BYTES);
+  const budgetBytes = file.endsWith('app-icon-master.png') ? 1_100_000 : 15 * 1024;
+  check(`asset de marca acima do orçamento de ${(budgetBytes / 1024).toFixed(0)}KB: ${file} (${(size / 1024).toFixed(1)}KB)`, size <= budgetBytes);
 }
 
 // 6. Recharts (chunk de ~374KB já documentado) continua só atrás de rotas lazy.

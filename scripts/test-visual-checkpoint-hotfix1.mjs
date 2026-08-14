@@ -21,8 +21,8 @@ function check(label, condition) {
 // ── 1. Branding — asset carrega de verdade em produção ─────────────────────
 
 const brandMark = read('src/components/design-system/BrandMark.jsx');
-check('BrandMark não importa o SVG oficial da marca', brandMark.includes("@/assets/brand/logo-app-mark.svg"));
-check('BrandMark não usa import estático `?url` (evita inlining de data-URI quebrado em produção)', brandMark.includes("logo-app-mark.svg?url"));
+check('BrandMark não importa o PNG oficial da marca', brandMark.includes("@/assets/brand/app-icon-master.png"));
+check('BrandMark não usa import estático `?url`', brandMark.includes("app-icon-master.png?url"));
 check('BrandMark não usa <img> para o símbolo', brandMark.includes('<img'));
 
 // Duas causas raiz confirmadas do ícone quebrado, ambas dentro dos
@@ -34,7 +34,7 @@ check('BrandMark não usa <img> para o símbolo', brandMark.includes('<img'));
 //     percent-encoda corretamente, corrompendo a URI resultante (renderiza
 //     normal no navegador/dev server, mas falha no WebView2 empacotado).
 // Ignora os delimitadores válidos `<!--`/`-->` na checagem de hífen duplo.
-for (const svgPath of ['src/assets/brand/logo-app-mark.svg', 'src/assets/brand/logo-horizontal.svg', 'src/assets/brand/logo-monochrome.svg']) {
+for (const svgPath of ['src/assets/brand/logo-horizontal.svg', 'src/assets/brand/logo-monochrome.svg']) {
   const svg = read(svgPath);
   const commentBodies = [...svg.matchAll(/<!--([\s\S]*?)-->/g)].map((m) => m[1]);
   const hasDoubleHyphen = commentBodies.some((body) => body.includes('--'));

@@ -1,6 +1,6 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 96 96" role="img" aria-labelledby="pl-mark-title" data-brand-symbol="padel-racket-ball">
   <title id="pl-mark-title">Padel Legacy</title>
-  <!-- Compatibility alias. Active UI imports logo-app-mark.svg. -->
+  <!-- Legacy compatibility asset. Active UI uses app-icon-master.png. -->
   <rect x="2" y="2" width="92" height="92" rx="20" fill="#B4E605"/>
   <g transform="rotate(-8 42 48)">
     <path fill="#0A0D14" d="M22 10C13 15 10 29 13 41c3 12 12 18 25 18 14 0 27-4 34-13 8-10 7-24-1-32C62 5 33 4 22 10Z"/>

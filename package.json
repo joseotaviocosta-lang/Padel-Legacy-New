@@ -155,6 +155,7 @@
     "test:app-icon-pipeline": "node scripts/test-app-icon-pipeline.mjs",
     "test:branding-final": "node scripts/test-branding-final.mjs",
     "test:branding-hotfix-9-1": "node scripts/test-branding-hotfix-9-1.mjs",
+    "test:branding-hotfix-9-2": "node scripts/test-branding-hotfix-9-2.mjs",
     "verify:exe-icon": "node scripts/verify-exe-icon.mjs"
   },
   "dependencies": {
