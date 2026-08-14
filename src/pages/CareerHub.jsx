@@ -21,6 +21,7 @@ import PartnerSelection from '@/components/career/PartnerSelection';
 import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
 import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
 import StrategicCareerPanel from '@/components/career/StrategicCareerPanel';
+import ActiveMatchRecoveryBanner from '@/components/career/ActiveMatchRecoveryBanner';
 import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
@@ -287,6 +288,7 @@ export default function CareerHub() {
   return (
     <Page size="wide" className="animate-fade-in">
       <PageContent>
+        <ActiveMatchRecoveryBanner />
         {latestAnnualReport && profile.career_date?.endsWith('-01-01') && latestAnnualReport.generatedDate === profile.career_date && <AnnualReportHomeCard report={latestAnnualReport} />}
         {latestMonthlyReport && profile.career_date?.endsWith('-01') && latestMonthlyReport.generatedDate === profile.career_date && <MonthlyReportHomeCard report={latestMonthlyReport} />}
         {activeTournamentEvent && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}

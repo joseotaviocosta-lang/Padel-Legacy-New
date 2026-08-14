@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState, useRef } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain } from 'lucide-react';
+import { Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain, History, Trash2 } from 'lucide-react';
 import { ModalShell } from '@/components/design-system';
 
 import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
@@ -16,6 +16,8 @@ import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { useToast } from '@/components/ui/use-toast';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { Surface, StatusBadge, ProgressBar } from '@/components/design-system';
+import { getMatchCheckpointRepository, createCheckpointMatchId } from '@/careers/MatchCheckpointRepository.js';
+import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
@@ -27,8 +29,18 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [result, setResult] = useState(null);
   const [coach,setCoach]=useState(null);
   const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
+  const [resumedEngineState, setResumedEngineState] = useState(null);
+  const [resumeDecided, setResumeDecided] = useState(false);
   const savedRef = useRef(false);
+  const matchIdRef = useRef(null);
+  const startedAtRef = useRef(null);
   const { toast } = useToast();
+  // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md): se o app foi fechado/morto
+  // com uma partida treino em andamento, o checkpoint sobrevive aqui — a
+  // config normal (Parte 8) só aparece depois que o jogador decidir o que
+  // fazer com ela (continuar ou descartar), nunca abrindo direto no meio.
+  const { checkpoint, loading: checkpointLoading, clear: clearCheckpoint } = useActiveMatchCheckpoint(careerId);
+  const pendingResume = !checkpointLoading && checkpoint?.type === 'practice' && !resumeDecided;
   useEffect(()=>{let active=true;(async()=>{if(!profile?.id)return;const result=await ensureStarterCoach(profile);if(!active)return;if(result.profile?.id&&result.profile.coach_id!==profile.coach_id){setProfile(result.profile);onProfileUpdate?.(result.profile);}setCoach(result.coach||null);})().catch(()=>{if(active)setCoach(null);});return()=>{active=false;};},[profile?.id,profile?.coach_id]);
   const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
   const changeDisplayMode=(mode)=>setDisplayMode(mode);
@@ -56,13 +68,47 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     const partnerBondBonus = calculatePartnershipPerformanceBonus({ chemistry: profile.partner_chemistry, partner_trust: profile.partner_trust, partner_morale: profile.partner_morale, natural_chemistry: profile.partner_chemistry, shared_matches: profile.matches_played || 0 }) * 40;
     const playerForMatch = { ...profile, _chemistryBonus: chemistryBonus, _energyPenalty: energyPenalty, _coachMatchBonus: coachMatchBonus, _partnerBondBonus: partnerBondBonus };
     setTeams({ partner, opponents, teamA: [playerForMatch, partner], teamB: opponents });
+    setResumedEngineState(null);
+    matchIdRef.current = createCheckpointMatchId();
+    startedAtRef.current = new Date().toISOString();
     savedRef.current = false;
     setPhase('live');
   }
 
+  function resumeMatch() {
+    const engineState = checkpoint.engine_state;
+    setTeams({ partner: engineState.teams.A[1], opponents: engineState.teams.B, teamA: engineState.teams.A, teamB: engineState.teams.B });
+    setResumedEngineState(engineState);
+    matchIdRef.current = checkpoint.match_id;
+    startedAtRef.current = checkpoint.started_at;
+    savedRef.current = false;
+    setResumeDecided(true);
+    setPhase('live');
+  }
+
+  function discardResume() {
+    clearCheckpoint();
+    setResumeDecided(true);
+  }
+
+  const saveCheckpoint = useCallback((engineState) => {
+    if (!careerId || !matchIdRef.current) return;
+    getMatchCheckpointRepository().save(careerId, {
+      match_id: matchIdRef.current,
+      type: 'practice',
+      tournament_id: null,
+      started_at: startedAtRef.current || new Date().toISOString(),
+      engine_state: engineState,
+    }).catch((error) => console.warn('[SimulationModal] falha ao salvar checkpoint da partida.', error));
+  }, [careerId]);
+
   async function handleFinished(matchState) {
     if (savedRef.current) return;
     savedRef.current = true;
+    // A partida chegou ao fim: o checkpoint deixou de representar "em
+    // andamento" independente do resultado do finalizador abaixo (que já é
+    // idempotente por conta própria — ver makeMatchFinalizationKey).
+    if (careerId) getMatchCheckpointRepository().clear(careerId).catch(() => {});
     try {
       const won = matchState.winner === 'A';
       const coreResult = await finalizePracticeMatch({
@@ -95,6 +141,9 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
   function reset() {
     savedRef.current = false;
+    matchIdRef.current = null;
+    startedAtRef.current = null;
+    setResumedEngineState(null);
     setTeams(null);
     setResult(null);
     setPhase('config');
@@ -123,8 +172,25 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
       size="md"
       className={phase === 'live' ? 'md:h-[min(46rem,92dvh)]' : ''}
     >
+        {/* Recovery — partida treino interrompida antes de terminar (M3, Parte 8) */}
+        {phase === 'config' && pendingResume && (
+          <div className="space-y-4 text-center">
+            <div className="rounded-2xl border border-primary/30 bg-primary/5 p-6">
+              <History className="mx-auto mb-2 h-10 w-10 text-primary" />
+              <p className="text-lg font-black">Partida em andamento</p>
+              <p className="mt-2 text-sm text-muted-foreground">Uma partida treino foi interrompida antes de terminar. Você pode continuar de onde parou.</p>
+            </div>
+            <button onClick={resumeMatch} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg">
+              <Play className="h-4 w-4" /> Continuar partida
+            </button>
+            <button onClick={discardResume} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-secondary/50 px-4 text-xs font-bold text-muted-foreground">
+              <Trash2 className="h-3.5 w-3.5" /> Descartar e começar outra
+            </button>
+          </div>
+        )}
+
         {/* Config */}
-        {phase === 'config' && (
+        {phase === 'config' && !pendingResume && (
           <div className="space-y-4">
             <Surface variant="premium" padding="compact">
               <div className="flex items-center gap-3">
@@ -201,6 +267,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             onFinished={handleFinished}
             displayMode={displayMode}
             onDisplayModeChange={changeDisplayMode}
+            initialState={resumedEngineState}
+            onCheckpoint={saveCheckpoint}
           />
         )}
 

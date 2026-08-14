@@ -23,6 +23,8 @@ import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelecti
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
 import { cancelTournamentRegistration, isPlayerRegisteredForTournament, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
+import { useCareer } from '@/careers/useCareer.js';
+import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { resolveTournamentOpenMode, TOURNAMENT_DEEP_LINK_MODES } from '@/lib/tournamentDeepLink.js';
 
 const TIER_CONFIG = {
@@ -53,6 +55,8 @@ function prepareTournamentList(items) {
 }
 
 export default function Tournaments() {
+  const { activeCareer } = useCareer();
+  const { checkpoint: activeMatchCheckpoint } = useActiveMatchCheckpoint(activeCareer?.career_id);
   const [searchParams, setSearchParams] = useSearchParams();
   const openedTournamentRef = useRef(null);
   const [tournaments, setTournaments] = useState([]);
@@ -145,6 +149,15 @@ export default function Tournaments() {
     if (mode === TOURNAMENT_DEEP_LINK_MODES.RUN) setActiveTournament(requested);
     else setDetailsTournament(requested);
   }, [activeRunEvents, loading, searchParams, tournaments]);
+
+  // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md, Parte 8): rodada de torneio
+  // interrompida reabre o mesmo torneio automaticamente — o modal mostra a
+  // confirmação "Continuar partida?" antes de restaurar, nunca silenciosamente.
+  useEffect(() => {
+    if (loading || activeTournament || activeMatchCheckpoint?.type !== 'tournament') return;
+    const requested = tournaments.find((tournament) => String(tournament.id) === String(activeMatchCheckpoint.tournament_id));
+    if (requested) setActiveTournament(requested);
+  }, [activeMatchCheckpoint, activeTournament, loading, tournaments]);
 
   async function refreshProfile() {
     const user = await localGame.auth.me();
@@ -413,6 +426,7 @@ export default function Tournaments() {
         <TournamentModal
           tournament={activeTournament}
           profile={profile}
+          careerId={activeCareer?.career_id}
           onClose={() => { setActiveTournament(null); clearTournamentDeepLink(); }}
           onProfileUpdate={setProfile}
           onComplete={refreshProfile}

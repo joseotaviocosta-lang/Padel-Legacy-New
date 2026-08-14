@@ -150,6 +150,7 @@
     "test:redesign-polish2": "node scripts/test-redesign-polish2.mjs",
     "test:mobile-m2-shell": "node scripts/test-mobile-m2-shell.mjs",
     "test:mobile-m2-device-hotfix": "node scripts/test-mobile-m2-1-device-hotfix.mjs",
+    "test:mobile-m3-live-match": "node scripts/test-mobile-m3-live-match.mjs",
     "test:redesign-polish21": "node scripts/test-redesign-polish21.mjs",
     "test:app-icon-pipeline": "node scripts/test-app-icon-pipeline.mjs",
     "test:branding-final": "node scripts/test-branding-final.mjs",

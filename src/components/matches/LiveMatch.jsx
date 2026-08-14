@@ -42,18 +42,61 @@ export default function LiveMatch({
   onFinished,
   displayMode = 'text',
   onDisplayModeChange,
+  initialState = null,
+  onCheckpoint = null,
 }) {
-  const [state, setState] = useState(() => createMatch(teamA, teamB, { initialTacticId, coach, liveCoachSettings }));
-  const [tactic, setTactic] = useState(
-    () => MATCH_TACTICS.find((item) => item.id === initialTacticId) || MATCH_TACTICS[0],
-  );
-  const [autoPlay, setAutoPlay] = useState(true);
+  const [state, setState] = useState(() => initialState || createMatch(teamA, teamB, { initialTacticId, coach, liveCoachSettings }));
+  const [tactic, setTactic] = useState(() => {
+    const resumedTacticId = initialState?.activeTactics?.A?.id;
+    return MATCH_TACTICS.find((item) => item.id === (resumedTacticId || initialTacticId)) || MATCH_TACTICS[0];
+  });
+  // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md, Parte 21): retomar uma partida
+  // interrompida sempre volta pausada — o jogador decide quando continuar,
+  // nunca avança pontos sozinho "recuperando o tempo perdido" em background.
+  const [autoPlay, setAutoPlay] = useState(!initialState);
   const [speed, setSpeed] = useState(1);
   const [activePanel, setActivePanel] = useState('match');
   const [tacticFeedback, setTacticFeedback] = useState('');
   const [confirmEndMatch, setConfirmEndMatch] = useState(false);
   const finishedRef = useRef(false);
   const narrationRef = useRef(null);
+  const checkpointSignatureRef = useRef(null);
+
+  // M3 — checkpoint em pontos seguros/semanticamente relevantes (início da
+  // partida, fim de game/set, mudança de tática/decisão do técnico), nunca a
+  // cada ponto/frame (Parte 5 e Parte 26 pedem explicitamente para evitar
+  // I/O excessivo). A assinatura cobre só os campos que definem um "momento
+  // seguro" — comparar o state inteiro dispararia a cada narração.
+  useEffect(() => {
+    if (!onCheckpoint || state.finished) return;
+    const signature = [
+      state.setsA, state.setsB, state.gamesA, state.gamesB,
+      state.tacticsTimeline?.length || 0,
+      state.liveCoach?.decisions?.length || 0,
+    ].join(':');
+    if (checkpointSignatureRef.current === signature) return;
+    checkpointSignatureRef.current = signature;
+    onCheckpoint(state);
+  }, [state, onCheckpoint]);
+
+  // M3 — pausa automática ao ir para background (Parte 6/7/21). O timer de
+  // autoplay já cancela sozinho quando autoPlay vira false (efeito abaixo,
+  // dependente de `autoPlay`), então isso também resolve "sem timer duplicado
+  // ao voltar" — o efeito do timer só reagenda quando o usuário aperta Play.
+  useEffect(() => {
+    if (typeof document === 'undefined') return undefined;
+    function handleVisibilityChange() {
+      if (document.hidden) {
+        setAutoPlay(false);
+        setState((current) => {
+          if (!current.finished) onCheckpoint?.(current);
+          return current;
+        });
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    return () => document.removeEventListener('visibilitychange', handleVisibilityChange);
+  }, [onCheckpoint]);
 
   useEffect(() => {
     if (displayMode !== 'quick') return;
@@ -134,7 +177,7 @@ export default function LiveMatch({
               role="tab"
               aria-selected={active}
               onClick={() => setActivePanel(id)}
-              className={`relative flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-colors ${
+              className={`pl-tab-trigger relative flex min-h-9 items-center justify-center gap-1 rounded-lg px-2 text-[11px] font-bold transition-colors ${
                 active ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground hover:bg-background/50 hover:text-foreground'
               }`}
             >
@@ -551,7 +594,7 @@ function PlaybackControls({
         <Button
           level="primary"
           onClick={onTogglePlay}
-          className="min-h-10 flex-1 rounded-xl px-3 text-xs font-extrabold shadow-sm"
+          className="pl-btn-tap min-h-10 flex-1 rounded-xl px-3 text-xs font-extrabold shadow-sm"
         >
           {autoPlay ? <Pause className="h-3.5 w-3.5" /> : <Play className="h-3.5 w-3.5" />}
           {autoPlay ? 'Pausar' : 'Continuar'}
@@ -563,7 +606,7 @@ function PlaybackControls({
               type="button"
               onClick={() => onSpeed(value)}
               aria-pressed={speed === value}
-              className={`min-h-8 min-w-8 rounded-md px-1 text-[10px] font-bold ${speed === value ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground'}`}
+              className={`pl-icon-tap min-h-8 min-w-8 rounded-md px-1 text-[10px] font-bold ${speed === value ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground'}`}
             >
               {value}x
             </button>
@@ -585,7 +628,7 @@ function SkipButton({ onClick, label, icon = false }) {
     <button
       type="button"
       onClick={onClick}
-      className="min-h-9 rounded-xl border border-border/40 bg-secondary/35 px-1 text-[9px] font-extrabold text-muted-foreground transition hover:bg-secondary hover:text-foreground"
+      className="pl-btn-tap min-h-9 rounded-xl border border-border/40 bg-secondary/35 px-1 text-[9px] font-extrabold text-muted-foreground transition hover:bg-secondary hover:text-foreground"
     >
       {icon && <FastForward className="mr-0.5 inline h-3 w-3" />}
       {label}

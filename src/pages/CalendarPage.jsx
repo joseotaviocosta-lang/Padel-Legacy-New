@@ -21,6 +21,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 import CalendarPlanner from '@/components/calendar/CalendarPlanner';
 import CalendarMonthView from '@/components/calendar/CalendarMonthView';
+import { useCareer } from '@/careers/useCareer.js';
 
 const TIER_DOT = {
   Silver:'bg-slate-500', Gold:'bg-yellow-500', Platinum:'bg-cyan-500',
@@ -28,6 +29,7 @@ const TIER_DOT = {
 };
 
 export default function CalendarPage() {
+  const { activeCareer } = useCareer();
   const [searchParams] = useSearchParams();
   const openedEventRef = useRef(null);
   const [profile, setProfile] = useState(null);
@@ -526,6 +528,7 @@ export default function CalendarPage() {
         <TournamentModal
           tournament={activeTournament}
           profile={profile}
+          careerId={activeCareer?.career_id}
           onClose={() => setActiveTournament(null)}
           onProfileUpdate={setProfile}
           onComplete={handleTournamentComplete}

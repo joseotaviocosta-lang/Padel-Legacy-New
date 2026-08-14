@@ -6,6 +6,7 @@ import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isIn
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
 import { ActionFeedback, Button, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard, Surface, SurfaceHeader } from '@/components/design-system';
+import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 
 export default function Matches() {
   const { activeCareer } = useCareer();
@@ -14,6 +15,11 @@ export default function Matches() {
   const [showSimulation, setShowSimulation] = useState(false);
   const [showPartner, setShowPartner] = useState(false);
   const [loading, setLoading] = useState(true);
+  // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md, Parte 8): uma partida treino
+  // interrompida reabre o modal automaticamente (o modal em si sempre mostra
+  // a confirmação "Continuar partida?" antes de restaurar — nunca cai direto
+  // no meio do placar sem avisar).
+  const { checkpoint: activeMatchCheckpoint } = useActiveMatchCheckpoint(activeCareer?.career_id);
 
   useEffect(() => {
     (async () => {
@@ -27,6 +33,10 @@ export default function Matches() {
       finally { setLoading(false); }
     })();
   }, []);
+
+  useEffect(() => {
+    if (activeMatchCheckpoint?.type === 'practice') setShowSimulation(true);
+  }, [activeMatchCheckpoint]);
 
   if (loading) {
     return <PageSkeleton variant="stats" rows={4} />;
