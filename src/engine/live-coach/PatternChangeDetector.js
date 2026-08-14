@@ -13,11 +13,12 @@ export class PatternChangeDetector {
     const opponentShots = shots.filter((shot) => shot.team === opponent);
     const teamShots = shots.filter((shot) => shot.team === teamId);
     const patterns = [];
-    const add = (patternId, category, evidence, sample, persistence, adjustment, priority = 'recommendation') => {
+    const add = (patternId, category, evidence, sample, persistence, adjustment, priority = 'recommendation', analysisWindow = 'last_2_games') => {
       const calibrated = confidence(sample, persistence, coachLevel >= 3 ? 6 : 8);
       patterns.push({
         patternId, category, evidence, sampleSize: sample, persistence,
         confidence: calibrated.label, confidenceScore: calibrated.score,
+        analysisWindow,
         firstDetectedAt: `point-${Math.max(1, currentPoint - window.length + 1)}`,
         lastDetectedAt: `point-${currentPoint}`, adjustment, priority,
       });
@@ -28,10 +29,24 @@ export class PatternChangeDetector {
     const breaksSuffered = games.filter((game) => game.servingTeamId === teamId && game.winnerTeamId === opponent).length;
     if (breaksSuffered >= 2) add('breaks_suffered', 'plan', `${breaksSuffered} games de saque perdidos na amostra recente.`, games.length, breaksSuffered, { tacticId: 'defensivo', components: { safeWeight: 1.18, riskModifier: 0.9 } }, 'urgent');
 
+    const recentTargetShots = opponentShots.filter((shot) => shot.targetPlayerId).slice(-12);
     const targets = {};
-    opponentShots.forEach((shot) => { if (shot.targetPlayerId) targets[shot.targetPlayerId] = (targets[shot.targetPlayerId] || 0) + 1; });
+    recentTargetShots.forEach((shot) => { targets[shot.targetPlayerId] = (targets[shot.targetPlayerId] || 0) + 1; });
     const targeted = Object.entries(targets).sort((a, b) => b[1] - a[1])[0];
-    if (targeted && targeted[1] >= 5 && targeted[1] / Math.max(1, opponentShots.length) >= 0.58) add('opponent_targeting_player', 'opponent', `${targeted[1]} de ${opponentShots.length} bolas foram dirigidas ao mesmo jogador.`, opponentShots.length, targeted[1], { tacticId: 'defensivo', components: { safeWeight: 1.15, tacticalWeight: 1.1 } });
+    const targetShare = targeted ? targeted[1] / Math.max(1, recentTargetShots.length) : 0;
+    if (targeted && recentTargetShots.length >= 8 && targeted[1] >= 6 && targetShare >= 0.7) {
+      const targetName = analytics.state.players?.[targeted[0]]?.name || 'um dos jogadores da dupla';
+      add(
+        'opponent_targeting_player',
+        'opponent',
+        `Os rivais estão concentrando o jogo em ${targetName}. Varie a cobertura e proteja o espaço no meio (${targeted[1]} das últimas ${recentTargetShots.length} ações).`,
+        recentTargetShots.length,
+        targeted[1],
+        { tacticId: 'defensivo', components: { safeWeight: 1.15, tacticalWeight: 1.1 } },
+        'recommendation',
+        'recent_target_actions',
+      );
+    }
 
     const opponentNetWins = window.filter((point) => point.winnerTeamId === opponent && point.winnerPosition === 'NET').length;
     if (opponentNetWins >= 4 && opponentNetWins / window.length >= 0.35) add('opponent_net_dominance', 'positional', `Os rivais venceram ${opponentNetWins} pontos na rede nos dois games recentes.`, window.length, opponentNetWins, { tacticId: 'tatico', components: { tacticalWeight: 1.2, safeWeight: 1.08 } });

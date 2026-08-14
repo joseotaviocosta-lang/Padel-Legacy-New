@@ -10,7 +10,6 @@ import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
 import BetaAnalyticsTracker from '@/components/system/BetaAnalyticsTracker.jsx';
 import CareerHud from '@/components/career/CareerHud';
 import CommunicationBell from '@/components/communications/CommunicationBell';
-import CareerAssistant from '@/components/career/CareerAssistant';
 import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import CareerDayControl from '@/components/career/CareerDayControl';
 import { ALL_SHELL_ITEMS, NAV_GROUPS, groupForPath } from '@/navigation/navigationConfig.js';
@@ -312,7 +311,6 @@ export default function AppLayout() {
         </div>
 
         <OnboardingGuide />
-        <CareerAssistant />
         {performanceProfile.allowDecorativeMotion ? (
           <motion.div key={location.pathname} className="app-route-stage design-system-page-host min-w-0 max-w-full" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.08 }}>
             <Outlet />

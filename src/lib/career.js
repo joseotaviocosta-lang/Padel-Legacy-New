@@ -83,7 +83,15 @@ export async function selectPartner(profile, bot) {
 export async function advanceDay(profile, { deferGlobalProcessing = false, profiler = null } = {}) {
   // Estágio opcional: sem profiler (caso comum em produção), stage() só
   // executa a task, sem custo extra de medição.
-  const stage = profiler ? profiler.measure : (_name, task) => task();
+  const measure = profiler ? profiler.measure : (_name, task) => task();
+  const stage = async (name, task) => {
+    try {
+      return await measure(name, task);
+    } catch (error) {
+      if (error && !error.advanceStage) error.advanceStage = name;
+      throw error;
+    }
+  };
   // Libera espaço antes de qualquer evento do novo dia tentar gravar no banco.
   // ── Block advance if there's a pending mandatory decision ──
   profile = await stage('validation:monthlyReport', () => ensureMonthlyReportCycle(profile));
@@ -91,7 +99,11 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
   const careerDateNow = profile.career_date || CAREER_START_DATE;
   const advanceCheck = await canAdvanceDay(profile.id, careerDateNow);
   if (!advanceCheck.canAdvance) {
-    throw new Error(advanceCheck.reason);
+    const error = /** @type {Error & { code?: string, advanceStage?: string, blockingEvent?: any }} */ (new Error(advanceCheck.reason));
+    error.code = 'advance_day_blocked';
+    error.advanceStage = 'validation:pendingDecision';
+    error.blockingEvent = advanceCheck.blockingEvent || null;
+    throw error;
   }
 
   const careerD = new Date((profile.career_date || CAREER_START_DATE) + 'T00:00:00');

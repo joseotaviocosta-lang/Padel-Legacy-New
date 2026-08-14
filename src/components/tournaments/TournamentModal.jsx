@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Bot, Brain, CalendarDays, CheckCircle, ChevronRight, Coins, Crown,
   Dumbbell, HeartPulse, History, Mic, Play, Shield, Star, Trash2, Trophy, Users,
@@ -39,6 +40,13 @@ import {
   withdrawTournamentRun,
 } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
+import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
+import {
+  buildTournamentMatchCheckpoint,
+  buildTournamentReturnRoute,
+  buildTournamentRoundCoreOperations,
+  inspectTournamentMatchCheckpoint,
+} from '@/game-core/tournamentMatchLifecycle.js';
 
 const TIER_STYLES = {
   Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
@@ -82,6 +90,7 @@ function normalizeLegacyRun(run, metadata = {}) {
 }
 
 export default function TournamentModal({ tournament, profile: initialProfile, careerId, onClose, onProfileUpdate, onComplete }) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(initialProfile);
   const [event, setEvent] = useState(null);
   const [registration, setRegistration] = useState(null);
@@ -174,16 +183,33 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // engine_state exato salvo em checkpoint — só cai para 0-0 quando não
       // existe checkpoint válido para esta rodada (fallback pré-existente).
       const restoredMatch = getCurrentTournamentMatch(tournamentRun);
+      const checkpoint = careerId ? await getMatchCheckpointRepository().read(careerId).catch(() => null) : null;
       let matchedCheckpoint = null;
       if (tournamentRun.status === 'playing' && restoredMatch?.status === 'playing') {
-        const checkpoint = careerId ? await getMatchCheckpointRepository().read(careerId).catch(() => null) : null;
-        if (checkpoint?.type === 'tournament' && checkpoint.tournament_id === tournament.id && checkpoint.match_id === restoredMatch.id) {
+        const inspection = inspectTournamentMatchCheckpoint(checkpoint, {
+          careerId,
+          careerDate: loadedProfile?.career_date,
+          tournament,
+          match: restoredMatch,
+          teamA: [loadedProfile, loadedPartner].filter(Boolean),
+          teamB: restoredMatch.opponent || [],
+        });
+        const identityMatches = checkpoint?.tournament_id === tournament.id && checkpoint.match_id === restoredMatch.id;
+        if (identityMatches && inspection.valid) {
           matchedCheckpoint = checkpoint;
         } else {
+          console.error('[TournamentLifecycle]', inspection.diagnostic);
+          registerBetaDiagnostic({
+            type: 'tournament-checkpoint-invalid',
+            ...inspection.diagnostic,
+          });
+          if (checkpoint?.match_id) await getMatchCheckpointRepository().clearIfMatch(careerId, checkpoint.match_id).catch(() => {});
           tournamentRun = JSON.parse(JSON.stringify(tournamentRun));
           tournamentRun.status = 'scheduled';
           getCurrentTournamentMatch(tournamentRun).status = 'scheduled';
         }
+      } else if (checkpoint?.type === 'tournament' && checkpoint.tournament_id === tournament.id) {
+        await getMatchCheckpointRepository().clearIfMatch(careerId, checkpoint.match_id).catch(() => {});
       }
 
       const playerTeam = teamName(loadedProfile, loadedPartner);
@@ -300,20 +326,28 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
 
   const saveMatchCheckpoint = useCallback((engineState) => {
     if (!careerId || !currentMatch?.id) return;
-    getMatchCheckpointRepository().save(careerId, {
-      match_id: currentMatch.id,
-      type: 'tournament',
-      tournament_id: tournament.id,
-      started_at: currentMatch.date || new Date().toISOString(),
-      engine_state: engineState,
-    }).catch((error) => console.warn('[TournamentModal] falha ao salvar checkpoint da partida.', error));
-  }, [careerId, currentMatch?.id, tournament.id, currentMatch?.date]);
+    const checkpoint = buildTournamentMatchCheckpoint({
+      tournament,
+      match: currentMatch,
+      teamA: [profile, partner].filter(Boolean),
+      teamB: opponent,
+      engineState,
+    });
+    getMatchCheckpointRepository().save(careerId, checkpoint)
+      .catch((error) => console.warn('[TournamentModal] falha ao salvar checkpoint da partida.', {
+        code: error?.code || 'tournament_match_checkpoint_save_failed',
+        tournamentId: tournament.id,
+        round: currentMatch.round,
+        matchId: currentMatch.id,
+      }));
+  }, [careerId, currentMatch, opponent, partner, profile, tournament]);
 
   function buildRoundMediaOperations(match, won, nextRun) {
     const importance = nextRun.matches.find((item) => item.id === match.id)?.pressImportance || 'simple';
     const safeMatchId = match.id.replace(/[^a-zA-Z0-9_-]/g, '-');
     const interview = postMatchInterviewIdentity(match.id);
     const interviewMessageId = postMatchInterviewMessageId(profile.id, match.id);
+    const returnTo = buildTournamentReturnRoute(tournament.id);
     const next = getCurrentTournamentMatch(nextRun);
     const headline = won
       ? `${teamName(profile, partner)} avança no ${tournament.name}`
@@ -336,8 +370,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         status: 'nao_lida', priority: ['global', 'high'].includes(importance) ? 'alta' : 'normal',
         related_entity_type: 'PressInterview', related_entity_id: interview.id,
         is_read: false, is_new: true,
-        destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: interview.id, source: interview.sourceId } },
-        metadata: { route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`, context_key: interview.contextKey, interview_id: interview.id, interview_source_id: interview.sourceId, match_id: match.id, tournament_id: tournament.id, round: match.round },
+        destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: interview.id, source: interview.sourceId, returnTo } },
+        metadata: { route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}&returnTo=${encodeURIComponent(returnTo)}`, context_key: interview.contextKey, interview_id: interview.id, interview_source_id: interview.sourceId, match_id: match.id, tournament_id: tournament.id, round: match.round },
       } },
       { type: 'upsert', entityName: 'Post', id: `round-post-${safeMatchId}`, data: {
         author_name: 'Padel Legacy News', author_type: 'media', content: headline,
@@ -351,10 +385,6 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   async function handleMatchFinished(matchState) {
     if (savedRef.current || !event?.id || !currentMatch) return;
     savedRef.current = true;
-    // A rodada chegou ao fim: o checkpoint deixou de representar "em
-    // andamento" independente do resultado do finalizador abaixo (que já é
-    // idempotente por conta própria — ver processed_match_finalizations).
-    if (careerId) getMatchCheckpointRepository().clear(careerId).catch(() => {});
     const won = matchState.winner === 'A';
     const profiler = createMatchEndProfiler();
     try {
@@ -365,6 +395,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       const freshRun = freshEvent.metadata?.tournament_run || run;
       const freshMatch = getCurrentTournamentMatch(freshRun);
       if (freshMatch?.status === 'completed') {
+        if (careerId) await getMatchCheckpointRepository().clearIfMatch(careerId, currentMatch.id).catch(() => {});
         setRun(freshRun);
         setPhase(freshRun.status === 'champion' ? 'champion' : freshRun.status === 'eliminated' ? 'eliminated' : 'round_result');
         return;
@@ -440,7 +471,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         getActivePartnership(profile.id),
       ]);
       /** @type {any[]} */
-      const operations = [{ type: 'upsert', entityName: 'Match', id: freshMatch.id, data: matchRecord }];
+      const operations = [];
       if (!rewardAlreadyApplied) {
         const ranking = rankingRows?.[0];
         if (rankingKey && partner) {
@@ -468,19 +499,40 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       const bracket = buildTournamentBracketHistory(nextRun, teamName(updatedDraft, partner));
       const nextScheduledMatch = getCurrentTournamentMatch(nextRun);
       const terminalStatus = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
-      operations.push(
-        { type: 'playerUpdate', id: freshProfile.id, data: { ...reward.updates, ...(physical?.patch || {}), partner_chemistry: updatedDraft.partner_chemistry, partner_trust: updatedDraft.partner_trust, partner_morale: updatedDraft.partner_morale, processed_tournament_physical_keys: updatedDraft.processed_tournament_physical_keys } },
-        { type: 'update', entityName: 'CalendarEvent', id: freshEvent.id, data: {
+      const mediaOperations = buildRoundMediaOperations(freshMatch, won, nextRun);
+      operations.push(...buildTournamentRoundCoreOperations({
+        matchRecord,
+        profileId: freshProfile.id,
+        playerPatch: { ...reward.updates, ...(physical?.patch || {}), partner_chemistry: updatedDraft.partner_chemistry, partner_trust: updatedDraft.partner_trust, partner_morale: updatedDraft.partner_morale, processed_tournament_physical_keys: updatedDraft.processed_tournament_physical_keys },
+        event: freshEvent,
+        eventPatch: {
           title: terminalStatus ? tournament.name : `${tournament.name} — ${nextScheduledMatch?.round || 'Torneio'}`,
           start_date: nextScheduledMatch?.date || freshEvent.start_date,
           end_date: nextScheduledMatch?.date || freshEvent.end_date,
           status: terminalStatus ? 'completed' : 'scheduled',
           requires_decision: !terminalStatus,
           metadata: { ...(freshEvent.metadata || {}), tournament_run: nextRun, tournament_run_schema_version: 2, last_completed_match_id: freshMatch.id, next_round_date: transition.nextMatch?.date || null },
-        } },
-        { type: 'update', entityName: 'Tournament', id: tournament.id, data: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status } },
-      );
+        },
+        tournament,
+        tournamentPatch: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status },
+        mediaOperations,
+      }));
       const coreResult = await profiler.measure('persistSave', async () => localGame.batch(operations, { idempotencyKey: `tournament:${freshMatch.id}` }));
+      if (careerId) {
+        await profiler.measure('clearCheckpoint', () => getMatchCheckpointRepository().clearIfMatch(careerId, freshMatch.id))
+          .catch((error) => {
+            const diagnostic = {
+              code: 'tournament_match_checkpoint_clear_failed',
+              careerId,
+              tournamentId: tournament.id,
+              round: freshMatch.round,
+              matchId: freshMatch.id,
+              message: error?.message,
+            };
+            console.error('[TournamentLifecycle]', diagnostic);
+            registerBetaDiagnostic({ type: 'tournament-checkpoint-clear-failed', ...diagnostic });
+          });
+      }
       let updated = coreResult.player || updatedDraft;
       setEvent(coreResult.records?.find((record) => record?.id === freshEvent.id) || freshEvent);
       setRun(nextRun);
@@ -501,15 +553,14 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         setTournamentRewards(completion.rewards);
       }
 
-      const mediaOperations = buildRoundMediaOperations(freshMatch, won, nextRun);
       const missionObjectives = [
         ...(won ? ['win_matches'] : []),
         'play_matches',
         ...(nextRun.status === 'champion' ? ['win_tournament'] : []),
       ];
-      const secondaryOperations = transition.terminal ? [...completion.operations, ...mediaOperations] : mediaOperations;
+      const secondaryOperations = transition.terminal ? completion.operations : [];
       const secondaryTask = () => rewardAlreadyApplied && !transition.terminal
-        ? localGame.batch(secondaryOperations)
+        ? Promise.resolve(null)
         : incrementMissionProgress(
           profile.id,
           missionObjectives,
@@ -537,6 +588,19 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       savedRef.current = false;
       toast({ title: 'Falha ao salvar a rodada', description: 'O resultado não foi aplicado novamente. Tente concluir o salvamento.', variant: 'destructive' });
     }
+  }
+
+  function openPostMatchInterview() {
+    if (!lastResult?.match?.id) return;
+    const interview = postMatchInterviewIdentity(lastResult.match.id);
+    const returnTo = buildTournamentReturnRoute(tournament.id);
+    const query = new URLSearchParams({
+      tab: 'interviews',
+      interview: interview.id,
+      source: interview.sourceId,
+      returnTo,
+    });
+    navigate(`/press?${query.toString()}`);
   }
 
   async function abandonTournament() {
@@ -588,7 +652,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       className={phase === 'match' ? 'h-[calc(100dvh-1rem)] sm:h-[min(48rem,calc(100dvh-2rem))]' : ''}
     >
       <div className={`flex min-h-0 flex-col ${phase === 'match' ? 'h-full' : ''}`}>
-        <div className="mb-3 flex items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
+        <div className="mb-3 flex shrink-0 items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
 
         {run && <RoundTimeline run={run} />}
 
@@ -644,7 +708,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
             {medical && <PhysicalPanel medical={medical} profile={profile} staff={staff} />}
             <div className="rounded-xl bg-secondary/30 p-3 text-xs"><span className="text-muted-foreground">Tática salva: </span><strong>{TOURNAMENT_STRATEGY_OPTIONS.find((item) => item.id === run.strategy?.id)?.label}</strong></div>
             <button onClick={startMatch} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
-            {(profile.energy || 0) < 35 && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
+            {((profile.energy || 0) < 35 || isInjured(profile)) && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
           </div>
         )}
 
@@ -653,7 +717,17 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         )}
 
         {phase === 'round_result' && lastResult && (
-          <div className="space-y-4 text-center"><StateMessage icon={CheckCircle} title="Vitória e fim do dia competitivo" body={`${lastResult.match.round}: ${lastResult.matchState.setsA}-${lastResult.matchState.setsB}. ${lastResult.nextMatch?.round} foi agendada para ${formatDay(lastResult.nextMatch?.date)}.`} tone="green" /><MatchRecapPremium matchState={lastResult.matchState} title={`Vitória · ${lastResult.match.round}`} />{physicalReport && <p className="text-xs text-muted-foreground">Energia: {profile.energy}% · Fadiga: {normalizeFatigue(profile.fatigue)}%</p>}<div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs"><p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Pós-jogo disponível</p><p className="mt-1 text-muted-foreground">Entrevista, notícias e preparação agora fazem parte do fluxo normal da carreira.</p></div><button onClick={onClose} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Voltar à carreira</button></div>
+          <div className="space-y-4 text-center">
+            <StateMessage icon={CheckCircle} title="Vitória e fim do dia competitivo" body={`${lastResult.match.round}: ${lastResult.matchState.setsA}-${lastResult.matchState.setsB}. ${lastResult.nextMatch?.round} foi agendada para ${formatDay(lastResult.nextMatch?.date)}.`} tone="green" />
+            <MatchRecapPremium matchState={lastResult.matchState} title={`Vitória · ${lastResult.match.round}`} />
+            {physicalReport && <p className="text-xs text-muted-foreground">Energia: {profile.energy}% · Fadiga: {normalizeFatigue(profile.fatigue)}%</p>}
+            <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs">
+              <p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p>
+              <p className="mt-1 text-muted-foreground">Ela é opcional. Ao concluir, você retorna diretamente à campanha deste torneio.</p>
+            </div>
+            <button onClick={openPostMatchInterview} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>
+            <button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Continuar no torneio</button>
+          </div>
         )}
 
         {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={onClose} profile={profile} />}

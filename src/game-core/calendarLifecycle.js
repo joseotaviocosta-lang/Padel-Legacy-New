@@ -5,8 +5,40 @@ import { isInjured } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 import { shouldBlockBeforeAdvance, getInjuryAutoResolution } from './calendarAdvancePolicy';
 import { compactGameStateReport } from './gameStateReport.js';
+import { gameRepository } from '@/gameplay/services/runtime.js';
+import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
+import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
+import { restoreCareerSnapshotOnFailure } from './careerAdvanceTransaction.js';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
+
+async function buildAdvanceFailureContext(profile, snapshot, error) {
+  const failedCareer = await gameRepository.getActiveCareer({ fresh: false }).catch(() => snapshot);
+  const events = failedCareer?.entities?.CalendarEvent || [];
+  const messages = failedCareer?.entities?.CareerMessage || [];
+  const tournamentEvent = events.find((event) => event.status === 'scheduled' && event.event_type === 'tournament' && event.metadata?.tournament_run) || null;
+  const tournamentRun = tournamentEvent?.metadata?.tournament_run || null;
+  const activeMatch = tournamentRun?.matches?.[Number(tournamentRun?.currentRound || 0)] || null;
+  const pendingDecision = events.find((event) => event.status === 'scheduled' && event.requires_decision && event.start_date <= profile?.career_date) || error?.blockingEvent || null;
+  const pendingInterview = messages.find((message) => message.related_entity_type === 'PressInterview' && !message.is_read) || null;
+  const checkpoint = snapshot?.career_id
+    ? await getMatchCheckpointRepository().read(snapshot.career_id).catch(() => null)
+    : null;
+  return {
+    stage: error?.advanceStage || 'unknown',
+    date: profile?.career_date || null,
+    tournamentId: tournamentEvent?.related_id || tournamentRun?.tournamentId || null,
+    round: activeMatch?.round || null,
+    activeMatchId: activeMatch?.id || null,
+    checkpointState: checkpoint ? {
+      matchId: checkpoint.match_id,
+      round: checkpoint.round || null,
+      status: checkpoint.checkpoint_status || 'active',
+    } : null,
+    pendingInterview: pendingInterview ? { id: pendingInterview.related_entity_id || pendingInterview.id } : null,
+    pendingDecision: pendingDecision ? { id: pendingDecision.id, title: pendingDecision.title } : null,
+  };
+}
 
 async function getCriticalEventBeforeAdvance(profile) {
   const nextDate = addDays(profile.career_date || CAREER_START_DATE, 1);
@@ -32,6 +64,24 @@ async function resolveInjuryCalendarConflicts(profile) {
       requires_decision: false,
       metadata,
     });
+    // A rodada é marcada 'missed', mas sem isto a TournamentRegistration
+    // correspondente ficava 'confirmed' para sempre: nenhum outro código
+    // encerra a inscrição fora do fluxo normal de finalização/abandono do
+    // torneio, o que acumula registros órfãos em carreiras longas com
+    // várias lesões durante torneios (ver docs/BETA_READINESS_PHASE10.md).
+    if (resolution.injury_resolution === 'tournament_missed' && event.related_id) {
+      const registrations = await localGame.entities.TournamentRegistration.filter({
+        profile_id: profile.id,
+        tournament_id: event.related_id,
+      });
+      for (const registration of registrations || []) {
+        if (!['pending', 'confirmed'].includes(registration.status)) continue;
+        await localGame.entities.TournamentRegistration.update(registration.id, {
+          status: 'withdrawn',
+          withdrawal_reason: 'injury_auto_resolved',
+        });
+      }
+    }
     resolved.push({ event, resolution });
   }
 
@@ -43,22 +93,46 @@ async function resolveInjuryCalendarConflicts(profile) {
  * A partir da versão 2.2, os demais sistemas são coordenados pelo GameState.
  */
 export async function advanceCareerDay(profile, { deferGameState = false, deferGlobalProcessing = false, profiler = null } = {}) {
-  let currentProfile = profile;
-  const compacted = compactGameStateReport(profile?.game_state_last_report);
-  if (profile?.id && compacted.changed) {
-    currentProfile = await localGame.entities.PlayerProfile.update(profile.id, {
-      game_state_last_report: compacted.report,
-    });
-  }
+  const snapshot = profile?.id ? await gameRepository.getActiveCareer({ fresh: false }).catch(() => null) : null;
+  try {
+    let currentProfile = profile;
+    const compacted = compactGameStateReport(profile?.game_state_last_report);
+    if (profile?.id && compacted.changed) {
+      currentProfile = await localGame.entities.PlayerProfile.update(profile.id, {
+        game_state_last_report: compacted.report,
+      });
+    }
 
-  const oldDate = currentProfile?.career_date || CAREER_START_DATE;
-  const advancedProfile = await advanceDay(currentProfile, { deferGlobalProcessing, profiler });
-  const newDate = advancedProfile?.career_date || oldDate;
-  if (deferGameState) return advancedProfile;
-  const result = profiler
-    ? await profiler.measure('gameState', () => processGameStateDay(advancedProfile, oldDate, newDate))
-    : await processGameStateDay(advancedProfile, oldDate, newDate);
-  return result.profile || advancedProfile;
+    const oldDate = currentProfile?.career_date || CAREER_START_DATE;
+    const advancedProfile = await advanceDay(currentProfile, { deferGlobalProcessing, profiler });
+    const newDate = advancedProfile?.career_date || oldDate;
+    if (deferGameState) return advancedProfile;
+    const result = profiler
+      ? await profiler.measure('gameState', () => processGameStateDay(advancedProfile, oldDate, newDate))
+      : await processGameStateDay(advancedProfile, oldDate, newDate);
+    return result.profile || advancedProfile;
+  } catch (error) {
+    const context = await buildAdvanceFailureContext(profile, snapshot, error);
+    const rollback = await restoreCareerSnapshotOnFailure({
+      snapshot,
+      restore: (career) => gameRepository.saveActiveCareer(career),
+    });
+    const rollbackError = rollback.rollbackError;
+    const code = rollbackError ? 'advance_day_rollback_failed' : (error?.code || 'advance_day_failed');
+    if (error && typeof error === 'object') {
+      error.code = code;
+      error.context = { ...context, rollbackApplied: rollback.rollbackApplied };
+    }
+    registerBetaDiagnostic({
+      type: 'career-day-advance',
+      code,
+      message: error?.message || 'Falha ao avançar o dia.',
+      context: { ...context, rollbackApplied: rollback.rollbackApplied },
+      rollbackError: rollbackError?.message || null,
+    });
+    console.error('[CareerDayAdvance]', { code, ...context, rollbackApplied: rollback.rollbackApplied });
+    throw error;
+  }
 }
 
 /**

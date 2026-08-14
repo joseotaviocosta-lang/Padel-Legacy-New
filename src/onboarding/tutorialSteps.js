@@ -146,7 +146,7 @@ export const TUTORIAL_STEPS = [
     whyItMatters: 'Boas relações podem abrir oportunidades e reduzir conflitos.',
   }),
   step('press-known', 'visit_press', 'Responda à imprensa', '/press?tab=interviews', 'Dupla e relações', 'confirm_understanding', {
-    explanation: 'Quando uma entrevista estiver disponível, o sino e a Central de Comunicações avisarão. Abra a oportunidade, responda e acompanhe a repercussão.',
+    explanation: 'Quando uma entrevista estiver disponível, o sino e a Central de Notificações avisarão. Abra a oportunidade, responda e acompanhe a repercussão.',
     whyItMatters: 'Entrevistas influenciam reputação, torcida, patrocinadores e a narrativa da sua carreira.',
     actionLabel: 'Abrir imprensa',
   }),

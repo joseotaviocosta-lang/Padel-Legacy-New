@@ -1,6 +1,7 @@
 import { getPendingInterviews } from '@/lib/pressData.js';
 import { localGame } from '@/api/localGameClient.js';
-import { buildCareerMemory, getCareerAgent } from '@/lib/careerMemory.js';
+import { buildCareerMemory } from '@/lib/careerMemory.js';
+import { selectRelevantCareerNotifications } from '@/lib/notificationCenter.js';
 import { getTournamentReminderMilestone, tournamentReminderContextKey } from '@/lib/tournamentNotifications.js';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import {
@@ -8,18 +9,6 @@ import {
   isValidPostMatchInterviewMessage,
   matchIdFromInterviewMessage,
 } from '@/lib/postMatchInterview.js';
-
-export const COMMUNICATION_CATEGORIES = [
-  { id: 'all', label: 'Todas' },
-  { id: 'treinador', label: 'Treinador' },
-  { id: 'atleta', label: 'Parceiro' },
-  { id: 'empresario', label: 'Empresário' },
-  { id: 'federacao', label: 'Federação' },
-  { id: 'patrocinador', label: 'Patrocinadores' },
-  { id: 'clube', label: 'Clube' },
-  { id: 'imprensa', label: 'Imprensa' },
-  { id: 'sistema', label: 'Sistema' },
-];
 
 export function normalizeCareerMessage(message = {}) {
   const status = message.status || (message.is_read ? 'lida' : 'nao_lida');
@@ -53,9 +42,9 @@ export function isCareerCommunicationVisible(message, context = {}) {
 export async function listCareerCommunications(profileId, limit = 120, context = {}) {
   if (!profileId) return [];
   const rows = await localGame.entities.CareerMessage.filter({ profile_id: profileId }, '-created_date', limit).catch(() => []);
-  return (rows || [])
+  return selectRelevantCareerNotifications((rows || [])
     .map(normalizeCareerMessage)
-    .filter((message) => isCareerCommunicationVisible(message, context));
+    .filter((message) => isCareerCommunicationVisible(message, context)));
 }
 
 export async function markAllCommunicationsRead(profileId) {
@@ -65,14 +54,18 @@ export async function markAllCommunicationsRead(profileId) {
   return unread.length;
 }
 
-export async function markCareerCommunicationRead(message) {
-  if (!message?.id || !isCareerMessageUnread(message)) return normalizeCareerMessage(message);
-  const patch = {
+export function buildReadNotificationPatch(message = {}, readAt = new Date().toISOString()) {
+  return {
     is_read: true,
     is_new: false,
-    read_at: new Date().toISOString(),
+    read_at: readAt,
     ...(message.status === 'nao_lida' || !message.status ? { status: 'lida' } : {}),
   };
+}
+
+export async function markCareerCommunicationRead(message) {
+  if (!message?.id || !isCareerMessageUnread(message)) return normalizeCareerMessage(message);
+  const patch = buildReadNotificationPatch(message);
   const updated = await localGame.entities.CareerMessage.update(message.id, patch);
   return normalizeCareerMessage({ ...message, ...updated, ...patch });
 }
@@ -168,7 +161,6 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   const existingKeys = new Set(existing.map((row) => row.metadata?.context_key).filter(Boolean));
   const existingInterviewMatchIds = new Set(existing.map(matchIdFromInterviewMessage).filter(Boolean));
   const memory = buildCareerMemory(profile, context);
-  const agent = getCareerAgent(profile);
 
   const createOnce = (contextKey, payload) => {
     if (!contextKey || existingKeys.has(contextKey)) return null;
@@ -252,28 +244,6 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     });
   }
 
-  if (profile.coach_id) {
-    const fatigue = Number(profile.fatigue) || 0;
-    const energy = Number(profile.energy) || 0;
-    if (fatigue >= 65 || energy <= 30) {
-      await createOnce(`coach-condition:${careerDate}:${fatigue >= 65 ? 'fatigue' : 'energy'}`, {
-        sender_type: 'treinador', sender_name: profile.coach_name || 'Treinador principal',
-        title: fatigue >= 65 ? 'Precisamos reduzir a carga' : 'Sua energia está baixa',
-        content: fatigue >= 65
-          ? `Sua fadiga chegou a ${Math.round(fatigue)}. Recomendo priorizar recuperação e evitar treinos intensos nos próximos dias.`
-          : `Sua energia está em ${Math.round(energy)}. Um dia livre agora pode melhorar a qualidade dos próximos treinos.`,
-        priority: fatigue >= 80 || energy <= 15 ? 'alta' : 'normal',
-        related_entity_type: 'Coach', related_entity_id: profile.coach_id, related_entity_name: profile.coach_name,
-        status: 'decisao_pendente',
-        actions: [
-          { id: 'follow_recovery', label: 'Seguir recomendação', description: 'Fortalece a confiança com o treinador.', effect: { coachTrust: 2 } },
-          { id: 'review_later', label: 'Revisar depois', description: 'Sem impacto imediato.', effect: {} },
-        ],
-        metadata: { memory_type: 'physical_condition', fatigue, energy },
-      });
-    }
-  }
-
   const nextTournament = context.nextTournament;
   if (nextTournament?.id && nextTournament.start_date) {
     const days = daysBetween(careerDate, nextTournament.start_date);
@@ -290,21 +260,6 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         metadata: { tournament_id: nextTournament.id, reminder_milestone_days: milestone, notification_type: 'TOURNAMENT_UPCOMING' },
       });
     }
-  }
-
-  const recentWins = Number(context.recentWins ?? memory.recentWins ?? 0);
-  if (profile.partner_id && recentWins >= 3) {
-    await createOnce(`partner-streak:${careerDate}:${recentWins}`, {
-      sender_type: 'atleta', sender_name: context.partnerName || profile.partner_name || 'Seu parceiro',
-      title: 'Estamos em uma boa sequência',
-      content: `Vencemos ${recentWins} partidas recentes. Sinto que nossa comunicação em quadra está evoluindo.`,
-      status: 'decisao_pendente',
-      actions: [
-        { id: 'celebrate_together', label: 'Valorizar a parceria', description: 'Fortalece confiança e moral da dupla.', effect: { partnerTrust: 2, partnerMorale: 2 } },
-        { id: 'stay_focused', label: 'Manter o foco', description: 'Resposta profissional, com pequeno ganho de confiança.', effect: { partnerTrust: 1 } },
-      ],
-      metadata: { memory_type: 'recent_form', recent_wins: recentWins },
-    });
   }
 
   if (profile.partner_id && memory.partnershipMonths >= 6) {
@@ -337,22 +292,6 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     }
   }
 
-  if (memory.activeSponsorContracts === 0 && Number(profile.reputation || 0) >= 8) {
-    const month = careerDate.slice(0, 7);
-    await createOnce(`agent-sponsor-search:${month}`, {
-      sender_type: 'empresario', sender_name: agent.name,
-      title: 'Vou mapear oportunidades comerciais',
-      content: `Sua reputação já permite iniciar conversas com marcas compatíveis. Meu perfil ${agent.personalityLabel.toLowerCase()} priorizará propostas que façam sentido para o momento da carreira.`,
-      status: 'decisao_pendente',
-      actions: [
-        { id: 'prioritize_value', label: 'Priorizar melhor valor', description: 'Aumenta a confiança do empresário.', effect: { agentTrust: 1 } },
-        { id: 'prioritize_fit', label: 'Priorizar marcas compatíveis', description: 'Fortalece a relação de longo prazo.', effect: { agentTrust: 2 } },
-      ],
-      metadata: { memory_type: 'agent_strategy', agent_personality: agent.personality },
-      related_entity_type: 'Sponsor',
-    });
-  }
-
   // A imprensa passa a procurar o jogador quando existe uma entrevista
   // realmente disponível. A comunicação leva diretamente à ferramenta e usa
   // o ID do fato gerador para não reaparecer após ser respondida.
@@ -362,6 +301,17 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     registrations: context.registrations || [],
   });
   const answeredSources = new Set((context.pressArticles || []).map(article => article.source_event_id).filter(Boolean));
+  for (const message of existing) {
+    if (!isPostMatchInterviewMessage(message)) continue;
+    const sourceId = message.metadata?.interview_source_id;
+    if (!sourceId || !answeredSources.has(sourceId) || message.status === 'resolvida') continue;
+    operations.push({
+      type: 'update',
+      entityName: 'CareerMessage',
+      id: message.id,
+      data: { status: 'resolvida', is_read: true, is_new: false },
+    });
+  }
   for (const interview of pendingInterviews.filter(item => !answeredSources.has(item.sourceId)).slice(0, 3)) {
     const interviewMatchId = /** @type {any} */ (interview).matchId;
     if (interviewMatchId && existingInterviewMatchIds.has(String(interviewMatchId))) continue;
@@ -386,18 +336,6 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         match_id: interviewMatchId || null,
         memory_type: 'press_opportunity',
       },
-    });
-  }
-
-  if (memory.matchesPlayed >= 10) {
-    const milestone = Math.floor(memory.matchesPlayed / 10) * 10;
-    await createOnce(`coach-match-memory:${milestone}`, {
-      sender_type: 'treinador', sender_name: profile.coach_name || 'Treinador principal',
-      title: `${milestone} partidas analisadas`,
-      content: memory.recentWinRate >= 60
-        ? `Nosso aproveitamento recente está em ${memory.recentWinRate}%. O padrão de jogo está mais consistente; vamos preservar o que funciona e ajustar os detalhes.`
-        : `Já reunimos dados de ${milestone} partidas. O aproveitamento recente está em ${memory.recentWinRate}%, então vou reforçar decisões mais seguras no próximo plano semanal.`,
-      metadata: { memory_type: 'match_milestone', matches: milestone, recent_win_rate: memory.recentWinRate },
     });
   }
 

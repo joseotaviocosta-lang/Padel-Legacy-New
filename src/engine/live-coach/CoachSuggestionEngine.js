@@ -26,7 +26,7 @@ export class CoachSuggestionEngine {
       id: `suggestion-${pointNumber}-${pattern.patternId}`,
       type: 'coach_suggestion', patternId: pattern.patternId, category: pattern.category,
       observation: pattern.evidence,
-      evidence: { sampleSize: pattern.sampleSize, window: 'last_2_games', persistence: pattern.persistence },
+      evidence: { sampleSize: pattern.sampleSize, window: pattern.analysisWindow || 'last_2_games', persistence: pattern.persistence },
       confidence: confidenceScore >= 0.78 ? 'high' : confidenceScore >= 0.5 ? 'medium' : 'low',
       confidenceScore: Math.round(confidenceScore * 100) / 100,
       suggestedAdjustment: pattern.adjustment,

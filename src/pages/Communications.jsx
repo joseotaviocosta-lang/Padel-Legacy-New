@@ -1,13 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Inbox, Mail, Megaphone, Newspaper, Search, Shield, Sparkles } from 'lucide-react';
+import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, GraduationCap, Handshake, Mail, Megaphone, Newspaper, Search, Shield, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
-import { applyCareerCommunicationAction, COMMUNICATION_CATEGORIES, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
-import { buildCareerMemory, getCareerAgent, getMemoryHighlights } from '@/lib/careerMemory.js';
+import { applyCareerCommunicationAction, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
 import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
+import { getNotificationCategory, getNotificationCategoryLabel, NOTIFICATION_CATEGORIES } from '@/lib/notificationCenter.js';
 
 const SENDER_ICONS = { treinador: GraduationCap, atleta: Handshake, empresario: BriefcaseBusiness, federacao: Shield, patrocinador: Sparkles, clube: Building2, imprensa: Newspaper, sistema: Bell };
 const SENDER_TONES = { treinador: 'primary', atleta: 'success', empresario: 'premium', federacao: 'info', patrocinador: 'premium', clube: 'info', imprensa: 'warning', sistema: 'neutral' };
@@ -22,8 +22,6 @@ export default function Communications() {
   const [category, setCategory] = useState('all');
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
-  const [agent, setAgent] = useState(null);
-  const [memoryHighlights, setMemoryHighlights] = useState([]);
 
   const load = async () => {
     setLoading(true);
@@ -42,11 +40,8 @@ export default function Communications() {
       ]);
       const nextTournament = (tournaments || []).filter((item) => item.start_date >= activeProfile.career_date).sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
       const context = { nextTournament, matches, partnership: partnerships?.[0] || null, sponsorContracts, partnerName: activeProfile.partner_name, calendarEvents, registrations, pressArticles };
-      const memory = buildCareerMemory(activeProfile, context);
-      setAgent(getCareerAgent(activeProfile));
-      setMemoryHighlights(getMemoryHighlights(activeProfile, memory));
       await ensureContextualCareerCommunications(activeProfile, context);
-      setMessages(await listCareerCommunications(activeProfile.id, 120, { matches, profile: activeProfile }));
+      setMessages(await listCareerCommunications(activeProfile.id, 120, { matches, profile: activeProfile, pressArticles }));
     }
     setLoading(false);
   };
@@ -92,9 +87,8 @@ export default function Communications() {
 
   const unread = countUnreadCareerMessages(messages);
   const pending = selectPendingDecisions(messages).length;
-  const senders = new Set(messages.map((item) => item.sender_type)).size;
   const filtered = useMemo(() => messages.filter((item) => {
-    const matchesCategory = category === 'all' || item.sender_type === category;
+    const matchesCategory = category === 'all' || getNotificationCategory(item) === category;
     const haystack = `${item.title} ${item.content} ${item.sender_name}`.toLowerCase();
     return matchesCategory && haystack.includes(query.trim().toLowerCase());
   }), [messages, category, query]);
@@ -155,38 +149,31 @@ export default function Communications() {
     window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
   }
 
-  if (loading) return <LoadingState label="Carregando comunicações" />;
+  if (loading) return <LoadingState label="Carregando notificações" />;
 
   return (
     <Page size="wide">
       <PageContent>
-        <PageHeader eyebrow="Living Career" title="Central de Comunicações" description="Treinador, parceiro, empresário, federação, clube, imprensa e sistema em uma única caixa de entrada." icon={Inbox} action={unread > 0 ? <button type="button" onClick={markAll} className="inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"><CheckCheck className="h-4 w-4" /> Marcar todas como lidas</button> : null} />
+        <PageHeader eyebrow="Living Career" title="Central de Notificações" description="Acontecimentos e decisões relevantes da carreira em um único lugar." icon={Bell} action={unread > 0 ? <button type="button" onClick={markAll} className="inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"><CheckCheck className="h-4 w-4" /> Marcar todas como lidas</button> : null} />
         <div className="grid gap-3 sm:grid-cols-3">
           <StatCard label="Não lidas" value={unread} detail="Aguardando sua atenção" icon={Mail} tone={unread ? 'primary' : 'neutral'} />
           <StatCard label="Decisões" value={pending} detail="Precisam de uma resposta" icon={AlertCircle} tone={pending ? 'warning' : 'neutral'} />
-          <StatCard label="Fontes ativas" value={senders} detail="Pessoas e organizações" icon={Megaphone} tone="info" />
+          <StatCard label="Histórico" value={messages.length} detail="Notificações relevantes" icon={Megaphone} tone="info" />
         </div>
-        {agent && <Surface className="p-4">
-          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-3"><div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-premium/15"><BriefcaseBusiness className="h-5 w-5 text-premium" /></div><div><p className="text-[10px] font-bold uppercase tracking-[0.18em] text-premium">Seu empresário</p><h2 className="font-black">{agent.name}</h2><p className="text-xs text-muted-foreground">{agent.personalityLabel} · {agent.description}</p></div></div>
-            <div className="flex gap-2"><StatusBadge tone="premium">Confiança {agent.trust}</StatusBadge><StatusBadge tone="info">Negociação {agent.negotiation}</StatusBadge></div>
-          </div>
-          {memoryHighlights.length > 0 && <div className="mt-4 grid gap-2 sm:grid-cols-3">{memoryHighlights.map((highlight) => <div key={highlight} className="rounded-xl bg-secondary/45 px-3 py-2 text-xs font-semibold text-muted-foreground">{highlight}</div>)}</div>}
-        </Surface>}
 
         <Surface className="p-3 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
             <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-              {COMMUNICATION_CATEGORIES.map((item) => <button key={item.id} type="button" onClick={() => setCategory(item.id)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold transition-colors ${category === item.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/55 text-muted-foreground hover:text-foreground'}`}>{item.label}</button>)}
+              {NOTIFICATION_CATEGORIES.map((item) => <button key={item.id} type="button" onClick={() => setCategory(item.id)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold transition-colors ${category === item.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/55 text-muted-foreground hover:text-foreground'}`}>{item.label}</button>)}
             </div>
-            <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/70 bg-background/50 px-3 py-2 lg:w-72"><Search className="h-4 w-4 text-muted-foreground" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar mensagens" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></label>
+            <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/70 bg-background/50 px-3 py-2 lg:w-72"><Search className="h-4 w-4 text-muted-foreground" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar notificações" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></label>
           </div>
         </Surface>
 
-        {filtered.length === 0 ? <EmptyState icon={Inbox} title="Nenhuma comunicação encontrada" description={query || category !== 'all' ? 'Altere os filtros ou a busca.' : 'Quando algo importante acontecer na carreira, aparecerá aqui.'} /> : <div className="grid gap-2 lg:grid-cols-2">{filtered.map((message) => {
+        {filtered.length === 0 ? <EmptyState icon={Bell} title="Você está em dia" description={query || category !== 'all' ? 'Altere os filtros ou a busca.' : 'Nenhuma notificação exige sua atenção agora.'} /> : <div className="grid gap-2 lg:grid-cols-2">{filtered.map((message) => {
           const Icon = SENDER_ICONS[message.sender_type] || Bell;
           const isUnread = isCareerMessageUnread(message);
-          return <button type="button" key={message.id} onClick={() => openMessage(message)} className={`group rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:bg-card/80 ${isUnread ? 'border-primary/35 bg-primary/[0.045]' : 'border-border/65 bg-card/55'}`}><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/70"><Icon className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className={`truncate text-sm ${isUnread ? 'font-black' : 'font-bold'}`}>{message.title}</p>{isUnread && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}</div><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{message.sender_name}</p><p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{message.content}</p><div className="mt-3 flex items-center gap-2"><StatusBadge tone={SENDER_TONES[message.sender_type] || 'neutral'}>{COMMUNICATION_CATEGORIES.find((item) => item.id === message.sender_type)?.label || 'Sistema'}</StatusBadge>{message.career_date && <span className="text-[10px] text-muted-foreground">{formatDate(message.career_date)}</span>}{message.status === 'decisao_pendente' && <StatusBadge tone="warning">Decisão pendente</StatusBadge>}</div></div></div></button>;
+          return <button type="button" key={message.id} onClick={() => openMessage(message)} className={`group rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:bg-card/80 ${isUnread ? 'border-primary/35 bg-primary/[0.045]' : 'border-border/65 bg-card/55'}`}><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/70"><Icon className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className={`truncate text-sm ${isUnread ? 'font-black' : 'font-bold'}`}>{message.title}</p>{isUnread && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}</div><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{message.sender_name}</p><p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{message.content}</p><div className="mt-3 flex items-center gap-2"><StatusBadge tone={SENDER_TONES[message.sender_type] || 'neutral'}>{getNotificationCategoryLabel(message)}</StatusBadge>{message.career_date && <span className="text-[10px] text-muted-foreground">{formatDate(message.career_date)}</span>}{message.status === 'decisao_pendente' && <StatusBadge tone="warning">Decisão pendente</StatusBadge>}</div></div></div></button>;
         })}</div>}
       </PageContent>
 

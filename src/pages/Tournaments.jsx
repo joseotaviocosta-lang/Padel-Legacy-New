@@ -166,7 +166,7 @@ export default function Tournaments() {
     const [matches, tournamentList, runEvents] = await Promise.all([
       localGame.entities.Match.list('-created_date', 100),
       localGame.entities.Tournament.list('-start_date', 200),
-      localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled', event_type: 'tournament' }).catch(() => []),
+      localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }).catch(() => []),
     ]);
     setMatches(matches || []);
     setTournaments(prepareTournamentList(tournamentList));

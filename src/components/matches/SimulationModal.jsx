@@ -72,6 +72,16 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     matchIdRef.current = createCheckpointMatchId();
     startedAtRef.current = new Date().toISOString();
     savedRef.current = false;
+    // M3.1: sem isto, o checkpoint que o próprio LiveMatch grava minutos depois
+    // de "Iniciar Partida" (ver saveCheckpoint) fazia `checkpoint` (o hook de
+    // useActiveMatchCheckpoint usado aqui mesmo, dentro deste componente)
+    // passar a apontar para a partida QUE ACABOU DE COMEÇAR — e resumeDecided
+    // só virava true dentro de resumeMatch()/discardResume(), nunca ao iniciar
+    // uma partida nova. pendingResume ficava true "por baixo" durante toda a
+    // partida em andamento, uma inconsistência de estado latente que não
+    // aparecia na UI hoje (a tela de recovery só renderiza em phase==='config'),
+    // mas que fica perigosa caso qualquer futuro remount volte para 'config'.
+    setResumeDecided(true);
     setPhase('live');
   }
 
@@ -170,7 +180,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         </span>
       )}
       size="md"
-      className={phase === 'live' ? 'md:h-[min(46rem,92dvh)]' : ''}
+      className={phase === 'live' ? 'h-[calc(100dvh-1rem)] md:h-[min(46rem,92dvh)]' : ''}
     >
         {/* Recovery — partida treino interrompida antes de terminar (M3, Parte 8) */}
         {phase === 'config' && pendingResume && (

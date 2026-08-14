@@ -87,7 +87,8 @@ export class RallyEngine {
       }
 
       const receivingTeam = activeTeam === 'A' ? 'B' : 'A';
-      const targetPlayer = teams[receivingTeam][(playerIndex + 1) % teams[receivingTeam].length];
+      const targetPlayer = this.chooseTargetPlayer(teams[receivingTeam], activeTactic, random);
+      const targetPlayerIndex = Math.max(0, teams[receivingTeam].findIndex((candidate) => candidate.id === targetPlayer?.id));
       memory.record({
         team: activeTeam,
         playerId: player.id,
@@ -114,7 +115,7 @@ export class RallyEngine {
             const otherTeam = activeTeam === 'A' ? 'B' : 'A';
             this.position.applyOpponentZone(teams[otherTeam], movement.opponentZone);
             activeTeam = otherTeam;
-            playerIndex += 1;
+            playerIndex = targetPlayerIndex;
             pressure = 16;
             continue;
           }
@@ -221,7 +222,7 @@ export class RallyEngine {
       const otherTeam = activeTeam === 'A' ? 'B' : 'A';
       this.position.applyOpponentZone(teams[otherTeam], movement.opponentZone);
       activeTeam = otherTeam;
-      playerIndex += 1;
+      playerIndex = targetPlayerIndex;
       pressure = Math.min(100, pressure + (['smash', 'volley', 'chiquita'].includes(shot) ? 10 : 4));
     }
 
@@ -265,6 +266,29 @@ export class RallyEngine {
       rallyMemory: memory.events,
       coordinationEvents,
     };
+  }
+
+  chooseTargetPlayer(candidates = [], tactic = null, random) {
+    if (candidates.length <= 1) return candidates[0] || null;
+    const requestedTarget = tactic?.targetPlayer || tactic?.targetPlayerId;
+    const strategicTarget = requestedTarget
+      ? candidates.find((candidate) => candidate.id === requestedTarget || candidate.name === requestedTarget)
+      : null;
+    // Um plano explícito concentra o jogo, mas não transforma todo golpe em
+    // uma bola automática no mesmo atleta.
+    if (strategicTarget && random.next() < 0.68) return strategicTarget;
+
+    // Jogadores mais cansados recebem um pouco mais de volume. A escolha segue
+    // determinística pela seed da partida, porém deixa de estar presa ao índice
+    // global do rally (a causa do antigo 100/0 artificial).
+    const weights = candidates.map((candidate) => 1 + Math.max(0, 100 - Number(candidate.energy ?? 100)) / 200);
+    const total = weights.reduce((sum, value) => sum + value, 0);
+    let cursor = random.next() * total;
+    for (let index = 0; index < candidates.length; index += 1) {
+      cursor -= weights[index];
+      if (cursor <= 0) return candidates[index];
+    }
+    return candidates.at(-1);
   }
 
   isForcedError({ pressure, execution, difficulty, rallyLength, memory }) {

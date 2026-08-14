@@ -18,7 +18,7 @@ export default function ActiveMatchRecoveryBanner() {
   if (!checkpoint) return null;
 
   const isTournament = checkpoint.type === 'tournament';
-  const destination = isTournament ? '/game/tournaments' : '/game/matches';
+  const destination = isTournament ? '/tournaments' : '/matches';
 
   return (
     <div className="flex flex-col gap-2 rounded-2xl border border-primary/30 bg-primary/5 p-4 sm:flex-row sm:items-center sm:justify-between">

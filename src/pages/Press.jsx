@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
@@ -17,8 +17,10 @@ import {
 } from '@/lib/postMatchInterview.js';
 
 export default function Press() {
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const openedResourceRef = useRef(null);
+  const completedDeepLinkedInterviewRef = useRef(false);
   const [profile, setProfile] = useState(null);
   const [articles, setArticles] = useState([]);
   const [journalists, setJournalists] = useState([]);
@@ -93,6 +95,7 @@ export default function Press() {
     : [];
 
   async function handleStartInterview(interview) {
+    completedDeepLinkedInterviewRef.current = false;
     // Pick journalist based on interview type
     const bias = interview.questionCategory === 'post_loss' || interview.questionCategory === 'rumor' ? 'critical' : 'any';
     const journalist = pickJournalist(bias);
@@ -132,7 +135,10 @@ export default function Press() {
       const processedSources = new Set(profile.processed_press_interview_sources || []);
       const alreadyProcessed = processedSources.has(interview.sourceId);
       const answered = articles.find((item) => item.source_event_id === interview.sourceId && item.interview_status === 'answered');
-      if (answered && alreadyProcessed) return true;
+      if (answered && alreadyProcessed) {
+        completedDeepLinkedInterviewRef.current = true;
+        return true;
+      }
 
       if (postMatch && !alreadyProcessed) {
         await incrementMissionProgress(
@@ -200,6 +206,9 @@ export default function Press() {
 
       // Atualiza a interface localmente sem desmontar e remontar o modal.
       setArticles(prev => [article, ...prev].slice(0, 50));
+      window.dispatchEvent(new CustomEvent('padel:communications-updated', {
+        detail: { reason: 'press-interview-answered', sourceId: interview.sourceId },
+      }));
       if (!alreadyProcessed) setJournalists(prev => prev.map(item =>
         item.id === journalist.id
           ? {
@@ -215,11 +224,22 @@ export default function Press() {
         description: `${journalist.name} publicou: "${headline.substring(0, 50)}..."`,
       });
 
+      completedDeepLinkedInterviewRef.current = true;
       return true;
     } catch (e) {
       console.error(e);
       toast({ title: 'Erro', description: 'Falha ao publicar entrevista.', variant: 'destructive' });
       return false;
+    }
+  }
+
+  function closeInterview() {
+    setActiveInterview(null);
+    setActiveJournalist(null);
+    const returnTo = searchParams.get('returnTo');
+    if (completedDeepLinkedInterviewRef.current && returnTo?.startsWith('/tournaments')) {
+      completedDeepLinkedInterviewRef.current = false;
+      navigate(returnTo, { replace: true });
     }
   }
 
@@ -369,7 +389,7 @@ export default function Press() {
           interview={activeInterview}
           journalist={activeJournalist}
           profile={profile}
-          onClose={() => { setActiveInterview(null); setActiveJournalist(null); }}
+          onClose={closeInterview}
           onComplete={handleCompleteInterview}
         />
       )}

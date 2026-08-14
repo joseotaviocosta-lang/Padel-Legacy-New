@@ -10,8 +10,8 @@ import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/l
 // as correções de posicionamento/colisão do M1.1 e do hotfix do sino do M2
 // (offset derivado de --pl-header-h/--pl-safe-t, folga de 1.5rem, container
 // pointer-events-none + botões pointer-events-auto) continuam aqui, agora
-// protegendo 4 botões em vez de 1. O Assistente da carreira (CareerAssistant)
-// continua um componente totalmente separado, fora deste arquivo.
+// protegendo os 4 botões utilitários preservados: Guia, BETA, Carreiras e Som.
+// A central de atenção da carreira vive exclusivamente no sino do header.
 export default function FloatingUtilityRail({ onOpenCareers }) {
   const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
 

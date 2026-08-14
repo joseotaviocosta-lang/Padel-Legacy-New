@@ -41,6 +41,13 @@ function checkpointPath(careerId) {
   return `${ACTIVE_MATCHES_DIRECTORY}/${careerId}.json`;
 }
 
+function notifyCheckpointChanged(careerId, checkpoint = null) {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('padel:match-checkpoint-changed', {
+    detail: { careerId, checkpoint },
+  }));
+}
+
 function isPlainObject(value) {
   return Boolean(value) && typeof value === 'object' && !Array.isArray(value);
 }
@@ -62,12 +69,41 @@ export function isValidCheckpointShape(data, careerId) {
   if (!Array.isArray(engineState.narration)) return false;
   if (!isPlainObject(engineState.teams) || !Array.isArray(engineState.teams.A) || !Array.isArray(engineState.teams.B)) return false;
   if (engineState.finished === true) return false; // partida concluída não é "em andamento"
+  if (data.type === 'tournament') {
+    if (typeof data.tournament_id !== 'string' || !data.tournament_id) return false;
+    if (typeof data.round !== 'string' || !data.round) return false;
+    if (data.checkpoint_status !== 'active') return false;
+    if (!isPlainObject(data.participant_ids)) return false;
+    if (!Array.isArray(data.participant_ids.A) || !Array.isArray(data.participant_ids.B)) return false;
+    if (data.participant_ids.A.length !== 2 || data.participant_ids.B.length !== 2) return false;
+  }
   return true;
 }
 
 export class MatchCheckpointRepository {
   constructor(storage = new GameStorage()) {
     this.storage = storage;
+    // GameStorage serializa escritas, mas remove() podia correr em paralelo
+    // com o último save e fazer o checkpoint antigo reaparecer após o jogo.
+    this.operationChains = new Map();
+  }
+
+  async enqueue(careerId, operation) {
+    const previous = this.operationChains.get(careerId) || Promise.resolve();
+    const current = previous.catch(() => {}).then(operation);
+    this.operationChains.set(careerId, current);
+    try {
+      return await current;
+    } finally {
+      if (this.operationChains.get(careerId) === current) this.operationChains.delete(careerId);
+    }
+  }
+
+  async removeFile(careerId) {
+    await this.initialize();
+    const removed = await this.storage.remove(checkpointPath(careerId));
+    if (removed) notifyCheckpointChanged(careerId, null);
+    return removed;
   }
 
   async initialize() {
@@ -83,22 +119,24 @@ export class MatchCheckpointRepository {
    */
   async read(careerId) {
     if (!careerId) return null;
-    await this.initialize();
-    let data;
-    try {
-      data = await this.storage.readJsonIfExists(checkpointPath(careerId), null);
-    } catch (error) {
-      console.warn('[MatchCheckpoint] falha ao ler checkpoint, tratando como corrompido.', { careerId, error });
-      await this.clear(careerId).catch(() => {});
-      return null;
-    }
-    if (!data) return null;
-    if (!isValidCheckpointShape(data, careerId)) {
-      console.warn('[MatchCheckpoint] checkpoint com formato inválido/incompatível, descartando.', { careerId, version: data?.checkpoint_schema_version });
-      await this.clear(careerId).catch(() => {});
-      return null;
-    }
-    return data;
+    return this.enqueue(careerId, async () => {
+      await this.initialize();
+      let data;
+      try {
+        data = await this.storage.readJsonIfExists(checkpointPath(careerId), null);
+      } catch (error) {
+        console.warn('[MatchCheckpoint] falha ao ler checkpoint, tratando como corrompido.', { careerId, error });
+        await this.removeFile(careerId).catch(() => {});
+        return null;
+      }
+      if (!data) return null;
+      if (!isValidCheckpointShape(data, careerId)) {
+        console.warn('[MatchCheckpoint] checkpoint com formato inválido/incompatível, descartando.', { careerId, version: data?.checkpoint_schema_version });
+        await this.removeFile(careerId).catch(() => {});
+        return null;
+      }
+      return data;
+    });
   }
 
   /**
@@ -108,22 +146,41 @@ export class MatchCheckpointRepository {
    */
   async save(careerId, checkpoint) {
     if (!careerId) throw new Error('careerId é obrigatório para salvar um checkpoint de partida.');
-    await this.initialize();
-    const payload = {
-      ...checkpoint,
-      checkpoint_schema_version: CHECKPOINT_SCHEMA_VERSION,
-      career_id: careerId,
-      updated_at: new Date().toISOString(),
-    };
-    // Checkpoint não precisa (e não deve) do backup automático do save
-    // principal — é descartável por natureza assim que a partida termina.
-    return this.storage.writeJson(checkpointPath(careerId), payload, { backup: false, validate: false });
+    return this.enqueue(careerId, async () => {
+      await this.initialize();
+      const payload = {
+        ...checkpoint,
+        checkpoint_schema_version: CHECKPOINT_SCHEMA_VERSION,
+        career_id: careerId,
+        updated_at: new Date().toISOString(),
+      };
+      if (!isValidCheckpointShape(payload, careerId)) {
+        const error = /** @type {Error & { code?: string }} */ (new Error('Checkpoint de partida incompleto ou incompatível.'));
+        error.code = 'MATCH_CHECKPOINT_INVALID';
+        throw error;
+      }
+      // Checkpoint não precisa (e não deve) do backup automático do save
+      // principal — é descartável por natureza assim que a partida termina.
+      const saved = await this.storage.writeJson(checkpointPath(careerId), payload, { backup: false, validate: false });
+      notifyCheckpointChanged(careerId, payload);
+      return saved;
+    });
   }
 
   async clear(careerId) {
     if (!careerId) return false;
-    await this.initialize();
-    return this.storage.remove(checkpointPath(careerId));
+    return this.enqueue(careerId, () => this.removeFile(careerId));
+  }
+
+  /** Remove somente o checkpoint da partida concluída, nunca o de uma nova rodada. */
+  async clearIfMatch(careerId, matchId) {
+    if (!careerId || !matchId) return false;
+    return this.enqueue(careerId, async () => {
+      await this.initialize();
+      const current = await this.storage.readJsonIfExists(checkpointPath(careerId), null).catch(() => null);
+      if (!current || current.match_id !== matchId) return false;
+      return this.removeFile(careerId);
+    });
   }
 
   async exists(careerId) {

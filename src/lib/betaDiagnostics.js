@@ -12,6 +12,14 @@ function pushRuntimeError(entry) {
   if (runtimeErrors.length > MAX_RUNTIME_ERRORS) runtimeErrors.splice(0, runtimeErrors.length - MAX_RUNTIME_ERRORS);
 }
 
+export function registerBetaDiagnostic(entry = {}) {
+  pushRuntimeError({
+    type: entry.type || 'diagnostic',
+    ...entry,
+    stack: entry.stack ? cleanStack(entry.stack) : undefined,
+  });
+}
+
 export function installBetaDiagnostics() {
   if (listenersInstalled || typeof window === 'undefined') return () => {};
   listenersInstalled = true;

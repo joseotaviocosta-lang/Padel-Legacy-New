@@ -13,9 +13,11 @@ export class LiveMatchAnalytics {
     for (const shot of shots) {
       this.state.shots[shot.team][shot.shot] = (this.state.shots[shot.team][shot.shot] || 0) + 1;
       const row = this.state.players[shot.playerId] || (this.state.players[shot.playerId] = { shots: 0, targets: 0, errors: 0, winners: 0 });
+      row.name ||= Object.values(teams).flat().find((player) => player.id === shot.playerId)?.name || null;
       row.shots += 1;
       if (shot.targetPlayerId) {
         const target = this.state.players[shot.targetPlayerId] || (this.state.players[shot.targetPlayerId] = { shots: 0, targets: 0, errors: 0, winners: 0 });
+        target.name ||= Object.values(teams).flat().find((player) => player.id === shot.targetPlayerId)?.name || null;
         target.targets += 1;
       }
     }

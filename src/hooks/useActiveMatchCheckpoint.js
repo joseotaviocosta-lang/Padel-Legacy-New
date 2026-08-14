@@ -33,6 +33,15 @@ export function useActiveMatchCheckpoint(careerId) {
     return () => { active = false; };
   }, [refresh]);
 
+  useEffect(() => {
+    if (typeof window === 'undefined' || !careerId) return undefined;
+    const handleChange = (event) => {
+      if (event?.detail?.careerId === careerId) void refresh();
+    };
+    window.addEventListener('padel:match-checkpoint-changed', handleChange);
+    return () => window.removeEventListener('padel:match-checkpoint-changed', handleChange);
+  }, [careerId, refresh]);
+
   const clear = useCallback(async () => {
     if (!careerId) return;
     await getMatchCheckpointRepository().clear(careerId).catch(() => {});

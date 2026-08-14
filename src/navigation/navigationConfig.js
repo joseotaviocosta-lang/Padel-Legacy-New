@@ -100,7 +100,7 @@ export const NAV_GROUPS = [
       { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' },
       { to: '/game/legacy', icon: Crown, label: 'Legado' },
       { to: '/achievements', icon: Medal, label: 'Conquistas' },
-      { to: '/communications', icon: Inbox, label: 'Comunicações' },
+      { to: '/communications', icon: Inbox, label: 'Notificações' },
       { to: '/history', icon: History, label: 'História do padel' },
       { to: '/hall-of-fame', icon: Crown, label: 'Hall da fama' },
       { to: '/encyclopedia', icon: BookOpen, label: 'Enciclopédia' },
