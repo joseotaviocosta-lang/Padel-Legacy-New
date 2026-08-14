@@ -22,6 +22,7 @@ import { createMatchEndProfiler, scheduleSecondaryMatchWork } from '@/game-core/
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import LiveMatch from '@/components/matches/LiveMatch';
+import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBoundary.jsx';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { ModalShell } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
@@ -43,10 +44,11 @@ import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepositor
 import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import {
   buildTournamentMatchCheckpoint,
+  buildTournamentRecoverySession,
   buildTournamentReturnRoute,
   buildTournamentRoundCoreOperations,
-  inspectTournamentMatchCheckpoint,
 } from '@/game-core/tournamentMatchLifecycle.js';
+import { buildFreshTournamentRoundRecovery, probeTournamentRecoverySession } from '@/game-core/tournamentMatchRecoveryEngine.js';
 
 const TIER_STYLES = {
   Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
@@ -116,6 +118,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   // de qualquer descarte.
   const [resumeCheckpoint, setResumeCheckpoint] = useState(null);
   const [resumedEngineState, setResumedEngineState] = useState(null);
+  const [recoverySession, setRecoverySession] = useState(null);
+  const [resumeError, setResumeError] = useState('');
+  const [resuming, setResuming] = useState(false);
+  const [liveMatchSessionKey, setLiveMatchSessionKey] = useState(0);
   const savedRef = useRef(false);
   const { toast } = useToast();
 
@@ -184,31 +190,32 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // existe checkpoint válido para esta rodada (fallback pré-existente).
       const restoredMatch = getCurrentTournamentMatch(tournamentRun);
       const checkpoint = careerId ? await getMatchCheckpointRepository().read(careerId).catch(() => null) : null;
-      let matchedCheckpoint = null;
+      let matchedSession = null;
       if (tournamentRun.status === 'playing' && restoredMatch?.status === 'playing') {
-        const inspection = inspectTournamentMatchCheckpoint(checkpoint, {
+        const identityMatches = Boolean(checkpoint && (
+          (checkpoint.match_id === restoredMatch.id && checkpoint.tournament_id === tournament.id)
+          || (String(checkpoint.match_id) === String(restoredMatch.id) && String(checkpoint.tournament_id) === String(tournament.id))
+        ));
+        const session = probeTournamentRecoverySession(buildTournamentRecoverySession(checkpoint, {
           careerId,
           careerDate: loadedProfile?.career_date,
           tournament,
+          run: tournamentRun,
           match: restoredMatch,
           teamA: [loadedProfile, loadedPartner].filter(Boolean),
           teamB: restoredMatch.opponent || [],
-        });
-        const identityMatches = checkpoint?.tournament_id === tournament.id && checkpoint.match_id === restoredMatch.id;
-        if (identityMatches && inspection.valid) {
-          matchedCheckpoint = checkpoint;
-        } else {
-          console.error('[TournamentLifecycle]', inspection.diagnostic);
+        }));
+        matchedSession = session;
+        if (!identityMatches || session.status !== 'resumable') {
+          console.error('[TournamentLifecycle]', session.diagnostic);
           registerBetaDiagnostic({
             type: 'tournament-checkpoint-invalid',
-            ...inspection.diagnostic,
+            ...session.diagnostic,
           });
-          if (checkpoint?.match_id) await getMatchCheckpointRepository().clearIfMatch(careerId, checkpoint.match_id).catch(() => {});
-          tournamentRun = JSON.parse(JSON.stringify(tournamentRun));
-          tournamentRun.status = 'scheduled';
-          getCurrentTournamentMatch(tournamentRun).status = 'scheduled';
         }
       } else if (checkpoint?.type === 'tournament' && checkpoint.tournament_id === tournament.id) {
+        // O bracket já não reconhece esta partida como atual: checkpoint órfão
+        // ou finalizado. Limpeza idempotente, sem tocar em resultados/rodadas.
         await getMatchCheckpointRepository().clearIfMatch(careerId, checkpoint.match_id).catch(() => {});
       }
 
@@ -234,9 +241,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       setRun(tournamentRun);
       setSelectedStrategy(tournamentRun.strategy?.id || 'balanced');
       setLiveCoachSettings((current) => ({ ...current, ...(loadedProfile.live_coach_settings || {}) }));
-      if (matchedCheckpoint) {
-        setResumeCheckpoint(matchedCheckpoint);
-        setPhase('match_resume_prompt');
+      if (matchedSession) {
+        setRecoverySession(matchedSession);
+        setResumeCheckpoint(matchedSession.checkpoint);
+        setPhase(matchedSession.status === 'resumable' ? 'match_resume_prompt' : 'match_restart_prompt');
       } else {
         setPhase(getTournamentRunPhase(tournamentRun, loadedProfile.career_date));
       }
@@ -308,20 +316,87 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     }
   }
 
-  function resumeMatchCheckpoint() {
-    savedRef.current = false;
-    setResumedEngineState(resumeCheckpoint.engine_state);
-    setPhase('match');
+  async function resumeMatchCheckpoint() {
+    if (resuming) return;
+    setResuming(true);
+    setResumeError('');
+    try {
+      const session = probeTournamentRecoverySession(buildTournamentRecoverySession(resumeCheckpoint, {
+        careerId,
+        careerDate: profile?.career_date,
+        tournament,
+        run,
+        match: currentMatch,
+        teamA: [profile, partner].filter(Boolean),
+        teamB: opponent,
+      }));
+      if (session.status !== 'resumable') throw new Error('O checkpoint não é compatível com esta rodada.');
+      savedRef.current = false;
+      setRecoverySession(session);
+      setResumedEngineState(session.engineState);
+      setLiveMatchSessionKey((value) => value + 1);
+      setPhase('match');
+    } catch (error) {
+      handleResumeFailure(error, recoverySession);
+    } finally {
+      setResuming(false);
+    }
   }
 
-  async function discardResumeCheckpoint() {
-    if (careerId) await getMatchCheckpointRepository().clear(careerId).catch(() => {});
-    const reverted = JSON.parse(JSON.stringify(run));
-    reverted.status = 'scheduled';
-    getCurrentTournamentMatch(reverted).status = 'scheduled';
-    await persistRun(reverted);
-    setResumeCheckpoint(null);
-    setPhase(getTournamentRunPhase(reverted, profile.career_date));
+  function handleResumeFailure(error, session = recoverySession) {
+    const diagnostic = {
+      code: 'tournament_resume_failed',
+      careerId: careerId || null,
+      tournamentId: tournament?.id || null,
+      round: currentMatch?.round || null,
+      checkpointMatchId: session?.checkpoint?.match_id || resumeCheckpoint?.match_id || null,
+      tournamentCurrentMatchId: currentMatch?.id || null,
+      checkpointParticipants: session?.checkpoint?.participant_ids || null,
+      expectedParticipants: session?.participants?.ids || null,
+      hasEngineState: Boolean(session?.checkpoint?.engine_state || resumeCheckpoint?.engine_state),
+      checkpointStatus: session?.checkpoint?.checkpoint_status || resumeCheckpoint?.checkpoint_status || null,
+      careerDate: profile?.career_date || null,
+      message: error?.message || 'Falha ao montar a partida recuperada.',
+    };
+    console.error('[TournamentLifecycle]', diagnostic);
+    registerBetaDiagnostic({ type: 'tournament-resume', ...diagnostic });
+    setRecoverySession((current) => ({ ...(current || session || {}), status: 'resume_failed', diagnostic }));
+    setResumeError('Não foi possível continuar esta partida. Seu torneio e as rodadas anteriores permanecem preservados.');
+    setPhase('match_restart_prompt');
+  }
+
+  async function restartRoundFromZero() {
+    if (resuming) return;
+    setResuming(true);
+    setResumeError('');
+    try {
+      const fresh = buildFreshTournamentRoundRecovery({
+        careerId,
+        tournament,
+        run,
+        teamA: [profile, partner].filter(Boolean),
+        teamB: opponent,
+        initialTacticId: run.strategy?.matchTacticId || 'equilibrado',
+        coach,
+        liveCoachSettings,
+      });
+      const repository = getMatchCheckpointRepository();
+      // Há exatamente um arquivo transitório por carreira e esta ação só é
+      // oferecida para a rodada atual já validada como restart_required.
+      await getMatchCheckpointRepository().clear(careerId);
+      await persistRun(fresh.run);
+      await repository.save(careerId, fresh.checkpoint);
+      savedRef.current = false;
+      setResumeCheckpoint(fresh.checkpoint);
+      setRecoverySession(fresh.session);
+      setResumedEngineState(fresh.session.engineState);
+      setLiveMatchSessionKey((value) => value + 1);
+      setPhase('match');
+    } catch (error) {
+      handleResumeFailure(error, recoverySession);
+    } finally {
+      setResuming(false);
+    }
   }
 
   const saveMatchCheckpoint = useCallback((engineState) => {
@@ -689,11 +764,29 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
               <p className="text-lg font-black">Partida em andamento</p>
               <p className="mt-2 text-sm text-muted-foreground">{currentMatch.round} foi interrompida antes de terminar. Você pode continuar de onde parou, sem perder o placar.</p>
             </div>
-            <button onClick={resumeMatchCheckpoint} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg">
-              <Play className="h-4 w-4" /> Continuar partida
+            <button disabled={resuming} onClick={resumeMatchCheckpoint} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg disabled:opacity-60">
+              <Play className="h-4 w-4" /> {resuming ? 'Validando partida…' : 'Continuar partida'}
             </button>
-            <button onClick={discardResumeCheckpoint} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-secondary/50 px-4 text-xs font-bold text-muted-foreground">
+            <button disabled={resuming} onClick={restartRoundFromZero} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-secondary/50 px-4 text-xs font-bold text-muted-foreground disabled:opacity-60">
               <Trash2 className="h-3.5 w-3.5" /> Reiniciar esta rodada do zero
+            </button>
+          </div>
+        )}
+
+        {phase === 'match_restart_prompt' && currentMatch && (
+          <div className="space-y-4 text-center">
+            <div className="rounded-2xl border border-amber-500/35 bg-amber-500/10 p-6">
+              <History className="mx-auto mb-2 h-10 w-10 text-amber-300" />
+              <p className="text-lg font-black">Recuperação necessária</p>
+              <p className="mt-2 text-sm text-muted-foreground">{resumeError || 'Não foi possível recuperar o estado interrompido desta partida.'}</p>
+            </div>
+            {recoverySession?.status === 'resume_failed' && resumeCheckpoint && (
+              <button disabled={resuming} onClick={resumeMatchCheckpoint} className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl border border-primary/30 px-4 text-xs font-bold text-primary disabled:opacity-60">
+                <Play className="h-3.5 w-3.5" /> Tentar novamente
+              </button>
+            )}
+            <button disabled={resuming} onClick={restartRoundFromZero} className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg disabled:opacity-60">
+              <Trash2 className="h-4 w-4" /> {resuming ? 'Criando nova sessão…' : 'Reiniciar esta rodada'}
             </button>
           </div>
         )}
@@ -713,7 +806,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         )}
 
         {phase === 'match' && opponent.length > 0 && (
-          <div className="min-h-0 flex-1 overflow-hidden"><LiveMatch key={currentMatch.id} teamA={[playerForMatch, partner].filter(Boolean)} teamB={opponent} initialTacticId={run.strategy?.matchTacticId || 'equilibrado'} coach={coach} liveCoachSettings={liveCoachSettings} onFinished={handleMatchFinished} onDisplayModeChange={() => {}} initialState={resumedEngineState} onCheckpoint={saveMatchCheckpoint} /></div>
+          <LiveMatchRecoveryBoundary key={`${currentMatch.id}:${liveMatchSessionKey}`} onRecoveryError={(error) => handleResumeFailure(error, recoverySession)}>
+            <div className="min-h-0 flex-1 overflow-hidden"><LiveMatch teamA={[playerForMatch, partner].filter(Boolean)} teamB={opponent} initialTacticId={run.strategy?.matchTacticId || 'equilibrado'} coach={coach} liveCoachSettings={liveCoachSettings} onFinished={handleMatchFinished} onDisplayModeChange={() => {}} initialState={resumedEngineState} onCheckpoint={saveMatchCheckpoint} /></div>
+          </LiveMatchRecoveryBoundary>
         )}
 
         {phase === 'round_result' && lastResult && (

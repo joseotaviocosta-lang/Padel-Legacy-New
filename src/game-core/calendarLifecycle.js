@@ -9,8 +9,54 @@ import { gameRepository } from '@/gameplay/services/runtime.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import { restoreCareerSnapshotOnFailure } from './careerAdvanceTransaction.js';
+import { buildTournamentRecoverySession, shouldBlockCareerAdvanceForMatchRecovery } from './tournamentMatchLifecycle.js';
+import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
+
+async function guardActiveMatchBeforeAdvance(profile, snapshot) {
+  const careerId = snapshot?.career_id;
+  if (!careerId) return null;
+  const repository = getMatchCheckpointRepository();
+  const checkpoint = await repository.read(careerId).catch(() => null);
+  if (!checkpoint) return null;
+  if (checkpoint.type === 'practice') {
+    const error = /** @type {Error & { code?: string, recovery?: any }} */ (new Error('Existe uma partida treino em andamento. Continue ou encerre a partida antes de avançar o dia.'));
+    error.code = 'ACTIVE_MATCH_RECOVERY_REQUIRED';
+    throw error;
+  }
+
+  const events = snapshot?.entities?.CalendarEvent || [];
+  const event = events.find((item) => item.event_type === 'tournament' && String(item.related_id) === String(checkpoint.tournament_id)) || null;
+  const run = event?.metadata?.tournament_run || null;
+  const match = getCurrentTournamentMatch(run);
+  const tournaments = snapshot?.entities?.Tournament || [];
+  const tournament = tournaments.find((item) => String(item.id) === String(checkpoint.tournament_id))
+    || (event ? { id: event.related_id, name: run?.tournamentName || event.related_name } : null);
+  const partnerId = profile?.partner_id || checkpoint.participant_ids?.A?.[1];
+  const session = buildTournamentRecoverySession(checkpoint, {
+    careerId,
+    careerDate: profile?.career_date,
+    tournament,
+    run,
+    match,
+    teamA: [profile, partnerId ? { id: partnerId } : null].filter(Boolean),
+    teamB: match?.opponent || [],
+  });
+  if (session.status === 'orphaned') {
+    await repository.clearIfMatch(careerId, checkpoint.match_id).catch(() => {});
+    return session;
+  }
+  if (shouldBlockCareerAdvanceForMatchRecovery(session)) {
+    const error = /** @type {Error & { code?: string, recovery?: any }} */ (new Error(session.status === 'resumable'
+      ? 'Existe uma partida de torneio em andamento. Continue a partida antes de avançar o dia.'
+      : 'A rodada interrompida precisa ser reiniciada com segurança antes de avançar o dia.'));
+    error.code = 'ACTIVE_MATCH_RECOVERY_REQUIRED';
+    error.recovery = session;
+    throw error;
+  }
+  return session;
+}
 
 async function buildAdvanceFailureContext(profile, snapshot, error) {
   const failedCareer = await gameRepository.getActiveCareer({ fresh: false }).catch(() => snapshot);
@@ -95,6 +141,7 @@ async function resolveInjuryCalendarConflicts(profile) {
 export async function advanceCareerDay(profile, { deferGameState = false, deferGlobalProcessing = false, profiler = null } = {}) {
   const snapshot = profile?.id ? await gameRepository.getActiveCareer({ fresh: false }).catch(() => null) : null;
   try {
+    await guardActiveMatchBeforeAdvance(profile, snapshot);
     let currentProfile = profile;
     const compacted = compactGameStateReport(profile?.game_state_last_report);
     if (profile?.id && compacted.changed) {

@@ -24,7 +24,14 @@ export function useOverlayBehavior({ open, onClose, closeOnEscape = true }) {
 
     if (scrollbarWidth > 0) document.body.style.paddingRight = `${scrollbarWidth}px`;
     document.body.style.overflow = 'hidden';
-    const focusTimer = window.setTimeout(() => closeRef.current?.focus(), 0);
+    // M3.2: só força foco no botão fechar se nada dentro do painel já pegou
+    // foco sozinho (ex.: <input autoFocus> num formulário de onboarding) —
+    // antes isto sempre roubava o foco do campo de volta para o X logo após
+    // o autoFocus, fechando o teclado Android no primeiro toque.
+    const focusTimer = window.setTimeout(() => {
+      if (panelRef.current && panelRef.current.contains(document.activeElement)) return;
+      closeRef.current?.focus();
+    }, 0);
 
     // Mesma regra do Escape: só fecha de fato se closeOnEscape permitir (passos
     // obrigatórios de onboarding usam closeOnEscape=false). De todo modo o
@@ -36,9 +43,9 @@ export function useOverlayBehavior({ open, onClose, closeOnEscape = true }) {
     });
 
     const onKey = (event) => {
-      if (event.key === 'Escape' && closeOnEscape) {
+      if (event.key === 'Escape' && closeOnEscapeRef.current) {
         event.preventDefault();
-        onClose?.();
+        onCloseRef.current?.();
         return;
       }
       if (event.key !== 'Tab') return;
@@ -66,7 +73,19 @@ export function useOverlayBehavior({ open, onClose, closeOnEscape = true }) {
       unregisterOverlay(overlayId);
       previousFocusRef.current?.focus?.();
     };
-  }, [open, onClose, closeOnEscape, overlayId]);
+    // M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md): `onClose`/`closeOnEscape`
+    // ficam FORA das deps de propósito — os callers quase sempre passam
+    // `onClose` como arrow function inline (`onClose={() => {...}}`), então uma
+    // nova referência nascia a cada re-render do pai. Com esses valores nas
+    // deps, digitar num input controlado dentro do modal (o pai re-renderiza a
+    // cada tecla) fazia este efeito inteiro desmontar/remontar a cada
+    // caractere — e o cleanup chama `previousFocusRef.current?.focus?.()`,
+    // arrancando o foco do input de volta para o elemento que tinha foco antes
+    // do modal abrir. No teclado Android isso fecha o teclado a cada tecla
+    // (parecendo "a tela fecha sozinha"). Os valores atuais continuam
+    // acessíveis via onCloseRef/closeOnEscapeRef (atualizados em toda
+    // renderização, fora do efeito), então nada aqui fica desatualizado.
+  }, [open, overlayId]);
 
   return { closeRef, panelRef };
 }

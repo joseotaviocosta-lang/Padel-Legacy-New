@@ -37,6 +37,11 @@ import { buildCareerDecisionCenter } from '@/lib/careerDecisionCenter.js';
 import { buildWeeklyCareerReview } from '@/lib/weeklyCareerReview.js';
 import { buildSeasonCareerPlan } from '@/lib/seasonCareerPlan.js';
 import { buildStrategicCareerState } from '@/lib/strategicCareerAI.js';
+import { useCareer } from '@/careers/useCareer.js';
+import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
+import { getPartnerBot } from '@/lib/career.js';
+import { buildTournamentRecoverySession } from '@/game-core/tournamentMatchLifecycle.js';
+import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
 
 /**
  * Centro da Carreira (Fase 4 — docs/HOME_REDESIGN.md).
@@ -56,6 +61,8 @@ const safe = (promise, fallback = []) => promise.catch((error) => {
 });
 
 export default function CareerHub() {
+  const { activeCareer } = useCareer();
+  const { checkpoint: activeMatchCheckpoint } = useActiveMatchCheckpoint(activeCareer?.career_id);
   const [profile, setProfile] = useState(null);
   const [recentMatches, setRecentMatches] = useState([]);
   const [missions, setMissions] = useState([]);
@@ -179,6 +186,8 @@ export default function CareerHub() {
           matches,
           recentWins,
           partnerName: p.partner_name,
+          calendarEvents: tournamentEvents,
+          activeMatchCheckpoint,
         });
         if (mounted && contextual.length) setMessages([...contextual, ...normalizedMessages]);
 
@@ -217,6 +226,21 @@ export default function CareerHub() {
   const unreadCount = unreadMessages.length + pendingOffers.length;
 
   const nextTournament = upcomingTournaments[0];
+  const activeTournamentRecovery = useMemo(() => {
+    if (activeMatchCheckpoint?.type !== 'tournament' || !activeTournamentEvent || !profile) return null;
+    const run = activeTournamentEvent.metadata?.tournament_run;
+    const match = getCurrentTournamentMatch(run);
+    return buildTournamentRecoverySession(activeMatchCheckpoint, {
+      careerId: activeCareer?.career_id,
+      careerDate: profile.career_date,
+      tournament: { id: activeTournamentEvent.related_id, name: run?.tournamentName || activeTournamentEvent.related_name },
+      run,
+      match,
+      teamA: [profile, getPartnerBot(profile)].filter(Boolean),
+      teamB: match?.opponent || [],
+    });
+  }, [activeCareer?.career_id, activeMatchCheckpoint, activeTournamentEvent, profile]);
+  const hasTournamentRecoveryAction = ['resumable', 'restart_required', 'resume_failed'].includes(activeTournamentRecovery?.status);
 
   // Todas as chamadas abaixo já existiam antes da Fase 4 (mesmas funções,
   // mesmos parâmetros) — só passaram a alimentar a nova composição visual
@@ -249,8 +273,8 @@ export default function CareerHub() {
   const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
   const heroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
   const nextEvent = useMemo(
-    () => buildNextEvent({ profile, activeTournamentEvent, nextTournament }),
-    [profile, activeTournamentEvent, nextTournament],
+    () => buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction }),
+    [profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction],
   );
   // Polish 2 (objetivo 1.5): quando lesionado, o item "injury" do briefing
   // diário repetiria o mesmo dado de dias restantes que NextEventCard e
@@ -288,10 +312,10 @@ export default function CareerHub() {
   return (
     <Page size="wide" className="animate-fade-in">
       <PageContent>
-        <ActiveMatchRecoveryBanner />
+        <ActiveMatchRecoveryBanner profile={profile} tournamentEvent={activeTournamentEvent} recoverySession={activeTournamentRecovery} />
         {latestAnnualReport && profile.career_date?.endsWith('-01-01') && latestAnnualReport.generatedDate === profile.career_date && <AnnualReportHomeCard report={latestAnnualReport} />}
         {latestMonthlyReport && profile.career_date?.endsWith('-01') && latestMonthlyReport.generatedDate === profile.career_date && <MonthlyReportHomeCard report={latestMonthlyReport} />}
-        {activeTournamentEvent && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}
+        {activeTournamentEvent && !hasTournamentRecoveryAction && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}
         {/* Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.5): 'tournament' e
             'injury' repetiam exatamente a mesma informação que já aparece,
             mais completa/acionável, em NextEventCard (sempre visível logo
@@ -395,7 +419,7 @@ function getNextStep(profile, upcomingTournaments) {
   return { icon: Dumbbell, title: 'Hora de treinar', description: 'Evolua seus atributos com um treino hoje.', to: '/game/training', cta: 'Treinar agora' };
 }
 
-function buildNextEvent({ profile, activeTournamentEvent, nextTournament }) {
+function buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction = false }) {
   const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
   if (injured) {
     const days = Math.max(1, Number(profile.injury_days_remaining) || 1);
@@ -404,7 +428,7 @@ function buildNextEvent({ profile, activeTournamentEvent, nextTournament }) {
   const run = activeTournamentEvent?.metadata?.tournament_run;
   const activeMatch = run?.matches?.[run?.currentRound || 0];
   if (activeMatch) {
-    return { icon: Trophy, tone: 'premium', eyebrow: 'Em torneio', title: run.tournamentName || activeTournamentEvent.related_name || 'Torneio', detail: `${activeMatch.round} · ${activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}`, route: '/tournaments', cta: 'Ver partida' };
+    return { icon: Trophy, tone: 'premium', eyebrow: hasTournamentRecoveryAction ? 'Em andamento' : 'Em torneio', title: run.tournamentName || activeTournamentEvent.related_name || 'Torneio', detail: `${activeMatch.round} · ${hasTournamentRecoveryAction ? 'use a ação de recuperação acima' : activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}`, route: '/tournaments', cta: hasTournamentRecoveryAction ? null : 'Ver partida' };
   }
   if (nextTournament) {
     const days = daysUntil(profile?.career_date, nextTournament.start_date);
@@ -548,7 +572,7 @@ function NextEventCard({ event }) {
           <p className="mt-1 text-xs text-muted-foreground">{event.detail}</p>
         </div>
       </div>
-      <Link to={event.route} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary">{event.cta} <ChevronRight className="h-3.5 w-3.5" /></Link>
+      {event.cta && <Link to={event.route} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary">{event.cta} <ChevronRight className="h-3.5 w-3.5" /></Link>}
     </Surface>
   );
 }

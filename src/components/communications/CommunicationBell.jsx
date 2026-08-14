@@ -12,8 +12,11 @@ import {
   getNotificationCategoryLabel,
   isNotificationFromCareerDate,
 } from '@/lib/notificationCenter.js';
+import { useCareer } from '@/careers/useCareer.js';
+import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 
 export default function CommunicationBell({ compact = false }) {
+  const { activeCareer } = useCareer();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
@@ -30,7 +33,7 @@ export default function CommunicationBell({ compact = false }) {
 
     // O sino também executa a reconciliação contextual. Assim novas mensagens
     // aparecem mesmo quando o jogador avança o calendário sem voltar à Home.
-    const [tournaments, matches, partnerships, sponsorContracts, calendarEvents, registrations, pressArticles] = await Promise.all([
+    const [tournaments, matches, partnerships, sponsorContracts, calendarEvents, registrations, pressArticles, activeMatchCheckpoint] = await Promise.all([
       localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
       localGame.entities.Match.filter({ profile_id: profile.id }, '-created_date', 40).catch(() => []),
       localGame.entities.Partnership.filter({ profile_id: profile.id, status: 'ativa' }, '-started_career_date', 1).catch(() => []),
@@ -38,6 +41,7 @@ export default function CommunicationBell({ compact = false }) {
       localGame.entities.CalendarEvent.filter({ profile_id: profile.id }, 'start_date', 100).catch(() => []),
       localGame.entities.TournamentRegistration.filter({ profile_id: profile.id }, '-registered_at', 100).catch(() => []),
       localGame.entities.PressArticle.filter({ profile_id: profile.id }, '-created_date', 100).catch(() => []),
+      getMatchCheckpointRepository().read(activeCareer?.career_id).catch(() => null),
     ]);
     const nextTournament = (tournaments || [])
       .filter((item) => item.start_date && item.start_date >= (profile.career_date || '2026-01-01'))
@@ -59,12 +63,13 @@ export default function CommunicationBell({ compact = false }) {
       calendarEvents,
       registrations,
       pressArticles,
+      activeMatchCheckpoint,
     }).catch(() => []);
 
     const rows = await listCareerCommunications(profile.id, 200, { matches, profile, pressArticles });
     setMessages(rows);
     if (created.length) window.dispatchEvent(new CustomEvent('padel:communications-created', { detail: { count: created.length } }));
-  }, []);
+  }, [activeCareer?.career_id]);
 
   useEffect(() => {
     let active = true;

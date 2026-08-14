@@ -12,12 +12,14 @@ import { MATCH_TACTICS, getSetScoreString } from '@/lib/matchEngine';
 import { processMatchRelationships } from '@/lib/relationships';
 import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
+import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBoundary.jsx';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { useToast } from '@/components/ui/use-toast';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { Surface, StatusBadge, ProgressBar } from '@/components/design-system';
 import { getMatchCheckpointRepository, createCheckpointMatchId } from '@/careers/MatchCheckpointRepository.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
+import { probePracticeRecoverySession } from '@/game-core/practiceMatchRecoveryEngine.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
@@ -31,6 +33,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
   const [resumedEngineState, setResumedEngineState] = useState(null);
   const [resumeDecided, setResumeDecided] = useState(false);
+  const [liveMatchSessionKey, setLiveMatchSessionKey] = useState(0);
   const savedRef = useRef(false);
   const matchIdRef = useRef(null);
   const startedAtRef = useRef(null);
@@ -86,7 +89,22 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   }
 
   function resumeMatch() {
-    const engineState = checkpoint.engine_state;
+    // M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md, Problema A): antes desta
+    // sonda, um checkpoint com engine_state incompatível (schema antigo,
+    // campo ausente) só quebrava DEPOIS de montar o LiveMatch — sem boundary
+    // local aqui, a exceção subia até o BetaErrorBoundary global e derrubava
+    // o app inteiro, parecendo "a partida abre e fecha sozinha". O torneio já
+    // fazia essa validação (probeTournamentRecoverySession); aqui é o mesmo
+    // princípio para treino.
+    const session = probePracticeRecoverySession(checkpoint);
+    if (session.status !== 'resumable') {
+      console.warn('[SimulationModal] checkpoint de treino não pôde ser retomado, descartando.', session.issues);
+      clearCheckpoint();
+      setResumeDecided(true);
+      toast({ title: 'Não foi possível continuar', description: 'A partida interrompida não pôde ser recuperada. Inicie uma nova partida treino.', variant: 'destructive' });
+      return;
+    }
+    const engineState = session.engineState;
     setTeams({ partner: engineState.teams.A[1], opponents: engineState.teams.B, teamA: engineState.teams.A, teamB: engineState.teams.B });
     setResumedEngineState(engineState);
     matchIdRef.current = checkpoint.match_id;
@@ -99,6 +117,26 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   function discardResume() {
     clearCheckpoint();
     setResumeDecided(true);
+  }
+
+  // M3.2: rede de segurança para qualquer exceção de render/runtime que
+  // escape da partida ao vivo (checkpoint corrompido que passou pela sonda,
+  // ou uma falha genuína do engine em qualquer partida, retomada ou não) —
+  // mantém o SimulationModal montado em vez de derrubar o app inteiro para o
+  // BetaErrorBoundary global (mesmo padrão de LiveMatchRecoveryBoundary já
+  // usado no torneio).
+  function handleLiveMatchCrash(error) {
+    console.error('[SimulationModal] LiveMatch falhou durante a partida treino.', error);
+    if (careerId) getMatchCheckpointRepository().clear(careerId).catch(() => {});
+    savedRef.current = false;
+    matchIdRef.current = null;
+    startedAtRef.current = null;
+    setResumedEngineState(null);
+    setTeams(null);
+    setResult(null);
+    setLiveMatchSessionKey((value) => value + 1);
+    setPhase('config');
+    toast({ title: 'A partida foi interrompida', description: 'Ocorreu um erro inesperado durante a simulação. Você pode iniciar uma nova partida treino.', variant: 'destructive' });
   }
 
   const saveCheckpoint = useCallback((engineState) => {
@@ -268,18 +306,20 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
         {/* Live match */}
         {phase === 'live' && teams && (
-          <LiveMatch
-            teamA={teams.teamA}
-            teamB={teams.teamB}
-            initialTacticId={initialTacticId}
-            coach={coach}
-            liveCoachSettings={liveCoachSettings}
-            onFinished={handleFinished}
-            displayMode={displayMode}
-            onDisplayModeChange={changeDisplayMode}
-            initialState={resumedEngineState}
-            onCheckpoint={saveCheckpoint}
-          />
+          <LiveMatchRecoveryBoundary key={liveMatchSessionKey} onRecoveryError={handleLiveMatchCrash}>
+            <LiveMatch
+              teamA={teams.teamA}
+              teamB={teams.teamB}
+              initialTacticId={initialTacticId}
+              coach={coach}
+              liveCoachSettings={liveCoachSettings}
+              onFinished={handleFinished}
+              displayMode={displayMode}
+              onDisplayModeChange={changeDisplayMode}
+              initialState={resumedEngineState}
+              onCheckpoint={saveCheckpoint}
+            />
+          </LiveMatchRecoveryBoundary>
         )}
 
         {/* Result */}

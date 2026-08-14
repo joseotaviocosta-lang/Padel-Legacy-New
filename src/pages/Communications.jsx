@@ -8,11 +8,14 @@ import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, Loadi
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
 import { getNotificationCategory, getNotificationCategoryLabel, NOTIFICATION_CATEGORIES } from '@/lib/notificationCenter.js';
+import { useCareer } from '@/careers/useCareer.js';
+import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 
 const SENDER_ICONS = { treinador: GraduationCap, atleta: Handshake, empresario: BriefcaseBusiness, federacao: Shield, patrocinador: Sparkles, clube: Building2, imprensa: Newspaper, sistema: Bell };
 const SENDER_TONES = { treinador: 'primary', atleta: 'success', empresario: 'premium', federacao: 'info', patrocinador: 'premium', clube: 'info', imprensa: 'warning', sistema: 'neutral' };
 
 export default function Communications() {
+  const { activeCareer } = useCareer();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const openedMessageRef = useRef(null);
@@ -29,7 +32,7 @@ export default function Communications() {
     const activeProfile = await ensureMyProfile(user);
     setProfile(activeProfile);
     if (activeProfile) {
-      const [tournaments, matches, partnerships, sponsorContracts, calendarEvents, registrations, pressArticles] = await Promise.all([
+      const [tournaments, matches, partnerships, sponsorContracts, calendarEvents, registrations, pressArticles, activeMatchCheckpoint] = await Promise.all([
         localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
         localGame.entities.Match.filter({ profile_id: activeProfile.id }, '-created_date', 40).catch(() => []),
         localGame.entities.Partnership.filter({ profile_id: activeProfile.id, status: 'ativa' }, '-started_career_date', 1).catch(() => []),
@@ -37,9 +40,10 @@ export default function Communications() {
         localGame.entities.CalendarEvent.filter({ profile_id: activeProfile.id }, 'start_date', 100).catch(() => []),
         localGame.entities.TournamentRegistration.filter({ profile_id: activeProfile.id }, '-registered_at', 100).catch(() => []),
         localGame.entities.PressArticle.filter({ profile_id: activeProfile.id }, '-created_date', 100).catch(() => []),
+        getMatchCheckpointRepository().read(activeCareer?.career_id).catch(() => null),
       ]);
       const nextTournament = (tournaments || []).filter((item) => item.start_date >= activeProfile.career_date).sort((a, b) => a.start_date.localeCompare(b.start_date))[0];
-      const context = { nextTournament, matches, partnership: partnerships?.[0] || null, sponsorContracts, partnerName: activeProfile.partner_name, calendarEvents, registrations, pressArticles };
+      const context = { nextTournament, matches, partnership: partnerships?.[0] || null, sponsorContracts, partnerName: activeProfile.partner_name, calendarEvents, registrations, pressArticles, activeMatchCheckpoint };
       await ensureContextualCareerCommunications(activeProfile, context);
       setMessages(await listCareerCommunications(activeProfile.id, 120, { matches, profile: activeProfile, pressArticles }));
     }

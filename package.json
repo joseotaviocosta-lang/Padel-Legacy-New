@@ -160,7 +160,8 @@
     "test:career-beta-readiness": "node scripts/test-career-beta-readiness.mjs",
     "test:tournament-match-lifecycle": "node scripts/test-tournament-match-lifecycle.mjs",
     "test:mobile-m3-device-hotfix": "node scripts/test-mobile-m3-1-device-hotfix.mjs",
-    "test:notification-center-consolidation": "node scripts/test-notification-center-consolidation.mjs"
+    "test:notification-center-consolidation": "node scripts/test-notification-center-consolidation.mjs",
+    "test:tournament-resume-recovery": "node scripts/test-tournament-resume-recovery.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

@@ -9,6 +9,7 @@ import {
   isValidPostMatchInterviewMessage,
   matchIdFromInterviewMessage,
 } from '@/lib/postMatchInterview.js';
+import { inspectResumableTournamentEngineState } from '@/game-core/tournamentMatchLifecycle.js';
 
 export function normalizeCareerMessage(message = {}) {
   const status = message.status || (message.is_read ? 'lida' : 'nao_lida');
@@ -219,6 +220,31 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   // mesmo lote — assim o clique em uma notificação obsoleta nunca tenta abrir
   // um recurso que não existe mais (ver resolveNotificationDestination).
   const activeTournamentId = context.nextTournament?.id || null;
+  const activeTournamentEvent = (context.calendarEvents || []).find((event) => {
+    const run = event?.metadata?.tournament_run;
+    const match = run?.matches?.[Number(run?.currentRound || 0)];
+    return event.status === 'scheduled' && event.event_type === 'tournament' && run?.status === 'playing' && match?.status === 'playing';
+  }) || null;
+  const activeTournamentRun = activeTournamentEvent?.metadata?.tournament_run || null;
+  const activeTournamentMatch = activeTournamentRun?.matches?.[Number(activeTournamentRun?.currentRound || 0)] || null;
+  const recoveryTournamentId = activeTournamentEvent?.related_id || activeTournamentRun?.tournamentId || null;
+  const activeMatchCheckpoint = context.activeMatchCheckpoint;
+  const expectedRecoveryTeamA = [
+    { id: profile.id },
+    (profile.partner_id || activeMatchCheckpoint?.participant_ids?.A?.[1]) ? { id: profile.partner_id || activeMatchCheckpoint.participant_ids.A[1] } : null,
+  ].filter(Boolean);
+  const recoveryEngineInspection = inspectResumableTournamentEngineState(activeMatchCheckpoint?.engine_state, {
+    A: expectedRecoveryTeamA,
+    B: activeTournamentMatch?.opponent || [],
+  });
+  const checkpointMatchesActiveRound = Boolean(
+    activeMatchCheckpoint?.type === 'tournament'
+    && String(activeMatchCheckpoint.tournament_id) === String(recoveryTournamentId)
+    && String(activeMatchCheckpoint.match_id) === String(activeTournamentMatch?.id)
+    && String(activeMatchCheckpoint.round) === String(activeTournamentMatch?.round)
+    && activeMatchCheckpoint.checkpoint_status === 'active'
+    && recoveryEngineInspection.valid,
+  );
   for (const message of existing) {
     if (['resolvida', 'ignorada', 'invalidada', 'expirada'].includes(message.status)) continue;
     let shouldExpire = false;
@@ -228,7 +254,10 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       // Só expira quando sabemos com certeza que existe um próximo torneio
       // diferente — se a busca de torneios falhar/retornar vazia, o lembrete
       // antigo permanece intacto em vez de ser expirado por engano.
-      shouldExpire = Boolean(activeTournamentId) && message.metadata.tournament_id !== activeTournamentId;
+      shouldExpire = (Boolean(activeTournamentId) && message.metadata.tournament_id !== activeTournamentId)
+        || (Boolean(recoveryTournamentId) && String(message.metadata.tournament_id) === String(recoveryTournamentId));
+    } else if (message.notification_type === 'TOURNAMENT_RESUME') {
+      shouldExpire = !activeTournamentMatch || String(message.metadata?.match_id) !== String(activeTournamentMatch.id);
     }
     if (!shouldExpire) continue;
     operations.push({
@@ -245,7 +274,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   }
 
   const nextTournament = context.nextTournament;
-  if (nextTournament?.id && nextTournament.start_date) {
+  if (nextTournament?.id && nextTournament.start_date && String(nextTournament.id) !== String(recoveryTournamentId)) {
     const days = daysBetween(careerDate, nextTournament.start_date);
     const milestone = getTournamentReminderMilestone(days);
     if (milestone !== null) {
@@ -310,6 +339,29 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       entityName: 'CareerMessage',
       id: message.id,
       data: { status: 'resolvida', is_read: true, is_new: false },
+    });
+  }
+
+  if (activeTournamentMatch?.id && recoveryTournamentId) {
+    await createOnce(`tournament-resume:${recoveryTournamentId}:${activeTournamentMatch.id}`, {
+      message_type: 'tournament_resume',
+      notification_type: 'TOURNAMENT_RESUME',
+      sender_type: 'federacao', sender_name: 'Federação do Circuito',
+      title: checkpointMatchesActiveRound ? `Continue ${activeTournamentMatch.round}` : `Recupere ${activeTournamentMatch.round}`,
+      content: checkpointMatchesActiveRound
+        ? 'A partida foi interrompida e pode ser retomada com o placar preservado.'
+        : 'O estado interrompido precisa ser validado ou reiniciado. O bracket e as rodadas anteriores estão preservados.',
+      priority: 'alta',
+      related_entity_type: 'Tournament', related_entity_id: recoveryTournamentId,
+      related_entity_name: activeTournamentRun?.tournamentName || activeTournamentEvent.related_name,
+      destination: { type: 'TOURNAMENT_RUN', route: '/tournaments', params: { tournament: recoveryTournamentId, mode: 'run' } },
+      metadata: {
+        tournament_id: recoveryTournamentId,
+        match_id: activeTournamentMatch.id,
+        round: activeTournamentMatch.round,
+        notification_type: 'TOURNAMENT_RESUME',
+        checkpoint_resumable_candidate: checkpointMatchesActiveRound,
+      },
     });
   }
   for (const interview of pendingInterviews.filter(item => !answeredSources.has(item.sourceId)).slice(0, 3)) {
