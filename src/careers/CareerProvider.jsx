@@ -3,7 +3,7 @@ import { CareerContext } from './CareerContext.jsx';
 import { CareerManager } from './CareerManager.js';
 import { gameRepository } from '@/gameplay/services/runtime.js';
 import { missionRuntime } from '@/missions/missionSystem.js';
-import { timeAsync } from '@/dev/performanceProbe.js';
+import { profileAction, timeAsync } from '@/dev/performanceProbe.js';
 
 const careerManager = new CareerManager();
 
@@ -26,7 +26,11 @@ export function CareerProvider({ children }) {
     }
   }, []);
 
-  const selectCareer = useCallback(async (careerId) => {
+  // M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md, Parte 42): "load-career" é
+  // um dos 5 pontos explicitamente pedidos para o profiler de ação — mede
+  // no bundle release (perfdebug), diferente do `timeAsync` já existente
+  // (cortado do release, só existe em `npm run dev`).
+  const selectCareer = useCallback(async (careerId) => profileAction('load-career', async () => {
     setLoading(true);
     missionRuntime.setHydrationStatus('loading');
     try {
@@ -39,7 +43,7 @@ export function CareerProvider({ children }) {
     } catch (error) { missionRuntime.setHydrationStatus('error'); throw error; } finally {
       setLoading(false);
     }
-  }, []);
+  }, { careerId }), []);
 
   const createCareer = useCallback(async (payload) => {
     setLoading(true);

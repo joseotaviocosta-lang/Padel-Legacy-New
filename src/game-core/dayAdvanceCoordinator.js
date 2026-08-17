@@ -2,7 +2,7 @@ import { advanceCareerDay } from './calendarLifecycle';
 import { processGameStateDay } from './gameStateLifecycle.js';
 import { createDayAdvanceController } from './dayAdvanceController.js';
 import { localGame } from '@/api/localGameClient.js';
-import { timeAsync } from '@/dev/performanceProbe.js';
+import { profileAction, timeAsync } from '@/dev/performanceProbe.js';
 
 function broadcastProfileUpdate(profile, source = 'day-advance-coordinator') {
   if (typeof window === 'undefined' || !profile) return;
@@ -41,7 +41,11 @@ const controller = createDayAdvanceController({
 export function advanceCareerDayOnce(profile) {
   if (!profile?.id) return Promise.reject(new Error('Perfil da carreira indisponível.'));
   if (defaultDebugEnabled) console.debug('[GlobalAdvance] click');
-  return timeAsync('calendar: advance 1 day (fase rápida)', () => controller.run(profile));
+  // M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md, Partes 27/42): `timeAsync`
+  // acima é cortado do bundle release (import.meta.env.DEV); `profileAction`
+  // não é — precisa aparecer no overlay ?perfdebug=1 rodando no APK release,
+  // que foi onde a lentidão real foi reportada.
+  return profileAction('advance-day', () => timeAsync('calendar: advance 1 day (fase rápida)', () => controller.run(profile)));
 }
 
 export function isCareerDayAdvanceProcessing() {

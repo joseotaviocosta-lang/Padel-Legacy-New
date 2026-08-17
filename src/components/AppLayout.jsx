@@ -23,6 +23,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 import FloatingUtilityRail from '@/components/system/FloatingUtilityRail.jsx';
 import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
+import MobilePerformanceMonitor from '@/dev/MobilePerformanceMonitor.jsx';
+import { recordAction, useRenderCounter } from '@/dev/performanceProbe.js';
 
 const EXPANDED_GROUP_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -177,6 +179,7 @@ function useCareerHeaderData() {
 }
 
 export default function AppLayout() {
+  useRenderCounter('AppLayout');
   const location = useLocation();
   const performanceProfile = useAdaptivePerformance();
   const keyboardOpen = useKeyboardInset();
@@ -201,6 +204,28 @@ export default function AppLayout() {
     if (activeGroup?.id) setExpandedGroup(activeGroup.id);
     setMobileOpen(false);
   }, [activeGroup?.id, location.pathname]);
+
+  // M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md, Parte 6): mede
+  // tap → navigate() → primeira pintura útil da nova rota. Duplo rAF é a
+  // aproximação padrão de "o navegador já pintou o commit anterior" sem
+  // depender de uma API de paint timing que a WebView Android pode não
+  // implementar. O vão atravessa dois rAF (não é uma chamada síncrona/
+  // assíncrona só), por isso usa `recordAction` (duração já medida) em vez
+  // de `profileAction` (que mede o tempo da própria chamada de fn()).
+  useEffect(() => {
+    const start = performance.now();
+    let raf1 = null;
+    let raf2 = null;
+    raf1 = requestAnimationFrame(() => {
+      raf2 = requestAnimationFrame(() => {
+        recordAction('navigate-route', performance.now() - start, { to: location.pathname });
+      });
+    });
+    return () => {
+      if (raf1 != null) cancelAnimationFrame(raf1);
+      if (raf2 != null) cancelAnimationFrame(raf2);
+    };
+  }, [location.pathname]);
 
   useEffect(() => { localStorage.setItem(EXPANDED_GROUP_KEY, expandedGroup); }, [expandedGroup]);
   useEffect(() => { localStorage.setItem(COLLAPSED_SIDEBAR_KEY, String(sidebarCollapsed)); }, [sidebarCollapsed]);
@@ -294,6 +319,7 @@ export default function AppLayout() {
       <FeedbackSoundController />
       <BetaWelcome />
       <FloatingUtilityRail onOpenCareers={openCareerManager} />
+      <MobilePerformanceMonitor />
 
       {/* M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md, Problema D): a reserva
           inferior agora deriva de --pl-bottom-nav-h (mesmo token que

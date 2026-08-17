@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { Coins, Crown, HeartPulse, Volume2, VolumeX, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/lib/uiSound.js';
+import { useRenderCounter } from '@/dev/performanceProbe.js';
 
 export default function CareerHud({ profile, ranking, compact = false, className }) {
+  useRenderCounter('CareerHud');
   const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
 
   const energy = Math.round(Number(profile?.energy) || 0);

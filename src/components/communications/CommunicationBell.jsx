@@ -14,8 +14,10 @@ import {
 } from '@/lib/notificationCenter.js';
 import { useCareer } from '@/careers/useCareer.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
+import { useRenderCounter } from '@/dev/performanceProbe.js';
 
 export default function CommunicationBell({ compact = false }) {
+  useRenderCounter('CommunicationBell');
   const { activeCareer } = useCareer();
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
@@ -100,7 +102,11 @@ export default function CommunicationBell({ compact = false }) {
     };
   }, [load]);
 
-  const unread = countUnreadCareerMessages(messages);
+  // M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md, Parte 13): o sino vive no
+  // shell global (renderiza em toda página) — sem memo, esse filtro sobre
+  // até 200 mensagens rodava de novo a cada render do AppLayout, não só
+  // quando `messages` de fato mudava.
+  const unread = useMemo(() => countUnreadCareerMessages(messages), [messages]);
   const visibleMessages = useMemo(
     () => (view === 'unread' ? messages.filter(isCareerMessageUnread) : messages),
     [messages, view],

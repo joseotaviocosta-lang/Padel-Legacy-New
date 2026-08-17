@@ -43,7 +43,11 @@ check('App.jsx importou uma página estaticamente em vez de via PAGE_LOADERS (en
 // LIVEMATCH — RENDER (Parte 6, 11)
 // ═══════════════════════════════════════════════════════════════════════════
 
-check('NarrationEntry deixou de ser memoizado (React.memo) — 120 itens seriam reexecutados a cada ponto', liveMatch.includes('const NarrationEntry = React.memo(function NarrationEntry({ event })'));
+// M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md): o componente foi
+// reescrito como função nomeada (`NarrationEntryComponent`) + `React.memo`
+// separado em vez do memo(function...) inline original — mesma memoização,
+// forma diferente. Checa as duas peças em vez de um literal frágil.
+check('NarrationEntry deixou de ser memoizado (React.memo) — 120 itens seriam reexecutados a cada ponto', liveMatch.includes('const NarrationEntry = React.memo(NarrationEntryComponent)') && /function NarrationEntryComponent\(\{ ?event ?\}\)/.test(liveMatch));
 check('limite de 120 eventos renderizados na narração foi removido', liveMatch.includes('.slice(-120)'));
 check('checkpoint do LiveMatch passou a gravar a cada ponto (deveria gravar só em momentos seguros, via assinatura)', liveMatch.includes('checkpointSignatureRef.current === signature'));
 check('painéis inativos (tática/técnico/stats) passaram a ficar sempre montados (deveriam só montar quando activePanel os seleciona)', /activePanel === 'tactics' &&\s*\(/.test(liveMatch) && /activePanel === 'coach' &&\s*\(/.test(liveMatch) && /activePanel === 'stats' &&/.test(liveMatch));
@@ -78,7 +82,11 @@ check('categorias não-tutorial perderam o limite de itens exibidos por ciclo', 
 // INSTRUMENTAÇÃO ESTÁ REALMENTE LIGADA NOS PONTOS CERTOS (sem mudar lógica)
 // ═══════════════════════════════════════════════════════════════════════════
 
-check('CareerProvider não importa mais o performanceProbe (startup deixou de ser medido)', careerProvider.includes("import { timeAsync } from '@/dev/performanceProbe.js';"));
+// M3.4: o import ganhou `profileAction` ao lado de `timeAsync` (load-career
+// agora também é medido no bundle release, ver Parte 42) — checa que
+// `timeAsync` ainda é importado do módulo certo, sem depender da forma
+// exata da lista de imports.
+check('CareerProvider não importa mais o performanceProbe (startup deixou de ser medido)', /import \{[^}]*\btimeAsync\b[^}]*\} from '@\/dev\/performanceProbe\.js';/.test(careerProvider));
 check('CareerProvider parou de medir o carregamento inicial da carreira', careerProvider.includes("timeAsync('startup: CareerProvider ready'"));
 check('dayAdvanceCoordinator parou de medir o avanço de 1 dia', dayAdvanceCoordinator.includes("timeAsync('calendar: advance 1 day"));
 check('advanceCareerDayOnce deixou de delegar para controller.run (instrumentação alterou o comportamento real)', dayAdvanceCoordinator.includes('() => controller.run(profile)'));

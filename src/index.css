@@ -339,15 +339,32 @@
       min-height: calc(100dvh - 7.9rem);
     }
 
+    /* M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md): esta regra aumentava o
+       blur especificamente no mobile (16px + saturate 150%, contra 12px sem
+       saturate no desktop) — o viewport com o WebView mais restrito recebia
+       o backdrop-filter MAIS caro, não o mais barato. `.glass`/`.glass-premium`
+       aparecem ~276x na árvore JSX; sem justificativa de performance para a
+       inversão, alinhado ao valor do desktop (nunca mais caro no mobile do
+       que já era antes desta fase).
+       `data-perf-no-blur` (ligado pelo overlay ?perfdebug=1) desativa o
+       blur por completo para o teste A/B pedido nesta fase — não é o
+       padrão, só uma ferramenta de medição em tempo real no aparelho.
+    */
     .glass,
     .glass-premium {
-      backdrop-filter: blur(16px) saturate(150%);
+      backdrop-filter: blur(12px);
     }
 
     .hover-lift:hover,
     .glass-hover:hover {
       transform: none;
     }
+  }
+
+  html[data-perf-no-blur] .glass,
+  html[data-perf-no-blur] .glass-premium {
+    backdrop-filter: none !important;
+    background: hsl(228 30% 9% / 0.94) !important;
   }
 
   @media (prefers-reduced-motion: reduce) {
@@ -359,6 +376,17 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+
+  /* M3.4: mesmo efeito de prefers-reduced-motion, mas ligado pelo overlay
+     ?perfdebug=1 (data-perf-no-motion) para o teste A/B "motion normal vs
+     reduzido" pedido nesta fase — ferramenta de medição, não um novo padrão. */
+  html[data-perf-no-motion] *,
+  html[data-perf-no-motion] *::before,
+  html[data-perf-no-motion] *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
   }
 }
 

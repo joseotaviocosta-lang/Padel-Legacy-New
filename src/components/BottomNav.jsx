@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { NAV_GROUPS, groupForPath } from '@/navigation/navigationConfig.js';
 import { BottomSheet } from '@/components/design-system';
 import { preloadRoute } from '@/lib/routeModules';
+import { useRenderCounter } from '@/dev/performanceProbe.js';
 
 // Paridade conceitual desktop/mobile (docs/NAVIGATION_ARCHITECTURE.md):
 // os mesmos 6 grupos existem nos dois, só que "Gestão" fica agrupada dentro
@@ -52,6 +53,7 @@ function MoreSheet({ open, onClose }) {
 }
 
 export default function BottomNav({ hidden = false }) {
+  useRenderCounter('BottomNav');
   const location = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
   const activeGroupId = groupForPath(location.pathname)?.id;

@@ -177,7 +177,8 @@
     "test:page-hierarchy": "node scripts/test-page-hierarchy.mjs",
     "test:tournament-round-availability": "node scripts/test-tournament-round-availability.mjs",
     "test:tutorial-floating-guide": "node scripts/test-tutorial-floating-guide.mjs",
-    "test:header-next-tournament": "node scripts/test-header-next-tournament.mjs"
+    "test:header-next-tournament": "node scripts/test-header-next-tournament.mjs",
+    "test:mobile-performance-device": "node scripts/test-mobile-performance-m3-4.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

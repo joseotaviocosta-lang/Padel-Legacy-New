@@ -15,8 +15,8 @@ function pluralDays(value) {
 }
 
 /**
- * @param {object} input
- * @param {object|null} input.profile
+ * @param {object} [input]
+ * @param {object|null} [input.profile]
  * @param {Array<{id:string,name:string,start_date:string}>} [input.tournaments] Torneios com inscrições abertas (já filtrados por status, não filtrados por data).
  * @returns {{kind:string, label:{compact:string,full:string}, ariaLabel:string|null, tournamentId:string|null, daysUntil:number|null}|null}
  */
