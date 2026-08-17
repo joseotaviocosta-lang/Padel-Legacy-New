@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import {
   bucketEventLoopLag, createEventLoopLagMonitor, createFrameMonitor, createLongTaskMonitor,
-  disablePerfDebug, getActionLog, getDomNodeCount, getRenderCounts, isPerfDebugEnabled,
+  disablePerfDebug, getActionLog, getDomNodeCount, getRenderCounts, isPerfDebugEnabled, PERFDEBUG_CHANGE_EVENT,
   resetRenderCounts, setPerfModeAttribute,
 } from '@/dev/performanceProbe.js';
 
@@ -22,7 +22,7 @@ const SAMPLE_INTERVAL_MS = 500;
 const LONG_TASK_HISTORY_LIMIT = 8;
 
 export default function MobilePerformanceMonitor() {
-  const [active, setActive] = useState(false);
+  const [active, setActive] = useState(() => isPerfDebugEnabled());
   const [collapsed, setCollapsed] = useState(false);
   const [frameStats, setFrameStats] = useState(null);
   const [longTasks, setLongTasks] = useState([]);
@@ -37,6 +37,12 @@ export default function MobilePerformanceMonitor() {
   useEffect(() => {
     setActive(isPerfDebugEnabled());
   }, [location.pathname]);
+
+  useEffect(() => {
+    const syncActiveState = () => setActive(isPerfDebugEnabled());
+    window.addEventListener(PERFDEBUG_CHANGE_EVENT, syncActiveState);
+    return () => window.removeEventListener(PERFDEBUG_CHANGE_EVENT, syncActiveState);
+  }, []);
 
   useEffect(() => {
     if (!active) return undefined;

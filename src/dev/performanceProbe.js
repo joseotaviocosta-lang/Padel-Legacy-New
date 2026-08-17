@@ -50,6 +50,7 @@ export async function timeAsync(label, fn) {
 // ---------------------------------------------------------------------------
 
 const PERFDEBUG_STORAGE_KEY = 'padel:perfdebug';
+export const PERFDEBUG_CHANGE_EVENT = 'padel:perfdebug-changed';
 
 /** Ativado por `?perfdebug=1` (persiste em localStorage) ou já persistido de uma visita anterior. Nunca ativo por padrão. */
 export function isPerfDebugEnabled() {
@@ -70,8 +71,22 @@ export function isPerfDebugEnabled() {
   }
 }
 
+/** Persiste o gate de diagnóstico e avisa os consumidores na mesma WebView. */
+export function setPerfDebugEnabled(nextEnabled) {
+  if (typeof window === 'undefined') return false;
+  const enabledValue = nextEnabled === true;
+  try {
+    if (enabledValue) window.localStorage?.setItem(PERFDEBUG_STORAGE_KEY, '1');
+    else window.localStorage?.removeItem(PERFDEBUG_STORAGE_KEY);
+  } catch {
+    return false;
+  }
+  try { window.dispatchEvent(new Event(PERFDEBUG_CHANGE_EVENT)); } catch { /* ambiente sem EventTarget */ }
+  return enabledValue;
+}
+
 export function disablePerfDebug() {
-  try { window.localStorage?.removeItem(PERFDEBUG_STORAGE_KEY); } catch { /* ambiente sem localStorage */ }
+  return setPerfDebugEnabled(false);
 }
 
 // ── FPS / frame timing (Parte 3) ─────────────────────────────────────────

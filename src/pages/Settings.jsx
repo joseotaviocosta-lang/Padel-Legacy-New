@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Bug, Cog, ExternalLink, Gauge, Headphones, Info, Sliders, Volume2, VolumeX, BriefcaseBusiness } from 'lucide-react';
 import { useCareer } from '@/careers/useCareer.js';
 import { loadUiSoundPreferences, saveUiSoundPreferences, playUiSound } from '@/lib/uiSound.js';
+import { isPerfDebugEnabled, PERFDEBUG_CHANGE_EVENT, setPerfDebugEnabled } from '@/dev/performanceProbe.js';
 import {
   BrandMark,
   Page,
@@ -26,7 +27,14 @@ export default function Settings() {
   const { activeCareer } = useCareer();
   const motion = useMotionPolicy();
   const [sound, setSound] = useState(() => loadUiSoundPreferences());
+  const [performanceMonitorEnabled, setPerformanceMonitorEnabled] = useState(() => isPerfDebugEnabled());
   const version = typeof __APP_VERSION__ !== 'undefined' ? __APP_VERSION__ : 'beta';
+
+  useEffect(() => {
+    const syncPerformanceMonitor = () => setPerformanceMonitorEnabled(isPerfDebugEnabled());
+    window.addEventListener(PERFDEBUG_CHANGE_EVENT, syncPerformanceMonitor);
+    return () => window.removeEventListener(PERFDEBUG_CHANGE_EVENT, syncPerformanceMonitor);
+  }, []);
 
   function toggleSound() {
     const next = saveUiSoundPreferences({ enabled: !sound.enabled });
@@ -36,6 +44,10 @@ export default function Settings() {
 
   function changeVolume(event) {
     setSound(saveUiSoundPreferences({ volume: Number(event.target.value) }));
+  }
+
+  function togglePerformanceMonitor() {
+    setPerformanceMonitorEnabled(setPerfDebugEnabled(!performanceMonitorEnabled));
   }
 
   return (
@@ -126,6 +138,20 @@ export default function Settings() {
             <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
               Esses modos seguem as preferências do seu sistema (redução de movimento, economia de dados, memória e núcleos do dispositivo). Ainda não há alternância manual nesta versão.
             </p>
+            <div className="mt-4 flex items-center justify-between gap-3 border-t border-border/60 pt-4">
+              <div>
+                <p className="text-sm font-bold">Performance</p>
+                <p className="text-xs text-muted-foreground">Painel temporário para diagnóstico no aparelho físico.</p>
+              </div>
+              <button
+                type="button"
+                onClick={togglePerformanceMonitor}
+                aria-pressed={performanceMonitorEnabled}
+                className={`inline-flex h-10 shrink-0 items-center gap-2 rounded-xl border px-3 text-xs font-bold transition-colors ${performanceMonitorEnabled ? 'border-primary/30 bg-primary/10 text-primary' : 'border-border bg-secondary/50 text-muted-foreground'}`}
+              >
+                {performanceMonitorEnabled ? 'Ativado' : 'Desativado'}
+              </button>
+            </div>
           </Surface>
         </PageSection>
 

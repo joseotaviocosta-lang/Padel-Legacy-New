@@ -80,6 +80,21 @@ try {
 
   // ── isPerfDebugEnabled nunca ativo por padrão sem window ──
   gate('isPerfDebugEnabled() é false sem window (build/SSR) — nunca ativo por padrão', probe.isPerfDebugEnabled() === false);
+
+  // ── Hotfix de acesso no APK sem barra de endereço ──
+  const storage = new Map();
+  globalThis.window = {
+    location: { search: '' },
+    localStorage: {
+      getItem: (key) => storage.get(key) ?? null,
+      setItem: (key, value) => storage.set(key, value),
+      removeItem: (key) => storage.delete(key),
+    },
+    dispatchEvent: () => true,
+  };
+  gate('Toggle interno ativa e persiste perfdebug', probe.setPerfDebugEnabled(true) === true && probe.isPerfDebugEnabled() === true && storage.get('padel:perfdebug') === '1');
+  gate('Toggle interno desativa e remove a preferência', probe.setPerfDebugEnabled(false) === false && probe.isPerfDebugEnabled() === false && !storage.has('padel:perfdebug'));
+  delete globalThis.window;
 } finally {
   await server.close();
 }
@@ -126,9 +141,14 @@ gate('Todas as actions do CareerProvider continuam estabilizadas (useCallback) �
 const monitorSrc = read('src/dev/MobilePerformanceMonitor.jsx');
 gate('Overlay nunca renderiza sem isPerfDebugEnabled() (gate explícito antes do JSX)', /if \(!active\) return null;/.test(monitorSrc));
 gate('Overlay amostra no máximo ~2x/s (SAMPLE_INTERVAL_MS = 500, não a cada frame)', monitorSrc.includes('SAMPLE_INTERVAL_MS = 500'));
+gate('Overlay reage ao toggle interno sem recarregar a WebView', monitorSrc.includes('PERFDEBUG_CHANGE_EVENT'));
 
 const probeSrc = read('src/dev/performanceProbe.js');
 gate('perfdebug não depende de import.meta.env.DEV (precisa sobreviver ao bundle release)', !/isPerfDebugEnabled[\s\S]{0,200}import\.meta\.env\.DEV/.test(probeSrc));
 gate('mark/measure/timeAsync originais (DEV-only) continuam intocados', probeSrc.includes("const enabled = import.meta.env.DEV;"));
+
+const settingsSrc = read('src/pages/Settings.jsx');
+gate('Configurações oferece o toggle temporário Performance', settingsSrc.includes('togglePerformanceMonitor') && settingsSrc.includes('setPerfDebugEnabled'));
+gate('Toggle de Performance permanece desligado por padrão', !settingsSrc.includes('setPerfDebugEnabled(true)'));
 
 console.log(`\n${gates} gates executados, todos PASS.`);
