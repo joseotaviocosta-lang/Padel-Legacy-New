@@ -1,4 +1,4 @@
-export { createMatch, playPoint, applyMatchTactic, decideLiveCoachSuggestion, askLiveMatchPartner, formatPoints, getSetScoreString, MATCH_TACTICS, TEAM_IDS, getOpponentTeamId, getTieBreakServingTeam, getTieBreakServerPlayerIndex, validateCompletedMatch } from './MatchEngine.js';
+export { createMatch, playPoint, applyMatchTactic, decideLiveCoachSuggestion, askLiveMatchPartner, attachLiveCoach, formatPoints, getSetScoreString, MATCH_TACTICS, TEAM_IDS, getOpponentTeamId, getTieBreakServingTeam, getTieBreakServerPlayerIndex, validateCompletedMatch } from './MatchEngine.js';
 export { getMatchTactic, chooseBotTactic } from './MatchTactics.js';
 export { RallyEngine } from './RallyEngine.js';
 export { DecisionEngine } from './DecisionEngine.js';

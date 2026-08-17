@@ -2,6 +2,7 @@ import { advanceCareerDay } from './calendarLifecycle';
 import { processGameStateDay } from './gameStateLifecycle.js';
 import { createDayAdvanceController } from './dayAdvanceController.js';
 import { localGame } from '@/api/localGameClient.js';
+import { timeAsync } from '@/dev/performanceProbe.js';
 
 function broadcastProfileUpdate(profile, source = 'day-advance-coordinator') {
   if (typeof window === 'undefined' || !profile) return;
@@ -40,7 +41,7 @@ const controller = createDayAdvanceController({
 export function advanceCareerDayOnce(profile) {
   if (!profile?.id) return Promise.reject(new Error('Perfil da carreira indisponível.'));
   if (defaultDebugEnabled) console.debug('[GlobalAdvance] click');
-  return controller.run(profile);
+  return timeAsync('calendar: advance 1 day (fase rápida)', () => controller.run(profile));
 }
 
 export function isCareerDayAdvanceProcessing() {

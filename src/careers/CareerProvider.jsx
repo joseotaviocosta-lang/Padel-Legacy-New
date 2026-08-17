@@ -3,6 +3,7 @@ import { CareerContext } from './CareerContext.jsx';
 import { CareerManager } from './CareerManager.js';
 import { gameRepository } from '@/gameplay/services/runtime.js';
 import { missionRuntime } from '@/missions/missionSystem.js';
+import { timeAsync } from '@/dev/performanceProbe.js';
 
 const careerManager = new CareerManager();
 
@@ -101,7 +102,7 @@ export function CareerProvider({ children }) {
 
   useEffect(() => {
     let mounted = true;
-    (async () => {
+    (async () => timeAsync('startup: CareerProvider ready', async () => {
       setLoading(true);
       missionRuntime.setHydrationStatus('loading');
       try {
@@ -121,7 +122,7 @@ export function CareerProvider({ children }) {
       } finally {
         if (mounted) setLoading(false);
       }
-    })();
+    }))();
     return () => { mounted = false; };
   }, [reloadCareers]);
 

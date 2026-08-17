@@ -318,6 +318,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
               onDisplayModeChange={changeDisplayMode}
               initialState={resumedEngineState}
               onCheckpoint={saveCheckpoint}
+              matchType="practice"
+              matchId={matchIdRef.current}
             />
           </LiveMatchRecoveryBoundary>
         )}

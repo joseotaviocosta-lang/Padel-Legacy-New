@@ -163,7 +163,11 @@
     "test:mobile-m3-android-ux": "node scripts/test-mobile-m3-2-android-ux.mjs",
     "test:notification-center-consolidation": "node scripts/test-notification-center-consolidation.mjs",
     "test:tournament-resume-recovery": "node scripts/test-tournament-resume-recovery.mjs",
-    "test:match-launch-pipeline": "node scripts/test-match-launch-pipeline.mjs"
+    "test:match-launch-pipeline": "node scripts/test-match-launch-pipeline.mjs",
+    "test:mobile-performance": "node scripts/test-mobile-performance-m3-3.mjs",
+    "test:live-coach-practice": "node scripts/test-live-coach-practice.mjs",
+    "test:live-coach-tournament": "node scripts/test-live-coach-tournament.mjs",
+    "test:live-coach-realism": "node scripts/test-live-coach-realism.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

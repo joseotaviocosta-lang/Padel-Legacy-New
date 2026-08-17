@@ -807,7 +807,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
 
         {phase === 'match' && opponent.length > 0 && (
           <LiveMatchRecoveryBoundary key={`${currentMatch.id}:${liveMatchSessionKey}`} onRecoveryError={(error) => handleResumeFailure(error, recoverySession)}>
-            <div className="min-h-0 flex-1 overflow-hidden"><LiveMatch teamA={[playerForMatch, partner].filter(Boolean)} teamB={opponent} initialTacticId={run.strategy?.matchTacticId || 'equilibrado'} coach={coach} liveCoachSettings={liveCoachSettings} onFinished={handleMatchFinished} onDisplayModeChange={() => {}} initialState={resumedEngineState} onCheckpoint={saveMatchCheckpoint} /></div>
+            <div className="min-h-0 flex-1 overflow-hidden"><LiveMatch teamA={[playerForMatch, partner].filter(Boolean)} teamB={opponent} initialTacticId={run.strategy?.matchTacticId || 'equilibrado'} coach={coach} liveCoachSettings={liveCoachSettings} onFinished={handleMatchFinished} onDisplayModeChange={() => {}} initialState={resumedEngineState} onCheckpoint={saveMatchCheckpoint} matchType="tournament" matchId={currentMatch?.id || null} /></div>
           </LiveMatchRecoveryBoundary>
         )}
 

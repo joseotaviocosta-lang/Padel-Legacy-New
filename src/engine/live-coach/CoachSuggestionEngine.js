@@ -1,5 +1,7 @@
 const specialtyMap = { tecnico: ['technical', 'offensive'], estratega: ['plan', 'opponent', 'positional'], fisico: ['physical'], mental: ['mental'], motivacional: ['mental'], duplas: ['partnership', 'positional'] };
-const coachLevel = (coach) => Number(coach?.level) || ({ basico: 1, regional: 2, nacional: 3, elite: 4, lendario: 5 }[String(coach?.tier || '').toLowerCase()] || 1);
+// Mesmo catálogo real de tiers que LiveCoachObserver.levelOf (src/lib/coaches.js:
+// COACH_TIERS) — iniciante/profissional caíam os dois no fallback `1` antes.
+const coachLevel = (coach) => Number(coach?.level) || ({ iniciante: 1, regional: 2, profissional: 3, elite: 4, lendario: 5 }[String(coach?.tier || '').toLowerCase()] || 1);
 
 const impacts = {
   games_lost_streak: 'Interromper a sequência adversária com mais controle e variação.',

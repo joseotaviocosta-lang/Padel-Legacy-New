@@ -1,0 +1,446 @@
+{
+  "configuration": {
+    "runs": 20
+  },
+  "scenarios": {
+    "fresh": {
+      "label": "Carreira nova (temporada 1)",
+      "oneDayCoreMs": {
+        "avg": 285.5,
+        "p50": 332.42,
+        "p95": 545.55,
+        "max": 545.55,
+        "min": 144.18
+      },
+      "oneDaySecondaryMs": {
+        "avg": 2078.64,
+        "p50": 2330.09,
+        "p95": 3250.78,
+        "max": 3250.78,
+        "min": 1087.23
+      },
+      "oneDayWritesCore": {
+        "avg": 0,
+        "p50": 0,
+        "p95": 0,
+        "max": 0,
+        "min": 0
+      },
+      "oneDayWritesSecondary": {
+        "avg": 11.05,
+        "p50": 11,
+        "p95": 12,
+        "max": 12,
+        "min": 8
+      },
+      "oneDayCoreStages": {
+        "validation:monthlyReport": 97.472,
+        "validation:annualReport": 131.774,
+        "calendar": 0.629,
+        "recovery": 133.691,
+        "training": 1.501,
+        "missions": 1.599,
+        "TOTAL": 3220.19
+      },
+      "oneDaySecondaryStages": {
+        "partner": 0.888,
+        "world": 278.543,
+        "aiPartnerships": 0.497,
+        "aiCareerStrategy": 0.693,
+        "circuit": 483.719,
+        "circuitLife": 819.907,
+        "athleteIntelligence": 571.672,
+        "medical": 162.482,
+        "relationships": 5.154,
+        "staff": 170.361,
+        "livingWorld": 163.331,
+        "persist": 169.072,
+        "TOTAL": 2830.289
+      },
+      "threeDaysMs": {
+        "avg": 1835.87,
+        "p50": 2036.24,
+        "p95": 2555.53,
+        "max": 2555.53,
+        "min": 965.99
+      },
+      "threeDaysWrites": {
+        "avg": 28.7,
+        "p50": 29,
+        "p95": 30,
+        "max": 30,
+        "min": 26
+      },
+      "sevenDaysMs": {
+        "avg": 2224.06,
+        "p50": 2154.26,
+        "p95": 3376.64,
+        "max": 3376.64,
+        "min": 1227.71
+      },
+      "sevenDaysWrites": {
+        "avg": 35.95,
+        "p50": 36,
+        "p95": 38,
+        "max": 38,
+        "min": 34
+      }
+    },
+    "season3": {
+      "label": "3 temporadas de histórico",
+      "oneDayCoreMs": {
+        "avg": 287.21,
+        "p50": 250.13,
+        "p95": 882.15,
+        "max": 882.15,
+        "min": 215.73
+      },
+      "oneDaySecondaryMs": {
+        "avg": 2368.5,
+        "p50": 2327.59,
+        "p95": 3115.78,
+        "max": 3115.78,
+        "min": 1837.49
+      },
+      "oneDayWritesCore": {
+        "avg": 0,
+        "p50": 0,
+        "p95": 0,
+        "max": 0,
+        "min": 0
+      },
+      "oneDayWritesSecondary": {
+        "avg": 14.65,
+        "p50": 15,
+        "p95": 16,
+        "max": 16,
+        "min": 12
+      },
+      "oneDayCoreStages": {
+        "validation:monthlyReport": 59.723,
+        "validation:annualReport": 72.242,
+        "calendar": 0.017,
+        "recovery": 77.451,
+        "training": 0.078,
+        "missions": 0.022,
+        "TOTAL": 2085.302
+      },
+      "oneDaySecondaryStages": {
+        "partner": 0.051,
+        "world": 155.1,
+        "aiPartnerships": 0.023,
+        "aiCareerStrategy": 0.01,
+        "circuit": 239.358,
+        "circuitLife": 240.818,
+        "athleteIntelligence": 309.52,
+        "medical": 99.687,
+        "relationships": 1.959,
+        "staff": 97.796,
+        "livingWorld": 627.967,
+        "persist": 92.469,
+        "TOTAL": 1865.347
+      },
+      "threeDaysMs": {
+        "avg": 1658.42,
+        "p50": 1606.59,
+        "p95": 2395.87,
+        "max": 2395.87,
+        "min": 1377.9
+      },
+      "threeDaysWrites": {
+        "avg": 31.4,
+        "p50": 32,
+        "p95": 32,
+        "max": 32,
+        "min": 29
+      },
+      "sevenDaysMs": {
+        "avg": 2187.05,
+        "p50": 1914.69,
+        "p95": 3485.62,
+        "max": 3485.62,
+        "min": 1802.34
+      },
+      "sevenDaysWrites": {
+        "avg": 32.65,
+        "p50": 33,
+        "p95": 34,
+        "max": 34,
+        "min": 30
+      }
+    },
+    "heavy": {
+      "label": "Muito histórico/torneios",
+      "oneDayCoreMs": {
+        "avg": 328,
+        "p50": 305.67,
+        "p95": 452.11,
+        "max": 452.11,
+        "min": 287.47
+      },
+      "oneDaySecondaryMs": {
+        "avg": 3456.49,
+        "p50": 3268.95,
+        "p95": 6032.61,
+        "max": 6032.61,
+        "min": 2754.02
+      },
+      "oneDayWritesCore": {
+        "avg": 0,
+        "p50": 0,
+        "p95": 0,
+        "max": 0,
+        "min": 0
+      },
+      "oneDayWritesSecondary": {
+        "avg": 17.7,
+        "p50": 18,
+        "p95": 18,
+        "max": 18,
+        "min": 16
+      },
+      "oneDayCoreStages": {
+        "validation:monthlyReport": 102.674,
+        "validation:annualReport": 174.341,
+        "calendar": 0.025,
+        "recovery": 151.585,
+        "training": 0.061,
+        "missions": 0.012,
+        "TOTAL": 6484.764
+      },
+      "oneDaySecondaryStages": {
+        "partner": 0.05,
+        "world": 342.128,
+        "aiPartnerships": 0.013,
+        "aiCareerStrategy": 0.007,
+        "circuit": 528.089,
+        "circuitLife": 1036.54,
+        "athleteIntelligence": 782.661,
+        "medical": 482.308,
+        "relationships": 4.331,
+        "staff": 261.216,
+        "livingWorld": 2353.257,
+        "persist": 241.239,
+        "TOTAL": 6032.658
+      },
+      "threeDaysMs": {
+        "avg": 599.06,
+        "p50": 562.85,
+        "p95": 1003.09,
+        "max": 1003.09,
+        "min": 531.04
+      },
+      "threeDaysWrites": {
+        "avg": 14.65,
+        "p50": 15,
+        "p95": 16,
+        "max": 16,
+        "min": 13
+      },
+      "sevenDaysMs": {
+        "avg": 2709.14,
+        "p50": 2595.93,
+        "p95": 3786.28,
+        "max": 3786.28,
+        "min": 2332.65
+      },
+      "sevenDaysWrites": {
+        "avg": 31.4,
+        "p50": 32,
+        "p95": 33,
+        "max": 33,
+        "min": 29
+      }
+    },
+    "injured": {
+      "label": "Com lesão ativa",
+      "oneDayCoreMs": {
+        "avg": 326.02,
+        "p50": 311.11,
+        "p95": 508.17,
+        "max": 508.17,
+        "min": 230.53
+      },
+      "oneDaySecondaryMs": {
+        "avg": 3218.04,
+        "p50": 3151.48,
+        "p95": 4646.52,
+        "max": 4646.52,
+        "min": 2027.21
+      },
+      "oneDayWritesCore": {
+        "avg": 0,
+        "p50": 0,
+        "p95": 0,
+        "max": 0,
+        "min": 0
+      },
+      "oneDayWritesSecondary": {
+        "avg": 14.5,
+        "p50": 15,
+        "p95": 16,
+        "max": 16,
+        "min": 12
+      },
+      "oneDayCoreStages": {
+        "validation:monthlyReport": 62.531,
+        "validation:annualReport": 74.046,
+        "calendar": 0.016,
+        "recovery": 83.293,
+        "training": 0.06,
+        "missions": 0.013,
+        "TOTAL": 2393.308
+      },
+      "oneDaySecondaryStages": {
+        "partner": 0.038,
+        "world": 168.296,
+        "aiPartnerships": 0.01,
+        "aiCareerStrategy": 0.005,
+        "circuit": 243.067,
+        "circuitLife": 441.733,
+        "athleteIntelligence": 324.165,
+        "medical": 99.695,
+        "relationships": 1.456,
+        "staff": 98.689,
+        "livingWorld": 676.821,
+        "persist": 108.289,
+        "TOTAL": 2162.779
+      },
+      "threeDaysMs": {
+        "avg": 2285.49,
+        "p50": 2102.61,
+        "p95": 5012.78,
+        "max": 5012.78,
+        "min": 1445.56
+      },
+      "threeDaysWrites": {
+        "avg": 31.9,
+        "p50": 32,
+        "p95": 33,
+        "max": 33,
+        "min": 30
+      },
+      "sevenDaysMs": {
+        "avg": 2892.4,
+        "p50": 2628.06,
+        "p95": 7407.89,
+        "max": 7407.89,
+        "min": 1860.84
+      },
+      "sevenDaysWrites": {
+        "avg": 32.55,
+        "p50": 33,
+        "p95": 35,
+        "max": 35,
+        "min": 31
+      }
+    },
+    "monthBoundary": {
+      "label": "Virada de mês",
+      "oneDayCoreMs": {
+        "avg": 3752.69,
+        "p50": 3214.93,
+        "p95": 9076.58,
+        "max": 9076.58,
+        "min": 1710.36
+      },
+      "oneDaySecondaryMs": {
+        "avg": 11580.39,
+        "p50": 10093.24,
+        "p95": 24161.91,
+        "max": 24161.91,
+        "min": 5522.06
+      },
+      "oneDayWritesCore": {
+        "avg": 14,
+        "p50": 14,
+        "p95": 14,
+        "max": 14,
+        "min": 14
+      },
+      "oneDayWritesSecondary": {
+        "avg": 41.55,
+        "p50": 42,
+        "p95": 43,
+        "max": 43,
+        "min": 39
+      },
+      "oneDayCoreStages": {
+        "validation:monthlyReport": 122.583,
+        "validation:annualReport": 123.66,
+        "calendar": 0.021,
+        "recovery": 101.143,
+        "training": 0.061,
+        "monthlyBoundary:simulatePastTournaments": 408.165,
+        "monthlyBoundary:ensureFutureTournaments": 417.31,
+        "monthlyBoundary:processMonthlyFinances": 429.857,
+        "monthlyBoundary:processAllClubsMonthly": 560.975,
+        "monthlyBoundary:evolveAthletesMonthly": 171.38,
+        "monthlyBoundary:finalizeClosedCareerMonth": 445.674,
+        "missions": 0.034,
+        "TOTAL": 13424.891
+      },
+      "oneDaySecondaryStages": {
+        "partner": 0.085,
+        "world": 597.317,
+        "aiPartnerships": 5113.13,
+        "aiCareerStrategy": 546.251,
+        "circuit": 1045.708,
+        "circuitLife": 1409.259,
+        "athleteIntelligence": 710.071,
+        "medical": 159.105,
+        "relationships": 1.977,
+        "staff": 168.477,
+        "livingWorld": 508.544,
+        "notifications": 176.849,
+        "persist": 191.052,
+        "TOTAL": 10629.103
+      },
+      "threeDaysMs": {
+        "avg": 6505.21,
+        "p50": 4776.62,
+        "p95": 14299.51,
+        "max": 14299.51,
+        "min": 3248.31
+      },
+      "threeDaysWrites": {
+        "avg": 71.75,
+        "p50": 72,
+        "p95": 73,
+        "max": 73,
+        "min": 70
+      },
+      "sevenDaysMs": {
+        "avg": 8033.69,
+        "p50": 6674.07,
+        "p95": 15799.53,
+        "max": 15799.53,
+        "min": 3771.46
+      },
+      "sevenDaysWrites": {
+        "avg": 74.45,
+        "p50": 75,
+        "p95": 75,
+        "max": 75,
+        "min": 72
+      }
+    }
+  },
+  "untilRecovered": {
+    "ms": {
+      "avg": 5425.57,
+      "p50": 5458.82,
+      "p95": 5624.14,
+      "max": 5624.14,
+      "min": 5100.87
+    },
+    "writes": {
+      "avg": 14,
+      "p50": 14,
+      "p95": 14,
+      "max": 14,
+      "min": 14
+    },
+    "avgDaysAdvanced": 6
+  }
+}

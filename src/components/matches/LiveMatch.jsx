@@ -20,10 +20,13 @@ import {
   applyMatchTactic,
   decideLiveCoachSuggestion,
   askLiveMatchPartner,
+  attachLiveCoach,
   formatPoints,
   MATCH_TACTICS,
 } from '@/lib/matchEngine';
 import { Button, ConfirmDialog } from '@/components/design-system';
+import { mark, measure } from '@/dev/performanceProbe.js';
+import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
 const PANELS = [
@@ -44,7 +47,10 @@ export default function LiveMatch({
   onDisplayModeChange,
   initialState = null,
   onCheckpoint = null,
+  matchType = null,
+  matchId = null,
 }) {
+  mark('livematch: render-start');
   const [state, setState] = useState(() => initialState || createMatch(teamA, teamB, { initialTacticId, coach, liveCoachSettings }));
   const [tactic, setTactic] = useState(() => {
     const resumedTacticId = initialState?.activeTactics?.A?.id;
@@ -61,6 +67,7 @@ export default function LiveMatch({
   const finishedRef = useRef(false);
   const narrationRef = useRef(null);
   const checkpointSignatureRef = useRef(null);
+  const diagnosedSuggestionIdRef = useRef(null);
 
   // M3 — checkpoint em pontos seguros/semanticamente relevantes (início da
   // partida, fim de game/set, mudança de tática/decisão do técnico), nunca a
@@ -78,6 +85,28 @@ export default function LiveMatch({
     checkpointSignatureRef.current = signature;
     onCheckpoint(state);
   }, [state, onCheckpoint]);
+
+  // Hotfix técnico (docs/LIVE-COACH-MATCH-HOTFIX.md): `coach` normalmente vem
+  // de um carregamento assíncrono (ensureStarterCoach) na tela de config, que
+  // roda em paralelo ao primeiro render deste componente. Como o estado do
+  // motor só grava o treinador uma vez, dentro do lazy initializer de
+  // useState acima, uma partida cujo primeiro render aconteceu antes desse
+  // carregamento terminar travava com liveCoach.coach = null pelo resto da
+  // partida inteira — o técnico aparecia normalmente na UI (o prop `coach`
+  // chegava certo), mas nunca observava um ponto sequer. attachLiveCoach é
+  // idempotente: não faz nada se o motor já tem um treinador anexado.
+  useEffect(() => {
+    if (!coach) return;
+    setState((previous) => attachLiveCoach(previous, coach));
+  }, [coach]);
+
+  // M3.3 (docs/MOBILE_M3_3_PERFORMANCE.md, Parte 20 da matriz): mede do início
+  // do render até o primeiro commit montado — só roda uma vez (deps vazias).
+  useEffect(() => {
+    mark('livematch: mount-end');
+    measure('livematch: abrir partida', 'livematch: render-start', 'livematch: mount-end');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // M3 — pausa automática ao ir para background (Parte 6/7/21). O timer de
   // autoplay já cancela sozinho quando autoPlay vira false (efeito abaixo,
@@ -152,6 +181,26 @@ export default function LiveMatch({
   const coachSuggestion = state.liveCoach?.pendingSuggestion;
   const partnerFeedback = state.liveCoach?.partnerFeedback?.at(-1);
   const recent = state.liveCoach?.analytics?.points?.slice(-5) || [];
+
+  // Item 20 do hotfix — diagnóstico apenas em memória (registerBetaDiagnostic
+  // nunca grava no save), para permitir investigar depois por que uma dica
+  // específica apareceu. Dispara só quando uma sugestão NOVA surge (dedup por
+  // id), nunca a cada render/ponto.
+  useEffect(() => {
+    if (!coachSuggestion || diagnosedSuggestionIdRef.current === coachSuggestion.id) return;
+    diagnosedSuggestionIdRef.current = coachSuggestion.id;
+    registerBetaDiagnostic({
+      type: 'coach_advice_generated',
+      matchType,
+      matchId,
+      coachId: coachSuggestion.coachId || null,
+      adviceType: coachSuggestion.patternId,
+      sampleSize: coachSuggestion.evidence?.sampleSize ?? null,
+      evidence: coachSuggestion.observation,
+      confidence: coachSuggestion.confidence,
+    });
+  }, [coachSuggestion, matchType, matchId]);
+
   const matchStatus = state.finished
     ? 'Finalizada'
     : state.superTiebreak
@@ -636,7 +685,14 @@ function SkipButton({ onClick, label, icon = false }) {
   );
 }
 
-function NarrationEntry({ event }) {
+// M3.3 (docs/MOBILE_M3_3_PERFORMANCE.md, Parte 11): a chave de cada item já é
+// estável por evento (posição absoluta em filteredNarration, não por índice
+// visível — sobrevive à janela de 120 deslizar), então o `event` de uma
+// entrada já renderizada mantém a MESMA referência entre pontos. Sem memo,
+// React ainda reexecutava as ~120 funções de NarrationEntry a cada ponto
+// (até 10x/seg no modo 10x) só para produzir o mesmo JSX de novo — memo
+// pula a rechamada quando `event` não mudou.
+function NarrationEntryComponent({ event }) {
   if (event.type === 'set' || event.type === 'match') {
     return (
       <div className={`rounded-lg px-2.5 py-1.5 ${event.type === 'match' ? 'border border-amber-500/30 bg-amber-500/10' : 'border border-primary/20 bg-primary/10'}`}>
@@ -656,3 +712,5 @@ function NarrationEntry({ event }) {
     </div>
   );
 }
+
+const NarrationEntry = React.memo(NarrationEntryComponent);

@@ -88,6 +88,20 @@ export function applyMatchTactic(prev, tacticValue, teamId = 'A') {
   return state;
 }
 
+// Hotfix (docs/LIVE-COACH-MATCH-HOTFIX.md): `coach` costuma chegar por um
+// carregamento assíncrono (ensureStarterCoach) na tela que monta o LiveMatch.
+// Como `liveCoach.coach` só é gravado uma vez, dentro do lazy initializer de
+// useState em createMatch, uma partida iniciada antes desse carregamento
+// terminar travava com `liveCoach.coach = null` para sempre — o técnico
+// existia na tela mas nunca observava a partida. Esta função deixa o
+// componente "avisar" o motor quando o treinador chega atrasado, sem alterar
+// nada além do campo coach (idempotente: não sobrescreve um treinador já
+// anexado nem cria um estado sem liveCoach).
+export function attachLiveCoach(prev, coach) {
+  if (!prev.liveCoach || prev.liveCoach.coach || !coach) return prev;
+  return { ...prev, liveCoach: { ...prev.liveCoach, coach } };
+}
+
 export function decideLiveCoachSuggestion(prev, decision='ignore', components=[]) {
   const suggestion=prev.liveCoach?.pendingSuggestion;if(!suggestion||prev.finished)return prev;const state=cloneState(prev);const accepted=['apply','partial','auto'].includes(decision);const record={type:'player_tactical_decision',suggestionId:suggestion.id,patternId:suggestion.patternId,decision,accepted,components,createdAtPoint:suggestion.createdAtPoint,decidedAtPoint:state.pointNumber,createdAtGame:suggestion.createdAtGame,scoreBefore:snapshot(state),confidenceScore:suggestion.confidenceScore,reason:suggestion.observation,effectiveFromPoint:state.pointNumber+1};state.liveCoach.decisions.push(record);state.liveCoach.pendingSuggestion=null;
   const applied=new LiveTacticalAdjustmentManager().apply({currentPlan:state.activeTactics.A,suggestion,decision,components,pointNumber:state.pointNumber,setNumber:state.currentSet,gameNumber:state.gamesA+state.gamesB});if(applied.adjustment){state.activeTactics.A=applied.plan;state.liveCoach.adjustments.push(applied.adjustment);const change={type:'tactic_changed',teamId:'A',tacticId:applied.plan.id,effectiveFromPoint:state.pointNumber+1,source:'coach_suggestion'};state.tacticsTimeline.push(change);}return state;
