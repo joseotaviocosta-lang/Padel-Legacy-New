@@ -1,4 +1,3 @@
-import { localGame } from '@/api/localGameClient.js';
 import { buildStrategicWeeklyPlan } from '@/lib/strategicCareerAI.js';
 
 const clamp = (v, min = 0, max = 100) => Math.max(min, Math.min(max, Number(v) || 0));
@@ -41,19 +40,14 @@ export function buildStaffMeeting(profile, staff = [], context = {}) {
   return { week: weekKey(profile?.career_date), notes, plan, moods, synergy: Math.round(synergy), moral: Math.round(moral), members: members.length };
 }
 
-export async function ensureWeeklyStaffMeeting(profile, staff = [], context = {}) {
-  if (!profile?.id) return null;
-  const meeting = buildStaffMeeting(profile, staff, context);
-  const contextKey = `staff-weekly-meeting:${meeting.week}`;
-  const rows = await localGame.entities.CareerMessage.filter({ profile_id: profile.id }, '-created_date', 200).catch(() => []);
-  if ((rows || []).some((row) => row.metadata?.context_key === contextKey)) return null;
-  const content = meeting.notes.map((note) => `${note.role} — ${note.text}`).join('\n\n');
-  return localGame.entities.CareerMessage.create({
-    profile_id: profile.id,
-    message_type: 'reuniao_comissao', sender_type: 'treinador', sender_name: profile.coach_name || 'Comissão técnica',
-    title: 'Reunião semanal da comissão', content, status: 'nao_lida', priority: meeting.moral < 45 ? 'alta' : 'normal', career_date: profile.career_date,
-    is_read: false, is_new: true, related_entity_type: 'staff', destination: { type: 'STAFF', route: '/staff' },
-    actions: [{ id: 'open_training_plan', label: 'Revisar planejamento', route: '/game/training' }],
-    metadata: { context_key: contextKey, meeting_week: meeting.week, synergy: meeting.synergy, moral: meeting.moral, proposed_plan: meeting.plan.plan },
-  }).catch(() => null);
-}
+// Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+// `ensureWeeklyStaffMeeting` foi removida daqui. Ela cobria basicamente a
+// mesma informação passiva do "Relatório semanal da comissão"
+// (staffLifecycle.js) — nenhuma decisão real distinguia as duas — e
+// disparava no mount de Staff.jsx (toda visita à página), não no ciclo de
+// vida do calendário, então cada visita repetida era uma nova chance de
+// duplicar (leitura-depois-escrita sem chave estável). As duas mensagens
+// foram mescladas numa só, gerada por `processStaffDay` (avanço de dia,
+// com upsert por chave estável — nunca duplica). `buildStaffMeeting`
+// continua aqui: Staff.jsx ainda a usa para o painel ao vivo da página, e
+// `processStaffDay` agora a reaproveita para compor o conteúdo do relatório.

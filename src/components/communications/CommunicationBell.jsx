@@ -10,7 +10,7 @@ import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavio
 import {
   getNotificationAttentionLevel,
   getNotificationCategoryLabel,
-  isNotificationFromCareerDate,
+  groupNotificationsByPriority,
 } from '@/lib/notificationCenter.js';
 import { useCareer } from '@/careers/useCareer.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
@@ -111,15 +111,15 @@ export default function CommunicationBell({ compact = false }) {
     () => (view === 'unread' ? messages.filter(isCareerMessageUnread) : messages),
     [messages, view],
   );
-  const groupedMessages = useMemo(() => {
-    const preview = visibleMessages.slice(0, 8);
-    const today = preview.filter((message) => isNotificationFromCareerDate(message, profile?.career_date));
-    const previous = preview.filter((message) => !isNotificationFromCareerDate(message, profile?.career_date));
-    return [
-      { id: 'today', label: 'Hoje', messages: today },
-      { id: 'previous', label: 'Anteriores', messages: previous },
-    ].filter((group) => group.messages.length > 0);
-  }, [profile?.career_date, visibleMessages]);
+  // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md,
+  // itens 26/34): agrupar por prioridade (Ação necessária > Atualizações >
+  // Relatórios) em vez de só Hoje/Anteriores — um relatório semanal
+  // passivo não deve competir visualmente com uma entrevista ou torneio
+  // pendente. Não esconde nada, só reordena.
+  const groupedMessages = useMemo(
+    () => groupNotificationsByPriority(visibleMessages.slice(0, 8)),
+    [visibleMessages],
+  );
 
   function handleToggle() {
     setOpen((current) => !current);

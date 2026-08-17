@@ -2,6 +2,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { STAFF_ROLE_DEFINITIONS, normalizeStaffMember, scaleStaffEffects } from '@/lib/staffCatalog.js';
 import { getFacilityEffects, getActiveStaffSynergies, getSynergyEffects } from '@/lib/staffFacilities.js';
 import { normalizeFatigue } from './physicalStats.js';
+import { upsertCareerMessage } from '@/lib/careerCommunications.js';
+import { buildStaffMeeting } from '@/lib/livingStaff.js';
 
 function asNumber(value, fallback = 0) {
   const number = Number(value);
@@ -240,24 +242,46 @@ export async function processStaffDay(profile, previousDate, currentDate) {
     snapshot = await getStaffSnapshot(updatedProfile);
   }
 
+  // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+  // esta era uma das duas fontes de "spam" de relatório semanal da comissão.
+  // Duas correções na mesma passagem:
+  // 1) dedupe por chave estável (`upsertCareerMessage`, mesmo mecanismo já
+  //    usado pelo "Resumo semanal do universo") em vez de só um campo
+  //    `staff_last_summary_week` checado em memória antes da escrita —
+  //    esse guard sozinho não protegia contra duas chamadas de
+  //    `processGameStateDay` para a mesma semana (avanço de 1 dia via
+  //    dayAdvanceCoordinator e avanço de múltiplos dias via
+  //    finalizeCareerAdvanceRange usam entradas diferentes, sem lock
+  //    compartilhado) nem contra qualquer nova leitura de `profile` que
+  //    ainda não tivesse observado a escrita anterior;
+  // 2) a "Reunião semanal da comissão" (`livingStaff.js`, antes disparada
+  //    no mount de Staff.jsx a cada visita à página — nunca devia gerar
+  //    notificação num mount de UI) cobria basicamente a mesma informação
+  //    passiva (notas por especialista) sem exigir nenhuma decisão real —
+  //    mesclada aqui numa única mensagem semanal em vez de duas quase
+  //    iguais.
   const currentWeek = weekKey(currentDate);
   if (snapshot.staff.length > 0 && profile.staff_last_summary_week !== currentWeek) {
     const recommendations = getStaffWeeklyRecommendations(updatedProfile, snapshot);
     const mainBenefits = snapshot.bonuses.slice(0, 3).join('; ');
     const advice = recommendations.map(item => `${item.title}: ${item.body}`).join(' ');
-    const weeklyBody = `Equipe: ${snapshot.staff.length} profissional(is), folha de ${snapshot.monthlyCost.toLocaleString('pt-BR')} moedas. Benefícios: ${mainBenefits}. Recomendações: ${advice}`;
-    await safeCreate('CareerMessage', {
-      profile_id: profile.id,
+    const meeting = buildStaffMeeting(updatedProfile, snapshot.staff);
+    const meetingNotes = meeting.notes.map(note => `${note.role} — ${note.text}`).join('\n');
+    const weeklyBody = `Equipe: ${snapshot.staff.length} profissional(is), folha de ${snapshot.monthlyCost.toLocaleString('pt-BR')} moedas. Benefícios: ${mainBenefits}. Recomendações: ${advice}\n\n${meetingNotes}`;
+    await upsertCareerMessage(profile.id, `staff-weekly-report:${currentWeek}`, {
       sender_name: 'Diretor de Performance',
       sender_type: 'sistema',
       subject: 'Relatório semanal da comissão',
       body: weeklyBody,
       title: 'Relatório semanal da comissão',
       content: weeklyBody,
-      status: 'nao_lida', message_type: 'staff_report', notification_type: 'STAFF',
+      priority: meeting.moral < 45 ? 'alta' : 'normal',
+      message_type: 'staff_report',
+      notification_type: 'STAFF',
       destination: { type: 'STAFF', route: '/staff' },
-      created_date: new Date().toISOString(),
-      metadata: { recommendations },
+      career_date: currentDate,
+      actions: [{ id: 'open_training_plan', label: 'Revisar planejamento', route: '/game/training' }],
+      metadata: { recommendations, synergy: meeting.synergy, moral: meeting.moral, proposed_plan: meeting.plan.plan },
     });
     try { updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, { staff_last_summary_week: currentWeek }); }
     catch (error) { console.warn('[Comissão Técnica] Semana do relatório não foi salva:', error); }

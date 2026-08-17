@@ -32,7 +32,6 @@ const STEP_FACT = {
   'difficulty-selected': facts => facts.difficultySelected,
   'style-selected': facts => facts.styleSelected,
   'first-training': facts => facts.trainingCompleted,
-  'energy-understood': facts => facts.trainingCompleted,
   'partner-selected': facts => facts.partnerSelected,
   'tournament-registered': facts => facts.tournamentRegistered,
   'first-match': facts => facts.matchCompleted,

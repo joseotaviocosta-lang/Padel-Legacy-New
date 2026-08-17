@@ -9,7 +9,7 @@ import StaffPanel from '@/components/economy/StaffPanel';
 import { syncStaffEffects } from '@/game-core/staffLifecycle';
 import { upgradeStaffFacility } from '@/lib/staffFacilities';
 import StaffLivePanel from '@/components/staff/StaffLivePanel';
-import { buildStaffMeeting, ensureWeeklyStaffMeeting } from '@/lib/livingStaff.js';
+import { buildStaffMeeting } from '@/lib/livingStaff.js';
 
 export default function Staff() {
   const [profile, setProfile] = useState(null);
@@ -29,9 +29,15 @@ export default function Staff() {
       if (currentProfile) {
         const records = await localGame.entities.PlayerStaffHire.filter({ profile_id: currentProfile.id });
         setStaff(records || []);
+        // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md,
+        // item 32): a notificação "semanal da comissão" saiu daqui — mount de
+        // página nunca deveria gerar comunicação (cada visita era uma nova
+        // chance de duplicar). Ela já é gerada pelo ciclo de vida do
+        // calendário (`processStaffDay`, avanço de dia), mesclada com o
+        // relatório semanal. `buildStaffMeeting` continua só para o painel
+        // ao vivo desta página.
         const liveMeeting = buildStaffMeeting(currentProfile, records || []);
         setMeeting(liveMeeting);
-        ensureWeeklyStaffMeeting(currentProfile, records || []).catch((error) => console.warn('[Staff] reunião semanal indisponível', error));
       }
     } catch (error) {
       console.error('[Staff] Falha ao carregar comissão técnica:', error);

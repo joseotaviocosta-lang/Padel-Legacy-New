@@ -88,3 +88,45 @@ export function isNotificationFromCareerDate(notification, careerDate) {
   const date = notification?.career_date || String(notification?.created_date || '').slice(0, 10);
   return date === careerDate;
 }
+
+// Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md,
+// itens 26/34): relatórios passivos e recorrentes (resumo semanal, boletim
+// do mundo, relatório da comissão, relatórios mensal/anual/de temporada)
+// não devem competir visualmente com ação necessária (entrevista, proposta,
+// partida, torneio, problema médico, decisão pendente). Lista fechada de
+// tipos conhecidos — nenhum tipo novo de relatório passa a existir aqui,
+// só a classificação de tipos que já existiam.
+const PASSIVE_REPORT_TYPES = new Set([
+  'weekly_summary', 'staff_report', 'world_bulletin',
+  'monthly_career_report', 'annual_career_report', 'season_report',
+]);
+const PASSIVE_REPORT_NOTIFICATION_TYPES = new Set([
+  'WEEKLY_SUMMARY', 'STAFF', 'MONTHLY_REPORT', 'ANNUAL_REPORT', 'SEASON_REPORT',
+]);
+
+export function isPassiveReportNotification(notification = {}) {
+  return PASSIVE_REPORT_TYPES.has(notification.message_type) || PASSIVE_REPORT_NOTIFICATION_TYPES.has(notification.notification_type);
+}
+
+/**
+ * Agrupa por prioridade visual (não por data): AÇÃO NECESSÁRIA primeiro
+ * (Crítica/Ação — entrevista, proposta, partida, torneio, decisão),
+ * ATUALIZAÇÕES depois (Informação, mas não um relatório recorrente),
+ * RELATÓRIOS por último (informação passiva — resumo semanal, boletim do
+ * mundo, relatório da comissão). Não esconde nada — só reordena.
+ */
+export function groupNotificationsByPriority(notifications = []) {
+  const action = [];
+  const updates = [];
+  const reports = [];
+  for (const notification of notifications) {
+    if (isPassiveReportNotification(notification)) { reports.push(notification); continue; }
+    const level = getNotificationAttentionLevel(notification);
+    (level === 'Crítica' || level === 'Ação' ? action : updates).push(notification);
+  }
+  return [
+    { id: 'action', label: 'Ação necessária', messages: action },
+    { id: 'updates', label: 'Atualizações', messages: updates },
+    { id: 'reports', label: 'Relatórios', messages: reports },
+  ].filter((group) => group.messages.length > 0);
+}
