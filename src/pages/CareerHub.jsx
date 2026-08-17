@@ -42,6 +42,7 @@ import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { getPartnerBot } from '@/lib/career.js';
 import { buildTournamentRecoverySession } from '@/game-core/tournamentMatchLifecycle.js';
 import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
 
 /**
  * Centro da Carreira (Fase 4 — docs/HOME_REDESIGN.md).
@@ -213,6 +214,26 @@ export default function CareerHub() {
       }
     })();
     return () => { mounted = false; };
+  }, []);
+
+  // Hotfix crítico (docs/TOURNAMENT_ROUND_STATE_HOTFIX.md, item 19): o
+  // avanço de dia pelo cabeçalho global (CareerDayControl, sempre montado em
+  // AppLayout) não recarregava o `profile` local da Home — o banner "Em
+  // torneio" continuava com o career_date antigo e nunca virava "Dia de
+  // torneio" no dia certo, mesmo com o avanço já persistido no storage.
+  // Mesmo padrão já usado por AppLayout.jsx (useCareerHeaderData): usa o
+  // perfil já incluído no evento (sem round-trip extra); não recarrega a
+  // carga pesada de `load()` — só a identidade/data do jogador.
+  useEffect(() => {
+    const refreshProfileOnly = (event) => {
+      if (event?.detail?.profile) setProfile(event.detail.profile);
+    };
+    window.addEventListener('padel:profile-updated', refreshProfileOnly);
+    window.addEventListener('padel:career-advanced', refreshProfileOnly);
+    return () => {
+      window.removeEventListener('padel:profile-updated', refreshProfileOnly);
+      window.removeEventListener('padel:career-advanced', refreshProfileOnly);
+    };
   }, []);
 
   // "Precisa de atenção" no hub combina não lidas (fonte única: isCareerMessageUnread
@@ -428,7 +449,7 @@ function buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTou
   const run = activeTournamentEvent?.metadata?.tournament_run;
   const activeMatch = run?.matches?.[run?.currentRound || 0];
   if (activeMatch) {
-    return { icon: Trophy, tone: 'premium', eyebrow: hasTournamentRecoveryAction ? 'Em andamento' : 'Em torneio', title: run.tournamentName || activeTournamentEvent.related_name || 'Torneio', detail: `${activeMatch.round} · ${hasTournamentRecoveryAction ? 'use a ação de recuperação acima' : activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}`, route: '/tournaments', cta: hasTournamentRecoveryAction ? null : 'Ver partida' };
+    return { icon: Trophy, tone: 'premium', eyebrow: hasTournamentRecoveryAction ? 'Em andamento' : 'Em torneio', title: run.tournamentName || activeTournamentEvent.related_name || 'Torneio', detail: `${activeMatch.round} · ${hasTournamentRecoveryAction ? 'use a ação de recuperação acima' : activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}`, route: buildTournamentPlayRoute(activeTournamentEvent.related_id), cta: hasTournamentRecoveryAction ? null : 'Ver partida' };
   }
   if (nextTournament) {
     const days = daysUntil(profile?.career_date, nextTournament.start_date);
@@ -802,13 +823,18 @@ function ActiveTournamentBanner({ event, careerDate }) {
   if (!match) return null;
   const opponent = (match.opponent || []).map((item) => item.name).filter(Boolean).join(' / ') || 'Adversário a definir';
   const offset = daysUntil(careerDate, match.date);
-  const when = offset === 0 ? 'Hoje' : offset === 1 ? 'Amanhã' : formatShortDate(match.date);
+  const isToday = offset === 0;
+  const when = isToday ? 'Hoje' : offset === 1 ? 'Amanhã' : formatShortDate(match.date);
+  // Hotfix UX (docs/TOURNAMENT_GUIDED_FLOW_HOTFIX.md, item 9): o CTA precisa
+  // abrir o torneio+rodada corretos direto — nunca "/tournaments" genérico
+  // deixando o jogador procurar. Mesmo deep link canônico usado pelo
+  // bloqueio de avanço de dia e pelo retorno pós-entrevista.
   return (
     <section className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-primary/5 p-5" aria-label="Torneio em andamento">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-300"><Trophy className="h-6 w-6" /></span>
-        <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-300">Em torneio</p><h2 className="mt-1 text-lg font-black">{run.tournamentName || event.related_name || event.title}</h2><p className="mt-1 text-xs text-muted-foreground">Próxima partida: <strong className="text-foreground">{match.round}</strong> · {when} · vs {opponent}</p></div>
-        <Link to="/tournaments" className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-black text-primary-foreground">{match.preparationCompleted ? 'Ver partida' : 'Preparar partida'} <ArrowRight className="h-3.5 w-3.5" /></Link>
+        <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-300">{isToday ? 'Dia de torneio' : 'Em torneio'}</p><h2 className="mt-1 text-lg font-black">{run.tournamentName || event.related_name || event.title}</h2><p className="mt-1 text-xs text-muted-foreground">Próxima partida: <strong className="text-foreground">{match.round}</strong> · {when} · vs {opponent}</p></div>
+        <Link to={buildTournamentPlayRoute(event.related_id)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-black text-primary-foreground">{match.preparationCompleted ? 'Ver partida' : 'Preparar partida'} <ArrowRight className="h-3.5 w-3.5" /></Link>
       </div>
     </section>
   );

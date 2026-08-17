@@ -1,11 +1,19 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
+import { buildCareerHeaderContext } from '@/lib/careerHeaderContext.js';
+import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
 
-function daysUntil(from, to) {
-  if (!from || !to) return null;
-  return Math.max(0, Math.ceil((new Date(`${to}T00:00:00`) - new Date(`${from}T00:00:00`)) / 86400000));
-}
+const ICON_BY_KIND = {
+  injured: { icon: HeartPulse, tone: 'text-rose-400' },
+  tournament_today: { icon: Trophy, tone: 'text-amber-400' },
+  tournament_soon: { icon: Trophy, tone: 'text-amber-400' },
+  fatigue: { icon: HeartPulse, tone: 'text-orange-400' },
+  energy: { icon: Zap, tone: 'text-yellow-400' },
+  tournament_upcoming: { icon: CalendarDays, tone: 'text-cyan-400' },
+  idle: { icon: CalendarDays, tone: 'text-cyan-400' },
+};
 
 export default function CareerHeaderContext({ profile, compact = false }) {
   const [context, setContext] = useState(null);
@@ -14,23 +22,7 @@ export default function CareerHeaderContext({ profile, compact = false }) {
     try {
       if (!profile) return;
       const tournaments = await localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []);
-      const next = (tournaments || [])
-        .filter((item) => item.start_date >= (profile.career_date || '2026-01-01'))
-        .sort((a, b) => String(a.start_date).localeCompare(String(b.start_date)))[0];
-      const injured = profile.injury_status === 'injured' || profile.is_injured;
-      const fatigue = Number(profile.fatigue) || 0;
-      const energy = Number(profile.energy) || 0;
-      const until = next ? daysUntil(profile.career_date, next.start_date) : null;
-      const value = injured
-        ? { icon: HeartPulse, tone: 'text-rose-400', label: `Recuperação · ${profile.injury_days_remaining || '—'} dias` }
-        : next && until <= 5
-          ? { icon: Trophy, tone: 'text-amber-400', label: `${next.name} · ${until}d` }
-          : fatigue >= 70
-            ? { icon: HeartPulse, tone: 'text-orange-400', label: `Fadiga alta · ${Math.round(fatigue)}%` }
-            : energy <= 30
-              ? { icon: Zap, tone: 'text-yellow-400', label: `Energia baixa · ${Math.round(energy)}%` }
-              : { icon: CalendarDays, tone: 'text-cyan-400', label: next ? `${next.name} · ${until}d` : 'Semana de desenvolvimento' };
-      setContext(value);
+      setContext(buildCareerHeaderContext({ profile, tournaments }));
     } catch (error) {
       console.warn('[CareerHeaderContext] contexto indisponível', error);
     }
@@ -46,11 +38,33 @@ export default function CareerHeaderContext({ profile, compact = false }) {
   }, [load]);
 
   if (!context) return null;
-  const Icon = context.icon;
+  const { icon: Icon, tone } = ICON_BY_KIND[context.kind] || ICON_BY_KIND.idle;
+  const label = compact ? context.label.compact : context.label.full;
+  const className = `inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-border/55 bg-card/45 px-2 py-1 ${compact ? 'max-w-[9rem]' : 'max-w-[17rem]'}`;
+  const inner = (
+    <>
+      <Icon className={`h-3.5 w-3.5 shrink-0 ${tone}`} />
+      <span className="truncate text-[10px] font-bold text-muted-foreground">{label}</span>
+    </>
+  );
+
+  // Hotfix page chrome (docs/PAGE_CHROME_TUTORIAL_HOTFIX.md, item 3): só o
+  // contexto de "próximo torneio" tem um destino único e óbvio — clicar
+  // reaproveita o mesmo deep link canônico do bloqueio de avanço/CTA "Ir
+  // para o torneio" (buildTournamentPlayRoute já cai em detalhes quando não
+  // há campanha ativa, via resolveTournamentOpenMode em Tournaments.jsx —
+  // nenhuma lógica nova de roteamento aqui).
+  if (context.tournamentId) {
+    return (
+      <Link to={buildTournamentPlayRoute(context.tournamentId)} className={`${className} transition-colors hover:border-primary/40 hover:bg-card/70`} title={context.ariaLabel || label} aria-label={context.ariaLabel || label}>
+        {inner}
+      </Link>
+    );
+  }
+
   return (
-    <div className={`inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-border/55 bg-card/45 px-2 py-1 ${compact ? 'max-w-[9rem]' : 'max-w-[17rem]'}`} title={context.label}>
-      <Icon className={`h-3.5 w-3.5 shrink-0 ${context.tone}`} />
-      <span className="truncate text-[10px] font-bold text-muted-foreground">{context.label}</span>
+    <div className={className} title={context.ariaLabel || label}>
+      {inner}
     </div>
   );
 }

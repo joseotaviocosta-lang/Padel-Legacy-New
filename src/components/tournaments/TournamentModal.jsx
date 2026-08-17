@@ -49,6 +49,7 @@ import {
   buildTournamentRoundCoreOperations,
 } from '@/game-core/tournamentMatchLifecycle.js';
 import { buildFreshTournamentRoundRecovery, probeTournamentRecoverySession } from '@/game-core/tournamentMatchRecoveryEngine.js';
+import { buildInterviewRoute } from '@/lib/tournamentNextAction.js';
 
 const TIER_STYLES = {
   Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
@@ -146,8 +147,19 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       const calendarEvent = (events || []).find((item) => item.status === 'scheduled') || events?.[0];
       if (!calendarEvent) throw new Error('O compromisso do torneio não foi encontrado no calendário.');
 
-      const starter = await ensureStarterCoach(initialProfile);
-      const loadedProfile = starter.profile || initialProfile;
+      // Hotfix crítico (docs/TOURNAMENT_ROUND_STATE_HOTFIX.md): `initialProfile`
+      // é só a prop recebida da página-pai (Tournaments.jsx/CareerHub.jsx),
+      // que busca o perfil uma vez no mount e não escuta o avanço de dia feito
+      // pelo cabeçalho global — pode estar com um career_date antigo mesmo
+      // que o storage já tenha avançado até a data desta rodada.
+      // `ensureStarterCoach` devolve a MESMA referência quando o jogador já
+      // tem treinador ativo (não relê o storage), então sem isto a fase da
+      // rodada (`getTournamentRunPhase`) era calculada com uma data errada e
+      // a rodada disponível hoje continuava aparecendo como "agendada".
+      const freshProfile = await localGame.entities.PlayerProfile.get(initialProfile.id).catch(() => initialProfile);
+      if (!active) return;
+      const starter = await ensureStarterCoach(freshProfile);
+      const loadedProfile = starter.profile || freshProfile;
       const loadedPartner = getPartnerBot(loadedProfile);
       const [rank, staffSnapshot] = await Promise.all([
         loadedPartner ? getTeamRank(loadedProfile, loadedPartner) : Promise.resolve({ rank: 0, total: 0 }),
@@ -446,7 +458,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         related_entity_type: 'PressInterview', related_entity_id: interview.id,
         is_read: false, is_new: true,
         destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: interview.id, source: interview.sourceId, returnTo } },
-        metadata: { route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}&returnTo=${encodeURIComponent(returnTo)}`, context_key: interview.contextKey, interview_id: interview.id, interview_source_id: interview.sourceId, match_id: match.id, tournament_id: tournament.id, round: match.round },
+        metadata: { route: buildInterviewRoute({ interviewId: interview.id, sourceId: interview.sourceId, returnTo }), context_key: interview.contextKey, interview_id: interview.id, interview_source_id: interview.sourceId, match_id: match.id, tournament_id: tournament.id, round: match.round },
       } },
       { type: 'upsert', entityName: 'Post', id: `round-post-${safeMatchId}`, data: {
         author_name: 'Padel Legacy News', author_type: 'media', content: headline,
@@ -669,13 +681,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     if (!lastResult?.match?.id) return;
     const interview = postMatchInterviewIdentity(lastResult.match.id);
     const returnTo = buildTournamentReturnRoute(tournament.id);
-    const query = new URLSearchParams({
-      tab: 'interviews',
-      interview: interview.id,
-      source: interview.sourceId,
-      returnTo,
-    });
-    navigate(`/press?${query.toString()}`);
+    navigate(buildInterviewRoute({ interviewId: interview.id, sourceId: interview.sourceId, returnTo }));
   }
 
   async function abandonTournament() {
@@ -811,7 +817,17 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           </LiveMatchRecoveryBoundary>
         )}
 
-        {phase === 'round_result' && lastResult && (
+        {phase === 'round_result' && lastResult && (() => {
+          // Hotfix UX — itens 17/18/20: `run` já foi atualizado para a
+          // próxima rodada nesta transição (setRun(nextRun) acima), então
+          // `currentMatch`/`getTournamentRunPhase` já refletem o que vem a
+          // seguir. Se a próxima rodada é HOJE, oferece jogá-la direto (sem
+          // fechar e reabrir o torneio); se é no futuro, o retorno natural é
+          // fechar e deixar o Home/bloqueio de avanço guiar o jogador de
+          // volta quando a data chegar (itens 8-11).
+          const nextPhase = getTournamentRunPhase(run, profile.career_date);
+          const playableToday = nextPhase === 'playable' || nextPhase === 'round_preparation';
+          return (
           <div className="space-y-4 text-center">
             <StateMessage icon={CheckCircle} title="Vitória e fim do dia competitivo" body={`${lastResult.match.round}: ${lastResult.matchState.setsA}-${lastResult.matchState.setsB}. ${lastResult.nextMatch?.round} foi agendada para ${formatDay(lastResult.nextMatch?.date)}.`} tone="green" />
             <MatchRecapPremium matchState={lastResult.matchState} title={`Vitória · ${lastResult.match.round}`} />
@@ -821,9 +837,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
               <p className="mt-1 text-muted-foreground">Ela é opcional. Ao concluir, você retorna diretamente à campanha deste torneio.</p>
             </div>
             <button onClick={openPostMatchInterview} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>
-            <button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Continuar no torneio</button>
+            {playableToday ? (
+              <button onClick={() => setPhase(nextPhase)} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">
+                Jogar {currentMatch?.round || 'próxima rodada'} agora
+              </button>
+            ) : (
+              <button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Continuar no torneio</button>
+            )}
           </div>
-        )}
+          );
+        })()}
 
         {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={onClose} profile={profile} />}
         {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={onClose} profile={profile} />}

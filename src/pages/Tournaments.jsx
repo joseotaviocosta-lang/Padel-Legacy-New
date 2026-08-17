@@ -137,6 +137,25 @@ export default function Tournaments() {
       finally { setLoading(false); }
     })();
   }, []);
+
+  // Hotfix crítico (docs/TOURNAMENT_ROUND_STATE_HOTFIX.md, item 1/9): o
+  // avanço de dia pelo cabeçalho global não recarregava o `profile` local
+  // desta página — o careerDate usado por isTournamentPlayable() e por
+  // TournamentModal (via prop) ficava desatualizado sempre que o jogador
+  // avançava sem sair de /tournaments. Mesmo padrão de AppLayout.jsx
+  // (useCareerHeaderData): usa o perfil já incluído no evento, sem round-trip.
+  useEffect(() => {
+    const refreshProfileOnly = (event) => {
+      if (event?.detail?.profile) setProfile(event.detail.profile);
+    };
+    window.addEventListener('padel:profile-updated', refreshProfileOnly);
+    window.addEventListener('padel:career-advanced', refreshProfileOnly);
+    return () => {
+      window.removeEventListener('padel:profile-updated', refreshProfileOnly);
+      window.removeEventListener('padel:career-advanced', refreshProfileOnly);
+    };
+  }, []);
+
   useEffect(() => {
     const requestedId = searchParams.get('tournament');
     const requestedMode = searchParams.get('mode') || TOURNAMENT_DEEP_LINK_MODES.DETAILS;

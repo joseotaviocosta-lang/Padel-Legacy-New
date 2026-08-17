@@ -45,10 +45,13 @@ assert.match(missionsSource, /role="status"/); assert.match(missionsSource, /rol
 assert.match(missionsSource, /type="submit"/); assert.match(missionsSource, /Salvando\.\.\./);
 // Regex por ordem textual quebrou quando PageIntroduction (dono do aria-label
 // "Orientação contextual do tutorial") passou a ser definido antes de
-// isMissionCenter no arquivo — a supressão em si sempre esteve correta
-// (`!isMissionCenter && <PageIntroduction .../>`). Checar o gate literal em
-// vez de depender da ordem de definição dos componentes no arquivo.
-assert(guideSource.includes('!isMissionCenter && <PageIntroduction'), 'global guide is suppressed in mission center');
+// isMissionCenter no arquivo — a supressão em si sempre esteve correta.
+// Hotfix page chrome (docs/PAGE_CHROME_TUTORIAL_HOTFIX.md): PageIntroduction
+// saiu do fluxo da página e virou PageIntroductionSection dentro do painel
+// flutuante (GuidePanel) — a supressão na página de missões agora vem de
+// `intro = !isMissionCenter ? getPageIntroduction(pathname) : null`, checado
+// pelo gate literal em vez de depender da forma exata do JSX.
+assert(guideSource.includes('!isMissionCenter ? getPageIntroduction(pathname) : null'), 'global guide is suppressed in mission center');
 assert(!missionsSource.includes('onboarding_completed: true'), 'style selection no longer ends onboarding');
 assert.match(hubSource, /Começar carreira livre/); assert.match(hubSource, /finishingTutorial/);
 assert(!bridgeSource.includes("visit_career_after_intro"), 'visiting the dashboard does not complete the tutorial');

@@ -52,8 +52,14 @@ for (const routePath of ['/development', '/team-hub', '/competitions', '/world',
 check('App.jsx não deveria ter ganhado redirects novos para /development ou /team-hub (mudariam o contrato do tutorial)', !appJsx.includes('to="/career"') && !appJsx.includes('to="/more"'));
 
 // 4. Sidebar desktop e drawer mobile consomem a mesma fonte de dados (NAV_GROUPS).
+// Hotfix hierarquia de páginas (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md):
+// ALL_SHELL_ITEMS só existia em AppLayout.jsx para derivar o título de rota
+// que o cabeçalho global reimprimia (currentItem/currentTitle) — removido
+// nesse hotfix porque duplicava a identidade que o PageHeader de cada
+// página já mostra. NAV_GROUPS/groupForPath (a fonte real da sidebar e do
+// drawer mobile, que é o que este bloco protege) continuam intactos.
 const appLayout = read('src/components/AppLayout.jsx');
-check('AppLayout.jsx não importa NAV_GROUPS/ALL_SHELL_ITEMS/groupForPath', /NAV_GROUPS/.test(appLayout) && appLayout.includes('ALL_SHELL_ITEMS') && appLayout.includes('groupForPath'));
+check('AppLayout.jsx não importa NAV_GROUPS/groupForPath', /NAV_GROUPS/.test(appLayout) && appLayout.includes('groupForPath'));
 check('AppLayout.jsx ainda referencia a navegação antiga (NAVIGATION_AREAS/areaForPath)', !appLayout.includes('NAVIGATION_AREAS') && !appLayout.includes('areaForPath'));
 check('Sidebar recolhível (estado + persistência local) ausente', appLayout.includes('COLLAPSED_SIDEBAR_KEY') && appLayout.includes('sidebarCollapsed'));
 check('Clique no ícone "Mais" recolhido não reabre a sidebar (grupo ficaria inalcançável)', appLayout.includes('onRequestExpandSidebar') || appLayout.includes('requestExpandSidebar'));

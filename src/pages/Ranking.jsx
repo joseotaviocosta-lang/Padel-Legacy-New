@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, CalendarDays, Medal, Activity } from 'lucide-react';
-import { overallRating } from '@/lib/padel';
+import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import {
   CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
   RankingPosition, StatCard, StatusBadge, Tabs,
@@ -21,14 +21,37 @@ const TABS = [
   { key: 'countries', label: 'Países', icon: Globe },
 ];
 
+// Fase 11: as abas Circuito/Jogadores/Race mostram o ranking INDIVIDUAL — a
+// mesma fonte canônica usada por Header/Home/Season (buildWorldRankingSnapshot,
+// src/lib/padel.js). Nenhum pseudo-atleta derivado de TeamRanking entra aqui;
+// a aba Duplas continua 100% separada, lendo TeamRanking diretamente.
+function toCircuitDisplay(entry) {
+  // O objeto bruto (AthleteProfile/PlayerProfile) vai por baixo para que
+  // AthleteDetail continue mostrando personalidade, fase de carreira, lesão,
+  // etc. — só os campos de ranking em si vêm da fonte canônica por cima.
+  return {
+    ...entry.raw,
+    id: entry.id,
+    name: entry.name,
+    sport_name: entry.name,
+    country: entry.country || 'Internacional',
+    circuit_category: entry.circuitCategory || 'Profissional',
+    overall_rating: entry.overallRating,
+    world_ranking_points: entry.points,
+    ranking_points: entry.points,
+    race_points: entry.racePoints,
+    ranking_previous_position: entry.previousPosition,
+    is_player_profile: entry.isPlayer,
+  };
+}
+
 export default function Ranking() {
   const [searchParams] = useSearchParams();
   const openedAthleteRef = useRef(null);
   const [tab, setTab] = useState('circuit');
-  const [players, setPlayers] = useState([]);
   const [clubs, setClubs] = useState([]);
-  const [athletes, setAthletes] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [rankingSnapshot, setRankingSnapshot] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(LIST_PAGE_SIZE);
   const [selectedAthlete, setSelectedAthlete] = useState(null);
@@ -36,16 +59,20 @@ export default function Ranking() {
   useEffect(() => {
     (async () => {
       try {
-        const { p, c, t, a } = await loadModuleTasks({
-          p: { task: () => localGame.entities.PlayerProfile.list('-xp', 100), fallback: [], label: 'perfis do ranking' },
+        const user = await localGame.auth.me();
+        const profile = await ensureMyProfile(user);
+        const { c, t, snapshot } = await loadModuleTasks({
           c: { task: () => localGame.entities.Club.list('-club_points', 100), fallback: [], label: 'clubes do ranking' },
           t: { task: () => localGame.entities.TeamRanking.list('-ranking_points', 600), fallback: [], label: 'ranking de duplas' },
-          a: { task: () => localGame.entities.AthleteProfile.list('ranking_position', 1200), fallback: [], label: 'atletas do ranking' },
+          snapshot: {
+            task: () => buildWorldRankingSnapshot(profile),
+            fallback: { entries: [], playerEntry: null, playerRank: 0, playerPoints: 0, total: 0, unranked: true },
+            label: 'ranking mundial individual',
+          },
         });
-        setPlayers(p || []);
         setClubs(c || []);
         setTeams(t || []);
-        setAthletes(a || []);
+        setRankingSnapshot(snapshot);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
     })();
@@ -54,103 +81,30 @@ export default function Ranking() {
   useEffect(() => { setVisibleCount(LIST_PAGE_SIZE); }, [tab]);
 
   const { countries, circuitAthletes, raceAthletes } = useMemo(() => {
-    const normalizeName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
-    const activeAthletes = (athletes || []).filter(a => !a.retired && a.career_phase !== 'Aposentado');
-    const teamAthleteMap = new Map();
+    const entries = rankingSnapshot?.entries || [];
+    const circuitAthletes = entries.map(toCircuitDisplay);
 
-    for (const team of teams || []) {
-      const teamPoints = Math.max(0, Number(team.ranking_points ?? team.rank_points) || 0);
-      const teamRace = Math.max(0, Number(team.race_points ?? team.season_points ?? teamPoints) || 0);
-      const members = [
-        { name: team.player1_name, id: team.player1_id, country: team.player1_country },
-        { name: team.player2_name, id: team.player2_id, country: team.player2_country },
-      ];
-      for (const member of members) {
-        const key = normalizeName(member.name);
-        if (!key) continue;
-        const current = teamAthleteMap.get(key);
-        const candidate = {
-          id: member.id || `team-athlete-${key.replace(/[^a-z0-9]+/g, '-')}`,
-          name: member.name,
-          sport_name: member.name,
-          country: member.country || team.country || team.nationality || 'Internacional',
-          circuit_category: team.circuit_category || 'Profissional',
-          overall_rating: Number(team.overall_rating ?? team.overall) || 70,
-          world_ranking_points: teamPoints,
-          ranking_points: teamPoints,
-          race_points: teamRace,
-          source_team: true,
-        };
-        if (!current || candidate.world_ranking_points > current.world_ranking_points) teamAthleteMap.set(key, candidate);
-      }
-    }
+    // Race é uma re-ordenação de apresentação da MESMA população canônica —
+    // não uma segunda fonte de verdade. Empate segue o mesmo desempate do
+    // ranking geral (pontos, depois id) para ficar determinístico.
+    const raceAthletes = [...entries]
+      .sort((a, b) => b.racePoints - a.racePoints || b.points - a.points || String(a.id).localeCompare(String(b.id)))
+      .map(toCircuitDisplay);
 
-    const mergedAthleteMap = new Map();
-    for (const athlete of [...activeAthletes, ...teamAthleteMap.values()]) {
-      const key = normalizeName(athlete.name || athlete.sport_name);
-      if (!key) continue;
-      const current = mergedAthleteMap.get(key);
-      if (!current) {
-        mergedAthleteMap.set(key, athlete);
-        continue;
-      }
-      mergedAthleteMap.set(key, {
-        ...athlete,
-        ...current,
-        id: current.id || athlete.id,
-        name: current.name || athlete.name,
-        sport_name: current.sport_name || athlete.sport_name,
-        country: current.country || current.nationality || athlete.country || athlete.nationality || 'Internacional',
-        overall_rating: Math.max(Number(current.overall_rating ?? current.overall) || 0, Number(athlete.overall_rating ?? athlete.overall) || 0),
-        world_ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
-        ranking_points: Math.max(Number(current.world_ranking_points ?? current.ranking_points) || 0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0),
-        race_points: Math.max(Number(current.race_points) || 0, Number(athlete.race_points) || 0),
-      });
-    }
-
-    const rankingAthletes = [...mergedAthleteMap.values()];
-    const playerEntries = (players || []).map(player => ({
-      ...player,
-      name: player.sport_name || player.name || 'Jogador',
-      sport_name: player.sport_name || player.name || 'Jogador',
-      country: player.country || player.nationality || 'Brasil',
-      overall_rating: overallRating(player),
-      world_ranking_points: Number(player.rank_points ?? player.ranking_points ?? player.world_ranking_points) || 0,
-      race_points: Number(player.race_points) || 0,
-      is_player_profile: true,
-    }));
-
-    const dedupedCircuit = [...rankingAthletes];
-    const included = new Set(dedupedCircuit.map(a => `${a.id || ''}|${normalizeName(a.name)}|${normalizeName(a.country)}`));
-    for (const player of playerEntries) {
-      const identity = `${player.id || ''}|${normalizeName(player.name)}|${normalizeName(player.country)}`;
-      if (!included.has(identity)) {
-        included.add(identity);
-        dedupedCircuit.push(player);
-      }
-    }
-
-    // O ranking de países precisa considerar todo o circuito, não apenas os
-    // perfis controlados pelo usuário. Atletas reais, bots e membros de duplas
-    // passam a contribuir com país, pontos e Overall.
     const countryMap = {};
-    for (const athlete of dedupedCircuit) {
-      const country = athlete.country || athlete.nationality || 'Internacional';
+    for (const entry of entries) {
+      const country = entry.country || 'Internacional';
       if (!countryMap[country]) countryMap[country] = { name: country, players: 0, totalXp: 0, totalOvr: 0 };
       countryMap[country].players += 1;
-      countryMap[country].totalXp += Number(athlete.world_ranking_points ?? athlete.ranking_points ?? athlete.xp) || 0;
-      countryMap[country].totalOvr += Number(athlete.overall_rating ?? athlete.overall) || 0;
+      countryMap[country].totalXp += entry.points;
+      countryMap[country].totalOvr += entry.overallRating;
     }
     const countryRanking = Object.values(countryMap)
       .map(country => ({ ...country, avgOvr: Math.round(country.totalOvr / Math.max(1, country.players)) }))
       .sort((a, b) => b.totalXp - a.totalXp || b.players - a.players || a.name.localeCompare(b.name, 'pt-BR'));
 
-    return {
-      countries: countryRanking,
-      circuitAthletes: [...dedupedCircuit].sort((a, b) => (Number(b.world_ranking_points ?? b.ranking_points) || 0) - (Number(a.world_ranking_points ?? a.ranking_points) || 0)),
-      raceAthletes: [...dedupedCircuit].sort((a, b) => (Number(b.race_points) || 0) - (Number(a.race_points) || 0)),
-    };
-  }, [players, athletes, teams]);
+    return { countries: countryRanking, circuitAthletes, raceAthletes };
+  }, [rankingSnapshot]);
 
   useEffect(() => {
     const requestedId = searchParams.get('athlete');

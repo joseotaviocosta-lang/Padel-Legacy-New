@@ -1,13 +1,17 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { CalendarPlus } from 'lucide-react';
 import { advanceCareerDayOnce, isCareerDayAdvanceProcessing, subscribeCareerDayAdvance } from '@/game-core/dayAdvanceCoordinator.js';
 import { getCareerDatePresentation } from '@/lib/careerDatePresentation.js';
+import { describeCalendarBlock } from '@/lib/tournamentNextAction.js';
 import { useToast } from '@/components/ui/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
 
 export default function CareerDayControl({ profile = null, compact = false, className = '' }) {
   const [processing, setProcessing] = useState(isCareerDayAdvanceProcessing);
   const { toast } = useToast();
+  const navigate = useNavigate();
   const date = useMemo(() => getCareerDatePresentation(profile?.career_date), [profile?.career_date]);
 
   useEffect(() => subscribeCareerDayAdvance(setProcessing), []);
@@ -17,10 +21,16 @@ export default function CareerDayControl({ profile = null, compact = false, clas
     try {
       await advanceCareerDayOnce(profile);
     } catch (error) {
+      // Hotfix UX (docs/TOURNAMENT_GUIDED_FLOW_HOTFIX.md, itens 10/11/28): o
+      // bloqueio em si não muda — só a mensagem passa a responder "por que" e
+      // "o que fazer", com um CTA que abre a partida pendente diretamente em
+      // vez de um erro genérico que deixa o jogador procurando sozinho.
+      const block = describeCalendarBlock(error?.blockingEvent);
       toast({
-        title: 'Não é possível avançar',
-        description: error?.message || 'Não foi possível avançar a carreira em um dia.',
+        title: block?.title || 'Não é possível avançar',
+        description: block?.description || error?.message || 'Não foi possível avançar a carreira em um dia.',
         variant: 'destructive',
+        action: block?.destination ? <ToastAction onClick={() => navigate(block.destination)}>{block.actionLabel || 'Resolver'}</ToastAction> : undefined,
       });
     }
   }

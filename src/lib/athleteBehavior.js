@@ -81,7 +81,16 @@ function generatePersonality(name) {
 export async function ensureAthleteProfiles() {
   let existing = [];
   try {
-    existing = await localGame.entities.AthleteProfile.list('-overall_rating', 500);
+    // Hotfix pré-beta (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md): esta leitura
+    // decide quais bots já existem antes de criar os que faltam. Com um
+    // limite (o antigo `500`), um catálogo que cresça além dele faz o
+    // conjunto `existingIds` ficar incompleto — os bots "fora da amostra"
+    // voltam a parecer ausentes e `bulkCreate` tenta recriá-los.
+    // `CareerEntityRepository.bulkCreate` lança no primeiro id duplicado e
+    // aborta o lote INTEIRO (não só o duplicado), deixando `ensureAthleteProfiles`
+    // rejeitada e a página Atletas com a lista vazia. Sem limite aqui: a
+    // checagem de existência precisa ver o catálogo completo, sempre.
+    existing = await localGame.entities.AthleteProfile.list('-overall_rating');
   } catch {}
 
   const existingIds = new Set((existing || []).flatMap(a => [a.id, a.bot_id, a.template_id].filter(Boolean)));

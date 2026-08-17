@@ -167,7 +167,17 @@
     "test:mobile-performance": "node scripts/test-mobile-performance-m3-3.mjs",
     "test:live-coach-practice": "node scripts/test-live-coach-practice.mjs",
     "test:live-coach-tournament": "node scripts/test-live-coach-tournament.mjs",
-    "test:live-coach-realism": "node scripts/test-live-coach-realism.mjs"
+    "test:live-coach-realism": "node scripts/test-live-coach-realism.mjs",
+    "test:ranking-consistency": "node scripts/test-ranking-consistency.mjs",
+    "test:career-atomicity": "node scripts/test-career-atomicity.mjs",
+    "test:beta-candidate": "node scripts/test-beta-candidate.mjs",
+    "test:overlay-back-stack": "node scripts/test-overlay-back-stack.mjs",
+    "test:tournament-guided-flow": "node scripts/test-tournament-guided-flow.mjs",
+    "test:athletes-page-data": "node scripts/test-athletes-page-data.mjs",
+    "test:page-hierarchy": "node scripts/test-page-hierarchy.mjs",
+    "test:tournament-round-availability": "node scripts/test-tournament-round-availability.mjs",
+    "test:tutorial-floating-guide": "node scripts/test-tutorial-floating-guide.mjs",
+    "test:header-next-tournament": "node scripts/test-header-next-tournament.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

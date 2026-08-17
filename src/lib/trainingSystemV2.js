@@ -207,6 +207,18 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     updates.injured_until = release.toISOString().slice(0, 10); updates.energy = 0; updates.fatigue = normalizeFatigue(updates.fatigue + 18);
   }
   const conditionAfter = { energy: updates.energy, fatigue: updates.fatigue, morale: updates.morale, confidence: updates.confidence, form: updates.form };
+  // Fase 11 (docs/RANKING_INTEGRITY_PHASE11.md): a escrita que define se o
+  // treino REALMENTE aconteceu (PlayerProfile.update — ganhos, energia, xp)
+  // vai primeiro. TrainingSession.create é só o registro histórico/auditoria
+  // e vem depois: se ela falhar, o jogador já recebeu o ganho de verdade
+  // (perda mínima, só falta um item no histórico). Na ordem antiga (sessão
+  // primeiro), uma falha exatamente entre as duas escritas deixava uma
+  // TrainingSession órfã — que por si só já bloqueia reaplicação futura
+  // daquele dia (calendarSystem.js: `sessions.some(s => s.date === date)`)
+  // — sem que os ganhos tivessem sido aplicados: perda silenciosa e
+  // permanente. Nenhuma outra parte do código depende da sessão existir
+  // antes do perfil ser atualizado.
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   await localGame.entities.TrainingSession.create({
     profile_id: profile.id, training_type: training.id, training_label: training.label, category: training.groupId,
     group_id: training.groupId, focus_id: training.focusId, intensity: preview.intensity.id,
@@ -217,7 +229,6 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     duration_min: preview.duration, date: profile.career_date || todayStr(), partner_id: training.requiresPartner ? profile.partner_id : null,
     coach_id: profile.coach_id || null, training_schema_version: 2,
   });
-  const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
   await incrementMissionProgress(profile.id, 'complete_training');
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
   return { profile: updated, gain: preview.budget, gains: appliedGains, injured, recoveryDays, activity: { ...training, category: training.groupId, attribute: Object.keys(training.primaryAttributes)[0] }, intensity: preview.intensity, conditionBefore, conditionAfter, diminishing: preview.repetitionMultiplier, fatiguePenalty: preview.fatigueMultiplier < 1 ? round((preview.fatigueMultiplier - 1) * 100) : 0 };

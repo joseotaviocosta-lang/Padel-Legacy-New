@@ -97,6 +97,24 @@ export default function CalendarPage() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Hotfix crítico (docs/TOURNAMENT_ROUND_STATE_HOTFIX.md, item 20): o
+  // avanço de dia pelo cabeçalho global não recarregava o `profile` local
+  // desta página — um evento de torneio no dia certo podia continuar
+  // marcado como futuro. Só atualiza o perfil (careerDate/decisões
+  // dependentes dele); não reposiciona a semana/dia selecionado — o
+  // jogador continua vendo onde estava navegando.
+  useEffect(() => {
+    const refreshProfileOnly = (event) => {
+      if (event?.detail?.profile) setProfile(event.detail.profile);
+    };
+    window.addEventListener('padel:profile-updated', refreshProfileOnly);
+    window.addEventListener('padel:career-advanced', refreshProfileOnly);
+    return () => {
+      window.removeEventListener('padel:profile-updated', refreshProfileOnly);
+      window.removeEventListener('padel:career-advanced', refreshProfileOnly);
+    };
+  }, []);
+
   useEffect(() => {
     const requestedId = searchParams.get('event');
     if (!requestedId || loading || openedEventRef.current === requestedId) return;

@@ -1,6 +1,6 @@
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { Users, Search, SlidersHorizontal } from 'lucide-react';
-import { ensureMyProfile } from '@/lib/padel';
+import { Users, Search, SlidersHorizontal, AlertTriangle } from 'lucide-react';
+import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 import { PageHeader, FilterPills } from '@/components/padel/ui';
 import { PageSkeleton } from '@/components/design-system';
@@ -22,6 +22,14 @@ export default function Athletes() {
   const [athletes, setAthletes] = useState([]);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  // Hotfix pré-beta (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md, item 8): a fonte
+  // pode falhar (exceção real) sem que isso seja o mesmo que "os filtros não
+  // encontraram ninguém". `sourceError` distingue os dois — a UI nunca deve
+  // mostrar "Nenhum atleta encontrado com esses filtros" quando na verdade a
+  // fonte nem carregou.
+  const [sourceError, setSourceError] = useState(null);
+  const [reloadToken, setReloadToken] = useState(0);
+  const [rankById, setRankById] = useState(null);
   const [phaseFilter, setPhaseFilter] = useState('all');
   const [persFilter, setPersFilter] = useState('all');
   const [selected, setSelected] = useState(null);
@@ -32,19 +40,40 @@ export default function Athletes() {
   const deferredSearch = useDeferredValue(search.trim().toLowerCase());
 
   useEffect(() => {
+    let active = true;
     (async () => {
+      setLoading(true);
+      setSourceError(null);
       try {
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
+        if (!active) return;
         setProfile(p);
         await ensureAthleteProfiles();
         await generateRelationships();
         const list = await getAthletes();
-        setAthletes(list);
-      } catch (e) { console.error(e); }
-      finally { setLoading(false); }
+        if (!active) return;
+        setAthletes(list || []);
+        // Item 7 do hotfix: "ordenar por ranking" usa a posição canônica
+        // (buildWorldRankingSnapshot, Fase 11) em vez do campo
+        // `ranking_position` bruto — esse só é atualizado semanalmente para
+        // uma amostra dos atletas de maior Overall (circuitLifecycle.js),
+        // então fica obsoleto para o resto da população. Reaproveita o
+        // `profile` já carregado nesta mesma passada — nenhum fetch extra.
+        if (p) {
+          const snapshot = await buildWorldRankingSnapshot(p);
+          if (!active) return;
+          setRankById(new Map(snapshot.entries.map((entry) => [entry.id, entry.rank])));
+        }
+      } catch (e) {
+        console.error('[Athletes] falha ao carregar atletas', e);
+        if (active) setSourceError(e);
+      } finally {
+        if (active) setLoading(false);
+      }
     })();
-  }, []);
+    return () => { active = false; };
+  }, [reloadToken]);
 
   useEffect(() => {
     setVisibleCount(PAGE_SIZE);
@@ -59,8 +88,10 @@ export default function Athletes() {
       if (sortBy === 'form') return Number(b.form || b.current_form || 0) - Number(a.form || a.current_form || 0);
       if (sortBy === 'clutch') return Number(b.behavior_axes?.clutch || 0) - Number(a.behavior_axes?.clutch || 0);
       if (sortBy === 'overall') return Number(b.overall_rating || 0) - Number(a.overall_rating || 0);
-      return Number(a.ranking_position || 9999) - Number(b.ranking_position || 9999);
-    }), [athletes, phaseFilter, persFilter, styleFilter, deferredSearch, sortBy]);
+      const rankA = rankById?.get(a.id) ?? Number(a.ranking_position || 9999);
+      const rankB = rankById?.get(b.id) ?? Number(b.ranking_position || 9999);
+      return rankA - rankB;
+    }), [athletes, phaseFilter, persFilter, styleFilter, deferredSearch, sortBy, rankById]);
 
   const PERS_FILTERS = [{ id: 'all', label: 'Todas' }, ...PERSONALITIES.map(p => ({ id: p.id, label: p.label }))];
   const STYLE_FILTERS = [
@@ -73,6 +104,24 @@ export default function Athletes() {
   ];
 
   if (loading) return <PageSkeleton variant="grid" rows={6} />;
+
+  // Item 8 do hotfix: fonte que falhou tem sua própria tela — nunca a mesma
+  // mensagem de "filtros sem resultado".
+  if (sourceError) {
+    return (
+      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
+        <PageHeader icon={Users} title="Atletas do Circuito" subtitle="Personalidades, evolução e relacionamentos dos atletas IA" accent="primary" />
+        <div className="glass rounded-2xl p-10 text-center">
+          <AlertTriangle className="h-10 w-10 text-amber-400/70 mx-auto mb-3" />
+          <p className="text-sm font-bold">Não foi possível carregar os atletas do circuito.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Sua carreira e seu save não foram afetados.</p>
+          <button type="button" onClick={() => setReloadToken((value) => value + 1)} className="mt-4 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
+            Tentar novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
@@ -101,7 +150,17 @@ export default function Athletes() {
       {filtered.length === 0 ? (
         <div className="glass rounded-2xl p-10 text-center">
           <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-          <p className="text-sm text-muted-foreground">Nenhum atleta encontrado com esses filtros.</p>
+          {athletes.length === 0 ? (
+            // A fonte carregou sem erro, mas realmente não retornou nenhum
+            // atleta — diferente de "os filtros excluíram todo mundo"
+            // (item 8: nunca confundir os dois).
+            <>
+              <p className="text-sm font-bold text-muted-foreground">O circuito ainda não tem atletas cadastrados.</p>
+              <p className="mt-1 text-xs text-muted-foreground">Isso não é esperado numa carreira normal — tente recarregar a página.</p>
+            </>
+          ) : (
+            <p className="text-sm text-muted-foreground">Nenhum atleta encontrado com esses filtros.</p>
+          )}
         </div>
       ) : (
         <div className="render-window grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">

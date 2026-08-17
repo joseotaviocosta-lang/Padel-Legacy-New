@@ -54,6 +54,18 @@ export function unregisterOverlay(id) {
   const idx = stack.findIndex((entry) => entry.id === id);
   if (idx === -1) return; // já removido pelo próprio handlePopState (Back físico)
   stack.splice(idx, 1);
+  // Hotfix UX (docs/TOURNAMENT_GUIDED_FLOW_HOTFIX.md): se algo DENTRO do
+  // overlay já disparou uma navegação real para outra rota (ex.: o CTA de
+  // entrevista pós-jogo do TournamentModal chamando navigate('/press?...')
+  // antes do modal terminar de desmontar), a entrada de histórico deste
+  // overlay já foi sobrescrita por uma entrada de navegação real — nesse
+  // caso, `window.history.state` não é mais `{ plOverlay: id }`. Chamar
+  // history.back() aqui desfaria a navegação que acabou de acontecer,
+  // devolvendo o jogador para a tela de baixo do overlay e dando a
+  // impressão de que o clique "não fez nada". Só compensamos a entrada de
+  // histórico quando ela ainda é a entrada no topo (fechamento normal via X/
+  // backdrop/Escape, sem navegação real por cima).
+  if (window.history.state?.plOverlay !== id) return;
   pendingProgrammaticPops += 1;
   try {
     window.history.back();

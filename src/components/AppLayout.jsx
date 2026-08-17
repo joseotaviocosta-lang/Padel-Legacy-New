@@ -1,5 +1,5 @@
 import { careerManager } from '@/local/careerDataStore.js';
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { BriefcaseBusiness, ChevronDown, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import BottomNav from './BottomNav';
@@ -12,7 +12,7 @@ import CareerHud from '@/components/career/CareerHud';
 import CommunicationBell from '@/components/communications/CommunicationBell';
 import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import CareerDayControl from '@/components/career/CareerDayControl';
-import { ALL_SHELL_ITEMS, NAV_GROUPS, groupForPath } from '@/navigation/navigationConfig.js';
+import { NAV_GROUPS, groupForPath } from '@/navigation/navigationConfig.js';
 import { useAdaptivePerformance } from '@/hooks/useAdaptivePerformance';
 import { useKeyboardInset } from '@/hooks/useKeyboardInset';
 import { MotionPolicyProvider } from '@/components/design-system/MotionPolicy';
@@ -181,11 +181,6 @@ export default function AppLayout() {
   const performanceProfile = useAdaptivePerformance();
   const keyboardOpen = useKeyboardInset();
   const activeGroup = groupForPath(location.pathname);
-  const currentItem = useMemo(
-    () => ALL_SHELL_ITEMS.find(item => item.to === location.pathname),
-    [location.pathname],
-  );
-  const currentTitle = currentItem?.label || activeGroup?.label || 'Padel Legacy';
   const [expandedGroup, setExpandedGroup] = useState(() => localStorage.getItem(EXPANDED_GROUP_KEY) || activeGroup?.id || 'career');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem(COLLAPSED_SIDEBAR_KEY) === 'true');
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -240,8 +235,11 @@ export default function AppLayout() {
           <Menu className="h-5 w-5" />
         </button>
         <div className="min-w-0 flex-1 px-3">
-          <p className="truncate text-[10px] font-bold uppercase tracking-[0.16em] text-primary/80">{activeGroup?.label || 'Carreira'}</p>
-          <p className="truncate text-sm font-extrabold leading-tight">{currentTitle}</p>
+          {/* Hotfix hierarquia de páginas (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md):
+              este cabeçalho global não deve mais reimprimir o título da rota —
+              cada página já tem seu próprio PageHeader (fonte única de
+              identidade). Aqui só cabe contexto operacional. */}
+          <CareerHeaderContext profile={headerProfile} compact />
         </div>
         <CareerDayControl profile={headerProfile} compact />
         <CommunicationBell compact />
@@ -305,11 +303,11 @@ export default function AppLayout() {
           de 1.25rem para 1.75rem como margem de segurança extra. */}
       <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+1.75rem)] pt-[calc(4rem+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 pl-[calc(1rem+var(--pl-safe-l))] pr-[calc(1rem+var(--pl-safe-r))] backdrop-blur-xl md:flex lg:pl-[calc(1.25rem+var(--pl-safe-l))] lg:pr-[calc(1.25rem+var(--pl-safe-r))]">
-          <div className="hidden min-w-0 flex-1 xl:block">
-            <div className="flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.16em] text-muted-foreground">
-              <span>{activeGroup?.label || 'Carreira'}</span><span className="text-border">/</span><span className="truncate text-primary/85">{currentTitle}</span>
-            </div>
-            <div className="mt-0.5 flex min-w-0 items-center gap-3"><p className="truncate text-lg font-black leading-tight">{currentTitle}</p><CareerHeaderContext profile={headerProfile} /></div>
+          {/* Hotfix hierarquia de páginas: idem ao cabeçalho mobile — sem
+              reimprimir breadcrumb/título da rota aqui, só contexto
+              operacional (a identidade da página já está no PageHeader). */}
+          <div className="hidden min-w-0 flex-1 xl:flex xl:items-center">
+            <CareerHeaderContext profile={headerProfile} />
           </div>
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2 xl:flex-none">
             <CareerHud profile={headerProfile} ranking={headerRanking} compact className="min-w-0" />

@@ -388,42 +388,126 @@ export async function ensureMyProfile(user) {
   }
 }
 
-export async function getWorldRank(profile) {
-  if (!profile) return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '1000+' };
+const normalizeRankingName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
+
+function isActiveRankedAthlete(athlete) {
+  return Boolean(athlete?.id) && !athlete.retired && athlete.career_phase !== 'Aposentado';
+}
+
+function athletePointsValue(athlete) {
+  return Math.max(0, Number(athlete?.world_ranking_points ?? athlete?.ranking_points) || 0);
+}
+
+function athleteOverallValue(athlete) {
+  return Math.max(0, Number(athlete?.overall_rating ?? athlete?.overall) || 0);
+}
+
+// Ordenação determinística única: pontos desc -> Overall desc (critério
+// secundário estável, já usado no jogo para medir força) -> id asc (último
+// fallback, garante que a MESMA lista sempre produz a MESMA posição, nunca
+// dependente da ordem de leitura/paginação do storage).
+function compareRankingEntries(a, b) {
+  if (b.points !== a.points) return b.points - a.points;
+  if (b.overallRating !== a.overallRating) return b.overallRating - a.overallRating;
+  return String(a.id).localeCompare(String(b.id));
+}
+
+/**
+ * Fonte canônica do ranking mundial INDIVIDUAL (Fase 11). Header, Home,
+ * Ranking (abas Circuito/Jogadores/Race) e Season devem todos derivar a
+ * posição do jogador a partir deste snapshot — nunca recalcular com sua
+ * própria lógica. Ranking de DUPLA (`getTeamRank`, `TeamRanking`) é um
+ * conceito separado e não entra aqui.
+ *
+ * Universo: AthleteProfile ativos (bots) + o PlayerProfile ativo informado.
+ * Nenhum pseudo-atleta derivado de TeamRanking é incluído.
+ *
+ * Tolerante a saves antigos: aceita os aliases históricos de campo
+ * (`rank_points`/`ranking_points`/`world_ranking_points` no jogador,
+ * `world_ranking_points`/`ranking_points` nos atletas) sem exigir migração.
+ */
+export async function buildWorldRankingSnapshot(profile) {
+  const generatedAt = new Date().toISOString();
+  const empty = { entries: [], playerEntry: null, playerRank: 0, playerPoints: 0, total: 0, unranked: true, generatedAt };
+  if (!profile?.id) return empty;
+
   try {
-    const athletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1500);
-    const active = (athletes || []).filter(
-      athlete => !athlete.retired && athlete.career_phase !== 'Aposentado'
-    );
+    const athletes = (await localGame.entities.AthleteProfile.list('-world_ranking_points', 1500)) || [];
+    const profileName = normalizeRankingName(profile.sport_name || profile.name);
+
+    const byName = new Map();
+    for (const athlete of athletes) {
+      if (!isActiveRankedAthlete(athlete)) continue;
+      const name = normalizeRankingName(athlete.name || athlete.sport_name);
+      if (!name || name === profileName || athlete.id === profile.id) continue;
+      const entry = {
+        id: athlete.id,
+        name: athlete.name || athlete.sport_name || 'Atleta',
+        points: athletePointsValue(athlete),
+        overallRating: athleteOverallValue(athlete),
+        racePoints: Math.max(0, Number(athlete.race_points) || 0),
+        country: athlete.country || athlete.nationality || null,
+        circuitCategory: athlete.circuit_category || null,
+        previousPosition: Number.isFinite(Number(athlete.ranking_previous_position)) ? Number(athlete.ranking_previous_position) : null,
+        isPlayer: false,
+        raw: athlete,
+      };
+      // Dedup por nome normalizado (o mesmo atleta pode aparecer com registros
+      // divergentes) — mantém a entrada de maior pontuação, igual ao critério
+      // já usado antes desta fase.
+      const current = byName.get(name);
+      if (!current || entry.points > current.points) byName.set(name, entry);
+    }
+
     const playerPoints = Math.max(0, Number(profile.rank_points ?? profile.ranking_points ?? profile.world_ranking_points) || 0);
     const officialMatches = Math.max(0, Number(profile.matches_played) || 0);
     const officialTournaments = Math.max(0, Number(profile.tournaments_played) || 0);
-    const normalizeName = value => String(value || '').trim().toLocaleLowerCase('pt-BR');
-    const profileName = normalizeName(profile.sport_name || profile.name);
-    const pointsByName = new Map();
-
-    for (const athlete of active) {
-      const name = normalizeName(athlete.name || athlete.sport_name);
-      if (!name || name === profileName || athlete.id === profile.id) continue;
-      const points = Math.max(0, Number(athlete.world_ranking_points ?? athlete.ranking_points) || 0);
-      pointsByName.set(name, Math.max(pointsByName.get(name) || 0, points));
-    }
-
-    const competitors = [...pointsByName.values()];
-    const total = competitors.length + 1;
-    const unranked = playerPoints <= 0 || (officialMatches <= 0 && officialTournaments <= 0);
-    const rank = competitors.filter(points => points > playerPoints).length + 1;
-    return {
-      rank,
-      total,
+    const playerEntryBase = {
+      id: profile.id,
+      name: profile.sport_name || profile.name || 'Você',
       points: playerPoints,
+      overallRating: overallRating(profile),
+      racePoints: Math.max(0, Number(profile.race_points) || 0),
+      country: profile.country || profile.nationality || 'Brasil',
+      circuitCategory: null,
+      previousPosition: null,
+      isPlayer: true,
+      raw: profile,
+    };
+
+    const entries = [...byName.values(), playerEntryBase]
+      .sort(compareRankingEntries)
+      .map((entry, index) => ({ ...entry, rank: index + 1 }));
+    const playerEntry = entries.find((entry) => entry.isPlayer) || null;
+    const unranked = playerPoints <= 0 || (officialMatches <= 0 && officialTournaments <= 0);
+
+    return {
+      entries,
+      playerEntry,
+      playerRank: playerEntry?.rank || 0,
+      playerPoints,
+      total: entries.length,
       unranked,
-      displayRank: unranked && rank > 1000 ? '1000+' : String(rank),
+      generatedAt,
     };
   } catch (error) {
-    console.error('getWorldRank', error);
-    return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '1000+' };
+    console.error('buildWorldRankingSnapshot', error);
+    return empty;
   }
+}
+
+export async function getWorldRank(profile) {
+  if (!profile) return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '1000+' };
+  const snapshot = await buildWorldRankingSnapshot(profile);
+  if (!snapshot.playerEntry) return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '1000+' };
+  const { playerRank: rank, total, playerPoints: points, unranked } = snapshot;
+  return {
+    rank,
+    total,
+    points,
+    unranked,
+    displayRank: unranked && rank > 1000 ? '1000+' : String(rank),
+  };
 }
 
 export function formatDate(dateStr) {
