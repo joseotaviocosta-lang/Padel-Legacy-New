@@ -140,7 +140,7 @@ gate('Todas as actions do CareerProvider continuam estabilizadas (useCallback) �
 
 const monitorSrc = read('src/dev/MobilePerformanceMonitor.jsx');
 gate('Overlay nunca renderiza sem isPerfDebugEnabled() (gate explícito antes do JSX)', /if \(!active\) return null;/.test(monitorSrc));
-gate('Overlay amostra no máximo ~2x/s (SAMPLE_INTERVAL_MS = 500, não a cada frame)', monitorSrc.includes('SAMPLE_INTERVAL_MS = 500'));
+gate('Overlay M3.7 amostra no máximo 1x/s (SAMPLE_INTERVAL_MS = 1000, não a cada frame)', monitorSrc.includes('SAMPLE_INTERVAL_MS = 1000'));
 gate('Overlay reage ao toggle interno sem recarregar a WebView', monitorSrc.includes('PERFDEBUG_CHANGE_EVENT'));
 
 const probeSrc = read('src/dev/performanceProbe.js');
