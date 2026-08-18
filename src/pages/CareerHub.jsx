@@ -25,6 +25,7 @@ import ActiveMatchRecoveryBanner from '@/components/career/ActiveMatchRecoveryBa
 import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
+import { getOnboardingNextAction } from '@/onboarding/onboardingNextAction.js';
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
 import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';
@@ -292,7 +293,14 @@ export default function CareerHub() {
   );
 
   const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
-  const heroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
+  // Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 2): enquanto o
+  // onboarding principal está em andamento, a etapa atual do tutorial é a
+  // ÚNICA fonte do CTA principal — `getNextStep` (o motor de recomendação
+  // "normal", preservado abaixo como fallback) só volta a decidir depois
+  // que o onboarding termina (ou nunca começou/foi pulado).
+  const onboardingNextAction = useMemo(() => getOnboardingNextAction(profile), [profile]);
+  const fallbackHeroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
+  const heroStep = onboardingNextAction || fallbackHeroStep;
   const nextEvent = useMemo(
     () => buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction }),
     [profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction],
@@ -306,8 +314,11 @@ export default function CareerHub() {
     [dailyBriefing, decisionCenter, messages, heroStep?.to, injured],
   );
   const attentionItems = useMemo(
-    () => (decisionCenter.decisions || []).filter((decision) => !priorityActions.some((action) => action.route === decision.route)).slice(0, 4),
-    [decisionCenter, priorityActions],
+    () => (decisionCenter.decisions || []).filter((decision) => (
+      !priorityActions.some((action) => basePath(action.route) === basePath(decision.route))
+      && basePath(decision.route) !== basePath(heroStep?.to)
+    )).slice(0, 4),
+    [decisionCenter, priorityActions, heroStep?.to],
   );
   const journeyGroups = useMemo(
     () => buildJourneyTimeline({ recentMatches, recentTrainings, messages, posts, partnerOffers }),
@@ -419,9 +430,21 @@ export default function CareerHub() {
 
 function daysUntil(from, to) { if (!from || !to) return 0; return Math.max(0, Math.ceil((new Date(`${to}T00:00:00`) - new Date(`${from}T00:00:00`)) / 86400000)); }
 function formatShortDate(value) { if (!value) return '—'; const date = new Date(`${value}T00:00:00`); return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', ''); }
+// Onboarding Flow 3.1: rotas de decisão/prioridade podem carregar query
+// string (ex.: a etapa de tutorial "escolher parceiro" usa
+// /partners?view=offers&source=tutorial) enquanto o Centro de Decisões usa
+// a rota base (/partners). Comparar string exata deixava o card duplicado
+// escapar do dedup — comparar só o pathname resolve os dois casos.
+function basePath(route) { return String(route || '').split('?')[0]; }
 
-// Motor de "próximo passo" reaproveitado de NextStepCard.jsx — mesma regra
-// determinística já usada no jogo, sem duplicar a lógica de decisão.
+// Motor de "próximo passo" para quando o onboarding principal NÃO está
+// ativo (pós-tutorial, tutorial pulado, ou nunca iniciado) — enquanto ativo,
+// getOnboardingNextAction() (onboarding/onboardingNextAction.js) tem
+// prioridade, ver `heroStep` acima. Onboarding Flow 3.1: o componente
+// NextStepCard.jsx de onde esta função foi originalmente copiada nunca era
+// mais importado em lugar nenhum e foi removido — mantinha esta mesma
+// lógica desatualizada (sem saber do tutorial) como um segundo caminho
+// morto que poderia voltar a ser usado por engano.
 function getNextStep(profile, upcomingTournaments) {
   if (!profile) return null;
   if (isRetired(profile)) return { icon: CheckCircle2, title: 'Carreira concluída', description: 'Você se aposentou. Revise seu legado e Hall da Fama.', to: '/game/legacy', cta: 'Ver legado' };
@@ -473,7 +496,7 @@ function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRou
   for (const decision of decisionCenter?.decisions || []) {
     if (items.length >= 5) break;
     if (!['critical', 'high'].includes(decision.priority)) continue;
-    if (decision.route === heroRoute || items.some((item) => item.route === decision.route)) continue;
+    if (basePath(decision.route) === basePath(heroRoute) || items.some((item) => basePath(item.route) === basePath(decision.route))) continue;
     items.push({ id: decision.id, tone: decision.priority === 'critical' ? 'danger' : 'warning', title: decision.title, description: decision.description, route: decision.route });
   }
 
@@ -489,7 +512,7 @@ function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRou
     // crítica/alta sobre o torneio) continua chegando por decisionCenter, com
     // outro id, e não é afetada por este corte.
     if (priority.id === 'tournament') continue;
-    if (priority.route === heroRoute || items.some((item) => item.route === priority.route)) continue;
+    if (basePath(priority.route) === basePath(heroRoute) || items.some((item) => basePath(item.route) === basePath(priority.route))) continue;
     items.push({ id: priority.id, tone: priority.tone, title: priority.title, description: priority.description, route: priority.route });
   }
 

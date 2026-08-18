@@ -1,6 +1,6 @@
 import { ALLOWED_CAREER_DIFFICULTIES } from '../gameplay/difficulty/difficultyConfig.js';
 
-export const CAREER_SAVE_SCHEMA_VERSION = 17;
+export const CAREER_SAVE_SCHEMA_VERSION = 19;
 export const CAREER_INDEX_SCHEMA_VERSION = 3;
 export const ALLOWED_COURT_SIDES = ['direita', 'esquerda', 'versatil'];
 export const ALLOWED_PLAY_STYLES = ['controle', 'ofensivo', 'defensivo', 'equilibrado', 'contra_ataque', 'construtor', 'finalizador', 'agressivo', 'tecnico'];

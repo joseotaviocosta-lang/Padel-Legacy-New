@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { createDefaultCareerData } from '../src/careers/careerDefaults.js';
-import { TUTORIAL_CHAPTERS, TUTORIAL_STEPS, TUTORIAL_VERSION } from '../src/onboarding/tutorialSteps.js';
+import { TUTORIAL_STEPS, TUTORIAL_VERSION } from '../src/onboarding/tutorialSteps.js';
 import { getCurrentTutorialStep, getTutorialProgress, normalizeTutorialState, reconcileTutorialProgress } from '../src/onboarding/tutorialState.js';
 
 const fresh = createDefaultCareerData({ saveName: 'Fluxo E2E', playerName: 'Novo Atleta', careerType: 'normal' });
@@ -10,7 +10,12 @@ const fresh = createDefaultCareerData({ saveName: 'Fluxo E2E', playerName: 'Novo
 // para este teste não ficar obsoleto a cada revisão futura do tutorial.
 assert(Number.isInteger(TUTORIAL_VERSION) && TUTORIAL_VERSION > 0, 'TUTORIAL_VERSION deve ser um inteiro positivo');
 assert.equal(getCurrentTutorialStep(fresh.tutorial).id, 'career-created', 'new career starts with an explicit dashboard explanation');
-assert(TUTORIAL_CHAPTERS.length >= 6 && TUTORIAL_STEPS.length >= 40, 'tutorial covers the complete career in progressive chapters');
+// Onboarding 2.0 (docs/ONBOARDING_V3_COMMUNICATIONS.md): a v9 reduziu o
+// tutorial de 57 para 15 etapas de propósito — só o essencial para começar a
+// jogar, o resto virou Guia opcional. Este teste não trava mais num piso
+// alto de etapas (isso é exatamente o que a v9 corrigiu); só garante que o
+// tutorial continua curto e não voltou a inchar silenciosamente.
+assert(TUTORIAL_STEPS.length >= 10 && TUTORIAL_STEPS.length <= 20, 'tutorial permanece curto e essencial (10-20 etapas)');
 assert.equal(new Set(TUTORIAL_STEPS.map(step => step.id)).size, TUTORIAL_STEPS.length, 'step IDs are stable and unique');
 assert(TUTORIAL_STEPS.every(step => step.route && step.objectiveType), 'every step has route and domain objective');
 
@@ -49,9 +54,11 @@ assert.match(missionsSource, /type="submit"/); assert.match(missionsSource, /Sal
 // Hotfix page chrome (docs/PAGE_CHROME_TUTORIAL_HOTFIX.md): PageIntroduction
 // saiu do fluxo da página e virou PageIntroductionSection dentro do painel
 // flutuante (GuidePanel) — a supressão na página de missões agora vem de
-// `intro = !isMissionCenter ? getPageIntroduction(pathname) : null`, checado
-// pelo gate literal em vez de depender da forma exata do JSX.
-assert(guideSource.includes('!isMissionCenter ? getPageIntroduction(pathname) : null'), 'global guide is suppressed in mission center');
+// `intro = !isMissionCenter ? getPageIntroduction(pathname, search) : null`
+// (Onboarding Flow 3.1 acrescentou o parâmetro `search` para o sub-guia de
+// Patrocínios, ver pageIntroductions.js), checado pelo gate literal em vez
+// de depender da forma exata do JSX.
+assert(guideSource.includes('!isMissionCenter ? getPageIntroduction(pathname, search) : null'), 'global guide is suppressed in mission center');
 assert(!missionsSource.includes('onboarding_completed: true'), 'style selection no longer ends onboarding');
 assert.match(hubSource, /Começar carreira livre/); assert.match(hubSource, /finishingTutorial/);
 assert(!bridgeSource.includes("visit_career_after_intro"), 'visiting the dashboard does not complete the tutorial');

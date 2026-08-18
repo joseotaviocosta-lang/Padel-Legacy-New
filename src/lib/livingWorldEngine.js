@@ -132,6 +132,25 @@ async function persistEvents(events) {
   return created;
 }
 
+// Onboarding 2.0 + Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md):
+// eventos com tier 'destaque' já são o sinal de relevância que este motor usa
+// para si mesmo (buildRankEvent sempre marca 'destaque'; buildTournamentEvent
+// só marca 'destaque' para torneios Major/Premier; eventos editoriais de
+// generateWorldEvents nunca têm tier). Reaproveitado aqui para escolher o que
+// vale citar no resumo semanal do jogador (gameStateLifecycle.js) em vez de
+// listar tudo que aconteceu no circuito sem filtro.
+export async function getWeeklyRelevantHighlights(date, { limit = 3 } = {}) {
+  const weekStart = new Date(parseDate(date));
+  weekStart.setUTCDate(weekStart.getUTCDate() - 7);
+  const start = weekStart.toISOString().slice(0, 10);
+  const recent = await safeList(localGame.entities.WorldEvent, '-event_date', 160);
+  return recent
+    .filter(event => event.event_date >= start && event.event_date <= date && event.event_type !== 'boletim_semanal' && event.tier === 'destaque')
+    .slice(0, limit)
+    .map(event => event.title)
+    .filter(Boolean);
+}
+
 export async function createWeeklyWorldBulletin(profile, date) {
   if (!profile?.id || !isWeeklyBulletinDay(date)) return null;
   const weekKey = livingWorldWeekKey(date);
@@ -170,27 +189,13 @@ export async function createWeeklyWorldBulletin(profile, date) {
     is_living_world: true,
     metadata: { week_key: weekKey, categories, source_event_ids: weekEvents.slice(0, 20).map(event => event.id) },
   };
+  // Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md): este
+  // boletim ainda vira um WorldEvent — continua alimentando a página
+  // Mundo/Notícias normalmente. Só não vira mais uma CareerMessage própria no
+  // sino: fazia isso duplicar o "Resumo semanal do universo"
+  // (gameStateLifecycle.js), que agora cita os destaques relevantes da
+  // semana (getWeeklyRelevantHighlights, acima) na própria mensagem única.
   const [created] = await persistEvents([bulletin]);
-  if (created && localGame.entities.CareerMessage) {
-    try {
-      await localGame.entities.CareerMessage.create({
-        id: `message-${bulletinId}`,
-        profile_id: profile.id,
-        message_type: 'world_bulletin',
-        title: bulletin.title,
-        content: bulletin.content,
-        sender_name: 'Central do Circuito',
-        status: 'nao_lida',
-        is_read: false,
-        is_new: true,
-        priority: 'normal',
-        career_date: date,
-        related_entity_type: 'world_event',
-        related_entity_id: bulletin.id,
-        destination: { type: 'WORLD_EVENT', route: '/world-events', params: { event: bulletin.id } },
-      });
-    } catch { /* mensagem é complementar */ }
-  }
   return created || bulletin;
 }
 

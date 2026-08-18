@@ -21,6 +21,32 @@ export const NOTIFICATION_DESTINATION_TYPES = Object.freeze({
   COMMUNICATION_ONLY: 'COMMUNICATION_ONLY',
 });
 
+// Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md, itens
+// 15/16): antes toda notificação acionável usava o mesmo botão genérico
+// "Abrir recurso" (Communications.jsx). Rótulo específico por destino,
+// reaproveitando o mesmo switch/tipo já resolvido abaixo — não é um sistema
+// de rotas paralelo, só texto do botão.
+const CTA_LABELS = Object.freeze({
+  [NOTIFICATION_DESTINATION_TYPES.PRESS_INTERVIEW]: 'Dar entrevista',
+  [NOTIFICATION_DESTINATION_TYPES.TOURNAMENT]: 'Ver torneio',
+  [NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_DETAILS]: 'Ver torneio',
+  [NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN]: 'Jogar partida',
+  [NOTIFICATION_DESTINATION_TYPES.PARTNER_OFFER]: 'Ver proposta',
+  [NOTIFICATION_DESTINATION_TYPES.COACH]: 'Ver treinador',
+  [NOTIFICATION_DESTINATION_TYPES.STAFF]: 'Ver comissão',
+  [NOTIFICATION_DESTINATION_TYPES.CONTRACT]: 'Revisar contrato',
+  [NOTIFICATION_DESTINATION_TYPES.MISSION]: 'Ver missão',
+  [NOTIFICATION_DESTINATION_TYPES.INJURY]: 'Ver recuperação',
+  [NOTIFICATION_DESTINATION_TYPES.TRAINING]: 'Ver treino',
+  [NOTIFICATION_DESTINATION_TYPES.SPONSOR]: 'Ver patrocínio',
+  [NOTIFICATION_DESTINATION_TYPES.RANKING]: 'Ver ranking',
+  [NOTIFICATION_DESTINATION_TYPES.CALENDAR]: 'Ver calendário',
+  [NOTIFICATION_DESTINATION_TYPES.WORLD_EVENT]: 'Ver notícia',
+  [NOTIFICATION_DESTINATION_TYPES.MONTHLY_REPORT]: 'Ver relatório',
+  [NOTIFICATION_DESTINATION_TYPES.ANNUAL_REPORT]: 'Ver relatório',
+});
+const DEFAULT_CTA_LABEL = 'Abrir recurso';
+
 const normalizeToken = (value) => String(value || '').trim().toLowerCase().replace(/[\s-]+/g, '_');
 
 function withParams(route, params = {}) {
@@ -155,7 +181,8 @@ export function resolveNotificationDestination(notification = {}) {
   }
 
   if (explicit && typeof explicit === 'object' && explicit.params) route = withParams(route, explicit.params);
-  return { type, route, actionable: type !== NOTIFICATION_DESTINATION_TYPES.COMMUNICATION_ONLY || Boolean(explicitRoute || metadata.route) };
+  const actionable = type !== NOTIFICATION_DESTINATION_TYPES.COMMUNICATION_ONLY || Boolean(explicitRoute || metadata.route);
+  return { type, route, actionable, label: actionable ? (CTA_LABELS[type] || DEFAULT_CTA_LABEL) : null };
 }
 
 export function hasSpecificNotificationDestination(notification) {

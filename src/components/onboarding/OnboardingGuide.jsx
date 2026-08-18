@@ -1,8 +1,9 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { BookOpen, Check, GraduationCap, RotateCcw } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { DrawerShell } from '@/components/design-system';
+import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getPageIntroduction } from '@/onboarding/pageIntroductions.js';
@@ -17,8 +18,8 @@ import { ensureTutorialMissionCatalog } from '@/lib/padel.js';
 // painel do Guia — sem título repetido (mesma regra do hotfix anterior) e
 // sempre com o conteúdo completo (não precisa mais de recolher/expandir,
 // já que abrir o painel já é uma ação deliberada do jogador).
-function PageIntroductionSection({ pathname }) {
-  const intro = getPageIntroduction(pathname);
+function PageIntroductionSection({ pathname, search }) {
+  const intro = getPageIntroduction(pathname, search);
   if (!intro) return null;
   return (
     <section className="rounded-2xl border border-border/60 bg-card/70 p-4">
@@ -52,7 +53,7 @@ function NextStepSection({ state, step, isOnStepPage, confirmingStepId, confirma
         </div>
       </div>
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        {isOnStepPage && step.completionType === 'confirm_understanding' ? (
+        {isOnStepPage && step.completionType === 'confirm_understanding' && step.kind !== 'VISIT' ? (
           <button type="button" disabled={confirmingStepId === step.id} onClick={onConfirm} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground disabled:opacity-60">{confirmingStepId === step.id ? 'Confirmando...' : 'Entendi, continuar'}</button>
         ) : isOnStepPage ? (
           <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
@@ -106,10 +107,10 @@ function GuideButton({ active, onClick }) {
 }
 
 function GuidePanel({
-  open, onClose, pathname, isMissionCenter, state, step, isOnStepPage,
+  open, onClose, pathname, search, isMissionCenter, state, step, isOnStepPage,
   confirmingStepId, confirmationError, onConfirm, onPersist, onRestart, recommendation,
 }) {
-  const intro = !isMissionCenter ? getPageIntroduction(pathname) : null;
+  const intro = !isMissionCenter ? getPageIntroduction(pathname, search) : null;
   return (
     <DrawerShell
       open={open}
@@ -124,7 +125,7 @@ function GuidePanel({
       size="lg"
     >
       <div className="space-y-4">
-        {intro && <PageIntroductionSection pathname={pathname} />}
+        {intro && <PageIntroductionSection pathname={pathname} search={search} />}
         {!isMissionCenter && state.status === 'in_progress' && step && (
           <NextStepSection
             state={state}
@@ -149,12 +150,14 @@ function GuidePanel({
 
 export default function OnboardingGuide() {
   const location = useLocation();
+  const { toast } = useToast();
   const [profile, setProfile] = useState(null);
   const [facts, setFacts] = useState({ registrations: [], matches: [], trainings: [] });
   const [state, setState] = useState(null);
   const [helpOpen, setHelpOpen] = useState(false);
   const [confirmingStepId, setConfirmingStepId] = useState(null);
   const [confirmationError, setConfirmationError] = useState('');
+  const autoCompletingStepIdRef = useRef(null);
 
   const load = useCallback(async () => {
     try {
@@ -202,6 +205,43 @@ export default function OnboardingGuide() {
   const stepPath = step?.route?.split('?')[0];
   const isOnStepPage = Boolean(stepPath && isTutorialRouteMatch(step.route, location.pathname));
 
+  // Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 1): etapas
+  // `kind: 'VISIT'` concluem sozinhas ao visitar a rota correta — o
+  // jogador não precisa abrir o Guia e clicar "Entendi" para provar que
+  // esteve na página. Roda aqui (não em MissionNotificationBridge.jsx, que
+  // só dispara em navegação PUSH) porque este efeito já reage a
+  // `location.pathname` desde a primeira montagem, cobrindo o caso de
+  // aterrissar em /game logo após a criação do atleta (normalmente um
+  // `replace`, não um `push`).
+  useEffect(() => {
+    if (!profile?.id || !step?.id || state?.status !== 'in_progress') return undefined;
+    if (step.kind !== 'VISIT' || !isOnStepPage) return undefined;
+    if (autoCompletingStepIdRef.current === step.id) return undefined;
+    autoCompletingStepIdRef.current = step.id;
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await completeTutorialStep({ profile, stepId: step.id, triggerSource: 'auto-visit' });
+        if (cancelled) return;
+        setProfile(result.profile);
+        setState(result.state);
+        window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: step.id } }));
+        // CareerHub.jsx (Home) só escuta padel:profile-updated/padel:career-
+        // advanced para refrescar o próprio `profile` local — sem isto, a
+        // etapa concluída automaticamente não chegaria ao CTA principal da
+        // Home até a próxima navegação.
+        window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile: result.profile } }));
+        const { dismiss } = toast({ title: '✓ Etapa concluída', description: step.title });
+        setTimeout(dismiss, 1800);
+      } catch (error) {
+        console.error('[onboarding] Falha ao concluir etapa automaticamente.', { stepId: step.id, error });
+      } finally {
+        if (!cancelled) autoCompletingStepIdRef.current = null;
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [profile, step, isOnStepPage, state?.status, toast]);
+
   const confirmCurrentStep = useCallback(async () => {
     if (!profile?.id || !step?.id || step.completionType !== 'confirm_understanding' || confirmingStepId) return;
     setConfirmingStepId(step.id);
@@ -211,6 +251,7 @@ export default function OnboardingGuide() {
       setProfile(result.profile);
       setState(result.state);
       window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: step.id } }));
+      window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile: result.profile } }));
     } catch (error) {
       console.error('[onboarding] Falha ao confirmar etapa.', { stepId: step.id, error });
       setConfirmationError(error?.message || 'Não foi possível concluir esta etapa.');
@@ -236,6 +277,7 @@ export default function OnboardingGuide() {
       open={helpOpen}
       onClose={() => setHelpOpen(false)}
       pathname={location.pathname}
+      search={location.search}
       isMissionCenter={isMissionCenter}
       state={state}
       step={step}

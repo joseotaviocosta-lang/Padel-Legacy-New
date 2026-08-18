@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { generateFanBase, reactToEvent } from '@/lib/fanBase';
+import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 
 function monthKey(value) {
   return String(value || new Date().toISOString()).slice(0, 7);
@@ -25,16 +26,6 @@ async function safeList(entityName, filter = null) {
   } catch (error) {
     console.warn(`[Game Core] Falha ao consultar ${entityName}:`, error);
     return [];
-  }
-}
-
-async function safeCreate(entityName, payload) {
-  try {
-    const entity = localGame.entities?.[entityName];
-    return entity?.create ? await entity.create(payload) : null;
-  } catch (error) {
-    console.warn(`[Game Core] Falha ao registrar ${entityName}:`, error);
-    return null;
   }
 }
 
@@ -97,14 +88,20 @@ export async function evaluateMonthlyFanEngagement(profile) {
   };
 
   const saved = await localGame.entities.FanBase.update(fanBase.id, updated);
-  await safeCreate('CareerMessage', {
-    profile_id: profile.id,
-    sender: 'Equipe de Comunicação',
-    subject: 'Relatório mensal da torcida',
-    body: `Sua base de fãs variou ${fanChange >= 0 ? '+' : ''}${fanChange.toLocaleString('pt-BR')} neste mês. Moral: ${saved.morale}/100. Popularidade: ${saved.popularity}/100.`,
+  // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+  // mesma correção de chave estável por mês do patrocínio acima — evita duas
+  // mensagens quase idênticas se evaluateMonthlyFanEngagement for disparada
+  // duas vezes rápido para o mesmo mês.
+  // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): título reflete
+  // se a torcida cresceu ou encolheu; primeira frase conta o que aconteceu.
+  const fanTitle = fanChange > 0 ? 'Sua torcida está crescendo' : fanChange < 0 ? 'Sua torcida diminuiu' : 'Sua torcida este mês';
+  await upsertCareerMessage(profile.id, `fan-evaluation:${month}`, {
+    sender_name: 'Equipe de Comunicação',
+    subject: fanTitle,
+    title: fanTitle,
+    body: `${fanChange >= 0 ? '+' : ''}${fanChange.toLocaleString('pt-BR')} fãs neste mês. Moral ${saved.morale}/100 · popularidade ${saved.popularity}/100.`,
     message_type: 'fans',
-    is_read: false,
-    sent_date: profile.career_date || new Date().toISOString().slice(0, 10),
+    career_date: profile.career_date || new Date().toISOString().slice(0, 10),
   });
 
   return { skipped: false, month, fanBase: saved, fanChange, stats: updated.monthly_summary };

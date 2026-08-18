@@ -16,7 +16,11 @@ import { useCareer } from '@/careers/useCareer.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 import { useRenderCounter } from '@/dev/performanceProbe.js';
 
-export default function CommunicationBell({ compact = false }) {
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): memoizado — montado 2x no
+// shell global (header compacto + barra desktop) e antes re-renderizava a
+// cada mudança de estado do AppLayout sem relação com notificações. Sua
+// única prop (`compact`) é um booleano estático por instância.
+function CommunicationBell({ compact = false }) {
   useRenderCounter('CommunicationBell');
   const { activeCareer } = useCareer();
   const navigate = useNavigate();
@@ -186,22 +190,30 @@ export default function CommunicationBell({ compact = false }) {
             </div>
 
             <div className="max-h-[min(32rem,65vh)] overflow-y-auto p-2 scrollbar-premium">
-              {groupedMessages.length ? groupedMessages.map((group) => (
-                <section key={group.id} aria-label={group.label} className="mb-2 last:mb-0">
-                  <p className="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground">{group.label}</p>
-                  {group.messages.map((message) => (
-                    <button type="button" key={message.id} onClick={() => handleMessageClick(message)} className="flex w-full gap-3 rounded-xl p-3 text-left hover:bg-secondary/60">
-                      <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10"><Inbox className="h-4 w-4 text-primary" /></div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"><span>{getNotificationCategoryLabel(message)}</span><span>·</span><span>{getNotificationAttentionLevel(message)}</span></div>
-                        <p className="mt-1 truncate text-xs font-bold">{message.title}</p>
-                        <p className="mt-1 line-clamp-2 text-[10px] text-muted-foreground">{message.content}</p>
-                      </div>
-                      {isCareerMessageUnread(message) && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" title="Não lida" />}
-                    </button>
-                  ))}
-                </section>
-              )) : <div className="p-8 text-center text-xs text-muted-foreground"><p className="font-bold text-foreground">Você está em dia.</p><p className="mt-1">Nenhuma notificação exige sua atenção.</p></div>}
+              {groupedMessages.length ? groupedMessages.map((group) => {
+                // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md,
+                // item 32): relatórios continuam na mesma lista/ordem
+                // (groupNotificationsByPriority já os coloca por último) —
+                // só ficam visualmente mais discretos, sem reestruturar o
+                // componente.
+                const isReports = group.id === 'reports';
+                return (
+                  <section key={group.id} aria-label={group.label} className="mb-2 last:mb-0">
+                    <p className="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground">{group.label}</p>
+                    {group.messages.map((message) => (
+                      <button type="button" key={message.id} onClick={() => handleMessageClick(message)} className={`flex w-full gap-3 rounded-xl text-left hover:bg-secondary/60 ${isReports ? 'p-2' : 'p-3'}`}>
+                        <div className={`flex shrink-0 items-center justify-center rounded-xl ${isReports ? 'h-7 w-7 bg-secondary/70' : 'h-9 w-9 bg-primary/10'}`}><Inbox className={isReports ? 'h-3.5 w-3.5 text-muted-foreground' : 'h-4 w-4 text-primary'} /></div>
+                        <div className="min-w-0 flex-1">
+                          {!isReports && <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"><span>{getNotificationCategoryLabel(message)}</span><span>·</span><span>{getNotificationAttentionLevel(message)}</span></div>}
+                          <p className={`truncate font-bold ${isReports ? 'text-[11px]' : 'mt-1 text-xs'}`}>{message.title}</p>
+                          <p className={`text-muted-foreground ${isReports ? 'line-clamp-1 text-[9px]' : 'mt-1 line-clamp-2 text-[10px]'}`}>{message.content}</p>
+                        </div>
+                        {isCareerMessageUnread(message) && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" title="Não lida" />}
+                      </button>
+                    ))}
+                  </section>
+                );
+              }) : <div className="p-8 text-center text-xs text-muted-foreground"><p className="font-bold text-foreground">Você está em dia.</p><p className="mt-1">Nenhuma notificação exige sua atenção.</p></div>}
             </div>
 
             <Link to="/communications" onClick={closeCenter} className="flex items-center justify-between border-t border-border/60 px-4 py-3 text-xs font-bold text-primary">
@@ -213,3 +225,5 @@ export default function CommunicationBell({ compact = false }) {
     </div>
   );
 }
+
+export default React.memo(CommunicationBell);

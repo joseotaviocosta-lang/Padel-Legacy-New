@@ -1,6 +1,6 @@
 import { AdaptiveTactics } from './AdaptiveTactics.js';
 
-const SHOTS = ['drive', 'backhand', 'lob', 'volley', 'bandeja', 'smash', 'chiquita'];
+export const SHOTS = ['drive', 'backhand', 'lob', 'volley', 'bandeja', 'smash', 'chiquita'];
 
 function shotSkill(player, shot) {
   const map = {
@@ -78,6 +78,10 @@ export class DecisionEngine {
       reasons.push(...adaptive.reasons);
 
       weight += player.personality.creativity / 20;
+
+      const shotWeight = Number(tactic?.shotWeights?.[shot]);
+      if (Number.isFinite(shotWeight) && shotWeight > 0) weight *= shotWeight;
+
       return { value: shot, weight: Math.max(0, weight), reasons };
     });
   }

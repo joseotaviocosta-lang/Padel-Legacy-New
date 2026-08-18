@@ -19,6 +19,15 @@ function makeId(prefix = 'entity') {
 export const careerWriteStats = { count: 0 };
 export function resetCareerWriteStats() { careerWriteStats.count = 0; }
 
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, item 9 — "Storage / IPC"):
+// contador leve de leituras/gravações + tempo gasto no chokepoint único por
+// onde toda entidade passa (withCareer, abaixo). Não muda cache/estratégia
+// de leitura nenhuma — só torna visível o que já acontece, para o overlay de
+// perfdebug (MobilePerformanceMonitor).
+export const careerIOStats = { reads: 0, writes: 0, totalMs: 0, maxMs: 0 };
+export function resetCareerIOStats() { careerIOStats.reads = 0; careerIOStats.writes = 0; careerIOStats.totalMs = 0; careerIOStats.maxMs = 0; }
+function nowMs() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
+
 function matches(row, query = {}) {
   return Object.entries(query || {}).every(([key, expected]) => {
     const actual = row?.[key];
@@ -87,22 +96,30 @@ export class CareerEntityRepository {
   }
 
   async withCareer(mutator, { save = false } = {}) {
-    if (save) {
-      careerWriteStats.count += 1;
-      const transaction = await this.repository.mutateActiveCareer(async (career) => {
-        if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
-        return mutator(career);
-      });
-      return clone(transaction.result);
-    }
+    const start = nowMs();
+    try {
+      if (save) {
+        careerWriteStats.count += 1;
+        const transaction = await this.repository.mutateActiveCareer(async (career) => {
+          if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
+          return mutator(career);
+        });
+        return clone(transaction.result);
+      }
 
-    // Leituras de entidades usam o snapshot quente da carreira. Persistência
-    // continua sendo a autoridade ao abrir/recarregar a carreira, mas não há
-    // motivo para reler e parsear o mesmo arquivo para cada card da mesma tela.
-    const career = await this.repository.ensureActiveCareer({ fresh: false, cloneResult: false });
-    if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
-    this.syncCacheCareer(career);
-    return mutator(career);
+      // Leituras de entidades usam o snapshot quente da carreira. Persistência
+      // continua sendo a autoridade ao abrir/recarregar a carreira, mas não há
+      // motivo para reler e parsear o mesmo arquivo para cada card da mesma tela.
+      const career = await this.repository.ensureActiveCareer({ fresh: false, cloneResult: false });
+      if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
+      this.syncCacheCareer(career);
+      return mutator(career);
+    } finally {
+      const duration = nowMs() - start;
+      if (save) careerIOStats.writes += 1; else careerIOStats.reads += 1;
+      careerIOStats.totalMs += duration;
+      if (duration > careerIOStats.maxMs) careerIOStats.maxMs = duration;
+    }
   }
 
   seedFor(entityName, career) {

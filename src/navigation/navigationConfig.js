@@ -8,10 +8,11 @@ import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, 
  * Nenhuma rota nova foi criada para esta reorganização: os grupos "Carreira"
  * e "Mais" combinam itens que já existiam em outras áreas, sem depender de
  * telas próprias. As páginas de hub antigas (`/development`, `/team-hub`)
- * continuam existindo e funcionando (usadas pelo tutorial — ver
- * src/onboarding/tutorialSteps.js), só deixam de ser o alvo direto do link
- * de topo do grupo; `aliases` garante que o estado ativo do shell ainda as
- * reconhece como parte do grupo "Carreira" quando visitadas diretamente.
+ * continuam existindo e funcionando — o tutorial (Onboarding 2.0, ver
+ * src/onboarding/tutorialSteps.js) não as visita mais desde a v9, mas elas
+ * seguem acessíveis pela navegação normal; só deixam de ser o alvo direto do
+ * link de topo do grupo. `aliases` garante que o estado ativo do shell ainda
+ * as reconhece como parte do grupo "Carreira" quando visitadas diretamente.
  */
 export const NAV_GROUPS = [
   {

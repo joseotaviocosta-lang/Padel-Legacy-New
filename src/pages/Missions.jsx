@@ -11,7 +11,7 @@ import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTION
 import { CAREER_DIFFICULTY_OPTIONS, DEFAULT_NEW_CAREER_DIFFICULTY } from '@/lib/careerDifficultyLabels.js';
 import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
-import { completeTutorialStep, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
+import { completeTutorialStep, isTutorialRouteMatch, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
 import { TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
 import { deterministicMissionSelection, missionStatus, requirementsMet } from '@/missions/missionSystem.js';
@@ -70,7 +70,7 @@ function ensureExtendedMissionCatalog() {
   return catalogSyncPromise;
 }
 
-export default function Missions() {
+function Missions() {
   const navigate = useNavigate();
   const location = useLocation();
   const [searchParams] = useSearchParams();
@@ -261,6 +261,7 @@ export default function Missions() {
       setActionFeedback('Etapa concluída. O próximo passo já está disponível.');
       if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
         window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: tutorialStep.id } }));
+        window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile: result.profile } }));
       }
       await load();
     } catch (error) {
@@ -280,15 +281,34 @@ export default function Missions() {
   const tutorialDone = getTutorialProgress(profile?.tutorial_onboarding).completed;
   const inlineAction = ['set_player_name', 'choose_court_side', 'choose_career_difficulty', 'choose_play_style'].includes(nextTutorial?.objective_type);
   const currentStepIndex = TUTORIAL_STEPS.findIndex(step => step.id === tutorialStep?.id);
-  const anticipatedCompleted = TUTORIAL_STEPS.filter((step, index) => index > currentStepIndex && profile?.tutorial_onboarding?.completedStepIds?.includes(step.id));
+  // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): esta página é montada via
+  // <Outlet/> dentro de AppLayout — antes do memo no próprio componente (ver
+  // export ao fim do arquivo), qualquer re-render do shell global (ex.: o
+  // header de perfil/ranking atualizando, sem relação nenhuma com missões)
+  // refazia esta filtragem/ordenação do zero. useMemo aqui garante que,
+  // mesmo que o componente seja chamado de novo por algum motivo alheio,
+  // este trabalho só roda quando os dados que ele realmente usa mudam.
+  const completedStepIds = profile?.tutorial_onboarding?.completedStepIds;
+  const anticipatedCompleted = useMemo(
+    () => TUTORIAL_STEPS.filter((step, index) => index > currentStepIndex && completedStepIds?.includes(step.id)),
+    [currentStepIndex, completedStepIds],
+  );
   const buildPreview = draftStyle && profile?.court_side
     ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle, careerDifficultyId: profile.career_difficulty || 'hard' })
     : null;
   const currentChapter = tutorialStep?.chapter;
-  const categoryPool = missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked:true, sponsorsUnlocked:false }));
+  const categoryPool = useMemo(
+    () => missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked: true, sponsorsUnlocked: false })),
+    [missions, tab, profile],
+  );
   const cycleId = tab === 'tutorial' ? 'tutorial:career' : missionPeriodKey(tab, profile?.career_date);
   const categoryLimit = tab === 'diaria' ? 3 : tab === 'semanal' ? 3 : 20;
-  const filtered = tab === 'tutorial' ? tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter) : deterministicMissionSelection(categoryPool,{careerId:profile?.id,cycleId,category:tab,limit:categoryLimit});
+  const filtered = useMemo(
+    () => (tab === 'tutorial'
+      ? tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter)
+      : deterministicMissionSelection(categoryPool, { careerId: profile?.id, cycleId, category: tab, limit: categoryLimit })),
+    [tab, tutorialMissions, currentChapter, categoryPool, profile?.id, cycleId, categoryLimit],
+  );
   const summary = useMemo(() => {
     const current = filtered;
     return { total: current.length, completed: current.filter(m => progress[m.id]?.claimed).length };
@@ -359,8 +379,10 @@ export default function Missions() {
             <div className="mt-3 flex items-center gap-3"><ProgressBar value={progress[nextTutorial.id]?.progress || 0} max={nextTutorial.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{progress[nextTutorial.id]?.progress || 0}/{nextTutorial.target_count || 1}</span></div>
           </div>
           <div className="flex shrink-0 flex-col gap-2">
-            {nextTutorial.completion_type === 'confirm_understanding' && nextTutorial.tutorial_route?.split('?')[0] === location.pathname ? (
+            {nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind !== 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
               <button type="button" disabled={savingChoice} onClick={confirmUnderstanding} className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Confirmando...' : 'Entendi, continuar'}</button>
+            ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind === 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
+              <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
             ) : nextTutorial.tutorial_route ? (
               <button type="button" onClick={() => navigate(nextTutorial.tutorial_route)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>
             ) : null}
@@ -400,3 +422,9 @@ export default function Missions() {
     </Page>
   );
 }
+
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): página roteada (via
+// <Outlet/>), sem props reais vindas do pai — memo evita que um re-render de
+// AppLayout alheio a missões force esta página a refazer seu próprio
+// trabalho quando nem seu estado local nem o contexto de carreira mudaram.
+export default React.memo(Missions);

@@ -12,8 +12,8 @@ precisa **funcionar no bundle release**, não só em dev — `mark`/`measure`/
 são deliberadamente cortados do build de produção via
 `import.meta.env.DEV` (o próprio Vite elimina o código morto). Tudo que
 foi criado nesta fase (`isPerfDebugEnabled`, os monitores de FPS/long
-task/lag, `profileAction`) usa um gate em **runtime** (`?perfdebug=1`,
-persistido em `localStorage`) em vez de uma constante de build — por isso
+task/lag, `profileAction`) usa um gate em **runtime** (toggle interno
+**Performance**, persistido em `localStorage`) em vez de uma constante de build — por isso
 sobrevive ao release e pode ser ativado no APK real sem precisar de um
 build separado.
 
@@ -38,13 +38,18 @@ render no modo 10x, etc.) fica para depois que os números reais do
 aparelho confirmarem se são necessários — não foi implementado sem prova,
 conforme a regra explícita desta fase.
 
-## 3. `?perfdebug=1`
+## 3. Ativação do painel no APK
 
-Ativa o overlay flutuante (`src/dev/MobilePerformanceMonitor.jsx`).
-Persiste em `localStorage` (`padel:perfdebug`), então continua ativo em
-navegações seguintes dentro do app sem precisar repetir o parâmetro.
-`?perfdebug=0` desativa. Nunca aparece por padrão — só quando o jogador
-pede.
+Em **Mais → Configurações → Performance e acessibilidade**, o controle
+temporário **Performance** ativa e desativa o overlay flutuante
+(`src/dev/MobilePerformanceMonitor.jsx`) sem depender de barra de endereço.
+A preferência persiste em `localStorage` (`padel:perfdebug`), então continua
+ativa depois de navegar ou reiniciar o app. O botão **×** do próprio painel
+também o desativa e atualiza o estado do controle. Nunca aparece por padrão.
+
+Para compatibilidade com navegador, `?perfdebug=1` continua ativando e
+`?perfdebug=0` continua desativando o painel, mas esses parâmetros não são
+necessários no APK.
 
 ## 4. FPS (Parte 3)
 
@@ -185,7 +190,8 @@ sacrificar identidade visual sem evidência).
 
 - `src/dev/performanceProbe.js` — extensão (novo bloco perfdebug, runtime
   em vez de build-time; `mark`/`measure`/`timeAsync` originais intocados).
-- `src/dev/MobilePerformanceMonitor.jsx` — novo, overlay `?perfdebug=1`.
+- `src/dev/MobilePerformanceMonitor.jsx` — overlay de diagnóstico ativado em runtime.
+- `src/pages/Settings.jsx` — toggle temporário **Performance** para APK sem barra de endereço.
 - `src/components/AppLayout.jsx` — monta o overlay; mede navegação
   (Parte 6); conta renders.
 - `src/components/career/CareerHud.jsx`, `src/components/BottomNav.jsx` —
@@ -208,7 +214,7 @@ Só o que dá para medir sem dispositivo físico:
 - Motor de partida: **1401 pontos, média 0.278ms, p95 0.515ms**
   (`test:mobile-performance`, inalterado nesta fase — já era rápido).
 - Bundle: `index` +7.48 kB raw / +2.61 kB gzip (ferramenta de profiling
-  nova, sempre presente mas inerte sem `?perfdebug=1`).
+  nova, sempre presente mas inerte enquanto o usuário não a ativa).
 - Typecheck: 0 erros novos líquidos.
 
 FPS/long tasks/render counts reais **exigem o teste físico** — é
@@ -237,9 +243,9 @@ falha contra o código pré-fase e passa com a fase aplicada.
 ## 19. Instruções para o teste físico
 
 1. Instalar o novo APK release (Parte 21 abaixo).
-2. Abrir o app, navegar até qualquer tela, adicionar `?perfdebug=1` na URL
-   uma vez (ou usar um link/atalho que já inclua o parâmetro) — o overlay
-   fica ativo daí em diante, mesmo navegando internamente.
+2. No app, abrir **Mais → Configurações → Performance e acessibilidade** e
+   tocar em **Performance** para mudar de **Desativado** para **Ativado**.
+   O overlay aparece imediatamente e continua ativo ao navegar ou reiniciar.
 3. Seguir o checklist físico (seção 20) anotando os números do overlay
    (FPS, frame médio, >33ms, long tasks, DOM nodes, última ação) em cada
    etapa.
@@ -247,7 +253,8 @@ falha contra o código pré-fase e passa com a fase aplicada.
    muitas superfícies `.glass` (Home, Missões) e comparar o FPS mostrado
    com e sem.
 5. Mandar os números — não precisa interpretar, só copiar o que o overlay
-   mostra.
+   mostra. Ao terminar, usar o botão **×** do painel ou o mesmo controle em
+   Configurações para desativar e limpar a preferência persistida.
 
 ## 20. Chrome DevTools (opcional, mais profundo)
 

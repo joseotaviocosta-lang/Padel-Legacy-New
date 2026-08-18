@@ -43,7 +43,16 @@ export default function Coaches() {
   const [sortOrder, setSortOrder] = useState('recommendation');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
+  // Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 4): o filtro
+  // padrão para uma carreira nova é "available" (getDefaultCoachDiscoveryFilter),
+  // que pode listar dezenas de treinadores de uma vez sem paginação nenhuma —
+  // isto só limita quantos cards renderizam por vez, sem tocar em
+  // buildCoachDiscovery/filterCoachDiscovery/sortCoachDiscovery nem inventar
+  // nenhum critério de recomendação novo.
+  const [visibleCount, setVisibleCount] = useState(12);
   const { toast } = useToast();
+
+  useEffect(() => { setVisibleCount(12); }, [statusFilter, specialtyFilter, sortOrder, search]);
 
   useEffect(() => { load(); }, []);
 
@@ -239,10 +248,19 @@ export default function Coaches() {
               <p className="text-xs text-muted-foreground">{section.description} · {section.items.length} resultado{section.items.length === 1 ? '' : 's'}</p>
             </div>
             <div className="grid gap-3 sm:grid-cols-2">
-              {section.items.map((evaluation) => (
+              {section.items.slice(0, visibleCount).map((evaluation) => (
                 <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
               ))}
             </div>
+            {section.items.length > visibleCount && (
+              <button
+                type="button"
+                onClick={() => setVisibleCount((count) => count + 12)}
+                className="mx-auto block rounded-xl border border-border/60 bg-secondary/30 px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground"
+              >
+                Mostrar mais ({section.items.length - visibleCount} restantes)
+              </button>
+            )}
           </section>
         ))}
 

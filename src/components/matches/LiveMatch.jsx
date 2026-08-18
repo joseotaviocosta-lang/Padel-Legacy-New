@@ -23,6 +23,7 @@ import {
   attachLiveCoach,
   formatPoints,
   MATCH_TACTICS,
+  getMatchTactic,
 } from '@/lib/matchEngine';
 import { Button, ConfirmDialog } from '@/components/design-system';
 import { mark, measure } from '@/dev/performanceProbe.js';
@@ -52,10 +53,7 @@ export default function LiveMatch({
 }) {
   mark('livematch: render-start');
   const [state, setState] = useState(() => initialState || createMatch(teamA, teamB, { initialTacticId, coach, liveCoachSettings }));
-  const [tactic, setTactic] = useState(() => {
-    const resumedTacticId = initialState?.activeTactics?.A?.id;
-    return MATCH_TACTICS.find((item) => item.id === (resumedTacticId || initialTacticId)) || MATCH_TACTICS[0];
-  });
+  const [tactic, setTactic] = useState(() => initialState?.activeTactics?.A || getMatchTactic(initialTacticId));
   // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md, Parte 21): retomar uma partida
   // interrompida sempre volta pausada — o jogador decide quando continuar,
   // nunca avança pontos sozinho "recuperando o tempo perdido" em background.
@@ -138,11 +136,28 @@ export default function LiveMatch({
     });
   }, [displayMode]);
 
+  // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): em velocidades altas
+  // (5x/10x) isto commitava 1 ponto por render a cada 1000/speed ms — em 10x,
+  // ~10 re-renders completos por segundo (placar, narração, painel tático)
+  // sem nenhum agrupamento. `pointsPerTick` processa vários pontos reais do
+  // motor por commit sempre que o intervalo natural cairia abaixo de
+  // MIN_TICK_MS, mantendo o MESMO ritmo de pontos-por-segundo (e portanto a
+  // MESMA duração total da partida) de antes — só reduz quantos commits de
+  // React isso custa. Em velocidades baixas (intervalo já >= MIN_TICK_MS),
+  // pointsPerTick fica em 1 e o comportamento é idêntico ao anterior.
   useEffect(() => {
     if (state.finished || !autoPlay) return undefined;
+    const MIN_TICK_MS = 150;
+    const intervalMs = 1000 / speed;
+    const pointsPerTick = Math.max(1, Math.ceil(MIN_TICK_MS / intervalMs));
+    const tickMs = intervalMs * pointsPerTick;
     const timer = window.setTimeout(() => {
-      setState((previous) => playPoint(previous));
-    }, 1000 / speed);
+      setState((previous) => {
+        let next = previous;
+        for (let i = 0; i < pointsPerTick && !next.finished; i += 1) next = playPoint(next);
+        return next;
+      });
+    }, tickMs);
     return () => window.clearTimeout(timer);
   }, [state, autoPlay, speed]);
 

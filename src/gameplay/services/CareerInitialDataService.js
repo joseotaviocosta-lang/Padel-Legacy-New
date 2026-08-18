@@ -32,8 +32,21 @@ function remapSeedRow(row, activePlayerId) {
   return seeded;
 }
 
+// Entidades de identidade (User/PlayerProfile) e de histórico/progresso
+// pessoal (Match/TrainingSession/MissionProgress) nunca herdam conteúdo de
+// demonstração do LOCAL_SEED — mesmo remapeado para o profile_id real, dar a
+// uma carreira nova partidas/treinos/progresso que ela nunca viveu corrompe
+// tanto o histórico exibido quanto a inferência de conclusão do tutorial
+// (Onboarding 2.0, docs/ONBOARDING_V3_COMMUNICATIONS.md): a primeira
+// confirmação de etapa do tutorial busca Match/TrainingSession antes de
+// qualquer partida/treino real terem acontecido, e via ensureCollection()
+// (CareerEntityRepository.js) essas coleções ainda não inicializadas caíam
+// no fallback de demonstração — marcando "primeiro treino"/"primeira
+// partida" como concluídos antes do jogador fazer qualquer coisa.
+const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress']);
+
 export function seedCollection(entityName, activePlayerId = null) {
-  if (entityName === 'User' || entityName === 'PlayerProfile') return [];
+  if (NEVER_SEED_WITH_DEMO_DATA.has(entityName)) return [];
   return clone(LOCAL_SEED[entityName] || []).map((row) => remapSeedRow(row, activePlayerId));
 }
 

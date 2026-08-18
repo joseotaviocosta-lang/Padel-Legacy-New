@@ -8,7 +8,7 @@ import PartnerSelection from '@/components/career/PartnerSelection';
 import { ActionFeedback, Button, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard, Surface, SurfaceHeader } from '@/components/design-system';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 
-export default function Matches() {
+function Matches() {
   const { activeCareer } = useCareer();
   const [matches, setMatches] = useState([]);
   const [profile, setProfile] = useState(null);
@@ -139,3 +139,8 @@ export default function Matches() {
     </Page>
   );
 }
+
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): página roteada (via
+// <Outlet/>), sem props reais vindas do pai — mesma razão do memo em
+// Missions.jsx.
+export default React.memo(Matches);

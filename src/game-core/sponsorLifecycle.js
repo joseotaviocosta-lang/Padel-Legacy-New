@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 
 function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -154,16 +155,24 @@ export async function evaluateSponsorContracts(profile) {
     });
 
     const terminatedNames = reports.filter((report) => report.terminated).map((report) => report.sponsor_name);
-    await safeCreate('CareerMessage', {
-      profile_id: profile.id,
-      sender: 'Departamento Comercial',
-      subject: 'Avaliação mensal dos patrocinadores',
+    // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+    // chave estável por mês — evaluateSponsorContracts é disparada por clique
+    // (Economy.jsx), então um duplo clique rápido antes do primeiro
+    // PlayerContract.update chegar podia gerar duas mensagens quase idênticas
+    // para a mesma avaliação mensal. Mesmo mecanismo já usado pelo relatório
+    // semanal da comissão.
+    // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): título muda
+    // conforme houver ou não algo notável (contrato encerrado) em vez de um
+    // "Avaliação mensal" fixo; primeira frase conta o que aconteceu.
+    await upsertCareerMessage(profile.id, `sponsor-evaluation:${month}`, {
+      sender_name: 'Departamento Comercial',
+      subject: terminatedNames.length ? 'Contrato de patrocínio encerrado' : 'Patrocínios em dia',
+      title: terminatedNames.length ? 'Contrato de patrocínio encerrado' : 'Patrocínios em dia',
       body: terminatedNames.length
-        ? `A avaliação foi concluída. Contratos encerrados: ${terminatedNames.join(', ')}.`
-        : `A avaliação foi concluída. Ajuste financeiro: ${totalAdjustment >= 0 ? '+' : ''}${totalAdjustment.toLocaleString('pt-BR')} moedas.`,
+        ? `${terminatedNames.join(', ')} encerrou o contrato após a avaliação deste mês.`
+        : `Ajuste financeiro do mês: ${totalAdjustment >= 0 ? '+' : ''}${totalAdjustment.toLocaleString('pt-BR')} moedas.`,
       message_type: 'sponsor',
-      is_read: false,
-      sent_date: profile.career_date || new Date().toISOString().slice(0, 10),
+      career_date: profile.career_date || new Date().toISOString().slice(0, 10),
     });
   }
 

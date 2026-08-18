@@ -2,7 +2,7 @@ import { advanceCareerDay } from './calendarLifecycle';
 import { processGameStateDay } from './gameStateLifecycle.js';
 import { createDayAdvanceController } from './dayAdvanceController.js';
 import { localGame } from '@/api/localGameClient.js';
-import { profileAction, timeAsync } from '@/dev/performanceProbe.js';
+import { profileAction, timeAsync, createStageProfiler } from '@/dev/performanceProbe.js';
 
 function broadcastProfileUpdate(profile, source = 'day-advance-coordinator') {
   if (typeof window === 'undefined' || !profile) return;
@@ -32,7 +32,13 @@ const controller = createDayAdvanceController({
   processSecondary: async (profile, previousDate, currentDate) => {
     const entities = /** @type {any} */ (localGame.entities);
     const fresh = await entities.PlayerProfile.get(profile.id).catch(() => profile);
-    const result = await processGameStateDay(fresh, previousDate, currentDate);
+    // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, item 10): processGameStateDay
+    // já aceita um profiler opcional (stage() lá dentro) — nunca era passado,
+    // então nenhuma medição por etapa existia. Reaproveita esse contrato em
+    // vez de criar um mecanismo novo.
+    const profiler = createStageProfiler();
+    const result = await processGameStateDay(fresh, previousDate, currentDate, { profiler });
+    profiler.finish();
     return result.profile || fresh;
   },
   publishProfile: broadcastProfileUpdate,

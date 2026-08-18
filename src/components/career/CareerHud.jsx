@@ -4,7 +4,7 @@ import { cn } from '@/lib/utils';
 import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/lib/uiSound.js';
 import { useRenderCounter } from '@/dev/performanceProbe.js';
 
-export default function CareerHud({ profile, ranking, compact = false, className }) {
+function CareerHud({ profile, ranking, compact = false, className }) {
   useRenderCounter('CareerHud');
   const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
 
@@ -47,3 +47,20 @@ export default function CareerHud({ profile, ranking, compact = false, className
     </div>
   );
 }
+
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): `profile`/`ranking` chegam
+// de AppLayout's useCareerHeaderData(), que emite um objeto novo a cada busca
+// mesmo quando nada visível aqui mudou (ex.: um outro campo do perfil foi
+// atualizado). Comparador dedicado só nos 4 campos que este componente
+// realmente mostra, em vez de comparação rasa do objeto inteiro inteiro.
+function areEqual(prev, next) {
+  return prev.compact === next.compact
+    && prev.className === next.className
+    && Number(prev.profile?.energy) === Number(next.profile?.energy)
+    && Number(prev.profile?.fatigue) === Number(next.profile?.fatigue)
+    && Number(prev.profile?.coins) === Number(next.profile?.coins)
+    && (prev.ranking?.rank || null) === (next.ranking?.rank || null)
+    && (prev.ranking?.displayRank || null) === (next.ranking?.displayRank || null);
+}
+
+export default React.memo(CareerHud, areEqual);

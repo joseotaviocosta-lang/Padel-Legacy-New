@@ -75,7 +75,12 @@ check('performanceProbe usa console.log/console.warn incondicional em vez de con
 // MISSÕES — NÃO MONTAR TODAS AS ETAPAS (Parte 10)
 // ═══════════════════════════════════════════════════════════════════════════
 
-check('tutorial em Missions.jsx parou de filtrar por capítulo atual (montaria as etapas todas de uma vez)', missions.includes("filtered = tab === 'tutorial' ? tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter)"));
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): `filtered` passou a ser
+// calculado dentro de um useMemo (evita refazer a filtragem/ordenação a cada
+// re-render do shell alheio a missões) — a lógica de filtrar por capítulo
+// atual no tutorial continua a mesma, só não é mais um literal `filtered =
+// tab === ...` direto.
+check('tutorial em Missions.jsx parou de filtrar por capítulo atual (montaria as etapas todas de uma vez)', missions.includes("tab === 'tutorial'") && missions.includes('tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter)'));
 check('categorias não-tutorial perderam o limite de itens exibidos por ciclo', /categoryLimit = tab === 'diaria' \? 3 : tab === 'semanal' \? 3 : \d+/.test(missions));
 
 // ═══════════════════════════════════════════════════════════════════════════

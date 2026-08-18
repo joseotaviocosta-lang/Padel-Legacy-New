@@ -52,7 +52,11 @@ function MoreSheet({ open, onClose }) {
   );
 }
 
-export default function BottomNav({ hidden = false }) {
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): memoizado — vive no shell
+// global e antes re-renderizava a cada mudança de estado do AppLayout sem
+// relação com navegação (perfil/ranking do header, etc.). Sua única prop
+// (`hidden`) só muda quando o teclado Android realmente abre/fecha.
+function BottomNav({ hidden = false }) {
   useRenderCounter('BottomNav');
   const location = useLocation();
   const [moreOpen, setMoreOpen] = useState(false);
@@ -124,3 +128,5 @@ export default function BottomNav({ hidden = false }) {
     </>
   );
 }
+
+export default React.memo(BottomNav);

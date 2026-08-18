@@ -24,7 +24,7 @@ import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 import FloatingUtilityRail from '@/components/system/FloatingUtilityRail.jsx';
 import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
 import MobilePerformanceMonitor from '@/dev/MobilePerformanceMonitor.jsx';
-import { recordAction, useRenderCounter } from '@/dev/performanceProbe.js';
+import { recordAction, useRenderCounter, mark, measure } from '@/dev/performanceProbe.js';
 
 const EXPANDED_GROUP_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -130,10 +130,18 @@ function useCareerHeaderData() {
   const [profile, setProfile] = useState(null);
   const [ranking, setRanking] = useState(null);
 
-  const applyProfile = useCallback((nextProfile) => {
+  // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): antes disparava setProfile
+  // (síncrono) e setRanking (dentro de um .then() assíncrono) em dois commits
+  // separados — dois re-renders de AppLayout (e de tudo que não está
+  // memoizado abaixo dele) por evento de perfil, em vez de um só. Aguardar
+  // getWorldRank antes de gravar os dois estados deixa as duas atualizações
+  // no mesmo "tick" de continuação da Promise, que o React já agrupa num
+  // único commit.
+  const applyProfile = useCallback(async (nextProfile) => {
     if (!nextProfile) return;
+    const nextRanking = await getWorldRank(nextProfile).catch(() => null);
     setProfile(nextProfile);
-    void getWorldRank(nextProfile).then(setRanking).catch(() => setRanking(null));
+    setRanking(nextRanking);
   }, []);
 
   const load = useCallback(async () => {
@@ -214,10 +222,22 @@ export default function AppLayout() {
   // de `profileAction` (que mede o tempo da própria chamada de fn()).
   useEffect(() => {
     const start = performance.now();
+    // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, item 8): o total já era
+    // medido (recordAction abaixo, ativo no bundle release); estes marks
+    // DEV-only dividem o mesmo vão em dois sub-trechos (até o commit do
+    // frame anterior vs. até a pintura da nova rota), para não depender só
+    // do total ao investigar onde o tempo é gasto — mark/measure já são
+    // eliminados do bundle release (import.meta.env.DEV), então isto não
+    // adiciona custo nenhum fora de `npm run dev`.
+    mark('navigate:start');
     let raf1 = null;
     let raf2 = null;
     raf1 = requestAnimationFrame(() => {
+      mark('navigate:raf1');
+      measure('navigate: até commit do frame anterior', 'navigate:start', 'navigate:raf1');
       raf2 = requestAnimationFrame(() => {
+        mark('navigate:raf2');
+        measure('navigate: pintura da nova rota', 'navigate:raf1', 'navigate:raf2');
         recordAction('navigate-route', performance.now() - start, { to: location.pathname });
       });
     });

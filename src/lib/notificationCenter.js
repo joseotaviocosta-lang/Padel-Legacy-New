@@ -97,8 +97,8 @@ export function isNotificationFromCareerDate(notification, careerDate) {
 // tipos conhecidos — nenhum tipo novo de relatório passa a existir aqui,
 // só a classificação de tipos que já existiam.
 const PASSIVE_REPORT_TYPES = new Set([
-  'weekly_summary', 'staff_report', 'world_bulletin',
-  'monthly_career_report', 'annual_career_report', 'season_report',
+  'weekly_summary', 'staff_report', 'staff_event', 'staff_monthly_report', 'world_bulletin',
+  'monthly_career_report', 'annual_career_report', 'season_report', 'sponsor', 'fans',
 ]);
 const PASSIVE_REPORT_NOTIFICATION_TYPES = new Set([
   'WEEKLY_SUMMARY', 'STAFF', 'MONTHLY_REPORT', 'ANNUAL_REPORT', 'SEASON_REPORT',

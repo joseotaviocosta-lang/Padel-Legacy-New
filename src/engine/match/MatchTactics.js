@@ -8,6 +8,10 @@ export const MATCH_TACTICS = Object.freeze([
 
 export const DEFAULT_TACTIC_ID = 'equilibrado';
 export function getMatchTactic(value) {
+  if (value && typeof value === 'object' && value.shotWeights) {
+    const base = MATCH_TACTICS.find(tactic => tactic.id === value.baseTacticId) || MATCH_TACTICS[0];
+    return { ...base, ...value, shotWeights: { ...value.shotWeights } };
+  }
   const id = typeof value === 'string' ? value : value?.id;
   return MATCH_TACTICS.find(tactic => tactic.id === id) || MATCH_TACTICS[0];
 }

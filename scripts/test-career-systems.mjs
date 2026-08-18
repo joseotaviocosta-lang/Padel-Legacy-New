@@ -152,7 +152,15 @@ try {
   assert(tournamentMigration.data.entities.Match[0].score === '6-4' && tournamentMigrationAgain.migrated === false, 'Migration de torneios alterou referências ou não é idempotente.');
 
   const missionsPage = await server.ssrLoadModule('/src/pages/Missions.jsx');
-  assert(typeof missionsPage.default === 'function', 'Página Missions não possui export válido.');
+  // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): Missions.jsx passou a
+  // exportar `React.memo(Missions)` (evita refazer o render da página a cada
+  // re-render do shell global alheio a missões) — isso é um objeto especial
+  // do React (`$$typeof: react.memo`, `.type` = a função original), não mais
+  // uma function declaration direta, mas continua um componente válido.
+  const missionsExport = missionsPage.default;
+  const isValidMissionsExport = typeof missionsExport === 'function'
+    || (missionsExport && typeof missionsExport === 'object' && typeof missionsExport.type === 'function');
+  assert(isValidMissionsExport, 'Página Missions não possui export válido.');
   console.log('CareerSystemsAuditTest: persistência, migration e Missions aprovadas.');
 } finally {
   await server.close();

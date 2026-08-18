@@ -54,6 +54,7 @@ try {
   const { reconcileTutorialProgress, getNextTutorialStep, getCurrentTutorialStep, getTutorialProgress } = await server.ssrLoadModule('/src/onboarding/tutorialState.js');
   const { reconcilePersistedTutorial } = await server.ssrLoadModule('/src/onboarding/tutorialReconciliation.js');
   const { completeTutorialStep, isTutorialRouteMatch } = await server.ssrLoadModule('/src/onboarding/tutorialEngine.js');
+  const { ensureTutorialMissionCatalog } = await server.ssrLoadModule('/src/lib/padel.js');
 
   // ── Métricas: antes vs depois (item 19/47 do hotfix) ────────────────────
   // "Antes" é o inventário travado desta auditoria (v8, 57 etapas — antes de
@@ -70,7 +71,11 @@ try {
       '/management', '/game/economy', '/history', '/hall-of-fame', '/game/legacy', '/admin', '/database',
     ]).size,
   };
-  gate('TUTORIAL_VERSION avançou (v8 → v9) — revisão estrutural real, documentada', TUTORIAL_VERSION === 9 && TUTORIAL_VERSION > BEFORE.version);
+  // "Depois" é lido ao vivo de TUTORIAL_VERSION (não fixado num número) —
+  // Onboarding Flow 3.1 avançou de v9 para v10 (docs/ONBOARDING_FLOW_3_1.md,
+  // Parte 1: campo `kind` novo por etapa, mecanismo de conclusão de 6
+  // etapas mudou de clique em "Entendi" para auto-complete por visita).
+  gate(`TUTORIAL_VERSION avançou (v${BEFORE.version} → v${TUTORIAL_VERSION}) — revisão estrutural real, documentada`, TUTORIAL_VERSION > BEFORE.version);
   gate(`Total de etapas obrigatórias reduziu bastante (${BEFORE.totalSteps} → ${TUTORIAL_STEPS.length})`, TUTORIAL_STEPS.length < BEFORE.totalSteps * 0.4);
   const afterRoutes = new Set(TUTORIAL_STEPS.map((step) => step.route.split('?')[0]));
   gate(`Páginas obrigatórias reduziram bastante (${BEFORE.mandatoryRoutes} → ${afterRoutes.size})`, afterRoutes.size < BEFORE.mandatoryRoutes * 0.4);
@@ -134,7 +139,19 @@ try {
     return result.state;
   };
 
-  let state = (await reconcilePersistedTutorial(profile, { registrations: [], matches: [], trainings: [] }, [], [])).state;
+  // Reconciliação real precisa do catálogo/progresso de missões atuais para
+  // poder confirmar (e recompensar) retroativamente etapas reconhecidas por
+  // fato — sem isso, a próxima etapa sequencial fica bloqueada por
+  // tutorialUnlocked() (exige a etapa anterior "claimed"). Mesma busca que
+  // Missions.jsx/OnboardingGuide.jsx fazem antes de chamar
+  // reconcilePersistedTutorial; nunca arrays vazios.
+  const reconcile = async (facts) => {
+    const missions = await ensureTutorialMissionCatalog();
+    const progressRows = await localGame.entities.MissionProgress.filter({ profile_id: profile.id });
+    return reconcilePersistedTutorial(profile, facts, missions, progressRows);
+  };
+
+  let state = (await reconcile({ registrations: [], matches: [], trainings: [] })).state;
   gate('Carreira nova começa na Fase A (career-created)', getCurrentTutorialStep(state)?.id === 'career-created');
   state = await confirmStep('career-created');
   gate('Após confirmar career-created, avança para athlete-named', getCurrentTutorialStep(state)?.id === 'athlete-named');
@@ -146,7 +163,7 @@ try {
     sport_name: 'Ale Tester', handedness: 'right', court_side: 'direita',
     career_difficulty: 'normal', play_style: 'agressivo',
   });
-  state = (await reconcilePersistedTutorial(profile, { registrations: [], matches: [], trainings: [] }, [], [])).state;
+  state = (await reconcile({ registrations: [], matches: [], trainings: [] })).state;
   gate('Nome/lado/dificuldade/estilo preenchidos → avança direto para appearance-known (Fase A)', getCurrentTutorialStep(state)?.id === 'appearance-known');
 
   state = await confirmStep('appearance-known');
@@ -155,26 +172,26 @@ try {
 
   state = await confirmStep('offers-reviewed');
   profile = await localGame.entities.PlayerProfile.update(profile.id, { partner_id: 'bot-partner-1' });
-  state = (await reconcilePersistedTutorial(profile, { registrations: [], matches: [], trainings: [] }, [], [])).state;
+  state = (await reconcile({ registrations: [], matches: [], trainings: [] })).state;
   gate('Parceiro escolhido (ação de domínio) → avança para Fase C (treinador)', getCurrentTutorialStep(state)?.id === 'coaches-known');
 
   state = await confirmStep('coaches-known');
   gate('Fase C concluída → Fase D (primeiro treino)', getCurrentTutorialStep(state)?.id === 'first-training');
 
   const trainings = [{ id: 'training-1', profile_id: profile.id }];
-  state = (await reconcilePersistedTutorial(profile, { registrations: [], matches: [], trainings }, [], [])).state;
+  state = (await reconcile({ registrations: [], matches: [], trainings })).state;
   gate('Treino concluído (evento de domínio) → avança para Fase E (calendário)', getCurrentTutorialStep(state)?.id === 'calendar-known');
 
   state = await confirmStep('calendar-known');
   gate('Fase E concluída → Fase F (primeiro torneio)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
 
   const registrations = [{ id: 'reg-1', profile_id: profile.id, tournament_id: 't1', status: 'confirmed' }];
-  state = (await reconcilePersistedTutorial(profile, { registrations, matches: [], trainings }, [], [])).state;
+  state = (await reconcile({ registrations, matches: [], trainings })).state;
   gate('Inscrição em torneio (evento de domínio) → avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
 
   const matches = [{ id: 'match-1', profile_id: profile.id }];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { matches_played: 1 });
-  state = (await reconcilePersistedTutorial(profile, { registrations, matches, trainings }, [], [])).state;
+  state = (await reconcile({ registrations, matches, trainings })).state;
   gate('Partida concluída (evento de domínio) → avança para autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
 
   state = await confirmStep('autonomy');

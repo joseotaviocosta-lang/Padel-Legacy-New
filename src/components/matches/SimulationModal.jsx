@@ -8,7 +8,8 @@ import { getPartnerBot } from '@/lib/career';
 import { overallRating, canPlayMatchToday, getChemistryBonus, isInjured, injuryRecoveryDays, getEnergyPenalty } from '@/lib/padel';
 import { getCoachEffects } from '@/lib/coaches';
 import { finalizePracticeMatch } from '@/game-core';
-import { MATCH_TACTICS, getSetScoreString } from '@/lib/matchEngine';
+import { MATCH_TACTICS, getSetScoreString, SHOTS } from '@/lib/matchEngine';
+import { Slider } from '@/components/ui/slider';
 import { processMatchRelationships } from '@/lib/relationships';
 import { ensureStarterCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
@@ -22,6 +23,16 @@ import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { probePracticeRecoverySession } from '@/game-core/practiceMatchRecoveryEngine.js';
 
 const TACTIC_ICONS = { Scale, Flame, Shield, Hammer, Brain };
+const SHOT_LABELS = {
+  drive: { label: 'Drive' },
+  backhand: { label: 'Backhand' },
+  lob: { label: 'Lob' },
+  volley: { label: 'Voleio' },
+  bandeja: { label: 'Bandeja' },
+  smash: { label: 'Smash' },
+  chiquita: { label: 'Chiquita', desc: 'Golpe baixo e rápido perto da rede, para tirar tempo do adversário.' },
+};
+const NEUTRAL_SHOT_WEIGHTS = Object.fromEntries(SHOTS.map((shot) => [shot, 1]));
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
   const [profile, setProfile] = useState(initialProfile);
   const [initialTacticId, setInitialTacticId] = useState('equilibrado');
@@ -31,6 +42,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [result, setResult] = useState(null);
   const [coach,setCoach]=useState(null);
   const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
+  const [useCustomPlan, setUseCustomPlan] = useState(() => Boolean(initialProfile?.custom_tactic_plan?.shotWeights));
+  const [customShotWeights, setCustomShotWeights] = useState(() => ({ ...NEUTRAL_SHOT_WEIGHTS, ...(initialProfile?.custom_tactic_plan?.shotWeights || {}) }));
   const [resumedEngineState, setResumedEngineState] = useState(null);
   const [resumeDecided, setResumeDecided] = useState(false);
   const [liveMatchSessionKey, setLiveMatchSessionKey] = useState(0);
@@ -46,6 +59,10 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const pendingResume = !checkpointLoading && checkpoint?.type === 'practice' && !resumeDecided;
   useEffect(()=>{let active=true;(async()=>{if(!profile?.id)return;const result=await ensureStarterCoach(profile);if(!active)return;if(result.profile?.id&&result.profile.coach_id!==profile.coach_id){setProfile(result.profile);onProfileUpdate?.(result.profile);}setCoach(result.coach||null);})().catch(()=>{if(active)setCoach(null);});return()=>{active=false;};},[profile?.id,profile?.coach_id]);
   const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
+  const persistCustomTacticPlan=(shotWeights)=>{if(!profile?.id)return;localGame.entities.PlayerProfile.update(profile.id,{custom_tactic_plan:{baseTacticId:initialTacticId,shotWeights,updatedAt:new Date().toISOString()}}).catch(()=>{});};
+  const changeShotWeight=(shot,value)=>{const next={...customShotWeights,[shot]:value};setCustomShotWeights(next);persistCustomTacticPlan(next);};
+  const resetShotWeights=()=>{setCustomShotWeights({...NEUTRAL_SHOT_WEIGHTS});persistCustomTacticPlan({...NEUTRAL_SHOT_WEIGHTS});};
+  const toggleCustomPlan=()=>{const next=!useCustomPlan;setUseCustomPlan(next);if(next)persistCustomTacticPlan(customShotWeights);};
   const changeDisplayMode=(mode)=>setDisplayMode(mode);
 
   function startMatch() {
@@ -288,6 +305,40 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
               <p className="text-[10px] text-muted-foreground mt-2">{MATCH_TACTICS.find(t => t.id === initialTacticId)?.desc}. Você pode mudar a tática durante o jogo!</p>
             </div>
 
+            <Surface variant="elevated" padding="compact" className="space-y-2">
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="text-xs font-bold">Personalizar por fundamento</p>
+                  <p className="text-[10px] text-muted-foreground">Ajuste fino golpe a golpe sobre a tática escolhida acima.</p>
+                </div>
+                <button aria-pressed={useCustomPlan} onClick={toggleCustomPlan} className={`rounded-full px-3 py-1 text-[10px] font-bold ${useCustomPlan ? 'bg-primary text-primary-foreground' : 'bg-secondary'}`}>
+                  {useCustomPlan ? 'Ativo' : 'Desativado'}
+                </button>
+              </div>
+              {useCustomPlan && (
+                <div className="space-y-3 pt-1">
+                  {SHOTS.map((shot) => (
+                    <div key={shot}>
+                      <div className="flex items-center justify-between text-[10px]">
+                        <span className="font-semibold text-foreground">{SHOT_LABELS[shot]?.label || shot}</span>
+                        <span className="text-muted-foreground">{customShotWeights[shot].toFixed(2)}x</span>
+                      </div>
+                      {SHOT_LABELS[shot]?.desc && <p className="mb-1 text-[9px] leading-relaxed text-muted-foreground">{SHOT_LABELS[shot].desc}</p>}
+                      <Slider
+                        aria-label={`Peso de ${SHOT_LABELS[shot]?.label || shot}`}
+                        value={[customShotWeights[shot]]}
+                        min={0.6}
+                        max={1.5}
+                        step={0.05}
+                        onValueChange={([value]) => changeShotWeight(shot, value)}
+                      />
+                    </div>
+                  ))}
+                  <button onClick={resetShotWeights} className="text-[10px] font-semibold text-primary hover:underline">Restaurar padrão</button>
+                </div>
+              )}
+            </Surface>
+
             <Surface variant="elevated" padding="compact" className="space-y-2"><div className="flex items-center justify-between gap-3"><div><p className="text-xs font-bold">Treinador ao vivo</p><p className="text-[10px] text-muted-foreground">{coach?`${coach.name} · ${coach.specialty}`:'Sem treinador: apenas métricas básicas'}</p></div><button aria-pressed={liveCoachSettings.liveCoachEnabled} onClick={()=>changeLiveCoachSettings({liveCoachEnabled:!liveCoachSettings.liveCoachEnabled})} className={`rounded-full px-3 py-1 text-[10px] font-bold ${liveCoachSettings.liveCoachEnabled?'bg-primary text-primary-foreground':'bg-secondary'}`}>{liveCoachSettings.liveCoachEnabled?'Ativo':'Desativado'}</button></div><select aria-label="Frequência das sugestões" value={liveCoachSettings.suggestionFrequency} onChange={event=>changeLiveCoachSettings({suggestionFrequency:event.target.value})} className="w-full rounded-lg bg-secondary/60 px-2 py-2 text-xs"><option value="minimal">Mínima</option><option value="normal">Normal</option><option value="frequent">Frequente</option><option value="sets_only">Apenas entre sets</option><option value="disabled">Desativada</option></select><label className="flex items-center gap-2 text-[10px] text-muted-foreground"><input type="checkbox" checked={liveCoachSettings.allowMinorAutoAdjustments} onChange={event=>changeLiveCoachSettings({allowMinorAutoAdjustments:event.target.checked})}/>Permitir somente ajustes automáticos leves</label></Surface>
 
             <div>
@@ -310,7 +361,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             <LiveMatch
               teamA={teams.teamA}
               teamB={teams.teamB}
-              initialTacticId={initialTacticId}
+              initialTacticId={useCustomPlan ? { id: 'personalizado', label: 'Personalizado', icon: 'Brain', baseTacticId: initialTacticId, shotWeights: customShotWeights } : initialTacticId}
               coach={coach}
               liveCoachSettings={liveCoachSettings}
               onFinished={handleFinished}

@@ -3,15 +3,17 @@ import { useLocation } from 'react-router-dom';
 import {
   bucketEventLoopLag, createEventLoopLagMonitor, createFrameMonitor, createLongTaskMonitor,
   disablePerfDebug, getActionLog, getDomNodeCount, getRenderCounts, isPerfDebugEnabled, PERFDEBUG_CHANGE_EVENT,
-  resetRenderCounts, setPerfModeAttribute,
+  resetRenderCounts, setPerfModeAttribute, getLastAdvanceDayBreakdown,
 } from '@/dev/performanceProbe.js';
+import { careerIOStats, resetCareerIOStats } from '@/gameplay/repositories/CareerEntityRepository.js';
 
 // M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md) — overlay de perfdebug.
 //
 // Só existe para o jogador conseguir nos mandar números reais do aparelho
-// físico sem precisar interpretar o Chrome DevTools. Ativa com
-// `?perfdebug=1` (persiste em localStorage — sobrevive a navegações
-// internas do app). NUNCA aparece por padrão. Roda no bundle release de
+// físico sem precisar interpretar o Chrome DevTools. Ativa pelo toggle
+// Performance em Configurações (ou por `?perfdebug=1`, como compatibilidade)
+// e persiste em localStorage — sobrevive a navegações internas do app.
+// NUNCA aparece por padrão. Roda no bundle release de
 // propósito (ver comentário em performanceProbe.js) — é exatamente o APK
 // release que precisa ser medido.
 //
@@ -30,6 +32,11 @@ export default function MobilePerformanceMonitor() {
   const [domNodes, setDomNodes] = useState(0);
   const [renderCounts, setRenderCounts] = useState({});
   const [lastAction, setLastAction] = useState(null);
+  // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, item 13): IO de storage e
+  // breakdown do último advance-day, amostrados no mesmo timer ~2x/s abaixo —
+  // sem monitor próprio novo, sem custo por frame.
+  const [ioStats, setIoStats] = useState({ reads: 0, writes: 0, totalMs: 0, maxMs: 0 });
+  const [advanceDayBreakdown, setAdvanceDayBreakdown] = useState(null);
   const [noBlur, setNoBlur] = useState(false);
   const [noMotion, setNoMotion] = useState(false);
   const location = useLocation();
@@ -65,6 +72,8 @@ export default function MobilePerformanceMonitor() {
       setDomNodes(getDomNodeCount());
       setRenderCounts(getRenderCounts());
       setLastAction(getActionLog().at(-1) || null);
+      setIoStats({ ...careerIOStats });
+      setAdvanceDayBreakdown(getLastAdvanceDayBreakdown());
     }, SAMPLE_INTERVAL_MS);
 
     return () => {
@@ -127,10 +136,26 @@ export default function MobilePerformanceMonitor() {
           <Row label="DOM nodes" value={String(domNodes)} />
           <Row label="Última ação" value={lastAction ? `${lastAction.label} ${lastAction.durationMs}ms` : '—'} />
 
+          {/* Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, itens 9/10): IO de
+              storage (via CareerEntityRepository.withCareer) e breakdown do
+              último avanço de dia (via o profiler já plugado em
+              dayAdvanceCoordinator.js). */}
+          <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
+            <Row label="Storage leituras/gravações" value={`${ioStats.reads}/${ioStats.writes}`} />
+            <Row label="Storage tempo total/pior" value={`${Math.round(ioStats.totalMs)}ms / ${Math.round(ioStats.maxMs)}ms`} />
+          </div>
+
+          {advanceDayBreakdown && (
+            <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
+              <Row label="advance-day (última)" value="" />
+              {Object.entries(advanceDayBreakdown.stages).map(([name, ms]) => <Row key={name} label={`  ${name}`} value={`${ms}ms`} />)}
+            </div>
+          )}
+
           {topRenders.length > 0 && (
             <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
               {topRenders.map(([label, count]) => <Row key={label} label={label} value={String(count)} />)}
-              <button type="button" onClick={resetRenderCounts} style={{ ...buttonStyle, marginTop: '0.25rem' }}>zerar contadores</button>
+              <button type="button" onClick={() => { resetRenderCounts(); resetCareerIOStats(); setIoStats({ ...careerIOStats }); }} style={{ ...buttonStyle, marginTop: '0.25rem' }}>zerar contadores</button>
             </div>
           )}
 

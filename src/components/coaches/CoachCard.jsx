@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Coins, LockKeyhole, MapPin, Sparkles, Star, WalletCards } from 'lucide-react';
+import { ArrowRight, Check, Coins, LockKeyhole, MapPin, Sparkles, Star, WalletCards } from 'lucide-react';
 import { COACH_SPECIALTY_INFO, COACH_TIERS } from '@/lib/coaches';
 import { Button } from '@/components/design-system';
 
@@ -43,6 +43,20 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
       </div>
 
       <p className="mt-3 line-clamp-2 min-h-8 text-[11px] leading-relaxed text-muted-foreground">{evaluation.recommendationReason}</p>
+
+      {/* Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 4): os
+          benefícios reais da especialidade (mesmo texto já usado em
+          getCoachImpactSummary, dentro de CoachDetail.jsx) agora aparecem
+          direto no card — decidir não deve exigir abrir "Ver detalhes". */}
+      {specialty?.benefits?.length > 0 && (
+        <ul className="mt-2 space-y-0.5">
+          {specialty.benefits.slice(0, 3).map((benefit) => (
+            <li key={benefit} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+              <Check className="h-3 w-3 shrink-0 text-emerald-400" /> {benefit}
+            </li>
+          ))}
+        </ul>
+      )}
 
       <div className="mt-3 grid grid-cols-2 gap-2">
         <div className="rounded-xl bg-secondary/35 p-2.5">

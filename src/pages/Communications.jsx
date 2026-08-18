@@ -191,7 +191,7 @@ export default function Communications() {
         {selected && <div className="space-y-5">
           <p className="whitespace-pre-line text-sm leading-7 text-foreground/90">{selected.content}</p>
           {resolveNotificationDestination(selected).actionable && (
-            <Link to={resolveNotificationDestination(selected).route} onClick={() => setSelected(null)} className="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground">Abrir recurso</Link>
+            <Link to={resolveNotificationDestination(selected).route} onClick={() => setSelected(null)} className="flex w-full items-center justify-center rounded-xl bg-primary px-4 py-3 text-sm font-black text-primary-foreground">{resolveNotificationDestination(selected).label}</Link>
           )}
           {selected.actions?.length > 0 && selected.status === 'decisao_pendente' && <div className="space-y-2">
             {selected.actions.map((action, index) => <button key={action.id} type="button" onClick={() => handleAction(action)} className={`w-full rounded-xl border px-4 py-3 text-left transition-colors ${index === 0 ? 'border-primary/30 bg-primary text-primary-foreground' : 'border-border/70 bg-secondary/55 hover:bg-secondary'}`}><span className="block text-sm font-bold">{action.label}</span>{action.description && <span className={`mt-1 block text-[10px] ${index === 0 ? 'text-primary-foreground/75' : 'text-muted-foreground'}`}>{action.description}</span>}</button>)}

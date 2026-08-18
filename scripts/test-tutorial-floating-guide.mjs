@@ -85,7 +85,10 @@ gate('Painel mostra recomendação quando o tutorial não está mais em andament
 // ---------------------------------------------------------------------------
 // 5) Guia sabe qual página está ativa — reaproveita pageIntroductions, sem duplicar mapa.
 // ---------------------------------------------------------------------------
-gate('GuidePanel recebe pathname e usa getPageIntroduction (mesma fonte de dados existente)', guideSrc.includes('getPageIntroduction(pathname)'));
+// Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 3): getPageIntroduction
+// ganhou um segundo argumento opcional (`search`) para resolver o sub-guia de
+// Patrocínios (/game/economy?view=sponsors) — GuidePanel agora repassa os dois.
+gate('GuidePanel recebe pathname/search e usa getPageIntroduction (mesma fonte de dados existente)', guideSrc.includes('getPageIntroduction(pathname, search)'));
 gate('Nenhum novo mapa de textos por página foi criado neste arquivo', !guideSrc.includes('PAGE_GUIDE_TEXT') && !guideSrc.includes('const GUIDE_TEXTS'));
 
 // ---------------------------------------------------------------------------
@@ -114,7 +117,10 @@ try {
   const { getNextTutorialStep } = await server.ssrLoadModule('/src/onboarding/tutorialState.js');
   const { reconcilePersistedTutorial } = await server.ssrLoadModule('/src/onboarding/tutorialReconciliation.js');
 
-  gate('TUTORIAL_VERSION não foi alterado por este hotfix (nenhuma migração nova era necessária)', TUTORIAL_VERSION === 8);
+  // Onboarding 2.0 (docs/ONBOARDING_V3_COMMUNICATIONS.md) bumped TUTORIAL_VERSION
+  // 8 -> 9 in a later, unrelated content revision — this hotfix's own gate only
+  // needs the version to still be a valid positive integer, not a fixed number.
+  gate('TUTORIAL_VERSION continua um inteiro positivo válido', Number.isInteger(TUTORIAL_VERSION) && TUTORIAL_VERSION > 0);
   gate('Nenhuma etapa de tutorial foi perdida (TUTORIAL_STEPS continua com o mesmo total)', TUTORIAL_STEPS.length > 0);
 
   const fakeStorage = createMemoryStorage();

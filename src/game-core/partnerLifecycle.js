@@ -177,12 +177,17 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
         });
       } else {
         updates.partner_morale = clamp(oldMorale - 15, 0, 100);
+        // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): um
+        // problema financeiro real com a dupla é ação necessária, não uma
+        // atualização qualquer — priority ficava sem valor (caía em
+        // 'normal') apesar de precisar de atenção.
         await localGame.entities.CareerMessage.create({
           profile_id: profile.id,
           sender_name: active.partner_name,
           subject: 'Salário da dupla em atraso',
           body: 'O pagamento mensal não foi realizado. Minha moral caiu e precisamos resolver isso.',
           status: 'nao_lida',
+          priority: 'alta',
           message_type: 'partner_warning',
           created_date: new Date().toISOString(),
         });

@@ -46,13 +46,16 @@ async function createReportNotification(profile, report) {
   const id = `monthly-career-report-notification:${profile.id}:${report.periodKey}`;
   const existing = await localGame.entities['CareerMessage'].get(id).catch(() => null);
   if (existing) return existing;
-  const body = `${report.competition.wins} vitória(s), ${report.training.sessions} treino(s) e saldo mensal de ${report.finances.net.toLocaleString('pt-BR')} moedas. Abra o relatório completo para revisar sua evolução.`;
+  // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): sem sufixo
+  // "· <período>" burocrático no título; primeira frase conta o que
+  // aconteceu, número completo fica no relatório de destino.
+  const body = `${report.competition.wins} vitória(s), ${report.training.sessions} treino(s) e saldo de ${report.finances.net.toLocaleString('pt-BR')} moedas neste mês.`;
   return localGame.entities['CareerMessage'].upsert(id, {
     profile_id: profile.id,
     sender_name: 'Equipe Padel Legacy',
-    subject: `Relatório mensal · ${report.periodKey}`,
+    subject: 'Seu mês em números',
     body,
-    title: `Relatório mensal · ${report.periodKey}`,
+    title: 'Seu mês em números',
     content: body,
     status: 'nao_lida',
     is_read: false,

@@ -16,10 +16,13 @@ async function createOfferMessage(profile, offer) {
   const candidate = offer.candidate_snapshot;
   const existing = await localGame.entities.CareerMessage.filter({ profile_id: profile.id, related_entity_id: offer.id }, null, 2).catch(() => []);
   if (existing.length) return existing[0];
+  // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md, item 21): esta é
+  // a mesma "voz" de proposta de dupla usada por createProposalMessage
+  // (partnershipSystem.js) — antes o corpo aqui era mais seco/burocrático.
   return localGame.entities.CareerMessage.create({
     profile_id: profile.id, message_type: 'proposta_parceria', sender_name: candidate.name,
     sender_type: 'atleta', title: `Proposta de parceria de ${candidate.name}`,
-    content: `${candidate.name} quer formar dupla. Analise compatibilidade, lados e condições na área de Parceiros.`,
+    content: `${candidate.name} quer formar dupla com você. Compare lado, nível e compatibilidade na área de Parceiros.`,
     related_entity_type: 'partner_offer', related_entity_id: offer.id, related_entity_name: candidate.name,
     status: 'decisao_pendente', priority: offer.recommended ? 'alta' : 'normal', career_date: profile.career_date,
     expires_career_date: offer.expires_career_date,

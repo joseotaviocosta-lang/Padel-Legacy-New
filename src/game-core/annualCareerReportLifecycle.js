@@ -64,13 +64,15 @@ async function createAnnualReportNotification(profile, report) {
   const id = `annual-career-report-notification:${profile.id}:${report.year}`;
   const existing = await localGame.entities['CareerMessage'].get(id).catch(() => null);
   if (existing) return existing;
-  const body = `A temporada ${report.year} terminou: #${report.ranking.endPosition || '—'}, ${report.sportingResults.titles} título(s), ${report.sportingResults.wins} vitória(s) e ${Number(report.fans.gained || 0).toLocaleString('pt-BR')} novos fãs.`;
+  // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): título sem
+  // "disponível" burocrático.
+  const body = `#${report.ranking.endPosition || '—'} no ranking, ${report.sportingResults.titles} título(s), ${report.sportingResults.wins} vitória(s) e ${Number(report.fans.gained || 0).toLocaleString('pt-BR')} novos fãs em ${report.year}.`;
   return localGame.entities['CareerMessage'].upsert(id, {
     profile_id: profile.id,
     sender_name: 'Equipe Padel Legacy',
-    subject: `Relatório Anual ${report.year} disponível`,
+    subject: `Resumo da temporada ${report.year}`,
     body,
-    title: `Relatório Anual ${report.year} disponível`,
+    title: `Resumo da temporada ${report.year}`,
     content: body,
     status: 'nao_lida',
     is_read: false,

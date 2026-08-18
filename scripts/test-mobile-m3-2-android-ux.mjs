@@ -54,7 +54,11 @@ check('token --pl-bottom-nav-h foi removido de index.css', indexCss.includes('--
 check('BottomNav perdeu o padding de safe-area inferior', bottomNav.includes('pb-[env(safe-area-inset-bottom)]'));
 
 // 4/5/6. bottom nav pode ser ocultada com o teclado aberto e volta sozinha.
-check('BottomNav parou de aceitar prop `hidden` (ocultar durante teclado)', /export default function BottomNav\(\{\s*hidden = false\s*\}\)/.test(bottomNav));
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): BottomNav passou a ser
+// `function BottomNav(...)` + `export default React.memo(BottomNav)` no fim
+// do arquivo (memoização do shell), em vez de `export default function`
+// inline — a prop `hidden` continua igual, só a forma do export mudou.
+check('BottomNav parou de aceitar prop `hidden` (ocultar durante teclado)', /function BottomNav\(\{\s*hidden = false\s*\}\)/.test(bottomNav));
 check('BottomNav não aplica translate-y-full quando hidden=true', bottomNav.includes("hidden ? 'translate-y-full' : 'translate-y-0'"));
 check('AppLayout parou de repassar o estado do teclado para BottomNav', appLayout.includes('<BottomNav hidden={keyboardOpen} />'));
 check('useKeyboardInset.js não existe mais (hook de detecção de teclado)', fs.existsSync(path.join(root, 'src/hooks/useKeyboardInset.js')));

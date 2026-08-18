@@ -23,16 +23,6 @@ function hashText(value = '') {
   return hash >>> 0;
 }
 function seeded01(value) { return (hashText(value) % 100000) / 100000; }
-async function safeCreate(entityName, payload) {
-  try {
-    const entity = localGame.entities?.[entityName];
-    if (!entity?.create) return null;
-    return await entity.create(payload);
-  } catch (error) {
-    console.warn(`[Comissão Técnica] Falha não crítica em ${entityName}:`, error?.message || error);
-    return null;
-  }
-}
 
 function combineEffects(staff) {
   const combined = {};
@@ -130,7 +120,7 @@ async function processStaffMonthlyEvent(profile, snapshot, month) {
   if (roll > 0.42) return null;
   const member = snapshot.staff[Math.floor(seeded01(`${profile.id}:${month}:member`) * snapshot.staff.length)];
   const activeSynergies = (snapshot.synergies || []).filter(item => item.active);
-  let subject = 'Bastidores da comissão';
+  let subject = `${member.staff_name} tem uma novidade`;
   let body = `${member.staff_name} destacou a evolução da estrutura de trabalho neste mês.`;
   let patch = {};
   if (member.satisfaction < 45) {
@@ -147,10 +137,16 @@ async function processStaffMonthlyEvent(profile, snapshot, month) {
     body = 'A equipe de gestão identificou melhor poder de negociação com patrocinadores e parceiros comerciais.';
   }
   if (Object.keys(patch).length) await localGame.entities.PlayerStaffHire.update(member.id, patch);
-  await safeCreate('CareerMessage', {
-    profile_id: profile.id, sender_name: 'Diretor de Performance', sender_type: 'sistema', subject, body, title: subject, content: body,
-    status: 'nao_lida', message_type: 'staff_event', notification_type: 'STAFF', destination: { type: 'STAFF', route: '/staff' },
-    created_date: new Date().toISOString(),
+  // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+  // chave estável por mês, mesmo mecanismo já usado pelo relatório semanal —
+  // sem isso, dois avanços de calendário cobrindo o mesmo mês (avanço de 1
+  // dia e avanço de vários dias entram em processGameStateDay por caminhos
+  // independentes, sem lock compartilhado) podiam gerar duas mensagens quase
+  // idênticas para o mesmo evento mensal.
+  await upsertCareerMessage(profile.id, `staff-event:${month}`, {
+    sender_name: 'Diretor de Performance', sender_type: 'sistema', subject, body, title: subject, content: body,
+    message_type: 'staff_event', notification_type: 'STAFF', destination: { type: 'STAFF', route: '/staff' },
+    career_date: profile.career_date,
   });
   return { subject, memberId: member.id };
 }
@@ -183,17 +179,20 @@ export async function processStaffMonth(profile, currentDate) {
     if (evolved.length) parts.push(`${evolved.map(item => item.name).join(', ')} evoluiu profissionalmente.`);
     if (expired.length) parts.push(`${expired.map(item => item.name).join(', ')} chegou ao fim do contrato.`);
     if (!parts.length) parts.push('A comissão acumulou experiência de trabalho neste mês.');
-    await safeCreate('CareerMessage', {
-      profile_id: profile.id,
+    // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+    // mesma correção de chave estável por mês do staff_event acima.
+    // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): título sem o
+    // sufixo "· <período>" burocrático.
+    await upsertCareerMessage(profile.id, `staff-monthly-report:${month}`, {
       sender_name: 'Diretor de Performance',
       sender_type: 'sistema',
-      subject: `Evolução da comissão · ${month}`,
+      subject: 'Evolução da comissão',
       body: parts.join(' '),
-      title: `Evolução da comissão · ${month}`,
+      title: 'Evolução da comissão',
       content: parts.join(' '),
-      status: 'nao_lida', message_type: 'staff_monthly_report', notification_type: 'STAFF',
+      message_type: 'staff_monthly_report', notification_type: 'STAFF',
       destination: { type: 'STAFF', route: '/staff' },
-      created_date: new Date().toISOString(),
+      career_date: currentDate,
     });
   }
   const refreshed = await getStaffSnapshot(profile);
@@ -263,17 +262,28 @@ export async function processStaffDay(profile, previousDate, currentDate) {
   const currentWeek = weekKey(currentDate);
   if (snapshot.staff.length > 0 && profile.staff_last_summary_week !== currentWeek) {
     const recommendations = getStaffWeeklyRecommendations(updatedProfile, snapshot);
-    const mainBenefits = snapshot.bonuses.slice(0, 3).join('; ');
-    const advice = recommendations.map(item => `${item.title}: ${item.body}`).join(' ');
     const meeting = buildStaffMeeting(updatedProfile, snapshot.staff);
-    const meetingNotes = meeting.notes.map(note => `${note.role} — ${note.text}`).join('\n');
-    const weeklyBody = `Equipe: ${snapshot.staff.length} profissional(is), folha de ${snapshot.monthlyCost.toLocaleString('pt-BR')} moedas. Benefícios: ${mainBenefits}. Recomendações: ${advice}\n\n${meetingNotes}`;
+    // Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md,
+    // item 6): "toda semana é praticamente a mesma coisa" — a mensagem
+    // completa (recomendações + notas da reunião) já fica disponível na
+    // página /staff (buildStaffMeeting alimenta o painel real lá); aqui só
+    // a primeira frase muda conforme houver ou não algo notável esta
+    // semana, e o corpo vira uma linha compacta em vez de um despejo de
+    // texto.
+    const topIssue = recommendations.find(item => item.priority === 'high');
+    const hasNotableEvent = meeting.moral < 45 || Boolean(topIssue);
+    const title = hasNotableEvent ? (topIssue?.title || 'Sua equipe pede atenção') : 'Sua equipe está em ordem';
+    const opening = hasNotableEvent
+      ? (topIssue?.body || 'O clima na comissão não está bom nesta semana.')
+      : 'Nada de urgente por aqui — a comissão segue trabalhando normalmente.';
+    const statsLine = `${snapshot.staff.length} profissional(is) · folha de ${snapshot.monthlyCost.toLocaleString('pt-BR')} moedas`;
+    const weeklyBody = `${opening} ${statsLine}.`;
     await upsertCareerMessage(profile.id, `staff-weekly-report:${currentWeek}`, {
       sender_name: 'Diretor de Performance',
       sender_type: 'sistema',
-      subject: 'Relatório semanal da comissão',
+      subject: title,
       body: weeklyBody,
-      title: 'Relatório semanal da comissão',
+      title,
       content: weeklyBody,
       priority: meeting.moral < 45 ? 'alta' : 'normal',
       message_type: 'staff_report',

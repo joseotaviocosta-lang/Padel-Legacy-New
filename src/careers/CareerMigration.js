@@ -325,6 +325,68 @@ export function migrateCareer(career) {
     data.player = { ...(data.player || {}), career_difficulty: data.player?.career_difficulty || data.metadata.career_difficulty };
     data.save_schema_version = 17; version = 17;
   }
+  if (version < 18) {
+    data.player = { ...(data.player || {}), custom_tactic_plan: data.player?.custom_tactic_plan || null };
+    data.save_schema_version = 18; version = 18;
+  }
+  if (version < 19) {
+    // Onboarding 2.0 + Central de Notificações (docs/ONBOARDING_V3_COMMUNICATIONS.md):
+    // antes desta versão, alguns relatórios recorrentes (resumo semanal do
+    // universo, relatório semanal/mensal da comissão, boletim do mundo,
+    // relatórios mensal/anual/de temporada, avaliação de patrocínio/torcida)
+    // podiam ser criados sem chave estável e duplicar quando o mesmo evento
+    // de calendário era processado por dois caminhos independentes (avanço
+    // de 1 dia vs. avanço de vários dias, sem lock compartilhado). Saves que
+    // já acumularam duplicatas antes da correção não devem continuar
+    // mostrando todas como "não lidas" para sempre. Limpeza conservadora:
+    // só agrupa mensagens com o MESMO message_type, MESMO período calculado
+    // (semana/mês/ano) e MESMO assunto — nunca apaga (o histórico continua
+    // em "Todas"), só marca as mais antigas do grupo como lidas.
+    const PASSIVE_REPORT_PERIOD = {
+      weekly_summary: 'week', staff_report: 'week', world_bulletin: 'week',
+      staff_event: 'month', staff_monthly_report: 'month', monthly_career_report: 'month',
+      sponsor: 'month', fans: 'month',
+      annual_career_report: 'year', season_report: 'year',
+    };
+    const weekKeyOf = (dateString) => {
+      const parsed = new Date(`${String(dateString || '').slice(0, 10)}T12:00:00`);
+      if (Number.isNaN(parsed.getTime())) return null;
+      const start = new Date(parsed.getFullYear(), 0, 1);
+      return `${parsed.getFullYear()}-${Math.floor((parsed.getTime() - start.getTime()) / 604800000)}`;
+    };
+    const periodKeyOf = (row, granularity) => {
+      const raw = String(row.career_date || row.sent_date || row.created_date || '');
+      if (!raw) return null;
+      if (granularity === 'week') return weekKeyOf(raw);
+      if (granularity === 'year') return raw.slice(0, 4) || null;
+      return raw.slice(0, 7) || null;
+    };
+    const messages = Array.isArray(data.entities?.CareerMessage) ? data.entities.CareerMessage : null;
+    if (messages) {
+      const groups = new Map();
+      for (const row of messages) {
+        const granularity = PASSIVE_REPORT_PERIOD[row?.message_type];
+        if (!granularity) continue;
+        const period = periodKeyOf(row, granularity);
+        if (!period) continue;
+        const key = `${row.message_type}:${period}:${row.subject || row.title || ''}`;
+        if (!groups.has(key)) groups.set(key, []);
+        groups.get(key).push(row);
+      }
+      const toMarkRead = new Set();
+      for (const rows of groups.values()) {
+        if (rows.length < 2) continue;
+        const sorted = [...rows].sort((a, b) => String(a.created_date || a.sent_date || a.career_date || '').localeCompare(String(b.created_date || b.sent_date || b.career_date || '')));
+        for (const row of sorted.slice(0, -1)) toMarkRead.add(row);
+      }
+      if (toMarkRead.size) {
+        data.entities.CareerMessage = messages.map((row) => (toMarkRead.has(row)
+          ? { ...row, is_read: true, is_new: false, status: row.status === 'nao_lida' ? 'lida' : row.status }
+          : row));
+      }
+    }
+    data.save_schema_version = 19; version = 19;
+  }
   const normalizedFatigue = normalizeFatigue(data.player?.fatigue);
   let repairedFatigue = Boolean(data.player) && data.player.fatigue !== normalizedFatigue;
   if (data.player) data.player = { ...data.player, fatigue: normalizedFatigue };

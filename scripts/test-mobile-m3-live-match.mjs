@@ -63,7 +63,13 @@ check('área de conteúdo dos painéis perdeu min-h-0 flex-1 (contrato de altura
 check('LiveMatch perdeu o listener de visibilitychange (pausa automática em background)', liveMatch.includes("addEventListener('visibilitychange'"));
 check('handler de visibilitychange não pausa o autoplay ao ir para background', /handleVisibilityChange\(\)\s*\{\s*if \(document\.hidden\)\s*\{\s*setAutoPlay\(false\)/.test(liveMatch));
 check('resumo de partida (initialState) não força autoPlay pausado ao retomar', liveMatch.includes('useState(!initialState)'));
-check('cleanup do timer de autoplay (setTimeout) foi removido — risco de timer duplicado', /window\.setTimeout[\s\S]{0,150}return \(\) => window\.clearTimeout/.test(liveMatch));
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): a janela de proximidade
+// subiu de 150 para 300 caracteres — o corpo do setTimeout agora processa
+// vários pontos por commit em velocidades altas (pointsPerTick), então há
+// mais código real entre a chamada e seu cleanup do que antes; a garantia
+// que este teste protege (cleanup sempre presente, sem timer duplicado)
+// continua intacta.
+check('cleanup do timer de autoplay (setTimeout) foi removido — risco de timer duplicado', /window\.setTimeout[\s\S]{0,300}return \(\) => window\.clearTimeout/.test(liveMatch));
 
 // ── 4. Checkpoint: criação/atualização/leitura/schema ──────────────────────
 

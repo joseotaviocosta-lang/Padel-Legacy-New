@@ -17,7 +17,11 @@ import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/l
 // mesmo espaço que o antigo Assistente de carreira (removido) ocupava, em
 // vez de dividir posição com BETA/Carreiras/Som aqui em cima.
 // A central de atenção da carreira vive exclusivamente no sino do header.
-export default function FloatingUtilityRail({ onOpenCareers }) {
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): memoizado porque vive no
+// shell global (AppLayout) e antes re-renderizava a cada mudança de estado
+// não relacionada do layout (header de perfil/ranking, sidebar, etc.) — sua
+// única prop real (`onOpenCareers`) já é uma referência estável de módulo.
+function FloatingUtilityRail({ onOpenCareers }) {
   const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
 
   const toggleSound = () => {
@@ -57,3 +61,5 @@ export default function FloatingUtilityRail({ onOpenCareers }) {
     </aside>
   );
 }
+
+export default React.memo(FloatingUtilityRail);

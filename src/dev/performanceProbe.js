@@ -46,13 +46,14 @@ export async function timeAsync(label, fn) {
 // (a lentidão apareceu lá, não só em `npm run android:dev`), então o que
 // vem abaixo NÃO pode depender de `import.meta.env.DEV` — precisa existir
 // no bundle release e ser ativado em runtime, só quando o jogador realmente
-// pede (`?perfdebug=1`), nunca por padrão.
+// pede pelo toggle temporário em Configurações (ou, como compatibilidade,
+// por `?perfdebug=1`), nunca por padrão.
 // ---------------------------------------------------------------------------
 
 const PERFDEBUG_STORAGE_KEY = 'padel:perfdebug';
 export const PERFDEBUG_CHANGE_EVENT = 'padel:perfdebug-changed';
 
-/** Ativado por `?perfdebug=1` (persiste em localStorage) ou já persistido de uma visita anterior. Nunca ativo por padrão. */
+/** Ativado pelo toggle interno ou por `?perfdebug=1`; persiste em localStorage e nunca fica ativo por padrão. */
 export function isPerfDebugEnabled() {
   if (typeof window === 'undefined') return false;
   try {
@@ -265,6 +266,34 @@ export function profileAction(label, fn, extra) {
 
 export function getActionLog() { return [...actionLog]; }
 export function getLastAction() { return actionLog[actionLog.length - 1] || null; }
+
+// ── Advance-day stage breakdown (Mobile M3.5, docs/MOBILE_M3_5_RENDER_STORM.md) ──
+// `processGameStateDay` (src/game-core/gameStateLifecycle.js) já aceita um
+// `profiler` opcional com um método `.measure(name, task)` para cada um dos
+// ~10 subsistemas que roda (stage() já existe lá, só nunca era chamado com
+// um profiler real). `createStageProfiler` implementa esse mesmo contrato e
+// guarda a duração de cada etapa; nenhuma medição por frame, um snapshot só
+// ao final de cada avanço de dia.
+let lastAdvanceDayBreakdown = null;
+export function createStageProfiler() {
+  const stages = {};
+  return {
+    async measure(name, task) {
+      const start = performance.now();
+      try {
+        return await task();
+      } finally {
+        stages[name] = Math.round((performance.now() - start) * 10) / 10;
+      }
+    },
+    finish() {
+      lastAdvanceDayBreakdown = { stages, at: Date.now() };
+      if (isPerfDebugEnabled()) console.debug('[perfdebug] advance-day breakdown', stages);
+      return lastAdvanceDayBreakdown;
+    },
+  };
+}
+export function getLastAdvanceDayBreakdown() { return lastAdvanceDayBreakdown; }
 
 // ── DOM size (Parte 23) ──────────────────────────────────────────────────
 export function getDomNodeCount() {

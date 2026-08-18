@@ -35,10 +35,14 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
 
   if (result.injured) {
     jobs.push(
+      // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md): título
+      // alinhado com a mesma voz das mensagens médicas de
+      // injuryRecoveryLifecycle.js ("Lesão: <tipo>"), não mais "Relatório
+      // de lesão".
       localGame.entities.CareerMessage.create({
         profile_id: updated.id,
         sender_name: 'Departamento Médico',
-        subject: 'Relatório de lesão',
+        subject: 'Lesão no treino',
         body: `A lesão sofrida no treino exige ${result.recoveryDays || 1} dia(s) de recuperação. Evite novas atividades até a liberação médica.`,
         status: 'nao_lida',
         message_type: 'injury_report',

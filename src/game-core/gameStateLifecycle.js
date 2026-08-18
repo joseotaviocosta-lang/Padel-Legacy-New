@@ -1,7 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { CAREER_START_DATE, daysBetween } from '@/lib/career';
 import { safeName } from './utils';
-import { processLivingWorldDay } from '@/lib/livingWorldEngine.js';
+import { processLivingWorldDay, getWeeklyRelevantHighlights } from '@/lib/livingWorldEngine.js';
 import { processPartnerDay } from './partnerLifecycle';
 import { simulateWorldDay } from './worldSimulationLifecycle';
 import { processAiPartnershipMarket } from './aiPartnershipLifecycle';
@@ -17,6 +17,20 @@ import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 
 function monthChanged(oldDate, newDate) {
   return String(oldDate || '').slice(0, 7) !== String(newDate || '').slice(0, 7);
+}
+
+// Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md, item 4):
+// nenhum produtor de "sua posição no ranking mudou" existia antes desta
+// mensagem — pequenas variações (920 -> 918) nunca devem virar notificação;
+// só a entrada em uma faixa nova (Top 500/100/10 ou #1). Do menor para o
+// maior threshold, para que um salto grande relate só a conquista mais
+// exclusiva (não uma notificação por faixa cruzada de uma vez).
+const RANKING_MILESTONES = [1, 10, 100, 500];
+function rankingMilestoneCrossed(previousPosition, currentPosition) {
+  if (!Number.isFinite(currentPosition) || currentPosition <= 0) return null;
+  const previous = Number.isFinite(previousPosition) ? previousPosition : Infinity;
+  const crossed = RANKING_MILESTONES.filter((threshold) => currentPosition <= threshold && previous > threshold);
+  return crossed.length ? Math.min(...crossed) : null;
 }
 
 async function createOptional(entityName, payload) {
@@ -189,17 +203,47 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
   const currentWeekIndex = Math.floor(daysBetween(CAREER_START_DATE, currentDate) / 7);
   if (currentWeekIndex > previousWeekIndex) {
     report.weeklySummary = true;
-    const summaryText = `${safeName(updatedProfile)}, você encerrou a semana com ${Number(updatedProfile.energy) || 0} de energia, ${(Number(updatedProfile.coins) || 0).toLocaleString('pt-BR')} moedas e ${Number(updatedProfile.xp) || 0} XP. O circuito mundial também foi atualizado.`;
+    // Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md):
+    // primeira frase conta o que aconteceu, não metadata; números vêm depois
+    // em formato compacto. Também absorve os destaques relevantes do mundo
+    // (getWeeklyRelevantHighlights, livingWorldEngine.js) — o boletim
+    // semanal do circuito parou de gerar uma segunda notificação própria
+    // ("Resumo da semana") para não duplicar este resumo.
+    const statsLine = `Energia ${Math.round(Number(updatedProfile.energy) || 0)}% · ${(Number(updatedProfile.coins) || 0).toLocaleString('pt-BR')} moedas · ${Number(updatedProfile.xp) || 0} XP`;
+    const highlights = await stage('notifications', () => getWeeklyRelevantHighlights(currentDate, { limit: 2 }));
+    const highlightsLine = highlights.length ? ` Também no circuito: ${highlights.join('; ')}.` : '';
+    const summaryText = `Mais uma semana de carreira concluída. ${statsLine}.${highlightsLine}`;
     await stage('notifications', () => upsertCareerMessage(updatedProfile.id, `weekly-summary:${currentWeekIndex}`, {
       sender_name: 'Equipe Padel Legacy',
       sender_type: 'sistema',
-      title: 'Resumo semanal do universo',
+      title: 'A semana no circuito',
       content: summaryText,
       status: 'nao_lida',
       message_type: 'weekly_summary',
       notification_type: 'WEEKLY_SUMMARY',
       career_date: currentDate,
     }));
+
+    const currentPosition = Number(updatedProfile.ranking_position);
+    const milestone = rankingMilestoneCrossed(updatedProfile.last_ranking_milestone_position, currentPosition);
+    if (milestone) {
+      const title = milestone === 1 ? 'Você é o novo #1' : `Você entrou no Top ${milestone}`;
+      await stage('notifications', () => upsertCareerMessage(updatedProfile.id, `ranking-milestone:${milestone}`, {
+        sender_name: 'Circuito Padel Legacy',
+        sender_type: 'federacao',
+        title,
+        content: `Sua nova posição é #${currentPosition}.`,
+        status: 'nao_lida',
+        message_type: 'ranking_milestone',
+        notification_type: 'RANKING',
+        career_date: currentDate,
+      }));
+      try {
+        updatedProfile = await stage('notifications', () => localGame.entities.PlayerProfile.update(updatedProfile.id, { last_ranking_milestone_position: currentPosition }));
+      } catch (error) {
+        console.warn('[Game Core] Marco de ranking não foi salvo:', error);
+      }
+    }
   }
 
   if (monthChanged(previousDate, currentDate)) {
