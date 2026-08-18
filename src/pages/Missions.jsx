@@ -9,7 +9,7 @@ import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { CAREER_DIFFICULTY_OPTIONS, DEFAULT_NEW_CAREER_DIFFICULTY } from '@/lib/careerDifficultyLabels.js';
-import { findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
+import { buildMissionAliasUpdates, findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { completeTutorialStep, isTutorialRouteMatch, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
@@ -47,18 +47,34 @@ function daysRemaining(careerDate, endDate) {
   return Math.max(0, Math.ceil((end - start) / 86400000));
 }
 
+// Hotfix "Single Source of Truth" (docs/ONBOARDING_SINGLE_SOURCE_OF_TRUTH.md,
+// bug C): as etapas ACTION (nome/lado/dificuldade/estilo) salvavam o perfil
+// e recarregavam esta página, mas nunca avisavam a Home/o Guia — os dois
+// ficavam com a etapa antiga até o jogador navegar para outro lugar e
+// voltar. Mesmo par de eventos que `confirmUnderstanding` já dispara para
+// as etapas VISIT/FINISH.
+function notifyProfileUpdated(profile, stepId) {
+  if (!profile?.id || typeof window === 'undefined' || typeof window.dispatchEvent !== 'function' || typeof CustomEvent === 'undefined') return;
+  window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: stepId } }));
+  window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile } }));
+}
+
 async function syncExtendedMissionCatalog() {
-  const existing = await localGame.entities.Mission.list('-created_date', 300);
+  let existing = await localGame.entities.Mission.list('-created_date', 300);
   const missing = findMissingMissionCatalog(existing, [...TUTORIAL_MISSIONS, ...EXTRA_MISSIONS]);
   if (missing.length) {
-    try { await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true }))); }
+    try {
+      const created = await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true })));
+      existing = [...existing, ...created];
+    }
     catch {
       const refreshed = await localGame.entities.Mission.list('-created_date', 300);
       const stillMissing = findMissingMissionCatalog(refreshed, missing);
       for (const mission of stillMissing) await localGame.entities.Mission.create({ ...mission, is_active: true });
+      existing = refreshed;
     }
   }
-  const aliases = existing.filter(mission => mission?.id && (mission.reward_xp != null || mission.reward_coins != null || !mission.mission_type)).map(mission => ({ ...mission, xp_reward:Number(mission.xp_reward ?? mission.reward_xp ?? 0),coins_reward:Number(mission.coins_reward ?? mission.reward_coins ?? 0),mission_type:mission.mission_type||'semanal',is_active:mission.is_active!==false }));
+  const aliases = buildMissionAliasUpdates(existing);
   if (aliases.length) await localGame.entities.Mission.bulkUpdate(aliases);
 }
 
@@ -113,11 +129,15 @@ function Missions() {
         () => localGame.entities.MissionProgress.filter({ profile_id: p.id }),
         { label: 'progresso das missões', fallback: [] },
       ) : [];
-      await safeModuleTask(() => syncMissionProgressPeriods(p, missionsData, progData), { label: 'sincronização das missões', fallback: null });
-      progData = p ? await safeModuleTask(
-        () => localGame.entities.MissionProgress.filter({ profile_id: p.id }),
-        { label: 'releitura do progresso das missões', fallback: progData },
-      ) : [];
+      const syncedProgress = await safeModuleTask(
+        () => syncMissionProgressPeriods(p, missionsData, progData),
+        { label: 'sincronização das missões', fallback: [] },
+      );
+      if (Array.isArray(syncedProgress) && syncedProgress.length) {
+        const progressById = new Map(progData.map((row) => [row.id, row]));
+        syncedProgress.forEach((row) => { if (row?.id) progressById.set(row.id, row); });
+        progData = [...progressById.values()];
+      }
       const [registrations, matches, trainings] = await Promise.all([
         localGame.entities.CalendarEvent.filter({ profile_id: p.id, event_type: 'tournament' }).catch(() => []),
         localGame.entities.Match.list('-created_date', 50).catch(() => []),
@@ -131,9 +151,17 @@ function Missions() {
       setProfile(p);
       setMissions(missionsData || []);
       setProgress(Object.fromEntries((progData || []).map(pr => [pr.mission_id, pr])));
+      // Hotfix "Single Source of Truth": os 4 handlers de etapa ACTION
+      // (nome/lado/dificuldade/estilo) chamam `load()` para recarregar o
+      // estado local e precisam do perfil JÁ RECONCILIADO (com
+      // tutorial_onboarding.currentStepId avançado) para poder notificar a
+      // Home/o Guia via evento — devolver aqui evita uma segunda chamada de
+      // reconciliação.
+      return p;
     } catch (e) {
       console.error(e);
       setLoadError('Não foi possível carregar o catálogo de missões. Verifique o armazenamento local e tente novamente.');
+      return null;
     }
     finally { setLoading(false); }
   }
@@ -160,7 +188,7 @@ function Missions() {
       await incrementMissionProgress(updated.id, 'choose_court_side', 1, updated.career_date);
       await localGame.entities.PlayerProfile.update(updated.id, { onboarding_stage: 'difficulty' });
       setActionFeedback('Lado salvo. Próximo passo: escolha a dificuldade da carreira.');
-      await load();
+      notifyProfileUpdated(await load(), 'side-selected');
     } catch (error) {
       console.error('[tutorial] Falha ao salvar lado.', error);
       setActionError('Não foi possível salvar o lado. Tente novamente.');
@@ -182,7 +210,7 @@ function Missions() {
       });
       await incrementMissionProgress(updated.id, 'choose_career_difficulty', 1, updated.career_date);
       setActionFeedback('Dificuldade salva. Próximo passo: escolha seu estilo.');
-      await load();
+      notifyProfileUpdated(await load(), 'difficulty-selected');
     } catch (error) {
       console.error('[tutorial] Falha ao salvar dificuldade.', error);
       setActionError('Não foi possível salvar a dificuldade. Tente novamente.');
@@ -203,7 +231,7 @@ function Missions() {
       await incrementMissionProgress(updated.id, 'set_player_name', 1, updated.career_date);
       setAthleteName(name);
       setActionFeedback('Nome salvo. Próximo passo: escolha seu lado de jogo.');
-      await load();
+      notifyProfileUpdated(await load(), 'athlete-named');
     } catch (error) {
       console.error('[tutorial] Falha ao salvar nome.', error);
       setActionError('Não foi possível salvar seu nome. Tente novamente.');
@@ -233,7 +261,7 @@ function Missions() {
       });
       await incrementMissionProgress(updated.id, 'choose_play_style', 1, updated.career_date);
       setActionFeedback('Estilo salvo. Próximo passo: faça seu primeiro treino.');
-      await load();
+      notifyProfileUpdated(await load(), 'style-selected');
     } catch (error) {
       console.error('[tutorial] Falha ao salvar estilo.', error);
       setActionError('Não foi possível salvar o estilo. Tente novamente.');

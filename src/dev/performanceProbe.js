@@ -1,3 +1,6 @@
+import { captureStorageTotals, diffStorageTotals } from './storageIOProbe.js';
+import { setPersistenceProfilerStage } from './persistenceTransactionProbe.js';
+
 // M3.3 (docs/MOBILE_M3_3_PERFORMANCE.md, Parte 5) — instrumentação DEV-only
 // para medir pontos reais do app (startup, avanço de calendário, LiveMatch)
 // sem espalhar performance.now()/mark solto pelo código.
@@ -277,18 +280,34 @@ export function getLastAction() { return actionLog[actionLog.length - 1] || null
 let lastAdvanceDayBreakdown = null;
 export function createStageProfiler() {
   const stages = {};
+  const stageDetails = {};
   return {
     async measure(name, task) {
       const start = performance.now();
+      const storageBefore = captureStorageTotals();
+      const previousStage = setPersistenceProfilerStage(name);
       try {
         return await task();
       } finally {
-        stages[name] = Math.round((performance.now() - start) * 10) / 10;
+        setPersistenceProfilerStage(previousStage);
+        const wallMs = Math.round((performance.now() - start) * 10) / 10;
+        const storage = diffStorageTotals(storageBefore);
+        stages[name] = wallMs;
+        stageDetails[name] = {
+          wallMs,
+          storageMs: storage.totalMs,
+          cpuMs: Math.round(Math.max(0, wallMs - storage.totalMs) * 10) / 10,
+          storageCalls: storage.calls,
+          reads: storage.reads,
+          writes: storage.writes,
+          bytesRead: storage.bytesRead,
+          bytesWritten: storage.bytesWritten,
+        };
       }
     },
     finish() {
-      lastAdvanceDayBreakdown = { stages, at: Date.now() };
-      if (isPerfDebugEnabled()) console.debug('[perfdebug] advance-day breakdown', stages);
+      lastAdvanceDayBreakdown = { stages, stageDetails, at: Date.now() };
+      if (isPerfDebugEnabled()) console.debug('[perfdebug] advance-day breakdown', stageDetails);
       return lastAdvanceDayBreakdown;
     },
   };

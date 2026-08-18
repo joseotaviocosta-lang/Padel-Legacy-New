@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
   ChevronDown, ChevronRight, Crown, Dumbbell, GraduationCap,
@@ -63,6 +63,7 @@ const safe = (promise, fallback = []) => promise.catch((error) => {
 });
 
 export default function CareerHub() {
+  const location = useLocation();
   const { activeCareer } = useCareer();
   const { checkpoint: activeMatchCheckpoint } = useActiveMatchCheckpoint(activeCareer?.career_id);
   const [profile, setProfile] = useState(null);
@@ -301,24 +302,44 @@ export default function CareerHub() {
   const onboardingNextAction = useMemo(() => getOnboardingNextAction(profile), [profile]);
   const fallbackHeroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
   const heroStep = onboardingNextAction || fallbackHeroStep;
+  // Hotfix "Single Source of Truth" (docs/ONBOARDING_SINGLE_SOURCE_OF_TRUTH.md):
+  // uma etapa VISIT como career-created aponta para /game — a própria Home.
+  // Enquanto o auto-complete por visita (OnboardingGuide.jsx) ainda não
+  // resolveu, um <Link to="/game"> renderizado dentro de /game é um no-op
+  // (o React Router não navega para a rota atual) — o botão parecia "não
+  // abrir". PriorityActionsPanel usa esta flag para mostrar um estado
+  // neutro em vez de um link morto.
+  const heroIsCurrentPage = Boolean(heroStep && basePath(heroStep.to) === location.pathname);
   const nextEvent = useMemo(
     () => buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction }),
     [profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction],
   );
+  // Hotfix "Single Source of Truth": enquanto o onboarding principal está
+  // ativo, getOnboardingNextAction() já é a ÚNICA autoridade sobre "o que
+  // fazer agora" (item central do hotfix) — decisionCenter/dailyBriefing
+  // continuam existindo (e alimentam o resto da Home normalmente depois do
+  // onboarding), mas nenhum item deles pode aparecer como recomendação
+  // concorrente enquanto uma etapa do tutorial já está dizendo o que fazer.
+  // Tentar "rankear" cada decisão contra a posição da etapa atual seria
+  // frágil e desnecessariamente complexo — suprimir por completo é a regra
+  // mais simples que já satisfaz "zero CTAs concorrentes" (Parte 2/6/9).
+  // PriorityActionsPanel já mostra "Nenhuma outra pendência agora" quando a
+  // lista vem vazia — nenhuma mudança de UI necessária para isto.
+  //
   // Polish 2 (objetivo 1.5): quando lesionado, o item "injury" do briefing
   // diário repetiria o mesmo dado de dias restantes que NextEventCard e
   // MedicalStatusPanel já mostram nesta mesma viewport — só esse item some
   // da lista; decisões e demais prioridades continuam normalmente.
   const priorityActions = useMemo(
-    () => buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRoute: heroStep?.to, injured }),
-    [dailyBriefing, decisionCenter, messages, heroStep?.to, injured],
+    () => (onboardingNextAction ? [] : buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRoute: heroStep?.to, injured })),
+    [onboardingNextAction, dailyBriefing, decisionCenter, messages, heroStep?.to, injured],
   );
   const attentionItems = useMemo(
-    () => (decisionCenter.decisions || []).filter((decision) => (
+    () => (onboardingNextAction ? [] : (decisionCenter.decisions || []).filter((decision) => (
       !priorityActions.some((action) => basePath(action.route) === basePath(decision.route))
       && basePath(decision.route) !== basePath(heroStep?.to)
-    )).slice(0, 4),
-    [decisionCenter, priorityActions, heroStep?.to],
+    )).slice(0, 4)),
+    [onboardingNextAction, decisionCenter, priorityActions, heroStep?.to],
   );
   const journeyGroups = useMemo(
     () => buildJourneyTimeline({ recentMatches, recentTrainings, messages, posts, partnerOffers }),
@@ -368,7 +389,7 @@ export default function CareerHub() {
         {/* 3. O que fazer agora */}
         <div className="grid gap-4 xl:grid-cols-12">
           <div className="space-y-4 xl:col-span-7">
-            <PriorityActionsPanel step={heroStep} actions={priorityActions} onChoosePartner={() => setShowPartner(true)} />
+            <PriorityActionsPanel step={heroStep} actions={priorityActions} isCurrentPage={heroIsCurrentPage} onChoosePartner={() => setShowPartner(true)} />
           </div>
           <div className="xl:col-span-5">
             {!isRetired(profile) && <CareerCalendar profile={profile} onAdvanceDay={setProfile} />}
@@ -621,10 +642,16 @@ function NextEventCard({ event }) {
   );
 }
 
-function PriorityActionsPanel({ step, actions, onChoosePartner }) {
+function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner }) {
   if (!step) return null;
   const HeroIcon = step.icon;
-  const heroLink = step.partnerAction
+  // Hotfix "Single Source of Truth": nunca renderizar um CTA que aponta
+  // para a própria página atual (React Router não navega — o botão parecia
+  // "não abrir", ver heroIsCurrentPage em CareerHub.jsx). Mesmo padrão de
+  // texto já usado por OnboardingGuide.jsx para "você está no lugar certo".
+  const heroLink = isCurrentPage
+    ? <span className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-black text-primary">Você já está aqui — concluindo automaticamente</span>
+    : step.partnerAction
     ? <button type="button" onClick={onChoosePartner} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground">{step.cta} <ArrowRight className="h-4 w-4" /></button>
     : <Link to={step.to} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground">{step.cta} <ArrowRight className="h-4 w-4" /></Link>;
 

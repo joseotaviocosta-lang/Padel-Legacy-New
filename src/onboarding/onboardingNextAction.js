@@ -45,8 +45,19 @@ export function getOnboardingNextAction(profile) {
     icon: STEP_ICON_BY_ID[step.id] || GraduationCap,
     title: step.title,
     description: step.explanation,
+    // `to`/`cta` são o contrato que PriorityActionsPanel/getNextStep já usam
+    // (mantidos para não forçar um rename em cascata). `destination`/
+    // `actionLabel`/`actionType` são aliases aditivos — hotfix "Single
+    // Source of Truth" pediu esse formato explicitamente para comparar
+    // Home x Guia sem depender de nomes de campo específicos de um único
+    // consumidor. `actionType` é sempre 'navigate' porque toda ação de
+    // onboarding hoje é "ir até esta rota" — não existe um segundo tipo
+    // real para justificar uma taxonomia maior.
     to: step.route,
     cta: step.actionLabel,
+    destination: step.route,
+    actionLabel: step.actionLabel,
+    actionType: 'navigate',
     partnerAction: false,
   };
 }

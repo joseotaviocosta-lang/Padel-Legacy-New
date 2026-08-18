@@ -154,7 +154,12 @@ export class CareerManager {
     return careerData;
   }
 
-  async saveCareer(careerId, careerData, { backup = true, updateIndex = true } = {}) {
+  async saveCareer(careerId, careerData, {
+    backup = true,
+    updateIndex = true,
+    crashRecovery = false,
+    caller = 'CareerManager.saveCareer',
+  } = {}) {
     const validated = validateCareerData(careerData);
     if (validated.career_id !== careerId) {
       throw new Error('career_id no conteúdo não pode ser alterado.');
@@ -166,7 +171,7 @@ export class CareerManager {
     // periódica pelo ActiveCareerAdapter e continua obrigatório em saves
     // explícitos/gerenciamento de carreira.
     if (!updateIndex) {
-      await this.repository.writeCareer(careerId, validated, { backup });
+      await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
       return validated;
     }
 
@@ -175,7 +180,7 @@ export class CareerManager {
     if (!entry) throw new Error('Carreira não encontrada no índice.');
     const summary = createSummaryFromCareer(validated);
 
-    await this.repository.writeCareer(careerId, validated, { backup });
+    await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
     Object.assign(entry, summary);
     await this.repository.writeIndex(index);
 

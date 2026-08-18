@@ -6,6 +6,8 @@ import {
   resetRenderCounts, setPerfModeAttribute, getLastAdvanceDayBreakdown,
 } from '@/dev/performanceProbe.js';
 import { careerIOStats, resetCareerIOStats } from '@/gameplay/repositories/CareerEntityRepository.js';
+import { getStoragePerformanceSnapshot, resetStoragePerformanceStats } from '@/dev/storageIOProbe.js';
+import { getPersistenceTransactionSnapshot, resetPersistenceTransactionStats } from '@/dev/persistenceTransactionProbe.js';
 
 // M3.4 (docs/MOBILE_M3_4_DEVICE_PERFORMANCE.md) — overlay de perfdebug.
 //
@@ -18,9 +20,9 @@ import { careerIOStats, resetCareerIOStats } from '@/gameplay/repositories/Caree
 // release que precisa ser medido.
 //
 // Visual propositalmente mínimo (Parte 2: "não precisa ter visual bonito,
-// precisa ser útil"). Atualiza no máximo ~2x/s para o próprio monitor não
+// precisa ser útil"). Atualiza no máximo 1x/s para o próprio monitor não
 // virar gargalo (Parte 3).
-const SAMPLE_INTERVAL_MS = 500;
+const SAMPLE_INTERVAL_MS = 1000;
 const LONG_TASK_HISTORY_LIMIT = 8;
 
 export default function MobilePerformanceMonitor() {
@@ -33,9 +35,12 @@ export default function MobilePerformanceMonitor() {
   const [renderCounts, setRenderCounts] = useState({});
   const [lastAction, setLastAction] = useState(null);
   // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, item 13): IO de storage e
-  // breakdown do último advance-day, amostrados no mesmo timer ~2x/s abaixo —
+  // breakdown do último advance-day, amostrados no mesmo timer 1x/s abaixo —
   // sem monitor próprio novo, sem custo por frame.
   const [ioStats, setIoStats] = useState({ reads: 0, writes: 0, totalMs: 0, maxMs: 0 });
+  const [storageSnapshot, setStorageSnapshot] = useState(() => getStoragePerformanceSnapshot(20));
+  const [transactionSnapshot, setTransactionSnapshot] = useState(() => getPersistenceTransactionSnapshot());
+  const [storageDetails, setStorageDetails] = useState(false);
   const [advanceDayBreakdown, setAdvanceDayBreakdown] = useState(null);
   const [noBlur, setNoBlur] = useState(false);
   const [noMotion, setNoMotion] = useState(false);
@@ -73,6 +78,8 @@ export default function MobilePerformanceMonitor() {
       setRenderCounts(getRenderCounts());
       setLastAction(getActionLog().at(-1) || null);
       setIoStats({ ...careerIOStats });
+      setStorageSnapshot(getStoragePerformanceSnapshot(20));
+      setTransactionSnapshot(getPersistenceTransactionSnapshot());
       setAdvanceDayBreakdown(getLastAdvanceDayBreakdown());
     }, SAMPLE_INTERVAL_MS);
 
@@ -96,6 +103,7 @@ export default function MobilePerformanceMonitor() {
     () => Object.entries(renderCounts).sort((a, b) => b[1] - a[1]).slice(0, 6),
     [renderCounts],
   );
+  const visibleStorageOperations = storageSnapshot.operations.slice(0, storageDetails ? 20 : 5);
 
   if (!active) return null;
 
@@ -110,6 +118,7 @@ export default function MobilePerformanceMonitor() {
       style={{
         position: 'fixed', left: '0.5rem', bottom: 'calc(env(safe-area-inset-bottom, 0px) + 0.5rem)',
         zIndex: 999999, maxWidth: collapsed ? 'auto' : 'min(92vw, 22rem)',
+        maxHeight: collapsed ? 'none' : 'min(88vh, 48rem)', overflowY: collapsed ? 'visible' : 'auto',
         background: 'rgba(10,10,16,0.92)', color: '#e6ffe6', font: '11px/1.4 ui-monospace, Menlo, Consolas, monospace',
         borderRadius: '10px', padding: collapsed ? '0.4rem 0.6rem' : '0.6rem 0.75rem',
         boxShadow: '0 8px 24px rgba(0,0,0,0.45)', pointerEvents: 'auto',
@@ -141,21 +150,63 @@ export default function MobilePerformanceMonitor() {
               último avanço de dia (via o profiler já plugado em
               dayAdvanceCoordinator.js). */}
           <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
-            <Row label="Storage leituras/gravações" value={`${ioStats.reads}/${ioStats.writes}`} />
-            <Row label="Storage tempo total/pior" value={`${Math.round(ioStats.totalMs)}ms / ${Math.round(ioStats.maxMs)}ms`} />
+            <Row label="IPC reads/writes" value={`${storageSnapshot.totals.reads}/${storageSnapshot.totals.writes}`} />
+            <Row label="Storage calls/tempo" value={`${storageSnapshot.totals.calls} / ${storageSnapshot.totals.totalMs}ms`} />
+            <Row label="Storage pior/bytes" value={`${storageSnapshot.totals.maxMs}ms / ${storageSnapshot.totals.bytesRead + storageSnapshot.totals.bytesWritten}B`} />
+            <Row label="Cache hit rate" value={`${storageSnapshot.totals.cacheHitRate}% (${storageSnapshot.totals.cacheHits}/${storageSnapshot.totals.cacheHits + storageSnapshot.totals.cacheMisses})`} />
+            <Row label="Fila lógica R/W" value={`${ioStats.reads}/${ioStats.writes}`} />
+            <Row label="Espera lógica total/pior" value={`${Math.round(ioStats.totalMs)}ms / ${Math.round(ioStats.maxMs)}ms`} />
           </div>
+
+          <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
+            <Row label="Transaction" value={transactionSnapshot.active?.id || transactionSnapshot.last?.id || '—'} />
+            <Row label="Tx mutations/commits" value={`${transactionSnapshot.active?.logicalMutations ?? transactionSnapshot.last?.logicalMutations ?? 0}/${transactionSnapshot.active?.physicalCommits ?? transactionSnapshot.last?.physicalCommits ?? 0}`} />
+            <Row label="Tx duração/commit I/O" value={`${transactionSnapshot.active?.durationMs ?? transactionSnapshot.last?.durationMs ?? 0}ms / ${transactionSnapshot.last?.commitIOms ?? 0}ms`} />
+            <Row label="Tx rollback" value={transactionSnapshot.last?.rolledBack ? `sim · ${transactionSnapshot.last.rollbackReason || 'erro'}` : 'não'} />
+            <Row label="Tx queue antes/depois" value={`${transactionSnapshot.last?.queueSizeBefore ?? 0}/${transactionSnapshot.last?.queueSizeAfter ?? 0}`} />
+            <Row label="Tx total T/C/R/clean" value={`${transactionSnapshot.totals.transactions}/${transactionSnapshot.totals.commits}/${transactionSnapshot.totals.rollbacks}/${transactionSnapshot.totals.skippedCleanCommits}`} />
+          </div>
+
+          {storageSnapshot.operations.length > 0 && (
+            <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
+              <Row label="Top Storage Operations" value="total / n / pior" />
+              {visibleStorageOperations.map((operation, index) => (
+                <Row
+                  key={`${operation.layer}:${operation.operation}:${operation.key}:${operation.caller}`}
+                  label={`${index + 1}. ${operation.operation} ${operation.key} · ${operation.caller}`}
+                  value={`${operation.totalMs} / ${operation.count} / ${operation.maxMs}ms${operation.cache ? ` · ${operation.cache}` : ''}${operation.transactionName ? ` · tx=${operation.transactionName}` : ''}`}
+                />
+              ))}
+              {storageSnapshot.operations.length > 5 && (
+                <button type="button" onClick={() => setStorageDetails((value) => !value)} style={{ ...buttonStyle, marginTop: '0.25rem' }}>
+                  {storageDetails ? 'menos detalhes' : 'ver detalhes (Top 20)'}
+                </button>
+              )}
+            </div>
+          )}
 
           {advanceDayBreakdown && (
             <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
               <Row label="advance-day (última)" value="" />
-              {Object.entries(advanceDayBreakdown.stages).map(([name, ms]) => <Row key={name} label={`  ${name}`} value={`${ms}ms`} />)}
+              {Object.entries(advanceDayBreakdown.stages).map(([name, ms]) => {
+                const detail = advanceDayBreakdown.stageDetails?.[name];
+                return <Row key={name} label={`  ${name}`} value={detail ? `${ms}ms (CPU ${detail.cpuMs} / I/O ${detail.storageMs})` : `${ms}ms`} />;
+              })}
             </div>
           )}
 
           {topRenders.length > 0 && (
             <div style={{ marginTop: '0.3rem', borderTop: '1px solid rgba(255,255,255,0.15)', paddingTop: '0.3rem' }}>
               {topRenders.map(([label, count]) => <Row key={label} label={label} value={String(count)} />)}
-              <button type="button" onClick={() => { resetRenderCounts(); resetCareerIOStats(); setIoStats({ ...careerIOStats }); }} style={{ ...buttonStyle, marginTop: '0.25rem' }}>zerar contadores</button>
+              <button type="button" onClick={() => {
+                resetRenderCounts();
+                resetCareerIOStats();
+                resetStoragePerformanceStats();
+                resetPersistenceTransactionStats();
+                setIoStats({ ...careerIOStats });
+                setStorageSnapshot(getStoragePerformanceSnapshot(20));
+                setTransactionSnapshot(getPersistenceTransactionSnapshot());
+              }} style={{ ...buttonStyle, marginTop: '0.25rem' }}>zerar contadores</button>
             </div>
           )}
 

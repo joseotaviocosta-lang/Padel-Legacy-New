@@ -10,14 +10,23 @@ export class CareerRepository {
   constructor(storage = new GameStorage()) {
     this.storage = storage;
     this.indexLock = Promise.resolve();
+    this.initializationPromise = null;
   }
 
   async initialize() {
-    await this.storage.initialize();
-    await Promise.all([
-      this.storage.ensureDirectory(CAREERS_DIRECTORY),
-      this.storage.ensureDirectory(CAREER_BACKUPS_DIRECTORY),
-    ]);
+    if (!this.initializationPromise) {
+      this.initializationPromise = (async () => {
+        await this.storage.initialize();
+        await Promise.all([
+          this.storage.ensureDirectory(CAREERS_DIRECTORY),
+          this.storage.ensureDirectory(CAREER_BACKUPS_DIRECTORY),
+        ]);
+      })().catch((error) => {
+        this.initializationPromise = null;
+        throw error;
+      });
+    }
+    await this.initializationPromise;
   }
 
   async withIndexLock(fn) {
@@ -32,7 +41,7 @@ export class CareerRepository {
       schema_version: 1,
       last_career_id: null,
       careers: [],
-    });
+    }, { caller: 'CareerRepository.readIndex' });
     const migrated = migrateIndex(index);
     if (migrated.migrated) await this.storage.writeJson(CAREER_INDEX_FILE_NAME, migrated.data, { backup: true, validate: false });
     return validateCareerIndex(migrated.data);
@@ -42,7 +51,7 @@ export class CareerRepository {
     await this.initialize();
     const validated = validateCareerIndex(index);
     return this.withIndexLock(async () => {
-      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: false });
+      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: false, caller: 'CareerRepository.writeIndex' });
     });
   }
 
@@ -52,7 +61,7 @@ export class CareerRepository {
       const current = await this.readIndex();
       const updated = await fn(JSON.parse(JSON.stringify(current)));
       const validated = validateCareerIndex(updated);
-      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: false });
+      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: false, caller: 'CareerRepository.updateIndex' });
     });
   }
 
@@ -70,7 +79,7 @@ export class CareerRepository {
 
   async readCareer(careerId) {
     const path = await this.getCareerPath(careerId);
-    const rawCareer = await this.storage.readJson(path);
+    const rawCareer = await this.storage.readJson(path, { caller: 'CareerRepository.readCareer' });
 
     // A migração precisa ocorrer antes da validação estrita. Saves de versões
     // anteriores são válidos para a versão em que foram criados, mas ainda não
@@ -103,6 +112,8 @@ export class CareerRepository {
       backup: options.backup !== false,
       validate: false,
       pretty: options.pretty === true,
+      crashRecovery: options.crashRecovery === true,
+      caller: options.caller || 'CareerRepository.writeCareer',
     });
   }
 

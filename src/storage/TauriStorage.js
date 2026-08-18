@@ -11,6 +11,7 @@ import {
   writeTextFile,
 } from '@tauri-apps/plugin-fs';
 import { StorageError } from './StorageError.js';
+import { measureStorageOperation } from '../dev/storageIOProbe.js';
 
 const STORAGE_BASE_DIRECTORY = BaseDirectory.AppData;
 
@@ -66,6 +67,12 @@ function createOptions(options = {}) {
   };
 }
 
+function byteLength(value) {
+  const text = String(value ?? '');
+  if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(text).byteLength;
+  return text.length;
+}
+
 export class TauriStorage {
   static isSupported() {
     return typeof window !== 'undefined' && Boolean(window.__TAURI_INTERNALS__);
@@ -84,27 +91,39 @@ export class TauriStorage {
     ]);
   }
 
-  async readText(relativePath) {
+  async readText(relativePath, { knownToExist = false, caller = 'TauriStorage.readText' } = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
-    const existsPath = await exists(normalizedPath, createOptions());
-    if (!existsPath) {
+    if (!knownToExist && !(await this.exists(normalizedPath, { caller: `${caller}:preflight` }))) {
       throw new StorageError('O arquivo não existe no armazenamento local.', 'FILE_NOT_FOUND');
     }
-    return readTextFile(normalizedPath, createOptions());
+    return measureStorageOperation(
+      { operation: 'read', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => readTextFile(normalizedPath, createOptions()),
+      { bytes: byteLength },
+    );
   }
 
-  async writeText(relativePath, content) {
+  async writeText(relativePath, content, { ensureParent = true, caller = 'TauriStorage.writeText' } = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
     const parentDirectory = normalizedPath.includes('/') ? normalizedPath.split('/').slice(0, -1).join('/') : null;
-    if (parentDirectory) {
-      await this.ensureDirectory(parentDirectory);
+    if (parentDirectory && ensureParent) {
+      await this.ensureDirectory(parentDirectory, { caller: `${caller}:parent` });
     }
-    return writeTextFile(normalizedPath, String(content), createOptions());
+    const serialized = String(content);
+    return measureStorageOperation(
+      { operation: 'write', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => writeTextFile(normalizedPath, serialized, createOptions()),
+      { bytes: byteLength(serialized) },
+    );
   }
 
-  async exists(relativePath) {
+  async exists(relativePath, { caller = 'TauriStorage.exists' } = {}) {
+    const normalizedPath = normalizeRelativePath(relativePath);
     try {
-      return await exists(normalizeRelativePath(relativePath), createOptions());
+      return await measureStorageOperation(
+        { operation: 'exists', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+        () => exists(normalizedPath, createOptions()),
+      );
     } catch (error) {
       return false;
     }
@@ -112,69 +131,91 @@ export class TauriStorage {
 
   async remove(relativePath, options = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
-    if (!(await this.exists(normalizedPath))) {
+    const { knownToExist = false, caller = 'TauriStorage.remove', ...fsOptions } = options;
+    if (!knownToExist && !(await this.exists(normalizedPath, { caller: `${caller}:preflight` }))) {
       return false;
     }
-    await remove(normalizedPath, createOptions(options));
+    await measureStorageOperation(
+      { operation: 'remove', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => remove(normalizedPath, createOptions(fsOptions)),
+    );
     return true;
   }
 
-  async copy(sourcePath, destinationPath) {
+  async copy(sourcePath, destinationPath, { ensureParent = true, caller = 'TauriStorage.copy' } = {}) {
     const normalizedSource = normalizeRelativePath(sourcePath);
     const normalizedDestination = normalizeRelativePath(destinationPath);
     const parentDirectory = normalizedDestination.includes('/') ? normalizedDestination.split('/').slice(0, -1).join('/') : null;
-    if (parentDirectory) {
-      await this.ensureDirectory(parentDirectory);
+    if (parentDirectory && ensureParent) {
+      await this.ensureDirectory(parentDirectory, { caller: `${caller}:parent` });
     }
-    await copyFile(normalizedSource, normalizedDestination, {
-      ...createOptions(),
-      fromPathBaseDir: STORAGE_BASE_DIRECTORY,
-      toPathBaseDir: STORAGE_BASE_DIRECTORY,
-    });
+    await measureStorageOperation(
+      { operation: 'copy', key: `${normalizedSource} -> ${normalizedDestination}`, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => copyFile(normalizedSource, normalizedDestination, {
+        ...createOptions(),
+        fromPathBaseDir: STORAGE_BASE_DIRECTORY,
+        toPathBaseDir: STORAGE_BASE_DIRECTORY,
+      }),
+    );
     return normalizedDestination;
   }
 
-  async rename(sourcePath, destinationPath) {
+  async rename(sourcePath, destinationPath, { ensureParent = true, caller = 'TauriStorage.rename' } = {}) {
     const normalizedSource = normalizeRelativePath(sourcePath);
     const normalizedDestination = normalizeRelativePath(destinationPath);
     const parentDirectory = normalizedDestination.includes('/') ? normalizedDestination.split('/').slice(0, -1).join('/') : null;
-    if (parentDirectory) {
-      await this.ensureDirectory(parentDirectory);
+    if (parentDirectory && ensureParent) {
+      await this.ensureDirectory(parentDirectory, { caller: `${caller}:parent` });
     }
-    await rename(normalizedSource, normalizedDestination, {
-      oldPathBaseDir: STORAGE_BASE_DIRECTORY,
-      newPathBaseDir: STORAGE_BASE_DIRECTORY,
-    });
+    await measureStorageOperation(
+      { operation: 'rename', key: `${normalizedSource} -> ${normalizedDestination}`, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => rename(normalizedSource, normalizedDestination, {
+        oldPathBaseDir: STORAGE_BASE_DIRECTORY,
+        newPathBaseDir: STORAGE_BASE_DIRECTORY,
+      }),
+    );
     return normalizedDestination;
   }
 
-  async list(relativeDirectory = '.') {
+  async list(relativeDirectory = '.', { knownToExist = false, caller = 'TauriStorage.list' } = {}) {
     const normalizedPath = normalizeRelativePath(relativeDirectory, { allowCurrentDirectory: true });
     if (normalizedPath === '.') {
-      const entries = await readDir('', createOptions());
+      const entries = await measureStorageOperation(
+        { operation: 'list', key: '.', caller, layer: 'tauri-ipc', cache: 'miss' },
+        () => readDir('', createOptions()),
+      );
       return entries;
     }
 
-    const existsPath = await this.exists(normalizedPath);
+    const existsPath = knownToExist || await this.exists(normalizedPath, { caller: `${caller}:preflight` });
     if (!existsPath) {
       return [];
     }
 
-    return readDir(normalizedPath, createOptions());
+    return measureStorageOperation(
+      { operation: 'list', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => readDir(normalizedPath, createOptions()),
+    );
   }
 
-  async ensureDirectory(relativeDirectory) {
+  async ensureDirectory(relativeDirectory, { caller = 'TauriStorage.ensureDirectory' } = {}) {
     const normalizedPath = normalizeRelativePath(relativeDirectory, { allowCurrentDirectory: true });
     if (normalizedPath === '.') {
       return true;
     }
-    await mkdir(normalizedPath, { recursive: true, ...createOptions() });
+    await measureStorageOperation(
+      { operation: 'mkdir', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => mkdir(normalizedPath, { recursive: true, ...createOptions() }),
+    );
     return true;
   }
 
-  async stat(relativePath) {
+  async stat(relativePath, { caller = 'TauriStorage.stat' } = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
-    return stat(normalizedPath, createOptions());
+    return measureStorageOperation(
+      { operation: 'stat', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+      () => stat(normalizedPath, createOptions()),
+    );
   }
 
   getDataDirectoryDescription() {

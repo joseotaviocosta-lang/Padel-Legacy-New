@@ -1,4 +1,11 @@
 import { GameStorage } from '../storage/GameStorage.js';
+import { recordStorageCacheAccess } from '../dev/storageIOProbe.js';
+
+function cloneCheckpoint(value) {
+  if (value == null) return value;
+  if (typeof structuredClone === 'function') return structuredClone(value);
+  return JSON.parse(JSON.stringify(value));
+}
 
 // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md) — uma partida ao vivo hoje só
 // existe no state React de LiveMatch: se o Android suspender a WebView, matar
@@ -86,6 +93,8 @@ export class MatchCheckpointRepository {
     // GameStorage serializa escritas, mas remove() podia correr em paralelo
     // com o último save e fazer o checkpoint antigo reaparecer após o jogo.
     this.operationChains = new Map();
+    this.cachedCheckpoints = new Map();
+    this.initializationPromise = null;
   }
 
   async enqueue(careerId, operation) {
@@ -101,14 +110,23 @@ export class MatchCheckpointRepository {
 
   async removeFile(careerId) {
     await this.initialize();
-    const removed = await this.storage.remove(checkpointPath(careerId));
+    const removed = await this.storage.remove(checkpointPath(careerId), { caller: 'MatchCheckpointRepository.remove' });
+    this.cachedCheckpoints.set(careerId, null);
     if (removed) notifyCheckpointChanged(careerId, null);
     return removed;
   }
 
   async initialize() {
-    await this.storage.initialize();
-    await this.storage.ensureDirectory(ACTIVE_MATCHES_DIRECTORY);
+    if (!this.initializationPromise) {
+      this.initializationPromise = (async () => {
+        await this.storage.initialize();
+        await this.storage.ensureDirectory(ACTIVE_MATCHES_DIRECTORY);
+      })().catch((error) => {
+        this.initializationPromise = null;
+        throw error;
+      });
+    }
+    await this.initializationPromise;
   }
 
   /**
@@ -121,21 +139,30 @@ export class MatchCheckpointRepository {
     if (!careerId) return null;
     return this.enqueue(careerId, async () => {
       await this.initialize();
+      if (this.cachedCheckpoints.has(careerId)) {
+        recordStorageCacheAccess({ key: checkpointPath(careerId), caller: 'MatchCheckpointRepository.read', cache: 'hit' });
+        return cloneCheckpoint(this.cachedCheckpoints.get(careerId));
+      }
+      recordStorageCacheAccess({ key: checkpointPath(careerId), caller: 'MatchCheckpointRepository.read', cache: 'miss' });
       let data;
       try {
-        data = await this.storage.readJsonIfExists(checkpointPath(careerId), null);
+        data = await this.storage.readJsonIfExists(checkpointPath(careerId), null, { caller: 'MatchCheckpointRepository.read' });
       } catch (error) {
         console.warn('[MatchCheckpoint] falha ao ler checkpoint, tratando como corrompido.', { careerId, error });
         await this.removeFile(careerId).catch(() => {});
         return null;
       }
-      if (!data) return null;
+      if (!data) {
+        this.cachedCheckpoints.set(careerId, null);
+        return null;
+      }
       if (!isValidCheckpointShape(data, careerId)) {
         console.warn('[MatchCheckpoint] checkpoint com formato inválido/incompatível, descartando.', { careerId, version: data?.checkpoint_schema_version });
         await this.removeFile(careerId).catch(() => {});
         return null;
       }
-      return data;
+      this.cachedCheckpoints.set(careerId, cloneCheckpoint(data));
+      return cloneCheckpoint(data);
     });
   }
 
@@ -161,7 +188,8 @@ export class MatchCheckpointRepository {
       }
       // Checkpoint não precisa (e não deve) do backup automático do save
       // principal — é descartável por natureza assim que a partida termina.
-      const saved = await this.storage.writeJson(checkpointPath(careerId), payload, { backup: false, validate: false });
+      const saved = await this.storage.writeJson(checkpointPath(careerId), payload, { backup: false, validate: false, caller: 'MatchCheckpointRepository.save' });
+      this.cachedCheckpoints.set(careerId, cloneCheckpoint(saved));
       notifyCheckpointChanged(careerId, payload);
       return saved;
     });

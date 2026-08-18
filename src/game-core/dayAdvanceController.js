@@ -19,8 +19,15 @@ export function createDayAdvanceController({
   let completedCore = null;
   let secondaryTail = Promise.resolve();
   let secondaryPending = 0;
+  let legacyProcessing = false;
+  let transactionalProcessing = false;
+  const processingListeners = new Set();
 
   const log = (...args) => { if (debug) logger(...args); };
+  const publishProcessing = () => {
+    const processing = legacyProcessing || transactionalProcessing;
+    processingListeners.forEach((listener) => listener(processing));
+  };
   const scheduleSecondary = (descriptor) => {
     secondaryPending += 1;
     secondaryTail = secondaryTail
@@ -55,6 +62,8 @@ export function createDayAdvanceController({
   }, {
     source: 'dayAdvanceCoordinator',
     onStateChange: ({ previous, next, source }) => {
+      legacyProcessing = next;
+      publishProcessing();
       log(`[AdvanceState] ${previous} -> ${next}`, `source: ${source}`);
       log(`[GlobalAdvance] lock=${next}`);
       if (!next && completedCore) {
@@ -65,11 +74,45 @@ export function createDayAdvanceController({
     },
   });
 
+  // Mobile M3.7: variante usada pelo APK para manter core + GameState dentro
+  // da mesma unidade de persistência. O método legado `run` continua existindo
+  // para os testes/consumidores que explicitamente exercitam secondary em fila.
+  const transactionalFlight = createSingleFlightCoordinator(async (profile) => {
+    const previousDate = profile?.career_date;
+    const startedAt = performance.now();
+    log('[GlobalAdvance] advanceCareerDay:start');
+    const updated = await advanceCore(profile);
+    log(`[GlobalAdvance] advanceCareerDay:done (${(performance.now() - startedAt).toFixed(1)}ms)`);
+    log('[GlobalAdvance] postDayEvents:start');
+    secondaryPending += 1;
+    try {
+      const secondaryProfile = await processSecondary(updated, previousDate, updated?.career_date);
+      const finalProfile = secondaryProfile || updated;
+      log(`[GlobalAdvance] postDayEvents:done (${(performance.now() - startedAt).toFixed(1)}ms)`);
+      return finalProfile;
+    } finally {
+      secondaryPending = Math.max(0, secondaryPending - 1);
+    }
+  }, {
+    source: 'dayAdvanceTransaction',
+    onStateChange: ({ previous, next, source }) => {
+      transactionalProcessing = next;
+      publishProcessing();
+      log(`[AdvanceState] ${previous} -> ${next}`, `source: ${source}`);
+      log(`[GlobalAdvance] lock=${next}`);
+    },
+  });
+
   return {
     run: (profile) => flight.run(profile),
-    isProcessing: () => flight.isProcessing(),
+    runTransactional: (profile) => transactionalFlight.run(profile),
+    isProcessing: () => flight.isProcessing() || transactionalFlight.isProcessing(),
     isSecondaryProcessing: () => secondaryPending > 0,
-    subscribe: (listener) => flight.subscribe(listener),
+    subscribe(listener) {
+      processingListeners.add(listener);
+      listener(flight.isProcessing() || transactionalFlight.isProcessing());
+      return () => { processingListeners.delete(listener); };
+    },
     waitForSecondaryWork: () => secondaryTail,
   };
 }

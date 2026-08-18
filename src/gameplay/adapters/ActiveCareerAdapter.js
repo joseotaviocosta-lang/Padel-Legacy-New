@@ -1,11 +1,33 @@
 import { CareerManager } from '../../careers/CareerManager.js';
 import { initializeCareerInitialData } from '../services/CareerInitialDataService.js';
 import { normalizeFatiguePatch, normalizePlayerPhysicalStats } from '../../game-core/physicalStats.js';
+import { recordStorageCacheAccess } from '../../dev/storageIOProbe.js';
+import {
+  createPersistenceTransaction,
+  finishPersistenceTransaction,
+  recordPersistenceLogicalMutation,
+  recordPersistencePhysicalCommit,
+  setActivePersistenceTransaction,
+  setPersistenceTransactionDepth,
+} from '../../dev/persistenceTransactionProbe.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
   if (typeof structuredClone === 'function') return structuredClone(value);
   return JSON.parse(JSON.stringify(value));
+}
+
+function storageStateEquals(left, right) {
+  if (Object.is(left, right)) return true;
+  if (!left || !right || typeof left !== 'object' || typeof right !== 'object') return false;
+  if (Array.isArray(left) !== Array.isArray(right)) return false;
+  const leftKeys = Object.keys(left);
+  const rightKeys = Object.keys(right);
+  if (leftKeys.length !== rightKeys.length) return false;
+  for (const key of leftKeys) {
+    if (!Object.prototype.hasOwnProperty.call(right, key) || !storageStateEquals(left[key], right[key])) return false;
+  }
+  return true;
 }
 
 const ROUTINE_BACKUP_INTERVAL_MS = 5 * 60 * 1000;
@@ -17,6 +39,8 @@ export class ActiveCareerAdapter {
     this.activeCareer = null;
     this.activeCareerId = null;
     this.writeChain = Promise.resolve();
+    this.activePersistenceTransaction = null;
+    this.pendingWriteCount = 0;
     this.lastRoutineBackupAt = 0;
     this.lastIndexSyncAt = 0;
   }
@@ -34,7 +58,17 @@ export class ActiveCareerAdapter {
     this.activeCareerId = null;
   }
 
-  async getActiveCareer({ fresh = false, waitForWrites = true, cloneResult = true } = {}) {
+  async getActiveCareer({ fresh = false, waitForWrites = true, cloneResult = true, caller = 'ActiveCareerAdapter.getActiveCareer' } = {}) {
+    // Uma transação mantém o snapshot confirmado isolado em `activeCareer` e
+    // expõe seu draft somente aos repositories enquanto a unidade lógica roda.
+    // Assim os stages seguintes veem imediatamente os stages anteriores, sem
+    // publicar estado não confirmado como o snapshot quente definitivo.
+    if (this.activePersistenceTransaction) {
+      const draft = this.activePersistenceTransaction.draft;
+      recordStorageCacheAccess({ key: `career:${draft?.career_id || 'transaction'}`, caller, cache: 'hit' });
+      return cloneResult ? clone(draft) : draft;
+    }
+
     // Leituras externas aguardam gravações anteriores. Operações que já estão
     // dentro da própria fila usam waitForWrites=false para não aguardarem a si
     // mesmas (deadlock).
@@ -52,7 +86,11 @@ export class ActiveCareerAdapter {
       ? (cloneResult ? clone(this.activeCareer) : this.activeCareer)
       : null;
 
-    if (!fresh && memoryCareer) return memoryCareer;
+    if (!fresh && memoryCareer) {
+      recordStorageCacheAccess({ key: `career:${this.activeCareerId}`, caller, cache: 'hit' });
+      return memoryCareer;
+    }
+    recordStorageCacheAccess({ key: `career:${this.activeCareerId || 'last'}`, caller, cache: 'miss' });
 
     // Preserve o id selecionado em memória. O índice só é consultado ao abrir
     // novamente o aplicativo ou quando ainda não houve seleção nesta sessão.
@@ -134,14 +172,14 @@ export class ActiveCareerAdapter {
       };
       initializeCareerInitialData(career);
       return career.player;
-    });
+    }, { caller: 'ActiveCareerAdapter.createPlayerProfile' });
     return clone(transaction.result);
   }
 
   async ensureInitialData() {
     const transaction = await this.mutateActiveCareer(async (career) => {
       return initializeCareerInitialData(career);
-    });
+    }, { caller: 'ActiveCareerAdapter.ensureInitialData' });
     return clone(transaction.result);
   }
 
@@ -180,11 +218,33 @@ export class ActiveCareerAdapter {
         career.tutorial = clone(updates.tutorial_onboarding);
       }
       return career.player;
-    });
+    }, { caller: 'ActiveCareerAdapter.updatePlayerProfile' });
     return clone(transaction.result);
   }
 
-  async mutateActiveCareer(mutator) {
+  async mutateActiveCareer(mutator, { caller = 'ActiveCareerAdapter.mutateActiveCareer' } = {}) {
+    const activeTransaction = this.activePersistenceTransaction;
+    if (activeTransaction) {
+      if (activeTransaction.rollbackError) throw activeTransaction.rollbackError;
+      const operation = activeTransaction.mutationChain.then(async () => {
+        if (activeTransaction.rollbackError) throw activeTransaction.rollbackError;
+        try {
+          // O draft já é um clone isolado do snapshot confirmado. Mutá-lo
+          // diretamente evita clonar/stringify o save inteiro a cada entidade;
+          // qualquer erro invalida a transação completa e descarta o draft.
+          const result = await mutator(activeTransaction.draft);
+          activeTransaction.dirty = true;
+          recordPersistenceLogicalMutation(activeTransaction.probe, caller);
+          return { result: clone(result), career: clone(activeTransaction.draft) };
+        } catch (error) {
+          activeTransaction.rollbackError = error;
+          throw error;
+        }
+      });
+      activeTransaction.mutationChain = operation.then(() => undefined, () => undefined);
+      return operation;
+    }
+
     // A carreira ativa em memória é a fonte quente durante a sessão. Ler o JSON
     // inteiro do disco antes de CADA entidade tornava páginas com 5-10 consultas
     // perceptivelmente lentas no desktop. A fila garante que o snapshot em
@@ -195,6 +255,7 @@ export class ActiveCareerAdapter {
         fresh: false,
         waitForWrites: false,
         cloneResult: false,
+        caller,
       });
       // O mutator recebe um draft isolado. Assim uma falha de persistência não
       // deixa o estado quente parcialmente alterado.
@@ -206,6 +267,7 @@ export class ActiveCareerAdapter {
       const saved = await this.careerManager.saveCareer(career.career_id, career, {
         backup: shouldBackup,
         updateIndex: shouldSyncIndex,
+        caller,
       });
       if (shouldBackup) this.lastRoutineBackupAt = now;
       if (shouldSyncIndex) this.lastIndexSyncAt = now;
@@ -217,7 +279,143 @@ export class ActiveCareerAdapter {
     return operation;
   }
 
+  /**
+   * Executa uma unidade lógica contra um draft da carreira e faz somente um
+   * save físico ao final. Chamadas concorrentes externas entram na writeChain;
+   * nesting explícito usa `transaction.withTransaction(...)` para compartilhar
+   * o draft sem criar commit intermediário.
+   */
+  async withPersistenceTransaction(name, work, { joinTransactionId = null } = {}) {
+    if (typeof name === 'function') {
+      work = name;
+      name = 'career-transaction';
+    }
+    if (typeof work !== 'function') throw new TypeError('A transação exige uma função assíncrona.');
+
+    const active = this.activePersistenceTransaction;
+    if (active && joinTransactionId === active.id) {
+      active.depth += 1;
+      setPersistenceTransactionDepth(active.probe, active.depth);
+      try {
+        return await work(this.createTransactionContext(active));
+      } catch (error) {
+        active.rollbackError = active.rollbackError || error;
+        throw error;
+      } finally {
+        active.depth -= 1;
+        setPersistenceTransactionDepth(active.probe, active.depth);
+      }
+    }
+
+    this.pendingWriteCount += 1;
+    const previousWrites = this.writeChain.catch(() => {});
+    const operation = previousWrites.then(async () => {
+      const current = await this.ensureActiveCareer({
+        fresh: false,
+        waitForWrites: false,
+        cloneResult: false,
+        caller: `transaction-begin:${name}`,
+      });
+      const probe = createPersistenceTransaction(name);
+      probe.queueSizeBefore = Math.max(0, this.pendingWriteCount - 1);
+      const snapshot = clone(current);
+      const transaction = {
+        id: probe.id,
+        name: probe.name,
+        depth: 1,
+        snapshot,
+        draft: clone(snapshot),
+        dirty: false,
+        rollbackError: null,
+        mutationChain: Promise.resolve(),
+        probe,
+      };
+      this.activePersistenceTransaction = transaction;
+      setActivePersistenceTransaction(probe);
+
+      try {
+        const result = await work(this.createTransactionContext(transaction));
+        await transaction.mutationChain;
+        if (transaction.rollbackError) throw transaction.rollbackError;
+
+        if (!transaction.dirty || storageStateEquals(transaction.draft, transaction.snapshot)) {
+          probe.queueSizeAfter = Math.max(0, this.pendingWriteCount - 1);
+          finishPersistenceTransaction(probe, { skippedCleanCommit: true });
+          return result;
+        }
+
+        const commitStartedAt = typeof performance !== 'undefined' && performance.now
+          ? performance.now()
+          : Date.now();
+        const commitNow = Date.now();
+        const shouldBackup = commitNow - this.lastRoutineBackupAt >= ROUTINE_BACKUP_INTERVAL_MS;
+        const saved = await this.careerManager.saveCareer(transaction.draft.career_id, transaction.draft, {
+          backup: shouldBackup,
+          crashRecovery: true,
+          // O índice é apenas um catálogo/summary separado. A transação diária
+          // confirma o arquivo autoritativo da carreira; um save independente
+          // posterior mantém a política periódica já existente para o índice.
+          updateIndex: false,
+          caller: `transaction-commit:${name}`,
+        });
+        const commitIOms = (typeof performance !== 'undefined' && performance.now
+          ? performance.now()
+          : Date.now()) - commitStartedAt;
+        recordPersistencePhysicalCommit(probe, commitIOms);
+        if (shouldBackup) this.lastRoutineBackupAt = commitNow;
+        this.setActiveCareer(saved);
+        probe.queueSizeAfter = Math.max(0, this.pendingWriteCount - 1);
+        finishPersistenceTransaction(probe);
+        return result;
+      } catch (error) {
+        // `activeCareer` nunca apontou para o draft; no erro ele continua sendo
+        // exatamente o último snapshot confirmado. GameStorage também restaura
+        // o arquivo anterior caso a troca final falhe.
+        probe.queueSizeAfter = Math.max(0, this.pendingWriteCount - 1);
+        finishPersistenceTransaction(probe, {
+          rolledBack: true,
+          rollbackReason: error?.message || error,
+        });
+        throw error;
+      } finally {
+        if (this.activePersistenceTransaction === transaction) {
+          this.activePersistenceTransaction = null;
+          setActivePersistenceTransaction(null);
+        }
+      }
+    });
+
+    this.writeChain = operation.then(() => undefined, () => undefined);
+    try {
+      return await operation;
+    } finally {
+      this.pendingWriteCount = Math.max(0, this.pendingWriteCount - 1);
+    }
+  }
+
+  createTransactionContext(transaction) {
+    return {
+      id: transaction.id,
+      name: transaction.name,
+      get depth() { return transaction.depth; },
+      withTransaction: (name, work) => this.withPersistenceTransaction(name, work, {
+        joinTransactionId: transaction.id,
+      }),
+    };
+  }
+
   async saveActiveCareer(careerData = null) {
+    if (this.activePersistenceTransaction) {
+      const transaction = this.activePersistenceTransaction;
+      const nextCareer = careerData ? clone(careerData) : clone(transaction.draft);
+      if (nextCareer?.career_id !== transaction.draft?.career_id) {
+        throw new Error('Não é permitido trocar a carreira ativa dentro de uma transação.');
+      }
+      transaction.draft = nextCareer;
+      transaction.dirty = true;
+      recordPersistenceLogicalMutation(transaction.probe, 'ActiveCareerAdapter.saveActiveCareer');
+      return clone(nextCareer);
+    }
     const career = careerData ? clone(careerData) : await this.ensureActiveCareer({ fresh: true });
     const saved = await this.careerManager.saveCareer(career.career_id, career);
     this.setActiveCareer(saved);

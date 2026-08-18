@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { gameRepository } from '@/gameplay/services/runtime.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { CORE_BALANCE } from './config';
 import { calculatePracticeProgress } from './progression';
@@ -69,7 +70,7 @@ async function buildSecondaryOperations({ profile, won, partnerName, opponents, 
   return operations;
 }
 
-export async function finalizePracticeMatch({ profile, matchState, partnerName, opponents, liveCoachSettings }) {
+async function finalizePracticeMatchWork({ profile, matchState, partnerName, opponents, liveCoachSettings }) {
   if (!profile?.id || !matchState?.finished) throw new Error('Partida concluída e perfil são obrigatórios.');
   const profiler = createMatchEndProfiler();
   const won = matchState.winner === 'A';
@@ -109,10 +110,9 @@ export async function finalizePracticeMatch({ profile, matchState, partnerName, 
     ? Promise.resolve({ skipped: true, writes: 0 })
     : scheduleSecondaryMatchWork(async () => {
       const operations = await buildSecondaryOperations({ profile: updatedProfile, won, partnerName, opponents, score, coinsGain: progress.coinsGain, finalizationKey });
-      const result = await localGame.batch(operations);
-      if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:match-finalized', { detail: { matchId, won, type: 'practice' } }));
-      return result;
+      return localGame.batch(operations);
     });
+  const secondaryResult = await secondary;
 
   const timings = profiler.finish();
   return {
@@ -123,7 +123,21 @@ export async function finalizePracticeMatch({ profile, matchState, partnerName, 
     finalizationKey,
     skipped: coreResult.skipped,
     writes: coreResult.skipped ? 0 : 1,
-    secondary,
+    secondary: Promise.resolve(secondaryResult),
     timings,
   };
+}
+
+export async function finalizePracticeMatch(input) {
+  const result = await gameRepository.withPersistenceTransaction(
+    'practice-match-finalization',
+    () => finalizePracticeMatchWork(input),
+  );
+  // Evento de UI só é publicado depois que o commit externo foi confirmado.
+  if (!result.skipped && typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('padel:match-finalized', {
+      detail: { matchId: result.matchRecord?.id, won: input.matchState?.winner === 'A', type: 'practice' },
+    }));
+  }
+  return result;
 }

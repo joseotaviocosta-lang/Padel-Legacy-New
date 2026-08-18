@@ -2,6 +2,7 @@ import { advanceCareerDay } from './calendarLifecycle';
 import { processGameStateDay } from './gameStateLifecycle.js';
 import { createDayAdvanceController } from './dayAdvanceController.js';
 import { localGame } from '@/api/localGameClient.js';
+import { gameRepository } from '@/gameplay/services/runtime.js';
 import { profileAction, timeAsync, createStageProfiler } from '@/dev/performanceProbe.js';
 
 function broadcastProfileUpdate(profile, source = 'day-advance-coordinator') {
@@ -28,10 +29,15 @@ const defaultDebugEnabled = runtime.__PADEL_ADVANCE_DEBUG__ === true
 
 const controller = createDayAdvanceController({
   debug: defaultDebugEnabled,
-  advanceCore: (profile) => advanceCareerDay(profile, { deferGameState: true, deferGlobalProcessing: true }),
+  advanceCore: (profile) => advanceCareerDay(profile, {
+    deferGameState: true,
+    deferGlobalProcessing: true,
+    persistenceTransaction: false,
+  }),
   processSecondary: async (profile, previousDate, currentDate) => {
     const entities = /** @type {any} */ (localGame.entities);
     const fresh = await entities.PlayerProfile.get(profile.id).catch(() => profile);
+    // Contrato central preservado: processGameStateDay(fresh, previousDate, currentDate).
     // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md, item 10): processGameStateDay
     // já aceita um profiler opcional (stage() lá dentro) — nunca era passado,
     // então nenhuma medição por etapa existia. Reaproveita esse contrato em
@@ -51,7 +57,16 @@ export function advanceCareerDayOnce(profile) {
   // acima é cortado do bundle release (import.meta.env.DEV); `profileAction`
   // não é — precisa aparecer no overlay ?perfdebug=1 rodando no APK release,
   // que foi onde a lentidão real foi reportada.
-  return profileAction('advance-day', () => timeAsync('calendar: advance 1 day (fase rápida)', () => controller.run(profile)));
+  // Compatibilidade estrutural histórica: () => controller.run(profile).
+  // No fluxo M3.7, core + GameState precisam terminar antes do commit único.
+  return profileAction('advance-day', () => timeAsync('calendar: advance 1 day (transação completa)', async () => {
+    const finalProfile = await gameRepository.withPersistenceTransaction(
+      'advance-day',
+      () => controller.runTransactional(profile),
+    );
+    broadcastProfileUpdate(finalProfile, 'day-advance-transaction');
+    return finalProfile;
+  }));
 }
 
 export function isCareerDayAdvanceProcessing() {

@@ -1,6 +1,7 @@
 import { gameRepository as repository } from '../services/runtime.js';
 import { seedCollection } from '../services/CareerInitialDataService.js';
 import { normalizeFatiguePatch } from '../../game-core/physicalStats.js';
+import { recordStorageCacheAccess } from '../../dev/storageIOProbe.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -95,7 +96,7 @@ export class CareerEntityRepository {
     return rows.map((row) => (row && typeof row === 'object' ? { ...row } : row));
   }
 
-  async withCareer(mutator, { save = false } = {}) {
+  async withCareer(mutator, { save = false, caller = save ? 'CareerEntityRepository.write' : 'CareerEntityRepository.read' } = {}) {
     const start = nowMs();
     try {
       if (save) {
@@ -103,14 +104,14 @@ export class CareerEntityRepository {
         const transaction = await this.repository.mutateActiveCareer(async (career) => {
           if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
           return mutator(career);
-        });
+        }, { caller });
         return clone(transaction.result);
       }
 
       // Leituras de entidades usam o snapshot quente da carreira. Persistência
       // continua sendo a autoridade ao abrir/recarregar a carreira, mas não há
       // motivo para reler e parsear o mesmo arquivo para cada card da mesma tela.
-      const career = await this.repository.ensureActiveCareer({ fresh: false, cloneResult: false });
+      const career = await this.repository.ensureActiveCareer({ fresh: false, cloneResult: false, caller });
       if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
       this.syncCacheCareer(career);
       return mutator(career);
@@ -139,13 +140,17 @@ export class CareerEntityRepository {
     return this.withCareer(async (career) => {
       const key = `${entityName}|list|${sort || ''}|${limit || ''}`;
       const cached = this.queryCache.get(key);
-      if (cached) return this.copyRows(cached);
+      if (cached) {
+        recordStorageCacheAccess({ key, caller: `CareerEntityRepository.list:${entityName}`, cache: 'hit' });
+        return this.copyRows(cached);
+      }
+      recordStorageCacheAccess({ key, caller: `CareerEntityRepository.list:${entityName}`, cache: 'miss' });
       const rows = this.ensureCollection(entityName, career);
       const sorted = sortRows(rows, sort);
       const out = limit ? sorted.slice(0, limit) : sorted;
       this.queryCache.set(key, out);
       return this.copyRows(out);
-    }, { save: false });
+    }, { save: false, caller: `CareerEntityRepository.list:${entityName}` });
   }
 
   async filter(entityName, query = {}, sort = null, limit = null) {
@@ -153,26 +158,34 @@ export class CareerEntityRepository {
       const queryKey = JSON.stringify(query || {});
       const key = `${entityName}|filter|${queryKey}|${sort || ''}|${limit || ''}`;
       const cached = this.queryCache.get(key);
-      if (cached) return this.copyRows(cached);
+      if (cached) {
+        recordStorageCacheAccess({ key, caller: `CareerEntityRepository.filter:${entityName}`, cache: 'hit' });
+        return this.copyRows(cached);
+      }
+      recordStorageCacheAccess({ key, caller: `CareerEntityRepository.filter:${entityName}`, cache: 'miss' });
       const rows = this.ensureCollection(entityName, career);
       const sorted = sortRows(rows.filter((row) => matches(row, query)), sort);
       const out = limit ? sorted.slice(0, limit) : sorted;
       this.queryCache.set(key, out);
       return this.copyRows(out);
-    }, { save: false });
+    }, { save: false, caller: `CareerEntityRepository.filter:${entityName}` });
   }
 
   async get(entityName, id) {
     return this.withCareer(async (career) => {
       const key = `${entityName}|get|${id}`;
       const cached = this.queryCache.get(key);
-      if (cached) return { ...cached };
+      if (cached) {
+        recordStorageCacheAccess({ key, caller: `CareerEntityRepository.get:${entityName}`, cache: 'hit' });
+        return { ...cached };
+      }
+      recordStorageCacheAccess({ key, caller: `CareerEntityRepository.get:${entityName}`, cache: 'miss' });
       const rows = this.ensureCollection(entityName, career);
       const found = rows.find((row) => row.id === id);
       if (!found) throw new Error(`${entityName} não encontrado: ${id}`);
       this.queryCache.set(key, found);
       return { ...found };
-    }, { save: false });
+    }, { save: false, caller: `CareerEntityRepository.get:${entityName}` });
   }
 
   async create(entityName, data = {}) {
@@ -186,7 +199,7 @@ export class CareerEntityRepository {
       }
       rows.push(record);
       return record;
-    }, { save: true });
+    }, { save: true, caller: `CareerEntityRepository.create:${entityName}` });
   }
 
   async update(entityName, id, data = {}) {
@@ -197,7 +210,7 @@ export class CareerEntityRepository {
       if (index < 0) throw new Error(`${entityName} não encontrado para atualização: ${id}`);
       rows[index] = { ...rows[index], ...clone(data), id, updated_date: new Date().toISOString() };
       return rows[index];
-    }, { save: true });
+    }, { save: true, caller: `CareerEntityRepository.update:${entityName}` });
   }
 
   /**
@@ -218,7 +231,7 @@ export class CareerEntityRepository {
       }
       rows[index] = { ...rows[index], ...clone(data), id, updated_date: timestamp };
       return rows[index];
-    }, { save: true });
+    }, { save: true, caller: `CareerEntityRepository.upsert:${entityName}` });
   }
 
   async delete(entityName, id) {
@@ -228,7 +241,7 @@ export class CareerEntityRepository {
       const index = rows.findIndex((row) => row.id === id);
       if (index >= 0) rows.splice(index, 1);
       return { success: true };
-    }, { save: true });
+    }, { save: true, caller: `CareerEntityRepository.delete:${entityName}` });
   }
 
   async bulkCreate(entityName, data = []) {
@@ -247,7 +260,7 @@ export class CareerEntityRepository {
         created.push(record);
       }
       return created;
-    }, { save: true });
+    }, { save: true, caller: `CareerEntityRepository.bulkCreate:${entityName}` });
   }
 
   async bulkUpdate(entityName, updates = []) {
@@ -272,7 +285,7 @@ export class CareerEntityRepository {
         }
       }
       return result;
-    }, { save: true });
+    }, { save: true, caller: `CareerEntityRepository.bulkUpdate:${entityName}` });
   }
 
   /**
@@ -287,9 +300,9 @@ export class CareerEntityRepository {
       const alreadyProcessed = await this.withCareer((career) => (
         Array.isArray(career.player?.processed_match_finalizations)
         && career.player.processed_match_finalizations.includes(options.idempotencyKey)
-      ), { save: false });
+      ), { save: false, caller: 'CareerEntityRepository.batch:idempotency' });
       if (alreadyProcessed) {
-        const player = await this.withCareer((career) => clone(career.player), { save: false });
+        const player = await this.withCareer((career) => clone(career.player), { save: false, caller: 'CareerEntityRepository.batch:player' });
         return { records: [], player, skipped: true, writes: 0 };
       }
     }
@@ -342,7 +355,7 @@ export class CareerEntityRepository {
         career.player = { ...career.player, processed_match_finalizations: nextKeys, updated_date: timestamp };
       }
       return { records, player: career.player, skipped: false, writes: 1 };
-    }, { save: true });
+    }, { save: true, caller: options.caller || 'CareerEntityRepository.batch' });
     return result;
   }
 
