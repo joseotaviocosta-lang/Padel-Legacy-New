@@ -11,7 +11,7 @@ import { finalizePracticeMatch } from '@/game-core';
 import { MATCH_TACTICS, getSetScoreString, SHOTS } from '@/lib/matchEngine';
 import { Slider } from '@/components/ui/slider';
 import { processMatchRelationships } from '@/lib/relationships';
-import { ensureStarterCoach } from '@/game-core/coachLifecycle';
+import { resolveActiveCoach } from '@/game-core/coachLifecycle';
 import LiveMatch from '@/components/matches/LiveMatch';
 import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBoundary.jsx';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
@@ -57,7 +57,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   // fazer com ela (continuar ou descartar), nunca abrindo direto no meio.
   const { checkpoint, loading: checkpointLoading, clear: clearCheckpoint } = useActiveMatchCheckpoint(careerId);
   const pendingResume = !checkpointLoading && checkpoint?.type === 'practice' && !resumeDecided;
-  useEffect(()=>{let active=true;(async()=>{if(!profile?.id)return;const result=await ensureStarterCoach(profile);if(!active)return;if(result.profile?.id&&result.profile.coach_id!==profile.coach_id){setProfile(result.profile);onProfileUpdate?.(result.profile);}setCoach(result.coach||null);})().catch(()=>{if(active)setCoach(null);});return()=>{active=false;};},[profile?.id,profile?.coach_id]);
+  useEffect(()=>{let active=true;(async()=>{if(!profile?.id)return;const result=await resolveActiveCoach(profile);if(!active)return;setCoach(result.coach||null);})().catch(()=>{if(active)setCoach(null);});return()=>{active=false;};},[profile?.id,profile?.coach_id]);
   const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
   const persistCustomTacticPlan=(shotWeights)=>{if(!profile?.id)return;localGame.entities.PlayerProfile.update(profile.id,{custom_tactic_plan:{baseTacticId:initialTacticId,shotWeights,updatedAt:new Date().toISOString()}}).catch(()=>{});};
   const changeShotWeight=(shot,value)=>{const next={...customShotWeights,[shot]:value};setCustomShotWeights(next);persistCustomTacticPlan(next);};

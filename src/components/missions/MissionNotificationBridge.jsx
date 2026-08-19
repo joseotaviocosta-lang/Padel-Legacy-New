@@ -110,8 +110,16 @@ export default function MissionNotificationBridge() {
         routeEvents.add(eventKey);
 
         const currentStep = getCurrentTutorialStep(profile.tutorial_onboarding);
+        // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte B/G):
+        // coaches-known virou kind DECISION (completionType domain_event) —
+        // sem este segundo caso, o exclude abaixo deixaria de valer para ele
+        // e uma simples visita a /coaches voltaria a completar a etapa
+        // (mesmo objectiveType 'visit_coaches' usado pelo ROUTE_OBJECTIVES
+        // genérico), reabrindo exatamente o bug que essa etapa existe para
+        // corrigir. Só afeta etapas cujo objectiveType colide com uma rota
+        // rastreada aqui — hoje, só coaches-known.
         const requiresExplicitConfirmation = currentStep?.objectiveType === objective
-          && currentStep?.completionType === 'confirm_understanding';
+          && (currentStep?.completionType === 'confirm_understanding' || currentStep?.kind === 'DECISION');
 
         await incrementMissionProgress(profile.id, objective, 1, profile.career_date, {
           triggerEventId: `route:${eventKey}`,

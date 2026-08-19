@@ -69,15 +69,19 @@ try {
     gate(`Etapa "${step.id}" tem kind conhecido`, VALID_KINDS.includes(step.kind));
   }
 
-  // ── 2) Composição exata bate com o design aprovado (docs/ONBOARDING_FLOW_3_1.md) ──
+  // ── 2) Composição exata bate com o design aprovado (docs/ONBOARDING_FLOW_3_1.md,
+  // docs/STARTER_COACH_FLOW.md) — coaches-known migrou de VISIT para DECISION
+  // no hotfix "Starter Coach Flow" (só conclui numa contratação real, nunca
+  // por visitar /coaches sozinho) — atualizado aqui de propósito, mesma
+  // propriedade real (nenhum id perdido, só reclassificado).
   const byKind = (kind) => TUTORIAL_STEPS.filter((step) => step.kind === kind).map((step) => step.id);
-  gate('VISIT = as 6 etapas de visita pura', byKind('VISIT').join(',') === [
-    'career-created', 'appearance-known', 'profile-reviewed', 'offers-reviewed', 'coaches-known', 'calendar-known',
+  gate('VISIT = as 5 etapas de visita pura (coaches-known virou DECISION)', byKind('VISIT').join(',') === [
+    'career-created', 'appearance-known', 'profile-reviewed', 'offers-reviewed', 'calendar-known',
   ].join(','));
   gate('ACTION = as 4 etapas de formulário/escolha salva', byKind('ACTION').join(',') === [
     'athlete-named', 'side-selected', 'difficulty-selected', 'style-selected',
   ].join(','));
-  gate('DECISION = escolher parceiro', byKind('DECISION').join(',') === ['partner-selected'].join(','));
+  gate('DECISION = escolher parceiro + escolher primeiro treinador', byKind('DECISION').join(',') === ['partner-selected', 'coaches-known'].join(','));
   gate('EVENT = as 3 etapas de evento de jogo real', byKind('EVENT').join(',') === [
     'first-training', 'tournament-registered', 'first-match',
   ].join(','));

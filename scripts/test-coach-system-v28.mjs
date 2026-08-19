@@ -13,9 +13,15 @@ const tournamentMatch = fs.readFileSync('src/components/tournaments/TournamentMo
 const checks = [
   ['catálogo ampliado', coaches.includes("['iniciante', 24]") && coaches.includes("['regional', 28]")],
   ['competências sem bônus negativos', coaches.includes('getCoachCompetencies') && coaches.includes('Math.max(1, Math.round')],
-  ['treinador inicial obrigatório', lifecycle.includes('ensureStarterCoach') && lifecycle.includes('coach_paid_by_club: true')],
+  // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte A):
+  // uma carreira nova NÃO deve mais receber um treinador contratado
+  // silenciosamente — auditoria confirmou que nenhum sistema exige um
+  // coach sempre presente. Estas duas checagens invertem o invariante
+  // antigo (mesma propriedade real: sem contratação fantasma), não o
+  // enfraquecem.
+  ['sem treinador inicial automático', !lifecycle.includes('ensureStarterCoach') && lifecycle.includes('resolveActiveCoach')],
   ['contrato e salário mensal', lifecycle.includes('coach_contract_end_date') && lifecycle.includes('coach_monthly_salary')],
-  ['demissão mantém treinador', lifecycle.includes('replaceWithStarterCoach')],
+  ['demissão não reatribui treinador automaticamente', !lifecycle.includes('replaceWithStarterCoach') && page.includes('coach_contract_status: \'terminated\'')],
   ['integração com comissão', staff.includes('Gerenciar treinador principal') && staff.includes('Líder da comissão')],
   ['mercado completo', page.includes("list('-reputation', 500)")],
   ['impacto real em partida treino', match.includes('_coachMatchBonus') && match.includes('getCoachEffects')],

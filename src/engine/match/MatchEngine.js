@@ -89,7 +89,7 @@ export function applyMatchTactic(prev, tacticValue, teamId = 'A') {
 }
 
 // Hotfix (docs/LIVE-COACH-MATCH-HOTFIX.md): `coach` costuma chegar por um
-// carregamento assíncrono (ensureStarterCoach) na tela que monta o LiveMatch.
+// carregamento assíncrono (resolveActiveCoach) na tela que monta o LiveMatch.
 // Como `liveCoach.coach` só é gravado uma vez, dentro do lazy initializer de
 // useState em createMatch, uma partida iniciada antes desse carregamento
 // terminar travava com `liveCoach.coach = null` para sempre — o técnico

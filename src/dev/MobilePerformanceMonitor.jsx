@@ -165,6 +165,13 @@ export default function MobilePerformanceMonitor() {
             <Row label="Tx rollback" value={transactionSnapshot.last?.rolledBack ? `sim · ${transactionSnapshot.last.rollbackReason || 'erro'}` : 'não'} />
             <Row label="Tx queue antes/depois" value={`${transactionSnapshot.last?.queueSizeBefore ?? 0}/${transactionSnapshot.last?.queueSizeAfter ?? 0}`} />
             <Row label="Tx total T/C/R/clean" value={`${transactionSnapshot.totals.transactions}/${transactionSnapshot.totals.commits}/${transactionSnapshot.totals.rollbacks}/${transactionSnapshot.totals.skippedCleanCommits}`} />
+            {transactionSnapshot.lastMultiDayAdvance && (
+              <>
+                <Row label="Multi-day pedido/processado" value={`${transactionSnapshot.lastMultiDayAdvance.requestedDays}/${transactionSnapshot.lastMultiDayAdvance.processedDays}`} />
+                <Row label="Multi-day restante/motivo" value={`${transactionSnapshot.lastMultiDayAdvance.remainingDays} / ${transactionSnapshot.lastMultiDayAdvance.stopReason || 'concluído'}`} />
+                <Row label="Multi-day tx/commits" value={`${transactionSnapshot.lastMultiDayAdvance.transactions}/${transactionSnapshot.lastMultiDayAdvance.physicalCommits}`} />
+              </>
+            )}
           </div>
 
           {storageSnapshot.operations.length > 0 && (

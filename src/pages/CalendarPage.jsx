@@ -207,7 +207,16 @@ export default function CalendarPage() {
     setAdvanceProgress({ current: 0, total: days });
     try {
       const current = await getFreshProfile();
+      const displayedStartDate = profile.career_date || CAREER_START_DATE;
+      // Reconciliamos a data visível antes de iniciar o lote. Se a página
+      // perdeu um evento de atualização, uma data já confirmada não pode
+      // parecer ter sido avançada por uma operação que processou zero dias.
+      if (current?.career_date && current.career_date !== displayedStartDate) {
+        applyAdvancedDate(current, { broadcast: false });
+        await new Promise((resolve) => requestAnimationFrame(() => resolve()));
+      }
       const result = await advanceCareerDays(current, days, {
+        displayedStartDate,
         onProgress: ({ current: processed, total, profile: progressedProfile }) => {
           setAdvanceProgress({ current: processed, total });
           applyAdvancedDate(progressedProfile, { broadcast: false });
@@ -220,9 +229,13 @@ export default function CalendarPage() {
       void finalizeCareerAdvanceRange(updated, result.rangeStartDate, updated.career_date)
         .then((finalProfile) => refreshAfterAdvance(finalProfile || updated))
         .catch((error) => console.warn('[Calendar] finalização global do avanço falhou', error));
-      const trainingsDone = (result.daily || []).filter((day) => day.automaticTraining).length;
+      const processedDays = result.processedDays ?? result.daysAdvanced ?? 0;
+      const trainingsDone = result.automaticTrainings ?? (result.daily || []).filter((day) => day.automaticTraining).length;
       const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
-      toast({ title: `${result.daysAdvanced} dia(s) processado(s)`, description: `${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}` });
+      toast({
+        title: `${processedDays} dia(s) processado(s)`,
+        description: `Solicitado: ${result.requestedDays ?? days} · Processado: ${processedDays} · ${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}`,
+      });
     } catch (error) {
       toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
     } finally {

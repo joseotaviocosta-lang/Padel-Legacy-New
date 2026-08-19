@@ -32,7 +32,13 @@
 // persistido, sempre lido ao vivo deste array — então, pelo mesmo
 // raciocínio do comentário de v9 acima, nenhuma migração de save é
 // necessária.
-export const TUTORIAL_VERSION = 10;
+//
+// v11 (Starter Coach Flow, docs/STARTER_COACH_FLOW.md): coaches-known
+// muda de VISIT/confirm_understanding para DECISION/domain_event — só
+// conclui contratando um treinador de verdade (uma carreira nova deixou
+// de receber um treinador contratado silenciosamente). Id e objectiveType
+// não mudaram, mesmo raciocínio de v10: nenhuma migração necessária.
+export const TUTORIAL_VERSION = 11;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,
@@ -125,10 +131,20 @@ export const TUTORIAL_STEPS = [
   }),
 
   // ── Fase C — Treinador ───────────────────────────────────────────────
-  step('coaches-known', 'visit_coaches', 'Conheça seu treinador principal', '/coaches', 'Desenvolvimento do atleta', 'confirm_understanding', {
-    explanation: 'Seu treinador melhora treinos e oferece orientações durante partidas.',
-    whyItMatters: 'A equipe técnica direciona a evolução e ajuda a corrigir fraquezas específicas.',
-    kind: 'VISIT',
+  // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte B/G):
+  // era VISIT/confirm_understanding — o jogador só precisava abrir /coaches
+  // para concluir, e uma carreira nova já chegava com um treinador
+  // contratado silenciosamente por trás. Agora é DECISION/domain_event: só
+  // conclui numa contratação real (hirePrimaryCoach dispara o
+  // incrementMissionProgress). objectiveType continua 'visit_coaches' de
+  // propósito — é a mesma chave já persistida em saves existentes; ver
+  // MissionNotificationBridge.jsx para o ajuste que impede a rota sozinha
+  // de completar isto de novo.
+  step('coaches-known', 'visit_coaches', 'Escolha seu primeiro treinador', '/coaches', 'Desenvolvimento do atleta', 'domain_event', {
+    actionLabel: 'Ver treinadores',
+    explanation: 'Compare treinadores por tier, especialidade, custo e benefícios reais, e contrate quem combina com sua carreira agora.',
+    whyItMatters: 'O treinador melhora treinos e orienta partidas ao vivo — a escolha é sua, não um padrão automático.',
+    kind: 'DECISION',
   }),
 
   // ── Fase D — Primeiro treino ─────────────────────────────────────────

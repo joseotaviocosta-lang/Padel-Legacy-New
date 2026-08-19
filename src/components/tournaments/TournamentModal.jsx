@@ -16,7 +16,7 @@ import { buildPartnershipMatchPatch, getActivePartnership } from '@/lib/partners
 import { getTeamRank, teamKey } from '@/lib/teamRanking';
 import { getSetScoreString } from '@/lib/matchEngine';
 import { getCoachEffects } from '@/lib/coaches';
-import { ensureStarterCoach } from '@/game-core/coachLifecycle';
+import { resolveActiveCoach } from '@/game-core/coachLifecycle';
 import { finalizeTournamentRun, prepareTournamentFinalization } from '@/game-core/tournamentLifecycle.js';
 import { createMatchEndProfiler, scheduleSecondaryMatchWork } from '@/game-core/matchFinalization.js';
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
@@ -151,14 +151,14 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // é só a prop recebida da página-pai (Tournaments.jsx/CareerHub.jsx),
       // que busca o perfil uma vez no mount e não escuta o avanço de dia feito
       // pelo cabeçalho global — pode estar com um career_date antigo mesmo
-      // que o storage já tenha avançado até a data desta rodada.
-      // `ensureStarterCoach` devolve a MESMA referência quando o jogador já
-      // tem treinador ativo (não relê o storage), então sem isto a fase da
-      // rodada (`getTournamentRunPhase`) era calculada com uma data errada e
-      // a rodada disponível hoje continuava aparecendo como "agendada".
+      // que o storage já tenha avançado até a data desta rodada. A releitura
+      // explícita acima é o que corrige isso; `resolveActiveCoach` só
+      // resolve o treinador ativo (se houver) para o bônus de partida e a
+      // fala do treinador — nunca cria um contrato (Starter Coach Flow,
+      // docs/STARTER_COACH_FLOW.md).
       const freshProfile = await localGame.entities.PlayerProfile.get(initialProfile.id).catch(() => initialProfile);
       if (!active) return;
-      const starter = await ensureStarterCoach(freshProfile);
+      const starter = await resolveActiveCoach(freshProfile);
       const loadedProfile = starter.profile || freshProfile;
       const loadedPartner = getPartnerBot(loadedProfile);
       const [rank, staffSnapshot] = await Promise.all([
@@ -753,7 +753,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         {phase === 'round_preparation' && currentMatch && (
           <div className="space-y-4">
             <MeetingHeader title={`Preparação — ${currentMatch.round}`} subtitle={`${formatDay(currentMatch.date)} · reunião breve entre rodadas`} />
-            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4"><p className="text-xs font-black">{coach?.name || profile.coach_name || 'Treinador principal'}</p><p className="mt-1 text-xs text-muted-foreground">“{coachSuggestion.text}”</p></div>
+            {/* Hotfix "Starter Coach Flow": sem treinador principal contratado,
+                a sugestão tática (buildTournamentCoachSuggestion, independente
+                de coach) fica atribuída à comissão técnica, não a um
+                "Treinador principal" fictício. */}
+            <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4"><p className="text-xs font-black">{coach?.name || 'Comissão técnica'}</p><p className="mt-1 text-xs text-muted-foreground">“{coachSuggestion.text}”</p></div>
             {run.lastMatchStats && <LastMatchStats stats={run.lastMatchStats} />}
             <OpponentAnalysis analysis={analysis} compact />
             <div className="rounded-xl bg-secondary/30 p-3 text-xs"><span className="text-muted-foreground">Plano atual: </span><strong>{TOURNAMENT_STRATEGY_OPTIONS.find((item) => item.id === run.strategy?.id)?.label || 'Jogo equilibrado'}</strong></div>
@@ -865,7 +869,11 @@ function MeetingHeader({ title, subtitle }) { return <div><p className="text-[10
 function TeamVoices({ coach, partner, analysis, staff, profile }) {
   const physical = staff.find((member) => member.staff_type === 'physical_trainer');
   const physio = staff.find((member) => member.staff_type === 'physio');
-  return <div className="space-y-2"><Voice icon={Brain} name={coach?.name || profile.coach_name || 'Treinador principal'} text={analysis.style.toLowerCase().includes('agress') ? 'Eles vão tentar encurtar os pontos. Precisamos controlar a primeira bola.' : 'Vamos construir o jogo com disciplina e observar os padrões iniciais.'} /><Voice icon={Users} name={partner?.name || 'Parceiro'} text={analysis.strengths.some((item) => item.key === 'smash') ? 'Podemos usar bastante lob e fazê-los trabalhar longe da rede.' : 'Quero começar com um plano claro e ajustar juntos.'} />{physical && <Voice icon={Dumbbell} name={physical.staff_name} text={`Energia em ${profile.energy || 0}%. A carga do torneio será acompanhada dia a dia.`} />}{physio && <Voice icon={HeartPulse} name={physio.staff_name} text={`Fadiga em ${normalizeFatigue(profile.fatigue)}%. Não haverá recuperação automática total entre rodadas.`} />}</div>;
+  // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte A): sem
+  // treinador principal contratado, não fabricar uma fala atribuída a um
+  // "Treinador principal" que não existe — a voz do técnico só aparece
+  // quando há um `coach` real.
+  return <div className="space-y-2">{coach && <Voice icon={Brain} name={coach.name} text={analysis.style.toLowerCase().includes('agress') ? 'Eles vão tentar encurtar os pontos. Precisamos controlar a primeira bola.' : 'Vamos construir o jogo com disciplina e observar os padrões iniciais.'} />}<Voice icon={Users} name={partner?.name || 'Parceiro'} text={analysis.strengths.some((item) => item.key === 'smash') ? 'Podemos usar bastante lob e fazê-los trabalhar longe da rede.' : 'Quero começar com um plano claro e ajustar juntos.'} />{physical && <Voice icon={Dumbbell} name={physical.staff_name} text={`Energia em ${profile.energy || 0}%. A carga do torneio será acompanhada dia a dia.`} />}{physio && <Voice icon={HeartPulse} name={physio.staff_name} text={`Fadiga em ${normalizeFatigue(profile.fatigue)}%. Não haverá recuperação automática total entre rodadas.`} />}</div>;
 }
 
 function Voice({ icon: Icon, name, text }) { return <div className="flex gap-3 rounded-xl bg-secondary/25 p-3"><Icon className="mt-0.5 h-4 w-4 shrink-0 text-primary" /><div><p className="text-xs font-black">{name}</p><p className="mt-1 text-xs text-muted-foreground">“{text}”</p></div></div>; }

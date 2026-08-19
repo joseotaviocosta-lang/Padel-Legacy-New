@@ -161,3 +161,15 @@ Também permanecem obrigatórias as suítes mobile anteriores, sistemas de carre
 6. Rotação portrait/landscape: confirmar overlay e app estáveis.
 
 Somente o aparelho físico pode validar os novos tempos reais. Após M3.7, parar e aguardar esses números antes de qualquer nova otimização.
+
+## Resultado final de validação e artefatos
+
+- `npm run lint`: passou.
+- `npm run typecheck`: executado; permanece bloqueado pela dívida global preexistente de tipagem do projeto. O único erro novo inicialmente detectado na M3.7 (retorno booleano de unsubscribe) foi corrigido; a filtragem dos arquivos/linhas novos da fase não encontrou regressão nova.
+- `npm run build`: passou, com 3.991 módulos transformados.
+- Todas as suítes mobile M1–M3.7 e as suítes de domínio exigidas passaram, incluindo determinismo, atomicidade, recuperação, calendário, lesões/fadiga, ranking, comunicações, parcerias, técnicos, lifecycle de partida/torneio e beta readiness.
+- Windows release: `src-tauri/target/release/bundle/msi/Padel Legacy_0.9.0_x64_en-US.msi` e `src-tauri/target/release/bundle/nsis/Padel Legacy_0.9.0_x64-setup.exe`.
+- Android universal release assinado: `src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-signed.apk`.
+- Tamanho do APK: 53.442.512 bytes.
+- SHA-256 do APK: `F310E242E4C25A2FD3899DAA79B28B16D0CC0BE9241F4024A3AC5023EA716E15`.
+- Assinatura verificada com sucesso por `apksigner` nos esquemas v2 e v3; certificado `CN=Android Debug`, SHA-256 `2924f0d2cf44e8fa45c9704088dc950eecf3a65825487acc647846b3417e90a6`.

@@ -14,10 +14,17 @@ function seeded01(key) {
   return (hashString(key) % 100000) / 100000;
 }
 
-export function getCareerEconomyStage(profile = {}) {
-  const level = Math.max(1, Number(profile.career_level) || 1);
-  const rank = Math.max(1, Number(profile.ranking_position || profile.world_rank || 2000) || 2000);
-  const reputation = Math.max(0, Number(profile.reputation || profile.fan_appeal || 0) || 0);
+// P0 hotfix (docs/CAREER_NULL_SAFETY_HOTFIX.md): `profile = {}` como valor
+// padrão só cobre `undefined` — um `profile` explicitamente `null` (comum
+// no primeiro render de qualquer tela que ainda não terminou de carregar,
+// já que hooks como useMemo rodam antes de qualquer gate de `loading`)
+// passava direto e quebrava em `profile.career_level`. `profile || {}`
+// cobre os dois casos.
+export function getCareerEconomyStage(profile) {
+  const p = profile || {};
+  const level = Math.max(1, Number(p.career_level) || 1);
+  const rank = Math.max(1, Number(p.ranking_position || p.world_rank || 2000) || 2000);
+  const reputation = Math.max(0, Number(p.reputation || p.fan_appeal || 0) || 0);
   if (level >= 35 && rank <= 40 && reputation >= 65) return 'elite';
   if (level >= 22 && rank <= 150 && reputation >= 35) return 'international';
   if (level >= 12 && rank <= 500 && reputation >= 15) return 'professional';

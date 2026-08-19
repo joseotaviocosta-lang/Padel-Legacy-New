@@ -85,7 +85,7 @@ export default function LiveMatch({
   }, [state, onCheckpoint]);
 
   // Hotfix técnico (docs/LIVE-COACH-MATCH-HOTFIX.md): `coach` normalmente vem
-  // de um carregamento assíncrono (ensureStarterCoach) na tela de config, que
+  // de um carregamento assíncrono (resolveActiveCoach) na tela de config, que
   // roda em paralelo ao primeiro render deste componente. Como o estado do
   // motor só grava o treinador uma vez, dentro do lazy initializer de
   // useState acima, uma partida cujo primeiro render aconteceu antes desse

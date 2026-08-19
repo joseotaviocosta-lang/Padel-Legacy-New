@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { COACHES_DATA, canHireCoach, getCoachEffects } from '@/lib/coaches.js';
+import { incrementMissionProgress } from '@/lib/padel.js';
 
 function normalizeName(value) { return String(value || '').trim().toLocaleLowerCase('pt-BR'); }
 function addMonths(date, months) {
@@ -33,35 +34,19 @@ export function isCoachActive(profile) {
   return Boolean(profile?.coach_id && !['terminated','expired'].includes(profile?.coach_contract_status));
 }
 
-export async function ensureStarterCoach(profile) {
-  if (!profile?.id) return { profile, coach:null, created:false };
+// Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md): uma carreira
+// nova não deve receber um treinador contratado silenciosamente. Esta
+// função só RESOLVE um treinador já ativo (se houver) — nunca cria um
+// contrato. Auditoria confirmou que nenhum sistema (treino, partidas,
+// Live Coach, painel de comissão, fechamento mensal) exige um coach
+// sempre presente — todos já tratam `coach: null`/`coach_id` ausente
+// corretamente (`coach ? x : 0`), então não existe necessidade técnica de
+// um "fallback" a preservar internamente.
+export async function resolveActiveCoach(profile) {
+  if (!profile?.id || !isCoachActive(profile)) return { profile, coach: null };
   const coaches = await ensureCoachCatalog();
-  if (isCoachActive(profile)) {
-    const current = coaches.find(coach => coach.id === profile.coach_id) || await localGame.entities.Coach.get(profile.coach_id).catch(() => null);
-    if (current) return { profile, coach:current, created:false };
-  }
-  const starter = coaches
-    .filter(coach => coach.tier === 'iniciante')
-    .sort((a,b) => (a.monthly_cost || 9999) - (b.monthly_cost || 9999) || (b.reputation || 0) - (a.reputation || 0))[0] || coaches[0];
-  if (!starter) return { profile, coach:null, created:false };
-  const currentDate = profile.career_date || '2026-01-01';
-  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-    coach_id: starter.id,
-    coach_name: starter.name,
-    coach_hired_date: currentDate,
-    coach_contract_started_date: currentDate,
-    coach_contract_end_date: addMonths(currentDate, 12),
-    coach_contract_months: 12,
-    coach_monthly_salary: 0,
-    coach_signing_cost: 0,
-    coach_contract_status: 'active',
-    coach_paid_by_club: true,
-    coach_trust: Number(profile.coach_trust) || 55,
-    coach_relationship_months: Number(profile.coach_relationship_months) || 0,
-    coach_tactical_understanding: Number(profile.coach_tactical_understanding) || 25,
-    coach_last_report_date: profile.coach_last_report_date || null,
-  });
-  return { profile:updated, coach:starter, created:true };
+  const current = coaches.find(coach => coach.id === profile.coach_id) || await localGame.entities.Coach.get(profile.coach_id).catch(() => null);
+  return { profile, coach: current || null };
 }
 
 export async function hirePrimaryCoach(profile, coach, months = 12) {
@@ -73,7 +58,7 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
   if ((Number(profile.coins) || 0) < signing) throw new Error(`São necessárias ${signing} moedas para o bônus de assinatura.`);
   const date = profile.career_date || '2026-01-01';
   const effects = getCoachEffects(coach, profile);
-  return localGame.entities.PlayerProfile.update(profile.id, {
+  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: Math.max(0, (Number(profile.coins) || 0) - signing),
     coach_id: coach.id,
     coach_name: coach.name,
@@ -93,15 +78,19 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
     coach_strategy_bonus: effects?.strategyBonus || 0,
     coach_partnership_bonus: effects?.partnershipBonus || 0,
   });
-}
-
-export async function replaceWithStarterCoach(profile) {
-  if (!profile?.id) return { profile, coach:null };
-  const cleared = await localGame.entities.PlayerProfile.update(profile.id, {
-    coach_id:null, coach_name:null, coach_monthly_salary:0, coach_contract_status:'terminated', coach_paid_by_club:false,
-    coach_trust:45, coach_relationship_months:0, coach_tactical_understanding:15,
-  });
-  return ensureStarterCoach(cleared);
+  // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte B/G): a
+  // etapa coaches-known do tutorial virou DECISION — só conclui numa
+  // contratação real, nunca por visitar /coaches. objectiveType continua
+  // 'visit_coaches' de propósito (não renomeado): é a mesma chave que a
+  // linha de missão do tutorial já tinha persistida antes desta fase, e
+  // incrementMissionProgress exige objective_type idêntico ao da missão
+  // já gravada mesmo quando um missionId é passado — trocar o nome exigiria
+  // uma migração de save que esta fase não precisa.
+  // allowDuringHydration: true — contratar é uma ação explícita do jogador
+  // (clique em "Contratar"), mesmo padrão já usado por completeTutorialStep
+  // para os botões de confirmação do Guia.
+  await incrementMissionProgress(profile.id, 'visit_coaches', 1, date, { onlyMissionTypes: ['tutorial'], allowDuringHydration: true }).catch(() => {});
+  return updated;
 }
 
 export async function renewPrimaryCoach(profile, coach, months = 12) {

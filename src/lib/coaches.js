@@ -3,6 +3,7 @@
 
 import { PLAY_STYLES, ATTRIBUTES } from '@/lib/padel';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
+import { getCareerEconomyStage } from '@/lib/sportsEconomyV26.js';
 
 export const COACH_TIERS = {
   iniciante: { label: 'Iniciante', color: 'text-slate-400', bg: 'bg-slate-500/15', border: 'border-slate-500/30', costMult: 1 },
@@ -952,6 +953,36 @@ export function buildCoachDiscovery(coaches, profile, context = {}) {
   const recommendedIds = new Set(available.slice(0, 5).map((item) => item.coach.id));
   const valueIds = new Set([...available].sort((a, b) => b.costBenefit - a.costBenefit || b.overall - a.overall).slice(0, 3).map((item) => item.coach.id));
   return evaluated.map((item) => ({ ...item, recommended: recommendedIds.has(item.coach.id), bestValue: valueIds.has(item.coach.id) }));
+}
+
+// Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte C-F): uma
+// carreira nova já tem 24 treinadores "disponíveis" de uma vez (todo o
+// tier iniciante, sem nada os bloqueando) — dados reais medidos contra o
+// catálogo real de 118. buildCoachDiscovery/evaluateCoachForCareer/
+// getCoachAvailability continuam intactos (reutilizados aqui, não
+// duplicados) — isto só reduz quantas opções são APRESENTADAS, nunca o
+// catálogo em si (COACH_MARKET != COACH_CATALOG). Reaproveita
+// getCareerEconomyStage (já usado pelo mercado de patrocinadores em
+// sportsEconomyV26.js) em vez de inventar um segundo conceito de estágio
+// de carreira.
+const COACH_MARKET_STAGE_LIMITS = { beginner: 8, regional: 10, professional: 12, international: 14, elite: 16 };
+
+export function buildCoachMarket(coaches, profile, context = {}) {
+  const discovery = buildCoachDiscovery(coaches, profile, context);
+  const available = discovery.filter((item) => item.availability.available);
+  const locked = discovery.filter((item) => !item.availability.available);
+  const highlighted = available.filter((item) => item.recommended || item.bestValue);
+  const rest = available.filter((item) => !item.recommended && !item.bestValue);
+  const stage = getCareerEconomyStage(profile);
+  const cap = COACH_MARKET_STAGE_LIMITS[stage] || COACH_MARKET_STAGE_LIMITS.beginner;
+  return {
+    stage,
+    cap,
+    highlighted,
+    curated: [...highlighted, ...rest].slice(0, cap),
+    availableCount: available.length,
+    locked,
+  };
 }
 
 export function filterCoachDiscovery(items, { status = 'all', specialty = 'all', search = '' } = {}) {

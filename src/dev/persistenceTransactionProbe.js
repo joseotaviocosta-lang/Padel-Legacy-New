@@ -7,6 +7,7 @@
 const totals = createEmptyTotals();
 let activeTransaction = null;
 let lastTransaction = null;
+let lastMultiDayAdvance = null;
 let sequence = 0;
 let activeStage = null;
 
@@ -130,10 +131,29 @@ export function getPersistenceTransactionSnapshot() {
       callers: { ...lastTransaction.callers },
       stages: { ...lastTransaction.stages },
     } : null,
+    lastMultiDayAdvance: lastMultiDayAdvance ? { ...lastMultiDayAdvance } : null,
   };
+}
+
+export function recordMultiDayAdvanceResult(result = {}) {
+  lastMultiDayAdvance = {
+    requestedDays: Math.max(0, Number(result.requestedDays) || 0),
+    processedDays: Math.max(0, Number(result.processedDays) || 0),
+    remainingDays: Math.max(0, Number(result.remainingDays) || 0),
+    stopReason: result.stopReason ? String(result.stopReason) : null,
+    transactions: Math.max(0, Number(result.transactions) || 0),
+    physicalCommits: Math.max(0, Number(result.physicalCommits) || 0),
+    initialDate: result.initialDate || null,
+    finalDate: result.finalDate || null,
+    displayedStartDate: result.displayedStartDate || null,
+    automaticTrainings: Math.max(0, Number(result.automaticTrainings) || 0),
+    at: Date.now(),
+  };
+  return { ...lastMultiDayAdvance };
 }
 
 export function resetPersistenceTransactionStats() {
   Object.assign(totals, createEmptyTotals());
   lastTransaction = null;
+  lastMultiDayAdvance = null;
 }

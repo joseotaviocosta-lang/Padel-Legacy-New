@@ -142,6 +142,9 @@
     "test:annual-career-report": "node scripts/test-annual-career-report-rc.mjs",
     "test:coach-discovery": "node scripts/test-coach-discovery-rc.mjs",
     "test:coach-selection-clarity": "node scripts/test-coach-selection-clarity.mjs",
+    "test:starter-coach-flow": "node scripts/test-starter-coach-flow.mjs",
+    "test:coach-market-curation": "node scripts/test-coach-market-curation.mjs",
+    "test:career-null-safety": "node scripts/test-career-null-safety.mjs",
     "test:match-finalization-performance": "node scripts/benchmark-match-finalization-rc.mjs",
     "test:project-cleanup": "node scripts/test-project-cleanup-rc.mjs",
     "test:fatigue-integrity": "node scripts/test-fatigue-integrity-rc.mjs",
@@ -190,7 +193,8 @@
     "test:mobile-performance-device": "node scripts/test-mobile-performance-m3-4.mjs",
     "test:mobile-performance-m3-5": "node scripts/test-mobile-performance-m3-5.mjs",
     "test:mobile-storage-m3-6": "node scripts/test-mobile-storage-m3-6.mjs",
-    "test:mobile-persistence-m3-7": "node scripts/test-mobile-persistence-m3-7.mjs"
+    "test:mobile-persistence-m3-7": "node scripts/test-mobile-persistence-m3-7.mjs",
+    "test:mobile-multi-day-m3-7-1": "node scripts/test-mobile-multi-day-hotfix-m3-7-1.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

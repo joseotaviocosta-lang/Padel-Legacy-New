@@ -1,12 +1,13 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Banknote, Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
+import { Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatCard, StatusBadge, Surface } from '@/components/design-system';
+import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatusBadge, Surface } from '@/components/design-system';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
 import {
   buildCoachDiscovery,
+  buildCoachMarket,
   calculateAffinity,
   COACH_SPECIALTY_INFO,
   COACH_TIERS,
@@ -16,7 +17,7 @@ import {
   sortCoachDiscovery,
 } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
-import { ensureStarterCoach, hirePrimaryCoach, renewPrimaryCoach, replaceWithStarterCoach } from '@/game-core/coachLifecycle';
+import { hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach } from '@/game-core/coachLifecycle';
 
 const STATUS_FILTERS = [
   ['all', 'Todos'],
@@ -50,9 +51,14 @@ export default function Coaches() {
   // buildCoachDiscovery/filterCoachDiscovery/sortCoachDiscovery nem inventar
   // nenhum critério de recomendação novo.
   const [visibleCount, setVisibleCount] = useState(12);
+  // Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte C-F): a visão
+  // padrão (sem filtro/busca tocados) mostra um mercado curado por estágio
+  // de carreira em vez do total de opções "disponíveis" de uma vez; este
+  // link reverte para a lista completa de sempre.
+  const [marketExpanded, setMarketExpanded] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => { setVisibleCount(12); }, [statusFilter, specialtyFilter, sortOrder, search]);
+  useEffect(() => { setVisibleCount(12); setMarketExpanded(false); }, [statusFilter, specialtyFilter, sortOrder, search]);
 
   useEffect(() => { load(); }, []);
 
@@ -69,8 +75,8 @@ export default function Coaches() {
     try {
       const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
       const rawProfile = profiles?.[0] || null;
-      const starterResult = rawProfile ? await ensureStarterCoach(rawProfile) : { profile: rawProfile, coach: null };
-      const activeProfile = starterResult.profile || rawProfile;
+      const resolved = rawProfile ? await resolveActiveCoach(rawProfile) : { profile: rawProfile, coach: null };
+      const activeProfile = resolved.profile || rawProfile;
       const [dbCoaches, transactions] = activeProfile ? await Promise.all([
         localGame.entities.Coach.list('-reputation', 500),
         localGame.entities.FinancialTransaction.filter({ profile_id: activeProfile.id }),
@@ -78,7 +84,7 @@ export default function Coaches() {
       const latestClose = (transactions || [])
         .filter((entry) => entry.type === 'monthly_close')
         .sort((a, b) => String(b.month || '').localeCompare(String(a.month || '')))[0];
-      const hired = starterResult.coach || (dbCoaches || []).find((coach) => coach.id === activeProfile?.coach_id) || null;
+      const hired = resolved.coach || (dbCoaches || []).find((coach) => coach.id === activeProfile?.coach_id) || null;
       setProfile(activeProfile);
       setCoaches(dbCoaches || []);
       setHiredCoach(hired);
@@ -97,6 +103,21 @@ export default function Coaches() {
     profile,
     { monthlyIncome },
   ), [coaches, hiredCoach?.id, monthlyIncome, profile]);
+
+  // Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte C/E/F): reaproveita
+  // buildCoachDiscovery inteiro (buildCoachMarket só embrulha) — nenhum
+  // critério de elegibilidade/recomendação novo, só um recorte por estágio
+  // de carreira sobre o mesmo resultado.
+  const market = useMemo(() => buildCoachMarket(
+    coaches.filter((coach) => coach.id !== hiredCoach?.id),
+    profile,
+    { monthlyIncome },
+  ), [coaches, hiredCoach?.id, monthlyIncome, profile]);
+  const isDefaultMarketView = statusFilter === 'available' && specialtyFilter === 'all' && !search && !marketExpanded;
+  // `curated` é construído como [...highlighted, ...rest].slice(0, cap) —
+  // fatiar a partir do tamanho de `highlighted` separa os dois grupos sem
+  // recomputar nada.
+  const marketRest = useMemo(() => market.curated.slice(market.highlighted.length), [market]);
 
   const visible = useMemo(() => sortCoachDiscovery(filterCoachDiscovery(discovery, {
     status: statusFilter,
@@ -130,6 +151,14 @@ export default function Coaches() {
       setHiredCoach(coach);
       setSelected(null);
       toast({ title: 'Treinador contratado', description: `${coach.name} assume a dupla por 12 meses, com salário mensal de ${updated.coach_monthly_salary} moedas.` });
+      // Hotfix "Starter Coach Flow" / Single Source of Truth
+      // (docs/STARTER_COACH_FLOW.md): coaches-known agora só conclui numa
+      // contratação real (ver hirePrimaryCoach) — Home/Guia precisam saber
+      // imediatamente, mesmo padrão já usado pelos handlers de Missions.jsx.
+      if (typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+        window.dispatchEvent(new CustomEvent('padel:onboarding-refresh', { detail: { completedStepId: 'coaches-known' } }));
+        window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile: updated } }));
+      }
     } catch (error) {
       toast({ title: 'Não foi possível contratar', description: error?.message || 'Verifique os requisitos e o saldo.', variant: 'destructive' });
     }
@@ -138,13 +167,20 @@ export default function Coaches() {
   async function handleFire() {
     if (!profile || !hiredCoach) return;
     try {
-      const result = await replaceWithStarterCoach(profile);
-      setProfile(result.profile);
-      setHiredCoach(result.coach);
+      // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte A):
+      // demitir deixa o jogador sem treinador — nada reatribui um substituto
+      // automaticamente (isso era exatamente o problema relatado no QA).
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+        coach_id: null, coach_name: null, coach_monthly_salary: 0, coach_signing_cost: 0,
+        coach_contract_status: 'terminated', coach_paid_by_club: false,
+        coach_trust: 45, coach_relationship_months: 0, coach_tactical_understanding: 15,
+      });
+      setProfile(updated);
+      setHiredCoach(null);
       setSelected(null);
-      toast({ title: 'Treinador substituído', description: `${hiredCoach.name} deixou a equipe. ${result.coach?.name || 'O treinador de formação do clube'} assume temporariamente.` });
+      toast({ title: 'Treinador dispensado', description: `${hiredCoach.name} deixou a equipe. Escolha um novo treinador quando quiser.` });
     } catch (error) {
-      toast({ title: 'Falha ao substituir', description: error?.message || 'Tente novamente.', variant: 'destructive' });
+      toast({ title: 'Falha ao dispensar', description: error?.message || 'Tente novamente.', variant: 'destructive' });
     }
   }
 
@@ -182,14 +218,19 @@ export default function Coaches() {
           </>}
         />
 
-        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Caixa atual" value={currency(profile?.coins)} detail="saldo para assinatura" icon={Wallet} tone="brand" />
-          <StatCard label="Receita mensal" value={monthlyIncome ? currency(monthlyIncome) : '—'} detail={monthlyIncome ? 'último fechamento' : 'ainda sem fechamento'} icon={Banknote} tone="success" />
-          <StatCard label="Confiança" value={`${trust}%`} detail="relação com o técnico" icon={Handshake} tone={trust >= 70 ? 'success' : 'warning'} />
-          <StatCard label="Afinidade atual" value={`${affinityCurrent}%`} detail="compatibilidade esportiva" icon={Brain} tone="info" />
-        </div>
+        {/* Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte D/12/13): os
+            4 StatCards grandes viraram uma única linha compacta de
+            indicadores — a página não precisa de quase uma tela inteira
+            para mostrar caixa/técnico/confiança/afinidade. Sem treinador,
+            mostra "—" em vez de fingir que confiança/afinidade existem. */}
+        <Surface className="flex flex-wrap items-center gap-x-5 gap-y-1.5 px-4 py-3 text-xs">
+          <span className="flex items-center gap-1.5 font-bold"><Wallet className="h-3.5 w-3.5 text-primary shrink-0" /> {currency(profile?.coins)}</span>
+          <span className="flex items-center gap-1.5 font-bold"><UserCheck className="h-3.5 w-3.5 text-primary shrink-0" /> {hiredCoach ? hiredCoach.name : 'Nenhum treinador'}</span>
+          <span className="flex items-center gap-1.5 font-bold"><Handshake className="h-3.5 w-3.5 text-primary shrink-0" /> Confiança {hiredCoach ? `${trust}%` : '—'}</span>
+          <span className="flex items-center gap-1.5 font-bold"><Brain className="h-3.5 w-3.5 text-primary shrink-0" /> Afinidade {hiredCoach ? `${affinityCurrent}%` : '—'}</span>
+        </Surface>
 
-        {hiredCoach && (
+        {hiredCoach ? (
           <Surface tone="brand" className="p-4">
             <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 font-black text-primary">{(hiredCoach.name || '?')[0]}</div>
@@ -203,10 +244,18 @@ export default function Coaches() {
                 <button type="button" onClick={() => setSelected(hiredCoach)} className="rounded-xl bg-primary/10 px-3 py-2 text-[11px] font-black text-primary hover:bg-primary/15">Ver detalhes</button>
               </div>
             </div>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              <div><p className="mb-1 text-[9px] font-bold uppercase text-muted-foreground">Confiança</p><ProgressBar value={trust} tone={trust >= 70 ? 'success' : 'warning'} /></div>
-              <div><p className="mb-1 text-[9px] font-bold uppercase text-muted-foreground">Entendimento tático</p><ProgressBar value={tactical} tone="info" /></div>
+            <div className="mt-3">
+              <p className="mb-1 text-[9px] font-bold uppercase text-muted-foreground">Entendimento tático</p>
+              <ProgressBar value={tactical} tone="info" />
             </div>
+          </Surface>
+        ) : (
+          <Surface className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-[10px] font-black uppercase tracking-wide text-muted-foreground">Técnico principal</p>
+              <p className="mt-0.5 text-sm font-black">Nenhum contratado</p>
+            </div>
+            <span className="rounded-xl bg-primary/10 px-3 py-2 text-center text-[11px] font-black text-primary">Escolha um treinador abaixo</span>
           </Surface>
         )}
 
@@ -239,7 +288,50 @@ export default function Coaches() {
           </div>
         </Surface>
 
-        {visible.length === 0 ? (
+        {isDefaultMarketView ? (
+          // Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte 7/8/9/15):
+          // mercado curado por padrão — "Recomendados" (o que buildCoachDiscovery
+          // já flagava recommended/bestValue) + "Outras opções" até o teto do
+          // estágio de carreira, em vez do total "disponível" de uma vez
+          // (24 numa carreira nova, medido de verdade contra o catálogo real).
+          <>
+            {market.highlighted.length > 0 && (
+              <section className="space-y-3">
+                <div>
+                  <h2 className="text-lg font-black">Recomendados para você</h2>
+                  <p className="text-xs text-muted-foreground">Melhor combinação de afinidade, nível e custo-benefício para sua carreira agora.</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {market.highlighted.map((evaluation) => (
+                    <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
+                  ))}
+                </div>
+              </section>
+            )}
+            {marketRest.length > 0 && (
+              <section className="space-y-3">
+                <div>
+                  <h2 className="text-lg font-black">Outras opções disponíveis</h2>
+                  <p className="text-xs text-muted-foreground">Também elegíveis agora, fora da recomendação principal.</p>
+                </div>
+                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                  {marketRest.map((evaluation) => (
+                    <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
+                  ))}
+                </div>
+              </section>
+            )}
+            {market.availableCount > market.cap && (
+              <button
+                type="button"
+                onClick={() => setMarketExpanded(true)}
+                className="mx-auto block rounded-xl border border-border/60 bg-secondary/30 px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground"
+              >
+                Ver mercado completo ({market.availableCount} disponíveis no total)
+              </button>
+            )}
+          </>
+        ) : visible.length === 0 ? (
           <EmptyState icon={Users} eyebrow="Mercado de técnicos" title="Nenhum profissional neste recorte" description="Ajuste os filtros para ver outras opções. Técnicos bloqueados continuam acessíveis no filtro correspondente." compact />
         ) : sections.map((section) => section.items.length > 0 && (
           <section key={section.id} className="space-y-3">
@@ -247,7 +339,7 @@ export default function Coaches() {
               <h2 className="text-lg font-black">{section.title}</h2>
               <p className="text-xs text-muted-foreground">{section.description} · {section.items.length} resultado{section.items.length === 1 ? '' : 's'}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2">
+            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {section.items.slice(0, visibleCount).map((evaluation) => (
                 <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
               ))}

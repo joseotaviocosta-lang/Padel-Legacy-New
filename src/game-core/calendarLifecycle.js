@@ -1,4 +1,4 @@
-import { advanceDay, CAREER_START_DATE, addDays } from '@/lib/career';
+import { advanceDay, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { processGameStateDay } from './gameStateLifecycle';
 import { getInjuryStatus } from './injuryRecoveryLifecycle';
 import { isInjured } from '@/lib/padel';
@@ -11,6 +11,7 @@ import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import { restoreCareerSnapshotOnFailure } from './careerAdvanceTransaction.js';
 import { buildTournamentRecoverySession, shouldBlockCareerAdvanceForMatchRecovery } from './tournamentMatchLifecycle.js';
 import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { getPersistenceTransactionSnapshot, recordMultiDayAdvanceResult } from '@/dev/persistenceTransactionProbe.js';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
 
@@ -209,15 +210,28 @@ export function finalizeCareerAdvanceRange(profile, previousDate, currentDate, {
 }
 
 
-export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalEvent = true, onProgress } = {}) {
+function getMultiDayStopReason(blockedBy) {
+  if (!blockedBy) return null;
+  if (blockedBy.event_type === 'tournament') return 'upcomingTournament';
+  if (blockedBy.error) return blockedBy.code === 'advance_day_blocked' ? 'pendingDecision' : 'transactionError';
+  if (blockedBy.requires_decision) return 'pendingDecision';
+  return 'upcomingCriticalEvent';
+}
+
+export async function advanceCareerDays(profile, days = 7, {
+  stopBeforeCriticalEvent = true,
+  onProgress,
+  displayedStartDate = null,
+} = {}) {
   const target = Math.max(1, Math.min(28, Number(days) || 1));
   let current = profile;
   const rangeStartDate = profile?.career_date || CAREER_START_DATE;
-  let daysAdvanced = 0;
+  let processedDays = 0;
   const daily = [];
   let blockedBy = null;
+  const countersBefore = getPersistenceTransactionSnapshot().totals;
 
-  while (daysAdvanced < target) {
+  while (processedDays < target) {
     // Recarrega o perfil antes de cada passo. Isso evita trabalhar com uma
     // cópia antiga após os sistemas diários persistirem energia, lesão, data
     // ou decisões no repositório da carreira.
@@ -228,7 +242,7 @@ export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalE
     }
     try {
       const before = current;
-      const dayNumber = daysAdvanced + 1;
+      const dayNumber = processedDays + 1;
       const dayResult = await gameRepository.withPersistenceTransaction(`advance-day-range:${dayNumber}`, async () => {
         const next = await advanceCareerDay(current, {
           deferGameState: true,
@@ -250,7 +264,9 @@ export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalE
       });
       current = dayResult.profile;
       const dailyProfile = dayResult.dayProfile;
-      daysAdvanced = dayNumber;
+      // A Promise transacional só resolve depois do commit físico. O contador
+      // nunca é derivado do índice do loop nem incrementado antes da confirmação.
+      processedDays = dayNumber;
       daily.push({
         date: dailyProfile.career_date,
         energy: dailyProfile.energy,
@@ -259,18 +275,56 @@ export async function advanceCareerDays(profile, days = 7, { stopBeforeCriticalE
         rested: Boolean(dailyProfile.last_day_was_rest),
         xpGained: Math.max(0, Number(dailyProfile.xp || 0) - Number(before.xp || 0)),
       });
-      onProgress?.({ current: daysAdvanced, total: target, profile: current, day: daily[daily.length - 1] });
+      onProgress?.({ current: processedDays, total: target, profile: current, day: daily[daily.length - 1] });
       if (dayResult.upcomingBlock) {
         blockedBy = dayResult.upcomingBlock;
         break;
       }
     } catch (error) {
-      blockedBy = { title: error?.message || 'Decisão obrigatória', error: true };
+      blockedBy = {
+        ...(error?.blockingEvent || {}),
+        title: error?.blockingEvent?.title || error?.message || 'Decisão obrigatória',
+        code: error?.code || 'advance_day_failed',
+        error: true,
+      };
       break;
     }
   }
 
-  return { profile: current, daysAdvanced, blockedBy, daily, rangeStartDate };
+  // Confere a invariável contra o snapshot confirmado. Em fluxo normal isso
+  // não altera o contador; protege o relatório se uma interrupção tardia fizer
+  // o objeto retornado e a carreira confirmada divergirem.
+  current = await localGame.entities.PlayerProfile.get(current.id).catch(() => current);
+  const confirmedDays = Math.max(0, Math.min(
+    target,
+    daysBetween(rangeStartDate, current?.career_date || rangeStartDate),
+  ));
+  if (confirmedDays !== processedDays) processedDays = confirmedDays;
+
+  const countersAfter = getPersistenceTransactionSnapshot().totals;
+  const transactions = Math.max(0, countersAfter.transactions - countersBefore.transactions);
+  const physicalCommits = Math.max(0, countersAfter.physicalCommits - countersBefore.physicalCommits);
+  const automaticTrainings = daily.filter((day) => day.automaticTraining).length;
+  const result = {
+    profile: current,
+    requestedDays: target,
+    processedDays,
+    remainingDays: Math.max(0, target - processedDays),
+    stopReason: getMultiDayStopReason(blockedBy),
+    transactions,
+    physicalCommits,
+    automaticTrainings,
+    initialDate: rangeStartDate,
+    finalDate: current?.career_date || rangeStartDate,
+    displayedStartDate: displayedStartDate || rangeStartDate,
+    // Compatibilidade com consumidores anteriores.
+    daysAdvanced: processedDays,
+    blockedBy,
+    daily,
+    rangeStartDate,
+  };
+  recordMultiDayAdvanceResult(result);
+  return result;
 }
 
 export function hasActiveInjury(profile) {
