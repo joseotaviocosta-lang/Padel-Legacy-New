@@ -23,6 +23,6 @@ const LEVEL_VARIANT = {
  * toque de 48px para a ação principal em mobile.
  */
 export const Button = React.forwardRef(({ level = 'primary', variant, size = 'default', className, ...props }, ref) => (
-  <BaseButton ref={ref} variant={variant || LEVEL_VARIANT[level] || 'default'} size={size} className={cn(className)} {...props} />
+  <BaseButton ref={ref} variant={variant || LEVEL_VARIANT[level] || 'default'} size={size} className={cn(level === 'primary' && 'pl-game-primary', className)} {...props} />
 ));
 Button.displayName = 'Button';

@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { CompactStats, EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatusBadge, Surface } from '@/components/design-system';
+import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, Surface } from '@/components/design-system';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
 import {
@@ -207,8 +207,6 @@ export default function Coaches() {
 
   if (loading) return <PageSkeleton variant="grid" rows={6} />;
 
-  const availableCount = discovery.filter((item) => item.availability.available).length;
-  const beginnerAvailableCount = discovery.filter((item) => item.availability.available && item.coach.tier === 'iniciante').length;
   const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : 0;
   const trust = Number(profile?.coach_trust ?? 55);
   const tactical = Number(profile?.coach_tactical_understanding ?? 20);
@@ -223,25 +221,14 @@ export default function Coaches() {
           title="Técnicos principais"
           description="Compare profissionais, entenda os requisitos e descubra quem pode assumir sua dupla agora."
           tone="brand"
-          stats={<>
-            <StatusBadge tone="success">{availableCount} disponíveis</StatusBadge>
-            <StatusBadge tone="info">{beginnerAvailableCount} de formação</StatusBadge>
-          </>}
+          hudLabel="Mercado de técnicos"
+          hudItems={[
+            { label: 'saldo', value: currency(profile?.coins), icon: Wallet },
+            { label: 'técnico', value: hiredCoach ? hiredCoach.name : 'Nenhum', icon: UserCheck },
+            { label: 'confiança', value: hiredCoach ? `${trust}%` : '—', icon: Handshake },
+            { label: 'afinidade', value: hiredCoach ? `${affinityCurrent}%` : '—', icon: Brain },
+          ]}
         />
-
-        {/* Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte D/12/13),
-            migrado para o CompactStats compartilhado na Mobile M4
-            (docs/MOBILE_M4_COMPACT_UX.md, M4.12) — mesmo padrão que este
-            arquivo já tinha inventado antes de existir um primitive
-            compartilhado; agora reaproveita em vez de manter duas
-            implementações. Sem treinador, mostra "—" em vez de fingir que
-            confiança/afinidade existem. */}
-        <CompactStats items={[
-          { label: '', value: currency(profile?.coins), icon: Wallet },
-          { label: '', value: hiredCoach ? hiredCoach.name : 'Nenhum treinador', icon: UserCheck },
-          { label: 'confiança', value: hiredCoach ? `${trust}%` : '—', icon: Handshake },
-          { label: 'afinidade', value: hiredCoach ? `${affinityCurrent}%` : '—', icon: Brain },
-        ]} />
 
         {hiredCoach ? (
           <Surface tone="brand" className="p-4">
@@ -319,7 +306,7 @@ export default function Coaches() {
                   <h2 className="text-lg font-black">Recomendados para você</h2>
                   <p className="text-xs text-muted-foreground">Melhor combinação de afinidade, nível e custo-benefício para sua carreira agora.</p>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="overflow-hidden rounded-xl border border-border/55">
                   {market.highlighted.map((evaluation) => (
                     <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
                   ))}
@@ -332,7 +319,7 @@ export default function Coaches() {
                   <h2 className="text-lg font-black">Outras opções disponíveis</h2>
                   <p className="text-xs text-muted-foreground">Também elegíveis agora, fora da recomendação principal.</p>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="overflow-hidden rounded-xl border border-border/55">
                   {marketRest.map((evaluation) => (
                     <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
                   ))}
@@ -357,7 +344,7 @@ export default function Coaches() {
               <h2 className="text-lg font-black">{section.title}</h2>
               <p className="text-xs text-muted-foreground">{section.description} · {section.items.length} resultado{section.items.length === 1 ? '' : 's'}</p>
             </div>
-            <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="overflow-hidden rounded-xl border border-border/55">
               {section.items.slice(0, visibleCount).map((evaluation) => (
                 <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
               ))}

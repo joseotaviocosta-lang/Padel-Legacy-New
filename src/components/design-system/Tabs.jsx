@@ -16,7 +16,7 @@ import { cn } from '@/lib/utils';
  */
 export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', className }) {
   return (
-    <TabsRoot value={activeTab} onValueChange={onTabChange} className={cn('min-w-0', className)}>
+    <TabsRoot value={activeTab} onValueChange={onTabChange} className={cn('pl-game-tabs min-w-0', className)}>
       <TabsList
         className={cn(
           'h-auto w-full min-w-0 justify-start gap-1 overflow-x-auto rounded-2xl border border-border/60 bg-card/55 p-1 scrollbar-none',

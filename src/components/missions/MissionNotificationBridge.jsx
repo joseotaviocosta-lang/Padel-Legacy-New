@@ -90,6 +90,33 @@ export default function MissionNotificationBridge() {
     return () => window.removeEventListener('padel:mission-completed', handler);
   }, [navigate]);
 
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 13):
+  // conquistas agora podem notificar quando desbloqueadas (achievementEngine.js
+  // dispara este evento só em unlocks reais, nunca por rotina/visita de
+  // rota) — mesmo padrão de toast já usado para missões, sino não vira feed
+  // de progresso trivial porque isto é sempre um evento raro e real.
+  useEffect(() => {
+    const handler = (event) => {
+      const achievements = event.detail?.achievements || [];
+      for (const achievement of achievements) {
+        const key = `achievement:${profileRef.current?.id || 'profile'}:${achievement.id}`;
+        if (shownNotifications.has(key)) continue;
+        shownNotifications.add(key);
+        const parts = [];
+        if (Number(achievement.xp_reward) > 0) parts.push(`+${achievement.xp_reward} XP`);
+        if (Number(achievement.coins_reward) > 0) parts.push(`+${achievement.coins_reward} moedas`);
+        if (achievement.medal_reward) parts.push(`Medalha: ${achievement.medal_reward}`);
+        toast({
+          title: `Conquista desbloqueada: ${achievement.name}`,
+          description: parts.length ? parts.join(' · ') : achievement.description,
+          action: <ToastAction onClick={() => navigate('/game/missions?tab=achievements')}>Ver conquistas</ToastAction>,
+        });
+      }
+    };
+    window.addEventListener('padel:achievement-unlocked', handler);
+    return () => window.removeEventListener('padel:achievement-unlocked', handler);
+  }, [navigate]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {

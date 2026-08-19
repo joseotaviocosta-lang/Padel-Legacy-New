@@ -154,10 +154,18 @@ try {
   const registrations = [{ id: 'reg-1', profile_id: profile.id, tournament_id: 't1', status: 'confirmed' }];
   state = (await reconcile({ registrations, matches: [], trainings })).state;
   gate('Inscrição em torneio (evento real) avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
-  const matches = [{ id: 'match-1', profile_id: profile.id }];
-  profile = await localGame.entities.PlayerProfile.update(profile.id, { matches_played: 1 });
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 2):
+  // "first-match" agora exige explicitamente uma partida OFICIAL de
+  // torneio (competition_type/is_official, os mesmos campos já gravados
+  // desde a finalização real — matchFinalization.js para treino,
+  // TournamentModal.jsx para torneio) — matches_played sozinho (contador
+  // incrementado também por treino) não basta mais, de propósito. Ver
+  // test-tutorial-first-official-match.mjs para a cobertura dedicada
+  // dessa regra (inclusive o caso negativo: partida de treino não conclui).
+  const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
+  profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Primeira partida (evento real) avança para autonomy', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Primeira partida OFICIAL (evento real) avança para autonomy', getCurrentTutorialStep(state)?.id === 'autonomy');
   state = await confirmStep('autonomy');
   gate('Sequência completa das 15 etapas concluída via pipeline real, do início ao fim', state.status === 'completed');
 

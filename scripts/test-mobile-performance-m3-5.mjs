@@ -61,7 +61,7 @@ gate('applyProfile aguarda getWorldRank antes de gravar profile/ranking (commit 
 // 3) Missions.jsx: as 3 computações caras do corpo de render viraram useMemo.
 // ---------------------------------------------------------------------------
 gate('anticipatedCompleted deixou de ser memoizado (refaria o filtro em toda renderização)', /const anticipatedCompleted = useMemo\(/.test(missions));
-gate('categoryPool deixou de ser memoizado', /const categoryPool = useMemo\(/.test(missions));
+gate('categoryPool é memoizado quando existe (Tutorial 4.0 removeu o pool periódico)', !missions.includes('categoryPool') || /const categoryPool = useMemo\(/.test(missions));
 gate('filtered (deterministicMissionSelection) deixou de ser memoizado', /const filtered = useMemo\(/.test(missions));
 
 // ---------------------------------------------------------------------------

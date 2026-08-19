@@ -1,5 +1,5 @@
 import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { Users, Search, SlidersHorizontal, AlertTriangle } from 'lucide-react';
+import { Users, Search, SlidersHorizontal, AlertTriangle, Trophy, ListFilter } from 'lucide-react';
 import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.10): migrado do wrapper
@@ -126,10 +126,14 @@ export default function Athletes() {
 
   return (
     <Page><PageContent>
-      <PageHeader dense icon={Users} title="Atletas do Circuito" description="Personalidades, evolução e relacionamentos dos atletas IA" tone="brand" />
+      <PageHeader dense icon={Users} title="Atletas" description="Personalidades, evolução e relacionamentos dos atletas IA" tone="brand" hudLabel="Scouting do circuito" hudItems={[
+        { label: 'no circuito', value: athletes.length, icon: Users },
+        { label: 'na lista', value: filtered.length, icon: ListFilter, tone: 'info' },
+        { label: 'sua posição', value: profile?.id ? `#${rankById?.get(profile.id) || '—'}` : '—', icon: Trophy, tone: 'premium' },
+      ]} />
 
-      <div className="glass rounded-2xl p-3 grid gap-3 md:grid-cols-[1fr_180px]">
-        <label className="relative block">
+      <div className="grid grid-cols-2 gap-2 border-y border-border/45 py-2 md:grid-cols-[1fr_180px_180px_180px]">
+        <label className="relative col-span-2 block md:col-span-1">
           <Search className="h-4 w-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
           <input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar atleta ou país..." className="w-full rounded-xl border border-border bg-background/50 pl-9 pr-3 py-2 text-sm" />
         </label>
@@ -142,11 +146,15 @@ export default function Athletes() {
             <option value="clutch">Ordenar: decisões</option>
           </select>
         </label>
+        <select value={persFilter} onChange={e => setPersFilter(e.target.value)} aria-label="Filtrar personalidade" className="min-h-11 rounded-lg border border-border bg-background/50 px-2 text-xs">
+          {PERS_FILTERS.map(f => <option key={f.id} value={f.id}>{f.label}</option>)}
+        </select>
+        <select value={styleFilter} onChange={e => setStyleFilter(e.target.value)} aria-label="Filtrar estilo" className="min-h-11 rounded-lg border border-border bg-background/50 px-2 text-xs">
+          {STYLE_FILTERS.map(f => <option key={f.id} value={f.id}>{f.label}</option>)}
+        </select>
       </div>
 
       <Tabs tabs={PHASE_FILTERS.map(f => ({ key: f.id, label: f.label }))} activeTab={phaseFilter} onTabChange={setPhaseFilter} variant="buttons" />
-      <Tabs tabs={PERS_FILTERS.map(f => ({ key: f.id, label: f.label }))} activeTab={persFilter} onTabChange={setPersFilter} variant="buttons" />
-      <Tabs tabs={STYLE_FILTERS.map(f => ({ key: f.id, label: f.label }))} activeTab={styleFilter} onTabChange={setStyleFilter} variant="buttons" />
 
       {filtered.length === 0 ? (
         athletes.length === 0 ? (
@@ -158,7 +166,7 @@ export default function Athletes() {
           <EmptyState icon={Users} title="Nenhum atleta encontrado" description="Nenhum atleta encontrado com esses filtros." />
         )
       ) : (
-        <div className="render-window grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+        <div className="render-window overflow-hidden rounded-xl border border-border/55 animate-stagger">
           {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} onClick={() => setSelected(a)} />)}
         </div>
       )}

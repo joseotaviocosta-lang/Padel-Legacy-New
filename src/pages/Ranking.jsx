@@ -4,8 +4,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, CalendarDays, Medal, Activity } from 'lucide-react';
 import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import {
-  CompactListItem, CompactStats, CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
-  RankingPosition, StatusBadge, Tabs,
+  CompactListItem, CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
+  RankingPosition, Tabs,
 } from '@/components/design-system';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 import AthleteDetail from '@/components/athletes/AthleteDetail.jsx';
@@ -193,18 +193,14 @@ export default function Ranking() {
         title="Ranking"
         description="Acompanhe posições, pontos, tendências e a corrida da temporada em um painel único."
         tone="premium"
-        stats={<><StatusBadge tone="premium">{circuitAthletes.length} atletas</StatusBadge><StatusBadge tone="info">{teams.length} duplas</StatusBadge></>}
+        hudLabel="Líderes do ranking"
+        hudItems={[
+          { label: 'líder', value: `${circuitAthletes[0]?.name || '—'} · ${Number(circuitAthletes[0]?.world_ranking_points ?? circuitAthletes[0]?.ranking_points) || 0}pts`, icon: Crown, tone: 'premium' },
+          { label: 'race', value: `${raceAthletes[0]?.name || '—'} · ${Number(raceAthletes[0]?.race_points) || 0}pts`, icon: Activity, tone: 'info' },
+          { label: 'países', value: countries.length, icon: Medal, tone: 'success' },
+          { label: 'clubes', value: clubs.length, icon: Users },
+        ]}
       />
-
-      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.9): 4 StatCards com
-          detalhe longo (nome do líder etc.) viram indicadores compactos —
-          o líder/melhor dupla de verdade já aparece no pódio logo abaixo. */}
-      <CompactStats items={[
-        { label: 'líder mundial', value: `${circuitAthletes[0]?.name || '—'} · ${Number(circuitAthletes[0]?.world_ranking_points ?? circuitAthletes[0]?.ranking_points) || 0}pts`, icon: Crown, tone: 'premium' },
-        { label: 'líder race', value: `${raceAthletes[0]?.name || '—'} · ${Number(raceAthletes[0]?.race_points) || 0}pts`, icon: Activity, tone: 'info' },
-        { label: 'países', value: countries.length, icon: Medal, tone: 'success' },
-        { label: 'clubes', value: clubs.length, icon: Users },
-      ]} />
 
       <Tabs tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" />
 

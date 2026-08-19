@@ -36,7 +36,7 @@ export function CompactActionCard({
 
   return (
     <div className={cn(
-      'glass rounded-2xl border p-[var(--mobile-card-padding)] sm:p-4 transition-all',
+      'pl-compact-action border p-[var(--mobile-card-padding)] sm:p-4 transition-all',
       expanded ? 'border-primary/30' : tone === 'premium' ? 'border-premium/35' : 'border-border/40',
       className,
     )}>

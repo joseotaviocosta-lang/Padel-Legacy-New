@@ -18,6 +18,7 @@ import { getSetScoreString } from '@/lib/matchEngine';
 import { getCoachEffects } from '@/lib/coaches';
 import { resolveActiveCoach } from '@/game-core/coachLifecycle';
 import { finalizeTournamentRun, prepareTournamentFinalization } from '@/game-core/tournamentLifecycle.js';
+import { syncPlayerAchievements } from '@/lib/achievementEngine.js';
 import { createMatchEndProfiler, scheduleSecondaryMatchWork } from '@/game-core/matchFinalization.js';
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
@@ -638,6 +639,18 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         }));
         updated = completion.updatedProfile;
         setTournamentRewards(completion.rewards);
+        // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9):
+        // ponto natural para avaliar conquistas de torneio (join_tournament/
+        // win_tournament, os únicos trigger_types cujo contador real muda
+        // aqui) — mesmo nível de abstração de incrementMissionProgress
+        // logo abaixo, nunca dentro do motor de torneio/finalização em si.
+        // Idempotente: nunca re-concede uma conquista já registrada.
+        try {
+          const achievementSync = await syncPlayerAchievements(updated, {}, { localGame });
+          if (achievementSync.profile) updated = achievementSync.profile;
+        } catch (achievementError) {
+          console.error('[achievements] Falha ao avaliar conquistas de torneio.', achievementError);
+        }
       }
 
       const missionObjectives = [

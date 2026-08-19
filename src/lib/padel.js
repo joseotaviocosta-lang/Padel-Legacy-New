@@ -2,7 +2,6 @@ import { localGame } from '@/api/localGameClient.js';
 import { normalizeCourtSide, sideMissionRepair } from '@/lib/tutorialSideState.js';
 import { deterministicMissionSelection, missionRuntime, missionStatus, requirementsMet, validateMissionReward } from '@/missions/missionSystem.js';
 import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
-import { PERIODIC_MISSIONS } from '@/missions/periodicMissionCatalog.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
@@ -613,9 +612,14 @@ const SHORT_TUTORIAL_MISSIONS = [
 
 export const TUTORIAL_MISSIONS = TUTORIAL_MISSION_CATALOG;
 
+// Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 7): as
+// missões diárias/semanais/mensais/sazonais (antes PERIODIC_MISSIONS) foram
+// removidas como sistema — ver Missions.jsx para a classificação completa.
+const RETIRED_PERIODIC_MISSION_TYPES = ['diaria', 'semanal', 'mensal', 'sazonal'];
+
 export async function ensureTutorialMissionCatalog() {
   const existing = await localGame.entities.Mission.list('-created_date', 500);
-  const fullCatalog = [...TUTORIAL_MISSIONS, ...PERIODIC_MISSIONS];
+  const fullCatalog = TUTORIAL_MISSIONS;
 
   const canonicalKey = mission => mission.catalog_key
     || (mission.mission_type === 'tutorial' ? `tutorial:${mission.objective_type}:${Number(mission.tutorial_order || 0)}` : `${mission.mission_type}:${mission.id || mission.objective_type}`);
@@ -663,6 +667,12 @@ export async function ensureTutorialMissionCatalog() {
       // Tutoriais antigos ou linhas duplicadas permanecem no histórico, mas
       // não aparecem nem recebem novos eventos/recompensas.
       updates.push({ ...mission, is_active: false, superseded_by_catalog: true });
+    } else if (RETIRED_PERIODIC_MISSION_TYPES.includes(mission.mission_type) && mission.is_active !== false) {
+      // Tutorial 4.0 (Parte 12): saves antigos com Mission diaria/semanal/
+      // mensal/sazonal já persistidas — arquivadas (nunca deletadas), o
+      // MissionProgress associado continua intocado (recompensas já
+      // reivindicadas não são revogadas nem re-concedidas).
+      updates.push({ ...mission, is_active: false, retired_reason: 'periodic_missions_removed_v40' });
     }
   }
 

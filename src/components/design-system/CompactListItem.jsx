@@ -29,7 +29,7 @@ export function CompactListItem({ leading, title, meta, trailing, onClick, to, i
   );
 
   const rowClassName = cn(
-    'glass flex w-full items-center gap-3 rounded-2xl p-3 text-left',
+    'pl-compact-row flex w-full items-center gap-3 p-3 text-left',
     isInteractive && 'transition-colors hover:border-primary/35',
     highlighted ? 'border border-primary/40 bg-primary/5' : 'border border-transparent',
     className,

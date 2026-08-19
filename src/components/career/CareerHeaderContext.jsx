@@ -40,7 +40,7 @@ export default function CareerHeaderContext({ profile, compact = false }) {
   if (!context) return null;
   const { icon: Icon, tone } = ICON_BY_KIND[context.kind] || ICON_BY_KIND.idle;
   const label = compact ? context.label.compact : context.label.full;
-  const className = `inline-flex min-w-0 items-center gap-1.5 rounded-lg border border-border/55 bg-card/45 px-2 py-1 ${compact ? 'max-w-[9rem]' : 'max-w-[17rem]'}`;
+  const className = `inline-flex min-w-0 items-center gap-1 rounded-md px-1.5 py-1 ${compact ? 'max-w-[6.75rem]' : 'max-w-[17rem]'}`;
   const inner = (
     <>
       <Icon className={`h-3.5 w-3.5 shrink-0 ${tone}`} />

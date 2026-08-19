@@ -54,8 +54,8 @@
        documentados para os números "mágicos" já usados em vários pontos do
        shell (header/bottom nav/safe area/alvo de toque), reaproveitados por
        CSS novo em vez de reescritos. Não mudam nenhum valor existente. */
-    --pl-header-h: 4rem; /* AppLayout: header mobile fixo e barra desktop, ambos h-16 */
-    --pl-bottom-nav-h: 4.35rem; /* BottomNav.jsx: h-[4.35rem] do conteúdo interno, sem contar safe-area */
+    --pl-header-h: 3.5rem; /* M4.1: shell mobile mais denso, preservando controles de 44px */
+    --pl-bottom-nav-h: 4rem; /* M4.1: ícone dominante + label curta, sem reduzir a área ativa */
     --pl-touch-min: 2.75rem; /* 44px — alvo de toque mínimo confortável */
     --pl-safe-t: env(safe-area-inset-top, 0px);
     --pl-safe-b: env(safe-area-inset-bottom, 0px);
@@ -69,6 +69,9 @@
     --mobile-card-padding: 0.75rem;
     --mobile-section-gap: 0.625rem;
     --mobile-compact-row-height: 3.5rem;
+    --mobile-page-padding: 0.5rem;
+    --mobile-game-radius: 0.75rem;
+    --mobile-game-gap: 0.5rem;
   }
 
   .dark {
@@ -911,7 +914,7 @@
   }
 
   .pl-page {
-    padding-inline: 0.625rem;
+    padding: var(--mobile-page-padding);
   }
 
   .pl-surface,
@@ -924,12 +927,114 @@
      menor, descrição/breadcrumb ocultos) já é resolvido por classes
      Tailwind condicionais no próprio PageHeader.jsx (prop `dense`). */
   .pl-page-hero--dense {
-    padding: 0.75rem;
+    overflow: visible;
+    border-color: transparent;
+    border-radius: var(--mobile-game-radius);
+    padding: 0.5rem 0.375rem;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
   }
 
   .pl-page-hero--dense .pl-page-hero-icon {
-    height: 2.25rem;
-    width: 2.25rem;
+    height: 2rem;
+    width: 2rem;
+    border-radius: 0.625rem;
+  }
+
+  .pl-page-hero--dense .pl-title-display {
+    font-size: 1.35rem;
+    line-height: 1.15;
+  }
+
+  .pl-page-hero--dense > div {
+    gap: 0.5rem;
+  }
+
+  .pl-game-hud {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0;
+    overflow-x: auto;
+    border-block: 1px solid hsl(var(--border) / 0.48);
+    padding-block: 0.4rem;
+    scrollbar-width: none;
+  }
+
+  .pl-game-hud::-webkit-scrollbar { display: none; }
+
+  .pl-game-hud-item {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    gap: 0.3rem;
+    padding-inline: 0.6rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .pl-game-hud-item:first-child { padding-left: 0; }
+  .pl-game-hud-item + .pl-game-hud-item { border-left: 1px solid hsl(var(--border) / 0.55); }
+
+  .pl-game-hud--standalone {
+    margin: 0;
+    padding-inline: 0.375rem;
+  }
+
+  .pl-game-tabs [role='tablist'] {
+    border: 0;
+    border-radius: 0.625rem;
+    background: hsl(var(--secondary) / 0.36);
+    padding: 0;
+  }
+
+  .pl-game-tabs [role='tab'] {
+    border-radius: 0.5rem;
+    padding-inline: 0.65rem;
+    padding-block: 0.35rem;
+    font-size: 0.7rem;
+  }
+
+  .pl-game-tabs [role='tab'][data-state='active'] {
+    box-shadow: inset 0 -2px 0 hsl(var(--primary));
+  }
+
+  .pl-compact-row {
+    min-height: var(--mobile-compact-row-height);
+    border-bottom: 1px solid hsl(var(--border) / 0.48);
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .pl-compact-row:last-child { border-bottom-color: transparent; }
+
+  .pl-compact-action {
+    border-width: 0 0 1px;
+    border-radius: 0;
+    background: transparent;
+  }
+
+  .pl-compact-action:last-child { border-bottom-color: transparent; }
+
+  [data-surface] {
+    border-radius: var(--mobile-game-radius);
+  }
+
+  [data-surface].p-4,
+  [data-surface].sm\:p-5,
+  [data-surface].p-5,
+  [data-surface].sm\:p-6 {
+    padding: 0.75rem;
+  }
+
+  [data-surface] > .mb-4:first-child {
+    margin-bottom: 0.625rem;
+  }
+
+  .pl-surface-description--compact {
+    display: none;
   }
 
   /* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.23): reduz o espaçamento
@@ -938,7 +1043,32 @@
      PageContent) em vez de um ajuste por página, já que é puramente CSS e
      só afeta telas estreitas. */
   .pl-content-enter.space-y-4 > :not([hidden]) ~ :not([hidden]) {
-    margin-top: var(--mobile-section-gap);
+    margin-top: var(--mobile-game-gap);
+  }
+
+  .pl-content-enter.space-y-5 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: var(--mobile-game-gap);
+  }
+
+  .pl-game-primary {
+    min-height: 2.75rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    box-shadow: 0 7px 18px hsl(var(--primary) / 0.2);
+  }
+
+  .pl-game-primary:active:not(:disabled) {
+    transform: scale(0.97);
+    filter: brightness(0.94);
+  }
+
+  @media (orientation: landscape) and (max-height: 520px) {
+    .pl-page { padding-block: 0.375rem; }
+    .pl-page-hero--dense { padding-block: 0.25rem; }
+    .pl-page-hero--dense .pl-page-hero-icon { display: none; }
+    .pl-game-hud { padding-block: 0.3rem; }
+    .pl-content-enter.space-y-4 > :not([hidden]) ~ :not([hidden]),
+    .pl-content-enter.space-y-5 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.375rem; }
   }
 }
 

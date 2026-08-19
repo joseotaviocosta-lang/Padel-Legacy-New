@@ -62,7 +62,12 @@ try {
   // ── 4) CareerHub.jsx: composição do hero e fix de dedup por rota ────────
   const hubSource = readFileSync('src/pages/CareerHub.jsx', 'utf8');
   gate('CareerHub.jsx importa getOnboardingNextAction', hubSource.includes("import { getOnboardingNextAction } from '@/onboarding/onboardingNextAction.js';"));
-  gate('heroStep prioriza onboardingNextAction, com fallbackHeroStep preservado', hubSource.includes('const heroStep = onboardingNextAction || fallbackHeroStep;'));
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 3):
+  // heroStep virou um useMemo (a etapa "first-match" precisa de uma
+  // resolução assíncrona de destino, ver firstMatchDestination.js) — a
+  // MESMA regra de prioridade (onboardingNextAction antes de
+  // fallbackHeroStep) continua, só não é mais um one-liner.
+  gate('heroStep prioriza onboardingNextAction, com fallbackHeroStep preservado', hubSource.includes('return onboardingNextAction || fallbackHeroStep;'));
   gate('getNextStep (motor de fallback) continua definido, não foi removido', /function getNextStep\(profile, upcomingTournaments\)/.test(hubSource));
   gate('basePath() existe para comparar rotas ignorando query string', /function basePath\(route\)/.test(hubSource));
   gate('buildPriorityActions usa basePath() no dedup contra o hero (decisões)', hubSource.includes('basePath(decision.route) === basePath(heroRoute)'));

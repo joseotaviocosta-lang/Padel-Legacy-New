@@ -80,8 +80,8 @@ check('performanceProbe usa console.log/console.warn incondicional em vez de con
 // re-render do shell alheio a missões) — a lógica de filtrar por capítulo
 // atual no tutorial continua a mesma, só não é mais um literal `filtered =
 // tab === ...` direto.
-check('tutorial em Missions.jsx parou de filtrar por capítulo atual (montaria as etapas todas de uma vez)', missions.includes("tab === 'tutorial'") && missions.includes('tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter)'));
-check('categorias não-tutorial perderam o limite de itens exibidos por ciclo', /categoryLimit = tab === 'diaria' \? 3 : tab === 'semanal' \? 3 : \d+/.test(missions));
+check('tutorial em Missions.jsx parou de filtrar por capítulo atual (montaria as etapas todas de uma vez)', missions.includes('tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter)'));
+check('categorias não-tutorial mantêm limite quando presentes (Tutorial 4.0 removeu missões periódicas)', !missions.includes('categoryLimit') || /categoryLimit = tab === 'diaria' \? 3 : tab === 'semanal' \? 3 : \d+/.test(missions));
 
 // ═══════════════════════════════════════════════════════════════════════════
 // INSTRUMENTAÇÃO ESTÁ REALMENTE LIGADA NOS PONTOS CERTOS (sem mudar lógica)

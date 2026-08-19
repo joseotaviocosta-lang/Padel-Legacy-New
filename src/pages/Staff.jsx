@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { CompactStats, Page, PageContent, PageHeader, PageSkeleton, StatusBadge } from '@/components/design-system';
+import { Page, PageContent, PageHeader, PageSkeleton } from '@/components/design-system';
 import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
@@ -83,16 +83,14 @@ export default function Staff() {
         title="Comissão técnica"
         description="Especialistas de apoio que trabalham sob liderança do treinador principal. O treinador não consome vaga da comissão."
         tone="brand"
-        stats={<><StatusBadge tone="success">Treinador separado</StatusBadge><StatusBadge tone="info">{activeStaff.length}/{maxSlots} vagas</StatusBadge></>}
+        hudLabel="Comissão atual"
+        hudItems={[
+          { label: 'vagas', value: `${activeStaff.length}/${maxSlots}`, icon: BriefcaseBusiness },
+          { label: 'folha', value: monthlyPayroll.toLocaleString('pt-BR'), icon: Wallet, tone: 'premium' },
+          { label: 'sinergia', value: `${synergy}%`, icon: Sparkles, tone: synergy >= 70 ? 'success' : 'info' },
+          { label: 'liderança', value: profile.coach_name || 'Treinador', icon: UserRoundCog, tone: 'info' },
+        ]}
       />
-      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): 4 StatCards viram
-          uma linha compacta. */}
-      <CompactStats items={[
-        { label: 'vagas', value: `${activeStaff.length}/${maxSlots}`, icon: BriefcaseBusiness },
-        { label: 'folha mensal', value: monthlyPayroll.toLocaleString('pt-BR'), icon: Wallet, tone: 'premium' },
-        { label: 'sinergia', value: `${synergy}%`, icon: Sparkles, tone: synergy >= 70 ? 'success' : 'info' },
-        { label: 'liderança', value: profile.coach_name || 'Treinador', icon: UserRoundCog, tone: 'info' },
-      ]} />
       <StaffLivePanel meeting={meeting} />
       <StaffPanel
         profile={profile}

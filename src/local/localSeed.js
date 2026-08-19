@@ -1,4 +1,5 @@
 import { buildSeasonTournaments } from '@/lib/circuitCatalog.js';
+import { ACHIEVEMENT_CATALOG } from '@/lib/achievementsData.js';
 
 export const LOCAL_USER = {
   id: 'local-user-001',
@@ -99,12 +100,15 @@ const clubs = [
 
 const tournaments = buildSeasonTournaments(2026, 'season-2026');
 
-const achievements = [
-  ['achievement-001', 'Primeiro treino', 'Complete seu primeiro treino.', 10, 'training'],
-  ['achievement-002', 'Primeira vitória', 'Vença sua primeira partida.', 20, 'match'],
-  ['achievement-003', 'Dupla formada', 'Escolha um parceiro.', 15, 'partnership'],
-  ['achievement-004', 'Top 1000', 'Entre no top 1000 do ranking.', 40, 'ranking'],
-].map(([id, title, description, points, category]) => ({ id, title, description, points, category, is_hidden: false }));
+// Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9): antes
+// disto, este seed de 4 itens hardcoded (title/is_hidden) não batia com o
+// schema real da entidade Achievement (name/visibility, base44/entities/
+// Achievement.jsonc) nem com o que AchievementCard.jsx lê — os cards
+// renderizavam com nome indefinido. Agora semeia o catálogo real
+// (achievementsData.js), a mesma fonte que o motor de avaliação
+// (achievementEngine.js) e a aba Conquistas usam — sem essa troca, nada
+// além dos 4 itens antigos existiria para desbloquear/exibir.
+const achievements = ACHIEVEMENT_CATALOG;
 
 const missions = [
   { id: 'mission-train-1', title: 'Primeiros passos', description: 'Complete 3 treinos.', objective_type: 'complete_training', target_count: 3, reward_xp: 100, reward_coins: 80, is_active: true, points: 10 },
@@ -179,7 +183,11 @@ export const LOCAL_SEED = {
   Mission: missions,
   MissionProgress: missions.map((mission, index) => ({ id: `progress-${index + 1}`, mission_id: mission.id, profile_id: LOCAL_PROFILE.id, current_count: index === 0 ? 1 : 0, completed: false, claimed: false })),
   Achievement: achievements,
-  PlayerAchievement: [{ id: 'player-achievement-001', profile_id: LOCAL_PROFILE.id, achievement_id: 'achievement-001', unlocked: true, unlocked_date: '2025-12-28' }],
+  // Tutorial 4.0: `achievement_id` aponta para o id real do catálogo
+  // reseedado acima ("Primeiro Treino") — o id antigo ('achievement-001')
+  // não existe mais em `achievements`, então esta linha ficaria órfã
+  // (não quebraria nada, só nunca apareceria como desbloqueada).
+  PlayerAchievement: [{ id: 'player-achievement-001', profile_id: LOCAL_PROFILE.id, achievement_id: 'achv-primeiro-treino', unlocked_date: '2025-12-28', career_date: '2025-12-28', is_new: false, progress: 1 }],
   Post: [
     { id: 'post-local-1', author_name: 'Padel Legacy', author_type: 'media', content: 'Bem-vindo à sua nova carreira no padel!', likes: 18, comments_count: 3, created_date: '2026-01-01T10:00:00.000Z' },
     { id: 'post-local-2', author_name: 'Circuito Mundial', author_type: 'organization', content: 'A temporada 2026 está oficialmente aberta.', likes: 42, comments_count: 7, created_date: '2026-01-01T09:00:00.000Z' },

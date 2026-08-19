@@ -48,9 +48,9 @@ const pkg = JSON.parse(read('package.json'));
 
 // 1/2/29. reserva inferior de main deriva de um token compartilhado com a
 // altura real da bottom nav + safe-area, em vez de um número solto.
-check('main.pb deixou de derivar de --pl-bottom-nav-h (token compartilhado com BottomNav)', appLayout.includes('pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+1.75rem)]'));
+check('main.pb deixou de derivar de --pl-bottom-nav-h (token compartilhado com BottomNav)', appLayout.includes('pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+'));
 check('BottomNav.jsx parou de usar --pl-bottom-nav-h para a própria altura (token dessincronizaria dos dois lados)', bottomNav.includes('h-[var(--pl-bottom-nav-h)]'));
-check('token --pl-bottom-nav-h foi removido de index.css', indexCss.includes('--pl-bottom-nav-h: 4.35rem'));
+check('token --pl-bottom-nav-h foi removido de index.css', indexCss.includes('--pl-bottom-nav-h:'));
 check('BottomNav perdeu o padding de safe-area inferior', bottomNav.includes('pb-[env(safe-area-inset-bottom)]'));
 
 // 4/5/6. bottom nav pode ser ocultada com o teclado aberto e volta sozinha.

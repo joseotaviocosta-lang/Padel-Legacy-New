@@ -11,7 +11,7 @@ export const PAGE_LOADERS = {
   CharacterEditor: () => import('@/pages/CharacterEditor'), Admin: () => import('@/pages/Admin'), DatabaseManager: () => import('@/pages/DatabaseManager'),
   History: () => import('@/pages/History'), HallOfFame: () => import('@/pages/HallOfFame'), Relationships: () => import('@/pages/Relationships'),
   Coaches: () => import('@/pages/Coaches'), TrainingCenter: () => import('@/pages/TrainingCenter'), Press: () => import('@/pages/Press'),
-  Fans: () => import('@/pages/Fans'), Achievements: () => import('@/pages/Achievements'),
+  Fans: () => import('@/pages/Fans'),
   WorldEvents: () => import('@/pages/WorldEvents'), WorldMarket: () => import('@/pages/WorldMarket'), Weather: () => import('@/pages/Weather'),
   Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'),
   NavigationHub: () => import('@/pages/NavigationHub'), WorldHub: () => import('@/pages/WorldHub'), Staff: () => import('@/pages/Staff'), Communications: () => import('@/pages/Communications'), MonthlyReports: () => import('@/pages/MonthlyReports'), AnnualReports: () => import('@/pages/AnnualReports'),
@@ -25,7 +25,10 @@ const ROUTE_MODULES = {
   '/tournaments': 'Tournaments', '/journal': 'Journal', '/ranking': 'Ranking', '/clubs': 'Clubs', '/athletes': 'Athletes',
   '/character': 'CharacterEditor', '/admin': 'Admin', '/database': 'DatabaseManager', '/history': 'History',
   '/hall-of-fame': 'HallOfFame', '/relationships': 'Relationships', '/coaches': 'Coaches', '/training-center': 'TrainingCenter',
-  '/press': 'Press', '/fans': 'Fans', '/achievements': 'Achievements', '/world-events': 'WorldEvents',
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 8): '/achievements'
+  // virou um redirect puro (App.jsx) para /game/missions?tab=achievements —
+  // não tem mais página/chunk próprio para pré-carregar.
+  '/press': 'Press', '/fans': 'Fans', '/world-events': 'WorldEvents',
   '/world-market': 'WorldMarket', '/weather': 'Weather', '/encyclopedia': 'Encyclopedia', '/partners': 'PartnerHub', '/community': 'Community',
   '/development': 'NavigationHub', '/team-hub': 'NavigationHub', '/staff': 'Staff', '/communications': 'Communications', '/game/monthly-reports': 'MonthlyReports', '/game/annual-reports': 'AnnualReports', '/competitions': 'NavigationHub', '/world': 'WorldHub', '/management': 'NavigationHub',
   '/settings': 'Settings',

@@ -11,6 +11,7 @@ import {
   BookOpen, ScrollText, User, Battery, Trash2, Rainbow, Baby, Scale,
 } from 'lucide-react';
 import { DIFFICULTY_META } from '@/lib/achievementsData';
+import { ProgressBar } from '@/components/design-system';
 
 const ICON_MAP = {
   Footprints, Play, Trophy, Shield, Activity, Crown, Infinity: InfinityIcon,
@@ -33,7 +34,13 @@ const RARITY_BADGE = {
   exclusivo: 'border-primary/40 bg-primary/15 text-primary',
 };
 
-export default function AchievementCard({ achievement, unlocked, onClick }) {
+// Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9): antes,
+// nada calculava progresso de verdade (nenhuma conquista era avaliada em
+// runtime) — `progress` é opcional de propósito, só chega quando
+// achievementEngine.js consegue medir o trigger_type com segurança (ver
+// EVALUABLE_TRIGGER_TYPES); o resto do catálogo continua sem essa linha,
+// exatamente como antes.
+export default function AchievementCard({ achievement, unlocked, onClick, progress }) {
   const difficulty = DIFFICULTY_META[achievement.difficulty] || DIFFICULTY_META.facil;
   const rarityStyle = RARITY_BADGE[achievement.rarity] || RARITY_BADGE.comum;
   const isSecret = achievement.visibility === 'secreto' && !unlocked;
@@ -91,6 +98,14 @@ export default function AchievementCard({ achievement, unlocked, onClick }) {
         <p className="text-[10px] text-muted-foreground leading-snug mt-0.5 line-clamp-3">
           {displayDesc}
         </p>
+        {!unlocked && progress?.evaluable && (
+          <div className="mt-1.5">
+            <ProgressBar value={progress.percent} max={100} size="sm" />
+            <p className="mt-0.5 text-[9px] font-bold text-muted-foreground">
+              {achievement.trigger_type === 'reach_rank' ? `Atual: #${progress.value || '—'}` : `${progress.value}/${achievement.threshold}`}
+            </p>
+          </div>
+        )}
       </div>
 
       {/* Rewards */}

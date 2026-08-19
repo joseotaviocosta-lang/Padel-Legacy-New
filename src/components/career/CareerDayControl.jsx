@@ -36,8 +36,8 @@ export default function CareerDayControl({ profile = null, compact = false, clas
   }
 
   return (
-    <div className={cn('flex min-w-0 shrink-0 items-stretch gap-1.5', className)} aria-label="Data e avanço da carreira">
-      <div className="flex min-w-[3.75rem] shrink-0 flex-col justify-center rounded-xl border border-border/55 bg-card/62 px-1.5 py-1 text-center sm:min-w-[7.35rem] sm:px-2.5">
+    <div className={cn('flex min-w-0 shrink-0 items-stretch gap-1', className)} aria-label="Data e avanço da carreira">
+      <div className="flex min-w-[3.45rem] shrink-0 flex-col justify-center rounded-md px-1 py-1 text-center sm:min-w-[7.35rem] sm:px-2.5">
         <span className="text-[8px] font-extrabold uppercase leading-none tracking-[0.12em] text-info sm:hidden">{date.weekdayShort}</span>
         <span className="hidden text-[8px] font-extrabold uppercase leading-none tracking-[0.12em] text-info sm:block">{date.weekday}</span>
         <span className="mt-1 whitespace-nowrap text-[10px] font-black leading-none tabular-nums sm:hidden">{date.compactDate}</span>
@@ -51,7 +51,7 @@ export default function CareerDayControl({ profile = null, compact = false, clas
         aria-label="Avançar carreira em um dia"
         aria-busy={processing}
         className={cn(
-          'pl-btn-tap inline-flex min-w-[4.8rem] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-primary px-2 text-[10px] font-black text-primary-foreground transition-[filter,opacity] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-55',
+          'pl-btn-tap inline-flex min-w-[4.55rem] shrink-0 items-center justify-center gap-1 rounded-lg bg-primary px-1.5 text-[10px] font-black text-primary-foreground transition-[filter,opacity] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-55',
           !compact && 'sm:min-w-[6.6rem] sm:px-3 sm:text-xs',
         )}
       >

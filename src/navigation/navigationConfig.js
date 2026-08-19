@@ -1,4 +1,4 @@
-import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, Medal, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
 
 /**
  * Fonte única da navegação do shell (Fase 3 — docs/NAVIGATION_ARCHITECTURE.md).
@@ -33,7 +33,7 @@ export const NAV_GROUPS = [
     items: [
       { to: '/profile', icon: User, label: 'Atleta' },
       { to: '/character', icon: Palette, label: 'Aparência' },
-      { to: '/game/missions', icon: Target, label: 'Missões e objetivos' },
+      { to: '/game/missions', icon: Target, label: 'Objetivos' },
       { to: '/game/training', icon: Dumbbell, label: 'Treinos' },
       { to: '/training-center', icon: Building2, label: 'Centro de treinamento' },
       { to: '/game/inventory', icon: Package, label: 'Equipamentos' },
@@ -100,7 +100,6 @@ export const NAV_GROUPS = [
     items: [
       { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' },
       { to: '/game/legacy', icon: Crown, label: 'Legado' },
-      { to: '/achievements', icon: Medal, label: 'Conquistas' },
       { to: '/communications', icon: Inbox, label: 'Notificações' },
       { to: '/history', icon: History, label: 'História do padel' },
       { to: '/hall-of-fame', icon: Crown, label: 'Hall da fama' },

@@ -11,7 +11,6 @@ import {
   validateMissionReward,
 } from '../src/missions/missionSystem.js';
 import { TUTORIAL_MISSION_CATALOG, TUTORIAL_STEPS } from '../src/onboarding/tutorialSteps.js';
-import { PERIODIC_MISSIONS } from '../src/missions/periodicMissionCatalog.js';
 
 missionRuntime.setHydrationStatus('loading');
 assert.equal(missionRuntime.canProcessEvents(), false, 'events were accepted during hydration');
@@ -44,7 +43,6 @@ const routes = [...new Set(TUTORIAL_STEPS.map(step => step.route.split('?')[0]))
 const catalogValidation = validateMissionCatalog(TUTORIAL_MISSION_CATALOG, routes);
 assert.equal(catalogValidation.valid, true, catalogValidation.errors.join('\n'));
 assert.equal(new Set(TUTORIAL_MISSION_CATALOG.map(mission => mission.id)).size, TUTORIAL_STEPS.length);
-assert.equal(validateMissionCatalog(PERIODIC_MISSIONS).valid, true);
 
 const legacy = {
   save_schema_version: 14,

@@ -4,7 +4,7 @@ import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react'
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
-import { CompactStats, ModalShell, Page, PageContent, PageHeader, Surface } from '@/components/design-system';
+import { ModalShell, Page, PageContent, PageHeader, Surface } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
@@ -271,6 +271,12 @@ export default function Press() {
         icon={Newspaper}
         tone="brand"
         breadcrumb={['Mundo', 'Imprensa']}
+        hudLabel="Repercussão atual"
+        hudItems={[
+          { label: 'fãs', value: fanAppeal, icon: Star },
+          { label: 'patrocinadores', value: sponsorAppeal, icon: TrendingUp, tone: 'premium' },
+          { label: 'moral', value: morale, icon: Sparkles, tone: 'info' },
+        ]}
       />
 
       {pendingInterviews.length > 0 && (
@@ -296,14 +302,6 @@ export default function Press() {
           </div>
         </Surface>
       )}
-
-      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.13): 3 StatCards viram
-          uma linha compacta. */}
-      <CompactStats items={[
-        { label: 'apego dos fãs', value: fanAppeal, icon: Star },
-        { label: 'patrocinadores', value: sponsorAppeal, icon: TrendingUp, tone: 'premium' },
-        { label: 'moral', value: morale, icon: Sparkles, tone: 'info' },
-      ]} />
 
       <Surface padding="compact">
       <div className="flex gap-2">
@@ -378,7 +376,7 @@ export default function Press() {
         journalists.length === 0 ? (
           <EmptyStateCard icon={Users} title="Nenhum jornalista" message="Os jornalistas aparecerão aqui." />
         ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+          <div className="overflow-hidden rounded-xl border border-border/55 animate-stagger">
             {journalists.map(j => (
               <JournalistCard key={j.id} journalist={j} onClick={() => setActiveJournalist(j)} />
             ))}

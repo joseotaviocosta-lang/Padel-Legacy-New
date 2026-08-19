@@ -5,7 +5,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import { ActionFeedback, Button, CompactStats, EmptyState, Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader } from '@/components/design-system';
+import { ActionFeedback, Button, EmptyState, Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader } from '@/components/design-system';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
@@ -67,33 +67,27 @@ function Matches() {
   return (
     <Page>
       <PageContent>
-        <PageHeader dense eyebrow="Preparação competitiva" title="Partidas de treino" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} action={<Button level="primary" size="touch" onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed}><Play className="h-4 w-4" /> Jogar agora</Button>} />
-
-        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.4 — gate obrigatório):
-            "Jogar agora" já está no header acima; os 4 StatCards grandes
-            viram uma linha compacta para o histórico começar logo abaixo,
-            sem uma tela inteira de estatísticas no meio do caminho. */}
-        <CompactStats items={[
+        <PageHeader dense eyebrow="Preparação competitiva" title="Partidas" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} hudLabel="Resumo das partidas" hudItems={[
           { label: 'hoje', value: `${profile?.practice_matches_today || 0}/${DAILY_MATCH_LIMIT}`, icon: Swords },
           { label: 'vitórias', value: wins, icon: Trophy, tone: 'success' },
           { label: 'aproveitamento', value: `${winRate}%`, icon: AlertCircle, tone: winRate >= 50 ? 'success' : 'warning' },
           { label: 'histórico', value: matches.length, icon: Bot, tone: 'info' },
-        ]} />
+        ]} action={<Button level="primary" size="touch" onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed}><Play className="h-4 w-4" /> Jogar agora</Button>} />
 
       {isInjured(profile) && (
         <ActionFeedback state="error" title={`Lesionado · recupera em ${injuryRecoveryDays(profile)} dias`} description="Avance o dia no calendário para se recuperar." />
       )}
 
-      <Surface>
-        <SurfaceHeader title="Histórico recente" description="Resultados mais recentes das partidas de preparação." icon={Calendar} />
-        <div className="space-y-3">
+      <Surface padding="none">
+        <SurfaceHeader compact title="Recentes" description="Resultados mais recentes das partidas de preparação." icon={Calendar} className="mb-0 border-b border-border/45 p-3" />
+        <div>
         {matches.length === 0 ? (
           <EmptyState icon={Swords} title="Nenhuma partida registrada" description="Jogue uma partida de treino para iniciar o histórico da dupla." />
         ) : (
           matches.map((m) => {
             const wonA = m.winner === 'A';
             return (
-              <div key={m.id} className="glass rounded-2xl p-3 sm:p-4">
+              <div key={m.id} className="border-b border-border/45 p-3 last:border-b-0 sm:p-4">
                 <div className="flex items-center justify-between gap-3">
                   {/* Team A */}
                   <div className={`flex-1 min-w-0 ${wonA ? 'opacity-100' : 'opacity-50'}`}>

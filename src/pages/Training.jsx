@@ -18,7 +18,6 @@ import {
   ActionFeedback,
   Button,
   CollapsibleSection,
-  CompactStats,
   EmptyState,
   Page,
   PageContent,
@@ -199,30 +198,19 @@ export default function Training() {
         <PageHeader
           dense
           eyebrow="Desenvolvimento"
-          title="Centro de treino"
+          title="Treinos"
           description="Planeje a semana, execute sessões e acompanhe a evolução com energia, fadiga e limite diário sempre visíveis."
           icon={Dumbbell}
           tone="brand"
           breadcrumb={['Desenvolvimento', 'Treinos']}
-          stats={<>
-            <StatusBadge tone={isInjured(profile) ? 'danger' : overtraining.level === 'none' ? 'success' : 'warning'}>
-              {isInjured(profile) ? `Lesionado · ${injuryRecoveryDays(profile)} dias` : overtraining.label || 'Condição estável'}
-            </StatusBadge>
-            <StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>
-            {coach && <StatusBadge tone="info">Treinador: {coach.name || 'principal'}</StatusBadge>}
-          </>}
-          action={<Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing}><FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : 'Avançar dia'}</Button>}
+          hudLabel="Estado para o treino"
+          hudItems={[
+            { label: 'hoje', value: `${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`, icon: Dumbbell },
+            { label: 'energia', value: `${profile.energy ?? 100}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
+            { label: 'fadiga', value: `${normalizeFatigue(profile.fatigue)}%`, icon: Activity, tone: normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success' },
+            { label: 'forma', value: conditionScore, icon: Heart, tone: conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success' },
+          ]}
         />
-        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3): os 4 StatCards
-            grandes (que sozinhos já ocupavam boa parte do primeiro
-            viewport) viram uma única linha compacta — mesma informação,
-            sem competir por espaço com as atividades logo abaixo. */}
-        <CompactStats items={[
-          { label: 'hoje', value: `${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`, icon: Dumbbell },
-          { label: 'energia', value: `${profile.energy ?? 100}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
-          { label: 'fadiga', value: `${normalizeFatigue(profile.fatigue)}%`, icon: Activity, tone: normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success' },
-          { label: 'condição', value: `${conditionScore}/100`, icon: Heart, tone: conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success' },
-        ]} />
 
       {/* Overtraining alert */}
       {overtraining.level !== 'none' && (
@@ -271,8 +259,8 @@ export default function Training() {
               antes. Essas duas seções continuam 100% presentes — só
               descem para depois das atividades e ficam recolhidas por
               padrão (progressive disclosure), não removidas. */}
-          <Surface>
-            <SurfaceHeader title="Atividades de treino" description="Escolha uma categoria e compare as sessões disponíveis para o estado atual do atleta." icon={Dumbbell} />
+          <Surface padding="compact">
+            <SurfaceHeader compact title="Atividades de treino" description="Escolha uma categoria e compare as sessões disponíveis para o estado atual do atleta." icon={Dumbbell} />
             <div className="mb-4">
               <Tabs
                 tabs={CATEGORY_ORDER.map((catId) => ({ key: catId, label: TRAINING_CATEGORIES[catId].label }))}
@@ -283,7 +271,7 @@ export default function Training() {
             </div>
 
             {/* Activity cards */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
+            <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-3 lg:grid-cols-3 animate-stagger">
               {TRAINING_ACTIVITIES.filter(a => a.category === activeCategory).map(activity => {
                 const weeklyCount = weeklyCounts[activity.id] || 0;
                 const coachBonusVal = coach?.training_bonus || {};

@@ -1,16 +1,6 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
-import { Surface } from './Surface';
-
-const TONE_TEXT = {
-  brand: 'text-primary',
-  success: 'text-success',
-  warning: 'text-warning',
-  danger: 'text-destructive',
-  info: 'text-info',
-  premium: 'text-premium',
-  neutral: 'text-foreground',
-};
+import { GameHud } from './GameHud';
 
 /**
  * Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md): substitui a grade de 4-6
@@ -21,20 +11,5 @@ const TONE_TEXT = {
  * própria versão.
  */
 export function CompactStats({ items, className }) {
-  const list = (items || []).filter(Boolean);
-  if (!list.length) return null;
-  return (
-    <Surface padding="compact" className={cn('flex flex-wrap items-center gap-x-5 gap-y-1.5 text-xs', className)}>
-      {list.map((item, index) => {
-        const Icon = item.icon;
-        return (
-          <span key={item.id || item.label || index} className="flex items-center gap-1.5 font-bold">
-            {Icon && <Icon className={cn('h-3.5 w-3.5 shrink-0', TONE_TEXT[item.tone] || 'text-primary')} />}
-            <span className={cn(TONE_TEXT[item.tone] || 'text-foreground')}>{item.value}</span>
-            <span className="text-muted-foreground font-semibold">{item.label}</span>
-          </span>
-        );
-      })}
-    </Surface>
-  );
+  return <GameHud items={items} className={cn('pl-game-hud--standalone', className)} />;
 }

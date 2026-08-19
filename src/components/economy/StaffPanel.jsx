@@ -1,11 +1,11 @@
 import React, { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  BadgeCheck, BriefcaseBusiness, Building2, ChartNoAxesCombined, CircleDollarSign, GraduationCap,
+  BadgeCheck, BriefcaseBusiness, Building2, ChartNoAxesCombined, GraduationCap,
   Dumbbell, FileText, HeartPulse, LockKeyhole, PanelsTopLeft, RefreshCw,
   Sparkles, TrendingUp, Users, WandSparkles, Zap,
 } from 'lucide-react';
-import { Button, EmptyState, Surface, SummaryRow, Tabs, TooltipHint } from '@/components/design-system';
+import { Button, EmptyState, Surface, SummaryRow, Tabs } from '@/components/design-system';
 import {
   STAFF_ROLE_DEFINITIONS, getStaffIcon, getStaffMarketForMonth, getStaffSlots,
   normalizeStaffMember,
@@ -61,7 +61,6 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
   const synergies = useMemo(() => getActiveStaffSynergies(profile, activeStaff), [profile?.staff_facilities, activeStaff]);
   const snapshot = { staff: activeStaff, types: activeStaff.map(s => s.staff_type), monthlyCost, synergies, facilityEffects: {} };
   const recommendations = getStaffWeeklyRecommendations(profile, snapshot);
-  const activeSynergies = synergies.filter(item => item.active);
 
   const tabs = [
     { key: 'team', label: 'Minha comissão', icon: Users },
@@ -76,20 +75,7 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
     else setConfirmFireId(member.id);
   }
 
-  return <div className="space-y-5">
-    <Surface variant="elevated" className="relative overflow-hidden">
-      <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
-      <div className="relative flex flex-col lg:flex-row lg:items-center gap-5">
-        <div className="flex-1"><div className="flex items-center gap-2"><p className="text-[10px] uppercase tracking-[0.24em] text-primary font-bold">Comissão técnica</p><TooltipHint label="Sobre a comissão" content="Profissionais, instalações e especialidades agora trabalham em conjunto. Monte uma estrutura com identidade própria e ganhos reais." /></div><h2 className="text-2xl font-black mt-1">Estrutura de alta performance</h2></div>
-        <div className="grid grid-cols-4 gap-2 min-w-[420px]">
-          <div className="rounded-xl bg-secondary/30 p-3"><Users className="h-4 w-4 text-primary" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Vagas</p><p className="font-black text-lg">{occupiedSlots}/{totalSlots}</p></div>
-          <div className="rounded-xl bg-secondary/30 p-3"><CircleDollarSign className="h-4 w-4 text-amber-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Folha</p><p className="font-black text-lg">{coins(monthlyCost)}</p></div>
-          <div className="rounded-xl bg-secondary/30 p-3"><Building2 className="h-4 w-4 text-cyan-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Estrutura</p><p className="font-black text-lg">{facilities.reduce((sum, item) => sum + item.level, 0)}</p></div>
-          <div className="rounded-xl bg-secondary/30 p-3"><Zap className="h-4 w-4 text-purple-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Sinergias</p><p className="font-black text-lg">{activeSynergies.length}</p></div>
-        </div>
-      </div>
-    </Surface>
-
+  return <div className="space-y-3">
     <Tabs tabs={tabs} activeTab={view} onTabChange={setView} variant="buttons" />
 
     {view === 'team' && <Surface>

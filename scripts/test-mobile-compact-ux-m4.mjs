@@ -36,6 +36,7 @@ try {
   console.log('\n--- M4.1: primitives compartilhados ---');
   const ds = await server.ssrLoadModule('/src/components/design-system/index.js');
   gate('CompactStats exportado', typeof ds.CompactStats === 'function');
+  gate('GameHud exportado (M4.1, sucessor visual do CompactStats separado)', typeof ds.GameHud === 'function');
   gate('CompactListItem exportado', typeof ds.CompactListItem === 'function');
   gate('CompactActionCard exportado', typeof ds.CompactActionCard === 'function');
   gate('CollapsibleSection exportado', typeof ds.CollapsibleSection === 'function');
@@ -66,7 +67,7 @@ try {
   gate('Atividades de treino aparecem ANTES de "Estado do atleta" na ordem do código (proxy para primeiro viewport)', activitiesIdx < conditionIdx);
   gate('Atividades de treino aparecem ANTES de "Recuperação e suporte" na ordem do código', activitiesIdx < recoveryIdx);
   gate('Estado do atleta e Recuperação usam CollapsibleSection (recolhidos por padrão, não cards grandes sempre expandidos)', /CollapsibleSection icon=\{Heart\} title="Estado do atleta"/.test(trainingSource) && /CollapsibleSection icon=\{FastForward\} title="Recuperação e suporte"/.test(trainingSource));
-  gate('4 StatCards viraram CompactStats', trainingSource.includes('<CompactStats items={[') && !/PremiumStatCard|StatCard as PremiumStatCard/.test(trainingSource));
+  gate('4 StatCards continuam compactos (agora integrados ao HUD do PageHeader)', /hudItems=\{\[/.test(trainingSource) && !/PremiumStatCard|StatCard as PremiumStatCard/.test(trainingSource));
   gate('PageHeader de Treinos usa dense', /<PageHeader\s+dense/.test(trainingSource));
 
   const activityCardSource = read('src/components/training/TrainingActivityCard.jsx');
@@ -87,11 +88,11 @@ try {
   console.log('\n--- M4.4: Partidas (gate obrigatório) ---');
   const matchesSource = read('src/pages/Matches.jsx');
   gate('"Jogar agora" continua no header (ação principal já no primeiro viewport)', matchesSource.includes('Jogar agora'));
-  gate('4 StatCards viraram CompactStats', matchesSource.includes('<CompactStats items={[') && !matchesSource.includes('StatCard,'));
+  gate('4 StatCards continuam compactos (agora integrados ao HUD do PageHeader)', /hudItems=\{\[/.test(matchesSource) && !matchesSource.includes('StatCard,'));
   gate('PageHeader de Partidas usa dense', /<PageHeader\s+dense/.test(matchesSource));
   const headerIdx = matchesSource.indexOf('Jogar agora');
-  const historyIdx = matchesSource.indexOf('Histórico recente');
-  gate('"Jogar agora" (header) aparece antes de "Histórico recente" na ordem do código', headerIdx !== -1 && historyIdx !== -1 && headerIdx < historyIdx);
+  const historyIdx = Math.max(matchesSource.indexOf('Histórico recente'), matchesSource.indexOf('Recentes'));
+  gate('"Jogar agora" (header) aparece antes do histórico recente na ordem do código', headerIdx !== -1 && historyIdx !== -1 && headerIdx < historyIdx);
 
   // ═══════════════════════════════════════════════════════════════════════
   // Regressão M3.7.2 — nenhuma página perdeu o listener de atualização
@@ -126,7 +127,7 @@ try {
     'src/pages/Communications.jsx', 'src/pages/Press.jsx',
   ];
   for (const path of pagesUsingCompactStats) {
-    gate(`${path} usa CompactStats`, read(path).includes('CompactStats'));
+    gate(`${path} usa HUD compacto compartilhado no PageHeader`, read(path).includes('hudItems='));
   }
   gate('Ranking.jsx usa CompactListItem para as linhas (não 4 blocos JSX quase-idênticos)', read('src/pages/Ranking.jsx').includes('CompactListItem'));
   gate('Missions.jsx agrupa "Concluídas" em CollapsibleSection', read('src/pages/Missions.jsx').includes("title={`Concluídas"));

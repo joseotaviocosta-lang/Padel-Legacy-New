@@ -40,9 +40,10 @@ export default function ArticleCard({ article, onClick }) {
   // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.13): preview de conteúdo
   // reduzido de 2 para 1 linha; padding levemente reduzido.
   return (
-    <div
+    <button
+      type="button"
       onClick={onClick}
-      className={`glass rounded-2xl p-3 border ${toneClass} hover-lift cursor-pointer ${article.is_read ? 'opacity-60' : ''}`}
+      className={`w-full border-b p-3 text-left transition-colors last:border-b-0 hover:bg-secondary/20 ${toneClass} ${article.is_read ? 'opacity-60' : ''}`}
     >
       <div className="flex items-start gap-3 mb-1.5">
         <div className="h-8 w-8 rounded-xl bg-secondary/60 flex items-center justify-center shrink-0">
@@ -89,6 +90,6 @@ export default function ArticleCard({ article, onClick }) {
           )}
         </div>
       )}
-    </div>
+    </button>
   );
 }

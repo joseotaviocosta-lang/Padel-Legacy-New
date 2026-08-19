@@ -13,7 +13,7 @@ import {
 import { listCareerCommunications } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { getAvailablePartners } from '@/lib/career';
-import { CompactStats, EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
+import { EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import PartnerOverview from '@/components/partner/PartnerOverview';
 import PartnerSearch from '@/components/partner/PartnerSearch';
@@ -276,17 +276,15 @@ export default function PartnerHub() {
           : 'Analise propostas e encontre um parceiro compatível com seu lado e estilo de jogo.'}
         tone="brand"
         breadcrumb={['Carreira', 'Dupla e relações']}
+        hudLabel="Estado da dupla"
+        hudItems={[
+          { label: activePartnership ? activePartnership.partner_name : 'escolha uma proposta', value: activePartnership ? 'Dupla ativa' : 'Sem dupla', icon: Users, tone: activePartnership ? 'success' : 'warning' },
+          { label: 'entrosamento', value: `${Math.round(chemistry)}/100`, icon: Handshake },
+          { label: 'confiança', value: `${Math.round(confidence)}/100`, icon: Lightbulb, tone: 'info' },
+          { label: 'ofertas', value: offerCount, icon: Inbox, tone: 'premium' },
+        ]}
         action={inboxCount > 0 ? <StatusBadge tone="info" icon={Inbox}>{inboxCount} não lida(s)</StatusBadge> : null}
       />
-
-      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.11): 4 StatCards com
-          detail longo viram uma linha compacta. */}
-      <CompactStats items={[
-        { label: activePartnership ? activePartnership.partner_name : 'escolha uma proposta', value: activePartnership ? 'Dupla ativa' : 'Sem dupla', icon: Users, tone: activePartnership ? 'success' : 'warning' },
-        { label: 'entrosamento', value: `${Math.round(chemistry)}/100`, icon: Handshake },
-        { label: 'confiança', value: `${Math.round(confidence)}/100`, icon: Lightbulb, tone: 'info' },
-        { label: 'propostas', value: offerCount, icon: Inbox, tone: 'premium' },
-      ]} />
 
       {/* Instability banner */}
       {switchCount >= 2 && (

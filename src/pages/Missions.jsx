@@ -1,11 +1,11 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock, AlertTriangle } from 'lucide-react';
-import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
+import { Target, Check, Coins, Zap, Award, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock, AlertTriangle } from 'lucide-react';
+import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
-import { CollapsibleSection, CompactListItem, CompactStats, Page, PageContent, PageHeader, StatusBadge, Surface } from '@/components/design-system';
+import { CollapsibleSection, CompactListItem, Page, PageContent, PageHeader, Tabs } from '@/components/design-system';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { CAREER_DIFFICULTY_OPTIONS, DEFAULT_NEW_CAREER_DIFFICULTY } from '@/lib/careerDifficultyLabels.js';
@@ -14,38 +14,27 @@ import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.
 import { completeTutorialStep, isTutorialRouteMatch, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
 import { TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
-import { deterministicMissionSelection, missionStatus, requirementsMet } from '@/missions/missionSystem.js';
+import { missionStatus } from '@/missions/missionSystem.js';
+import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
+import { useCareer } from '@/careers/useCareer.js';
+import AchievementsPanel from '@/components/achievements/AchievementsPanel.jsx';
+import { summarizeAchievements } from '@/lib/achievementEngine.js';
 
+// Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 7/8): as
+// missões diárias/semanais/mensais/sazonais (antes definidas aqui em
+// EXTRA_MISSIONS) foram removidas como sistema — eram checklist repetitivo
+// sem valor próprio (ex.: "treine 3x esta semana", já incentivado pela
+// progressão normal) ou duplicavam conquistas de longo prazo já existentes
+// no catálogo real (season-wins ≈ "Vencedor Iniciante" win_match≥25,
+// season-titles ≈ "Tricampeão" win_tournament≥3). "Missões e objetivos"
+// virou "Objetivos": só Tutorial (ensina uma vez) e Conquistas (progressão
+// de longo prazo, achievementsData.js — agora com motor real de avaliação
+// em achievementEngine.js). Ver Parte 12 para a migração não-destrutiva das
+// linhas antigas de Mission/MissionProgress já persistidas em saves.
 const TABS = [
   { key: 'tutorial', label: 'Tutorial', icon: GraduationCap },
-  { key: 'diaria', label: 'Diárias', icon: Calendar },
-  { key: 'semanal', label: 'Semanais', icon: Flame },
-  { key: 'mensal', label: 'Mensais', icon: Clock },
-  { key: 'sazonal', label: 'Sazonais', icon: Trophy },
+  { key: 'conquistas', label: 'Conquistas', icon: Trophy },
 ];
-
-const EXTRA_MISSIONS = [
-  { id:'daily-training',title:'Movimente-se',description:'Complete 1 treino leve ou normal.',mission_type:'diaria',objective_type:'complete_training',target_count:1,xp_reward:20,coins_reward:25,difficulty:'baixa',cycle_scope:'career-day' },
-  { id:'daily-calendar',title:'Planeje o dia',description:'Programe uma atividade futura no calendário.',mission_type:'diaria',objective_type:'schedule_calendar_activity',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
-  { id:'daily-news',title:'Informe-se',description:'Leia uma notícia do circuito.',mission_type:'diaria',objective_type:'visit_journal',target_count:1,xp_reward:15,coins_reward:20,difficulty:'baixa',cycle_scope:'career-day' },
-  { id:'daily-match',title:'Entre em quadra',description:'Jogue ou simule 1 partida.',mission_type:'diaria',objective_type:'play_matches',target_count:1,xp_reward:30,coins_reward:35,difficulty:'baixa',cycle_scope:'career-day' },
-  { id:'weekly-training',title:'Semana de evolução',description:'Complete 4 treinos.',mission_type:'semanal',objective_type:'complete_training',target_count:4,xp_reward:100,coins_reward:90,difficulty:'média',cycle_scope:'career-week' },
-  { id:'weekly-matches',title:'Ritmo competitivo',description:'Dispute 2 partidas.',mission_type:'semanal',objective_type:'play_matches',target_count:2,xp_reward:120,coins_reward:100,difficulty:'média',cycle_scope:'career-week' },
-  { id:'weekly-win',title:'Vitória da semana',description:'Vença 1 partida.',mission_type:'semanal',objective_type:'win_matches',target_count:1,xp_reward:130,coins_reward:120,difficulty:'média',cycle_scope:'career-week' },
-  { id:'weekly-recovery',title:'Carga controlada',description:'Realize 2 ações de recuperação.',mission_type:'semanal',objective_type:'use_recovery',target_count:2,xp_reward:90,coins_reward:80,difficulty:'média',cycle_scope:'career-week' },
-  { id:'monthly-training',title:'Bloco de preparação',description:'Complete 12 sessões de treino no mês.',mission_type:'mensal',objective_type:'complete_training',target_count:12,xp_reward:300,coins_reward:240,difficulty:'alta',cycle_scope:'career-month' },
-  { id:'monthly-matches',title:'Calendário competitivo',description:'Dispute 8 partidas no mês.',mission_type:'mensal',objective_type:'play_matches',target_count:8,xp_reward:380,coins_reward:300,difficulty:'alta',cycle_scope:'career-month' },
-  { id:'monthly-tournaments',title:'Presença mensal',description:'Dispute 3 torneios no mês.',mission_type:'mensal',objective_type:'join_tournament',target_count:3,xp_reward:450,coins_reward:350,difficulty:'alta',cycle_scope:'career-month',requirements:['has-partner'] },
-  { id:'season-wins',title:'Temporada consistente',description:'Vença 25 partidas na temporada.',mission_type:'sazonal',objective_type:'win_matches',target_count:25,xp_reward:1200,coins_reward:900,difficulty:'muito alta',cycle_scope:'career-season' },
-  { id:'season-tour',title:'Presença no circuito',description:'Participe de 12 torneios na temporada.',mission_type:'sazonal',objective_type:'join_tournament',target_count:12,xp_reward:1000,coins_reward:750,difficulty:'muito alta',cycle_scope:'career-season',requirements:['has-partner'] },
-  { id:'season-titles',title:'Temporada de campeão',description:'Conquiste 3 torneios na temporada.',mission_type:'sazonal',objective_type:'win_tournament',target_count:3,xp_reward:2000,coins_reward:1500,difficulty:'muito alta',cycle_scope:'career-season',requirements:['has-partner'],medal_reward:'Temporada de Campeão' },
-];
-
-function daysRemaining(careerDate, endDate) {
-  const start = new Date(`${careerDate}T12:00:00`);
-  const end = new Date(`${endDate}T12:00:00`);
-  return Math.max(0, Math.ceil((end - start) / 86400000));
-}
 
 // Hotfix "Single Source of Truth" (docs/ONBOARDING_SINGLE_SOURCE_OF_TRUTH.md,
 // bug C): as etapas ACTION (nome/lado/dificuldade/estilo) salvavam o perfil
@@ -59,9 +48,11 @@ function notifyProfileUpdated(profile, stepId) {
   window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile } }));
 }
 
+const RETIRED_PERIODIC_MISSION_TYPES = ['diaria', 'semanal', 'mensal', 'sazonal'];
+
 async function syncExtendedMissionCatalog() {
   let existing = await localGame.entities.Mission.list('-created_date', 300);
-  const missing = findMissingMissionCatalog(existing, [...TUTORIAL_MISSIONS, ...EXTRA_MISSIONS]);
+  const missing = findMissingMissionCatalog(existing, TUTORIAL_MISSIONS);
   if (missing.length) {
     try {
       const created = await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true })));
@@ -76,6 +67,20 @@ async function syncExtendedMissionCatalog() {
   }
   const aliases = buildMissionAliasUpdates(existing);
   if (aliases.length) await localGame.entities.Mission.bulkUpdate(aliases);
+  // Tutorial 4.0 (Parte 12): saves antigos podem ter linhas de Mission com
+  // mission_type diaria/semanal/mensal/sazonal (o catálogo periódico
+  // removido acima). Nunca deletamos — só arquivamos (is_active:false),
+  // mesmo padrão já usado por ensureTutorialMissionCatalog para catálogo
+  // obsoleto (padel.js). MissionProgress dessas missões continua intocado:
+  // linhas já reivindicadas mantêm a recompensa histórica, nada é
+  // re-concedido nem revogado — só param de aparecer na UI porque a aba
+  // Conquistas não lê mission_type nenhum.
+  const stillActivePeriodic = existing.filter((mission) => RETIRED_PERIODIC_MISSION_TYPES.includes(mission.mission_type) && mission.is_active !== false);
+  if (stillActivePeriodic.length) {
+    await localGame.entities.Mission.bulkUpdate(stillActivePeriodic.map((mission) => ({ id: mission.id, is_active: false, retired_reason: 'periodic_missions_removed_v40' }))).catch(async () => {
+      for (const mission of stillActivePeriodic) await localGame.entities.Mission.update(mission.id, { is_active: false, retired_reason: 'periodic_missions_removed_v40' }).catch(() => {});
+    });
+  }
 }
 
 let catalogSyncPromise = null;
@@ -89,13 +94,17 @@ function ensureExtendedMissionCatalog() {
 function Missions() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { activeCareer } = useCareer();
   const [searchParams] = useSearchParams();
   const requestedMissionId = searchParams.get('mission');
   const [profile, setProfile] = useState(null);
   const [missions, setMissions] = useState([]);
   const [progress, setProgress] = useState({});
   const [loading, setLoading] = useState(true);
-  const [tab, setTab] = useState('tutorial');
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 8): o
+  // redirect de /achievements (App.jsx) chega como ?tab=achievements — um
+  // link/favorito antigo precisa abrir direto na aba Conquistas.
+  const [tab, setTab] = useState(() => (searchParams.get('tab') === 'achievements' ? 'conquistas' : 'tutorial'));
   const [savingChoice, setSavingChoice] = useState(false);
   const [athleteName, setAthleteName] = useState('');
   const [loadError, setLoadError] = useState('');
@@ -133,8 +142,26 @@ function Missions() {
   useEffect(() => {
     if (!requestedMissionId || !missions.length) return;
     const requested = missions.find((mission) => String(mission.id) === requestedMissionId);
-    if (requested?.mission_type) setTab(requested.mission_type);
+    // Tutorial 4.0: só existem mais duas abas — um deep link antigo para
+    // uma missão periódica (agora arquivada) cai de volta em "tutorial" em
+    // vez de setar uma aba que não existe mais.
+    if (requested?.mission_type === 'tutorial') setTab('tutorial');
   }, [missions, requestedMissionId]);
+
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 8): a
+  // aba padrão é Tutorial enquanto o onboarding está em andamento; depois
+  // de concluído, Conquistas vira a visão principal. Só decide isso UMA
+  // vez, no primeiro carregamento do perfil — nunca sobrescreve uma troca
+  // manual de aba feita pelo jogador depois.
+  const defaultTabDecidedRef = useRef(false);
+  useEffect(() => {
+    if (defaultTabDecidedRef.current || !profile?.id) return;
+    defaultTabDecidedRef.current = true;
+    // Um ?tab= explícito na URL (ex.: o redirect de /achievements) já
+    // decidiu — não sobrescreve.
+    if (searchParams.get('tab')) return;
+    if (profile?.tutorial_onboarding?.status !== 'in_progress') setTab('conquistas');
+  }, [profile, searchParams]);
 
   async function load() {
     setLoading(true);
@@ -329,6 +356,17 @@ function Missions() {
   const tutorialMissions = useMemo(() => missions.filter(m => m.mission_type === 'tutorial' && m.is_active !== false).sort((a, b) => Number(a.tutorial_order || 0) - Number(b.tutorial_order || 0)), [missions]);
   const nextTutorial = tutorialStatus === 'in_progress' ? resolveTutorialMission(tutorialStep, tutorialMissions) : null;
   const tutorialDone = getTutorialProgress(profile?.tutorial_onboarding).completed;
+
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 3):
+  // mesmo destino dinâmico usado por Home/Guia — evita uma terceira lógica
+  // divergente de resolução para a mesma etapa "first-match".
+  const [firstMatchAction, setFirstMatchAction] = useState(null);
+  useEffect(() => {
+    if (tutorialStep?.id !== 'first-match' || !profile?.id) { setFirstMatchAction(null); return undefined; }
+    let cancelled = false;
+    resolveFirstMatchAction(profile, activeCareer?.career_id).then((result) => { if (!cancelled) setFirstMatchAction(result); });
+    return () => { cancelled = true; };
+  }, [tutorialStep?.id, profile, activeCareer?.career_id]);
   const inlineAction = ['set_player_name', 'choose_court_side', 'choose_career_difficulty', 'choose_play_style'].includes(nextTutorial?.objective_type);
   const currentStepIndex = TUTORIAL_STEPS.findIndex(step => step.id === tutorialStep?.id);
   // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): esta página é montada via
@@ -347,17 +385,13 @@ function Missions() {
     ? buildInitialProfile({ handedness: profile.handedness || 'right', preferredSide: profile.court_side, playStyle: draftStyle, careerDifficultyId: profile.career_difficulty || 'hard' })
     : null;
   const currentChapter = tutorialStep?.chapter;
-  const categoryPool = useMemo(
-    () => missions.filter(m => m.mission_type === tab && requirementsMet(m, profile, { tournamentsUnlocked: true, sponsorsUnlocked: false })),
-    [missions, tab, profile],
-  );
-  const cycleId = tab === 'tutorial' ? 'tutorial:career' : missionPeriodKey(tab, profile?.career_date);
-  const categoryLimit = tab === 'diaria' ? 3 : tab === 'semanal' ? 3 : 20;
+  // Tutorial 4.0: só existe mais a aba Tutorial para esta lista (Conquistas
+  // é um painel totalmente separado, AchievementsPanel) — o antigo branch
+  // de seleção periódica (deterministicMissionSelection por categoria)
+  // nunca mais é alcançado, removido junto com EXTRA_MISSIONS.
   const filtered = useMemo(
-    () => (tab === 'tutorial'
-      ? tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter)
-      : deterministicMissionSelection(categoryPool, { careerId: profile?.id, cycleId, category: tab, limit: categoryLimit })),
-    [tab, tutorialMissions, currentChapter, categoryPool, profile?.id, cycleId, categoryLimit],
+    () => tutorialMissions.filter(m => !currentChapter || m.tutorial_chapter === currentChapter),
+    [tutorialMissions, currentChapter],
   );
   const summary = useMemo(() => {
     const current = filtered;
@@ -370,28 +404,33 @@ function Missions() {
   // cada linha é desenhada.
   const missionRows = useMemo(() => filtered.map((m, index) => {
     const pr = progress[m.id];
-    const status = missionStatus(pr, { locked: tab === 'tutorial' && !pr?.claimed && nextTutorial?.id !== m.id });
+    const status = missionStatus(pr, { locked: !pr?.claimed && nextTutorial?.id !== m.id });
     return { mission: m, index, pr, status, done: status === 'rewarded', current: Number(pr?.progress || 0), locked: status === 'locked' };
-  }), [filtered, progress, tab, nextTutorial?.id]);
+  }), [filtered, progress, nextTutorial?.id]);
   const activeMissionRows = useMemo(() => missionRows.filter((row) => !row.done), [missionRows]);
   const completedMissionRows = useMemo(() => missionRows.filter((row) => row.done), [missionRows]);
+  const achievementsSummary = useMemo(() => (profile?.id ? summarizeAchievements(profile) : { unlocked: 0, total: 0 }), [profile]);
 
   if (loading) return <LoadingScreen />;
-  const careerDate = profile?.career_date || '2026-01-01';
-  const remaining = tab === 'tutorial' ? null : daysRemaining(careerDate, missionPeriodEndsAt(tab, careerDate));
 
   return (
     <Page>
       <PageContent className="max-w-6xl space-y-5">
-        <PageHeader dense eyebrow="Carreira" title="Missões e tutorial" description="Aprenda os sistemas em sequência e acompanhe objetivos recorrentes sem perder o próximo passo." icon={Target} tone="premium" breadcrumb={['Carreira', 'Missões']} stats={<><StatusBadge tone={tutorialStatus === 'completed' ? 'success' : 'brand'}>{tutorialStatus === 'completed' ? 'Tutorial concluído' : `Tutorial ${tutorialDone}/${tutorialMissions.length}`}</StatusBadge><StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>{remaining != null && <StatusBadge tone="info">{remaining === 0 ? 'Renova hoje' : `${remaining} dias restantes`}</StatusBadge>}</>} />
-        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.6): 4 StatCards
-            grandes viram uma linha compacta. */}
-        <CompactStats items={[
-          { label: tab === 'tutorial' ? 'etapas' : 'objetivos', value: summary.total, icon: Target },
-          { label: 'finalizados', value: summary.completed, icon: Check, tone: 'success' },
+        {/* Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 8/9):
+            "Missões e objetivos" + a página separada Conquistas viram
+            "Objetivos" — um resumo único (Tutorial X/Y · Conquistas X/Y) e
+            duas abas, nunca mais cinco sistemas diferentes de tarefas. */}
+        <PageHeader dense eyebrow="Carreira" title="Objetivos" description="Aprenda o essencial no tutorial e acompanhe sua evolução nas conquistas." icon={Target} tone="premium" breadcrumb={['Carreira', 'Objetivos']} hudLabel="Progresso dos objetivos" hudItems={[
+          { label: 'tutorial', value: tutorialStatus === 'completed' ? `${tutorialMissions.length}/${tutorialMissions.length}` : `${tutorialDone}/${tutorialMissions.length}`, icon: GraduationCap, tone: tutorialStatus === 'completed' ? 'success' : 'brand' },
+          { label: 'conquistas', value: `${achievementsSummary.unlocked}/${achievementsSummary.total}`, icon: Trophy, tone: 'premium' },
           { label: 'em andamento', value: Math.max(0, summary.total - summary.completed), icon: Clock, tone: 'warning' },
-          { label: 'recompensa', value: 'automática', icon: Award, tone: 'premium' },
         ]} />
+
+        <Tabs tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" className="sticky top-2 z-20 bg-background/90" />
+
+        {tab === 'conquistas' ? (
+          <AchievementsPanel profile={profile} />
+        ) : (<>
       {loadError && (
         <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100 flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 shrink-0" />
@@ -439,11 +478,15 @@ function Missions() {
       {nextTutorial && !inlineAction ? <div className="glass rounded-2xl border border-primary/40 p-5 bg-primary/5">
         <div className="flex items-start gap-4">
           <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center"><GraduationCap className="h-6 w-6 text-primary" /></div>
-          <div className="flex-1"><p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p><h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2><p className="text-sm text-muted-foreground mt-1">{nextTutorial.description}</p>{nextTutorial.why_it_matters && <p className="mt-2 text-xs"><strong>Por que isso importa?</strong> {nextTutorial.why_it_matters}</p>}
+          <div className="flex-1"><p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p><h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2><p className="text-sm text-muted-foreground mt-1">{tutorialStep?.id === 'first-match' && firstMatchAction ? firstMatchAction.description : nextTutorial.description}</p>{nextTutorial.why_it_matters && <p className="mt-2 text-xs"><strong>Por que isso importa?</strong> {nextTutorial.why_it_matters}</p>}
             <div className="mt-3 flex items-center gap-3"><ProgressBar value={progress[nextTutorial.id]?.progress || 0} max={nextTutorial.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{progress[nextTutorial.id]?.progress || 0}/{nextTutorial.target_count || 1}</span></div>
           </div>
           <div className="flex shrink-0 flex-col gap-2">
-            {nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind !== 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
+            {tutorialStep?.id === 'first-match' ? (
+              // Tutorial 4.0: nunca usa tutorial_route/action_label estáticos
+              // (route='/matches') para esta etapa — sempre o destino real.
+              <button type="button" onClick={() => navigate((firstMatchAction || { to: '/tournaments' }).to)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{(firstMatchAction || { cta: 'Inscrever-se em um torneio' }).cta} <ArrowRight className="h-4 w-4" /></button>
+            ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind !== 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
               <button type="button" disabled={savingChoice} onClick={confirmUnderstanding} className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Confirmando...' : 'Entendi, continuar'}</button>
             ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind === 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
               <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
@@ -454,20 +497,18 @@ function Missions() {
         </div>
       </div> : !nextTutorial && tutorialStatus === 'completed' ? <div className="glass rounded-2xl border border-primary/40 p-5 flex items-center gap-4"><Award className="h-9 w-9 text-primary" /><div><p className="font-black">Tutorial concluído!</p><p className="text-sm text-muted-foreground">Você conheceu os principais sistemas do Padel Legacy.</p></div></div> : null}
 
-      <Surface padding="compact" className="sticky top-2 z-20 bg-background/90 backdrop-blur-xl"><div className="flex gap-2 overflow-x-auto pb-1">{TABS.map(t => <button key={t.key} onClick={() => setTab(t.key)} className={`min-w-[125px] flex-1 flex items-center justify-center gap-2 py-2.5 rounded-xl font-semibold text-sm ${tab === t.key ? 'bg-primary/15 text-primary' : 'glass text-muted-foreground hover:text-foreground'}`}><t.icon className="h-4 w-4" />{t.label}</button>)}</div></Surface>
-
       <div className="glass rounded-xl px-4 py-3 flex items-center gap-3 text-xs text-muted-foreground">
         <RotateCcw className="h-4 w-4 text-primary shrink-0" />
-        <span>{tab === 'tutorial' ? 'As etapas são liberadas em sequência. Ao concluir, a recompensa é entregue e a próxima etapa é desbloqueada.' : `Período atual: ${missionPeriodKey(tab, careerDate).split(':')[1]}. Renovação em ${remaining === 0 ? 'hoje' : `${remaining} dia${remaining === 1 ? '' : 's'}`}.`}</span>
+        <span>As etapas são liberadas em sequência. Ao concluir, a recompensa é entregue e a próxima etapa é desbloqueada.</span>
       </div>
 
-      {filtered.length === 0 ? <SectionCard title="Missões" icon={Target}><EmptyState icon={Target} message="Nenhuma missão ativa." /></SectionCard> : <div className="space-y-3 animate-stagger">
+      {filtered.length === 0 ? <SectionCard title="Tutorial" icon={Target}><EmptyState icon={Target} message="Nenhuma etapa ativa." /></SectionCard> : <div className="overflow-hidden rounded-xl border border-border/55 animate-stagger">
         {activeMissionRows.map(({ mission: m, index, status, done, current, locked }) => {
-          return <div key={m.id} aria-current={String(m.id) === requestedMissionId ? 'true' : undefined} className={`pl-surface rounded-2xl border p-4 ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id || String(m.id) === requestedMissionId ? 'border-primary/60 ring-2 ring-primary/15' : ''}`}>
+          return <div key={m.id} aria-current={String(m.id) === requestedMissionId ? 'true' : undefined} className={`border-b border-border/45 p-3 last:border-b-0 ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id || String(m.id) === requestedMissionId ? 'bg-primary/5 ring-1 ring-inset ring-primary/30' : ''}`}>
             <div className="flex items-start gap-3">
               <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${locked ? 'bg-secondary/60' : 'bg-amber-500/15'}`}>{locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Target className="h-5 w-5 text-amber-400" />}</div>
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2"><p className="font-semibold text-sm">{tab === 'tutorial' && <span className="text-primary mr-2">#{index + 1}</span>}{m.title}</p><span className="text-[10px] uppercase font-bold text-muted-foreground">{{rewarded:'Recompensa recebida',completed:'Concluída',locked:'Bloqueada',available:'Disponível',in_progress:'Em andamento',expired:'Expirada'}[status]}</span></div>
+                <div className="flex items-center justify-between gap-2"><p className="font-semibold text-sm"><span className="text-primary mr-2">#{index + 1}</span>{m.title}</p><span className="text-[10px] uppercase font-bold text-muted-foreground">{{rewarded:'Recompensa recebida',completed:'Concluída',locked:'Bloqueada',available:'Disponível',in_progress:'Em andamento',expired:'Expirada'}[status]}</span></div>
                 <p className="text-xs text-muted-foreground mt-1">{m.description}</p>
                 {m.why_it_matters && <p className="mt-2 text-xs"><strong>Por que importa:</strong> {m.why_it_matters}</p>}
                 <div className="mt-3 flex items-center gap-3"><ProgressBar value={done ? m.target_count : current} max={m.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{done ? m.target_count : current}/{m.target_count || 1}</span></div>
@@ -497,6 +538,7 @@ function Missions() {
           </CollapsibleSection>
         )}
       </div>}
+      </>)}
       </PageContent>
     </Page>
   );

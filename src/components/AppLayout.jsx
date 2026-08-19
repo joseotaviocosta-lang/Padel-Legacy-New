@@ -275,11 +275,11 @@ export default function AppLayout() {
   return (
     <MotionPolicyProvider value={performanceProfile}>
     <div className="app-shell min-h-screen bg-background">
-      <header className="glass pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex min-h-16 items-center border-b border-border/60 pl-[calc(0.625rem+var(--pl-safe-l))] pr-[calc(0.625rem+var(--pl-safe-r))] md:hidden">
+      <header className="pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex h-[calc(var(--pl-header-h)+env(safe-area-inset-top))] items-center border-b border-border/45 bg-background/95 pl-[calc(0.375rem+var(--pl-safe-l))] pr-[calc(0.375rem+var(--pl-safe-r))] md:hidden">
         <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
-        <div className="min-w-0 flex-1 px-3">
+        <div className="min-w-0 flex-1 px-1.5">
           {/* Hotfix hierarquia de páginas (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md):
               este cabeçalho global não deve mais reimprimir o título da rota —
               cada página já tem seu próprio PageHeader (fonte única de
@@ -347,7 +347,7 @@ export default function AppLayout() {
           solto — qualquer mudança futura na altura da nav não pode mais
           descasar dos dois lugares. A folga sobre a altura real da nav subiu
           de 1.25rem para 1.75rem como margem de segurança extra. */}
-      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+1.75rem)] pt-[calc(4rem+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+3.5rem)] pt-[calc(var(--pl-header-h)+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 pl-[calc(1rem+var(--pl-safe-l))] pr-[calc(1rem+var(--pl-safe-r))] backdrop-blur-xl md:flex lg:pl-[calc(1.25rem+var(--pl-safe-l))] lg:pr-[calc(1.25rem+var(--pl-safe-r))]">
           {/* Hotfix hierarquia de páginas: idem ao cabeçalho mobile — sem
               reimprimir breadcrumb/título da rota aqui, só contexto

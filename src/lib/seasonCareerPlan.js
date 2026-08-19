@@ -1,13 +1,28 @@
+import { findNextLockedAchievement } from './achievementEngine.js';
+
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
 
-function rankingGoal(rank) {
-  const current = Number(rank) || 1001;
-  if (current > 500) return { title: 'Entrar no Top 500', target: 500, progress: clamp(((1001 - current) / 501) * 100), route: '/ranking', category: 'competicao' };
-  if (current > 100) return { title: 'Entrar no Top 100', target: 100, progress: clamp(((500 - current) / 400) * 100), route: '/ranking', category: 'competicao' };
-  if (current > 20) return { title: 'Entrar no Top 20', target: 20, progress: clamp(((100 - current) / 80) * 100), route: '/ranking', category: 'competicao' };
-  if (current > 10) return { title: 'Entrar no Top 10', target: 10, progress: clamp(((20 - current) / 10) * 100), route: '/ranking', category: 'competicao' };
-  if (current > 1) return { title: 'Chegar ao nº 1', target: 1, progress: clamp(((10 - current) / 9) * 100), route: '/ranking', category: 'competicao' };
-  return { title: 'Defender a liderança mundial', target: 1, progress: 100, route: '/ranking', category: 'competicao' };
+// Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 14): esta
+// escada de metas de ranking (Top 500→100→20→10→#1) era uma fonte de
+// objetivo PRÓPRIA e paralela — a mesma progressão já existe como conquista
+// real no catálogo (categoria "carreira", trigger_type "reach_rank": Top
+// 100/50/10/3/#1). Em vez de manter duas, o "Próximo objetivo" da Home lê
+// a próxima conquista de ranking ainda bloqueada — mesma fonte que a aba
+// Conquistas usa, nunca uma terceira.
+function rankingGoal(profile, context) {
+  const rank = context?.worldRank?.rank || profile?.world_rank || profile?.ranking || 1001;
+  const next = findNextLockedAchievement(profile, context, { category: 'carreira', triggerType: 'reach_rank' });
+  if (!next) {
+    return { title: 'Defender a liderança mundial', target: 1, progress: 100, route: '/ranking', category: 'competicao' };
+  }
+  return {
+    title: next.achievement.name,
+    target: next.achievement.threshold,
+    progress: clamp(next.percent),
+    route: '/ranking',
+    category: 'competicao',
+    _rank: rank,
+  };
 }
 
 function developmentGoal(profile, trainings = []) {
@@ -53,9 +68,10 @@ function structureGoal(profile) {
 }
 
 export function buildSeasonCareerPlan(profile, context = {}) {
-  const rank = context?.worldRank?.rank || profile?.world_rank || profile?.ranking || 1001;
-  const ranking = rankingGoal(rank);
-  ranking.description = rank > 1000 ? 'Comece a somar pontos no circuito.' : `Posição atual: #${rank}`;
+  const ranking = rankingGoal(profile, context);
+  const rank = ranking._rank;
+  delete ranking._rank;
+  ranking.description = !rank || rank > 1000 ? 'Comece a somar pontos no circuito.' : `Posição atual: #${rank}`;
 
   const goals = [
     ranking,

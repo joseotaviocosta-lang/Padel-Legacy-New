@@ -3,7 +3,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, GraduationCap,
-  HeartPulse, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target,
+  HeartPulse, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target, Zap,
   Trophy, TrendingUp, UserRound, Users, Globe2, Wrench,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
@@ -14,7 +14,7 @@ import {
 import {
   CollapsibleSection,
   Page, PageContent, PageHeader, StatusBadge, Surface, SurfaceHeader,
-  ProgressBar, EmptyState, PageSkeleton, TooltipHint, Button, ConfirmDialog,
+  ProgressBar, EmptyState, PageSkeleton, Button, ConfirmDialog,
 } from '@/components/design-system';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
 import CareerCalendar from '@/components/career/CareerCalendar';
@@ -27,6 +27,7 @@ import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getOnboardingNextAction } from '@/onboarding/onboardingNextAction.js';
+import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
 import { getLivingWorldSnapshot } from '@/lib/livingWorldEngine.js';
@@ -302,7 +303,28 @@ export default function CareerHub() {
   // que o onboarding termina (ou nunca começou/foi pulado).
   const onboardingNextAction = useMemo(() => getOnboardingNextAction(profile), [profile]);
   const fallbackHeroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
-  const heroStep = onboardingNextAction || fallbackHeroStep;
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 3): a
+  // etapa "first-match" é a única cujo destino real depende de estado de
+  // torneio (inscrito? hoje? interrompida?) — não dá para resolver isso de
+  // forma síncrona a partir só do `profile`, então só essa etapa recebe uma
+  // resolução assíncrona por cima do valor estático padrão de
+  // getOnboardingNextAction(). Inicializa com o MESMO fallback que
+  // resolveFirstMatchAction usaria para "ainda não inscrito" — nunca aponta
+  // para /matches (partida de treino), nem enquanto resolve.
+  const [firstMatchAction, setFirstMatchAction] = useState(null);
+  useEffect(() => {
+    if (onboardingNextAction?.stepId !== 'first-match' || !profile?.id) { setFirstMatchAction(null); return undefined; }
+    let cancelled = false;
+    resolveFirstMatchAction(profile, activeCareer?.career_id).then((result) => { if (!cancelled) setFirstMatchAction(result); });
+    return () => { cancelled = true; };
+  }, [onboardingNextAction?.stepId, profile, activeCareer?.career_id]);
+  const heroStep = useMemo(() => {
+    if (onboardingNextAction?.stepId === 'first-match') {
+      const resolved = firstMatchAction || { to: '/tournaments', cta: 'Inscrever-se em um torneio', description: onboardingNextAction.description };
+      return { ...onboardingNextAction, to: resolved.to, destination: resolved.to, cta: resolved.cta, actionLabel: resolved.cta, description: resolved.description };
+    }
+    return onboardingNextAction || fallbackHeroStep;
+  }, [onboardingNextAction, firstMatchAction, fallbackHeroStep]);
   // Hotfix "Single Source of Truth" (docs/ONBOARDING_SINGLE_SOURCE_OF_TRUTH.md):
   // uma etapa VISIT como career-created aponta para /game — a própria Home.
   // Enquanto o auto-complete por visita (OnboardingGuide.jsx) ainda não
@@ -382,10 +404,10 @@ export default function CareerHub() {
         <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} />
 
         {/* 2. Próximo objetivo + próximo evento */}
-        <div className="grid gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-7"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} /></div>
-          <div className="xl:col-span-5"><NextEventCard event={nextEvent} /></div>
-        </div>
+        <Surface padding="none" className="grid overflow-hidden xl:grid-cols-12">
+          <div className="border-b border-border/45 xl:col-span-7 xl:border-b-0 xl:border-r"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} embedded /></div>
+          <div className="xl:col-span-5"><NextEventCard event={nextEvent} embedded /></div>
+        </Surface>
 
         {/* 3. O que fazer agora */}
         <div className="grid gap-4 xl:grid-cols-12">
@@ -593,29 +615,28 @@ function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount
       description={metaParts.join(' · ')}
       icon={UserRound}
       tone={primaryContext.tone}
-      stats={[
-        <StatusBadge key="ranking" tone="premium" icon={Crown}>Ranking {worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+'}</StatusBadge>,
-        <StatusBadge key="ovr" tone="info" icon={TrendingUp}>OVR {ovr}</StatusBadge>,
-        <TooltipHint key="xp" content={`Nível ${careerExperience.level}/${careerExperience.maxLevel} · ${careerExperience.isMax ? 'nível máximo' : `${careerExperience.xp}/${careerExperience.nextXp} XP`}`}>
-          <StatusBadge tone="success">XP {careerExperience.level}/{careerExperience.maxLevel}</StatusBadge>
-        </TooltipHint>,
-        unreadCount > 0 ? <StatusBadge key="pending" tone="danger" icon={AlertCircle}>{unreadCount} pendência{unreadCount === 1 ? '' : 's'}</StatusBadge> : null,
-      ].filter(Boolean)}
-      action={<div className="flex flex-wrap gap-2"><CommandLink to="/game/training" icon={Dumbbell}>Treinar</CommandLink><CommandLink to="/game/calendar" icon={CalendarDays}>Agenda</CommandLink><CommandLink to="/tournaments" icon={Trophy}>Competir</CommandLink></div>}
+      hudLabel="Resumo do atleta"
+      hudItems={[
+        { label: 'ranking', value: worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+', icon: Crown, tone: 'premium' },
+        { label: 'OVR', value: ovr, icon: TrendingUp, tone: 'info' },
+        { label: 'nível', value: `${careerExperience.level}/${careerExperience.maxLevel}`, icon: Zap, tone: 'success' },
+        unreadCount > 0 ? { label: 'pendências', value: unreadCount, icon: AlertCircle, tone: 'danger' } : null,
+      ]}
+      action={<div className="flex flex-wrap gap-2"><CommandLink primary to="/game/training" icon={Dumbbell}>Treinar</CommandLink><CommandLink to="/tournaments" icon={Trophy}>Competir</CommandLink><CommandLink to="/game/calendar" icon={CalendarDays}>Agenda</CommandLink></div>}
     />
   );
 }
 
-function CommandLink({ to, icon: Icon, children }) {
-  return <Link to={to} className="inline-flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-3 py-2 text-xs font-bold transition hover:border-primary/30 hover:bg-primary/10 hover:text-primary"><Icon className="h-3.5 w-3.5" />{children}</Link>;
+function CommandLink({ to, icon: Icon, children, primary = false }) {
+  return <Link to={to} className={primary ? 'pl-game-primary inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-black text-primary-foreground' : 'inline-flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-bold text-muted-foreground transition hover:bg-primary/10 hover:text-primary'}><Icon className="h-3.5 w-3.5" />{children}</Link>;
 }
 
-function NextObjectiveCard({ goal, worldRank }) {
-  if (!goal) return <Surface className="h-full"><EmptyState compact icon={Target} title="Objetivo em definição" description="Continue jogando para desbloquear sua próxima meta." /></Surface>;
+function NextObjectiveCard({ goal, worldRank, embedded = false }) {
+  if (!goal) return embedded ? <div className="p-3"><EmptyState compact icon={Target} title="Objetivo em definição" description="Continue jogando para desbloquear sua próxima meta." /></div> : <Surface className="h-full"><EmptyState compact icon={Target} title="Objetivo em definição" description="Continue jogando para desbloquear sua próxima meta." /></Surface>;
   const currentLabel = worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+';
-  return (
-    <Surface variant="premium" className="h-full">
-      <SurfaceHeader icon={Target} title="Próximo objetivo" description={goal.description} />
+  const content = (
+    <div className="p-3 sm:p-4">
+      <SurfaceHeader compact icon={Target} title="Próximo objetivo" description={goal.description} />
       <p className="text-lg font-black leading-tight">{goal.title}</p>
       <div className="mt-3 flex items-center gap-2 text-xs font-bold text-muted-foreground">
         <span className="text-foreground">{currentLabel}</span><ArrowRight className="h-3.5 w-3.5" /><span className="text-primary">#{goal.target}</span>
@@ -623,14 +644,15 @@ function NextObjectiveCard({ goal, worldRank }) {
       </div>
       <ProgressBar value={goal.progress} max={100} tone="premium" className="mt-2" />
       <Link to={goal.route} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary">Ver ranking <ChevronRight className="h-3.5 w-3.5" /></Link>
-    </Surface>
+    </div>
   );
+  return embedded ? content : <Surface variant="premium" padding="none" className="h-full">{content}</Surface>;
 }
 
-function NextEventCard({ event }) {
+function NextEventCard({ event, embedded = false }) {
   const Icon = event.icon;
-  return (
-    <Surface className={`h-full pl-tone-${event.tone}`}>
+  const content = (
+    <div className={`h-full p-3 pl-tone-${event.tone} sm:p-4`}>
       <div className="flex items-start gap-3">
         <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-current/10" style={{ color: 'hsl(var(--tone-color, var(--primary)))' }}><Icon className="h-5 w-5" /></span>
         <div className="min-w-0 flex-1">
@@ -640,8 +662,9 @@ function NextEventCard({ event }) {
         </div>
       </div>
       {event.cta && <Link to={event.route} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary">{event.cta} <ChevronRight className="h-3.5 w-3.5" /></Link>}
-    </Surface>
+    </div>
   );
+  return embedded ? content : <Surface padding="none" className="h-full">{content}</Surface>;
 }
 
 function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner }) {

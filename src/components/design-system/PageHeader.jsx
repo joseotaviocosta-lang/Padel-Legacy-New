@@ -1,6 +1,7 @@
 import React from 'react';
 import { ChevronRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { GameHud } from './GameHud';
 
 export function PageHeader({
   eyebrow,
@@ -13,6 +14,8 @@ export function PageHeader({
   tone = 'brand',
   className,
   dense = false,
+  hudItems = undefined,
+  hudLabel = undefined,
 }) {
   // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.2): heroes desktop com
   // eyebrow+título+descrição+breadcrumb+stats consomem 250-400px em mobile
@@ -24,7 +27,7 @@ export function PageHeader({
   // várias linhas. Nenhum branch de JS/isMobile — todo o resto do
   // componente é idêntico ao uso não-denso.
   return (
-    <header className={cn('pl-page-hero relative overflow-hidden rounded-2xl border p-4 sm:p-5 lg:p-6', dense && 'pl-page-hero--dense', `pl-tone-${tone}`, className)}>
+    <header data-game-context={dense ? 'true' : undefined} className={cn('pl-page-hero relative overflow-hidden rounded-2xl border p-4 sm:p-5 lg:p-6', dense && 'pl-page-hero--dense', `pl-tone-${tone}`, className)}>
       <div className="relative z-10 flex min-w-0 flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           {breadcrumb?.length > 0 && (
@@ -50,6 +53,7 @@ export function PageHeader({
               {stats}
             </div>
           )}
+          <GameHud items={hudItems} label={hudLabel} className="mt-2.5 md:mt-4" />
         </div>
         {action && <div className="flex shrink-0 flex-wrap gap-2 lg:justify-end">{action}</div>}
       </div>

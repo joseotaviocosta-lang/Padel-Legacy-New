@@ -2,7 +2,20 @@
 // Hundreds of achievements: public, hidden (mysterious), and secret (invisible)
 // Categories: partidas, torneios, evolução, social, economia, mercado, coleção, história, carreira, secreto, lendário
 
-export const ACHIEVEMENT_CATALOG = [
+// Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9): id
+// estável derivado do nome (único no catálogo) — a mesma função gera o id
+// tanto para o reseed do save (src/local/localSeed.js) quanto para o motor
+// de avaliação (src/lib/achievementEngine.js), então nunca divergem.
+function slugifyAchievementName(value) {
+  return String(value || '')
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+export function achievementIdFromName(name) {
+  return `achv-${slugifyAchievementName(name)}`;
+}
+
+const RAW_ACHIEVEMENT_CATALOG = [
   // ═══════════════ PARTIDAS — PÚBLICAS ═══════════════
   { name: 'Primeiro Passo', description: 'Jogue sua primeira partida oficial.', icon: 'Footprints', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'play_match', threshold: 1, xp_reward: 50, coins_reward: 100, points: 10 },
   { name: 'Estreante Dedicado', description: 'Jogue 10 partidas.', icon: 'Play', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'play_match', threshold: 10, xp_reward: 100, coins_reward: 200, points: 15 },
@@ -248,6 +261,18 @@ export const ACHIEVEMENT_CATALOG = [
   { name: 'Multiverso do Padel', description: 'Complete 10 gerações de carreira com #1 em todas.', icon: 'Infinity', rarity: 'exclusivo', category: 'lendário', visibility: 'secreto', difficulty: 'lendario', trigger_type: 'multi_generation_champ', threshold: 10, xp_reward: 500000, coins_reward: 1000000, medal_reward: 'O Eterno', title_reward: 'O Eterno', exclusive_item: 'Coroa da Eternidade', hint: '10 vidas. 10 coroas. Uma alma.', is_revealed_hint: false, points: 5000 },
   { name: 'O Inatingível', description: 'Desbloqueie TODAS as outras conquistas.', icon: 'Sparkles', rarity: 'exclusivo', category: 'lendário', visibility: 'secreto', difficulty: 'lendario', trigger_type: 'all_achievements', threshold: 1, xp_reward: 1000000, coins_reward: 2000000, medal_reward: 'O Inatingível', title_reward: 'O Inatingível', exclusive_item: 'Coroa do Inatingível', hint: 'A perfeição não é o fim. É o começo de algo maior.', is_revealed_hint: false, points: 10000 },
 ];
+
+// As conquistas "secreto" compartilham name:'???' até serem desbloqueadas
+// (nada para o slug pegar) — usa o índice como desempate nesses casos e em
+// qualquer outra colisão, garantindo id único e estável por posição no
+// catálogo (a ordem do array nunca muda em runtime).
+const usedAchievementIds = new Set();
+export const ACHIEVEMENT_CATALOG = RAW_ACHIEVEMENT_CATALOG.map((entry, index) => {
+  let id = achievementIdFromName(entry.name);
+  if (!id || id === 'achv-' || usedAchievementIds.has(id)) id = `achv-${index}`;
+  usedAchievementIds.add(id);
+  return { id, ...entry };
+});
 
 // ─── Stats ────────────────────────────────────────────────────────────────────
 

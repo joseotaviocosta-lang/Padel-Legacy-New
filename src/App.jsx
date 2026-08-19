@@ -23,13 +23,13 @@ const lazyPage = (name) => lazy(PAGE_LOADERS[name]);
 const [PageNotFound, CareerManager, Login, Register, ForgotPassword, ResetPassword, CareerHub, Training, Missions,
   Shop, Inventory, Legacy, CareerStats, CalendarPage, Season, Economy, PlayerProfile, Matches, Tournaments,
   Journal, Ranking, Clubs, ClubDetail, Athletes, CharacterEditor, Admin, DatabaseManager, History, HallOfFame,
-  Relationships, Coaches, TrainingCenter, Press, Fans, Achievements, WorldEvents, WorldMarket, Weather,
+  Relationships, Coaches, TrainingCenter, Press, Fans, WorldEvents, WorldMarket, Weather,
   Encyclopedia, PartnerHub, Community, NavigationHub, WorldHub, Staff, Communications, MonthlyReports, AnnualReports, Settings] = [
   'PageNotFound', 'CareerManager', 'Login', 'Register', 'ForgotPassword', 'ResetPassword', 'CareerHub', 'Training',
   'Missions', 'Shop', 'Inventory', 'Legacy', 'CareerStats', 'CalendarPage', 'Season', 'Economy', 'PlayerProfile',
   'Matches', 'Tournaments', 'Journal', 'Ranking', 'Clubs', 'ClubDetail', 'Athletes', 'CharacterEditor', 'Admin',
   'DatabaseManager', 'History', 'HallOfFame', 'Relationships', 'Coaches', 'TrainingCenter', 'Press', 'Fans',
-  'Achievements', 'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'NavigationHub', 'WorldHub', 'Staff', 'Communications', 'MonthlyReports', 'AnnualReports', 'Settings',
+  'WorldEvents', 'WorldMarket', 'Weather', 'Encyclopedia', 'PartnerHub', 'Community', 'NavigationHub', 'WorldHub', 'Staff', 'Communications', 'MonthlyReports', 'AnnualReports', 'Settings',
 ].map(lazyPage);
 
 const RouteLoadingFallback = () => (
@@ -124,7 +124,12 @@ const AuthenticatedApp = () => {
           <Route path="/press" element={<Press />} />
           <Route path="/social" element={<Navigate to="/community" replace />} />
           <Route path="/fans" element={<Fans />} />
-          <Route path="/achievements" element={<Achievements />} />
+          {/* Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md,
+              Parte 8): Conquistas passou a ser uma aba da página unificada
+              de Objetivos (Missions.jsx) — links/favoritos antigos para
+              /achievements continuam funcionando, só chegam num lugar
+              diferente. */}
+          <Route path="/achievements" element={<Navigate to="/game/missions?tab=achievements" replace />} />
           <Route path="/world-events" element={<WorldEvents />} />
           <Route path="/world-market" element={<WorldMarket />} />
           <Route path="/weather" element={<Weather />} />

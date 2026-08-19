@@ -14,7 +14,7 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, Surface, CompactStats, StatusBadge, EmptyState, Tabs, Button, ConfirmDialog, TooltipHint } from '@/components/design-system';
+import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, StatusBadge, EmptyState, Tabs, Button, ConfirmDialog, TooltipHint } from '@/components/design-system';
 import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -248,12 +248,8 @@ export default function Tournaments() {
     .filter((t) => t.start_date && careerDate && t.start_date >= careerDate && isRegistrationOpen(t, careerDate))
     .sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''))[0] || null;
 
-  const { filtered, counts, byMonth } = (() => {
+  const { filtered, byMonth } = (() => {
     const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
-    const totals = Object.fromEntries(FILTERS.slice(1).map(item => [item.id, 0]));
-    ordered.forEach(tournament => {
-      if (Object.hasOwn(totals, tournament.tier)) totals[tournament.tier] += 1;
-    });
     const inSelectedView = ordered.filter(tournament => {
       const isPast = activeRunEvents.has(tournament.id) ? false : tournament.start_date && careerDate
         ? tournament.start_date < careerDate
@@ -266,7 +262,7 @@ export default function Tournaments() {
       (groups[key] ||= []).push(tournament);
       return groups;
     }, {});
-    return { filtered: selected, counts: totals, byMonth: grouped };
+    return { filtered: selected, byMonth: grouped };
   })();
 
   async function handlePlay(tournament) {
@@ -328,39 +324,19 @@ export default function Tournaments() {
         <PremiumPageHeader
           dense
           eyebrow="Padel Legacy World Tour"
-          title={season?.name || 'Temporada 2026'}
+          title="Torneios"
           description={season?.description || 'Escolha os torneios certos, administre inscrições e acompanhe a evolução do circuito.'}
           icon={Trophy}
           tone="premium"
           breadcrumb={['Competições', 'Torneios']}
-          action={<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." />}
+          hudLabel="Próximo evento"
+          hudItems={nextTournament ? [
+            { label: nextTournament.name, value: daysBetween(careerDate, nextTournament.start_date) === 0 ? 'Hoje' : `${daysBetween(careerDate, nextTournament.start_date)}d`, icon: Trophy, tone: 'premium' },
+            { label: 'status', value: registeredTournaments.has(nextTournament.id) ? 'Inscrito' : 'Disponível', icon: CheckCircle, tone: registeredTournaments.has(nextTournament.id) ? 'success' : 'warning' },
+            { label: 'nível', value: nextTournament.tier, icon: Award },
+          ] : [{ label: 'agenda', value: 'Livre', icon: Calendar, tone: 'info' }]}
+          action={<div className="flex items-center gap-2">{nextTournament && <Button level="primary" size="touch" onClick={() => setDetailsTournament(nextTournament)}>Abrir evento</Button>}<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." /></div>}
         />
-
-        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7 — gate obrigatório):
-            próximo torneio no primeiro viewport, com ação direta. */}
-        {nextTournament && (
-          <Surface variant="premium" padding="compact" className="flex items-center justify-between gap-3">
-            <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-black uppercase tracking-wide text-primary">
-                {daysBetween(careerDate, nextTournament.start_date) === 0 ? 'Próximo torneio · hoje' : `Próximo torneio · em ${daysBetween(careerDate, nextTournament.start_date)}d`}
-              </p>
-              <p className="truncate text-sm font-bold">{nextTournament.name}</p>
-            </div>
-            <Button level="primary" size="sm" onClick={() => setDetailsTournament(nextTournament)} className="shrink-0">Ver torneio</Button>
-          </Surface>
-        )}
-
-        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7): os 6 StatCards de
-            contagem por tier viram uma linha compacta — a mesma informação
-            já reaparece nos botões de filtro logo abaixo. */}
-        <CompactStats items={[
-          { label: 'Crown', value: counts.Crown, icon: Crown, tone: 'premium' },
-          { label: 'Elite', value: counts.Elite, icon: Flame, tone: 'danger' },
-          { label: 'Masters', value: counts.Masters, icon: Trophy, tone: 'info' },
-          { label: 'Platinum', value: counts.Platinum, icon: Star },
-          { label: 'Gold', value: counts.Gold, icon: Award, tone: 'warning' },
-          { label: 'Silver', value: counts.Silver, icon: Shield },
-        ]} />
 
       <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
 

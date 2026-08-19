@@ -189,10 +189,15 @@ try {
   state = (await reconcile({ registrations, matches: [], trainings })).state;
   gate('Inscrição em torneio (evento de domínio) → avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
 
-  const matches = [{ id: 'match-1', profile_id: profile.id }];
-  profile = await localGame.entities.PlayerProfile.update(profile.id, { matches_played: 1 });
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 2):
+  // "first-match" exige explicitamente uma partida OFICIAL de torneio —
+  // os mesmos campos já gravados desde a finalização real (matchFinalization.js
+  // para treino, TournamentModal.jsx para torneio), não matches_played
+  // sozinho (contador também incrementado por treino).
+  const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
+  profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Partida concluída (evento de domínio) → avança para autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Partida OFICIAL concluída (evento de domínio) → avança para autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
 
   state = await confirmStep('autonomy');
   gate('Onboarding principal concluído de ponta a ponta (status completed)', state.status === 'completed');

@@ -27,6 +27,7 @@ export * from './CountryFlag';
 export * from './RankingPosition';
 export * from './NotificationBadge';
 export * from './CompactStats';
+export * from './GameHud';
 export * from './CompactListItem';
 export * from './CompactActionCard';
 export * from './CollapsibleSection';

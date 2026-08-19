@@ -20,7 +20,7 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
   const available = evaluation.availability.available;
 
   return (
-    <article className={`glass rounded-2xl border p-4 transition ${available ? `${tier.border} hover:border-primary/35` : 'border-border/45 opacity-85'}`}>
+    <article className={`pl-roster-row border-b border-border/45 p-3 transition last:border-b-0 ${available ? 'hover:bg-secondary/20' : 'opacity-70'}`}>
       <div className="flex items-start gap-3">
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${tier.bg} ${tier.border}`}>
           <span className={`text-lg font-black ${tier.color}`}>{(coach.name || '?')[0]}</span>
@@ -36,13 +36,13 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
           </p>
           <p className="mt-1 text-[10px] font-bold text-foreground/80">{specialty?.label || coach.specialty} · {tier.label}</p>
         </div>
-        <div className="rounded-xl bg-secondary/45 px-2.5 py-1.5 text-center">
+        <div className="px-1.5 py-1 text-center">
           <p className="text-[8px] font-bold uppercase text-muted-foreground">OVR</p>
           <p className="text-lg font-black tabular-nums">{evaluation.overall}</p>
         </div>
       </div>
 
-      <p className="mt-3 line-clamp-2 min-h-8 text-[11px] leading-relaxed text-muted-foreground">{evaluation.recommendationReason}</p>
+      <p className="mt-2 line-clamp-1 text-[11px] leading-relaxed text-muted-foreground">{evaluation.recommendationReason}</p>
 
       {/* Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 4): os
           benefícios reais da especialidade (mesmo texto já usado em
@@ -51,7 +51,7 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
           Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): reduzido de 3
           para 2 linhas — a lista completa continua em "Ver detalhes". */}
       {specialty?.benefits?.length > 0 && (
-        <ul className="mt-2 space-y-0.5">
+        <ul className="mt-2 hidden space-y-0.5 sm:block">
           {specialty.benefits.slice(0, 2).map((benefit) => (
             <li key={benefit} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
               <Check className="h-3 w-3 shrink-0 text-emerald-400" /> {benefit}
@@ -67,7 +67,7 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
         <span className="flex items-center gap-1.5 font-bold"><Star className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.affinity}/100 <span className="text-muted-foreground font-semibold">afinidade</span></span>
       </div>
 
-      <div className={`mt-3 rounded-xl border p-2.5 ${available ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-amber-500/25 bg-amber-500/5'}`}>
+      <div className="mt-2">
         <p className={`flex items-center gap-1 text-[10px] font-black ${available ? 'text-emerald-400' : 'text-amber-400'}`}>
           {available ? <Sparkles className="h-3.5 w-3.5" /> : <LockKeyhole className="h-3.5 w-3.5" />}
           {available ? 'Disponível para contratar agora' : 'Ainda não disponível'}
@@ -78,7 +78,7 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
         )}
       </div>
 
-      <div className="mt-3 flex gap-2">
+      <div className="mt-2 flex gap-2">
         <Button level="secondary" size="sm" onClick={onDetails} className="flex-1">Ver detalhes</Button>
         {available ? (
           <Button level="primary" size="sm" onClick={onHire} className="flex-1">Contratar <ArrowRight className="h-3.5 w-3.5" /></Button>

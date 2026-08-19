@@ -18,7 +18,15 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
     trainingCompleted: Number(player.trainings_completed || player.total_trainings || 0) > 0 || trainings.length > 0,
     partnerSelected: Boolean(player.partner_id || player.current_partner_id),
     tournamentRegistered: registrations.some(item => item.tournament_id ? item.status === 'confirmed' : ['tournament', 'torneio'].includes(item.event_type) && item.status === 'scheduled' && Boolean(item.metadata?.registration_id)),
-    matchCompleted: Number(player.matches_played || 0) > 0 || matches.length > 0,
+    // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md): a etapa
+    // "first-match" pede explicitamente uma PARTIDA OFICIAL DE TORNEIO —
+    // `matches_played` é um contador de carreira único, incrementado por
+    // partida de treino e de torneio igualmente (progression.js/padel.js),
+    // e `matches.length > 0` nem olhava o tipo. Os campos reais já existem
+    // em todo Match desde a finalização (competition_type/is_official,
+    // matchFinalization.js para treino, TournamentModal.jsx para torneio) —
+    // só faltava consultá-los aqui.
+    matchCompleted: matches.some(item => item.competition_type === 'tournament' && item.is_official === true),
     tutorialFinished: Boolean(player.tutorial_onboarding?.completedAt || player.onboarding_completed || facts.tutorialFinished || facts.completedObjectiveTypes?.includes('finish_tutorial')),
   };
 }

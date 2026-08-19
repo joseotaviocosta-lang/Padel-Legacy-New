@@ -12,6 +12,8 @@ import { getNextTutorialStep } from '@/onboarding/tutorialState.js';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { completeTutorialStep, isTutorialRouteMatch } from '@/onboarding/tutorialEngine.js';
 import { ensureTutorialMissionCatalog } from '@/lib/padel.js';
+import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
+import { useCareer } from '@/careers/useCareer.js';
 
 // Hotfix page chrome (docs/PAGE_CHROME_TUTORIAL_HOTFIX.md): a introdução da
 // página (antes uma faixa fixa acima do conteúdo) agora só existe dentro do
@@ -35,8 +37,17 @@ function PageIntroductionSection({ pathname, search }) {
   );
 }
 
-function NextStepSection({ state, step, isOnStepPage, confirmingStepId, confirmationError, onConfirm, onPersist, onClose }) {
+function NextStepSection({ state, step, isOnStepPage, confirmingStepId, confirmationError, onConfirm, onPersist, onClose, firstMatchAction }) {
   const [showWhy, setShowWhy] = useState(false);
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 3): a
+  // etapa "first-match" nunca deve usar step.route/step.actionLabel
+  // estáticos (route='/matches', partida de treino) — sempre que resolvido,
+  // usa o destino real (torneio/recovery/aguardar) montado por
+  // resolveFirstMatchAction.
+  const isFirstMatch = step.id === 'first-match';
+  const resolvedRoute = isFirstMatch && firstMatchAction ? firstMatchAction.to : step.route;
+  const resolvedLabel = isFirstMatch && firstMatchAction ? firstMatchAction.cta : step.actionLabel;
+  const resolvedExplanation = isFirstMatch && firstMatchAction ? firstMatchAction.description : step.explanation;
   return (
     <section className="rounded-2xl border border-primary/40 bg-primary/10 p-4" aria-label="Orientação contextual do tutorial">
       {!state.welcomeSeen && <div className="mb-3 border-b border-primary/20 pb-3"><p className="text-xs font-bold uppercase tracking-wider text-primary">Bem-vindo ao Padel Legacy</p><p className="mt-1 text-sm">Construa seu atleta, forme uma dupla, vença torneios e deixe seu legado. Vamos preparar os primeiros passos.</p></div>}
@@ -45,7 +56,7 @@ function NextStepSection({ state, step, isOnStepPage, confirmingStepId, confirma
         <div className="min-w-0 flex-1">
           <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Próximo passo · {step.phase}</p>
           <h3 className="font-black leading-tight">{step.title}</h3>
-          <p className="text-xs text-muted-foreground">{step.explanation}</p>
+          <p className="text-xs text-muted-foreground">{resolvedExplanation}</p>
           <button type="button" onClick={() => setShowWhy((value) => !value)} className="mt-1 text-[11px] font-bold text-primary/80 hover:text-primary" aria-expanded={showWhy}>
             {showWhy ? 'Ocultar por que usar' : 'Por que usar?'}
           </button>
@@ -55,10 +66,10 @@ function NextStepSection({ state, step, isOnStepPage, confirmingStepId, confirma
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {isOnStepPage && step.completionType === 'confirm_understanding' && step.kind !== 'VISIT' ? (
           <button type="button" disabled={confirmingStepId === step.id} onClick={onConfirm} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground disabled:opacity-60">{confirmingStepId === step.id ? 'Confirmando...' : 'Entendi, continuar'}</button>
-        ) : isOnStepPage ? (
+        ) : isOnStepPage && !isFirstMatch ? (
           <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
         ) : (
-          <Link to={step.route} onClick={() => { onPersist(current => ({ ...current, welcomeSeen: true })); onClose(); }} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{step.actionLabel}</Link>
+          <Link to={resolvedRoute} onClick={() => { onPersist(current => ({ ...current, welcomeSeen: true })); onClose(); }} className="rounded-xl bg-primary px-4 py-2 text-center text-sm font-bold text-primary-foreground">{resolvedLabel}</Link>
         )}
         {/* Hotfix page chrome: "Minimizar" existia para recolher a faixa
             permanente sem perder o lembrete. Sem faixa permanente (o botão
@@ -98,7 +109,7 @@ function GuideButton({ active, onClick }) {
       onClick={onClick}
       aria-label="Abrir guia da carreira"
       title="Guia da carreira"
-      className="pl-floating-utilities pointer-events-auto fixed bottom-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.75rem)] right-[max(0.75rem,env(safe-area-inset-right))] flex h-12 w-12 items-center justify-center rounded-2xl bg-emerald-500 text-white shadow-xl transition-transform hover:scale-105 hover:brightness-110 md:bottom-5 md:right-5 md:h-14 md:w-14"
+      className="pl-floating-utilities pointer-events-auto fixed bottom-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.5rem)] right-[max(0.5rem,env(safe-area-inset-right))] flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg transition-transform hover:scale-105 hover:brightness-110 md:bottom-5 md:right-5 md:h-14 md:w-14"
     >
       <GraduationCap className="h-6 w-6" />
       {active && <span className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full border-2 border-background bg-primary" aria-hidden="true" />}
@@ -108,7 +119,7 @@ function GuideButton({ active, onClick }) {
 
 function GuidePanel({
   open, onClose, pathname, search, isMissionCenter, state, step, isOnStepPage,
-  confirmingStepId, confirmationError, onConfirm, onPersist, onRestart, recommendation,
+  confirmingStepId, confirmationError, onConfirm, onPersist, onRestart, recommendation, firstMatchAction,
 }) {
   const intro = !isMissionCenter ? getPageIntroduction(pathname, search) : null;
   return (
@@ -136,6 +147,7 @@ function GuidePanel({
             onConfirm={onConfirm}
             onPersist={onPersist}
             onClose={onClose}
+            firstMatchAction={firstMatchAction}
           />
         )}
         {state.status !== 'in_progress' && <RecommendationSection recommendation={recommendation} onClose={onClose} />}
@@ -151,6 +163,7 @@ function GuidePanel({
 export default function OnboardingGuide() {
   const location = useLocation();
   const { toast } = useToast();
+  const { activeCareer } = useCareer();
   const [profile, setProfile] = useState(null);
   const [facts, setFacts] = useState({ registrations: [], matches: [], trainings: [] });
   const [state, setState] = useState(null);
@@ -200,6 +213,16 @@ export default function OnboardingGuide() {
   }, [location.pathname, persist, state]);
 
   const step = getNextTutorialStep(state);
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 3):
+  // mesmo destino dinâmico usado por CareerHub.jsx (Home) — evita uma
+  // segunda lógica de resolução divergente para a mesma etapa.
+  const [firstMatchAction, setFirstMatchAction] = useState(null);
+  useEffect(() => {
+    if (step?.id !== 'first-match' || !profile?.id) { setFirstMatchAction(null); return undefined; }
+    let cancelled = false;
+    resolveFirstMatchAction(profile, activeCareer?.career_id).then((result) => { if (!cancelled) setFirstMatchAction(result); });
+    return () => { cancelled = true; };
+  }, [step?.id, profile, activeCareer?.career_id]);
   const recommendation = useMemo(() => getCareerRecommendations(profile, facts)[0], [profile, facts]);
   const isMissionCenter = location.pathname === '/game/missions';
   const stepPath = step?.route?.split('?')[0];
@@ -288,6 +311,7 @@ export default function OnboardingGuide() {
       onPersist={persist}
       onRestart={() => persist(current => ({ ...current, status: 'in_progress', tutorialSkipped: false, minimized: false, welcomeSeen: false, pageIntroductionsSeen: [], collapsedIntroductions: [] }))}
       recommendation={recommendation}
+      firstMatchAction={firstMatchAction}
     />
   </>;
 }

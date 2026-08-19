@@ -11,8 +11,8 @@
 // montagem do TournamentModal (`src/components/tournaments/TournamentModal.jsx`)
 // nunca busca o perfil do jogador de novo no storage — ele confia inteiramente
 // na prop `profile` (renomeada `initialProfile`), que só passa por
-// `ensureStarterCoach(initialProfile)`. Quando o jogador já tem treinador
-// ativo (`isCoachActive`), `ensureStarterCoach` devolve `{ profile, ... }`
+// `resolveActiveCoach(initialProfile)`. Quando o jogador já tem treinador
+// ativo (`isCoachActive`), `resolveActiveCoach` devolve `{ profile, ... }`
 // com a MESMA referência recebida — nunca relê o storage. Essa `initialProfile`
 // vem de qualquer página-pai que renderiza o modal (Tournaments.jsx,
 // CareerHub.jsx) — e essas páginas buscam o perfil UMA VEZ no mount
@@ -74,7 +74,7 @@ try {
   const {
     createTournamentRun, getTournamentRunPhase, getCurrentTournamentMatch, recordTournamentMatchResult,
   } = await server.ssrLoadModule('/src/gameplay/worldTour/TournamentRunManager.js');
-  const { ensureStarterCoach, ensureCoachCatalog } = await server.ssrLoadModule('/src/game-core/coachLifecycle.js');
+  const { resolveActiveCoach, ensureCoachCatalog } = await server.ssrLoadModule('/src/game-core/coachLifecycle.js');
   const { canAdvanceDay } = await server.ssrLoadModule('/src/lib/calendarSystem.js');
   const { describeCalendarBlock, getTournamentNextAction, buildTournamentPlayRoute, TOURNAMENT_NEXT_ACTION } = await server.ssrLoadModule('/src/lib/tournamentNextAction.js');
 
@@ -143,8 +143,8 @@ try {
   // global) já levou o career_date real, no storage, até R16_DATE.
   await localGame.entities.PlayerProfile.update(profile.id, { career_date: R16_DATE });
 
-  const staleStarter = await ensureStarterCoach(profile);
-  gate('ensureStarterCoach devolve a MESMA referência quando já há treinador ativo (mecanismo real do bug)', staleStarter.profile === profile);
+  const staleStarter = await resolveActiveCoach(profile);
+  gate('resolveActiveCoach devolve a MESMA referência quando já há treinador ativo (mecanismo real do bug)', staleStarter.profile === profile);
   const staleLoadedProfile = staleStarter.profile || profile;
   gate(
     'BUG REPRODUZIDO: com o perfil desatualizado (career_date antigo), a fase calculada fica "waiting" mesmo com a rodada já disponível no storage',
@@ -154,7 +154,7 @@ try {
   // ── Correção: buscar o perfil fresco do storage antes de calcular a fase ─
   const freshProfile = await localGame.entities.PlayerProfile.get(profile.id);
   gate('Perfil fresco reflete o career_date real (R16_DATE) já persistido', freshProfile.career_date === R16_DATE);
-  const freshStarter = await ensureStarterCoach(freshProfile);
+  const freshStarter = await resolveActiveCoach(freshProfile);
   const freshLoadedProfile = freshStarter.profile || freshProfile;
   gate(
     'CORREÇÃO CONFIRMADA: com o perfil fresco, a fase calculada é "playable" — R16 jogável no dia certo',
@@ -190,8 +190,8 @@ try {
     /PlayerProfile\.get\(initialProfile\.id\)/.test(mountEffectSrc),
   );
   const freshProfileFetchIndex = mountEffectSrc.indexOf('PlayerProfile.get(initialProfile.id)');
-  const ensureStarterCoachIndex = mountEffectSrc.indexOf('ensureStarterCoach(');
-  gate('A busca do perfil fresco acontece ANTES de ensureStarterCoach (ordem importa)', freshProfileFetchIndex >= 0 && freshProfileFetchIndex < ensureStarterCoachIndex);
+  const resolveActiveCoachIndex = mountEffectSrc.indexOf('resolveActiveCoach(');
+  gate('A busca do perfil fresco acontece ANTES de resolveActiveCoach (ordem importa)', freshProfileFetchIndex >= 0 && freshProfileFetchIndex < resolveActiveCoachIndex);
 
   const careerHubSrc = readSrc('pages/CareerHub.jsx');
   gate('CareerHub.jsx (Home) escuta padel:profile-updated (banner "Dia de torneio" não fica desatualizado)', /addEventListener\(\s*['"]padel:profile-updated['"]/.test(careerHubSrc));

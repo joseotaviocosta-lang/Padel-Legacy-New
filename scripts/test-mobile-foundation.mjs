@@ -64,7 +64,7 @@ for (const util of ['.pl-safe-t', '.pl-safe-b', '.pl-safe-l', '.pl-safe-r', '.pl
 const appLayout = read('src/components/AppLayout.jsx');
 check('header mobile fixo sem pl-safe-t', appLayout.includes('pl-safe-t') && appLayout.includes('md:hidden'));
 check('barra desktop sem pl-safe-t (tablets/telas grandes Android)', (appLayout.match(/pl-safe-t/g) || []).length >= 2);
-check('main não compensa a altura do header mobile com safe-area (pt calc)', appLayout.includes('pt-[calc(4rem+env(safe-area-inset-top))]'));
+check('main compensa a altura tokenizada do header mobile com safe-area (pt calc)', appLayout.includes('pt-[calc(var(--pl-header-h)+env(safe-area-inset-top))]'));
 check('bottom nav perdeu a safe-area já existente (regressão)', appLayout.includes('env(safe-area-inset-bottom)'));
 
 // ── 4. Toast — cobre header/bottom-nav em vez de sobrepor ──────────────────
