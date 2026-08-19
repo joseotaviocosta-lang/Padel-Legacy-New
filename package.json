@@ -198,6 +198,7 @@
     "test:mobile-match-day-refresh-m3-7-2": "node scripts/test-mobile-match-day-refresh-m3-7-2.mjs",
     "test:mobile-compact-ux-m4": "node scripts/test-mobile-compact-ux-m4.mjs",
     "test:mobile-game-feel-m4-1": "node scripts/test-mobile-game-feel-m4-1.mjs",
+    "test:tournament-date-continuity-hotfix": "node scripts/test-tournament-date-continuity-hotfix.mjs",
     "test:tutorial-first-official-match": "node scripts/test-tutorial-first-official-match.mjs",
     "test:tutorial-complete-flow": "node scripts/test-tutorial-complete-flow.mjs",
     "test:missions-achievements-unification": "node scripts/test-missions-achievements-unification.mjs"

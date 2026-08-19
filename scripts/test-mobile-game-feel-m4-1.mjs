@@ -4,6 +4,7 @@
 // primitives e páginas, mas não se apresenta como teste visual de um aparelho.
 // Os gates físicos de 390x800 e landscape ficam no relatório/checklist.
 import { readFileSync } from 'node:fs';
+import { getCareerHudDatePresentation } from '../src/lib/careerDatePresentation.js';
 
 let gates = 0;
 function gate(label, condition) {
@@ -37,9 +38,15 @@ const pageHeader = read('src/components/design-system/PageHeader.jsx');
 const dsIndex = read('src/components/design-system/index.js');
 gate('GameHud é um primitive compartilhado e exportado', gameHud.includes('data-game-hud') && dsIndex.includes("from './GameHud'"));
 gate('GameHud usa faixa com separadores, sem Surface/card próprio', gameHud.includes('pl-game-hud-item') && !gameHud.includes('<Surface'));
+gate('cada item do HUD expõe valor e rótulo separados com nome acessível', gameHud.includes('pl-game-hud-value') && gameHud.includes('pl-game-hud-label') && gameHud.includes('aria-label={item.label'));
 gate('PageHeader aceita hudItems/hudLabel e compõe GameHud', pageHeader.includes('hudItems') && pageHeader.includes('<GameHud'));
-gate('PageHeader denso remove o hero visual apenas no mobile', css.includes('.pl-page-hero--dense') && css.includes('background: transparent') && css.includes('box-shadow: none'));
+gate('PageHeader denso remove o hero visual no mobile', css.includes('.pl-page-hero--dense') && css.includes('background: transparent') && css.includes('box-shadow: none'));
 gate('título operacional mobile permanece abaixo de 40px', css.includes('font-size: 1.35rem'));
+gate('HUD compartilha tokens de gap/padding/ícone/valor/rótulo', ['--game-hud-gap', '--game-hud-padding-x', '--game-hud-icon-size', '--game-hud-value-size', '--game-hud-label-size'].every((token) => css.includes(token)));
+gate('estrutura base do HUD é aplicada antes dos breakpoints desktop/mobile', css.indexOf('.pl-game-hud {') < css.indexOf('@media (min-width: 768px)'));
+gate('HUD desktop não quebra valores e compacta o hero em uma linha operacional', css.includes('@media (min-width: 768px)') && css.includes('grid-template-columns: minmax(12rem, auto) minmax(0, 1fr)') && css.includes('flex-wrap: nowrap'));
+gate('HUD mobile preserva 44px e usa colunas horizontais sem colar valor/rótulo', css.includes('min-height: 2.75rem') && css.includes('grid-auto-flow: column') && css.includes('gap: var(--game-hud-gap)'));
+gate('Calendário usa data compacta 08 JAN · Quinta', (() => { const value = getCareerHudDatePresentation('2026-01-08'); return value.date === '08 JAN' && value.weekday === 'Quinta'; })());
 for (const [path, source] of Object.entries(pages)) {
   gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));
   gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));

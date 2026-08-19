@@ -15,7 +15,7 @@ const welcome = read('src/components/system/BetaWelcome.jsx');
 const candidate = read('src/lib/betaCandidate.js');
 const layout = read('src/components/AppLayout.jsx');
 
-check('RC1 version', pkg.version === '0.9.0-rc.1');
+check('RC1 version', /^0\.9\.0-rc\.1(?:\.\d+)?$/.test(pkg.version));
 check('candidate test script', pkg.scripts?.['test:closed-beta-candidate']?.includes('test-closed-beta-candidate-rc1.mjs'));
 check('first run welcome', welcome.includes('Bem-vindo ao Padel Legacy') && candidate.includes('CLOSED_BETA_CHANGELOG'));
 check('welcome wired into app shell', layout.includes('<BetaWelcome />'));

@@ -34,3 +34,16 @@ export function getCareerDatePresentation(value) {
     weekdayShort: format({ weekday: 'short' }).replaceAll('.', '').toLocaleUpperCase('pt-BR'),
   };
 }
+
+export function getCareerHudDatePresentation(value) {
+  const date = parseCareerDate(value);
+  if (!date) return { date: '—', weekday: '—' };
+  const format = (options) => new Intl.DateTimeFormat('pt-BR', {
+    ...options,
+    timeZone: 'UTC',
+  }).format(date);
+  const day = format({ day: '2-digit' });
+  const month = format({ month: 'short' }).replaceAll('.', '').toLocaleUpperCase('pt-BR');
+  const weekday = capitalize(format({ weekday: 'long' }).replace('-feira', ''));
+  return { date: `${day} ${month}`, weekday };
+}

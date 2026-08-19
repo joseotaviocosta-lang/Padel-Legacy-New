@@ -200,13 +200,13 @@ try {
   gate('+7 sem bloqueador avança sete dias', plus7Free.result.processedDays === 7 && plus7Free.result.finalDate === '2026-01-13');
   gate('+3 livre mantém uma transação/commit por dia', plus3Free.result.transactions === 3 && plus3Free.result.physicalCommits === 3 && plus3Free.commits === 3);
   gate('+7 livre mantém uma transação/commit por dia', plus7Free.result.transactions === 7 && plus7Free.result.physicalCommits === 7 && plus7Free.commits === 7);
-  gate('+3 com Miami em dois dias processa exatamente um dia', plus3Blocked.result.processedDays === 1 && plus3Blocked.result.remainingDays === 2 && plus3Blocked.result.finalDate === '2026-01-07');
-  gate('+7 com Miami em dois dias processa exatamente um dia', plus7Blocked.result.processedDays === 1 && plus7Blocked.result.remainingDays === 6 && plus7Blocked.result.finalDate === '2026-01-07');
+  gate('+3 com Miami em dois dias chega ao dia oficial e processa dois dias', plus3Blocked.result.processedDays === 2 && plus3Blocked.result.remainingDays === 1 && plus3Blocked.result.finalDate === '2026-01-08');
+  gate('+7 com Miami em dois dias chega ao dia oficial e processa dois dias', plus7Blocked.result.processedDays === 2 && plus7Blocked.result.remainingDays === 5 && plus7Blocked.result.finalDate === '2026-01-08');
   gate('interrupção por torneio usa stopReason explícito', plus3Blocked.result.stopReason === 'upcomingTournament' && plus7Blocked.result.stopReason === 'upcomingTournament');
-  gate('avanço parcial confirma somente uma transação/commit', plus3Blocked.result.transactions === 1 && plus3Blocked.result.physicalCommits === 1 && plus7Blocked.result.transactions === 1 && plus7Blocked.result.physicalCommits === 1);
-  gate('evento amanhã bloqueia sem alterar data nem abrir transação', eventTomorrow.result.processedDays === 0 && eventTomorrow.result.finalDate === '2026-01-07' && eventTomorrow.result.transactions === 0 && eventTomorrow.result.physicalCommits === 0);
+  gate('avanço parcial confirma uma transação/commit por dia até o evento', plus3Blocked.result.transactions === 2 && plus3Blocked.result.physicalCommits === 2 && plus7Blocked.result.transactions === 2 && plus7Blocked.result.physicalCommits === 2);
+  gate('evento amanhã permite chegar à data e então interrompe', eventTomorrow.result.processedDays === 1 && eventTomorrow.result.finalDate === '2026-01-08' && eventTomorrow.result.transactions === 1 && eventTomorrow.result.physicalCommits === 1);
   gate('evento hoje bloqueia sem alterar data nem commit', eventToday.result.processedDays === 0 && eventToday.result.finalDate === '2026-01-08' && eventToday.result.physicalCommits === 0);
-  gate('campos requested/processed/remaining não se confundem', plus3Blocked.result.requestedDays === 3 && plus3Blocked.result.processedDays === 1 && plus3Blocked.result.remainingDays === 2);
+  gate('campos requested/processed/remaining não se confundem', plus3Blocked.result.requestedDays === 3 && plus3Blocked.result.processedDays === 2 && plus3Blocked.result.remainingDays === 1);
   gate('contador de treinos deriva somente dos dias confirmados', plus3Free.result.automaticTrainings === plus3Free.result.daily.filter((day) => day.automaticTraining).length && plus3Free.result.automaticTrainings <= plus3Free.result.processedDays);
   gate('falha no segundo dia conta somente o primeiro', secondDayFailure.result.processedDays === 1 && secondDayFailure.result.finalDate === '2026-01-07' && secondDayFailure.result.stopReason === 'transactionError');
   gate('falha no segundo dia faz rollback sem segundo commit', secondDayFailure.result.transactions === 2 && secondDayFailure.result.physicalCommits === 1 && secondDayFailure.commits === 1 && secondDayFailure.probe.totals.rollbacks === 1);
@@ -214,10 +214,10 @@ try {
 
   const retrySnapshot = clone(plus3Blocked.career);
   retrySnapshot.entities.CalendarEvent = retrySnapshot.entities.CalendarEvent.map((event) => ({ ...event, status: 'completed', requires_decision: false }));
-  const retry = await runScenario({ days: 2, startDate: '2026-01-07', snapshot: retrySnapshot });
-  gate('retry após resolver interrupção processa os dias restantes', retry.result.processedDays === 2 && retry.result.finalDate === '2026-01-09' && retry.result.physicalCommits === 2);
+  const retry = await runScenario({ days: 1, startDate: '2026-01-08', snapshot: retrySnapshot });
+  gate('retry após resolver interrupção processa o dia restante', retry.result.processedDays === 1 && retry.result.finalDate === '2026-01-09' && retry.result.physicalCommits === 1);
   gate('mesma seed/data produz estado final determinístico', assert.deepEqual(deterministicA.career, deterministicB.career) === undefined);
-  gate('perfdebug guarda o último multi-day completo', staleDisplay.probe.lastMultiDayAdvance?.requestedDays === 3 && staleDisplay.probe.lastMultiDayAdvance?.processedDays === 0 && staleDisplay.probe.lastMultiDayAdvance?.displayedStartDate === '2026-01-06');
+  gate('perfdebug guarda o último multi-day completo', staleDisplay.probe.lastMultiDayAdvance?.requestedDays === 3 && staleDisplay.probe.lastMultiDayAdvance?.processedDays === 1 && staleDisplay.probe.lastMultiDayAdvance?.displayedStartDate === '2026-01-06');
 
   const calendarPageSource = readFileSync(new URL('../src/pages/CalendarPage.jsx', import.meta.url), 'utf8');
   gate('lock síncrono continua protegendo +3/+7 contra double click', calendarPageSource.includes('if (!profile || advanceLockRef.current) return;') && calendarPageSource.includes('advanceLockRef.current = true;'));

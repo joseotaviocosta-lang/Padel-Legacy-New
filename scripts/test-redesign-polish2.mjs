@@ -68,7 +68,7 @@ check('package.json ganhou uma dependência nova nesta fase (deveria só ter nov
 // ação que antes era 1 clique virou 2. Revertido para botões individuais
 // (Guia/Carreiras/Som/BETA), preservando as correções de posicionamento e
 // pointer-events do M1.1/M2 (agora protegendo 4 botões, não 1).
-check('botão do Guia sem aria-label', floatingRail.includes('aria-label="Abrir guia da carreira"'));
+check('botão do Guia sem aria-label', onboardingGuide.includes('aria-label="Abrir guia da carreira"'));
 check('botão de Carreiras sem aria-label', floatingRail.includes('aria-label="Gerenciar carreiras"'));
 check('botão de Som sem aria-label', /aria-label=\{soundEnabled[\s\S]{0,120}Desativar sons da interface[\s\S]{0,60}Ativar sons da interface/.test(floatingRail));
 check('FloatingUtilityRail voltou a ser um único gatilho (UX rejeitada pelo QA real)', !floatingRail.includes('aria-haspopup="dialog"') && !floatingRail.includes('MoreHorizontal'));

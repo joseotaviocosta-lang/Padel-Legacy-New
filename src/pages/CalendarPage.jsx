@@ -5,7 +5,7 @@ import { Calendar as CalendarIcon, FastForward, Trophy, Zap, Battery, Clock3, Al
 import { Button, EmptyState, Page, PageHeader, PageSkeleton, Surface, ModalShell, Tabs, ConfirmDialog } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
-import { getCareerDatePresentation } from '@/lib/careerDatePresentation.js';
+import { getCareerHudDatePresentation } from '@/lib/careerDatePresentation.js';
 import { advanceCareerDayOnce, advanceCareerDays, advanceCareerUntilRecovered, finalizeCareerAdvanceRange, hasActiveInjury } from '@/game-core';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -378,7 +378,7 @@ export default function CalendarPage() {
 
   const nextTournament = upcomingTournaments[0] || null;
   const daysToNextTournament = nextTournament ? daysBetween(careerDate, nextTournament.start_date) : null;
-  const datePresentation = getCareerDatePresentation(careerDate);
+  const hudDatePresentation = getCareerHudDatePresentation(careerDate);
   const injurySkipDays = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysBetween(careerDate, profile.injured_until) : 0);
 
   return (
@@ -393,7 +393,7 @@ export default function CalendarPage() {
         tone="info"
         hudLabel="Agenda atual"
         hudItems={[
-          { label: datePresentation.weekday, value: datePresentation.fullDate, icon: CalendarIcon, tone: 'info' },
+          { label: hudDatePresentation.weekday, value: hudDatePresentation.date, icon: CalendarIcon, tone: 'info' },
           { label: 'energia', value: `${Math.round(Number(profile.energy) || 0)}%`, icon: Battery, tone: Number(profile.energy) < 30 ? 'danger' : 'success' },
           { label: 'fadiga', value: `${Math.round(Number(profile.fatigue) || 0)}%`, icon: Zap, tone: Number(profile.fatigue) > 65 ? 'danger' : Number(profile.fatigue) > 40 ? 'warning' : 'info' },
           { label: nextTournament?.name || 'agenda livre', value: nextTournament ? (daysToNextTournament > 0 ? `${daysToNextTournament}d` : 'Hoje') : calendarEvents.filter((event) => event.start_date >= careerDate).length, icon: nextTournament ? Trophy : Clock3, tone: nextTournament ? 'premium' : 'brand' },

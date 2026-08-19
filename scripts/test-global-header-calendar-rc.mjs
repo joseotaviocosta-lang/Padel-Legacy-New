@@ -30,7 +30,7 @@ const checks = [
   ['bloqueios oficiais permanecem no fluxo', lifecycle.includes('advanceDay(currentProfile') && lifecycle.includes('processGameStateDay')],
   ['todos os atalhos de um dia usam o coordenador', [calendarPage, trainingPage, careerCalendar].every((source) => source.includes('advanceCareerDayOnce'))],
   ['nenhum atalho de UI chama advanceDay diretamente', [calendarPage, trainingPage, careerCalendar].every((source) => !/\badvanceDay\s*\(/.test(source))],
-  ['largura mínima e data sem quebra', control.includes('min-w-[3.75rem]') && control.includes('min-w-[7.35rem]') && control.includes('whitespace-nowrap')],
+  ['largura mínima compacta e data sem quebra', control.includes('min-w-[3.45rem]') && control.includes('sm:min-w-[7.35rem]') && control.includes('whitespace-nowrap')],
   ['layout protege contra overflow horizontal', layout.includes('overflow-x-hidden')],
   ['acessibilidade do botão', control.includes('aria-label="Avançar carreira em um dia"') && control.includes('aria-busy={processing}') && control.includes('title="Avançar carreira em um dia"')],
   ['sem polling ou processamento durante render', !control.includes('setInterval') && !control.includes('localGame')],

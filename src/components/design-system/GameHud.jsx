@@ -24,10 +24,14 @@ export function GameHud({ items = [], label = 'Status atual', className = '' }) 
       {list.map((item, index) => {
         const Icon = item.icon;
         return (
-          <span key={item.id || item.label || index} className="pl-game-hud-item">
-            {Icon && <Icon className={cn('h-3.5 w-3.5 shrink-0', TONE_TEXT[item.tone] || 'text-primary')} aria-hidden="true" />}
-            <strong className={cn('whitespace-nowrap tabular-nums', TONE_TEXT[item.tone] || 'text-foreground')}>{item.value}</strong>
-            {item.label && <span className="whitespace-nowrap text-muted-foreground">{item.label}</span>}
+          <span
+            key={item.id || item.label || index}
+            className="pl-game-hud-item"
+            aria-label={item.label ? `${item.label}: ${item.value}` : String(item.value)}
+          >
+            {Icon && <Icon className={cn('pl-game-hud-icon shrink-0', TONE_TEXT[item.tone] || 'text-primary')} aria-hidden="true" />}
+            <strong className={cn('pl-game-hud-value whitespace-nowrap tabular-nums', TONE_TEXT[item.tone] || 'text-foreground')}>{item.value}</strong>
+            {item.label && <span className="pl-game-hud-label whitespace-nowrap text-muted-foreground">{item.label}</span>}
           </span>
         );
       })}

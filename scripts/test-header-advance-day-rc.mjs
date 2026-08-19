@@ -111,7 +111,7 @@ const calendar = read('src/game-core/calendarLifecycle.js');
 const sourceChecks = [
   ['botão usa o estado operacional central', control.includes('subscribeCareerDayAdvance(setProcessing)')],
   ['botão normal volta para Avançar', control.includes("'Avançar'") && control.includes('processing ?')],
-  ['header reutiliza advanceCareerDay com core explícito', dayCoordinator.includes('advanceCareerDay(profile, { deferGameState: true, deferGlobalProcessing: true })')],
+  ['header reutiliza advanceCareerDay com core transacional explícito', dayCoordinator.includes('advanceCareerDay(profile, {') && dayCoordinator.includes('deferGameState: true') && dayCoordinator.includes('deferGlobalProcessing: true') && dayCoordinator.includes('persistenceTransaction: false')],
   ['pós-processamento não alimenta o lock do botão', dayController.includes('queueMicrotask(() => scheduleSecondary(descriptor))')],
   ['coordenador é single-flight', dayController.includes('createSingleFlightCoordinator')],
   ['relatório final é compactado', gameState.includes('game_state_last_report: persistedReport')],

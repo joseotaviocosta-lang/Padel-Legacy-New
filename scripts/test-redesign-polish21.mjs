@@ -22,7 +22,7 @@ const calendarPage = read('src/pages/CalendarPage.jsx');
 const dailyBriefing = read('src/lib/dailyCareerBriefing.js');
 const decisionCenter = read('src/lib/careerDecisionCenter.js');
 const floatingRail = read('src/components/system/FloatingUtilityRail.jsx');
-const careerAssistant = read('src/components/career/CareerAssistant.jsx');
+const onboardingGuide = read('src/components/onboarding/OnboardingGuide.jsx');
 const activityCard = read('src/components/training/TrainingActivityCard.jsx');
 const trainingSystemV2 = read('src/lib/trainingSystemV2.js');
 const pkg = JSON.parse(read('package.json'));
@@ -36,7 +36,7 @@ const pkg = JSON.parse(read('package.json'));
 // mesmos casos — este era o terceiro lugar que sobrava.
 check('buildPriorityActions voltou a incluir o item "tournament" do briefing diário (duplica NextEventCard)', /if \(priority\.id === 'tournament'\) continue;/.test(careerHub));
 check('CareerMomentStrip voltou a mostrar o tipo "tournament" (regressão do Polish 2)', careerHub.includes("!['tournament', 'injury'].includes(careerMoment.type)"));
-check('NextEventCard (fonte única do "próximo torneio" informativo) foi removido da Home', careerHub.includes('function NextEventCard') && careerHub.includes('<NextEventCard event={nextEvent} />'));
+check('NextEventCard (fonte única do "próximo torneio" informativo) foi removido da Home', careerHub.includes('function NextEventCard') && /<NextEventCard event=\{nextEvent\}(?: embedded)? \/>/.test(careerHub));
 // Evento acionável continua podendo aparecer — via decisionCenter, id diferente de "tournament".
 check('decisionCenter perdeu a decisão acionável de torneio próximo (ex.: preparar torneio)', /id: `tournament-\$\{nextTournament\.id/.test(decisionCenter) && decisionCenter.includes("actionLabel: 'Preparar torneio'"));
 // Nenhuma regra de torneio (dado/lógica) foi removida — só a apresentação.
@@ -44,9 +44,11 @@ check('dailyCareerBriefing.js perdeu o cálculo de daysToTournament (lógica de 
 
 // ── CALENDÁRIO ───────────────────────────────────────────────────────────
 
-for (const label of ['Energia', 'Fadiga', 'Agenda', 'Próximo torneio']) {
-  check(`Calendário perdeu o indicador "${label}"`, calendarPage.includes(`label="${label}"`) || calendarPage.includes(`label: '${label}'`));
+for (const label of ['energia', 'fadiga']) {
+  check(`Calendário perdeu o indicador "${label}"`, calendarPage.includes(`label: '${label}'`));
 }
+check('Calendário perdeu o contexto da agenda no HUD', calendarPage.includes('hudLabel="Agenda atual"'));
+check('Calendário perdeu o próximo torneio no HUD', calendarPage.includes("label: nextTournament?.name || 'agenda livre'"));
 check('+1 dia sumiu do Calendário', calendarPage.includes("'+1 dia'"));
 check('+3 dias sumiu do Calendário', calendarPage.includes("'+3 dias'"));
 check('+1 semana sumiu do Calendário', calendarPage.includes("'+1 semana'"));
@@ -60,15 +62,14 @@ check('StatCard ainda é usado na faixa operacional (deveria ter saído — obje
 // ── FLOATING ACTIONS ────────────────────────────────────────────────────
 
 check('FloatingUtilityRail voltou a ser um dock único (BottomSheet "Ferramentas") — UX rejeitada pelo QA real', !floatingRail.includes('<BottomSheet') && !floatingRail.includes('aria-haspopup="dialog"'));
-check('botão do Guia não é mais acessado com 1 clique', floatingRail.includes("window.dispatchEvent(new CustomEvent('padel:open-career-guide'))") && !floatingRail.includes('setOpen'));
+check('botão do Guia não é mais acessado com 1 clique', onboardingGuide.includes('onClick={() => setHelpOpen(true)}'));
 check('botão de Carreiras não é mais acessado com 1 clique', /onClick=\{onOpenCareers\}/.test(floatingRail));
 check('botão de Som não é mais acessado com 1 clique', /onClick=\{toggleSound\}/.test(floatingRail) && !floatingRail.includes('DockRow'));
 check('BETA não é mais acessado com 1 clique (voltou a exigir abrir um menu antes)', floatingRail.includes('<BetaTools compact />'));
-for (const label of ['Abrir guia da carreira', 'Gerenciar carreiras']) {
-  check(`botão "${label}" sem aria-label`, floatingRail.includes(`aria-label="${label}"`));
-}
-check('Assistente da carreira deixou de ser um componente separado do FloatingUtilityRail', exists('src/components/career/CareerAssistant.jsx') && !floatingRail.includes('<CareerAssistant') && !floatingRail.includes("from '@/components/career/CareerAssistant"));
-check('Assistente da carreira perdeu o badge de prioridades', careerAssistant.includes('visibleInsights.length > 0'));
+check('botão "Abrir guia da carreira" sem aria-label', onboardingGuide.includes('aria-label="Abrir guia da carreira"'));
+check('botão "Gerenciar carreiras" sem aria-label', floatingRail.includes('aria-label="Gerenciar carreiras"'));
+check('Guia contextual voltou a ser acoplado ao FloatingUtilityRail', !exists('src/components/career/CareerAssistant.jsx') && !floatingRail.includes('<OnboardingGuide') && !floatingRail.includes("from '@/components/onboarding/OnboardingGuide"));
+check('Guia contextual perdeu o badge de onboarding ativo', onboardingGuide.includes('active={tutorialActive}') && onboardingGuide.includes('{active &&'));
 // Estratégia coordenada de offsets: o rail deriva de --pl-header-h/--pl-safe-t
 // (não números soltos por botão) e o Assistente usa seu próprio offset fixo
 // e documentado (bottom, não right-top) — sem overlap entre os dois grupos.
@@ -79,7 +80,7 @@ check('algum botão do rail perdeu pointer-events-auto', (floatingRail.match(/po
 // ── TREINO (freeze) ──────────────────────────────────────────────────────
 
 check('TrainingActivityCard parou de mostrar atributo atual + ganho previsto', /profile\?\.\[attribute\]/.test(activityCard) && activityCard.includes('gain.toFixed(2)'));
-check('linha compacta Duração/Fadiga/Energia foi removida do card de treino', activityCard.includes('Duração') && activityCard.includes('Fadiga') && activityCard.includes('Energia'));
+check('linha compacta duração/fadiga/energia foi removida do card de treino', activityCard.includes('activity.duration') && activityCard.includes('fadiga') && activityCard.includes('energia'));
 for (const fn of ['getPredictedGain', 'distributeTrainingGain', 'previewTraining']) {
   check(`trainingSystemV2.js não exporta mais ${fn} (fórmula tocada)`, trainingSystemV2.includes(`export function ${fn}`));
 }

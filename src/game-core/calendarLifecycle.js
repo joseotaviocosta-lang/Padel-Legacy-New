@@ -66,7 +66,11 @@ async function buildAdvanceFailureContext(profile, snapshot, error) {
   const tournamentEvent = events.find((event) => event.status === 'scheduled' && event.event_type === 'tournament' && event.metadata?.tournament_run) || null;
   const tournamentRun = tournamentEvent?.metadata?.tournament_run || null;
   const activeMatch = tournamentRun?.matches?.[Number(tournamentRun?.currentRound || 0)] || null;
-  const pendingDecision = events.find((event) => event.status === 'scheduled' && event.requires_decision && event.start_date <= profile?.career_date) || error?.blockingEvent || null;
+  const pendingDecision = events.find((event) => event.status === 'scheduled'
+    && event.requires_decision
+    && (event.event_type === 'tournament'
+      ? shouldBlockBeforeAdvance(event, profile?.career_date)
+      : event.start_date <= profile?.career_date)) || error?.blockingEvent || null;
   const pendingInterview = messages.find((message) => message.related_entity_type === 'PressInterview' && !message.is_read) || null;
   const checkpoint = snapshot?.career_id
     ? await getMatchCheckpointRepository().read(snapshot.career_id).catch(() => null)
@@ -88,9 +92,13 @@ async function buildAdvanceFailureContext(profile, snapshot, error) {
 }
 
 async function getCriticalEventBeforeAdvance(profile) {
+  const currentDate = profile.career_date || CAREER_START_DATE;
   const nextDate = addDays(profile.career_date || CAREER_START_DATE, 1);
   const events = await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, status: 'scheduled' });
-  return (events || []).find((event) => shouldBlockBeforeAdvance(event, nextDate)) || null;
+  return (events || []).find((event) => shouldBlockBeforeAdvance(
+    event,
+    event.event_type === 'tournament' ? currentDate : nextDate,
+  )) || null;
 }
 
 async function resolveInjuryCalendarConflicts(profile) {

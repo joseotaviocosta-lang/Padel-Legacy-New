@@ -212,8 +212,11 @@ try {
     metadata: { tournament_run: run },
   };
   await localGame.entities.CalendarEvent.create({ profile_id: profile.id, ...blockingEvent });
-  const advanceCheck = await canAdvanceDay(profile.id, '2026-03-08');
-  gate('canAdvanceDay continua bloqueando quando há decisão de torneio pendente (regra existente preservada)', advanceCheck.canAdvance === false);
+  const qfCommitmentDate = getCurrentTournamentMatch(run)?.date;
+  const futureCheck = await canAdvanceDay(profile.id, '2026-03-08');
+  gate('canAdvanceDay não bloqueia um dia antes da próxima rodada', futureCheck.canAdvance === true && qfCommitmentDate > '2026-03-08');
+  const advanceCheck = await canAdvanceDay(profile.id, qfCommitmentDate);
+  gate('canAdvanceDay bloqueia na data oficial da decisão de torneio', advanceCheck.canAdvance === false);
   const block = describeCalendarBlock(advanceCheck.blockingEvent);
   gate('a mensagem de bloqueio é acionável (não é só "não é possível avançar")', block?.description?.includes(tournament.name) && Boolean(block.actionLabel));
   gate('o CTA do bloqueio abre o torneio certo, pelo id', block.destination === buildTournamentPlayRoute(tournament.id));

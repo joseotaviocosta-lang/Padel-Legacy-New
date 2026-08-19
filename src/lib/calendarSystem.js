@@ -5,6 +5,7 @@ import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } 
 import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystemV2.js';
 import { normalizeTrainingId } from '@/lib/trainingCatalog.js';
 import { registerTournament, cancelTournamentRegistration, getTournamentRegistrationWindow } from '@/lib/tournamentRegistration.js';
+import { getTournamentCommitmentDate, shouldBlockBeforeAdvance } from '@/game-core/calendarAdvancePolicy.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -352,8 +353,13 @@ export async function getPendingDecisions(profileId, careerDate) {
     status: 'scheduled',
     requires_decision: true,
   });
-  // Only events on or before the current date require a decision before advancing
-  return (events || []).filter(e => e.start_date <= careerDate);
+  // Saves antigos podem manter start_date na rodada anterior. Para torneios,
+  // a rodada atual do tournament_run e a data oficial da pendencia.
+  return (events || []).filter((event) => (
+    event.event_type === 'tournament'
+      ? shouldBlockBeforeAdvance(event, careerDate)
+      : event.start_date <= careerDate
+  ));
 }
 
 // ── Can advance day check ────────────────────────────────────────────────
@@ -384,8 +390,12 @@ export async function processCalendarEvents(profile, newDate) {
 
   for (const event of events || []) {
     // Mark past events as missed if they were tournaments requiring decisions
-    const eventEnd = event.end_date || event.start_date;
-    if (eventEnd < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
+    const tournamentCommitmentDate = getTournamentCommitmentDate(event);
+    const hasTournamentRun = event.event_type === 'tournament' && Boolean(event.metadata?.tournament_run);
+    const eventEnd = event.event_type === 'tournament'
+      ? (tournamentCommitmentDate || (hasTournamentRun ? null : event.end_date || event.start_date))
+      : (event.end_date || event.start_date);
+    if (eventEnd && eventEnd < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
       await localGame.entities.CalendarEvent.update(event.id, { status: 'missed' });
       // Penalty for missing a tournament
       coinChange -= 50;
@@ -394,7 +404,7 @@ export async function processCalendarEvents(profile, newDate) {
     }
 
     // Complete non-tournament events that have ended
-    if (eventEnd < newDate && !event.requires_decision) {
+    if (eventEnd && eventEnd < newDate && !event.requires_decision) {
       await localGame.entities.CalendarEvent.update(event.id, { status: 'completed' });
       coinChange += event.coin_reward || 0;
       xpChange += event.xp_reward || 0;
@@ -450,7 +460,13 @@ export async function getEventsForRange(profileId, startDate, endDate) {
     profile_id: profileId,
     status: 'scheduled',
   });
-  return (events || []).filter(e => !(e.end_date < startDate || e.start_date > endDate));
+  return (events || []).filter((event) => {
+    const tournamentCommitmentDate = getTournamentCommitmentDate(event);
+    if (event.event_type === 'tournament' && event.metadata?.tournament_run && !tournamentCommitmentDate) return false;
+    const eventStart = tournamentCommitmentDate || event.start_date;
+    const eventEnd = tournamentCommitmentDate || event.end_date || eventStart;
+    return !(eventEnd < startDate || eventStart > endDate);
+  });
 }
 
 // ── Resolve a pending decision ────────────────────────────────────────────

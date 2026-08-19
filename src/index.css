@@ -72,6 +72,14 @@
     --mobile-page-padding: 0.5rem;
     --mobile-game-radius: 0.75rem;
     --mobile-game-gap: 0.5rem;
+
+    /* M4.1.1 — uma única escala para o HUD compacto em todas as páginas. */
+    --game-hud-gap: 0.5rem;
+    --game-hud-padding-x: 0.625rem;
+    --game-hud-padding-y: 0.45rem;
+    --game-hud-icon-size: 0.95rem;
+    --game-hud-value-size: 0.8125rem;
+    --game-hud-label-size: 0.6875rem;
   }
 
   .dark {
@@ -908,6 +916,77 @@
   }
 }
 
+.pl-game-hud {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: stretch;
+  gap: var(--game-hud-gap);
+}
+
+.pl-game-hud-item {
+  display: inline-flex;
+  min-height: 2.5rem;
+  min-width: 0;
+  align-items: center;
+  gap: var(--game-hud-gap);
+  border: 1px solid hsl(var(--border) / 0.58);
+  border-radius: 0.625rem;
+  padding: var(--game-hud-padding-y) var(--game-hud-padding-x);
+  background: hsl(var(--surface-subtle) / 0.48);
+  line-height: 1;
+}
+
+.pl-game-hud-icon {
+  width: var(--game-hud-icon-size);
+  height: var(--game-hud-icon-size);
+}
+
+.pl-game-hud-value {
+  font-size: var(--game-hud-value-size);
+  font-weight: 900;
+  letter-spacing: -0.015em;
+}
+
+.pl-game-hud-label {
+  font-size: var(--game-hud-label-size);
+  font-weight: 650;
+}
+
+@media (min-width: 768px) {
+  .pl-page-hero--dense {
+    padding: 0.75rem 1rem;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-content {
+    align-items: center;
+    gap: 0.75rem;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-main {
+    display: grid;
+    min-width: 0;
+    grid-template-columns: minmax(12rem, auto) minmax(0, 1fr);
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+
+  .pl-page-hero--dense nav,
+  .pl-page-hero--dense [data-page-description] {
+    display: none;
+  }
+
+  .pl-page-hero--dense .pl-game-hud {
+    margin-top: 0;
+    flex-wrap: nowrap;
+    justify-content: flex-end;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+
+  .pl-page-hero--dense .pl-game-hud::-webkit-scrollbar { display: none; }
+}
+
 @media (max-width: 767px) {
   .design-system-page-host {
     overflow-x: clip;
@@ -922,7 +1001,7 @@
     border-radius: 0.875rem;
   }
 
-  /* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.2): hero denso — padding
+  /* Mobile M4.1.1: hero denso — padding
      reduzido, sem o respiro extra do hero desktop. O restante (título
      menor, descrição/breadcrumb ocultos) já é resolvido por classes
      Tailwind condicionais no próprio PageHeader.jsx (prop `dense`). */
@@ -952,9 +1031,12 @@
   }
 
   .pl-game-hud {
-    display: flex;
+    display: grid;
     min-width: 0;
-    align-items: center;
+    min-height: 2.75rem;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(max-content, 1fr);
+    align-items: stretch;
     gap: 0;
     overflow-x: auto;
     border-block: 1px solid hsl(var(--border) / 0.48);
@@ -967,11 +1049,13 @@
   .pl-game-hud-item {
     display: inline-flex;
     flex: none;
+    min-height: 2.75rem;
     align-items: center;
-    gap: 0.3rem;
+    gap: var(--game-hud-gap);
+    border: 0;
+    border-radius: 0;
     padding-inline: 0.6rem;
-    font-size: 0.7rem;
-    font-weight: 700;
+    background: transparent;
     line-height: 1;
   }
 
