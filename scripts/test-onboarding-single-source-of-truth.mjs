@@ -78,7 +78,7 @@ try {
   gate('useLocation importado (para a comparação de mesma página)', hubSource.includes("useLocation") && hubSource.includes("react-router-dom"));
   gate('heroIsCurrentPage compara basePath(heroStep.to) com a rota atual', hubSource.includes('basePath(heroStep.to) === location.pathname'));
   gate('PriorityActionsPanel recebe isCurrentPage', hubSource.includes('isCurrentPage={heroIsCurrentPage}'));
-  gate('PriorityActionsPanel nunca renderiza um link para a própria página atual', hubSource.includes('isCurrentPage\n    ? <span'));
+  gate('PriorityActionsPanel nunca renderiza um link para a própria página atual', hubSource.includes('const heroLink = isCurrentPage') && hubSource.includes('Você já está aqui'));
 
   // ── 4) Nenhuma etapa (exceto FINISH) fica sem destination/actionLabel — nenhum CTA "vazio" ──
   for (const step of TUTORIAL_STEPS.filter((item) => item.kind !== 'FINISH')) {

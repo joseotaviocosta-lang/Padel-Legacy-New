@@ -31,6 +31,8 @@
     "test:tutorial-chronology": "node scripts/test-tutorial-chronology.mjs",
     "test:tutorial-auto-completion": "node scripts/test-tutorial-auto-completion.mjs",
     "test:onboarding-priority": "node scripts/test-onboarding-priority.mjs",
+    "test:onboarding-single-source-of-truth": "node scripts/test-onboarding-single-source-of-truth.mjs",
+    "test:onboarding-home-cta": "node scripts/test-onboarding-home-cta.mjs",
     "test:missions": "node scripts/test-mission-system-v2.mjs",
     "validate:missions": "node scripts/test-mission-system-v2.mjs",
     "test:ui-quality": "node scripts/audit-ui-quality.mjs",
