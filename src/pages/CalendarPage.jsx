@@ -384,6 +384,7 @@ export default function CalendarPage() {
   return (
     <Page>
       <PageHeader
+        dense
         eyebrow="Planejamento da carreira"
         icon={CalendarIcon}
         title="Calendário"

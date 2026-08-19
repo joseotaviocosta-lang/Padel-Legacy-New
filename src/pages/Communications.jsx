@@ -4,7 +4,7 @@ import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, Graduation
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { applyCareerCommunicationAction, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
-import { Page, PageContent, PageHeader, StatCard, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
+import { CompactStats, Page, PageContent, PageHeader, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
 import { getNotificationCategory, getNotificationCategoryLabel, NOTIFICATION_CATEGORIES } from '@/lib/notificationCenter.js';
@@ -158,12 +158,14 @@ export default function Communications() {
   return (
     <Page size="wide">
       <PageContent>
-        <PageHeader eyebrow="Living Career" title="Central de Notificações" description="Acontecimentos e decisões relevantes da carreira em um único lugar." icon={Bell} action={unread > 0 ? <button type="button" onClick={markAll} className="inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"><CheckCheck className="h-4 w-4" /> Marcar todas como lidas</button> : null} />
-        <div className="grid gap-3 sm:grid-cols-3">
-          <StatCard label="Não lidas" value={unread} detail="Aguardando sua atenção" icon={Mail} tone={unread ? 'primary' : 'neutral'} />
-          <StatCard label="Decisões" value={pending} detail="Precisam de uma resposta" icon={AlertCircle} tone={pending ? 'warning' : 'neutral'} />
-          <StatCard label="Histórico" value={messages.length} detail="Notificações relevantes" icon={Megaphone} tone="info" />
-        </div>
+        <PageHeader dense eyebrow="Living Career" title="Central de Notificações" description="Acontecimentos e decisões relevantes da carreira em um único lugar." icon={Bell} action={unread > 0 ? <button type="button" onClick={markAll} className="inline-flex items-center gap-2 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground"><CheckCheck className="h-4 w-4" /> Marcar todas como lidas</button> : null} />
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.13): 3 StatCards
+            viram uma linha compacta. */}
+        <CompactStats items={[
+          { label: 'não lidas', value: unread, icon: Mail, tone: unread ? 'brand' : 'neutral' },
+          { label: 'decisões', value: pending, icon: AlertCircle, tone: pending ? 'warning' : 'neutral' },
+          { label: 'histórico', value: messages.length, icon: Megaphone, tone: 'info' },
+        ]} />
 
         <Surface className="p-3 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
@@ -177,7 +179,9 @@ export default function Communications() {
         {filtered.length === 0 ? <EmptyState icon={Bell} title="Você está em dia" description={query || category !== 'all' ? 'Altere os filtros ou a busca.' : 'Nenhuma notificação exige sua atenção agora.'} /> : <div className="grid gap-2 lg:grid-cols-2">{filtered.map((message) => {
           const Icon = SENDER_ICONS[message.sender_type] || Bell;
           const isUnread = isCareerMessageUnread(message);
-          return <button type="button" key={message.id} onClick={() => openMessage(message)} className={`group rounded-2xl border p-4 text-left transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:bg-card/80 ${isUnread ? 'border-primary/35 bg-primary/[0.045]' : 'border-border/65 bg-card/55'}`}><div className="flex items-start gap-3"><div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary/70"><Icon className="h-5 w-5 text-primary" /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className={`truncate text-sm ${isUnread ? 'font-black' : 'font-bold'}`}>{message.title}</p>{isUnread && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}</div><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{message.sender_name}</p><p className="mt-2 line-clamp-2 text-xs leading-relaxed text-muted-foreground">{message.content}</p><div className="mt-3 flex items-center gap-2"><StatusBadge tone={SENDER_TONES[message.sender_type] || 'neutral'}>{getNotificationCategoryLabel(message)}</StatusBadge>{message.career_date && <span className="text-[10px] text-muted-foreground">{formatDate(message.career_date)}</span>}{message.status === 'decisao_pendente' && <StatusBadge tone="warning">Decisão pendente</StatusBadge>}</div></div></div></button>;
+          {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.13): preview de 2
+              linhas vira 1 linha; padding reduzido de p-4 para p-3. */}
+          return <button type="button" key={message.id} onClick={() => openMessage(message)} className={`group rounded-2xl border p-3 text-left transition-all hover:-translate-y-0.5 hover:border-primary/35 hover:bg-card/80 ${isUnread ? 'border-primary/35 bg-primary/[0.045]' : 'border-border/65 bg-card/55'}`}><div className="flex items-start gap-3"><div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary/70"><Icon className="h-4.5 w-4.5 text-primary" /></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className={`truncate text-sm ${isUnread ? 'font-black' : 'font-bold'}`}>{message.title}</p>{isUnread && <span className="h-2 w-2 shrink-0 rounded-full bg-primary" />}</div><p className="mt-0.5 text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{message.sender_name}</p><p className="mt-1.5 line-clamp-1 text-xs leading-relaxed text-muted-foreground">{message.content}</p><div className="mt-2 flex items-center gap-2"><StatusBadge tone={SENDER_TONES[message.sender_type] || 'neutral'}>{getNotificationCategoryLabel(message)}</StatusBadge>{message.career_date && <span className="text-[10px] text-muted-foreground">{formatDate(message.career_date)}</span>}{message.status === 'decisao_pendente' && <StatusBadge tone="warning">Decisão pendente</StatusBadge>}</div></div></div></button>;
         })}</div>}
       </PageContent>
 

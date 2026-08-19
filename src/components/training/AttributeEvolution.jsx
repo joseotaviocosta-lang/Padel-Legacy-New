@@ -1,12 +1,18 @@
 import React, { useEffect, useState } from 'react';
 import { Radar, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ResponsiveContainer } from 'recharts';
-import { TrendingUp, ArrowUpRight, Activity } from 'lucide-react';
-import { ATTRIBUTES } from '@/lib/padel';
+import { TrendingUp, ArrowUpRight, Activity, Award } from 'lucide-react';
+import { ATTRIBUTES, ATTRIBUTE_GROUPS } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
+import { CollapsibleSection, Surface, SurfaceHeader } from '@/components/design-system';
 
 // ── Attribute Evolution ──────────────────────────────────────────────────
-// Shows a radar chart of all attributes, progression bars with gains from
-// training history, and top improving attributes.
+// Mostra o radar de todos os atributos, top-melhorados e a evolução
+// início→atual de cada um. Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.14):
+// era a única tela do app usando `glass rounded-2xl p-4` cru em vez de
+// Surface/SurfaceHeader, e a única lista de atributos totalmente plana
+// (sem agrupar por categoria) — migrada para os primitives do design
+// system e agrupada por ATTRIBUTE_GROUPS (mesma categorização já usada em
+// PlayerProfile.jsx, não uma nova).
 export default function AttributeEvolution({ profile }) {
   const [sessions, setSessions] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -61,19 +67,13 @@ export default function AttributeEvolution({ profile }) {
   return (
     <div className="space-y-4">
       {/* Radar Chart */}
-      <div className="glass rounded-2xl p-4">
-        <div className="flex items-center justify-between mb-3">
-          <div>
-            <h3 className="font-bold text-sm flex items-center gap-2">
-              <Activity className="h-4 w-4 text-primary" /> Perfil de Atributos
-            </h3>
-            <p className="text-[10px] text-muted-foreground">Visão radar de todos os atributos</p>
-          </div>
-          <div className="text-right">
-            <p className="text-[9px] uppercase text-muted-foreground font-bold">Ganho Total</p>
-            <p className="text-lg font-black text-primary tabular-nums">+{totalGain}</p>
-          </div>
-        </div>
+      <Surface>
+        <SurfaceHeader
+          icon={Activity}
+          title="Perfil de Atributos"
+          description="Visão radar de todos os atributos"
+          action={<div className="text-right"><p className="text-[9px] uppercase text-muted-foreground font-bold">Ganho Total</p><p className="text-lg font-black text-primary tabular-nums">+{totalGain}</p></div>}
+        />
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
             <RadarChart data={radarData}>
@@ -84,12 +84,12 @@ export default function AttributeEvolution({ profile }) {
             </RadarChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </Surface>
 
       {/* Top Improving */}
       {topImproving.length > 0 && (
-        <div className="glass rounded-2xl p-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Mais Evoluídos</p>
+        <Surface>
+          <SurfaceHeader icon={Award} title="Mais Evoluídos" />
           <div className="space-y-2">
             {topImproving.map((a, i) => (
               <div key={a.key} className="flex items-center gap-3">
@@ -103,38 +103,49 @@ export default function AttributeEvolution({ profile }) {
               </div>
             ))}
           </div>
-        </div>
+        </Surface>
       )}
 
-      {/* Before/After Comparison */}
-      <div className="glass rounded-2xl p-4">
-        <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-3">Evolução por Atributo (Início → Atual)</p>
-        <div className="space-y-3">
-          {sortedAttrs.map(a => {
-            const startPct = (STARTING_VALUE / 100) * 100;
-            const currentPct = (a.current / 100) * 100;
-            return (
-              <div key={a.key}>
-                <div className="flex justify-between text-[10px] mb-1">
-                  <span className="font-semibold">{a.label}</span>
-                  <div className="flex items-center gap-2">
-                    <span className="text-muted-foreground tabular-nums">{STARTING_VALUE}</span>
-                    <ArrowUpRight className="h-2.5 w-2.5 text-muted-foreground" />
-                    <span className="font-bold text-primary tabular-nums">{a.current}</span>
-                    {a.growth > 0 && <span className="text-primary text-[9px]">(+{a.growth})</span>}
+      {/* Before/After Comparison — agrupado por categoria, cada grupo
+          recolhível (o primeiro, Técnicos, aberto por padrão por ser o
+          mais consultado). */}
+      {ATTRIBUTE_GROUPS.map((group, groupIndex) => {
+        const groupAttrs = sortedAttrs.filter((a) => group.keys.includes(a.key));
+        if (!groupAttrs.length) return null;
+        const groupGain = groupAttrs.reduce((sum, a) => sum + a.gain, 0);
+        return (
+          <CollapsibleSection
+            key={group.id}
+            title={group.label}
+            description={`${groupAttrs.length} atributo${groupAttrs.length === 1 ? '' : 's'} · +${groupGain} no total`}
+            defaultOpen={groupIndex === 0}
+          >
+            <div className="space-y-3">
+              {groupAttrs.map(a => {
+                const startPct = (STARTING_VALUE / 100) * 100;
+                const currentPct = (a.current / 100) * 100;
+                return (
+                  <div key={a.key}>
+                    <div className="flex justify-between text-[10px] mb-1">
+                      <span className="font-semibold">{a.label}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-muted-foreground tabular-nums">{STARTING_VALUE}</span>
+                        <ArrowUpRight className="h-2.5 w-2.5 text-muted-foreground" />
+                        <span className="font-bold text-primary tabular-nums">{a.current}</span>
+                        {a.growth > 0 && <span className="text-primary text-[9px]">(+{a.growth})</span>}
+                      </div>
+                    </div>
+                    <div className="relative h-2.5 rounded-full bg-secondary/60 overflow-hidden">
+                      <div className="absolute h-full bg-muted-foreground/30 rounded-full" style={{ width: `${startPct}%` }} />
+                      <div className="absolute h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${currentPct}%` }} />
+                    </div>
                   </div>
-                </div>
-                <div className="relative h-2.5 rounded-full bg-secondary/60 overflow-hidden">
-                  {/* Starting value */}
-                  <div className="absolute h-full bg-muted-foreground/30 rounded-full" style={{ width: `${startPct}%` }} />
-                  {/* Growth over starting */}
-                  <div className="absolute h-full bg-primary rounded-full transition-all duration-500" style={{ width: `${currentPct}%` }} />
-                </div>
-              </div>
-            );
-          })}
-        </div>
-      </div>
+                );
+              })}
+            </div>
+          </CollapsibleSection>
+        );
+      })}
     </div>
   );
 }

@@ -13,7 +13,7 @@ import {
 import { listCareerCommunications } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { getAvailablePartners } from '@/lib/career';
-import { EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatCard, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
+import { CompactStats, EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import PartnerOverview from '@/components/partner/PartnerOverview';
 import PartnerSearch from '@/components/partner/PartnerSearch';
@@ -267,6 +267,7 @@ export default function PartnerHub() {
     <Page size="wide" className="animate-fade-in">
       <PageContent>
       <PageHeader
+        dense
         icon={Handshake}
         eyebrow="Dupla e relações"
         title={activePartnership ? `Você e ${activePartnership.partner_name}` : 'Construa sua próxima dupla'}
@@ -278,12 +279,14 @@ export default function PartnerHub() {
         action={inboxCount > 0 ? <StatusBadge tone="info" icon={Inbox}>{inboxCount} não lida(s)</StatusBadge> : null}
       />
 
-      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-        <StatCard label="Situação" value={activePartnership ? 'Dupla ativa' : 'Sem dupla'} detail={activePartnership?.partner_name || 'Escolha uma proposta'} icon={Users} tone={activePartnership ? 'success' : 'warning'} />
-        <StatCard label="Entrosamento" value={`${Math.round(chemistry)}/100`} detail={sharedMatches > 0 ? `${sharedMatches} partidas juntos` : 'Construído com jogos e treinos'} icon={Handshake} tone="brand" />
-        <StatCard label="Confiança" value={`${Math.round(confidence)}/100`} detail="Relação profissional da dupla" icon={Lightbulb} tone="info" />
-        <StatCard label="Propostas" value={offerCount} detail={inboxCount > 0 ? `${inboxCount} mensagem(ns) nova(s)` : 'Mercado atualizado'} icon={Inbox} tone="premium" />
-      </div>
+      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.11): 4 StatCards com
+          detail longo viram uma linha compacta. */}
+      <CompactStats items={[
+        { label: activePartnership ? activePartnership.partner_name : 'escolha uma proposta', value: activePartnership ? 'Dupla ativa' : 'Sem dupla', icon: Users, tone: activePartnership ? 'success' : 'warning' },
+        { label: 'entrosamento', value: `${Math.round(chemistry)}/100`, icon: Handshake },
+        { label: 'confiança', value: `${Math.round(confidence)}/100`, icon: Lightbulb, tone: 'info' },
+        { label: 'propostas', value: offerCount, icon: Inbox, tone: 'premium' },
+      ]} />
 
       {/* Instability banner */}
       {switchCount >= 2 && (

@@ -4,7 +4,7 @@ import { Newspaper, Mic, Users, Star, TrendingUp, Sparkles } from 'lucide-react'
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { LoadingScreen, EmptyStateCard } from '@/components/padel/ui';
-import { CardGrid, ModalShell, Page, PageContent, PageHeader, StatCard, Surface } from '@/components/design-system';
+import { CompactStats, ModalShell, Page, PageContent, PageHeader, Surface } from '@/components/design-system';
 import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
@@ -264,6 +264,7 @@ export default function Press() {
     <Page size="default">
       <PageContent>
       <PageHeader
+        dense
         eyebrow="Relacionamento com a mídia"
         title="Imprensa Esportiva"
         description="Entrevistas, coletivas, rumores e repercussões. Suas respostas moldam reputação, fãs e patrocinadores."
@@ -296,11 +297,13 @@ export default function Press() {
         </Surface>
       )}
 
-      <CardGrid columns={3}>
-        <StatCard label="Apego dos fãs" value={fanAppeal} detail="Popularidade com o público" icon={Star} tone="brand" />
-        <StatCard label="Patrocinadores" value={sponsorAppeal} detail="Atratividade comercial" icon={TrendingUp} tone="premium" />
-        <StatCard label="Moral" value={morale} detail="Momento emocional" icon={Sparkles} tone="info" />
-      </CardGrid>
+      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.13): 3 StatCards viram
+          uma linha compacta. */}
+      <CompactStats items={[
+        { label: 'apego dos fãs', value: fanAppeal, icon: Star },
+        { label: 'patrocinadores', value: sponsorAppeal, icon: TrendingUp, tone: 'premium' },
+        { label: 'moral', value: morale, icon: Sparkles, tone: 'info' },
+      ]} />
 
       <Surface padding="compact">
       <div className="flex gap-2">

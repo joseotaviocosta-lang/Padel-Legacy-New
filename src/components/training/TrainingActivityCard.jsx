@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Dumbbell, Zap, Clock, AlertTriangle, TrendingDown, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { Dumbbell, AlertTriangle, Sparkles } from 'lucide-react';
 import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/trainingSystemV2';
 import { ATTRIBUTE_LABELS } from '@/lib/initialCareerProfiles';
 import { getAttributeIcon } from '@/components/padel/Shared';
-import { Button, ProgressBar, StatusBadge } from '@/components/design-system';
+import { Button, CompactActionCard, ProgressBar, StatusBadge } from '@/components/design-system';
 
-// ── Card de treino ──────────────────────────────────────────────────────
-// Prioriza o que decide a escolha (seção 4 do redesign): ganho previsto,
-// fadiga e duração ficam sempre visíveis; nível atual/afinidade/detalhamento
-// completo viram secundários, atrás do "Ver detalhes".
+// Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3 — gate obrigatório): fechado,
+// o card mostra só o que decide a escolha (duração/fadiga/energia + o ganho
+// previsto nos 2 atributos principais) e o botão Treinar — ~110-160px, sem
+// a caixa de ganho/linha de stats/seletor de intensidade sempre expandidos
+// como antes. Intensidade vira um segmented control dentro do "expandir",
+// junto do nível atual/afinidade/risco/bônus que já era secundário.
 export default function TrainingActivityCard({
   activity,
   profile,
@@ -21,7 +23,6 @@ export default function TrainingActivityCard({
   disabledReason = null,
 }) {
   const [intensity, setIntensity] = useState('moderado');
-  const [expanded, setExpanded] = useState(false);
 
   const category = TRAINING_CATEGORIES[activity.category];
   const Icon = getAttributeIcon(activity.icon);
@@ -34,95 +35,39 @@ export default function TrainingActivityCard({
   const isDisabled = disabled || busy || lowEnergy;
   const topGains = Object.entries(prediction.gains).slice(0, 2);
 
-  return (
-    <div className={`glass rounded-2xl p-4 border ${expanded ? 'border-primary/30' : recommended ? 'border-premium/35' : 'border-border/40'} transition-all`}>
-      {/* Header */}
-      <div className="flex items-start gap-3 mb-3">
-        <div className={`h-10 w-10 rounded-xl ${category?.dot ? 'bg-secondary/60' : 'bg-primary/15'} flex items-center justify-center shrink-0`}>
-          <Icon className={`h-5 w-5 ${category?.color || 'text-primary'}`} />
-        </div>
-        <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
-            <p className="font-semibold text-sm leading-tight">{activity.label}</p>
-            {recommended && <StatusBadge tone="premium" icon={Sparkles}>Recomendado</StatusBadge>}
-          </div>
-          <span className={`text-[9px] font-bold uppercase ${category?.color}`}>{category?.label}</span>
-        </div>
-        <button
-          type="button"
-          onClick={() => setExpanded(!expanded)}
-          aria-expanded={expanded}
-          aria-label={expanded ? 'Ver menos detalhes' : 'Ver mais detalhes'}
-          className="text-muted-foreground hover:text-foreground transition-colors"
-        >
-          {expanded ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
-        </button>
-      </div>
-
-      {/* Ganho previsto — valor atual + ganho é o que decide a escolha, sempre visível.
-          Valor atual lido direto de `profile` (mesma fonte do gameplay, sem
-          estado duplicado) — só apresentação, não afeta o cálculo do ganho. */}
-      <div className="mb-3 space-y-1 rounded-xl bg-primary/5 border border-primary/15 p-2.5">
-        {topGains.length ? topGains.map(([attribute, gain]) => {
-          const currentAttrVal = Math.round(Number(profile?.[attribute]) || 0);
-          return (
-            <div key={attribute} className="flex items-center justify-between gap-2 text-xs">
-              <span className="min-w-0 truncate text-muted-foreground">{ATTRIBUTE_LABELS[attribute] || attribute}</span>
-              <span className="flex shrink-0 items-baseline gap-1.5 tabular-nums">
-                <span className="font-bold text-foreground">{currentAttrVal}</span>
-                <span className="font-bold text-primary">+{gain.toFixed(2)}</span>
-              </span>
-            </div>
-          );
-        }) : <p className="text-xs text-muted-foreground">Sessão de manutenção</p>}
-      </div>
-
-      {/* Duração / Fadiga / Energia — uma linha compacta em vez de 3 caixas
-          empilhadas (Polish 2, objetivo 3.2); mesmos valores/cores/rótulos. */}
-      <div className="mb-3 flex items-center justify-between gap-2 rounded-xl bg-secondary/30 px-3 py-2 text-[11px] font-bold">
-        <span className="inline-flex items-center gap-1.5 text-muted-foreground"><Clock className="h-3.5 w-3.5" />Duração <span className="text-foreground">{activity.duration}min</span></span>
-        <span className={`inline-flex items-center gap-1.5 ${fatigueCost >= 12 ? 'text-red-400' : 'text-amber-400'}`}><TrendingDown className="h-3.5 w-3.5" />Fadiga +{fatigueCost}</span>
-        <span className={`inline-flex items-center gap-1.5 ${lowEnergy ? 'text-red-400' : 'text-primary'}`}><Zap className="h-3.5 w-3.5" />Energia {energyCost}</span>
-      </div>
-
+  const summary = (
+    <div className="space-y-0.5">
+      <p>
+        {activity.duration}min · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span> · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span>
+      </p>
+      <p className="text-foreground/90">
+        {/* Redesign Checkpoint Hotfix 1 (scripts/test-visual-checkpoint-hotfix1.mjs):
+            mostra o valor ATUAL do atributo (mesma fonte do gameplay,
+            `profile?.[attribute]`), não só o ganho — já foi perdido uma vez
+            antes por engano e corrigido de propósito. */}
+        {topGains.length
+          ? topGains.map(([attribute, gain]) => `${ATTRIBUTE_LABELS[attribute] || attribute} ${Math.round(Number(profile?.[attribute]) || 0)} +${gain.toFixed(2)}`).join(' · ')
+          : 'Sessão de manutenção'}
+      </p>
       {weeklyCount >= 2 && (
-        <div className="flex items-center gap-1.5 mb-3 text-[10px] text-amber-400">
-          <AlertTriangle className="h-3 w-3" />
-          <span>Retornos decrescentes: {weeklyCount}x esta semana ({Math.round(prediction.diminishing * 100)}% eficiência)</span>
-        </div>
+        <p className="flex items-center gap-1 text-amber-400">
+          <AlertTriangle className="h-3 w-3 shrink-0" /> {weeklyCount}x esta semana · {Math.round(prediction.diminishing * 100)}% eficiência
+        </p>
       )}
+    </div>
+  );
 
-      {/* Detalhes secundários — nível atual, afinidade, risco, bônus */}
-      {expanded && (
-        <div className="mb-3 space-y-2 animate-fade-in">
-          <div>
-            <div className="flex justify-between text-[10px] mb-1">
-              <span className="text-muted-foreground">Nível atual</span>
-              <span className="font-bold text-primary tabular-nums">{prediction.currentVal}/100</span>
-            </div>
-            <ProgressBar value={prediction.currentVal} max={100} tone="brand" />
-          </div>
-          <div className="grid grid-cols-2 gap-2 text-[10px]">
-            <DetailRow label="Afinidade" value={prediction.affinity.label} highlight />
-            <DetailRow label="Risco de lesão" value={`${Math.round(prediction.chance > 0 ? intensityObj.injuryRisk * 100 : 0)}%`} />
-          </div>
-          <div className="glass rounded-xl p-2.5 space-y-1.5">
-            <DetailRow label="XP" value={`+${activity.xp}`} />
-            <DetailRow label="Moedas" value={`+${activity.coins}`} />
-            {activity.formBoost && <DetailRow label="Bônus de forma" value={`+${activity.formBoost}`} highlight />}
-            {activity.moraleBoost && <DetailRow label="Bônus de moral" value={`+${activity.moraleBoost}`} highlight />}
-            {activity.confidenceBoost && <DetailRow label="Bônus de confiança" value={`+${activity.confidenceBoost}`} highlight />}
-            {activity.fatigueReduction && <DetailRow label="Redução de fadiga" value={`-${activity.fatigueReduction}`} highlight />}
-            {prediction.coachMultiplier > 1 && <DetailRow label="Bônus do treinador" value={`+${Math.round((prediction.coachMultiplier - 1) * 100)}%`} highlight />}
-            {prediction.fatiguePenalty < 0 && <DetailRow label="Penalidade de fadiga" value={`${prediction.fatiguePenalty}`} />}
-          </div>
-          <p className="text-[10px] text-muted-foreground">{category?.description}</p>
+  const details = (
+    <>
+      <div>
+        <div className="mb-1 flex justify-between text-[10px]">
+          <span className="text-muted-foreground">Nível atual</span>
+          <span className="font-bold text-primary tabular-nums">{prediction.currentVal}/100</span>
         </div>
-      )}
-
-      {/* Intensidade */}
-      <div className="mb-3">
-        <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold mb-1.5">Intensidade</p>
+        <ProgressBar value={prediction.currentVal} max={100} tone="brand" />
+      </div>
+      <div>
+        <p className="mb-1.5 text-[9px] font-bold uppercase tracking-wide text-muted-foreground">Intensidade</p>
         <div className="grid grid-cols-3 gap-1.5">
           {INTENSITY_LEVELS.map(int => (
             <button
@@ -140,19 +85,47 @@ export default function TrainingActivityCard({
           ))}
         </div>
       </div>
+      <div className="grid grid-cols-2 gap-2 text-[10px]">
+        <DetailRow label="Afinidade" value={prediction.affinity.label} highlight />
+        <DetailRow label="Risco de lesão" value={`${Math.round(prediction.chance > 0 ? intensityObj.injuryRisk * 100 : 0)}%`} />
+      </div>
+      <div className="glass rounded-xl p-2.5 space-y-1.5">
+        <DetailRow label="XP" value={`+${activity.xp}`} />
+        <DetailRow label="Moedas" value={`+${activity.coins}`} />
+        {activity.formBoost && <DetailRow label="Bônus de forma" value={`+${activity.formBoost}`} highlight />}
+        {activity.moraleBoost && <DetailRow label="Bônus de moral" value={`+${activity.moraleBoost}`} highlight />}
+        {activity.confidenceBoost && <DetailRow label="Bônus de confiança" value={`+${activity.confidenceBoost}`} highlight />}
+        {activity.fatigueReduction && <DetailRow label="Redução de fadiga" value={`-${activity.fatigueReduction}`} highlight />}
+        {prediction.coachMultiplier > 1 && <DetailRow label="Bônus do treinador" value={`+${Math.round((prediction.coachMultiplier - 1) * 100)}%`} highlight />}
+        {prediction.fatiguePenalty < 0 && <DetailRow label="Penalidade de fadiga" value={`${prediction.fatiguePenalty}`} />}
+      </div>
+      <p className="text-[10px] text-muted-foreground">{category?.description}</p>
+    </>
+  );
 
-      <Button level="primary" size="touch" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="w-full">
-        {busy ? (
-          <><div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> Treinando...</>
-        ) : disabledReason ? (
-          disabledReason
-        ) : lowEnergy ? (
-          'Sem energia'
-        ) : (
-          <><Dumbbell className="h-4 w-4" /> Treinar</>
-        )}
-      </Button>
-    </div>
+  return (
+    <CompactActionCard
+      icon={Icon}
+      iconClassName={category?.color || 'text-primary'}
+      title={activity.label}
+      badge={recommended && <StatusBadge tone="premium" icon={Sparkles}>Recomendado</StatusBadge>}
+      summary={summary}
+      details={details}
+      tone={recommended ? 'premium' : 'default'}
+      primaryAction={
+        <Button level="primary" size="touch" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="w-full">
+          {busy ? (
+            <><div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> Treinando...</>
+          ) : disabledReason ? (
+            disabledReason
+          ) : lowEnergy ? (
+            'Sem energia'
+          ) : (
+            <><Dumbbell className="h-4 w-4" /> Treinar</>
+          )}
+        </Button>
+      }
+    />
   );
 }
 

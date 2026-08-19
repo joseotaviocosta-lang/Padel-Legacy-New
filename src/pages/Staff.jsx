@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Page, PageContent, PageHeader, PageSkeleton, StatCard, StatusBadge } from '@/components/design-system';
+import { CompactStats, Page, PageContent, PageHeader, PageSkeleton, StatusBadge } from '@/components/design-system';
 import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
@@ -77,6 +77,7 @@ export default function Staff() {
     <Page size="wide" className="animate-fade-in">
       <PageContent>
       <PageHeader
+        dense
         eyebrow="Equipe técnica"
         icon={Users}
         title="Comissão técnica"
@@ -84,12 +85,14 @@ export default function Staff() {
         tone="brand"
         stats={<><StatusBadge tone="success">Treinador separado</StatusBadge><StatusBadge tone="info">{activeStaff.length}/{maxSlots} vagas</StatusBadge></>}
       />
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Profissionais" value={`${activeStaff.length}/${maxSlots}`} detail="vagas de apoio" icon={BriefcaseBusiness} tone="brand" />
-        <StatCard label="Folha mensal" value={monthlyPayroll.toLocaleString('pt-BR')} detail="sem contar o treinador" icon={Wallet} tone="premium" />
-        <StatCard label="Sinergia" value={`${synergy}%`} detail="integração da equipe" icon={Sparkles} tone={synergy >= 70 ? 'success' : 'info'} />
-        <StatCard label="Liderança" value={profile.coach_name || 'Treinador'} detail="comando técnico" icon={UserRoundCog} tone="info" />
-      </div>
+      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): 4 StatCards viram
+          uma linha compacta. */}
+      <CompactStats items={[
+        { label: 'vagas', value: `${activeStaff.length}/${maxSlots}`, icon: BriefcaseBusiness },
+        { label: 'folha mensal', value: monthlyPayroll.toLocaleString('pt-BR'), icon: Wallet, tone: 'premium' },
+        { label: 'sinergia', value: `${synergy}%`, icon: Sparkles, tone: synergy >= 70 ? 'success' : 'info' },
+        { label: 'liderança', value: profile.coach_name || 'Treinador', icon: UserRoundCog, tone: 'info' },
+      ]} />
       <StaffLivePanel meeting={meeting} />
       <StaffPanel
         profile={profile}

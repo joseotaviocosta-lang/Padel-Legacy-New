@@ -5,7 +5,7 @@ import {
   Dumbbell, FileText, HeartPulse, LockKeyhole, PanelsTopLeft, RefreshCw,
   Sparkles, TrendingUp, Users, WandSparkles, Zap,
 } from 'lucide-react';
-import { Surface, EmptyState, Button, Tabs } from '@/components/design-system';
+import { Button, EmptyState, Surface, SummaryRow, Tabs, TooltipHint } from '@/components/design-system';
 import {
   STAFF_ROLE_DEFINITIONS, getStaffIcon, getStaffMarketForMonth, getStaffSlots,
   normalizeStaffMember,
@@ -80,7 +80,7 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
     <Surface variant="elevated" className="relative overflow-hidden">
       <div className="absolute -right-20 -top-24 h-64 w-64 rounded-full bg-primary/10 blur-3xl" />
       <div className="relative flex flex-col lg:flex-row lg:items-center gap-5">
-        <div className="flex-1"><p className="text-[10px] uppercase tracking-[0.24em] text-primary font-bold">Comissão técnica</p><h2 className="text-2xl font-black mt-1">Estrutura de alta performance</h2><p className="text-sm text-muted-foreground mt-2 max-w-2xl">Profissionais, instalações e especialidades agora trabalham em conjunto. Monte uma estrutura com identidade própria e ganhos reais.</p></div>
+        <div className="flex-1"><div className="flex items-center gap-2"><p className="text-[10px] uppercase tracking-[0.24em] text-primary font-bold">Comissão técnica</p><TooltipHint label="Sobre a comissão" content="Profissionais, instalações e especialidades agora trabalham em conjunto. Monte uma estrutura com identidade própria e ganhos reais." /></div><h2 className="text-2xl font-black mt-1">Estrutura de alta performance</h2></div>
         <div className="grid grid-cols-4 gap-2 min-w-[420px]">
           <div className="rounded-xl bg-secondary/30 p-3"><Users className="h-4 w-4 text-primary" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Vagas</p><p className="font-black text-lg">{occupiedSlots}/{totalSlots}</p></div>
           <div className="rounded-xl bg-secondary/30 p-3"><CircleDollarSign className="h-4 w-4 text-amber-400" /><p className="text-[9px] uppercase text-muted-foreground mt-2">Folha</p><p className="font-black text-lg">{coins(monthlyCost)}</p></div>
@@ -101,7 +101,13 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
           return <div key={member.id || member.staff_id} className="rounded-2xl border border-border/50 bg-secondary/20 p-4 space-y-3">
             <div className="flex items-start gap-3"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Icon className="h-5 w-5 text-primary" /></div><div className="flex-1 min-w-0"><p className="font-bold text-sm truncate">{member.staff_name}</p><p className="text-[10px] text-muted-foreground">{member.role_name} · {member.specialty_name}</p><p className="text-[9px] text-muted-foreground">{member.personality} · {member.age} anos</p></div><span className="text-[9px] px-2 py-1 rounded-full bg-secondary/50">Nv. {member.staff_level}</span></div>
             <QualityBar value={member.quality} potential={member.potential} />
-            <div className="grid grid-cols-3 gap-2 text-[9px]"><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Satisfação</p><p className="font-bold">{member.satisfaction}/100</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Salário</p><p className="font-bold">{coins(member.monthly_cost)}</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Contrato</p><p className={`font-bold ${remaining != null && remaining <= 45 ? 'text-amber-400' : ''}`}>{remaining == null ? 'Sem data' : remaining < 0 ? 'Vencido' : `${remaining} dias`}</p></div></div>
+            {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): a grade de 3
+                blocos com padding próprio vira uma linha compacta. */}
+            <SummaryRow items={[
+              { label: 'Satisfação', value: `${member.satisfaction}/100` },
+              { label: 'Salário', value: coins(member.monthly_cost) },
+              { label: 'Contrato', value: remaining == null ? 'Sem data' : remaining < 0 ? 'Vencido' : `${remaining}d` },
+            ]} />
             <EffectPills effects={member.effects} />
             <div className="flex gap-2">
               <Button level="ghost" size="sm" disabled={busy || !onRenew} onClick={() => onRenew?.(member, 12)} className="flex-1 bg-primary/15 text-primary">Renovar 12 meses</Button>

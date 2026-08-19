@@ -4,8 +4,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { Trophy, Users, Globe, Crown, Link, Plus, CalendarDays, Medal, Activity } from 'lucide-react';
 import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import {
-  CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
-  RankingPosition, StatCard, StatusBadge, Tabs,
+  CompactListItem, CompactStats, CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
+  RankingPosition, StatusBadge, Tabs,
 } from '@/components/design-system';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 import AthleteDetail from '@/components/athletes/AthleteDetail.jsx';
@@ -134,23 +134,15 @@ export default function Ranking() {
           const movement = previous - (i + 1);
           const isPlayer = Boolean(a.is_player_profile);
           return (
-            <button
-              type="button"
+            <CompactListItem
               key={a.id || `${a.name}-${i}`}
               onClick={() => setSelectedAthlete(a)}
-              className={`glass flex w-full items-center gap-3 rounded-2xl p-3 text-left transition-colors hover:border-primary/35 ${isPlayer ? 'border border-primary/40 bg-primary/5' : ''}`}
-            >
-              <RankingPosition position={i + 1} movement={movement} />
-              <PlayerAvatar name={a.name} shape="rounded" />
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{a.name || 'Atleta'}{isPlayer && <span className="ml-1.5 text-[9px] font-black uppercase text-primary">Você</span>}</p>
-                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                  <CountryFlag country={a.country || a.nationality} />
-                  <span>{a.circuit_category || 'Future'} · {Number(a.overall_rating ?? a.overall) || 0} OVR</span>
-                </div>
-              </div>
-              <p className="font-black text-primary tabular-nums">{points.toLocaleString('pt-BR')}</p>
-            </button>
+              highlighted={isPlayer}
+              leading={<><RankingPosition position={i + 1} movement={movement} /><PlayerAvatar name={a.name} shape="rounded" /></>}
+              title={<>{a.name || 'Atleta'}{isPlayer && <span className="ml-1.5 text-[9px] font-black uppercase text-primary">Você</span>}</>}
+              meta={<><CountryFlag country={a.country || a.nationality} /> {a.circuit_category || 'Future'} · {Number(a.overall_rating ?? a.overall) || 0} OVR</>}
+              trailing={<p className="font-black text-primary tabular-nums">{points.toLocaleString('pt-BR')}</p>}
+            />
           );
         })}
         {visibleCount < items.length && (
@@ -195,6 +187,7 @@ export default function Ranking() {
     <Page size="wide">
       <PageContent>
       <PageHeader
+        dense
         eyebrow="Circuito mundial"
         icon={Trophy}
         title="Ranking"
@@ -203,12 +196,15 @@ export default function Ranking() {
         stats={<><StatusBadge tone="premium">{circuitAthletes.length} atletas</StatusBadge><StatusBadge tone="info">{teams.length} duplas</StatusBadge></>}
       />
 
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Líder mundial" value={circuitAthletes[0]?.name || '—'} detail={`${Number(circuitAthletes[0]?.world_ranking_points ?? circuitAthletes[0]?.ranking_points) || 0} pontos`} icon={Crown} tone="premium" />
-        <StatCard label="Líder da Race" value={raceAthletes[0]?.name || '—'} detail={`${Number(raceAthletes[0]?.race_points) || 0} pontos`} icon={Activity} tone="info" />
-        <StatCard label="Melhor dupla" value={teams[0] ? `${teams[0].player1_name} & ${teams[0].player2_name}` : '—'} detail={`${Number(teams[0]?.ranking_points) || 0} pontos`} icon={Users} tone="brand" />
-        <StatCard label="Circuito" value={`${countries.length} países`} detail={`${clubs.length} clubes ativos`} icon={Medal} tone="success" />
-      </div>
+      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.9): 4 StatCards com
+          detalhe longo (nome do líder etc.) viram indicadores compactos —
+          o líder/melhor dupla de verdade já aparece no pódio logo abaixo. */}
+      <CompactStats items={[
+        { label: 'líder mundial', value: `${circuitAthletes[0]?.name || '—'} · ${Number(circuitAthletes[0]?.world_ranking_points ?? circuitAthletes[0]?.ranking_points) || 0}pts`, icon: Crown, tone: 'premium' },
+        { label: 'líder race', value: `${raceAthletes[0]?.name || '—'} · ${Number(raceAthletes[0]?.race_points) || 0}pts`, icon: Activity, tone: 'info' },
+        { label: 'países', value: countries.length, icon: Medal, tone: 'success' },
+        { label: 'clubes', value: clubs.length, icon: Users },
+      ]} />
 
       <Tabs tabs={TABS} activeTab={tab} onTabChange={setTab} variant="segmented" />
 
@@ -229,20 +225,13 @@ export default function Ranking() {
                 renderSub={t => `${t.ranking_points} pts`}
               />
               {teams.slice(0, visibleCount).map((t, i) => (
-                <div key={t.id} className="glass rounded-2xl p-3 flex items-center gap-3">
-                  <RankingPosition position={i + 1} movement={0} />
-                  <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
-                    <Users className="h-5 w-5 text-primary" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-semibold text-sm truncate">{t.player1_name} & {t.player2_name}</p>
-                    <p className="text-[10px] text-muted-foreground">{t.wins || 0}V · {t.losses || 0}D · {(t.titles || []).length} título(s)</p>
-                  </div>
-                  <div className="text-right">
-                    <p className="font-black text-primary tabular-nums">{t.ranking_points || 0}</p>
-                    <p className="text-[9px] text-muted-foreground uppercase">pontos</p>
-                  </div>
-                </div>
+                <CompactListItem
+                  key={t.id}
+                  leading={<><RankingPosition position={i + 1} movement={0} /><div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0"><Users className="h-4.5 w-4.5 text-primary" /></div></>}
+                  title={`${t.player1_name} & ${t.player2_name}`}
+                  meta={`${t.wins || 0}V · ${t.losses || 0}D · ${(t.titles || []).length} título(s)`}
+                  trailing={<div className="text-right"><p className="font-black text-primary tabular-nums">{t.ranking_points || 0}</p><p className="text-[9px] text-muted-foreground uppercase">pontos</p></div>}
+                />
               ))}
             </>
           )
@@ -262,43 +251,26 @@ export default function Ranking() {
           {clubs.length === 0 ? (
             <EmptyState compact icon={Users} title="Sem clubes" description="Nenhum clube cadastrado." />
           ) : clubs.slice(0, visibleCount).map((c, i) => (
-            <div key={c.id} className="glass rounded-2xl p-3 flex items-center gap-3">
-              <RankingPosition position={i + 1} movement={0} />
-              <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center overflow-hidden">
-                {c.logo_url ? <img src={c.logo_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary text-lg">{(c.name || '?')[0]?.toUpperCase()}</span>}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="font-semibold text-sm truncate">{c.name}</p>
-                <div className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                  {c.country && <CountryFlag country={c.country} />}
-                  <span>{c.city || ''}{c.city && c.country ? ', ' : ''}{c.country || ''} · {c.member_count || 0} membros</span>
-                </div>
-              </div>
-              <div className="text-right">
-                <p className="font-black text-primary tabular-nums">{c.club_points || 0}</p>
-                <p className="text-[9px] text-muted-foreground uppercase">pontos</p>
-              </div>
-            </div>
+            <CompactListItem
+              key={c.id}
+              leading={<><RankingPosition position={i + 1} movement={0} /><div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center overflow-hidden shrink-0">{c.logo_url ? <img src={c.logo_url} alt="" className="h-full w-full object-cover" /> : <span className="font-black text-primary text-sm">{(c.name || '?')[0]?.toUpperCase()}</span>}</div></>}
+              title={c.name}
+              meta={<>{c.country && <CountryFlag country={c.country} />} {c.city || ''}{c.city && c.country ? ', ' : ''}{c.country || ''} · {c.member_count || 0} membros</>}
+              trailing={<div className="text-right"><p className="font-black text-primary tabular-nums">{c.club_points || 0}</p><p className="text-[9px] text-muted-foreground uppercase">pontos</p></div>}
+            />
           ))}
           </>
         )}
 
         {/* Countries */}
         {tab === 'countries' && countries.slice(0, visibleCount).map((c, i) => (
-          <div key={c.name} className="glass rounded-2xl p-3 flex items-center gap-3">
-            <RankingPosition position={i + 1} movement={0} />
-            <div className="h-11 w-11 rounded-xl bg-gradient-to-br from-accent/30 to-secondary flex items-center justify-center text-xl">
-              <CountryFlag country={c.name} />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-semibold text-sm truncate">{c.name}</p>
-              <p className="text-[10px] text-muted-foreground">{c.players} jogadores · {c.avgOvr} OVR médio</p>
-            </div>
-            <div className="text-right">
-              <p className="font-black text-primary tabular-nums">{c.totalXp.toLocaleString()}</p>
-              <p className="text-[9px] text-muted-foreground uppercase">XP total</p>
-            </div>
-          </div>
+          <CompactListItem
+            key={c.name}
+            leading={<><RankingPosition position={i + 1} movement={0} /><div className="h-9 w-9 rounded-xl bg-gradient-to-br from-accent/30 to-secondary flex items-center justify-center text-lg shrink-0"><CountryFlag country={c.name} /></div></>}
+            title={c.name}
+            meta={`${c.players} jogadores · ${c.avgOvr} OVR médio`}
+            trailing={<div className="text-right"><p className="font-black text-primary tabular-nums">{c.totalXp.toLocaleString()}</p><p className="text-[9px] text-muted-foreground uppercase">XP total</p></div>}
+          />
         ))}
 
         {((tab === 'teams' && visibleCount < teams.length) ||

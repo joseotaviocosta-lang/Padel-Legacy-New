@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield } from 'lucide-react';
+import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, ChevronDown, ChevronUp } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
@@ -14,7 +14,7 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, Surface, StatCard, StatusBadge, EmptyState, Tabs, Button, ConfirmDialog } from '@/components/design-system';
+import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, Surface, CompactStats, StatusBadge, EmptyState, Tabs, Button, ConfirmDialog, TooltipHint } from '@/components/design-system';
 import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -239,6 +239,14 @@ export default function Tournaments() {
   }
 
   const hasEnergyForTournament = (profile?.energy || 0) >= 20;
+  // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7): "próximo torneio" não
+  // existia como valor isolado nesta página (só implícito na ordenação de
+  // `byMonth`) — reaproveita o mesmo critério já usado em
+  // CalendarPage.jsx (`upcomingTournaments`/`daysBetween`), não um cálculo
+  // novo.
+  const nextTournament = [...tournaments]
+    .filter((t) => t.start_date && careerDate && t.start_date >= careerDate && isRegistrationOpen(t, careerDate))
+    .sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''))[0] || null;
 
   const { filtered, counts, byMonth } = (() => {
     const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
@@ -318,27 +326,41 @@ export default function Tournaments() {
     <Page width="wide">
       <PageContent>
         <PremiumPageHeader
+          dense
           eyebrow="Padel Legacy World Tour"
           title={season?.name || 'Temporada 2026'}
           description={season?.description || 'Escolha os torneios certos, administre inscrições e acompanhe a evolução do circuito.'}
           icon={Trophy}
           tone="premium"
           breadcrumb={['Competições', 'Torneios']}
-          action={null}
+          action={<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." />}
         />
 
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-          <StatCard icon={Crown} label="Crown" value={counts.Crown} tone="premium" />
-          <StatCard icon={Flame} label="Elite" value={counts.Elite} tone="danger" />
-          <StatCard icon={Trophy} label="Masters" value={counts.Masters} tone="info" />
-          <StatCard icon={Star} label="Platinum" value={counts.Platinum} tone="brand" />
-          <StatCard icon={Award} label="Gold" value={counts.Gold} tone="warning" />
-          <StatCard icon={Shield} label="Silver" value={counts.Silver} />
-        </div>
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7 — gate obrigatório):
+            próximo torneio no primeiro viewport, com ação direta. */}
+        {nextTournament && (
+          <Surface variant="premium" padding="compact" className="flex items-center justify-between gap-3">
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-black uppercase tracking-wide text-primary">
+                {daysBetween(careerDate, nextTournament.start_date) === 0 ? 'Próximo torneio · hoje' : `Próximo torneio · em ${daysBetween(careerDate, nextTournament.start_date)}d`}
+              </p>
+              <p className="truncate text-sm font-bold">{nextTournament.name}</p>
+            </div>
+            <Button level="primary" size="sm" onClick={() => setDetailsTournament(nextTournament)} className="shrink-0">Ver torneio</Button>
+          </Surface>
+        )}
 
-        <Surface variant="subtle" padding="compact" className="text-xs text-muted-foreground">
-          Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla.
-        </Surface>
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7): os 6 StatCards de
+            contagem por tier viram uma linha compacta — a mesma informação
+            já reaparece nos botões de filtro logo abaixo. */}
+        <CompactStats items={[
+          { label: 'Crown', value: counts.Crown, icon: Crown, tone: 'premium' },
+          { label: 'Elite', value: counts.Elite, icon: Flame, tone: 'danger' },
+          { label: 'Masters', value: counts.Masters, icon: Trophy, tone: 'info' },
+          { label: 'Platinum', value: counts.Platinum, icon: Star },
+          { label: 'Gold', value: counts.Gold, icon: Award, tone: 'warning' },
+          { label: 'Silver', value: counts.Silver, icon: Shield },
+        ]} />
 
       <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
 
@@ -505,6 +527,11 @@ export default function Tournaments() {
 }
 
 function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewDetails, onViewBracket, careerDate, profile, teamRank, activeRun }) {
+  // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7): a análise do treinador
+  // (5 linhas de estatísticas) era sempre renderizada por card — maior
+  // ganho de altura isolado encontrado na auditoria. Fica atrás de um
+  // toggle local, recolhida por padrão; nada do cálculo muda.
+  const [showAnalysis, setShowAnalysis] = useState(false);
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
   const coach = !isPast ? evaluateTournamentChoice(tournament, {
@@ -586,20 +613,30 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
       </div>
 
       {coach && (
-        <div className="mb-3 rounded-xl bg-secondary/35 border border-border/40 p-2.5">
-          <div className="flex items-center justify-between mb-2">
+        <div className="mb-3 rounded-xl bg-secondary/35 border border-border/40 overflow-hidden">
+          <button
+            type="button"
+            onClick={() => setShowAnalysis((value) => !value)}
+            aria-expanded={showAnalysis}
+            className="flex w-full items-center justify-between gap-2 p-2.5 text-left"
+          >
             <span className="text-[9px] uppercase tracking-wider font-black text-primary">Análise do treinador</span>
-            <span className={`text-[9px] font-bold ${entry?.eligible ? 'text-emerald-400' : 'text-red-400'}`}>
-              {getEntryPathLabel(entry?.path)}
+            <span className="flex items-center gap-1.5">
+              <span className={`text-[9px] font-bold ${entry?.eligible ? 'text-emerald-400' : 'text-red-400'}`}>
+                {getEntryPathLabel(entry?.path)}
+              </span>
+              {showAnalysis ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
             </span>
-          </div>
-          <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-            <span className="text-muted-foreground">Chance de título</span><strong className="text-right">{coach.titleChance}%</strong>
-            <span className="text-muted-foreground">Chance de semifinal</span><strong className="text-right">{coach.semifinalChance}%</strong>
-            <span className="text-muted-foreground">Lucro esperado</span><strong className="text-right">{coach.expectedNet >= 0 ? '+' : ''}{coach.expectedNet}</strong>
-            <span className="text-muted-foreground">Pontos esperados</span><strong className="text-right">{coach.expectedPoints}</strong>
-            <span className="text-muted-foreground">Fadiga estimada</span><strong className="text-right text-orange-400">+{coach.fatigueIncrease}%</strong>
-          </div>
+          </button>
+          {showAnalysis && (
+            <div className="grid grid-cols-2 gap-x-3 gap-y-1 px-2.5 pb-2.5 text-[10px]">
+              <span className="text-muted-foreground">Chance de título</span><strong className="text-right">{coach.titleChance}%</strong>
+              <span className="text-muted-foreground">Chance de semifinal</span><strong className="text-right">{coach.semifinalChance}%</strong>
+              <span className="text-muted-foreground">Lucro esperado</span><strong className="text-right">{coach.expectedNet >= 0 ? '+' : ''}{coach.expectedNet}</strong>
+              <span className="text-muted-foreground">Pontos esperados</span><strong className="text-right">{coach.expectedPoints}</strong>
+              <span className="text-muted-foreground">Fadiga estimada</span><strong className="text-right text-orange-400">+{coach.fatigueIncrease}%</strong>
+            </div>
+          )}
         </div>
       )}
 

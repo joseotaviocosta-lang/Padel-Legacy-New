@@ -5,7 +5,7 @@ import { Target, Check, Coins, Zap, Award, Calendar, Flame, Trophy, Clock, Rotat
 import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, missionPeriodEndsAt, missionPeriodKey, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
-import { Page, PageContent, PageHeader, StatCard as PremiumStatCard, StatusBadge, Surface } from '@/components/design-system';
+import { CollapsibleSection, CompactListItem, CompactStats, Page, PageContent, PageHeader, StatusBadge, Surface } from '@/components/design-system';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { CAREER_DIFFICULTY_OPTIONS, DEFAULT_NEW_CAREER_DIFFICULTY } from '@/lib/careerDifficultyLabels.js';
@@ -107,6 +107,28 @@ function Missions() {
   const [draftStyle, setDraftStyle] = useState('');
 
   useEffect(() => { load(); }, []);
+  // Mobile M3.7.2 (docs/MOBILE_M3_7_2_MATCH_DAY_REFRESH.md): esta página só
+  // buscava tudo (perfil + missões + progresso) uma vez no mount — um
+  // avanço de dia disparado em outro lugar do app (atalho global) nunca
+  // chegava aqui, mesma causa raiz de Matches.jsx/Training.jsx. Recarrega
+  // via `load()` (não só o perfil) porque missões/progresso também podem
+  // mudar com o dia. Debounce de 150ms: mesmo padrão já usado em
+  // Communications.jsx/AppLayout.jsx — o avanço de dia dispara
+  // padel:profile-updated duas vezes (fase rápida + secundária).
+  useEffect(() => {
+    let timer = null;
+    const debouncedLoad = () => {
+      if (timer) clearTimeout(timer);
+      timer = setTimeout(() => { timer = null; load(); }, 150);
+    };
+    window.addEventListener('padel:profile-updated', debouncedLoad);
+    window.addEventListener('padel:career-advanced', debouncedLoad);
+    return () => {
+      if (timer) clearTimeout(timer);
+      window.removeEventListener('padel:profile-updated', debouncedLoad);
+      window.removeEventListener('padel:career-advanced', debouncedLoad);
+    };
+  }, []);
 
   useEffect(() => {
     if (!requestedMissionId || !missions.length) return;
@@ -341,6 +363,18 @@ function Missions() {
     const current = filtered;
     return { total: current.length, completed: current.filter(m => progress[m.id]?.claimed).length };
   }, [filtered, progress]);
+  // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.6): calcula status/locked
+  // uma vez por missão (mesma lógica de antes, `missionStatus`) e separa em
+  // ativas (renderizadas como card completo, como sempre) vs. concluídas
+  // (recolhidas por padrão) — não muda nenhuma regra de missão, só onde
+  // cada linha é desenhada.
+  const missionRows = useMemo(() => filtered.map((m, index) => {
+    const pr = progress[m.id];
+    const status = missionStatus(pr, { locked: tab === 'tutorial' && !pr?.claimed && nextTutorial?.id !== m.id });
+    return { mission: m, index, pr, status, done: status === 'rewarded', current: Number(pr?.progress || 0), locked: status === 'locked' };
+  }), [filtered, progress, tab, nextTutorial?.id]);
+  const activeMissionRows = useMemo(() => missionRows.filter((row) => !row.done), [missionRows]);
+  const completedMissionRows = useMemo(() => missionRows.filter((row) => row.done), [missionRows]);
 
   if (loading) return <LoadingScreen />;
   const careerDate = profile?.career_date || '2026-01-01';
@@ -349,13 +383,15 @@ function Missions() {
   return (
     <Page>
       <PageContent className="max-w-6xl space-y-5">
-        <PageHeader eyebrow="Carreira" title="Missões e tutorial" description="Aprenda os sistemas em sequência e acompanhe objetivos recorrentes sem perder o próximo passo." icon={Target} tone="premium" breadcrumb={['Carreira', 'Missões']} stats={<><StatusBadge tone={tutorialStatus === 'completed' ? 'success' : 'brand'}>{tutorialStatus === 'completed' ? 'Tutorial concluído' : `Tutorial ${tutorialDone}/${tutorialMissions.length}`}</StatusBadge><StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>{remaining != null && <StatusBadge tone="info">{remaining === 0 ? 'Renova hoje' : `${remaining} dias restantes`}</StatusBadge>}</>} />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <PremiumStatCard label="Objetivos" value={summary.total} detail={tab === 'tutorial' ? 'Etapas desta jornada' : 'Ciclo atual'} icon={Target} tone="brand" />
-          <PremiumStatCard label="Finalizados" value={summary.completed} detail="Recompensas processadas" icon={Check} tone="success" />
-          <PremiumStatCard label="Em andamento" value={Math.max(0, summary.total - summary.completed)} detail="Ainda disponíveis" icon={Clock} tone="warning" />
-          <PremiumStatCard label="Recompensa" value="Automática" detail="XP e moedas ao concluir" icon={Award} tone="premium" />
-        </div>
+        <PageHeader dense eyebrow="Carreira" title="Missões e tutorial" description="Aprenda os sistemas em sequência e acompanhe objetivos recorrentes sem perder o próximo passo." icon={Target} tone="premium" breadcrumb={['Carreira', 'Missões']} stats={<><StatusBadge tone={tutorialStatus === 'completed' ? 'success' : 'brand'}>{tutorialStatus === 'completed' ? 'Tutorial concluído' : `Tutorial ${tutorialDone}/${tutorialMissions.length}`}</StatusBadge><StatusBadge tone="premium">{profile?.coins || 0} moedas</StatusBadge>{remaining != null && <StatusBadge tone="info">{remaining === 0 ? 'Renova hoje' : `${remaining} dias restantes`}</StatusBadge>}</>} />
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.6): 4 StatCards
+            grandes viram uma linha compacta. */}
+        <CompactStats items={[
+          { label: tab === 'tutorial' ? 'etapas' : 'objetivos', value: summary.total, icon: Target },
+          { label: 'finalizados', value: summary.completed, icon: Check, tone: 'success' },
+          { label: 'em andamento', value: Math.max(0, summary.total - summary.completed), icon: Clock, tone: 'warning' },
+          { label: 'recompensa', value: 'automática', icon: Award, tone: 'premium' },
+        ]} />
       {loadError && (
         <div role="alert" className="rounded-2xl border border-amber-500/30 bg-amber-500/10 p-4 text-sm text-amber-100 flex items-center gap-3">
           <AlertTriangle className="h-5 w-5 shrink-0" />
@@ -426,14 +462,10 @@ function Missions() {
       </div>
 
       {filtered.length === 0 ? <SectionCard title="Missões" icon={Target}><EmptyState icon={Target} message="Nenhuma missão ativa." /></SectionCard> : <div className="space-y-3 animate-stagger">
-        {filtered.map((m, index) => {
-          const pr = progress[m.id];
-          const status = missionStatus(pr,{locked:tab==='tutorial'&&!pr?.claimed&&nextTutorial?.id!==m.id}); const done = status === 'rewarded';
-          const current = Number(pr?.progress || 0);
-          const locked = status === 'locked';
-          return <div key={m.id} aria-current={String(m.id) === requestedMissionId ? 'true' : undefined} className={`pl-surface rounded-2xl border p-4 ${done ? 'opacity-60' : ''} ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id || String(m.id) === requestedMissionId ? 'border-primary/60 ring-2 ring-primary/15' : ''}`}>
+        {activeMissionRows.map(({ mission: m, index, status, done, current, locked }) => {
+          return <div key={m.id} aria-current={String(m.id) === requestedMissionId ? 'true' : undefined} className={`pl-surface rounded-2xl border p-4 ${locked ? 'opacity-45' : ''} ${nextTutorial?.id === m.id || String(m.id) === requestedMissionId ? 'border-primary/60 ring-2 ring-primary/15' : ''}`}>
             <div className="flex items-start gap-3">
-              <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${done ? 'bg-primary/20' : locked ? 'bg-secondary/60' : 'bg-amber-500/15'}`}>{done ? <Check className="h-5 w-5 text-primary" /> : locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Target className="h-5 w-5 text-amber-400" />}</div>
+              <div className={`h-10 w-10 rounded-xl flex items-center justify-center shrink-0 ${locked ? 'bg-secondary/60' : 'bg-amber-500/15'}`}>{locked ? <Lock className="h-5 w-5 text-muted-foreground" /> : <Target className="h-5 w-5 text-amber-400" />}</div>
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between gap-2"><p className="font-semibold text-sm">{tab === 'tutorial' && <span className="text-primary mr-2">#{index + 1}</span>}{m.title}</p><span className="text-[10px] uppercase font-bold text-muted-foreground">{{rewarded:'Recompensa recebida',completed:'Concluída',locked:'Bloqueada',available:'Disponível',in_progress:'Em andamento',expired:'Expirada'}[status]}</span></div>
                 <p className="text-xs text-muted-foreground mt-1">{m.description}</p>
@@ -445,6 +477,25 @@ function Missions() {
             </div>
           </div>;
         })}
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.6): missões já
+            concluídas/recompensadas não precisam permanecer como cards
+            grandes — viram uma linha compacta dentro de uma seção
+            recolhida por padrão. */}
+        {completedMissionRows.length > 0 && (
+          <CollapsibleSection icon={Check} title={`Concluídas (${completedMissionRows.length})`} description="Recompensas já processadas.">
+            <div className="space-y-2">
+              {completedMissionRows.map(({ mission: m }) => (
+                <CompactListItem
+                  key={m.id}
+                  leading={<div className="h-8 w-8 rounded-lg bg-primary/20 flex items-center justify-center shrink-0"><Check className="h-4 w-4 text-primary" /></div>}
+                  title={m.title}
+                  meta={[Number(m.xp_reward) > 0 ? `+${m.xp_reward} XP` : null, Number(m.coins_reward) > 0 ? `+${m.coins_reward} moedas` : null, m.medal_reward].filter(Boolean).join(' · ') || 'Recompensa recebida'}
+                  trailing={null}
+                />
+              ))}
+            </div>
+          </CollapsibleSection>
+        )}
       </div>}
       </PageContent>
     </Page>

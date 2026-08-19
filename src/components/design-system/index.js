@@ -26,6 +26,11 @@ export * from './PlayerAvatar';
 export * from './CountryFlag';
 export * from './RankingPosition';
 export * from './NotificationBadge';
+export * from './CompactStats';
+export * from './CompactListItem';
+export * from './CompactActionCard';
+export * from './CollapsibleSection';
+export * from './SummaryRow';
 
 export { MotionReveal, AnimatedNumber, ChangePulse } from './Motion';
 export { MotionPolicyProvider, useMotionPolicy } from './MotionPolicy';

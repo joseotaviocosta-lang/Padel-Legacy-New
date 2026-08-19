@@ -61,6 +61,14 @@
     --pl-safe-b: env(safe-area-inset-bottom, 0px);
     --pl-safe-l: env(safe-area-inset-left, 0px);
     --pl-safe-r: env(safe-area-inset-right, 0px);
+
+    /* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.23). Só os tokens que
+       ainda não existiam — altura de header/bottom-nav/toque mínimo já têm
+       tokens acima (--pl-header-h/--pl-bottom-nav-h/--pl-touch-min) e são
+       reaproveitados, não duplicados. */
+    --mobile-card-padding: 0.75rem;
+    --mobile-section-gap: 0.625rem;
+    --mobile-compact-row-height: 3.5rem;
   }
 
   .dark {
@@ -909,6 +917,28 @@
   .pl-surface,
   .pl-surface-subtle {
     border-radius: 0.875rem;
+  }
+
+  /* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.2): hero denso — padding
+     reduzido, sem o respiro extra do hero desktop. O restante (título
+     menor, descrição/breadcrumb ocultos) já é resolvido por classes
+     Tailwind condicionais no próprio PageHeader.jsx (prop `dense`). */
+  .pl-page-hero--dense {
+    padding: 0.75rem;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-icon {
+    height: 2.25rem;
+    width: 2.25rem;
+  }
+
+  /* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.23): reduz o espaçamento
+     vertical padrão entre blocos de PageContent só em mobile — desktop
+     (lg:space-y-5) fica intocado. Sistêmico de propósito (toda página usa
+     PageContent) em vez de um ajuste por página, já que é puramente CSS e
+     só afeta telas estreitas. */
+  .pl-content-enter.space-y-4 > :not([hidden]) ~ :not([hidden]) {
+    margin-top: var(--mobile-section-gap);
   }
 }
 

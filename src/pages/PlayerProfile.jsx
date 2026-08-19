@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Sword, Gauge, Brain, Flame, Edit3, Check, X, Trophy, Coins, MapPin, Hand, Battery, Palette, ChevronRight } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { ensureMyProfile, careerExperienceSummary, careerExperienceUnlocks, overallRating, winRate, ATTRIBUTES, calculateAge, isRetired } from '@/lib/padel';
+import { ensureMyProfile, careerExperienceSummary, careerExperienceUnlocks, overallRating, winRate, ATTRIBUTES, ATTRIBUTE_GROUPS, calculateAge, isRetired } from '@/lib/padel';
 import { PLAY_STYLE_OPTIONS, DOMINANT_HANDS, COURT_SIDE_OPTIONS } from '@/lib/initialCareerProfiles.js';
 import { CAREER_DIFFICULTY_OPTIONS, getCareerDifficultyOption } from '@/lib/careerDifficultyLabels.js';
 import LogoutButton from '@/components/LogoutButton';
@@ -15,12 +15,10 @@ const ICON_MAP = { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield
 
 // Grupos de leitura rápida dos atributos reais do projeto (seção 5 do
 // redesign de Carreira) — não inventa atributos novos, só organiza os 10
-// existentes em ATTRIBUTES por natureza técnica/mental/física.
-const ATTRIBUTE_GROUPS = [
-  { id: 'tecnicos', label: 'Técnicos', keys: ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense'] },
-  { id: 'mentais', label: 'Mentais', keys: ['strategy', 'emotional_control'] },
-  { id: 'fisicos', label: 'Físicos', keys: ['agility'] },
-];
+// existentes em ATTRIBUTES por natureza técnica/mental/física. Mobile M4
+// (docs/MOBILE_M4_COMPACT_UX.md, M4.14): movido para src/lib/padel.js e
+// reaproveitado por AttributeEvolution.jsx também, em vez de ficar só
+// aqui.
 
 function sideLabel(side) {
   return COURT_SIDE_OPTIONS.find(option => option.id === side)?.label || 'Não definido';

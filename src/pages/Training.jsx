@@ -3,12 +3,13 @@ import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Users, Zap } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { advanceCareerDayOnce } from '@/game-core';
+import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore, getRecommendedTrainings } from '@/lib/trainingSystemV2';
 import { useToast } from '@/components/ui/use-toast';
 import { Link, useSearchParams } from 'react-router-dom';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
-import ConditionPanel from '@/components/training/ConditionPanel';
+import ConditionPanel, { getConditionSummaryItems } from '@/components/training/ConditionPanel';
 import TrainingActivityCard from '@/components/training/TrainingActivityCard';
 import WeeklyPlanner from '@/components/training/WeeklyPlanner';
 import AttributeEvolution from '@/components/training/AttributeEvolution';
@@ -16,16 +17,18 @@ import DevelopmentGoals from '@/components/training/DevelopmentGoals';
 import {
   ActionFeedback,
   Button,
+  CollapsibleSection,
+  CompactStats,
   EmptyState,
   Page,
   PageContent,
   PageHeader,
   PageSkeleton,
   Section,
-  StatCard as PremiumStatCard,
   StatusBadge,
   Surface,
   SurfaceHeader,
+  SummaryRow,
   Tabs,
 } from '@/components/design-system';
 
@@ -56,6 +59,11 @@ export default function Training() {
   useEffect(() => {
     if (searchParams.get('training')) setActiveTab('historico');
   }, [searchParams]);
+  // Mobile M3.7.2 (docs/MOBILE_M3_7_2_MATCH_DAY_REFRESH.md): mesma causa
+  // raiz de Matches.jsx — o avanço de dia PRÓPRIO desta página (handleAdvance
+  // abaixo) já atualizava `profile` corretamente; só o avanço disparado em
+  // outro lugar do app (atalho global) nunca chegava aqui.
+  useCareerProfileSync(setProfile);
 
   async function load() {
     try {
@@ -189,6 +197,7 @@ export default function Training() {
     <Page>
       <PageContent className="max-w-6xl space-y-5">
         <PageHeader
+          dense
           eyebrow="Desenvolvimento"
           title="Centro de treino"
           description="Planeje a semana, execute sessões e acompanhe a evolução com energia, fadiga e limite diário sempre visíveis."
@@ -204,12 +213,16 @@ export default function Training() {
           </>}
           action={<Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing}><FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : 'Avançar dia'}</Button>}
         />
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <PremiumStatCard label="Treinos hoje" value={`${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`} detail="Sessões principais" icon={Dumbbell} tone="brand" />
-          <PremiumStatCard label="Energia" value={`${profile.energy ?? 100}%`} detail="Disponibilidade imediata" icon={Zap} tone={(profile.energy ?? 100) < 30 ? 'danger' : 'success'} />
-          <PremiumStatCard label="Fadiga" value={`${normalizeFatigue(profile.fatigue)}%`} detail="Desgaste acumulado" icon={Activity} tone={normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success'} />
-          <PremiumStatCard label="Condição" value={`${conditionScore}/100`} detail={overtraining.label || 'Pronto para evoluir'} icon={Heart} tone={conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success'} />
-        </div>
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3): os 4 StatCards
+            grandes (que sozinhos já ocupavam boa parte do primeiro
+            viewport) viram uma única linha compacta — mesma informação,
+            sem competir por espaço com as atividades logo abaixo. */}
+        <CompactStats items={[
+          { label: 'hoje', value: `${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`, icon: Dumbbell },
+          { label: 'energia', value: `${profile.energy ?? 100}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
+          { label: 'fadiga', value: `${normalizeFatigue(profile.fatigue)}%`, icon: Activity, tone: normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success' },
+          { label: 'condição', value: `${conditionScore}/100`, icon: Heart, tone: conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success' },
+        ]} />
 
       {/* Overtraining alert */}
       {overtraining.level !== 'none' && (
@@ -252,37 +265,12 @@ export default function Training() {
       {/* Tab content */}
       {activeTab === 'treino' && (
         <>
-          {/* Condition panel */}
-          <ConditionPanel profile={profile} />
-
-          {/* Recuperação automática e equipe técnica */}
-          <Surface>
-            <SurfaceHeader title="Recuperação e suporte" description="Dias livres recuperam energia automaticamente; a comissão cuida da prevenção no longo prazo." icon={Heart} />
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-              <div className="glass rounded-2xl p-4 border border-emerald-500/20">
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0"><FastForward className="h-5 w-5 text-emerald-400" /></div>
-                  <div>
-                    <p className="font-semibold text-sm">Descanso automático</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">Avance um dia sem treinar ou jogar para recuperar cerca de 32 de energia e reduzir 10 de fadiga. Não é mais necessário escolher “Descanso total”.</p>
-                  </div>
-                </div>
-                <Button level="secondary" size="sm" onClick={handleAdvanceDay} disabled={advancing} className="mt-3 w-full bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25">{advancing ? 'Avançando...' : 'Avançar dia'}</Button>
-              </div>
-              <div className="glass rounded-2xl p-4 border border-primary/20">
-                <div className="flex items-start gap-3">
-                  <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0"><Users className="h-5 w-5 text-primary" /></div>
-                  <div>
-                    <p className="font-semibold text-sm">Fisioterapia pela equipe</p>
-                    <p className="text-[10px] text-muted-foreground mt-1">A fisioterapia deixou de ser uma ação diária. Contrate o profissional mensalmente para reduzir fadiga todos os dias e diminuir o risco de lesões.</p>
-                  </div>
-                </div>
-                <Link to="/staff" className="mt-3 flex w-full items-center justify-center py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors">Gerenciar comissão técnica</Link>
-              </div>
-            </div>
-          </Surface>
-
-          {/* Category filter */}
+          {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3 — gate
+              obrigatório): categoria + atividades ficam logo após a faixa
+              de status/tabs, sem passar por moral/recuperação/fisioterapia
+              antes. Essas duas seções continuam 100% presentes — só
+              descem para depois das atividades e ficam recolhidas por
+              padrão (progressive disclosure), não removidas. */}
           <Surface>
             <SurfaceHeader title="Atividades de treino" description="Escolha uma categoria e compare as sessões disponíveis para o estado atual do atleta." icon={Dumbbell} />
             <div className="mb-4">
@@ -316,6 +304,39 @@ export default function Training() {
               })}
             </div>
           </Surface>
+
+          {/* Estado do atleta (moral/confiança/forma/entrosamento) — antes
+              um card grande sempre expandido antes dos treinos; agora
+              recolhido, com o resumo de uma linha já visível fechado. */}
+          <CollapsibleSection icon={Heart} title="Estado do atleta" description={<SummaryRow items={getConditionSummaryItems(profile)} />}>
+            <ConditionPanel profile={profile} />
+          </CollapsibleSection>
+
+          {/* Recuperação automática e equipe técnica */}
+          <CollapsibleSection icon={FastForward} title="Recuperação e suporte" description="Descanso automático e fisioterapia da comissão.">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              <div className="glass rounded-2xl p-4 border border-emerald-500/20">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-emerald-500/15 flex items-center justify-center shrink-0"><FastForward className="h-5 w-5 text-emerald-400" /></div>
+                  <div>
+                    <p className="font-semibold text-sm">Descanso automático</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">Avance um dia sem treinar ou jogar para recuperar cerca de 32 de energia e reduzir 10 de fadiga. Não é mais necessário escolher “Descanso total”.</p>
+                  </div>
+                </div>
+                <Button level="secondary" size="sm" onClick={handleAdvanceDay} disabled={advancing} className="mt-3 w-full bg-emerald-500/15 text-emerald-300 hover:bg-emerald-500/25">{advancing ? 'Avançando...' : 'Avançar dia'}</Button>
+              </div>
+              <div className="glass rounded-2xl p-4 border border-primary/20">
+                <div className="flex items-start gap-3">
+                  <div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center shrink-0"><Users className="h-5 w-5 text-primary" /></div>
+                  <div>
+                    <p className="font-semibold text-sm">Fisioterapia pela equipe</p>
+                    <p className="text-[10px] text-muted-foreground mt-1">A fisioterapia deixou de ser uma ação diária. Contrate o profissional mensalmente para reduzir fadiga todos os dias e diminuir o risco de lesões.</p>
+                  </div>
+                </div>
+                <Link to="/staff" className="mt-3 flex w-full items-center justify-center py-2 rounded-xl bg-primary/15 text-primary font-semibold text-sm hover:bg-primary/25 transition-colors">Gerenciar comissão técnica</Link>
+              </div>
+            </div>
+          </CollapsibleSection>
         </>
       )}
 

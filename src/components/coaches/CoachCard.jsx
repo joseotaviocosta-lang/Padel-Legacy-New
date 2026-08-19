@@ -47,10 +47,12 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
       {/* Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 4): os
           benefícios reais da especialidade (mesmo texto já usado em
           getCoachImpactSummary, dentro de CoachDetail.jsx) agora aparecem
-          direto no card — decidir não deve exigir abrir "Ver detalhes". */}
+          direto no card — decidir não deve exigir abrir "Ver detalhes".
+          Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): reduzido de 3
+          para 2 linhas — a lista completa continua em "Ver detalhes". */}
       {specialty?.benefits?.length > 0 && (
         <ul className="mt-2 space-y-0.5">
-          {specialty.benefits.slice(0, 3).map((benefit) => (
+          {specialty.benefits.slice(0, 2).map((benefit) => (
             <li key={benefit} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
               <Check className="h-3 w-3 shrink-0 text-emerald-400" /> {benefit}
             </li>
@@ -58,15 +60,11 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
         </ul>
       )}
 
-      <div className="mt-3 grid grid-cols-2 gap-2">
-        <div className="rounded-xl bg-secondary/35 p-2.5">
-          <p className="flex items-center gap-1 text-[9px] font-bold uppercase text-muted-foreground"><Coins className="h-3 w-3" /> Salário mensal</p>
-          <p className="mt-0.5 text-sm font-black tabular-nums">{evaluation.salary.toLocaleString('pt-BR')} moedas</p>
-        </div>
-        <div className="rounded-xl bg-secondary/35 p-2.5">
-          <p className="flex items-center gap-1 text-[9px] font-bold uppercase text-muted-foreground"><Star className="h-3 w-3" /> Afinidade</p>
-          <p className="mt-0.5 text-sm font-black tabular-nums">{evaluation.affinity}/100</p>
-        </div>
+      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): os 2 blocos com
+          padding próprio viraram uma linha compacta — mesmos valores. */}
+      <div className="mt-3 flex items-center gap-x-4 gap-y-1 flex-wrap text-xs">
+        <span className="flex items-center gap-1.5 font-bold"><Coins className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.salary.toLocaleString('pt-BR')} <span className="text-muted-foreground font-semibold">moedas/mês</span></span>
+        <span className="flex items-center gap-1.5 font-bold"><Star className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.affinity}/100 <span className="text-muted-foreground font-semibold">afinidade</span></span>
       </div>
 
       <div className={`mt-3 rounded-xl border p-2.5 ${available ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-amber-500/25 bg-amber-500/5'}`}>

@@ -115,6 +115,16 @@ export const ATTRIBUTES = [
 
 export const ATTRIBUTE_KEYS = ATTRIBUTES.map(a => a.key);
 
+// Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.14): agrupamento por
+// categoria, movido para cá a partir de uma cópia local em PlayerProfile.jsx
+// para que AttributeEvolution.jsx (Training > Evolução) reaproveite a mesma
+// classificação em vez de inventar uma segunda.
+export const ATTRIBUTE_GROUPS = [
+  { id: 'tecnicos', label: 'Técnicos', keys: ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense'] },
+  { id: 'mentais', label: 'Mentais', keys: ['strategy', 'emotional_control'] },
+  { id: 'fisicos', label: 'Físicos', keys: ['agility'] },
+];
+
 export const TRAINING_TYPES = [
   { id: 'serve', label: 'Treino de Saque', attribute: 'serve', icon: 'Zap', xp: 15, coins: 10, gain: 2 },
   { id: 'forehand', label: 'Treino de Forehand', attribute: 'forehand', icon: 'ArrowUpRight', xp: 15, coins: 10, gain: 2 },

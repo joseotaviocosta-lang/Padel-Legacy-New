@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatusBadge, Surface } from '@/components/design-system';
+import { CompactStats, EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatusBadge, Surface } from '@/components/design-system';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
 import {
@@ -18,6 +18,7 @@ import {
 } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
 import { hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach } from '@/game-core/coachLifecycle';
+import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
 const STATUS_FILTERS = [
   ['all', 'Todos'],
@@ -61,6 +62,15 @@ export default function Coaches() {
   useEffect(() => { setVisibleCount(12); setMarketExpanded(false); }, [statusFilter, specialtyFilter, sortOrder, search]);
 
   useEffect(() => { load(); }, []);
+
+  // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): correção incidental,
+  // não coberta pelo M3.7.2 na época (docs/MOBILE_M3_7_2_MATCH_DAY_REFRESH.md
+  // já documentava isso como pendente) — esta página disparava
+  // padel:profile-updated ao contratar/demitir mas nunca escutava o próprio
+  // evento nem o do atalho global "Avançar dia", mesma causa raiz corrigida
+  // em Matches.jsx/Training.jsx/Missions.jsx. Corrigido agora porque este
+  // arquivo já estava sendo editado para a M4.
+  useCareerProfileSync(setProfile);
 
   useEffect(() => {
     const requestedId = searchParams.get('coach');
@@ -207,6 +217,7 @@ export default function Coaches() {
     <Page size="wide" className="animate-fade-in">
       <PageContent>
         <PageHeader
+          dense
           eyebrow="Equipe técnica"
           icon={Users}
           title="Técnicos principais"
@@ -218,17 +229,19 @@ export default function Coaches() {
           </>}
         />
 
-        {/* Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte D/12/13): os
-            4 StatCards grandes viraram uma única linha compacta de
-            indicadores — a página não precisa de quase uma tela inteira
-            para mostrar caixa/técnico/confiança/afinidade. Sem treinador,
-            mostra "—" em vez de fingir que confiança/afinidade existem. */}
-        <Surface className="flex flex-wrap items-center gap-x-5 gap-y-1.5 px-4 py-3 text-xs">
-          <span className="flex items-center gap-1.5 font-bold"><Wallet className="h-3.5 w-3.5 text-primary shrink-0" /> {currency(profile?.coins)}</span>
-          <span className="flex items-center gap-1.5 font-bold"><UserCheck className="h-3.5 w-3.5 text-primary shrink-0" /> {hiredCoach ? hiredCoach.name : 'Nenhum treinador'}</span>
-          <span className="flex items-center gap-1.5 font-bold"><Handshake className="h-3.5 w-3.5 text-primary shrink-0" /> Confiança {hiredCoach ? `${trust}%` : '—'}</span>
-          <span className="flex items-center gap-1.5 font-bold"><Brain className="h-3.5 w-3.5 text-primary shrink-0" /> Afinidade {hiredCoach ? `${affinityCurrent}%` : '—'}</span>
-        </Surface>
+        {/* Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte D/12/13),
+            migrado para o CompactStats compartilhado na Mobile M4
+            (docs/MOBILE_M4_COMPACT_UX.md, M4.12) — mesmo padrão que este
+            arquivo já tinha inventado antes de existir um primitive
+            compartilhado; agora reaproveita em vez de manter duas
+            implementações. Sem treinador, mostra "—" em vez de fingir que
+            confiança/afinidade existem. */}
+        <CompactStats items={[
+          { label: '', value: currency(profile?.coins), icon: Wallet },
+          { label: '', value: hiredCoach ? hiredCoach.name : 'Nenhum treinador', icon: UserCheck },
+          { label: 'confiança', value: hiredCoach ? `${trust}%` : '—', icon: Handshake },
+          { label: 'afinidade', value: hiredCoach ? `${affinityCurrent}%` : '—', icon: Brain },
+        ]} />
 
         {hiredCoach ? (
           <Surface tone="brand" className="p-4">
@@ -260,9 +273,14 @@ export default function Coaches() {
         )}
 
         <Surface className="space-y-3 p-4">
+          {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.15): a legenda
+              removida aqui explicava um detalhe de cache interno (quando o
+              mercado é recalculado), não uma regra útil ao jogador — não é
+              informação de jogo perdida, só ruído técnico que não deveria
+              ter estado na UI. */}
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4 text-primary" />
-            <div><p className="text-sm font-black">Encontre seu próximo técnico</p><p className="text-[10px] text-muted-foreground">O mercado é calculado apenas quando os dados carregam ou os filtros mudam.</p></div>
+            <p className="text-sm font-black">Encontre seu próximo técnico</p>
           </div>
           <div className="flex flex-wrap gap-2">
             {STATUS_FILTERS.map(([id, label]) => (

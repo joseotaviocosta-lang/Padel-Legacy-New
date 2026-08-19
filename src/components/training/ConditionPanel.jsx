@@ -1,13 +1,19 @@
 import React from 'react';
 import { Heart, Brain, Battery, Users } from 'lucide-react';
 import { chemistryLabel } from '@/lib/padel';
-import { ProgressBar, Surface, SurfaceHeader } from '@/components/design-system';
+import { ProgressBar } from '@/components/design-system';
 
 // Condição geral, energia, fadiga e alertas de lesão/overtraining já
 // aparecem na faixa de estatísticas e nos avisos do topo de Training.jsx —
 // este painel mostra só o que é exclusivo daqui (moral, confiança, forma
 // física, química da dupla), evitando repetir a mesma informação três vezes
 // (seção 6 do redesign).
+//
+// Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3): este bloco não deve mais
+// aparecer sempre-expandido antes das atividades de treino — Training.jsx
+// agora embrulha só o conteúdo (sem Surface/SurfaceHeader própria) dentro de
+// um CollapsibleSection ("Estado do atleta"), usando
+// `getConditionSummaryItems` para o resumo de uma linha visível fechado.
 function ConditionBar({ icon: Icon, label, value, max = 100 }) {
   const pct = Math.max(0, Math.min(100, (Number(value) || 0) / max * 100));
   const tone = pct >= 70 ? 'success' : pct >= 40 ? 'brand' : pct >= 20 ? 'warning' : 'danger';
@@ -23,13 +29,23 @@ function ConditionBar({ icon: Icon, label, value, max = 100 }) {
   );
 }
 
+export function getConditionSummaryItems(profile) {
+  if (!profile) return [];
+  const chemLabel = chemistryLabel(profile.partner_chemistry || 50);
+  return [
+    { label: 'Moral', value: Math.round(profile.morale || 70) },
+    { label: 'Confiança', value: Math.round(profile.confidence || 50) },
+    { label: 'Forma', value: Math.round(profile.form || 50) },
+    { label: 'Entrosamento', value: chemLabel.label },
+  ];
+}
+
 export default function ConditionPanel({ profile }) {
   if (!profile) return null;
   const chemLabel = chemistryLabel(profile.partner_chemistry || 50);
 
   return (
-    <Surface>
-      <SurfaceHeader title="Moral e entrosamento" description="O que a faixa de energia/fadiga acima não mostra." icon={Heart} />
+    <>
       <div className="space-y-3">
         <ConditionBar icon={Heart} label="Moral" value={profile.morale || 70} />
         <ConditionBar icon={Brain} label="Confiança" value={profile.confidence || 50} />
@@ -48,6 +64,6 @@ export default function ConditionPanel({ profile }) {
           <p className="text-[10px] text-muted-foreground tabular-nums">{profile.partner_chemistry || 50}/100</p>
         </div>
       </div>
-    </Surface>
+    </>
   );
 }

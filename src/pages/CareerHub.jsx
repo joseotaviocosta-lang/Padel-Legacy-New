@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
-  ChevronDown, ChevronRight, Crown, Dumbbell, GraduationCap,
+  ChevronRight, Crown, Dumbbell, GraduationCap,
   HeartPulse, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target,
   Trophy, TrendingUp, UserRound, Users, Globe2, Wrench,
 } from 'lucide-react';
@@ -12,6 +12,7 @@ import {
   getWorldRank, isRetired,
 } from '@/lib/padel';
 import {
+  CollapsibleSection,
   Page, PageContent, PageHeader, StatusBadge, Surface, SurfaceHeader,
   ProgressBar, EmptyState, PageSkeleton, TooltipHint, Button, ConfirmDialog,
 } from '@/components/design-system';
@@ -586,6 +587,7 @@ function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount
 
   return (
     <PageHeader
+      dense
       eyebrow={primaryContext.eyebrow}
       title={profile.sport_name || profile.full_name || 'Seu atleta'}
       description={metaParts.join(' · ')}
@@ -822,23 +824,21 @@ function QuickActionsBar({ missionsCount }) {
 }
 
 function CareerToolsSection({ open, onToggle, profile, strategicState, onProfileUpdate }) {
+  // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.1): migrado para o
+  // CollapsibleSection compartilhado — este bloco escrito à mão era o
+  // padrão original que o novo primitive extraiu; agora reaproveita em vez
+  // de manter duas implementações do mesmo comportamento.
   return (
-    <Surface padding="none" className="overflow-hidden">
-      <button type="button" onClick={onToggle} aria-expanded={open} aria-controls="career-tools-panel" className="flex w-full items-center gap-3 p-4 text-left">
-        <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary/60 text-muted-foreground"><Wrench className="h-4 w-4" /></span>
-        <span className="min-w-0 flex-1">
-          <span className="block text-sm font-black">Ferramentas de gestão</span>
-          <span className="block text-xs text-muted-foreground">Centro médico e leitura estratégica da carreira</span>
-        </span>
-        <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
-      </button>
-      {open && (
-        <div id="career-tools-panel" className="space-y-4 border-t border-border/50 p-4">
-          <MedicalCenterPanel profile={profile} onProfileUpdate={onProfileUpdate} />
-          <StrategicCareerPanel profile={profile} state={strategicState} onProfileUpdate={onProfileUpdate} />
-        </div>
-      )}
-    </Surface>
+    <CollapsibleSection
+      icon={Wrench}
+      title="Ferramentas de gestão"
+      description="Centro médico e leitura estratégica da carreira"
+      open={open}
+      onToggle={onToggle}
+    >
+      <MedicalCenterPanel profile={profile} onProfileUpdate={onProfileUpdate} />
+      <StrategicCareerPanel profile={profile} state={strategicState} onProfileUpdate={onProfileUpdate} />
+    </CollapsibleSection>
   );
 }
 

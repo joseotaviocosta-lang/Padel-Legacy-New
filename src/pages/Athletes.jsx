@@ -2,8 +2,11 @@ import React, { useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { Users, Search, SlidersHorizontal, AlertTriangle } from 'lucide-react';
 import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
-import { PageHeader, FilterPills } from '@/components/padel/ui';
-import { PageSkeleton } from '@/components/design-system';
+// Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.10): migrado do wrapper
+// deprecated em padel/ui.jsx (ambos marcados "@deprecated" no próprio
+// arquivo) para os primitives reais do design-system — esta era a única
+// página do app inteiro ainda fora de Page/PageContent.
+import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, Tabs } from '@/components/design-system';
 import { ensureAthleteProfiles, generateRelationships, getAthletes, PERSONALITIES } from '@/lib/athleteBehavior';
 import AthleteCard from '@/components/athletes/AthleteCard';
 import AthleteDetail from '@/components/athletes/AthleteDetail';
@@ -109,23 +112,21 @@ export default function Athletes() {
   // mensagem de "filtros sem resultado".
   if (sourceError) {
     return (
-      <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-        <PageHeader icon={Users} title="Atletas do Circuito" subtitle="Personalidades, evolução e relacionamentos dos atletas IA" accent="primary" />
-        <div className="glass rounded-2xl p-10 text-center">
-          <AlertTriangle className="h-10 w-10 text-amber-400/70 mx-auto mb-3" />
-          <p className="text-sm font-bold">Não foi possível carregar os atletas do circuito.</p>
-          <p className="mt-1 text-xs text-muted-foreground">Sua carreira e seu save não foram afetados.</p>
-          <button type="button" onClick={() => setReloadToken((value) => value + 1)} className="mt-4 rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">
-            Tentar novamente
-          </button>
-        </div>
-      </div>
+      <Page><PageContent>
+        <PageHeader dense icon={Users} title="Atletas do Circuito" description="Personalidades, evolução e relacionamentos dos atletas IA" tone="brand" />
+        <EmptyState
+          icon={AlertTriangle}
+          title="Não foi possível carregar os atletas do circuito"
+          description="Sua carreira e seu save não foram afetados."
+          action={<button type="button" onClick={() => setReloadToken((value) => value + 1)} className="rounded-xl bg-primary px-4 py-2 text-xs font-bold text-primary-foreground">Tentar novamente</button>}
+        />
+      </PageContent></Page>
     );
   }
 
   return (
-    <div className="px-4 md:px-8 py-6 max-w-5xl mx-auto space-y-6 animate-fade-in">
-      <PageHeader icon={Users} title="Atletas do Circuito" subtitle="Personalidades, evolução e relacionamentos dos atletas IA" accent="primary" />
+    <Page><PageContent>
+      <PageHeader dense icon={Users} title="Atletas do Circuito" description="Personalidades, evolução e relacionamentos dos atletas IA" tone="brand" />
 
       <div className="glass rounded-2xl p-3 grid gap-3 md:grid-cols-[1fr_180px]">
         <label className="relative block">
@@ -143,25 +144,19 @@ export default function Athletes() {
         </label>
       </div>
 
-      <FilterPills filters={PHASE_FILTERS} activeFilter={phaseFilter} onFilterChange={setPhaseFilter} />
-      <FilterPills filters={PERS_FILTERS} activeFilter={persFilter} onFilterChange={setPersFilter} />
-      <FilterPills filters={STYLE_FILTERS} activeFilter={styleFilter} onFilterChange={setStyleFilter} />
+      <Tabs tabs={PHASE_FILTERS.map(f => ({ key: f.id, label: f.label }))} activeTab={phaseFilter} onTabChange={setPhaseFilter} variant="buttons" />
+      <Tabs tabs={PERS_FILTERS.map(f => ({ key: f.id, label: f.label }))} activeTab={persFilter} onTabChange={setPersFilter} variant="buttons" />
+      <Tabs tabs={STYLE_FILTERS.map(f => ({ key: f.id, label: f.label }))} activeTab={styleFilter} onTabChange={setStyleFilter} variant="buttons" />
 
       {filtered.length === 0 ? (
-        <div className="glass rounded-2xl p-10 text-center">
-          <Users className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-          {athletes.length === 0 ? (
-            // A fonte carregou sem erro, mas realmente não retornou nenhum
-            // atleta — diferente de "os filtros excluíram todo mundo"
-            // (item 8: nunca confundir os dois).
-            <>
-              <p className="text-sm font-bold text-muted-foreground">O circuito ainda não tem atletas cadastrados.</p>
-              <p className="mt-1 text-xs text-muted-foreground">Isso não é esperado numa carreira normal — tente recarregar a página.</p>
-            </>
-          ) : (
-            <p className="text-sm text-muted-foreground">Nenhum atleta encontrado com esses filtros.</p>
-          )}
-        </div>
+        athletes.length === 0 ? (
+          // A fonte carregou sem erro, mas realmente não retornou nenhum
+          // atleta — diferente de "os filtros excluíram todo mundo"
+          // (item 8: nunca confundir os dois).
+          <EmptyState icon={Users} title="O circuito ainda não tem atletas cadastrados" description="Isso não é esperado numa carreira normal — tente recarregar a página." />
+        ) : (
+          <EmptyState icon={Users} title="Nenhum atleta encontrado" description="Nenhum atleta encontrado com esses filtros." />
+        )
       ) : (
         <div className="render-window grid sm:grid-cols-2 lg:grid-cols-3 gap-3 animate-stagger">
           {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} onClick={() => setSelected(a)} />)}
@@ -175,6 +170,6 @@ export default function Athletes() {
       )}
 
       {selected && <AthleteDetail athlete={selected} onClose={() => setSelected(null)} />}
-    </div>
+    </PageContent></Page>
   );
 }

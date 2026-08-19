@@ -194,7 +194,9 @@
     "test:mobile-performance-m3-5": "node scripts/test-mobile-performance-m3-5.mjs",
     "test:mobile-storage-m3-6": "node scripts/test-mobile-storage-m3-6.mjs",
     "test:mobile-persistence-m3-7": "node scripts/test-mobile-persistence-m3-7.mjs",
-    "test:mobile-multi-day-m3-7-1": "node scripts/test-mobile-multi-day-hotfix-m3-7-1.mjs"
+    "test:mobile-multi-day-m3-7-1": "node scripts/test-mobile-multi-day-hotfix-m3-7-1.mjs",
+    "test:mobile-match-day-refresh-m3-7-2": "node scripts/test-mobile-match-day-refresh-m3-7-2.mjs",
+    "test:mobile-compact-ux-m4": "node scripts/test-mobile-compact-ux-m4.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

@@ -5,8 +5,9 @@ import { useCareer } from '@/careers/useCareer.js';
 import { formatDate, ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import SimulationModal from '@/components/matches/SimulationModal';
 import PartnerSelection from '@/components/career/PartnerSelection';
-import { ActionFeedback, Button, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard, Surface, SurfaceHeader } from '@/components/design-system';
+import { ActionFeedback, Button, CompactStats, EmptyState, Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader } from '@/components/design-system';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
+import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
 function Matches() {
   const { activeCareer } = useCareer();
@@ -20,6 +21,15 @@ function Matches() {
   // a confirmação "Continuar partida?" antes de restaurar — nunca cai direto
   // no meio do placar sem avisar).
   const { checkpoint: activeMatchCheckpoint } = useActiveMatchCheckpoint(activeCareer?.career_id);
+  // Mobile M3.7.2 (docs/MOBILE_M3_7_2_MATCH_DAY_REFRESH.md): causa raiz do
+  // "Jogar agora" não reaparecer após avançar o dia pelo atalho global —
+  // `profile` só era buscado uma vez no mount (linha abaixo), nunca
+  // reagia ao avanço de dia disparado em outro lugar do app. Não era
+  // React.memo (o memo do componente inteiro, ao fim deste arquivo, só
+  // evita re-render por props do pai — Matches não recebe nenhuma — e
+  // nunca impediu este setState interno). O evento já era transmitido de
+  // forma confiável; só faltava esta página assiná-lo.
+  useCareerProfileSync(setProfile);
 
   useEffect(() => {
     (async () => {
@@ -57,14 +67,18 @@ function Matches() {
   return (
     <Page>
       <PageContent>
-        <PageHeader eyebrow="Preparação competitiva" title="Partidas de treino" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} action={<Button level="primary" size="touch" onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed}><Play className="h-4 w-4" /> Jogar agora</Button>} />
+        <PageHeader dense eyebrow="Preparação competitiva" title="Partidas de treino" description="Teste táticas, fortaleça a dupla e pratique sem alterar o ranking oficial." icon={Swords} tone="info" breadcrumb={['Competições', 'Partidas']} action={<Button level="primary" size="touch" onClick={() => profile?.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed}><Play className="h-4 w-4" /> Jogar agora</Button>} />
 
-        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-          <StatCard icon={Swords} label="Hoje" value={`${profile?.practice_matches_today || 0}/${DAILY_MATCH_LIMIT}`} />
-          <StatCard icon={Trophy} label="Vitórias" value={wins} tone="success" />
-          <StatCard icon={AlertCircle} label="Aproveitamento" value={`${winRate}%`} tone={winRate >= 50 ? 'success' : 'warning'} />
-          <StatCard icon={Bot} label="Histórico" value={matches.length} tone="info" />
-        </div>
+        {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.4 — gate obrigatório):
+            "Jogar agora" já está no header acima; os 4 StatCards grandes
+            viram uma linha compacta para o histórico começar logo abaixo,
+            sem uma tela inteira de estatísticas no meio do caminho. */}
+        <CompactStats items={[
+          { label: 'hoje', value: `${profile?.practice_matches_today || 0}/${DAILY_MATCH_LIMIT}`, icon: Swords },
+          { label: 'vitórias', value: wins, icon: Trophy, tone: 'success' },
+          { label: 'aproveitamento', value: `${winRate}%`, icon: AlertCircle, tone: winRate >= 50 ? 'success' : 'warning' },
+          { label: 'histórico', value: matches.length, icon: Bot, tone: 'info' },
+        ]} />
 
       {isInjured(profile) && (
         <ActionFeedback state="error" title={`Lesionado · recupera em ${injuryRecoveryDays(profile)} dias`} description="Avance o dia no calendário para se recuperar." />
@@ -79,7 +93,7 @@ function Matches() {
           matches.map((m) => {
             const wonA = m.winner === 'A';
             return (
-              <div key={m.id} className="glass rounded-2xl p-4">
+              <div key={m.id} className="glass rounded-2xl p-3 sm:p-4">
                 <div className="flex items-center justify-between gap-3">
                   {/* Team A */}
                   <div className={`flex-1 min-w-0 ${wonA ? 'opacity-100' : 'opacity-50'}`}>
