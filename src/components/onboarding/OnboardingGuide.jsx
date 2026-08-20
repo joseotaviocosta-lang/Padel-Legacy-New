@@ -109,7 +109,14 @@ function GuideButton({ active, onClick }) {
       onClick={onClick}
       aria-label="Abrir guia da carreira"
       title="Guia da carreira"
-      className="pl-floating-utilities pointer-events-auto fixed bottom-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.5rem)] right-[max(0.5rem,env(safe-area-inset-right))] flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg transition-transform hover:scale-105 hover:brightness-110 md:bottom-5 md:right-5 md:h-14 md:w-14"
+      // M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 2): folga maior
+      // acima da bottom nav (0.5rem→0.875rem) — QA físico achou o botão
+      // "muito próximo" da barra. z-[var(--z-dropdown)] (60) sobrepõe
+      // deliberadamente a bottom nav (55, via pl-floating-utilities antes),
+      // então mesmo numa transição/teclado o Guia nunca some atrás dela —
+      // sua posição vertical já termina bem acima da área interativa da nav,
+      // o z-index maior é só uma garantia extra, não o que evita a colisão.
+      className="pointer-events-auto fixed z-[var(--z-dropdown)] bottom-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.875rem)] right-[max(0.5rem,env(safe-area-inset-right))] flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg transition-transform hover:scale-105 hover:brightness-110 md:bottom-5 md:right-5 md:h-14 md:w-14"
     >
       <GraduationCap className="h-6 w-6" />
       {active && <span className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full border-2 border-background bg-primary" aria-hidden="true" />}

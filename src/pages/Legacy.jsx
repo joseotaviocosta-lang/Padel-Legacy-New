@@ -5,6 +5,7 @@ import { PageContainer, GlassCard, EmptyStateCard, LoadingScreen, InfoBanner, Pr
 import { PageHeader as PremiumPageHeader, StatCard } from '@/components/design-system';
 import { calculateAge, isRetired, RETIREMENT_AGE, STARTING_AGE, overallRating } from '@/lib/padel';
 import { computeLegacyScore, computeLegacyBonuses, retireProfile, startNewCareer, getUserLegacies, getCoachLegacy } from '@/lib/legacy';
+import { isOfficialMatch } from '@/lib/careerStory';
 import RetirementModal from '@/components/legacy/RetirementModal';
 import NewAthleteModal from '@/components/legacy/NewAthleteModal';
 import HallOfFame from '@/components/legacy/HallOfFame';
@@ -37,9 +38,17 @@ const RARITY_STYLES = {
   'lendário': { border: 'border-amber-500/40', bg: 'from-amber-500/10 to-transparent', text: 'text-amber-300' },
 };
 
+// Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 4): "Estreia"/"Primeira
+// Vitória" usavam profile.matches_played/wins — os mesmos contadores
+// SÓ-DE-TREINO que a Fase 12 já tinha identificado como errados pra
+// conquistas (game-core/progression.js). Corrigido pra usar contagem real
+// de partida OFICIAL (Match.competition_type/is_official — a mesma fonte
+// canônica de achievementContext.js), passada como segundo argumento
+// (`stats`) só pros 2 marcos que precisam dela; os demais continuam
+// ignorando o argumento extra, sem mudança de comportamento.
 const MILESTONES = [
-  { label: 'Estreia', description: 'Primeira partida', icon: Swords, check: (p) => (p.matches_played || 0) >= 1 },
-  { label: 'Primeira Vitória', description: 'Primeira vitória', icon: Trophy, check: (p) => (p.wins || 0) >= 1 },
+  { label: 'Estreia', description: 'Primeira partida oficial', icon: Swords, check: (p, stats) => (stats?.played || 0) >= 1 },
+  { label: 'Primeira Vitória', description: 'Primeira vitória oficial', icon: Trophy, check: (p, stats) => (stats?.won || 0) >= 1 },
   { label: 'Primeiro Título', description: 'Primeiro torneio', icon: Crown, check: (p) => (p.tournaments_won || 0) >= 1 },
   { label: 'Amador', description: 'Nível Amador', icon: Star, check: (p) => (p.xp || 0) >= 500 },
   { label: 'Competitivo', description: 'Nível Competitivo', icon: Target, check: (p) => (p.xp || 0) >= 3000 },
@@ -48,13 +57,25 @@ const MILESTONES = [
   { label: 'Lenda', description: 'Nível máximo', icon: Crown, check: (p) => (p.xp || 0) >= 50000 },
 ];
 
-function isAchievementUnlocked(a, profile) {
-  return (profile?.[a.metric] || 0) >= a.threshold;
+// Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 4/11): bug real encontrado
+// na auditoria — `Achievement.list()` (abaixo) sempre retorna o catálogo
+// REAL de 175 conquistas (achievementsData.js, semeado por localSeed.js),
+// não o array DEFAULT_ACHIEVEMENTS de 12 itens antigos — mas essas
+// conquistas reais usam `trigger_type`, nunca o campo `.metric` que este
+// checker esperava. Resultado: TODA conquista real aparecia travada (0%
+// desbloqueado), sempre, mesmo com progresso/desbloqueios reais — um
+// sistema que "produzia números mas nenhuma consequência" (Parte 0, item
+// 5). Corrigido pra checar contra as linhas reais de PlayerAchievement
+// (a mesma fonte que a aba Objetivos → Conquistas usa), não uma
+// re-derivação quebrada a partir do perfil.
+function isAchievementUnlocked(a, unlockedIds) {
+  return unlockedIds.has(a.id);
 }
 
 export default function Legacy() {
   const [profile, setProfile] = useState(null);
   const [achievements, setAchievements] = useState([]);
+  const [unlockedAchievementIds, setUnlockedAchievementIds] = useState(new Set());
   const [legacies, setLegacies] = useState([]);
   const [coachLegacy, setCoachLegacy] = useState(null);
   const [matches, setMatches] = useState([]);
@@ -78,9 +99,19 @@ export default function Legacy() {
             const coach = await getCoachLegacy(p.coach_legacy_id);
             setCoachLegacy(coach);
           }
+          // Fase 13 (Parte 4/11): fonte real de desbloqueio — mesma linha
+          // que a aba Objetivos → Conquistas usa (PlayerAchievement), não
+          // uma re-derivação a partir de campos do perfil.
+          const unlocked = await localGame.entities.PlayerAchievement.filter({ profile_id: p.id }).catch(() => []);
+          setUnlockedAchievementIds(new Set((unlocked || []).map((row) => row.achievement_id)));
         }
         let ach = await localGame.entities.Achievement.list();
         if (!ach || ach.length === 0) ach = DEFAULT_ACHIEVEMENTS;
+        // Fase 13 (Parte 10): nunca apresentar future_system/arquivadas como
+        // se fossem conquistas normais bloqueadas — mesma regra da Fase 12
+        // (presentableAchievements), aplicada aqui porque Legacy.jsx lê o
+        // catálogo bruto direto da entidade, não via achievementEngine.js.
+        ach = (ach || []).filter((entry) => !entry.future_system && entry.is_active !== false);
         setAchievements(ach);
       } catch (e) {
         setAchievements(DEFAULT_ACHIEVEMENTS);
@@ -102,8 +133,14 @@ export default function Legacy() {
   const hasLegacyRecord = !!currentLegacy;
   const canStartNewCareer = retired && hasLegacyRecord;
   const previewBonuses = computeLegacyBonuses({ ...profile, generation, legacy_score: legacyScore, sport_name: profile.sport_name });
-  const unlockedMilestones = MILESTONES.filter(m => m.check(profile)).length;
-  const unlockedAchievements = achievements.filter(a => isAchievementUnlocked(a, profile)).length;
+  // Fase 13 (Parte 4): "Estreia"/"Primeira Vitória" precisam de contagem
+  // real de partida oficial — derivada aqui de `matches` (já buscado acima
+  // pra CareerTimeline/SeasonRetrospective), nunca profile.matches_played/
+  // wins (só treino).
+  const officialCareerMatches = matches.filter(isOfficialMatch);
+  const officialStats = { played: officialCareerMatches.length, won: officialCareerMatches.filter((m) => m.result === 'vitória').length };
+  const unlockedMilestones = MILESTONES.filter(m => m.check(profile, officialStats)).length;
+  const unlockedAchievements = achievements.filter(a => isAchievementUnlocked(a, unlockedAchievementIds)).length;
   const ageProgress = Math.min(100, Math.round(((age - STARTING_AGE) / (RETIREMENT_AGE - STARTING_AGE)) * 100));
 
   async function handleRetire() {
@@ -257,7 +294,7 @@ export default function Legacy() {
           </div>
           <div className="grid grid-cols-2 gap-2">
             {MILESTONES.map((m) => {
-              const unlocked = m.check(profile);
+              const unlocked = m.check(profile, officialStats);
               const Icon = m.icon;
               return (
                 <div key={m.label} className={`rounded-xl p-3 border flex items-center gap-3 transition-all ${unlocked ? 'border-primary/30 bg-primary/5' : 'border-border/50 bg-secondary/20 opacity-60'}`}>
@@ -287,7 +324,7 @@ export default function Legacy() {
           ) : (
             <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
               {achievements.map((a, i) => {
-                const unlocked = isAchievementUnlocked(a, profile);
+                const unlocked = isAchievementUnlocked(a, unlockedAchievementIds);
                 const rarity = RARITY_STYLES[a.rarity] || RARITY_STYLES['comum'];
                 const Icon = ICON_MAP[a.icon] || Award;
                 return (

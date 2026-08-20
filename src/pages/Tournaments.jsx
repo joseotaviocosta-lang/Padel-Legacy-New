@@ -14,7 +14,7 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, StatusBadge, EmptyState, Tabs, Button, ConfirmDialog, TooltipHint } from '@/components/design-system';
+import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, StatusBadge, EmptyState, Surface, Tabs, Button, ConfirmDialog, TooltipHint } from '@/components/design-system';
 import { enrichTournament } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -248,6 +248,19 @@ export default function Tournaments() {
     .filter((t) => t.start_date && careerDate && t.start_date >= careerDate && isRegistrationOpen(t, careerDate))
     .sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''))[0] || null;
 
+  // M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 10/11): "Tournament
+  // Focus" — quando o jogador está de fato disputando um torneio
+  // (activeRunEvents, a mesma fonte que já alimenta o banner "Em torneio"
+  // dentro de cada TournamentCard) ou já confirmou inscrição no próximo
+  // torneio elegível, essa é a informação mais importante da tela — deve
+  // dominar visualmente, antes da lista/tabs, não ser só mais um card entre
+  // outros. Nenhum dado novo: reaproveita activeRunEvents/nextTournament/
+  // registeredTournaments já computados acima.
+  const focusRunTournamentId = activeRunEvents.size > 0 ? [...activeRunEvents.keys()][0] : null;
+  const focusRunTournament = focusRunTournamentId ? tournaments.find((t) => t.id === focusRunTournamentId) : null;
+  const focusRegisteredTournament = !focusRunTournament && nextTournament && registeredTournaments.has(nextTournament.id) ? nextTournament : null;
+  const focusTournament = focusRunTournament || focusRegisteredTournament;
+
   const { filtered, byMonth } = (() => {
     const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
     const inSelectedView = ordered.filter(tournament => {
@@ -346,6 +359,17 @@ export default function Tournaments() {
         />
 
       <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
+
+      {focusTournament && (
+        <TournamentFocusMode
+          tournament={focusTournament}
+          activeRun={activeRunEvents.get(focusTournament.id) || null}
+          careerDate={careerDate}
+          onPlay={() => handlePlay(focusTournament)}
+          onViewBracket={() => setBracketTournament(focusTournament)}
+          onViewDetails={() => setDetailsTournament(focusTournament)}
+        />
+      )}
 
       {/* Top tabs */}
       <Tabs
@@ -506,6 +530,50 @@ export default function Tournaments() {
       />
       </PageContent>
     </Page>
+  );
+}
+
+// M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 11): "Tournament
+// Focus" — transmite "estou disputando um torneio", não "estou olhando uma
+// lista". Só apresentação: `activeRun.metadata.tournament_run` e o formato
+// de `activeMatch`/`match.opponent` já existiam (mesmos campos que
+// TournamentCard já lia para o banner "Em torneio" e que CareerHub.jsx já
+// usa via getCurrentTournamentMatch/match.opponent) — nenhum dado novo.
+function TournamentFocusMode({ tournament, activeRun, careerDate, onPlay, onViewBracket, onViewDetails }) {
+  const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
+  const Icon = config.icon;
+  const run = activeRun?.metadata?.tournament_run;
+  const activeMatch = run?.matches?.[run?.currentRound ?? -1] || null;
+  const opponentNames = Array.isArray(activeMatch?.opponent) ? activeMatch.opponent.map((item) => item.name).filter(Boolean).join(' & ') : '';
+  const canPlayNow = Boolean(activeMatch) && activeMatch.date === careerDate && activeMatch.preparationCompleted;
+
+  let statusLine;
+  if (activeMatch) {
+    statusLine = [activeMatch.round, formatDate(activeMatch.date), opponentNames ? `vs ${opponentNames}` : null].filter(Boolean).join(' · ');
+  } else if (activeRun) {
+    statusLine = `Inscrito · aguardando início · ${formatDate(tournament.start_date)}`;
+  } else {
+    statusLine = `Inscrito · ${formatDate(tournament.start_date)}`;
+  }
+
+  const primaryLabel = canPlayNow ? 'Jogar partida' : activeMatch ? 'Preparar' : 'Ver evento';
+
+  return (
+    <Surface variant="premium" className="border-primary/30">
+      <div className="flex items-start gap-3">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15"><Icon className="h-5 w-5 text-primary" /></span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-black uppercase tracking-wider text-primary">{activeMatch ? 'Você está disputando' : 'Inscrito para este torneio'}</p>
+          <p className="mt-0.5 truncate text-lg font-black">{tournament.name}</p>
+          <p className="mt-1 text-xs text-muted-foreground">{statusLine}</p>
+        </div>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Button level="primary" size="touch" onClick={onPlay}><Play className="h-4 w-4" /> {primaryLabel}</Button>
+        <Button level="ghost" size="sm" onClick={onViewBracket}>Chave</Button>
+        <Button level="ghost" size="sm" onClick={onViewDetails}>Detalhes</Button>
+      </div>
+    </Surface>
   );
 }
 

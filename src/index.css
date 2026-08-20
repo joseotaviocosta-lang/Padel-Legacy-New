@@ -61,6 +61,12 @@
        CSS novo em vez de reescritos. Não mudam nenhum valor existente. */
     --pl-header-h: 3.5rem; /* M4.1: shell mobile mais denso, preservando controles de 44px */
     --pl-bottom-nav-h: 4rem; /* M4.1: ícone dominante + label curta, sem reduzir a área ativa */
+    /* M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 2/13): fundo
+       REALMENTE opaco da bottom nav — nunca um bg-background/NN com canal
+       alfa (QA físico provou que até /98 deixava conteúdo "vazar" atrás da
+       barra). Aponta para --background em vez de duplicar o valor, então
+       nunca dessincroniza se a paleta mudar. */
+    --pl-bottom-nav-bg: var(--background);
     --pl-touch-min: 2.75rem; /* 44px — alvo de toque mínimo confortável */
     --pl-safe-t: env(safe-area-inset-top, 0px);
     --pl-safe-b: env(safe-area-inset-bottom, 0px);
@@ -97,6 +103,14 @@
        control-h: nível compact/default. control-h-primary: nível primary. */
     --pl-mobile-control-h: 2.75rem;
     --pl-mobile-control-h-primary: 3rem;
+
+    /* M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 11/13): a
+       FloatingUtilityRail (BETA/Carreiras/Som) flutua fixa perto do topo
+       direito da tela (~44px de botão + respiro), na mesma faixa vertical
+       de controles de página como o grupo de avançar dia do Calendário.
+       Aplicado só como padding-right pontual nos componentes que realmente
+       colidem com ela — nunca como padding global da página. */
+    --pl-utility-rail-safe-zone: 3.5rem;
   }
 
   .dark {

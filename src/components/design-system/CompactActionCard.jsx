@@ -40,7 +40,7 @@ export function CompactActionCard({
       expanded ? 'border-primary/30' : tone === 'premium' ? 'border-premium/35' : 'border-border/40',
       className,
     )}>
-      <div className="flex items-start gap-3">
+      <div className="flex items-start gap-2.5">
         {Icon && (
           <div className={cn('flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary/60', iconClassName)}>
             <Icon className="h-4.5 w-4.5" />
@@ -51,7 +51,7 @@ export function CompactActionCard({
             <p className="truncate text-sm font-semibold leading-tight">{title}</p>
             {badge}
           </div>
-          {summary && <div className="mt-1 text-[11px] leading-relaxed text-muted-foreground">{summary}</div>}
+          {summary && <div className="mt-1 text-[11px] leading-snug text-muted-foreground">{summary}</div>}
         </div>
         {details && (
           <button
@@ -68,7 +68,12 @@ export function CompactActionCard({
 
       {expanded && details && <div className="mt-3 animate-fade-in space-y-2">{details}</div>}
 
-      {primaryAction && <div className="mt-3">{primaryAction}</div>}
+      {/* M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 5): mt-3→mt-2 e
+          leading-relaxed→leading-snug acima — compacta ~10px de altura
+          fechada sem remover nenhum dado (ícone/nome/duração/fadiga/energia/
+          atributo/ganho/botão continuam todos visíveis, só com menos
+          espaço morto entre eles). */}
+      {primaryAction && <div className="mt-2">{primaryAction}</div>}
     </div>
   );
 }

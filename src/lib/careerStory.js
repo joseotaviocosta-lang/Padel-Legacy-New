@@ -31,6 +31,19 @@ function matchBelongsToProfile(match, profile) {
   return names.some((name) => haystack.includes(name));
 }
 
+// Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 4/7): bug real encontrado na
+// auditoria — nem buildCareerTimeline nem buildSeasonRetrospectives nunca
+// distinguiam partida de treino de partida oficial. "Primeira partida
+// OFICIAL"/"Primeira vitória" podiam disparar numa partida de treino
+// qualquer, e a retrospectiva de temporada somava partidas/vitórias/títulos
+// de treino junto com os reais — a mesma classe de bug que a Fase 12 já
+// tinha corrigido pro motor de conquistas (game-core/progression.js conta
+// só treino; a fonte real é Match.competition_type/is_official). Mesmo
+// critério aqui, reaproveitado — nenhum contador novo.
+export function isOfficialMatch(match) {
+  return match?.competition_type === 'tournament' && match?.is_official === true;
+}
+
 function playerWonMatch(match, profile) {
   if (typeof match?.player_won === 'boolean') return match.player_won;
   if (match?.winner_profile_id && profile?.id) return match.winner_profile_id === profile.id;
@@ -43,7 +56,7 @@ export function buildCareerTimeline(profile, matches = []) {
   const events = [];
   const startDate = parseDate(profile.career_started_at || profile.created_date || profile.career_date || '2026-01-01');
   const currentDate = parseDate(profile.career_date) || startDate;
-  const playerMatches = (matches || []).filter((match) => matchBelongsToProfile(match, profile)).sort((a, b) => (parseDate(a.date || a.created_date)?.getTime() || 0) - (parseDate(b.date || b.created_date)?.getTime() || 0));
+  const playerMatches = (matches || []).filter((match) => matchBelongsToProfile(match, profile) && isOfficialMatch(match)).sort((a, b) => (parseDate(a.date || a.created_date)?.getTime() || 0) - (parseDate(b.date || b.created_date)?.getTime() || 0));
   const firstMatch = playerMatches[0];
   const firstWin = playerMatches.find((match) => playerWonMatch(match, profile));
 
@@ -74,7 +87,7 @@ export function buildCareerTimeline(profile, matches = []) {
 export function buildSeasonRetrospectives(profile, matches = []) {
   if (!profile) return [];
   const seasons = new Map();
-  (matches || []).filter((match) => matchBelongsToProfile(match, profile)).forEach((match) => {
+  (matches || []).filter((match) => matchBelongsToProfile(match, profile) && isOfficialMatch(match)).forEach((match) => {
     const date = parseDate(match.date || match.created_date);
     if (!date) return;
     const year = date.getFullYear();

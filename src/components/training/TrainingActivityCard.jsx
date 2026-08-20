@@ -113,11 +113,18 @@ export default function TrainingActivityCard({
       details={details}
       tone={recommended ? 'premium' : 'default'}
       primaryAction={
-        // M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte 12): o card já
-        // identifica a atividade inteira — não precisa de um CTA de largura
-        // total como se fosse uma landing page. Largura própria, alinhado à
-        // direita da área de ação (CompactActionCard já organiza o layout).
-        <Button level="primary" size="touch" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="ml-auto min-w-[7.5rem]">
+        // M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 4): QA físico
+        // mostrou que mesmo compacto (M4.1.2), o botão ainda lia como um
+        // segundo CTA de página inteira (~220×80px reais) porque `size="touch"`
+        // (48px) + a classe `pl-game-primary` do level="primary" (uppercase,
+        // letter-spacing, sombra pensada pra 1 CTA por tela) não foi feita
+        // pra uma ação repetida em CADA card. `size="default"` já cai pra
+        // 44px no mobile via a mesma regra pl-btn-tap que qualquer botão
+        // default usa (index.css) — sem token novo. normal-case/tracking-normal
+        // anulam só o uppercase/letter-spacing (utilities sempre vencem
+        // components no Tailwind), mantendo a cor/sombra "primary" do resto
+        // do design system intactas.
+        <Button level="primary" size="default" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="ml-auto normal-case tracking-normal">
           {busy ? (
             <><div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> Treinando...</>
           ) : disabledReason ? (

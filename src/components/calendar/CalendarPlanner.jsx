@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CalendarPlus, Trash2, Pencil } from 'lucide-react';
+import { Trash2, Pencil } from 'lucide-react';
 import { TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystemV2';
 
 export default function CalendarPlanner({ profile, selectedDate, events, onSchedule, onCancel, onEdit, busy }) {
@@ -25,8 +25,10 @@ export default function CalendarPlanner({ profile, selectedDate, events, onSched
     setTitle('');
   }
 
-  return <div className="glass rounded-2xl p-4 space-y-4 border border-cyan-500/20">
-    <div><h2 className="font-bold text-sm flex items-center gap-2"><CalendarPlus className="h-4 w-4 text-cyan-400" /> Planejar atividade</h2><p className="text-xs text-muted-foreground mt-1">O compromisso será executado automaticamente quando a data chegar.</p></div>
+  // M4.2: título/descrição agora vêm do CollapsibleSection que envolve este
+  // componente em CalendarPage.jsx — evita cabeçalho duplicado (Parte 28).
+  return <div className="space-y-4">
+    <p className="text-xs text-muted-foreground">O compromisso será executado automaticamente quando a data chegar.</p>
     <form onSubmit={submit} className="grid gap-3 md:grid-cols-2">
       <label className="text-xs font-semibold">Data<input type="date" min={minimumDate} value={date} onChange={(event) => setDate(event.target.value)} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2" /></label>
       <label className="text-xs font-semibold">Atividade<select value={kind} onChange={(event) => setKind(event.target.value)} className="mt-1 w-full rounded-lg border border-border bg-background px-3 py-2"><option value="training">Treino</option><option value="rest">Dia de descanso</option><option value="personal">Atividade pessoal</option></select></label>

@@ -25,9 +25,16 @@ const SOURCE = readFileSync('src/components/achievements/AchievementsPanel.jsx',
 // ── 1) Estrutural: os elementos exigidos existem no componente real ──────
 gate('Header de progresso usa CompactStats (não uma parede de cards)', /CompactStats/.test(SOURCE));
 gate('Mostra contagem desbloqueadas/total (X/Y — a base do "PROGRESSO — 31/X — X%" do briefing)', /stats\.unlocked.*stats\.total|unlocked.*total/.test(SOURCE));
-gate('Existe a seção "Próximas conquistas"', /Próximas conquistas/.test(SOURCE));
-gate('"Próximas conquistas" é limitada a um N pequeno (não a lista inteira)', /NEXT_UP_COUNT\s*=\s*\d+/.test(SOURCE) && Number(SOURCE.match(/NEXT_UP_COUNT\s*=\s*(\d+)/)[1]) <= 5);
-gate('"Próximas conquistas" é ordenada por proximidade (percent), não por id/threshold cru', /nextUp[\s\S]{0,200}sort\(\(a, b\) => b\.percent - a\.percent\)/.test(SOURCE));
+// Achievements Polish 12.1 (docs/ACHIEVEMENTS_POLISH_12_1.md): QA real
+// mostrou que ordenar só por `percent` deixava idade/tempo (Auge, Veterano,
+// Lenda Madura, Um Mês) dominarem "Próximas" pra um atleta jovem — a seção
+// foi renomeada pra "Metas relevantes para sua carreira agora" e passou a
+// usar findNextRelevantAchievements (progresso real + o quanto o jogador
+// controla a conquista + diversidade — nunca mais só percentual isolado).
+// Gates atualizados para a fonte real e correta, não a hipótese anterior.
+gate('Existe a seção "Metas relevantes para sua carreira agora" (antes "Próximas conquistas")', /Metas relevantes para sua carreira agora/.test(SOURCE));
+gate('"Próximas" é limitada a um N pequeno (não a lista inteira)', /NEXT_UP_COUNT\s*=\s*\d+/.test(SOURCE) && Number(SOURCE.match(/NEXT_UP_COUNT\s*=\s*(\d+)/)[1]) <= 5);
+gate('"Próximas" usa findNextRelevantAchievements (relevância real — Achievements Polish 12.1), não mais só percent desc', SOURCE.includes("from '@/lib/achievementRelevance.js'") && /nextUp\s*=\s*useMemo\(\(\)\s*=>\s*relevantList\.slice/.test(SOURCE) && !/nextUp[\s\S]{0,200}sort\(\(a, b\) => b\.percent - a\.percent\)/.test(SOURCE));
 gate('Existe busca por texto (filtro compacto)', /placeholder="Buscar conquista/.test(SOURCE));
 gate('Existe filtro por categoria (chips/select compacto, não 3 sistemas de navegação)', /CATEGORY_FILTERS/.test(SOURCE) && /<select/.test(SOURCE));
 gate('Só existe UM controle de categoria (nenhum segundo <select> ou <Tabs> concorrente)', (SOURCE.match(/<select/g) || []).length === 1);
@@ -43,6 +50,19 @@ gate('reach_rank usa rótulo de posição real (#atual → Top N), não X/Y gen�
 gate('Reconciliação de save antigo roda uma única vez por perfil (flag persistida), não a cada abertura da aba', /achievements_v2_reconciled/.test(SOURCE));
 gate('Reconciliação usa syncPlayerAchievements com {reconciliation:true} só quando ainda não reconciliado (idempotente)', /reconciliation: needsReconciliation/.test(SOURCE) && /!profile\.achievements_v2_reconciled/.test(SOURCE));
 gate('Usa presentableAchievements() (exclui future_system/arquivadas), nunca o catálogo bruto direto', /presentableAchievements\(\)/.test(SOURCE) && !/ACHIEVEMENT_CATALOG\.map/.test(SOURCE));
+
+// ── Achievements Polish 12.1: conteúdo da linha "Metas relevantes" (Parte 15-18) ──
+gate('Cada linha de "Metas relevantes" mostra a descrição curta da conquista', /achievement\.description/.test(SOURCE));
+gate('Cada linha mostra um badge de categoria discreto (Parte 16 — sem exagero visual)', /categoryMeta\.label/.test(SOURCE));
+gate('Cada linha mostra recompensa (+XP/+moedas) de forma discreta, sem competir com o objetivo', /achievement\.xp_reward/.test(SOURCE) && /achievement\.coins_reward/.test(SOURCE));
+gate('Progresso vem acompanhado de texto (nunca só uma barra sem contexto — Parte 18)', /progressLabel\(progress\)/.test(SOURCE));
+
+// ── Achievements Polish 12.1: densidade padrão da página (Parte 19-21) ──
+gate('Existe um limite padrão para "Em progresso" (IN_PROGRESS_DEFAULT_COUNT)', /IN_PROGRESS_DEFAULT_COUNT\s*=\s*12/.test(SOURCE));
+gate('O limite só se aplica na vista padrão (sem filtro/busca ativos — Parte H)', /isDefaultView\s*=\s*category === 'all' && !search/.test(SOURCE));
+gate('Existe "Ver todas" para revelar o catálogo completo quando a vista padrão esconde algo', /Ver todas/.test(SOURCE) && /setShowAllInProgress\(true\)/.test(SOURCE));
+gate('"Ver todas" pode ser desfeito (voltar a mostrar só as mais relevantes)', /setShowAllInProgress\(false\)/.test(SOURCE));
+gate('Uma escada expandida ("ver mais") continua visível mesmo com o limite de densidade ativo', /expandedLadders\.has\(ladderKey\(a\)\)/.test(SOURCE));
 
 // ── 2) Funcional real: paginação/lazy-list-limit via laddering, mobile grid ──
 const server = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });

@@ -17,11 +17,20 @@ import { cn } from '@/lib/utils';
 export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', className }) {
   return (
     <TabsRoot value={activeTab} onValueChange={onTabChange} className={cn('pl-game-tabs min-w-0', className)}>
+      {/* M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 6): QA físico
+          mostrou a última aba cortada na borda (ex.: "Tático..." em
+          Treinos). overflow-x-auto/min-w-max/scrollbar-none já existiam,
+          mas nada tornava `flex-nowrap` explícito nem dava folga depois da
+          última aba — sem isso, ela fica encostada no canto arredondado do
+          container e lê como "cortada" mesmo quando tecnicamente
+          scrollável. pr- extra (em vez de aumentar p-1/gap-1 do resto)
+          só afeta a ponta da lista. */}
       <TabsList
         className={cn(
-          'h-auto w-full min-w-0 justify-start gap-1 overflow-x-auto rounded-2xl border border-border/60 bg-card/55 p-1 scrollbar-none',
-          variant === 'buttons' && 'gap-2 border-none bg-transparent p-0',
+          'h-auto w-full min-w-0 flex-nowrap justify-start gap-1 overflow-x-auto rounded-2xl border border-border/60 bg-card/55 p-1 pr-3 scrollbar-none',
+          variant === 'buttons' && 'gap-2 border-none bg-transparent p-0 pr-3',
         )}
+        style={{ WebkitOverflowScrolling: 'touch' }}
       >
         {tabs.map((tab) => {
           const Icon = tab.icon;
@@ -32,7 +41,7 @@ export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', clas
               className={cn(
                 // pl-tab-trigger (Fase M1): eleva a área de toque mínima
                 // para 44px sob mobile — ver src/index.css.
-                'pl-tab-trigger min-w-max shrink-0 gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+                'pl-tab-trigger min-w-max shrink-0 whitespace-nowrap gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
                 variant === 'segmented' && 'flex-1',
                 variant === 'buttons' && 'bg-secondary/50 data-[state=active]:bg-primary/15 data-[state=active]:text-primary',
               )}

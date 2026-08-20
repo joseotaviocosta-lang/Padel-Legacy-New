@@ -91,7 +91,11 @@ gate('Bottom nav dá mais peso ao ícone e label menor', bottomNav.includes("h-[
 gate('Bottom nav ativa é clara e a transição é curta', bottomNav.includes('bg-primary/15') && bottomNav.includes("duration: 0.15"));
 gate('Header global compacto preserva aria-label completo do evento', headerContext.includes("max-w-[6.75rem]") && headerContext.includes('aria-label={context.ariaLabel'));
 gate('Shell usa tokens de header/bottom-nav e safe areas', appLayout.includes('--pl-header-h') && appLayout.includes('--pl-bottom-nav-h') && appLayout.includes('safe-area-inset-bottom'));
-gate('GuideButton fica acima da nav e o conteúdo reserva espaço adicional', guide.includes('var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.5rem') && appLayout.includes('+3.5rem'));
+// M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 2): folga acima da nav
+// aumentada de 0.5rem para 0.875rem — QA físico achou o botão "muito
+// próximo" da barra. Continua estritamente ACIMA de toda a altura da nav,
+// só com mais respiro; gate atualizado para o valor real e correto.
+gate('GuideButton fica acima da nav e o conteúdo reserva espaço adicional', guide.includes('var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.875rem') && appLayout.includes('+3.5rem'));
 for (const [path, source] of Object.entries(pages)) {
   gate(`${path} não cria ação fixed concorrente`, !/className="[^"]*\bfixed\b[^"]*bottom-/.test(source));
 }

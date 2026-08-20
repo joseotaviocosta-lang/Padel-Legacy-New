@@ -337,6 +337,18 @@ export default function CareerHub() {
     () => buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction }),
     [profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction],
   );
+  // M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 7): "Competir" era
+  // um link fixo pra /tournaments — se há uma partida de torneio disponível
+  // agora, deve ir direto a ela. Mesma condição/helper que buildNextEvent já
+  // usa pro card "Próximo evento" (buildTournamentPlayRoute,
+  // activeTournamentEvent, hasTournamentRecoveryAction) — nenhuma lógica de
+  // estado de torneio nova, só reaproveitada pra um segundo atalho.
+  const competeRoute = useMemo(() => {
+    const run = activeTournamentEvent?.metadata?.tournament_run;
+    const activeMatch = run?.matches?.[run?.currentRound || 0];
+    if (activeMatch && !hasTournamentRecoveryAction) return buildTournamentPlayRoute(activeTournamentEvent.related_id);
+    return '/tournaments';
+  }, [activeTournamentEvent, hasTournamentRecoveryAction]);
   // Hotfix "Single Source of Truth": enquanto o onboarding principal está
   // ativo, getOnboardingNextAction() já é a ÚNICA autoridade sobre "o que
   // fazer agora" (item central do hotfix) — decisionCenter/dailyBriefing
@@ -401,7 +413,7 @@ export default function CareerHub() {
         {careerMoment && !['tournament', 'injury'].includes(careerMoment.type) && <CareerMomentStrip moment={careerMoment} />}
 
         {/* 1. Identidade + contexto */}
-        <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} />
+        <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} competeRoute={competeRoute} />
 
         {/* 2. Próximo objetivo + próximo evento */}
         <Surface padding="none" className="grid overflow-hidden xl:grid-cols-12">
@@ -597,7 +609,7 @@ function buildJourneyTimeline({ recentMatches, recentTrainings, messages, posts,
 // Regiões visuais
 // ────────────────────────────────────────────────────────────────
 
-function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount }) {
+function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount, competeRoute = '/tournaments' }) {
   const age = calculateAge(profile);
   const country = profile.country || profile.nationality || profile.country_name || 'Brasil';
   const side = profile.court_side ? (profile.court_side === 'direita' ? 'Direita' : profile.court_side === 'esquerda' ? 'Esquerda' : profile.court_side) : null;
@@ -622,7 +634,7 @@ function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount
         { label: 'nível', value: `${careerExperience.level}/${careerExperience.maxLevel}`, icon: Zap, tone: 'success' },
         unreadCount > 0 ? { label: 'pendências', value: unreadCount, icon: AlertCircle, tone: 'danger' } : null,
       ]}
-      action={<div className="flex flex-wrap gap-2"><CommandLink primary to="/game/training" icon={Dumbbell}>Treinar</CommandLink><CommandLink to="/tournaments" icon={Trophy}>Competir</CommandLink><CommandLink to="/game/calendar" icon={CalendarDays}>Agenda</CommandLink></div>}
+      action={<div className="flex flex-wrap gap-2"><CommandLink primary to="/game/training" icon={Dumbbell}>Treinar</CommandLink><CommandLink to={competeRoute} icon={Trophy}>Competir</CommandLink><CommandLink to="/game/calendar" icon={CalendarDays}>Agenda</CommandLink></div>}
     />
   );
 }

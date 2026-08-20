@@ -221,9 +221,25 @@ const RAW_ACHIEVEMENT_CATALOG = [
   { name: 'Lenda Madura', description: 'Alcance a idade de 40 anos.', icon: 'Crown', rarity: 'épico', category: 'carreira', visibility: 'publico', difficulty: 'extremo', trigger_type: 'reach_age', threshold: 40, xp_reward: 5000, coins_reward: 10000, medal_reward: 'Lenda Madura', points: 100 },
 
   // Rank
+  // Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 3): a ladder de reach_rank
+  // só tinha 5 degraus (100/50/10/3/1) — pra um atleta iniciante (rank
+  // ~900+), o próximo degrau REAL disponível já era "Top 100", uma meta
+  // longe demais pra ser motivadora (o achado que deu origem a esta fase).
+  // 5 degraus novos (500/250/30/20/5) preenchem os buracos da escada
+  // 500→250→100→50→30→20→10→5→#1 pedida pelo briefing — nenhuma conquista
+  // existente foi removida ou renomeada (Top 3 continua existindo ao lado
+  // de Top 5; são marcos distintos, não duplicados). A seleção de "próximo
+  // degrau relevante" em achievementRelevance.js já escolhe por `percent`
+  // (o mais próximo), então preencher os degraus ausentes já corrige a
+  // recomendação sem precisar tocar nessa lógica.
+  { name: 'Top 500', description: 'Alcance o top 500 do ranking mundial.', icon: 'TrendingUp', rarity: 'comum', category: 'carreira', visibility: 'publico', difficulty: 'facil', trigger_type: 'reach_rank', threshold: 500, xp_reward: 300, coins_reward: 600, points: 15 },
+  { name: 'Top 250', description: 'Alcance o top 250 do ranking mundial.', icon: 'TrendingUp', rarity: 'incomum', category: 'carreira', visibility: 'publico', difficulty: 'medio', trigger_type: 'reach_rank', threshold: 250, xp_reward: 500, coins_reward: 1000, points: 22 },
   { name: 'Top 100', description: 'Alcance o top 100 do ranking mundial.', icon: 'TrendingUp', rarity: 'incomum', category: 'carreira', visibility: 'publico', difficulty: 'medio', trigger_type: 'reach_rank', threshold: 100, xp_reward: 800, coins_reward: 1500, points: 30 },
   { name: 'Top 50', description: 'Alcance o top 50 do ranking mundial.', icon: 'TrendingUp', rarity: 'raro', category: 'carreira', visibility: 'publico', difficulty: 'dificil', trigger_type: 'reach_rank', threshold: 50, xp_reward: 2000, coins_reward: 4000, points: 50 },
+  { name: 'Top 30', description: 'Alcance o top 30 do ranking mundial.', icon: 'Star', rarity: 'raro', category: 'carreira', visibility: 'publico', difficulty: 'dificil', trigger_type: 'reach_rank', threshold: 30, xp_reward: 3000, coins_reward: 6000, points: 70 },
+  { name: 'Top 20', description: 'Alcance o top 20 do ranking mundial.', icon: 'Star', rarity: 'épico', category: 'carreira', visibility: 'publico', difficulty: 'dificil', trigger_type: 'reach_rank', threshold: 20, xp_reward: 4000, coins_reward: 8000, points: 90 },
   { name: 'Top 10', description: 'Alcance o top 10 do ranking mundial.', icon: 'Star', rarity: 'épico', category: 'carreira', visibility: 'publico', difficulty: 'extremo', trigger_type: 'reach_rank', threshold: 10, xp_reward: 5000, coins_reward: 10000, medal_reward: 'Top 10 Mundial', title_reward: 'Top 10 Mundial', points: 120 },
+  { name: 'Top 5', description: 'Alcance o top 5 do ranking mundial.', icon: 'Crown', rarity: 'épico', category: 'carreira', visibility: 'publico', difficulty: 'extremo', trigger_type: 'reach_rank', threshold: 5, xp_reward: 7000, coins_reward: 15000, medal_reward: 'Top 5 Mundial', points: 150 },
   { name: 'Top 3', description: 'Alcance o top 3 do ranking mundial.', icon: 'Crown', rarity: 'lendário', category: 'carreira', visibility: 'publico', difficulty: 'extremo', trigger_type: 'reach_rank', threshold: 3, xp_reward: 10000, coins_reward: 20000, medal_reward: 'Pódio Mundial', title_reward: 'Pódio Mundial', points: 200 },
   { name: 'Número 1 do Mundo', description: 'Seja o #1 do ranking mundial.', icon: 'Castle', rarity: 'mitico', category: 'carreira', visibility: 'publico', difficulty: 'lendario', trigger_type: 'reach_rank', threshold: 1, xp_reward: 50000, coins_reward: 100000, medal_reward: '#1 do Mundo', title_reward: '#1 do Mundo', exclusive_item: 'Coroa de #1', points: 1000 },
 

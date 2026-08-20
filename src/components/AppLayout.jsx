@@ -1,9 +1,8 @@
 import { careerManager } from '@/local/careerDataStore.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { BriefcaseBusiness, ChevronDown, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
+import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import BottomNav from './BottomNav';
-import LogoutButton from './LogoutButton';
 import { motion, AnimatePresence } from 'framer-motion';
 import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
@@ -303,12 +302,6 @@ export default function AppLayout() {
                 <button ref={mobileDrawerCloseRef} type="button" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} className="pl-icon-tap rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
               </div>
               <nav className="scrollbar-premium flex-1 overflow-y-auto p-3"><NavigationGroups expandedGroup={expandedGroup} onExpandedGroupChange={setExpandedGroup} onNavigate={() => setMobileOpen(false)} /></nav>
-              <div className="space-y-2 border-t border-border/50 p-3">
-                <button type="button" onClick={openCareerManager} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-                  <BriefcaseBusiness className="h-4.5 w-4.5" /> Gerenciar carreiras
-                </button>
-                <LogoutButton variant="sidebar" />
-              </div>
             </motion.aside>
           </>
         )}
@@ -325,14 +318,6 @@ export default function AppLayout() {
 
         {sidebarCollapsed && <button type="button" onClick={() => setSidebarCollapsed(false)} aria-label="Expandir barra lateral" className="mx-auto mt-3 rounded-xl p-2 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground"><PanelLeftOpen className="h-5 w-5" /></button>}
         <nav className="scrollbar-none flex-1 overflow-y-auto px-2.5 py-4"><NavigationGroups expandedGroup={expandedGroup} onExpandedGroupChange={setExpandedGroup} compact={sidebarCollapsed} onRequestExpandSidebar={requestExpandSidebar} /></nav>
-        <div className="space-y-1 border-t border-border/40 p-2.5">
-          {!sidebarCollapsed && (
-            <button type="button" onClick={openCareerManager} className="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-bold text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
-              <BriefcaseBusiness className="h-4.5 w-4.5" /> Gerenciar carreiras
-            </button>
-          )}
-          {!sidebarCollapsed && <LogoutButton variant="sidebar" />}
-        </div>
       </aside>
 
       <BetaAnalyticsTracker />

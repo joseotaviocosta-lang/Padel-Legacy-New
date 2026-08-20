@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Calendar as CalendarIcon, FastForward, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
-import { Button, EmptyState, Page, PageHeader, PageSkeleton, Surface, ModalShell, Tabs, ConfirmDialog } from '@/components/design-system';
+import { Calendar as CalendarIcon, CalendarPlus, FastForward, Trophy, Zap, Battery, Clock3, AlertTriangle } from 'lucide-react';
+import { Button, CollapsibleSection, EmptyState, Page, PageHeader, PageSkeleton, Surface, ModalShell, Tabs, ConfirmDialog } from '@/components/design-system';
 import { ensureMyProfile, incrementMissionProgress } from '@/lib/padel';
 import { daysBetween, CAREER_START_DATE } from '@/lib/career';
 import { getCareerHudDatePresentation } from '@/lib/careerDatePresentation.js';
@@ -417,19 +417,28 @@ export default function CalendarPage() {
           controle segmentado em vez de 3 CTAs separados — mesma altura,
           mesmos handlers/labels/estados de disabled, nenhuma lógica tocada.
           Desktop mantém o layout de 3 colunas do Polish 2.1 intacto. */}
-      <Surface variant="premium" padding="compact" className="flex items-center gap-2">
+      {/* M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 10/11): QA físico
+          mostrou "+1 seman..." parcialmente coberto pela FloatingUtilityRail
+          (BETA/Carreiras/Som), que flutua fixa perto do topo direito — bem
+          na faixa vertical deste Surface. mr-[safe-zone] reserva espaço só
+          AQUI (nunca padding global da página), md:mr-0 porque a rail não
+          colide neste ponto no layout desktop mais largo. Grid
+          1.15fr/1fr/1fr (em vez de 3× flex-1 iguais) dá um pouco mais de
+          largura pra "+1 semana", o rótulo mais longo dos três — mesmos
+          handlers/labels/estados de disabled, nenhuma lógica tocada. */}
+      <Surface variant="premium" padding="compact" className="flex items-center gap-2 mr-[var(--pl-utility-rail-safe-zone)] md:mr-0">
         <div className="hidden min-w-0 flex-1 md:block">
           <p className="text-[10px] font-black uppercase tracking-[0.16em] text-premium">Avançar carreira</p>
           <p className="hidden text-xs text-muted-foreground sm:block">Processa o Universo Vivo e para diante de decisões obrigatórias.</p>
         </div>
-          <div className="flex w-full gap-1 rounded-2xl bg-secondary/25 p-1 md:w-auto md:shrink-0 md:flex-wrap md:justify-end md:gap-1.5 md:bg-transparent md:p-0">
-            <Button level="primary" size="touch" className="flex-1 md:flex-none" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
+          <div className="grid w-full grid-cols-[1.15fr_1fr_1fr] gap-1 rounded-2xl bg-secondary/25 p-1 md:flex md:w-auto md:shrink-0 md:flex-wrap md:justify-end md:gap-1.5 md:bg-transparent md:p-0">
+            <Button level="primary" size="default" className="md:flex-none" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
               <FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : pendingDecisions.length > 0 ? 'Decisão pendente' : '+1 dia'}
             </Button>
-            <Button level="secondary" size="touch" className="flex-1 md:flex-none" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
+            <Button level="secondary" size="default" className="md:flex-none" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
               {advancingBatch === 3 ? `${advanceProgress?.current || 0}/3…` : '+3 dias'}
             </Button>
-            <Button level="secondary" size="touch" className="flex-1 md:flex-none" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
+            <Button level="secondary" size="default" className="md:flex-none" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
               {advancingBatch === 7 ? `${advanceProgress?.current || 0}/7…` : '+1 semana'}
             </Button>
           </div>
@@ -482,7 +491,18 @@ export default function CalendarPage() {
         Todos os sistemas diários serão processados. Treinos serão cancelados e torneios serão marcados como perdidos automaticamente durante a lesão. Apenas outras decisões obrigatórias interrompem o avanço.
       </ConfirmDialog>
 
-      <CalendarPlanner profile={profile} selectedDate={selectedDay ? format(selectedDay, 'yyyy-MM-dd') : careerDate} events={calendarEvents} onSchedule={handleScheduleActivity} onCancel={handleCancelActivity} onEdit={handleEditActivity} busy={planning} />
+      {/* M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 13): o
+          formulário completo (data/atividade/intensidade/repetição/preview
+          de impacto) renderizava sempre aberto, abaixo da semana — o
+          calendário virava "formulário grande" por padrão em vez de
+          continuar calendar-first. Planejar é uma ação secundária/opcional
+          (a rotina diária normal é olhar a semana e avançar o dia), então
+          fica atrás de um disclosure fechado por padrão — nenhuma
+          funcionalidade do CalendarPlanner foi tocada, só a visibilidade
+          inicial. */}
+      <CollapsibleSection icon={CalendarPlus} title="Planejar atividade" description="Agende um treino, descanso ou compromisso pessoal para uma data futura.">
+        <CalendarPlanner profile={profile} selectedDate={selectedDay ? format(selectedDay, 'yyyy-MM-dd') : careerDate} events={calendarEvents} onSchedule={handleScheduleActivity} onCancel={handleCancelActivity} onEdit={handleEditActivity} busy={planning} />
+      </CollapsibleSection>
 
       {/* Upcoming tournament registrations */}
       <Surface>

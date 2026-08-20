@@ -31,8 +31,20 @@ gate('--z-bottom-nav fica acima de --z-floating (Guia flutuante nunca mais empat
 
 const navSource = readFileSync('src/components/BottomNav.jsx', 'utf8');
 gate('BottomNav.jsx usa o token --z-bottom-nav, não mais um z-50 hardcoded', navSource.includes('z-[var(--z-bottom-nav)]') && !/\bz-50\b/.test(navSource));
-gate('BottomNav.jsx tem superfície opaca reforçada (98%, não mais 96%)', navSource.includes('bg-background/98'));
-gate('BottomNav.jsx tem um leve backdrop-blur (decorativo, não é o que esconde o conteúdo)', navSource.includes('backdrop-blur-sm'));
+// M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 2): QA físico real
+// provou que mesmo 98% (2% de transparência) já bastava pro card verde de
+// Treinos "vazar" através da barra num aparelho Android real — a premissa
+// desta Parte A (98% + blur leve bastam) ficou superada por evidência de
+// campo. M4.1.3 foi além: 100% opaco (--pl-bottom-nav-bg, sem canal alfa
+// nenhum) e sem blur (nada mais para borrar atrás de um fundo sólido).
+// Gates atualizados para refletir o estado real e correto, não a hipótese
+// original — ver test:mobile-visual-hotfix-m4-1-3 para a cobertura completa.
+// Isola o className real da tag <nav> — os comentários acima dela citam de
+// propósito o valor antigo "bg-background/98" como contexto histórico, o
+// que faria uma checagem sobre o arquivo inteiro dar falso-negativo.
+const navClassName = (navSource.match(/<nav[\s\S]*?className=\{`([\s\S]*?)`\}/) || [])[1] || '';
+gate('BottomNav.jsx tem superfície 100% opaca (M4.1.3 — nenhum canal alfa, não mais 98%)', navClassName.includes('bg-[hsl(var(--pl-bottom-nav-bg))]') && !/bg-background\/\d/.test(navClassName));
+gate('BottomNav.jsx não usa mais backdrop-blur (M4.1.3 — fundo 100% opaco não tem nada atrás pra borrar)', !navClassName.includes('backdrop-blur'));
 gate('BottomNav.jsx tem o gradiente de separação superior (Parte 3, leve, não um bloco pesado)', navSource.includes('bg-gradient-to-t from-background'));
 gate('BottomNav.jsx continua respeitando a safe-area (Parte 5)', navSource.includes('env(safe-area-inset-bottom)'));
 
@@ -69,6 +81,12 @@ gate('TrainingActivityCard.jsx: botão "Treinar" não é mais w-full (Parte 12 �
 const calendarSource = readFileSync('src/pages/CalendarPage.jsx', 'utf8');
 gate('CalendarPage.jsx: título "Avançar carreira" some em mobile (Parte 24 — não ocupa mais uma coluna inteira)', calendarSource.includes('hidden min-w-0 flex-1 md:block'));
 gate('CalendarPage.jsx: os 3 botões de avanço ganham um invólucro compacto único em mobile (Parte 14 — grupo segmentado)', calendarSource.includes('rounded-2xl bg-secondary/25 p-1'));
-gate('CalendarPage.jsx: os 3 botões continuam com a mesma altura (size="touch" preservado nos 3)', (calendarSource.match(/size="touch"/g) || []).length >= 3);
+// M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 10): QA físico mostrou
+// "+1 seman..." cortado em 360px — size="touch" (px-5/20px) foi trocado por
+// size="default" (px-4/16px, ainda 44px de altura via pl-btn-tap no mobile)
+// nos 3 botões, dando a folga horizontal que faltava. A altura continua a
+// mesma NOS TRÊS (o ponto original desta Parte C), só que agora via
+// size="default" em vez de "touch" — gate atualizado para o nome certo.
+gate('CalendarPage.jsx: os 3 botões continuam com a mesma altura entre si (M4.1.3 — size="default", não mais "touch")', (calendarSource.match(/size="default"/g) || []).length >= 3 && !/size="touch"/.test(calendarSource));
 
 console.log(`\n${gates} gates executados, todos PASS — M4.1.2 (bottom nav com superfície própria, HUD sem informação colada, botões densos). QA visual manual nos 5 viewports continua obrigatória — este teste não a substitui.`);
