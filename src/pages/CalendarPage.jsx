@@ -409,19 +409,27 @@ export default function CalendarPage() {
           espaço — mantendo o ganho de altura do Polish 2 sem sacrificar
           legibilidade. Mesmos dados, mesmos handlers/labels/estados de
           disabled dos botões de avanço; nenhuma lógica de calendário tocada. */}
+      {/* M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte 14/24): em mobile,
+          o título "Avançar carreira" ocupava uma coluna inteira ao lado de 3
+          botões grandes e independentes competindo visualmente. O título some
+          em mobile (a descrição já era hidden até sm:) e os 3 botões ganham
+          um invólucro compacto próprio (fundo + padding), lendo como um único
+          controle segmentado em vez de 3 CTAs separados — mesma altura,
+          mesmos handlers/labels/estados de disabled, nenhuma lógica tocada.
+          Desktop mantém o layout de 3 colunas do Polish 2.1 intacto. */}
       <Surface variant="premium" padding="compact" className="flex items-center gap-2">
-        <div className="min-w-0 flex-1">
+        <div className="hidden min-w-0 flex-1 md:block">
           <p className="text-[10px] font-black uppercase tracking-[0.16em] text-premium">Avançar carreira</p>
           <p className="hidden text-xs text-muted-foreground sm:block">Processa o Universo Vivo e para diante de decisões obrigatórias.</p>
         </div>
-          <div className="flex shrink-0 flex-wrap justify-end gap-1.5">
-            <Button level="primary" size="touch" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
+          <div className="flex w-full gap-1 rounded-2xl bg-secondary/25 p-1 md:w-auto md:shrink-0 md:flex-wrap md:justify-end md:gap-1.5 md:bg-transparent md:p-0">
+            <Button level="primary" size="touch" className="flex-1 md:flex-none" onClick={handleAdvanceDay} disabled={advancing || Boolean(advancingBatch) || pendingDecisions.length > 0}>
               <FastForward className="h-4 w-4" />{advancing ? 'Avançando...' : pendingDecisions.length > 0 ? 'Decisão pendente' : '+1 dia'}
             </Button>
-            <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
+            <Button level="secondary" size="touch" className="flex-1 md:flex-none" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(3)}>
               {advancingBatch === 3 ? `${advanceProgress?.current || 0}/3…` : '+3 dias'}
             </Button>
-            <Button level="secondary" size="touch" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
+            <Button level="secondary" size="touch" className="flex-1 md:flex-none" disabled={Boolean(advancingBatch) || advancing || pendingDecisions.length > 0} onClick={() => handleAdvancePeriod(7)}>
               {advancingBatch === 7 ? `${advanceProgress?.current || 0}/7…` : '+1 semana'}
             </Button>
           </div>

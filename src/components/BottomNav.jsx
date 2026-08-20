@@ -73,8 +73,13 @@ function BottomNav({ hidden = false }) {
         aria-label="Navegação rápida"
         aria-hidden={hidden}
         inert={hidden ? '' : undefined}
-        className={`fixed inset-x-0 bottom-0 z-50 border-t border-primary/15 bg-background/96 pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_hsl(230_35%_2%/0.4)] transition-transform duration-150 md:hidden ${hidden ? 'translate-y-full' : 'translate-y-0'}`}
+        className={`fixed inset-x-0 bottom-0 z-[var(--z-bottom-nav)] border-t border-primary/15 bg-background/98 backdrop-blur-sm pb-[env(safe-area-inset-bottom)] shadow-[0_-8px_24px_hsl(230_35%_2%/0.4)] transition-transform duration-150 md:hidden ${hidden ? 'translate-y-full' : 'translate-y-0'}`}
       >
+        {/* M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte A/3): separação
+            leve entre o conteúdo da página e a barra — não é a opacidade que
+            esconde o conteúdo (isso já é bg-background/98), só reforça a
+            transição visual sem virar um bloco pesado. */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-x-0 -top-3 h-3 bg-gradient-to-t from-background/70 to-transparent" />
         <div className="mx-auto grid h-[var(--pl-bottom-nav-h)] max-w-lg grid-cols-5 items-center px-1.5">
           {tabGroups.map((group) => (
             <NavLink

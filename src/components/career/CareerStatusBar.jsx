@@ -43,7 +43,13 @@ export default function CareerStatusBar({ profile, onPartnerClick }) {
         </div>
         <div className="flex-1 min-w-0 text-left">
           <p className="text-xs font-semibold truncate">{partner ? partner.name : 'Sem parceiro'}</p>
-          <p className="text-[10px] text-muted-foreground">
+          {/* M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte 9): esta
+              linha ficava numa coluna espremida (os irmãos do mesmo flex row
+              — data, badge de lado, avatar, cadeado/chevron — são todos
+              shrink-0, então em 360px sobra pouco espaço aqui) e quebrava
+              sem proteção nenhuma. truncate é o degrade correto para
+              informação já secundária, não uma reestruturação em grid. */}
+          <p className="text-[10px] text-muted-foreground truncate">
             {partner ? `OVR ${overallRating(partner)} · Química ${profile?.partner_chemistry || 50}` : 'Toque para escolher'}
           </p>
         </div>

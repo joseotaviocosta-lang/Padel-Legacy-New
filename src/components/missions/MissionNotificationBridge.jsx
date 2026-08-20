@@ -80,6 +80,19 @@ export default function MissionNotificationBridge() {
       const description = validateMissionReward(mission).hasReward && parts.length
         ? `${parts.join(' · ')}. Recompensa recebida.`
         : 'Etapa concluída.';
+      // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+      // Parte E): a primeira partida oficial é um marco, não o fim do
+      // tutorial — reaproveita este mesmo toast genérico (nenhum banner
+      // novo, Parte M) só trocando a cópia e o CTA para a próxima etapa
+      // (comissão técnica), em vez do texto padrão "Tutorial: {título}".
+      if (tutorial && mission.id === 'tutorial-first-match') {
+        toast({
+          title: 'Primeira partida oficial concluída',
+          description: 'Você aprendeu o ciclo básico: preparar, inscrever-se e competir.',
+          action: <ToastAction onClick={() => navigate('/staff')}>Continuar conhecendo a carreira</ToastAction>,
+        });
+        return;
+      }
       toast({
         title: tutorial ? `Tutorial: ${mission.title}` : `Missão concluída: ${mission.title}`,
         description,

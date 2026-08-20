@@ -875,7 +875,31 @@ export function getCoachSpecializationMatch(coach, profile) {
 
 const COACH_CAREER_LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
-function coachSalary(coach) { return Math.max(1, Number(coach?.market_salary ?? coach?.monthly_cost ?? coach?.monthly_salary) || 1); }
+// Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+// Parte H/I): fonte única do salário mensal real de um treinador. Antes
+// existiam 3 fórmulas divergentes (esta, a de hirePrimaryCoach — sem o
+// fallback monthly_salary — e um Stat inline em CoachDetail.jsx — sem
+// nenhum fallback) e um piso Math.max(1, ...) que mascarava NaN como "1
+// moeda" em vez de expor o dado quebrado. Nunca cai silenciosamente em 1:
+// resolve pelo próprio objeto, senão pela fonte canônica (COACHES_DATA,
+// por nome), senão devolve null — nunca um número inventado.
+export function resolveCoachCanonicalSalary(coach) {
+  const direct = Number(coach?.market_salary ?? coach?.monthly_cost ?? coach?.monthly_salary);
+  if (Number.isFinite(direct) && direct > 0) return direct;
+  const normalized = String(coach?.name || '').trim().toLocaleLowerCase('pt-BR');
+  const catalogMatch = normalized ? COACHES_DATA.find((entry) => String(entry.name || '').trim().toLocaleLowerCase('pt-BR') === normalized) : null;
+  const fallback = Number(catalogMatch?.monthly_cost);
+  return Number.isFinite(fallback) && fallback > 0 ? fallback : null;
+}
+
+function coachSalary(coach) {
+  const resolved = resolveCoachCanonicalSalary(coach);
+  if (resolved == null) {
+    console.error('[coaches] Salário não encontrado no catálogo para o treinador.', { id: coach?.id, name: coach?.name });
+    return 0;
+  }
+  return resolved;
+}
 function coachSigningCost(coach) { return Math.max(0, Number(coach?.market_signing_bonus ?? coach?.sign_on_bonus) || 0); }
 
 /** Fonte única de verdade para descoberta e contratação. */

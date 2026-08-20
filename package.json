@@ -201,7 +201,11 @@
     "test:tournament-date-continuity-hotfix": "node scripts/test-tournament-date-continuity-hotfix.mjs",
     "test:tutorial-first-official-match": "node scripts/test-tutorial-first-official-match.mjs",
     "test:tutorial-complete-flow": "node scripts/test-tutorial-complete-flow.mjs",
-    "test:missions-achievements-unification": "node scripts/test-missions-achievements-unification.mjs"
+    "test:missions-achievements-unification": "node scripts/test-missions-achievements-unification.mjs",
+    "test:tutorial-expanded-flow": "node scripts/test-tutorial-expanded-flow.mjs",
+    "test:tutorial-visit-auto-completion": "node scripts/test-tutorial-visit-auto-completion.mjs",
+    "test:coach-card-effects": "node scripts/test-coach-card-effects.mjs",
+    "test:coach-salary-consistency": "node scripts/test-coach-salary-consistency.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

@@ -38,7 +38,25 @@
 // conclui contratando um treinador de verdade (uma carreira nova deixou
 // de receber um treinador contratado silenciosamente). Id e objectiveType
 // não mudaram, mesmo raciocínio de v10: nenhuma migração necessária.
-export const TUTORIAL_VERSION = 11;
+//
+// v12 (Tutorial 4.1, docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+// Partes A-E): a primeira partida oficial ensinava só o loop básico
+// (criar atleta, dupla, treinador, treino, calendário, competir) e
+// terminava o tutorial ali — sistemas inteiros (comissão técnica,
+// economia, patrocínios, loja, equipamentos, atletas do circuito,
+// ranking, mundo do padel, notícias, imprensa, central de notificações)
+// nunca eram apresentados. 12 novas etapas VISIT (auto-completam ao
+// visitar a rota real, mesmo mecanismo de v10 — ver OnboardingGuide.jsx)
+// são inseridas entre first-match e autonomy. Nenhuma etapa existente
+// mudou de id/objectiveType/mecanismo — só houve inserção, então uma
+// carreira em andamento continua resolvendo corretamente pelo mesmo
+// raciocínio de v9 (busca por conteúdo da lista atual, não por posição).
+// Saves que já tinham completado autonomy sob a definição de 15 etapas
+// reabrem automaticamente (decisão deliberada — ver Parte 1 do plano):
+// completedStepIds não inclui os 12 ids novos, então
+// reconcileTutorialProgress recalcula status='in_progress' ao vivo, sem
+// revogar nenhuma recompensa nem apagar o completedAt histórico.
+export const TUTORIAL_VERSION = 12;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,
@@ -181,10 +199,90 @@ export const TUTORIAL_STEPS = [
     kind: 'EVENT',
   }),
 
+  // ── Fase G — Construa sua equipe (Tutorial 4.1, Parte D: comissão
+  // técnica + auxiliares numa página só — /staff não tem sub-view que
+  // distinga um do outro, então uma visita ensina os dois) ─────────────
+  step('staff-known', 'visit_staff', 'Conheça a Comissão Técnica', '/staff', 'Comissão técnica', 'confirm_understanding', {
+    actionLabel: 'Ver comissão',
+    explanation: 'A comissão reúne especialistas de apoio (físico, fisioterapia, nutrição, psicologia, análise) que trabalham sob a liderança do treinador principal, cada um com custo mensal próprio.',
+    whyItMatters: 'Contratar a comissão certa acelera a evolução do atleta — mas nada aqui é obrigatório agora.',
+    kind: 'VISIT',
+  }),
+
+  // ── Fase H — Aprenda a ganhar e gastar dinheiro ──────────────────────
+  step('economy-known', 'visit_economy', 'Conheça sua economia', '/game/economy?view=dashboard', 'Economia e patrimônio', 'confirm_understanding', {
+    actionLabel: 'Ver economia',
+    explanation: 'Veja saldo, receitas, despesas e salários da carreira num só painel.',
+    whyItMatters: 'Entender para onde o dinheiro vai ajuda a planejar contratações e investimentos.',
+    kind: 'VISIT',
+  }),
+  step('sponsors-known', 'visit_sponsors', 'Conheça os patrocínios', '/game/economy?view=sponsors', 'Economia e patrimônio', 'confirm_understanding', {
+    actionLabel: 'Ver patrocínios',
+    explanation: 'Patrocínios são uma das principais formas de financiar sua carreira — marcas oferecem contratos conforme sua evolução, exposição e resultados.',
+    whyItMatters: 'Nem sempre existe um contrato adequado agora; a etapa é só conhecer onde eles aparecem.',
+    kind: 'VISIT',
+  }),
+  step('opportunities-known', 'visit_opportunities', 'Conheça outras oportunidades', '/game/economy?view=opportunities', 'Economia e patrimônio', 'confirm_understanding', {
+    actionLabel: 'Ver oportunidades',
+    explanation: 'Além de premiação de torneio e patrocínios, oportunidades pontuais também podem aparecer aqui.',
+    whyItMatters: 'Conhecer todas as fontes de receita reais evita depender só das partidas.',
+    kind: 'VISIT',
+  }),
+  step('shop-known', 'visit_shop', 'Conheça a loja', '/game/shop', 'Economia e patrimônio', 'confirm_understanding', {
+    actionLabel: 'Ver loja',
+    explanation: 'A loja vende itens e equipamentos para o atleta — nada aqui precisa ser comprado agora.',
+    whyItMatters: 'Saber onde comprar evita procurar às pressas antes de um torneio importante.',
+    kind: 'VISIT',
+  }),
+  step('equipment-known', 'visit_equipment', 'Entenda equipamentos e bônus', '/game/inventory', 'Economia e patrimônio', 'confirm_understanding', {
+    actionLabel: 'Ver equipamentos',
+    explanation: 'Equipamentos não são só cosméticos — itens equipados podem dar bônus reais de atributo.',
+    whyItMatters: 'Equipar o item certo pode valer tanto quanto um treino bem escolhido.',
+    kind: 'VISIT',
+  }),
+
+  // ── Fase I — Conheça o circuito ───────────────────────────────────────
+  step('athletes-known', 'visit_athletes', 'Conheça os atletas do circuito', '/athletes', 'Conheça o circuito', 'confirm_understanding', {
+    actionLabel: 'Ver atletas',
+    explanation: 'Consulte quem está no circuito, ranking, estilo, características e evolução dos outros atletas.',
+    whyItMatters: 'Conhecer o circuito ajuda a entender contra quem (e por quê) você está competindo.',
+    kind: 'VISIT',
+  }),
+  step('ranking-known', 'visit_ranking_page', 'Conheça o ranking', '/ranking', 'Conheça o circuito', 'confirm_understanding', {
+    actionLabel: 'Ver ranking',
+    explanation: 'Veja sua posição atual, pontos e evolução — e o que falta para subir no circuito.',
+    whyItMatters: 'O ranking é o objetivo competitivo de longo prazo da carreira.',
+    kind: 'VISIT',
+  }),
+  step('world-known', 'visit_world', 'Conheça o mundo do padel', '/world', 'Conheça o circuito', 'confirm_understanding', {
+    actionLabel: 'Ver circuito',
+    explanation: 'O mundo do padel continua em movimento — bulletins, rivalidades e o pulso geral do circuito aparecem aqui.',
+    whyItMatters: 'O circuito evolui mesmo quando você não está jogando.',
+    kind: 'VISIT',
+  }),
+  step('news-known', 'visit_news', 'Conheça as notícias', '/journal', 'Conheça o circuito', 'confirm_understanding', {
+    actionLabel: 'Ver notícias',
+    explanation: 'O jornal do circuito mostra manchetes, campeões recentes, rivalidades e resultados relevantes.',
+    whyItMatters: 'O universo do jogo continua evoluindo independentemente de você.',
+    kind: 'VISIT',
+  }),
+  step('press-known', 'visit_press_room', 'Conheça a imprensa', '/press', 'Conheça o circuito', 'confirm_understanding', {
+    actionLabel: 'Ver imprensa',
+    explanation: 'Entrevistas e repercussão na mídia acompanham sua evolução e resultados no circuito.',
+    whyItMatters: 'Sua relação com a imprensa é parte da sua carreira, não só um extra.',
+    kind: 'VISIT',
+  }),
+  step('notifications-known', 'visit_notifications', 'Conheça a central de notificações', '/communications', 'Conheça o circuito', 'confirm_understanding', {
+    actionLabel: 'Ver notificações',
+    explanation: 'O sino é a central operacional da carreira: decisões importantes, propostas, partidas e relatórios aparecem ali.',
+    whyItMatters: 'Vale conferir o sino regularmente — sem precisar abrir cada notificação agora.',
+    kind: 'VISIT',
+  }),
+
   step('autonomy', 'finish_tutorial', 'Comece a carreira livre', '/game', 'Gestão, história e legado', 'confirm_understanding', {
-    actionLabel: 'Concluir tutorial',
-    explanation: 'Volte ao painel, veja suas recomendações e confirme que está pronto para seguir no seu ritmo. Loja, comissão completa, imprensa, mercado, ranking, mundo vivo e o resto ficam disponíveis a qualquer momento pelo Guia flutuante.',
-    whyItMatters: 'Você já conhece o essencial e poderá consultar o Guia sempre que precisar.',
+    actionLabel: 'Começar carreira livre',
+    explanation: 'Você já conhece os principais sistemas do Padel Legacy. A partir daqui, as decisões são suas: treine, monte sua equipe, encontre parceiros, conquiste patrocinadores e suba no circuito. O Guia flutuante continua disponível para ajuda contextual.',
+    whyItMatters: 'Você já conheceu o essencial e o avançado — a partir daqui, suas Conquistas acompanham a evolução da carreira.',
     reward: { xp: 100, coins: 200 },
     // Único confirm_understanding que NÃO auto-completa por visita: fecha o
     // onboarding principal de propósito, compartilha rota (/game) com

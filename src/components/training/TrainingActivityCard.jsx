@@ -113,7 +113,11 @@ export default function TrainingActivityCard({
       details={details}
       tone={recommended ? 'premium' : 'default'}
       primaryAction={
-        <Button level="primary" size="touch" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="w-full">
+        // M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte 12): o card já
+        // identifica a atividade inteira — não precisa de um CTA de largura
+        // total como se fosse uma landing page. Largura própria, alinhado à
+        // direita da área de ação (CompactActionCard já organiza o layout).
+        <Button level="primary" size="touch" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="ml-auto min-w-[7.5rem]">
           {busy ? (
             <><div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> Treinando...</>
           ) : disabledReason ? (

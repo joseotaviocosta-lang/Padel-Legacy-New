@@ -75,8 +75,16 @@ try {
   // por visitar /coaches sozinho) — atualizado aqui de propósito, mesma
   // propriedade real (nenhum id perdido, só reclassificado).
   const byKind = (kind) => TUTORIAL_STEPS.filter((step) => step.kind === kind).map((step) => step.id);
-  gate('VISIT = as 5 etapas de visita pura (coaches-known virou DECISION)', byKind('VISIT').join(',') === [
+  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+  // Parte B): 12 novas etapas de descoberta (comissão, economia,
+  // patrocínios, oportunidades, loja, equipamentos, atletas, ranking,
+  // mundo, notícias, imprensa, notificações) — todas VISIT, mesmo
+  // mecanismo de auto-complete, nenhuma mudou de kind. Atualizado aqui de
+  // propósito, mesma propriedade real (nenhum id perdido, só expandido).
+  gate('VISIT = as 17 etapas de visita pura (5 originais + 12 novas de descoberta)', byKind('VISIT').join(',') === [
     'career-created', 'appearance-known', 'profile-reviewed', 'offers-reviewed', 'calendar-known',
+    'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known', 'shop-known', 'equipment-known',
+    'athletes-known', 'ranking-known', 'world-known', 'news-known', 'press-known', 'notifications-known',
   ].join(','));
   gate('ACTION = as 4 etapas de formulário/escolha salva', byKind('ACTION').join(',') === [
     'athlete-named', 'side-selected', 'difficulty-selected', 'style-selected',
@@ -146,7 +154,11 @@ try {
   // ── 7) Branch de 3 vias em Missions.jsx ──────────────────────────────────
   const missionsSource = readFileSync('src/pages/Missions.jsx', 'utf8');
   gate('Missions.jsx distingue VISIT (sem botão Entendi) de outras confirm_understanding', missionsSource.includes("tutorialStep?.kind !== 'VISIT'") && missionsSource.includes("tutorialStep?.kind === 'VISIT'"));
-  gate('Missions.jsx reusa isTutorialRouteMatch em vez da comparação improvisada antiga', missionsSource.includes('isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname)'));
+  // Tutorial 4.1 (Parte L): isTutorialRouteMatch ganhou um 3º argumento
+  // (location.search) para diferenciar etapas que dividem a mesma rota
+  // base por query string — mesma função reaproveitada, só o call site
+  // passa mais contexto agora.
+  gate('Missions.jsx reusa isTutorialRouteMatch em vez da comparação improvisada antiga', missionsSource.includes('isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname, location.search)'));
 
   console.log(`\n${gates} gates executados, todos PASS — Onboarding Flow 3.1 (auto-complete de etapas VISIT), TUTORIAL_VERSION v${TUTORIAL_VERSION}.`);
 } finally {

@@ -397,6 +397,25 @@ function Missions() {
     const current = filtered;
     return { total: current.length, completed: current.filter(m => progress[m.id]?.claimed).length };
   }, [filtered, progress]);
+  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+  // Parte D): com 27 etapas, "Tutorial 16/27" sozinho não deixa claro que
+  // ainda existe conteúdo depois da primeira partida — agrupa por capítulo
+  // (mesma ordem de tutorial_order, já vem ordenado em tutorialMissions)
+  // para o jogador ver a estrutura inteira, não só a etapa atual.
+  const chapterSummary = useMemo(() => {
+    const order = [];
+    const byChapter = new Map();
+    for (const mission of tutorialMissions) {
+      const chapter = mission.tutorial_chapter || 'Outros';
+      if (!byChapter.has(chapter)) { byChapter.set(chapter, []); order.push(chapter); }
+      byChapter.get(chapter).push(mission);
+    }
+    return order.map(chapter => {
+      const items = byChapter.get(chapter);
+      const completed = items.filter(m => progress[m.id]?.claimed).length;
+      return { chapter, completed, total: items.length, isCurrent: chapter === currentChapter };
+    });
+  }, [tutorialMissions, progress, currentChapter]);
   // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.6): calcula status/locked
   // uma vez por missão (mesma lógica de antes, `missionStatus`) e separa em
   // ativas (renderizadas como card completo, como sempre) vs. concluídas
@@ -475,6 +494,20 @@ function Missions() {
       {actionError && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{actionError}</p>}
       {anticipatedCompleted.length > 0 && <p role="status" className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">Ação antecipada reconhecida: {anticipatedCompleted.map(step => step.title).join(', ')}. Você não precisará repeti-la; conclua apenas o passo atual.</p>}
 
+      {chapterSummary.length > 1 && (
+        <div className="rounded-2xl border border-border/60 divide-y divide-border/40 overflow-hidden">
+          {chapterSummary.map(({ chapter, completed, total, isCurrent }) => (
+            <CompactListItem
+              key={chapter}
+              leading={completed === total ? <Check className="h-4 w-4 text-emerald-400" /> : <Clock className="h-4 w-4 text-muted-foreground" />}
+              title={chapter}
+              highlighted={isCurrent}
+              trailing={<span className={`text-xs font-black tabular-nums ${completed === total ? 'text-emerald-400' : 'text-muted-foreground'}`}>{completed}/{total}</span>}
+            />
+          ))}
+        </div>
+      )}
+
       {nextTutorial && !inlineAction ? <div className="glass rounded-2xl border border-primary/40 p-5 bg-primary/5">
         <div className="flex items-start gap-4">
           <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center"><GraduationCap className="h-6 w-6 text-primary" /></div>
@@ -486,9 +519,9 @@ function Missions() {
               // Tutorial 4.0: nunca usa tutorial_route/action_label estáticos
               // (route='/matches') para esta etapa — sempre o destino real.
               <button type="button" onClick={() => navigate((firstMatchAction || { to: '/tournaments' }).to)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{(firstMatchAction || { cta: 'Inscrever-se em um torneio' }).cta} <ArrowRight className="h-4 w-4" /></button>
-            ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind !== 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
+            ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind !== 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname, location.search) ? (
               <button type="button" disabled={savingChoice} onClick={confirmUnderstanding} className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Confirmando...' : 'Entendi, continuar'}</button>
-            ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind === 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname) ? (
+            ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind === 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname, location.search) ? (
               <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
             ) : nextTutorial.tutorial_route ? (
               <button type="button" onClick={() => navigate(nextTutorial.tutorial_route)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>

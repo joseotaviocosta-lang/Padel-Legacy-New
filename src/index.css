@@ -45,6 +45,11 @@
     --sidebar-ring: 84 81% 52%;
     --z-header: 40;
     --z-floating: 50;
+    /* M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte A): a bottom nav
+       usava um z-50 do Tailwind, fora desta escala — empatado com
+       --z-floating (FloatingUtilityRail/Guia), dependendo só da ordem no
+       DOM para ficar por cima. Token próprio explícito na escala. */
+    --z-bottom-nav: 55;
     --z-dropdown: 60;
     --z-modal: 100;
     --z-toast: 120;
@@ -80,6 +85,18 @@
     --game-hud-icon-size: 0.95rem;
     --game-hud-value-size: 0.8125rem;
     --game-hud-label-size: 0.6875rem;
+
+    /* M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte 30): densidade de
+       controles mobile — a escala de tamanhos de Button já ficava dentro da
+       faixa pedida (h-10/h-11/h-12 ≈ 40/44/48px); estes tokens só formalizam
+       essa faixa para uso fora do componente Button (ex.: grupos segmentados
+       feitos à mão, como o de avançar dia no calendário), sem duplicar
+       --mobile-card-padding/--mobile-section-gap/--mobile-game-gap/
+       --game-hud-gap, que já cobrem espaçamento/gap e continuam sendo a
+       fonte única para isso.
+       control-h: nível compact/default. control-h-primary: nível primary. */
+    --pl-mobile-control-h: 2.75rem;
+    --pl-mobile-control-h-primary: 3rem;
   }
 
   .dark {

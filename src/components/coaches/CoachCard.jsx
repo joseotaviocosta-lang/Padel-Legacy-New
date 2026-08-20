@@ -1,6 +1,6 @@
 import React from 'react';
 import { ArrowRight, Check, Coins, LockKeyhole, MapPin, Sparkles, Star, WalletCards } from 'lucide-react';
-import { COACH_SPECIALTY_INFO, COACH_TIERS } from '@/lib/coaches';
+import { COACH_TIERS, getCoachImpactSummary } from '@/lib/coaches';
 import { Button } from '@/components/design-system';
 
 function Badge({ children, tone = 'brand' }) {
@@ -12,12 +12,17 @@ function Badge({ children, tone = 'brand' }) {
   return <span className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${tones[tone]}`}>{children}</span>;
 }
 
-export default function CoachCard({ evaluation, onDetails, onHire }) {
+export default function CoachCard({ evaluation, profile, onDetails, onHire }) {
   const coach = evaluation?.coach;
   if (!coach) return null;
   const tier = COACH_TIERS[coach.tier] || COACH_TIERS.regional;
-  const specialty = COACH_SPECIALTY_INFO[coach.specialty];
   const available = evaluation.availability.available;
+  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+  // Parte F/G): antes o card mostrava COACH_SPECIALTY_INFO.benefits — uma
+  // lista editorial estática ("mais estratégia") independente da engine,
+  // enquanto o impacto numérico real só aparecia em "Ver detalhes"
+  // (CoachDetail.jsx, mesma função). Fonte única agora: getCoachImpactSummary.
+  const impact = getCoachImpactSummary(coach, profile);
 
   return (
     <article className={`pl-roster-row border-b border-border/45 p-3 transition last:border-b-0 ${available ? 'hover:bg-secondary/20' : 'opacity-70'}`}>
@@ -34,7 +39,7 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
           <p className="mt-0.5 flex items-center gap-1 text-[10px] text-muted-foreground">
             <MapPin className="h-3 w-3" /> {coach.city || coach.nationality || 'Circuito mundial'}
           </p>
-          <p className="mt-1 text-[10px] font-bold text-foreground/80">{specialty?.label || coach.specialty} · {tier.label}</p>
+          <p className="mt-1 text-[10px] font-bold text-foreground/80">{impact.title || coach.specialty} · {tier.label}</p>
         </div>
         <div className="px-1.5 py-1 text-center">
           <p className="text-[8px] font-bold uppercase text-muted-foreground">OVR</p>
@@ -44,26 +49,31 @@ export default function CoachCard({ evaluation, onDetails, onHire }) {
 
       <p className="mt-2 line-clamp-1 text-[11px] leading-relaxed text-muted-foreground">{evaluation.recommendationReason}</p>
 
-      {/* Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 4): os
-          benefícios reais da especialidade (mesmo texto já usado em
-          getCoachImpactSummary, dentro de CoachDetail.jsx) agora aparecem
-          direto no card — decidir não deve exigir abrir "Ver detalhes".
-          Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): reduzido de 3
-          para 2 linhas — a lista completa continua em "Ver detalhes". */}
-      {specialty?.benefits?.length > 0 && (
-        <ul className="mt-2 hidden space-y-0.5 sm:block">
-          {specialty.benefits.slice(0, 2).map((benefit) => (
-            <li key={benefit} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-              <Check className="h-3 w-3 shrink-0 text-emerald-400" /> {benefit}
-            </li>
-          ))}
-        </ul>
+      {/* Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+          Parte F/G): impacto REAL (não mais o texto editorial genérico) —
+          tudo que muda a decisão de contratação precisa estar aqui, "Ver
+          detalhes" é só informação secundária. Mesma função que
+          CoachDetail.jsx usa, então card e modal nunca mais divergem. */}
+      {impact.highlights?.length > 0 && (
+        <div className="mt-2">
+          <p className="text-[8px] font-black uppercase tracking-wide text-primary">Impacto</p>
+          <ul className="mt-0.5 space-y-0.5">
+            {impact.highlights.slice(0, 3).map((highlight) => (
+              <li key={highlight} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
+                <Check className="h-3 w-3 shrink-0 text-emerald-400" /> {highlight}
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
 
       {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): os 2 blocos com
           padding próprio viraram uma linha compacta — mesmos valores. */}
       <div className="mt-3 flex items-center gap-x-4 gap-y-1 flex-wrap text-xs">
         <span className="flex items-center gap-1.5 font-bold"><Coins className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.salary.toLocaleString('pt-BR')} <span className="text-muted-foreground font-semibold">moedas/mês</span></span>
+        {evaluation.signingCost > 0 && (
+          <span className="flex items-center gap-1.5 font-bold text-muted-foreground">{evaluation.signingCost.toLocaleString('pt-BR')} <span className="font-semibold">assinatura</span></span>
+        )}
         <span className="flex items-center gap-1.5 font-bold"><Star className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.affinity}/100 <span className="text-muted-foreground font-semibold">afinidade</span></span>
       </div>
 

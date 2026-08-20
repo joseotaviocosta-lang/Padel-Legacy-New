@@ -226,7 +226,7 @@ export default function OnboardingGuide() {
   const recommendation = useMemo(() => getCareerRecommendations(profile, facts)[0], [profile, facts]);
   const isMissionCenter = location.pathname === '/game/missions';
   const stepPath = step?.route?.split('?')[0];
-  const isOnStepPage = Boolean(stepPath && isTutorialRouteMatch(step.route, location.pathname));
+  const isOnStepPage = Boolean(stepPath && isTutorialRouteMatch(step.route, location.pathname, location.search));
 
   // Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 1): etapas
   // `kind: 'VISIT'` concluem sozinhas ao visitar a rota correta — o

@@ -321,6 +321,13 @@ export default function Tournaments() {
   return (
     <Page width="wide">
       <PageContent>
+        {/* M4.1.2 (docs/MOBILE_M4_1_2_VISUAL_POLISH.md, Parte 7/19): os 3
+            hudItems tinham value/label trocados (o nome do torneio ia no
+            label, o contador de dias no value — lia "9d Los Angeles Cup")
+            e 2 deles usavam um label genérico redundante com o próprio
+            ícone ("Inscrito status", "Silver nível"). GameHud já renderiza
+            icon → value → label corretamente (ambos whitespace-nowrap) —
+            o bug era de conteúdo, não do componente. */}
         <PremiumPageHeader
           dense
           eyebrow="Padel Legacy World Tour"
@@ -331,9 +338,9 @@ export default function Tournaments() {
           breadcrumb={['Competições', 'Torneios']}
           hudLabel="Próximo evento"
           hudItems={nextTournament ? [
-            { label: nextTournament.name, value: daysBetween(careerDate, nextTournament.start_date) === 0 ? 'Hoje' : `${daysBetween(careerDate, nextTournament.start_date)}d`, icon: Trophy, tone: 'premium' },
-            { label: 'status', value: registeredTournaments.has(nextTournament.id) ? 'Inscrito' : 'Disponível', icon: CheckCircle, tone: registeredTournaments.has(nextTournament.id) ? 'success' : 'warning' },
-            { label: 'nível', value: nextTournament.tier, icon: Award },
+            { value: `${nextTournament.name} · ${daysBetween(careerDate, nextTournament.start_date) === 0 ? 'Hoje' : `${daysBetween(careerDate, nextTournament.start_date)}d`}`, icon: Trophy, tone: 'premium' },
+            { value: registeredTournaments.has(nextTournament.id) ? 'Inscrito' : 'Disponível', icon: CheckCircle, tone: registeredTournaments.has(nextTournament.id) ? 'success' : 'warning' },
+            { value: nextTournament.tier, icon: Award },
           ] : [{ label: 'agenda', value: 'Livre', icon: Calendar, tone: 'info' }]}
           action={<div className="flex items-center gap-2">{nextTournament && <Button level="primary" size="touch" onClick={() => setDetailsTournament(nextTournament)}>Abrir evento</Button>}<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." /></div>}
         />

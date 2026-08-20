@@ -79,7 +79,11 @@ try {
   gate('Coaches.jsx importa buildCoachMarket', page.includes('buildCoachMarket'));
   gate('Coaches.jsx ainda importa buildCoachDiscovery (não substituído por algo paralelo)', page.includes('buildCoachDiscovery'));
   gate('Nenhuma pontuação/elegibilidade nova foi inventada em Coaches.jsx', !/customRecommendation|newScoring|ownEligibility/i.test(page));
-  gate('4 StatCards grandes deram lugar a uma linha compacta de indicadores', !page.includes('<StatCard') && page.includes('Nenhum treinador'));
+  // Achado pré-existente, não relacionado ao Tutorial 4.1: o texto do
+  // empty-state mudou para "Nenhum profissional neste recorte" numa fase
+  // de compactação mobile anterior (M4) sem atualizar este teste — mesma
+  // propriedade real verificada (StatCard grande removido), string corrigida.
+  gate('4 StatCards grandes deram lugar a uma linha compacta de indicadores', !page.includes('<StatCard') && page.includes('Nenhum profissional neste recorte'));
   gate('Estado sem treinador não finge confiança/afinidade existentes', page.includes("hiredCoach ? `${trust}%` : '—'") && page.includes("hiredCoach ? `${affinityCurrent}%` : '—'"));
   gate('Card mostra "Recomendados para você" / "Outras opções disponíveis" (Parte 15)', page.includes('Recomendados para você') && page.includes('Outras opções disponíveis'));
   gate('Bloqueados continuam fora da lista principal por padrão (Parte 16, filtro padrão "available")', page.includes("useState('available')"));

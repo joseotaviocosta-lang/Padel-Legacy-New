@@ -24,9 +24,23 @@ export function resolveTutorialMission(step, missions = []) {
     || null;
 }
 
-export function isTutorialRouteMatch(stepRoute, pathname) {
-  const expected = normalizePath(stepRoute);
+// Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+// Parte L): algumas etapas de descoberta vivem na MESMA rota, diferenciadas
+// só pela query string (ex.: /game/economy?view=sponsors vs ?view=dashboard).
+// `search` é opcional (undefined) para não quebrar nenhum chamador antigo —
+// e só é exigido quando a própria `stepRoute` declara parâmetros.
+export function isTutorialRouteMatch(stepRoute, pathname, search = '') {
+  const [routePath, routeQuery] = String(stepRoute || '/').split('?');
+  const expected = normalizePath(routePath);
   const current = normalizePath(pathname);
-  if (expected === current) return true;
-  return ['/clubs', '/athletes', '/matches'].some(prefix => expected === prefix && current.startsWith(`${prefix}/`));
+  const pathMatches = expected === current
+    || ['/clubs', '/athletes', '/matches'].some(prefix => expected === prefix && current.startsWith(`${prefix}/`));
+  if (!pathMatches) return false;
+  if (!routeQuery) return true;
+  const expectedParams = new URLSearchParams(routeQuery);
+  const currentParams = new URLSearchParams(search || '');
+  let allMatch = true;
+  expectedParams.forEach((value, key) => { if (currentParams.get(key) !== value) allMatch = false; });
+  if (!allMatch) return false;
+  return true;
 }

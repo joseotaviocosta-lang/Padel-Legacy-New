@@ -40,11 +40,11 @@ try {
   const { CareerManager } = await server.ssrLoadModule('/src/careers/CareerManager.js');
   const { activeCareerAdapter } = await server.ssrLoadModule('/src/gameplay/services/runtime.js');
   const { localGame } = await server.ssrLoadModule('/src/api/localGameClient.js');
-  const { getCurrentTutorialStep, getTutorialProgress } = await server.ssrLoadModule('/src/onboarding/tutorialState.js');
+  const { getCurrentTutorialStep } = await server.ssrLoadModule('/src/onboarding/tutorialState.js');
   const { reconcilePersistedTutorial } = await server.ssrLoadModule('/src/onboarding/tutorialReconciliation.js');
   const { completeTutorialStep } = await server.ssrLoadModule('/src/onboarding/tutorialEngine.js');
   const { ensureTutorialMissionCatalog, incrementMissionProgress } = await server.ssrLoadModule('/src/lib/padel.js');
-  const { hirePrimaryCoach } = await server.ssrLoadModule('/src/game-core/coachLifecycle.js');
+  const { hirePrimaryCoach, ensureCoachCatalog } = await server.ssrLoadModule('/src/game-core/coachLifecycle.js');
 
   const fakeStorage = createMemoryStorage();
   const careerManager = new CareerManager(new CareerRepository(new GameStorage(fakeStorage)));
@@ -109,7 +109,11 @@ try {
   state = (await reconcile(currentFacts)).state;
   gate('Parceiro escolhido (evento real) → coaches-known', getCurrentTutorialStep(state)?.id === 'coaches-known');
 
-  const [coach] = await localGame.entities.Coach.list('-reputation', 1);
+  // Tutorial 4.1 (Parte H): o Coach: [] seed legado foi removido de
+  // localSeed.js (raiz do bug de salário) — ensureCoachCatalog() é agora a
+  // única forma real de ter treinadores disponíveis, igual à Coaches.jsx.
+  const catalog = await ensureCoachCatalog();
+  const coach = catalog.find((c) => c.tier === 'iniciante');
   gate('Catálogo de treinadores tem ao menos 1 elegível para o teste', Boolean(coach));
   profile = await hirePrimaryCoach(profile, coach, 12);
   state = (await reconcile(currentFacts)).state;
@@ -146,21 +150,17 @@ try {
   gate('BUG REPRODUZIDO E CORRIGIDO: partida de TREINO não conclui first-match', getCurrentTutorialStep(state)?.id === 'first-match');
   gate('BUG REPRODUZIDO E CORRIGIDO: partida de TREINO não conclui o tutorial (ainda in_progress)', state.status === 'in_progress');
 
-  // Partida OFICIAL de torneio — agora sim conclui.
+  // Partida OFICIAL de torneio — agora sim conclui a Fase 1 (só a Fase 1:
+  // Tutorial 4.1 estendeu o tutorial com 12 novas etapas de descoberta
+  // depois da primeira partida — ver test-tutorial-expanded-flow.mjs para
+  // a cobertura completa até autonomy/carreira livre).
   currentFacts.matches.push({ id: 'official-match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true });
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile(currentFacts)).state;
-  gate('Partida OFICIAL de torneio conclui first-match → autonomy', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Partida OFICIAL de torneio conclui first-match → staff-known (Fase 1 concluída)', getCurrentTutorialStep(state)?.id === 'staff-known');
+  gate('GATE CENTRAL (Tutorial 4.1): partida oficial NÃO conclui o tutorial inteiro', state.status === 'in_progress');
 
-  // ═══════════════════════════════════════════════════════════════════════
-  // FASE 5 — Carreira livre
-  // ═══════════════════════════════════════════════════════════════════════
-  console.log('\n--- Fase 5: carreira livre ---');
-  state = await confirmStep('autonomy');
-  gate('Tutorial concluído de ponta a ponta (status completed)', state.status === 'completed');
-  gate('getTutorialProgress reporta 100%', getTutorialProgress(state).percent === 100);
-
-  console.log(`\n${gates} gates executados, todos PASS — Tutorial 4.0 fluxo completo (identidade → dupla → treinador → treino → inscrição → torneio → partida oficial → concluído; partida de treino não conclui).`);
+  console.log(`\n${gates} gates executados, todos PASS — Tutorial fluxo (identidade → dupla → treinador → treino → inscrição → torneio → partida oficial conclui a Fase 1; partida de treino não conclui).`);
 } finally {
   await server.close();
 }

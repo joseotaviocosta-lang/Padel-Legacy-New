@@ -153,10 +153,16 @@ export const LOCAL_SEED = {
     { id: 'ranking-001', team_key: 'mateo-tomas', player1_name: 'Mateo Ruiz', player2_name: 'Tomás Vidal', ranking_points: 2240, ranking_position: 1, wins: 18, losses: 3 },
     { id: 'ranking-002', team_key: 'lucas-rafael', player1_name: 'Lucas Ferraz', player2_name: 'Rafael Martins', ranking_points: 1810, ranking_position: 2, wins: 14, losses: 5 },
   ],
-  Coach: [
-    { id: 'coach-001', name: 'Carlos Mendes', country: 'Brasil', specialty: 'Técnica', reputation: 65, monthly_salary: 500, philosophy: 'Equilíbrio e consistência', is_available: true },
-    { id: 'coach-002', name: 'Javier Molina', country: 'Espanha', specialty: 'Tática', reputation: 82, monthly_salary: 900, philosophy: 'Controle de rede', is_available: true },
-  ],
+  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+  // Parte H): removido um seed legado de 2 treinadores ("Carlos Mendes"/
+  // "Javier Molina") com schema incompatível (monthly_salary em vez de
+  // monthly_cost real, specialty capitalizada fora do enum real) — raiz do
+  // bug "salário mensal de 1 moedas": esses nomes não batem com nenhuma
+  // entrada de COACHES_DATA, então ensureCoachCatalog() (coachLifecycle.js)
+  // nunca corrigia essas linhas via bulkUpdate, e monthly_cost ficava
+  // undefined para sempre. ensureCoachCatalog() já semeia o catálogo real
+  // (~118 treinadores) sob demanda — este array de 2 linhas era peso morto.
+  Coach: [],
   Club: clubs,
   ClubMember: [
     { id: 'club-member-001', club_id: 'club-001', profile_id: 'athlete-002', member_name: 'Lucas Ferraz', role: 'atleta', status: 'ativo' },

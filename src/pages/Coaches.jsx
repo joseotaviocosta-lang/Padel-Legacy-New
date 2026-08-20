@@ -308,7 +308,7 @@ export default function Coaches() {
                 </div>
                 <div className="overflow-hidden rounded-xl border border-border/55">
                   {market.highlighted.map((evaluation) => (
-                    <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
+                    <CoachCard key={evaluation.coach.id} evaluation={evaluation} profile={profile} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
                   ))}
                 </div>
               </section>
@@ -321,7 +321,7 @@ export default function Coaches() {
                 </div>
                 <div className="overflow-hidden rounded-xl border border-border/55">
                   {marketRest.map((evaluation) => (
-                    <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
+                    <CoachCard key={evaluation.coach.id} evaluation={evaluation} profile={profile} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
                   ))}
                 </div>
               </section>
@@ -346,7 +346,7 @@ export default function Coaches() {
             </div>
             <div className="overflow-hidden rounded-xl border border-border/55">
               {section.items.slice(0, visibleCount).map((evaluation) => (
-                <CoachCard key={evaluation.coach.id} evaluation={evaluation} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
+                <CoachCard key={evaluation.coach.id} evaluation={evaluation} profile={profile} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
               ))}
             </div>
             {section.items.length > visibleCount && (

@@ -1,6 +1,6 @@
 import React from 'react';
 import { Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain, AlertTriangle, ArrowRightLeft } from 'lucide-react';
-import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, evaluateCoachForCareer, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons } from '@/lib/coaches';
+import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, evaluateCoachForCareer, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons, resolveCoachCanonicalSalary } from '@/lib/coaches';
 import { ModalShell, Button } from '@/components/design-system';
 
 export default function CoachDetail({ coach, profile, evaluation: providedEvaluation, currentCoach, onHire, onFire, onClose, isHired }) {
@@ -185,7 +185,7 @@ export default function CoachDetail({ coach, profile, evaluation: providedEvalua
           <div className="glass rounded-xl p-3 mb-3 border border-amber-500/20 bg-amber-500/5">
             <p className="text-[10px] uppercase tracking-wide text-amber-400 font-bold mb-2">Exigências Financeiras</p>
             <div className="grid grid-cols-3 gap-2">
-              <Stat label="Mensal" value={coach.market_salary || coach.monthly_cost} icon={Coins} color="text-yellow-400" />
+              <Stat label="Mensal" value={resolveCoachCanonicalSalary(coach) ?? '—'} icon={Coins} color="text-yellow-400" />
               <Stat label="Assinatura" value={coach.market_signing_bonus ?? coach.sign_on_bonus ?? 0} icon={Coins} color="text-yellow-400" />
               <Stat label="% Vitória" value={`${Math.max(0, Number(coach.performance_bonus_pct) || 0)}%`} color="text-green-400" />
             </div>

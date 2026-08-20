@@ -165,9 +165,14 @@ try {
   const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Primeira partida OFICIAL (evento real) avança para autonomy', getCurrentTutorialStep(state)?.id === 'autonomy');
-  state = await confirmStep('autonomy');
-  gate('Sequência completa das 15 etapas concluída via pipeline real, do início ao fim', state.status === 'completed');
+  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+  // Parte A/E): a primeira partida oficial encerra só a Fase 1 agora — 12
+  // novas etapas de descoberta vêm antes de autonomy. Cobertura completa
+  // até autonomy/carreira livre é responsabilidade de
+  // test-tutorial-expanded-flow.mjs; aqui só fecha o ciclo desta suíte
+  // (destinos reais + pipeline real dos handlers ACTION).
+  gate('Primeira partida OFICIAL (evento real) avança para staff-known (fim da Fase 1)', getCurrentTutorialStep(state)?.id === 'staff-known');
+  gate('Sequência via pipeline real chega ao fim da Fase 1 sem travar (ainda in_progress, tutorial continua)', state.status === 'in_progress');
 
   console.log(`\n${gates} gates executados, todos PASS — Home CTA (destinos reais + pipeline real + notificação de eventos).`);
 } finally {

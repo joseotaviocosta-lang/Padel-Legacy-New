@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { COACHES_DATA, canHireCoach, getCoachEffects } from '@/lib/coaches.js';
+import { COACHES_DATA, canHireCoach, getCoachEffects, resolveCoachCanonicalSalary } from '@/lib/coaches.js';
 import { incrementMissionProgress } from '@/lib/padel.js';
 
 function normalizeName(value) { return String(value || '').trim().toLocaleLowerCase('pt-BR'); }
@@ -27,7 +27,14 @@ export async function ensureCoachCatalog() {
     await localGame.entities.Coach.bulkUpdate(updates);
     coaches = (await localGame.entities.Coach.list('-reputation', 500)) || [];
   }
-  return coaches;
+  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
+  // Parte H): saves antigos podem ter linhas de Coach de um seed legado
+  // (nome fora de COACHES_DATA, sem monthly_cost real) — a raiz do bug
+  // "salário mensal de 1 moedas". Nunca deletamos a linha (histórico do
+  // save é preservado), só paramos de oferecê-la no mercado: sem
+  // correspondência no catálogo real e sem um monthly_cost válido, ela
+  // não tem como ser exibida ou contratada com segurança.
+  return coaches.filter(coach => catalogByName.has(normalizeName(coach.name)) || Number(coach.monthly_cost) > 0);
 }
 
 export function isCoachActive(profile) {
@@ -46,6 +53,17 @@ export async function resolveActiveCoach(profile) {
   if (!profile?.id || !isCoachActive(profile)) return { profile, coach: null };
   const coaches = await ensureCoachCatalog();
   const current = coaches.find(coach => coach.id === profile.coach_id) || await localGame.entities.Coach.get(profile.coach_id).catch(() => null);
+  // Tutorial 4.1 (Parte H/I): correção única e não-destrutiva para saves já
+  // afetados pelo bug "salário mensal de 1 moedas" (herdado do seed legado
+  // removido) — corrige só o dado quebrado, nunca concede nem revoga
+  // nenhuma recompensa/coins.
+  if (current && !profile.coach_paid_by_club && Number(profile.coach_monthly_salary) <= 1) {
+    const corrected = resolveCoachCanonicalSalary(current);
+    if (corrected != null && corrected !== Number(profile.coach_monthly_salary)) {
+      const updated = await localGame.entities.PlayerProfile.update(profile.id, { coach_monthly_salary: corrected }).catch(() => profile);
+      return { profile: updated, coach: current };
+    }
+  }
   return { profile, coach: current || null };
 }
 
@@ -53,7 +71,12 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
   if (!profile?.id || !coach?.id) throw new Error('Dados do treinador incompletos.');
   const check = canHireCoach(coach, profile);
   if (!check.allowed) throw new Error(check.reason || 'Treinador indisponível.');
-  const salary = Math.max(1, Number(coach.market_salary ?? coach.monthly_cost) || 1);
+  // Tutorial 4.1 (Parte H/I): nunca cair silenciosamente em 1 moeda —
+  // resolveCoachCanonicalSalary já cobre o catálogo real como fallback;
+  // se mesmo assim não resolver, falha de forma diagnosticável em vez de
+  // prosseguir com um valor inventado.
+  const salary = resolveCoachCanonicalSalary(coach);
+  if (salary == null) throw new Error(`Salário do treinador "${coach.name || coach.id}" não encontrado no catálogo — contratação cancelada.`);
   const signing = Math.max(0, Number(coach.market_signing_bonus ?? coach.sign_on_bonus) || 0);
   if ((Number(profile.coins) || 0) < signing) throw new Error(`São necessárias ${signing} moedas para o bônus de assinatura.`);
   const date = profile.career_date || '2026-01-01';
@@ -95,7 +118,9 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
 
 export async function renewPrimaryCoach(profile, coach, months = 12) {
   if (!profile?.id || !coach?.id) throw new Error('Treinador não encontrado.');
-  const salary = Math.max(1, Math.round((Number(profile.coach_monthly_salary) || Number(coach.monthly_cost) || 1) * 1.06));
+  const baseline = Number(profile.coach_monthly_salary) > 0 ? Number(profile.coach_monthly_salary) : resolveCoachCanonicalSalary(coach);
+  if (!(baseline > 0)) throw new Error(`Salário do treinador "${coach.name || coach.id}" não encontrado no catálogo — renovação cancelada.`);
+  const salary = Math.round(baseline * 1.06);
   const date = profile.career_date || '2026-01-01';
   return localGame.entities.PlayerProfile.update(profile.id, {
     coach_contract_started_date: date,
