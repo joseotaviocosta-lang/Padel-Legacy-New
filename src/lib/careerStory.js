@@ -44,10 +44,25 @@ export function isOfficialMatch(match) {
   return match?.competition_type === 'tournament' && match?.is_official === true;
 }
 
+// Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 4/7): achado real durante a
+// auditoria — a linha real de Match (TournamentModal.jsx, finalização
+// oficial) nunca escreve player_won/winner_profile_id/winner_name; escreve
+// só `winner: 'A'|'B'` (código de lado, não nome) e `result:'vitória'|
+// 'derrota'`. Isso deixava playerWonMatch SEMPRE falso pra toda partida real
+// já jogada — "Primeira vitória" na timeline e toda contagem de
+// vitórias/títulos da retrospectiva de temporada nunca disparavam, mesmo
+// com partidas oficiais vencidas de verdade (o mesmo "produz número mas
+// nenhuma consequência" da Parte 0, item 5). Corrigido pra checar primeiro
+// `result` — o mesmo campo que achievementContext.js já usa com sucesso
+// pra win_official_match (`m.result === 'vitória'`) — antes dos heurísticos
+// antigos, mantidos só como fallback pra formatos de dado que não escrevem
+// `result` (nenhum caso real conhecido, mas inofensivo manter).
 function playerWonMatch(match, profile) {
+  if (match?.result === 'vitória') return true;
+  if (match?.result === 'derrota') return false;
   if (typeof match?.player_won === 'boolean') return match.player_won;
   if (match?.winner_profile_id && profile?.id) return match.winner_profile_id === profile.id;
-  const winner = normalize(match?.winner_name || match?.winner || match?.winning_team_name);
+  const winner = normalize(match?.winner_name || match?.winning_team_name);
   return [profile?.sport_name, profile?.name, profile?.full_name].map(normalize).filter(Boolean).some((name) => winner.includes(name));
 }
 

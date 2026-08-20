@@ -219,7 +219,13 @@
     "test:achievements-page-density": "node scripts/test-achievements-page-density.mjs",
     "test:achievement-progress-display": "node scripts/test-achievement-progress-display.mjs",
     "test:sidebar-footer-cleanup": "node scripts/test-sidebar-footer-cleanup.mjs",
-    "test:mobile-game-app-experience-m4-2": "node scripts/test-mobile-game-app-experience-m4-2.mjs"
+    "test:mobile-game-app-experience-m4-2": "node scripts/test-mobile-game-app-experience-m4-2.mjs",
+    "test:ranking-milestone-ladder": "node scripts/test-ranking-milestone-ladder.mjs",
+    "test:career-stage-progression": "node scripts/test-career-stage-progression.mjs",
+    "test:career-legacy-integrity": "node scripts/test-career-legacy-integrity.mjs",
+    "test:career-opportunity-progression": "node scripts/test-career-opportunity-progression.mjs",
+    "test:career-long-term-goals": "node scripts/test-career-long-term-goals.mjs",
+    "test:career-depth": "node scripts/test-career-depth.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

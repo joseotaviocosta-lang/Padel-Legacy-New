@@ -23,7 +23,9 @@ try {
   const { ACHIEVEMENT_CATALOG, CATEGORY_META } = await server.ssrLoadModule('/src/lib/achievementsData.js');
   const { EVALUABLE_TRIGGER_TYPES, presentableAchievements } = await server.ssrLoadModule('/src/lib/achievementEngine.js');
 
-  gate('Catálogo tem 175 entradas (nada perdido silenciosamente)', ACHIEVEMENT_CATALOG.length === 175);
+  // Fase 13 (Parte 3/10): 180 = 175 (Fase 12) + 5 novos degraus de reach_rank
+  // (Top 500/250/30/20/5 — a ladder de ranking pedida pelo briefing).
+  gate('Catálogo tem 180 entradas (175 da Fase 12 + 5 novos degraus de reach_rank da Fase 13)', ACHIEVEMENT_CATALOG.length === 180);
   gate('Todo id é único', new Set(ACHIEVEMENT_CATALOG.map((a) => a.id)).size === ACHIEVEMENT_CATALOG.length);
   gate('Toda entrada tem trigger_type, threshold, category, difficulty', ACHIEVEMENT_CATALOG.every((a) => a.trigger_type && a.threshold > 0 && a.category && a.difficulty));
   gate('Toda categoria usada existe em CATEGORY_META ou é "secreto"/"lendário" (categorias já existentes)', ACHIEVEMENT_CATALOG.every((a) => CATEGORY_META[a.category] || ['secreto', 'lendário'].includes(a.category)));
@@ -46,14 +48,18 @@ try {
 
   // ── Nenhum objetivo "impossível" apresentado como normal ──
   const presentable = presentableAchievements();
-  gate('presentableAchievements() exclui exatamente as 15 arquivadas + 5 future_system (175-20=155)', presentable.length === 155);
+  gate('presentableAchievements() exclui exatamente as 15 arquivadas + 5 future_system (180-20=160)', presentable.length === 160);
   for (const achievement of presentable) {
     gate(`"${achievement.name}" presentável não é future_system nem arquivada`, !achievement.future_system && achievement.is_active !== false);
   }
 
   // ── Cobertura funcional real ──
   const functional = presentable.filter((a) => EVALUABLE_TRIGGER_TYPES.has(a.trigger_type));
-  gate('Ao menos 85 conquistas presentáveis têm trigger funcional (correção real, não marginal)', functional.length >= 85);
+  // Fase 13 (Parte 10): +5 dos novos degraus de reach_rank, +5 de
+  // own_rackets/own_shoes/own_apparel/own_tech/all_rarities (reclassificadas
+  // de C pra A — o dado já existia em fetchInventoryStats). 90 (Fase 12) + 10 = 100.
+  gate('Ao menos 95 conquistas presentáveis têm trigger funcional (correção real, não marginal — piso atualizado pela Fase 13)', functional.length >= 95);
+  gate('own_rackets/own_shoes/own_apparel/own_tech/all_rarities agora são funcionais (Fase 13, Parte 10 — dado já existia)', ['own_rackets', 'own_shoes', 'own_apparel', 'own_tech', 'all_rarities'].every((t) => EVALUABLE_TRIGGER_TYPES.has(t)));
   gate('EVALUABLE_TRIGGER_TYPES não contém play_match/win_match (nomes antigos — renomeados, Parte 6/7)', !EVALUABLE_TRIGGER_TYPES.has('play_match') && !EVALUABLE_TRIGGER_TYPES.has('win_match'));
   gate('EVALUABLE_TRIGGER_TYPES contém play_official_match/win_official_match', EVALUABLE_TRIGGER_TYPES.has('play_official_match') && EVALUABLE_TRIGGER_TYPES.has('win_official_match'));
 
@@ -77,7 +83,7 @@ try {
 
   // ── Documentação existe e é consistente ──
   const auditDoc = readFileSync('docs/ACHIEVEMENTS_AUDIT_V2.md', 'utf8');
-  gate('docs/ACHIEVEMENTS_AUDIT_V2.md existe e documenta as 175 entradas', auditDoc.includes('175 entradas') || auditDoc.includes('(175 conquistas)'));
+  gate('docs/ACHIEVEMENTS_AUDIT_V2.md existe e documenta o estado pós-Fase-12 (175) e o addendum da Fase 13 (180)', (auditDoc.includes('175 entradas') || auditDoc.includes('(175 conquistas)')) && auditDoc.includes('Fase 13'));
   gate('docs/ACHIEVEMENTS_AUDIT_V2.md documenta os placeholders arquivados', auditDoc.includes('placeholders vazios') || auditDoc.includes('placeholder vazio arquivado'));
 
   console.log(`\n${gates} gates executados, todos PASS — Auditoria estrutural do catálogo de conquistas (Fase 12).`);

@@ -81,6 +81,24 @@ export function getCareerRelevanceStage(profile, context) {
   return getCareerEconomyStage(effectiveProfile);
 }
 
+// Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 2): o briefing pede uma
+// classificação de estágio (Início/Ascensão/Profissional/Elite/Lenda) —
+// `getCareerEconomyStage` já é EXATAMENTE essa classificação (5 estágios,
+// já derivada de level/rank/reputação, já usada pra graduar o mercado de
+// treinadores e patrocinadores). Nenhum campo novo persistido, nenhuma
+// segunda taxonomia — só um mapa de exibição em cima do mesmo id de sempre.
+export const CAREER_STAGE_LABELS = {
+  beginner: 'Início',
+  regional: 'Ascensão',
+  professional: 'Profissional',
+  international: 'Elite',
+  elite: 'Lenda',
+};
+
+export function getCareerStageLabel(profile, context) {
+  return CAREER_STAGE_LABELS[getCareerRelevanceStage(profile, context)] || CAREER_STAGE_LABELS.beginner;
+}
+
 /**
  * "Próximas conquistas" relevantes — combina progresso real, o quanto o
  * jogador controla aquela conquista por decisão própria, e uma penalidade

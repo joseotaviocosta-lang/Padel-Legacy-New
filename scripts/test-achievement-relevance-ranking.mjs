@@ -112,10 +112,16 @@ try {
   gate('Nenhuma conquista arquivada (is_active:false) aparece', nextUp.every((i) => i.achievement.is_active !== false));
   gate('Nenhuma conquista já desbloqueada aparece', nextUp.every((i) => !i.progress.unlocked));
 
-  // ── N-B: Top 300 → próxima conquista de ranking relevante (Top 100, único degrau existente <=300) ──
+  // ── N-B: Top 300 → próxima conquista de ranking relevante ─────────────────
+  // Fase 13 (Parte 3): a escada ganhou os degraus intermediários Top 500 e
+  // Top 250 (antes só existiam 100/50/10/3/1 — #300 "pulava" direto pra Top
+  // 100, o mesmo bug de granularidade que o briefing pediu pra corrigir).
+  // Com a escada completa, #300 já superou Top 500 (unlocked, fora da
+  // disputa) e o próximo degrau real e não-desbloqueado é Top 250 — mostrar
+  // Top 100 aqui seria exatamente o "pular degrau" que a Fase 13 corrigiu.
   const topContext = await buildAchievementContext(profile, { worldRank: { rank: 300 } });
   const topNext = findNextRelevantAchievements(profile, topContext, { limit: 5 });
-  gate('N-B: rank #300 → "Top 100" (próximo degrau real da escada de ranking) aparece entre as relevantes', topNext.some((i) => i.achievement.trigger_type === 'reach_rank' && i.achievement.threshold === 100));
+  gate('N-B (Fase 13): rank #300 → "Top 250" (próximo degrau real da escada expandida, não mais "Top 100") aparece entre as relevantes', topNext.some((i) => i.achievement.trigger_type === 'reach_rank' && i.achievement.threshold === 250));
 
   // ── N-C: Top 20 → Top 10 relevante ────────────────────────────────────────
   const eliteContext = await buildAchievementContext(profile, { worldRank: { rank: 20 } });
@@ -128,8 +134,16 @@ try {
   // Mesmo rank fraco do fixture early-game (900): o ponto deste cenário é
   // provar que reach_age PODE entrar quando genuinamente perto (1 ano de
   // distância), não testar competição de ranking — isso já é coberto acima.
+  // Fase 13 (Parte 3): rank #900 passou a ter uma meta de ranking legítima
+  // (Top 500 — não existia antes da escada expandida, e com percent alto o
+  // bastante pra vencer Veterano de qualquer forma), o que reintroduz
+  // competição de ranking dentro de um cenário desenhado pra isolar só o
+  // comportamento de proximidade temporal. Usa um rank deliberadamente
+  // distante de TODOS os degraus (inclusive o novo Top 500) pra manter o
+  // isolamento original do cenário — não testar competição de ranking, que
+  // já é coberta acima (N-B/N-C).
   const veteranProfile = await localGame.entities.PlayerProfile.update(profile.id, { birth_date: '1991-06-01' }); // ~34-35 anos em 2026-01-11
-  const veteranContext = await buildAchievementContext(veteranProfile, { worldRank: { rank: 900 } });
+  const veteranContext = await buildAchievementContext(veteranProfile, { worldRank: { rank: 50000 } });
   const veteranNext = findNextRelevantAchievements(veteranProfile, veteranContext, { limit: 5 });
   console.log('(info) Regra NOVA (veterano perto de 35 anos):', veteranNext.map((i) => i.achievement.name).join(' · '));
   gate('N-D: veterano perto de 35 anos → "Veterano" (reach_age) pode aparecer (realmente próximo, não distante)', veteranNext.some((i) => i.achievement.trigger_type === 'reach_age'));

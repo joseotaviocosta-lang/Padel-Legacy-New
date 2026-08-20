@@ -119,7 +119,38 @@ try {
   gate('Progresso NOVO depois da reconciliação desbloqueia normalmente ("Decacampeão")', thirdSync.unlocked.some((a) => a.trigger_type === 'win_tournament' && a.threshold === 10));
   gate('Progresso NOVO depois da reconciliação CONCEDE recompensa normalmente (coins aumentaram)', profile.coins > beforeCoins);
 
-  console.log(`\n${gates} gates executados, todos PASS — Reconciliação de save antigo (desbloqueio correto, zero recompensa retroativa, idempotente, progresso normal depois).`);
+  // ── Fase 13 (Parte 15): catálogo cresce (5 novos degraus de reach_rank) —
+  // confirma que um save deste tamanho reconcilia corretamente contra o
+  // catálogo expandido. Rank 340 (usado desde o início deste teste) já
+  // satisfaz o novo "Top 500" (340<=500) — ele foi silenciosamente
+  // reconciliado (sem recompensa) na PRIMEIRA chamada de sync lá em cima,
+  // junto com Bicampeão/partidas oficiais/etc., exatamente como qualquer
+  // outro achievement provado por estado antigo. "Top 250" (340>250) ainda
+  // não é satisfeito — fica pra quando o rank realmente melhorar.
+  // (o gate de "zero recompensa retroativa" já foi provado logo após a
+  // primeira sync, antes do bloco "Decacampeão" acima ter concedido coins —
+  // aqui só confirma que "Top 500" especificamente está entre as linhas já
+  // reconciliadas, sem reabrir aquela checagem de coins com um baseline
+  // desatualizado.)
+  const alreadyReconciledRows = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id });
+  gate('Fase 13: "Top 500" (rank 340 já o satisfazia) foi reconciliado silenciosamente na primeira abertura', alreadyReconciledRows.some((r) => r.achievement_id === 'achv-top-500'));
+  gate('Fase 13: "Top 250" (rank 340 ainda não o satisfaz) continua bloqueado — não foi concedido cedo demais', !alreadyReconciledRows.some((r) => r.achievement_name === 'Top 250'));
+
+  // Progresso real e NOVO (rank melhora de verdade) → Top 250 desbloqueia
+  // como um live-unlock normal, com recompensa normal — a mesma seta
+  // "subir ranking → consequência real" que o resto da Fase 13 testa.
+  const preFase13Count = alreadyReconciledRows.length;
+  const coinsBeforeTop250 = profile.coins;
+  const improvedRankContext = await buildAchievementContext(profile, { worldRank: { rank: 200 } });
+  const top250Sync = await syncPlayerAchievements(profile, improvedRankContext, { localGame, reconciliation: false });
+  profile = top250Sync.profile;
+  gate('Fase 13: melhorar o rank pra #200 desbloqueia "Top 250" normalmente, com recompensa (progresso novo, não retroativo)', top250Sync.unlocked.some((a) => a.threshold === 250) && profile.coins > coinsBeforeTop250);
+  gate('Fase 13: "Top 500" (já reconciliado antes) NÃO é re-concedido junto com "Top 250"', !top250Sync.unlocked.some((a) => a.threshold === 500));
+  const postFase13Rows = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id });
+  gate('Fase 13: nenhuma linha pré-existente foi duplicada (só a nova de Top 250 foi adicionada)', postFase13Rows.length === preFase13Count + 1);
+  gate('Fase 13: reprocessar o mesmo estado de novo não concede nada a mais (idempotência mantida com o catálogo expandido)', (await syncPlayerAchievements(profile, improvedRankContext, { localGame, reconciliation: false })).unlocked.length === 0);
+
+  console.log(`\n${gates} gates executados, todos PASS — Reconciliação de save antigo (desbloqueio correto, zero recompensa retroativa, idempotente, progresso normal depois; catálogo expandido da Fase 13 não re-concede nem duplica o que já existia).`);
 } finally {
   await server.close();
 }

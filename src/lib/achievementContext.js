@@ -37,6 +37,15 @@ async function fetchCareerEarnings(profileId) {
   return transactions.reduce((sum, row) => sum + (Number(row.amount) || 0), 0);
 }
 
+// Fase 13 (docs/FASE_13_CAREER_DEPTH.md, Parte 10): own_rackets/own_shoes/
+// own_apparel/own_tech/all_rarities eram "C — necessita novo evento leve" na
+// auditoria da Fase 12, mas a mesma passada de inventário já lê
+// item.category/item.rarity pra alimentar own_items/own_legendary/
+// all_categories — o dado já existe (storeCatalog.js: categorias canônicas
+// 'raquete'/'tenis'/'roupa'/'acessorio_tec'), só faltava contar por
+// categoria/raridade específica. Nenhum campo novo, nenhuma mecânica nova.
+const CATEGORY_COUNT_KEYS = { raquete: 'rackets', tenis: 'shoes', roupa: 'apparel', acessorio_tec: 'tech' };
+
 async function fetchInventoryStats(profileId) {
   const [inventory, shopItems] = await Promise.all([
     localGame.entities.PlayerInventory.filter({ profile_id: profileId }).catch(() => []),
@@ -46,6 +55,7 @@ async function fetchInventoryStats(profileId) {
   const owned = inventory.filter((row) => Number(row.quantity) > 0);
   const categories = new Set();
   const rarities = new Set();
+  const categoryCounts = { rackets: 0, shoes: 0, apparel: 0, tech: 0 };
   let legendary = 0;
   let mythic = 0;
   let exclusive = 0;
@@ -57,9 +67,12 @@ async function fetchInventoryStats(profileId) {
     if (item.rarity === 'lendario' || item.rarity === 'lendário') legendary += 1;
     if (item.rarity === 'mitico' || item.rarity === 'mítico') mythic += 1;
     if (item.is_exclusive) exclusive += 1;
+    const countKey = CATEGORY_COUNT_KEYS[item.category];
+    if (countKey) categoryCounts[countKey] += 1;
   }
   const totalCategoriesInCatalog = new Set(shopItems.map((item) => item.category).filter(Boolean)).size;
-  return { totalOwned: owned.length, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog };
+  const totalRaritiesInCatalog = new Set(shopItems.map((item) => item.rarity).filter(Boolean)).size;
+  return { totalOwned: owned.length, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, ...categoryCounts };
 }
 
 async function fetchTrainingCenter(profileId) {

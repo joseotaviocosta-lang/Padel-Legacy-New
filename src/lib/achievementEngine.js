@@ -30,6 +30,11 @@ const EVALUABLE_TRIGGER_TYPES = new Set([
   'reach_coins', 'buy_property', 'make_investment', 'sign_sponsor', 'multi_sponsor',
   // Equipamentos
   'own_items', 'own_legendary', 'own_mythic', 'own_exclusive', 'all_categories',
+  // Fase 13 (Parte 10): mesma passada de inventário de own_items/
+  // all_categories acima, só contando por categoria/raridade específica —
+  // reclassificadas de "C" pra "A" porque o dado (ShopItem.category/rarity)
+  // já era lido, só não quebrado por categoria.
+  'own_rackets', 'own_shoes', 'own_apparel', 'own_tech', 'all_rarities',
   // Instalações
   'upgrade_facility',
   // Sequências/contadores leves novos (Parte C)
@@ -85,6 +90,15 @@ function rawMetricValue(achievement, profile, context) {
       const total = Number(context?.inventory?.totalCategoriesInCatalog) || 0;
       if (!total) return 0;
       return Number(context?.inventory?.categories) >= total ? 1 : 0;
+    }
+    case 'own_rackets': return Number(context?.inventory?.rackets) || 0;
+    case 'own_shoes': return Number(context?.inventory?.shoes) || 0;
+    case 'own_apparel': return Number(context?.inventory?.apparel) || 0;
+    case 'own_tech': return Number(context?.inventory?.tech) || 0;
+    case 'all_rarities': {
+      const total = Number(context?.inventory?.totalRaritiesInCatalog) || 0;
+      if (!total) return 0;
+      return Number(context?.inventory?.rarities) >= total ? 1 : 0;
     }
 
     case 'upgrade_facility': {
