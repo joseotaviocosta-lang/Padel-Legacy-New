@@ -205,7 +205,8 @@
     "test:tutorial-expanded-flow": "node scripts/test-tutorial-expanded-flow.mjs",
     "test:tutorial-visit-auto-completion": "node scripts/test-tutorial-visit-auto-completion.mjs",
     "test:coach-card-effects": "node scripts/test-coach-card-effects.mjs",
-    "test:coach-salary-consistency": "node scripts/test-coach-salary-consistency.mjs"
+    "test:coach-salary-consistency": "node scripts/test-coach-salary-consistency.mjs",
+    "test:mobile-visual-polish-m4-1-2": "node scripts/test-mobile-visual-polish-m4-1-2.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
