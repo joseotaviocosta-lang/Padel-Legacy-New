@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { normalizeCourtSide, sideMissionRepair } from '@/lib/tutorialSideState.js';
 import { deterministicMissionSelection, missionRuntime, missionStatus, requirementsMet, validateMissionReward } from '@/missions/missionSystem.js';
 import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
+import { ATTRIBUTES, ATTRIBUTE_KEYS } from '@/lib/attributes.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
@@ -99,20 +100,7 @@ export function careerExperienceUnlocks(levelOrXp, isXp = false) {
 }
 export const PLAY_STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
 
-export const ATTRIBUTES = [
-  { key: 'serve', label: 'Saque', icon: 'Zap' },
-  { key: 'forehand', label: 'Forehand', icon: 'ArrowUpRight' },
-  { key: 'backhand', label: 'Backhand', icon: 'ArrowUpLeft' },
-  { key: 'volley', label: 'Voleio', icon: 'Waves' },
-  { key: 'bandeja', label: 'Bandeja', icon: 'Circle' },
-  { key: 'smash', label: 'Smash', icon: 'Hammer' },
-  { key: 'defense', label: 'Defesa', icon: 'Shield' },
-  { key: 'agility', label: 'Agilidade', icon: 'Gauge' },
-  { key: 'strategy', label: 'Estratégia', icon: 'Brain' },
-  { key: 'emotional_control', label: 'Controle Emoc.', icon: 'Flame' },
-];
-
-export const ATTRIBUTE_KEYS = ATTRIBUTES.map(a => a.key);
+export { ATTRIBUTES, ATTRIBUTE_KEYS };
 
 // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.14): agrupamento por
 // categoria, movido para cá a partir de uma cópia local em PlayerProfile.jsx

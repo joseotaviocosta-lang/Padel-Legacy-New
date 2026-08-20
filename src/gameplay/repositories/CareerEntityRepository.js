@@ -65,10 +65,27 @@ function sortRows(items, sort) {
 }
 
 export class CareerEntityRepository {
-  constructor(gameRepository = repository) {
-    this.repository = gameRepository;
+  constructor(gameRepository) {
+    // Fase 12: `EntityAdapter.js` cria a instância padrão sem argumento
+    // (`new CareerEntityRepository()`), contando com o fallback para o
+    // `gameRepository` de runtime.js. Se essa instanciação acontecer no
+    // meio da avaliação de um grafo de import circular — antes da linha
+    // top-level de runtime.js que atribui `gameRepository` ter rodado —
+    // capturar `repository` aqui (num campo comum) o congelaria como
+    // `undefined` para sempre, mesmo depois de runtime.js terminar de
+    // carregar (o binding do import É atualizado ao vivo, mas uma cópia
+    // já feita em `this.repository` não é). Por isso o fallback vira um
+    // getter: relê o binding vivo a cada acesso, então funciona não
+    // importa a ordem de avaliação dos módulos — só precisa estar pronto
+    // no momento em que algum método realmente É chamado, bem depois de
+    // todo o grafo de módulos ter terminado de carregar.
+    this._repository = gameRepository;
     this.queryCache = new Map();
     this.cacheCareerRef = null;
+  }
+
+  get repository() {
+    return this._repository || repository;
   }
 
   syncCacheCareer(career) {

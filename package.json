@@ -206,7 +206,14 @@
     "test:tutorial-visit-auto-completion": "node scripts/test-tutorial-visit-auto-completion.mjs",
     "test:coach-card-effects": "node scripts/test-coach-card-effects.mjs",
     "test:coach-salary-consistency": "node scripts/test-coach-salary-consistency.mjs",
-    "test:mobile-visual-polish-m4-1-2": "node scripts/test-mobile-visual-polish-m4-1-2.mjs"
+    "test:mobile-visual-polish-m4-1-2": "node scripts/test-mobile-visual-polish-m4-1-2.mjs",
+    "test:achievements-audit": "node scripts/test-achievements-audit.mjs",
+    "test:achievement-engine-v2": "node scripts/test-achievement-engine-v2.mjs",
+    "test:official-match-achievements": "node scripts/test-official-match-achievements.mjs",
+    "test:achievement-career-progression": "node scripts/test-achievement-career-progression.mjs",
+    "test:achievement-rewards-balance": "node scripts/test-achievement-rewards-balance.mjs",
+    "test:achievement-save-migration": "node scripts/test-achievement-save-migration.mjs",
+    "test:achievements-ui-v2": "node scripts/test-achievements-ui-v2.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

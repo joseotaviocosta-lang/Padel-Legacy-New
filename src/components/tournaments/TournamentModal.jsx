@@ -8,7 +8,7 @@ import {
 import { localGame } from '@/api/localGameClient.js';
 import {
   TOURNAMENT_ENERGY_COST, buildMatchRewardsPatch, getChemistryBonus, getEnergyPenalty,
-  incrementMissionProgress, isInjured, injuryRecoveryDays, overallRating,
+  incrementMissionProgress, isInjured, injuryRecoveryDays, overallRating, getWorldRank,
 } from '@/lib/padel';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { generateTournamentOpponent, getPartnerBot, getTournamentRounds } from '@/lib/career';
@@ -19,6 +19,7 @@ import { getCoachEffects } from '@/lib/coaches';
 import { resolveActiveCoach } from '@/game-core/coachLifecycle';
 import { finalizeTournamentRun, prepareTournamentFinalization } from '@/game-core/tournamentLifecycle.js';
 import { syncPlayerAchievements } from '@/lib/achievementEngine.js';
+import { buildAchievementContext } from '@/lib/achievementContext.js';
 import { createMatchEndProfiler, scheduleSecondaryMatchWork } from '@/game-core/matchFinalization.js';
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
@@ -519,6 +520,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         score,
         winner: matchState.winner,
         result: won ? 'vitória' : 'derrota',
+        // Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte C): campo novo ao lado da
+        // própria escrita da partida — nenhuma consulta/coluna nova além
+        // desta. opponentRank já existia em memória (usado só para o
+        // cálculo local de `upset` acima); agora também persiste na
+        // partida, permitindo achievementContext.js calcular "venceu um
+        // Top 10"/"venceu o #1" sob demanda, sem reprocessar histórico.
+        opponent_rank: Number(freshMatch.opponentRank) > 0 ? Number(freshMatch.opponentRank) : null,
         status: 'completed',
         match_type: freshMatch.stage === 'qualifying' ? 'qualifying' : 'tournament',
         competition_type: 'tournament',
@@ -540,6 +548,14 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         officialTournament: true,
       });
       let updatedDraft = { ...freshProfile, ...reward.updates };
+      // Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte C): sequência de vitórias
+      // OFICIAIS — nenhum contador existia antes. Mesma guarda de
+      // idempotência (rewardAlreadyApplied) que o resto desta função já usa
+      // para o mesmo matchId, para nunca incrementar duas vezes o mesmo
+      // resultado reprocessado.
+      if (!rewardAlreadyApplied) {
+        updatedDraft = { ...updatedDraft, current_win_streak: won ? (Number(updatedDraft.current_win_streak) || 0) + 1 : 0 };
+      }
       const physicalKeys = Array.isArray(updatedDraft.processed_tournament_physical_keys) ? updatedDraft.processed_tournament_physical_keys : [];
       let physical = null;
       if (!physicalKeys.includes(freshMatch.id)) {
@@ -639,18 +655,25 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         }));
         updated = completion.updatedProfile;
         setTournamentRewards(completion.rewards);
-        // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9):
-        // ponto natural para avaliar conquistas de torneio (join_tournament/
-        // win_tournament, os únicos trigger_types cujo contador real muda
-        // aqui) — mesmo nível de abstração de incrementMissionProgress
-        // logo abaixo, nunca dentro do motor de torneio/finalização em si.
-        // Idempotente: nunca re-concede uma conquista já registrada.
-        try {
-          const achievementSync = await syncPlayerAchievements(updated, {}, { localGame });
-          if (achievementSync.profile) updated = achievementSync.profile;
-        } catch (achievementError) {
-          console.error('[achievements] Falha ao avaliar conquistas de torneio.', achievementError);
-        }
+      }
+
+      // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9)
+      // + Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte C): antes só rodava no
+      // fim do torneio (join_tournament/win_tournament) — movido para depois
+      // de CADA partida oficial porque agora também avalia conquistas de
+      // partida (play_official_match/win_official_match/beat_top10/
+      // beat_rank1/win_streak), cujo contador real muda a cada partida, não
+      // só no fim da campanha. Mesmo nível de abstração de
+      // incrementMissionProgress logo abaixo, nunca dentro do motor de
+      // torneio/finalização em si. Idempotente: nunca re-concede uma
+      // conquista já registrada.
+      try {
+        const worldRank = await getWorldRank(updated).catch(() => null);
+        const achievementContext = await buildAchievementContext(updated, { worldRank });
+        const achievementSync = await syncPlayerAchievements(updated, achievementContext, { localGame });
+        if (achievementSync.profile) updated = achievementSync.profile;
+      } catch (achievementError) {
+        console.error('[achievements] Falha ao avaliar conquistas de torneio.', achievementError);
       }
 
       const missionObjectives = [

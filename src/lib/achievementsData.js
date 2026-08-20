@@ -1,6 +1,12 @@
 // ─── Achievement Catalog ──────────────────────────────────────────────────────
 // Hundreds of achievements: public, hidden (mysterious), and secret (invisible)
 // Categories: partidas, torneios, evolução, social, economia, mercado, coleção, história, carreira, secreto, lendário
+// Importa da folha attributes.js, NUNCA de padel.js diretamente: padel.js
+// importa localGameClient.js -> localSeed.js -> achievementsData.js — se
+// este arquivo importasse padel.js de volta, fecharia um ciclo real
+// (padel.js ainda no meio de sua própria avaliação quando o ciclo
+// retornasse aqui, deixando ATTRIBUTES undefined nesse instante).
+import { ATTRIBUTES } from './attributes.js';
 
 // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9): id
 // estável derivado do nome (único no catálogo) — a mesma função gera o id
@@ -15,29 +21,37 @@ export function achievementIdFromName(name) {
   return `achv-${slugifyAchievementName(name)}`;
 }
 
+// Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte 6/7): trigger_type renomeado de
+// play_match/win_match para play_official_match/win_official_match — só o
+// nome (achievement.id continua derivado de `name`, save-compatível).
+// Antes, esses 13 triggers existiam mas ficavam deliberadamente FORA de
+// EVALUABLE_TRIGGER_TYPES (Tutorial 4.0): o único contador disponível na
+// época era profile.matches_played/wins, que só conta partida de TREINO.
+// Agora avaliados de verdade contra Match.filter({competition_type:
+// 'tournament', is_official:true}) — nunca treino, nunca simulação.
 const RAW_ACHIEVEMENT_CATALOG = [
   // ═══════════════ PARTIDAS — PÚBLICAS ═══════════════
-  { name: 'Primeiro Passo', description: 'Jogue sua primeira partida oficial.', icon: 'Footprints', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'play_match', threshold: 1, xp_reward: 50, coins_reward: 100, points: 10 },
-  { name: 'Estreante Dedicado', description: 'Jogue 10 partidas.', icon: 'Play', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'play_match', threshold: 10, xp_reward: 100, coins_reward: 200, points: 15 },
-  { name: 'Veterano de Quadra', description: 'Jogue 50 partidas.', icon: 'Trophy', rarity: 'incomum', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'play_match', threshold: 50, xp_reward: 300, coins_reward: 500, points: 25 },
-  { name: 'Centurião', description: 'Jogue 100 partidas.', icon: 'Shield', rarity: 'raro', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'play_match', threshold: 100, xp_reward: 500, coins_reward: 1000, points: 40 },
-  { name: 'Maratonista', description: 'Jogue 250 partidas.', icon: 'Activity', rarity: 'épico', category: 'partidas', visibility: 'publico', difficulty: 'dificil', trigger_type: 'play_match', threshold: 250, xp_reward: 1500, coins_reward: 3000, points: 75 },
-  { name: 'Lenda das Quadras', description: 'Jogue 500 partidas.', icon: 'Crown', rarity: 'lendário', category: 'partidas', visibility: 'publico', difficulty: 'extremo', trigger_type: 'play_match', threshold: 500, xp_reward: 5000, coins_reward: 10000, medal_reward: 'Maratonista Eterno', points: 150 },
-  { name: 'Imortal do Padel', description: 'Jogue 1000 partidas.', icon: 'Infinity', rarity: 'mitico', category: 'partidas', visibility: 'publico', difficulty: 'lendario', trigger_type: 'play_match', threshold: 1000, xp_reward: 20000, coins_reward: 50000, medal_reward: 'Imortal', title_reward: 'O Imortal', points: 500 },
+  { name: 'Primeiro Passo', description: 'Jogue sua primeira partida oficial.', icon: 'Footprints', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'play_official_match', threshold: 1, xp_reward: 50, coins_reward: 100, points: 10 },
+  { name: 'Estreante Dedicado', description: 'Jogue 10 partidas.', icon: 'Play', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'play_official_match', threshold: 10, xp_reward: 100, coins_reward: 200, points: 15 },
+  { name: 'Veterano de Quadra', description: 'Jogue 50 partidas.', icon: 'Trophy', rarity: 'incomum', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'play_official_match', threshold: 50, xp_reward: 300, coins_reward: 500, points: 25 },
+  { name: 'Centurião', description: 'Jogue 100 partidas.', icon: 'Shield', rarity: 'raro', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'play_official_match', threshold: 100, xp_reward: 500, coins_reward: 1000, points: 40 },
+  { name: 'Maratonista', description: 'Jogue 250 partidas.', icon: 'Activity', rarity: 'épico', category: 'partidas', visibility: 'publico', difficulty: 'dificil', trigger_type: 'play_official_match', threshold: 250, xp_reward: 1500, coins_reward: 3000, points: 75 },
+  { name: 'Lenda das Quadras', description: 'Jogue 500 partidas.', icon: 'Crown', rarity: 'lendário', category: 'partidas', visibility: 'publico', difficulty: 'extremo', trigger_type: 'play_official_match', threshold: 500, xp_reward: 5000, coins_reward: 10000, medal_reward: 'Maratonista Eterno', points: 150 },
+  { name: 'Imortal do Padel', description: 'Jogue 1000 partidas.', icon: 'Infinity', rarity: 'mitico', category: 'partidas', visibility: 'publico', difficulty: 'lendario', trigger_type: 'play_official_match', threshold: 1000, xp_reward: 20000, coins_reward: 50000, medal_reward: 'Imortal', title_reward: 'O Imortal', points: 500 },
 
   // Vitórias
-  { name: 'Primeira Vitória', description: 'Vença sua primeira partida.', icon: 'Trophy', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'win_match', threshold: 1, xp_reward: 50, coins_reward: 100, points: 10 },
+  { name: 'Primeira Vitória', description: 'Vença sua primeira partida.', icon: 'Trophy', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'win_official_match', threshold: 1, xp_reward: 50, coins_reward: 100, points: 10 },
   { name: 'Em Sequência', description: 'Vença 5 partidas seguidas.', icon: 'Flame', rarity: 'incomum', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'win_streak', threshold: 5, xp_reward: 200, coins_reward: 400, points: 20 },
   { name: 'Dominador', description: 'Vença 10 partidas seguidas.', icon: 'Swords', rarity: 'raro', category: 'partidas', visibility: 'publico', difficulty: 'dificil', trigger_type: 'win_streak', threshold: 10, xp_reward: 500, coins_reward: 1000, points: 40 },
   { name: 'Imparável', description: 'Vença 20 partidas seguidas.', icon: 'Zap', rarity: 'épico', category: 'partidas', visibility: 'publico', difficulty: 'extremo', trigger_type: 'win_streak', threshold: 20, xp_reward: 2000, coins_reward: 4000, points: 100 },
   { name: 'Máquina Implacável', description: 'Vença 50 partidas seguidas.', icon: 'Crown', rarity: 'mitico', category: 'partidas', visibility: 'publico', difficulty: 'lendario', trigger_type: 'win_streak', threshold: 50, xp_reward: 15000, coins_reward: 30000, medal_reward: 'Invencível', title_reward: 'O Invencível', points: 400 },
 
   // Vitórias totais
-  { name: 'Vencedor Iniciante', description: 'Vença 25 partidas.', icon: 'Award', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'win_match', threshold: 25, xp_reward: 150, coins_reward: 300, points: 15 },
-  { name: 'Competidor', description: 'Vença 100 partidas.', icon: 'Medal', rarity: 'incomum', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'win_match', threshold: 100, xp_reward: 500, coins_reward: 1000, points: 30 },
-  { name: 'Campeão Nato', description: 'Vença 250 partidas.', icon: 'Trophy', rarity: 'raro', category: 'partidas', visibility: 'publico', difficulty: 'dificil', trigger_type: 'win_match', threshold: 250, xp_reward: 1500, coins_reward: 3000, points: 60 },
-  { name: 'Titan', description: 'Vença 500 partidas.', icon: 'Star', rarity: 'épico', category: 'partidas', visibility: 'publico', difficulty: 'extremo', trigger_type: 'win_match', threshold: 500, xp_reward: 5000, coins_reward: 10000, points: 120 },
-  { name: 'Semideus', description: 'Vença 1000 partidas.', icon: 'Sparkles', rarity: 'lendário', category: 'partidas', visibility: 'publico', difficulty: 'lendario', trigger_type: 'win_match', threshold: 1000, xp_reward: 20000, coins_reward: 50000, medal_reward: 'Semideus do Padel', title_reward: 'Semideus', points: 500 },
+  { name: 'Vencedor Iniciante', description: 'Vença 25 partidas.', icon: 'Award', rarity: 'comum', category: 'partidas', visibility: 'publico', difficulty: 'facil', trigger_type: 'win_official_match', threshold: 25, xp_reward: 150, coins_reward: 300, points: 15 },
+  { name: 'Competidor', description: 'Vença 100 partidas.', icon: 'Medal', rarity: 'incomum', category: 'partidas', visibility: 'publico', difficulty: 'medio', trigger_type: 'win_official_match', threshold: 100, xp_reward: 500, coins_reward: 1000, points: 30 },
+  { name: 'Campeão Nato', description: 'Vença 250 partidas.', icon: 'Trophy', rarity: 'raro', category: 'partidas', visibility: 'publico', difficulty: 'dificil', trigger_type: 'win_official_match', threshold: 250, xp_reward: 1500, coins_reward: 3000, points: 60 },
+  { name: 'Titan', description: 'Vença 500 partidas.', icon: 'Star', rarity: 'épico', category: 'partidas', visibility: 'publico', difficulty: 'extremo', trigger_type: 'win_official_match', threshold: 500, xp_reward: 5000, coins_reward: 10000, points: 120 },
+  { name: 'Semideus', description: 'Vença 1000 partidas.', icon: 'Sparkles', rarity: 'lendário', category: 'partidas', visibility: 'publico', difficulty: 'lendario', trigger_type: 'win_official_match', threshold: 1000, xp_reward: 20000, coins_reward: 50000, medal_reward: 'Semideus do Padel', title_reward: 'Semideus', points: 500 },
 
   // ═══════════════ PARTIDAS — OCULTAS ═══════════════
   { name: 'Virada Épica', description: 'Vença uma partida após estar perdendo por 0-2 em sets.', icon: 'RotateCcw', rarity: 'raro', category: 'partidas', visibility: 'oculto', mystery_description: 'Quando tudo parece perdido, os verdadeiros campeões despertam...', difficulty: 'dificil', trigger_type: 'comeback', threshold: 1, xp_reward: 800, coins_reward: 1500, points: 50 },
@@ -262,6 +276,37 @@ const RAW_ACHIEVEMENT_CATALOG = [
   { name: 'O Inatingível', description: 'Desbloqueie TODAS as outras conquistas.', icon: 'Sparkles', rarity: 'exclusivo', category: 'lendário', visibility: 'secreto', difficulty: 'lendario', trigger_type: 'all_achievements', threshold: 1, xp_reward: 1000000, coins_reward: 2000000, medal_reward: 'O Inatingível', title_reward: 'O Inatingível', exclusive_item: 'Coroa do Inatingível', hint: 'A perfeição não é o fim. É o começo de algo maior.', is_revealed_hint: false, points: 10000 },
 ];
 
+// Fase 12 (docs/ACHIEVEMENTS_AUDIT_V2.md, Parte A): max_attribute não tinha
+// campo próprio dizendo QUAL atributo — só a descrição em português
+// ("Alcance 100 em Smash."). Deriva attribute_key comparando a descrição
+// com os labels reais de ATTRIBUTES (lib/padel.js) — mesma fonte que
+// overallRating já usa, nada inventado.
+const ATTRIBUTE_LABEL_TO_KEY = new Map(ATTRIBUTES.map((attr) => [attr.label.toLowerCase(), attr.key]));
+ATTRIBUTE_LABEL_TO_KEY.set('controle emocional', 'emotional_control');
+ATTRIBUTE_LABEL_TO_KEY.set('volley', 'volley');
+function attributeKeyFromDescription(description) {
+  const text = String(description || '').toLowerCase();
+  for (const [label, key] of ATTRIBUTE_LABEL_TO_KEY) {
+    if (text.includes(label)) return key;
+  }
+  return null;
+}
+
+// Fase 12 (Parte D): dependem de um sistema de aposentadoria/geração de
+// carreira que não existe para o jogador (retirement_announced/season só
+// existem para atletas simulados do circuito — circuitLifeLifecycle.js,
+// worldMarketLifecycle.js — nunca aplicados ao próprio jogador). Ficam
+// marcadas future_system: não aparecem como objetivo normal (nem
+// bloqueado, nem "???") até essa mecânica existir de verdade.
+// `all_achievements` ("O Inatingível") entrou nesta lista durante a
+// revisão da UI da Fase 12: é uma conquista secreta LEGÍTIMA em conceito
+// (meta: desbloquear todas as outras), mas seu trigger_type nunca foi
+// adicionado a EVALUABLE_TRIGGER_TYPES — sem isso ela apareceria como
+// "???" na aba Secretas sem jamais poder ser desbloqueada, exatamente o
+// anti-padrão que a Parte 28 proíbe (confundir impossível com secreta).
+// Fica future_system até ganhar um trigger dedicado numa fase futura.
+const FUTURE_SYSTEM_TRIGGER_TYPES = new Set(['retire', 'generations', 'multi_generation_champ', 'all_achievements']);
+
 // As conquistas "secreto" compartilham name:'???' até serem desbloqueadas
 // (nada para o slug pegar) — usa o índice como desempate nesses casos e em
 // qualquer outra colisão, garantindo id único e estável por posição no
@@ -271,7 +316,18 @@ export const ACHIEVEMENT_CATALOG = RAW_ACHIEVEMENT_CATALOG.map((entry, index) =>
   let id = achievementIdFromName(entry.name);
   if (!id || id === 'achv-' || usedAchievementIds.has(id)) id = `achv-${index}`;
   usedAchievementIds.add(id);
-  return { id, ...entry };
+  const extra = {};
+  if (entry.trigger_type === 'max_attribute') extra.attribute_key = attributeKeyFromDescription(entry.description);
+  if (FUTURE_SYSTEM_TRIGGER_TYPES.has(entry.trigger_type)) extra.future_system = true;
+  // Fase 12 (Parte 27/28): os 15 "secret_N" são placeholders vazios de
+  // verdade — description idêntica ("Desbloqueie para revelar.") em todos,
+  // nenhuma condição real por trás. Uma conquista secreta LEGÍTIMA (ex.:
+  // "Multiverso do Padel", "Renascimento") tem descrição/hint próprios;
+  // estas não. Arquivadas (is_active:false), nunca deletadas — se um save
+  // antigo já tiver uma delas em PlayerAchievement, o histórico permanece,
+  // só não aparecem mais como objetivo "???" vazio.
+  if (/^secret_\d+$/.test(entry.trigger_type)) { extra.is_active = false; extra.archived_reason = 'empty_secret_placeholder_v40'; }
+  return { id, ...entry, ...extra };
 });
 
 // ─── Stats ────────────────────────────────────────────────────────────────────

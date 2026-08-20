@@ -67,6 +67,25 @@ function structureGoal(profile) {
   };
 }
 
+// Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte 49-51): "próximo objetivo" geral
+// da Home, não restrito à categoria de ranking (diferente de rankingGoal
+// acima, que continua alimentando especificamente o card de ranking do
+// plano de temporada). Mesma fonte que a aba Conquistas usa
+// (findNextLockedAchievement, sem filtro de categoria) — nunca uma terceira
+// escada paralela. Não bloqueia nada: é uma sugestão contextual, não uma
+// ordem (Part 51).
+export function getNextCareerObjective(profile, context = {}) {
+  const next = findNextLockedAchievement(profile, context);
+  if (!next) return null;
+  return {
+    title: next.achievement.name,
+    description: next.achievement.description,
+    progress: clamp(next.percent),
+    category: next.achievement.category,
+    achievementId: next.achievement.id,
+  };
+}
+
 export function buildSeasonCareerPlan(profile, context = {}) {
   const ranking = rankingGoal(profile, context);
   const rank = ranking._rank;

@@ -69,7 +69,11 @@ try {
     new Set(ACHIEVEMENT_CATALOG.map(a => a.id)).size === ACHIEVEMENT_CATALOG.length);
 
   const hasEquivalent = (triggerType, threshold) => ACHIEVEMENT_CATALOG.some(a => a.trigger_type === triggerType && a.threshold === threshold);
-  gate('season-wins (vença 25 partidas) tem equivalente: "Vencedor Iniciante" win_match≥25', hasEquivalent('win_match', 25));
+  // Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte 6/7): win_match foi renomeado
+  // para win_official_match (agora com trigger funcional de verdade,
+  // contra partida OFICIAL, não mais bloqueado) — mesma conquista real
+  // ("Vencedor Iniciante"), só o nome do trigger mudou.
+  gate('season-wins (vença 25 partidas) tem equivalente: "Vencedor Iniciante" win_official_match≥25', hasEquivalent('win_official_match', 25));
   gate('season-tour (participe de 12 torneios) tem equivalente na escada join_tournament (10)', hasEquivalent('join_tournament', 10));
   gate('season-titles (vença 3 torneios) tem equivalente: "Tricampeão" win_tournament≥3', hasEquivalent('win_tournament', 3));
 

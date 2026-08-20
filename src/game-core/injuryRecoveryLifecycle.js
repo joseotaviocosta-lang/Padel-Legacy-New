@@ -75,6 +75,10 @@ export async function processInjuryRecoveryDay(profile, previousDate, currentDat
           injury_return_date: currentDate,
           energy: Math.max(45, Number(profile.energy) || 45),
           confidence: Math.max(45, Number(profile.confidence) || 45),
+          // Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte C): contador de
+          // recuperações — ao lado da própria transição para "apto", nenhum
+          // sistema novo.
+          injury_recoveries: (Number(profile.injury_recoveries) || 0) + 1,
         }
       : {
           injury_days_remaining: remaining,

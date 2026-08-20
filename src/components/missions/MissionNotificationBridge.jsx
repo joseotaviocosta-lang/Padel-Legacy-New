@@ -104,17 +104,33 @@ export default function MissionNotificationBridge() {
   }, [navigate]);
 
   // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 13):
-  // conquistas agora podem notificar quando desbloqueadas (achievementEngine.js
-  // dispara este evento só em unlocks reais, nunca por rotina/visita de
-  // rota) — mesmo padrão de toast já usado para missões, sino não vira feed
-  // de progresso trivial porque isto é sempre um evento raro e real.
+  // conquistas notificam quando desbloqueadas (achievementEngine.js dispara
+  // este evento só em unlocks ao vivo reais — nunca em reconciliação de
+  // save antigo, nunca por rotina/visita de rota).
+  //
+  // Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte 52-54): (1) só conquistas de
+  // "grande marco" chegam ao sino (Central de Notificações) — as demais
+  // ficam só no toast local, o sino não vira feed trivial de cada conquista
+  // pequena; (2) múltiplos unlocks no mesmo evento (ex.: reconciliação
+  // pontual, ou uma partida que bate 2 marcos de uma vez) viram UMA
+  // notificação agrupada, nunca N.
   useEffect(() => {
+    const isGrandMilestone = (achievement) => (
+      (achievement.trigger_type === 'reach_rank' && achievement.threshold <= 500)
+      || (achievement.trigger_type === 'win_tournament' && achievement.threshold === 1)
+      || ['lendário', 'mitico', 'exclusivo'].includes(achievement.rarity)
+    );
     const handler = (event) => {
-      const achievements = event.detail?.achievements || [];
-      for (const achievement of achievements) {
+      const achievements = (event.detail?.achievements || []).filter((achievement) => {
         const key = `achievement:${profileRef.current?.id || 'profile'}:${achievement.id}`;
-        if (shownNotifications.has(key)) continue;
+        if (shownNotifications.has(key)) return false;
         shownNotifications.add(key);
+        return true;
+      });
+      if (!achievements.length) return;
+
+      if (achievements.length === 1) {
+        const [achievement] = achievements;
         const parts = [];
         if (Number(achievement.xp_reward) > 0) parts.push(`+${achievement.xp_reward} XP`);
         if (Number(achievement.coins_reward) > 0) parts.push(`+${achievement.coins_reward} moedas`);
@@ -124,6 +140,28 @@ export default function MissionNotificationBridge() {
           description: parts.length ? parts.join(' · ') : achievement.description,
           action: <ToastAction onClick={() => navigate('/game/missions?tab=achievements')}>Ver conquistas</ToastAction>,
         });
+      } else {
+        toast({
+          title: `${achievements.length} conquistas desbloqueadas`,
+          description: achievements.slice(0, 3).map((a) => a.name).join(' · ') + (achievements.length > 3 ? '…' : ''),
+          action: <ToastAction onClick={() => navigate('/game/missions?tab=achievements')}>Ver conquistas</ToastAction>,
+        });
+      }
+
+      const milestones = achievements.filter(isGrandMilestone);
+      if (milestones.length && profileRef.current?.id) {
+        const body = milestones.length === 1
+          ? `Você desbloqueou "${milestones[0].name}" — ${milestones[0].description}`
+          : `Você desbloqueou ${milestones.length} grandes marcos: ${milestones.map((a) => a.name).join(', ')}.`;
+        localGame.entities.CareerMessage.create({
+          profile_id: profileRef.current.id,
+          sender_name: 'Sua Carreira',
+          subject: milestones.length === 1 ? `Conquista: ${milestones[0].name}` : `${milestones.length} conquistas importantes`,
+          body,
+          status: 'nao_lida',
+          message_type: 'achievement_milestone',
+          created_date: new Date().toISOString(),
+        }).catch(() => {});
       }
     };
     window.addEventListener('padel:achievement-unlocked', handler);
