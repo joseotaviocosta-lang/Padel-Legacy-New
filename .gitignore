@@ -20,3 +20,13 @@ Thumbs.db
 
 # GitHub Desktop
 .github/
+
+# Cache de builds locais
+.build-cache/
+
+# Android / Gradle
+.gradle/
+**/.gradle/
+
+# Arquivos gerados pelo Android
+**/build/
