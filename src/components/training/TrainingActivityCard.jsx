@@ -32,13 +32,18 @@ export default function TrainingActivityCard({
   const energyCost = prediction.energyCost;
   const fatigueCost = intensityObj.fatigueCost + (activity.fatigueExtra || 0);
   const lowEnergy = (profile?.energy || 100) < energyCost;
-  const isDisabled = disabled || busy || lowEnergy;
+  // M4.2.1 (Parte 9/11): custo visível ANTES da confirmação, no mesmo card
+  // fechado — nunca cobrar sem avisar. Mesma fonte que a execução real usa
+  // (getTrainingCost via previewTraining/getPredictedGain — Parte 41).
+  const cost = prediction.cost || 0;
+  const lowCoins = (Number(profile?.coins) || 0) < cost;
+  const isDisabled = disabled || busy || lowEnergy || lowCoins;
   const topGains = Object.entries(prediction.gains).slice(0, 2);
 
   const summary = (
     <div className="space-y-0.5">
       <p>
-        {activity.duration}min · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span> · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span>
+        {activity.duration}min · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span> · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span> · <span className={lowCoins ? 'text-red-400 font-bold' : 'text-amber-300 font-bold'}>💰 {cost}</span>
       </p>
       <p className="text-foreground/90">
         {/* Redesign Checkpoint Hotfix 1 (scripts/test-visual-checkpoint-hotfix1.mjs):
@@ -91,7 +96,7 @@ export default function TrainingActivityCard({
       </div>
       <div className="glass rounded-xl p-2.5 space-y-1.5">
         <DetailRow label="XP" value={`+${activity.xp}`} />
-        <DetailRow label="Moedas" value={`+${activity.coins}`} />
+        <DetailRow label="Custo" value={`💰 ${cost}`} danger={lowCoins} />
         {activity.formBoost && <DetailRow label="Bônus de forma" value={`+${activity.formBoost}`} highlight />}
         {activity.moraleBoost && <DetailRow label="Bônus de moral" value={`+${activity.moraleBoost}`} highlight />}
         {activity.confidenceBoost && <DetailRow label="Bônus de confiança" value={`+${activity.confidenceBoost}`} highlight />}
@@ -131,8 +136,12 @@ export default function TrainingActivityCard({
             disabledReason
           ) : lowEnergy ? (
             'Sem energia'
+          ) : lowCoins ? (
+            'Moedas insuficientes'
           ) : (
-            <><Dumbbell className="h-4 w-4" /> Treinar</>
+            // M4.2.1 (Parte 10): botão informativo sem ficar pesado — custo
+            // ao lado do rótulo, mesmo padrão compacto de M4.1.3.
+            <><Dumbbell className="h-4 w-4" /> Treinar · 💰{cost}</>
           )}
         </Button>
       }
@@ -140,11 +149,11 @@ export default function TrainingActivityCard({
   );
 }
 
-function DetailRow({ label, value, highlight }) {
+function DetailRow({ label, value, highlight = false, danger = false }) {
   return (
     <div className="flex justify-between text-[10px]">
       <span className="text-muted-foreground">{label}</span>
-      <span className={`font-bold ${highlight ? 'text-primary' : 'text-foreground'}`}>{value}</span>
+      <span className={`font-bold ${danger ? 'text-red-400' : highlight ? 'text-primary' : 'text-foreground'}`}>{value}</span>
     </div>
   );
 }

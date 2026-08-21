@@ -1,11 +1,12 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Users, Zap } from 'lucide-react';
+import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Users, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { advanceCareerDayOnce } from '@/game-core';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore, getRecommendedTrainings } from '@/lib/trainingSystemV2';
+import { getTrainingCost } from '@/lib/trainingEconomy';
 import { useToast } from '@/components/ui/use-toast';
 import { Link, useSearchParams } from 'react-router-dom';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
@@ -124,14 +125,18 @@ export default function Training() {
         recoveryDays: res.recoveryDays,
         diminishing: res.diminishing,
         fatiguePenalty: res.fatiguePenalty,
+        cost: res.cost,
+        coinsAfter: res.profile.coins,
       });
 
+      // M4.2.1 (Parte 33): feedback pós-treino mostra o débito real, nunca
+      // mais "+moedas" (treino não paga mais — Parte 2).
       if (res.injured) {
         toast({ title: 'Lesão!', description: `Você se lesionou no treino! Fica parado ${res.recoveryDays} dias.`, variant: 'destructive' });
       } else if (res.gain > 0) {
-        toast({ title: 'Treino concluído!', description: `+${res.gain} ${res.activity.attribute} · +${res.activity.xp} XP` });
+        toast({ title: 'Treino concluído!', description: `+${res.gain} ${res.activity.attribute} · +${res.activity.xp} XP · -${res.cost} moedas` });
       } else {
-        toast({ title: 'Treino concluído', description: 'Sem progresso no atributo. Continue tentando!' });
+        toast({ title: 'Treino concluído', description: `Sem progresso no atributo. -${res.cost} moedas.` });
       }
 
       // Refresh weekly counts and history
@@ -205,6 +210,10 @@ export default function Training() {
           breadcrumb={['Desenvolvimento', 'Treinos']}
           hudLabel="Estado para o treino"
           hudItems={[
+            // M4.2.1 (Parte 27): saldo de moedas visível junto do HUD, sem
+            // ocupar card próprio — agora que treino tem custo, o jogador
+            // precisa comparar saldo × custo sem sair da tela.
+            { label: 'moedas', value: Number(profile.coins || 0).toLocaleString('pt-BR'), icon: Coins, tone: 'success' },
             { label: 'hoje', value: `${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`, icon: Dumbbell },
             { label: 'energia', value: `${profile.energy ?? 100}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
             { label: 'fadiga', value: `${normalizeFatigue(profile.fatigue)}%`, icon: Activity, tone: normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success' },
@@ -237,8 +246,9 @@ export default function Training() {
           title={`${result.activity.label} · ${result.intensity.label}`}
           description={[
             result.gain > 0
-              ? `${Number(result.gain).toFixed(2)} de progresso distribuído · +${result.activity.xp} XP · +${result.activity.coins} moedas`
-              : `Sessão de manutenção · +${result.activity.xp} XP · +${result.activity.coins} moedas`,
+              ? `${Number(result.gain).toFixed(2)} de progresso distribuído · +${result.activity.xp} XP · -${result.cost} moedas`
+              : `Sessão de manutenção · +${result.activity.xp} XP · -${result.cost} moedas`,
+            `Saldo: ${Number(result.coinsAfter || 0).toLocaleString('pt-BR')}`,
             result.diminishing < 1 ? `${Math.round(result.diminishing * 100)}% eficiência` : null,
             result.fatiguePenalty < 0 ? `fadiga: ${result.fatiguePenalty}` : null,
           ].filter(Boolean).join(' · ')}
@@ -359,7 +369,15 @@ export default function Training() {
                       {t.intensity && ` · ${t.intensity}`}
                     </p>
                   </div>
-                  <StatusBadge tone="premium">{Number(t.coins_reward || 0).toLocaleString('pt-BR')}</StatusBadge>
+                  {/* M4.2.1 (Parte 34): sessões antigas (pré-M4.2.1) tinham
+                      coins_reward>0 e nenhum coins_cost — continuam exibidas
+                      como estavam, sem migração. Sessões novas têm
+                      coins_cost (débito) e coins_reward sempre 0. */}
+                  {Number(t.coins_cost || 0) > 0 ? (
+                    <StatusBadge tone="neutral">-{Number(t.coins_cost).toLocaleString('pt-BR')}</StatusBadge>
+                  ) : (
+                    <StatusBadge tone="premium">+{Number(t.coins_reward || 0).toLocaleString('pt-BR')}</StatusBadge>
+                  )}
                 </div>
               ))}
             </div>
@@ -370,7 +388,7 @@ export default function Training() {
       {/* Training timer modal */}
       {activeTraining && (
         <TrainingTimerModal
-          training={{ id: activeTraining.activity.id, label: activeTraining.activity.label, attribute: activeTraining.activity.attribute, icon: activeTraining.activity.icon, xp: activeTraining.activity.xp, coins: activeTraining.activity.coins }}
+          training={{ id: activeTraining.activity.id, label: activeTraining.activity.label, attribute: activeTraining.activity.attribute, icon: activeTraining.activity.icon, xp: activeTraining.activity.xp, cost: getTrainingCost(profile, activeTraining.intensityId) }}
           onComplete={() => {
             const { activity, intensityId } = activeTraining;
             setActiveTraining(null);

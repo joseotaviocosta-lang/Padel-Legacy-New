@@ -12,15 +12,15 @@ import { Surface } from './Surface';
  * `open`/`onToggle` controlados, mantém estado próprio (defaultOpen).
  */
 export function CollapsibleSection({
-  icon: Icon,
+  icon: Icon = undefined,
   title,
-  description,
-  badge,
+  description = undefined,
+  badge = undefined,
   children,
   defaultOpen = false,
-  open: controlledOpen,
-  onToggle,
-  className,
+  open: controlledOpen = undefined,
+  onToggle = undefined,
+  className = undefined,
 }) {
   const [internalOpen, setInternalOpen] = useState(defaultOpen);
   const isControlled = controlledOpen !== undefined;

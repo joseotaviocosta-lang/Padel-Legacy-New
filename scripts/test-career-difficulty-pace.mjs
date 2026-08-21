@@ -192,9 +192,20 @@ function median(rows,key){return percentile(rows,key,50);}
 // implementação §27/§28.
 const PEAK_TARGETS={easy:{min:2,max:4,outlierLow:1,outlierHigh:6},normal:{min:5,max:7,outlierLow:3,outlierHigh:9},hard:{min:8,max:10,outlierLow:5,outlierHigh:12}};
 
+// Fase 13.1 (Parte 2): achado real de performance, não um bug de lógica —
+// `hardCareers` abaixo recomputava 'hard' do zero mesmo já tendo sido
+// simulado dentro do loop principal (ALLOWED_CAREER_DIFFICULTIES inclui
+// 'hard'), uma 5ª passada 100% redundante com a 3ª. Guardado aqui em vez de
+// descartado — mesmo resultado, ~20% menos tempo total, nenhuma mudança de
+// comportamento/números.
+let hardCareersFromLoop = null;
+const perPhaseMs = {};
 const report={generatedAt:new Date().toISOString(),configuration:{runs,seasons,scenarios:scenarios.length,perDifficulty:runs*scenarios.length},byDifficulty:{},findings:[]};
 for(const difficultyId of ALLOWED_CAREER_DIFFICULTIES){
+  const __t0=Date.now();
   const careers=simulateDifficulty(difficultyId);
+  perPhaseMs[difficultyId]=Date.now()-__t0;
+  if(difficultyId==='hard') hardCareersFromLoop=careers;
   const target=PEAK_TARGETS[difficultyId];
   const peakMedian=median(careers,'peakSeason');
   const peakP25=percentile(careers,'peakSeason',25);
@@ -242,8 +253,11 @@ for(const difficultyId of ALLOWED_CAREER_DIFFICULTIES){
 // meta de 8-10 temporadas — ver §46 do plano. O ajuste deve ser pequeno:
 // sinalizamos apenas se a diferença for grande demais para ainda ser "o
 // jogo atual, levemente refinado".
+const __tNeutral=Date.now();
 const neutralCareers=simulateDifficulty(null);
-const hardCareers=simulateDifficulty('hard');
+perPhaseMs.neutral=Date.now()-__tNeutral;
+const hardCareers=hardCareersFromLoop;
+report.perPhaseMs=perPhaseMs;
 report.hardVsNeutral={
   hardPeakMedian:median(hardCareers,'peakSeason'),
   neutralPeakMedian:median(neutralCareers,'peakSeason'),

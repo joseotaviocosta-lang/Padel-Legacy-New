@@ -104,23 +104,19 @@ const PROHIBITED_PATH_FRAGMENTS = [
 const touchedProhibited = changedFiles.filter((file) => PROHIBITED_PATH_FRAGMENTS.some((fragment) => file.includes(fragment)));
 gate('Nenhum arquivo desta fase toca lógica de gameplay/economia/calendário/torneio/ranking/save proibida (Parte 1)', touchedProhibited.length === 0);
 
-// M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md): esta suíte roda numa
-// sessão onde fases não são commitadas entre si (padrão já estabelecido —
-// ver o mesmo problema em test-mobile-visual-polish-m4-1-2.mjs/
-// test-mobile-game-feel-m4-1.mjs) — `git diff` acumula os arquivos de
-// TODAS as fases ainda não commitadas, não só desta. Um allowlist exato
-// ("changedFiles ⊆ EXPECTED_VISUAL_FILES") quebra assim que qualquer fase
-// seguinte toca um arquivo novo, mesmo sendo 100% apresentação — não é
-// isso que este gate deveria provar. Invertido pra "os arquivos que ESTA
-// fase tocou continuam entre os alterados" (⊇, nunca falso-positivo por
-// causa de fases futuras) — a garantia real de "nenhum arquivo de lógica
-// proibida" já é feita à parte, de forma durável, pelo gate anterior
-// (PROHIBITED_PATH_FRAGMENTS, uma lista de exclusão, não de inclusão).
-const EXPECTED_VISUAL_FILES = [
-  'src/components/BottomNav.jsx', 'src/components/career/CareerStatusBar.jsx', 'src/components/design-system/CompactActionCard.jsx',
-  'src/components/design-system/Tabs.jsx', 'src/components/onboarding/OnboardingGuide.jsx', 'src/components/training/TrainingActivityCard.jsx',
-  'src/index.css', 'src/pages/CalendarPage.jsx',
-];
-gate('Os arquivos desta fase (M4.1.3) continuam entre os alterados — nenhum foi revertido por fases seguintes', EXPECTED_VISUAL_FILES.every((f) => changedFiles.includes(f)));
+// M4.2.1: o gate ⊇ anterior ("changedFiles inclui os arquivos desta fase")
+// dependia de `git diff` mostrar essas mudanças como NÃO commitadas — mas
+// o processo de auto-commit da sessão (memória: "repo has an automated
+// process committing snapshots (v## messages)") passou a commitar tudo
+// periodicamente, inclusive entre a execução deste script e a última
+// alteração real. Quando isso acontece, `git diff`/`git diff --cached`
+// voltam vazios pra arquivos já commitados — nada foi revertido, só o
+// mecanismo de detecção (diff não commitado) parou de ser confiável nesta
+// sessão. A garantia real que este gate tentava dar — "as propriedades da
+// M4.1.3 ainda existem nos arquivos" — já É PROVADA, de forma mais forte e
+// imune a timing de commit, pelos gates 1-17 acima (leem o CONTEÚDO real
+// dos mesmos arquivos e confirmam cada propriedade específica). Um gate
+// baseado em git diff nunca poderia ser mais confiável que ler o arquivo
+// direto — removido por ser redundante E frágil, não só frágil.
 
 console.log(`\n${gates} gates executados, todos PASS — M4.1.3 Mobile Visual Hotfix (estrutural — screenshot-driven QA física ainda pendente, ver relatório).`);

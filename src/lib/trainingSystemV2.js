@@ -6,6 +6,7 @@ import {
 } from '@/lib/trainingCatalog';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
+import { getTrainingCost } from '@/lib/trainingEconomy.js';
 export { WEEKDAYS, createGoal, deleteGoal, checkGoalCompletion, getConditionScore, getConditionLabel, getOvertrainingStatus } from '@/lib/trainingSystem';
 
 const COLORS = { court: ['text-cyan-400', 'bg-cyan-500'], physical: ['text-amber-400', 'bg-amber-500'], mental: ['text-green-400', 'bg-green-500'], tactical: ['text-purple-400', 'bg-purple-500'] };
@@ -134,7 +135,11 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
   const lowEnergyRisk = energyAfter >= 30 ? 0 : (30 - energyAfter) * 0.00007;
   const secondSessionRisk = (profile?.trainings_today || 0) > 0 ? 0.0004 : 0;
   const injuryRisk = Math.min(0.022, (calculation.intensity.injuryRisk + fatigueRisk + lowEnergyRisk + secondSessionRisk) * staffInjuryMultiplier * getDifficultyModifier(profile, 'injuryRiskMultiplier'));
-  return { ...calculation, gains: distributeTrainingGain(profile, training, calculation.budget), energyCost, energyAfter: Math.max(0, Number(profile?.energy ?? 100) - energyCost), fatigueCost, duration: Math.round(training.duration * calculation.intensity.durationMult), injuryRisk };
+  // M4.2.1 (Parte 9/32): custo visível no preview, ANTES de qualquer
+  // confirmação — mesma função getTrainingCost usada na execução real
+  // (Parte 41, fonte única), nunca recalculada separadamente na UI.
+  const cost = getTrainingCost(profile, calculation.intensity.id);
+  return { ...calculation, gains: distributeTrainingGain(profile, training, calculation.budget), energyCost, energyAfter: Math.max(0, Number(profile?.energy ?? 100) - energyCost), fatigueCost, duration: Math.round(training.duration * calculation.intensity.durationMult), injuryRisk, cost };
 }
 
 export function getPredictedGain(profile, activity, intensityId, weeklyCount = 0, coachBonus = {}) {
@@ -168,6 +173,12 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   const counts = await getWeeklyTrainingCounts(profile.id, profile.career_date);
   const preview = previewTraining(profile, training, intensityId, counts[training.id] || 0, coachBonus);
   if (Number(profile?.energy ?? 0) < preview.energyCost) return { error: `Energia insuficiente: são necessários ${preview.energyCost} pontos.` };
+  // M4.2.1 (Parte 11/42): revalida saldo no momento da execução real —
+  // nunca confia só no saldo mostrado na UI (que pode estar desatualizado
+  // por outra aba/ação concorrente). Mesma função de custo do preview
+  // (Parte 41), chamada de novo aqui contra o `profile` fresco recebido.
+  const currentCoins = Number(profile?.coins) || 0;
+  if (currentCoins < preview.cost) return { error: `Moedas insuficientes: este treino custa ${preview.cost}, você tem ${currentCoins}.` };
 
   const oldProgress = { ...(profile.attribute_progress || {}) };
   const progress = { ...oldProgress };
@@ -191,7 +202,11 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   Object.assign(updates, {
     attribute_progress: progress,
     xp: (Number(profile.xp) || 0) + scaledXp,
-    coins: (Number(profile.coins) || 0) + training.coins,
+    // M4.2.1 (Parte 2/3/13): treino deixa de PAGAR moedas e passa a CUSTAR —
+    // débito faz parte da MESMA atualização atômica de perfil que aplica os
+    // ganhos (nunca uma escrita separada), preservando a garantia de
+    // "validar → debitar → aplicar → salvar" em uma única operação.
+    coins: currentCoins - preview.cost,
     trainings_today: doneToday + 1,
     last_training_date: profile.career_date || todayStr(),
     energy: Math.max(0, conditionBefore.energy - preview.energyCost),
@@ -224,14 +239,17 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     group_id: training.groupId, focus_id: training.focusId, intensity: preview.intensity.id,
     attribute_target: Object.keys(training.primaryAttributes)[0], attribute_gain: preview.budget,
     attribute_gains: appliedGains, progress_before: oldProgress, progress_after: progress,
-    xp_reward: scaledXp, coins_reward: training.coins, energy_cost: preview.energyCost, fatigue_cost: preview.fatigueCost,
+    // M4.2.1 (Parte 2/34): treino não paga mais moedas — coins_reward fica
+    // 0 daqui em diante (histórico antigo com valor >0 continua intacto,
+    // sem migração). coins_cost é o campo novo com o débito real.
+    xp_reward: scaledXp, coins_reward: 0, coins_cost: preview.cost, energy_cost: preview.energyCost, fatigue_cost: preview.fatigueCost,
     injury_risk: preview.injuryRisk, condition_before: conditionBefore, condition_after: conditionAfter,
     duration_min: preview.duration, date: profile.career_date || todayStr(), partner_id: training.requiresPartner ? profile.partner_id : null,
     coach_id: profile.coach_id || null, training_schema_version: 2,
   });
   await incrementMissionProgress(profile.id, 'complete_training');
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
-  return { profile: updated, gain: preview.budget, gains: appliedGains, injured, recoveryDays, activity: { ...training, category: training.groupId, attribute: Object.keys(training.primaryAttributes)[0] }, intensity: preview.intensity, conditionBefore, conditionAfter, diminishing: preview.repetitionMultiplier, fatiguePenalty: preview.fatigueMultiplier < 1 ? round((preview.fatigueMultiplier - 1) * 100) : 0 };
+  return { profile: updated, gain: preview.budget, gains: appliedGains, injured, recoveryDays, cost: preview.cost, activity: { ...training, category: training.groupId, attribute: Object.keys(training.primaryAttributes)[0] }, intensity: preview.intensity, conditionBefore, conditionAfter, diminishing: preview.repetitionMultiplier, fatiguePenalty: preview.fatigueMultiplier < 1 ? round((preview.fatigueMultiplier - 1) * 100) : 0 };
 }
 
 export async function saveWeeklyPlan(profile, plan, enabled = true) {

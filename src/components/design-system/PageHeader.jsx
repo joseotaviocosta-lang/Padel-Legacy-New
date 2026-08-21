@@ -4,15 +4,15 @@ import { cn } from '@/lib/utils';
 import { GameHud } from './GameHud';
 
 export function PageHeader({
-  eyebrow,
+  eyebrow = undefined,
   title,
-  description,
-  icon: Icon,
-  action,
-  stats,
-  breadcrumb,
+  description = undefined,
+  icon: Icon = undefined,
+  action = undefined,
+  stats = undefined,
+  breadcrumb = undefined,
   tone = 'brand',
-  className,
+  className = undefined,
   dense = false,
   hudItems = undefined,
   hudLabel = undefined,

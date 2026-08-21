@@ -15,7 +15,12 @@ export const TRAINING_INTENSITIES = [
   { id: 'intenso', label: 'Intensa', energyCost: 16, fatigueCost: 12, gainMult: 1.28, durationMult: 1.35, injuryRisk: 0.0045, moraleImpact: -3, color: 'text-red-400', description: 'Mais progresso, fadiga e risco reais.' },
 ];
 
-const focus = (definition) => ({ duration: 50, xp: 18, coins: 10, baseGainBudget: 0.9, ...definition });
+// M4.2.1 (docs/MOBILE_M4_2_1_TRAINING_ECONOMY.md, Parte 2): treino deixou de
+// pagar moedas por atividade — o campo `coins` (fixo, 10, independente de
+// intensidade/estágio) foi removido daqui. O custo de treino agora é
+// calculado à parte por getTrainingCost() (trainingEconomy.js), que varia
+// por estágio de carreira e intensidade — nunca um valor fixo por catálogo.
+const focus = (definition) => ({ duration: 50, xp: 18, baseGainBudget: 0.9, ...definition });
 
 export const TRAINING_FOCUSES = [
   focus({ id: 'court-groundstrokes', groupId: 'court', focusId: 'groundstrokes', label: 'Golpes de fundo', icon: 'Target', description: 'Desenvolve forehand e backhand em conjunto.', primaryAttributes: { forehand: 1, backhand: 1 }, secondaryAttributes: { strategy: 0.3, agility: 0.2 } }),

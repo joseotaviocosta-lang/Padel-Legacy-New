@@ -9,6 +9,8 @@ const variants = {
   premium: 'pl-surface pl-surface-premium',
 };
 
+/** @typedef {{ variant?: keyof typeof variants, padding?: 'none' | 'compact' | 'default' | 'spacious' } & React.HTMLAttributes<HTMLDivElement>} SurfaceProps */
+/** @type {React.ForwardRefExoticComponent<SurfaceProps & React.RefAttributes<HTMLDivElement>>} */
 export const Surface = React.forwardRef(({ className, variant = 'default', padding = 'default', children, ...props }, ref) => {
   const paddings = { none: '', compact: 'p-3', default: 'p-4 sm:p-5', spacious: 'p-5 sm:p-6' };
   return <div ref={ref} data-surface className={cn('pl-surface-motion min-w-0 rounded-2xl border', variants[variant] || variants.default, paddings[padding], className)} {...props}>{children}</div>;

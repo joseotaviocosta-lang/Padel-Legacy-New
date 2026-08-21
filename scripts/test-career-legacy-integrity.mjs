@@ -82,6 +82,17 @@ try {
   gate('Título só conta a partir de vitória oficial em final (1 título, não influenciado por treino)', season2025.titles === 1);
   gate('Highlight do título cita o torneio real', season2025.highlights.some((h) => h.includes('Master QA')));
 
+  // ── 4b) Timeline: escada de ranking unificada com a de conquistas (10 degraus, não a antiga lista de 6) ──
+  const rankProfile = { ...profile, ranking_position: 200 }; // cruza Top 500 e Top 250, mas não Top 100
+  const rankTimeline = buildCareerTimeline(rankProfile, []);
+  gate('BUG BLOQUEADO: rank #200 agora cria evento "Entrada no Top 250" (a escada antiga da timeline pulava direto de Top 500 pra Top 100)', rankTimeline.some((e) => e.id === 'rank-250'));
+  gate('rank #200 também mantém "Entrada no Top 500" (degrau mais largo, coerente)', rankTimeline.some((e) => e.id === 'rank-500'));
+  gate('rank #200 NÃO cria "Entrada no Top 100" (ainda não foi alcançado)', !rankTimeline.some((e) => e.id === 'rank-100'));
+  const eliteRankProfile = { ...profile, ranking_position: 4 }; // cruza Top 5 e Top 3, mas não #1
+  const eliteTimeline = buildCareerTimeline(eliteRankProfile, []);
+  gate('BUG BLOQUEADO: rank #4 cria "Entrada no Top 5" (não existia na escada antiga de 6 degraus)', eliteTimeline.some((e) => e.id === 'rank-5'));
+  gate('rank #4 NÃO cria "Número 1 do mundo" (ainda não é #1)', !eliteTimeline.some((e) => e.id === 'rank-1'));
+
   // ── 5) Regressão: sem nenhuma partida, timeline/retrospectiva não quebram ──
   gate('buildCareerTimeline sem partidas ainda retorna o evento de início de carreira', buildCareerTimeline(profile, []).some((e) => e.type === 'start'));
   gate('buildSeasonRetrospectives sem partidas retorna lista vazia, não lança exceção', Array.isArray(buildSeasonRetrospectives(profile, [])) && buildSeasonRetrospectives(profile, []).length === 0);

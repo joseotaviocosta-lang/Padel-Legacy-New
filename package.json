@@ -225,7 +225,10 @@
     "test:career-legacy-integrity": "node scripts/test-career-legacy-integrity.mjs",
     "test:career-opportunity-progression": "node scripts/test-career-opportunity-progression.mjs",
     "test:career-long-term-goals": "node scripts/test-career-long-term-goals.mjs",
-    "test:career-depth": "node scripts/test-career-depth.mjs"
+    "test:career-depth": "node scripts/test-career-depth.mjs",
+    "test:training-economy-m4-2-1": "node scripts/test-training-economy-m4-2-1.mjs",
+    "test:training-economy-balance-m4-2-1": "node scripts/test-training-economy-balance-m4-2-1.mjs",
+    "test:mobile-training-game-experience-m4-2-1": "node scripts/test-mobile-training-game-experience-m4-2-1.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

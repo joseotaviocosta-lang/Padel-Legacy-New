@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils';
  * chevron, badge). Renderiza `<Link>` se `to` for passado, senão
  * `<button>` — nunca os dois.
  */
-export function CompactListItem({ leading, title, meta, trailing, onClick, to, interactive, highlighted = false, unread = false, className }) {
+export function CompactListItem({ leading = undefined, title, meta = undefined, trailing = undefined, onClick = undefined, to = undefined, interactive = undefined, highlighted = false, unread = false, className = undefined }) {
   const isInteractive = interactive !== undefined ? interactive : Boolean(to || onClick);
   const content = (
     <>

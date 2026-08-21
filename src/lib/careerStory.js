@@ -83,7 +83,16 @@ export function buildCareerTimeline(profile, matches = []) {
   if ((profile.tournaments_won || titles.length) > 0) events.push({ id: 'first-title', year: currentDate?.getFullYear(), type: 'title', title: 'Primeiro título', description: titles[0] ? `Conquista do ${titles[0]}.` : 'O primeiro troféu da carreira.', achieved: true });
 
   const rank = Number(profile.ranking_position || profile.world_ranking || profile.ranking || 0);
-  [500, 100, 50, 20, 10, 1].forEach((milestone) => {
+  // Fase 13 (Parte 3/4/11): achado real — esta lista era uma escada PRÓPRIA
+  // e mais curta (500/100/50/20/10/1), diferente da escada de conquistas
+  // reach_rank (achievementsData.js, agora 500/250/100/50/30/20/10/5/3/1).
+  // Um jogador que cruzasse Top 250/30/5/3 ganhava a conquista mas NENHUM
+  // registro na timeline de legado — exatamente a falta de conversa entre
+  // sistemas que a Parte 0 pede pra identificar. Unificado com a mesma
+  // escada, sem duplicar a fonte (valores literais aqui porque
+  // achievementsData.js não é importado por este módulo puro/sem storage;
+  // qualquer mudança futura na ladder de reach_rank precisa espelhar aqui).
+  [500, 250, 100, 50, 30, 20, 10, 5, 3, 1].forEach((milestone) => {
     if (rank > 0 && rank <= milestone) events.push({ id: `rank-${milestone}`, year: currentDate?.getFullYear(), type: 'ranking', title: milestone === 1 ? 'Número 1 do mundo' : `Entrada no Top ${milestone}`, description: `A carreira alcançou a posição #${rank} do ranking mundial.`, achieved: true });
   });
 

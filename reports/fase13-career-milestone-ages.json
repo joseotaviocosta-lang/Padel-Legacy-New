@@ -1,0 +1,36 @@
+{
+  "sourceFile": "reports/massive-careers-v32-fase13.json",
+  "totalCareersSimulated": 1000,
+  "scenarios": 10,
+  "seasonsPerCareer": 10,
+  "medianAgeByRung": {
+    "top500": 17,
+    "top250": 19,
+    "top100": 20,
+    "top50": 21,
+    "top30": 22,
+    "top20": 25,
+    "top10": 26,
+    "top5": null,
+    "top3": null,
+    "top1": null
+  },
+  "sampleSizeByRung": {
+    "top500": 1000,
+    "top250": 1000,
+    "top100": 1000,
+    "top50": 984,
+    "top30": 937,
+    "top20": 484,
+    "top10": 7,
+    "top5": 0,
+    "top3": 0,
+    "top1": 0
+  },
+  "top500ReachRate": 100,
+  "medianPeakAge": 26,
+  "medianFirstTitleAge": 17,
+  "titleRate": 61,
+  "expectedPeakWindow": "22-25",
+  "peakWithinExpectedWindowRate": 40.2
+}
