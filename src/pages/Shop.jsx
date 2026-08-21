@@ -4,6 +4,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ShoppingBag, Coins, Check, Lock, Package, Search, SlidersHorizontal, TrendingUp, TrendingDown, Flame } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
 import { Page, PageContent, PageHeader, PageSkeleton, CardGrid, StatCard, Surface, StatusBadge, EmptyState, Tabs, Button } from '@/components/design-system';
+import { FilterPills } from '@/components/padel/ui';
 import { useToast } from '@/components/ui/use-toast';
 import EquippedView from '@/components/shop/EquippedView';
 import ItemDetailModal from '@/components/shop/ItemDetailModal';
@@ -320,20 +321,8 @@ export default function Shop() {
             </button>
           </Surface>
 
-          {/* Category filter */}
-          <div className="flex gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none">
-            {CATEGORIES.map(cat => (
-              <button
-                key={cat.id}
-                onClick={() => setCategory(cat.id)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all flex items-center gap-1 ${
-                  category === cat.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <span>{cat.emoji}</span> {cat.label}
-              </button>
-            ))}
-          </div>
+          {/* Category filter — M4.2.2: FilterPills compartilhado (shrink-0 real), não mais uma faixa própria sem proteção contra compressão */}
+          <FilterPills filters={CATEGORIES} activeFilter={category} onFilterChange={setCategory} />
 
           {/* Advanced filters */}
           {showFilters && (

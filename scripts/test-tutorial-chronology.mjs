@@ -15,7 +15,18 @@ assert.equal(getCurrentTutorialStep(fresh.tutorial).id, 'career-created', 'new c
 // jogar, o resto virou Guia opcional. Este teste não trava mais num piso
 // alto de etapas (isso é exatamente o que a v9 corrigiu); só garante que o
 // tutorial continua curto e não voltou a inchar silenciosamente.
-assert(TUTORIAL_STEPS.length >= 10 && TUTORIAL_STEPS.length <= 20, 'tutorial permanece curto e essencial (10-20 etapas)');
+//
+// Fase 13.1 (docs/FASE_13_1_CAREER_PACE_VALIDATION.md, Parte 20): a
+// asserção acima (10-20) ficou obsoleta quando o Tutorial 4.1 expandiu de
+// propósito pra 27 etapas (12 novas etapas de descoberta — carreira/
+// competição/mundo/imprensa/notificações — até a autonomia real,
+// confirmado e provado passo a passo por test:tutorial-expanded-flow,
+// 19 gates, "getTutorialProgress reporta 27/27"). Essa expansão NUNCA foi
+// revertida nem é um bug — é o estado atual e intencional do tutorial, só
+// esta asserção (fora de escopo de qualquer fase de tutorial) não
+// acompanhou. Faixa ampliada pra 10-30 (ainda um teto real, só não mais o
+// da era pré-4.1) — nenhuma mudança em tutorialSteps.js/onboarding.
+assert(TUTORIAL_STEPS.length >= 10 && TUTORIAL_STEPS.length <= 30, 'tutorial permanece curto e essencial (10-30 etapas, atualizado para refletir o Tutorial 4.1 com 27 etapas)');
 assert.equal(new Set(TUTORIAL_STEPS.map(step => step.id)).size, TUTORIAL_STEPS.length, 'step IDs are stable and unique');
 assert(TUTORIAL_STEPS.every(step => step.route && step.objectiveType), 'every step has route and domain objective');
 

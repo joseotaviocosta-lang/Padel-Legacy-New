@@ -228,7 +228,13 @@
     "test:career-depth": "node scripts/test-career-depth.mjs",
     "test:training-economy-m4-2-1": "node scripts/test-training-economy-m4-2-1.mjs",
     "test:training-economy-balance-m4-2-1": "node scripts/test-training-economy-balance-m4-2-1.mjs",
-    "test:mobile-training-game-experience-m4-2-1": "node scripts/test-mobile-training-game-experience-m4-2-1.mjs"
+    "test:mobile-training-game-experience-m4-2-1": "node scripts/test-mobile-training-game-experience-m4-2-1.mjs",
+    "test:elite-progression": "node scripts/test-elite-progression.mjs",
+    "test:career-pace-production": "node scripts/test-career-pace-production.mjs",
+    "test:career-pace-by-difficulty": "node scripts/test-career-pace-by-difficulty.mjs",
+    "test:career-ovr-curve": "node scripts/test-career-ovr-curve.mjs",
+    "test:career-pace-performance": "node scripts/test-career-pace-performance.mjs",
+    "test:mobile-filters-postmatch-m4-2-2": "node scripts/test-mobile-filters-postmatch-m4-2-2.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

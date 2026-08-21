@@ -5,6 +5,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { applyCareerCommunicationAction, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
 import { Page, PageContent, PageHeader, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
+import { FilterPills } from '@/components/padel/ui';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
 import { getNotificationCategory, getNotificationCategoryLabel, NOTIFICATION_CATEGORIES } from '@/lib/notificationCenter.js';
@@ -166,9 +167,8 @@ export default function Communications() {
 
         <Surface className="p-3 sm:p-4">
           <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-            <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-              {NOTIFICATION_CATEGORIES.map((item) => <button key={item.id} type="button" onClick={() => setCategory(item.id)} className={`whitespace-nowrap rounded-xl px-3 py-2 text-xs font-bold transition-colors ${category === item.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/55 text-muted-foreground hover:text-foreground'}`}>{item.label}</button>)}
-            </div>
+            {/* M4.2.2: FilterPills compartilhado (mesmo padrão de Loja/Economia) */}
+            <FilterPills filters={NOTIFICATION_CATEGORIES} activeFilter={category} onFilterChange={setCategory} />
             <label className="flex min-w-0 items-center gap-2 rounded-xl border border-border/70 bg-background/50 px-3 py-2 lg:w-72"><Search className="h-4 w-4 text-muted-foreground" /><input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Buscar notificações" className="min-w-0 flex-1 bg-transparent text-sm outline-none" /></label>
           </div>
         </Surface>

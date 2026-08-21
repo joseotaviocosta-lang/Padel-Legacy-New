@@ -35,8 +35,25 @@ function getProfileStyleKey(profile) {
   return 'balanced';
 }
 
+// Fase 13.1 (docs/FASE_13_1_CAREER_PACE_VALIDATION.md, Parte 10/15, Caso 4):
+// achado real confirmado por auditoria de código — nenhum ponto da criação
+// real de carreira (CareerInitialDataService.js, ActiveCareerAdapter.js,
+// initialCareerProfiles.js, o assistente de personagem) jamais define
+// `profile.potential`. Todo jogador real caía no fallback antigo (72,
+// teto ~82-84) — abaixo do próprio Overall dos bots do Top 100 (~85, ver
+// rankingPopulation.js), tornando o Top 100+ estruturalmente inalcançável
+// para QUALQUER carreira real, não só difícil. Os simuladores de pace
+// (massive-v32/career-difficulty-pace) nunca expuseram esse problema
+// porque SEMPRE injetam seu próprio `potential` (78-91) por cenário — eles
+// testam builds mais talentosos do que qualquer perfil real recebe.
+// Corrigido no MENOR ponto possível (só o fallback, nenhum campo novo
+// persistido, nenhuma tela de criação de personagem alterada): 80 é o
+// mesmo valor já usado e validado por um dos 10 cenários "saudáveis" do
+// massive-v32 (economy-conservative), dá teto ~87 (acima do Top 100 real,
+// ainda abaixo do Top 20-10 real de propósito — carreira excepcional
+// continua exigindo mais do que a média, por design, Parte 12).
 export function getAttributeDevelopmentCeiling(profile, attribute) {
-  const potential = clamp(profile?.potential ?? 72, 45, 99);
+  const potential = clamp(profile?.potential ?? 80, 45, 99);
   const base = 47 + potential * 0.48;
   const styleKey = getProfileStyleKey(profile);
   const preferred = STYLE_ATTRIBUTE_BONUSES[styleKey]?.has(attribute);
@@ -84,7 +101,11 @@ export function calculateTrainingGainBudget({ profile, training, intensityId = '
   const weightedLevel = Object.entries(weights).reduce((sum, [key, weight]) => sum + clamp(profile?.[key]) * weight, 0) / Math.max(1, Object.values(weights).reduce((a, b) => a + b, 0));
   const levelMultiplier = clamp(1.18 - weightedLevel * 0.0065, 0.42, 1.12);
   const fatigueMultiplier = clamp(1 - clamp(profile?.fatigue) * 0.006, 0.45, 1);
-  const potentialMultiplier = clamp(0.9 + (Number(profile?.potential) || 60) / 520, 0.92, 1.11);
+  // Fase 13.1 (Parte 10/15): mesmo fallback de getAttributeDevelopmentCeiling
+  // acima (80, não mais 60) — os dois liam profile.potential com defaults
+  // diferentes para o mesmo campo ausente, uma inconsistência que só não
+  // aparecia porque nenhum perfil real jamais tinha o campo definido.
+  const potentialMultiplier = clamp(0.9 + (Number(profile?.potential) || 80) / 520, 0.92, 1.11);
   const age = profile?.birth_date ? Math.max(16, Math.floor((parseDate(profile.career_date) - parseDate(profile.birth_date)) / 31557600000)) : 25;
   // A maior janela de evolução acontece dos 16 aos 22 anos. O auge chega
   // entre 23 e 26; depois disso a progressão vira manutenção e especialização.

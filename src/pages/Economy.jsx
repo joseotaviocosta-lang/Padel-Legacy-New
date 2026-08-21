@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Wallet, Star, Building2, TrendingUp, Receipt, ClipboardCheck, Coins, Users } from 'lucide-react';
-import { LoadingScreen } from '@/components/padel/ui';
+import { LoadingScreen, FilterPills } from '@/components/padel/ui';
 import { PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
@@ -169,23 +169,10 @@ export default function Economy() {
         <StatCard label="Investimentos" value={investmentTotal.toLocaleString('pt-BR')} detail={`${investments.length} posição(ões)`} icon={TrendingUp} tone="info" />
       </div>
 
-      {/* Tabs */}
-      <div className="sticky top-0 z-20 -mx-1 flex gap-1.5 overflow-x-auto rounded-2xl border border-border/50 bg-background/90 p-1.5 shadow-sm backdrop-blur-xl scrollbar-none">
-        {TABS.map(t => {
-          const Icon = t.icon;
-          const isActive = tab === t.id;
-          return (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap transition-colors ${
-                isActive ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'
-              }`}
-            >
-              <Icon className="h-3.5 w-3.5" /> {t.label}
-            </button>
-          );
-        })}
+      {/* Tabs — M4.2.2: FilterPills compartilhado (mesmo padrão da Loja) dentro
+          do wrapper sticky/blur próprio da Economia (identidade visual preservada) */}
+      <div className="sticky top-0 z-20 -mx-1 rounded-2xl border border-border/50 bg-background/90 p-1.5 shadow-sm backdrop-blur-xl">
+        <FilterPills filters={TABS} activeFilter={tab} onFilterChange={setTab} />
       </div>
 
       {/* Tab content */}

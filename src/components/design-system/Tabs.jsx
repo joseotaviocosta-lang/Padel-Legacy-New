@@ -42,7 +42,17 @@ export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', clas
                 // pl-tab-trigger (Fase M1): eleva a área de toque mínima
                 // para 44px sob mobile — ver src/index.css.
                 'pl-tab-trigger min-w-max shrink-0 whitespace-nowrap gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
-                variant === 'segmented' && 'flex-1',
+                // M4.2.2 (docs/MOBILE_M4_2_2_FILTERS_POSTMATCH.md, Parte A/B):
+                // achado real — `flex-1` incondicional forçava TODA aba a
+                // dividir a largura igualmente, o mesmo anti-padrão de
+                // "grid-cols-N" que o briefing pede pra evitar (labels como
+                // "Investimentos"/"Oportunidades" ficavam espremidas pra
+                // caber no mesmo espaço de "Fluxo"). `min-w-max shrink-0`
+                // (base, acima) já garante largura por conteúdo + rolagem —
+                // `flex-1` só volta a partir de `sm:` (telas com espaço de
+                // sobra), preservando o preenchimento uniforme no desktop
+                // sem comprimir nada no mobile.
+                variant === 'segmented' && 'sm:flex-1',
                 variant === 'buttons' && 'bg-secondary/50 data-[state=active]:bg-primary/15 data-[state=active]:text-primary',
               )}
             >

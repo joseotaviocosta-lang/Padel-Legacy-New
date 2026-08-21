@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useState, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain, History, Trash2 } from 'lucide-react';
+import { Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain, History, Trash2, Home } from 'lucide-react';
 import { ModalShell } from '@/components/design-system';
 
 import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
@@ -33,7 +34,28 @@ const SHOT_LABELS = {
   chiquita: { label: 'Chiquita', desc: 'Golpe baixo e rápido perto da rede, para tirar tempo do adversário.' },
 };
 const NEUTRAL_SHOT_WEIGHTS = Object.fromEntries(SHOTS.map((shot) => [shot, 1]));
+
+// M4.2.2 (docs/MOBILE_M4_2_2_FILTERS_POSTMATCH.md, Parte F/G/H): achado real
+// — o resumo de partida treino sempre oferecia "Jogar Novamente", mesmo já
+// tendo consumido o limite diário (DAILY_MATCH_LIMIT=1, src/lib/padel.js).
+// `startMatch()` já bloqueia corretamente uma segunda tentativa (linha
+// acima, `canPlayMatchToday`) — o bug era só o CTA prometer uma ação que a
+// própria regra do jogo recusaria em seguida. Função pura e testável
+// (Parte K pede teste comportamental, não regex): recebe o MESMO `profile`
+// já atualizado pós-finalização (setProfile(updated) já corrige isso antes
+// do resumo renderizar — não havia stale state nesta tela especificamente,
+// confirmado por leitura). Este componente é usado SÓ para partida treino
+// (torneio usa TournamentModal.jsx, um arquivo inteiramente separado) — não
+// precisa distinguir contexto aqui, mas fica isolado como função pura para
+// não espalhar a condição pelo JSX (Parte G).
+export function getPostMatchPrimaryAction(profile) {
+  if (canPlayMatchToday(profile).allowed) {
+    return { key: 'play-again', label: 'Jogar Novamente' };
+  }
+  return { key: 'back-to-career', label: 'Voltar para a carreira' };
+}
 export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState(initialProfile);
   const [initialTacticId, setInitialTacticId] = useState('equilibrado');
   const [displayMode, setDisplayMode] = useState('text');
@@ -422,12 +444,27 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             />
             {result.matchState.liveCoachReport && <div className="glass rounded-2xl p-4"><p className="text-xs font-black mb-2">Decisões durante a partida</p><p className="text-[11px] text-muted-foreground">{result.matchState.liveCoachReport.suggestionsReceived} sugestões · {result.matchState.liveCoachReport.suggestionsApplied} aplicadas · {result.matchState.liveCoachReport.suggestionsIgnored} ignoradas</p><p className="mt-2 text-[9px] text-muted-foreground">{result.matchState.liveCoachReport.disclaimer}</p></div>}
 
-            <button
-              onClick={reset}
-              className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
-            >
-              <RefreshCw className="h-4 w-4" /> Jogar Novamente
-            </button>
+            {(() => {
+              const primaryAction = getPostMatchPrimaryAction(profile);
+              if (primaryAction.key === 'back-to-career') {
+                return (
+                  <button
+                    onClick={() => { onClose?.(); navigate('/'); }}
+                    className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
+                  >
+                    <Home className="h-4 w-4" /> {primaryAction.label}
+                  </button>
+                );
+              }
+              return (
+                <button
+                  onClick={reset}
+                  className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
+                >
+                  <RefreshCw className="h-4 w-4" /> {primaryAction.label}
+                </button>
+              );
+            })()}
           </div>
         )}
     </ModalShell>

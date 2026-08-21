@@ -1,0 +1,120 @@
+{
+  "generatedAt": "2026-08-21T13:36:39.991Z",
+  "configuration": {
+    "runs": 100,
+    "seasons": 16,
+    "scenarios": 10,
+    "perDifficulty": 1000
+  },
+  "byDifficulty": {
+    "easy": {
+      "difficultyId": "easy",
+      "careers": 1000,
+      "peak": {
+        "median": 4,
+        "p25": 4,
+        "p75": 5,
+        "neverPeakedRate": 10
+      },
+      "peakGateMedians": {
+        "technicalReady": 4,
+        "competitiveReady": 2,
+        "experienceReady": 1
+      },
+      "top100Median": 2,
+      "top20Median": 3,
+      "top10Median": 5,
+      "top500Median": 1,
+      "finalOverall": 81.8,
+      "overallCeilingRatio": 0.928,
+      "coins": 0,
+      "bankruptRate": 0,
+      "stagnationRate": 0,
+      "injuries": 3.2,
+      "avgFatigue": 27,
+      "outliers": {
+        "tooSlow": 0,
+        "tooFast": 0,
+        "tooSlowPct": 0,
+        "tooFastPct": 0
+      }
+    },
+    "normal": {
+      "difficultyId": "normal",
+      "careers": 1000,
+      "peak": {
+        "median": 6,
+        "p25": 5,
+        "p75": 6,
+        "neverPeakedRate": 10
+      },
+      "peakGateMedians": {
+        "technicalReady": 5,
+        "competitiveReady": 4,
+        "experienceReady": 1
+      },
+      "top100Median": 3,
+      "top20Median": 7,
+      "top10Median": 11,
+      "top500Median": 1,
+      "finalOverall": 80.1,
+      "overallCeilingRatio": 0.909,
+      "coins": 0,
+      "bankruptRate": 0,
+      "stagnationRate": 0,
+      "injuries": 3.9,
+      "avgFatigue": 36.4,
+      "outliers": {
+        "tooSlow": 1,
+        "tooFast": 0,
+        "tooSlowPct": 0.1,
+        "tooFastPct": 0
+      }
+    },
+    "hard": {
+      "difficultyId": "hard",
+      "careers": 1000,
+      "peak": {
+        "median": 8,
+        "p25": 7,
+        "p75": 9,
+        "neverPeakedRate": 10
+      },
+      "peakGateMedians": {
+        "technicalReady": 7,
+        "competitiveReady": 5,
+        "experienceReady": 1
+      },
+      "top100Median": 4,
+      "top20Median": 10,
+      "top10Median": 14,
+      "top500Median": 1,
+      "finalOverall": 78.5,
+      "overallCeilingRatio": 0.893,
+      "coins": 0,
+      "bankruptRate": 0,
+      "stagnationRate": 0,
+      "injuries": 4.2,
+      "avgFatigue": 44.5,
+      "outliers": {
+        "tooSlow": 98,
+        "tooFast": 0,
+        "tooSlowPct": 9.8,
+        "tooFastPct": 0
+      }
+    }
+  },
+  "findings": [],
+  "perPhaseMs": {
+    "easy": 314805,
+    "normal": 287523,
+    "hard": 445584,
+    "neutral": 580206
+  },
+  "hardVsNeutral": {
+    "hardPeakMedian": 8,
+    "neutralPeakMedian": 9,
+    "hardFinalOverall": 78.5,
+    "neutralFinalOverall": 78.2
+  }
+}

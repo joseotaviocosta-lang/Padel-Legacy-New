@@ -93,24 +93,41 @@ export function TabBar({ tabs, activeTab, onTabChange, variant = 'buttons' }) {
 }
 
 // ─── FilterPills ───────────────────────────────────────────────
-/** @deprecated Considere `Tabs` (variant="buttons") do design-system para casos novos. */
+// M4.2.2 (docs/MOBILE_M4_2_2_FILTERS_POSTMATCH.md, Parte A/B): achado real
+// de auditoria — Loja, Economia e Comunicações reimplementavam essa MESMA
+// faixa de pílulas roláveis cada uma à sua própria maneira, e as 3 cópias
+// (+ esta função original) tinham o mesmo bug: `overflow-x-auto` sem
+// `shrink-0` nos itens. Flexbox encolhe itens (`flex-shrink:1` é o padrão)
+// antes de deixar o container estourar e rolar — sem `shrink-0` explícito,
+// o navegador prefere espremer os botões a ativar o scroll, exatamente o
+// "filtros comprimidos" relatado no aparelho físico. `shrink-0` força cada
+// item a manter sua largura de conteúdo; só então o container realmente
+// rola em vez de espremer. Deixou de ser @deprecated — agora é o padrão
+// recomendado para qualquer faixa de filtros/categorias em pílula (com ou
+// sem ícone), reaproveitado por Loja/Economia/Comunicações em vez de cada
+// uma reimplementar a mesma faixa.
 export function FilterPills({ filters, activeFilter, onFilterChange }) {
   return (
-    <div className="flex gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none">
-      {filters.map(f => (
-        <button
-          key={f.id}
-          type="button"
-          onClick={() => onFilterChange(f.id)}
-          className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
-            activeFilter === f.id
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
-          }`}
-        >
-          {f.label}
-        </button>
-      ))}
+    <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+      {filters.map(f => {
+        const Icon = f.icon;
+        return (
+          <button
+            key={f.id}
+            type="button"
+            onClick={() => onFilterChange(f.id)}
+            className={`inline-flex shrink-0 items-center gap-1.5 px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all ${
+              activeFilter === f.id
+                ? 'bg-primary text-primary-foreground'
+                : 'bg-secondary/50 text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            {f.emoji && <span>{f.emoji}</span>}
+            {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+            {f.label}
+          </button>
+        );
+      })}
     </div>
   );
 }
