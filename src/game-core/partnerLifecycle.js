@@ -10,6 +10,8 @@ import { overallRating } from '@/lib/padel';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 import { calculateRenewalInterest, decideRenewal, getPartnershipContractTransition, seededChance, seededHash } from './livingCircuitRules.js';
 
+const entities = /** @type {any} */ (localGame.entities);
+
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
 }
@@ -21,6 +23,23 @@ function monthKey(date) {
 function defaultSalary(bot) {
   const ovr = overallRating(bot || {});
   return Math.max(80, Math.round((ovr * ovr) / 18));
+}
+
+async function resolvePartnerDecisionMessages(profileId, partnershipId, outcome) {
+  if (!profileId || !partnershipId) return 0;
+  const rows = await entities.CareerMessage.filter({ profile_id: profileId }, '-created_date', 160).catch(() => []);
+  const pending = rows.filter((row) => {
+    const contextKey = String(row.metadata?.context_key || '');
+    return !['resolvida', 'ignorada', 'invalidada'].includes(row.status)
+      && contextKey.includes(partnershipId)
+      && (contextKey.startsWith('partner-contract-') || contextKey.startsWith('partner-renewal:'));
+  });
+  if (!pending.length) return 0;
+  await localGame.batch(pending.map((row) => ({
+    type: 'update', entityName: 'CareerMessage', id: row.id,
+    data: { status: 'resolvida', is_read: true, is_new: false, chosen_action_id: outcome },
+  })));
+  return pending.length;
 }
 
 export function getSuggestedPartnerTerms(profile, bot) {
@@ -47,7 +66,7 @@ export async function formPartnerContract(profile, bot, requestedTerms = {}) {
 
   const result = await startPartnership(profile, bot, terms.durationDays, terms.prizeSplit);
   const careerDate = profile.career_date || CAREER_START_DATE;
-  const partnership = await localGame.entities.Partnership.update(result.partnership.id, {
+  const partnership = await entities.Partnership.update(result.partnership.id, {
     contract_status: 'ativo',
     monthly_salary: terms.monthlySalary,
     partner_morale: terms.morale,
@@ -58,7 +77,7 @@ export async function formPartnerContract(profile, bot, requestedTerms = {}) {
   });
 
   await Promise.allSettled([
-    localGame.entities.HistoryEntry.create({
+    entities.HistoryEntry.create({
       profile_id: profile.id,
       year: Number(careerDate.slice(0, 4)),
       event_date: careerDate,
@@ -66,7 +85,7 @@ export async function formPartnerContract(profile, bot, requestedTerms = {}) {
       description: `Contrato de ${terms.durationDays} dias, divisão de ${terms.prizeSplit}% da premiação e salário mensal de ${terms.monthlySalary} moedas.`,
       category: 'parceria',
     }),
-    localGame.entities.CareerMessage.create({
+    entities.CareerMessage.create({
       profile_id: profile.id,
       sender_name: bot.name,
       subject: 'Contrato de dupla confirmado',
@@ -87,7 +106,7 @@ export async function renewPartnerContract(profile, terms = {}) {
   const durationDays = clamp(terms.durationDays ?? 60, 30, 180);
   const prizeSplit = clamp(terms.prizeSplit ?? active.prize_split_pct ?? 50, 35, 70);
   const monthlySalary = clamp(terms.monthlySalary ?? active.monthly_salary ?? 100, 0, 999999);
-  const partnerRows = await localGame.entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
+  const partnerRows = await entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
   const partner = partnerRows[0] || { id: active.partner_bot_id, name: active.partner_name, expected_salary: active.monthly_salary };
   const decisionKey = `${careerDate}:${durationDays}:${prizeSplit}:${monthlySalary}`;
   if (active.last_renewal_decision_key === decisionKey && active.last_renewal_decision) {
@@ -97,7 +116,7 @@ export async function renewPartnerContract(profile, terms = {}) {
 
   if (decision.outcome === 'wait' || decision.outcome === 'refused') {
     const contractStatus = decision.outcome === 'wait' ? 'negociacao' : 'nao_renovara';
-    const partnership = await localGame.entities.Partnership.update(active.id, {
+    const partnership = await entities.Partnership.update(active.id, {
       contract_status: contractStatus,
       renewal_available: decision.outcome === 'wait',
       last_renewal_decision_key: decisionKey,
@@ -114,6 +133,7 @@ export async function renewPartnerContract(profile, terms = {}) {
       status: 'decisao_pendente', priority: 'alta', message_type: 'partner_renewal_decision', career_date: careerDate,
       destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
     });
+    if (decision.outcome === 'refused') await resolvePartnerDecisionMessages(profile.id, active.id, 'renewal_refused');
     return { partnership, profile, decision };
   }
 
@@ -122,7 +142,7 @@ export async function renewPartnerContract(profile, terms = {}) {
     : { durationDays, prizeSplit, monthlySalary };
 
   await negotiatePrizeSplit(active.id, acceptedTerms.prizeSplit);
-  const partnership = await localGame.entities.Partnership.update(active.id, {
+  const partnership = await entities.Partnership.update(active.id, {
     status: 'ativa',
     contract_status: 'renovado',
     negotiated_duration_days: acceptedTerms.durationDays,
@@ -139,11 +159,12 @@ export async function renewPartnerContract(profile, terms = {}) {
     renewal_count: Number(active.renewal_count || 0) + 1,
     history: [...(active.history || []), { date: careerDate, event: 'renewed', outcome: decision.outcome, duration_days: acceptedTerms.durationDays }].slice(-30),
   });
-  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
+  const updatedProfile = await entities.PlayerProfile.update(profile.id, {
     partner_locked_until: partnership.contract_end_date,
   });
+  await resolvePartnerDecisionMessages(profile.id, active.id, 'renewed');
   await Promise.allSettled([
-    localGame.entities.HistoryEntry.create({
+    entities.HistoryEntry.create({
       profile_id: profile.id,
       year: Number(careerDate.slice(0, 4)),
       event_date: careerDate,
@@ -151,7 +172,7 @@ export async function renewPartnerContract(profile, terms = {}) {
       description: `Novo vínculo de ${acceptedTerms.durationDays} dias, salário mensal de ${acceptedTerms.monthlySalary} moedas e ${acceptedTerms.prizeSplit}% da premiação para o jogador.`,
       category: 'parceria',
     }),
-    localGame.entities.CareerMessage.create({
+    entities.CareerMessage.create({
       profile_id: profile.id,
       sender_name: active.partner_name,
       subject: 'Renovação confirmada',
@@ -172,15 +193,16 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
   const penalty = early ? Math.min(Number(profile.coins) || 0, Math.max(50, Math.round((active.monthly_salary || 100) * 0.5))) : 0;
 
   await endPartnership(active.id, 'encerrada_jogador', reason, careerDate);
-  const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
+  const updatedProfile = await entities.PlayerProfile.update(profile.id, {
     partner_id: null,
     partner_name: null,
     partner_locked_until: null,
     partner_chemistry: 50,
     coins: Math.max(0, (Number(profile.coins) || 0) - penalty),
   });
+  await resolvePartnerDecisionMessages(profile.id, active.id, 'released');
   if (penalty > 0) {
-    await localGame.entities.FinancialTransaction.create({
+    await entities.FinancialTransaction.create({
       profile_id: profile.id,
       date: careerDate,
       type: 'expense',
@@ -197,7 +219,7 @@ export async function schedulePartnerSeparation(profile, reason = 'Fim de ciclo 
   if (!active) throw new Error('Nenhuma parceria ativa.');
   const careerDate = profile.career_date || CAREER_START_DATE;
   const endDate = active.contract_end_date || active.scheduled_end_date || careerDate;
-  const partnership = await localGame.entities.Partnership.update(active.id, {
+  const partnership = await entities.Partnership.update(active.id, {
     contract_status: 'encerrar_ao_final', renewal_available: false,
     planned_end_reason: reason,
     history: [...(active.history || []), { date: careerDate, event: 'end_scheduled', reason }].slice(-30),
@@ -208,6 +230,7 @@ export async function schedulePartnerSeparation(profile, reason = 'Fim de ciclo 
     status: 'nao_lida', priority: 'normal', message_type: 'partner_contract', career_date: careerDate,
     destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
   });
+  await resolvePartnerDecisionMessages(profile.id, active.id, 'end_scheduled');
   return { partnership, profile };
 }
 
@@ -215,7 +238,7 @@ export async function processPartnerMarketInterest(profile, previousDate, curren
   if (!profile?.id || !profile.partner_id || monthKey(previousDate) === monthKey(currentDate)) return profile;
   const active = await getActivePartnership(profile.id);
   if (!active || active.last_partner_market_month === monthKey(currentDate)) return profile;
-  const partnerRows = await localGame.entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
+  const partnerRows = await entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
   const partner = partnerRows[0];
   if (!partner) return profile;
   const interest = calculateRenewalInterest(active, profile, partner, null);
@@ -223,14 +246,14 @@ export async function processPartnerMarketInterest(profile, previousDate, curren
   const month = monthKey(currentDate);
   const mark = { last_partner_market_month: month };
   if (!seededChance(`${profile.id}:${active.id}:${month}:partner-market`, chance)) {
-    await localGame.entities.Partnership.update(active.id, mark);
+    await entities.Partnership.update(active.id, mark);
     return profile;
   }
 
-  const candidates = (await localGame.entities.AthleteProfile.filter({ market_status: 'livre' }, 'ranking_position', 80).catch(() => []))
+  const candidates = (await entities.AthleteProfile.filter({ market_status: 'livre' }, 'ranking_position', 80).catch(() => []))
     .filter((candidate) => candidate.id && candidate.id !== partner.id && candidate.career_status !== 'aposentado');
   if (!candidates.length) {
-    await localGame.entities.Partnership.update(active.id, mark);
+    await entities.Partnership.update(active.id, mark);
     return profile;
   }
   const ordered = candidates.sort((a, b) => {
@@ -240,7 +263,7 @@ export async function processPartnerMarketInterest(profile, previousDate, curren
   });
   const suitor = ordered[0];
   const offerId = `partner-poaching-${active.id}-${month}`;
-  const offer = await localGame.entities.PartnerOffer.upsert(offerId, {
+  const offer = await entities.PartnerOffer.upsert(offerId, {
     profile_id: profile.id, candidate_player_id: suitor.id, athlete_id: suitor.id, athlete_name: suitor.name,
     recipient_athlete_id: partner.id, recipient_athlete_name: partner.name, offer_type: 'partner_poaching',
     direction: 'to_player_partner', status: 'pending_partner', created_career_date: currentDate,
@@ -248,7 +271,7 @@ export async function processPartnerMarketInterest(profile, previousDate, curren
     candidate_snapshot: suitor, schema_version: 2,
   });
   const opportunity = { id: offer.id, name: suitor.name, ranking_position: suitor.ranking_position, offer_date: currentDate };
-  await localGame.entities.Partnership.update(active.id, { ...mark, partner_market_offer: opportunity });
+  await entities.Partnership.update(active.id, { ...mark, partner_market_offer: opportunity });
   await upsertCareerMessage(profile.id, `partner-market-interest:${active.id}:${month}`, {
     sender_name: 'Empresário', sender_type: 'empresario', title: 'Seu parceiro recebeu uma sondagem',
     content: `${suitor.name} demonstrou interesse em formar dupla com ${partner.name}. Isso não encerra seu contrato, mas pode influenciar a próxima renovação.`,
@@ -297,6 +320,20 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
   const active = await getActivePartnership(profile?.id);
   if (!active) return profile;
 
+  const partnerRows = await entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
+  const partnerStatus = String(partnerRows[0]?.career_status || partnerRows[0]?.status || '').toLowerCase();
+  if (partnerRows[0]?.retired || ['aposentado', 'retired'].includes(partnerStatus)) {
+    await endPartnership(active.id, 'encerrada_parceiro', 'Aposentadoria do parceiro', currentDate);
+    await upsertCareerMessage(profile.id, `partner-retirement:${active.id}`, {
+      sender_name: active.partner_name, sender_type: 'atleta', title: 'Fim da parceria',
+      content: `${active.partner_name} encerrou a carreira competitiva. O histórico da dupla foi preservado e você já pode buscar um novo parceiro.`,
+      status: 'nao_lida', priority: 'alta', message_type: 'partner_contract_ended', career_date: currentDate,
+      destination: { type: 'PARTNER_OFFER', route: '/partners', params: { view: 'offers' } },
+    });
+    await resolvePartnerDecisionMessages(profile.id, active.id, 'partner_retired');
+    return entities.PlayerProfile.update(profile.id, { partner_id: null, partner_name: null, partner_locked_until: null, partner_chemistry: 50 });
+  }
+
   const updates = {};
   const profileUpdates = {};
   const oldMorale = active.partner_morale ?? 70;
@@ -310,7 +347,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
       if (balance >= salary) {
         profileUpdates.coins = balance - salary;
         updates.partner_morale = clamp(oldMorale + 2, 0, 100);
-        await localGame.entities.FinancialTransaction.create({
+        await entities.FinancialTransaction.create({
           profile_id: profile.id,
           date: currentDate,
           type: 'expense',
@@ -324,7 +361,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
         // problema financeiro real com a dupla é ação necessária, não uma
         // atualização qualquer — priority ficava sem valor (caía em
         // 'normal') apesar de precisar de atenção.
-        await localGame.entities.CareerMessage.create({
+        await entities.CareerMessage.create({
           profile_id: profile.id,
           sender_name: active.partner_name,
           subject: 'Salário da dupla em atraso',
@@ -390,7 +427,8 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
         actions: [{ id: 'find_partner', label: 'Buscar nova dupla', type: 'view_partnership', payload: {} }],
         destination: { type: 'PARTNER_OFFER', route: '/partners', params: { view: 'offers' } },
       });
-      return localGame.entities.PlayerProfile.update(profile.id, {
+      await resolvePartnerDecisionMessages(profile.id, active.id, 'contract_ended');
+      return entities.PlayerProfile.update(profile.id, {
         ...profileUpdates,
         partner_id: null,
         partner_name: null,
@@ -407,9 +445,9 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
     updates.contract_status = 'insatisfeito';
   }
 
-  await localGame.entities.Partnership.update(active.id, updates);
+  await entities.Partnership.update(active.id, updates);
   if (Object.keys(profileUpdates).length > 0) {
-    return localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
+    return entities.PlayerProfile.update(profile.id, profileUpdates);
   }
   return profile;
 }

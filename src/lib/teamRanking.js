@@ -134,15 +134,11 @@ export async function getTeamRank(profile, partner) {
 }
 
 export async function simulateProRankingWeek() {
-  const shuffled = [...PRO_TEAMS].sort(() => Math.random() - 0.5);
-  for (let i = 0; i < shuffled.length - 1; i += 2) {
-    const teamA = shuffled[i];
-    const teamB = shuffled[i + 1];
-    const result = simulateMatch(teamA, teamB);
-    const aWon = result.winner === 'A';
-    await updateTeamRanking(teamA[0], teamA[1], aWon);
-    await updateTeamRanking(teamB[0], teamB[1], !aWon);
-  }
+  // Fase 15: a classificação profissional não recebe mais partidas
+  // invisíveis semanais. WorldTourLifecycle concede pontos a partir dos
+  // torneios reais do calendário e circuitLifecycle projeta esses pontos na
+  // tabela de duplas. Mantemos a exportação apenas para compatibilidade.
+  return { skipped: true, reason: 'world-tour-is-canonical' };
 }
 
 // Runs a single-elimination bracket using the match engine — stronger teams
@@ -228,6 +224,10 @@ export async function simulatePastTournaments(careerDate) {
     ].filter(Boolean));
     const needsSimulation = tournaments.filter(t => {
       if (activeTournamentIds.has(t.id)) return false;
+      // Eventos do circuito mundial pertencem exclusivamente ao
+      // WorldTourLifecycle. O simulador legado fica restrito a calendários
+      // antigos sem essa marca e não pode sobrescrever campeão nem pontos.
+      if (t.world_tour_event) return false;
       if (t.champion) return false;
       if (t.status === 'finalizado') return false;
       if (t.start_date && t.start_date < careerDate) return true;

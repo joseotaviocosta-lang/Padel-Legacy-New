@@ -42,6 +42,11 @@ export function athleteAgeAt(athlete = {}, currentDate = '2026-01-01') {
   return Math.max(16, age);
 }
 
+export function isAthleteRetired(athlete = {}) {
+  return Boolean(athlete.retired) || [athlete.career_status, athlete.status, athlete.market_status]
+    .some((value) => ['aposentado', 'retired'].includes(String(value || '').toLowerCase()));
+}
+
 export function deriveAthleteCareerState(athlete = {}, currentDate = '2026-01-01') {
   const age = athleteAgeAt(athlete, currentDate);
   const peakAge = clampNumber(athlete.peak_age, 24, 34, 28);

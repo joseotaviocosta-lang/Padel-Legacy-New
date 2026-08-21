@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { deriveAthleteCareerState } from './livingCircuitRules.js';
+import { deriveAthleteCareerState, isAthleteRetired } from './livingCircuitRules.js';
 
 const MAX_STORIES_PER_WEEK = 4;
 
@@ -83,8 +83,7 @@ function athleteName(athlete) {
 // antes de realmente se aposentar. Match exato — só 'aposentado'/'retired'
 // (aposentadoria de fato) conta.
 function isRetired(athlete) {
-  const status = String(athlete?.status || athlete?.career_status || '').toLowerCase();
-  return Boolean(athlete?.retired || status === 'aposentado' || status === 'retired');
+  return isAthleteRetired(athlete);
 }
 
 function ageOf(athlete, currentDate) {
@@ -164,6 +163,8 @@ export async function processCircuitLifeWeek(profile, previousDate, currentDate)
       }
     } else if (athlete.retirement_announced && !isRetired(athlete) && Number(String(currentDate).slice(0, 4)) > Number(athlete.retirement_season || 0)) {
       updates.career_status = 'aposentado';
+      updates.market_status = 'aposentado';
+      updates.retired = true;
       updates.retired_career_date = currentDate;
       changes += 1;
       if (stories < MAX_STORIES_PER_WEEK) {

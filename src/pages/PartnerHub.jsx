@@ -5,7 +5,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { getPlayerRelationships } from '@/lib/relationships';
 import {
-  getActivePartnership, getPartnershipHistory, startPartnership, endPartnership,
+  getActivePartnership, getPartnershipHistory, startPartnership,
   generateAdvisorTips,
   getPartnerSwitchCount, getInstabilityPenalty, negotiatePrizeSplit, addConversation,
   sendMessage,
@@ -164,13 +164,10 @@ export default function PartnerHub() {
   async function handleEndPartnership() {
     if (!activePartnership) return;
     try {
-      await endPartnership(activePartnership.id, 'encerrada_jogador', 'Decisão do jogador', profile.career_date);
-      const updated = await localGame.entities.PlayerProfile.update(profile.id, {
-        partner_id: null, partner_name: null, partner_locked_until: null, partner_chemistry: 50,
-      });
-      setProfile(updated);
+      const result = await releasePartner(profile, 'Decisão do jogador');
+      setProfile(result.profile || profile);
       setActivePartnership(null);
-      toast({ title: 'Parceria encerrada', description: 'Você está sem dupla agora.' });
+      toast({ title: 'Parceria encerrada', description: result.penalty > 0 ? `Multa de ${result.penalty} moedas aplicada.` : 'Você está sem dupla agora.' });
       await load();
     } catch (e) {
       toast({ title: 'Erro', description: 'Não foi possível encerrar.', variant: 'destructive' });
@@ -278,7 +275,7 @@ export default function PartnerHub() {
   }
 
   const chemistry = activePartnership?.chemistry ?? profile?.partner_chemistry ?? 0;
-  const confidence = activePartnership?.trust ?? activePartnership?.confidence ?? 0;
+  const confidence = activePartnership?.partner_trust ?? activePartnership?.confidence ?? 0;
   const sharedMatches = activePartnership?.shared_matches ?? 0;
   const offerCount = proposals.filter((offer) => offer.status === 'pending' && offer.offer_type !== 'partner_poaching').length;
 

@@ -174,7 +174,7 @@ export default function Athletes() {
         )
       ) : (
         <div className="render-window overflow-hidden rounded-xl border border-border/55 animate-stagger">
-          {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} displayRank={rankById?.get(a.id)} onClick={() => setSelected(a)} />)}
+          {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} displayRank={rankById?.get(a.id)} onClick={() => setSelected({ ...a, ranking_position: rankById?.get(a.id) ?? a.ranking_position })} />)}
         </div>
       )}
 

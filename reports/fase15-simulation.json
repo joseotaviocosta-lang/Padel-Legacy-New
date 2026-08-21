@@ -1,0 +1,41 @@
+{
+  "generatedAt": "2026-08-21T20:02:28.992Z",
+  "mode": "progression",
+  "fixtures": {
+    "youngOverallAfter5Years": 84,
+    "veteranOneMonthOverall": 88
+  },
+  "partnership100x3": {
+    "careers": 100,
+    "seasons": 3,
+    "averagePartners": 2.49,
+    "averagePartnershipMonths": 13.966666666666667,
+    "renewals": 271,
+    "endings": 149,
+    "partnerDepartures": 20,
+    "proposalsPerSeason": 1.17,
+    "pairedProposals": 298,
+    "averageFreeAgentDays": 74.4,
+    "underThreeMonthsPct": 22.5,
+    "overOneSeasonPct": 41.25
+  },
+  "world100x10": {
+    "worlds": 100,
+    "seasons": 10,
+    "populationInitial": 180,
+    "populationRetired": 75.74,
+    "populationGenerated": 72.47,
+    "populationFinal": 176.73,
+    "averageTop100Age": 30.4707,
+    "averageTop10Age": 27.980999999999998,
+    "averageNumberOneAge": 30.3,
+    "distinctTop10": 20.64,
+    "distinctNumberOnes": 6.28,
+    "averagePeakAge": 27.87042837538404,
+    "averageRetirementAge": 38.48576867111608,
+    "worldStoriesPerSeason": 12.76,
+    "elapsedMs": 15041.4239
+  },
+  "performance1000AthletesMs": 5.792600000000675,
+  "partnershipDurationP90Months": 33
+}

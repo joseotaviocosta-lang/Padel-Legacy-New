@@ -247,7 +247,18 @@
     "test:career-pace-by-difficulty": "node scripts/test-career-pace-by-difficulty.mjs",
     "test:career-ovr-curve": "node scripts/test-career-ovr-curve.mjs",
     "test:career-pace-performance": "node scripts/test-career-pace-performance.mjs",
-    "test:mobile-filters-postmatch-m4-2-2": "node scripts/test-mobile-filters-postmatch-m4-2-2.mjs"
+    "test:mobile-filters-postmatch-m4-2-2": "node scripts/test-mobile-filters-postmatch-m4-2-2.mjs",
+    "test:living-partnership-market-phase15": "node scripts/test-living-partnership-market-phase15.mjs",
+    "test:world-career-progression": "node scripts/test-world-career-phase15.mjs --suite=progression",
+    "test:world-partnership-dynamics": "node scripts/test-world-career-phase15.mjs --suite=partnerships",
+    "test:world-career-stages": "node scripts/test-world-career-phase15.mjs --suite=stages",
+    "test:world-retirement": "node scripts/test-world-career-phase15.mjs --suite=retirement",
+    "test:world-generation": "node scripts/test-world-career-phase15.mjs --suite=generation",
+    "test:world-ranking-milestones": "node scripts/test-world-career-phase15.mjs --suite=ranking",
+    "test:world-career-story": "node scripts/test-world-career-phase15.mjs --suite=story",
+    "test:world-idempotency": "node scripts/test-world-career-phase15.mjs --suite=idempotency",
+    "test:world-save-load": "node scripts/test-world-career-phase15.mjs --suite=save-load",
+    "test:world-performance": "node scripts/test-world-career-phase15.mjs --suite=performance"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

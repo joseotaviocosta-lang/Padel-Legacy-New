@@ -5,7 +5,7 @@ import { processMonthlyFinances } from '@/lib/economy';
 import { processAllClubsMonthly } from '@/lib/clubs';
 import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
-import { simulateProRankingWeek, simulatePastTournaments } from '@/lib/teamRanking';
+import { simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents, executePlannedActivities, executeWeeklyTrainingPlan } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
@@ -266,10 +266,6 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
         } catch (e) { console.error('finalizeClosedCareerMonth', e); }
       });
     }
-  }
-  const totalDays = daysBetween(CAREER_START_DATE, newCareerDate);
-  if (totalDays > 0 && totalDays % 7 === 0) {
-    await stage('ranking', () => simulateProRankingWeek().catch(e => console.error('simulateProRankingWeek', e)));
   }
   // O universo vivo (World Tour, notícias, boletim semanal) roda exclusivamente
   // dentro de processGameStateDay agora — ver game-core/gameStateLifecycle.js.

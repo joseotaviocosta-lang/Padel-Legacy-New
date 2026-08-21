@@ -7,7 +7,7 @@ import { localGame } from '@/api/localGameClient.js';
 // só um corte fixo de idade — Parte 11: "não fazer todos seguirem
 // exatamente a mesma curva"); esta função só computa e escreve, nunca
 // mais reimplementa a regra.
-import { getCareerPhase } from '@/lib/athleteBehavior.js';
+import { deriveAthleteCareerState, isAthleteRetired } from './livingCircuitRules.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -31,8 +31,7 @@ function athleteOverall(athlete) {
 }
 
 function isRetired(athlete) {
-  const status = String(athlete?.status || athlete?.market_status || '').toLowerCase();
-  return athlete?.retired === true || status === 'aposentado' || status === 'retired';
+  return isAthleteRetired(athlete);
 }
 
 function categoryFor(points, overall) {
@@ -112,9 +111,10 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
   const athletes = ((await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [])
     .filter((athlete) => athlete?.id && !isRetired(athlete));
 
-  const selected = athletes
-    .sort((a, b) => athleteOverall(b) - athleteOverall(a))
-    .slice(0, 160);
+  // Ranking é uma ladder global: processar só os 160 maiores OVR deixava
+  // posições antigas no restante da população. O patch final continua em
+  // um único bulkUpdate, portanto ordenar até 500 atletas é barato.
+  const selected = athletes;
 
   const results = [];
   for (const athlete of selected) {
@@ -154,8 +154,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     const athlete = entry.athlete;
     const oldPosition = safeNumber(athlete.ranking_position, index + 1);
     const newPosition = index + 1;
-    const age = safeNumber(athlete.age, 24);
-    const careerPhase = getCareerPhase(age, safeNumber(athlete.peak_age, 28));
+    const careerState = deriveAthleteCareerState(athlete, currentDate);
 
     athleteUpdates.push({
       id: athlete.id,
@@ -168,7 +167,8 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       ranking_trend: newPosition < oldPosition ? 'subindo' : newPosition > oldPosition ? 'caindo' : 'estavel',
       circuit_category: categoryFor(entry.generalPoints, athleteOverall(athlete)),
       ranking_history: entry.history,
-      career_phase: careerPhase,
+      career_stage: careerState.stage,
+      career_phase: careerState.legacyPhase,
       last_circuit_update: currentDate,
     });
   }

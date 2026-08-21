@@ -1,6 +1,8 @@
 import { localGame } from '@/api/localGameClient.js';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
-import { careerDaysBetween, partnershipRecordId, seededChance, seededInteger } from './livingCircuitRules.js';
+import { careerDaysBetween, isAthleteRetired, partnershipRecordId, seededChance, seededInteger } from './livingCircuitRules.js';
+
+const entities = /** @type {any} */ (localGame.entities);
 
 function safeNumber(value, fallback = 0) {
   const parsed = Number(value);
@@ -39,7 +41,7 @@ function pairKeyOf(a, b) {
 }
 
 async function listWorldPartnerships() {
-  const rows = (await localGame.entities.Partnership.list('-started_career_date', 2500).catch(() => [])) || [];
+  const rows = (await entities.Partnership.list('-started_career_date', 2500).catch(() => [])) || [];
   return rows.filter((row) => row.partnership_type === 'npc' || row.scope === 'world');
 }
 
@@ -76,8 +78,7 @@ function athleteOverall(athlete) {
 }
 
 function isRetired(athlete) {
-  const status = String(athlete?.market_status || athlete?.status || athlete?.career_status || '').toLowerCase();
-  return Boolean(athlete?.retired) || status === 'retired' || status === 'aposentado';
+  return isAthleteRetired(athlete);
 }
 
 function isInjured(athlete, date) {
@@ -108,7 +109,7 @@ function compatibility(a, b) {
 
 async function createWorldEvent(payload) {
   try {
-    const entity = localGame.entities?.WorldEvent;
+    const entity = entities?.WorldEvent;
     if (!entity?.create) return null;
     return await entity.create(payload);
   } catch (error) {
@@ -119,7 +120,7 @@ async function createWorldEvent(payload) {
 
 async function updateAthlete(id, payload) {
   if (!id) return null;
-  return localGame.entities.AthleteProfile.update(id, payload);
+  return entities.AthleteProfile.update(id, payload);
 }
 
 function availableAthletes(athletes, date) {
@@ -181,10 +182,11 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
     const contractEnd = canonical?.contract_end_date || canonical?.scheduled_end_date || addDays(startDate, 240);
     const contractExpired = currentDate >= contractEnd;
     const renewalScore = clamp(chemistry * 0.5 + formAverage * 0.3 + Math.min(100, monthsTogether * 5) * 0.2, 0, 100);
-    const renews = contractExpired && seededChance(`${month}:${pairKey}:renew`, Math.max(18, renewalScore - 8));
+    const retirementEnd = isRetired(athlete) || isRetired(partner);
+    const renews = !retirementEnd && contractExpired && seededChance(`${month}:${pairKey}:renew`, Math.max(18, renewalScore - 8));
     if (renews && canonical?.id) {
       const duration = seededInteger(`${month}:${pairKey}:duration`, 210, 360);
-      await localGame.entities.Partnership.update(canonical.id, {
+      await entities.Partnership.update(canonical.id, {
         contract_status: 'renovado', contract_end_date: addDays(currentDate, duration), scheduled_end_date: addDays(currentDate, duration),
         renewal_count: safeNumber(canonical.renewal_count, 0) + 1,
         history: [...(canonical.history || []), { date: currentDate, event: 'renewed', duration_days: duration, reason: 'stability' }].slice(-30),
@@ -197,7 +199,7 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
     }
     const minimumStabilityReached = careerDaysBetween(startDate, currentDate) >= 120;
     const pressure = clamp((52 - chemistry) + Math.max(0, 45 - formAverage) + Math.max(0, monthsTogether - 30), 0, 42);
-    const shouldDissolve = contractExpired || (minimumStabilityReached && seededChance(`${month}:${pairKey}:breakup`, pressure));
+    const shouldDissolve = retirementEnd || contractExpired || (minimumStabilityReached && seededChance(`${month}:${pairKey}:breakup`, pressure));
     if (!shouldDissolve) {
       await Promise.allSettled([
         updateAthlete(athlete.id, { ai_partnership_months: monthsTogether + 1 }),
@@ -222,10 +224,10 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
       }),
     ]);
     if (canonical?.id) {
-      await localGame.entities.Partnership.update(canonical.id, {
+      await entities.Partnership.update(canonical.id, {
         status: 'encerrada_parceiro', contract_status: 'encerrado', ended_career_date: currentDate,
-        end_reason: contractExpired ? 'fim de contrato sem renovação' : chemistry < 45 ? 'incompatibilidade e resultados ruins' : 'fim natural de ciclo',
-        history: [...(canonical.history || []), { date: currentDate, event: 'ended', reason: contractExpired ? 'contract_expired' : 'sporting_cycle' }].slice(-30),
+        end_reason: retirementEnd ? 'aposentadoria' : contractExpired ? 'fim de contrato sem renovação' : chemistry < 45 ? 'incompatibilidade e resultados ruins' : 'fim natural de ciclo',
+        history: [...(canonical.history || []), { date: currentDate, event: 'ended', reason: retirementEnd ? 'retirement' : contractExpired ? 'contract_expired' : 'sporting_cycle' }].slice(-30),
       });
     }
     dissolved += 1;
@@ -283,7 +285,7 @@ async function formNewPartnerships(athletes, currentDate) {
     ]);
 
     const partnershipId = partnershipRecordId(pair.first.id, pair.second.id, currentDate);
-    await localGame.entities.Partnership.upsert(partnershipId, {
+    await entities.Partnership.upsert(partnershipId, {
       partnership_type: 'npc', scope: 'world', athlete_a_id: pair.first.id, athlete_b_id: pair.second.id,
       athlete_ids: [pair.first.id, pair.second.id], athlete_a_name: pair.first.name, athlete_b_name: pair.second.name,
       partner_name: pair.second.name, started_career_date: currentDate, scheduled_end_date: addDays(currentDate, duration),
@@ -327,10 +329,10 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
     return { skipped: true, month: currentMonth, formed: 0, dissolved: 0, events: [] };
   }
 
-  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await entities.AthleteProfile.list('ranking_position', 500)) || [];
   const worldPartnerships = await ensureCanonicalPartnerships(athletes, currentDate, await listWorldPartnerships());
   const dissolution = await dissolvePartnerships(athletes, currentDate, worldPartnerships);
-  const refreshed = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || athletes;
+  const refreshed = (await entities.AthleteProfile.list('ranking_position', 500)) || athletes;
   const formation = await formNewPartnerships(refreshed, currentDate);
 
   let updatedProfile = profile;
@@ -342,7 +344,7 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
   };
 
   if (profile?.id) {
-    updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
+    updatedProfile = await entities.PlayerProfile.update(profile.id, {
       last_ai_partnership_month: currentMonth,
       last_ai_partnership_summary: summary,
     });
@@ -357,7 +359,7 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
 }
 
 export async function getAiPartnershipSnapshot(profile) {
-  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await entities.AthleteProfile.list('ranking_position', 500)) || [];
   const activePairs = new Set();
   let freeAgents = 0;
   for (const athlete of athletes) {

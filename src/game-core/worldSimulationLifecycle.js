@@ -1,6 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { normalizeFatigue } from './physicalStats.js';
-import { deriveAthleteCareerState, deriveRecentForm } from './livingCircuitRules.js';
+import { deriveAthleteCareerState, deriveRecentForm, isAthleteRetired } from './livingCircuitRules.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'ativo', 'livre', 'contratado']);
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Suécia', 'México', 'Chile', 'Paraguai'];
@@ -62,7 +62,7 @@ function calculateOverall(athlete) {
 
 function athleteStatus(athlete) {
   const status = String(athlete.market_status || athlete.status || 'active').toLowerCase();
-  if (athlete.retired || status === 'retired' || status === 'aposentado') return 'retired';
+  if (isAthleteRetired(athlete)) return 'retired';
   return ACTIVE_STATUSES.has(status) ? status : 'active';
 }
 
@@ -152,7 +152,13 @@ async function generateProspect(currentDate, existingAthletes) {
   const month = monthKey(currentDate);
   const alreadyGenerated = existingAthletes.some((athlete) => athlete.generated_month === month);
   if (alreadyGenerated) return null;
-  if (integer(`${month}:prospect-roll`, 0, 99) >= 42) return null;
+  const retired = existingAthletes.filter((athlete) => athleteStatus(athlete) === 'retired').length;
+  const replacements = existingAthletes.filter((athlete) => athlete.generation_reason === 'retirement_replacement').length;
+  if (replacements >= retired) return null;
+  // Reposição acompanha aposentadorias com pequena defasagem, sem inflar
+  // a população. A chance alta mantém o circuito estável mesmo quando as
+  // saídas se concentram no fim de uma temporada.
+  if (integer(`${month}:prospect-roll`, 0, 99) >= 90) return null;
 
   const first = FIRST_NAMES[integer(`${month}:first`, 0, FIRST_NAMES.length - 1)];
   const last = LAST_NAMES[integer(`${month}:last`, 0, LAST_NAMES.length - 1)];
@@ -178,6 +184,7 @@ async function generateProspect(currentDate, existingAthletes) {
     wealth: 1200,
     generated_month: month,
     generated_by: 'game-core-2.2',
+    generation_reason: 'retirement_replacement',
     career_seasons: 0,
     career_titles: 0,
     career_wins: 0,
@@ -188,7 +195,7 @@ async function generateProspect(currentDate, existingAthletes) {
     event_date: currentDate,
     date: currentDate,
     title: `Nova promessa: ${profile.name}`,
-    description: `${profile.name}, de ${country}, entrou no circuito aos 17 anos com potencial ${potential}.`,
+    description: `${profile.name}, de ${country}, entrou no circuito aos 17 anos e passa a integrar a nova geração profissional.`,
     category: 'mercado',
     event_type: 'new_prospect',
     importance: potential >= 88 ? 'alta' : 'media',
