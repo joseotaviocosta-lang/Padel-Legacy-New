@@ -7,6 +7,7 @@ import {
   negotiatePrizeSplit,
 } from '@/lib/partnershipSystem';
 import { overallRating } from '@/lib/padel';
+import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -129,7 +130,7 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
   const early = active.contract_end_date && active.contract_end_date > careerDate;
   const penalty = early ? Math.min(Number(profile.coins) || 0, Math.max(50, Math.round((active.monthly_salary || 100) * 0.5))) : 0;
 
-  await endPartnership(active.id, 'encerrada_jogador', reason);
+  await endPartnership(active.id, 'encerrada_jogador', reason, careerDate);
   const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_id: null,
     partner_name: null,
@@ -148,6 +149,77 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
     });
   }
   return { profile: updatedProfile, penalty };
+}
+
+// Fase 15 (docs/FASE_15_CIRCUITO_VIVO.md, Parte 7): interesse do parceiro
+// em renovar — deriva de dados JÁ existentes na própria Partnership/
+// profile (química, resultados compartilhados, moral, estabilidade),
+// nunca um atributo persistido novo. Determinística (mesma entrada, mesma
+// saída — Parte 7/38), sem número exposto na UI (Parte 8) — quem consome
+// isto formata em ALTO/MÉDIO/BAIXO + fatores textuais.
+export function calculatePartnerRenewalInterest(active, profile, { betterOpportunity = null } = {}) {
+  const chemistry = clamp(active?.chemistry ?? profile?.partner_chemistry ?? 50, 0, 100);
+  const matches = Number(active?.shared_matches || 0);
+  const wins = Number(active?.shared_wins || 0);
+  const winRate = matches > 0 ? wins / matches : 0.5;
+  const morale = clamp(active?.partner_morale ?? 70, 0, 100);
+  const startedDate = active?.started_career_date || active?.contract_started_date;
+  const durationDays = startedDate && profile?.career_date ? Math.max(0, daysBetweenDates(startedDate, profile.career_date)) : 0;
+  const stability = clamp((durationDays / 180) * 100, 0, 100); // até 6 meses juntos = estabilidade máxima
+
+  const score = clamp(Math.round(
+    chemistry * 0.35 +
+    (winRate * 100) * 0.25 +
+    morale * 0.20 +
+    stability * 0.10 +
+    (betterOpportunity ? -25 : 10) * 0.10
+  ), 0, 100);
+
+  const factors = [];
+  if (chemistry >= 70) factors.push('ótima química'); else if (chemistry < 35) factors.push('química ruim');
+  if (matches >= 5 && winRate >= 0.55) factors.push('bons resultados recentes'); else if (matches >= 5 && winRate < 0.35) factors.push('resultados recentes ruins');
+  if (stability >= 70) factors.push('parceria estável há tempo');
+  if (betterOpportunity) factors.push(`recebeu interesse de ${betterOpportunity.name || 'outro atleta'}, melhor ranqueado`);
+
+  return {
+    score,
+    level: score >= 65 ? 'alto' : score >= 40 ? 'medio' : 'baixo',
+    factors,
+  };
+}
+
+function daysBetweenDates(from, to) {
+  const start = new Date(`${String(from).slice(0, 10)}T00:00:00`).getTime();
+  const end = new Date(`${String(to).slice(0, 10)}T00:00:00`).getTime();
+  if (!Number.isFinite(start) || !Number.isFinite(end)) return 0;
+  return Math.round((end - start) / 86400000);
+}
+
+// Fase 15 (Parte 5): thresholds de aviso idempotentes — cada um dispara no
+// MÁXIMO uma vez (upsertCareerMessage já garante isso pela chave estável),
+// mesmo em avanço de vários dias de uma vez (checa se o limiar foi
+// CRUZADO entre previousDate e currentDate, não só "é exatamente esse
+// dia" — um salto de 20 dias não pode pular o aviso D-15).
+const EXPIRY_WARNING_THRESHOLDS = [15, 7, 3, 1];
+
+async function emitExpiryWarnings(profile, active, previousDate, currentDate, endDate) {
+  for (const daysBefore of EXPIRY_WARNING_THRESHOLDS) {
+    const warningDate = addDays(endDate, -daysBefore);
+    if (!(previousDate < warningDate && currentDate >= warningDate)) continue;
+    const label = daysBefore === 1 ? 'Decida o futuro da dupla.' : daysBefore <= 3 ? `Seu contrato termina em ${daysBefore} dias.` : daysBefore <= 7 ? 'Hora de pensar no futuro da dupla.' : `Seu contrato com ${active.partner_name} termina em ${daysBefore} dias.`;
+    await upsertCareerMessage(profile.id, `partner-contract-expiry:${active.id}:${daysBefore}`, {
+      sender_name: active.partner_name,
+      sender_type: 'atleta',
+      title: daysBefore <= 3 ? 'Futuro da dupla' : 'Contrato se aproximando do fim',
+      content: label,
+      status: 'decisao_pendente',
+      priority: daysBefore <= 3 ? 'alta' : 'normal',
+      message_type: 'partner_contract_expiry',
+      career_date: currentDate,
+      actions: [{ id: 'open_partner_hub', label: 'Conversar sobre o futuro', type: 'view_partnership', payload: { partnershipId: active.id } }],
+      destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+    });
+  }
 }
 
 export async function processPartnerDay(profile, previousDate, currentDate) {
@@ -197,11 +269,49 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
   }
 
   const endDate = active.contract_end_date || active.scheduled_end_date;
+  // Fase 15 (Parte 2/4/5): bug real confirmado pela auditoria — este bloco
+  // já implementava o vencimento (vencido -> 7 dias de carência ->
+  // encerramento + partner_id null) corretamente, mas NUNCA criava
+  // nenhuma CareerMessage em nenhum dos 2 pontos — o único sistema de
+  // contrato do jogo (junto com staff/coach) sem cobertura de aviso
+  // nenhuma. "Simplesmente desapareceu" era exatamente isso: lifecycle
+  // real, zero UX.
+  if (endDate) {
+    await emitExpiryWarnings(profile, active, previousDate, currentDate, endDate);
+  }
   if (endDate && currentDate >= endDate) {
+    const wasAlreadyVencido = active.contract_status === 'vencido';
     updates.renewal_available = true;
     updates.contract_status = 'vencido';
+    if (!wasAlreadyVencido) {
+      await upsertCareerMessage(profile.id, `partner-contract-vencido:${active.id}`, {
+        sender_name: active.partner_name,
+        sender_type: 'atleta',
+        title: 'Contrato vencido',
+        content: `Nosso contrato chegou ao fim. Temos 7 dias para decidir: renovar ou seguir caminhos separados.`,
+        status: 'decisao_pendente',
+        priority: 'alta',
+        message_type: 'partner_contract_expiry',
+        career_date: currentDate,
+        actions: [{ id: 'open_partner_hub', label: 'Resolver agora', type: 'view_partnership', payload: { partnershipId: active.id } }],
+        destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+      });
+    }
     if (currentDate > addDays(endDate, 7)) {
-      await endPartnership(active.id, 'encerrada_contrato', 'Contrato não renovado');
+      const partnerName = active.partner_name;
+      await endPartnership(active.id, 'encerrada_contrato', 'Contrato não renovado', currentDate);
+      await upsertCareerMessage(profile.id, `partner-contract-ended:${active.id}`, {
+        sender_name: partnerName,
+        sender_type: 'atleta',
+        title: 'Fim da parceria',
+        content: `Nosso contrato com ${partnerName} chegou ao fim. ${Number(active.shared_matches) || 0} partidas, ${Number(active.shared_wins) || 0} vitórias${Number(active.shared_titles) ? `, ${active.shared_titles} título${active.shared_titles === 1 ? '' : 's'}` : ''} juntos.`,
+        status: 'nao_lida',
+        priority: 'alta',
+        message_type: 'partner_contract_ended',
+        career_date: currentDate,
+        actions: [{ id: 'find_partner', label: 'Buscar nova dupla', type: 'view_partnership', payload: {} }],
+        destination: { type: 'PARTNER_OFFER', route: '/partners', params: { view: 'offers' } },
+      });
       return localGame.entities.PlayerProfile.update(profile.id, {
         ...profileUpdates,
         partner_id: null,

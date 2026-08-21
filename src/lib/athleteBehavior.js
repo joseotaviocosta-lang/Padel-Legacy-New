@@ -230,7 +230,7 @@ export async function updateRelationshipAfterMatch(winnerName, loserName) {
 
 // ── Monthly Evolution ───────────────────────────────────────────────────────
 
-export async function evolveAthletesMonthly(date) {
+export async function evolveAthletesMonthly(date, { isYearBoundary = false } = {}) {
   let profiles = [];
   try {
     profiles = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
@@ -245,7 +245,12 @@ export async function evolveAthletesMonthly(date) {
 
   const updates = [];
   for (const p of profiles) {
-    const newAge = (p.age || 20) + 1;
+    // Fase 15 (Parte 0/1/11): idade só avança na virada de ANO real da
+    // carreira (isYearBoundary) — esta função continua rodando toda
+    // virada de MÊS pra tudo o mais (atributos/lesão/moral/apelo), mas
+    // incrementar `age` a cada mês fazia um atleta envelhecer 12 anos por
+    // ano de carreira. Ver career.js pro call site que calcula o flag.
+    const newAge = isYearBoundary ? (p.age || 20) + 1 : (p.age || 20);
     const newPhase = getCareerPhase(newAge, p.peak_age || 28);
     const u = { id: p.id, age: newAge, career_phase: newPhase, last_updated_date: date };
 

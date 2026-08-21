@@ -54,6 +54,11 @@
       "type": "number",
       "default": 0
     },
+    "shared_finals": {
+      "type": "number",
+      "default": 0,
+      "description": "Fase 14: finais de torneio disputadas contra este adversário"
+    },
     "history": {
       "type": "array",
       "items": {

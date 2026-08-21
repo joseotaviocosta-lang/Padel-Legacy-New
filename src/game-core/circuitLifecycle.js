@@ -1,4 +1,13 @@
 import { localGame } from '@/api/localGameClient.js';
+// Fase 15 (Parte 0/1/4/10): auditoria achou 2 fórmulas de career_phase
+// conflitantes escrevendo no MESMO campo em cadências diferentes — esta
+// (semanal, só idade + peak_age-1) e a de athleteBehavior.js (mensal,
+// peak_age ± janela). Consolidado numa só fonte (a de athleteBehavior.js,
+// já exportada e mais nuançada por depender de peak_age por atleta, não
+// só um corte fixo de idade — Parte 11: "não fazer todos seguirem
+// exatamente a mesma curva"); esta função só computa e escreve, nunca
+// mais reimplementa a regra.
+import { getCareerPhase } from '@/lib/athleteBehavior.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -175,10 +184,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     const oldPosition = safeNumber(athlete.ranking_position, index + 1);
     const newPosition = index + 1;
     const age = safeNumber(athlete.age, 24);
-    let careerPhase = athlete.career_phase || 'Ascensão';
-    if (age >= 35) careerPhase = 'Veterano';
-    else if (age >= 31) careerPhase = 'Declínio';
-    else if (age >= safeNumber(athlete.peak_age, 28) - 1) careerPhase = 'Auge';
+    const careerPhase = getCareerPhase(age, safeNumber(athlete.peak_age, 28));
 
     athleteUpdates.push({
       id: athlete.id,
@@ -202,6 +208,47 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
   }
   if (athleteUpdates.length) {
     await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
+  }
+
+  // Fase 15 (Parte 24/28/37): marcos de ranking dos bots — MESMA escada
+  // unificada já usada pelo jogador (careerStory.js/achievementsData.js),
+  // nunca uma nova. Reaproveita oldPosition/newPosition JÁ calculados no
+  // laço acima (nenhuma consulta extra). Detector de transição real
+  // (cruzou agora, não "já está"), mesmo princípio de
+  // rankingMilestoneCrossed (gameStateLifecycle.js) — só o degrau mais
+  // exclusivo cruzado gera história, e no máximo 3 histórias de marco por
+  // semana (Parte 37: não temos garantia de quantos atletas cruzam ao
+  // mesmo tempo com ~1000 no circuito).
+  const RANKING_LADDER = [1, 3, 5, 10, 20, 30, 50, 100, 250, 500];
+  const MAX_MILESTONE_STORIES_PER_WEEK = 3;
+  let milestoneStories = 0;
+  // athleteUpdates e ordered têm o MESMO comprimento e ordem (o laço acima
+  // gera 1 update por entry, na mesma sequência) — zipar por índice evita
+  // qualquer busca O(n) por atleta (Parte 37: nada de O(n²) com ~1000
+  // atletas).
+  const milestoneCandidates = athleteUpdates
+    .map((update, idx) => {
+      const crossed = RANKING_LADDER.filter((tier) => update.ranking_position <= tier && update.ranking_previous_position > tier);
+      return crossed.length ? { athlete: ordered[idx]?.athlete, milestone: Math.min(...crossed), position: update.ranking_position } : null;
+    })
+    .filter((item) => item?.athlete)
+    .sort((a, b) => a.milestone - b.milestone); // mais exclusivo primeiro
+  for (const { athlete, milestone, position } of milestoneCandidates) {
+    if (milestoneStories >= MAX_MILESTONE_STORIES_PER_WEEK) break;
+    const age = safeNumber(athlete.age, 24);
+    const title = milestone === 1
+      ? `${athlete.name} é o novo número 1 do mundo`
+      : `${age <= 22 ? `Aos ${age} anos, ` : ''}${athlete.name} entra no Top ${milestone} do ranking mundial${age <= 22 ? ' pela primeira vez' : ''}`;
+    const event = await createWorldEvent({
+      event_type: 'ranking',
+      title,
+      content: `Com a posição #${position}, ${athlete.name} consolida sua ascensão no circuito profissional.`,
+      related_players: [athlete.name],
+      tier: milestone <= 10 ? 'destaque' : 'normal',
+      event_date: currentDate,
+      tags: ['ranking', 'marco', athlete.country || athlete.nationality || 'internacional'],
+    });
+    if (event) milestoneStories += 1;
   }
 
   const events = [];

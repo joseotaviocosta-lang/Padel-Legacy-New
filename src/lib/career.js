@@ -245,7 +245,19 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
       } catch (e) { console.error('processMonthlyFinances', e); }
     });
     await stage('monthlyBoundary:processAllClubsMonthly', () => processAllClubsMonthly().catch(e => console.error('processAllClubsMonthly', e)));
-    await stage('monthlyBoundary:evolveAthletesMonthly', () => evolveAthletesMonthly(newCareerDate).catch(e => console.error('evolveAthletesMonthly', e)));
+    // Fase 15 (docs/FASE_15_CIRCUITO_VIVO.md, Parte 0/1/11): bug real e
+    // severo encontrado na auditoria — evolveAthletesMonthly incrementava
+    // `age` em +1 TODA vez que rodava, e roda em toda virada de MÊS (12x
+    // por ano de carreira), não de ano. Um bot de 20 anos virava 32 depois
+    // de só 1 ano de jogo — nenhuma curva de carreira (auge/declínio/
+    // aposentadoria) fazia sentido nessa cadência. O jogador deriva idade
+    // de birth_date/career_date (correto, `ageAtDate` acima); bots não têm
+    // birth_date no schema, só um contador manual — o contador só pode
+    // andar na virada de ANO (oldYear !== newYear, já calculado acima),
+    // nunca a cada mês. Saves antigos não são corrigidos retroativamente
+    // (Parte 41: nunca inventar passado) — só a taxa de incremento futura
+    // para de acumular o erro.
+    await stage('monthlyBoundary:evolveAthletesMonthly', () => evolveAthletesMonthly(newCareerDate, { isYearBoundary: oldYear !== newYear }).catch(e => console.error('evolveAthletesMonthly', e)));
     if (oldYear === newYear) {
       await stage('monthlyBoundary:finalizeClosedCareerMonth', async () => {
         try {

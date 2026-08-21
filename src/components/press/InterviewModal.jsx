@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
-import { QUESTION_BANKS, fillTemplate, generateHeadline, generateArticleContent, toneFromEffects } from '@/lib/pressData';
+import { fillTemplate, generateHeadline, generateArticleContent, toneFromEffects, selectInterviewQuestions } from '@/lib/pressData';
 import { ModalShell } from '@/components/design-system';
 
 const PERSONALITY_LABELS = {
@@ -8,18 +8,30 @@ const PERSONALITY_LABELS = {
   passional: 'Passional', neutro: 'Neutro', provocador: 'Provocador',
 };
 
+// Hotfix 14.1 (docs/HOTFIX_14_1_MATCH_UX_INTERVIEWS.md, Parte 9): bug real
+// encontrado na auditoria — a chave `fechado` (resposta reservada/fechada,
+// ex.: "Sem comentários.") sempre exibia o rótulo "Festivo", sem relação
+// nenhuma com o texto real das respostas dessa postura.
 const TONE_LABELS = {
   humilde: { label: 'Humilde', color: 'text-green-400 bg-green-500/15' },
   confiante: { label: 'Confiante', color: 'text-primary bg-primary/15' },
   neutro: { label: 'Neutro', color: 'text-muted-foreground bg-secondary/50' },
   arrogante: { label: 'Arrogante', color: 'text-red-400 bg-red-500/15' },
-  fechado: { label: 'Festivo', color: 'text-cyan-400 bg-cyan-500/15' },
+  fechado: { label: 'Reservado', color: 'text-cyan-400 bg-cyan-500/15' },
   provocativo: { label: 'Provocativo', color: 'text-orange-400 bg-orange-500/15' },
   controverso: { label: 'Controverso', color: 'text-purple-400 bg-purple-500/15' },
 };
 
-export default function InterviewModal({ interview, journalist, profile, onClose, onComplete }) {
-  const questions = QUESTION_BANKS[interview.questionCategory] || [];
+// Hotfix 14.1 (Parte 9/10/13): antes, `questions` era QUESTION_BANKS[categoria]
+// inteiro, caminhado sequencialmente do índice 0 — com poucas perguntas por
+// categoria, toda entrevista mostrava exatamente as mesmas, na mesma ordem.
+// selectInterviewQuestions escolhe um subconjunto real do pool elegível
+// (contextual + anti-repetição), do MESMO tamanho de antes (2 perguntas) —
+// a entrevista continua rápida (Parte 16), só o conteúdo varia.
+const QUESTIONS_PER_INTERVIEW = 2;
+
+export default function InterviewModal({ interview, journalist, profile, recentQuestionIds = [], onClose, onComplete }) {
+  const [questions] = useState(() => selectInterviewQuestions(interview.questionCategory, interview.matchContext || {}, recentQuestionIds, QUESTIONS_PER_INTERVIEW));
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState([]);
   const [done, setDone] = useState(false);
@@ -78,7 +90,11 @@ export default function InterviewModal({ interview, journalist, profile, onClose
 
     setSaving(true);
     try {
-      const completed = await onComplete({ headline, content, tone, effects, journalist, interview });
+      // Hotfix 14.1 (Parte 13): repassa os IDs das perguntas REALMENTE
+      // mostradas nesta entrevista — Press.jsx grava em
+      // recent_interview_question_ids pra alimentar o anti-repetição da
+      // próxima seleção.
+      const completed = await onComplete({ headline, content, tone, effects, journalist, interview, questionIds: questions.map((q) => q.id) });
       if (completed !== false) {
         setResultData({ headline, effects });
         setDone(true);

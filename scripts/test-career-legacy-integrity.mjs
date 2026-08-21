@@ -38,7 +38,11 @@ const SOURCE = readFileSync('src/pages/Legacy.jsx', 'utf8');
 gate('isAchievementUnlocked checa contra PlayerAchievement real (unlockedIds.has), nunca mais achievement.metric', /unlockedIds\.has\(a\.id\)/.test(SOURCE) && !/profile\?\.\[a\.metric\]/.test(SOURCE));
 gate('Legacy.jsx busca PlayerAchievement.filter (mesma fonte que a aba Conquistas usa)', /PlayerAchievement\.filter/.test(SOURCE));
 gate('MILESTONES de Estreia/Primeira Vitória usam stats.played/stats.won (oficial), nunca profile.matches_played/wins bruto', /stats\?\.played \|\| 0\) >= 1/.test(SOURCE) && /stats\?\.won \|\| 0\) >= 1/.test(SOURCE));
-gate('Legacy.jsx importa isOfficialMatch de careerStory.js (fonte canônica de partida oficial)', /import \{ isOfficialMatch \} from '@\/lib\/careerStory'/.test(SOURCE));
+// Fase 14: Legacy.jsx passou a importar mais nomes do mesmo módulo
+// (describePartnershipHistory/getTopRivalry) — regex relaxada pra checar
+// só que isOfficialMatch está entre os nomes importados de careerStory.js,
+// não mais um match exato de uma import de um nome só.
+gate('Legacy.jsx importa isOfficialMatch de careerStory.js (fonte canônica de partida oficial)', /import \{[^}]*\bisOfficialMatch\b[^}]*\} from '@\/lib\/careerStory'/.test(SOURCE));
 gate('officialStats é derivado com isOfficialMatch (mesma fonte que Timeline/Retrospectiva usam)', /officialCareerMatches\s*=\s*matches\.filter\(isOfficialMatch\)/.test(SOURCE));
 gate('Achievement.list() bruto é filtrado por future_system/is_active antes de apresentar (nunca mostra o catálogo cru)', /!entry\.future_system && entry\.is_active !== false/.test(SOURCE));
 
@@ -73,7 +77,13 @@ try {
     ...practiceMatchOnly, // 2 vitórias de treino — não devem contar
     { id: 'm-off-a', profile_id: 'p-legacy', date: '2025-04-01', competition_type: 'tournament', is_official: true, result: 'vitória', player_won: true },
     { id: 'm-off-b', profile_id: 'p-legacy', date: '2025-04-15', competition_type: 'tournament', is_official: true, result: 'derrota', player_won: false },
-    { id: 'm-off-c', profile_id: 'p-legacy', date: '2025-05-01', competition_type: 'tournament', is_official: true, result: 'vitória', player_won: true, round: 'final', is_final: true, tournament_name: 'Master QA' },
+    // Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 1/8): esta fixture
+    // usava round:'final'/is_final:true — campos que a Match real nunca
+    // escreve (TournamentModal.jsx só grava tournament_round e
+    // tournament_outcome:'champion'|'eliminated'|'advanced'). O detector de
+    // título de buildSeasonRetrospectives foi corrigido pra checar o campo
+    // real; a fixture foi corrigida junto, mesma mudança.
+    { id: 'm-off-c', profile_id: 'p-legacy', date: '2025-05-01', competition_type: 'tournament', is_official: true, result: 'vitória', player_won: true, tournament_outcome: 'champion', tournament_name: 'Master QA' },
   ];
   const [season2025] = buildSeasonRetrospectives(profile, seasonMatches);
   gate('Retrospectiva de temporada existe para 2025', Boolean(season2025));

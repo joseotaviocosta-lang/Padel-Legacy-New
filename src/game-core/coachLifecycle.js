@@ -1,6 +1,48 @@
 import { localGame } from '@/api/localGameClient.js';
 import { COACHES_DATA, canHireCoach, getCoachEffects, resolveCoachCanonicalSalary } from '@/lib/coaches.js';
-import { incrementMissionProgress } from '@/lib/padel.js';
+import { incrementMissionProgress, overallRating } from '@/lib/padel.js';
+
+// Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 7): achado real na
+// auditoria — trocar de treinador sempre sobrescrevia coach_id/coach_name
+// direto no perfil, sem nenhum rastro do treinador anterior (nenhuma
+// CoachContract/histórico existia). Diferente de Partnership (que já
+// preserva parcerias antigas em linhas próprias), não havia equivalente
+// pra treinador. Fecha o período ativo (se houver) e abre um novo — só
+// daqui em diante; não reconstrói períodos anteriores a esta fase que já
+// foram substituídos sem deixar rastro (Parte 14: não inventar dado que não
+// existe). Best-effort: uma falha aqui nunca deve impedir a contratação
+// real (a mesma postura de createOptional em gameStateLifecycle.js).
+async function closeActiveCoachTenure(profile, endedDate) {
+  if (!profile?.coach_id) return;
+  try {
+    const rows = await localGame.entities.CoachTenure.filter({ profile_id: profile.id, coach_id: profile.coach_id, status: 'ativo' });
+    if (rows?.length) {
+      await localGame.entities.CoachTenure.update(rows[0].id, { status: 'encerrado', ended_date: endedDate, ovr_end: overallRating(profile) });
+    } else if (profile.coach_hired_date) {
+      // Parte 14: treinador já estava ativo antes de CoachTenure existir —
+      // reconstrói o período com o que é conhecido (coach_hired_date real),
+      // sem inventar um ovr_start que não foi registrado na época.
+      await localGame.entities.CoachTenure.create({
+        profile_id: profile.id, coach_id: profile.coach_id, coach_name: profile.coach_name,
+        started_date: profile.coach_hired_date, ended_date: endedDate, ovr_end: overallRating(profile),
+        status: 'encerrado', end_reason: 'backfill',
+      });
+    }
+  } catch (error) {
+    console.warn('[Coach] Não foi possível fechar o período do treinador anterior:', error);
+  }
+}
+
+async function openCoachTenure(profile, coach, startedDate) {
+  try {
+    await localGame.entities.CoachTenure.create({
+      profile_id: profile.id, coach_id: coach.id, coach_name: coach.name,
+      started_date: startedDate, ovr_start: overallRating(profile), status: 'ativo',
+    });
+  } catch (error) {
+    console.warn('[Coach] Não foi possível abrir o período do novo treinador:', error);
+  }
+}
 
 function normalizeName(value) { return String(value || '').trim().toLocaleLowerCase('pt-BR'); }
 function addMonths(date, months) {
@@ -81,6 +123,7 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
   if ((Number(profile.coins) || 0) < signing) throw new Error(`São necessárias ${signing} moedas para o bônus de assinatura.`);
   const date = profile.career_date || '2026-01-01';
   const effects = getCoachEffects(coach, profile);
+  await closeActiveCoachTenure(profile, date);
   const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: Math.max(0, (Number(profile.coins) || 0) - signing),
     coach_id: coach.id,
@@ -101,6 +144,7 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
     coach_strategy_bonus: effects?.strategyBonus || 0,
     coach_partnership_bonus: effects?.partnershipBonus || 0,
   });
+  await openCoachTenure(updated, coach, date);
   // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte B/G): a
   // etapa coaches-known do tutorial virou DECISION — só conclui numa
   // contratação real, nunca por visitar /coaches. objectiveType continua
@@ -114,6 +158,41 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
   // para os botões de confirmação do Guia.
   await incrementMissionProgress(profile.id, 'visit_coaches', 1, date, { onlyMissionTypes: ['tutorial'], allowDuringHydration: true }).catch(() => {});
   return updated;
+}
+
+// Fase 14 (Parte 7): "Durante o período com X: OVR 64 -> 72, 2 títulos" —
+// fato, não causalidade inventada ("responsável por +23% da evolução" não é
+// demonstrável e não é calculado). Títulos durante o período são
+// computados sob demanda a partir de Match reais (competition_type/
+// is_official/tournament_outcome já existentes — nenhum contador novo),
+// filtrados pela janela de datas do período — o mesmo princípio de
+// achievementContext.js (ler a fonte real, não um campo derivado).
+export async function getCoachTenureHistory(profile) {
+  if (!profile?.id) return { past: [], current: null };
+  const [tenures, championMatches] = await Promise.all([
+    localGame.entities.CoachTenure.filter({ profile_id: profile.id }).catch(() => []),
+    localGame.entities.Match.filter({ profile_id: profile.id, competition_type: 'tournament', is_official: true, tournament_outcome: 'champion' }).catch(() => []),
+  ]);
+  const titlesBetween = (start, end) => championMatches.filter((m) => {
+    const d = m.date || m.played_date || m.created_date;
+    return d && d >= (start || '0000-00-00') && (!end || d <= end);
+  }).length;
+
+  const past = (tenures || [])
+    .filter((t) => t.status === 'encerrado')
+    .map((t) => ({ coachId: t.coach_id, coachName: t.coach_name, startedDate: t.started_date, endedDate: t.ended_date, ovrStart: t.ovr_start ?? null, ovrEnd: t.ovr_end ?? null, titles: titlesBetween(t.started_date, t.ended_date), backfilled: t.end_reason === 'backfill' }))
+    .sort((a, b) => String(b.endedDate || '').localeCompare(String(a.endedDate || '')));
+
+  const activeTenure = (tenures || []).find((t) => t.status === 'ativo' && t.coach_id === profile.coach_id);
+  const current = profile.coach_id ? {
+    coachId: profile.coach_id,
+    coachName: profile.coach_name,
+    startedDate: activeTenure?.started_date || profile.coach_hired_date || null,
+    ovrStart: activeTenure?.ovr_start ?? null,
+    titles: titlesBetween(activeTenure?.started_date || profile.coach_hired_date, null),
+  } : null;
+
+  return { past, current };
 }
 
 export async function renewPrimaryCoach(profile, coach, months = 12) {

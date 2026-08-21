@@ -257,7 +257,11 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         </span>
       )}
       size="md"
-      className={phase === 'live' ? 'h-[calc(100dvh-1rem)] md:h-[min(46rem,92dvh)]' : ''}
+      // Hotfix 14.1 (Parte 1/4/6): mesmo teto artificial de TournamentModal.jsx
+      // corrigido aqui, mesma fórmula — breakpoint unificado em sm: (era md:
+      // aqui e sm: lá, uma divergência sem motivo entre os dois hosts do
+      // MESMO LiveMatch.jsx compartilhado).
+      className={phase === 'live' ? 'h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)]' : ''}
     >
         {/* Recovery — partida treino interrompida antes de terminar (M3, Parte 8) */}
         {phase === 'config' && pendingResume && (

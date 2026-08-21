@@ -131,7 +131,7 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
   // End any existing active partnership
   const existing = await getActivePartnership(profile.id);
   if (existing) {
-    await endPartnership(existing.id, 'encerrada_jogador', 'Nova parceria formada');
+    await endPartnership(existing.id, 'encerrada_jogador', 'Nova parceria formada', careerDate);
   }
 
   const relationships = await localGame.entities.Relationship.filter({ profile_id: profile.id }, null, 200).catch(() => []);
@@ -188,12 +188,21 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
   return { partnership, profile: updated };
 }
 
-export async function endPartnership(partnershipId, endStatus, reason) {
+// Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 6): bug real encontrado na
+// auditoria — nenhum dos 4 call sites passava uma data real de término, e o
+// fallback aqui usava `p.started_career_date` como se fosse a data de FIM,
+// fazendo `ended_career_date` sempre igual à data de início (ou
+// CAREER_START_DATE). Toda parceria encerrada no jogo mostrava "período
+// junto" igual a zero dias, inviabilizando "parceria mais longa"/"melhor
+// parceria" (Parte 6). Corrigido para receber a data real da carreira no
+// momento do encerramento; mantém o fallback antigo só se nenhuma data for
+// passada (nenhum caso real esperado, inofensivo manter).
+export async function endPartnership(partnershipId, endStatus, reason, endedCareerDate) {
   if (!partnershipId) return null;
   try {
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    const careerDate = p.started_career_date || CAREER_START_DATE;
+    const careerDate = endedCareerDate || p.started_career_date || CAREER_START_DATE;
     return await localGame.entities.Partnership.update(partnershipId, {
       status: endStatus,
       end_reason: reason,

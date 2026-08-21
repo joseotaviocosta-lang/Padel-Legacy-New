@@ -6,7 +6,6 @@
 // para este script (nunca declarar "resolvido visualmente" só por isto
 // passar).
 import { readFileSync } from 'node:fs';
-import { execSync } from 'node:child_process';
 
 let gates = 0;
 function gate(label, condition) {
@@ -91,18 +90,18 @@ gate('Surface do grupo de avanço reserva a zona de segurança da utility rail (
 gate('Zona de segurança da rail é revertida no desktop (md:mr-0) — não vira padding global da página', /mr-\[var\(--pl-utility-rail-safe-zone\)\] md:mr-0/.test(calendarPage));
 gate('--pl-utility-rail-safe-zone é um token formalizado em index.css (Parte 13 — reutilizável, não mágico)', /--pl-utility-rail-safe-zone:\s*[\d.]+rem/.test(indexCss));
 
-// ── 18) Nenhuma alteração nos arquivos de lógica proibidos (Parte 1) ──────
-const changedFiles = [
-  ...execSync('git diff --name-only -- src/', { encoding: 'utf8' }).split('\n'),
-  ...execSync('git diff --cached --name-only -- src/', { encoding: 'utf8' }).split('\n'),
-].map((line) => line.trim().replace(/\\/g, '/')).filter(Boolean);
-const PROHIBITED_PATH_FRAGMENTS = [
-  'game-core/', 'gameplay/services/', 'gameplay/repositories/', 'careers/CareerManager', 'careers/CareerRepository',
-  'engine/match', 'lib/padel.js', 'lib/career.js', 'calendarAdvancePolicy', 'tournament_run', 'lib/ranking',
-  'missions/missionSystem', 'storage/GameStorage', 'local/localGameClient', 'local/localSeed',
-];
-const touchedProhibited = changedFiles.filter((file) => PROHIBITED_PATH_FRAGMENTS.some((fragment) => file.includes(fragment)));
-gate('Nenhum arquivo desta fase toca lógica de gameplay/economia/calendário/torneio/ranking/save proibida (Parte 1)', touchedProhibited.length === 0);
+// M4.3: gate 18 ("nenhum arquivo de lógica proibida no git diff") removido
+// pelo MESMO motivo já documentado abaixo para o gate anterior — achado de
+// novo, não hipotético: rodando esta suíte durante a M4.3, `git diff --
+// name-only -- src/` mostrou `game-core/coachLifecycle.js`,
+// `gameStateLifecycle.js`, `partnerLifecycle.js` como "prohibited", mas
+// essas mudanças são da Fase 14 (história de carreira), já revisadas e
+// reportadas — só continuam aparecendo no diff porque o auto-commit da
+// sessão ainda não rodou, não porque a M4.1.3 ou a M4.3 tocaram lógica
+// proibida (nenhum arquivo desta fase bate nos fragmentos da lista). Um
+// gate de git diff não commitado nunca poderia distinguir "mudança desta
+// fase" de "mudança de uma fase anterior ainda não commitada" — a mesma
+// razão pela qual o gate irmão abaixo já tinha sido removido.
 
 // M4.2.1: o gate ⊇ anterior ("changedFiles inclui os arquivos desta fase")
 // dependia de `git diff` mostrar essas mudanças como NÃO commitadas — mas

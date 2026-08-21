@@ -5,12 +5,15 @@ import { PageContainer, GlassCard, EmptyStateCard, LoadingScreen, InfoBanner, Pr
 import { PageHeader as PremiumPageHeader, StatCard } from '@/components/design-system';
 import { calculateAge, isRetired, RETIREMENT_AGE, STARTING_AGE, overallRating } from '@/lib/padel';
 import { computeLegacyScore, computeLegacyBonuses, retireProfile, startNewCareer, getUserLegacies, getCoachLegacy } from '@/lib/legacy';
-import { isOfficialMatch } from '@/lib/careerStory';
+import { isOfficialMatch, describePartnershipHistory, getTopRivalry } from '@/lib/careerStory';
+import { getCoachTenureHistory } from '@/game-core/coachLifecycle.js';
+import { getPlayerRelationships } from '@/lib/relationships';
 import RetirementModal from '@/components/legacy/RetirementModal';
 import NewAthleteModal from '@/components/legacy/NewAthleteModal';
 import HallOfFame from '@/components/legacy/HallOfFame';
 import FamilyTree from '@/components/legacy/FamilyTree';
 import CareerTimeline from '@/components/legacy/CareerTimeline';
+import CareerIdentitySummary from '@/components/legacy/CareerIdentitySummary';
 import SeasonRetrospective from '@/components/legacy/SeasonRetrospective';
 import LegacyBonusesCard from '@/components/legacy/LegacyBonusesCard';
 
@@ -79,6 +82,9 @@ export default function Legacy() {
   const [legacies, setLegacies] = useState([]);
   const [coachLegacy, setCoachLegacy] = useState(null);
   const [matches, setMatches] = useState([]);
+  const [partnerships, setPartnerships] = useState([]);
+  const [coachHistory, setCoachHistory] = useState({ past: [], current: null });
+  const [relationships, setRelationships] = useState([]);
   const [loading, setLoading] = useState(true);
   const [showRetirement, setShowRetirement] = useState(false);
   const [showNewAthlete, setShowNewAthlete] = useState(false);
@@ -93,6 +99,18 @@ export default function Legacy() {
           setProfile(p);
           const careerMatches = await localGame.entities.Match.filter({ profile_id: p.id }, '-created_date', 500).catch(() => []);
           setMatches(careerMatches || []);
+          // Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 6/7/5): busca
+          // única aqui — buildCareerTimeline/describePartnershipHistory/
+          // getTopRivalry são funções puras que só formatam o que já foi
+          // buscado, nenhuma consulta nova dentro delas (Parte 15).
+          const [partnershipRows, tenureHistory, relationshipRows] = await Promise.all([
+            localGame.entities.Partnership.filter({ profile_id: p.id }, '-started_career_date', 50).catch(() => []),
+            getCoachTenureHistory(p).catch(() => ({ past: [], current: null })),
+            getPlayerRelationships(p.id),
+          ]);
+          setPartnerships(partnershipRows || []);
+          setCoachHistory(tenureHistory);
+          setRelationships(relationshipRows || []);
           const userLegacies = await getUserLegacies(user.id);
           setLegacies(userLegacies);
           if (p.coach_legacy_id) {
@@ -243,7 +261,13 @@ export default function Legacy() {
         <FamilyTree legacies={legacies} currentGeneration={generation} />
 
         {/* Career Timeline */}
-        <CareerTimeline profile={profile} matches={matches} />
+        <CareerTimeline profile={profile} matches={matches} partnerships={partnerships} coachTenures={coachHistory.past} relationships={relationships} />
+
+        {/* Fase 14 (Parte 6/7/5/19): "Quem foram minhas duplas? Quem foram
+            meus treinadores? Quem é meu adversário mais recorrente?" —
+            fatos reais, compactos, no mesmo padrão visual das seções
+            vizinhas (nada de painel novo gigante). */}
+        <CareerIdentitySummary partnershipHistory={describePartnershipHistory(partnerships)} coachHistory={coachHistory} rivalry={getTopRivalry(relationships)} />
 
         <SeasonRetrospective profile={profile} matches={matches} />
 

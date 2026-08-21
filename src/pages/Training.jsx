@@ -8,7 +8,8 @@ import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore, getRecommendedTrainings } from '@/lib/trainingSystemV2';
 import { getTrainingCost } from '@/lib/trainingEconomy';
 import { useToast } from '@/components/ui/use-toast';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { getCareerNextAction } from '@/lib/careerNextAction.js';
 import TrainingTimerModal from '@/components/training/TrainingTimerModal';
 import ConditionPanel, { getConditionSummaryItems } from '@/components/training/ConditionPanel';
 import TrainingActivityCard from '@/components/training/TrainingActivityCard';
@@ -19,6 +20,7 @@ import {
   ActionFeedback,
   Button,
   CollapsibleSection,
+  ContextActionBar,
   EmptyState,
   Page,
   PageContent,
@@ -54,6 +56,7 @@ export default function Training() {
   const [activeTab, setActiveTab] = useState('treino');
   const [activeCategory, setActiveCategory] = useState('court');
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   useEffect(() => { load(); }, []);
   useEffect(() => {
@@ -184,6 +187,16 @@ export default function Training() {
     [profile, weeklyCounts],
   );
 
+  // M4.3 (docs/MOBILE_M4_3_GAME_FLOW.md, Parte G): "treino concluído" hoje
+  // não sugeria nenhum próximo passo — o jogador tinha que navegar sozinho.
+  // Só calculado quando há um resultado pra mostrar (Parte R: nenhum cálculo
+  // por render fora desse momento); usa o profile JÁ atualizado por
+  // doTraining (res.profile), nenhuma consulta nova.
+  const postTrainingAction = useMemo(
+    () => (result?.type === 'training' ? getCareerNextAction(profile) : null),
+    [result, profile],
+  );
+
   if (loading) return <PageSkeleton variant="dashboard" rows={4} />;
 
   if (!profile) {
@@ -253,6 +266,17 @@ export default function Training() {
             result.fatiguePenalty < 0 ? `fadiga: ${result.fatiguePenalty}` : null,
           ].filter(Boolean).join(' · ')}
           action={<button type="button" onClick={() => setResult(null)} className="text-xs font-bold text-muted-foreground hover:text-foreground">Fechar</button>}
+        />
+      )}
+      {postTrainingAction && (
+        <ContextActionBar
+          description={postTrainingAction.description}
+          primary={{
+            label: postTrainingAction.label,
+            icon: postTrainingAction.icon,
+            onClick: () => (postTrainingAction.actionType === 'advance-day' ? handleAdvanceDay() : navigate(postTrainingAction.route)),
+            disabled: postTrainingAction.actionType === 'advance-day' && advancing,
+          }}
         />
       )}
       {/* Tabs */}

@@ -13,6 +13,7 @@ import {
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { generateTournamentOpponent, getPartnerBot, getTournamentRounds } from '@/lib/career';
 import { buildPartnershipMatchPatch, getActivePartnership } from '@/lib/partnershipSystem';
+import { processMatchRelationships } from '@/lib/relationships';
 import { getTeamRank, teamKey } from '@/lib/teamRanking';
 import { getSetScoreString } from '@/lib/matchEngine';
 import { getCoachEffects } from '@/lib/coaches';
@@ -20,13 +21,14 @@ import { resolveActiveCoach } from '@/game-core/coachLifecycle';
 import { finalizeTournamentRun, prepareTournamentFinalization } from '@/game-core/tournamentLifecycle.js';
 import { syncPlayerAchievements } from '@/lib/achievementEngine.js';
 import { buildAchievementContext } from '@/lib/achievementContext.js';
+import { evaluateCareerMatchMilestones } from '@/lib/careerStoryEvents.js';
 import { createMatchEndProfiler, scheduleSecondaryMatchWork } from '@/game-core/matchFinalization.js';
 import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import LiveMatch from '@/components/matches/LiveMatch';
 import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBoundary.jsx';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
-import { ModalShell } from '@/components/design-system';
+import { ModalShell, ContextActionBar } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { getQualifyingRoundLabels } from '@/gameplay/worldTour/QualifyingManager.js';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
@@ -96,6 +98,15 @@ function normalizeLegacyRun(run, metadata = {}) {
 
 export default function TournamentModal({ tournament, profile: initialProfile, careerId, onClose, onProfileUpdate, onComplete }) {
   const navigate = useNavigate();
+  // M4.3 (docs/MOBILE_M4_3_GAME_FLOW.md, Parte I/N): bug real encontrado na
+  // auditoria — todo botão "Voltar à carreira" só chamava onClose (fecha o
+  // modal), sem navegar. Como o modal é montado tanto em Tournaments.jsx
+  // quanto em CalendarPage.jsx (onClose só limpa o estado local do modal
+  // ali), o jogador ficava na página que já estava, nunca de fato "de
+  // volta à carreira" (Home) como o rótulo prometia — mesma classe de bug
+  // já corrigida em SimulationModal.jsx (M4.2.2). Fechar + navegar, mesmo
+  // padrão.
+  const goBackToCareer = useCallback(() => { onClose?.(); navigate('/'); }, [onClose, navigate]);
   const [profile, setProfile] = useState(initialProfile);
   const [event, setEvent] = useState(null);
   const [registration, setRegistration] = useState(null);
@@ -667,14 +678,41 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // incrementMissionProgress logo abaixo, nunca dentro do motor de
       // torneio/finalização em si. Idempotente: nunca re-concede uma
       // conquista já registrada.
+      let achievementContext = null;
       try {
         const worldRank = await getWorldRank(updated).catch(() => null);
-        const achievementContext = await buildAchievementContext(updated, { worldRank });
+        achievementContext = await buildAchievementContext(updated, { worldRank });
         const achievementSync = await syncPlayerAchievements(updated, achievementContext, { localGame });
         if (achievementSync.profile) updated = achievementSync.profile;
       } catch (achievementError) {
         console.error('[achievements] Falha ao avaliar conquistas de torneio.', achievementError);
       }
+
+      // Fase 14 (Parte 2/10): mesmo achievementContext já construído acima
+      // (Parte 15: nenhuma consulta extra) — dispara notificações
+      // deduplicadas de marco de carreira (1ª partida/vitória/título,
+      // vitória sobre Top 10/#1 do mundo). Best-effort, mesmo nível de
+      // abstração das conquistas.
+      if (achievementContext) {
+        evaluateCareerMatchMilestones(updated, matchRecord, achievementContext).catch((careerStoryError) => {
+          console.error('[career-story] Falha ao avaliar marcos de carreira.', careerStoryError);
+        });
+      }
+
+      // Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 5): auditoria achou
+      // que processMatchRelationships só era chamada em partida de treino
+      // (SimulationModal.jsx) — um rival de torneio de verdade nunca
+      // acumulava confronto/H2H nenhum. Mesmo nível de abstração das
+      // conquistas acima (não-bloqueante, nunca dentro do motor de
+      // torneio em si).
+      const finalLabel = String(freshMatch.round || '').toLowerCase();
+      processMatchRelationships(
+        profile.id,
+        opponent.map((item) => item.name),
+        partner?.name,
+        won,
+        { isFinal: finalLabel.includes('final') && !finalLabel.includes('semi') },
+      ).catch(() => {});
 
       const missionObjectives = [
         ...(won ? ['win_matches'] : []),
@@ -713,10 +751,27 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     }
   }
 
+  // Hotfix 14.1 (docs/HOTFIX_14_1_MATCH_UX_INTERVIEWS.md, Parte 7/8): causa
+  // raiz real do "backdrop sombreado" — este handler nunca chamava onClose(),
+  // só navigate(). Como /press é uma rota lazy (React Router
+  // future.v7_startTransition:true, routeModules.js) dentro de um
+  // <Suspense>, navegar pra um chunk ainda não carregado mantém a árvore
+  // ANTERIOR montada (TournamentModal, com seu próprio backdrop) até o
+  // chunk resolver — nesse intervalo, o backdrop do TournamentModal e o
+  // backdrop do InterviewModal (que monta depois, quando Press termina seu
+  // próprio load()) podem coexistir, somando opacidade/blur. "Selecionar
+  // uma resposta corrige visualmente" era coincidência de tempo (a árvore
+  // antiga já tinha desmontado sozinha até então), não uma consequência da
+  // resposta em si. Corrigido na raiz — não com z-index maior (proibido
+  // pelo próprio briefing): fechar o overlay do torneio ANTES de navegar
+  // desacopla o desmonte do modal da espera pelo chunk/lazy-load da rota
+  // de entrevista, exatamente o fluxo pedido ("resultado → fecha overlay
+  // anterior → abre entrevista").
   function openPostMatchInterview() {
     if (!lastResult?.match?.id) return;
     const interview = postMatchInterviewIdentity(lastResult.match.id);
     const returnTo = buildTournamentReturnRoute(tournament.id);
+    onClose?.();
     navigate(buildInterviewRoute({ interviewId: interview.id, sourceId: interview.sourceId, returnTo }));
   }
 
@@ -766,7 +821,15 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       title={tournament.name}
       description="Campanha de torneio"
       size="md"
-      className={phase === 'match' ? 'h-[calc(100dvh-1rem)] sm:h-[min(48rem,calc(100dvh-2rem))]' : ''}
+      // Hotfix 14.1 (Parte 1/4): a auditoria achou a causa raiz real da
+      // narração/Técnico espremidos no desktop — não faltava min-h-0/flex-1
+      // dentro de LiveMatch.jsx (já corretos), o teto era este `min(48rem, …)`
+      // artificial, que capava o modal em ~768px de altura mesmo em telas de
+      // 900-1080px. Removido o teto em rem; desktop agora usa a MESMA fórmula
+      // de viewport que o mobile já usava (só a margem de respiro muda, 2rem
+      // vs 1rem, herdada do próprio max-h do ModalShell) — cresce com a tela
+      // real (1366×768/1440×900/1920×1080) em vez de um valor fixo.
+      className={phase === 'match' ? 'h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)]' : ''}
     >
       <div className={`flex min-h-0 flex-col ${phase === 'match' ? 'h-full' : ''}`}>
         <div className="mb-3 flex shrink-0 items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
@@ -837,7 +900,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           </div>
         )}
 
-        {phase === 'waiting' && currentMatch && <StateMessage icon={CalendarDays} title={`${currentMatch.round} agendada`} body={`${formatDay(currentMatch.date)} contra ${analysis.name}. Avance o calendário pela carreira; energia e fadiga serão recuperadas pelos sistemas diários normais.`} tone="cyan" action={<button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
+        {phase === 'waiting' && currentMatch && <StateMessage icon={CalendarDays} title={`${currentMatch.round} agendada`} body={`${formatDay(currentMatch.date)} contra ${analysis.name}. Avance o calendário pela carreira; energia e fadiga serão recuperadas pelos sistemas diários normais.`} tone="cyan" action={<button onClick={goBackToCareer} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
         {phase === 'missed' && <StateMessage icon={CalendarDays} title="Data da rodada ultrapassada" body="Abra o calendário para resolver este compromisso sem recriar a partida." tone="red" />}
 
         {phase === 'playable' && currentMatch && (
@@ -882,15 +945,24 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
                 Jogar {currentMatch?.round || 'próxima rodada'} agora
               </button>
             ) : (
-              <button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Continuar no torneio</button>
+              // M4.3 (Parte I): "Continuar no torneio" era genérico e só
+              // fechava o modal (sem navegar) — Parte I pede exatamente
+              // "Próxima rodada · DATA" + [Voltar para carreira] ou [Ver
+              // calendário], nunca um botão que tenta jogar uma rodada
+              // futura (playableToday já garante isso acima).
+              <ContextActionBar
+                description={lastResult.nextMatch ? `Próxima rodada · ${formatDay(lastResult.nextMatch.date)}` : undefined}
+                primary={{ label: 'Voltar para a carreira', icon: 'crown', onClick: goBackToCareer }}
+                secondary={{ label: 'Ver calendário', icon: 'calendar', onClick: () => { onClose?.(); navigate('/game/calendar'); } }}
+              />
             )}
           </div>
           );
         })()}
 
-        {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={onClose} profile={profile} />}
-        {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={onClose} profile={profile} />}
-        {phase === 'withdrawn' && <StateMessage icon={Shield} title="Torneio encerrado por abandono" body="A comissão priorizou sua recuperação. A participação, premiação aplicável e calendário foram encerrados sem criar outra rodada." tone="orange" action={<button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
+        {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} profile={profile} />}
+        {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} profile={profile} />}
+        {phase === 'withdrawn' && <StateMessage icon={Shield} title="Torneio encerrado por abandono" body="A comissão priorizou sua recuperação. A participação, premiação aplicável e calendário foram encerrados sem criar outra rodada." tone="orange" action={<button onClick={goBackToCareer} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
       </div>
     </ModalShell>
   );

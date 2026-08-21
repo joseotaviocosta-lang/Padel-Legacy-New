@@ -72,8 +72,15 @@ check('feed da narração perdeu o limite de 120 eventos renderizados', liveMatc
 // valia no mobile) — SimulationModal só tinha `md:h-[...]`, deixando o mobile
 // (o cenário report bugado) cair no max-height "solto" padrão do ModalShell.
 check('ModalShell.pl-modal-panel deixou de depender de max-height (mudança arquitetural fora do escopo deste hotfix)', modalShell.includes('max-h-[calc(100dvh-1rem)]'));
-check('SimulationModal (fase ao vivo) ainda não define altura EXPLÍCITA no mobile — raiz do bug real de narração sem limite', /phase === 'live' \? 'h-\[calc\(100dvh-1rem\)\] md:h-\[min\(46rem,92dvh\)\]' : ''/.test(simulationModal));
-check('TournamentModal (fase da partida) perdeu a altura explícita no mobile', /phase === 'match' \? 'h-\[calc\(100dvh-1rem\)\] sm:h-\[min\(48rem,calc\(100dvh-2rem\)\)\]' : ''/.test(tournamentModal));
+// Hotfix 14.1 (Parte 1/4): a altura MOBILE (h-[calc(100dvh-1rem)], sem
+// prefixo) é exatamente a propriedade que esta checagem sempre quis provar
+// (raiz do bug de narração sem limite) — preservada, intocada. Só o SUFIXO
+// desktop mudou: o teto artificial `min(46rem,92dvh)`/`min(48rem,...)` foi
+// removido (causa raiz real do desktop espremido, Hotfix 14.1) e os dois
+// hosts foram unificados no mesmo breakpoint sm: — regex atualizada pra
+// refletir a mudança deliberada, não pra esconder uma regressão.
+check('SimulationModal (fase ao vivo) mantém a altura EXPLÍCITA no mobile (raiz do bug de narração sem limite) e ganhou espaço real no desktop (sem teto artificial)', /phase === 'live' \? 'h-\[calc\(100dvh-1rem\)\] sm:h-\[calc\(100dvh-2rem\)\]' : ''/.test(simulationModal));
+check('TournamentModal (fase da partida) mantém a altura explícita no mobile e ganhou espaço real no desktop (sem teto artificial)', /phase === 'match' \? 'h-\[calc\(100dvh-1rem\)\] sm:h-\[calc\(100dvh-2rem\)\]' : ''/.test(tournamentModal));
 
 // 9. recovery CTA permanece acessível (touch target >= 44px = min-h-11/12)
 check('CTA "Continuar partida" (treino) perdeu touch target >= 44px', /resumeMatch\}[^>]*className="flex min-h-12/.test(simulationModal));

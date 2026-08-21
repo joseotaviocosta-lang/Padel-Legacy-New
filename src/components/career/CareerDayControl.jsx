@@ -37,12 +37,29 @@ export default function CareerDayControl({ profile = null, compact = false, clas
 
   return (
     <div className={cn('flex min-w-0 shrink-0 items-stretch gap-1', className)} aria-label="Data e avanço da carreira">
-      <div className="flex min-w-[3.45rem] shrink-0 flex-col justify-center rounded-md px-1 py-1 text-center sm:min-w-[7.35rem] sm:px-2.5">
+      {/* Hotfix 14.1 (docs/HOTFIX_14_1_MATCH_UX_INTERVIEWS.md, Parte 17/18/19):
+          a data era um <div> puramente informativo — vira um botão real
+          (semântico, focável, Enter/Space nativos) para a MESMA rota
+          canônica que describeCalendarBlock/CareerCalendar já usam
+          (/game/calendar), sem duplicar rota nova. Hover/focus é discreto
+          (fundo sutil) — não um CTA verde grande, continua parecendo parte
+          do header (Parte 18). "Avançar" ao lado permanece intocado, sua
+          própria função/comportamento não muda (Parte 19/20 — navegar para
+          o calendário é só uma troca de rota, nunca um avanço de tempo, e
+          nenhum outro item de navegação do header já é bloqueado durante
+          recovery de partida, então este não introduz um bypass novo). */}
+      <button
+        type="button"
+        onClick={() => navigate('/game/calendar')}
+        title="Abrir calendário"
+        aria-label="Abrir calendário"
+        className="flex min-w-[3.45rem] shrink-0 flex-col justify-center rounded-md px-1 py-1 text-center transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-w-[7.35rem] sm:px-2.5"
+      >
         <span className="text-[8px] font-extrabold uppercase leading-none tracking-[0.12em] text-info sm:hidden">{date.weekdayShort}</span>
         <span className="hidden text-[8px] font-extrabold uppercase leading-none tracking-[0.12em] text-info sm:block">{date.weekday}</span>
         <span className="mt-1 whitespace-nowrap text-[10px] font-black leading-none tabular-nums sm:hidden">{date.compactDate}</span>
         <span className="mt-1 hidden whitespace-nowrap text-[11px] font-black leading-none tabular-nums sm:block">{date.fullDate}</span>
-      </div>
+      </button>
       <button
         type="button"
         onClick={handleAdvance}

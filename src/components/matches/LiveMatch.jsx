@@ -66,6 +66,12 @@ export default function LiveMatch({
   const narrationRef = useRef(null);
   const checkpointSignatureRef = useRef(null);
   const diagnosedSuggestionIdRef = useRef(null);
+  // Hotfix 14.1 (docs/HOTFIX_14_1_MATCH_UX_INTERVIEWS.md, Parte 2/3): o
+  // indicador da aba Técnico (hasAlert, abaixo) era `Boolean(coachSuggestion)`
+  // — ficava aceso enquanto a sugestão atual existisse, mesmo depois do
+  // jogador já ter aberto e visto a aba. Precisa de estado (não só ref) pra
+  // re-renderizar e sumir o ponto assim que a aba for aberta.
+  const [seenSuggestionId, setSeenSuggestionId] = useState(null);
 
   // M3 — checkpoint em pontos seguros/semanticamente relevantes (início da
   // partida, fim de game/set, mudança de tática/decisão do técnico), nunca a
@@ -216,6 +222,14 @@ export default function LiveMatch({
     });
   }, [coachSuggestion, matchType, matchId]);
 
+  // Hotfix 14.1 (Parte 3): "depois de visualizada, retirar o estado de
+  // 'nova'" — abrir a aba Técnico marca a sugestão ATUAL como vista. Se uma
+  // sugestão NOVA chegar depois (id diferente), o indicador volta a acender
+  // normalmente, mesmo com a aba já tendo sido aberta antes.
+  useEffect(() => {
+    if (activePanel === 'coach' && coachSuggestion) setSeenSuggestionId(coachSuggestion.id);
+  }, [activePanel, coachSuggestion]);
+
   const matchStatus = state.finished
     ? 'Finalizada'
     : state.superTiebreak
@@ -233,7 +247,7 @@ export default function LiveMatch({
       <div className="grid shrink-0 grid-cols-4 gap-1 rounded-xl border border-border/40 bg-secondary/30 p-1" role="tablist" aria-label="Painéis da partida">
         {PANELS.map(({ id, label, icon: Icon }) => {
           const active = activePanel === id;
-          const hasAlert = id === 'coach' && Boolean(coachSuggestion);
+          const hasAlert = id === 'coach' && Boolean(coachSuggestion) && coachSuggestion.id !== seenSuggestionId;
           return (
             <button
               key={id}

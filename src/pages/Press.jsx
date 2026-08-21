@@ -9,6 +9,8 @@ import ArticleCard from '@/components/press/ArticleCard';
 import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
 import { getPendingInterviews, pickJournalist, applyReputationEffects, reconcileJournalistCatalog } from '@/lib/pressData';
+import { getPlayerRelationships } from '@/lib/relationships';
+import { getTopRivalry } from '@/lib/careerStory';
 import { useToast } from '@/components/ui/use-toast';
 import {
   buildOfficialInterviewProgressPatch,
@@ -28,6 +30,7 @@ export default function Press() {
   const [calendarEvents, setCalendarEvents] = useState([]);
   const [partnership, setPartnership] = useState(null);
   const [registrations, setRegistrations] = useState([]);
+  const [rivalry, setRivalry] = useState(null);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') === 'interviews' ? 'interviews' : searchParams.get('tab') === 'journalists' ? 'journalists' : 'feed');
   const [activeInterview, setActiveInterview] = useState(null);
@@ -52,18 +55,25 @@ export default function Press() {
       setProfile(p);
 
       if (p) {
-        const [arts, mats, events, partnerships, tournamentRegistrations] = await Promise.all([
+        const [arts, mats, events, partnerships, tournamentRegistrations, relationships] = await Promise.all([
           localGame.entities.PressArticle.filter({ profile_id: p.id }, '-created_date', 50),
           localGame.entities.Match.filter({ profile_id: p.id }, '-created_date', 20),
           localGame.entities.CalendarEvent.filter({ profile_id: p.id }, 'start_date', 100),
           localGame.entities.Partnership.filter({ profile_id: p.id }, '-created_date', 20).catch(() => []),
           localGame.entities.TournamentRegistration.filter({ profile_id: p.id }, '-registered_at', 100).catch(() => []),
+          // Hotfix 14.1 (Parte 11): rivalidade real (Fase 14,
+          // careerStory.js/getTopRivalry) — mesma consulta leve já usada
+          // em Legacy.jsx, reaproveitada aqui pra sustentar a família de
+          // pergunta de rivalidade só quando há confronto real (>=3
+          // partidas) por trás.
+          getPlayerRelationships(p.id).catch(() => []),
         ]);
         setArticles(arts || []);
         setRecentMatches(mats || []);
         setCalendarEvents(events || []);
         setPartnership((partnerships || []).find(item => item.is_active || item.status === 'active') || null);
         setRegistrations(tournamentRegistrations || []);
+        setRivalry(getTopRivalry(relationships));
 
         // Load or seed journalists for this profile
         const existing = await localGame.entities.PressJournalist.filter({ profile_id: p.id }, null, 50);
@@ -80,7 +90,7 @@ export default function Press() {
   }
 
   const pendingInterviews = profile
-    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership, registrations }).filter(interview => {
+    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership, registrations, rivalry }).filter(interview => {
         return !articles.some(article =>
           (article.source_event_id === interview.sourceId || article.related_event === interview.relatedEvent) &&
           (
@@ -122,7 +132,7 @@ export default function Press() {
   }, [articles, journalists, loading, pendingInterviews, searchParams]);
 
   async function handleCompleteInterview(result) {
-    const { headline, content, tone, effects, journalist, interview } = result;
+    const { headline, content, tone, effects, journalist, interview, questionIds } = result;
 
     try {
       const postMatch = isPostMatchInterview(interview);
@@ -184,10 +194,18 @@ export default function Press() {
         const progressPatch = postMatch
           ? buildOfficialInterviewProgressPatch(profile, interview, recentMatches)
           : {};
+        // Hotfix 14.1 (Parte 13): "últimas 10-20 perguntas" — guarda as
+        // question IDs desta entrevista para o anti-repetição da PRÓXIMA
+        // seleção (selectInterviewQuestions). Só grava uma vez por
+        // sourceId, no mesmo bloco idempotente que já protege os outros
+        // contadores — reload/retry nunca duplica nem "esquece" a mesma
+        // entrevista 2x.
+        const recentQuestionIds = [...(profile.recent_interview_question_ids || []), ...(questionIds || [])].slice(-20);
         const profileUpdates = {
           ...applyReputationEffects(profile, effects),
           ...progressPatch,
           processed_press_interview_sources: [...processedSources, interview.sourceId].slice(-200),
+          recent_interview_question_ids: recentQuestionIds,
         };
         const updated = await localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
         setProfile(updated);
@@ -390,6 +408,7 @@ export default function Press() {
           interview={activeInterview}
           journalist={activeJournalist}
           profile={profile}
+          recentQuestionIds={profile?.recent_interview_question_ids || []}
           onClose={closeInterview}
           onComplete={handleCompleteInterview}
         />

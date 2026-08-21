@@ -1,0 +1,49 @@
+{
+  "name": "CoachTenure",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "ID do PlayerProfile"
+    },
+    "coach_id": {
+      "type": "string",
+      "description": "ID do treinador (Coach)"
+    },
+    "coach_name": {
+      "type": "string",
+      "description": "Nome do treinador (denormalizado)"
+    },
+    "started_date": {
+      "type": "string",
+      "description": "Data de carreira em que o treinador foi contratado"
+    },
+    "ended_date": {
+      "type": "string",
+      "description": "Data de carreira em que o período terminou (vazio enquanto ativo)"
+    },
+    "ovr_start": {
+      "type": "number",
+      "description": "Overall do atleta no início do período, quando conhecido (null se não puder ser reconstruído — ex.: treinador já ativo antes desta fase existir)"
+    },
+    "ovr_end": {
+      "type": "number",
+      "description": "Overall do atleta no fim do período"
+    },
+    "status": {
+      "type": "string",
+      "enum": ["ativo", "encerrado"],
+      "default": "ativo"
+    },
+    "end_reason": {
+      "type": "string",
+      "enum": ["substituido", "backfill"],
+      "description": "'backfill' marca um período reconstruído retroativamente a partir de coach_hired_date (Fase 14, Parte 14) — sem ovr_start conhecido, nunca inventado"
+    }
+  },
+  "required": [
+    "profile_id",
+    "coach_id",
+    "started_date"
+  ]
+}

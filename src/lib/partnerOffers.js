@@ -7,6 +7,17 @@ export const PARTNER_OFFERS_ROUTE = '/partners?view=offers';
 const acceptanceLocks = new Map();
 const useful = value => value !== undefined && value !== null && value !== '';
 
+function hash(text) {
+  let value = 2166136261;
+  for (const char of String(text || '')) {
+    value ^= char.charCodeAt(0);
+    value = Math.imul(value, 16777619);
+  }
+  return value >>> 0;
+}
+function monthKeyOf(date) { return String(date || '').slice(0, 7); }
+const addDaysStr = (date, days) => { const value = new Date(`${date}T12:00:00`); value.setDate(value.getDate() + days); return value.toISOString().slice(0, 10); };
+
 
 export async function listPartnerOffers(profileId) {
   return localGame.entities.PartnerOffer.filter({ profile_id: profileId }, '-created_date', 100);
@@ -80,6 +91,62 @@ export async function rejectPartnerOffer(profile, offer) {
   const updated = await localGame.entities.PartnerOffer.update(fresh.id, { status: 'rejected', resolved_career_date: profile.career_date });
   await resolveOfferMessages(profile.id, fresh.id, 'decline');
   return updated;
+}
+
+// Fase 15 (docs/FASE_15_CIRCUITO_VIVO.md, Parte 14/15/16/45): auditoria
+// confirmou que NENHUM mecanismo gerava proposta espontânea depois da
+// oferta inicial — ensureInitialPartnerOffers se recusa a rodar de novo
+// (guarda dupla: existing.length || profile.partner_id). Esta função é o
+// gerador CONTÍNUO que faltava, gatilhado uma vez por mês (mesmo padrão
+// idempotente de aiPartnershipLifecycle.js: campo no profile marca o mês
+// já processado), com chance BAIXA (Parte 45: 1-4 propostas relevantes
+// por TEMPORADA, não por mês) — sorteio determinístico via hash(seed),
+// nunca Math.random (Parte 38). Funciona com OU sem parceiro atual: com
+// parceiro, a proposta fica disponível mas nunca troca a dupla sozinha
+// (validatePartnerOfferAcceptance já bloqueia aceitar com parceria ativa
+// diferente — Parte 15: "receber proposta NÃO quebra a dupla atual").
+const FREE_AGENT_MONTHLY_CHANCE = 22; // ~1000 chance efetiva
+const PAIRED_MONTHLY_CHANCE = 9;
+
+export async function processSpontaneousPartnerMarket(profile, previousDate, currentDate) {
+  if (!profile?.id) return profile;
+  const month = monthKeyOf(currentDate);
+  if (monthKeyOf(previousDate) === month) return profile; // só processa na virada do mês
+  if (profile.last_spontaneous_offer_month === month) return profile; // idempotente
+
+  const isFreeAgent = !profile.partner_id;
+  const chance = isFreeAgent ? FREE_AGENT_MONTHLY_CHANCE : PAIRED_MONTHLY_CHANCE;
+  const roll = hash(`${profile.id}:${month}:spontaneous-partner-offer`) % 100;
+  const marked = { last_spontaneous_offer_month: month };
+  if (roll >= chance) {
+    return localGame.entities.PlayerProfile.update(profile.id, marked);
+  }
+
+  const candidates = await localGame.entities.AthleteProfile.filter({ market_status: 'livre' }, '-overall_rating', 40).catch(() => []);
+  if (!candidates.length) return localGame.entities.PlayerProfile.update(profile.id, marked);
+
+  const existingOffers = await listPartnerOffers(profile.id).catch(() => []);
+  const alreadyOfferedIds = new Set(existingOffers.filter((item) => item.status === 'pending').map((item) => item.candidate_player_id));
+  const pool = candidates.filter((candidate) => !alreadyOfferedIds.has(candidate.id));
+  const built = buildInitialPartnerOffers(profile, pool, 1);
+  if (!built.length) return localGame.entities.PlayerProfile.update(profile.id, marked);
+
+  const offer = { ...built[0], source: isFreeAgent ? 'spontaneous-market-offer' : 'spontaneous-market-offer-while-paired', expires_career_date: addDaysStr(currentDate, 10) };
+  const saved = await localGame.entities.PartnerOffer.create(offer);
+  await createOfferMessage(profile, saved);
+
+  // Fase 15 (Parte 7/16): quando o jogador já está em dupla, a proposta
+  // espontânea TAMBÉM alimenta o interesse de renovação do parceiro atual
+  // (fator real "recebeu interesse de atleta melhor ranqueado" — Parte 7),
+  // marcado na própria Partnership ativa, nunca um contador novo solto.
+  if (!isFreeAgent) {
+    const active = await localGame.entities.Partnership.filter({ profile_id: profile.id, status: 'ativa' }, null, 1).catch(() => []);
+    if (active[0]) {
+      await localGame.entities.Partnership.update(active[0].id, { partner_saw_better_opportunity: { name: saved.candidate_snapshot?.name, world_rank: saved.candidate_snapshot?.world_rank || null, career_date: currentDate } });
+    }
+  }
+
+  return localGame.entities.PlayerProfile.update(profile.id, marked);
 }
 
 export function offerCandidate(offer) { return offer?.candidate_snapshot || null; }

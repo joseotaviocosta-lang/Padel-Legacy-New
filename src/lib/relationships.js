@@ -92,7 +92,20 @@ export async function updateRelationshipScore(relId, scoreChange, event, descrip
 
 // ─── Match Processing ───────────────────────────────────────────────────────
 
-export async function processMatchRelationships(profileId, opponentNames = [], partnerName, won) {
+// Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 5): auditoria achou 2
+// lacunas reais aqui, não hipóteses:
+// (1) para ADVERSÁRIOS, só `shared_matches` incrementava — `shared_wins`/
+//     `shared_losses` nunca eram gravados (só o parceiro tinha os três),
+//     tornando impossível montar um H2H real ("4-4") como a Parte 5 pede.
+// (2) esta função só era chamada por partida de TREINO
+//     (SimulationModal.jsx) — TournamentModal.jsx (partida oficial) nunca
+//     a chamava, então um rival de torneio de verdade nunca acumulava
+//     confronto nenhum aqui. Corrigido: shared_wins/losses agora também
+//     conta pra adversário (da perspectiva do jogador), um `isFinal`
+//     opcional soma `shared_finals` (Parte 5: "Finais: 2"), e um novo call
+//     site foi adicionado em TournamentModal.jsx (partida oficial) — sem
+//     mudar a assinatura pra quem já chama sem o 5º argumento.
+export async function processMatchRelationships(profileId, opponentNames = [], partnerName, won, { isFinal = false } = {}) {
   if (!profileId) return;
 
   // Update relationship with partner
@@ -123,7 +136,12 @@ export async function processMatchRelationships(profileId, opponentNames = [], p
       await updateRelationshipScore(
         rel.id, finalChange, won ? 'match_win_vs' : 'match_loss_vs',
         won ? `Vitória contra ${oppName}` : `Derrota para ${oppName}`,
-        { shared_matches: (rel.shared_matches || 0) + 1 }
+        {
+          shared_matches: (rel.shared_matches || 0) + 1,
+          shared_wins: won ? (rel.shared_wins || 0) + 1 : rel.shared_wins,
+          shared_losses: !won ? (rel.shared_losses || 0) + 1 : rel.shared_losses,
+          ...(isFinal ? { shared_finals: (rel.shared_finals || 0) + 1 } : {}),
+        }
       );
     }
   }

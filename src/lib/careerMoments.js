@@ -1,3 +1,5 @@
+import { isOfficialMatch, playerWonMatch } from '@/lib/careerStory.js';
+
 const DAY_MS = 86400000;
 
 function daysBetween(from, to) {
@@ -8,17 +10,22 @@ function daysBetween(from, to) {
   return Math.ceil((end - start) / DAY_MS);
 }
 
+// Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 1/9): bug real encontrado
+// na auditoria — este módulo checava campos que a partida real nunca
+// escreve (`winner_id`/`winner_player_id`/`player_won`/`is_winner`; a
+// escrita real em TournamentModal.jsx só grava `result:'vitória'|'derrota'`
+// e `winner:'A'|'B'`, a mesma causa raiz já corrigida em careerStory.js
+// durante a Fase 13). Além disso, `isCompletedMatch` não exigia partida
+// OFICIAL — uma partida de treino comum podia disparar o destaque "título"/
+// "grande fase" da Home, violando a mesma regra que a Parte 4 pede pra
+// timeline. Reaproveita as funções já corrigidas de careerStory.js em vez
+// de manter uma 3ª implementação divergente do mesmo conceito.
 function isCompletedMatch(match) {
-  const status = String(match?.status || '').toLowerCase();
-  return ['completed', 'finished', 'concluida', 'concluido'].includes(status)
-    || Boolean(match?.winner_id || match?.winner_player_id || match?.winner_team_id);
+  return isOfficialMatch(match);
 }
 
-function playerWon(match, profileId) {
-  return match?.winner_id === profileId
-    || match?.winner_player_id === profileId
-    || match?.player_won === true
-    || match?.is_winner === true;
+function playerWon(match, profile) {
+  return playerWonMatch(match, profile);
 }
 
 function matchDate(match) {
@@ -51,7 +58,12 @@ export function deriveCareerMoment(profile, context = {}) {
     };
   }
 
-  if (latestMatch && playerWon(latestMatch, profile.id) && (latestMatch.is_final || latestMatch.round === 'final' || latestMatch.title_won || latestMatch.tournament_won)) {
+  // Fase 14 (Parte 1/9): `is_final`/`round`/`title_won`/`tournament_won`
+  // nunca existiram na Match real (TournamentModal.jsx só grava
+  // `tournament_round` e `tournament_outcome:'champion'|'eliminated'|
+  // 'advanced'`) — este destaque de "título" nunca disparava mesmo com um
+  // torneio de verdade vencido. Corrigido pra checar o campo real.
+  if (latestMatch && playerWon(latestMatch, profile) && latestMatch.tournament_outcome === 'champion') {
     return {
       id: `title-${latestMatch.id || matchDate(latestMatch)}`,
       type: 'title',
@@ -108,7 +120,7 @@ export function deriveCareerMoment(profile, context = {}) {
   }
 
   const recent = matches.slice(0, 6);
-  const recentWins = recent.filter((match) => playerWon(match, profile.id)).length;
+  const recentWins = recent.filter((match) => playerWon(match, profile)).length;
   if (recent.length >= 4 && recentWins >= 4) {
     return {
       id: `streak-${recentWins}-${matchDate(recent[0])}`,

@@ -31,9 +31,13 @@ function athleteName(athlete) {
   return athlete?.sport_name || athlete?.name || athlete?.full_name || 'Atleta do circuito';
 }
 
+// Fase 15 (Parte 0/1/26): mesmo bug real corrigido em circuitLifeLifecycle.js
+// — `.includes('aposent')` também batia em 'aposentadoria_anunciada' (só o
+// anúncio), excluindo o atleta da IA de estratégia de carreira antes de se
+// aposentar de fato.
 function isRetired(athlete) {
   const status = String(athlete?.career_status || athlete?.status || '').toLowerCase();
-  return Boolean(athlete?.retired) || status.includes('aposent');
+  return Boolean(athlete?.retired) || status === 'aposentado' || status === 'retired';
 }
 
 function isInjured(athlete, date) {

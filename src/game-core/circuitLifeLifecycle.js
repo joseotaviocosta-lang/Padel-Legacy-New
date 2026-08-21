@@ -79,9 +79,15 @@ function athleteName(athlete) {
   return athlete?.name || athlete?.full_name || 'Atleta do circuito';
 }
 
+// Fase 15 (Parte 0/1/26): bug real encontrado na auditoria —
+// `.includes('aposent')` também batia em 'aposentadoria_anunciada' (só o
+// ANÚNCIO, Parte 26 explicitamente pede pra preservar esse estágio
+// intermediário), excluindo o atleta do circuito/ranking/IA de carreira
+// antes de realmente se aposentar. Match exato — só 'aposentado'/'retired'
+// (aposentadoria de fato) conta.
 function isRetired(athlete) {
   const status = String(athlete?.status || athlete?.career_status || '').toLowerCase();
-  return Boolean(athlete?.retired || status.includes('aposent'));
+  return Boolean(athlete?.retired || status === 'aposentado' || status === 'retired');
 }
 
 function ageOf(athlete, currentDate) {
@@ -148,7 +154,19 @@ export async function processCircuitLifeWeek(profile, previousDate, currentDate)
     }
 
     const age = ageOf(athlete, currentDate);
-    if (age >= 36 && chance(`${seed}:retirement`, Math.min(18, 3 + (age - 35) * 2))) {
+    // Fase 15 (Parte 0/1/26/39): 2 bugs reais corrigidos aqui —
+    // (1) faltava `!athlete.retirement_announced` na condição: um atleta já
+    // anunciado podia "anunciar" de novo toda semana (evento duplicado,
+    // quebra de idempotência real, Parte 39).
+    // (2) o anúncio nunca tinha um SEGUIMENTO automático — a aposentadoria
+    // de fato só existia atrás de um botão manual em WorldMarket.jsx,
+    // nunca no pipeline automático de avanço de dia. Corrigido: na
+    // primeira virada de ano depois do anúncio, o atleta se aposenta de
+    // verdade (career_status:'aposentado', sai da população competitiva
+    // via isRetired() já usado pelo resto do arquivo) — título, melhor
+    // ranking e histórico permanecem intactos no AthleteProfile, nada é
+    // apagado (Parte 26).
+    if (!athlete.retirement_announced && age >= 36 && chance(`${seed}:retirement`, Math.min(18, 3 + (age - 35) * 2))) {
       updates.retirement_announced = true;
       updates.retirement_season = Number(String(currentDate).slice(0, 4));
       updates.career_status = 'aposentadoria_anunciada';
@@ -163,6 +181,23 @@ export async function processCircuitLifeWeek(profile, previousDate, currentDate)
           content: `${name} anunciou que esta será uma de suas últimas temporadas no circuito. O veterano pretende encerrar a carreira competitiva após cumprir os compromissos atuais.`,
         });
         if (event) { stories += 1; highlights.push(`${name} anunciou despedida`); }
+      }
+    } else if (athlete.retirement_announced && !isRetired(athlete) && Number(String(currentDate).slice(0, 4)) > Number(athlete.retirement_season || 0)) {
+      updates.career_status = 'aposentado';
+      updates.retired_career_date = currentDate;
+      changes += 1;
+      if (stories < MAX_STORIES_PER_WEEK) {
+        const bestRank = athlete.best_ranking_position || athlete.ranking_position;
+        const rankNote = bestRank ? ` Encerra a carreira tendo alcançado a posição #${bestRank} do ranking mundial.` : '';
+        const event = await createWorldEvent({
+          event_type: 'aposentadoria',
+          event_date: currentDate,
+          tier: 'destaque',
+          related_players: [name],
+          tags: ['aposentadoria', 'veterano', 'circuito', 'encerramento'],
+          content: `${name} encerrou oficialmente a carreira competitiva.${rankNote}`,
+        });
+        if (event) { stories += 1; highlights.push(`${name} encerrou a carreira`); }
       }
     }
 

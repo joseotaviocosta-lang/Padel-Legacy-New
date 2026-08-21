@@ -1,9 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Lock } from 'lucide-react';
 import { careerDateLabel, careerMonthLabel } from '@/lib/career';
 import { advanceCareerDayOnce } from '@/game-core';
 import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
 import { getPendingDecisions } from '@/lib/calendarSystem';
+import { describeCalendarBlock } from '@/lib/tournamentNextAction.js';
 
 // Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.5): este widget mostrava
 // seus próprios avisos de "torneio chegando" e "lesionado" — a mesma
@@ -13,6 +15,7 @@ import { getPendingDecisions } from '@/lib/calendarSystem';
 // renderização nem rede; o essencial deste card — progresso diário, energia,
 // química e o botão de avançar — continua intacto.
 export default function CareerCalendar({ profile, onAdvanceDay }) {
+  const navigate = useNavigate();
   const [advancing, setAdvancing] = useState(false);
   const [pendingDecisions, setPendingDecisions] = useState([]);
   const dateLabel = careerDateLabel(profile);
@@ -63,14 +66,28 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
       </div>
 
       {/* Pending decision warning */}
-      {pendingDecisions.length > 0 && (
-        <div className="glass rounded-xl p-3 border border-amber-500/30 bg-amber-500/5 flex items-center gap-2">
-          <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
-          <p className="text-xs text-amber-200 font-medium flex-1">
-            Decisão obrigatória pendente: <span className="font-bold">{pendingDecisions[0].title}</span>. Resolva no Calendário antes de avançar.
-          </p>
-        </div>
-      )}
+      {/* M4.3 (docs/MOBILE_M4_3_GAME_FLOW.md, Parte J/L): este aviso só
+          desabilitava o botão + dizia "resolva no Calendário" sem link —
+          o cabeçalho global (CareerDayControl.jsx) já resolve o mesmo
+          bloqueio com describeCalendarBlock e uma ação "Ir para o
+          torneio"; reaproveitado aqui pra consistência, não uma lógica
+          nova de roteamento. */}
+      {pendingDecisions.length > 0 && (() => {
+        const block = describeCalendarBlock(pendingDecisions[0]);
+        return (
+          <div className="glass rounded-xl p-3 border border-amber-500/30 bg-amber-500/5 flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4 text-amber-400 shrink-0" />
+            <p className="text-xs text-amber-200 font-medium flex-1">
+              {block?.title || 'Decisão obrigatória pendente'}: <span className="font-bold">{pendingDecisions[0].title}</span>.
+            </p>
+            {block?.destination && (
+              <button type="button" onClick={() => navigate(block.destination)} className="shrink-0 rounded-lg bg-amber-500/20 px-2.5 py-1.5 text-[11px] font-bold text-amber-200 hover:bg-amber-500/30">
+                {block.actionLabel || 'Resolver'}
+              </button>
+            )}
+          </div>
+        );
+      })()}
 
       {/* Daily progress */}
       <div className="grid grid-cols-3 gap-2">

@@ -20,6 +20,8 @@ export * from './IconFrame';
 export * from './Button';
 export * from './IconButton';
 export * from './Tabs';
+export * from './FilterPills';
+export * from './ContextActionBar';
 export * from './Dropdown';
 export * from './Select';
 export * from './PlayerAvatar';

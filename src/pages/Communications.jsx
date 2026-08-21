@@ -4,8 +4,7 @@ import { AlertCircle, Bell, BriefcaseBusiness, Building2, CheckCheck, Graduation
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { applyCareerCommunicationAction, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
-import { Page, PageContent, PageHeader, StatusBadge, EmptyState, LoadingState, ModalShell, Surface } from '@/components/design-system';
-import { FilterPills } from '@/components/padel/ui';
+import { Page, PageContent, PageHeader, StatusBadge, EmptyState, LoadingState, ModalShell, Surface, FilterPills } from '@/components/design-system';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
 import { getNotificationCategory, getNotificationCategoryLabel, NOTIFICATION_CATEGORIES } from '@/lib/notificationCenter.js';

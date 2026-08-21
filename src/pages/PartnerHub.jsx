@@ -20,7 +20,7 @@ import PartnerSearch from '@/components/partner/PartnerSearch';
 import InboxPanel from '@/components/partner/InboxPanel';
 import AdvisorPanel from '@/components/partner/AdvisorPanel';
 import PartnerNegotiationModal from '@/components/partner/PartnerNegotiationModal';
-import { renewPartnerContract, releasePartner } from '@/game-core/partnerLifecycle';
+import { renewPartnerContract, releasePartner, calculatePartnerRenewalInterest } from '@/game-core/partnerLifecycle';
 import PartnerOffersPanel from '@/components/partner/PartnerOffersPanel';
 import { acceptPartnerOffer, ensureInitialPartnerOffers, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
 
@@ -164,7 +164,7 @@ export default function PartnerHub() {
   async function handleEndPartnership() {
     if (!activePartnership) return;
     try {
-      await endPartnership(activePartnership.id, 'encerrada_jogador', 'Decisão do jogador');
+      await endPartnership(activePartnership.id, 'encerrada_jogador', 'Decisão do jogador', profile.career_date);
       const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         partner_id: null, partner_name: null, partner_locked_until: null, partner_chemistry: 50,
       });
@@ -431,6 +431,25 @@ function ContractPanel({ partnership, profile, onRenew, onRelease }) {
           <div><p className="font-bold text-sm text-amber-400">Renovação necessária</p><p className="text-xs text-muted-foreground">O contrato venceu. Renove dentro da janela disponível para não perder a dupla.</p></div>
         </Surface>
       )}
+
+      {/* Fase 15 (Parte 6/7/8): interesse do parceiro em renovar — derivado
+          de dados reais já existentes (química/resultados/moral/
+          estabilidade/oportunidade de mercado), nunca a fórmula numérica
+          exposta, só o nível (ALTO/MÉDIO/BAIXO) + fatores textuais. */}
+      {(() => {
+        const interest = calculatePartnerRenewalInterest(partnership, profile, { betterOpportunity: partnership.partner_saw_better_opportunity || null });
+        const toneClass = interest.level === 'alto' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-400' : interest.level === 'baixo' ? 'border-red-500/30 bg-red-500/5 text-red-400' : 'border-amber-500/30 bg-amber-500/5 text-amber-400';
+        return (
+          <Surface padding="compact" className={`border ${toneClass.split(' ').slice(0, 2).join(' ')}`}>
+            <p className={`text-xs font-black uppercase tracking-wide ${toneClass.split(' ')[2]}`}>Interesse em renovar: {interest.level.toUpperCase()}</p>
+            {interest.factors.length > 0 && (
+              <ul className="mt-1.5 space-y-0.5">
+                {interest.factors.map((factor) => <li key={factor} className="text-xs text-muted-foreground">• {factor}</li>)}
+              </ul>
+            )}
+          </Surface>
+        );
+      })()}
 
       <Surface>
         <div className="flex items-center gap-2 mb-4"><RefreshCw className="h-5 w-5 text-primary" /><h3 className="font-black">Renovar e renegociar</h3></div>

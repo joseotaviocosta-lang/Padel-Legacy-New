@@ -21,16 +21,24 @@ const read = (path) => readFileSync(path, 'utf8');
 // ═══════════════════════════════════════════════════════════════════════
 // FILTROS (casos 1-8)
 // ═══════════════════════════════════════════════════════════════════════
-const filterPillsSource = read('src/components/padel/ui.jsx');
+// M4.2.2 correção de arquitetura (achado durante a implementação, Parte A):
+// Shop.jsx é explicitamente proibido de importar de padel/ui.jsx (a
+// "biblioteca-sombra" — test:career-ui-v2/test:ui-redesign já garantem
+// isso desde uma migração anterior). Por isso o FilterPills correto pra
+// páginas migradas vive em @/components/design-system (mesmo lugar de
+// Tabs.jsx) — não em padel/ui.jsx (mantido lá, também corrigido, só para
+// os 6 consumidores legados que ainda o usam: Fans/HallOfFame/History/
+// Relationships/Weather/WorldEvents/WorldFeed).
+const filterPillsSource = read('src/components/design-system/FilterPills.jsx');
 const shopSource = read('src/pages/Shop.jsx');
 const economySource = read('src/pages/Economy.jsx');
 const tabsSource = read('src/components/design-system/Tabs.jsx');
 
-// 1) Loja usa faixa rolável mobile (FilterPills, não mais a faixa própria sem proteção)
-gate('1. Loja usa o FilterPills compartilhado para a faixa de categorias (não mais uma faixa própria)', /import \{ FilterPills \} from '@\/components\/padel\/ui'/.test(shopSource) && /<FilterPills filters=\{CATEGORIES\}/.test(shopSource));
+// 1) Loja usa faixa rolável mobile (FilterPills do design-system, nunca padel/ui.jsx)
+gate('1. Loja usa o FilterPills do design-system para a faixa de categorias (nunca padel/ui.jsx — Shop.jsx é proibido de importar de lá)', /FilterPills/.test(shopSource) && /<FilterPills filters=\{CATEGORIES\}/.test(shopSource) && !shopSource.includes("from '@/components/padel/ui'"));
 
 // 2) Itens têm shrink-0
-gate('2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)', /shrink-0 items-center gap-1\.5 px-4 py-2/.test(filterPillsSource));
+gate('2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)', /shrink-0 items-center gap-1\.5 rounded-xl px-4 py-2/.test(filterPillsSource));
 
 // 3) Labels usam whitespace-nowrap
 gate('3. FilterPills usa whitespace-nowrap (nunca corta/quebra o texto do label)', /whitespace-nowrap/.test(filterPillsSource));
@@ -41,18 +49,22 @@ gate('4. FilterPills usa overflow-x-auto com flex-nowrap (rolagem horizontal rea
 // 5) Último item é alcançável (scroll touch nativo habilitado, sem overflow-hidden capando o container)
 gate('5. FilterPills habilita scroll touch nativo (WebkitOverflowScrolling), nada de overflow-hidden escondendo os últimos itens', /WebkitOverflowScrolling: 'touch'/.test(filterPillsSource) && !/overflow-hidden/.test(filterPillsSource));
 
-// 6) Economia usa o MESMO padrão compartilhado que a Loja
-gate('6. Economia usa o mesmo FilterPills compartilhado (não uma faixa própria reimplementada)', /import \{ LoadingScreen, FilterPills \} from '@\/components\/padel\/ui'/.test(economySource) && /<FilterPills filters=\{TABS\}/.test(economySource));
+// 6) Economia usa o MESMO padrão compartilhado que a Loja (mesmo arquivo FilterPills.jsx, mesmo componente)
+gate('6. Economia usa o mesmo FilterPills do design-system que a Loja (não uma faixa própria reimplementada)', /FilterPills/.test(economySource) && /<FilterPills filters=\{TABS\}/.test(economySource) && economySource.includes("from '@/components/design-system'"));
 
 // 7) Touch target mínimo preservado (Parte E: 40-44px normal — py-2 = 8px×2 + ~16px de linha de texto ≈ 40-42px total)
-gate('7. FilterPills usa py-2 (padding vertical compatível com o alvo de toque de 40-44px da Parte E, não um botão gigante)', /px-4 py-2 rounded-xl text-xs font-bold/.test(filterPillsSource));
+gate('7. FilterPills usa py-2 (padding vertical compatível com o alvo de toque de 40-44px da Parte E, não um botão gigante)', /rounded-xl px-4 py-2 text-xs font-bold/.test(filterPillsSource));
 
 // 8) Desktop não força scroll horizontal desnecessário — Tabs.jsx segmented volta a preencher a largura a partir de sm:
 gate('8. Tabs.jsx (variant=segmented) preenche a largura igualmente a partir de sm: (desktop/tablet com espaço), mas nunca força isso no mobile', /variant === 'segmented' && 'sm:flex-1'/.test(tabsSource) && !/variant === 'segmented' && 'flex-1'/.test(tabsSource));
 
 // ── Bônus: Comunicações também migrada (mesma causa raiz, mesmo primitive) ──
 const commsSource = read('src/pages/Communications.jsx');
-gate('Bônus: Comunicações também usa o FilterPills compartilhado (mesma causa raiz corrigida numa 3ª página)', /<FilterPills filters=\{NOTIFICATION_CATEGORIES\}/.test(commsSource));
+gate('Bônus: Comunicações também usa o FilterPills do design-system (mesma causa raiz corrigida numa 3ª página)', /<FilterPills filters=\{NOTIFICATION_CATEGORIES\}/.test(commsSource) && commsSource.includes("from '@/components/design-system'"));
+
+// ── Regressão de arquitetura: nenhuma das 3 páginas reintroduziu padel/ui.jsx pra FilterPills ──
+gate('Regressão: Comunicações não importa FilterPills de padel/ui.jsx', !/FilterPills.*from '@\/components\/padel\/ui'/.test(commsSource));
+gate('Regressão: Economia continua sem NOVA dependência de padel/ui.jsx (só o LoadingScreen pré-existente, se ainda usado)', !/FilterPills.*from '@\/components\/padel\/ui'/.test(economySource));
 
 // ═══════════════════════════════════════════════════════════════════════
 // POST-MATCH (casos 9-17)

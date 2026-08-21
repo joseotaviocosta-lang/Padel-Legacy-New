@@ -3,6 +3,7 @@ import { CAREER_START_DATE, daysBetween } from '@/lib/career';
 import { safeName } from './utils';
 import { processLivingWorldDay, getWeeklyRelevantHighlights } from '@/lib/livingWorldEngine.js';
 import { processPartnerDay } from './partnerLifecycle';
+import { processSpontaneousPartnerMarket } from '@/lib/partnerOffers.js';
 import { simulateWorldDay } from './worldSimulationLifecycle';
 import { processAiPartnershipMarket } from './aiPartnershipLifecycle';
 import { processAiCareerStrategyMonth } from './aiCareerStrategyLifecycle';
@@ -25,8 +26,18 @@ function monthChanged(oldDate, newDate) {
 // só a entrada em uma faixa nova (Top 500/100/10 ou #1). Do menor para o
 // maior threshold, para que um salto grande relate só a conquista mais
 // exclusiva (não uma notificação por faixa cruzada de uma vez).
-const RANKING_MILESTONES = [1, 10, 100, 500];
-function rankingMilestoneCrossed(previousPosition, currentPosition) {
+//
+// Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 3/10): a auditoria achou
+// esta escada (só 4 degraus) desalinhada com a escada já unificada em
+// achievementsData.js (reach_rank) e careerStory.js (buildCareerTimeline) —
+// 500/250/100/50/30/20/10/5/3/1, 10 degraus. Um jogador cruzando Top 250,
+// 50, 30, 20, 5 ou 3 ganhava a conquista e a entrada na timeline, mas NUNCA
+// uma notificação — o mesmo tipo de "sistemas que não conversam" que esta
+// fase existe para conectar. `rankingMilestoneCrossed` já é um detector de
+// transição real (não um "está <= threshold" estático) — só a lista de
+// thresholds precisava crescer, nenhuma lógica nova.
+export const RANKING_MILESTONES = [1, 3, 5, 10, 20, 30, 50, 100, 250, 500];
+export function rankingMilestoneCrossed(previousPosition, currentPosition) {
   if (!Number.isFinite(currentPosition) || currentPosition <= 0) return null;
   const previous = Number.isFinite(previousPosition) ? previousPosition : Infinity;
   const crossed = RANKING_MILESTONES.filter((threshold) => currentPosition <= threshold && previous > threshold);
@@ -78,6 +89,12 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
 
   try {
     updatedProfile = await stage('partner', () => processPartnerDay(updatedProfile, previousDate, currentDate));
+    // Fase 15 (Parte 14/15/36): mercado de propostas espontâneas — mesmo
+    // nível de abstração de processPartnerDay logo acima, auto-gated por
+    // mês dentro da própria função (Parte 36: nunca em render, sempre
+    // dentro do avanço de dia já existente, participando do mesmo
+    // commit/transação M3.7).
+    updatedProfile = await stage('spontaneousPartnerMarket', () => processSpontaneousPartnerMarket(updatedProfile, previousDate, currentDate));
     report.partner = { processed: true };
   } catch (error) {
     report.partner = { processed: false, error: error?.message || String(error) };
@@ -237,6 +254,31 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
         message_type: 'ranking_milestone',
         notification_type: 'RANKING',
         career_date: currentDate,
+      }));
+      // Fase 14 (Parte 11): auditoria achou que só a finalização de torneio
+      // (tournamentLifecycle.js) gera PressArticle/Post — um marco de
+      // ranking real (ex.: primeira entrada no Top 100) nunca virava
+      // notícia. Reaproveita o MESMO evento (já dedupado pelo `if(milestone)`
+      // acima, que só é verdadeiro numa transição real e nunca se repete
+      // por causa de `last_ranking_milestone_position`) em vez de criar um
+      // novo motor de notícias — mesmo padrão `createOptional` best-effort
+      // já usado nesta função para o HistoryEntry mensal.
+      await stage('notifications', () => createOptional('PressArticle', {
+        profile_id: updatedProfile.id,
+        title: milestone === 1 ? `${safeName(updatedProfile)} é o novo número 1 do mundo` : `${safeName(updatedProfile)} entra no Top ${milestone} do ranking mundial`,
+        content: `Com a posição #${currentPosition}, ${safeName(updatedProfile)} consolida sua ascensão no circuito profissional.`,
+        sentiment: 'positivo',
+        outlet: 'Padel Legacy News',
+        journalist_name: 'Redação PL',
+        published_date: currentDate,
+      }));
+      await stage('notifications', () => createOptional('Post', {
+        author_name: 'Padel Legacy News',
+        author_type: 'media',
+        content: milestone === 1 ? `👑 ${safeName(updatedProfile)} assume o topo do ranking mundial!` : `📈 ${safeName(updatedProfile)} entra no Top ${milestone} do ranking mundial (#${currentPosition}).`,
+        likes: Math.max(10, Math.round(200 / milestone)),
+        comments_count: Math.max(2, Math.round(40 / milestone)),
+        created_date: new Date().toISOString(),
       }));
       try {
         updatedProfile = await stage('notifications', () => localGame.entities.PlayerProfile.update(updatedProfile.id, { last_ranking_milestone_position: currentPosition }));
