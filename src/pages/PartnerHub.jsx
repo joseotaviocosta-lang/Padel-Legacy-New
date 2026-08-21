@@ -20,7 +20,7 @@ import PartnerSearch from '@/components/partner/PartnerSearch';
 import InboxPanel from '@/components/partner/InboxPanel';
 import AdvisorPanel from '@/components/partner/AdvisorPanel';
 import PartnerNegotiationModal from '@/components/partner/PartnerNegotiationModal';
-import { renewPartnerContract, releasePartner, calculatePartnerRenewalInterest } from '@/game-core/partnerLifecycle';
+import { renewPartnerContract, releasePartner, schedulePartnerSeparation, calculatePartnerRenewalInterest } from '@/game-core/partnerLifecycle';
 import PartnerOffersPanel from '@/components/partner/PartnerOffersPanel';
 import { acceptPartnerOffer, ensureInitialPartnerOffers, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
 
@@ -194,10 +194,29 @@ export default function PartnerHub() {
       const result = await renewPartnerContract(profile, terms);
       setProfile(result.profile || profile);
       setActivePartnership(result.partnership);
-      toast({ title: 'Contrato renovado!', description: `A dupla segue unida até ${result.partnership.contract_end_date}.` });
+      if (result.decision?.outcome === 'refused') {
+        toast({ title: 'Renovação recusada', description: 'Seu parceiro decidiu encerrar a dupla ao fim do contrato.', variant: 'destructive' });
+      } else if (result.decision?.outcome === 'wait') {
+        toast({ title: 'Decisão adiada', description: 'Seu parceiro quer conversar novamente mais perto do vencimento.' });
+      } else if (result.decision?.outcome === 'conditional') {
+        toast({ title: 'Renovação aceita com condições', description: `A dupla segue unida até ${result.partnership.contract_end_date}.` });
+      } else {
+        toast({ title: 'Contrato renovado!', description: `A dupla segue unida até ${result.partnership.contract_end_date}.` });
+      }
       await load();
     } catch (e) {
       toast({ title: 'Erro na renovação', description: e?.message || 'Não foi possível renovar o contrato.', variant: 'destructive' });
+    }
+  }
+
+  async function handleScheduleSeparation() {
+    try {
+      const result = await schedulePartnerSeparation(profile);
+      setActivePartnership(result.partnership);
+      toast({ title: 'Fim de ciclo combinado', description: 'A dupla seguirá ativa até o vencimento atual.' });
+      await load();
+    } catch (e) {
+      toast({ title: 'Erro', description: e?.message || 'Não foi possível agendar o encerramento.', variant: 'destructive' });
     }
   }
 
@@ -261,7 +280,7 @@ export default function PartnerHub() {
   const chemistry = activePartnership?.chemistry ?? profile?.partner_chemistry ?? 0;
   const confidence = activePartnership?.trust ?? activePartnership?.confidence ?? 0;
   const sharedMatches = activePartnership?.shared_matches ?? 0;
-  const offerCount = proposals.filter((offer) => offer.status === 'pendente' || !offer.status).length;
+  const offerCount = proposals.filter((offer) => offer.status === 'pending' && offer.offer_type !== 'partner_poaching').length;
 
   return (
     <Page size="wide" className="animate-fade-in">
@@ -342,6 +361,7 @@ export default function PartnerHub() {
           profile={profile}
           onRenew={handleRenewContract}
           onRelease={handleReleaseContract}
+          onScheduleSeparation={handleScheduleSeparation}
         />
       )}
 
@@ -375,7 +395,7 @@ function getAvailablePartnersForSearch(profile) {
   return getAvailablePartners(profile);
 }
 
-function ContractPanel({ partnership, profile, onRenew, onRelease }) {
+function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSeparation }) {
   const [durationDays, setDurationDays] = useState(60);
   const [prizeSplit, setPrizeSplit] = useState(partnership?.prize_split_pct ?? 50);
   const [monthlySalary, setMonthlySalary] = useState(partnership?.monthly_salary ?? 100);
@@ -437,7 +457,7 @@ function ContractPanel({ partnership, profile, onRenew, onRelease }) {
           estabilidade/oportunidade de mercado), nunca a fórmula numérica
           exposta, só o nível (ALTO/MÉDIO/BAIXO) + fatores textuais. */}
       {(() => {
-        const interest = calculatePartnerRenewalInterest(partnership, profile, { betterOpportunity: partnership.partner_saw_better_opportunity || null });
+        const interest = calculatePartnerRenewalInterest(partnership, profile, { betterOpportunity: partnership.partner_market_offer || null });
         const toneClass = interest.level === 'alto' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-400' : interest.level === 'baixo' ? 'border-red-500/30 bg-red-500/5 text-red-400' : 'border-amber-500/30 bg-amber-500/5 text-amber-400';
         return (
           <Surface padding="compact" className={`border ${toneClass.split(' ').slice(0, 2).join(' ')}`}>
@@ -464,6 +484,7 @@ function ContractPanel({ partnership, profile, onRenew, onRelease }) {
       <Surface className="border border-red-500/20">
         <h3 className="font-black text-sm text-red-400">Rescisão</h3>
         <p className="text-xs text-muted-foreground mt-1">Encerrar antes do vencimento pode gerar multa de até 50% do salário mensal.</p>
+        <Button level="secondary" onClick={onScheduleSeparation} className="mt-3 w-full">Encerrar ao final do contrato</Button>
         {estimatedPenalty > 0 && <p className="text-xs font-bold text-amber-400 mt-2">Multa estimada: {estimatedPenalty} moedas</p>}
         {!confirmRelease ? <Button level="ghost" onClick={()=>setConfirmRelease(true)} className="mt-3 border border-red-500/30 text-red-400">Solicitar rescisão</Button> : <div className="flex gap-2 mt-3"><Button level="secondary" onClick={()=>setConfirmRelease(false)} className="flex-1">Cancelar</Button><Button level="danger" onClick={onRelease} className="flex-1">Confirmar rescisão</Button></div>}
       </Surface>

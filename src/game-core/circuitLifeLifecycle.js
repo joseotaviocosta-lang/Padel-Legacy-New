@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { deriveAthleteCareerState } from './livingCircuitRules.js';
 
 const MAX_STORIES_PER_WEEK = 4;
 
@@ -13,10 +14,6 @@ function hash(text) {
     value = Math.imul(value, 16777619);
   }
   return value >>> 0;
-}
-
-function seeded(seed, min, max) {
-  return min + (hash(seed) % (max - min + 1));
 }
 
 function chance(seed, percentage) {
@@ -104,15 +101,6 @@ function ageOf(athlete, currentDate) {
   return age;
 }
 
-function getProspectGrowth(athlete, seed) {
-  const age = Number(athlete?.age) || 25;
-  const potential = clamp(athlete?.potential ?? athlete?.potential_rating ?? 65);
-  const overall = clamp(athlete?.overall_rating ?? athlete?.overall ?? 50);
-  if (age > 24 || potential <= overall) return 0;
-  const maxGain = potential >= 85 ? 2 : 1;
-  return seeded(`${seed}:growth`, 0, maxGain);
-}
-
 export async function processCircuitLifeWeek(profile, previousDate, currentDate) {
   const currentWeek = weekKey(currentDate);
   if (!currentWeek || profile?.last_circuit_life_week === currentWeek) {
@@ -134,23 +122,15 @@ export async function processCircuitLifeWeek(profile, previousDate, currentDate)
     const seed = `${athlete.id || name}:${currentWeek}:circuit-life`;
     const updates = {};
 
-    const growth = getProspectGrowth(athlete, seed);
-    if (growth > 0) {
-      const previousOverall = clamp(athlete.overall_rating ?? athlete.overall ?? 50);
-      updates.overall_rating = clamp(previousOverall + growth);
-      updates.development_trend = 'subindo';
+    // A evolução técnica passou a ter uma única cadência mensal em
+    // evolveAthletesMonthly/livingCircuitRules. Este lifecycle semanal só
+    // projeta fase/tendência e produz narrativa; não concede OVR de novo.
+    const careerState = deriveAthleteCareerState(athlete, currentDate);
+    if (athlete.career_stage !== careerState.stage || athlete.career_phase !== careerState.legacyLabel) {
+      updates.career_stage = careerState.stage;
+      updates.career_phase = careerState.legacyLabel;
+      updates.development_trend = ['prospect', 'rising'].includes(careerState.stage) ? 'subindo' : careerState.stage === 'declining' ? 'caindo' : 'estavel';
       changes += 1;
-      if (stories < MAX_STORIES_PER_WEEK && previousOverall < 78 && updates.overall_rating >= 70 && chance(`${seed}:breakout`, 35)) {
-        const event = await createWorldEvent({
-          event_type: 'promessa',
-          event_date: currentDate,
-          tier: 'destaque',
-          related_players: [name],
-          tags: ['promessa', 'evolução', 'circuito'],
-          content: `${name} aparece como uma das promessas em ascensão. A evolução técnica nas últimas semanas já começa a chamar atenção de treinadores, patrocinadores e duplas mais bem ranqueadas.`,
-        });
-        if (event) { stories += 1; highlights.push(`${name} entrou em ascensão`); }
-      }
     }
 
     const age = ageOf(athlete, currentDate);

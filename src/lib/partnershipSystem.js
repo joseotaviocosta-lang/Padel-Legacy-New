@@ -139,6 +139,13 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
 
   const partnership = await localGame.entities.Partnership.create({
     profile_id: profile.id,
+    partnership_type: 'player',
+    scope: 'career',
+    athlete_a_id: profile.id,
+    athlete_b_id: bot.id,
+    athlete_ids: [profile.id, bot.id],
+    athlete_a_name: profile.sport_name || profile.name || 'Jogador',
+    athlete_b_name: bot.name,
     partner_bot_id: bot.id,
     partner_name: bot.name,
     partner_country: bot.country,
@@ -171,6 +178,11 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
     partner_trust: partnership.partner_trust,
     partner_morale: partnership.partner_morale,
   });
+  await localGame.entities.AthleteProfile.update(bot.id, {
+    current_partner_profile_id: profile.id,
+    contracted_to_profile_id: profile.id,
+    market_status: 'contratado',
+  }).catch(() => null);
 
   // Create or upgrade relationship to 'parceiro'
   const rel = await getOrCreateRelationship(profile.id, bot.id, bot.name, bot.country);
@@ -203,11 +215,20 @@ export async function endPartnership(partnershipId, endStatus, reason, endedCare
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
     const careerDate = endedCareerDate || p.started_career_date || CAREER_START_DATE;
-    return await localGame.entities.Partnership.update(partnershipId, {
+    const updated = await localGame.entities.Partnership.update(partnershipId, {
       status: endStatus,
+      contract_status: 'encerrado',
       end_reason: reason,
       ended_career_date: careerDate,
     });
+    if (p.partnership_type !== 'npc' && p.partner_bot_id) {
+      await localGame.entities.AthleteProfile.update(p.partner_bot_id, {
+        current_partner_profile_id: null,
+        contracted_to_profile_id: null,
+        market_status: 'livre',
+      }).catch(() => null);
+    }
+    return updated;
   } catch (e) { console.error('endPartnership', e); return null; }
 }
 

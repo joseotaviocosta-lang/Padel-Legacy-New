@@ -6,6 +6,7 @@ import { getInterviewStyle, generateInterviewQuote } from '@/lib/personalityTrai
 import { AttributeBar } from '@/components/padel/Shared';
 import { ModalShell } from '@/components/design-system';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
+import { deriveRecentForm } from '@/game-core/livingCircuitRules.js';
 
 const PERSONALITY_ICONS = { Star, Eye, Flame, Waves, Zap, Crown, Target };
 const PHASE_ICONS = { TrendingUp, Star, TrendingDown, Clock };
@@ -29,6 +30,8 @@ export default function AthleteDetail({ athlete, onClose }) {
   const phase = getPhaseMeta(athlete.career_phase);
   const PhaseIcon = PHASE_ICONS[phase.icon] || TrendingUp;
   const PersonalityIcon = PERSONALITY_ICONS[personality.icon] || Star;
+  const recentForm = deriveRecentForm(athlete);
+  const partnerName = athlete.ai_partner_name || athlete.current_partner_name || null;
 
   return (
     <ModalShell open={Boolean(athlete)} onClose={onClose} title="Perfil de atleta" description={`${athlete.name} · ${athlete.country || 'Circuito mundial'}`} size="sm">
@@ -48,6 +51,24 @@ export default function AthleteDetail({ athlete, onClose }) {
             </div>
           </div>
         </div>
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+          <CareerMetric label="Ranking" value={athlete.ranking_position ? `#${athlete.ranking_position}` : '—'} />
+          <CareerMetric label="Melhor ranking" value={athlete.best_ranking_position ? `#${athlete.best_ranking_position}` : 'Sem dados'} />
+          <CareerMetric label="Títulos" value={Number(athlete.career_titles) || 0} />
+          <CareerMetric label="Forma" value={recentForm.label} />
+        </div>
+        <div className="glass rounded-xl p-3">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Parceiro atual</p>
+          <p className="mt-1 text-xs font-bold">{partnerName || 'Livre no mercado'}</p>
+        </div>
+        {Array.isArray(athlete.recent_results) && athlete.recent_results.length > 0 && (
+          <div className="glass rounded-xl p-3">
+            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Trajetória recente</p>
+            {athlete.recent_results.slice(-4).reverse().map((result) => (
+              <p key={`${result.tournament_id}:${result.date}`} className="text-[11px] text-muted-foreground">{result.date || '—'} · {result.tournament_name || 'Torneio'} · {result.finish || result.placement || 'participação'}</p>
+            ))}
+          </div>
+        )}
         {/* Personality */}
         <div className="glass rounded-xl p-3 mb-3">
           <div className="flex items-center gap-2 mb-1">
@@ -178,6 +199,10 @@ export default function AthleteDetail({ athlete, onClose }) {
       </div>
     </ModalShell>
   );
+}
+
+function CareerMetric({ label, value }) {
+  return <div className="glass rounded-xl p-2.5"><p className="text-[9px] uppercase text-muted-foreground font-bold">{label}</p><p className="mt-1 text-sm font-black">{value}</p></div>;
 }
 
 function TraitBar({ icon: Icon, label, value, color, barColor }) {

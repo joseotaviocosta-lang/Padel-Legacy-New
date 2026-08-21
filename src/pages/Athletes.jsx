@@ -15,10 +15,10 @@ const PAGE_SIZE = 60;
 
 const PHASE_FILTERS = [
   { id: 'all', label: 'Todas' },
-  { id: 'Ascensão', label: 'Ascensão' },
-  { id: 'Auge', label: 'Auge' },
-  { id: 'Declínio', label: 'Declínio' },
-  { id: 'Veterano', label: 'Veteranos' },
+  { id: 'top100', label: 'Top 100' },
+  { id: 'rising', label: 'Em ascensão' },
+  { id: 'elite', label: 'Elite' },
+  { id: 'veteran', label: 'Veteranos' },
 ];
 
 export default function Athletes() {
@@ -83,7 +83,14 @@ export default function Athletes() {
   }, [phaseFilter, persFilter, styleFilter, deferredSearch, sortBy]);
 
   const filtered = useMemo(() => athletes
-    .filter(a => phaseFilter === 'all' || a.career_phase === phaseFilter)
+    .filter((a) => {
+      if (phaseFilter === 'all') return true;
+      if (phaseFilter === 'top100') return Number(rankById?.get(a.id) ?? a.ranking_position ?? 9999) <= 100;
+      if (phaseFilter === 'elite') return Number(rankById?.get(a.id) ?? a.ranking_position ?? 9999) <= 30 || Number(a.overall_rating || 0) >= 84;
+      if (phaseFilter === 'rising') return ['prospect', 'rising'].includes(a.career_stage) || a.career_phase === 'Ascensão';
+      if (phaseFilter === 'veteran') return a.career_stage === 'veteran' || a.career_phase === 'Veterano';
+      return true;
+    })
     .filter(a => persFilter === 'all' || a.personality === persFilter)
     .filter(a => styleFilter === 'all' || a.play_style === styleFilter)
     .filter(a => !deferredSearch || `${a.name || ''} ${a.country || ''}`.toLowerCase().includes(deferredSearch))
@@ -167,7 +174,7 @@ export default function Athletes() {
         )
       ) : (
         <div className="render-window overflow-hidden rounded-xl border border-border/55 animate-stagger">
-          {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} onClick={() => setSelected(a)} />)}
+          {filtered.slice(0, visibleCount).map(a => <AthleteCard key={a.id} athlete={a} displayRank={rankById?.get(a.id)} onClick={() => setSelected(a)} />)}
         </div>
       )}
 

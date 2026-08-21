@@ -126,25 +126,18 @@ export async function processSpontaneousPartnerMarket(profile, previousDate, cur
   if (!candidates.length) return localGame.entities.PlayerProfile.update(profile.id, marked);
 
   const existingOffers = await listPartnerOffers(profile.id).catch(() => []);
-  const alreadyOfferedIds = new Set(existingOffers.filter((item) => item.status === 'pending').map((item) => item.candidate_player_id));
+  const expired = existingOffers.filter((item) => item.status === 'pending' && item.expires_career_date && item.expires_career_date < currentDate);
+  if (expired.length) {
+    await Promise.all(expired.map((item) => localGame.entities.PartnerOffer.update(item.id, { status: 'expired', resolved_career_date: currentDate })));
+  }
+  const alreadyOfferedIds = new Set(existingOffers.filter((item) => item.status === 'pending' && (!item.expires_career_date || item.expires_career_date >= currentDate)).map((item) => item.candidate_player_id));
   const pool = candidates.filter((candidate) => !alreadyOfferedIds.has(candidate.id));
   const built = buildInitialPartnerOffers(profile, pool, 1);
   if (!built.length) return localGame.entities.PlayerProfile.update(profile.id, marked);
 
-  const offer = { ...built[0], source: isFreeAgent ? 'spontaneous-market-offer' : 'spontaneous-market-offer-while-paired', expires_career_date: addDaysStr(currentDate, 10) };
+  const offer = { ...built[0], id: `${partnerOfferId(profile.id, built[0].candidate_player_id)}-${month}`, created_career_date: currentDate, source: isFreeAgent ? 'spontaneous-market-offer' : 'spontaneous-market-offer-while-paired', expires_career_date: addDaysStr(currentDate, 10), offer_month: month };
   const saved = await localGame.entities.PartnerOffer.create(offer);
   await createOfferMessage(profile, saved);
-
-  // Fase 15 (Parte 7/16): quando o jogador já está em dupla, a proposta
-  // espontânea TAMBÉM alimenta o interesse de renovação do parceiro atual
-  // (fator real "recebeu interesse de atleta melhor ranqueado" — Parte 7),
-  // marcado na própria Partnership ativa, nunca um contador novo solto.
-  if (!isFreeAgent) {
-    const active = await localGame.entities.Partnership.filter({ profile_id: profile.id, status: 'ativa' }, null, 1).catch(() => []);
-    if (active[0]) {
-      await localGame.entities.Partnership.update(active[0].id, { partner_saw_better_opportunity: { name: saved.candidate_snapshot?.name, world_rank: saved.candidate_snapshot?.world_rank || null, career_date: currentDate } });
-    }
-  }
 
   return localGame.entities.PlayerProfile.update(profile.id, marked);
 }

@@ -4,8 +4,15 @@
   "properties": {
     "profile_id": {
       "type": "string",
-      "description": "ID do PlayerProfile"
+      "description": "ID do PlayerProfile; ausente em duplas NPC x NPC"
     },
+    "partnership_type": { "type": "string", "enum": ["player", "npc"], "default": "player" },
+    "scope": { "type": "string", "enum": ["career", "world"], "default": "career" },
+    "athlete_a_id": { "type": "string" },
+    "athlete_b_id": { "type": "string" },
+    "athlete_ids": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "athlete_a_name": { "type": "string" },
+    "athlete_b_name": { "type": "string" },
     "partner_bot_id": {
       "type": "string",
       "description": "ID do bot/athlete parceiro"
@@ -50,6 +57,19 @@
       "format": "date",
       "description": "Data de fim contratual"
     },
+    "contract_started_date": { "type": "string", "format": "date" },
+    "contract_end_date": { "type": "string", "format": "date" },
+    "contract_status": { "type": "string", "enum": ["ativo", "renovacao_proxima", "negociacao", "renovado", "vencido", "nao_renovara", "encerrar_ao_final", "encerrado", "insatisfeito"], "default": "ativo" },
+    "renewal_available": { "type": "boolean", "default": false },
+    "renewal_count": { "type": "number", "default": 0 },
+    "renewal_interest_snapshot": { "type": "object" },
+    "last_renewal_decision_key": { "type": "string" },
+    "last_renewal_decision": { "type": "object" },
+    "partner_market_offer": { "type": "object" },
+    "last_partner_market_month": { "type": "string" },
+    "origin": { "type": "string" },
+    "history": { "type": "array", "items": { "type": "object" }, "default": [] },
+    "schema_version": { "type": "number", "default": 2 },
     "status": {
       "type": "string",
       "enum": [
@@ -144,7 +164,6 @@
     }
   },
   "required": [
-    "profile_id",
     "partner_name"
   ]
 }

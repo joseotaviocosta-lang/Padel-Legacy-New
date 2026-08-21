@@ -18,19 +18,6 @@ function safeNumber(value, fallback = 0) {
   return Number.isFinite(parsed) ? parsed : fallback;
 }
 
-function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text || '')) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return value >>> 0;
-}
-
-function integer(seed, min, max) {
-  return min + (hash(seed) % (max - min + 1));
-}
-
 function weekKey(date) {
   const parsed = new Date(`${date}T00:00:00`);
   if (Number.isNaN(parsed.getTime())) return String(date || '');
@@ -55,34 +42,6 @@ function categoryFor(points, overall) {
   if (points >= 1100 || overall >= 72) return 'Platinum';
   if (points >= 400 || overall >= 64) return 'Gold';
   return 'Silver';
-}
-
-function weeklyResult(athlete, currentDate) {
-  const overall = athleteOverall(athlete);
-  const form = clamp(athlete?.form ?? athlete?.current_form ?? 60, 0, 100);
-  const fatigue = clamp(athlete?.fatigue ?? 15, 0, 100);
-  const seed = `${athlete.id}:${currentDate}:circuit`;
-  const performance = overall * 0.62 + form * 0.28 - fatigue * 0.12 + integer(`${seed}:variance`, -12, 12);
-  const wonEvent = performance >= 83 && integer(`${seed}:title`, 0, 99) < Math.max(4, performance - 72);
-  const reachedFinal = wonEvent || performance >= 76;
-  const reachedSemi = reachedFinal || performance >= 68;
-  const wonMatches = wonEvent ? integer(`${seed}:wins`, 4, 6) : reachedFinal ? integer(`${seed}:wins`, 3, 5) : reachedSemi ? integer(`${seed}:wins`, 2, 4) : integer(`${seed}:wins`, 0, 2);
-  const lostMatches = wonEvent ? 0 : 1;
-  const pointsGain = wonEvent
-    ? integer(`${seed}:points`, 500, 1000)
-    : reachedFinal
-      ? integer(`${seed}:points`, 260, 520)
-      : reachedSemi
-        ? integer(`${seed}:points`, 120, 300)
-        : integer(`${seed}:points`, 15, 110);
-  const prizeMoney = wonEvent
-    ? integer(`${seed}:prize`, 18000, 55000)
-    : reachedFinal
-      ? integer(`${seed}:prize`, 8000, 22000)
-      : reachedSemi
-        ? integer(`${seed}:prize`, 3000, 10000)
-        : integer(`${seed}:prize`, 250, 3500);
-  return { performance, wonEvent, reachedFinal, reachedSemi, wonMatches, lostMatches, pointsGain, prizeMoney };
 }
 
 async function createWorldEvent(payload) {
@@ -159,12 +118,24 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
 
   const results = [];
   for (const athlete of selected) {
-    const result = weeklyResult(athlete, currentDate);
+    // O World Tour/Tournament é a fonte canônica de resultado e pontos. A
+    // versão anterior simulava um segundo torneio invisível toda semana,
+    // concedendo pontos, títulos e dinheiro em paralelo ao calendário real.
+    const result = {
+      performance: clamp(athlete.form ?? athlete.current_form ?? 60, 0, 100),
+      wonEvent: false,
+      reachedFinal: false,
+      reachedSemi: false,
+      wonMatches: 0,
+      lostMatches: 0,
+      pointsGain: 0,
+      prizeMoney: 0,
+    };
     const oldGeneral = Math.max(0, safeNumber(athlete.world_ranking_points ?? athlete.ranking_points, athleteOverall(athlete) * 25));
     const oldRace = Math.max(0, safeNumber(athlete.race_points, 0));
-    const decay = Math.round(oldGeneral * 0.012);
-    const generalPoints = Math.max(0, oldGeneral - decay + result.pointsGain);
-    const racePoints = oldRace + result.pointsGain;
+    const decay = 0;
+    const generalPoints = oldGeneral;
+    const racePoints = oldRace;
     const history = Array.isArray(athlete.ranking_history) ? athlete.ranking_history.slice(-51) : [];
     history.push({ date: currentDate, week: currentWeek, points: generalPoints, race_points: racePoints, gained: result.pointsGain, decayed: decay });
     results.push({ athlete, result, generalPoints, racePoints, history });
@@ -197,11 +168,6 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       ranking_trend: newPosition < oldPosition ? 'subindo' : newPosition > oldPosition ? 'caindo' : 'estavel',
       circuit_category: categoryFor(entry.generalPoints, athleteOverall(athlete)),
       ranking_history: entry.history,
-      career_wins: safeNumber(athlete.career_wins, 0) + entry.result.wonMatches,
-      career_losses: safeNumber(athlete.career_losses, 0) + entry.result.lostMatches,
-      career_titles: safeNumber(athlete.career_titles, 0) + (entry.result.wonEvent ? 1 : 0),
-      prize_money_total: safeNumber(athlete.prize_money_total, 0) + entry.result.prizeMoney,
-      wealth: safeNumber(athlete.wealth, 0) + entry.result.prizeMoney,
       career_phase: careerPhase,
       last_circuit_update: currentDate,
     });

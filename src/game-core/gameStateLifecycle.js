@@ -2,7 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { CAREER_START_DATE, daysBetween } from '@/lib/career';
 import { safeName } from './utils';
 import { processLivingWorldDay, getWeeklyRelevantHighlights } from '@/lib/livingWorldEngine.js';
-import { processPartnerDay } from './partnerLifecycle';
+import { processPartnerDay, processPartnerMarketInterest } from './partnerLifecycle';
 import { processSpontaneousPartnerMarket } from '@/lib/partnerOffers.js';
 import { simulateWorldDay } from './worldSimulationLifecycle';
 import { processAiPartnershipMarket } from './aiPartnershipLifecycle';
@@ -95,6 +95,7 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
     // dentro do avanço de dia já existente, participando do mesmo
     // commit/transação M3.7).
     updatedProfile = await stage('spontaneousPartnerMarket', () => processSpontaneousPartnerMarket(updatedProfile, previousDate, currentDate));
+    updatedProfile = await stage('partnerMarketInterest', () => processPartnerMarketInterest(updatedProfile, previousDate, currentDate));
     report.partner = { processed: true };
   } catch (error) {
     report.partner = { processed: false, error: error?.message || String(error) };

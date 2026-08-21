@@ -18,7 +18,7 @@ const PHASE_COLOR = {
 // segundo toggle de expandir dentro do card, os campos secundários só
 // ficam disponíveis ali, e o card mostra só o que permite comparação
 // rápida entre atletas: nome, país/idade, OVR, fase de carreira.
-export default function AthleteCard({ athlete, onClick }) {
+export default function AthleteCard({ athlete, displayRank, onClick }) {
   const PhaseIcon = PHASE_ICONS[getPhaseMeta(athlete.career_phase).icon] || TrendingUp;
 
   return (
@@ -31,7 +31,7 @@ export default function AthleteCard({ athlete, onClick }) {
           <p className="truncate text-[10px] text-muted-foreground">{athlete.country} · {athlete.court_side || athlete.preferred_side || 'lado livre'} · {athlete.age}a · {athlete.play_style || athlete.archetype_label || athlete.career_phase}</p>
         </div>
         <div className="shrink-0 text-right">
-          <p className="text-[9px] font-bold text-muted-foreground">#{athlete.ranking_position || '—'}</p>
+          <p className="text-[9px] font-bold text-muted-foreground">#{displayRank || athlete.ranking_position || '—'}</p>
           <p className="text-lg font-black text-primary tabular-nums leading-none">{athlete.overall_rating || 50}</p>
           <p className="text-[8px] text-muted-foreground uppercase">OVR</p>
         </div>

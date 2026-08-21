@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { normalizeFatigue } from './physicalStats.js';
+import { deriveAthleteCareerState, deriveRecentForm } from './livingCircuitRules.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'ativo', 'livre', 'contratado']);
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Suécia', 'México', 'Chile', 'Paraguai'];
@@ -81,18 +82,14 @@ function activityFor(athlete, date) {
 }
 
 function evolutionFor(athlete, activity, date) {
-  const age = ageFor(athlete, date);
   const overall = calculateOverall(athlete);
-  const potential = clamp(safeNumber(athlete.potential, Math.min(99, overall + 8)), overall, 99);
-  const form = clamp(safeNumber(athlete.form ?? athlete.current_form, 65), 0, 100);
+  const form = deriveRecentForm(athlete).score;
   const energy = clamp(safeNumber(athlete.energy, 80), 0, 100);
   const fatigue = clamp(safeNumber(athlete.fatigue, 15), 0, 100);
   const reputation = Math.max(0, safeNumber(athlete.reputation, Math.max(1, 110 - safeNumber(athlete.ranking_position, 300))));
   const wealth = Math.max(0, safeNumber(athlete.wealth ?? athlete.coins, 5000));
   const seed = `${athlete.id}:${date}:${activity}`;
 
-  let overallDelta = 0;
-  let formDelta = integer(`${seed}:form`, -2, 2);
   let energyDelta = 0;
   let fatigueDelta = 0;
   let reputationDelta = 0;
@@ -101,13 +98,9 @@ function evolutionFor(athlete, activity, date) {
   if (activity === 'technical_training' || activity === 'physical_training' || activity === 'tactical_training') {
     energyDelta = -integer(`${seed}:energy`, 5, 11);
     fatigueDelta = integer(`${seed}:fatigue`, 3, 8);
-    formDelta += 1;
-    const growthChance = age <= 23 ? 24 : age <= 29 ? 10 : 3;
-    if (overall < potential && integer(`${seed}:growth`, 0, 99) < growthChance) overallDelta = 1;
   } else if (activity === 'rest' || activity === 'recovery') {
     energyDelta = integer(`${seed}:energy`, 8, 16);
     fatigueDelta = -integer(`${seed}:fatigue`, 7, 15);
-    formDelta += activity === 'recovery' ? 1 : 0;
   } else if (activity === 'marketing') {
     energyDelta = -3;
     reputationDelta = integer(`${seed}:rep`, 1, 3);
@@ -117,10 +110,7 @@ function evolutionFor(athlete, activity, date) {
     fatigueDelta = integer(`${seed}:fatigue`, 4, 9);
     reputationDelta = integer(`${seed}:rep`, 1, 4);
     wealthDelta = integer(`${seed}:money`, 250, 850);
-    formDelta += integer(`${seed}:result`, -1, 2);
   }
-
-  if (age >= 35 && integer(`${seed}:decline`, 0, 999) < 8) overallDelta = -1;
 
   const injuryRoll = integer(`${seed}:injury`, 0, 9999);
   const injuryRisk = Math.max(2, Math.round((fatigue + Math.max(0, 45 - energy)) / 8));
@@ -129,13 +119,13 @@ function evolutionFor(athlete, activity, date) {
 
   return {
     activity,
-    overall: clamp(overall + overallDelta, 1, 99),
-    form: clamp(form + formDelta, 0, 100),
+    overall,
+    form,
     energy: clamp(energy + energyDelta, 0, 100),
     fatigue: normalizeFatigue(fatigue + fatigueDelta),
     reputation: Math.max(0, reputation + reputationDelta),
     wealth: Math.max(0, wealth + wealthDelta),
-    overallDelta,
+    overallDelta: 0,
     reputationDelta,
     wealthDelta,
     injured,
@@ -231,6 +221,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
   for (const athlete of selected) {
     const activity = activityFor(athlete, currentDate);
     const result = evolutionFor(athlete, activity, currentDate);
+    const careerState = deriveAthleteCareerState(athlete, currentDate);
     const updates = {
       last_ai_activity: activity,
       last_ai_activity_date: currentDate,
@@ -244,7 +235,9 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
       wealth: result.wealth,
       market_value: Math.max(500, Math.round((result.overall ** 2) * (0.7 + result.form / 200) * 18)),
       expected_salary: Math.max(80, Math.round((result.overall ** 2) / 16)),
-      market_trend: result.overallDelta > 0 || result.form >= 75 ? 'rising' : result.form <= 42 ? 'falling' : 'stable',
+      career_stage: careerState.stage,
+      career_phase: careerState.legacyLabel,
+      market_trend: athlete.ranking_trend === 'subindo' || result.form >= 75 ? 'rising' : athlete.ranking_trend === 'caindo' || result.form <= 42 ? 'falling' : 'stable',
     };
 
     if (result.injured) {

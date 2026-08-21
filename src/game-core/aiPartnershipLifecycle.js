@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
+import { careerDaysBetween, partnershipRecordId, seededChance, seededInteger } from './livingCircuitRules.js';
 
 function safeNumber(value, fallback = 0) {
   const parsed = Number(value);
@@ -25,6 +26,49 @@ function integer(seed, min, max) {
 
 function monthKey(date) {
   return String(date || '').slice(0, 7);
+}
+
+function addDays(date, days) {
+  const value = new Date(`${date}T00:00:00Z`);
+  value.setUTCDate(value.getUTCDate() + days);
+  return value.toISOString().slice(0, 10);
+}
+
+function pairKeyOf(a, b) {
+  return [String(a), String(b)].sort().join(':');
+}
+
+async function listWorldPartnerships() {
+  const rows = (await localGame.entities.Partnership.list('-started_career_date', 2500).catch(() => [])) || [];
+  return rows.filter((row) => row.partnership_type === 'npc' || row.scope === 'world');
+}
+
+async function ensureCanonicalPartnerships(athletes, currentDate, existing) {
+  const byPair = new Map(existing.map((row) => [pairKeyOf(row.athlete_a_id || row.participant_a_id, row.athlete_b_id || row.participant_b_id), row]));
+  const byId = new Map(athletes.map((athlete) => [athlete.id, athlete]));
+  const operations = [];
+  const processed = new Set();
+  for (const athlete of athletes) {
+    const partnerId = aiPartnerId(athlete);
+    if (!partnerId || !byId.has(partnerId)) continue;
+    const pairKey = pairKeyOf(athlete.id, partnerId);
+    if (processed.has(pairKey) || byPair.has(pairKey)) continue;
+    processed.add(pairKey);
+    const partner = byId.get(partnerId);
+    const startDate = athlete.ai_partnership_start_date || partner.ai_partnership_start_date || currentDate;
+    const id = partnershipRecordId(athlete.id, partner.id, startDate);
+    operations.push({ type: 'upsert', entityName: 'Partnership', id, data: {
+      partnership_type: 'npc', scope: 'world', athlete_a_id: athlete.id, athlete_b_id: partner.id,
+      athlete_ids: [athlete.id, partner.id], athlete_a_name: athlete.name, athlete_b_name: partner.name,
+      partner_name: partner.name, started_career_date: startDate, scheduled_end_date: addDays(startDate, 240),
+      contract_end_date: addDays(startDate, 240), contract_status: 'ativo', status: 'ativa',
+      chemistry: clamp(athlete.ai_partnership_chemistry ?? partner.ai_partnership_chemistry ?? 60, 0, 100),
+      origin: 'legacy-ai-partnership-migration', history: [{ date: startDate, event: 'formed', reason: 'legacy_import' }],
+      schema_version: 2,
+    } });
+  }
+  if (operations.length) await localGame.batch(operations);
+  return listWorldPartnerships();
 }
 
 function athleteOverall(athlete) {
@@ -103,9 +147,10 @@ function selectPair(free, month, pairIndex) {
   return second ? { first, second, compatibility: candidates[0].score } : null;
 }
 
-async function dissolvePartnerships(athletes, currentDate) {
+async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
   const month = monthKey(currentDate);
   const byId = new Map(athletes.map((athlete) => [athlete.id, athlete]));
+  const canonicalByPair = new Map(partnerships.filter((row) => row.status === 'ativa').map((row) => [pairKeyOf(row.athlete_a_id || row.participant_a_id, row.athlete_b_id || row.participant_b_id), row]));
   const processedPairs = new Set();
   const events = [];
   let dissolved = 0;
@@ -113,7 +158,7 @@ async function dissolvePartnerships(athletes, currentDate) {
   for (const athlete of athletes) {
     const partnerId = aiPartnerId(athlete);
     if (!partnerId || hasHumanContract(athlete)) continue;
-    const pairKey = [athlete.id, partnerId].sort().join(':');
+    const pairKey = pairKeyOf(athlete.id, partnerId);
     if (processedPairs.has(pairKey)) continue;
     processedPairs.add(pairKey);
 
@@ -128,12 +173,32 @@ async function dissolvePartnerships(athletes, currentDate) {
       continue;
     }
 
-    const chemistry = clamp(athlete.ai_partnership_chemistry ?? partner.ai_partnership_chemistry ?? 60, 0, 100);
-    const monthsTogether = Math.max(0, safeNumber(athlete.ai_partnership_months, 0));
+    const canonical = canonicalByPair.get(pairKey);
+    const chemistry = clamp(canonical?.chemistry ?? athlete.ai_partnership_chemistry ?? partner.ai_partnership_chemistry ?? 60, 0, 100);
+    const startDate = canonical?.started_career_date || athlete.ai_partnership_start_date || currentDate;
+    const monthsTogether = Math.max(0, Math.floor(careerDaysBetween(startDate, currentDate) / 30));
     const formAverage = (safeNumber(athlete.form ?? athlete.current_form, 60) + safeNumber(partner.form ?? partner.current_form, 60)) / 2;
-    const pressure = clamp((55 - chemistry) + Math.max(0, 48 - formAverage) + Math.max(0, monthsTogether - 18), 0, 65);
-    const roll = integer(`${month}:${pairKey}:breakup`, 0, 99);
-    if (roll >= pressure) {
+    const contractEnd = canonical?.contract_end_date || canonical?.scheduled_end_date || addDays(startDate, 240);
+    const contractExpired = currentDate >= contractEnd;
+    const renewalScore = clamp(chemistry * 0.5 + formAverage * 0.3 + Math.min(100, monthsTogether * 5) * 0.2, 0, 100);
+    const renews = contractExpired && seededChance(`${month}:${pairKey}:renew`, Math.max(18, renewalScore - 8));
+    if (renews && canonical?.id) {
+      const duration = seededInteger(`${month}:${pairKey}:duration`, 210, 360);
+      await localGame.entities.Partnership.update(canonical.id, {
+        contract_status: 'renovado', contract_end_date: addDays(currentDate, duration), scheduled_end_date: addDays(currentDate, duration),
+        renewal_count: safeNumber(canonical.renewal_count, 0) + 1,
+        history: [...(canonical.history || []), { date: currentDate, event: 'renewed', duration_days: duration, reason: 'stability' }].slice(-30),
+      });
+      await Promise.allSettled([
+        updateAthlete(athlete.id, { ai_partnership_months: monthsTogether + 1 }),
+        updateAthlete(partner.id, { ai_partnership_months: monthsTogether + 1 }),
+      ]);
+      continue;
+    }
+    const minimumStabilityReached = careerDaysBetween(startDate, currentDate) >= 120;
+    const pressure = clamp((52 - chemistry) + Math.max(0, 45 - formAverage) + Math.max(0, monthsTogether - 30), 0, 42);
+    const shouldDissolve = contractExpired || (minimumStabilityReached && seededChance(`${month}:${pairKey}:breakup`, pressure));
+    if (!shouldDissolve) {
       await Promise.allSettled([
         updateAthlete(athlete.id, { ai_partnership_months: monthsTogether + 1 }),
         updateAthlete(partner.id, { ai_partnership_months: monthsTogether + 1 }),
@@ -156,6 +221,13 @@ async function dissolvePartnerships(athletes, currentDate) {
         partnership_history_count: safeNumber(partner.partnership_history_count, 0) + 1,
       }),
     ]);
+    if (canonical?.id) {
+      await localGame.entities.Partnership.update(canonical.id, {
+        status: 'encerrada_parceiro', contract_status: 'encerrado', ended_career_date: currentDate,
+        end_reason: contractExpired ? 'fim de contrato sem renovação' : chemistry < 45 ? 'incompatibilidade e resultados ruins' : 'fim natural de ciclo',
+        history: [...(canonical.history || []), { date: currentDate, event: 'ended', reason: contractExpired ? 'contract_expired' : 'sporting_cycle' }].slice(-30),
+      });
+    }
     dissolved += 1;
     const event = await createWorldEvent({
       event_date: currentDate,
@@ -188,6 +260,7 @@ async function formNewPartnerships(athletes, currentDate) {
     if (pair.compatibility < 48 && integer(`${month}:${index}:weak-pair`, 0, 99) > 25) break;
 
     const chemistry = clamp(42 + Math.round(pair.compatibility * 0.45), 45, 88);
+    const duration = seededInteger(`${month}:${pair.first.id}:${pair.second.id}:contract`, 210, 360);
     const common = {
       ai_partnership_status: 'ativa',
       ai_partnership_start_date: currentDate,
@@ -208,6 +281,16 @@ async function formNewPartnerships(athletes, currentDate) {
         ai_partner_name: pair.first.name,
       }),
     ]);
+
+    const partnershipId = partnershipRecordId(pair.first.id, pair.second.id, currentDate);
+    await localGame.entities.Partnership.upsert(partnershipId, {
+      partnership_type: 'npc', scope: 'world', athlete_a_id: pair.first.id, athlete_b_id: pair.second.id,
+      athlete_ids: [pair.first.id, pair.second.id], athlete_a_name: pair.first.name, athlete_b_name: pair.second.name,
+      partner_name: pair.second.name, started_career_date: currentDate, scheduled_end_date: addDays(currentDate, duration),
+      contract_end_date: addDays(currentDate, duration), negotiated_duration_days: duration, contract_status: 'ativo',
+      status: 'ativa', chemistry, compatibility_score: pair.compatibility, origin: 'world-partner-market',
+      history: [{ date: currentDate, event: 'formed', reason: 'market_match', compatibility: pair.compatibility }], schema_version: 2,
+    });
 
     pair.first.ai_partner_id = pair.second.id;
     pair.second.ai_partner_id = pair.first.id;
@@ -245,7 +328,8 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
   }
 
   const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
-  const dissolution = await dissolvePartnerships(athletes, currentDate);
+  const worldPartnerships = await ensureCanonicalPartnerships(athletes, currentDate, await listWorldPartnerships());
+  const dissolution = await dissolvePartnerships(athletes, currentDate, worldPartnerships);
   const refreshed = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || athletes;
   const formation = await formNewPartnerships(refreshed, currentDate);
 

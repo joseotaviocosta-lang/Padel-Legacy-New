@@ -3,6 +3,7 @@ import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating, ATTRIBUTE_KEYS } from '@/lib/padel';
 import { assignTraits, computeTraitEffects } from '@/lib/personalityTraits';
+import { evolveAthleteCareerMonth, seededHash } from '@/game-core/livingCircuitRules.js';
 
 // ── Catalogs ────────────────────────────────────────────────────────────────
 
@@ -33,11 +34,6 @@ export const CAREER_PHASES = {
 
 const PLAY_STYLES = ['Agressivo', 'Defensivo', 'Equilibrado', 'Tático', 'Potência'];
 
-const INJURIES = [
-  'lesão no cotovelo', 'fisura no pulso', 'estiramento na panturrilha',
-  'inflamação no ombro', 'torção no tornozelo', 'tendinite no braço',
-];
-
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
 function hashName(name) {
@@ -48,9 +44,6 @@ function hashName(name) {
   }
   return Math.abs(h);
 }
-
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
 
 export function getCareerPhase(age, peakAge) {
   const peak = peakAge || 28;
@@ -166,25 +159,27 @@ export async function generateRelationships() {
     const others = profiles.filter(o => o.id !== p.id);
     const rels = [];
 
-    // Rivals: closest in rating
-    const byRating = [...others].sort((a, b) => Math.abs((a.overall_rating||0) - (p.overall_rating||0)) - Math.abs((b.overall_rating||0) - (p.overall_rating||0)));
-    for (let i = 0; i < Math.min(2, byRating.length); i++) {
-      rels.push({ target_name: byRating[i].name, type: 'rival', score: -(20 + Math.random() * 50) });
-    }
+    // Rivalidade só nasce de H2H factual. A versão anterior escolhia os dois
+    // OVRs mais próximos e usava Math.random ao abrir a página Atletas — isso
+    // inventava histórias e fazia save/reload mudar o mundo.
+    const headToHead = Array.isArray(p.head_to_head) ? p.head_to_head : [];
+    headToHead.filter((row) => Number(row.meetings) >= 3 && row.opponent_name).slice(0, 2).forEach((row) => {
+      rels.push({ target_name: row.opponent_name, target_athlete_id: row.opponent_id, type: 'rival', score: -Math.min(90, 20 + Number(row.meetings) * 8), meetings: row.meetings });
+    });
 
     // Friends: same personality
     const same = others.filter(o => o.personality === p.personality);
     for (let i = 0; i < Math.min(2, same.length); i++) {
       const friend = same[i];
       if (!rels.find(r => r.target_name === friend.name)) {
-        rels.push({ target_name: friend.name, type: 'amigo', score: 20 + Math.random() * 50 });
+      rels.push({ target_name: friend.name, target_athlete_id: friend.id, type: 'amigo', score: 25 + (seededHash(`${p.id}:${friend.id}:friend`) % 41) });
       }
     }
 
     // Mentor: older with higher rating
     const mentors = others.filter(o => (o.age||0) > (p.age||0) + 5 && (o.overall_rating||0) > (p.overall_rating||0));
     if (mentors.length > 0 && p.career_phase === 'Ascensão') {
-      const mentor = pick(mentors);
+      const mentor = mentors[seededHash(`${p.id}:mentor`) % mentors.length];
       if (!rels.find(r => r.target_name === mentor.name)) {
         rels.push({ target_name: mentor.name, type: 'mentor', score: 40 + Math.random() * 30 });
       }
@@ -245,59 +240,22 @@ export async function evolveAthletesMonthly(date, { isYearBoundary = false } = {
 
   const updates = [];
   for (const p of profiles) {
-    // Fase 15 (Parte 0/1/11): idade só avança na virada de ANO real da
-    // carreira (isYearBoundary) — esta função continua rodando toda
-    // virada de MÊS pra tudo o mais (atributos/lesão/moral/apelo), mas
-    // incrementar `age` a cada mês fazia um atleta envelhecer 12 anos por
-    // ano de carreira. Ver career.js pro call site que calcula o flag.
-    const newAge = isYearBoundary ? (p.age || 20) + 1 : (p.age || 20);
-    const newPhase = getCareerPhase(newAge, p.peak_age || 28);
-    const u = { id: p.id, age: newAge, career_phase: newPhase, last_updated_date: date };
-
-    // Trait effects
+    const evolution = evolveAthleteCareerMonth(p, date, { isYearBoundary });
+    if (!evolution.changed) continue;
     const traitEffects = computeTraitEffects(p.personality_traits || []);
-
-    // Attribute evolution — traits modify growth rate
-    const attrs = { ...(p.attributes || {}) };
-    if (newPhase === 'Ascensão') {
-      const growth = ((p.ambition || 50) / 100) * ((p.discipline || 50) / 100) * (p.growth_rate || 1) * (traitEffects.growthModifier || 1);
-      ATTRIBUTE_KEYS.forEach(k => { attrs[k] = Math.min(100, (attrs[k] || 5) + growth); });
-    } else if (newPhase === 'Declínio' || newPhase === 'Veterano') {
-      const decline = (p.decline_rate || 1);
-      ATTRIBUTE_KEYS.forEach(k => { attrs[k] = Math.max(5, (attrs[k] || 5) - decline); });
-    }
-    u.attributes = attrs;
-    u.overall_rating = Math.round(Object.values(attrs).reduce((a, b) => a + b, 0) / ATTRIBUTE_KEYS.length);
-
-    // Injury check — traits modify injury risk
-    if (!p.current_injury) {
-      const injuryChance = ((p.injury_prone || 30) / 100) * (newAge > 30 ? 1.5 : 1) * 0.08 * (traitEffects.injuryModifier || 1);
-      if (Math.random() < injuryChance) {
-        u.current_injury = pick(INJURIES);
-        u.injury_recovery_days = randInt(7, 30);
-        u.fatigue = 80;
-      } else {
-        u.fatigue = normalizeFatigue((p.fatigue || 0) - 20);
-      }
-    } else {
-      const remaining = Math.max(0, (p.injury_recovery_days || 0) - 30);
-      u.injury_recovery_days = remaining;
-      if (remaining === 0) u.current_injury = null;
-    }
-
-    // Morale drift — traits modify volatility
-    const moraleDrift = (Math.random() - 0.5) * 15 * (traitEffects.moraleVolatility || 1);
-    u.morale = Math.max(20, Math.min(100, (p.morale || 70) + moraleDrift));
-
-    // Fan/sponsor/coach appeal drifts toward trait-modified baseline
+    const drift = (key, modifier = 1) => ((seededHash(`${p.id}:${date}:${key}`) % 401) - 200) / 100 * modifier;
     const fanBaseline = 50 + (traitEffects.fanModifier || 0) * 100;
-    u.fan_appeal = Math.max(0, Math.min(100, (p.fan_appeal || 50) + (fanBaseline - (p.fan_appeal || 50)) * 0.1 + (Math.random() - 0.5) * 4));
     const sponsorBaseline = 50 + (traitEffects.sponsorModifier || 0) * 100;
-    u.sponsor_appeal = Math.max(0, Math.min(100, (p.sponsor_appeal || 50) + (sponsorBaseline - (p.sponsor_appeal || 50)) * 0.1 + (Math.random() - 0.5) * 4));
     const coachBaseline = 50 + (traitEffects.coachModifier || 0) * 100;
-    u.coach_relationship = Math.max(0, Math.min(100, (p.coach_relationship || 50) + (coachBaseline - (p.coach_relationship || 50)) * 0.1 + (Math.random() - 0.5) * 4));
-
-    updates.push(u);
+    updates.push({
+      id: p.id,
+      ...evolution.patch,
+      fatigue: normalizeFatigue((p.fatigue || 0) - 20),
+      morale: Math.max(20, Math.min(100, (p.morale || 70) + drift('morale', 1.2))),
+      fan_appeal: Math.max(0, Math.min(100, (p.fan_appeal || 50) + (fanBaseline - (p.fan_appeal || 50)) * 0.1 + drift('fan'))),
+      sponsor_appeal: Math.max(0, Math.min(100, (p.sponsor_appeal || 50) + (sponsorBaseline - (p.sponsor_appeal || 50)) * 0.1 + drift('sponsor'))),
+      coach_relationship: Math.max(0, Math.min(100, (p.coach_relationship || 50) + (coachBaseline - (p.coach_relationship || 50)) * 0.1 + drift('coach'))),
+    });
   }
 
   if (updates.length > 0) {

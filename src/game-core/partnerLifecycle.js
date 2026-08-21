@@ -8,6 +8,7 @@ import {
 } from '@/lib/partnershipSystem';
 import { overallRating } from '@/lib/padel';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
+import { calculateRenewalInterest, decideRenewal, getPartnershipContractTransition, seededChance, seededHash } from './livingCircuitRules.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -86,17 +87,57 @@ export async function renewPartnerContract(profile, terms = {}) {
   const durationDays = clamp(terms.durationDays ?? 60, 30, 180);
   const prizeSplit = clamp(terms.prizeSplit ?? active.prize_split_pct ?? 50, 35, 70);
   const monthlySalary = clamp(terms.monthlySalary ?? active.monthly_salary ?? 100, 0, 999999);
+  const partnerRows = await localGame.entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
+  const partner = partnerRows[0] || { id: active.partner_bot_id, name: active.partner_name, expected_salary: active.monthly_salary };
+  const decisionKey = `${careerDate}:${durationDays}:${prizeSplit}:${monthlySalary}`;
+  if (active.last_renewal_decision_key === decisionKey && active.last_renewal_decision) {
+    return { partnership: active, profile, decision: active.last_renewal_decision, idempotent: true };
+  }
+  const decision = decideRenewal(active, profile, partner, { durationDays, prizeSplit, monthlySalary }, careerDate, active.partner_market_offer || null);
 
-  await negotiatePrizeSplit(active.id, prizeSplit);
+  if (decision.outcome === 'wait' || decision.outcome === 'refused') {
+    const contractStatus = decision.outcome === 'wait' ? 'negociacao' : 'nao_renovara';
+    const partnership = await localGame.entities.Partnership.update(active.id, {
+      contract_status: contractStatus,
+      renewal_available: decision.outcome === 'wait',
+      last_renewal_decision_key: decisionKey,
+      last_renewal_decision: decision,
+      renewal_interest_snapshot: decision.interest,
+    });
+    await upsertCareerMessage(profile.id, `partner-renewal:${active.id}:${decisionKey}`, {
+      sender_name: active.partner_name,
+      sender_type: 'atleta',
+      title: decision.outcome === 'wait' ? 'Futuro da dupla em aberto' : 'Parceiro não renovará o contrato',
+      content: decision.outcome === 'wait'
+        ? 'Quero esperar um pouco antes de confirmar a renovação. Podemos conversar novamente mais perto do vencimento.'
+        : 'Decidi não renovar quando o contrato terminar. Até lá, seguiremos cumprindo nosso calendário normalmente.',
+      status: 'decisao_pendente', priority: 'alta', message_type: 'partner_renewal_decision', career_date: careerDate,
+      destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+    });
+    return { partnership, profile, decision };
+  }
+
+  const acceptedTerms = decision.conditions
+    ? { durationDays, prizeSplit: Math.min(prizeSplit, decision.conditions.maximumPlayerPrizeSplit), monthlySalary: Math.max(monthlySalary, decision.conditions.minimumSalary) }
+    : { durationDays, prizeSplit, monthlySalary };
+
+  await negotiatePrizeSplit(active.id, acceptedTerms.prizeSplit);
   const partnership = await localGame.entities.Partnership.update(active.id, {
     status: 'ativa',
     contract_status: 'renovado',
-    negotiated_duration_days: durationDays,
-    scheduled_end_date: addDays(careerDate, durationDays),
-    contract_end_date: addDays(careerDate, durationDays),
-    monthly_salary: monthlySalary,
+    negotiated_duration_days: acceptedTerms.durationDays,
+    scheduled_end_date: addDays(careerDate, acceptedTerms.durationDays),
+    contract_end_date: addDays(careerDate, acceptedTerms.durationDays),
+    monthly_salary: acceptedTerms.monthlySalary,
+    prize_split_pct: acceptedTerms.prizeSplit,
     renewal_available: false,
     partner_morale: clamp((active.partner_morale ?? 70) + 5, 0, 100),
+    last_renewal_decision_key: decisionKey,
+    last_renewal_decision: decision,
+    renewal_interest_snapshot: decision.interest,
+    partner_market_offer: null,
+    renewal_count: Number(active.renewal_count || 0) + 1,
+    history: [...(active.history || []), { date: careerDate, event: 'renewed', outcome: decision.outcome, duration_days: acceptedTerms.durationDays }].slice(-30),
   });
   const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_locked_until: partnership.contract_end_date,
@@ -107,7 +148,7 @@ export async function renewPartnerContract(profile, terms = {}) {
       year: Number(careerDate.slice(0, 4)),
       event_date: careerDate,
       title: `Contrato renovado com ${active.partner_name}`,
-      description: `Novo vínculo de ${durationDays} dias, salário mensal de ${monthlySalary} moedas e ${prizeSplit}% da premiação para o jogador.`,
+      description: `Novo vínculo de ${acceptedTerms.durationDays} dias, salário mensal de ${acceptedTerms.monthlySalary} moedas e ${acceptedTerms.prizeSplit}% da premiação para o jogador.`,
       category: 'parceria',
     }),
     localGame.entities.CareerMessage.create({
@@ -120,7 +161,7 @@ export async function renewPartnerContract(profile, terms = {}) {
       created_date: new Date().toISOString(),
     }),
   ]);
-  return { partnership, profile: updatedProfile };
+  return { partnership, profile: updatedProfile, decision, terms: acceptedTerms };
 }
 
 export async function releasePartner(profile, reason = 'Decisão do jogador') {
@@ -151,6 +192,74 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
   return { profile: updatedProfile, penalty };
 }
 
+export async function schedulePartnerSeparation(profile, reason = 'Fim de ciclo decidido pelo jogador') {
+  const active = await getActivePartnership(profile?.id);
+  if (!active) throw new Error('Nenhuma parceria ativa.');
+  const careerDate = profile.career_date || CAREER_START_DATE;
+  const endDate = active.contract_end_date || active.scheduled_end_date || careerDate;
+  const partnership = await localGame.entities.Partnership.update(active.id, {
+    contract_status: 'encerrar_ao_final', renewal_available: false,
+    planned_end_reason: reason,
+    history: [...(active.history || []), { date: careerDate, event: 'end_scheduled', reason }].slice(-30),
+  });
+  await upsertCareerMessage(profile.id, `partner-end-scheduled:${active.id}`, {
+    sender_name: active.partner_name, sender_type: 'atleta', title: 'Fim de ciclo combinado',
+    content: `A parceria seguirá normalmente até ${endDate}. Depois disso, cada atleta ficará livre para buscar uma nova dupla.`,
+    status: 'nao_lida', priority: 'normal', message_type: 'partner_contract', career_date: careerDate,
+    destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+  });
+  return { partnership, profile };
+}
+
+export async function processPartnerMarketInterest(profile, previousDate, currentDate) {
+  if (!profile?.id || !profile.partner_id || monthKey(previousDate) === monthKey(currentDate)) return profile;
+  const active = await getActivePartnership(profile.id);
+  if (!active || active.last_partner_market_month === monthKey(currentDate)) return profile;
+  const partnerRows = await localGame.entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
+  const partner = partnerRows[0];
+  if (!partner) return profile;
+  const interest = calculateRenewalInterest(active, profile, partner, null);
+  const chance = interest.level === 'baixo' ? 20 : interest.level === 'medio' ? 9 : 3;
+  const month = monthKey(currentDate);
+  const mark = { last_partner_market_month: month };
+  if (!seededChance(`${profile.id}:${active.id}:${month}:partner-market`, chance)) {
+    await localGame.entities.Partnership.update(active.id, mark);
+    return profile;
+  }
+
+  const candidates = (await localGame.entities.AthleteProfile.filter({ market_status: 'livre' }, 'ranking_position', 80).catch(() => []))
+    .filter((candidate) => candidate.id && candidate.id !== partner.id && candidate.career_status !== 'aposentado');
+  if (!candidates.length) {
+    await localGame.entities.Partnership.update(active.id, mark);
+    return profile;
+  }
+  const ordered = candidates.sort((a, b) => {
+    const scoreA = Math.abs(Number(a.ranking_position || 999) - Number(partner.ranking_position || 999)) - (seededHash(`${month}:${a.id}`) % 12);
+    const scoreB = Math.abs(Number(b.ranking_position || 999) - Number(partner.ranking_position || 999)) - (seededHash(`${month}:${b.id}`) % 12);
+    return scoreA - scoreB;
+  });
+  const suitor = ordered[0];
+  const offerId = `partner-poaching-${active.id}-${month}`;
+  const offer = await localGame.entities.PartnerOffer.upsert(offerId, {
+    profile_id: profile.id, candidate_player_id: suitor.id, athlete_id: suitor.id, athlete_name: suitor.name,
+    recipient_athlete_id: partner.id, recipient_athlete_name: partner.name, offer_type: 'partner_poaching',
+    direction: 'to_player_partner', status: 'pending_partner', created_career_date: currentDate,
+    expires_career_date: active.contract_end_date || active.scheduled_end_date, source: 'living-partnership-market',
+    candidate_snapshot: suitor, schema_version: 2,
+  });
+  const opportunity = { id: offer.id, name: suitor.name, ranking_position: suitor.ranking_position, offer_date: currentDate };
+  await localGame.entities.Partnership.update(active.id, { ...mark, partner_market_offer: opportunity });
+  await upsertCareerMessage(profile.id, `partner-market-interest:${active.id}:${month}`, {
+    sender_name: 'Empresário', sender_type: 'empresario', title: 'Seu parceiro recebeu uma sondagem',
+    content: `${suitor.name} demonstrou interesse em formar dupla com ${partner.name}. Isso não encerra seu contrato, mas pode influenciar a próxima renovação.`,
+    status: 'decisao_pendente', priority: 'alta', message_type: 'partner_market_interest', career_date: currentDate,
+    related_entity_type: 'partner_offer', related_entity_id: offer.id,
+    actions: [{ id: 'talk_future', label: 'Conversar sobre o futuro', type: 'view_partnership', payload: { partnershipId: active.id } }],
+    destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+  });
+  return profile;
+}
+
 // Fase 15 (docs/FASE_15_CIRCUITO_VIVO.md, Parte 7): interesse do parceiro
 // em renovar — deriva de dados JÁ existentes na própria Partnership/
 // profile (química, resultados compartilhados, moral, estabilidade),
@@ -158,41 +267,7 @@ export async function releasePartner(profile, reason = 'Decisão do jogador') {
 // saída — Parte 7/38), sem número exposto na UI (Parte 8) — quem consome
 // isto formata em ALTO/MÉDIO/BAIXO + fatores textuais.
 export function calculatePartnerRenewalInterest(active, profile, { betterOpportunity = null } = {}) {
-  const chemistry = clamp(active?.chemistry ?? profile?.partner_chemistry ?? 50, 0, 100);
-  const matches = Number(active?.shared_matches || 0);
-  const wins = Number(active?.shared_wins || 0);
-  const winRate = matches > 0 ? wins / matches : 0.5;
-  const morale = clamp(active?.partner_morale ?? 70, 0, 100);
-  const startedDate = active?.started_career_date || active?.contract_started_date;
-  const durationDays = startedDate && profile?.career_date ? Math.max(0, daysBetweenDates(startedDate, profile.career_date)) : 0;
-  const stability = clamp((durationDays / 180) * 100, 0, 100); // até 6 meses juntos = estabilidade máxima
-
-  const score = clamp(Math.round(
-    chemistry * 0.35 +
-    (winRate * 100) * 0.25 +
-    morale * 0.20 +
-    stability * 0.10 +
-    (betterOpportunity ? -25 : 10) * 0.10
-  ), 0, 100);
-
-  const factors = [];
-  if (chemistry >= 70) factors.push('ótima química'); else if (chemistry < 35) factors.push('química ruim');
-  if (matches >= 5 && winRate >= 0.55) factors.push('bons resultados recentes'); else if (matches >= 5 && winRate < 0.35) factors.push('resultados recentes ruins');
-  if (stability >= 70) factors.push('parceria estável há tempo');
-  if (betterOpportunity) factors.push(`recebeu interesse de ${betterOpportunity.name || 'outro atleta'}, melhor ranqueado`);
-
-  return {
-    score,
-    level: score >= 65 ? 'alto' : score >= 40 ? 'medio' : 'baixo',
-    factors,
-  };
-}
-
-function daysBetweenDates(from, to) {
-  const start = new Date(`${String(from).slice(0, 10)}T00:00:00`).getTime();
-  const end = new Date(`${String(to).slice(0, 10)}T00:00:00`).getTime();
-  if (!Number.isFinite(start) || !Number.isFinite(end)) return 0;
-  return Math.round((end - start) / 86400000);
+  return calculateRenewalInterest(active, profile, {}, betterOpportunity);
 }
 
 // Fase 15 (Parte 5): thresholds de aviso idempotentes — cada um dispara no
@@ -200,12 +275,8 @@ function daysBetweenDates(from, to) {
 // mesmo em avanço de vários dias de uma vez (checa se o limiar foi
 // CRUZADO entre previousDate e currentDate, não só "é exatamente esse
 // dia" — um salto de 20 dias não pode pular o aviso D-15).
-const EXPIRY_WARNING_THRESHOLDS = [15, 7, 3, 1];
-
-async function emitExpiryWarnings(profile, active, previousDate, currentDate, endDate) {
-  for (const daysBefore of EXPIRY_WARNING_THRESHOLDS) {
-    const warningDate = addDays(endDate, -daysBefore);
-    if (!(previousDate < warningDate && currentDate >= warningDate)) continue;
+async function emitExpiryWarnings(profile, active, currentDate, warningDays) {
+  for (const daysBefore of warningDays) {
     const label = daysBefore === 1 ? 'Decida o futuro da dupla.' : daysBefore <= 3 ? `Seu contrato termina em ${daysBefore} dias.` : daysBefore <= 7 ? 'Hora de pensar no futuro da dupla.' : `Seu contrato com ${active.partner_name} termina em ${daysBefore} dias.`;
     await upsertCareerMessage(profile.id, `partner-contract-expiry:${active.id}:${daysBefore}`, {
       sender_name: active.partner_name,
@@ -269,6 +340,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
   }
 
   const endDate = active.contract_end_date || active.scheduled_end_date;
+  const transition = getPartnershipContractTransition(active, previousDate, currentDate);
   // Fase 15 (Parte 2/4/5): bug real confirmado pela auditoria — este bloco
   // já implementava o vencimento (vencido -> 7 dias de carência ->
   // encerramento + partner_id null) corretamente, mas NUNCA criava
@@ -277,13 +349,19 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
   // nenhuma. "Simplesmente desapareceu" era exatamente isso: lifecycle
   // real, zero UX.
   if (endDate) {
-    await emitExpiryWarnings(profile, active, previousDate, currentDate, endDate);
+    await emitExpiryWarnings(profile, active, currentDate, transition.warningDays);
+    const daysRemaining = transition.daysRemaining;
+    if (daysRemaining <= 15 && daysRemaining > 0 && !['encerrar_ao_final', 'nao_renovara'].includes(active.contract_status)) {
+      updates.contract_status = 'renovacao_proxima';
+      updates.renewal_available = true;
+    }
   }
   if (endDate && currentDate >= endDate) {
     const wasAlreadyVencido = active.contract_status === 'vencido';
-    updates.renewal_available = true;
-    updates.contract_status = 'vencido';
-    if (!wasAlreadyVencido) {
+    const plannedEnd = ['encerrar_ao_final', 'nao_renovara'].includes(active.contract_status);
+    updates.renewal_available = !plannedEnd;
+    updates.contract_status = plannedEnd ? active.contract_status : 'vencido';
+    if (!wasAlreadyVencido && !plannedEnd) {
       await upsertCareerMessage(profile.id, `partner-contract-vencido:${active.id}`, {
         sender_name: active.partner_name,
         sender_type: 'atleta',
@@ -297,7 +375,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
         destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
       });
     }
-    if (currentDate > addDays(endDate, 7)) {
+    if (transition.shouldEnd) {
       const partnerName = active.partner_name;
       await endPartnership(active.id, 'encerrada_contrato', 'Contrato não renovado', currentDate);
       await upsertCareerMessage(profile.id, `partner-contract-ended:${active.id}`, {

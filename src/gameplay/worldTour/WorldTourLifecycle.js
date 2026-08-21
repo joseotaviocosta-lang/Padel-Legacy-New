@@ -39,6 +39,20 @@ function finishForIndex(index, total) {
   return 'entry';
 }
 
+function winsForFinish(finish) {
+  return ({ champion: 5, final: 4, semifinal: 3, quarterfinal: 2, r16: 1, r32: 0, entry: 0 })[finish] || 0;
+}
+
+function addHeadToHead(athlete, opponent, won, tournamentId, date) {
+  if (!opponent?.id) return Array.isArray(athlete.head_to_head) ? athlete.head_to_head : [];
+  const rows = [...(Array.isArray(athlete.head_to_head) ? athlete.head_to_head : [])];
+  const index = rows.findIndex((row) => row.opponent_id === opponent.id);
+  const current = index >= 0 ? rows[index] : { opponent_id: opponent.id, opponent_name: opponent.name, meetings: 0, wins: 0, losses: 0 };
+  const next = { ...current, opponent_name: opponent.name, meetings: Number(current.meetings || 0) + 1, wins: Number(current.wins || 0) + (won ? 1 : 0), losses: Number(current.losses || 0) + (won ? 0 : 1), last_tournament_id: tournamentId, last_meeting_date: date };
+  if (index >= 0) rows[index] = next; else rows.push(next);
+  return rows.sort((a, b) => Number(b.meetings || 0) - Number(a.meetings || 0)).slice(0, 16);
+}
+
 function pointsFor(tournament, finish) {
   return Math.round(Number(tournament.rank_points || tournament.ranking_points || 0) * (FINISH_POINTS[finish] || FINISH_POINTS.entry));
 }
@@ -82,6 +96,8 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   });
 
   const athletePoints = new Map();
+  const athleteOutcomes = new Map();
+  const headToHeadByAthlete = new Map();
   const tournamentUpdates = [];
   const news = [];
 
@@ -111,7 +127,21 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       ordered.forEach((athlete, index) => {
         const finish = finishForIndex(index, ordered.length);
         athletePoints.set(athlete.id, (athletePoints.get(athlete.id) || 0) + pointsFor(tournament, finish));
+        if (!athleteOutcomes.has(athlete.id)) athleteOutcomes.set(athlete.id, []);
+        athleteOutcomes.get(athlete.id).push({
+          tournament_id: tournament.id,
+          tournament_name: tournament.name,
+          date: tournamentEndDate(tournament),
+          finish,
+          points: pointsFor(tournament, finish),
+          won: finish === 'champion',
+        });
       });
+
+      if (champion?.id && runnerUp?.id && champion.id !== runnerUp.id) {
+        headToHeadByAthlete.set(champion.id, addHeadToHead(champion, runnerUp, true, tournament.id, tournamentEndDate(tournament)));
+        headToHeadByAthlete.set(runnerUp.id, addHeadToHead(runnerUp, champion, false, tournament.id, tournamentEndDate(tournament)));
+      }
 
       tournamentUpdates.push({
         id: tournament.id,
@@ -143,12 +173,22 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
 
   const athleteUpdates = athletes
     .filter((athlete) => athletePoints.has(athlete.id))
-    .map((athlete) => ({
-      id: athlete.id,
-      world_ranking_points: Number(athlete.world_ranking_points || 0) + athletePoints.get(athlete.id),
-      current_region: athlete.currentRegion,
-      tournaments_played: Number(athlete.tournaments_played || 0) + 1,
-    }));
+    .map((athlete) => {
+      const outcomes = athleteOutcomes.get(athlete.id) || [];
+      const points = Number(athlete.world_ranking_points || athlete.ranking_points || 0) + athletePoints.get(athlete.id);
+      return {
+        id: athlete.id,
+        world_ranking_points: points,
+        ranking_points: points,
+        current_region: athlete.currentRegion,
+        tournaments_played: Number(athlete.tournaments_played || 0) + outcomes.length,
+        career_wins: Number(athlete.career_wins || 0) + outcomes.reduce((sum, item) => sum + winsForFinish(item.finish), 0),
+        career_losses: Number(athlete.career_losses || 0) + outcomes.filter((item) => item.finish !== 'champion').length,
+        career_titles: Number(athlete.career_titles || 0) + outcomes.filter((item) => item.finish === 'champion').length,
+        recent_results: [...(Array.isArray(athlete.recent_results) ? athlete.recent_results : []), ...outcomes].slice(-12),
+        ...(headToHeadByAthlete.has(athlete.id) ? { head_to_head: headToHeadByAthlete.get(athlete.id) } : {}),
+      };
+    });
 
   if (tournamentUpdates.length) await localGame.entities.Tournament.bulkUpdate(tournamentUpdates);
   if (athleteUpdates.length) await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
