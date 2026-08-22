@@ -68,6 +68,11 @@
        nunca dessincroniza se a paleta mudar. */
     --pl-bottom-nav-bg: var(--background);
     --pl-touch-min: 2.75rem; /* 44px — alvo de toque mínimo confortável */
+    /* Fase 15.2 (Bug 2/F3): altura real do CTA sticky de salvar (ex.:
+       editor de Aparência) — botão de 44px de alvo de toque + padding
+       vertical + folga de sombra. Usado para reservar espaço no fim de
+       conteúdo roláveis, nunca uma margem arbitrária. */
+    --pl-sticky-save-h: 3.75rem;
     --pl-safe-t: env(safe-area-inset-top, 0px);
     --pl-safe-b: env(safe-area-inset-bottom, 0px);
     --pl-safe-l: env(safe-area-inset-left, 0px);

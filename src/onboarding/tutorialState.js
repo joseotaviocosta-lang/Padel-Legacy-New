@@ -17,7 +17,21 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
     styleSelected: Boolean(player.play_style) && player.play_style !== 'Equilibrado',
     trainingCompleted: Number(player.trainings_completed || player.total_trainings || 0) > 0 || trainings.length > 0,
     partnerSelected: Boolean(player.partner_id || player.current_partner_id),
-    tournamentRegistered: registrations.some(item => item.tournament_id ? item.status === 'confirmed' : ['tournament', 'torneio'].includes(item.event_type) && item.status === 'scheduled' && Boolean(item.metadata?.registration_id)),
+    // Fase 15.2 (Bug 5/D1/D3): a etapa é "inscrever-se", não "jogar a
+    // primeira partida" — precisa concluir assim que existir uma inscrição
+    // válida confirmada, nunca esperando o torneio começar. O caminho real
+    // de inscrição (registerTournament, src/lib/tournamentRegistration.js)
+    // sempre grava metadata.registration_id, mas saves mais antigos (ou o
+    // ramo legado de calendarSystem.js) podem não ter esse campo — a
+    // condição aceita também um CalendarEvent de torneio agendado e
+    // obrigatório com o torneio já referenciado, para reconciliar saves já
+    // inscritos sem depender de um campo que pode faltar.
+    tournamentRegistered: registrations.some(item => item.tournament_id
+      ? item.status === 'confirmed'
+      : ['tournament', 'torneio'].includes(item.event_type)
+        && item.status === 'scheduled'
+        && Boolean(item.related_id || item.tournament_id)
+        && (Boolean(item.metadata?.registration_id) || item.is_mandatory === true)),
     // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md): a etapa
     // "first-match" pede explicitamente uma PARTIDA OFICIAL DE TORNEIO —
     // `matches_played` é um contador de carreira único, incrementado por

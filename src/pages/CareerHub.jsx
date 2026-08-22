@@ -694,7 +694,7 @@ function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner })
 
   return (
     <Surface variant="elevated">
-      <SurfaceHeader icon={HeroIcon} title="O que fazer agora" description={step.description} action={heroLink} />
+      <SurfaceHeader icon={HeroIcon} title="O que fazer agora" description={step.description} action={heroLink} stackActionOnMobile />
       {actions.length ? (
         <ul className="space-y-1.5">
           {actions.map((action) => (

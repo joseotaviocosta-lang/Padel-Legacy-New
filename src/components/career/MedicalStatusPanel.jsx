@@ -1,7 +1,7 @@
 import React from 'react';
 import { Activity, HeartPulse, ShieldCheck, CalendarDays, FastForward } from 'lucide-react';
 import { formatDate } from '@/lib/padel';
-import { normalizeFatigue } from '@/game-core/physicalStats.js';
+import { formatPercent, normalizeFatigue } from '@/game-core/physicalStats.js';
 
 export default function MedicalStatusPanel({ profile, onSkipRecovery, skipping, skipError, skipSummary }) {
   const legacyDays = profile?.injured_until && profile?.career_date
@@ -22,7 +22,7 @@ export default function MedicalStatusPanel({ profile, onSkipRecovery, skipping, 
           <p className="text-xs text-muted-foreground">Sem restrições para treinar ou competir.</p>
         </div>
         </div>
-        {skipSummary && <div className="rounded-xl bg-emerald-500/10 p-3 text-xs"><p className="font-bold text-emerald-300">Recuperação concluída</p><p className="text-muted-foreground mt-1">Dias avançados: {skipSummary.daysAdvanced} · Energia: {skipSummary.energy} · Fadiga: {normalizeFatigue(skipSummary.fatigue)} · Treinos cancelados: {skipSummary.trainingsCancelled || 0} · Eventos processados: {skipSummary.eventsProcessed || 0} · Torneios perdidos: {skipSummary.tournamentsMissed || 0}</p></div>}
+        {skipSummary && <div className="rounded-xl bg-emerald-500/10 p-3 text-xs"><p className="font-bold text-emerald-300">Recuperação concluída</p><p className="text-muted-foreground mt-1">Dias avançados: {skipSummary.daysAdvanced} · Energia: {formatPercent(skipSummary.energy)} · Fadiga: {normalizeFatigue(skipSummary.fatigue)} · Treinos cancelados: {skipSummary.trainingsCancelled || 0} · Eventos processados: {skipSummary.eventsProcessed || 0} · Torneios perdidos: {skipSummary.tournamentsMissed || 0}</p></div>}
       </div>
     );
   }

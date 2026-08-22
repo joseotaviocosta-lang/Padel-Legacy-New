@@ -1,16 +1,25 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Users, X } from 'lucide-react';
 import { getAvailablePartners, getLockedPartners, canChangePartner, daysUntilPartnerUnlock } from '@/lib/career';
 import { overallRating } from '@/lib/padel';
 import { computeCompatibility, compatibilityLabel } from '@/lib/partnershipSystem';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
+import { localGame } from '@/api/localGameClient.js';
 
 export default function PartnerSearch({ profile, relationships, onInvite, onCompare }) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('compat');
   const [selected, setSelected] = useState(null);
   const [sideFilter, setSideFilter] = useState('all');
+  // Fase 15.2 (Bug 3/G1/G2): os bots de busca de parceiro vêm de um catálogo
+  // estático (bots.js/athleteCatalog.js) sem idade real coerente com a Fase
+  // 15 (atletas fictícios têm uma idade gerada uma única vez no catálogo,
+  // atletas reais não têm nenhuma) — nunca a MESMA fonte que envelhece
+  // AthleteProfile mês a mês. Em vez de inventar um cálculo paralelo, busca
+  // a idade viva pelo mesmo id estável (stableAthleteId, athleteSchema.js)
+  // que o mundo já usa.
+  const [athleteAges, setAthleteAges] = useState({});
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
 
@@ -22,6 +31,17 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
       return { bot, compat, interest: calculatePartnershipInterest(profile, bot, compat) };
     });
   }, [profile, relationships]);
+
+  useEffect(() => {
+    let active = true;
+    const ids = available.map(({ bot }) => bot.id).filter(Boolean);
+    if (!ids.length) return undefined;
+    localGame.entities.AthleteProfile.filter({ id: { $in: ids } }).then((rows) => {
+      if (!active) return;
+      setAthleteAges(Object.fromEntries((rows || []).map((row) => [row.id, row.age])));
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [available]);
 
   const filtered = useMemo(() => {
     let list = available;
@@ -99,7 +119,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm truncate">{bot.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{bot.country} · OVR {overallRating(bot)} · {bot.level}</p>
+                  <p className="text-[10px] text-muted-foreground">{bot.country}{athleteAges[bot.id] ? ` · ${athleteAges[bot.id]} anos` : ''} · OVR {overallRating(bot)} · {bot.level}</p>
                 </div>
                 <div className="text-right">
                   <p className={`text-lg font-black tabular-nums ${cl.color}`}>{compat.total}</p>

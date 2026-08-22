@@ -2,10 +2,11 @@ import React from 'react';
 import { Zap, Smile, Coins, Users } from 'lucide-react';
 import { computeMoral, computeFollowers } from '@/lib/simulatedData';
 import { MAX_ENERGY } from '@/lib/padel';
+import { formatPercent } from '@/game-core/physicalStats.js';
 
 export default function StatusStrip({ profile }) {
   if (!profile) return null;
-  const energy = profile.energy || 0;
+  const energy = formatPercent(profile.energy);
   const moral = computeMoral(profile);
   const money = profile.coins || 0;
   const followers = computeFollowers(profile);

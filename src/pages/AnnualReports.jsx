@@ -8,6 +8,7 @@ import {
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel.js';
 import { getAnnualCareerReport, listAnnualCareerReports } from '@/game-core/annualCareerReportLifecycle.js';
+import { formatPercent } from '@/game-core/physicalStats.js';
 import { Page, PageContent, PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { LoadingScreen } from '@/components/padel/ui';
 
@@ -127,7 +128,7 @@ function AnnualReportDetail({ report }) {
           <Metric label="Atributo mais treinado" value={report.training.mostTrainedAttribute ? label(report.training.mostTrainedAttribute[0]) : '—'} />
         </Surface>
         <Surface title="Saúde física" description="Carga, recuperação e ocorrências" icon={HeartPulse}>
-          <Metric label="Energia" value={`${report.health.energyStart} → ${report.health.energyEnd}`} detail={report.health.averageEnergy == null ? 'média indisponível' : `média ${report.health.averageEnergy}`} />
+          <Metric label="Energia" value={`${formatPercent(report.health.energyStart)} → ${formatPercent(report.health.energyEnd)}`} detail={report.health.averageEnergy == null ? 'média indisponível' : `média ${formatPercent(report.health.averageEnergy)}`} />
           <Metric label="Fadiga" value={`${report.health.fatigueStart} → ${report.health.fatigueEnd}`} detail={report.health.peakFatigue == null ? 'pico indisponível' : `pico ${report.health.peakFatigue}`} />
           <Metric label="Lesões" value={report.health.injuries} />
           <Metric label="Dias afastado" value={report.health.daysOut} />

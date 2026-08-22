@@ -4,7 +4,7 @@ import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, U
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
 import { advanceCareerDayOnce } from '@/game-core';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
-import { normalizeFatigue } from '@/game-core/physicalStats.js';
+import { formatPercent, normalizeFatigue } from '@/game-core/physicalStats.js';
 import { TRAINING_ACTIVITIES, TRAINING_CATEGORIES, CATEGORY_ORDER, executeTraining, getWeeklyTrainingCounts, getOvertrainingStatus, getConditionScore, getRecommendedTrainings } from '@/lib/trainingSystemV2';
 import { getTrainingCost } from '@/lib/trainingEconomy';
 import { useToast } from '@/components/ui/use-toast';
@@ -170,7 +170,7 @@ export default function Training() {
       setHistory((sessions || []).sort((a, b) => (b.created_date || '').localeCompare(a.created_date || '')));
       setWeeklyCounts(counts);
       setResult(null);
-      toast({ title: 'Dia avançado', description: `${formatDate(updated.career_date)} · Energia: ${updated.energy}/100 · Fadiga: ${normalizeFatigue(updated.fatigue)}/100` });
+      toast({ title: 'Dia avançado', description: `${formatDate(updated.career_date)} · Energia: ${formatPercent(updated.energy)}/100 · Fadiga: ${normalizeFatigue(updated.fatigue)}/100` });
     } catch (e) {
       console.error(e);
       toast({ title: 'Bloqueado', description: e.message || 'Não foi possível avançar o dia.', variant: 'destructive' });
@@ -228,7 +228,7 @@ export default function Training() {
             // precisa comparar saldo × custo sem sair da tela.
             { label: 'moedas', value: Number(profile.coins || 0).toLocaleString('pt-BR'), icon: Coins, tone: 'success' },
             { label: 'hoje', value: `${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`, icon: Dumbbell },
-            { label: 'energia', value: `${profile.energy ?? 100}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
+            { label: 'energia', value: `${formatPercent(profile.energy ?? 100)}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
             { label: 'fadiga', value: `${normalizeFatigue(profile.fatigue)}%`, icon: Activity, tone: normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success' },
             { label: 'forma', value: conditionScore, icon: Heart, tone: conditionScore < 45 ? 'danger' : conditionScore < 70 ? 'warning' : 'success' },
           ]}

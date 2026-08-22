@@ -1,16 +1,33 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2 } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
 import { formatDate } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 import { Surface, Button } from '@/components/design-system';
+import { localGame } from '@/api/localGameClient.js';
 
 function sideName(side) {
   return side === 'left' || side === 'esquerda' ? 'esquerda' : side === 'right' || side === 'direita' ? 'direita' : 'versátil';
 }
 
 export default function PartnerOverview({ partnership, profile, onEnd, onNegotiate, onConverse }) {
+  // Fase 15.2 (Bug 3/G1/G2): Partnership não guarda a idade do parceiro —
+  // busca pelo mesmo AthleteProfile já referenciado por partner_bot_id em
+  // qualquer outro ponto do sistema (ex.: partnershipSystem.js atualiza esse
+  // mesmo id), reaproveitando a idade que a Fase 15 já mantém em dia, sem
+  // duplicar cálculo nem persistir um campo novo no save.
+  const [partnerAge, setPartnerAge] = useState(null);
+  useEffect(() => {
+    let active = true;
+    setPartnerAge(null);
+    if (!partnership?.partner_bot_id) return undefined;
+    localGame.entities.AthleteProfile.get(partnership.partner_bot_id).then((row) => {
+      if (active) setPartnerAge(row?.age ?? null);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [partnership?.partner_bot_id]);
+
   if (!partnership) {
     return (
       <Surface className="p-8 text-center">
@@ -44,7 +61,7 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-black text-lg">{partnership.partner_name}</h3>
-            <p className="text-xs text-muted-foreground">{partnership.partner_country} · {partnership.partner_level} · OVR {partnership.partner_overall} · Lado {sideName(partnership.partner_position)}</p>
+            <p className="text-xs text-muted-foreground">{partnership.partner_country}{partnerAge ? ` · ${partnerAge} anos` : ''} · {partnership.partner_level} · OVR {partnership.partner_overall} · Lado {sideName(partnership.partner_position)}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${chemLabel.bg} ${chemLabel.color}`}>
                 Entrosamento {chem}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { X, Check } from 'lucide-react';
-import { fillTemplate, generateHeadline, generateArticleContent, toneFromEffects, selectInterviewQuestions } from '@/lib/pressData';
+import { fillTemplate, formatDaysUntilPhrase, generateHeadline, generateArticleContent, toneFromEffects, selectInterviewQuestions } from '@/lib/pressData';
 import { ModalShell } from '@/components/design-system';
 
 const PERSONALITY_LABELS = {
@@ -168,7 +168,7 @@ export default function InterviewModal({ interview, journalist, profile, recentQ
         {/* Question */}
         <div className="mb-4">
           <p className="text-[10px] uppercase tracking-wide text-primary font-bold mb-1.5">Pergunta {currentIdx + 1}</p>
-          <p className="text-sm font-medium leading-relaxed">{fillTemplate(question.text, { opponent: interview.opponent, player: profile?.sport_name })}</p>
+          <p className="text-sm font-medium leading-relaxed">{fillTemplate(question.text, { opponent: interview.opponent, player: profile?.sport_name, daysPhrase: formatDaysUntilPhrase(interview.daysUntil) })}</p>
         </div>
 
         {/* Answers */}

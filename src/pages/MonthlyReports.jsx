@@ -7,6 +7,7 @@ import {
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel.js';
 import { getMonthlyCareerReport, listMonthlyCareerReports } from '@/game-core/monthlyCareerReportLifecycle.js';
+import { formatPercent } from '@/game-core/physicalStats.js';
 import { Page, PageContent, PageHeader, StatCard, StatusBadge } from '@/components/design-system';
 import { LoadingScreen } from '@/components/padel/ui';
 
@@ -75,7 +76,7 @@ function ReportDetail({ report }) {
           <MetricRow label="Aproveitamento na rede" value={report.performance.netSuccessRate === null ? 'Não registrado' : `${report.performance.netSuccessRate}%`} />
         </Surface>
         <Surface title="Saúde e condição" description="Energia, fadiga, lesões e recuperação" icon={HeartPulse}>
-          <MetricRow label="Energia" value={`${report.health.startEnergy} → ${report.health.endEnergy}`} detail={`(${signed(report.health.energyDelta)})`} />
+          <MetricRow label="Energia" value={`${formatPercent(report.health.startEnergy)} → ${formatPercent(report.health.endEnergy)}`} detail={`(${signed(report.health.energyDelta === null ? null : Math.round(report.health.energyDelta))})`} />
           <MetricRow label="Fadiga" value={`${report.health.startFatigue} → ${report.health.endFatigue}`} detail={`(${signed(report.health.fatigueDelta)})`} />
           <MetricRow label="Ocorrências de lesão" value={report.health.injuries} />
           <MetricRow label="Atendimentos médicos" value={report.health.medicalTreatments} />

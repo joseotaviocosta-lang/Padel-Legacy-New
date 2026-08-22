@@ -98,7 +98,7 @@ export const QUESTION_BANKS = {
     {
       id: 'pre_1',
       category: 'pre_match',
-      text: 'Você enfrenta {opponent} amanhã. Como você avalia o adversário?',
+      text: 'Você enfrenta {opponent} {daysPhrase}. Como você avalia o adversário?',
       answers: [
         { text: 'É um grande jogador, mas estou preparado para o desafio.', effects: { fan_appeal: +3, sponsor_appeal: +2, morale: +2, reputation: +3, journalist_bias: +5 }, tone: 'humilde' },
         { text: 'Respeito todos, mas na quadra não existe favorito. Vou vencer.', effects: { fan_appeal: +5, sponsor_appeal: +4, morale: +3, reputation: +2, journalist_bias: +3 }, tone: 'confiante' },
@@ -612,6 +612,17 @@ export function fillTemplate(template, vars) {
   return template.replace(/\{(\w+)\}/g, (_, key) => vars[key] || key);
 }
 
+// Fase 15.2 (Bug 4/C1): fonte canônica para linguagem temporal relativa —
+// nunca hardcodar "amanhã" num texto de entrevista. `daysUntil` já deve vir
+// calculado a partir de uma data real (careerDate vs. a data do compromisso),
+// nunca adivinhado aqui.
+export function formatDaysUntilPhrase(daysUntil) {
+  const value = Number(daysUntil);
+  if (!Number.isFinite(value) || value <= 0) return 'hoje';
+  if (value === 1) return 'amanhã';
+  return `em ${value} dias`;
+}
+
 export function generateHeadline(type, vars) {
   const templates = HEADLINE_TEMPLATES[type];
   if (!templates || templates.length === 0) return 'Notícia do Dia';
@@ -720,6 +731,14 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
   );
   if (nextTournament) {
     const eventKey = nextTournament.id || `${nextTournament.start_date || nextTournament.event_date}-${nextTournament.title || nextTournament.name}`;
+    // Fase 15.2 (Bug 4/C1): dias reais até o compromisso, a partir das MESMAS
+    // duas datas já usadas por findNextTournament (careerDate vs. a data do
+    // torneio) — nunca um texto estático. Consumido por InterviewModal.jsx
+    // via formatDaysUntilPhrase, nunca um "amanhã" hardcoded.
+    const nextTournamentDate = String(nextTournament.start_date || nextTournament.event_date || nextTournament.date || '').slice(0, 10);
+    const daysUntilTournament = nextTournamentDate
+      ? Math.max(0, Math.round((new Date(`${nextTournamentDate}T00:00:00`).getTime() - new Date(`${careerDate}T00:00:00`).getTime()) / 86400000))
+      : null;
     pending.push({
       id: `press_conf_pre_${eventKey}`,
       sourceId: `calendar:${eventKey}`,
@@ -731,6 +750,7 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
       relatedEvent: `Torneio:${eventKey}`,
       eventLabel: nextTournament.title || nextTournament.name || 'Próximo torneio',
       careerDate,
+      daysUntil: daysUntilTournament,
     });
   }
 

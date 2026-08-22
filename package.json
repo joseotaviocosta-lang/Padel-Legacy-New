@@ -258,7 +258,8 @@
     "test:world-career-story": "node scripts/test-world-career-phase15.mjs --suite=story",
     "test:world-idempotency": "node scripts/test-world-career-phase15.mjs --suite=idempotency",
     "test:world-save-load": "node scripts/test-world-career-phase15.mjs --suite=save-load",
-    "test:world-performance": "node scripts/test-world-career-phase15.mjs --suite=performance"
+    "test:world-performance": "node scripts/test-world-career-phase15.mjs --suite=performance",
+    "test:phase15-2-integrated-qa": "node scripts/test-phase15-2-integrated-qa.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

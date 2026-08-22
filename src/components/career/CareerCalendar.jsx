@@ -6,6 +6,7 @@ import { advanceCareerDayOnce } from '@/game-core';
 import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
 import { getPendingDecisions } from '@/lib/calendarSystem';
 import { describeCalendarBlock } from '@/lib/tournamentNextAction.js';
+import { formatPercent } from '@/game-core/physicalStats.js';
 
 // Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.5): este widget mostrava
 // seus próprios avisos de "torneio chegando" e "lesionado" — a mesma
@@ -109,7 +110,7 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
           <Battery className={`h-4 w-4 ${energyColor} shrink-0`} />
           <div className="flex-1">
             <p className="text-[9px] text-muted-foreground uppercase">Energia</p>
-            <p className={`text-xs font-bold tabular-nums ${energyColor}`}>{energy}</p>
+            <p className={`text-xs font-bold tabular-nums ${energyColor}`}>{formatPercent(energy)}</p>
           </div>
         </div>
       </div>

@@ -139,6 +139,15 @@ export default function CharacterEditor() {
               {activeTab === 'history' && <HistoryEditor data={customization} update={update} />}
             </Surface>
 
+            {/* Fase 15.2 (Bug 2/F2/F3): reserva o espaço que o CTA sticky abaixo
+                ocupa quando "estacionado" (bottom-20 no mobile, bottom-4 a
+                partir de md) — sem essa folga, rolar até o fim do editor
+                deixava o último controle (ex.: slider de Altura) atrás da
+                barra "PERSONAGEM SALVO". Altura derivada de tokens reais
+                (--pl-sticky-save-h + a própria distância `bottom-*` do CTA +
+                safe-area no mobile), nunca um valor de margem arbitrário. */}
+            <div aria-hidden className="h-[calc(5rem+var(--pl-sticky-save-h)+var(--pl-safe-b)+0.75rem)] md:h-[calc(1rem+var(--pl-sticky-save-h)+0.75rem)]" />
+
             <div className="sticky bottom-20 z-30 md:bottom-4">
               <PrimaryButton onClick={handleSave} disabled={saving || !dirty} className="w-full shadow-2xl">
                 <Save className="h-4 w-4" />

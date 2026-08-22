@@ -90,7 +90,7 @@ function OfferCard({ offer, candidate, compatibility, interest, highlighted, sel
             <h3 className="font-black">{candidate.name}</h3>
             {offer.recommended && <span className="rounded-full bg-amber-500/15 px-2 py-1 text-[9px] font-bold text-amber-300"><Star className="mr-1 inline h-3 w-3"/>Recomendado para sua primeira dupla</span>}
           </div>
-          <p className="text-xs text-muted-foreground">{candidate.country || 'Nacionalidade não informada'} · OVR {overallRating(candidate)} · {candidate.level || 'iniciante'}</p>
+          <p className="text-xs text-muted-foreground">{candidate.country || 'Nacionalidade não informada'}{candidate.age ? ` · ${candidate.age} anos` : ''} · OVR {overallRating(candidate)} · {candidate.level || 'iniciante'}</p>
         </div>
         <div className="text-right shrink-0">
           <p className="text-xl font-black text-primary">{compatibility.total}</p>

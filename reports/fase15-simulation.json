@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T20:02:28.992Z",
+  "generatedAt": "2026-08-22T13:26:07.634Z",
   "mode": "progression",
   "fixtures": {
     "youngOverallAfter5Years": 84,
@@ -34,8 +34,8 @@
     "averagePeakAge": 27.87042837538404,
     "averageRetirementAge": 38.48576867111608,
     "worldStoriesPerSeason": 12.76,
-    "elapsedMs": 15041.4239
+    "elapsedMs": 14958.601299999998
   },
-  "performance1000AthletesMs": 5.792600000000675,
+  "performance1000AthletesMs": 6.286199999998644,
   "partnershipDurationP90Months": 33
 }

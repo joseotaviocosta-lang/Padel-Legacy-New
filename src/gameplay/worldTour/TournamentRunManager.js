@@ -92,8 +92,15 @@ export function getTournamentRunPhase(run, careerDate) {
   const match = getCurrentTournamentMatch(run);
   if (!run.meetingsCompleted?.preTournament) return 'pre_tournament';
   if (!match) return 'finished';
-  if (!match.preparationCompleted) return 'round_preparation';
+  // Fase 15.2 (Bug 7/B2): a rodada nunca pode parecer "pronta" (preparação
+  // ou jogável) antes da própria data chegar — a checagem de data precisa
+  // vir ANTES de `preparationCompleted`. Antes desta correção, ao terminar
+  // uma rodada e avançar `currentRound`, a nova partida (preparationCompleted
+  // sempre false) retornava 'round_preparation' mesmo com `match.date` dias
+  // no futuro, o que fazia `round_result` (TournamentModal.jsx) oferecer
+  // "Jogar {rodada} agora" um dia (ou vários dias) cedo demais.
   if (careerDate < match.date) return 'waiting';
+  if (!match.preparationCompleted) return 'round_preparation';
   if (careerDate > match.date) return 'missed';
   if (match.status === 'playing' || run.status === 'playing') return 'playing';
   return 'playable';

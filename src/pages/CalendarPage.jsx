@@ -11,6 +11,7 @@ import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
 import { getEventsForRange, getPendingDecisions, resolveDecision, isRegistrationOpen, scheduleRecurringActivities, cancelPlannedActivity, updatePlannedActivity } from '@/lib/calendarSystem';
+import { formatPercent, normalizeFatigue } from '@/game-core/physicalStats.js';
 import { startOfWeek, format } from 'date-fns';
 import CalendarWeekView from '@/components/calendar/CalendarWeekView';
 import DayEventList from '@/components/calendar/DayEventList';
@@ -234,7 +235,7 @@ export default function CalendarPage() {
       const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
       toast({
         title: `${processedDays} dia(s) processado(s)`,
-        description: `Solicitado: ${result.requestedDays ?? days} · Processado: ${processedDays} · ${trainingsDone} treino(s) automático(s) · Energia ${updated.energy} · Fadiga ${updated.fatigue}.${interrupted}`,
+        description: `Solicitado: ${result.requestedDays ?? days} · Processado: ${processedDays} · ${trainingsDone} treino(s) automático(s) · Energia ${formatPercent(updated.energy)} · Fadiga ${normalizeFatigue(updated.fatigue)}.${interrupted}`,
       });
     } catch (error) {
       toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
@@ -313,8 +314,8 @@ export default function CalendarPage() {
         const cancelled = Number(result.summary?.activitiesCancelledByInjury || 0);
         const details = [
           `${result.daysAdvanced} dia(s) avançado(s)`,
-          `Energia ${result.profile.energy}`,
-          `Fadiga ${result.profile.fatigue}`,
+          `Energia ${formatPercent(result.profile.energy)}`,
+          `Fadiga ${normalizeFatigue(result.profile.fatigue)}`,
           missed ? `${missed} torneio(s) perdido(s)` : null,
           cancelled ? `${cancelled} atividade(s) cancelada(s)` : null,
         ].filter(Boolean).join(' · ');
