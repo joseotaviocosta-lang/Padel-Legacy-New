@@ -1,15 +1,21 @@
 import React from 'react';
 import { CalendarDays, ArrowUpRight, ArrowDownRight, Sparkles } from 'lucide-react';
 import { ModalShell } from '@/components/design-system';
+import { formatCurrency, formatSignedGameNumber } from '@/lib/numberFormat.js';
 
 function ChangeBadge({ item }) {
   const visuallyPositive = item.inverse ? item.value < 0 : item.value > 0;
   const Icon = item.value > 0 ? ArrowUpRight : ArrowDownRight;
+  const value = item.key === 'coins'
+    ? `${item.value > 0 ? '+' : item.value < 0 ? '-' : ''}${formatCurrency(Math.abs(item.value))}`
+    : formatSignedGameNumber(item.value, {
+        maximumFractionDigits: ['energy', 'fatigue'].includes(item.key) ? 1 : 2,
+      });
   return (
-    <div className="rounded-xl bg-secondary/35 p-3">
+    <div className="min-w-0 rounded-xl bg-secondary/35 p-3">
       <p className="text-[10px] uppercase font-bold text-muted-foreground">{item.label}</p>
-      <p className={`mt-1 flex items-center gap-1 font-black ${visuallyPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
-        <Icon className="h-4 w-4" /> {item.value > 0 ? '+' : ''}{item.value}
+      <p className={`mt-1 flex min-w-0 items-center gap-1 font-black tabular-nums ${visuallyPositive ? 'text-emerald-400' : 'text-rose-400'}`}>
+        <Icon className="h-4 w-4 shrink-0" /> <span className="min-w-0 truncate">{value}</span>
       </p>
     </div>
   );

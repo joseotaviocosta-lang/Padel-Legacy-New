@@ -7,6 +7,7 @@ import { describeCalendarBlock } from '@/lib/tournamentNextAction.js';
 import { useToast } from '@/components/ui/use-toast';
 import { ToastAction } from '@/components/ui/toast';
 import { cn } from '@/lib/utils';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 export default function CareerDayControl({ profile = null, compact = false, className = '' }) {
   const [processing, setProcessing] = useState(isCareerDayAdvanceProcessing);
@@ -50,10 +51,10 @@ export default function CareerDayControl({ profile = null, compact = false, clas
           recovery de partida, então este não introduz um bypass novo). */}
       <button
         type="button"
-        onClick={() => navigate('/game/calendar')}
+        onClick={() => navigate(APP_ROUTES.CALENDAR)}
         title="Abrir calendário"
         aria-label="Abrir calendário"
-        className="flex min-w-[3.45rem] shrink-0 flex-col justify-center rounded-md px-1 py-1 text-center transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:min-w-[7.35rem] sm:px-2.5"
+        className="pl-icon-tap flex w-11 shrink-0 flex-col justify-center rounded-md px-0.5 py-1 text-center transition-colors hover:bg-secondary/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background sm:w-auto sm:min-w-[7.35rem] sm:px-2.5"
       >
         <span className="text-[8px] font-extrabold uppercase leading-none tracking-[0.12em] text-info sm:hidden">{date.weekdayShort}</span>
         <span className="hidden text-[8px] font-extrabold uppercase leading-none tracking-[0.12em] text-info sm:block">{date.weekday}</span>
@@ -68,12 +69,12 @@ export default function CareerDayControl({ profile = null, compact = false, clas
         aria-label="Avançar carreira em um dia"
         aria-busy={processing}
         className={cn(
-          'pl-btn-tap inline-flex min-w-[4.55rem] shrink-0 items-center justify-center gap-1 rounded-lg bg-primary px-1.5 text-[10px] font-black text-primary-foreground transition-[filter,opacity] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-55',
+          'pl-btn-tap inline-flex w-11 shrink-0 items-center justify-center gap-1 rounded-lg bg-primary px-1 text-[10px] font-black text-primary-foreground transition-[filter,opacity] hover:brightness-110 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-55 min-[390px]:w-auto min-[390px]:min-w-[4.55rem] min-[390px]:px-1.5',
           !compact && 'sm:min-w-[6.6rem] sm:px-3 sm:text-xs',
         )}
       >
         <CalendarPlus className="h-3.5 w-3.5 shrink-0" />
-        <span>{processing ? (compact ? '…' : 'Processando...') : 'Avançar'}</span>
+        <span className="hidden min-[390px]:inline">{processing ? (compact ? '…' : 'Processando...') : 'Avançar'}</span>
       </button>
     </div>
   );

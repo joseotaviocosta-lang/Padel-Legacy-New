@@ -287,7 +287,7 @@ export default function AppLayout() {
         <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
-        <div className="min-w-0 flex-1 px-1.5">
+        <div className="min-w-0 flex-1 px-0.5 min-[390px]:px-1.5">
           {/* Hotfix hierarquia de páginas (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md):
               este cabeçalho global não deve mais reimprimir o título da rota —
               cada página já tem seu próprio PageHeader (fonte única de
@@ -298,10 +298,10 @@ export default function AppLayout() {
           to={APP_ROUTES.ECONOMY}
           title="Abrir Economia"
           aria-label={`Abrir Economia. Saldo: ${formatCoinBalance(headerProfile?.coins)} moedas`}
-          className="mr-1 inline-flex max-w-[4.65rem] shrink-0 items-center gap-1 rounded-lg border border-premium/25 bg-premium/10 px-1.5 py-1.5 text-[10px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          className="pl-icon-tap mr-0.5 inline-flex max-w-11 shrink-0 items-center justify-center gap-1 overflow-hidden rounded-lg border border-premium/25 bg-premium/10 px-1.5 text-[10px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-[400px]:max-w-[4.65rem]"
         >
           <Coins className="h-3.5 w-3.5 shrink-0" />
-          <span className="truncate">{formatCoinBalance(headerProfile?.coins)}</span>
+          <span className="hidden truncate min-[400px]:inline">{formatCoinBalance(headerProfile?.coins)}</span>
         </NavLink>
         <CareerDayControl profile={headerProfile} compact />
         <CommunicationBell compact />
@@ -313,7 +313,7 @@ export default function AppLayout() {
             <motion.button aria-label="Fechar navegação" className="pl-layer-dropdown fixed inset-0 bg-black/60 backdrop-blur-[2px] md:hidden" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setMobileOpen(false)} />
             <motion.aside ref={mobileDrawerPanelRef} id="mobile-navigation-drawer" role="dialog" aria-modal="true" aria-label="Navegação principal" className="glass pl-safe-t pl-safe-b fixed inset-y-0 left-0 z-[70] flex w-[min(88vw,20rem)] flex-col border-r border-border pl-[var(--pl-safe-l)] md:hidden" initial={{ x: '-100%' }} animate={{ x: 0 }} exit={{ x: '-100%' }} transition={performanceProfile.lowPower ? { duration: 0.16 } : { type: 'spring', stiffness: 380, damping: 36 }}>
               <div className="flex h-16 shrink-0 items-center justify-between border-b border-border/50 px-4">
-                <NavLink to="/game" onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
+                <NavLink to={APP_ROUTES.HOME} onClick={() => setMobileOpen(false)} className="flex items-center gap-2.5">
                   <BrandMark size={36} className="shadow-[0_0_22px_hsl(var(--primary)/0.22)]" />
                   <span className="font-heading font-black">PADEL <span className="text-primary">LEGACY</span></span>
                 </NavLink>
@@ -327,7 +327,7 @@ export default function AppLayout() {
 
       <aside aria-label="Navegação principal" className={`glass fixed inset-y-0 left-0 z-40 hidden flex-col border-r border-border/60 transition-[width] duration-300 md:flex ${sidebarCollapsed ? 'w-[4.5rem]' : 'w-[16rem]'}`}>
         <div className={`flex h-20 items-center border-b border-border/40 ${sidebarCollapsed ? 'justify-center px-2' : 'justify-between px-4'}`}>
-          <NavLink to="/game" className="flex min-w-0 items-center gap-2.5">
+          <NavLink to={APP_ROUTES.HOME} className="flex min-w-0 items-center gap-2.5">
             <BrandMark size={40} className="shadow-[0_0_24px_hsl(var(--primary)/0.2)]" />
             {!sidebarCollapsed && <span className="min-w-0"><strong className="block truncate font-heading text-lg leading-none">PADEL</strong><small className="font-bold tracking-[.24em] text-primary">LEGACY</small></span>}
           </NavLink>
@@ -355,7 +355,7 @@ export default function AppLayout() {
           {/* Hotfix hierarquia de páginas: idem ao cabeçalho mobile — sem
               reimprimir breadcrumb/título da rota aqui, só contexto
               operacional (a identidade da página já está no PageHeader). */}
-          <div className="hidden min-w-0 flex-1 xl:flex xl:items-center">
+          <div className="flex min-w-0 flex-1 items-center">
             <CareerHeaderContext profile={headerProfile} />
           </div>
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2 xl:flex-none">

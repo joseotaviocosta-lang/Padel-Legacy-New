@@ -30,7 +30,7 @@ const TONE_LABELS = {
 // a entrevista continua rápida (Parte 16), só o conteúdo varia.
 const QUESTIONS_PER_INTERVIEW = 2;
 
-export default function InterviewModal({ interview, journalist, profile, recentQuestionIds = [], onClose, onComplete }) {
+export default function InterviewModal({ interview, journalist, profile, recentQuestionIds = [], onClose, onComplete, completionLabel = 'Concluir' }) {
   const [questions] = useState(() => selectInterviewQuestions(interview.questionCategory, interview.matchContext || {}, recentQuestionIds, QUESTIONS_PER_INTERVIEW));
   const [currentIdx, setCurrentIdx] = useState(0);
   const [answers, setAnswers] = useState([]);
@@ -127,7 +127,7 @@ export default function InterviewModal({ interview, journalist, profile, recentQ
             {totalEffects.reputation !== 0 && <EffectChip label="Reputação" value={totalEffects.reputation} />}
           </div>
           <button onClick={onClose} className="w-full py-2.5 rounded-xl bg-primary text-primary-foreground font-bold text-sm flex items-center justify-center gap-1.5">
-            <Check className="h-4 w-4" /> Concluir
+            <Check className="h-4 w-4" /> {completionLabel}
           </button>
         </div>
       </ModalShell>

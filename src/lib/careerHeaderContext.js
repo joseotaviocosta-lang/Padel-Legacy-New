@@ -18,9 +18,10 @@ function pluralDays(value) {
  * @param {object} [input]
  * @param {object|null} [input.profile]
  * @param {Array<{id:string,name:string,start_date:string}>} [input.tournaments] Torneios com inscrições abertas (já filtrados por status, não filtrados por data).
+ * @param {Array<object>} [input.calendarEvents] Eventos de torneio com tournament_run canônico.
  * @returns {{kind:string, label:{compact:string,full:string}, ariaLabel:string|null, tournamentId:string|null, daysUntil:number|null}|null}
  */
-export function buildCareerHeaderContext({ profile, tournaments = [] } = {}) {
+export function buildCareerHeaderContext({ profile, tournaments = [], calendarEvents = [] } = {}) {
   if (!profile) return null;
   const careerDate = profile.career_date || '2026-01-01';
   const injured = profile.injury_status === 'injured' || profile.is_injured;
@@ -31,6 +32,32 @@ export function buildCareerHeaderContext({ profile, tournaments = [] } = {}) {
     .filter((item) => item?.start_date && item.start_date >= careerDate)
     .sort((a, b) => String(a.start_date).localeCompare(String(b.start_date)))[0] || null;
   const until = next ? daysUntil(careerDate, next.start_date) : null;
+
+  // Fase 15.4: tournament_run é a fonte canônica para uma campanha já
+  // iniciada. A data do round atual vem do próprio match, nunca do
+  // CalendarEvent legado (que pode ainda apontar para a rodada anterior).
+  const activeEvent = (calendarEvents || []).find((event) => {
+    const run = event?.metadata?.tournament_run;
+    return run && !['champion', 'eliminated', 'finished', 'withdrawn'].includes(run.status)
+      && getCurrentTournamentMatch(run);
+  }) || null;
+  const activeRun = activeEvent?.metadata?.tournament_run || null;
+  const activeMatch = activeRun ? getCurrentTournamentMatch(activeRun) : null;
+  if (activeMatch) {
+    const roundDays = daysUntil(careerDate, activeMatch.date);
+    const tournamentName = activeRun.tournamentName || activeEvent.related_name || 'Torneio';
+    const timing = roundDays === 0 ? 'Hoje' : roundDays === 1 ? 'Amanhã' : `${roundDays}d`;
+    return {
+      kind: roundDays === 0 ? 'tournament_today' : 'tournament_round',
+      label: {
+        compact: `${tournamentName} · ${timing}`,
+        full: `${tournamentName} · ${activeMatch.round} · ${timing}`,
+      },
+      ariaLabel: `${tournamentName}: ${activeMatch.round} ${roundDays === 0 ? 'hoje' : `em ${pluralDays(roundDays)}`}`,
+      tournamentId: activeEvent.related_id || activeRun.tournamentId || null,
+      daysUntil: roundDays,
+    };
+  }
 
   if (injured) {
     const days = profile.injury_days_remaining || '—';
@@ -90,9 +117,10 @@ export function buildCareerHeaderContext({ profile, tournaments = [] } = {}) {
     kind: next ? 'tournament_upcoming' : 'idle',
     label: next
       ? { compact: `${next.name} · ${until}d`, full: `Próximo torneio · ${next.name} · ${until}d` }
-      : { compact: 'Semana de desenvolvimento', full: 'Semana de desenvolvimento' },
+      : { compact: 'Torneios', full: 'Torneios' },
     ariaLabel: next ? `Próximo torneio: ${next.name} em ${pluralDays(until)}` : null,
     tournamentId: next?.id || null,
     daysUntil: until,
   };
 }
+import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';

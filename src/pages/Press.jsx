@@ -16,7 +16,10 @@ import {
   buildOfficialInterviewProgressPatch,
   findOfficialInterviewMatch,
   isPostMatchInterview,
+  matchIdFromInterview,
+  postMatchInterviewMessageId,
 } from '@/lib/postMatchInterview.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 export default function Press() {
   const navigate = useNavigate();
@@ -113,6 +116,14 @@ export default function Press() {
     const saved = journalists.find(j => j.name === journalist.name) || journalist;
     setActiveInterview(interview);
     setActiveJournalist(saved);
+    const matchId = matchIdFromInterview(interview);
+    const messageId = matchId ? postMatchInterviewMessageId(profile?.id, matchId) : null;
+    if (messageId) {
+      await localGame.entities['CareerMessage'].update(messageId, { status: 'lida', is_read: true, is_new: false }).catch(() => null);
+      window.dispatchEvent(new CustomEvent('padel:communications-updated', {
+        detail: { reason: 'press-interview-opened', sourceId: interview.sourceId },
+      }));
+    }
   }
 
   useEffect(() => {
@@ -255,7 +266,8 @@ export default function Press() {
     setActiveInterview(null);
     setActiveJournalist(null);
     const returnTo = searchParams.get('returnTo');
-    if (completedDeepLinkedInterviewRef.current && returnTo?.startsWith('/tournaments')) {
+    const validReturn = returnTo === APP_ROUTES.HOME || returnTo?.startsWith(APP_ROUTES.TOURNAMENTS);
+    if (completedDeepLinkedInterviewRef.current && validReturn) {
       completedDeepLinkedInterviewRef.current = false;
       navigate(returnTo, { replace: true });
     }
@@ -411,6 +423,7 @@ export default function Press() {
           recentQuestionIds={profile?.recent_interview_question_ids || []}
           onClose={closeInterview}
           onComplete={handleCompleteInterview}
+          completionLabel={searchParams.get('returnTo') === APP_ROUTES.HOME ? 'Voltar para a carreira' : 'Voltar para o torneio'}
         />
       )}
 

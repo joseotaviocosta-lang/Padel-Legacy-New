@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Bell, ChevronRight, Inbox, X } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
@@ -15,6 +16,7 @@ import {
 import { useCareer } from '@/careers/useCareer.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 import { useRenderCounter } from '@/dev/performanceProbe.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): memoizado — montado 2x no
 // shell global (header compacto + barra desktop) e antes re-renderizava a
@@ -26,7 +28,6 @@ function CommunicationBell({ compact = false }) {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState([]);
-  const [profile, setProfile] = useState(null);
   const [view, setView] = useState('unread');
   const closeCenter = useCallback(() => setOpen(false), []);
   const { closeRef, panelRef } = useOverlayBehavior({ open, onClose: closeCenter });
@@ -35,7 +36,6 @@ function CommunicationBell({ compact = false }) {
     const user = await localGame.auth.me().catch(() => null);
     const profile = user ? await ensureMyProfile(user).catch(() => null) : null;
     if (!profile?.id) return;
-    setProfile(profile);
 
     // O sino também executa a reconciliação contextual. Assim novas mensagens
     // aparecem mesmo quando o jogador avança o calendário sem voltar à Home.
@@ -148,7 +148,79 @@ function CommunicationBell({ compact = false }) {
     }
   }
 
+  const center = open && typeof document !== 'undefined' ? createPortal(
+    <div
+      className="pl-layer-notification pointer-events-auto fixed inset-0 h-[100dvh] w-[100dvw] overflow-hidden"
+      data-notification-overlay
+      data-scroll-lock="body"
+    >
+      <button
+        type="button"
+        aria-label="Fechar notificações"
+        className="absolute inset-0 cursor-default bg-black/65 backdrop-blur-[2px]"
+        onClick={closeCenter}
+      />
+      <section
+        ref={panelRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label="Central de notificações"
+        className="pl-safe-t pl-safe-b absolute inset-y-0 right-0 z-10 flex h-[100dvh] w-full max-w-sm min-w-0 flex-col overflow-hidden border-l border-border/70 bg-card shadow-2xl sm:inset-y-3 sm:right-3 sm:h-[calc(100dvh-1.5rem)] sm:rounded-2xl sm:border"
+      >
+        <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-4 py-3 pr-[calc(0.75rem+var(--pl-safe-r))]">
+          <div className="min-w-0">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Central única</p>
+            <p className="truncate font-black">Notificações</p>
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            {unread > 0 && <span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-black text-primary">{unread}</span>}
+            <button ref={closeRef} type="button" aria-label="Fechar notificações" onClick={closeCenter} className="pl-icon-tap flex h-11 w-11 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground"><X className="h-4 w-4" /></button>
+          </div>
+        </div>
+
+        <div className="flex shrink-0 gap-2 border-b border-border/60 px-3 py-2" aria-label="Filtro de notificações">
+          {[
+            { id: 'unread', label: 'Não lidas' },
+            { id: 'all', label: 'Todas' },
+          ].map((item) => (
+            <button key={item.id} type="button" onClick={() => setView(item.id)} className={`min-h-11 rounded-lg px-3 py-1.5 text-[11px] font-bold ${view === item.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/60 text-muted-foreground'}`}>
+              {item.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="scrollbar-premium min-h-0 flex-1 touch-pan-y overflow-y-auto overscroll-contain p-2" data-notification-scroll>
+          {groupedMessages.length ? groupedMessages.map((group) => {
+            const isReports = group.id === 'reports';
+            return (
+              <section key={group.id} aria-label={group.label} className="mb-2 last:mb-0">
+                <p className="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground">{group.label}</p>
+                {group.messages.map((message) => (
+                  <button type="button" key={message.id} onClick={() => handleMessageClick(message)} className={`flex min-h-11 w-full gap-3 rounded-xl text-left hover:bg-secondary/60 ${isReports ? 'p-2' : 'p-3'}`}>
+                    <div className={`flex shrink-0 items-center justify-center rounded-xl ${isReports ? 'h-7 w-7 bg-secondary/70' : 'h-9 w-9 bg-primary/10'}`}><Inbox className={isReports ? 'h-3.5 w-3.5 text-muted-foreground' : 'h-4 w-4 text-primary'} /></div>
+                    <div className="min-w-0 flex-1">
+                      {!isReports && <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"><span>{getNotificationCategoryLabel(message)}</span><span>·</span><span>{getNotificationAttentionLevel(message)}</span></div>}
+                      <p className={`truncate font-bold ${isReports ? 'text-[11px]' : 'mt-1 text-xs'}`}>{message.title}</p>
+                      <p className={`text-muted-foreground ${isReports ? 'line-clamp-1 text-[9px]' : 'mt-1 line-clamp-2 text-[10px]'}`}>{message.content}</p>
+                    </div>
+                    {isCareerMessageUnread(message) && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" title="Não lida" />}
+                  </button>
+                ))}
+              </section>
+            );
+          }) : <div className="p-8 text-center text-xs text-muted-foreground"><p className="font-bold text-foreground">Você está em dia.</p><p className="mt-1">Nenhuma notificação exige sua atenção.</p></div>}
+        </div>
+
+        <Link to={APP_ROUTES.COMMUNICATIONS} onClick={closeCenter} className="flex min-h-11 shrink-0 items-center justify-between border-t border-border/60 px-4 py-3 text-xs font-bold text-primary">
+          Abrir Central de Notificações <ChevronRight className="h-4 w-4" />
+        </Link>
+      </section>
+    </div>,
+    document.body,
+  ) : null;
+
   return (
+    <>
     <div className="relative">
       <button
         type="button"
@@ -163,66 +235,9 @@ function CommunicationBell({ compact = false }) {
         <NotificationBadge count={unread} />
       </button>
 
-      {open && (
-        <>
-          <button type="button" aria-label="Fechar notificações" className="pl-layer-dropdown fixed inset-0" onClick={closeCenter} />
-          <div ref={panelRef} role="dialog" aria-modal="true" aria-label="Central de notificações" className="pl-layer-dropdown absolute right-0 top-[calc(100%+0.6rem)] w-[min(23rem,calc(100vw-1.5rem))] overflow-hidden rounded-2xl border border-border/70 bg-card shadow-2xl">
-            <div className="flex items-center justify-between border-b border-border/60 p-4">
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Central única</p>
-                <p className="font-black">Notificações</p>
-              </div>
-              <div className="flex items-center gap-2">
-                {unread > 0 && <span className="rounded-full bg-primary/15 px-2 py-1 text-xs font-black text-primary">{unread}</span>}
-                <button ref={closeRef} type="button" aria-label="Fechar notificações" onClick={closeCenter} className="pl-icon-tap flex h-9 w-9 items-center justify-center rounded-xl text-muted-foreground hover:bg-secondary hover:text-foreground"><X className="h-4 w-4" /></button>
-              </div>
-            </div>
-
-            <div className="flex gap-2 border-b border-border/60 px-3 py-2" aria-label="Filtro de notificações">
-              {[
-                { id: 'unread', label: 'Não lidas' },
-                { id: 'all', label: 'Todas' },
-              ].map((item) => (
-                <button key={item.id} type="button" onClick={() => setView(item.id)} className={`rounded-lg px-3 py-1.5 text-[11px] font-bold ${view === item.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/60 text-muted-foreground'}`}>
-                  {item.label}
-                </button>
-              ))}
-            </div>
-
-            <div className="max-h-[min(32rem,65vh)] overflow-y-auto p-2 scrollbar-premium">
-              {groupedMessages.length ? groupedMessages.map((group) => {
-                // Polish editorial (docs/NOTIFICATION_EDITORIAL_POLISH.md,
-                // item 32): relatórios continuam na mesma lista/ordem
-                // (groupNotificationsByPriority já os coloca por último) —
-                // só ficam visualmente mais discretos, sem reestruturar o
-                // componente.
-                const isReports = group.id === 'reports';
-                return (
-                  <section key={group.id} aria-label={group.label} className="mb-2 last:mb-0">
-                    <p className="px-3 py-1 text-[10px] font-black uppercase tracking-wider text-muted-foreground">{group.label}</p>
-                    {group.messages.map((message) => (
-                      <button type="button" key={message.id} onClick={() => handleMessageClick(message)} className={`flex w-full gap-3 rounded-xl text-left hover:bg-secondary/60 ${isReports ? 'p-2' : 'p-3'}`}>
-                        <div className={`flex shrink-0 items-center justify-center rounded-xl ${isReports ? 'h-7 w-7 bg-secondary/70' : 'h-9 w-9 bg-primary/10'}`}><Inbox className={isReports ? 'h-3.5 w-3.5 text-muted-foreground' : 'h-4 w-4 text-primary'} /></div>
-                        <div className="min-w-0 flex-1">
-                          {!isReports && <div className="flex items-center gap-2 text-[9px] font-bold uppercase tracking-wide text-muted-foreground"><span>{getNotificationCategoryLabel(message)}</span><span>·</span><span>{getNotificationAttentionLevel(message)}</span></div>}
-                          <p className={`truncate font-bold ${isReports ? 'text-[11px]' : 'mt-1 text-xs'}`}>{message.title}</p>
-                          <p className={`text-muted-foreground ${isReports ? 'line-clamp-1 text-[9px]' : 'mt-1 line-clamp-2 text-[10px]'}`}>{message.content}</p>
-                        </div>
-                        {isCareerMessageUnread(message) && <span className="mt-1 h-2 w-2 shrink-0 rounded-full bg-primary" title="Não lida" />}
-                      </button>
-                    ))}
-                  </section>
-                );
-              }) : <div className="p-8 text-center text-xs text-muted-foreground"><p className="font-bold text-foreground">Você está em dia.</p><p className="mt-1">Nenhuma notificação exige sua atenção.</p></div>}
-            </div>
-
-            <Link to="/communications" onClick={closeCenter} className="flex items-center justify-between border-t border-border/60 px-4 py-3 text-xs font-bold text-primary">
-              Abrir Central de Notificações <ChevronRight className="h-4 w-4" />
-            </Link>
-          </div>
-        </>
-      )}
     </div>
+    {center}
+    </>
   );
 }
 

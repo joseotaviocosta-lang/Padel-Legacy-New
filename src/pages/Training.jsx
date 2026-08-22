@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { formatAttributeGain } from '@/lib/numberFormat.js';
+import { formatAttributeGain, formatGameNumber } from '@/lib/numberFormat.js';
 import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Users, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
@@ -264,7 +264,7 @@ export default function Training() {
               : `Sessão de manutenção · +${result.activity.xp} XP · -${result.cost} moedas`,
             `Saldo: ${Number(result.coinsAfter || 0).toLocaleString('pt-BR')}`,
             result.diminishing < 1 ? `${Math.round(result.diminishing * 100)}% eficiência` : null,
-            result.fatiguePenalty < 0 ? `fadiga: ${result.fatiguePenalty}` : null,
+            result.fatiguePenalty < 0 ? `fadiga: ${formatGameNumber(result.fatiguePenalty, { maximumFractionDigits: 1 })}` : null,
           ].filter(Boolean).join(' · ')}
           action={<button type="button" onClick={() => setResult(null)} className="text-xs font-bold text-muted-foreground hover:text-foreground">Fechar</button>}
         />

@@ -3,6 +3,7 @@ import { format } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import { Trophy, Dumbbell, Moon, Plane, Mic, Swords, Clock, Coins } from 'lucide-react';
 import { EVENT_TYPES } from '@/lib/calendarSystem';
+import { formatAttributeGain, formatCurrency, formatGameNumber } from '@/lib/numberFormat.js';
 
 const EVENT_ICON = {
   tournament: Trophy,
@@ -57,9 +58,9 @@ export default function DayEventList({ day, dayData, onResolve, onPlayTournament
                       <p className="font-bold text-xs truncate">{item.title}</p>
                       <p className="text-[10px] text-muted-foreground line-clamp-1">{item.description || item.location || ''}</p>
                       <div className="flex flex-wrap gap-2 mt-1">
-                        {item.energy_cost > 0 && <span className="text-[9px] text-amber-400">-{item.energy_cost} energia</span>}
-                        {item.coin_cost > 0 && <span className="text-[9px] text-red-400">-{item.coin_cost} moedas</span>}
-                        {item.coin_reward > 0 && <span className="text-[9px] text-green-400">+{item.coin_reward} moedas</span>}
+                        {item.energy_cost > 0 && <span className="text-[9px] text-amber-400">-{formatGameNumber(item.energy_cost)} energia</span>}
+                        {item.coin_cost > 0 && <span className="text-[9px] text-red-400">-{formatCurrency(item.coin_cost)} moedas</span>}
+                        {item.coin_reward > 0 && <span className="text-[9px] text-green-400">+{formatCurrency(item.coin_reward)} moedas</span>}
                         {item.metadata?.failure_reason && <span className="text-[9px] text-red-400">Não realizado: {item.metadata.failure_reason}</span>}
                         {item.requires_decision && (
                           <span className="text-[9px] text-amber-400 font-bold">⚠ Decisão obrigatória</span>
@@ -111,10 +112,10 @@ export default function DayEventList({ day, dayData, onResolve, onPlayTournament
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-bold text-xs truncate">{item.training_label}</p>
-                    <p className="text-[10px] text-muted-foreground">+{item.attribute_gain} {item.attribute_target} · +{item.xp_reward} XP</p>
+                    <p className="text-[10px] text-muted-foreground">+{formatAttributeGain(item.attribute_gain)} {item.attribute_target} · +{formatGameNumber(item.xp_reward, { maximumFractionDigits: 0 })} XP</p>
                   </div>
                   <Coins className="h-3 w-3 text-yellow-400" />
-                  <span className="text-[10px] font-bold text-yellow-400">{item.coins_reward}</span>
+                  <span className="text-[10px] font-bold text-yellow-400">{formatCurrency(item.coins_reward)}</span>
                 </div>
               );
             }

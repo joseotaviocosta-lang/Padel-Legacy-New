@@ -80,6 +80,7 @@ export const zIndex = Object.freeze({
   header: 40,
   floating: 50,
   dropdown: 60,
+  notification: 80,
   modal: 100,
   toast: 120,
   critical: 200,

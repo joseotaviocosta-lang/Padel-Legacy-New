@@ -33,7 +33,7 @@ function CareerHud({ profile, ranking, compact = false, className }) {
     <div className={cn('pl-career-hud flex min-w-0 items-center gap-1.5', compact && 'gap-1', className)} aria-label="Status rápido da carreira">
       {items.map(({ label, value, icon: Icon, tone, to }, index) => {
         const className = cn(
-          'flex min-w-0 items-center gap-2 rounded-xl border border-border/55 bg-card/62 px-2.5 py-1.5',
+          'flex min-h-[var(--pl-touch-min)] min-w-0 items-center gap-2 rounded-xl border border-border/55 bg-card/62 px-2.5 py-1.5',
           compact && index > 2 && 'hidden xl:flex',
           to && 'transition-colors hover:border-premium/40 hover:bg-premium/10',
         );

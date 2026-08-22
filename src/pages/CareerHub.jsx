@@ -4,7 +4,7 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, GraduationCap,
-  HeartPulse, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target, Zap,
+  FastForward, HeartPulse, Mail, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target, Zap,
   Trophy, TrendingUp, UserRound, Users, Globe2, Wrench,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
@@ -47,6 +47,7 @@ import { getPartnerBot } from '@/lib/career.js';
 import { buildTournamentRecoverySession } from '@/game-core/tournamentMatchLifecycle.js';
 import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
+import { getCareerNextAction } from '@/lib/careerNextAction.js';
 
 /**
  * Centro da Carreira (Fase 4 — docs/HOME_REDESIGN.md).
@@ -64,6 +65,31 @@ const safe = (promise, fallback = []) => promise.catch((error) => {
   console.warn('[CareerControlCenter] módulo secundário indisponível', error);
   return fallback;
 });
+
+const CAREER_ACTION_ICONS = {
+  crown: Crown,
+  'heart-pulse': HeartPulse,
+  trophy: Trophy,
+  'alert-circle': AlertCircle,
+  mail: Mail,
+  swords: Swords,
+  dumbbell: Dumbbell,
+  target: Target,
+  calendar: CalendarDays,
+  'fast-forward': FastForward,
+};
+
+function careerActionToHeroStep(action) {
+  if (!action) return null;
+  return {
+    icon: CAREER_ACTION_ICONS[action.icon] || Target,
+    title: action.label,
+    description: action.description,
+    to: action.route || APP_ROUTES.CALENDAR,
+    cta: action.actionType === 'advance-day' ? 'Abrir calendário' : action.label,
+    actionId: action.id,
+  };
+}
 
 export default function CareerHub() {
   const location = useLocation();
@@ -266,7 +292,6 @@ export default function CareerHub() {
       teamB: match?.opponent || [],
     });
   }, [activeCareer?.career_id, activeMatchCheckpoint, activeTournamentEvent, profile]);
-  const hasTournamentRecoveryAction = ['resumable', 'restart_required', 'resume_failed'].includes(activeTournamentRecovery?.status);
 
   // Todas as chamadas abaixo já existiam antes da Fase 4 (mesmas funções,
   // mesmos parâmetros) — só passaram a alimentar a nova composição visual
@@ -299,11 +324,33 @@ export default function CareerHub() {
   const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
   // Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 2): enquanto o
   // onboarding principal está em andamento, a etapa atual do tutorial é a
-  // ÚNICA fonte do CTA principal — `getNextStep` (o motor de recomendação
-  // "normal", preservado abaixo como fallback) só volta a decidir depois
+  // ÚNICA fonte do CTA principal — `getCareerNextAction` (o motor canônico
+  // compartilhado) só volta a decidir depois
   // que o onboarding termina (ou nunca começou/foi pulado).
   const onboardingNextAction = useMemo(() => getOnboardingNextAction(profile), [profile]);
-  const fallbackHeroStep = useMemo(() => getNextStep(profile, upcomingTournaments), [profile, upcomingTournaments]);
+  const fallbackHeroStep = useMemo(() => {
+    const run = activeTournamentEvent?.metadata?.tournament_run;
+    const activeMatch = run ? getCurrentTournamentMatch(run) : null;
+    const mandatoryDecision = (decisionCenter.decisions || []).find((decision) => ['critical', 'high'].includes(decision.priority));
+    const interviewMessage = messages.find((message) => message.related_entity_type === 'PressInterview' && !message.is_read);
+    const interviewDestination = interviewMessage ? resolveNotificationDestination(interviewMessage) : null;
+    const action = getCareerNextAction(profile, {
+      tournamentMatchToday: activeMatch && activeMatch.date <= profile?.career_date
+        ? { route: buildTournamentPlayRoute(activeTournamentEvent.related_id), label: activeMatch.preparationCompleted ? `Jogar ${activeMatch.round}` : `Preparar ${activeMatch.round}`, description: run?.tournamentName || activeTournamentEvent.related_name }
+        : null,
+      mandatoryDecision: mandatoryDecision
+        ? { route: mandatoryDecision.route, label: mandatoryDecision.title, description: mandatoryDecision.description }
+        : null,
+      tournamentRegistrationNeeded: !activeMatch && nextTournament
+        ? { route: APP_ROUTES.TOURNAMENTS, name: nextTournament.name, daysUntil: daysUntil(profile?.career_date, nextTournament.start_date) }
+        : null,
+      urgentMessage: interviewMessage
+        ? { route: interviewDestination?.route || APP_ROUTES.PRESS, label: 'Dar entrevista', description: interviewMessage.title }
+        : null,
+      hasPendingPartnerProposal: pendingOffers.length > 0,
+    });
+    return careerActionToHeroStep(action);
+  }, [activeTournamentEvent, decisionCenter.decisions, messages, nextTournament, pendingOffers.length, profile]);
   // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 3): a
   // etapa "first-match" é a única cujo destino real depende de estado de
   // torneio (inscrito? hoje? interrompida?) — não dá para resolver isso de
@@ -334,22 +381,6 @@ export default function CareerHub() {
   // abrir". PriorityActionsPanel usa esta flag para mostrar um estado
   // neutro em vez de um link morto.
   const heroIsCurrentPage = Boolean(heroStep && basePath(heroStep.to) === location.pathname);
-  const nextEvent = useMemo(
-    () => buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction }),
-    [profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction],
-  );
-  // M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 7): "Competir" era
-  // um link fixo pra /tournaments — se há uma partida de torneio disponível
-  // agora, deve ir direto a ela. Mesma condição/helper que buildNextEvent já
-  // usa pro card "Próximo evento" (buildTournamentPlayRoute,
-  // activeTournamentEvent, hasTournamentRecoveryAction) — nenhuma lógica de
-  // estado de torneio nova, só reaproveitada pra um segundo atalho.
-  const competeRoute = useMemo(() => {
-    const run = activeTournamentEvent?.metadata?.tournament_run;
-    const activeMatch = run?.matches?.[run?.currentRound || 0];
-    if (activeMatch && !hasTournamentRecoveryAction) return buildTournamentPlayRoute(activeTournamentEvent.related_id);
-    return '/tournaments';
-  }, [activeTournamentEvent, hasTournamentRecoveryAction]);
   // Hotfix "Single Source of Truth": enquanto o onboarding principal está
   // ativo, getOnboardingNextAction() já é a ÚNICA autoridade sobre "o que
   // fazer agora" (item central do hotfix) — decisionCenter/dailyBriefing
@@ -363,7 +394,7 @@ export default function CareerHub() {
   // lista vem vazia — nenhuma mudança de UI necessária para isto.
   //
   // Polish 2 (objetivo 1.5): quando lesionado, o item "injury" do briefing
-  // diário repetiria o mesmo dado de dias restantes que NextEventCard e
+  // diário repetiria o mesmo dado de dias restantes que o header e
   // MedicalStatusPanel já mostram nesta mesma viewport — só esse item some
   // da lista; decisões e demais prioridades continuam normalmente.
   const priorityActions = useMemo(
@@ -404,27 +435,25 @@ export default function CareerHub() {
         <ActiveMatchRecoveryBanner profile={profile} tournamentEvent={activeTournamentEvent} recoverySession={activeTournamentRecovery} />
         {latestAnnualReport && profile.career_date?.endsWith('-01-01') && latestAnnualReport.generatedDate === profile.career_date && <AnnualReportHomeCard report={latestAnnualReport} />}
         {latestMonthlyReport && profile.career_date?.endsWith('-01') && latestMonthlyReport.generatedDate === profile.career_date && <MonthlyReportHomeCard report={latestMonthlyReport} />}
-        {activeTournamentEvent && !hasTournamentRecoveryAction && <ActiveTournamentBanner event={activeTournamentEvent} careerDate={profile.career_date} />}
         {/* Polish 2 (docs/REDESIGN_POLISH_2.md, objetivo 1.5): 'tournament' e
             'injury' repetiam exatamente a mesma informação que já aparece,
-            mais completa/acionável, em NextEventCard (sempre visível logo
-            abaixo) e em MedicalStatusPanel (quando lesionado). Os outros
+            mais completa/acionável, no header/ação dominante e em
+            MedicalStatusPanel (quando lesionado). Os outros
             tipos (título/ranking/sequência/dupla) não têm equivalente em
             nenhum outro painel desta viewport — continuam aparecendo. */}
         {careerMoment && !['tournament', 'injury'].includes(careerMoment.type) && <CareerMomentStrip moment={careerMoment} />}
 
         {/* 1. Identidade + contexto */}
-        <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} competeRoute={competeRoute} />
+        <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} />
 
-        {/* 2. Próximo objetivo + próximo evento */}
-        <Surface padding="none" className="grid overflow-hidden xl:grid-cols-12">
-          <div className="border-b border-border/45 xl:col-span-7 xl:border-b-0 xl:border-r"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} embedded /></div>
-          <div className="xl:col-span-5"><NextEventCard event={nextEvent} embedded /></div>
-        </Surface>
+        {/* 2. Próximo objetivo. O contexto do próximo evento já vive no
+            header global; manter outro card aqui criava o segundo/terceiro
+            CTA para o mesmo torneio. */}
+        <Surface variant="premium" padding="none"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} embedded /></Surface>
 
         {/* 3. O que fazer agora */}
-        <div className="grid gap-4 xl:grid-cols-12">
-          <div className="space-y-4 xl:col-span-7">
+        <div className="grid gap-3 xl:grid-cols-12">
+          <div className="space-y-3 xl:col-span-7">
             <PriorityActionsPanel step={heroStep} actions={priorityActions} isCurrentPage={heroIsCurrentPage} onChoosePartner={() => setShowPartner(true)} />
           </div>
           <div className="xl:col-span-5">
@@ -486,7 +515,6 @@ export default function CareerHub() {
 // ────────────────────────────────────────────────────────────────
 
 function daysUntil(from, to) { if (!from || !to) return 0; return Math.max(0, Math.ceil((new Date(`${to}T00:00:00`) - new Date(`${from}T00:00:00`)) / 86400000)); }
-function formatShortDate(value) { if (!value) return '—'; const date = new Date(`${value}T00:00:00`); return date.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' }).replace('.', ''); }
 // Onboarding Flow 3.1: rotas de decisão/prioridade podem carregar query
 // string (ex.: a etapa de tutorial "escolher parceiro" usa
 // /partners?view=offers&source=tutorial) enquanto o Centro de Decisões usa
@@ -502,42 +530,6 @@ function basePath(route) { return String(route || '').split('?')[0]; }
 // mais importado em lugar nenhum e foi removido — mantinha esta mesma
 // lógica desatualizada (sem saber do tutorial) como um segundo caminho
 // morto que poderia voltar a ser usado por engano.
-function getNextStep(profile, upcomingTournaments) {
-  if (!profile) return null;
-  if (isRetired(profile)) return { icon: CheckCircle2, title: 'Carreira concluída', description: 'Você se aposentou. Revise seu legado e Hall da Fama.', to: '/game/legacy', cta: 'Ver legado' };
-  if (!profile.court_side) return { icon: Users, title: 'Escolha seu lado', description: 'Complete a missão "Escolha seu lado" no tutorial.', to: '/game/missions', cta: 'Ir para a missão' };
-  if ((profile.unspent_attribute_points || 0) > 0 && (profile.matches_played || 0) === 0) return { icon: Sparkles, title: 'Distribua seus atributos', description: `${profile.unspent_attribute_points} pontos disponíveis antes de começar.`, to: '/profile', cta: 'Distribuir pontos' };
-  if (!profile.partner_id) return { icon: Users, title: 'Selecione um parceiro', description: 'Você precisa de uma dupla para jogar torneios e partidas.', to: '/partners?view=offers', cta: 'Escolher dupla', partnerAction: true };
-  if (profile.injury_status === 'injured' || profile.is_injured) return { icon: HeartPulse, title: 'Recuperando lesão', description: 'Avance o dia para se recuperar.', to: '/game/calendar', cta: 'Ver recuperação' };
-  const playableTournament = (upcomingTournaments || []).find((t) => {
-    const tMonth = t.month || (t.start_date ? new Date(`${t.start_date}T00:00:00`).getMonth() + 1 : 0);
-    const careerMonth = profile.career_date ? new Date(`${profile.career_date}T00:00:00`).getMonth() + 1 : 1;
-    return tMonth === careerMonth && t.status === 'inscricoes';
-  });
-  if (playableTournament) return { icon: Trophy, title: `Torneio disponível: ${playableTournament.name}`, description: `Tier ${playableTournament.tier}. Inscreva-se e dispute o título.`, to: '/tournaments', cta: 'Ver torneios' };
-  const energy = profile.energy || 0;
-  if (energy < 30) return { icon: HeartPulse, title: 'Energia baixa', description: 'Avance um dia sem atividade para recuperar energia.', to: '/game/calendar', cta: 'Ver calendário' };
-  return { icon: Dumbbell, title: 'Hora de treinar', description: 'Evolua seus atributos com um treino hoje.', to: APP_ROUTES.TRAINING, cta: 'Treinar agora' };
-}
-
-function buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction = false }) {
-  const injured = profile?.injury_status === 'injured' || profile?.is_injured || Number(profile?.injury_days_remaining) > 0;
-  if (injured) {
-    const days = Math.max(1, Number(profile.injury_days_remaining) || 1);
-    return { icon: HeartPulse, tone: 'danger', eyebrow: 'Recuperação', title: 'Retorno à quadra', detail: `${days} dia${days === 1 ? '' : 's'} restante${days === 1 ? '' : 's'}`, route: '/game/calendar', cta: 'Ver recuperação' };
-  }
-  const run = activeTournamentEvent?.metadata?.tournament_run;
-  const activeMatch = run?.matches?.[run?.currentRound || 0];
-  if (activeMatch) {
-    return { icon: Trophy, tone: 'premium', eyebrow: hasTournamentRecoveryAction ? 'Em andamento' : 'Em torneio', title: run.tournamentName || activeTournamentEvent.related_name || 'Torneio', detail: `${activeMatch.round} · ${hasTournamentRecoveryAction ? 'use a ação de recuperação acima' : activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}`, route: buildTournamentPlayRoute(activeTournamentEvent.related_id), cta: hasTournamentRecoveryAction ? null : 'Ver partida' };
-  }
-  if (nextTournament) {
-    const days = daysUntil(profile?.career_date, nextTournament.start_date);
-    return { icon: Trophy, tone: 'info', eyebrow: days === 0 ? 'Hoje' : `Em ${days} dia${days === 1 ? '' : 's'}`, title: nextTournament.name, detail: 'Inscrição aberta', route: '/tournaments', cta: 'Ver torneio' };
-  }
-  return { icon: CalendarDays, tone: 'neutral', eyebrow: 'Agenda livre', title: 'Nenhum evento nos próximos dias', detail: 'Boa janela para treinar e evoluir.', route: APP_ROUTES.TRAINING, cta: 'Treinar' };
-}
-
 // Regra de prioridade simples e determinística (seção 8): entrevista > decisões
 // críticas/altas já computadas pelo Centro de Decisões > prioridades do
 // briefing diário. Sem pontuação nova nem IA — só ordena o que já existe.
@@ -562,10 +554,9 @@ function buildPriorityActions({ dailyBriefing, decisionCenter, messages, heroRou
     if (priority.id === 'injury' && injured) continue;
     // Polish 2.1 (docs/REDESIGN_POLISH_2_1.md, objetivo 3): o item "tournament"
     // do briefing diário é puramente informativo ("Nome em X dias") — a mesma
-    // informação que NextEventCard já mostra, sempre, com mais contexto e um
-    // CTA. NextEventCard não está nesta lista (é renderizado à parte), então
-    // o dedup por rota abaixo não o alcança sozinho; aqui a regra é explícita:
-    // evento sem ação própria não duplica o card. Uma pendência real (decisão
+    // informação que o header global já mostra com a fonte canônica. O dedup
+    // por rota abaixo não alcança o header, então aqui a regra é explícita:
+    // evento sem ação própria não duplica o contexto. Uma pendência real (decisão
     // crítica/alta sobre o torneio) continua chegando por decisionCenter, com
     // outro id, e não é afetada por este corte.
     if (priority.id === 'tournament') continue;
@@ -610,7 +601,7 @@ function buildJourneyTimeline({ recentMatches, recentTrainings, messages, posts,
 // Regiões visuais
 // ────────────────────────────────────────────────────────────────
 
-function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount, competeRoute = '/tournaments' }) {
+function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount }) {
   const age = calculateAge(profile);
   const country = profile.country || profile.nationality || profile.country_name || 'Brasil';
   const side = profile.court_side ? (profile.court_side === 'direita' ? 'Direita' : profile.court_side === 'esquerda' ? 'Esquerda' : profile.court_side) : null;
@@ -635,13 +626,8 @@ function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount
         { label: 'nível', value: `${careerExperience.level}/${careerExperience.maxLevel}`, icon: Zap, tone: 'success' },
         unreadCount > 0 ? { label: 'pendências', value: unreadCount, icon: AlertCircle, tone: 'danger' } : null,
       ]}
-      action={<div className="flex flex-wrap gap-2"><CommandLink primary to="/game/training" icon={Dumbbell}>Treinar</CommandLink><CommandLink to={competeRoute} icon={Trophy}>Competir</CommandLink><CommandLink to="/game/calendar" icon={CalendarDays}>Agenda</CommandLink></div>}
     />
   );
-}
-
-function CommandLink({ to, icon: Icon, children, primary = false }) {
-  return <Link to={to} className={primary ? 'pl-game-primary inline-flex items-center gap-2 rounded-lg bg-primary px-3 py-2 text-xs font-black text-primary-foreground' : 'inline-flex items-center gap-2 rounded-lg px-2.5 py-2 text-xs font-bold text-muted-foreground transition hover:bg-primary/10 hover:text-primary'}><Icon className="h-3.5 w-3.5" />{children}</Link>;
 }
 
 function NextObjectiveCard({ goal, worldRank, embedded = false }) {
@@ -662,24 +648,6 @@ function NextObjectiveCard({ goal, worldRank, embedded = false }) {
   return embedded ? content : <Surface variant="premium" padding="none" className="h-full">{content}</Surface>;
 }
 
-function NextEventCard({ event, embedded = false }) {
-  const Icon = event.icon;
-  const content = (
-    <div className={`h-full p-3 pl-tone-${event.tone} sm:p-4`}>
-      <div className="flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-current/10" style={{ color: 'hsl(var(--tone-color, var(--primary)))' }}><Icon className="h-5 w-5" /></span>
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black uppercase tracking-[0.14em]" style={{ color: 'hsl(var(--tone-color, var(--primary)))' }}>{event.eyebrow}</p>
-          <p className="mt-0.5 truncate text-base font-black">{event.title}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{event.detail}</p>
-        </div>
-      </div>
-      {event.cta && <Link to={event.route} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary">{event.cta} <ChevronRight className="h-3.5 w-3.5" /></Link>}
-    </div>
-  );
-  return embedded ? content : <Surface padding="none" className="h-full">{content}</Surface>;
-}
-
 function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner }) {
   if (!step) return null;
   const HeroIcon = step.icon;
@@ -694,7 +662,7 @@ function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner })
     : <Link to={step.to} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground">{step.cta} <ArrowRight className="h-4 w-4" /></Link>;
 
   return (
-    <Surface variant="elevated">
+    <Surface variant="elevated" padding="compact">
       <SurfaceHeader icon={HeroIcon} title="O que fazer agora" description={step.description} action={heroLink} stackActionOnMobile />
       {actions.length ? (
         <ul className="space-y-1.5">
@@ -850,10 +818,10 @@ function QuickActionsBar({ missionsCount }) {
     <Surface className="flex h-full flex-col justify-center gap-2">
       <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Ações rápidas</p>
       <div className="grid grid-cols-2 gap-2">
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/game/calendar"><CalendarDays className="h-4 w-4" />Calendário</Link></Button>
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/tournaments"><Trophy className="h-4 w-4" />Torneios</Link></Button>
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/ranking"><Crown className="h-4 w-4" />Ranking</Link></Button>
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/game/missions"><Target className="h-4 w-4" />Missões{missionsCount > 0 ? ` (${missionsCount})` : ''}</Link></Button>
+        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/game/legacy"><Crown className="h-4 w-4" />Legado</Link></Button>
+        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/team-hub"><Users className="h-4 w-4" />Equipe</Link></Button>
+        <Button asChild level="secondary" size="sm" className="justify-start"><Link to={APP_ROUTES.PRESS}><Mic className="h-4 w-4" />Imprensa</Link></Button>
+        <Button asChild level="secondary" size="sm" className="justify-start"><Link to={APP_ROUTES.MISSIONS}><Target className="h-4 w-4" />Missões{missionsCount > 0 ? ` (${missionsCount})` : ''}</Link></Button>
       </div>
     </Surface>
   );
@@ -898,29 +866,6 @@ function AnnualReportHomeCard({ report }) {
         <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-400"><Crown className="h-6 w-6" /></span>
         <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-400">Temporada {report.year} encerrada</p><h2 className="mt-1 text-lg font-black">{report.playerSummary?.badge || 'Seu ano em números'}</h2><p className="mt-1 text-xs text-muted-foreground">Ranking final #{report.ranking?.endPosition || '—'} · {report.sportingResults?.titles || 0} títulos · {report.bestTournament?.name || `${report.sportingResults?.wins || 0} vitórias`}</p></div>
         <Link to={`/game/annual-reports?report=${encodeURIComponent(report.id)}`} className="inline-flex items-center justify-center gap-2 rounded-xl bg-amber-400 px-4 py-3 text-xs font-black text-black">Ver relatório anual <ArrowRight className="h-3.5 w-3.5" /></Link>
-      </div>
-    </section>
-  );
-}
-
-function ActiveTournamentBanner({ event, careerDate }) {
-  const run = event?.metadata?.tournament_run;
-  const match = run?.matches?.[run.currentRound || 0];
-  if (!match) return null;
-  const opponent = (match.opponent || []).map((item) => item.name).filter(Boolean).join(' / ') || 'Adversário a definir';
-  const offset = daysUntil(careerDate, match.date);
-  const isToday = offset === 0;
-  const when = isToday ? 'Hoje' : offset === 1 ? 'Amanhã' : formatShortDate(match.date);
-  // Hotfix UX (docs/TOURNAMENT_GUIDED_FLOW_HOTFIX.md, item 9): o CTA precisa
-  // abrir o torneio+rodada corretos direto — nunca "/tournaments" genérico
-  // deixando o jogador procurar. Mesmo deep link canônico usado pelo
-  // bloqueio de avanço de dia e pelo retorno pós-entrevista.
-  return (
-    <section className="rounded-3xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-card to-primary/5 p-5" aria-label="Torneio em andamento">
-      <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-amber-500/15 text-amber-300"><Trophy className="h-6 w-6" /></span>
-        <div className="min-w-0 flex-1"><p className="text-[10px] font-black uppercase tracking-[0.18em] text-amber-300">{isToday ? 'Dia de torneio' : 'Em torneio'}</p><h2 className="mt-1 text-lg font-black">{run.tournamentName || event.related_name || event.title}</h2><p className="mt-1 text-xs text-muted-foreground">Próxima partida: <strong className="text-foreground">{match.round}</strong> · {when} · vs {opponent}</p></div>
-        <Link to={buildTournamentPlayRoute(event.related_id)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-xs font-black text-primary-foreground">{match.preparationCompleted ? 'Ver partida' : 'Preparar partida'} <ArrowRight className="h-3.5 w-3.5" /></Link>
       </div>
     </section>
   );

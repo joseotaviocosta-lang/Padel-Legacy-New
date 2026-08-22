@@ -108,12 +108,12 @@ const notificationSource = read('src/lib/notificationDestinations.js');
 const nextActionSource = read('src/lib/careerNextAction.js');
 gate('rota canônica de treino é /game/training', APP_ROUTES.TRAINING === '/game/training');
 gate('router declara rota canônica de treino', appSource.includes('path="/game/training"'));
-gate('CTA da Home usa constante canônica', homeSource.includes('APP_ROUTES.TRAINING'));
+gate('CTA da Home usa resolver com rota canônica', homeSource.includes('getCareerNextAction') && nextActionSource.includes('route: APP_ROUTES.TRAINING'));
 gate('guia resolve para rota existente', guideSource.includes("'first-training'") && guideSource.includes("'/game/training'"));
 gate('NavigationHub/sidebar resolve Treinos', navSource.includes("to: '/game/training'"));
 gate('BottomNav deriva itens da fonte de navegação', bottomNavSource.includes('NAV_GROUPS'));
 gate('notificação de treino usa rota canônica válida', notificationSource.includes("'/game/training'"));
-gate('pós-treino usa rota válida', nextActionSource.includes("route: '/game/training'"));
+gate('pós-treino usa rota válida', nextActionSource.includes('route: APP_ROUTES.TRAINING'));
 for (const relative of ['src/lib/weeklyCareerReview.js', 'src/lib/dailyCareerBriefing.js', 'src/lib/careerDecisionCenter.js']) {
   gate(`${relative} não contém rota /training inválida`, !/route:\s*['"]\/training['"]/.test(read(relative)));
 }

@@ -9,6 +9,9 @@ export const APP_ROUTES = Object.freeze({
   CALENDAR: '/game/calendar',
   MATCHES: '/matches',
   TOURNAMENTS: '/tournaments',
+  PRESS: '/press',
+  COMMUNICATIONS: '/communications',
+  RANKING: '/ranking',
   PARTNERS: '/partners',
   ATHLETES: '/athletes',
 });

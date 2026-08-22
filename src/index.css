@@ -51,6 +51,7 @@
        DOM para ficar por cima. Token próprio explícito na escala. */
     --z-bottom-nav: 55;
     --z-dropdown: 60;
+    --z-notification: 80;
     --z-modal: 100;
     --z-toast: 120;
     --z-critical: 200;
@@ -696,6 +697,7 @@
   .pl-layer-header { z-index: var(--z-header); }
   .pl-floating-utilities { z-index: var(--z-floating); }
   .pl-layer-dropdown { z-index: var(--z-dropdown); }
+  .pl-layer-notification { z-index: var(--z-notification); }
   .pl-layer-toast { z-index: var(--z-toast); }
 
   .pl-icon-frame {

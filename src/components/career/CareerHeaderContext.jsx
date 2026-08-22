@@ -4,11 +4,13 @@ import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerHeaderContext } from '@/lib/careerHeaderContext.js';
 import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 const ICON_BY_KIND = {
   injured: { icon: HeartPulse, tone: 'text-rose-400' },
   tournament_today: { icon: Trophy, tone: 'text-amber-400' },
   tournament_soon: { icon: Trophy, tone: 'text-amber-400' },
+  tournament_round: { icon: Trophy, tone: 'text-amber-400' },
   fatigue: { icon: HeartPulse, tone: 'text-orange-400' },
   energy: { icon: Zap, tone: 'text-yellow-400' },
   tournament_upcoming: { icon: CalendarDays, tone: 'text-cyan-400' },
@@ -21,8 +23,11 @@ export default function CareerHeaderContext({ profile, compact = false }) {
   const load = useCallback(async () => {
     try {
       if (!profile) return;
-      const tournaments = await localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []);
-      setContext(buildCareerHeaderContext({ profile, tournaments }));
+      const [tournaments, calendarEvents] = await Promise.all([
+        localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
+        localGame.entities['CalendarEvent'].filter({ profile_id: profile.id, event_type: 'tournament' }, 'start_date', 30).catch(() => []),
+      ]);
+      setContext(buildCareerHeaderContext({ profile, tournaments, calendarEvents }));
     } catch (error) {
       console.warn('[CareerHeaderContext] contexto indisponível', error);
     }
@@ -40,7 +45,7 @@ export default function CareerHeaderContext({ profile, compact = false }) {
   if (!context) return null;
   const { icon: Icon, tone } = ICON_BY_KIND[context.kind] || ICON_BY_KIND.idle;
   const label = compact ? context.label.compact : context.label.full;
-  const className = `inline-flex min-w-0 items-center gap-1 rounded-md px-1.5 py-1 ${compact ? 'max-w-[6.75rem]' : 'max-w-[17rem]'}`;
+  const className = `pl-icon-tap inline-flex min-w-0 items-center justify-center gap-1 rounded-lg px-1.5 py-1 ${compact ? 'max-w-[6.75rem]' : 'max-w-[17rem]'}`;
   const inner = (
     <>
       <Icon className={`h-3.5 w-3.5 shrink-0 ${tone}`} />
@@ -63,8 +68,8 @@ export default function CareerHeaderContext({ profile, compact = false }) {
   }
 
   return (
-    <div className={className} title={context.ariaLabel || label}>
+    <Link to={APP_ROUTES.TOURNAMENTS} className={`${className} transition-colors hover:border-primary/40 hover:bg-card/70`} title="Abrir torneios" aria-label="Abrir torneios">
       {inner}
-    </div>
+    </Link>
   );
 }
