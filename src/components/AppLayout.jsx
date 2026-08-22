@@ -261,8 +261,8 @@ export default function AppLayout() {
   useEffect(() => {
     if (!performanceProfile.allowRoutePreload) return undefined;
     const commonRoutes = performanceProfile.lowPower
-      ? ['/game/training']
-      : ['/game/training', '/game/calendar'];
+      ? [APP_ROUTES.TRAINING]
+      : [APP_ROUTES.TRAINING, APP_ROUTES.CALENDAR];
     const run = () => preloadRoutes(commonRoutes);
     if ('requestIdleCallback' in window) {
       const idleId = window.requestIdleCallback(run, { timeout: 3500 });
@@ -298,10 +298,10 @@ export default function AppLayout() {
           to={APP_ROUTES.ECONOMY}
           title="Abrir Economia"
           aria-label={`Abrir Economia. Saldo: ${formatCoinBalance(headerProfile?.coins)} moedas`}
-          className="pl-icon-tap mr-0.5 inline-flex max-w-11 shrink-0 items-center justify-center gap-1 overflow-hidden rounded-lg border border-premium/25 bg-premium/10 px-1.5 text-[10px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-[400px]:max-w-[4.65rem]"
+          className="pl-icon-tap mr-0.5 inline-flex max-w-[4.8rem] shrink-0 items-center justify-center gap-1 overflow-hidden rounded-lg border border-premium/25 bg-premium/10 px-1 text-[9px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-[390px]:px-1.5 min-[390px]:text-[10px]"
         >
           <Coins className="h-3.5 w-3.5 shrink-0" />
-          <span className="hidden truncate min-[400px]:inline">{formatCoinBalance(headerProfile?.coins)}</span>
+          <span className="min-w-0 truncate">{formatCoinBalance(headerProfile?.coins)}</span>
         </NavLink>
         <CareerDayControl profile={headerProfile} compact />
         <CommunicationBell compact />

@@ -173,7 +173,7 @@ const FEATURE_CATALOG = [
   { id: 'career', label: 'Carreira', routes: ['/', '/career', '/profile', '/stats'] },
   { id: 'training', label: 'Treinos', routes: [APP_ROUTES.TRAINING] },
   { id: 'calendar', label: 'Calendário', routes: ['/calendar'] },
-  { id: 'tournaments', label: 'Torneios', routes: ['/tournaments', '/matches'] },
+  { id: 'tournaments', label: 'Torneios', routes: [APP_ROUTES.TOURNAMENTS] },
   { id: 'ranking', label: 'Ranking', routes: ['/ranking'] },
   { id: 'team', label: 'Dupla e equipe', routes: ['/relationships', '/coach', '/staff'] },
   { id: 'market', label: 'Mercado', routes: ['/market', '/world-market'] },

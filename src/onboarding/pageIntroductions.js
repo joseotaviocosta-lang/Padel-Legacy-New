@@ -1,7 +1,14 @@
+import { APP_ROUTES } from '../navigation/routes.js';
+
 export const PAGE_INTRODUCTIONS = {
   '/game': { title: 'Painel da carreira', description: 'Resumo da sua situação, energia, compromissos e evolução.', purpose: 'Use as recomendações para decidir a melhor ação de agora.', tip: 'Comece pelo cartão Próximo passo.' },
   '/game/missions': { title: 'Missões', description: 'Objetivos que ensinam sistemas e acompanham sua evolução.', purpose: 'Cada missão explica a ação, o motivo e a recompensa.', tip: 'Abrir uma aba só conclui missões de apresentação.' },
-  '/game/training': { title: 'Treinos', description: 'Desenvolva atributos com atividades e intensidades diferentes.', purpose: 'Treinos fortes evoluem mais, mas gastam mais energia e aumentam a fadiga.', tip: 'Priorize atributos ligados ao seu estilo.' },
+  [APP_ROUTES.TRAINING_CENTER]: { title: 'Centro de Treinamento', description: 'Prepare seu atleta em um único espaço de treino, prática, agenda, progresso e estrutura.', purpose: 'Use as cinco áreas para evoluir sem perder o contexto da condição do atleta.', tip: 'Comece em Treinar e alterne com Agenda e Progresso.' },
+  [APP_ROUTES.TRAINING]: { title: 'Treinar', description: 'Desenvolva atributos com atividades e intensidades diferentes.', purpose: 'Treinos fortes evoluem mais, mas gastam mais energia e aumentam a fadiga.', tip: 'Priorize atributos ligados ao seu estilo.' },
+  [APP_ROUTES.MATCHES]: { title: 'Partida treino', description: 'Teste sua preparação em uma partida de prática sem confundir esse resultado com competição oficial.', purpose: 'Use a prática para avaliar prontidão, parceria e ajustes antes dos torneios.', tip: 'Há uma partida treino disponível por dia.' },
+  [APP_ROUTES.TRAINING_AGENDA]: { title: 'Agenda de treino', description: 'Organize a semana de preparação do atleta.', purpose: 'Equilibre carga, descanso e compromissos antes de competir.', tip: 'Evite concentrar esforço alto perto de torneios.' },
+  [APP_ROUTES.TRAINING_PROGRESS]: { title: 'Progresso', description: 'Acompanhe evolução, metas e histórico de treino.', purpose: 'Compare ganhos recentes com os objetivos de desenvolvimento.', tip: 'Use o histórico para ajustar o próximo ciclo.' },
+  [APP_ROUTES.TRAINING_FACILITIES]: { title: 'Estrutura', description: 'Conheça e evolua as instalações do Centro de Treinamento.', purpose: 'Melhorias de estrutura ampliam os benefícios da sua preparação.', tip: 'Confira custo e efeito antes de investir.' },
   '/partners': { title: 'Parceiros', description: 'Forme e administre sua dupla.', purpose: 'Compatibilidade de lado, estilo e entrosamento pode valer mais que o maior overall.', tip: 'Direita e esquerda normalmente se complementam.' },
   '/tournaments': { title: 'Torneios', description: 'Competições disponíveis para sua dupla.', purpose: 'Torneios geram experiência, dinheiro, reputação e ranking.', tip: 'Confira requisitos, energia e taxa antes de se inscrever.' },
   '/game/calendar': { title: 'Calendário', description: 'Planeje treinos, descansos, torneios e eventos.', purpose: 'Um bom plano evita conflitos e cansaço antes das competições.', tip: 'Reserve recuperação antes de torneios importantes.' },
@@ -34,8 +41,10 @@ export const PAGE_INTRODUCTIONS = {
 // funcionando exatamente como antes.
 export function getPageIntroduction(pathname, search = '') {
   if (pathname?.startsWith('/clubs/')) return PAGE_INTRODUCTIONS['/clubs'];
-  if (search && String(search).includes('view=sponsors')) {
-    const composite = PAGE_INTRODUCTIONS[`${pathname}?view=sponsors`];
+  if (search) {
+    const params = new URLSearchParams(String(search).replace(/^\?/, ''));
+    const view = params.get('view');
+    const composite = view ? PAGE_INTRODUCTIONS[`${pathname}?view=${view}`] : null;
     if (composite) return composite;
   }
   return PAGE_INTRODUCTIONS[pathname] || { title: 'Explore esta área', description: 'Este módulo amplia as opções da sua carreira.', purpose: 'Use quando fizer sentido para seu objetivo atual.', tip: 'Você pode voltar ao Guia para rever o ciclo principal.' };

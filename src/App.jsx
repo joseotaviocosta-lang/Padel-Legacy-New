@@ -13,6 +13,7 @@ import { PAGE_LOADERS } from '@/lib/routeModules';
 import { CareerProvider } from '@/careers/CareerProvider';
 import { ActiveCareerGuard } from '@/careers/ActiveCareerGuard';
 import { useCareer } from '@/careers/useCareer.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 import GlobalDayAdvanceSummary from '@/components/calendar/GlobalDayAdvanceSummary';
 import SaveFoundationBootstrap from '@/components/system/SaveFoundationBootstrap';
@@ -92,6 +93,7 @@ const AuthenticatedApp = () => {
           <Route path="/world" element={<WorldHub />} />
           <Route path="/management" element={<NavigationHub areaId="management" />} />
           <Route path="/game/training" element={<Training />} />
+          <Route path="/game/matches" element={<Matches />} />
           <Route path="/game/missions" element={<Missions />} />
           <Route path="/game/shop" element={<Shop />} />
           <Route path="/game/inventory" element={<Inventory />} />
@@ -120,7 +122,8 @@ const AuthenticatedApp = () => {
           <Route path="/relationships" element={<Relationships />} />
           <Route path="/coaches" element={<Coaches />} />
           <Route path="/staff" element={<ModuleErrorBoundary moduleName="Comissão técnica"><Staff /></ModuleErrorBoundary>} />
-          <Route path="/training-center" element={<TrainingCenter />} />
+          <Route path={APP_ROUTES.TRAINING_CENTER} element={<TrainingCenter />} />
+          <Route path="/training-center" element={<Navigate to={APP_ROUTES.TRAINING_FACILITIES} replace />} />
           <Route path="/press" element={<Press />} />
           <Route path="/social" element={<Navigate to="/community" replace />} />
           <Route path="/fans" element={<Fans />} />

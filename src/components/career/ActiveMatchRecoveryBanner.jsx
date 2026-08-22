@@ -6,6 +6,7 @@ import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { buildTournamentRecoverySession } from '@/game-core/tournamentMatchLifecycle.js';
 import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { getPartnerBot } from '@/lib/career.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md, Parte 8): ponto único e sempre
 // visível (Home) para o jogador saber que existe uma partida interrompida,
@@ -41,7 +42,7 @@ export default function ActiveMatchRecoveryBanner({ profile = null, tournamentEv
   if (isTournament && tournamentRecovery?.status === 'orphaned') {
     return null;
   }
-  const destination = isTournament ? '/tournaments' : '/matches';
+  const destination = isTournament ? APP_ROUTES.TOURNAMENTS : APP_ROUTES.MATCHES;
   const needsRestart = tournamentRecovery && tournamentRecovery.status !== 'resumable';
 
   return (

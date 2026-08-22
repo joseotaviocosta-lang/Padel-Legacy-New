@@ -37,7 +37,7 @@ async function checkAsync(label, fn) {
 const liveMatch = read('src/components/matches/LiveMatch.jsx');
 const simulationModal = read('src/components/matches/SimulationModal.jsx');
 const tournamentModal = read('src/components/tournaments/TournamentModal.jsx');
-const matchesPage = read('src/pages/Matches.jsx');
+const matchesPage = read('src/components/training-center/PracticeMatchView.jsx');
 const tournamentsPage = read('src/pages/Tournaments.jsx');
 const calendarPage = read('src/pages/CalendarPage.jsx');
 const careerHub = read('src/pages/CareerHub.jsx');
@@ -86,7 +86,7 @@ check('SimulationModal perdeu o prompt "Partida em andamento" antes de restaurar
 check('SimulationModal perdeu a opção de descartar o checkpoint tecnicamente (sem nova penalidade esportiva)', simulationModal.includes('discardResume'));
 check('TournamentModal perdeu a detecção de checkpoint casado com a rodada atual (match_id + tournament_id)', tournamentModal.includes('checkpoint.match_id === restoredMatch.id'));
 check('TournamentModal perdeu o prompt "Partida em andamento" para retomar a rodada', tournamentModal.includes("phase === 'match_resume_prompt'"));
-check('Matches.jsx perdeu a reabertura automática da SimulationModal quando existe checkpoint de treino', matchesPage.includes('activeMatchCheckpoint?.type'));
+check('PracticeMatchView perdeu a reabertura automática da SimulationModal quando existe checkpoint de treino', matchesPage.includes("checkpoint?.type === 'practice'") && matchesPage.includes('setShowSimulation(true)'));
 check('Tournaments.jsx perdeu a reabertura automática do torneio certo quando existe checkpoint', tournamentsPage.includes('activeMatchCheckpoint.tournament_id'));
 check('CareerHub perdeu o aviso global de partida em andamento (ActiveMatchRecoveryBanner)', careerHub.includes('ActiveMatchRecoveryBanner'));
 

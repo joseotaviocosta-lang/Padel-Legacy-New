@@ -18,13 +18,15 @@ function gate(label, condition) {
 }
 
 const read = (path) => readFileSync(path, 'utf8');
-const training = read('src/pages/Training.jsx');
+const training = read('src/components/training-center/TrainingView.jsx');
+const hub = read('src/pages/TrainingCenter.jsx');
+const progress = read('src/components/training-center/TrainingProgressView.jsx');
 const card = read('src/components/training/TrainingActivityCard.jsx');
 const appLayout = read('src/components/AppLayout.jsx');
 
 // ── Parte 26/27: HUD com saldo visível, sem card gigante próprio ──────────
-gate('PageHeader mostra saldo de moedas no HUD (Parte 27 — próximo ao HUD, não em card dedicado)', /label: 'moedas'.*icon: Coins/s.test(training));
-gate('HUD continua mostrando treinos hoje/energia/fadiga/forma (nada removido pela adição do saldo)', /trainings_today.*DAILY_TRAINING_LIMIT/s.test(training) && /energia/.test(training) && /fadiga/.test(training));
+gate('Saldo de moedas permanece no Header Global e não é duplicado no HUD local do Centro', /formatCoinBalance\(headerProfile\?\.coins\)/.test(appLayout) && !/label: 'moedas'/.test(hub));
+gate('HUD local continua mostrando treinos hoje/energia/fadiga e partida', /trainings_today.*DAILY_TRAINING_LIMIT/s.test(hub) && /energia/.test(hub) && /fadiga/.test(hub) && /partida/.test(hub));
 
 // ── Parte 26: action-first — atividades de treino vêm ANTES de recovery/staff ──
 const activitiesIdx = training.indexOf('Atividades de treino');
@@ -38,8 +40,8 @@ gate('"Estado do atleta" usa CollapsibleSection (recolhido por padrão, não sem
 gate('"Recuperação e suporte" usa CollapsibleSection', /<CollapsibleSection icon=\{FastForward\} title="Recuperação e suporte"/.test(training));
 
 // ── Parte 25/38: tabs acessíveis (Treino/Agenda/Evolução/Metas/Histórico) ──
-gate('Existem as 5 abas esperadas (Treino/Agenda/Evolução/Metas/Histórico)', ['treino', 'agenda', 'evolucao', 'metas', 'historico'].every((key) => training.includes(`key: '${key}'`)));
-gate('Tabs usa variant="segmented" compacto (mesmo padrão M4.1.3), não abas grandes', /variant="segmented"/.test(training));
+gate('Existem 5 abas primárias compactas e Metas/Histórico ficam dentro de Evolução', ['TRAINING', 'MATCH', 'AGENDA', 'PROGRESS', 'CENTER'].every((key) => hub.includes(`TRAINING_CENTER_VIEWS.${key}`)) && /key: 'goals'/.test(progress) && /key: 'history'/.test(progress));
+gate('Tabs primárias usam variant="segmented" compacto', /variant="segmented"/.test(hub));
 
 // ── Parte 9/31: custo visível no card, fechado E expandido, antes de confirmar ──
 gate('Card fechado (summary) mostra custo em moedas (💰) junto de fadiga/energia — nunca escondido atrás de um clique', /💰 \{cost\}/.test(card));
@@ -55,10 +57,10 @@ gate('Trocar intensidade recalcula a predição (getPredictedGain) reativamente 
 
 // ── Parte 33: feedback pós-treino mostra o débito real, nunca "+moedas" ──
 gate('Feedback pós-treino mostra "-{cost} moedas" (débito), nunca mais "+{coins} moedas" (a atividade não paga mais — Parte 2)', /-\$\{res\.cost\} moedas/.test(training) && !/\+\$\{res\.activity\.coins\}/.test(training));
-gate('Feedback compacto mostra o saldo atualizado após o treino', /Saldo: \$\{Number\(result\.coinsAfter/.test(training));
+gate('Feedback compacto mantém o saldo atualizado no profile compartilhado/Header', /coinsAfter: res\.profile\.coins/.test(training) && /onProfileUpdate\(res\.profile/.test(training));
 
 // ── Parte 34: histórico mostra custo da sessão, sem exigir migração de saves antigos ──
-gate('Histórico mostra custo (coins_cost, débito) para sessões novas, preservando coins_reward de sessões antigas sem migração', /coins_cost/.test(training) && /coins_reward/.test(training));
+gate('Histórico mostra custo (coins_cost, débito) para sessões novas, preservando coins_reward de sessões antigas sem migração', /coins_cost/.test(progress) && /coins_reward/.test(progress));
 
 // ── Parte 26/28: menos cards isolados — CompactActionCard, não card grande por atividade ──
 gate('Cada atividade usa CompactActionCard (fechado por padrão, ~110-160px — não um card grande sempre expandido)', /<CompactActionCard/.test(card));
@@ -69,6 +71,6 @@ gate('Nenhum branch de plataforma (isMobile/isDesktop) na lógica de custo — m
 // ── Bottom nav / utility rail: Training.jsx não sai do shell global (AppLayout) ──
 gate('AppLayout continua montando BottomNav globalmente (Training.jsx não precisa recriar navegação)', /BottomNav/.test(appLayout));
 gate('AppLayout continua montando FloatingUtilityRail/guia globalmente', /FloatingUtilityRail/.test(appLayout));
-gate('Training.jsx usa o wrapper padrão <Page>/<PageContent> (não um layout customizado que escondesse bottom nav/utility rail)', /<Page>/.test(training) && /<PageContent/.test(training));
+gate('Centro unificado usa o wrapper padrão <Page>/<PageContent> (não um layout customizado que escondesse bottom nav/utility rail)', /<Page/.test(hub) && /<PageContent/.test(hub));
 
 console.log(`\n${gates} gates executados, todos PASS — Experiência de treino mobile (M4.2.1): action-first, saldo/custo visíveis, botão compacto, disclosure, sem quebrar shell global. QA física em 390×800 continua obrigatória para o visual real.`);

@@ -165,7 +165,7 @@ function CommunicationBell({ compact = false }) {
         role="dialog"
         aria-modal="true"
         aria-label="Central de notificações"
-        className="pl-safe-t pl-safe-b absolute inset-y-0 right-0 z-10 flex h-[100dvh] w-full max-w-sm min-w-0 flex-col overflow-hidden border-l border-border/70 bg-card shadow-2xl sm:inset-y-3 sm:right-3 sm:h-[calc(100dvh-1.5rem)] sm:rounded-2xl sm:border"
+        className="pl-safe-t pl-safe-b absolute inset-y-0 right-0 z-10 flex h-[100dvh] w-[min(88vw,380px)] min-w-0 flex-col overflow-hidden border-l border-border/70 bg-card shadow-2xl sm:inset-y-3 sm:right-3 sm:h-[calc(100dvh-1.5rem)] sm:rounded-2xl sm:border"
       >
         <div className="flex shrink-0 items-center justify-between border-b border-border/60 px-4 py-3 pr-[calc(0.75rem+var(--pl-safe-r))]">
           <div className="min-w-0">

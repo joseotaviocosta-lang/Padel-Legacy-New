@@ -1,4 +1,5 @@
-import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Swords, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { APP_ROUTES } from './routes.js';
 
 /**
  * Fonte única da navegação do shell (Fase 3 — docs/NAVIGATION_ARCHITECTURE.md).
@@ -34,8 +35,7 @@ export const NAV_GROUPS = [
       { to: '/profile', icon: User, label: 'Atleta' },
       { to: '/character', icon: Palette, label: 'Aparência' },
       { to: '/game/missions', icon: Target, label: 'Objetivos' },
-      { to: '/game/training', icon: Dumbbell, label: 'Treinos' },
-      { to: '/training-center', icon: Building2, label: 'Centro de treinamento' },
+      { to: APP_ROUTES.TRAINING_CENTER, icon: Building2, label: 'Centro de treinamento' },
       { to: '/game/inventory', icon: Package, label: 'Equipamentos' },
       { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
       { to: '/partners', icon: Handshake, label: 'Minha dupla e propostas' },
@@ -54,7 +54,6 @@ export const NAV_GROUPS = [
     items: [
       { to: '/tournaments', icon: Award, label: 'Torneios' },
       { to: '/game/calendar', icon: Calendar, label: 'Calendário' },
-      { to: '/matches', icon: Swords, label: 'Partidas' },
       { to: '/ranking', icon: Trophy, label: 'Ranking' },
       { to: '/game/season', icon: BarChart3, label: 'Temporada' },
     ],

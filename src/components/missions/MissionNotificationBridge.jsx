@@ -7,6 +7,7 @@ import { ToastAction } from '@/components/ui/toast';
 import { useCareer } from '@/careers/useCareer.js';
 import { missionRuntime, validateMissionReward } from '@/missions/missionSystem.js';
 import { getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
+import { APP_ROUTES, isTrainingCenterView, TRAINING_CENTER_VIEWS } from '@/navigation/routes.js';
 
 const ROUTE_OBJECTIVES = {
   '/game': 'visit_career',
@@ -17,6 +18,8 @@ const ROUTE_OBJECTIVES = {
   '/game/stats': 'visit_career_stats',
   '/game/legacy': 'visit_legacy',
   '/development': 'visit_development',
+  [APP_ROUTES.TRAINING]: 'review_training_groups',
+  [APP_ROUTES.TRAINING_FACILITIES]: 'visit_training_center',
   '/game/training': 'review_training_groups',
   '/training-center': 'visit_training_center',
   '/coaches': 'visit_coaches',
@@ -30,6 +33,7 @@ const ROUTE_OBJECTIVES = {
   '/competitions': 'visit_competitions',
   '/tournaments': 'visit_tournaments',
   '/game/calendar': 'visit_calendar',
+  [APP_ROUTES.MATCHES]: 'visit_matches',
   '/matches': 'visit_matches',
   '/ranking': 'visit_ranking',
   '/game/season': 'visit_season',
@@ -54,8 +58,15 @@ const ROUTE_OBJECTIVES = {
 const shownNotifications = new Set();
 const routeEvents = new Set();
 
-function normalizedRoute(pathname) {
+function normalizedRoute(pathname, search = '') {
   if (pathname?.startsWith('/clubs/')) return '/clubs';
+  if (pathname === APP_ROUTES.TRAINING_CENTER) {
+    const requestedView = new URLSearchParams(search).get('view');
+    const view = isTrainingCenterView(requestedView)
+      ? requestedView
+      : TRAINING_CENTER_VIEWS.TRAINING;
+    return `${pathname}?view=${view}`;
+  }
   return pathname;
 }
 
@@ -178,7 +189,7 @@ export default function MissionNotificationBridge() {
           const user = await localGame.auth.me();
           profileRef.current = await ensureMyProfile(user);
         }
-        const route = normalizedRoute(location.pathname);
+        const route = normalizedRoute(location.pathname, location.search);
         const objective = ROUTE_OBJECTIVES[route];
         const profile = profileRef.current;
         if (cancelled || !objective || !profile?.id) return;
@@ -208,7 +219,7 @@ export default function MissionNotificationBridge() {
       }
     })();
     return () => { cancelled = true; };
-  }, [activeCareer?.career_id, location.key, location.pathname, loading, navigationType]);
+  }, [activeCareer?.career_id, location.key, location.pathname, location.search, loading, navigationType]);
 
   return null;
 }

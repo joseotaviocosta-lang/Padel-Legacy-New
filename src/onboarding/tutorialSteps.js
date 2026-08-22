@@ -1,3 +1,5 @@
+import { APP_ROUTES } from '../navigation/routes.js';
+
 // Onboarding 2.0 (docs/ONBOARDING_V3_COMMUNICATIONS.md): a versão 8 tinha 57
 // etapas — visitava praticamente toda página do jogo ("confirm_understanding"
 // para cada hub/aba) antes de liberar a carreira livre. QA real: tutorial
@@ -166,7 +168,7 @@ export const TUTORIAL_STEPS = [
   }),
 
   // ── Fase D — Primeiro treino ─────────────────────────────────────────
-  step('first-training', 'complete_training', 'Faça o primeiro treino', '/game/training', 'Desenvolvimento do atleta', 'domain_event', {
+  step('first-training', 'complete_training', 'Faça o primeiro treino', APP_ROUTES.TRAINING, 'Desenvolvimento do atleta', 'domain_event', {
     actionLabel: 'Escolher treino',
     explanation: 'Compare grupos, intensidade, ganho previsto, energia e fadiga, e conclua uma sessão. Dias sem treino ou partida recuperam energia e reduzem fadiga automaticamente ao avançar o calendário.',
     whyItMatters: 'Treinos são a principal forma de desenvolver seu atleta ao longo da carreira; um atleta cansado treina pior e pode chegar sem condições para competir.',
@@ -192,7 +194,7 @@ export const TUTORIAL_STEPS = [
     reward: { xp: 100, coins: 150 },
     kind: 'EVENT',
   }),
-  step('first-match', 'play_matches', 'Jogue sua primeira partida de torneio', '/matches', 'Competições', 'domain_event', {
+  step('first-match', 'play_matches', 'Jogue sua primeira partida de torneio', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
     explanation: 'No dia do torneio, jogue a partida — o técnico ao vivo orienta táticas durante o jogo. Depois do resultado, responda a entrevista pós-jogo se ela for gerada, e siga para a próxima rodada.',
     whyItMatters: 'O resultado mostra como treino, parceiro e tática funcionaram juntos.',
     reward: { xp: 100, coins: 150 },

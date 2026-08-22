@@ -261,7 +261,9 @@
     "test:world-performance": "node scripts/test-world-career-phase15.mjs --suite=performance",
     "test:phase15-2-integrated-qa": "node scripts/test-phase15-2-integrated-qa.mjs",
     "test:phase15-3-economy-progression-navigation": "node scripts/test-phase15-3-economy-progression-navigation.mjs",
-    "test:phase15-4-mobile-flow-polish": "node scripts/test-phase15-4-mobile-flow-polish.mjs"
+    "test:phase15-4-mobile-flow-polish": "node scripts/test-phase15-4-mobile-flow-polish.mjs",
+    "test:training-center-unification-phase15-5": "node scripts/test-training-center-unification-phase15-5.mjs",
+    "test:phase15-5-1-header-notifications-partnership-ui": "node scripts/test-phase15-5-1-header-notifications-partnership-ui.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

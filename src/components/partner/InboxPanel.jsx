@@ -89,7 +89,8 @@ export default function InboxPanel({ profile, onAction }) {
   }
 
   async function handleAction(msg, action) {
-    if (action.type !== 'view_partner_offer') await resolveMessage(msg.id, action.id);
+    const isNavigationOnly = ['view_partner_offer', 'view_partnership'].includes(action.type);
+    if (!isNavigationOnly) await resolveMessage(msg.id, action.id);
     else if (msg.status === 'nao_lida') await markCareerCommunicationRead(msg);
     setSelected(null);
     onAction?.(action, msg);

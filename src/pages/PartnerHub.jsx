@@ -52,6 +52,7 @@ export default function PartnerHub() {
   const [showNegotiation, setShowNegotiation] = useState(false);
   const [showConverse, setShowConverse] = useState(false);
   const proposalsRef = useRef([]);
+  const handledContractFocusRef = useRef(null);
   const { toast } = useToast();
   useCareerProfileSync(setProfile);
 
@@ -94,6 +95,21 @@ export default function PartnerHub() {
   useEffect(() => {
     if (profile) load();
   }, [profile, load]);
+
+  useEffect(() => {
+    const requestedView = searchParams.get('view');
+    if (requestedView && TAB_DEFS.some((tab) => tab.key === requestedView)) setActiveTab(requestedView);
+
+    const focus = searchParams.get('focus');
+    const focusKey = focus === 'contract-future'
+      ? `${focus}:${searchParams.get('partnership') || activePartnership?.id || ''}`
+      : null;
+    if (focusKey && activePartnership && handledContractFocusRef.current !== focusKey) {
+      handledContractFocusRef.current = focusKey;
+      setActiveTab('contract');
+      setShowConverse(true);
+    }
+  }, [activePartnership, searchParams]);
 
   // PartnerOffer is the source of truth; inbox messages only reference offers.
   useEffect(() => {
@@ -261,6 +277,11 @@ export default function PartnerHub() {
       await load();
     } else if (action.type === 'decline_partnership') {
       toast({ title: 'Proposta recusada' });
+    } else if (action.type === 'view_partnership') {
+      selectTab('contract', {
+        focus: 'contract-future',
+        partnership: action.payload?.partnershipId || activePartnership?.id,
+      });
     } else if (action.type === 'counter_proposal') {
       const { bot } = action.payload;
       await sendMessage(profile.id, {

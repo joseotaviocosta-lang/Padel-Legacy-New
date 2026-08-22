@@ -1,4 +1,5 @@
 import { findNextLockedAchievement } from './achievementEngine.js';
+import { APP_ROUTES } from '../navigation/routes.js';
 
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
 
@@ -33,7 +34,7 @@ function developmentGoal(profile, trainings = []) {
     title: 'Construir uma temporada de evolução',
     description: `${completed}/${target} sessões realizadas na temporada`,
     progress: clamp((completed / target) * 100),
-    route: '/game/training',
+    route: APP_ROUTES.TRAINING,
     category: 'desenvolvimento',
   };
 }

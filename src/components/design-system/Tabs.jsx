@@ -27,8 +27,8 @@ export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', clas
           só afeta a ponta da lista. */}
       <TabsList
         className={cn(
-          'h-auto w-full min-w-0 flex-nowrap justify-start gap-1 overflow-x-auto rounded-2xl border border-border/60 bg-card/55 p-1 pr-3 scrollbar-none',
-          variant === 'buttons' && 'gap-2 border-none bg-transparent p-0 pr-3',
+          'h-auto w-full min-w-0 flex-nowrap justify-start gap-1 overflow-x-auto scroll-px-2 rounded-2xl border border-border/60 bg-card/55 p-1 pr-3 scrollbar-none',
+          variant === 'buttons' && 'gap-2 border-none bg-transparent p-0 pl-1 pr-3',
         )}
         style={{ WebkitOverflowScrolling: 'touch' }}
       >
@@ -41,7 +41,7 @@ export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', clas
               className={cn(
                 // pl-tab-trigger (Fase M1): eleva a área de toque mínima
                 // para 44px sob mobile — ver src/index.css.
-                'pl-tab-trigger min-w-max shrink-0 whitespace-nowrap gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
+                'pl-tab-trigger min-h-11 min-w-max shrink-0 whitespace-nowrap gap-1.5 rounded-xl px-3 py-2.5 text-xs font-bold text-muted-foreground shadow-none transition-colors data-[state=active]:bg-primary data-[state=active]:text-primary-foreground',
                 // M4.2.2 (docs/MOBILE_M4_2_2_FILTERS_POSTMATCH.md, Parte A/B):
                 // achado real — `flex-1` incondicional forçava TODA aba a
                 // dividir a largura igualmente, o mesmo anti-padrão de

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2 } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
-import { formatDate, overallRating } from '@/lib/padel';
+import { formatDate } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 import { Surface, Button } from '@/components/design-system';
 import { localGame } from '@/api/localGameClient.js';
@@ -11,6 +11,14 @@ const athleteProfiles = /** @type {any} */ (localGame.entities).AthleteProfile;
 
 function sideName(side) {
   return side === 'left' || side === 'esquerda' ? 'esquerda' : side === 'right' || side === 'direita' ? 'direita' : 'versátil';
+}
+
+export function resolvePartnerOverall(partnerProfile, legacyOverall) {
+  const rawValue = partnerProfile
+    ? (partnerProfile.overall_rating ?? partnerProfile.overall)
+    : legacyOverall;
+  const value = Number(rawValue);
+  return Number.isFinite(value) ? Math.max(1, Math.min(100, Math.round(value))) : '—';
 }
 
 export default function PartnerOverview({ partnership, profile, onEnd, onNegotiate, onConverse }) {
@@ -53,7 +61,7 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
   const positionScore = partnership.compatibility_breakdown?.position;
   const sideOk = positionScore == null ? null : positionScore >= 70;
   const partnerAge = partnerProfile?.age ?? null;
-  const partnerOverall = partnerProfile ? overallRating(partnerProfile) : partnership.partner_overall;
+  const partnerOverall = resolvePartnerOverall(partnerProfile, partnership.partner_overall);
 
   return (
     <div className="space-y-4">
@@ -65,7 +73,14 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-black text-lg">{partnership.partner_name}</h3>
-            <p className="text-xs text-muted-foreground">{partnership.partner_country}{partnerAge ? ` · ${partnerAge} anos` : ''} · {partnership.partner_level} · OVR {partnerOverall} · Lado {sideName(partnership.partner_position)}</p>
+            <div className="mt-0.5 space-y-0.5 text-xs text-muted-foreground">
+              <p className="break-words">{partnership.partner_country}{partnerAge ? ` · ${partnerAge} anos` : ''} · {partnership.partner_level}</p>
+              <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
+                <span className="shrink-0 whitespace-nowrap font-black tabular-nums text-foreground">OVR {partnerOverall}</span>
+                <span aria-hidden="true">·</span>
+                <span>Lado {sideName(partnership.partner_position)}</span>
+              </p>
+            </div>
             <div className="flex items-center gap-2 mt-1">
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${chemLabel.bg} ${chemLabel.color}`}>
                 Entrosamento {chem}

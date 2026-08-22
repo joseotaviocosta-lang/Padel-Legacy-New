@@ -19,7 +19,7 @@ export const PAGE_LOADERS = {
 };
 
 const ROUTE_MODULES = {
-  '/game': 'CareerHub', '/game/training': 'Training', '/game/missions': 'Missions', '/game/shop': 'Shop',
+  '/game': 'CareerHub', '/game/training-center': 'TrainingCenter', '/game/training': 'Training', '/game/matches': 'Matches', '/game/missions': 'Missions', '/game/shop': 'Shop',
   '/game/inventory': 'Inventory', '/game/legacy': 'Legacy', '/game/stats': 'CareerStats', '/game/calendar': 'CalendarPage',
   '/game/season': 'Season', '/game/economy': 'Economy', '/profile': 'PlayerProfile', '/matches': 'Matches',
   '/tournaments': 'Tournaments', '/journal': 'Journal', '/ranking': 'Ranking', '/clubs': 'Clubs', '/athletes': 'Athletes',
@@ -37,7 +37,8 @@ const ROUTE_MODULES = {
 const preloadRequests = new Map();
 
 export function preloadRoute(pathname) {
-  const normalized = pathname?.startsWith('/clubs/') ? '/clubs' : pathname;
+  const pathOnly = String(pathname || '').split('?')[0];
+  const normalized = pathOnly.startsWith('/clubs/') ? '/clubs' : pathOnly;
   const moduleName = ROUTE_MODULES[normalized];
   const loader = PAGE_LOADERS[moduleName];
   if (!loader) return Promise.resolve(null);

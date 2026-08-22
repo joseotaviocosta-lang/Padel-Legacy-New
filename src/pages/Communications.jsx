@@ -5,7 +5,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { applyCareerCommunicationAction, dismissMessage, ensureContextualCareerCommunications, isCareerMessageUnread, listCareerCommunications, markAllCommunicationsRead, markCareerCommunicationRead, normalizeCareerMessage, resolveAndOpenNotification, resolveMessage } from '@/lib/careerCommunications.js';
 import { Page, PageContent, PageHeader, StatusBadge, EmptyState, LoadingState, ModalShell, Surface, FilterPills } from '@/components/design-system';
-import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
+import { resolveNotificationActionDestination, resolveNotificationDestination } from '@/lib/notificationDestinations.js';
 import { countUnreadCareerMessages, selectPendingDecisions } from '@/lib/notificationSelectors.js';
 import { getNotificationCategory, getNotificationCategoryLabel, NOTIFICATION_CATEGORIES } from '@/lib/notificationCenter.js';
 import { useCareer } from '@/careers/useCareer.js';
@@ -135,6 +135,15 @@ export default function Communications() {
 
   async function handleAction(action) {
     if (!selected) return;
+    const destination = resolveNotificationActionDestination(selected, action);
+    if (destination.actionable) {
+      if (isCareerMessageUnread(selected)) await markCareerCommunicationRead(selected);
+      setSelected(null);
+      navigate(destination.route);
+      window.dispatchEvent(new CustomEvent('padel:communications-updated'));
+      window.dispatchEvent(new CustomEvent('padel:communications-refresh'));
+      return;
+    }
     const updatedProfile = await applyCareerCommunicationAction(profile, selected, action);
     if (updatedProfile) setProfile(updatedProfile);
     await resolveMessage(selected.id, action.id);

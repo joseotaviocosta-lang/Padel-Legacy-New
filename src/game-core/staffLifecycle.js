@@ -4,6 +4,7 @@ import { getFacilityEffects, getActiveStaffSynergies, getSynergyEffects } from '
 import { normalizeFatigue } from './physicalStats.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 import { buildStaffMeeting } from '@/lib/livingStaff.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 function asNumber(value, fallback = 0) {
   const number = Number(value);
@@ -290,7 +291,7 @@ export async function processStaffDay(profile, previousDate, currentDate) {
       notification_type: 'STAFF',
       destination: { type: 'STAFF', route: '/staff' },
       career_date: currentDate,
-      actions: [{ id: 'open_training_plan', label: 'Revisar planejamento', route: '/game/training' }],
+      actions: [{ id: 'open_training_plan', label: 'Revisar planejamento', route: APP_ROUTES.TRAINING_AGENDA }],
       metadata: { recommendations, synergy: meeting.synergy, moral: meeting.moral, proposed_plan: meeting.plan.plan },
     });
     try { updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, { staff_last_summary_week: currentWeek }); }

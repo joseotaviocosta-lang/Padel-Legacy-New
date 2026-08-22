@@ -228,7 +228,7 @@ export async function schedulePartnerSeparation(profile, reason = 'Fim de ciclo 
     sender_name: active.partner_name, sender_type: 'atleta', title: 'Fim de ciclo combinado',
     content: `A parceria seguirá normalmente até ${endDate}. Depois disso, cada atleta ficará livre para buscar uma nova dupla.`,
     status: 'nao_lida', priority: 'normal', message_type: 'partner_contract', career_date: careerDate,
-    destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+    destination: { type: 'CONTRACT', route: '/partners', params: { view: 'contract', focus: 'contract-future', partnership: active.id } },
   });
   await resolvePartnerDecisionMessages(profile.id, active.id, 'end_scheduled');
   return { partnership, profile };
@@ -311,7 +311,7 @@ async function emitExpiryWarnings(profile, active, currentDate, warningDays) {
       message_type: 'partner_contract_expiry',
       career_date: currentDate,
       actions: [{ id: 'open_partner_hub', label: 'Conversar sobre o futuro', type: 'view_partnership', payload: { partnershipId: active.id } }],
-      destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+      destination: { type: 'CONTRACT', route: '/partners', params: { view: 'contract', focus: 'contract-future', partnership: active.id } },
     });
   }
 }
@@ -409,7 +409,7 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
         message_type: 'partner_contract_expiry',
         career_date: currentDate,
         actions: [{ id: 'open_partner_hub', label: 'Resolver agora', type: 'view_partnership', payload: { partnershipId: active.id } }],
-        destination: { type: 'PARTNERSHIP', route: '/partners', params: { view: 'contract' } },
+        destination: { type: 'CONTRACT', route: '/partners', params: { view: 'contract', focus: 'contract-future', partnership: active.id } },
       });
     }
     if (transition.shouldEnd) {

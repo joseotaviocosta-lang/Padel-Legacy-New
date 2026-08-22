@@ -28,7 +28,7 @@ const sources = {
   numberFormat: read('src/lib/numberFormat.js'),
   daySummary: read('src/components/calendar/DayAdvanceSummary.jsx'),
   dayEvents: read('src/components/calendar/DayEventList.jsx'),
-  training: read('src/pages/Training.jsx'),
+  training: read('src/components/training-center/TrainingView.jsx'),
   evolution: read('src/components/training/AttributeEvolution.jsx'),
   tournamentModal: read('src/components/tournaments/TournamentModal.jsx'),
   press: read('src/pages/Press.jsx'),
@@ -88,7 +88,7 @@ try {
   gate('Sino preserva aria-haspopup dialog', sources.bell.includes('aria-haspopup="dialog"'));
   gate('Controles de ícone usam alvo global de 44px', sources.css.includes('.pl-icon-tap { min-height: var(--pl-touch-min); min-width: var(--pl-touch-min); }'));
   gate('Token de toque permanece 44px', sources.css.includes('--pl-touch-min: 2.75rem'));
-  gate('Header 360 esconde saldo textual antes de 400px', sources.layout.includes('hidden truncate min-[400px]:inline'));
+  gate('Header 360 mantém saldo textual visível', sources.layout.includes('<span className="min-w-0 truncate">{formatCoinBalance(headerProfile?.coins)}</span>'));
   gate('Header 390 libera label compacta de avançar', sources.dayControl.includes('min-[390px]:inline'));
   gate('Header protege o contexto com min-w-0', sources.layout.includes('min-w-0 flex-1'));
   gate('Desktop continua exibindo o contexto de torneio', sources.layout.includes('flex min-w-0 flex-1 items-center'));
@@ -184,7 +184,7 @@ try {
 
   // Rotas, torneios futuros e invariantes de regressão.
   gate('Rota canônica Home', APP_ROUTES.HOME === '/game');
-  gate('Rota canônica Training', APP_ROUTES.TRAINING === '/game/training');
+  gate('Rota canônica Training', APP_ROUTES.TRAINING === `${APP_ROUTES.TRAINING_CENTER}?view=training`);
   gate('Rota canônica Economy', APP_ROUTES.ECONOMY === '/game/economy');
   gate('Rota canônica Calendar', APP_ROUTES.CALENDAR === '/game/calendar');
   gate('Rota canônica Press', APP_ROUTES.PRESS === '/press');

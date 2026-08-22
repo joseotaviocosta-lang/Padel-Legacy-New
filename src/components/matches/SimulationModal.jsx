@@ -54,7 +54,7 @@ export function getPostMatchPrimaryAction(profile) {
   }
   return { key: 'back-to-career', label: 'Voltar para a carreira' };
 }
-export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate }) {
+export default function SimulationModal({ profile: initialProfile, careerId, onClose, onComplete, onProfileUpdate, onReturnToTrainingCenter = null }) {
   const navigate = useNavigate();
   const [profile, setProfile] = useState(initialProfile);
   const [initialTacticId, setInitialTacticId] = useState('equilibrado');
@@ -449,6 +449,16 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
             {result.matchState.liveCoachReport && <div className="glass rounded-2xl p-4"><p className="text-xs font-black mb-2">Decisões durante a partida</p><p className="text-[11px] text-muted-foreground">{result.matchState.liveCoachReport.suggestionsReceived} sugestões · {result.matchState.liveCoachReport.suggestionsApplied} aplicadas · {result.matchState.liveCoachReport.suggestionsIgnored} ignoradas</p><p className="mt-2 text-[9px] text-muted-foreground">{result.matchState.liveCoachReport.disclaimer}</p></div>}
 
             {(() => {
+              if (onReturnToTrainingCenter) {
+                return (
+                  <button
+                    onClick={() => { onClose?.(); onReturnToTrainingCenter(); }}
+                    className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-secondary/50 px-4 text-sm font-bold text-foreground transition-colors hover:bg-secondary"
+                  >
+                    <Home className="h-4 w-4" /> Voltar ao Centro de Treinamento
+                  </button>
+                );
+              }
               const primaryAction = getPostMatchPrimaryAction(profile);
               if (primaryAction.key === 'back-to-career') {
                 return (

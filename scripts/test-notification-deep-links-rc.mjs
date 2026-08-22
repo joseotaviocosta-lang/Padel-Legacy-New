@@ -15,7 +15,7 @@ const ranking = read('src/pages/Ranking.jsx');
 const calendar = read('src/pages/CalendarPage.jsx');
 const worldEvents = read('src/pages/WorldEvents.jsx');
 const economy = read('src/pages/Economy.jsx');
-const training = read('src/pages/Training.jsx');
+const training = read('src/pages/TrainingCenter.jsx');
 const pkg = JSON.parse(read('package.json'));
 
 const cases = [
@@ -23,7 +23,7 @@ const cases = [
   [{ id: 'n2', related_entity_type: 'Tournament', related_entity_id: 'tour-2' }, '/tournaments?tournament=tour-2&mode=details'],
   [{ id: 'n3', message_type: 'proposta_parceria', related_entity_id: 'offer-3' }, '/partners?view=offers&offer=offer-3'],
   [{ id: 'n4', message_type: 'mission_completed', related_entity_id: 'mission-7' }, '/game/missions?mission=mission-7'],
-  [{ id: 'n5', message_type: 'injury_report', related_entity_id: 'injury-1' }, '/game/calendar?focus=recovery&injury=injury-1'],
+  [{ id: 'n5', message_type: 'injury_report', related_entity_id: 'injury-1' }, '/game/training-center?view=center&focus=recovery&injury=injury-1'],
   [{ id: 'n6', message_type: 'ranking_update', related_entity_id: 'athlete-2' }, '/ranking?athlete=athlete-2'],
   [{ id: 'n7', message_type: 'sponsor_contract', related_entity_id: 'contract-2' }, '/game/economy?view=sponsors&contract=contract-2'],
   [{ id: 'n8', notification_type: 'MONTHLY_REPORT', related_entity_id: 'monthly-career-report:player-1:2026-01' }, '/game/monthly-reports?report=monthly-career-report%3Aplayer-1%3A2026-01'],

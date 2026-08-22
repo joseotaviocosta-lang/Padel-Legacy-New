@@ -115,7 +115,7 @@ export function deriveCareerMoment(profile, context = {}) {
         ? 'Revise sua condição, tática e dupla antes de entrar em quadra.'
         : `Faltam ${daysToTournament} dia${daysToTournament === 1 ? '' : 's'}. Priorize recuperação, confiança e um plano claro de jogo.`,
       primaryAction: { label: 'Ver torneio', route: '/tournaments' },
-      secondaryAction: { label: 'Revisar tática', route: '/game/training' },
+      secondaryAction: { label: 'Revisar tática', route: APP_ROUTES.TRAINING },
     };
   }
 

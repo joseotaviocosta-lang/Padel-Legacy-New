@@ -106,13 +106,13 @@ const navSource = read('src/navigation/navigationConfig.js');
 const bottomNavSource = read('src/components/BottomNav.jsx');
 const notificationSource = read('src/lib/notificationDestinations.js');
 const nextActionSource = read('src/lib/careerNextAction.js');
-gate('rota canônica de treino é /game/training', APP_ROUTES.TRAINING === '/game/training');
-gate('router declara rota canônica de treino', appSource.includes('path="/game/training"'));
+gate('rota canônica de treino abre o Centro unificado', APP_ROUTES.TRAINING === `${APP_ROUTES.TRAINING_CENTER}?view=training`);
+gate('router preserva adapter legado de treino', appSource.includes('path="/game/training"'));
 gate('CTA da Home usa resolver com rota canônica', homeSource.includes('getCareerNextAction') && nextActionSource.includes('route: APP_ROUTES.TRAINING'));
-gate('guia resolve para rota existente', guideSource.includes("'first-training'") && guideSource.includes("'/game/training'"));
-gate('NavigationHub/sidebar resolve Treinos', navSource.includes("to: '/game/training'"));
+gate('guia resolve para rota existente', guideSource.includes("'first-training'") && guideSource.includes('APP_ROUTES.TRAINING'));
+gate('NavigationHub/sidebar resolve Centro unificado', navSource.includes("label: 'Centro de treinamento'") && navSource.includes('to: APP_ROUTES.TRAINING_CENTER'));
 gate('BottomNav deriva itens da fonte de navegação', bottomNavSource.includes('NAV_GROUPS'));
-gate('notificação de treino usa rota canônica válida', notificationSource.includes("'/game/training'"));
+gate('notificação de treino usa rota canônica válida', notificationSource.includes('APP_ROUTES.TRAINING'));
 gate('pós-treino usa rota válida', nextActionSource.includes('route: APP_ROUTES.TRAINING'));
 for (const relative of ['src/lib/weeklyCareerReview.js', 'src/lib/dailyCareerBriefing.js', 'src/lib/careerDecisionCenter.js']) {
   gate(`${relative} não contém rota /training inválida`, !/route:\s*['"]\/training['"]/.test(read(relative)));

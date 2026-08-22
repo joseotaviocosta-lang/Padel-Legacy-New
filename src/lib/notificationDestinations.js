@@ -1,4 +1,5 @@
 import { getTournamentNotificationMode, TOURNAMENT_DEEP_LINK_MODES } from './tournamentDeepLink.js';
+import { APP_ROUTES } from '../navigation/routes.js';
 
 export const NOTIFICATION_DESTINATION_TYPES = Object.freeze({
   PRESS_INTERVIEW: 'PRESS_INTERVIEW',
@@ -59,6 +60,22 @@ function withParams(route, params = {}) {
   return suffix ? `${pathname}?${suffix}` : pathname;
 }
 
+function canonicalTrainingDestination(route) {
+  if (!route) return route;
+  const [pathname, query = ''] = String(route).split('?');
+  const canonical = pathname === '/game/training'
+    ? APP_ROUTES.TRAINING
+    : ['/matches', '/game/matches'].includes(pathname)
+      ? APP_ROUTES.MATCHES
+      : pathname === '/training-center'
+        ? APP_ROUTES.TRAINING_FACILITIES
+        : route;
+  if (!query || canonical === route) return canonical;
+  const preservedParams = {};
+  new URLSearchParams(query).forEach((value, key) => { preservedParams[key] = value; });
+  return withParams(canonical, preservedParams);
+}
+
 function classifyNotification(notification = {}) {
   const metadata = notification.metadata || {};
   const explicitType = notification.destination?.type || metadata.destination?.type || notification.notification_type;
@@ -109,12 +126,13 @@ export function resolveNotificationDestination(notification = {}) {
   const explicit = notification.destination || metadata.destination || null;
   const type = classifyNotification(notification);
   const entityId = notification.related_entity_id || metadata.entity_id || null;
-  const explicitRoute = typeof explicit === 'string' ? explicit : explicit?.route;
+  const explicitRoute = canonicalTrainingDestination(typeof explicit === 'string' ? explicit : explicit?.route);
+  const metadataRoute = canonicalTrainingDestination(metadata.route);
 
   let route;
   switch (type) {
     case NOTIFICATION_DESTINATION_TYPES.PRESS_INTERVIEW:
-      route = withParams(explicitRoute || metadata.route || '/press', {
+      route = withParams(explicitRoute || metadataRoute || '/press', {
         tab: 'interviews',
         interview: metadata.interview_id || entityId,
         source: metadata.interview_source_id,
@@ -123,7 +141,7 @@ export function resolveNotificationDestination(notification = {}) {
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT:
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_DETAILS:
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN:
-      route = withParams(explicitRoute || metadata.route || '/tournaments', {
+      route = withParams(explicitRoute || metadataRoute || '/tournaments', {
         tournament: metadata.tournament_id || entityId,
         mode: type === NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN
           ? TOURNAMENT_DEEP_LINK_MODES.RUN
@@ -131,18 +149,18 @@ export function resolveNotificationDestination(notification = {}) {
       });
       break;
     case NOTIFICATION_DESTINATION_TYPES.PARTNER_OFFER:
-      route = withParams(explicitRoute || metadata.route || '/partners', { view: 'offers', offer: metadata.offer_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/partners', { view: 'offers', offer: metadata.offer_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.COACH:
-      route = withParams(explicitRoute || metadata.route || '/coaches', { coach: metadata.coach_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/coaches', { coach: metadata.coach_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.STAFF:
-      route = withParams(explicitRoute || metadata.route || '/staff', { staff: metadata.staff_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/staff', { staff: metadata.staff_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.CONTRACT: {
       const partnerContract = /partner/i.test(`${notification.message_type || ''} ${notification.related_entity_type || ''}`);
       const coachContract = /coach|trainer|treinador/i.test(`${notification.message_type || ''} ${notification.related_entity_type || ''}`);
-      route = withParams(explicitRoute || metadata.route || (partnerContract ? '/partners' : coachContract ? '/coaches' : '/game/economy'), {
+      route = withParams(explicitRoute || metadataRoute || (partnerContract ? '/partners' : coachContract ? '/coaches' : '/game/economy'), {
         view: partnerContract || coachContract ? 'contract' : 'sponsors',
         contract: metadata.contract_id || entityId,
         coach: coachContract ? metadata.coach_id || entityId : null,
@@ -150,41 +168,69 @@ export function resolveNotificationDestination(notification = {}) {
       break;
     }
     case NOTIFICATION_DESTINATION_TYPES.MISSION:
-      route = withParams(explicitRoute || metadata.route || '/game/missions', { mission: metadata.mission_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/game/missions', { mission: metadata.mission_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.INJURY:
-      route = withParams(explicitRoute || metadata.route || '/game/calendar', { focus: 'recovery', injury: metadata.injury_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || APP_ROUTES.TRAINING_FACILITIES, { focus: 'recovery', injury: metadata.injury_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.TRAINING:
-      route = withParams(explicitRoute || metadata.route || '/game/training', { training: metadata.training_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || APP_ROUTES.TRAINING, { training: metadata.training_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.SPONSOR:
-      route = withParams(explicitRoute || metadata.route || '/game/economy', { view: 'sponsors', sponsor: metadata.sponsor_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/game/economy', { view: 'sponsors', sponsor: metadata.sponsor_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.RANKING:
-      route = withParams(explicitRoute || metadata.route || '/ranking', { athlete: metadata.athlete_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/ranking', { athlete: metadata.athlete_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.CALENDAR:
-      route = withParams(explicitRoute || metadata.route || '/game/calendar', { event: metadata.calendar_event_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/game/calendar', { event: metadata.calendar_event_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.WORLD_EVENT:
-      route = withParams(explicitRoute || metadata.route || '/world-events', { event: metadata.world_event_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/world-events', { event: metadata.world_event_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.MONTHLY_REPORT:
-      route = withParams(explicitRoute || metadata.route || '/game/monthly-reports', { report: metadata.report_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/game/monthly-reports', { report: metadata.report_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.ANNUAL_REPORT:
-      route = withParams(explicitRoute || metadata.route || '/game/annual-reports', { report: metadata.report_id || entityId });
+      route = withParams(explicitRoute || metadataRoute || '/game/annual-reports', { report: metadata.report_id || entityId });
       break;
     default:
-      route = withParams(explicitRoute || metadata.route || '/communications', { message: messageId });
+      route = withParams(explicitRoute || metadataRoute || '/communications', { message: messageId });
   }
 
   if (explicit && typeof explicit === 'object' && explicit.params) route = withParams(route, explicit.params);
-  const actionable = type !== NOTIFICATION_DESTINATION_TYPES.COMMUNICATION_ONLY || Boolean(explicitRoute || metadata.route);
+  const actionable = type !== NOTIFICATION_DESTINATION_TYPES.COMMUNICATION_ONLY || Boolean(explicitRoute || metadataRoute);
   return { type, route, actionable, label: actionable ? (CTA_LABELS[type] || DEFAULT_CTA_LABEL) : null };
 }
 
 export function hasSpecificNotificationDestination(notification) {
   return resolveNotificationDestination(notification).actionable;
+}
+
+// Ações puramente navegacionais usam o mesmo resolvedor canônico das
+// notificações. Em especial, "Conversar sobre o futuro" não é uma decisão
+// contratual: abre o contrato e a conversa existente sem marcar a pendência
+// como resolvida por engano.
+export function resolveNotificationActionDestination(notification = {}, action = {}) {
+  if (action.type === 'view_partner_offer') return resolveNotificationDestination(notification);
+  if (action.type !== 'view_partnership') {
+    return { type: NOTIFICATION_DESTINATION_TYPES.COMMUNICATION_ONLY, route: null, actionable: false, label: null };
+  }
+
+  if (action.id === 'find_partner') return resolveNotificationDestination(notification);
+
+  const partnershipId = action.payload?.partnershipId || notification.metadata?.partnership_id || null;
+  return resolveNotificationDestination({
+    ...notification,
+    related_entity_type: 'partner_contract',
+    destination: {
+      type: NOTIFICATION_DESTINATION_TYPES.CONTRACT,
+      route: APP_ROUTES.PARTNERS,
+      params: {
+        view: 'contract',
+        focus: 'contract-future',
+        partnership: partnershipId,
+      },
+    },
+  });
 }

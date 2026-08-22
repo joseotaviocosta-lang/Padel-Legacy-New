@@ -59,8 +59,8 @@ try {
   gate('6. getPostMatchPrimaryAction (M4.2.2) preservado — CTA nunca "Jogar Novamente" com limite consumido', /canPlayMatchToday\(profile\)\.allowed/.test(modalSource));
 
   // ── 7. treino concluído atualiza next action ────────────────────────
-  const trainingSource = read('src/pages/Training.jsx');
-  gate('7. Training.jsx calcula postTrainingAction a partir do profile JÁ atualizado (res.profile), reagindo ao resultado', /getCareerNextAction\(profile\)/.test(trainingSource) && /result\?\.type === 'training' \? getCareerNextAction/.test(trainingSource));
+  const trainingSource = read('src/components/training-center/TrainingView.jsx');
+  gate('7. TrainingView calcula postTrainingAction a partir do profile compartilhado já atualizado, reagindo ao resultado', /getCareerNextAction\(profile\)/.test(trainingSource) && /result\?\.type === 'training' \? getCareerNextAction/.test(trainingSource) && /onProfileUpdate\(res\.profile/.test(trainingSource));
   const trainingsMaxed = { ...baseProfile, trainings_today: 3, practice_matches_today: 1 };
   gate('7b. Com treino E partida do dia esgotados, next action cai para avançar o dia', getCareerNextAction(trainingsMaxed).id === 'advance-day');
 
