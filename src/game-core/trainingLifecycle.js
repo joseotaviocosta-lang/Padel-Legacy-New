@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { executeTraining } from '@/lib/trainingSystemV2';
+import { formatAttributeGain } from '@/lib/numberFormat.js';
 import { safeName } from './utils';
 
 function clamp(value, min = 0, max = 100) {
@@ -28,7 +29,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
       title: trainingTitle(result.activity || activity),
       description: result.injured
         ? `${athleteName} sofreu uma lesão durante o treino e ficará em recuperação por ${result.recoveryDays || 1} dia(s).`
-        : `${athleteName} concluiu um treino ${result.intensity?.label || intensityId}. Evolução de +${gain} em ${attribute}.`,
+        : `${athleteName} concluiu um treino ${result.intensity?.label || intensityId}. Evolução de +${formatAttributeGain(gain)} em ${attribute}.`,
       category: result.injured ? 'lesao' : 'treino',
     }),
   ];
@@ -62,7 +63,7 @@ export async function finalizeTrainingSession(profile, activity, intensityId, co
       profile_id: updated.id,
       sender_name: 'Equipe Técnica',
       subject: 'Treino concluído',
-      body: `Boa sessão: +${gain} em ${attribute}. Energia atual: ${updated.energy ?? 0}; fadiga: ${updated.fatigue ?? 0}.`,
+      body: `Boa sessão: +${formatAttributeGain(gain)} em ${attribute}. Energia atual: ${updated.energy ?? 0}; fadiga: ${updated.fatigue ?? 0}.`,
       status: 'nao_lida',
       message_type: 'training_feedback',
       created_date: new Date().toISOString(),

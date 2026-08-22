@@ -1,3 +1,5 @@
+import { APP_ROUTES } from '@/navigation/routes.js';
+
 function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number(value) || 0));
 }
@@ -83,7 +85,7 @@ export function buildCareerDecisionCenter(profile, context = {}) {
       category: 'Condição física',
       title: fatigue >= 75 ? 'Reduza a carga de treino' : 'Recupere energia antes de competir',
       description: `Energia ${Math.round(energy)}% · Fadiga ${Math.round(fatigue)}%. Ajuste o planejamento antes de avançar.`,
-      route: '/training',
+      route: APP_ROUTES.TRAINING,
       actionLabel: 'Ajustar treinos',
     });
   }

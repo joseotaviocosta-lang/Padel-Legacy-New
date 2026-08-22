@@ -459,7 +459,7 @@ export default function Tournaments() {
       )}
 
       {bracketTournament && (
-        <TournamentBracket tournament={bracketTournament} onClose={() => setBracketTournament(null)} />
+        <TournamentBracket tournament={bracketTournament} careerDate={profile?.career_date} onClose={() => setBracketTournament(null)} />
       )}
 
       {showPartner && (

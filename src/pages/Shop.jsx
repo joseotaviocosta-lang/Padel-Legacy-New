@@ -9,7 +9,7 @@ import EquippedView from '@/components/shop/EquippedView';
 import ItemDetailModal from '@/components/shop/ItemDetailModal';
 import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
 import { RARITY_STYLES, RARITY_ORDER, CATEGORY_META } from '@/lib/equipmentCatalog';
-import { computeItemPrice, BADGE_COLORS, seedMarket } from '@/lib/marketEngine';
+import { computeItemPrice, BADGE_COLORS, isMarketEventActive, normalizeMarketEvent, seedMarket } from '@/lib/marketEngine';
 import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 import { getEquipmentMarketState } from '@/lib/sportsEconomyV26';
@@ -95,7 +95,7 @@ export default function Shop() {
         setItems((shopItems || []).filter(Boolean).map(normalizeShopItem).map(item => ({ ...item, price: safePrice(item.price) })));
         setOwnedIds(new Set((inventory || []).map(i => i.item_id)));
         setEquippedItems((inventory || []).filter(i => i.equipped));
-        setMarketEvents(events || []);
+        setMarketEvents((events || []).map(normalizeMarketEvent).filter((event) => isMarketEventActive(event, p?.career_date)));
         setPriceHistories(histories || []);
         setPlayerSponsors((contracts || []).map(c => c.sponsor_name));
       } catch (e) { console.error(e); }
@@ -283,7 +283,7 @@ export default function Shop() {
 
       {/* Live Market Events Banner */}
       {marketEvents.length > 0 && (
-        <MarketEventsBanner events={marketEvents} />
+        <MarketEventsBanner events={marketEvents} careerDate={profile?.career_date} />
       )}
 
       {/* View toggle — separa claramente Loja de Equipados (seção 23) */}

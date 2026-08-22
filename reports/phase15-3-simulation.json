@@ -1,0 +1,17 @@
+{
+  "generatedAt": "2026-08-22T15:24:03.090Z",
+  "gates": 66,
+  "simulations": {
+    "careers": 100,
+    "seasons": 3,
+    "deltaOvrPerRole": {
+      "active-partner": 18.81,
+      "free": 18.81,
+      "ex-partner": 18.81
+    },
+    "activePartnerFinalAgeAverage": 20,
+    "futureTournamentCalendars": 100,
+    "prematureResults": 0,
+    "finalEconomyBalance": 1547
+  }
+}

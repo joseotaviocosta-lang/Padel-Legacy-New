@@ -184,7 +184,7 @@ export const LOCAL_SEED = {
   PlayerStaffHire: [],
   ShopItem: shopItems,
   PlayerInventory: [{ id: 'inventory-001', profile_id: LOCAL_PROFILE.id, item_id: 'shop-003', item_name: 'Grip Performance', category: 'grip', quantity: 2, equipped: false, durability: 100 }],
-  MarketEvent: [{ id: 'market-event-001', title: 'Semana de lançamento', description: 'Descontos em itens iniciais.', event_type: 'promotion', discount_percent: 10, is_active: true, priority: 1, start_date: '2026-01-01', end_date: '2026-01-07' }],
+  MarketEvent: [{ id: 'market-event-001', title: 'Semana de lançamento', description: 'Descontos em itens iniciais.', event_type: 'promocao', price_modifier: 0.9, discount_percent: 10, affected_item_ids: [], affected_categories: [], affected_manufacturers: [], affected_rarities: [], is_active: true, priority: 1, start_date: '2026-01-01', end_date: '2026-01-07' }],
   MarketPriceHistory: shopItems.map((item, index) => ({ id: `price-${index + 1}`, item_id: item.id, item_name: item.name, price: item.current_price, last_updated_date: '2026-01-01T00:00:00.000Z' })),
   Mission: missions,
   MissionProgress: missions.map((mission, index) => ({ id: `progress-${index + 1}`, mission_id: mission.id, profile_id: LOCAL_PROFILE.id, current_count: index === 0 ? 1 : 0, completed: false, claimed: false })),

@@ -1,7 +1,7 @@
 import { careerManager } from '@/local/careerDataStore.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ChevronDown, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
+import { ChevronDown, Coins, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import BottomNav from './BottomNav';
 import { motion, AnimatePresence } from 'framer-motion';
 import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
@@ -24,6 +24,8 @@ import FloatingUtilityRail from '@/components/system/FloatingUtilityRail.jsx';
 import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
 import MobilePerformanceMonitor from '@/dev/MobilePerformanceMonitor.jsx';
 import { recordAction, useRenderCounter, mark, measure } from '@/dev/performanceProbe.js';
+import { formatCoinBalance } from '@/lib/numberFormat.js';
+import { APP_ROUTES } from '@/navigation/routes.js';
 
 const EXPANDED_GROUP_KEY = 'padel:navigation-expanded-area';
 const COLLAPSED_SIDEBAR_KEY = 'padel:sidebar-collapsed';
@@ -167,6 +169,13 @@ function useCareerHeaderData() {
       pendingEvent = null;
     };
     const refresh = (event) => {
+      if (event?.detail?.source === 'player-adapter-balance' && event.detail.profile) {
+        if (timer) clearTimeout(timer);
+        timer = null;
+        pendingEvent = null;
+        void applyProfile(event.detail.profile);
+        return;
+      }
       pendingEvent = event;
       if (timer) clearTimeout(timer);
       timer = setTimeout(flush, 150);
@@ -274,7 +283,7 @@ export default function AppLayout() {
   return (
     <MotionPolicyProvider value={performanceProfile}>
     <div className="app-shell min-h-screen bg-background">
-      <header className="pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex h-[calc(var(--pl-header-h)+env(safe-area-inset-top))] items-center border-b border-border/45 bg-background/95 pl-[calc(0.375rem+var(--pl-safe-l))] pr-[calc(0.375rem+var(--pl-safe-r))] md:hidden">
+      <header className="pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex h-[calc(var(--pl-header-h)+env(safe-area-inset-top))] items-center overflow-hidden border-b border-border/45 bg-background/95 pl-[calc(0.375rem+var(--pl-safe-l))] pr-[calc(0.375rem+var(--pl-safe-r))] md:hidden">
         <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
           <Menu className="h-5 w-5" />
         </button>
@@ -285,6 +294,15 @@ export default function AppLayout() {
               identidade). Aqui só cabe contexto operacional. */}
           <CareerHeaderContext profile={headerProfile} compact />
         </div>
+        <NavLink
+          to={APP_ROUTES.ECONOMY}
+          title="Abrir Economia"
+          aria-label={`Abrir Economia. Saldo: ${formatCoinBalance(headerProfile?.coins)} moedas`}
+          className="mr-1 inline-flex max-w-[4.65rem] shrink-0 items-center gap-1 rounded-lg border border-premium/25 bg-premium/10 px-1.5 py-1.5 text-[10px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+        >
+          <Coins className="h-3.5 w-3.5 shrink-0" />
+          <span className="truncate">{formatCoinBalance(headerProfile?.coins)}</span>
+        </NavLink>
         <CareerDayControl profile={headerProfile} compact />
         <CommunicationBell compact />
       </header>

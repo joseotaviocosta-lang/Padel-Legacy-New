@@ -4,6 +4,7 @@ import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/t
 import { ATTRIBUTE_LABELS } from '@/lib/initialCareerProfiles';
 import { getAttributeIcon } from '@/components/padel/Shared';
 import { Button, CompactActionCard, ProgressBar, StatusBadge } from '@/components/design-system';
+import { formatAttributeGain } from '@/lib/numberFormat.js';
 
 // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3 — gate obrigatório): fechado,
 // o card mostra só o que decide a escolha (duração/fadiga/energia + o ganho
@@ -51,7 +52,7 @@ export default function TrainingActivityCard({
             `profile?.[attribute]`), não só o ganho — já foi perdido uma vez
             antes por engano e corrigido de propósito. */}
         {topGains.length
-          ? topGains.map(([attribute, gain]) => `${ATTRIBUTE_LABELS[attribute] || attribute} ${Math.round(Number(profile?.[attribute]) || 0)} +${gain.toFixed(2)}`).join(' · ')
+          ? topGains.map(([attribute, gain]) => `${ATTRIBUTE_LABELS[attribute] || attribute} ${Math.round(Number(profile?.[attribute]) || 0)} +${formatAttributeGain(gain)}`).join(' · ')
           : 'Sessão de manutenção'}
       </p>
       {weeklyCount >= 2 && (

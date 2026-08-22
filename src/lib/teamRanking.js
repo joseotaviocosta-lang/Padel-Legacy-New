@@ -230,7 +230,9 @@ export async function simulatePastTournaments(careerDate) {
       if (t.world_tour_event) return false;
       if (t.champion) return false;
       if (t.status === 'finalizado') return false;
-      if (t.start_date && t.start_date < careerDate) return true;
+      // A data canônica vence o fallback legado de mês. Sem isso, uma
+      // edição de janeiro do ano seguinte podia ser simulada em junho.
+      if (t.start_date) return t.start_date < careerDate;
       if ((t.month || 0) < currentMonth) return true;
       return false;
     });

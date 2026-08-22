@@ -1,3 +1,5 @@
+import { APP_ROUTES } from '@/navigation/routes.js';
+
 function clamp(value, min = 0, max = 100) {
   return Math.max(min, Math.min(max, Number(value) || 0));
 }
@@ -46,7 +48,7 @@ export function buildDailyCareerBriefing(profile, context = {}) {
       label: 'Condição física',
       title: 'Reduza a carga hoje',
       description: `Sua fadiga está em ${Math.round(fatigue)}. Um dia leve preserva a evolução da semana.`,
-      route: '/training',
+      route: APP_ROUTES.TRAINING,
     });
   } else if (energy <= 35) {
     priorities.push({
@@ -55,7 +57,7 @@ export function buildDailyCareerBriefing(profile, context = {}) {
       label: 'Energia',
       title: 'Recupere antes de forçar',
       description: `Sua energia está em ${Math.round(energy)}. Priorize descanso ou treino leve.`,
-      route: '/training',
+      route: APP_ROUTES.TRAINING,
     });
   } else {
     priorities.push({
@@ -64,7 +66,7 @@ export function buildDailyCareerBriefing(profile, context = {}) {
       label: 'Desenvolvimento',
       title: 'Boa janela para evoluir',
       description: 'Sua condição permite cumprir o plano semanal sem comprometer a recuperação.',
-      route: '/training',
+      route: APP_ROUTES.TRAINING,
     });
   }
 

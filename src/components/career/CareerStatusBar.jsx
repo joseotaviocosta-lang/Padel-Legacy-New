@@ -1,12 +1,25 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Calendar, Users, Lock, ChevronRight } from 'lucide-react';
 import { careerDateLabel, careerMonthLabel, canChangePartner, daysUntilPartnerUnlock, getPartnerBot } from '@/lib/career';
 import { overallRating } from '@/lib/padel';
+import { localGame } from '@/api/localGameClient.js';
+
+const athleteProfiles = /** @type {any} */ (localGame.entities).AthleteProfile;
 
 export default function CareerStatusBar({ profile, onPartnerClick }) {
+  const fallbackPartner = getPartnerBot(profile);
+  const [canonicalPartner, setCanonicalPartner] = useState(null);
+  useEffect(() => {
+    let active = true;
+    setCanonicalPartner(null);
+    if (!profile?.partner_id) return undefined;
+    athleteProfiles.get(profile.partner_id).then((row) => {
+      if (active) setCanonicalPartner(row || null);
+    }).catch(() => {});
+    return () => { active = false; };
+  }, [profile?.career_date, profile?.partner_id]);
   if (!profile) return null;
-
-  const partner = getPartnerBot(profile);
+  const partner = canonicalPartner || fallbackPartner;
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
 

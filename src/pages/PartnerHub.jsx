@@ -23,6 +23,7 @@ import PartnerNegotiationModal from '@/components/partner/PartnerNegotiationModa
 import { renewPartnerContract, releasePartner, schedulePartnerSeparation, calculatePartnerRenewalInterest } from '@/game-core/partnerLifecycle';
 import PartnerOffersPanel from '@/components/partner/PartnerOffersPanel';
 import { acceptPartnerOffer, ensureInitialPartnerOffers, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
+import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
 const TAB_DEFS = [
   { key: 'offers', label: 'Propostas', icon: Handshake },
@@ -52,6 +53,7 @@ export default function PartnerHub() {
   const [showConverse, setShowConverse] = useState(false);
   const proposalsRef = useRef([]);
   const { toast } = useToast();
+  useCareerProfileSync(setProfile);
 
   const selectTab = useCallback((tab, extra = {}) => {
     setActiveTab(tab);

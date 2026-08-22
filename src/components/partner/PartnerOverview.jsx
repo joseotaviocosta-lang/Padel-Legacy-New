@@ -2,10 +2,12 @@ import React, { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2 } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
-import { formatDate } from '@/lib/padel';
+import { formatDate, overallRating } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 import { Surface, Button } from '@/components/design-system';
 import { localGame } from '@/api/localGameClient.js';
+
+const athleteProfiles = /** @type {any} */ (localGame.entities).AthleteProfile;
 
 function sideName(side) {
   return side === 'left' || side === 'esquerda' ? 'esquerda' : side === 'right' || side === 'direita' ? 'direita' : 'versátil';
@@ -17,16 +19,16 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
   // qualquer outro ponto do sistema (ex.: partnershipSystem.js atualiza esse
   // mesmo id), reaproveitando a idade que a Fase 15 já mantém em dia, sem
   // duplicar cálculo nem persistir um campo novo no save.
-  const [partnerAge, setPartnerAge] = useState(null);
+  const [partnerProfile, setPartnerProfile] = useState(null);
   useEffect(() => {
     let active = true;
-    setPartnerAge(null);
+    setPartnerProfile(null);
     if (!partnership?.partner_bot_id) return undefined;
-    localGame.entities.AthleteProfile.get(partnership.partner_bot_id).then((row) => {
-      if (active) setPartnerAge(row?.age ?? null);
+    athleteProfiles.get(partnership.partner_bot_id).then((row) => {
+      if (active) setPartnerProfile(row || null);
     }).catch(() => {});
     return () => { active = false; };
-  }, [partnership?.partner_bot_id]);
+  }, [partnership?.partner_bot_id, profile?.career_date]);
 
   if (!partnership) {
     return (
@@ -50,6 +52,8 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
     : 0;
   const positionScore = partnership.compatibility_breakdown?.position;
   const sideOk = positionScore == null ? null : positionScore >= 70;
+  const partnerAge = partnerProfile?.age ?? null;
+  const partnerOverall = partnerProfile ? overallRating(partnerProfile) : partnership.partner_overall;
 
   return (
     <div className="space-y-4">
@@ -61,7 +65,7 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           </div>
           <div className="flex-1 min-w-0">
             <h3 className="font-black text-lg">{partnership.partner_name}</h3>
-            <p className="text-xs text-muted-foreground">{partnership.partner_country}{partnerAge ? ` · ${partnerAge} anos` : ''} · {partnership.partner_level} · OVR {partnership.partner_overall} · Lado {sideName(partnership.partner_position)}</p>
+            <p className="text-xs text-muted-foreground">{partnership.partner_country}{partnerAge ? ` · ${partnerAge} anos` : ''} · {partnership.partner_level} · OVR {partnerOverall} · Lado {sideName(partnership.partner_position)}</p>
             <div className="flex items-center gap-2 mt-1">
               <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${chemLabel.bg} ${chemLabel.color}`}>
                 Entrosamento {chem}

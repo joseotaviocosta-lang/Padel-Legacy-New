@@ -4,6 +4,7 @@ import { TrendingUp, ArrowUpRight, Activity, Award } from 'lucide-react';
 import { ATTRIBUTES, ATTRIBUTE_GROUPS } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 import { CollapsibleSection, Surface, SurfaceHeader } from '@/components/design-system';
+import { formatAttributeGain } from '@/lib/numberFormat.js';
 
 // ── Attribute Evolution ──────────────────────────────────────────────────
 // Mostra o radar de todos os atributos, top-melhorados e a evolução
@@ -72,7 +73,7 @@ export default function AttributeEvolution({ profile }) {
           icon={Activity}
           title="Perfil de Atributos"
           description="Visão radar de todos os atributos"
-          action={<div className="text-right"><p className="text-[9px] uppercase text-muted-foreground font-bold">Ganho Total</p><p className="text-lg font-black text-primary tabular-nums">+{totalGain}</p></div>}
+          action={<div className="text-right"><p className="text-[9px] uppercase text-muted-foreground font-bold">Ganho Total</p><p className="text-lg font-black text-primary tabular-nums">+{formatAttributeGain(totalGain)}</p></div>}
         />
         <div className="h-64 w-full">
           <ResponsiveContainer width="100%" height="100%">
@@ -97,7 +98,7 @@ export default function AttributeEvolution({ profile }) {
                 <span className="text-xs font-semibold flex-1">{a.label}</span>
                 <div className="flex items-center gap-1 text-primary">
                   <TrendingUp className="h-3 w-3" />
-                  <span className="text-xs font-bold">+{a.gain}</span>
+                  <span className="text-xs font-bold">+{formatAttributeGain(a.gain)}</span>
                 </div>
                 <span className="text-xs text-muted-foreground tabular-nums w-8 text-right">{a.current}/100</span>
               </div>
@@ -117,7 +118,7 @@ export default function AttributeEvolution({ profile }) {
           <CollapsibleSection
             key={group.id}
             title={group.label}
-            description={`${groupAttrs.length} atributo${groupAttrs.length === 1 ? '' : 's'} · +${groupGain} no total`}
+            description={`${groupAttrs.length} atributo${groupAttrs.length === 1 ? '' : 's'} · +${formatAttributeGain(groupGain)} no total`}
             defaultOpen={groupIndex === 0}
           >
             <div className="space-y-3">
@@ -132,7 +133,7 @@ export default function AttributeEvolution({ profile }) {
                         <span className="text-muted-foreground tabular-nums">{STARTING_VALUE}</span>
                         <ArrowUpRight className="h-2.5 w-2.5 text-muted-foreground" />
                         <span className="font-bold text-primary tabular-nums">{a.current}</span>
-                        {a.growth > 0 && <span className="text-primary text-[9px]">(+{a.growth})</span>}
+                        {a.growth > 0 && <span className="text-primary text-[9px]">(+{formatAttributeGain(a.growth)})</span>}
                       </div>
                     </div>
                     <div className="relative h-2.5 rounded-full bg-secondary/60 overflow-hidden">

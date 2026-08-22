@@ -171,16 +171,16 @@ export function buildBetaAnalyticsExport() {
 
 const FEATURE_CATALOG = [
   { id: 'career', label: 'Carreira', routes: ['/', '/career', '/profile', '/stats'] },
-  { id: 'training', label: 'Treinos', routes: ['/training'] },
+  { id: 'training', label: 'Treinos', routes: [APP_ROUTES.TRAINING] },
   { id: 'calendar', label: 'Calendário', routes: ['/calendar'] },
   { id: 'tournaments', label: 'Torneios', routes: ['/tournaments', '/matches'] },
   { id: 'ranking', label: 'Ranking', routes: ['/ranking'] },
   { id: 'team', label: 'Dupla e equipe', routes: ['/relationships', '/coach', '/staff'] },
   { id: 'market', label: 'Mercado', routes: ['/market', '/world-market'] },
-  { id: 'shop', label: 'Equipamentos', routes: ['/shop', '/inventory'] },
+  { id: 'shop', label: 'Equipamentos', routes: [APP_ROUTES.SHOP, APP_ROUTES.INVENTORY] },
   { id: 'communications', label: 'Comunicações', routes: ['/communications'] },
   { id: 'press', label: 'Imprensa', routes: ['/press'] },
-  { id: 'economy', label: 'Economia', routes: ['/economy', '/sponsors'] },
+  { id: 'economy', label: 'Economia', routes: [APP_ROUTES.ECONOMY] },
   { id: 'world', label: 'Mundo', routes: ['/world', '/news', '/community'] },
   { id: 'club', label: 'Clube', routes: ['/clubs'] },
   { id: 'legacy', label: 'Legado', routes: ['/legacy', '/hall-of-fame', '/achievements'] },
@@ -249,3 +249,4 @@ export function getBetaTesterInsights(snapshot = getBetaAnalyticsSnapshot()) {
     missed,
   };
 }
+import { APP_ROUTES } from '@/navigation/routes.js';

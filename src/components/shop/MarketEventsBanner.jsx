@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ChevronRight } from 'lucide-react';
-import { EVENT_TYPE_META } from '@/lib/marketEngine';
+import { EVENT_TYPE_META, isMarketEventActive, normalizeMarketEvent } from '@/lib/marketEngine';
 
-export default function MarketEventsBanner({ events, onDismiss }) {
+export default function MarketEventsBanner({ events, careerDate, onDismiss }) {
   const [expanded, setExpanded] = useState(null);
   const navigate = useNavigate();
 
   if (!events || events.length === 0) return null;
 
   const topEvents = events
-    .filter(e => e.is_active)
+    .map(normalizeMarketEvent)
+    .filter((event) => isMarketEventActive(event, careerDate))
     .sort((a, b) => (b.priority || 0) - (a.priority || 0))
     .slice(0, 5);
 
@@ -82,7 +83,7 @@ export default function MarketEventsBanner({ events, onDismiss }) {
                   </span>
                   {ev.end_date && (
                     <span className="px-2 py-0.5 rounded-full bg-secondary/60 text-muted-foreground">
-                      Até {new Date(ev.end_date).toLocaleDateString('pt-BR')}
+                      Até {new Date(`${String(ev.end_date).slice(0, 10)}T12:00:00`).toLocaleDateString('pt-BR')}
                     </span>
                   )}
                 </div>

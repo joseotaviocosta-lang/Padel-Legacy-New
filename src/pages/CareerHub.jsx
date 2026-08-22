@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { APP_ROUTES } from '@/navigation/routes.js';
 import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
@@ -516,7 +517,7 @@ function getNextStep(profile, upcomingTournaments) {
   if (playableTournament) return { icon: Trophy, title: `Torneio disponível: ${playableTournament.name}`, description: `Tier ${playableTournament.tier}. Inscreva-se e dispute o título.`, to: '/tournaments', cta: 'Ver torneios' };
   const energy = profile.energy || 0;
   if (energy < 30) return { icon: HeartPulse, title: 'Energia baixa', description: 'Avance um dia sem atividade para recuperar energia.', to: '/game/calendar', cta: 'Ver calendário' };
-  return { icon: Dumbbell, title: 'Hora de treinar', description: 'Evolua seus atributos com um treino hoje.', to: '/game/training', cta: 'Treinar agora' };
+  return { icon: Dumbbell, title: 'Hora de treinar', description: 'Evolua seus atributos com um treino hoje.', to: APP_ROUTES.TRAINING, cta: 'Treinar agora' };
 }
 
 function buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTournamentRecoveryAction = false }) {
@@ -534,7 +535,7 @@ function buildNextEvent({ profile, activeTournamentEvent, nextTournament, hasTou
     const days = daysUntil(profile?.career_date, nextTournament.start_date);
     return { icon: Trophy, tone: 'info', eyebrow: days === 0 ? 'Hoje' : `Em ${days} dia${days === 1 ? '' : 's'}`, title: nextTournament.name, detail: 'Inscrição aberta', route: '/tournaments', cta: 'Ver torneio' };
   }
-  return { icon: CalendarDays, tone: 'neutral', eyebrow: 'Agenda livre', title: 'Nenhum evento nos próximos dias', detail: 'Boa janela para treinar e evoluir.', route: '/game/training', cta: 'Treinar' };
+  return { icon: CalendarDays, tone: 'neutral', eyebrow: 'Agenda livre', title: 'Nenhum evento nos próximos dias', detail: 'Boa janela para treinar e evoluir.', route: APP_ROUTES.TRAINING, cta: 'Treinar' };
 }
 
 // Regra de prioridade simples e determinística (seção 8): entrevista > decisões

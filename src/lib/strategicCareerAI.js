@@ -1,3 +1,5 @@
+import { APP_ROUTES } from '@/navigation/routes.js';
+
 const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(value) || 0));
 
 function daysBetween(from, to) {
@@ -60,15 +62,15 @@ export function buildStrategicCareerState(profile, context = {}) {
   const nextDays = daysBetween(profile?.career_date, context.nextTournament?.start_date);
   const weeklyPlan = buildStrategicWeeklyPlan(profile, context);
 
-  const recommendations = [
+  const recommendations = /** @type {any[]} */ ([
     {
       id: 'coach-plan', source: 'Treinador', title: weeklyPlan.label, body: weeklyPlan.reason,
-      route: '/game/training', priority: fatigue >= 70 || energy <= 30 ? 'high' : 'normal', explain: [`Energia: ${Math.round(energy)}%`, `Fadiga: ${Math.round(fatigue)}%`, nextDays != null ? `Próximo torneio: ${nextDays} dias` : 'Sem torneio iminente'],
+      route: APP_ROUTES.TRAINING, priority: fatigue >= 70 || energy <= 30 ? 'high' : 'normal', explain: [`Energia: ${Math.round(energy)}%`, `Fadiga: ${Math.round(fatigue)}%`, nextDays != null ? `Próximo torneio: ${nextDays} dias` : 'Sem torneio iminente'],
     },
-  ];
+  ]);
   if (profile?.partner_id) recommendations.push({ id: 'partner', source: 'Parceiro', title: partnerTrust >= 70 ? 'Manter a estabilidade da dupla' : 'Trabalhar comunicação e confiança', body: partnerTrust >= 70 ? 'A parceria está sólida; preserve a rotina conjunta.' : 'Uma conversa ou treino em dupla pode fortalecer a relação.', route: '/partners', priority: partnerTrust < 45 ? 'high' : 'normal', explain: [`Confiança da dupla: ${Math.round(partnerTrust)}%`, `Forma recente: ${form.label}`] });
   else recommendations.push({ id: 'partner-missing', source: 'Parceiro', title: 'Defina sua dupla', body: 'Sem parceiro ativo, sua evolução competitiva e ranking de duplas ficam limitados.', route: '/partners', priority: 'high', explain: ['Nenhuma parceria ativa'] });
-  recommendations.push({ id: 'agent', source: 'Empresário', title: Number(profile?.active_sponsors || 0) > 0 ? 'Preservar valor comercial' : 'Buscar primeiro contrato comercial', body: Number(profile?.active_sponsors || 0) > 0 ? 'Resultados e exposição sustentam melhores renovações.' : 'Resultados iniciais e presença no circuito aumentam o interesse de marcas.', route: '/economy', priority: 'normal', explain: [`Popularidade: ${Math.round(clamp(profile?.popularity))}%`, `Ranking: ${context.worldRank?.rank ? `#${context.worldRank.rank}` : 'sem ranking'}`] });
+  recommendations.push({ id: 'agent', source: 'Empresário', title: Number(profile?.active_sponsors || 0) > 0 ? 'Preservar valor comercial' : 'Buscar primeiro contrato comercial', body: Number(profile?.active_sponsors || 0) > 0 ? 'Resultados e exposição sustentam melhores renovações.' : 'Resultados iniciais e presença no circuito aumentam o interesse de marcas.', route: APP_ROUTES.ECONOMY, priority: 'normal', explain: [`Popularidade: ${Math.round(clamp(profile?.popularity))}%`, `Ranking: ${context.worldRank?.rank ? `#${context.worldRank.rank}` : 'sem ranking'}`] });
 
   return {
     score: Math.round(momentScore),

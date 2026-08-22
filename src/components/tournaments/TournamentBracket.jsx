@@ -1,6 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
 import { ModalShell, Surface, Tabs } from '@/components/design-system';
+import { isTournamentCompletedAt, sanitizeBracketHistory, visibleTournamentChampion } from '@/lib/tournamentBracketView.js';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
@@ -70,11 +71,13 @@ function reconstructLegacyHistory(tournament) {
   ];
 }
 
-function normalizeHistory(tournament) {
+function normalizeHistory(tournament, careerDate) {
   const canonical = Array.isArray(tournament.bracket_history) && tournament.bracket_history.length;
   const raw = canonical
-    ? tournament.bracket_history
-    : reconstructLegacyHistory(tournament);
+    ? sanitizeBracketHistory(tournament, careerDate)
+    : isTournamentCompletedAt(tournament, careerDate) && tournament.champion
+      ? reconstructLegacyHistory(tournament)
+      : [];
 
   return raw.map((round) => ({
     round: round.round || round.label || 'Rodada',
@@ -93,13 +96,15 @@ function normalizeHistory(tournament) {
   }));
 }
 
-export default function TournamentBracket({ tournament, onClose }) {
+export default function TournamentBracket({ tournament, careerDate, onClose }) {
   const tier = TIER_STYLES[tournament.tier] || TIER_STYLES.Silver;
-  const history = useMemo(() => normalizeHistory(tournament), [tournament]);
+  const history = useMemo(() => normalizeHistory(tournament, careerDate), [careerDate, tournament]);
   const [activeRound, setActiveRound] = useState(Math.max(0, history.length - 1));
-  const champion = normalizeTeamName(tournament.champion);
-  const runnerUp = normalizeTeamName(tournament.runner_up || history.at(-1)?.matches?.[0]?.team_b);
+  const visibleChampion = visibleTournamentChampion(tournament, careerDate);
+  const champion = visibleChampion ? normalizeTeamName(visibleChampion) : null;
+  const runnerUp = champion ? normalizeTeamName(tournament.runner_up || history.at(-1)?.matches?.[0]?.team_b) : null;
   const matches = history.reduce((sum, round) => sum + round.matches.length, 0);
+  const completed = isTournamentCompletedAt(tournament, careerDate);
 
   return (
     <ModalShell
@@ -116,19 +121,20 @@ export default function TournamentBracket({ tournament, onClose }) {
         <Info icon={BarChart3} value={`${matches} partidas`} color="text-emerald-400" />
       </div>
 
-      {tournament.champion && <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 to-transparent p-4 mb-4 text-center">
+      {champion && <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 to-transparent p-4 mb-4 text-center">
         <Crown className="h-8 w-8 text-amber-400 mx-auto mb-2" />
         <p className="text-[10px] text-amber-400/70 uppercase font-bold tracking-wide">Campeões</p>
         <p className="text-lg font-black text-amber-300">{champion}</p>
         <p className="text-[10px] text-muted-foreground mt-1">Vice: {runnerUp}</p>
       </div>}
 
-      <div className="mb-3">
+      {history.length > 0 ? <><div className="mb-3">
         <Tabs
           tabs={history.map((round, index) => ({ key: String(index), label: round.round }))}
           activeTab={String(activeRound)}
           onTabChange={(key) => setActiveRound(Number(key))}
           variant="buttons"
+          className=""
         />
       </div>
 
@@ -137,11 +143,17 @@ export default function TournamentBracket({ tournament, onClose }) {
           <MatchCard key={`${activeRound}-${index}`} match={match} number={index + 1} />
         ))}
       </div>
+      </> : (
+        <Surface padding="compact" className="text-center">
+          <p className="text-sm font-bold">Chave ainda não sorteada</p>
+          <p className="mt-1 text-xs text-muted-foreground">Participantes e confrontos aparecerão quando o sorteio oficial for realizado.</p>
+        </Surface>
+      )}
 
       <div className="flex flex-wrap items-center gap-4 pt-4 mt-4 border-t border-border/40">
         <div className="flex items-center gap-1.5"><Coins className="h-3.5 w-3.5 text-yellow-400" /><span className="text-xs font-bold">{(tournament.prize_coins || 0).toLocaleString('pt-BR')}</span><span className="text-[9px] text-muted-foreground uppercase">moedas</span></div>
         <div className="flex items-center gap-1.5"><Trophy className="h-3.5 w-3.5 text-amber-400" /><span className="text-xs font-bold">{tournament.rank_points || 0}</span><span className="text-[9px] text-muted-foreground uppercase">pts ranking</span></div>
-        <div className="flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5 text-cyan-400" /><span className="text-xs font-bold">Histórico completo</span></div>
+        <div className="flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5 text-cyan-400" /><span className="text-xs font-bold">{completed ? 'Histórico completo' : 'Chave prevista'}</span></div>
       </div>
     </ModalShell>
   );

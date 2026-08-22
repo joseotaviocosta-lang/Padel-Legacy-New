@@ -3,6 +3,8 @@
 
 import { localGame } from '@/api/localGameClient.js';
 import { RARITY_STYLES } from '@/lib/equipmentCatalog';
+import { normalizeMarketEvent } from '@/lib/marketPromotion.js';
+export { isMarketEventActive, normalizeMarketEvent } from '@/lib/marketPromotion.js';
 
 // ─── Price Computation ────────────────────────────────────────────────────────
 
@@ -24,7 +26,8 @@ export function computeItemPrice(item, marketEvents = [], priceHistory = null, p
   let appliedEvents = [];
 
   // 1. Apply active market events
-  for (const ev of marketEvents) {
+  for (const rawEvent of marketEvents) {
+    const ev = normalizeMarketEvent(rawEvent);
     if (!ev.is_active) continue;
     // Check if event affects this item
     if (ev.affected_item_ids?.length > 0 && !ev.affected_item_ids.includes(item.id)) continue;

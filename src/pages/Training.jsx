@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { formatAttributeGain } from '@/lib/numberFormat.js';
 import { localGame } from '@/api/localGameClient.js';
 import { Dumbbell, FastForward, Heart, Activity, Calendar, TrendingUp, Target, Users, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, formatDate, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel';
@@ -137,7 +138,7 @@ export default function Training() {
       if (res.injured) {
         toast({ title: 'Lesão!', description: `Você se lesionou no treino! Fica parado ${res.recoveryDays} dias.`, variant: 'destructive' });
       } else if (res.gain > 0) {
-        toast({ title: 'Treino concluído!', description: `+${res.gain} ${res.activity.attribute} · +${res.activity.xp} XP · -${res.cost} moedas` });
+        toast({ title: 'Treino concluído!', description: `+${formatAttributeGain(res.gain)} ${res.activity.attribute} · +${res.activity.xp} XP · -${res.cost} moedas` });
       } else {
         toast({ title: 'Treino concluído', description: `Sem progresso no atributo. -${res.cost} moedas.` });
       }
@@ -259,7 +260,7 @@ export default function Training() {
           title={`${result.activity.label} · ${result.intensity.label}`}
           description={[
             result.gain > 0
-              ? `${Number(result.gain).toFixed(2)} de progresso distribuído · +${result.activity.xp} XP · -${result.cost} moedas`
+              ? `${formatAttributeGain(result.gain)} de progresso distribuído · +${result.activity.xp} XP · -${result.cost} moedas`
               : `Sessão de manutenção · +${result.activity.xp} XP · -${result.cost} moedas`,
             `Saldo: ${Number(result.coinsAfter || 0).toLocaleString('pt-BR')}`,
             result.diminishing < 1 ? `${Math.round(result.diminishing * 100)}% eficiência` : null,
@@ -388,7 +389,7 @@ export default function Training() {
                   <div className="flex-1 min-w-0">
                     <p className="text-xs font-medium truncate">{t.training_label}</p>
                     <p className="text-[10px] text-muted-foreground">
-                      +{t.attribute_gain} {t.attribute_target} · +{t.xp_reward} XP
+                      +{formatAttributeGain(t.attribute_gain)} {t.attribute_target} · +{t.xp_reward} XP
                       {t.category && ` · ${TRAINING_CATEGORIES[t.category]?.label || t.category}`}
                       {t.intensity && ` · ${t.intensity}`}
                     </p>

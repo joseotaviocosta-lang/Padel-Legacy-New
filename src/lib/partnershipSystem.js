@@ -152,7 +152,6 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
     partner_level: bot.level,
     partner_position: bot.position,
     partner_play_style: bot.play_style,
-    partner_overall: overallRating(bot),
     started_career_date: careerDate,
     negotiated_duration_days: durationDays,
     scheduled_end_date: endDate,

@@ -50,7 +50,13 @@ const PlayerAdapter = {
   },
 
   async update(id, updates = {}) {
-    return repository.updatePlayerProfile(id, updates);
+    const profile = await repository.updatePlayerProfile(id, updates);
+    if (Object.prototype.hasOwnProperty.call(updates, 'coins') && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('padel:profile-updated', {
+        detail: { profile, profileId: profile?.id, careerDate: profile?.career_date, source: 'player-adapter-balance' },
+      }));
+    }
+    return profile;
   },
 
   async delete(id) {

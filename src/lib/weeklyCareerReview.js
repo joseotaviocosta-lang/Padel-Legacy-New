@@ -1,3 +1,6 @@
+import { APP_ROUTES } from '@/navigation/routes.js';
+import { formatAttributeGain } from '@/lib/numberFormat.js';
+
 function parseDate(value) {
   if (!value) return null;
   const raw = String(value).slice(0, 10);
@@ -63,7 +66,7 @@ function pickHeadline({ matches, wins, trainings, unread, profile }) {
       label: 'Ajuste',
       title: 'Hora de revisar o plano',
       description: 'Os resultados da semana indicam uma boa oportunidade para ajustar treino, tática e recuperação.',
-      route: '/training',
+      route: APP_ROUTES.TRAINING,
     };
   }
   if (trainings >= 4) {
@@ -72,7 +75,7 @@ function pickHeadline({ matches, wins, trainings, unread, profile }) {
       label: 'Desenvolvimento',
       title: 'Semana consistente de evolução',
       description: `${trainings} sessões concluídas mantiveram o desenvolvimento da carreira em movimento.`,
-      route: '/training',
+      route: APP_ROUTES.TRAINING,
     };
   }
   if (unread > 0) {
@@ -127,7 +130,7 @@ export function buildWeeklyCareerReview(profile, context = {}) {
     metrics: [
       { id: 'matches', label: 'Partidas', value: weeklyMatches.length, detail: weeklyMatches.length ? `${wins}V · ${losses}D` : 'Nenhuma disputa' },
       { id: 'performance', label: 'Aproveitamento', value: `${winRate}%`, detail: weeklyMatches.length ? 'Na semana' : 'Sem partidas' },
-      { id: 'trainings', label: 'Treinos', value: weeklyTrainings.length, detail: gain > 0 ? `+${gain.toFixed(2)} de progresso` : 'Sessões concluídas' },
+      { id: 'trainings', label: 'Treinos', value: weeklyTrainings.length, detail: gain > 0 ? `+${formatAttributeGain(gain)} de progresso` : 'Sessões concluídas' },
       { id: 'communications', label: 'Pendências', value: unread, detail: unread ? 'Aguardando leitura' : 'Tudo em dia' },
     ],
     hasActivity: weeklyMatches.length > 0 || weeklyTrainings.length > 0 || unread > 0,

@@ -130,7 +130,7 @@ export function deriveCareerMoment(profile, context = {}) {
       title: `${recentWins} vitórias nas últimas ${recent.length} partidas`,
       description: 'A dupla vive um momento de confiança. Mantenha o equilíbrio entre competição, treino e recuperação para prolongar a sequência.',
       primaryAction: { label: 'Ver estatísticas', route: '/stats' },
-      secondaryAction: { label: 'Conversar com a dupla', route: '/partnership' },
+      secondaryAction: { label: 'Conversar com a dupla', route: APP_ROUTES.PARTNERS },
     };
   }
 
@@ -144,7 +144,7 @@ export function deriveCareerMoment(profile, context = {}) {
       eyebrow: 'Dupla consolidada',
       title: `${partnerMatches} partidas construindo uma identidade`,
       description: 'A continuidade está transformando química em entendimento real de quadra. Esse vínculo pode se tornar um diferencial difícil de substituir.',
-      primaryAction: { label: 'Ver dupla', route: '/partnership' },
+      primaryAction: { label: 'Ver dupla', route: APP_ROUTES.PARTNERS },
       secondaryAction: { label: 'Ver treinador', route: '/coaches' },
     };
   }
@@ -156,3 +156,4 @@ export function careerMomentTheme(moment) {
   if (!moment) return 'neutral';
   return moment.tone || 'neutral';
 }
+import { APP_ROUTES } from '@/navigation/routes.js';
