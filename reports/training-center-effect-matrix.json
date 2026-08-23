@@ -1,0 +1,411 @@
+{
+  "generatedAt": "2026-08-23T02:23:33.794Z",
+  "generator": "scripts/generate-training-center-effect-matrix.mjs",
+  "facilities": [
+    {
+      "id": "courts",
+      "name": "Quadras",
+      "category": "infra",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "daily_training_bonus",
+          "resolvedEffect": "dailyTrainingBonus",
+          "consumer": "padel.js: getDailyTrainingLimit -> canTrainToday/canDoPhysio; trainingSystemV2.js: executeTrainingWork (limite real)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "gym",
+      "name": "Academia",
+      "category": "fisico",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "physical_gain_pct",
+          "resolvedEffect": "physicalGainPct",
+          "consumer": "trainingSystemV2.js: calculateTrainingGainBudget (facilityGroupMultiplier, grupo physical)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "physio",
+      "name": "Fisioterapia",
+      "category": "fisico",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "energy_recovery_bonus",
+          "resolvedEffect": "energyRecoveryBonus",
+          "consumer": "career.js: advanceDay (recovery aditivo diário)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "medical",
+      "name": "Departamento Médico",
+      "category": "fisico",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "injury_risk_reduction",
+          "resolvedEffect": "injuryRiskReduction",
+          "consumer": "trainingSystemV2.js: previewTraining (facilityInjuryMultiplier); padel.js: buildMatchRewardsPatch (rollInjury riskMultiplier)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        },
+        {
+          "declaredEffect": "injury_recovery_bonus",
+          "resolvedEffect": "injuryRecoveryBonus",
+          "consumer": "trainingSystemV2.js: executeTrainingWork (recoveryDays); padel.js: buildMatchRewardsPatch (recoveryDays)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "performance_analysis",
+      "name": "Análise de Desempenho",
+      "category": "tecnologia",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "training_gain_pct",
+          "resolvedEffect": "trainingGainPct",
+          "consumer": "trainingSystemV2.js: calculateTrainingGainBudget (facilityGlobalMultiplier, todos os grupos)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "biomechanics",
+      "name": "Biomecânica",
+      "category": "tecnologia",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "technique_gain_pct",
+          "resolvedEffect": "techniqueGainPct",
+          "consumer": "trainingSystemV2.js: calculateTrainingGainBudget (facilityGroupMultiplier, grupo court)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "nutrition",
+      "name": "Nutrição",
+      "category": "fisico",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "max_energy_bonus",
+          "resolvedEffect": "maxEnergyBonus",
+          "consumer": null,
+          "statusBefore": "B",
+          "statusAfter": "F",
+          "ambiguityNote": "Elevar o teto real de energia acima de 100 quebraria formatPercent()/todas as barras de energia da UI, que assumem escala 0-100 (MIN/MAX_FATIGUE). Requer auditar e ajustar cada exibição de energia antes de ativar — não implementado nesta fase para não introduzir uma regressão visual silenciosa."
+        },
+        {
+          "declaredEffect": "energy_recovery_pct",
+          "resolvedEffect": "energyRecoveryPct",
+          "consumer": "career.js: advanceDay (multiplicador percentual sobre a recuperação diária)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "psychology",
+      "name": "Psicologia Esportiva",
+      "category": "bemestar",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "mental_gain_pct",
+          "resolvedEffect": "mentalGainPct",
+          "consumer": "trainingSystemV2.js: calculateTrainingGainBudget (facilityGroupMultiplier, grupo mental)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        },
+        {
+          "declaredEffect": "morale_bonus",
+          "resolvedEffect": "moraleBonus",
+          "consumer": "career.js: advanceDay (moraleRecovery aditivo diário)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "accommodation",
+      "name": "Alojamentos",
+      "category": "infra",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "energy_recovery_bonus",
+          "resolvedEffect": "energyRecoveryBonus",
+          "consumer": "career.js: advanceDay (recovery aditivo diário)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        },
+        {
+          "declaredEffect": "rest_anytime",
+          "resolvedEffect": "restAnytime",
+          "consumer": "padel.js: applyRecovery (bypassa o bloqueio de descanso após atividade)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "laboratory",
+      "name": "Laboratório de Inovação",
+      "category": "tecnologia",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "overall_gain_pct",
+          "resolvedEffect": "overallGainPct",
+          "consumer": "trainingSystemV2.js: calculateTrainingGainBudget (facilityGlobalMultiplier, todos os grupos)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        }
+      ]
+    },
+    {
+      "id": "vip",
+      "name": "Área VIP",
+      "category": "bemestar",
+      "maxLevel": 5,
+      "benefits": [
+        {
+          "declaredEffect": "coins_per_match",
+          "resolvedEffect": "coinsPerMatch",
+          "consumer": "padel.js: buildMatchRewardsPatch (coinsGain aditivo por partida)",
+          "statusBefore": "B",
+          "statusAfter": "A",
+          "ambiguityNote": null
+        },
+        {
+          "declaredEffect": "sponsor_appeal",
+          "resolvedEffect": "sponsorAppeal",
+          "consumer": null,
+          "statusBefore": "B",
+          "statusAfter": "F",
+          "ambiguityNote": "profile.fan_appeal/sponsor_appeal já existem e têm um modelo de deriva-para-baseline (athleteBehavior.js) e efeitos pontuais de entrevista (pressData.js). Um bônus fixo de instalação entraria em conflito com esse modelo (a deriva devolveria o valor à baseline com o tempo) — a semântica correta (piso permanente? recálculo do baseline? multiplicador?) é uma decisão de design fora do escopo deste hotfix."
+        },
+        {
+          "declaredEffect": "fan_appeal",
+          "resolvedEffect": "fanAppeal",
+          "consumer": null,
+          "statusBefore": "B",
+          "statusAfter": "F",
+          "ambiguityNote": "Mesmo caso de sponsorAppeal — mesma instalação (Área VIP), mesmo conflito com o modelo de deriva existente."
+        }
+      ]
+    }
+  ],
+  "equipment": [
+    {
+      "declaredEffect": "agility",
+      "resolvedEffect": "agility",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "backhand",
+      "resolvedEffect": "backhand",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "bandeja",
+      "resolvedEffect": "bandeja",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "concentration",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "control",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "defense",
+      "resolvedEffect": "defense",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "durability",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "emotional_control",
+      "resolvedEffect": "emotional_control",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "followers",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "forehand",
+      "resolvedEffect": "forehand",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "health",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "positioning",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "reflexes",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "reputation",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "smash",
+      "resolvedEffect": "smash",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "speed",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "stamina",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "strategy",
+      "resolvedEffect": "strategy",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    },
+    {
+      "declaredEffect": "strength",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "tactics",
+      "resolvedEffect": null,
+      "consumer": null,
+      "statusBefore": "E",
+      "statusAfter": "F",
+      "ambiguityNote": "Chave declarada no catálogo de itens de suporte (storeCatalog.js) que não corresponde a nenhum ATTRIBUTE_KEYS real do jogador — provável confusão com o vocabulário de atributos de mundo (athleteGenerator.js: speed/stamina/strength/reflexes/concentration/tactics/positioning) ou com sistemas adjacentes (reputation/followers/health/durability). Vira um campo órfão no profile sem efeito prático. Requer decisão de design (remapear para o atributo correto ou remover o bônus) antes de conectar."
+    },
+    {
+      "declaredEffect": "volley",
+      "resolvedEffect": "volley",
+      "consumer": "Inventory.jsx: toggleEquip (soma/subtrai diretamente em profile[attribute], cascateando para overallRating/ranking/motor de partida)",
+      "statusBefore": "D",
+      "statusAfter": "A",
+      "ambiguityNote": null
+    }
+  ],
+  "summary": {
+    "facilitiesTotal": 11,
+    "facilityBenefitsTotal": 17,
+    "facilityBenefitsFunctionalAfter": 14,
+    "facilityBenefitsAmbiguous": 3,
+    "equipmentCatalogTotal": 97,
+    "equipmentItemsWithBonus": 91,
+    "equipmentBonusKeysTotal": 21,
+    "equipmentBonusKeysConsumed": 9,
+    "equipmentBonusKeysOrphan": 12
+  }
+}

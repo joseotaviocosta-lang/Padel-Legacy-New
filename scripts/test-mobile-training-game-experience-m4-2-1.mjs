@@ -26,7 +26,14 @@ const appLayout = read('src/components/AppLayout.jsx');
 
 // ── Parte 26/27: HUD com saldo visível, sem card gigante próprio ──────────
 gate('Saldo de moedas permanece no Header Global e não é duplicado no HUD local do Centro', /formatCoinBalance\(headerProfile\?\.coins\)/.test(appLayout) && !/label: 'moedas'/.test(hub));
-gate('HUD local continua mostrando treinos hoje/energia/fadiga e partida', /trainings_today.*DAILY_TRAINING_LIMIT/s.test(hub) && /energia/.test(hub) && /fadiga/.test(hub) && /partida/.test(hub));
+// Hotfix 15.5.3 (Centro de Treinamento): o HUD comparava trainings_today
+// contra a constante fixa DAILY_TRAINING_LIMIT — Quadras evoluídas
+// anunciavam "+1 treino/dia" na UI, mas o limite real (aqui e na execução)
+// nunca refletia o bônus. Corrigido para getDailyTrainingLimit(profile),
+// que soma o bônus resolvido do Centro (facility_daily_training_bonus,
+// cacheado no profile no momento do upgrade) à mesma constante base — o
+// regex passa a exigir o resolver canônico, não mais a constante isolada.
+gate('HUD local continua mostrando treinos hoje/limite real (getDailyTrainingLimit, com bônus do Centro)/energia/fadiga e partida', /trainings_today.*getDailyTrainingLimit\(profile\)/s.test(hub) && /energia/.test(hub) && /fadiga/.test(hub) && /partida/.test(hub));
 
 // ── Parte 26: action-first — atividades de treino vêm ANTES de recovery/staff ──
 const activitiesIdx = training.indexOf('Atividades de treino');
