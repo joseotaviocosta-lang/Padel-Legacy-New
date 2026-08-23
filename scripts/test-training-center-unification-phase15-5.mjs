@@ -103,7 +103,7 @@ try {
   gate('Hub não importa páginas completas legadas', !/pages\/(Training|Matches)/.test(source.hub));
   gate('Suspense envolve conteúdo ativo', source.hub.includes('<Suspense') && source.hub.includes('{activeContent}'));
   gate('Perfil é carregado uma vez no host', (source.hub.match(/ensureMyProfile/g) || []).length === 2);
-  gate('Views recebem perfil compartilhado', source.hub.includes('const shared = { profile, onProfileUpdate'));
+  gate('Views recebem perfil compartilhado', /const shared = \{ profile,[^}]*onProfileUpdate/.test(source.hub));
   gate('HUD local mostra treinos', source.hub.includes("label: 'treinos'"));
   gate('HUD local mostra partida', source.hub.includes("label: 'partida'"));
   gate('HUD local mostra energia', source.hub.includes("label: 'energia'"));

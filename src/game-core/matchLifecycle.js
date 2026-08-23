@@ -1,6 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
 import { gameRepository } from '@/gameplay/services/runtime.js';
-import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { CORE_BALANCE } from './config';
 import { calculatePracticeProgress } from './progression';
 import { calculatePostMatchCondition } from './condition';
@@ -12,19 +11,8 @@ import {
   scheduleSecondaryMatchWork,
 } from './matchFinalization';
 
-function teamKeyFor(profile, partnerName) {
-  return [profile.sport_name || 'jogador', partnerName || 'parceiro']
-    .map((value) => String(value).toLowerCase().replace(/\s+/g, '-'))
-    .sort().join('__');
-}
-
 async function buildSecondaryOperations({ profile, won, partnerName, opponents, score, coinsGain, finalizationKey }) {
-  const teamKey = teamKeyFor(profile, partnerName);
-  const [rankingRows, athletes] = await Promise.all([
-    localGame.entities.TeamRanking.filter({ team_key: teamKey }),
-    localGame.entities.AthleteProfile.list('-ranking_points', 40),
-  ]);
-  const currentRanking = rankingRows?.[0];
+  const athletes = await localGame.entities.AthleteProfile.list('-ranking_points', 40);
   const date = todayForProfile(profile);
   const recordId = finalizationKey.replaceAll(':', '-');
   const playerName = safeName(profile);
@@ -52,10 +40,6 @@ async function buildSecondaryOperations({ profile, won, partnerName, opponents, 
     {
       type: 'upsert', entityName: 'Post', id: `post-${recordId}`,
       data: { author_name: 'Padel Legacy News', author_type: 'media', content: newsTitle, likes: won ? 24 : 9, comments_count: won ? 6 : 2, created_date: new Date().toISOString() },
-    },
-    {
-      type: 'upsert', entityName: 'TeamRanking', id: currentRanking?.id || `team-ranking-${teamKey}`,
-      data: { team_key: teamKey, player1_name: profile.sport_name || 'Jogador', player2_name: partnerName, ranking_position: currentRanking?.ranking_position || 999, rank_points: (Number(currentRanking?.rank_points) || 0) + (won ? 2 : 0), wins: (Number(currentRanking?.wins) || 0) + (won ? 1 : 0), losses: (Number(currentRanking?.losses) || 0) + (won ? 0 : 1) },
     },
   ];
   for (const athlete of (athletes || []).slice(0, 12)) {
@@ -91,7 +75,6 @@ async function finalizePracticeMatchWork({ profile, matchState, partnerName, opp
   const playerPatch = {
     ...progress.updates,
     ...condition,
-    rank_points: (Number(profile.rank_points) || 0) + Math.round((won ? CORE_BALANCE.ranking.practiceWin : CORE_BALANCE.ranking.practiceLoss) * getDifficultyModifier(profile, 'rankingPointsMultiplier')),
     live_coach_settings: liveCoachSettings || profile.live_coach_settings,
     live_coach_history: matchState.liveCoachReport ? [...(profile.live_coach_history || []), matchState.liveCoachReport].slice(-100) : profile.live_coach_history,
     coach_match_observations: [...(profile.coach_match_observations || []), ...(matchState.liveCoach?.observations || [])].slice(-500),

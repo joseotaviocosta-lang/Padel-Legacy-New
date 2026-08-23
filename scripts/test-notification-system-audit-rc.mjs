@@ -32,7 +32,6 @@ try {
   const bell = read('src/components/communications/CommunicationBell.jsx');
   const communications = read('src/pages/Communications.jsx');
   const careerHub = read('src/pages/CareerHub.jsx');
-  const careerAssistant = read('src/components/career/CareerAssistant.jsx');
   const partnerHub = read('src/pages/PartnerHub.jsx');
   const inboxPanel = read('src/components/partner/InboxPanel.jsx');
   const partnershipSystem = read('src/lib/partnershipSystem.js');
@@ -98,10 +97,12 @@ try {
   record('cenário 11: lesão abre direto na recuperação', resolveNotificationDestination(injuryNotification).route === '/game/calendar?focus=recovery');
 
   // ── Cenário 12: notificação resolvida não aparece mais como pendente ──────
-  const coachCondition = await ensureContextualCareerCommunications(
-    { ...profile, coach_id: 'coach-1', coach_name: 'Treinador Teste', fatigue: 80 },
-    {},
-  );
+  const coachCondition = [await upsertCareerMessage(PROFILE_ID, 'coach-recovery:coach-1', {
+    title: 'Plano de recuperação',
+    content: 'A comissão recomenda reduzir a carga.',
+    status: 'decisao_pendente',
+    actions: [{ id: 'follow_recovery', label: 'Seguir recuperação' }],
+  })];
   const pendingBefore = selectPendingDecisions(await listCareerCommunications(PROFILE_ID, 50));
   record('cenário 12: decisão pendente do treinador foi criada', pendingBefore.some((m) => m.id === coachCondition[0]?.id));
   await resolveMessage(coachCondition[0].id, 'follow_recovery');
@@ -206,7 +207,7 @@ try {
   record('contador único: sino usa notificationSelectors.js', bell.includes("from '@/lib/notificationSelectors.js'") && bell.includes('countUnreadCareerMessages'));
   record('contador único: Comunicações usa notificationSelectors.js', communications.includes("from '@/lib/notificationSelectors.js'"));
   record('contador único: CareerHub usa notificationSelectors.js', careerHub.includes("from '@/lib/notificationSelectors.js'"));
-  record('contador único: CareerAssistant usa notificationSelectors.js', careerAssistant.includes("from '@/lib/notificationSelectors.js'"));
+  record('contador único: sino global usa notificationSelectors.js', bell.includes("from '@/lib/notificationSelectors.js'"));
   record('contador único: PartnerHub usa notificationSelectors.js', partnerHub.includes("from '@/lib/notificationSelectors.js'"));
 
   // ── Estrutural: 1 única superfície de leitura/resolução (partnershipSystem não duplica mais) ─

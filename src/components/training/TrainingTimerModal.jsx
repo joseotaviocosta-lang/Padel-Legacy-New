@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { Check, Dumbbell } from 'lucide-react';
 import { ModalShell, useMotionPolicy } from '@/components/design-system';
@@ -8,8 +8,10 @@ const DURATION = 0; // instantâneo
 export default function TrainingTimerModal({ training, onComplete, onCancel }) {
   const { allowDecorativeMotion } = useMotionPolicy();
   const [seconds, setSeconds] = useState(DURATION);
+  const completedRef = useRef(false);
 
   useEffect(() => {
+    if (DURATION <= 0) return undefined;
     const interval = setInterval(() => {
       setSeconds(s => Math.max(0, s - 1));
     }, 1000);
@@ -17,11 +19,10 @@ export default function TrainingTimerModal({ training, onComplete, onCancel }) {
   }, []);
 
   useEffect(() => {
-    if (seconds === 0) {
-      const t = setTimeout(() => onComplete(), 800);
-      return () => clearTimeout(t);
-    }
-  }, [seconds]);
+    if (seconds !== 0 || completedRef.current) return;
+    completedRef.current = true;
+    onComplete();
+  }, [onComplete, seconds]);
 
   const mins = Math.floor(seconds / 60);
   const secs = seconds % 60;

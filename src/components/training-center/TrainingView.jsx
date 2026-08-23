@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Dumbbell, FastForward, Heart, Users } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
@@ -33,30 +33,37 @@ import {
 } from '@/lib/trainingSystemV2.js';
 import { APP_ROUTES, TRAINING_CENTER_VIEWS } from '@/navigation/routes.js';
 
+const CoachEntity = Reflect.get(localGame.entities, 'Coach');
+
 export default function TrainingView({ profile, onProfileUpdate, onSelectView }) {
-  const entities = /** @type {any} */ (localGame.entities);
   const [coach, setCoach] = useState(null);
   const [weeklyCounts, setWeeklyCounts] = useState({});
   const [busy, setBusy] = useState(null);
+  const [loadError, setLoadError] = useState('');
   const [result, setResult] = useState(null);
   const [activeTraining, setActiveTraining] = useState(null);
   const [advancing, setAdvancing] = useState(false);
   const [activeCategory, setActiveCategory] = useState('court');
   const { toast } = useToast();
   const navigate = useNavigate();
+  const trainingFlightRef = useRef(null);
 
   useEffect(() => {
     let cancelled = false;
+    setLoadError('');
     Promise.all([
       getWeeklyTrainingCounts(profile.id, profile.career_date),
-      profile.coach_id ? entities.Coach.get(profile.coach_id).catch(() => null) : Promise.resolve(null),
+      profile.coach_id ? CoachEntity.get(profile.coach_id).catch(() => null) : Promise.resolve(null),
     ]).then(([counts, currentCoach]) => {
       if (cancelled) return;
       setWeeklyCounts(counts || {});
       setCoach(currentCoach);
-    }).catch(() => {});
+    }).catch((error) => {
+      if (!cancelled) setLoadError(error?.message || 'Falha ao carregar o estado dos treinos.');
+      console.error('[TrainingCenter] Falha ao preparar a view de treino.', error);
+    });
     return () => { cancelled = true; };
-  }, [entities.Coach, profile.id, profile.career_date, profile.coach_id]);
+  }, [profile.id, profile.career_date, profile.coach_id]);
 
   const recommendedIds = useMemo(
     () => new Set(getRecommendedTrainings(profile, { recentCounts: weeklyCounts }).map((item) => item.training.id)),
@@ -70,7 +77,6 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
   const conditionScore = getConditionScore(profile);
 
   async function doTraining(activity, intensityId) {
-    setBusy(activity.id);
     try {
       const res = await executeTraining(profile, activity, intensityId, coach?.training_bonus || {});
       if (res.error) {
@@ -97,6 +103,7 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
       console.error(error);
       toast({ title: 'Erro', description: 'Falha ao registrar treino.', variant: 'destructive' });
     } finally {
+      trainingFlightRef.current = null;
       setBusy(null);
     }
   }
@@ -117,6 +124,7 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
   }
 
   function handleExecute(activity, intensityId) {
+    if (trainingFlightRef.current) return;
     if (isRetired(profile)) {
       toast({ title: 'Aposentado', description: 'Sua carreira como jogador terminou.', variant: 'destructive' });
       return;
@@ -125,6 +133,8 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
       toast({ title: 'Lesionado', description: `Recupera em ${injuryRecoveryDays(profile)} dias.`, variant: 'destructive' });
       return;
     }
+    trainingFlightRef.current = `${profile.id}:${activity.id}`;
+    setBusy(activity.id);
     setActiveTraining({ activity, intensityId });
   }
 
@@ -142,6 +152,7 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
 
   return (
     <div className="space-y-3" data-training-center-view="training">
+      {loadError && <ActionFeedback state="error" title="Falha ao carregar o treino" description={loadError} action={null} className="" />}
       {overtraining.level !== 'none' && <ActionFeedback state={overtraining.level === 'critical' ? 'error' : 'warning'} title={overtraining.label} description={overtraining.message} action={null} className="" />}
       {isInjured(profile) && <ActionFeedback state="error" title={`Lesionado · recupera em ${injuryRecoveryDays(profile)} dias`} description="Avance o calendário; a fisioterapia da comissão reduz risco e fadiga." action={null} className="" />}
       {result?.type === 'training' && (
@@ -209,7 +220,7 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
         <TrainingTimerModal
           training={{ id: activeTraining.activity.id, label: activeTraining.activity.label, attribute: activeTraining.activity.attribute, icon: activeTraining.activity.icon, xp: activeTraining.activity.xp, cost: getTrainingCost(profile, activeTraining.intensityId) }}
           onComplete={() => { const selected = activeTraining; setActiveTraining(null); doTraining(selected.activity, selected.intensityId); }}
-          onCancel={() => setActiveTraining(null)}
+          onCancel={() => { trainingFlightRef.current = null; setBusy(null); setActiveTraining(null); }}
         />
       )}
     </div>

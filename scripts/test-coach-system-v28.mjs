@@ -5,6 +5,7 @@ const lifecycle = fs.readFileSync('src/game-core/coachLifecycle.js','utf8');
 const page = fs.readFileSync('src/pages/Coaches.jsx','utf8');
 const staff = fs.readFileSync('src/components/economy/StaffPanel.jsx','utf8');
 const match = fs.readFileSync('src/components/matches/SimulationModal.jsx','utf8');
+const practiceSession = fs.readFileSync('src/game-core/practiceMatchSession.js','utf8');
 // A regressão histórica era "treinador ignorado em torneios": o bônus só
 // era aplicado em partida treino. Checar também TournamentModal.jsx garante
 // que essa lacuna não volte silenciosamente (Fase 10 / beta readiness).
@@ -23,8 +24,8 @@ const checks = [
   ['contrato e salário mensal', lifecycle.includes('coach_contract_end_date') && lifecycle.includes('coach_monthly_salary')],
   ['demissão não reatribui treinador automaticamente', !lifecycle.includes('replaceWithStarterCoach') && page.includes('coach_contract_status: \'terminated\'')],
   ['integração com comissão', staff.includes('Gerenciar treinador principal') && staff.includes('Líder da comissão')],
-  ['mercado completo', page.includes("list('-reputation', 500)")],
-  ['impacto real em partida treino', match.includes('_coachMatchBonus') && match.includes('getCoachEffects')],
+  ['mercado completo', page.includes('ensureCoachMarketInitialized') && lifecycle.includes("list('-reputation', 500)")],
+  ['impacto real em partida treino', match.includes('preparePracticeMatchSession') && practiceSession.includes('_coachMatchBonus') && practiceSession.includes('getCoachEffects')],
   ['impacto real em partida de torneio', tournamentMatch.includes('_coachMatchBonus') && tournamentMatch.includes('getCoachEffects')],
 ];
 const failed = checks.filter(([,ok]) => !ok);

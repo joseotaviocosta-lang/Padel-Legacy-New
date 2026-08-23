@@ -7,6 +7,8 @@ import {
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { getTrainingCost } from '@/lib/trainingEconomy.js';
+import { gameRepository } from '@/gameplay/services/runtime.js';
+import { getActivePersistenceTransactionContext } from '@/dev/persistenceTransactionProbe.js';
 export { WEEKDAYS, createGoal, deleteGoal, checkGoalCompletion, getConditionScore, getConditionLabel, getOvertrainingStatus } from '@/lib/trainingSystem';
 
 const COLORS = { court: ['text-cyan-400', 'bg-cyan-500'], physical: ['text-amber-400', 'bg-amber-500'], mental: ['text-green-400', 'bg-green-500'], tactical: ['text-purple-400', 'bg-purple-500'] };
@@ -182,7 +184,7 @@ export async function getWeeklyTrainingCounts(profileId, careerDate) {
   } catch { return {}; }
 }
 
-export async function executeTraining(profile, activity, intensityId, coachBonus = {}) {
+async function executeTrainingWork(profile, activity, intensityId, coachBonus = {}) {
   const training = getTrainingFocus(activity?.id);
   if (!training) return { error: 'Treino inválido ou desatualizado.' };
   if (isRetired(profile)) return { error: 'Sua carreira como jogador terminou.' };
@@ -269,8 +271,29 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
     coach_id: profile.coach_id || null, training_schema_version: 2,
   });
   await incrementMissionProgress(profile.id, 'complete_training');
-  if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
   return { profile: updated, gain: preview.budget, gains: appliedGains, injured, recoveryDays, cost: preview.cost, activity: { ...training, category: training.groupId, attribute: Object.keys(training.primaryAttributes)[0] }, intensity: preview.intensity, conditionBefore, conditionAfter, diminishing: preview.repetitionMultiplier, fatiguePenalty: preview.fatigueMultiplier < 1 ? round((preview.fatigueMultiplier - 1) * 100) : 0 };
+}
+
+const trainingExecutions = new Map();
+function trainingNowMs() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
+
+export function executeTraining(profile, activity, intensityId, coachBonus = {}) {
+  const executionKey = `${profile?.id || 'missing'}:${profile?.career_date || 'undated'}`;
+  if (trainingExecutions.has(executionKey)) return trainingExecutions.get(executionKey);
+  const startedAt = trainingNowMs();
+  const activeTransaction = getActivePersistenceTransactionContext();
+  const execution = gameRepository.withPersistenceTransaction(
+    'training-execution',
+    () => executeTrainingWork(profile, activity, intensityId, coachBonus),
+    activeTransaction?.id ? { joinTransactionId: activeTransaction.id } : undefined,
+  ).then((result) => {
+    if (!result?.error && typeof window !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
+    }
+    return { ...result, timings: { wallMs: trainingNowMs() - startedAt } };
+  }).finally(() => trainingExecutions.delete(executionKey));
+  trainingExecutions.set(executionKey, execution);
+  return execution;
 }
 
 export async function saveWeeklyPlan(profile, plan, enabled = true) {

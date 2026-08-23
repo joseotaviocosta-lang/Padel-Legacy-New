@@ -1,7 +1,6 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AlertCircle, Bot, Calendar, MapPin, Play, Swords, Trophy } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { useCareer } from '@/careers/useCareer.js';
 import PartnerSelection from '@/components/career/PartnerSelection';
 import SimulationModal from '@/components/matches/SimulationModal';
 import { ActionFeedback, EmptyState, StatusBadge, Surface, SurfaceHeader } from '@/components/design-system';
@@ -9,28 +8,40 @@ import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { canPlayMatchToday, DAILY_MATCH_LIMIT, formatDate, injuryRecoveryDays, isInjured } from '@/lib/padel.js';
 import { TRAINING_CENTER_VIEWS } from '@/navigation/routes.js';
 
-export default function PracticeMatchView({ profile, onProfileUpdate, onSelectView, autoOpen = false }) {
-  const entities = /** @type {any} */ (localGame.entities);
-  const { activeCareer } = useCareer();
+const MatchEntity = Reflect.get(localGame.entities, 'Match');
+
+export default function PracticeMatchView({ profile, careerId, onProfileUpdate, onSelectView, autoOpen = false }) {
   const [matches, setMatches] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState('');
   const [showSimulation, setShowSimulation] = useState(autoOpen);
   const [showPartner, setShowPartner] = useState(false);
-  const { checkpoint } = useActiveMatchCheckpoint(activeCareer?.career_id);
+  const launchFlightRef = useRef(false);
+  const { checkpoint } = useActiveMatchCheckpoint(careerId);
 
   async function refreshMatches() {
-    const list = await entities.Match.list('-created_date', 50);
+    const list = await MatchEntity.list('-created_date', 50);
     setMatches(list || []);
+  }
+
+  function openPracticeMatch() {
+    if (launchFlightRef.current || showSimulation) return;
+    launchFlightRef.current = true;
+    setShowSimulation(true);
   }
 
   useEffect(() => {
     let cancelled = false;
-    entities.Match.list('-created_date', 50)
+    setLoadError('');
+    MatchEntity.list('-created_date', 50)
       .then((list) => { if (!cancelled) setMatches(list || []); })
-      .catch(() => {})
+      .catch((error) => {
+        if (!cancelled) setLoadError(error?.message || 'Falha ao carregar o histÃ³rico de partidas.');
+        console.error('[TrainingCenter] Falha ao preparar a view de partida treino.', error);
+      })
       .finally(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
-  }, [entities.Match, profile.id]);
+  }, [profile.id]);
 
   useEffect(() => {
     if (checkpoint?.type === 'practice') setShowSimulation(true);
@@ -45,6 +56,7 @@ export default function PracticeMatchView({ profile, onProfileUpdate, onSelectVi
 
   return (
     <div className="space-y-3" data-training-center-view="match">
+      {loadError && <ActionFeedback state="error" title="Falha ao carregar partidas" description={loadError} action={null} className="" />}
       {isInjured(profile) && <ActionFeedback state="error" title={`Lesionado · recupera em ${injuryRecoveryDays(profile)} dias`} description="Avance o dia no calendário para se recuperar." action={null} className="" />}
 
       <Surface variant={playStatus.allowed ? 'premium' : 'subtle'} padding="compact">
@@ -55,7 +67,7 @@ export default function PracticeMatchView({ profile, onProfileUpdate, onSelectVi
             <h2 className="text-base font-black">{playedToday ? 'Partida treino de hoje concluída ✓' : playStatus.allowed ? 'Disponível hoje' : 'Indisponível hoje'}</h2>
             <p className="text-xs text-muted-foreground">{playedToday ? 'O limite diário foi consumido. Avance o dia para jogar novamente.' : profile.partner_id ? 'Sua dupla está pronta para uma partida de preparação.' : 'Escolha uma dupla antes de entrar em quadra.'}</p>
           </div>
-          <button type="button" onClick={() => profile.partner_id ? setShowSimulation(true) : setShowPartner(true)} disabled={!playStatus.allowed} className="flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground disabled:opacity-50">
+          <button type="button" onClick={() => profile.partner_id ? openPracticeMatch() : setShowPartner(true)} disabled={!playStatus.allowed} className="flex min-h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground disabled:opacity-50">
             <Play className="h-4 w-4" /> Jogar partida treino
           </button>
         </div>
@@ -95,11 +107,11 @@ export default function PracticeMatchView({ profile, onProfileUpdate, onSelectVi
       {showSimulation && (
         <SimulationModal
           profile={profile}
-          careerId={activeCareer?.career_id}
-          onClose={() => setShowSimulation(false)}
+          careerId={careerId}
+          onClose={() => { launchFlightRef.current = false; setShowSimulation(false); }}
           onProfileUpdate={(updated) => onProfileUpdate(updated, 'training-center:practice-match')}
           onComplete={refreshMatches}
-          onReturnToTrainingCenter={() => { setShowSimulation(false); onSelectView(TRAINING_CENTER_VIEWS.MATCH, { replace: true }); }}
+          onReturnToTrainingCenter={() => { launchFlightRef.current = false; setShowSimulation(false); onSelectView(TRAINING_CENTER_VIEWS.MATCH, { replace: true }); }}
         />
       )}
       {showPartner && (

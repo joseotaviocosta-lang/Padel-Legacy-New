@@ -118,7 +118,7 @@ try {
   const calendar = source('src/game-core/calendarLifecycle.js');
   assert(modal.includes("setPhase('match_restart_prompt')") && modal.includes('LiveMatchRecoveryBoundary'), 'falha de resume ainda pode derrubar/fechar o modal silenciosamente');
   assert(modal.includes('buildFreshTournamentRoundRecovery') && modal.includes('repository.save(careerId, fresh.checkpoint)'), 'restart não cria/persiste sessão nova antes de abrir');
-  assert(home.includes('!hasTournamentRecoveryAction') && home.includes('event.cta &&'), 'Home ainda oferece dois CTAs concorrentes');
+  assert(home.includes('<ActiveMatchRecoveryBanner') && home.includes("!['tournament', 'injury'].includes(careerMoment.type)"), 'Home ainda oferece dois CTAs concorrentes');
   assert(communications.includes('TOURNAMENT_RESUME') && communications.includes("String(nextTournament.id) !== String(recoveryTournamentId)"), 'notificação de jogar próxima rodada não é suprimida durante recovery');
   assert(calendar.includes('guardActiveMatchBeforeAdvance') && calendar.includes('ACTIVE_MATCH_RECOVERY_REQUIRED'), 'porta global de avanço não protege partida ativa real');
 

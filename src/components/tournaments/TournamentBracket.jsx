@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
 import { ModalShell, Surface, Tabs } from '@/components/design-system';
-import { isTournamentCompletedAt, sanitizeBracketHistory, visibleTournamentChampion } from '@/lib/tournamentBracketView.js';
+import { getVisibleTournamentBracketState, isTournamentCompletedAt } from '@/lib/tournamentBracketView.js';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
@@ -33,6 +33,7 @@ function normalizeTeamName(value) {
   if (!value) return 'Dupla não registrada';
   if (Array.isArray(value)) return value.filter(Boolean).join(' & ');
   const text = String(value).trim();
+  if (/^(Vencedor Jogo \d+|Participante a definir)$/.test(text)) return text;
   return text.includes(' & ') ? text : `${text} & parceiro não registrado`;
 }
 
@@ -73,13 +74,14 @@ function reconstructLegacyHistory(tournament) {
 
 function normalizeHistory(tournament, careerDate) {
   const canonical = Array.isArray(tournament.bracket_history) && tournament.bracket_history.length;
-  const raw = canonical
-    ? sanitizeBracketHistory(tournament, careerDate)
+  const sourceTournament = canonical
+    ? tournament
     : isTournamentCompletedAt(tournament, careerDate) && tournament.champion
-      ? reconstructLegacyHistory(tournament)
-      : [];
+      ? { ...tournament, bracket_history: reconstructLegacyHistory(tournament) }
+      : tournament;
+  const bracketState = getVisibleTournamentBracketState(sourceTournament, careerDate);
 
-  return raw.map((round) => ({
+  const rounds = bracketState.rounds.map((round) => ({
     round: round.round || round.label || 'Rodada',
     date: round.date || null,
     status: round.status || null,
@@ -94,17 +96,18 @@ function normalizeHistory(tournament, careerDate) {
       canonical,
     })),
   }));
+  return { ...bracketState, rounds };
 }
 
 export default function TournamentBracket({ tournament, careerDate, onClose }) {
   const tier = TIER_STYLES[tournament.tier] || TIER_STYLES.Silver;
-  const history = useMemo(() => normalizeHistory(tournament, careerDate), [careerDate, tournament]);
-  const [activeRound, setActiveRound] = useState(Math.max(0, history.length - 1));
-  const visibleChampion = visibleTournamentChampion(tournament, careerDate);
-  const champion = visibleChampion ? normalizeTeamName(visibleChampion) : null;
+  const bracketState = useMemo(() => normalizeHistory(tournament, careerDate), [careerDate, tournament]);
+  const history = bracketState.rounds;
+  const [activeRound, setActiveRound] = useState(bracketState.focusRoundIndex);
+  const champion = bracketState.champion ? normalizeTeamName(bracketState.champion) : null;
   const runnerUp = champion ? normalizeTeamName(tournament.runner_up || history.at(-1)?.matches?.[0]?.team_b) : null;
   const matches = history.reduce((sum, round) => sum + round.matches.length, 0);
-  const completed = isTournamentCompletedAt(tournament, careerDate);
+  const completed = bracketState.completed;
 
   return (
     <ModalShell
@@ -166,9 +169,10 @@ function Info({ icon: Icon, value, color }) {
 function MatchCard({ match, number }) {
   const aWon = match.winner === match.team_a;
   const bWon = match.winner === match.team_b;
+  const unresolved = /^Vencedor Jogo/.test(match.team_a) || /^Vencedor Jogo/.test(match.team_b);
   return (
     <Surface padding="compact">
-      <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score || (match.status === 'scheduled' ? 'Agendada' : '—')}</span></div>
+      <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score || (unresolved ? 'A definir' : match.status === 'scheduled' ? 'Agendada' : '—')}</span></div>
       <TeamLine name={match.team_a} winner={aWon} />
       <TeamLine name={match.team_b} winner={bWon} />
     </Surface>

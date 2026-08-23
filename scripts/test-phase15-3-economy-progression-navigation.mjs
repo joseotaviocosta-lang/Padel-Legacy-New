@@ -47,7 +47,7 @@ gate('simulador legado respeita data canônica', teamRankingSource.includes('if 
 gate('World Tour não entra no simulador legado', teamRankingSource.includes('if (t.world_tour_event) return false'));
 const bracketSource = read('src/components/tournaments/TournamentBracket.jsx');
 gate('UI oferece estado de chave não sorteada', bracketSource.includes('Chave ainda não sorteada'));
-gate('UI usa sanitização de save futuro', bracketSource.includes('sanitizeBracketHistory'));
+gate('UI usa projeção temporal canônica do save', bracketSource.includes('getVisibleTournamentBracketState'));
 
 function athleteFixture(index, role = 'free') {
   return {
@@ -92,7 +92,7 @@ const partnershipSource = read('src/lib/partnershipSystem.js');
 gate('Partnership referencia AthleteProfile por id', partnershipSource.includes('partner_bot_id: bot.id') && partnershipSource.includes('athlete_b_id: bot.id'));
 const partnerOverviewSource = read('src/components/partner/PartnerOverview.jsx');
 gate('Minha dupla lê AthleteProfile canônico', partnerOverviewSource.includes('(localGame.entities).AthleteProfile') && partnerOverviewSource.includes('athleteProfiles.get(partnership.partner_bot_id)'));
-gate('Minha dupla deriva OVR do perfil canônico', partnerOverviewSource.includes('overallRating(partnerProfile)'));
+gate('Minha dupla deriva OVR do perfil canônico', partnerOverviewSource.includes('resolvePartnerOverall(partnerProfile, partnership.partner_overall)'));
 const reloadStart = simulateAthlete(777, 'active-partner', 12).athlete;
 const reloaded = structuredClone(JSON.parse(JSON.stringify(reloadStart)));
 const reloadEvolution = evolveAthleteCareerMonth(reloaded, '2027-02-01');
@@ -153,7 +153,7 @@ gate('saldo desktop navega para Economia', hudSource.includes('to: APP_ROUTES.EC
 gate('saldo reage imediatamente ao update canônico', playerAdapterSource.includes("'padel:profile-updated'"));
 gate('evento de saldo carrega o perfil atualizado em memória', playerAdapterSource.includes('detail: { profile'));
 gate('header não adiciona polling', !appLayoutSource.includes('setInterval('));
-gate('header mobile protege overflow em 360px', appLayoutSource.includes('items-center overflow-hidden') && appLayoutSource.includes('max-w-[4.65rem]'));
+gate('header mobile protege overflow em 360px', appLayoutSource.includes('items-center overflow-hidden') && appLayoutSource.includes('max-w-[4.8rem]'));
 gate('saldo usa separador pt-BR sem decimais', formatCoinBalance(125000) === '125.000');
 let balance = 1307;
 for (const delta of [-120, -300, 650, 100, -90]) balance += delta;

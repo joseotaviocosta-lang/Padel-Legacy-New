@@ -1,6 +1,7 @@
 import React, { lazy, Suspense, useCallback, useMemo } from 'react';
 import { Activity, Building2, CalendarDays, Dumbbell, Swords, Zap } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
+import { useCareer } from '@/careers/useCareer.js';
 import { localGame } from '@/api/localGameClient.js';
 import { Page, PageContent, PageHeader, PageSkeleton, Surface, Tabs } from '@/components/design-system';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
@@ -28,6 +29,7 @@ export function resolveTrainingCenterView(value) {
 }
 
 export default function TrainingCenterPage() {
+  const { activeCareer } = useCareer();
   const [searchParams, setSearchParams] = useSearchParams();
   const [profile, setProfile] = React.useState(null);
   const [loading, setLoading] = React.useState(true);
@@ -70,7 +72,7 @@ export default function TrainingCenterPage() {
 
   const activeContent = useMemo(() => {
     if (!profile) return null;
-    const shared = { profile, onProfileUpdate: handleProfileUpdate, onSelectView: selectView };
+    const shared = { profile, careerId: activeCareer?.career_id, onProfileUpdate: handleProfileUpdate, onSelectView: selectView };
     switch (activeView) {
       case TRAINING_CENTER_VIEWS.MATCH:
         return <PracticeMatchView {...shared} autoOpen={searchParams.get('play') === '1'} />;
@@ -83,7 +85,7 @@ export default function TrainingCenterPage() {
       default:
         return <TrainingView {...shared} />;
     }
-  }, [activeView, handleProfileUpdate, profile, searchParams, selectView]);
+  }, [activeCareer?.career_id, activeView, handleProfileUpdate, profile, searchParams, selectView]);
 
   if (loading) return <PageSkeleton variant="dashboard" rows={4} className="" />;
   if (!profile) return <Page className=""><PageContent className=""><p className="rounded-2xl border border-border/60 p-5 text-sm text-muted-foreground">Perfil não encontrado.</p></PageContent></Page>;

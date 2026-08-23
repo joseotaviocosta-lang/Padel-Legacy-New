@@ -69,7 +69,7 @@ const sourceChecks = [
   // verificado passou de `profile.id}-${contextKey}` inline para a função
   // nomeada, chamada com profile.id em cada contextKey.
   ['persistência resiste à corrida entre sinos mobile e desktop', communicationsSource.includes("type: 'upsert', entityName: 'CareerMessage', id: stableId") && communicationsSource.includes('career-message-${profileId}-${contextKey}') && communicationsSource.includes('buildStableMessageId(profile.id, contextKey)')],
-  ['clique marca individualmente como lida', bellSource.includes('markCareerCommunicationRead(message)') && bellSource.indexOf('markCareerCommunicationRead(message)') < bellSource.indexOf('navigate(destination.route)')],
+  ['clique marca individualmente como lida', bellSource.includes('resolveAndOpenNotification(message, { navigate })') && communicationsSource.includes('await markCareerCommunicationRead(normalized)') && communicationsSource.includes('navigate(destination.route)')],
   ['script npm registrado', pkg.scripts?.['test:tournament-notification-deeplink'] === 'node scripts/test-tournament-notification-deeplink-rc.mjs'],
 ];
 

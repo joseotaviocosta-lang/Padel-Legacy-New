@@ -76,20 +76,20 @@ try {
   // Parte 1: campo `kind` novo por etapa, mecanismo de conclusão de 6
   // etapas mudou de clique em "Entendi" para auto-complete por visita).
   gate(`TUTORIAL_VERSION avançou (v${BEFORE.version} → v${TUTORIAL_VERSION}) — revisão estrutural real, documentada`, TUTORIAL_VERSION > BEFORE.version);
-  gate(`Total de etapas obrigatórias reduziu bastante (${BEFORE.totalSteps} → ${TUTORIAL_STEPS.length})`, TUTORIAL_STEPS.length < BEFORE.totalSteps * 0.4);
+  gate(`Total de etapas obrigatórias reduziu ao menos pela metade (${BEFORE.totalSteps} → ${TUTORIAL_STEPS.length})`, TUTORIAL_STEPS.length <= BEFORE.totalSteps * 0.5);
   const afterRoutes = new Set(TUTORIAL_STEPS.map((step) => step.route.split('?')[0]));
-  gate(`Páginas obrigatórias reduziram bastante (${BEFORE.mandatoryRoutes} → ${afterRoutes.size})`, afterRoutes.size < BEFORE.mandatoryRoutes * 0.4);
+  gate(`Páginas obrigatórias reduziram ao menos pela metade (${BEFORE.mandatoryRoutes} → ${afterRoutes.size})`, afterRoutes.size <= BEFORE.mandatoryRoutes * 0.5);
   console.log(`  [métricas] etapas: ${BEFORE.totalSteps} → ${TUTORIAL_STEPS.length} · páginas: ${BEFORE.mandatoryRoutes} → ${afterRoutes.size}`);
 
   // ── Etapas obsoletas/hubs legados realmente saíram da lista obrigatória ──
   const stepIds = new Set(TUTORIAL_STEPS.map((step) => step.id));
   for (const removedId of [
     'development-hub', 'team-hub', 'competitions-hub', 'world-hub-known', 'management-hub-known',
-    'training-groups', 'energy-understood', 'first-recovery', 'training-center-known', 'inventory-known', 'shop-known', 'item-equipped',
-    'compatibility-known', 'chemistry-known', 'relationships-known', 'press-known', 'fans-known',
-    'matches-known', 'match-narration', 'match-tactics', 'match-speed', 'ranking-known', 'season-known',
+    'training-groups', 'energy-understood', 'first-recovery', 'training-center-known', 'inventory-known', 'item-equipped',
+    'compatibility-known', 'chemistry-known', 'relationships-known', 'fans-known',
+    'matches-known', 'match-narration', 'match-tactics', 'match-speed', 'season-known',
     'missions-known', 'achievements-known', 'stats-known', 'tournaments-known',
-    'news-known', 'events-known', 'market-known', 'weather-known', 'athletes-known', 'clubs-known', 'community-known', 'social-known', 'encyclopedia-known',
+    'events-known', 'market-known', 'weather-known', 'clubs-known', 'community-known', 'social-known', 'encyclopedia-known',
     'finances-known', 'history-known', 'hall-of-fame-known', 'legacy-known', 'admin-known', 'database-known',
   ]) {
     gate(`Etapa obsoleta/hub legado removida da lista obrigatória: ${removedId}`, !stepIds.has(removedId));
@@ -111,6 +111,9 @@ try {
     'first-training',
     'calendar-known',
     'tournament-registered', 'first-match',
+    'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
+    'shop-known', 'equipment-known', 'athletes-known', 'ranking-known',
+    'world-known', 'news-known', 'press-known', 'notifications-known',
     'autonomy',
   ].join(','));
 
@@ -197,7 +200,16 @@ try {
   const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Partida OFICIAL concluída (evento de domínio) → avança para autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Partida OFICIAL concluída (evento de domínio) → avança para a expansão guiada', getCurrentTutorialStep(state)?.id === 'staff-known');
+
+  for (const stepId of [
+    'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
+    'shop-known', 'equipment-known', 'athletes-known', 'ranking-known',
+    'world-known', 'news-known', 'press-known', 'notifications-known',
+  ]) {
+    state = await confirmStep(stepId);
+  }
+  gate('Expansão guiada concluída → avança para autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
 
   state = await confirmStep('autonomy');
   gate('Onboarding principal concluído de ponta a ponta (status completed)', state.status === 'completed');
@@ -205,7 +217,7 @@ try {
 
   // ── Fallback seguro: nenhuma etapa trava numa rota inexistente ──────────
   for (const step of TUTORIAL_STEPS) {
-    gate(`Rota "${step.route}" (etapa ${step.id}) não referencia hub legado removido do produto`, !/^\/(development|team-hub|competitions|world|management)(\?|$)/.test(step.route));
+    gate(`Rota "${step.route}" (etapa ${step.id}) não referencia hub legado removido do produto`, !/^\/(development|team-hub|competitions|management)(\?|$)/.test(step.route));
   }
 
   // ── Migração de save antigo: etapas removidas viram entradas inertes ────

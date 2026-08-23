@@ -4,6 +4,7 @@ import {
   postMatchInterviewIdentity,
   resolveOfficialPlayerOutcome,
 } from '@/lib/postMatchInterview.js';
+import { interviewContextKey, isInterviewActionable } from '@/lib/interviewLifecycle.js';
 
 // ─── Journalists ─────────────────────────────────────────────────────────────
 // 12 journalists with distinct personalities and specialties.
@@ -667,6 +668,13 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
 
   const pending = [];
   const careerDate = profile.career_date || new Date().toISOString().slice(0, 10);
+  const completedSources = new Set([
+    ...(profile.processed_press_interview_sources || []),
+    ...(context.pressArticles || [])
+      .filter((article) => article?.interview_status === 'answered')
+      .map((article) => article.source_event_id)
+      .filter(Boolean),
+  ]);
   const playerNames = new Set([
     profile.sport_name,
     profile.name,
@@ -766,13 +774,13 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
     const partnershipKey = partnership.id || profile.partner_id || 'active';
     pending.push({
       id: `interview_rumor_partner_${partnershipKey}`,
-      sourceId: `partnership:${partnershipKey}:${careerDate}`,
+      sourceId: `partnership:${partnershipKey}:risk`,
       type: 'interview',
       title: 'Rumores sobre a Dupla',
       description: 'O momento recente da parceria levantou dúvidas na imprensa.',
       questionCategory: 'rumor',
       opponent: partnership.partner_name || profile.partner_name || 'seu parceiro',
-      relatedEvent: `RumorDupla:${partnershipKey}:${careerDate}`,
+      relatedEvent: `RumorDupla:${partnershipKey}:risk`,
       eventLabel: 'Situação da parceria',
       careerDate,
     });
@@ -786,13 +794,13 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
     const partnershipKey = partnership.id || profile.partner_id || 'active';
     pending.push({
       id: `interview_partner_positive_${partnershipKey}`,
-      sourceId: `partnership-positive:${partnershipKey}:${careerDate}`,
+      sourceId: `partnership-positive:${partnershipKey}`,
       type: 'interview',
       title: 'Parceria em Alta',
       description: 'A imprensa quer entender o momento positivo da dupla.',
       questionCategory: 'partner_positive',
       opponent: partnership.partner_name || profile.partner_name || 'seu parceiro',
-      relatedEvent: `ParceriaPositiva:${partnershipKey}:${careerDate}`,
+      relatedEvent: `ParceriaPositiva:${partnershipKey}`,
       eventLabel: 'Parceria em alta',
       careerDate,
     });
@@ -803,13 +811,13 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
   if (profile.coach_id && Number(profile.coach_trust || 0) >= 75) {
     pending.push({
       id: `interview_coach_positive_${profile.coach_id}`,
-      sourceId: `coach-positive:${profile.coach_id}:${careerDate}`,
+      sourceId: `coach-positive:${profile.coach_id}`,
       type: 'interview',
       title: 'Trabalho com a Comissão Técnica',
       description: 'A imprensa quer saber mais sobre o momento com a comissão técnica.',
       questionCategory: 'coach_positive',
       opponent: profile.coach_name || 'o técnico',
-      relatedEvent: `TreinadorPositivo:${profile.coach_id}:${careerDate}`,
+      relatedEvent: `TreinadorPositivo:${profile.coach_id}`,
       eventLabel: 'Relação com a comissão técnica',
       careerDate,
     });
@@ -834,7 +842,13 @@ export function getPendingInterviews(profile, recentMatches = [], context = {}) 
     });
   }
 
-  return pending;
+  return pending
+    .map((interview) => ({
+      ...interview,
+      contextKey: interviewContextKey(interview),
+      status: completedSources.has(interview.sourceId) ? 'completed' : 'available',
+    }))
+    .filter((interview) => isInterviewActionable(interview, careerDate));
 }
 
 // Hotfix 14.1 (Parte 12): todo sinal aqui vem de um campo já persistido no

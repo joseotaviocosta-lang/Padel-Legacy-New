@@ -503,48 +503,53 @@ function CoachPanel({
   const minimumEnergy = Math.round(Math.min(...state.teams.A.map((player) => player.energy)));
 
   return (
-    <div className="scrollbar-premium h-full min-h-0 overflow-y-auto overscroll-contain p-3">
-      <div className="mb-3 flex items-center justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-xs font-bold">{coach?.name || 'Sem técnico contratado'}</p>
-          <p className="truncate text-[9px] text-muted-foreground">{coach?.specialty || 'Somente métricas básicas'}</p>
+    <div data-coach-panel className="flex h-full min-h-0 flex-col overflow-hidden">
+      <div className="scrollbar-premium min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 pb-2">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          <div className="min-w-0">
+            <p className="truncate text-xs font-bold">{coach?.name || 'Sem técnico contratado'}</p>
+            <p className="truncate text-[9px] text-muted-foreground">{coach?.specialty || 'Somente métricas básicas'}</p>
+          </div>
+          <span className="shrink-0 rounded-full bg-secondary/60 px-2 py-1 text-[9px] text-muted-foreground">Fim do game</span>
         </div>
-        <span className="shrink-0 rounded-full bg-secondary/60 px-2 py-1 text-[9px] text-muted-foreground">Fim do game</span>
+
+        {state.liveCoach?.settings?.showLiveMetrics && (
+          <div className="mb-3 grid grid-cols-3 gap-1.5">
+            <Metric value={`${recent.filter((point) => point.winnerTeamId === 'A').length}/${recent.length}`} label="Pontos recentes" />
+            <Metric value={state.activeTactics.A?.label || '—'} label="Plano" />
+            <Metric value={minimumEnergy} label="Energia mínima" />
+          </div>
+        )}
+
+        {coachSuggestion ? (
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
+            <p className="text-xs font-bold">{coachSuggestion.observation}</p>
+            <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">{coachSuggestion.expectedImpact}</p>
+            <p className="mt-2 text-[9px] text-muted-foreground">
+              Confiança: <b className="text-foreground">{coachSuggestion.confidence}</b> · custo físico:{' '}
+              <b className="text-foreground">{coachSuggestion.physicalCost}</b>
+            </p>
+          </div>
+        ) : (
+          <div className="rounded-xl bg-secondary/30 px-3 py-5 text-center text-[10px] text-muted-foreground">
+            {coach ? 'O técnico ainda está analisando a partida.' : 'Contrate um técnico para receber recomendações especializadas.'}
+          </div>
+        )}
+
+        {partnerFeedback && (
+          <p role="status" className="mt-2 rounded-lg bg-secondary/30 px-3 py-2 text-[10px] italic text-muted-foreground">
+            Parceiro: “{partnerFeedback.response}”
+          </p>
+        )}
       </div>
 
-      {state.liveCoach?.settings?.showLiveMetrics && (
-        <div className="mb-3 grid grid-cols-3 gap-1.5">
-          <Metric value={`${recent.filter((point) => point.winnerTeamId === 'A').length}/${recent.length}`} label="Pontos recentes" />
-          <Metric value={state.activeTactics.A?.label || '—'} label="Plano" />
-          <Metric value={minimumEnergy} label="Energia mínima" />
+      {coachSuggestion && (
+        <div data-coach-actions className="grid shrink-0 grid-cols-2 gap-2 border-t border-border/50 bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur">
+          <SmallAction primary onClick={onApply}>Aplicar</SmallAction>
+          <SmallAction onClick={onPartial}>Parcial</SmallAction>
+          <SmallAction onClick={onPartner}>Ouvir dupla</SmallAction>
+          <SmallAction onClick={onIgnore}>Manter plano</SmallAction>
         </div>
-      )}
-
-      {coachSuggestion ? (
-        <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
-          <p className="text-xs font-bold">{coachSuggestion.observation}</p>
-          <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">{coachSuggestion.expectedImpact}</p>
-          <p className="mt-2 text-[9px] text-muted-foreground">
-            Confiança: <b className="text-foreground">{coachSuggestion.confidence}</b> · custo físico:{' '}
-            <b className="text-foreground">{coachSuggestion.physicalCost}</b>
-          </p>
-          <div className="mt-3 grid grid-cols-2 gap-1.5">
-            <SmallAction primary onClick={onApply}>Aplicar</SmallAction>
-            <SmallAction onClick={onPartial}>Parcial</SmallAction>
-            <SmallAction onClick={onPartner}>Ouvir dupla</SmallAction>
-            <SmallAction onClick={onIgnore}>Manter plano</SmallAction>
-          </div>
-        </div>
-      ) : (
-        <div className="rounded-xl bg-secondary/30 px-3 py-5 text-center text-[10px] text-muted-foreground">
-          {coach ? 'O técnico ainda está analisando a partida.' : 'Contrate um técnico para receber recomendações especializadas.'}
-        </div>
-      )}
-
-      {partnerFeedback && (
-        <p role="status" className="mt-2 rounded-lg bg-secondary/30 px-3 py-2 text-[10px] italic text-muted-foreground">
-          Parceiro: “{partnerFeedback.response}”
-        </p>
       )}
     </div>
   );
@@ -639,7 +644,7 @@ function SmallAction({ children, primary = false, onClick }) {
     <button
       type="button"
       onClick={onClick}
-      className={`rounded-lg px-2 py-2 text-[10px] font-bold ${primary ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground'}`}
+      className={`pl-btn-tap min-h-11 rounded-lg px-2 py-2 text-[10px] font-bold ${primary ? 'bg-primary text-primary-foreground' : 'bg-secondary text-foreground'}`}
     >
       {children}
     </button>

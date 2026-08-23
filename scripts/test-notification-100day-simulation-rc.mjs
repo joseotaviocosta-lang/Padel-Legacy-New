@@ -69,6 +69,18 @@ try {
 
     await ensureContextualCareerCommunications(profile, { nextTournament, matches: [], recentWins: 0 });
 
+    // Decisões de domínio são produzidas pelos ciclos de parceria/staff, hoje
+    // fora do reconciliador editorial. Injeta o mesmo contrato persistido para
+    // manter a simulação focada em leitura/resolução/dedupe da Central.
+    if (day % 30 === 0) {
+      await upsertCareerMessage(PROFILE_ID, `simulated-decision:${day}`, {
+        title: 'Decisão de carreira simulada',
+        content: 'Escolha pendente para validar o ciclo de resolução.',
+        status: 'decisao_pendente',
+        actions: [{ id: 'ack', label: 'Resolver' }],
+      });
+    }
+
     // Mesma fórmula de chave usada em gameStateLifecycle.js (item 4 da auditoria).
     const weekIndex = Math.floor(daysBetween(CAREER_START_DATE, profile.career_date) / 7);
     if (weekIndex > previousWeekIndex) {

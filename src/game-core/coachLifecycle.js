@@ -45,25 +45,34 @@ async function openCoachTenure(profile, coach, startedDate) {
 }
 
 function normalizeName(value) { return String(value || '').trim().toLocaleLowerCase('pt-BR'); }
+const coachMarketInitializations = new Map();
+function nowMs() { return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now(); }
 function addMonths(date, months) {
   const d = new Date(`${String(date || '2026-01-01').slice(0,10)}T12:00:00`);
   d.setMonth(d.getMonth() + months);
   return d.toISOString().slice(0,10);
 }
 
-export async function ensureCoachCatalog() {
+async function initializeCoachCatalog(careerId) {
+  const startedAt = nowMs();
   let coaches = (await localGame.entities.Coach.list('-reputation', 500)) || [];
+  const firstQueryMs = nowMs() - startedAt;
   const byName = new Map(coaches.map(coach => [normalizeName(coach.name), coach]));
   const missing = COACHES_DATA.filter(coach => !byName.has(normalizeName(coach.name)));
   if (missing.length) {
-    await localGame.entities.Coach.bulkCreate(missing.map(coach => ({ ...coach })));
+    await localGame.entities.Coach.bulkCreate(missing.map(coach => ({
+      ...coach,
+      id: `catalog-${coach.catalog_key}`,
+    })));
     coaches = (await localGame.entities.Coach.list('-reputation', 500)) || [];
   }
   const catalogByName = new Map(COACHES_DATA.map(coach => [normalizeName(coach.name), coach]));
   const updates = coaches.map(existing => {
     const catalog = catalogByName.get(normalizeName(existing.name));
     if (!catalog || !existing.id) return null;
-    return { id: existing.id, tier: catalog.tier, specialty: catalog.specialty, competencies: catalog.competencies, overall: catalog.overall, potential: catalog.potential, monthly_cost: catalog.monthly_cost, sign_on_bonus: catalog.sign_on_bonus, performance_bonus_pct: catalog.performance_bonus_pct, training_bonus: catalog.training_bonus, specializations: catalog.specializations, preferred_styles: catalog.preferred_styles, demands: catalog.demands };
+    const patch = { tier: catalog.tier, specialty: catalog.specialty, competencies: catalog.competencies, overall: catalog.overall, potential: catalog.potential, monthly_cost: catalog.monthly_cost, sign_on_bonus: catalog.sign_on_bonus, performance_bonus_pct: catalog.performance_bonus_pct, training_bonus: catalog.training_bonus, specializations: catalog.specializations, preferred_styles: catalog.preferred_styles, demands: catalog.demands };
+    const changed = Object.entries(patch).some(([key, value]) => JSON.stringify(existing[key]) !== JSON.stringify(value));
+    return changed ? { id: existing.id, ...patch } : null;
   }).filter(Boolean);
   if (updates.length && localGame.entities.Coach.bulkUpdate) {
     await localGame.entities.Coach.bulkUpdate(updates);
@@ -76,7 +85,39 @@ export async function ensureCoachCatalog() {
   // save é preservado), só paramos de oferecê-la no mercado: sem
   // correspondência no catálogo real e sem um monthly_cost válido, ela
   // não tem como ser exibida ou contratada com segurança.
-  return coaches.filter(coach => catalogByName.has(normalizeName(coach.name)) || Number(coach.monthly_cost) > 0);
+  const visible = coaches.filter(coach => catalogByName.has(normalizeName(coach.name)) || Number(coach.monthly_cost) > 0);
+  return {
+    careerId,
+    coaches: visible,
+    initialized: true,
+    seeded: missing.length,
+    queryMs: firstQueryMs,
+    bootstrapMs: nowMs() - startedAt,
+  };
+}
+
+/**
+ * Bootstrap explÃ­cito do mercado. A Promise por carreira impede que duas
+ * primeiras visitas semeiem o mesmo catÃ¡logo em paralelo.
+ */
+export async function ensureCoachMarketInitialized(expectedCareerId = null) {
+  const status = await localGame.storage.status();
+  const careerId = status.active_career_id;
+  if (!careerId) throw new Error('Nenhuma carreira ativa para inicializar o mercado de treinadores.');
+  if (expectedCareerId && expectedCareerId !== careerId) {
+    throw new Error('A carreira ativa mudou durante a inicializaÃ§Ã£o do mercado de treinadores.');
+  }
+  if (!coachMarketInitializations.has(careerId)) {
+    const initialization = initializeCoachCatalog(careerId)
+      .finally(() => coachMarketInitializations.delete(careerId));
+    coachMarketInitializations.set(careerId, initialization);
+  }
+  return coachMarketInitializations.get(careerId);
+}
+
+export async function ensureCoachCatalog() {
+  const result = await ensureCoachMarketInitialized();
+  return result.coaches;
 }
 
 export function isCoachActive(profile) {

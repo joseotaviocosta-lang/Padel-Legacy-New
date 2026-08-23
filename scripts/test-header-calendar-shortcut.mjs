@@ -18,7 +18,7 @@ const appSource = readFileSync('src/App.jsx', 'utf8');
 
 gate('Rota canônica /game/calendar existe em App.jsx (nenhuma rota nova/duplicada criada)', /path="\/game\/calendar"/.test(appSource));
 
-gate('Botão navega para a rota canônica do calendário', /onClick=\{\(\) => navigate\('\/game\/calendar'\)\}/.test(source));
+gate('Botão navega para a rota canônica do calendário', /onClick=\{\(\) => navigate\(APP_ROUTES\.CALENDAR\)\}/.test(source));
 gate('Data é um <button> real (semântico, focável, Enter/Space nativos) — não mais um <div> só informativo', /<button[\s\S]{0,800}date\.weekdayShort/.test(source));
 gate('Acessibilidade: aria-label "Abrir calendário" presente', /aria-label="Abrir calendário"/.test(source));
 gate('Tooltip discreto presente (title)', /title="Abrir calendário"/.test(source));

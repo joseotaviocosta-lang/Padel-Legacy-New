@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { useCareer } from '@/careers/useCareer.js';
 import { Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, Surface } from '@/components/design-system';
@@ -17,7 +18,7 @@ import {
   sortCoachDiscovery,
 } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
-import { hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach } from '@/game-core/coachLifecycle';
+import { ensureCoachMarketInitialized, hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach } from '@/game-core/coachLifecycle';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
 const STATUS_FILTERS = [
@@ -33,6 +34,7 @@ function currency(value) {
 }
 
 export default function Coaches() {
+  const { activeCareer } = useCareer();
   const [searchParams] = useSearchParams();
   const openedCoachRef = useRef(null);
   const [profile, setProfile] = useState(null);
@@ -40,6 +42,9 @@ export default function Coaches() {
   const [coaches, setCoaches] = useState([]);
   const [monthlyIncome, setMonthlyIncome] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [marketState, setMarketState] = useState('uninitialized');
+  const [marketError, setMarketError] = useState('');
+  const [marketMetrics, setMarketMetrics] = useState(null);
   const [statusFilter, setStatusFilter] = useState('available');
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState('recommendation');
@@ -61,7 +66,7 @@ export default function Coaches() {
 
   useEffect(() => { setVisibleCount(12); setMarketExpanded(false); }, [statusFilter, specialtyFilter, sortOrder, search]);
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => { void load(activeCareer?.career_id); }, [activeCareer?.career_id]);
 
   // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): correção incidental,
   // não coberta pelo M3.7.2 na época (docs/MOBILE_M3_7_2_MATCH_DAY_REFRESH.md
@@ -80,15 +85,20 @@ export default function Coaches() {
     if (requested) setSelected(requested);
   }, [coaches, loading, searchParams]);
 
-  async function load() {
+  async function load(careerId = activeCareer?.career_id) {
     setLoading(true);
+    setMarketState('loading');
+    setMarketError('');
     try {
       const profiles = await localGame.entities.PlayerProfile.list('-created_date', 1);
       const rawProfile = profiles?.[0] || null;
+      const initialized = rawProfile
+        ? await ensureCoachMarketInitialized(careerId)
+        : { coaches: [], initialized: true, bootstrapMs: 0, queryMs: 0, seeded: 0 };
       const resolved = rawProfile ? await resolveActiveCoach(rawProfile) : { profile: rawProfile, coach: null };
       const activeProfile = resolved.profile || rawProfile;
       const [dbCoaches, transactions] = activeProfile ? await Promise.all([
-        localGame.entities.Coach.list('-reputation', 500),
+        Promise.resolve(initialized.coaches),
         localGame.entities.FinancialTransaction.filter({ profile_id: activeProfile.id }),
       ]) : [[], []];
       const latestClose = (transactions || [])
@@ -100,8 +110,12 @@ export default function Coaches() {
       setHiredCoach(hired);
       setMonthlyIncome(Number(latestClose?.income) > 0 ? Number(latestClose.income) : null);
       setStatusFilter(getDefaultCoachDiscoveryFilter(activeProfile));
+      setMarketMetrics(initialized);
+      setMarketState((dbCoaches || []).length > 0 ? 'ready-with-results' : 'ready-empty');
     } catch (error) {
       console.error(error);
+      setMarketError(error?.message || 'Falha ao inicializar o mercado de treinadores.');
+      setMarketState('error');
       toast({ title: 'Não foi possível abrir o mercado', description: 'Tente novamente em instantes.', variant: 'destructive' });
     } finally {
       setLoading(false);
@@ -205,7 +219,7 @@ export default function Coaches() {
     }
   }
 
-  if (loading) return <PageSkeleton variant="grid" rows={6} />;
+  if (loading || marketState === 'uninitialized' || marketState === 'loading') return <PageSkeleton variant="grid" rows={6} />;
 
   const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : 0;
   const trust = Number(profile?.coach_trust ?? 55);
@@ -213,7 +227,7 @@ export default function Coaches() {
 
   return (
     <Page size="wide" className="animate-fade-in">
-      <PageContent>
+      <PageContent data-coach-market-state={marketState} data-coach-count={coaches.length} data-coach-bootstrap-ms={Math.round(marketMetrics?.bootstrapMs || 0)}>
         <PageHeader
           dense
           eyebrow="Equipe técnica"
@@ -229,6 +243,18 @@ export default function Coaches() {
             { label: 'afinidade', value: hiredCoach ? `${affinityCurrent}%` : '—', icon: Brain },
           ]}
         />
+
+        {marketState === 'error' && (
+          <Surface className="border-red-500/30 p-4">
+            <p className="text-sm font-black text-red-300">Mercado indisponÃ­vel</p>
+            <p className="mt-1 text-xs text-muted-foreground">{marketError}</p>
+            <button type="button" onClick={() => load()} className="mt-3 min-h-11 rounded-xl bg-secondary px-4 text-xs font-bold">Tentar novamente</button>
+          </Surface>
+        )}
+
+        {marketState === 'ready-empty' && (
+          <EmptyState icon={Users} eyebrow="Mercado de tÃ©cnicos" title="Nenhum treinador disponÃ­vel" description="O bootstrap e a consulta terminaram sem encontrar profissionais para esta carreira." compact />
+        )}
 
         {hiredCoach ? (
           <Surface tone="brand" className="p-4">

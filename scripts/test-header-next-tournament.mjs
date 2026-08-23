@@ -29,7 +29,7 @@ try {
   const idle = buildCareerHeaderContext({ profile: baseProfile, tournaments: [] });
   gate('Sem torneio próximo não inventa "próximo torneio" falso', idle.kind === 'idle');
   gate('Sem torneio: nenhum tournamentId (não pode virar clicável sem destino real)', idle.tournamentId === null);
-  gate('Sem torneio: label conhecido do comportamento existente ("Semana de desenvolvimento")', idle.label.compact === 'Semana de desenvolvimento' && idle.label.full === 'Semana de desenvolvimento');
+  gate('Sem torneio: fallback clicável mantém o rótulo Torneios', idle.label.compact === 'Torneios' && idle.label.full === 'Torneios');
 
   // ── Torneio distante (>5 dias): não é "próximo torneio" urgente, mas é clicável ──
   const farTournament = { id: 'roland-garros-open', name: 'Roland Garros Open', start_date: '2026-04-20' };

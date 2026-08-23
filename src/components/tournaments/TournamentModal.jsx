@@ -37,6 +37,7 @@ import {
   postMatchInterviewIdentity,
   postMatchInterviewMessageId,
 } from '@/lib/postMatchInterview.js';
+import { isInterviewActionable } from '@/lib/interviewLifecycle.js';
 import {
   TOURNAMENT_STRATEGY_OPTIONS, buildOpponentAnalysis, buildTournamentBracketHistory,
   buildTournamentCoachSuggestion, completePreTournamentMeeting, completeRoundPreparation,
@@ -615,7 +616,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       const bracket = buildTournamentBracketHistory(nextRun, teamName(updatedDraft, partner));
       const nextScheduledMatch = getCurrentTournamentMatch(nextRun);
       const terminalStatus = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
-      const mediaOperations = buildRoundMediaOperations(freshMatch, won, nextRun);
+      // O lote principal é atômico. Em retry de uma rodada já finalizada não
+      // reexecutamos o upsert da ação de imprensa, pois isso ressuscitaria uma
+      // mensagem que o jogador pode ter concluído depois do primeiro save.
+      const mediaOperations = rewardAlreadyApplied ? [] : buildRoundMediaOperations(freshMatch, won, nextRun);
       operations.push(...buildTournamentRoundCoreOperations({
         matchRecord,
         profileId: freshProfile.id,
@@ -769,7 +773,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   // de entrevista, exatamente o fluxo pedido ("resultado → fecha overlay
   // anterior → abre entrevista").
   function openPostMatchInterview() {
-    if (!lastResult?.match?.id) return;
+    if (!lastResult?.match?.id || !postMatchInterviewActionable) return;
     const interview = postMatchInterviewIdentity(lastResult.match.id);
     const continuesTournament = lastResult.won && !['champion', 'eliminated', 'finished'].includes(run?.status);
     const returnTo = continuesTournament ? buildTournamentReturnRoute(tournament.id) : APP_ROUTES.HOME;
@@ -802,6 +806,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   const medical = currentMatch ? getCoachPhysicalRecommendation(profile, tournament, currentMatch.round) : null;
   const coachEffects = getCoachEffects(coach, profile);
   const coachMatchBonus = coach ? Math.min(3, ((coachEffects?.strategyBonus || 0) + (coachEffects?.partnershipBonus || 0)) * 0.35) : 0;
+  const resultInterviewIdentity = lastResult?.match?.id ? postMatchInterviewIdentity(lastResult.match.id) : null;
+  const postMatchInterviewActionable = isInterviewActionable(resultInterviewIdentity ? {
+    ...resultInterviewIdentity,
+    type: 'interview',
+    questionCategory: lastResult?.won ? 'post_win' : 'post_loss',
+    status: (profile.processed_press_interview_sources || []).includes(resultInterviewIdentity.sourceId) ? 'completed' : 'available',
+  } : null, profile.career_date);
   const playerForMatch = {
     ...profile,
     _chemistryBonus: getChemistryBonus(profile.partner_chemistry || 50),
@@ -832,6 +843,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // vs 1rem, herdada do próprio max-h do ModalShell) — cresce com a tela
       // real (1366×768/1440×900/1920×1080) em vez de um valor fixo.
       className={phase === 'match' ? 'h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)]' : ''}
+      contentClassName={phase === 'match' ? 'flex flex-col overflow-hidden' : ''}
     >
       <div className={`flex min-h-0 flex-col ${phase === 'match' ? 'h-full' : ''}`}>
         <div className="mb-3 flex shrink-0 items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
@@ -937,11 +949,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
             <StateMessage icon={CheckCircle} title="Vitória e fim do dia competitivo" body={`${lastResult.match.round}: ${lastResult.matchState.setsA}-${lastResult.matchState.setsB}. ${lastResult.nextMatch?.round} foi agendada para ${formatDay(lastResult.nextMatch?.date)}.`} tone="green" />
             <MatchRecapPremium matchState={lastResult.matchState} title={`Vitória · ${lastResult.match.round}`} />
             {physicalReport && <p className="text-xs text-muted-foreground">Energia: {formatPercent(profile.energy)}% · Fadiga: {normalizeFatigue(profile.fatigue)}%</p>}
-            <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs">
+            {postMatchInterviewActionable && <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs">
               <p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p>
               <p className="mt-1 text-muted-foreground">Ela é opcional. Ao concluir, você retorna diretamente à campanha deste torneio.</p>
-            </div>
-            <button onClick={openPostMatchInterview} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>
+            </div>}
+            {postMatchInterviewActionable && <button onClick={openPostMatchInterview} className="min-h-11 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>}
             {playableToday ? (
               <button onClick={() => setPhase(nextPhase)} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">
                 Jogar {currentMatch?.round || 'próxima rodada'} agora
@@ -962,8 +974,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           );
         })()}
 
-        {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} profile={profile} />}
-        {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} profile={profile} />}
+        {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} interviewActionable={postMatchInterviewActionable} profile={profile} />}
+        {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} interviewActionable={postMatchInterviewActionable} profile={profile} />}
         {phase === 'withdrawn' && <StateMessage icon={Shield} title="Torneio encerrado por abandono" body="A comissão priorizou sua recuperação. A participação, premiação aplicável e calendário foram encerrados sem criar outra rodada." tone="orange" action={<button onClick={goBackToCareer} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
       </div>
     </ModalShell>
@@ -1003,5 +1015,5 @@ function TeamMember({ name, ovr, highlight = false, rightAlign = false }) { retu
 
 function StateMessage({ icon: Icon, title, body, tone, action = null }) { const colors = { green:'border-emerald-500/35 bg-emerald-500/5 text-emerald-300', cyan:'border-cyan-500/35 bg-cyan-500/5 text-cyan-300', red:'border-red-500/35 bg-red-500/5 text-red-300', orange:'border-orange-500/35 bg-orange-500/5 text-orange-300' }; return <div className="space-y-4 text-center"><div className={`rounded-2xl border p-6 ${colors[tone] || colors.cyan}`}><Icon className="mx-auto mb-2 h-12 w-12" /><p className="text-xl font-black">{title}</p><p className="mt-2 text-sm text-muted-foreground">{body}</p></div>{action}</div>; }
 
-function FinalState({ champion = false, tournament, result, rewards, onInterview, onClose, profile }) { return <div className="space-y-4 text-center"><StateMessage icon={champion ? Crown : XCircle} title={champion ? 'CAMPEÃO!' : 'Eliminado do torneio'} body={champion ? `Título conquistado no ${tournament.name}. Cerimônia, ranking e imprensa foram processados.` : `${result.match.round}: ${result.matchState.setsA}-${result.matchState.setsB}. Não existe próxima rodada agendada.`} tone={champion ? 'green' : 'red'} />{rewards && <div className="grid grid-cols-3 gap-2"><Reward icon={Coins} label="Moedas" value={`+${rewards.coins}`} /><Reward icon={Zap} label="XP" value={`+${rewards.xp}`} /><Reward icon={Star} label="Ranking" value={`+${rewards.rankPoints}`} /></div>}<MatchRecapPremium matchState={result.matchState} title={`${champion ? 'Título' : 'Eliminação'} · ${result.match.round}`} /><p className="text-xs text-muted-foreground">Energia {formatPercent(profile.energy)}% · Fadiga {normalizeFatigue(profile.fatigue)}%</p><div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs"><p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p><p className="mt-1 text-muted-foreground">A mesma entrevista criada para este resultado pode ser respondida agora.</p></div><button onClick={onInterview} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button><button onClick={onClose} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button></div>; }
+function FinalState({ champion = false, tournament, result, rewards, onInterview, onClose, interviewActionable, profile }) { return <div className="space-y-4 text-center"><StateMessage icon={champion ? Crown : XCircle} title={champion ? 'CAMPEÃO!' : 'Eliminado do torneio'} body={champion ? `Título conquistado no ${tournament.name}. Cerimônia, ranking e imprensa foram processados.` : `${result.match.round}: ${result.matchState.setsA}-${result.matchState.setsB}. Não existe próxima rodada agendada.`} tone={champion ? 'green' : 'red'} />{rewards && <div className="grid grid-cols-3 gap-2"><Reward icon={Coins} label="Moedas" value={`+${rewards.coins}`} /><Reward icon={Zap} label="XP" value={`+${rewards.xp}`} /><Reward icon={Star} label="Ranking" value={`+${rewards.rankPoints}`} /></div>}<MatchRecapPremium matchState={result.matchState} title={`${champion ? 'Título' : 'Eliminação'} · ${result.match.round}`} /><p className="text-xs text-muted-foreground">Energia {formatPercent(profile.energy)}% · Fadiga {normalizeFatigue(profile.fatigue)}%</p>{interviewActionable && <><div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs"><p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p><p className="mt-1 text-muted-foreground">A mesma entrevista criada para este resultado pode ser respondida agora.</p></div><button onClick={onInterview} className="min-h-11 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button></>}<button onClick={onClose} className="min-h-11 w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button></div>; }
 function Reward({ icon: Icon, label, value }) { return <div className="rounded-xl bg-secondary/30 p-3"><Icon className="mx-auto h-4 w-4 text-primary" /><p className="mt-1 text-sm font-black">{value}</p><p className="text-[9px] text-muted-foreground">{label}</p></div>; }

@@ -9,6 +9,7 @@ import {
   isValidPostMatchInterviewMessage,
   matchIdFromInterviewMessage,
 } from '@/lib/postMatchInterview.js';
+import { isInterviewActionable } from '@/lib/interviewLifecycle.js';
 import { inspectResumableTournamentEngineState } from '@/game-core/tournamentMatchLifecycle.js';
 
 export function normalizeCareerMessage(message = {}) {
@@ -328,17 +329,41 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     calendarEvents: context.calendarEvents || [],
     partnership: context.partnership || null,
     registrations: context.registrations || [],
+    pressArticles: context.pressArticles || [],
   });
-  const answeredSources = new Set((context.pressArticles || []).map(article => article.source_event_id).filter(Boolean));
+  const answeredSources = new Set((context.pressArticles || [])
+    .filter((article) => article?.interview_status === 'answered')
+    .map((article) => article.source_event_id)
+    .filter(Boolean));
+  const completedSources = new Set([
+    ...(profile.processed_press_interview_sources || []),
+    ...answeredSources,
+  ]);
+  const actionableInterviewSources = new Set(pendingInterviews
+    .filter((interview) => isInterviewActionable(interview, careerDate))
+    .map((interview) => interview.sourceId));
   for (const message of existing) {
-    if (!isPostMatchInterviewMessage(message)) continue;
+    if (message.related_entity_type !== 'PressInterview') continue;
     const sourceId = message.metadata?.interview_source_id;
-    if (!sourceId || !answeredSources.has(sourceId) || message.status === 'resolvida') continue;
+    if (!sourceId || ['resolvida', 'invalidada', 'expirada'].includes(message.status)) continue;
+    const completed = completedSources.has(sourceId);
+    const staleDerivedInterview = !isPostMatchInterviewMessage(message) && !actionableInterviewSources.has(sourceId);
+    if (!completed && !staleDerivedInterview) continue;
     operations.push({
       type: 'update',
       entityName: 'CareerMessage',
       id: message.id,
-      data: { status: 'resolvida', is_read: true, is_new: false },
+      data: {
+        status: completed ? 'resolvida' : 'expirada',
+        is_read: true,
+        is_new: false,
+        metadata: {
+          ...(message.metadata || {}),
+          ...(completed
+            ? { interview_completed: true, interview_completed_source_id: sourceId }
+            : { interview_expired: true, expired_reason: 'interview_no_longer_actionable' }),
+        },
+      },
     });
   }
 

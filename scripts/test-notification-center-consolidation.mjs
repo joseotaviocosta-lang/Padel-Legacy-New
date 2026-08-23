@@ -13,6 +13,7 @@ const bell = read('src/components/communications/CommunicationBell.jsx');
 const rail = read('src/components/system/FloatingUtilityRail.jsx');
 const communications = read('src/lib/careerCommunications.js');
 const press = read('src/pages/Press.jsx');
+const interviewLifecycle = read('src/lib/interviewLifecycle.js');
 const badge = read('src/components/design-system/NotificationBadge.jsx');
 
 assert.equal(exists('src/components/career/CareerAssistant.jsx'), false, 'componente do Assistente ainda existe');
@@ -25,7 +26,7 @@ assert.ok(!bell.includes('setInterval('), 'sino não pode usar polling');
 assert.ok(bell.includes("{ id: 'unread', label: 'Não lidas' }") && bell.includes("{ id: 'all', label: 'Todas' }"), 'filtros Não lidas/Todas ausentes');
 assert.ok(badge.includes('if (value <= 0) return null'), 'badge zero deve desaparecer');
 assert.ok(communications.includes('buildStableMessageId') && communications.includes('metadata?.context_key'), 'deduplicação persistida perdeu a identidade estável');
-assert.ok(communications.includes("data: { status: 'resolvida', is_read: true, is_new: false }") && press.includes("reason: 'press-interview-answered'"), 'entrevista concluída não resolve/atualiza a notificação');
+assert.ok(press.includes('resolveRelatedInterviewMessage(interview)') && interviewLifecycle.includes("status: 'resolvida'") && press.includes("reason: 'press-interview-answered'"), 'entrevista concluída não resolve/atualiza a notificação');
 
 const vite = await createServer({
   root: rootPath,

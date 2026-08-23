@@ -263,7 +263,9 @@
     "test:phase15-3-economy-progression-navigation": "node scripts/test-phase15-3-economy-progression-navigation.mjs",
     "test:phase15-4-mobile-flow-polish": "node scripts/test-phase15-4-mobile-flow-polish.mjs",
     "test:training-center-unification-phase15-5": "node scripts/test-training-center-unification-phase15-5.mjs",
-    "test:phase15-5-1-header-notifications-partnership-ui": "node scripts/test-phase15-5-1-header-notifications-partnership-ui.mjs"
+    "test:phase15-5-1-header-notifications-partnership-ui": "node scripts/test-phase15-5-1-header-notifications-partnership-ui.mjs",
+    "test:phase15-5-1-tournament-interview-consistency": "node scripts/test-phase15-5-1-tournament-interview-consistency.mjs",
+    "test:phase15-5-1-critical-training-center": "node scripts/test-phase15-5-1-critical-training-center.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

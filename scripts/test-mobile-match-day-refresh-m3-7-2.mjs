@@ -177,11 +177,12 @@ try {
   // ═══════════════════════════════════════════════════════════════════════
   console.log('\n--- Wiring nas páginas ---');
   const matchesSource = readFileSync('src/pages/Matches.jsx', 'utf8');
-  gate('Matches.jsx importa e usa useCareerProfileSync', matchesSource.includes("import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';") && matchesSource.includes('useCareerProfileSync(setProfile);'));
+  const trainingCenterSource = readFileSync('src/pages/TrainingCenter.jsx', 'utf8');
+  gate('Matches.jsx redireciona para o Training Center, que importa e usa useCareerProfileSync', matchesSource.includes('buildTrainingCenterRoute(TRAINING_CENTER_VIEWS.MATCH') && trainingCenterSource.includes("import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';") && trainingCenterSource.includes('useCareerProfileSync(setProfile);'));
   gate('React.memo(Matches) não tem comparador próprio (só compara props — nunca bloqueou o setState interno do hook)', /export default React\.memo\(Matches\);/.test(matchesSource));
 
   const trainingSource = readFileSync('src/pages/Training.jsx', 'utf8');
-  gate('Training.jsx importa e usa useCareerProfileSync (mesma causa raiz, avanço externo à página)', trainingSource.includes("import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';") && trainingSource.includes('useCareerProfileSync(setProfile);'));
+  gate('Training.jsx redireciona para o Training Center, que compartilha o mesmo perfil sincronizado', trainingSource.includes('buildTrainingCenterRoute(TRAINING_CENTER_VIEWS.TRAINING') && trainingCenterSource.includes('useCareerProfileSync(setProfile);'));
 
   const missionsSource = readFileSync('src/pages/Missions.jsx', 'utf8');
   gate('Missions.jsx passou a escutar padel:profile-updated/career-advanced (antes só disparava, nunca escutava)', missionsSource.includes("window.addEventListener('padel:profile-updated', debouncedLoad)") && missionsSource.includes("window.addEventListener('padel:career-advanced', debouncedLoad)"));

@@ -4,10 +4,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { Swords, Zap, Coins, Trophy, RefreshCw, Bot, Cpu, Play, Scale, Flame, Shield, Hammer, Brain, History, Trash2, Home } from 'lucide-react';
 import { ModalShell } from '@/components/design-system';
 
-import { getRandomBots, getDifficultyForPlayer } from '@/lib/bots';
-import { getPartnerBot } from '@/lib/career';
-import { overallRating, canPlayMatchToday, getChemistryBonus, isInjured, injuryRecoveryDays, getEnergyPenalty } from '@/lib/padel';
-import { getCoachEffects } from '@/lib/coaches';
+import { overallRating, canPlayMatchToday, isInjured, injuryRecoveryDays } from '@/lib/padel';
 import { finalizePracticeMatch } from '@/game-core';
 import { MATCH_TACTICS, getSetScoreString, SHOTS } from '@/lib/matchEngine';
 import { Slider } from '@/components/ui/slider';
@@ -17,7 +14,7 @@ import LiveMatch from '@/components/matches/LiveMatch';
 import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBoundary.jsx';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { useToast } from '@/components/ui/use-toast';
-import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
+import { preparePracticeMatchSession } from '@/game-core/practiceMatchSession.js';
 import { Surface, StatusBadge, ProgressBar } from '@/components/design-system';
 import { getMatchCheckpointRepository, createCheckpointMatchId } from '@/careers/MatchCheckpointRepository.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
@@ -69,7 +66,10 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [resumedEngineState, setResumedEngineState] = useState(null);
   const [resumeDecided, setResumeDecided] = useState(false);
   const [liveMatchSessionKey, setLiveMatchSessionKey] = useState(0);
+  const [launching, setLaunching] = useState(false);
+  const [launchMetrics, setLaunchMetrics] = useState(null);
   const savedRef = useRef(false);
+  const launchFlightRef = useRef(false);
   const matchIdRef = useRef(null);
   const startedAtRef = useRef(null);
   const { toast } = useToast();
@@ -88,28 +88,34 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const changeDisplayMode=(mode)=>setDisplayMode(mode);
 
   function startMatch() {
+    if (launchFlightRef.current) return;
+    launchFlightRef.current = true;
+    setLaunching(true);
     if (isInjured(profile)) {
       toast({ title: 'Lesionado', description: `Você está lesionado! Recupera em ${injuryRecoveryDays(profile)} dias.` });
+      launchFlightRef.current = false;
+      setLaunching(false);
       return;
     }
     const matchStatus = canPlayMatchToday(profile);
     if (!matchStatus.allowed) {
       toast({ title: 'Limite diário', description: 'Você já fez seu jogo treino de hoje. Avance o dia!' });
+      launchFlightRef.current = false;
+      setLaunching(false);
       return;
     }
-    const partner = getPartnerBot(profile);
-    if (!partner) {
-      toast({ title: 'Sem parceiro', description: 'Selecione um parceiro na aba Carreira.' });
+    let session;
+    try {
+      session = preparePracticeMatchSession(profile, coach);
+    } catch (error) {
+      console.error('[SimulationModal] Falha ao preparar partida treino.', error);
+      toast({ title: 'NÃ£o foi possÃ­vel iniciar', description: error?.message || 'Falha ao preparar a partida treino.', variant: 'destructive' });
+      launchFlightRef.current = false;
+      setLaunching(false);
       return;
     }
-    const opponents = getRandomBots(getDifficultyForPlayer(profile), 2, [partner.id]);
-    const chemistryBonus = getChemistryBonus(profile.partner_chemistry || 50);
-    const energyPenalty = getEnergyPenalty(profile.energy || 100);
-    const coachEffects = getCoachEffects(coach, profile);
-    const coachMatchBonus = coach ? Math.min(3, ((coachEffects?.strategyBonus || 0) + (coachEffects?.partnershipBonus || 0)) * 0.35) : 0;
-    const partnerBondBonus = calculatePartnershipPerformanceBonus({ chemistry: profile.partner_chemistry, partner_trust: profile.partner_trust, partner_morale: profile.partner_morale, natural_chemistry: profile.partner_chemistry, shared_matches: profile.matches_played || 0 }) * 40;
-    const playerForMatch = { ...profile, _chemistryBonus: chemistryBonus, _energyPenalty: energyPenalty, _coachMatchBonus: coachMatchBonus, _partnerBondBonus: partnerBondBonus };
-    setTeams({ partner, opponents, teamA: [playerForMatch, partner], teamB: opponents });
+    setTeams({ partner: session.partner, opponents: session.opponents, teamA: session.teamA, teamB: session.teamB });
+    setLaunchMetrics(session.timings);
     setResumedEngineState(null);
     matchIdRef.current = createCheckpointMatchId();
     startedAtRef.current = new Date().toISOString();
@@ -174,6 +180,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     setTeams(null);
     setResult(null);
     setLiveMatchSessionKey((value) => value + 1);
+    launchFlightRef.current = false;
+    setLaunching(false);
     setPhase('config');
     toast({ title: 'A partida foi interrompida', description: 'Ocorreu um erro inesperado durante a simulação. Você pode iniciar uma nova partida treino.', variant: 'destructive' });
   }
@@ -227,6 +235,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   }
 
   function reset() {
+    launchFlightRef.current = false;
+    setLaunching(false);
     savedRef.current = false;
     matchIdRef.current = null;
     startedAtRef.current = null;
@@ -262,6 +272,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
       // aqui e sm: lá, uma divergência sem motivo entre os dois hosts do
       // MESMO LiveMatch.jsx compartilhado).
       className={phase === 'live' ? 'h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)]' : ''}
+      contentClassName={phase === 'live' ? 'flex flex-col overflow-hidden' : ''}
     >
         {/* Recovery — partida treino interrompida antes de terminar (M3, Parte 8) */}
         {phase === 'config' && pendingResume && (
@@ -374,9 +385,11 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
             <button
               onClick={startMatch}
-              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg transition hover:brightness-110"
+              disabled={launching}
+              data-practice-launch-ms={Math.round(launchMetrics?.preparationMs || 0)}
+              className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg transition hover:brightness-110 disabled:opacity-60"
             >
-              <Play className="h-4 w-4" /> Iniciar Partida
+              <Play className="h-4 w-4" /> {launching ? 'Preparando...' : 'Iniciar Partida'}
             </button>
           </div>
         )}
@@ -384,20 +397,22 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
         {/* Live match */}
         {phase === 'live' && teams && (
           <LiveMatchRecoveryBoundary key={liveMatchSessionKey} onRecoveryError={handleLiveMatchCrash}>
-            <LiveMatch
-              teamA={teams.teamA}
-              teamB={teams.teamB}
-              initialTacticId={useCustomPlan ? { id: 'personalizado', label: 'Personalizado', icon: 'Brain', baseTacticId: initialTacticId, shotWeights: customShotWeights } : initialTacticId}
-              coach={coach}
-              liveCoachSettings={liveCoachSettings}
-              onFinished={handleFinished}
-              displayMode={displayMode}
-              onDisplayModeChange={changeDisplayMode}
-              initialState={resumedEngineState}
-              onCheckpoint={saveCheckpoint}
-              matchType="practice"
-              matchId={matchIdRef.current}
-            />
+            <div className="h-full min-h-0 flex-1 overflow-hidden">
+              <LiveMatch
+                teamA={teams.teamA}
+                teamB={teams.teamB}
+                initialTacticId={useCustomPlan ? { id: 'personalizado', label: 'Personalizado', icon: 'Brain', baseTacticId: initialTacticId, shotWeights: customShotWeights } : initialTacticId}
+                coach={coach}
+                liveCoachSettings={liveCoachSettings}
+                onFinished={handleFinished}
+                displayMode={displayMode}
+                onDisplayModeChange={changeDisplayMode}
+                initialState={resumedEngineState}
+                onCheckpoint={saveCheckpoint}
+                matchType="practice"
+                matchId={matchIdRef.current}
+              />
+            </div>
           </LiveMatchRecoveryBoundary>
         )}
 

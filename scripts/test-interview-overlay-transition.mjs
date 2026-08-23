@@ -23,7 +23,7 @@ const interviewModal = read('src/components/press/InterviewModal.jsx');
 const pressPage = read('src/pages/Press.jsx');
 
 // ── Causa raiz corrigida: onClose ANTES de navigate ─────────────────────
-gate('BUG BLOQUEADO: openPostMatchInterview fecha o overlay do torneio (onClose) ANTES de navegar para /press — nunca deixa o backdrop antigo montado esperando o chunk lazy carregar', /function openPostMatchInterview\(\) \{[\s\S]{0,300}onClose\?\.\(\);\s*\n\s*navigate\(buildInterviewRoute/.test(tournamentModal));
+gate('BUG BLOQUEADO: openPostMatchInterview fecha o overlay do torneio (onClose) ANTES de navegar para /press — nunca deixa o backdrop antigo montado esperando o chunk lazy carregar', /function openPostMatchInterview\(\) \{[\s\S]{0,500}onClose\?\.\(\);\s*\n\s*navigate\(buildInterviewRoute/.test(tournamentModal));
 gate('Não foi aplicado z-index maior como correção (proibido pelo próprio briefing — a causa raiz era stacking/timing, não prioridade de camada)', !/openPostMatchInterview[\s\S]{0,600}z-index/i.test(tournamentModal));
 
 // ── Nenhum outro botão "Voltar à carreira" foi deixado sem navegar (M4.3 já tinha corrigido os outros) ──

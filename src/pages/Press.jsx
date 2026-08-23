@@ -19,6 +19,11 @@ import {
   matchIdFromInterview,
   postMatchInterviewMessageId,
 } from '@/lib/postMatchInterview.js';
+import {
+  buildCompletedInterviewMessagePatch,
+  interviewNotificationIdentity,
+  isInterviewActionable,
+} from '@/lib/interviewLifecycle.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
 export default function Press() {
@@ -93,7 +98,7 @@ export default function Press() {
   }
 
   const pendingInterviews = profile
-    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership, registrations, rivalry }).filter(interview => {
+    ? getPendingInterviews(profile, recentMatches, { calendarEvents, partnership, registrations, rivalry, pressArticles: articles }).filter(interview => {
         return !articles.some(article =>
           (article.source_event_id === interview.sourceId || article.related_event === interview.relatedEvent) &&
           (
@@ -108,6 +113,10 @@ export default function Press() {
     : [];
 
   async function handleStartInterview(interview) {
+    if (!isInterviewActionable(interview, profile?.career_date)) {
+      toast({ title: 'Entrevista indisponível', description: 'Esta entrevista já foi concluída ou não está mais disponível.', variant: 'destructive' });
+      return false;
+    }
     completedDeepLinkedInterviewRef.current = false;
     // Pick journalist based on interview type
     const bias = interview.questionCategory === 'post_loss' || interview.questionCategory === 'rumor' ? 'critical' : 'any';
@@ -124,6 +133,19 @@ export default function Press() {
         detail: { reason: 'press-interview-opened', sourceId: interview.sourceId },
       }));
     }
+    return true;
+  }
+
+  async function resolveRelatedInterviewMessage(interview) {
+    const identity = interviewNotificationIdentity(profile?.id, interview);
+    if (!identity) return null;
+    const existing = await localGame.entities['CareerMessage'].get(identity.messageId).catch(() => null);
+    if (!existing) return null;
+    const completedAt = new Date().toISOString();
+    return localGame.entities['CareerMessage'].update(
+      identity.messageId,
+      buildCompletedInterviewMessagePatch(interview, completedAt, existing.metadata || {}),
+    ).catch(() => null);
   }
 
   useEffect(() => {
@@ -157,6 +179,10 @@ export default function Press() {
       const alreadyProcessed = processedSources.has(interview.sourceId);
       const answered = articles.find((item) => item.source_event_id === interview.sourceId && item.interview_status === 'answered');
       if (answered && alreadyProcessed) {
+        await resolveRelatedInterviewMessage(interview);
+        window.dispatchEvent(new CustomEvent('padel:communications-updated', {
+          detail: { reason: 'press-interview-already-answered', sourceId: interview.sourceId },
+        }));
         completedDeepLinkedInterviewRef.current = true;
         return true;
       }
@@ -221,6 +247,11 @@ export default function Press() {
         const updated = await localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
         setProfile(updated);
       }
+
+      // A mensagem representa uma ação, não apenas leitura. Concluir a
+      // entrevista encerra a mesma identidade estável no sino; se a gravação
+      // tiver sido interrompida, a reconciliação contextual repete este passo.
+      await resolveRelatedInterviewMessage(interview);
 
       // Update journalist bias
       if (journalist.id && !alreadyProcessed) {

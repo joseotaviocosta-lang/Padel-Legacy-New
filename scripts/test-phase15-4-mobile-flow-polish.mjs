@@ -174,7 +174,7 @@ try {
   gate('Persistência usa upsert para mensagem', /type: 'upsert', entityName: 'CareerMessage'/.test(sources.tournamentModal));
   gate('Batch de rodada mantém chave idempotente', sources.tournamentModal.includes('idempotencyKey: `tournament:${freshMatch.id}`'));
   gate('Press marca mensagem lida ao abrir direto', sources.press.includes("status: 'lida', is_read: true, is_new: false"));
-  gate('Press resolve mensagem após resposta', read('src/lib/careerCommunications.js').includes("status: 'resolvida', is_read: true, is_new: false"));
+  gate('Press resolve mensagem após resposta', sources.press.includes('resolveRelatedInterviewMessage(interview)') && read('src/lib/interviewLifecycle.js').includes("status: 'resolvida'"));
   gate('Efeitos são guardados por processed source', sources.press.includes('processed_press_interview_sources'));
   gate('Retry não reaplica efeitos', sources.press.includes('if (answered && alreadyProcessed)'));
   gate('CTA final pós-derrota diz Voltar para a carreira', sources.press.includes("'Voltar para a carreira'"));

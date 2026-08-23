@@ -46,6 +46,7 @@ export function getNotificationCategoryLabel(notification = {}) {
 }
 
 export function getNotificationAttentionLevel(notification = {}) {
+  if (['resolvida', 'ignorada', 'invalidada', 'expirada'].includes(notification.status)) return 'Informação';
   if (notification.priority === 'critica' || notification.priority === 'crítica') return 'Crítica';
   if (notification.status === 'decisao_pendente' || notification.priority === 'alta') return 'Ação';
   return 'Informação';

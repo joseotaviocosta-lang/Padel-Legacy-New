@@ -13,6 +13,7 @@ export function ModalShell({
   footer = null,
   size = 'lg',
   className = '',
+  contentClassName = '',
   closeOnBackdrop = true,
   closeOnEscape = true,
 }) {
@@ -47,7 +48,7 @@ export function ModalShell({
             <X className="h-4 w-4" />
           </button>
         </header>
-        <div className="pl-modal-content scrollbar-premium min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5">{children}</div>
+        <div className={cn('pl-modal-content scrollbar-premium min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 sm:p-5', contentClassName)}>{children}</div>
         {footer && <footer className="pl-modal-footer shrink-0 border-t px-4 py-3 sm:px-5">{footer}</footer>}
       </section>
     </div>,

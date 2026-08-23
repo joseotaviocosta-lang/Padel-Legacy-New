@@ -209,14 +209,14 @@ try {
       armedCreateFailure = null;
     }
     gate('B2: executeTraining propaga a falha do TrainingSession.create', b2Threw);
-    gate('B2: PlayerProfile.update JÁ tinha sido chamado com sucesso quando a auditoria falhou', playerProfileUpdateCalls === 1);
+    gate('B2: PlayerProfile.update foi chamado antes da falha injetada na TrainingSession', playerProfileUpdateCalls === 1);
     const profileAfterB2 = await localGame.entities.PlayerProfile.get(profile.id);
-    gate('B2: os ganhos JÁ foram aplicados ao perfil mesmo com o registro de auditoria falhando (degradação mínima, não perda de progresso)', profileAfterB2.trainings_today === 1);
+    gate('B2: rollback remove todo ganho parcial quando o registro da sessão falha', profileAfterB2.trainings_today === 0);
 
     // Cenário B3 (caminho feliz): sem falhas, os dois escrevem normalmente.
     resetCounters();
     const result = await executeTraining(profileAfterB2, fullActivity, 'moderado');
-    gate('B3: caminho feliz continua funcionando (sem regressão de comportamento)', !result.error && result.profile.trainings_today === 2);
+    gate('B3: caminho feliz continua funcionando (sem regressão de comportamento)', !result.error && result.profile.trainings_today === 1);
     gate('B3: exatamente uma escrita de cada tipo no caminho feliz', playerProfileUpdateCalls === 1 && entityCreateCalls.TrainingSession === 1);
   }
 
