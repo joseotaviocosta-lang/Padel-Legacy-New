@@ -3,7 +3,7 @@ import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import {
   ATTRIBUTES, ATTRIBUTE_KEYS, calculateTrainingGain, trainingGainChance,
   rollInjury, calculateAge, isInjured, isRetired,
-  MAX_ENERGY, DAILY_TRAINING_LIMIT,
+  getDailyTrainingLimit,
   incrementMissionProgress, todayStr,
 } from '@/lib/padel';
 
@@ -265,7 +265,7 @@ export async function executeTraining(profile, activity, intensityId, coachBonus
   if (Number(profile?.tournament_matches_today || 0) > 0) return { error: 'Dia de torneio: treinos ficam bloqueados após a partida oficial.' };
 
   const doneToday = profile.trainings_today || 0;
-  if (doneToday >= DAILY_TRAINING_LIMIT) return { error: 'Limite diário de treino atingido. Avance o dia!' };
+  if (doneToday >= getDailyTrainingLimit(profile)) return { error: 'Limite diário de treino atingido. Avance o dia!' };
 
   // Second training of the day costs 50% more energy
   const energyCost = Math.round(intensity.energyCost + (doneToday > 0 ? intensity.energyCost * 0.5 : 0));

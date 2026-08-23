@@ -123,7 +123,15 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
   const restedFully = !hadTraining && !hadMatch;
   const recoveryMultiplier = getDifficultyModifier(profile, 'recoveryMultiplier');
   const baseRecovery = Math.round((restedFully ? 32 : (hadMatch ? (hadTraining ? 8 : 10) : 16)) * recoveryMultiplier);
-  const recovery = baseRecovery + Math.max(0, Number(profile.club_recovery_bonus) || 0);
+  // Fase 15.5.3: Fisioterapia/Alojamentos ("+X energia/dia", aditivo) e
+  // Nutrição ("+Y% recuperação") são instalações do Centro de Treinamento —
+  // mesmos campos `facility_*` cacheados no profile no upgrade, somados ao
+  // bônus de clube já existente (fonte independente, próprio fator) antes do
+  // percentual multiplicativo, mesma regra de composição usada em
+  // calculateTrainingGainBudget (cada fonte é um fator próprio).
+  const facilityRecoveryBonus = Math.max(0, Number(profile.facility_energy_recovery_bonus) || 0);
+  const facilityRecoveryPctMultiplier = 1 + Math.max(0, Number(profile.facility_energy_recovery_pct) || 0) / 100;
+  const recovery = Math.round((baseRecovery + Math.max(0, Number(profile.club_recovery_bonus) || 0) + facilityRecoveryBonus) * facilityRecoveryPctMultiplier);
 
   // ── Process calendar events for the new day ──
   const calendarResult = await stage('calendar', () => processCalendarEvents(profile, newCareerDate));
@@ -131,7 +139,9 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
   // A fadiga representa desgaste acumulado, não uma punição diária.
   // Dias livres recuperam mais; dias com atividade ainda geram recuperação parcial.
   const fatigueRecovery = Math.round((restedFully ? 10 : (hadMatch ? (hadTraining ? 2 : 3) : 4)) * recoveryMultiplier);
-  const moraleRecovery = restedFully ? 4 : 2;
+  // Fase 15.5.3: Psicologia Esportiva ("+N moral") — bônus diário aditivo,
+  // mesmo padrão do bônus de energia acima.
+  const moraleRecovery = (restedFully ? 4 : 2) + Math.max(0, Number(profile.facility_morale_bonus) || 0);
   const formRecovery = restedFully ? 3 : 1;
 
   const updates = {

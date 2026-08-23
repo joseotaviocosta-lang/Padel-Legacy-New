@@ -83,7 +83,33 @@ export default function TrainingFacilityView({ profile, onProfileUpdate }) {
         level: getCenterLevel({ facilities }),
         reputation_bonus: getCenterReputation({ facilities }),
       });
-      const updatedProfile = await entities.PlayerProfile.update(profile.id, { coins: (profile.coins || 0) - nextLevel.cost });
+      // Hotfix 15.5.3: a UI já anunciava o bônus (getCenterEffects, abaixo)
+      // mas nenhum sistema de gameplay o lia — DAILY_TRAINING_LIMIT e outros
+      // cálculos usavam constantes fixas, então evoluir Quadras nunca
+      // liberava o treino extra de verdade. Os efeitos resolvidos são
+      // gravados como campos `facility_*` no PlayerProfile (mesmo padrão já
+      // usado por `club_recovery_bonus`/`staff_*_multiplier`) para que
+      // consumidores síncronos (canTrainToday, calculateTrainingGainBudget,
+      // advanceDay) leiam o bônus real sem precisar buscar TrainingCenter de
+      // novo — e para que o HUD atualize imediatamente pelo mesmo
+      // onProfileUpdate que já dispara padel:profile-updated, sem reload.
+      const resolvedEffects = getCenterEffects({ facilities });
+      const updatedProfile = await entities.PlayerProfile.update(profile.id, {
+        coins: (profile.coins || 0) - nextLevel.cost,
+        facility_daily_training_bonus: resolvedEffects.dailyTrainingBonus,
+        facility_energy_recovery_bonus: resolvedEffects.energyRecoveryBonus,
+        facility_energy_recovery_pct: resolvedEffects.energyRecoveryPct,
+        facility_injury_risk_reduction: resolvedEffects.injuryRiskReduction,
+        facility_injury_recovery_bonus: resolvedEffects.injuryRecoveryBonus,
+        facility_training_gain_pct: resolvedEffects.trainingGainPct,
+        facility_physical_gain_pct: resolvedEffects.physicalGainPct,
+        facility_technique_gain_pct: resolvedEffects.techniqueGainPct,
+        facility_mental_gain_pct: resolvedEffects.mentalGainPct,
+        facility_overall_gain_pct: resolvedEffects.overallGainPct,
+        facility_morale_bonus: resolvedEffects.moraleBonus,
+        facility_coins_per_match: resolvedEffects.coinsPerMatch,
+        facility_rest_anytime: resolvedEffects.restAnytime,
+      });
       setCenter(updatedCenter);
       onProfileUpdate(updatedProfile, 'training-center:facility-upgrade');
       toast({ title: 'Evoluído!', description: `${facility.name} agora está no nível ${currentLevel + 1}.` });

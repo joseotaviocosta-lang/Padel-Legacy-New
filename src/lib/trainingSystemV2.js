@@ -1,5 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
-import { ATTRIBUTE_KEYS, DAILY_TRAINING_LIMIT, isInjured, isRetired, incrementMissionProgress, todayStr } from '@/lib/padel';
+import { ATTRIBUTE_KEYS, getDailyTrainingLimit, isInjured, isRetired, incrementMissionProgress, todayStr } from '@/lib/padel';
 import {
   TRAINING_GROUPS, TRAINING_GROUP_ORDER, TRAINING_INTENSITIES, TRAINING_FOCUSES,
   getTrainingFocus, getTrainingWeights, migrateTrainingReference,
@@ -128,9 +128,26 @@ export function calculateTrainingGainBudget({ profile, training, intensityId = '
           ? Number(profile?.staff_tactical_training_multiplier || 1)
           : 1;
   const staffMultiplier = Math.max(1, Number(profile?.staff_training_gain_multiplier || 1)) * Math.max(1, groupMultiplier);
+  // Fase 15.5.3: Academia/Biomecânica/Psicologia (bônus por grupo) e Análise
+  // de Desempenho/Laboratório (bônus global "em todos os treinos"/"em todos
+  // os atributos") são instalações do Centro de Treinamento — mesmo campo
+  // `facility_*` cacheado no profile no momento do upgrade (padrão idêntico
+  // a staff_*_multiplier acima), mesma regra de composição: cada fonte
+  // independente é um fator multiplicativo próprio (nunca soma de %).
+  const facilityGroupPct = training.groupId === 'physical'
+    ? Number(profile?.facility_physical_gain_pct || 0)
+    : training.groupId === 'court'
+      ? Number(profile?.facility_technique_gain_pct || 0)
+      : training.groupId === 'mental'
+        ? Number(profile?.facility_mental_gain_pct || 0)
+        : 0;
+  const facilityGroupMultiplier = 1 + Math.max(0, facilityGroupPct) / 100;
+  const facilityGlobalMultiplier = (1 + Math.max(0, Number(profile?.facility_training_gain_pct || 0)) / 100)
+    * (1 + Math.max(0, Number(profile?.facility_overall_gain_pct || 0)) / 100);
+  const facilityMultiplier = facilityGroupMultiplier * facilityGlobalMultiplier;
   const difficultyMultiplier = getDifficultyModifier(profile, 'trainingGainMultiplier');
-  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * development.multiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier * difficultyMultiplier;
-  return { budget: round(Math.max(0.03, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, development, repetitionMultiplier, affinity, coachMultiplier, staffMultiplier, intensity };
+  const budget = training.baseGainBudget * intensity.gainMult * levelMultiplier * fatigueMultiplier * potentialMultiplier * ageMultiplier * development.multiplier * repetitionMultiplier * affinity.multiplier * clubMultiplier * coachMultiplier * staffMultiplier * facilityMultiplier * difficultyMultiplier;
+  return { budget: round(Math.max(0.03, budget)), levelMultiplier, fatigueMultiplier, potentialMultiplier, ageMultiplier, development, repetitionMultiplier, affinity, coachMultiplier, staffMultiplier, facilityMultiplier, intensity };
 }
 
 export function distributeTrainingGain(profile, training, budget) {
@@ -157,7 +174,11 @@ export function previewTraining(profile, activity, intensityId = 'moderado', rep
     : 0.001 + (fatigue - 75) * 0.00014;
   const lowEnergyRisk = energyAfter >= 30 ? 0 : (30 - energyAfter) * 0.00007;
   const secondSessionRisk = (profile?.trainings_today || 0) > 0 ? 0.0004 : 0;
-  const injuryRisk = Math.min(0.022, (calculation.intensity.injuryRisk + fatigueRisk + lowEnergyRisk + secondSessionRisk) * staffInjuryMultiplier * getDifficultyModifier(profile, 'injuryRiskMultiplier'));
+  // Fase 15.5.3: Departamento Médico ("-X% lesão") é uma instalação, não o
+  // fisioterapeuta da comissão (staffInjuryMultiplier, já existente) — fontes
+  // distintas, cada uma seu próprio fator, nunca substituindo a outra.
+  const facilityInjuryMultiplier = Math.max(0, 1 - (Number(profile?.facility_injury_risk_reduction) || 0) / 100);
+  const injuryRisk = Math.min(0.022, (calculation.intensity.injuryRisk + fatigueRisk + lowEnergyRisk + secondSessionRisk) * staffInjuryMultiplier * facilityInjuryMultiplier * getDifficultyModifier(profile, 'injuryRiskMultiplier'));
   // M4.2.1 (Parte 9/32): custo visível no preview, ANTES de qualquer
   // confirmação — mesma função getTrainingCost usada na execução real
   // (Parte 41, fonte única), nunca recalculada separadamente na UI.
@@ -192,7 +213,7 @@ async function executeTrainingWork(profile, activity, intensityId, coachBonus = 
   if (Number(profile?.tournament_matches_today || 0) > 0) return { error: 'Dia de torneio: treinos ficam bloqueados após a partida oficial.' };
   if (training.requiresPartner && !profile?.partner_id) return { error: 'Este foco exige um parceiro ativo.' };
   const doneToday = Number(profile?.trainings_today) || 0;
-  if (doneToday >= DAILY_TRAINING_LIMIT) return { error: 'Limite diário de treino atingido. Avance o dia.' };
+  if (doneToday >= getDailyTrainingLimit(profile)) return { error: 'Limite diário de treino atingido. Avance o dia.' };
   const counts = await getWeeklyTrainingCounts(profile.id, profile.career_date);
   const preview = previewTraining(profile, training, intensityId, counts[training.id] || 0, coachBonus);
   if (Number(profile?.energy ?? 0) < preview.energyCost) return { error: `Energia insuficiente: são necessários ${preview.energyCost} pontos.` };
@@ -220,7 +241,7 @@ async function executeTrainingWork(profile, activity, intensityId, coachBonus = 
   }
   const conditionBefore = { energy: Number(profile.energy ?? 100), fatigue: normalizeFatigue(profile.fatigue), morale: Number(profile.morale ?? 70), confidence: Number(profile.confidence ?? 50), form: Number(profile.form ?? 50) };
   const injured = Math.random() < preview.injuryRisk;
-  const recoveryDays = injured ? 5 + Math.floor(Math.random() * 7) : 0;
+  const recoveryDays = injured ? Math.max(1, 5 + Math.floor(Math.random() * 7) - (Number(profile?.facility_injury_recovery_bonus) || 0)) : 0;
   const scaledXp = Math.round(training.xp * getDifficultyModifier(profile, 'careerXpMultiplier'));
   Object.assign(updates, {
     attribute_progress: progress,

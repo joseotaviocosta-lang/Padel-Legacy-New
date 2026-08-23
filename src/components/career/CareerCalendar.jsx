@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Calendar, FastForward, Dumbbell, Swords, Heart, Battery, AlertTriangle, Lock } from 'lucide-react';
 import { careerDateLabel, careerMonthLabel } from '@/lib/career';
 import { advanceCareerDayOnce } from '@/game-core';
-import { DAILY_TRAINING_LIMIT, DAILY_MATCH_LIMIT, chemistryLabel, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
+import { getDailyTrainingLimit, DAILY_MATCH_LIMIT, chemistryLabel, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, isRetired } from '@/lib/padel';
 import { getPendingDecisions } from '@/lib/calendarSystem';
 import { describeCalendarBlock } from '@/lib/tournamentNextAction.js';
 import { formatPercent } from '@/game-core/physicalStats.js';
@@ -96,7 +96,7 @@ export default function CareerCalendar({ profile, onAdvanceDay }) {
           <Dumbbell className="h-4 w-4 text-primary shrink-0" />
           <div className="flex-1">
             <p className="text-[9px] text-muted-foreground uppercase">Treino</p>
-            <p className="text-xs font-bold tabular-nums">{trainingsToday}/{DAILY_TRAINING_LIMIT}</p>
+            <p className="text-xs font-bold tabular-nums">{trainingsToday}/{getDailyTrainingLimit(profile)}</p>
           </div>
         </div>
         <div className="glass rounded-xl p-2 flex items-center gap-2">

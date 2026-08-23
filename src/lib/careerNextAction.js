@@ -17,7 +17,7 @@
 //
 // Retorno nunca acopla JSX: `icon` é uma CHAVE (string), resolvida pelo
 // componente de UI (ContextActionBar) — não uma referência de componente.
-import { canPlayMatchToday, isInjured, injuryRecoveryDays, isRetired, DAILY_TRAINING_LIMIT } from '@/lib/padel.js';
+import { canPlayMatchToday, isInjured, injuryRecoveryDays, isRetired, getDailyTrainingLimit } from '@/lib/padel.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
 /**
@@ -91,8 +91,9 @@ export function getCareerNextAction(profile, context = {}) {
   }
   // 8. treino disponível
   const trainingsToday = Number(profile.trainings_today) || 0;
-  if (trainingsToday < DAILY_TRAINING_LIMIT) {
-    return { id: 'training', priority: 9, label: trainingsToday > 0 ? 'Treinar novamente' : 'Treinar agora', description: `${trainingsToday}/${DAILY_TRAINING_LIMIT} treinos hoje`, route: APP_ROUTES.TRAINING, actionType: 'navigate', icon: 'dumbbell', tone: 'info' };
+  const dailyTrainingLimit = getDailyTrainingLimit(profile);
+  if (trainingsToday < dailyTrainingLimit) {
+    return { id: 'training', priority: 9, label: trainingsToday > 0 ? 'Treinar novamente' : 'Treinar agora', description: `${trainingsToday}/${dailyTrainingLimit} treinos hoje`, route: APP_ROUTES.TRAINING, actionType: 'navigate', icon: 'dumbbell', tone: 'info' };
   }
   // 9. missão/tutorial prioritário
   if (context.priorityMission) {

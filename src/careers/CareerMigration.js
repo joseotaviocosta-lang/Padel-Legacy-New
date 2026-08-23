@@ -7,6 +7,7 @@ import { buildInitialProfile } from '../lib/initialCareerProfiles.js';
 import { migrateTrainingReference } from '../lib/trainingCatalog.js';
 import { DEFAULT_MIGRATED_CAREER_DIFFICULTY } from '../gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '../game-core/physicalStats.js';
+import { getCenterEffects } from '../lib/trainingCenter.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -386,6 +387,36 @@ export function migrateCareer(career) {
       }
     }
     data.save_schema_version = 19; version = 19;
+  }
+  if (version < 20) {
+    // Fase 15.5.3: o Centro de Treinamento (TrainingCenter) já existia e a
+    // UI já anunciava os bônus de cada instalação (getCenterEffects), mas
+    // nenhum sistema de gameplay os lia — DAILY_TRAINING_LIMIT e outros
+    // cálculos usavam constantes fixas. Saves que já tinham instalações
+    // evoluídas antes desta correção precisam dos campos `facility_*`
+    // derivados automaticamente aqui, sem exigir comprar de novo (não é
+    // migração destrutiva: só preenche campos derivados a partir do nível
+    // de instalação já persistido).
+    const centers = Array.isArray(data.entities?.TrainingCenter) ? data.entities.TrainingCenter : [];
+    const center = centers.find((item) => item?.profile_id === data.player?.id) || centers[0] || null;
+    const effects = getCenterEffects(center);
+    data.player = {
+      ...(data.player || {}),
+      facility_daily_training_bonus: effects.dailyTrainingBonus,
+      facility_energy_recovery_bonus: effects.energyRecoveryBonus,
+      facility_energy_recovery_pct: effects.energyRecoveryPct,
+      facility_injury_risk_reduction: effects.injuryRiskReduction,
+      facility_injury_recovery_bonus: effects.injuryRecoveryBonus,
+      facility_training_gain_pct: effects.trainingGainPct,
+      facility_physical_gain_pct: effects.physicalGainPct,
+      facility_technique_gain_pct: effects.techniqueGainPct,
+      facility_mental_gain_pct: effects.mentalGainPct,
+      facility_overall_gain_pct: effects.overallGainPct,
+      facility_morale_bonus: effects.moraleBonus,
+      facility_coins_per_match: effects.coinsPerMatch,
+      facility_rest_anytime: effects.restAnytime,
+    };
+    data.save_schema_version = 20; version = 20;
   }
   const normalizedFatigue = normalizeFatigue(data.player?.fatigue);
   let repairedFatigue = Boolean(data.player) && data.player.fatigue !== normalizedFatigue;

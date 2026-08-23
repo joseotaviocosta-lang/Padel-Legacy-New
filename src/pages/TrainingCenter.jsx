@@ -5,7 +5,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import { localGame } from '@/api/localGameClient.js';
 import { Page, PageContent, PageHeader, PageSkeleton, Surface, Tabs } from '@/components/design-system';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
-import { ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, DAILY_TRAINING_LIMIT } from '@/lib/padel.js';
+import { ensureMyProfile, canPlayMatchToday, DAILY_MATCH_LIMIT, getDailyTrainingLimit } from '@/lib/padel.js';
 import { formatPercent, normalizeFatigue } from '@/game-core/physicalStats.js';
 import { TRAINING_CENTER_VIEWS } from '@/navigation/routes.js';
 
@@ -106,7 +106,7 @@ export default function TrainingCenterPage() {
           breadcrumb={['Desenvolvimento', 'Centro de Treinamento']}
           hudLabel="Estado da preparação"
           hudItems={[
-            { label: 'treinos', value: `${profile.trainings_today || 0}/${DAILY_TRAINING_LIMIT}`, icon: Dumbbell },
+            { label: 'treinos', value: `${profile.trainings_today || 0}/${getDailyTrainingLimit(profile)}`, icon: Dumbbell },
             { label: 'partida', value: `${profile.practice_matches_today || 0}/${DAILY_MATCH_LIMIT}`, icon: Swords },
             { label: 'energia', value: `${formatPercent(profile.energy ?? 100)}%`, icon: Zap, tone: (profile.energy ?? 100) < 30 ? 'danger' : 'success' },
             { label: 'fadiga', value: `${normalizeFatigue(profile.fatigue)}%`, icon: Activity, tone: normalizeFatigue(profile.fatigue) > 65 ? 'danger' : normalizeFatigue(profile.fatigue) > 40 ? 'warning' : 'success' },

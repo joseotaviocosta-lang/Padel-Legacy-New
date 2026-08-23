@@ -266,7 +266,9 @@
     "test:phase15-5-1-header-notifications-partnership-ui": "node scripts/test-phase15-5-1-header-notifications-partnership-ui.mjs",
     "test:phase15-5-1-tournament-interview-consistency": "node scripts/test-phase15-5-1-tournament-interview-consistency.mjs",
     "test:phase15-5-1-critical-training-center": "node scripts/test-phase15-5-1-critical-training-center.mjs",
-    "test:phase15-5-2-tournament-continuity": "node scripts/test-phase15-5-2-tournament-continuity.mjs"
+    "test:phase15-5-2-tournament-continuity": "node scripts/test-phase15-5-2-tournament-continuity.mjs",
+    "test:phase15-5-3-training-center-effects": "node scripts/test-phase15-5-3-training-center-effects.mjs",
+    "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

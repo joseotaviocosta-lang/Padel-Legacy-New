@@ -130,6 +130,21 @@ export const DAILY_TRAINING_LIMIT = 3;
 export const DAILY_MATCH_LIMIT = 1;
 
 export const MAX_ENERGY = 100;
+
+// Fase 15.5.3: Centro de Treinamento — a UI já anunciava "+1 treino/dia" ao
+// evoluir Quadras (TrainingFacilityView.jsx, getCenterEffects), mas nenhum
+// sistema de gameplay lia esse bônus; DAILY_TRAINING_LIMIT/MAX_ENERGY eram
+// usados como constantes fixas em toda parte (trainingSystemV2.js, HUD,
+// careerNextAction.js). O bônus resolvido (getCenterEffects) é gravado em
+// campos `facility_*` no PlayerProfile no momento do upgrade (mesmo padrão
+// já usado por `club_recovery_bonus`/`staff_*_multiplier` — consumidores
+// síncronos como advanceDay/calculateTrainingGainBudget já leem esses
+// campos direto do profile, sem precisar buscar TrainingCenter de novo) e
+// por uma migração de save (CareerMigration.js v20) para saves que já
+// tinham instalações evoluídas antes desta correção.
+export function getDailyTrainingLimit(profile) {
+  return DAILY_TRAINING_LIMIT + Math.max(0, Number(profile?.facility_daily_training_bonus) || 0);
+}
 export const TRAINING_ENERGY_COST = 10;
 export const MATCH_ENERGY_COST = 15;
 export const TOURNAMENT_ENERGY_COST = 20;
@@ -204,7 +219,8 @@ export function topAttributes(profile) {
 export function canTrainToday(profile) {
   const done = profile?.trainings_today || 0;
   const officialMatchPlayed = Number(profile?.tournament_matches_today || 0) > 0;
-  return { allowed: !officialMatchPlayed && done < DAILY_TRAINING_LIMIT, remaining: officialMatchPlayed ? 0 : Math.max(0, DAILY_TRAINING_LIMIT - done) };
+  const limit = getDailyTrainingLimit(profile);
+  return { allowed: !officialMatchPlayed && done < limit, remaining: officialMatchPlayed ? 0 : Math.max(0, limit - done) };
 }
 
 export function daysSincePhysio(profile) {
@@ -218,7 +234,7 @@ export function daysSincePhysio(profile) {
 
 export function canDoPhysio(profile) {
   const done = profile?.trainings_today || 0;
-  const dailyOk = done < DAILY_TRAINING_LIMIT;
+  const dailyOk = done < getDailyTrainingLimit(profile);
   return {
     allowed: dailyOk,
     dailyOk,
@@ -274,10 +290,10 @@ export function getEnergyPenalty(energy) {
   return -10;
 }
 
-export function rollInjury(energy, age = 16) {
+export function rollInjury(energy, age = 16, riskMultiplier = 1) {
   let chance = energy < 30 ? 0.12 : 0.02;
   if (age > 30) chance += (age - 30) * 0.03;
-  return Math.random() < chance;
+  return Math.random() < chance * Math.max(0, riskMultiplier);
 }
 
 export function isInjured(profile) {
@@ -891,7 +907,10 @@ export function buildMatchRewardsPatch(profile, won, options = {}) {
   const processedKeys = Array.isArray(profile?.processed_match_keys) ? profile.processed_match_keys : [];
   if (idempotencyKey && processedKeys.includes(idempotencyKey)) return { alreadyProcessed: true, updates: {} };
   const xpGain = won ? 50 : 20;
-  const coinsGain = won ? 30 : 10;
+  // Fase 15.5.3: Área VIP ("+X moedas/jogo") é aditivo por partida,
+  // independente de vitória/derrota — mesmo campo `facility_*` cacheado no
+  // profile no upgrade usado pelos outros efeitos do Centro de Treinamento.
+  const coinsGain = (won ? 30 : 10) + Math.max(0, Number(profile.facility_coins_per_match) || 0);
   const newXp = (profile.xp || 0) + xpGain;
   const updates = {
     matches_played: (profile.matches_played || 0) + 1,
@@ -917,9 +936,13 @@ export function buildMatchRewardsPatch(profile, won, options = {}) {
   if (!options.skipPhysical) {
     updates.energy = Math.max(0, (profile.energy || 100) - TOURNAMENT_ENERGY_COST);
   }
-  if (!options.skipPhysical && rollInjury(profile.energy || 100, calculateAge(profile))) {
+  // Fase 15.5.3: Departamento Médico anuncia "-X% lesão, -Yd recuperação" —
+  // reduz a chance de rolagem e encurta a janela sorteada, nunca a
+  // recalcula com uma fórmula paralela.
+  const facilityInjuryRiskMultiplier = Math.max(0, 1 - (Number(profile.facility_injury_risk_reduction) || 0) / 100);
+  if (!options.skipPhysical && rollInjury(profile.energy || 100, calculateAge(profile), facilityInjuryRiskMultiplier)) {
     const careerD = new Date((profile.career_date || '2026-01-01') + 'T00:00:00');
-    const recoveryDays = 7 + Math.floor(Math.random() * 8);
+    const recoveryDays = Math.max(1, 7 + Math.floor(Math.random() * 8) - (Number(profile.facility_injury_recovery_bonus) || 0));
     const recoveryDate = new Date(careerD);
     recoveryDate.setDate(recoveryDate.getDate() + recoveryDays);
     updates.injured_until = recoveryDate.toISOString().slice(0, 10);
@@ -968,8 +991,9 @@ export async function applyRecovery(profile, recoveryType) {
     if (!physioCheck.allowed) return null;
   }
 
-  // Rest: blocked if already trained or played a match today
-  if (recoveryType.advanceDays) {
+  // Rest: blocked if already trained or played a match today — exceto
+  // quando Alojamentos concede "descanso livre" (Fase 15.5.3: facility_rest_anytime).
+  if (recoveryType.advanceDays && !profile.facility_rest_anytime) {
     const hasActivity = (profile.trainings_today || 0) > 0 || (profile.practice_matches_today || 0) > 0 || (profile.tournament_matches_today || 0) > 0;
     if (hasActivity) return null;
   }
