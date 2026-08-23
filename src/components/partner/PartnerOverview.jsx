@@ -6,6 +6,7 @@ import { formatDate } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 import { Surface, Button } from '@/components/design-system';
 import { localGame } from '@/api/localGameClient.js';
+import { getPartnerBot } from '@/lib/career';
 
 const athleteProfiles = /** @type {any} */ (localGame.entities).AthleteProfile;
 
@@ -60,7 +61,13 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
     : 0;
   const positionScore = partnership.compatibility_breakdown?.position;
   const sideOk = positionScore == null ? null : positionScore >= 70;
-  const partnerAge = partnerProfile?.age ?? null;
+  // Hotfix 15.5.2: parceiros vêm do catálogo estático de bots (bots.js), que
+  // nunca é persistido em AthleteProfile (partnershipSystem.js já tolera essa
+  // ausência com .catch(() => null) no update de mercado) — a busca acima
+  // praticamente sempre retorna null para esses ids. Sem fallback, a idade
+  // nunca aparecia. bot.age vem do mesmo gerador determinístico (não é um
+  // snapshot da parceria nem recalculado a partir do ranking).
+  const partnerAge = partnerProfile?.age ?? getPartnerBot(profile)?.age ?? null;
   const partnerOverall = resolvePartnerOverall(partnerProfile, partnership.partner_overall);
 
   return (

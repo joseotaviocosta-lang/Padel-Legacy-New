@@ -102,6 +102,26 @@ export async function isPlayerRegisteredForTournament(profileId, tournamentId) {
   return rows?.[0] || null;
 }
 
+const TERMINAL_TOURNAMENT_RUN_STATUSES = new Set(['eliminated', 'champion', 'finished']);
+
+/**
+ * Hotfix 15.5.2: presença numa campanha vale para o torneio inteiro, não por
+ * rodada — uma vez confirmado o registro inicial, R16→QF→SF→F nunca exigem
+ * nova confirmação manual enquanto o jogador seguir classificado. Fonte
+ * canônica é `TournamentRegistration.status === 'confirmed'`; quando esse
+ * registro está ausente (save legado anterior à v2, ou linha órfã) mas o
+ * `CalendarEvent` já guarda um `tournament_run` ativo para este torneio, a
+ * presença é derivada em memória a partir do próprio run — nunca exige
+ * migração destrutiva nem recria o registro sozinha.
+ */
+export function isTournamentParticipationConfirmed({ registration = null, event = null, tournamentRun = null } = {}) {
+  if (registration?.status === 'confirmed') return true;
+  if (!event || event.event_type !== 'tournament' || event.status !== 'scheduled') return false;
+  const run = tournamentRun || event.metadata?.tournament_run || null;
+  if (!run || TERMINAL_TOURNAMENT_RUN_STATUSES.has(run.status)) return false;
+  return true;
+}
+
 export async function registerTournament({ player, partner, tournament, teamRank = 0 }) {
   const id = deterministicRegistrationId(player.id, tournament.id);
   const existingById = await localGame.entities.TournamentRegistration.filter({ profile_id: player.id, tournament_id: tournament.id });

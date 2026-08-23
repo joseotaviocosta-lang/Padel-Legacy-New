@@ -265,7 +265,8 @@
     "test:training-center-unification-phase15-5": "node scripts/test-training-center-unification-phase15-5.mjs",
     "test:phase15-5-1-header-notifications-partnership-ui": "node scripts/test-phase15-5-1-header-notifications-partnership-ui.mjs",
     "test:phase15-5-1-tournament-interview-consistency": "node scripts/test-phase15-5-1-tournament-interview-consistency.mjs",
-    "test:phase15-5-1-critical-training-center": "node scripts/test-phase15-5-1-critical-training-center.mjs"
+    "test:phase15-5-1-critical-training-center": "node scripts/test-phase15-5-1-critical-training-center.mjs",
+    "test:phase15-5-2-tournament-continuity": "node scripts/test-phase15-5-2-tournament-continuity.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

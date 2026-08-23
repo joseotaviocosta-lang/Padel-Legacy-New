@@ -22,7 +22,7 @@ import { isRegistrationOpen } from '@/lib/calendarSystem';
 import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
-import { cancelTournamentRegistration, isPlayerRegisteredForTournament, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
+import { cancelTournamentRegistration, isPlayerRegisteredForTournament, isTournamentParticipationConfirmed, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
 import { useCareer } from '@/careers/useCareer.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { resolveTournamentOpenMode, TOURNAMENT_DEEP_LINK_MODES } from '@/lib/tournamentDeepLink.js';
@@ -284,7 +284,12 @@ export default function Tournaments() {
     if (!activeRun && playedTournaments.has(tournament.name)) return;
     // If not registered yet, open registration modal first
     const persistedRegistration = await isPlayerRegisteredForTournament(profile.id, tournament.id);
-    if (!persistedRegistration) {
+    // Hotfix 15.5.2: um save legado sem TournamentRegistration não pode
+    // mandar o jogador de volta para a inscrição no meio de uma campanha já
+    // em andamento — activeRun (mesmo CalendarEvent que já habilita o botão
+    // acima) prova a participação quando o registro canônico está ausente.
+    const confirmed = persistedRegistration || (activeRun && isTournamentParticipationConfirmed({ event: activeRun }));
+    if (!confirmed) {
       if (!canRegisterForTournament(tournament)) return;
       setRegistrationTournament(tournament);
       return;

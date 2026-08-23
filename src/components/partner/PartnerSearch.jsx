@@ -12,13 +12,14 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
   const [sort, setSort] = useState('compat');
   const [selected, setSelected] = useState(null);
   const [sideFilter, setSideFilter] = useState('all');
-  // Fase 15.2 (Bug 3/G1/G2): os bots de busca de parceiro vêm de um catálogo
-  // estático (bots.js/athleteCatalog.js) sem idade real coerente com a Fase
-  // 15 (atletas fictícios têm uma idade gerada uma única vez no catálogo,
-  // atletas reais não têm nenhuma) — nunca a MESMA fonte que envelhece
-  // AthleteProfile mês a mês. Em vez de inventar um cálculo paralelo, busca
-  // a idade viva pelo mesmo id estável (stableAthleteId, athleteSchema.js)
-  // que o mundo já usa.
+  // Fase 15.2 (Bug 3/G1/G2): tenta ler a idade viva de AthleteProfile pelo
+  // mesmo id estável (stableAthleteId, athleteSchema.js) que o mundo usa,
+  // para não recalcular nada em paralelo. Hotfix 15.5.2: esses bots
+  // (bots.js/athleteCatalog.js) nunca são persistidos em AthleteProfile
+  // (mesma lacuna que partnershipSystem.js já tolera com .catch(() => null)
+  // no update de mercado ao selecionar parceiro) — a busca abaixo praticamente
+  // sempre retorna vazio, então sem fallback a idade nunca aparecia. bot.age
+  // (gerado uma única vez no catálogo) é usado só quando não há registro vivo.
   const [athleteAges, setAthleteAges] = useState({});
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
@@ -119,7 +120,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
                 </div>
                 <div className="flex-1 min-w-0">
                   <p className="font-semibold text-sm truncate">{bot.name}</p>
-                  <p className="text-[10px] text-muted-foreground">{bot.country}{athleteAges[bot.id] ? ` · ${athleteAges[bot.id]} anos` : ''} · OVR {overallRating(bot)} · {bot.level}</p>
+                  <p className="text-[10px] text-muted-foreground">{bot.country}{(athleteAges[bot.id] ?? bot.age) ? ` · ${athleteAges[bot.id] ?? bot.age} anos` : ''} · OVR {overallRating(bot)} · {bot.level}</p>
                 </div>
                 <div className="text-right">
                   <p className={`text-lg font-black tabular-nums ${cl.color}`}>{compat.total}</p>

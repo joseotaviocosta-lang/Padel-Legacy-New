@@ -32,7 +32,7 @@ import { ModalShell, ContextActionBar } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { getQualifyingRoundLabels } from '@/gameplay/worldTour/QualifyingManager.js';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
-import { isPlayerRegisteredForTournament } from '@/lib/tournamentRegistration.js';
+import { isPlayerRegisteredForTournament, isTournamentParticipationConfirmed } from '@/lib/tournamentRegistration.js';
 import {
   postMatchInterviewIdentity,
   postMatchInterviewMessageId,
@@ -156,11 +156,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   useEffect(() => {
     let active = true;
     (async () => {
-      const confirmed = await isPlayerRegisteredForTournament(initialProfile.id, tournament.id);
-      if (!confirmed) throw new Error('Sua dupla não possui inscrição confirmada neste torneio.');
       const events = await localGame.entities.CalendarEvent.filter({ profile_id: initialProfile.id, related_id: tournament.id });
       const calendarEvent = (events || []).find((item) => item.status === 'scheduled') || events?.[0];
       if (!calendarEvent) throw new Error('O compromisso do torneio não foi encontrado no calendário.');
+      const registration = await isPlayerRegisteredForTournament(initialProfile.id, tournament.id);
+      // Hotfix 15.5.2: um save legado (anterior à inscrição v2) ou uma linha
+      // de TournamentRegistration órfã não pode travar uma campanha já em
+      // andamento — se o próprio CalendarEvent já guarda um tournament_run
+      // ativo para este torneio, a presença é derivada dele em memória.
+      const confirmed = registration || (isTournamentParticipationConfirmed({ event: calendarEvent }) ? { derived: true } : null);
+      if (!confirmed) throw new Error('Sua dupla não possui inscrição confirmada neste torneio.');
 
       // Hotfix crítico (docs/TOURNAMENT_ROUND_STATE_HOTFIX.md): `initialProfile`
       // é só a prop recebida da página-pai (Tournaments.jsx/CareerHub.jsx),

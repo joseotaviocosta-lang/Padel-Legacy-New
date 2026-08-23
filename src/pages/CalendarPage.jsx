@@ -11,6 +11,7 @@ import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { enrichTournament } from '@/lib/tournaments';
 import { getEventsForRange, getPendingDecisions, resolveDecision, isRegistrationOpen, scheduleRecurringActivities, cancelPlannedActivity, updatePlannedActivity } from '@/lib/calendarSystem';
+import { describeCalendarBlock } from '@/lib/tournamentNextAction.js';
 import { formatPercent, normalizeFatigue } from '@/game-core/physicalStats.js';
 import { startOfWeek, format } from 'date-fns';
 import CalendarWeekView from '@/components/calendar/CalendarWeekView';
@@ -19,6 +20,7 @@ import PendingDecisionBanner from '@/components/calendar/PendingDecisionBanner';
 import TournamentRegistrationModal from '@/components/calendar/TournamentRegistrationModal';
 import TournamentModal from '@/components/tournaments/TournamentModal';
 import { useToast } from '@/components/ui/use-toast';
+import { ToastAction } from '@/components/ui/toast';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 import CalendarPlanner from '@/components/calendar/CalendarPlanner';
 import CalendarMonthView from '@/components/calendar/CalendarMonthView';
@@ -233,9 +235,18 @@ export default function CalendarPage() {
       const processedDays = result.processedDays ?? result.daysAdvanced ?? 0;
       const trainingsDone = result.automaticTrainings ?? (result.daily || []).filter((day) => day.automaticTraining).length;
       const interrupted = result.blockedBy ? ` Avanço interrompido antes de: ${result.blockedBy.title}.` : '';
+      // Hotfix 15.5.2: o avanço de +1 dia (CareerDayControl.jsx) já usa
+      // describeCalendarBlock para dar um CTA acionável ("Ir para o
+      // torneio") no bloqueio; o avanço em lote (+3/+7) mostrava só um toast
+      // informativo. Mesma fonte canônica, reaproveitando handlePlayTournament
+      // (já usado pelo resto desta página) em vez de navegar para outra rota.
+      const block = result.blockedBy ? describeCalendarBlock(result.blockedBy) : null;
       toast({
         title: `${processedDays} dia(s) processado(s)`,
         description: `Solicitado: ${result.requestedDays ?? days} · Processado: ${processedDays} · ${trainingsDone} treino(s) automático(s) · Energia ${formatPercent(updated.energy)} · Fadiga ${normalizeFatigue(updated.fatigue)}.${interrupted}`,
+        action: block?.destination && result.blockedBy?.related_id
+          ? <ToastAction onClick={() => handlePlayTournament(result.blockedBy)}>{block.actionLabel || 'Resolver'}</ToastAction>
+          : undefined,
       });
     } catch (error) {
       toast({ title: 'Avanço interrompido', description: error?.message, variant: 'destructive' });
