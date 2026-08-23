@@ -4,6 +4,7 @@ import { deterministicMissionSelection, missionRuntime, missionStatus, requireme
 import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
 import { ATTRIBUTES, ATTRIBUTE_KEYS } from '@/lib/attributes.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
+import { activeCareerAdapter } from '@/gameplay/services/runtime.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
@@ -622,7 +623,30 @@ export const TUTORIAL_MISSIONS = TUTORIAL_MISSION_CATALOG;
 // removidas como sistema — ver Missions.jsx para a classificação completa.
 const RETIRED_PERIODIC_MISSION_TYPES = ['diaria', 'semanal', 'mensal', 'sazonal'];
 
+// Fase 15.6 (performance — catálogo de missões reconciliado a cada chamada):
+// esta função fazia um diff completo do catálogo (list + bulkUpdate) toda
+// vez que era chamada — e é chamada 2-3x por navegação (MissionNotificationBridge
+// direto + via incrementMissionProgress, OnboardingGuide em toda troca de
+// rota, Missions.jsx se for a página ativa), sendo a causa raiz da demora
+// percebida entre "abrir a página certa" e "missão reconhecida". O catálogo
+// (TUTORIAL_MISSIONS) é estático — nada além desta própria função escreve na
+// entidade Mission — então o resultado já reconciliado é válido pelo resto
+// da sessão NA MESMA carreira; só precisa ser recalculado se a carreira
+// ativa mudar (cache por `activeCareerId`, nunca entre carreiras diferentes).
+let tutorialMissionCatalogCache = null;
+
 export async function ensureTutorialMissionCatalog() {
+  const careerId = activeCareerAdapter.activeCareerId;
+  if (tutorialMissionCatalogCache?.careerId === careerId) return tutorialMissionCatalogCache.promise;
+  const promise = ensureTutorialMissionCatalogUncached();
+  tutorialMissionCatalogCache = { careerId, promise };
+  promise.catch(() => {
+    if (tutorialMissionCatalogCache?.promise === promise) tutorialMissionCatalogCache = null;
+  });
+  return promise;
+}
+
+async function ensureTutorialMissionCatalogUncached() {
   const existing = await localGame.entities.Mission.list('-created_date', 500);
   const fullCatalog = TUTORIAL_MISSIONS;
 

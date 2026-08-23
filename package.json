@@ -269,6 +269,7 @@
     "test:phase15-5-2-tournament-continuity": "node scripts/test-phase15-5-2-tournament-continuity.mjs",
     "test:phase15-5-3-training-center-effects": "node scripts/test-phase15-5-3-training-center-effects.mjs",
     "test:phase15-5-4-critical-mobile-qa": "node scripts/test-phase15-5-4-critical-mobile-qa.mjs",
+    "test:phase15-6-app-performance-calendar-hardening": "node scripts/test-phase15-6-app-performance-calendar-hardening.mjs",
     "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs"
   },
   "dependencies": {

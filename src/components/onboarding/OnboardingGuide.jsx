@@ -7,7 +7,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getPageIntroduction } from '@/onboarding/pageIntroductions.js';
-import { CORE_GAME_LOOP, GLOSSARY, TUTORIAL_STEPS } from '@/onboarding/tutorialSteps.js';
+import { CORE_GAME_LOOP, GLOSSARY, TUTORIAL_STEPS, TUTORIAL_VERSION } from '@/onboarding/tutorialSteps.js';
 import { getNextTutorialStep } from '@/onboarding/tutorialState.js';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { completeTutorialStep, isTutorialRouteMatch } from '@/onboarding/tutorialEngine.js';
@@ -184,14 +184,35 @@ export default function OnboardingGuide() {
       const user = await localGame.auth.me();
       const currentProfile = await ensureMyProfile(user);
       if (!currentProfile?.id) return;
-      const [registrations, matches, trainings, missions, progressRows] = await Promise.all([
+      const [registrations, matches, trainings] = await Promise.all([
         localGame.entities.CalendarEvent.filter({ profile_id: currentProfile.id, event_type: 'tournament' }).catch(() => []),
         localGame.entities.Match.list('-created_date', 20).catch(() => []),
         localGame.entities.TrainingSession.filter({ profile_id: currentProfile.id }).catch(() => []),
+      ]);
+      const currentFacts = { registrations, matches, trainings };
+      // Fase 15.6 (performance — demora entre "ação certa" e "missão
+      // reconhecida"): este load() roda a cada navegação, app inteiro
+      // (dependência [load, location.pathname] abaixo). Uma vez que o
+      // tutorial está `completed` NA MESMA versão do catálogo
+      // (tutorial_onboarding.version === TUTORIAL_VERSION), reconciliar de
+      // novo nunca produz um resultado diferente — reconcileTutorialProgress
+      // só volta a marcar 'in_progress' se TUTORIAL_STEPS ganhar um passo
+      // novo que o estado persistido não reconhece, e isso já muda
+      // `version` (bump manual, tutorialSteps.js) — checar a versão em vez
+      // de só o status garante que uma atualização do app com tutorial
+      // expandido ainda dispara uma reconciliação real. Isso elimina
+      // ensureTutorialMissionCatalog()+reconcilePersistedTutorial() (diff
+      // completo do catálogo + varredura de todos os passos + 2 fetches) em
+      // toda navegação para qualquer jogador que já terminou o tutorial.
+      const persistedTutorial = currentProfile.tutorial_onboarding;
+      if (persistedTutorial?.status === 'completed' && persistedTutorial?.version === TUTORIAL_VERSION) {
+        setProfile(currentProfile); setFacts(currentFacts); setState(persistedTutorial);
+        return;
+      }
+      const [missions, progressRows] = await Promise.all([
         ensureTutorialMissionCatalog().catch(() => []),
         localGame.entities.MissionProgress.filter({ profile_id: currentProfile.id }).catch(() => []),
       ]);
-      const currentFacts = { registrations, matches, trainings };
       const reconciliation = await reconcilePersistedTutorial(currentProfile, currentFacts, missions, progressRows);
       setProfile(reconciliation.profile || currentProfile); setFacts(currentFacts); setState(reconciliation.state);
     } catch (error) { console.error('[onboarding] Falha ao carregar orientação.', error); }

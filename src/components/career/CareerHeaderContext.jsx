@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
@@ -18,20 +18,32 @@ const ICON_BY_KIND = {
 };
 
 export default function CareerHeaderContext({ profile, compact = false }) {
-  const [context, setContext] = useState(null);
+  // Fase 15.6 (performance — Header não deve ler storage a cada render):
+  // antes, `load` dependia do objeto `profile` inteiro — qualquer mudança de
+  // perfil (moedas, XP após um treino, por exemplo) recriava `load` e
+  // buscava Tournament/CalendarEvent de novo, mesmo quando nenhum dos dois
+  // mudou. Torneios "em inscrição" e o calendário de torneios do jogador só
+  // mudam de fato quando o DIA muda (ou o jogador troca) — nunca por um
+  // treino/partida isolados no mesmo dia. A busca em si agora só depende de
+  // `profile.id`/`career_date`; o cálculo do contexto (que também usa
+  // energia/fadiga/lesão, voláteis dentro do mesmo dia) continua reagindo a
+  // qualquer mudança do perfil, mas reaproveitando os dados já buscados.
+  const [fetchedData, setFetchedData] = useState(null);
+  const profileId = profile?.id;
+  const careerDate = profile?.career_date;
 
   const load = useCallback(async () => {
+    if (!profileId) return;
     try {
-      if (!profile) return;
       const [tournaments, calendarEvents] = await Promise.all([
         localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
-        localGame.entities['CalendarEvent'].filter({ profile_id: profile.id, event_type: 'tournament' }, 'start_date', 30).catch(() => []),
+        localGame.entities['CalendarEvent'].filter({ profile_id: profileId, event_type: 'tournament' }, 'start_date', 30).catch(() => []),
       ]);
-      setContext(buildCareerHeaderContext({ profile, tournaments, calendarEvents }));
+      setFetchedData({ tournaments, calendarEvents });
     } catch (error) {
       console.warn('[CareerHeaderContext] contexto indisponível', error);
     }
-  }, [profile]);
+  }, [profileId, careerDate]);
 
   useEffect(() => {
     load();
@@ -41,6 +53,11 @@ export default function CareerHeaderContext({ profile, compact = false }) {
       window.removeEventListener('focus', refresh);
     };
   }, [load]);
+
+  const context = useMemo(() => {
+    if (!profile || !fetchedData) return null;
+    return buildCareerHeaderContext({ profile, tournaments: fetchedData.tournaments, calendarEvents: fetchedData.calendarEvents });
+  }, [profile, fetchedData]);
 
   if (!context) return null;
   const { icon: Icon, tone } = ICON_BY_KIND[context.kind] || ICON_BY_KIND.idle;

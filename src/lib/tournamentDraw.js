@@ -131,6 +131,22 @@ export async function ensureTournamentDraw({ profile, tournament, calendarEvent 
   if (!tournament || !calendarEvent || !profile?.id) {
     return { run: null, event: calendarEvent || null, created: false, drawn: false };
   }
+  // Fase 15.6 (achado real — QA físico, "primeiro torneio" bloqueando o
+  // calendário sem inscrição): todo CalendarEvent do tipo 'tournament' criado
+  // por um registro real (registerTournament, tournamentRegistration.js)
+  // grava `metadata.registration_id`. O seed de demonstração
+  // (src/local/localSeed.js, CalendarEvent 'cal-002') é um evento
+  // event_type:'tournament'/status:'scheduled'/related_id válido só para
+  // ilustrar o calendário — nunca teve inscrição real (is_mandatory:false,
+  // sem metadata). Sem este guard, esta pipeline sorteava esse evento de
+  // demonstração como se fosse uma campanha real assim que sua data
+  // chegasse, e a escrita de `requires_decision:true` (abaixo) o
+  // transformava numa decisão obrigatória bloqueando advanceDay para
+  // QUALQUER carreira nova — mesmo sem o jogador nunca ter se inscrito em
+  // nada. Nenhum sorteio deve nascer sem uma inscrição real por trás.
+  if (!calendarEvent.metadata?.registration_id) {
+    return { run: null, event: calendarEvent, created: false, drawn: false };
+  }
   if (!isTournamentDrawDue(calendarEvent, tournament, profile.career_date)) {
     return { run: null, event: calendarEvent, created: false, drawn: false };
   }
