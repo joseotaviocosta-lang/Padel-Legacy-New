@@ -135,9 +135,24 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   });
   const coachSuggestion = buildTournamentCoachSuggestion(run, profile, analysis);
 
+  // Hotfix 15.6.1 (D-3/D-0 — modal preso em "chave ainda não sorteada"):
+  // este efeito só reagia a `initialProfile.id`/`tournament.id`, que nunca
+  // mudam para o MESMO torneio — então, se o modal for aberto (ou
+  // permanecer montado, ex.: reaproveitado por uma navegação que não
+  // desmonta a página-mãe) ANTES de D-3/no meio da janela D-3..D-0 e o
+  // sorteio só se concretizar depois (ensureTournamentDraw roda dentro do
+  // PRÓXIMO avanço de dia, um processo assíncrono independente deste
+  // componente), nada nunca mandava este efeito reler o CalendarEvent —
+  // `run` ficava `null` para sempre, mesmo depois do sorteio existir de
+  // verdade no storage. A extração abaixo permite chamar exatamente a
+  // mesma leitura (nunca uma criação) tanto no mount quanto — só enquanto
+  // a fase for 'not_drawn' — a cada `padel:career-advanced`/
+  // `padel:profile-updated` (os mesmos eventos que TODO avanço de dia já
+  // dispara; nenhum evento novo, nenhum polling, nenhum timer).
+  const loadCampaignRef = useRef(null);
   useEffect(() => {
     let active = true;
-    (async () => {
+    const loadCampaign = async () => {
       const events = await localGame.entities.CalendarEvent.filter({ profile_id: initialProfile.id, related_id: tournament.id });
       const calendarEvent = (events || []).find((item) => item.status === 'scheduled') || events?.[0];
       if (!calendarEvent) throw new Error('O compromisso do torneio não foi encontrado no calendário.');
@@ -255,7 +270,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         setPhase(getTournamentRunPhase(tournamentRun, loadedProfile.career_date));
       }
       if (loadedProfile.id && loadedProfile.coach_id !== initialProfile.coach_id) onProfileUpdate?.(loadedProfile);
-    })().catch((error) => {
+    };
+    loadCampaignRef.current = loadCampaign;
+    loadCampaign().catch((error) => {
       console.error('[TournamentModal] Falha ao restaurar campanha', error);
       if (active) {
         toast({ title: 'Torneio indisponível', description: error.message, variant: 'destructive' });
@@ -264,6 +281,21 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     });
     return () => { active = false; };
   }, [initialProfile.id, tournament.id]);
+
+  // Só ouve enquanto a fase for 'not_drawn' — uma vez que o run é
+  // encontrado, o efeito acima já assume o controle normal da campanha;
+  // isto nunca dispara `ensureTournamentDraw` nem qualquer criação, apenas
+  // reexecuta a MESMA leitura read-only do efeito de mount.
+  useEffect(() => {
+    if (phase !== 'not_drawn') return undefined;
+    const recheck = () => { loadCampaignRef.current?.(); };
+    window.addEventListener('padel:career-advanced', recheck);
+    window.addEventListener('padel:profile-updated', recheck);
+    return () => {
+      window.removeEventListener('padel:career-advanced', recheck);
+      window.removeEventListener('padel:profile-updated', recheck);
+    };
+  }, [phase]);
 
   async function persistRun(nextRun, eventPatch = {}) {
     const freshEvent = await localGame.entities.CalendarEvent.get(event.id).catch(() => event);
