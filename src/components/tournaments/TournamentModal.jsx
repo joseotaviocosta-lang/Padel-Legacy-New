@@ -31,7 +31,7 @@ import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { ModalShell, ContextActionBar } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
-import { isPlayerRegisteredForTournament, isTournamentParticipationConfirmed } from '@/lib/tournamentRegistration.js';
+import { isPlayerRegisteredForTournament, isTournamentParticipationConfirmed, resolveTournamentCampaignEvent } from '@/lib/tournamentRegistration.js';
 import { getTournamentDrawAnchorDate } from '@/lib/tournamentDraw.js';
 import {
   postMatchInterviewIdentity,
@@ -153,8 +153,17 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   useEffect(() => {
     let active = true;
     const loadCampaign = async () => {
-      const events = await localGame.entities.CalendarEvent.filter({ profile_id: initialProfile.id, related_id: tournament.id });
-      const calendarEvent = (events || []).find((item) => item.status === 'scheduled') || events?.[0];
+      // Hotfix 15.6.2 (causa raiz real — QA desktop): antes, um `.find()`
+      // ingênuo sobre TODAS as linhas de CalendarEvent com este `related_id`
+      // podia pegar um evento de demonstração do seed local (mesma
+      // `related_id` do torneio real, nunca com `tournament_run`) em vez da
+      // inscrição real do jogador — o modal "esquecia" um sorteio que já
+      // existia de verdade (confirmado por Torneios → Ver chaves, que nunca
+      // sofria disso por já preferir, por construção, a linha com run).
+      // `resolveTournamentCampaignEvent` é agora a ÚNICA fonte usada por
+      // qualquer consumidor que precise resolver uma campanha a partir de
+      // (profileId, tournamentId) — nunca uma segunda interpretação aqui.
+      const calendarEvent = await resolveTournamentCampaignEvent(initialProfile.id, tournament.id);
       if (!calendarEvent) throw new Error('O compromisso do torneio não foi encontrado no calendário.');
       const registration = await isPlayerRegisteredForTournament(initialProfile.id, tournament.id);
       // Hotfix 15.5.2: um save legado (anterior à inscrição v2) ou uma linha

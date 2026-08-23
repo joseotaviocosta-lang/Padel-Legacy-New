@@ -41,6 +41,13 @@ export default function TournamentDetailsModal({
   const validation = checkTournamentRequirements(profile, tournament, teamRank);
   const run = activeRun?.metadata?.tournament_run || null;
   const activeMatch = run?.matches?.[run.currentRound || 0] || null;
+  // Hotfix 15.6.2 (Parte 9): mesma condição já usada em Tournaments.jsx
+  // (TournamentFocusMode.canPlayNow) — antes este botão dizia sempre
+  // "Preparar partida" enquanto `activeRun` existisse, mesmo no dia exato
+  // da partida já preparada, porque a condição nunca olhava data/prep. Não
+  // é um cálculo novo: reaproveita a mesma fórmula, aplicada ao 3º
+  // consumidor que faltava (TournamentModal e Tournaments.jsx já usam).
+  const canPlayNow = Boolean(activeMatch) && activeMatch.date === careerDate && activeMatch.preparationCompleted;
   const ended = Boolean(tournament.end_date && tournament.end_date < careerDate)
     || ['concluido', 'completed', 'finished', 'finalizado'].includes(String(tournament.status || tournament.current_phase || '').toLowerCase());
   const status = activeRun
@@ -64,7 +71,7 @@ export default function TournamentDetailsModal({
         <div className="flex flex-wrap justify-end gap-2">
           <Button level="ghost" size="touch" onClick={onClose}>Fechar</Button>
           <Button level="secondary" size="touch" onClick={onViewBracket}><ListTree className="h-4 w-4" />Ver chave</Button>
-          {activeRun && <Button level="primary" size="touch" onClick={onContinue}><Play className="h-4 w-4" />Preparar partida</Button>}
+          {activeRun && <Button level="primary" size="touch" onClick={onContinue}><Play className="h-4 w-4" />{canPlayNow ? 'Jogar partida' : 'Preparar partida'}</Button>}
           {!activeRun && !registration && canRegister && validation.canRegister && registrationOpen && (
             <Button level="primary" size="touch" onClick={onRegister}><CheckCircle className="h-4 w-4" />Inscrever-se</Button>
           )}

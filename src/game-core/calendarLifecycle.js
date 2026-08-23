@@ -11,6 +11,7 @@ import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import { restoreCareerSnapshotOnFailure } from './careerAdvanceTransaction.js';
 import { buildTournamentRecoverySession, shouldBlockCareerAdvanceForMatchRecovery } from './tournamentMatchLifecycle.js';
 import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { pickCanonicalTournamentEvent } from '@/lib/tournamentRegistration.js';
 import { getPersistenceTransactionSnapshot, recordMultiDayAdvanceResult } from '@/dev/persistenceTransactionProbe.js';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
@@ -27,8 +28,13 @@ async function guardActiveMatchBeforeAdvance(profile, snapshot) {
     throw error;
   }
 
-  const events = snapshot?.entities?.CalendarEvent || [];
-  const event = events.find((item) => item.event_type === 'tournament' && String(item.related_id) === String(checkpoint.tournament_id)) || null;
+  // Hotfix 15.6.2: mesma fonte canônica de src/lib/tournamentRegistration.js
+  // — um `.find()` sem preferência podia pegar um evento de demonstração do
+  // seed local em vez da inscrição real quando ambos compartilham
+  // `related_id` (mesmo torneio), quebrando a sessão de recuperação de
+  // partida por causa de um `run` inexistente na linha errada.
+  const events = (snapshot?.entities?.CalendarEvent || []).filter((item) => item.event_type === 'tournament' && String(item.related_id) === String(checkpoint.tournament_id));
+  const event = pickCanonicalTournamentEvent(events);
   const run = event?.metadata?.tournament_run || null;
   const match = getCurrentTournamentMatch(run);
   const tournaments = snapshot?.entities?.Tournament || [];

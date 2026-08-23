@@ -102,6 +102,50 @@ export async function isPlayerRegisteredForTournament(profileId, tournamentId) {
   return rows?.[0] || null;
 }
 
+/**
+ * Hotfix 15.6.2: fonte canônica ÚNICA para "qual CalendarEvent representa a
+ * campanha real deste torneio para este jogador" — usada por todo consumidor
+ * que precisa ler/decidir sobre um tournament_run a partir de (profileId,
+ * tournamentId).
+ *
+ * Causa raiz do bug real (QA desktop): o seed de demonstração local
+ * (src/local/localSeed.js, CalendarEvent 'cal-002') e uma inscrição real
+ * (registerTournament) podem compartilhar o MESMO `related_id` quando o
+ * jogador se inscreve exatamente no torneio que o seed também referencia —
+ * duas linhas de CalendarEvent, um único `related_id`. Um `.find()` ingênuo
+ * (sem preferência) pode pegar a linha de demonstração (sempre sem
+ * `tournament_run`, `is_mandatory:false`, sem `metadata`) em vez da inscrição
+ * real — fazendo o consumidor "esquecer" um sorteio que existe de verdade.
+ * `Tournaments.jsx` (Ver chaves) nunca sofreu isso por acidente: seu
+ * `activeRunEvents` já filtra por `metadata?.tournament_run` truthy ANTES de
+ * indexar por `related_id` — como a linha seed nunca tem run (garantido pelo
+ * guard `registration_id` de ensureTournamentDraw), ela já saía do
+ * candidato. Esta função aplica a MESMA regra de preferência explicitamente,
+ * para qualquer consumidor que precise de uma única linha: uma inscrição
+ * real (`metadata.registration_id` presente) é sempre a fonte canônica;
+ * nunca um evento ilustrativo sem inscrição.
+ */
+// Regra de preferência pura (sem I/O) — extraída para ser reutilizável tanto
+// por quem tem acesso a `localGame` (consulta assíncrona) quanto por quem já
+// possui um snapshot em memória das entidades da carreira (ex.:
+// guardActiveMatchBeforeAdvance, que opera sobre `snapshot.entities`, não
+// sobre uma nova query).
+export function pickCanonicalTournamentEvent(events) {
+  const list = Array.isArray(events) ? events : [];
+  if (list.length <= 1) return list[0] || null;
+  return list.find((event) => event.metadata?.registration_id && event.status === 'scheduled')
+    || list.find((event) => event.metadata?.registration_id)
+    || list.find((event) => event.status === 'scheduled')
+    || list[0];
+}
+
+export async function resolveTournamentCampaignEvent(profileId, tournamentId) {
+  if (!profileId || !tournamentId) return null;
+  const events = await localGame.entities.CalendarEvent.filter({ profile_id: profileId, related_id: tournamentId, event_type: 'tournament' });
+  if (!events || events.length === 0) return null;
+  return pickCanonicalTournamentEvent(events);
+}
+
 const TERMINAL_TOURNAMENT_RUN_STATUSES = new Set(['eliminated', 'champion', 'finished']);
 
 /**
