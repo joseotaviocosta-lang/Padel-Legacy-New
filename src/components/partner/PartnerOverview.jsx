@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2 } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
-import { formatDate } from '@/lib/padel';
+import { formatDate, overallRating } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 import { Surface, Button } from '@/components/design-system';
 import { localGame } from '@/api/localGameClient.js';
@@ -68,7 +68,14 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
   // nunca aparecia. bot.age vem do mesmo gerador determinístico (não é um
   // snapshot da parceria nem recalculado a partir do ranking).
   const partnerAge = partnerProfile?.age ?? getPartnerBot(profile)?.age ?? null;
-  const partnerOverall = resolvePartnerOverall(partnerProfile, partnership.partner_overall);
+  // Hotfix 15.5.4 (P1 — OVR "—" na dupla): mesma causa da idade — sem
+  // AthleteProfile persistido, `resolvePartnerOverall` caía no legado
+  // `partnership.partner_overall`, campo que nenhum outro código deste
+  // projeto jamais escreve (busca confirmada: só é lido aqui). Mesmo
+  // resolver canônico usado por busca de parceiros/ranking/cards de
+  // atletas (`overallRating`, padel.js) aplicado ao bot do catálogo,
+  // nunca um cálculo paralelo.
+  const partnerOverall = resolvePartnerOverall(partnerProfile, partnership.partner_overall ?? overallRating(getPartnerBot(profile)));
 
   return (
     <div className="space-y-4">

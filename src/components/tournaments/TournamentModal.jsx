@@ -11,7 +11,7 @@ import {
   incrementMissionProgress, isInjured, injuryRecoveryDays, overallRating, getWorldRank,
 } from '@/lib/padel';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
-import { generateTournamentOpponent, getPartnerBot, getTournamentRounds } from '@/lib/career';
+import { getPartnerBot, getTournamentRounds } from '@/lib/career';
 import { buildPartnershipMatchPatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { processMatchRelationships } from '@/lib/relationships';
 import { getTeamRank, teamKey } from '@/lib/teamRanking';
@@ -30,9 +30,9 @@ import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBou
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { ModalShell, ContextActionBar } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
-import { getQualifyingRoundLabels } from '@/gameplay/worldTour/QualifyingManager.js';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
 import { isPlayerRegisteredForTournament, isTournamentParticipationConfirmed } from '@/lib/tournamentRegistration.js';
+import { getTournamentDrawAnchorDate } from '@/lib/tournamentDraw.js';
 import {
   postMatchInterviewIdentity,
   postMatchInterviewMessageId,
@@ -41,7 +41,7 @@ import { isInterviewActionable } from '@/lib/interviewLifecycle.js';
 import {
   TOURNAMENT_STRATEGY_OPTIONS, buildOpponentAnalysis, buildTournamentBracketHistory,
   buildTournamentCoachSuggestion, completePreTournamentMeeting, completeRoundPreparation,
-  countMainDrawWins, createTournamentRun, getCurrentTournamentMatch, getTournamentRunPhase,
+  countMainDrawWins, getCurrentTournamentMatch, getTournamentRunPhase,
   recordTournamentMatchResult, startTournamentMatch, summarizeTournamentMatch,
   withdrawTournamentRun,
 } from '@/gameplay/worldTour/TournamentRunManager.js';
@@ -75,27 +75,6 @@ function formatDay(value) {
 
 function teamName(profile, partner) {
   return `${profile?.sport_name || profile?.name || 'Jogador'} & ${partner?.name || 'Parceiro'}`;
-}
-
-function normalizeLegacyRun(run, metadata = {}) {
-  if (!run || run.meetingsCompleted?.preTournament || !(metadata.main_draw_state?.results?.length || metadata.qualifying_state?.results?.length)) return run;
-  const next = JSON.parse(JSON.stringify(run));
-  next.meetingsCompleted.preTournament = true;
-  const legacyResults = [
-    ...(metadata.qualifying_state?.results || []).map((result) => ({ ...result, stage: 'qualifying' })),
-    ...(metadata.main_draw_state?.results || []).map((result) => ({ ...result, stage: 'main' })),
-  ];
-  legacyResults.forEach((result) => {
-    const match = next.matches.find((item) => item.stage === result.stage && item.status !== 'completed');
-    if (!match) return;
-    match.status = 'completed';
-    match.preparationCompleted = true;
-    match.result = { won: Boolean(result.won), score: result.score || null };
-  });
-  const nextIndex = next.matches.findIndex((match) => match.status !== 'completed');
-  next.currentRound = nextIndex < 0 ? Math.max(0, next.matches.length - 1) : nextIndex;
-  if (nextIndex >= 0) next.status = 'between_rounds';
-  return next;
 }
 
 export default function TournamentModal({ tournament, profile: initialProfile, careerId, onClose, onProfileUpdate, onComplete }) {
@@ -138,6 +117,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   const [resumeError, setResumeError] = useState('');
   const [resuming, setResuming] = useState(false);
   const [liveMatchSessionKey, setLiveMatchSessionKey] = useState(0);
+  // Hotfix 15.5.4 (complemento — sorteio em D-3): usado só pela fase
+  // 'not_drawn', para informar quando a chave sai (ver render abaixo).
+  const [drawDate, setDrawDate] = useState(null);
   const savedRef = useRef(false);
   const { toast } = useToast();
 
@@ -187,33 +169,25 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       ]);
       if (!active) return;
 
-      let tournamentRun = calendarEvent.metadata?.tournament_run || null;
+      const tournamentRun = calendarEvent.metadata?.tournament_run || null;
       if (!tournamentRun) {
-        const qualifyingRequired = Boolean(calendarEvent.metadata?.qualifying_required || confirmed.entry_path === 'qualifying');
-        const qualifyingRounds = qualifyingRequired
-          ? getQualifyingRoundLabels(tournament).map((label) => ({ label, short: 'Q' }))
-          : [];
-        const stageRounds = [
-          ...qualifyingRounds.map((round, index) => ({ ...round, stage: 'qualifying', stageRoundIndex: index })),
-          ...mainRounds.map((round, index) => ({ ...round, stage: 'main', stageRoundIndex: index })),
-        ];
-        const usedIds = [loadedPartner?.id].filter(Boolean);
-        const opponents = stageRounds.map((round) => {
-          let members = generateTournamentOpponent(tournament, loadedProfile, round.stageRoundIndex, usedIds, rank.rank, round.stage);
-          if (members.length < 2) members = generateTournamentOpponent(tournament, loadedProfile, round.stageRoundIndex, [loadedPartner?.id].filter(Boolean), rank.rank, round.stage);
-          usedIds.push(...members.map((item) => item.id));
-          return { members, rank: Math.max(1, Number(rank.rank || 240) - (round.stageRoundIndex + 1) * (round.stage === 'main' ? 8 : 3)) };
-        });
-        tournamentRun = createTournamentRun({
-          tournament,
-          profileId: loadedProfile.id,
-          startDate: calendarEvent.metadata?.original_start_date || calendarEvent.start_date || tournament.start_date,
-          qualifyingRounds,
-          mainRounds,
-          qualifyingRequired,
-          opponents,
-        });
-        tournamentRun = normalizeLegacyRun(tournamentRun, calendarEvent.metadata || {});
+        // Hotfix 15.5.4 (complemento — sorteio na data canônica, D-3): este
+        // modal NUNCA cria o tournament_run. Quem sorteia é exclusivamente
+        // a pipeline de avanço de dia (ensureTournamentDraw, chamada por
+        // processCalendarEvents dentro de advanceDay — ver
+        // src/lib/tournamentDraw.js e src/lib/calendarSystem.js). Antes de
+        // D-3, abrir/fechar este modal repetidamente só mostra o estado
+        // "chave ainda não sorteada" (fase 'not_drawn'), sem qualquer
+        // efeito colateral — mesmo run inexistente na 1ª, 2ª ou 10ª vez.
+        setRegistration(confirmed);
+        setEvent(calendarEvent);
+        setProfile(loadedProfile);
+        setCoach(starter.coach || null);
+        setStaff(staffSnapshot.staff || []);
+        setTeamRank(rank || { rank: 0, total: 0 });
+        setDrawDate(getTournamentDrawAnchorDate(calendarEvent, tournament));
+        setPhase('not_drawn');
+        return;
       }
 
       // Uma partida interrompida pode ser reiniciada; uma concluída nunca volta a jogar.
@@ -660,6 +634,26 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       }
       let updated = coreResult.player || updatedDraft;
       setEvent(coreResult.records?.find((record) => record?.id === freshEvent.id) || freshEvent);
+      // Hotfix 15.5.4 (P0 — 2ª rodada "iniciando" por alguns segundos):
+      // `run` (e portanto `currentMatch`/`opponent`, derivados dele a cada
+      // render) já aponta para a PRÓXIMA rodada assim que `setRun(nextRun)`
+      // roda. O restante da função ainda tem vários `await` pela frente
+      // (finalização do torneio, conquistas, marcos de carreira,
+      // relacionamentos, missões) antes de `setPhase` sair de 'match' — nessa
+      // janela, um render com `phase === 'match'` e `currentMatch` já sendo
+      // a QF trocava a `key` do LiveMatch e montava uma sessão nova da QF
+      // (autoPlay verdadeiro), que só era desmontada quando o `setPhase`
+      // tardio finalmente chegava — exatamente o "início e aborto" visto no
+      // QA físico. `run` e a transição de fase precisam mudar no MESMO
+      // commit: chamados em sequência síncrona (sem `await` entre eles),
+      // o batching do React 18 garante que nenhum render intermediário veja
+      // a rodada nova com a fase ainda em 'match'. O restante do trabalho
+      // assíncrono (conquistas/missões/perfil final) continua depois,
+      // exatamente como antes — só a transição de fase deixou de esperar por ele.
+      setPhysicalReport(physical);
+      setLastResult({ won, matchState, match: freshMatch, nextMatch: transition.nextMatch });
+      setSelectedStrategy(nextRun.strategy?.id || 'balanced');
+      setPhase(nextRun.status === 'champion' ? 'champion' : nextRun.status === 'eliminated' ? 'eliminated' : 'round_result');
       setRun(nextRun);
 
       let completion = null;
@@ -747,12 +741,12 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       if (transition.terminal) await profiler.measure('missions', secondaryTask);
       else scheduleSecondaryMatchWork(secondaryTask);
       profiler.finish();
+      // physicalReport/lastResult/selectedStrategy/phase já foram aplicados
+      // logo após persistir o resultado (ver comentário acima) — aqui só o
+      // perfil final (já incorporando conquistas/finalização de torneio,
+      // que só terminam depois deste ponto) precisa de uma atualização extra.
       setProfile(updated);
       onProfileUpdate?.(updated);
-      setPhysicalReport(physical);
-      setLastResult({ won, matchState, match: freshMatch, nextMatch: transition.nextMatch });
-      setSelectedStrategy(nextRun.strategy?.id || 'balanced');
-      setPhase(nextRun.status === 'champion' ? 'champion' : nextRun.status === 'eliminated' ? 'eliminated' : 'round_result');
       onComplete?.();
     } catch (error) {
       console.error('[TournamentModal] Falha ao concluir rodada', error);
@@ -857,6 +851,27 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
 
         {phase === 'loading' && <div className="py-12 text-center text-sm text-muted-foreground">Restaurando campanha e calendário…</div>}
         {phase === 'error' && <StateMessage icon={XCircle} title="Não foi possível abrir o torneio" body="A inscrição e o calendário foram preservados. Feche e tente novamente." tone="red" />}
+
+        {phase === 'not_drawn' && (
+          // Hotfix 15.5.4 (complemento): estado antes de D-3 — inscrição e
+          // participantes já existem, mas o sorteio oficial (adversários,
+          // chave) ainda não. Nunca mostra adversário/bracket/vencedor
+          // sintético; só dados já conhecidos do torneio em si.
+          <div className="space-y-4">
+            <StateMessage
+              icon={CalendarDays}
+              title="Chave ainda não sorteada"
+              body={`Participantes e confrontos aparecerão quando o sorteio oficial for realizado${drawDate ? `, a partir de ${formatDay(drawDate)}` : ''}.`}
+              tone="cyan"
+            />
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+              <Info label="Categoria" value={tournament.tier || tournament.category || 'Oficial'} />
+              <Info label="Premiação" value={`${Number(tournament.prize_coins || 0).toLocaleString('pt-BR')} moedas`} />
+              <Info label="Ranking" value={`${Number(tournament.rank_points || 0).toLocaleString('pt-BR')} pontos`} />
+            </div>
+            <button onClick={goBackToCareer} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>
+          </div>
+        )}
 
         {phase === 'pre_tournament' && currentMatch && (
           <div className="space-y-4">

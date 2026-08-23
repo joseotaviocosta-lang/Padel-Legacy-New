@@ -60,8 +60,15 @@ try {
     const tournamentIndex = Math.floor(day / 10);
     const blockStart = addDays(CAREER_START_DATE, tournamentIndex * 10);
     const tournamentStart = addDays(blockStart, 7);
+    // Complemento (sorteio em D-3): ensureContextualCareerCommunications só
+    // cria o aviso quando o sorteio já existe de verdade
+    // (nextTournament.bracket_history). Esta simulação dirige direto o
+    // reconciliador de notificações (não a pipeline de avanço de dia que
+    // chama ensureTournamentDraw — ver cabeçalho do arquivo), então simula
+    // o torneio já sorteado o tempo todo, como a pipeline real deixaria
+    // antes de qualquer leitura desta função.
     const nextTournament = daysBetween(profile.career_date, tournamentStart) >= 0
-      ? { id: `sim-tournament-${tournamentIndex}`, name: `Torneio Simulado ${tournamentIndex}`, start_date: tournamentStart }
+      ? { id: `sim-tournament-${tournamentIndex}`, name: `Torneio Simulado ${tournamentIndex}`, start_date: tournamentStart, bracket_history: [{ round: 'R16' }] }
       : null;
 
     profile.fatigue = 40 + 30 * Math.sin(day / 5);
@@ -110,7 +117,7 @@ try {
   console.log('--- Simulação de 100 dias: resultado ---');
   console.log(`Total de notificações geradas: ${finalMessages.length}`);
   console.log(`Distribuição por status: ${JSON.stringify(byStatus)}`);
-  console.log(`Lembretes de torneio: ${tournamentReminders.length} (esperado: 4 por torneio rotacionado)`);
+  console.log(`Lembretes de torneio: ${tournamentReminders.length} (esperado: 1 por torneio rotacionado)`);
   console.log(`Resumos semanais: ${weeklySummaries.length} (esperado: ~${Math.floor(DAYS / 7)})`);
   console.log(`Não lidas ao final: ${countUnreadCareerMessages(finalMessages)}`);
 
@@ -118,8 +125,11 @@ try {
   const record = (name, ok) => checks.push([name, ok]);
 
   record('nenhuma context_key duplicada entre linhas (id estável + upsert funcionando)', uniqueContextKeys.size === contextKeys.length);
-  // 100 dias / 10 dias por rotação = 10 torneios, 4 marcos (7/3/1/0) cada.
-  record('lembretes de torneio: exatamente 4 por torneio rotacionado, sem repetição de "se aproxima"', tournamentReminders.length === 10 * 4);
+  // Hotfix 15.5.4 (P1 — notificações redundantes): TOURNAMENT_REMINDER_MILESTONES
+  // passou de [7,3,1,0] (4 avisos "se aproxima" por torneio, o próprio bug
+  // relatado no QA físico) para [3] (1 aviso único, no marco do sorteio).
+  // 100 dias / 10 dias por rotação = 10 torneios, 1 marco (D-3) cada.
+  record('lembretes de torneio: exatamente 1 por torneio rotacionado, sem repetição de "se aproxima"', tournamentReminders.length === 10 * 1);
   record('resumo semanal: uma linha por fronteira de semana cruzada, sem pular nem duplicar', weeklySummaries.length === Math.floor(daysBetween(CAREER_START_DATE, profile.career_date) / 7));
   record('crescimento não é descontrolado (total bem abaixo do pior caso ingênuo de 1 linha/regra/dia)', finalMessages.length < DAYS * 3);
   record('pelo menos uma notificação foi lida ao longo da simulação', Object.keys(byStatus).some((status) => ['lida', 'resolvida'].includes(status)));

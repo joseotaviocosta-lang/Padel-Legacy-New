@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Brain, Coins, Heart, Shield, Sparkles, TrendingUp, Users, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
@@ -36,6 +36,13 @@ export default function TrainingFacilityView({ profile, onProfileUpdate }) {
   const [busy, setBusy] = useState(null);
   const [activeCategory, setActiveCategory] = useState('all');
   const { toast } = useToast();
+  // Hotfix 15.5.4 (Parte L — double tap/atomicidade do upgrade): `busy`
+  // (estado React) só desabilita o botão depois que o componente re-renderiza
+  // — um duplo toque real, rápido o suficiente, pode disparar as duas
+  // chamadas antes desse re-render. Um ref muda de valor de forma síncrona
+  // e imediata, garantindo single-flight de verdade (mesmo padrão já usado
+  // por `savedRef`/`trainingFlightRef` em outras telas desta base).
+  const upgradingRef = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -58,7 +65,22 @@ export default function TrainingFacilityView({ profile, onProfileUpdate }) {
       }
     })();
     return () => { cancelled = true; };
-  }, [entities.TrainingCenter, profile.id]);
+  // Hotfix 15.5.4 (P0 — travamento pós-upgrade): `entities.TrainingCenter`
+  // vinha na lista de dependências, mas `localGame.entities` é um Proxy
+  // (localGameClient.js) cujo `get` chama `createEntityAdapter(entityName)`
+  // sem cache — cada acesso devolve um objeto NOVO. Um objeto novo na
+  // dependência a cada render faz o efeito re-disparar a cada render, que
+  // chama setCenter com outro objeto recém-desserializado (outra referência
+  // nova), que causa outro render — um loop que nunca estabiliza.
+  // Isoladamente ele já consumia CPU o tempo todo com a aba Centro aberta;
+  // o upgrade (mais escritas + o evento global padel:profile-updated,
+  // ouvido por vários componentes) empilhava trabalho síncrono em cima do
+  // loop já rodando, o que em um WebView Android mais fraco aparecia como
+  // travamento completo. `entities` (o Proxy em si, não uma propriedade
+  // lida dele) é estável — não precisa entrar na lista; mesmo padrão já
+  // usado em TournamentModal.jsx e em toda a base para `localGame.entities.X`
+  // dentro de efeitos.
+  }, [profile.id]);
 
   const categories = useMemo(() => [
     { key: 'all', label: 'Todos' },
@@ -66,6 +88,7 @@ export default function TrainingFacilityView({ profile, onProfileUpdate }) {
   ], []);
 
   async function handleUpgrade(facilityId) {
+    if (upgradingRef.current) return;
     const facility = FACILITY_LIST.find((item) => item.id === facilityId);
     const currentLevel = center?.facilities?.[facilityId] || 0;
     const nextLevel = facility?.levels?.[currentLevel + 1];
@@ -74,6 +97,7 @@ export default function TrainingFacilityView({ profile, onProfileUpdate }) {
       toast({ title: 'Moedas insuficientes', description: `Precisa de ${formatCoinBalance(nextLevel.cost)} moedas.`, variant: 'destructive' });
       return;
     }
+    upgradingRef.current = true;
     setBusy(facilityId);
     try {
       const facilities = { ...center.facilities, [facilityId]: currentLevel + 1 };
@@ -116,6 +140,10 @@ export default function TrainingFacilityView({ profile, onProfileUpdate }) {
     } catch (error) {
       toast({ title: 'Erro', description: 'Falha ao evoluir.', variant: 'destructive' });
     } finally {
+      // Parte L: `finally` sempre libera — sucesso, erro em TrainingCenter.update,
+      // erro em PlayerProfile.update ou qualquer exceção intermediária. Nenhum
+      // estado "busy" preso, nenhum freeze de botão em caso de falha.
+      upgradingRef.current = false;
       setBusy(null);
     }
   }

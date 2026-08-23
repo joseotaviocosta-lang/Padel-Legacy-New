@@ -278,15 +278,26 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   if (nextTournament?.id && nextTournament.start_date && String(nextTournament.id) !== String(recoveryTournamentId)) {
     const days = daysBetween(careerDate, nextTournament.start_date);
     const milestone = getTournamentReminderMilestone(days);
-    if (milestone !== null) {
+    // Hotfix 15.5.4 (complemento — sorteio em D-3): esta notificação passou
+    // a estar semanticamente ligada ao sorteio real, não só à contagem de
+    // dias. `nextTournament` já é a linha bruta de Tournament (todos os
+    // chamadores — CommunicationBell.jsx/Communications.jsx/CareerHub.jsx —
+    // buscam `Tournament.filter(...)` e passam o registro completo), então
+    // `bracket_history` já reflete se ensureTournamentDraw (chamado pela
+    // pipeline de avanço de dia, nunca por este código) já persistiu o
+    // sorteio. Se D-3 chegou mas a criação/persistência ainda não
+    // aconteceu ou falhou, NENHUMA notificação é criada agora — ela só
+    // aparece quando o sorteio realmente existe, nunca antes.
+    const drawn = Array.isArray(nextTournament.bracket_history) && nextTournament.bracket_history.length > 0;
+    if (milestone !== null && drawn) {
       await createOnce(tournamentReminderContextKey(nextTournament.id, milestone), {
         message_type: 'tournament_upcoming',
         notification_type: 'TOURNAMENT_UPCOMING',
         sender_type: 'federacao', sender_name: 'Federação do Circuito',
-        title: `${nextTournament.name || 'Próximo torneio'} se aproxima`,
-        content: days === 0 ? 'A competição começa hoje. Confira sua inscrição, energia e planejamento.' : `Faltam ${days} dia${days === 1 ? '' : 's'} para o início. Revise sua preparação e os compromissos no calendário.`,
+        title: `Sorteio definido — ${nextTournament.name || 'Próximo torneio'}`,
+        content: `A chave foi sorteada. Confira seu adversário da estreia e os compromissos no calendário.`,
         related_entity_type: 'Tournament', related_entity_id: nextTournament.id, related_entity_name: nextTournament.name,
-        destination: { type: 'TOURNAMENT_DETAILS', route: '/tournaments', params: { tournament: nextTournament.id, mode: 'details' } },
+        destination: { type: 'TOURNAMENT_RUN', route: '/tournaments', params: { tournament: nextTournament.id, mode: 'run' } },
         metadata: { tournament_id: nextTournament.id, reminder_milestone_days: milestone, notification_type: 'TOURNAMENT_UPCOMING' },
       });
     }

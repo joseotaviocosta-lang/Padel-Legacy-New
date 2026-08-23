@@ -74,7 +74,15 @@ try {
   gate('Entrevista obrigatória domina treino', getCareerNextAction(baseProfile, { urgentMessage: { route: `${APP_ROUTES.PRESS}?interview=i1` } }).id === 'message');
   gate('Entrevista usa o destino existente', getCareerNextAction(baseProfile, { urgentMessage: { route: `${APP_ROUTES.PRESS}?interview=i1` } }).route.includes('interview=i1'));
   gate('Resolver continua puro e sem storage', !/localStorage|sessionStorage|entities\./.test(read('src/lib/careerNextAction.js')));
-  gate('Limite diário de treino continua referenciado pelo resolver', read('src/lib/careerNextAction.js').includes('DAILY_TRAINING_LIMIT'));
+  // Nota (achado pré-existente, não causado pela Fase 15.5.4): o resolver já
+  // não usa a constante literal `DAILY_TRAINING_LIMIT` há algumas fases —
+  // ele importa e chama `getDailyTrainingLimit(profile)` (padel.js), o
+  // MESMO resolver dinâmico usado pelo Centro de Treinamento para refletir
+  // bônus de instalações (Quadras etc.) na recomendação "Treinar agora".
+  // Ter migrado para a função é estritamente melhor que a constante fixa
+  // (senão a recomendação de "próxima ação" ficaria desatualizada assim que
+  // o jogador evoluísse uma instalação) — só a asserção ficou desatualizada.
+  gate('Limite diário de treino continua referenciado pelo resolver', read('src/lib/careerNextAction.js').includes('getDailyTrainingLimit'));
 
   // Header global e fonte canônica de torneio.
   gate('Menu mobile abre NavigationHub', sources.layout.includes('setMobileOpen(true)') && sources.layout.includes('aria-controls="mobile-navigation-drawer"'));

@@ -513,21 +513,21 @@ function CoachPanel({
 
   return (
     <div data-coach-panel className="flex h-full min-h-0 flex-col overflow-hidden">
-      <div className="scrollbar-premium min-h-0 flex-1 overflow-y-auto overscroll-contain p-3 pb-2">
-        <div className="mb-2 flex items-center justify-between gap-2">
+      <div className="scrollbar-premium min-h-0 flex-1 overflow-y-auto overscroll-contain p-2.5 pb-1.5">
+        <div className="mb-1.5 flex items-center justify-between gap-2">
           <div className="min-w-0">
             <p className="truncate text-xs font-bold">{coach?.name || 'Sem técnico contratado'}</p>
             <p className="truncate text-[9px] text-muted-foreground">{coach?.specialty || 'Somente métricas básicas'}</p>
           </div>
-          <span className="shrink-0 rounded-full bg-secondary/60 px-2 py-1 text-[9px] text-muted-foreground">Fim do game</span>
+          <span className="shrink-0 rounded-full bg-secondary/60 px-2 py-0.5 text-[9px] text-muted-foreground">Fim do game</span>
         </div>
 
         <div className="md:grid md:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] md:items-start md:gap-3">
           {coachSuggestion ? (
-            <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-3">
+            <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 p-2.5">
               <p className="text-xs font-bold">{coachSuggestion.observation}</p>
               <p className="mt-1 text-[10px] leading-relaxed text-muted-foreground">{coachSuggestion.expectedImpact}</p>
-              <p className="mt-2 text-[9px] text-muted-foreground">
+              <p className="mt-1.5 text-[9px] text-muted-foreground">
                 Confiança: <b className="text-foreground">{coachSuggestion.confidence}</b> · custo físico:{' '}
                 <b className="text-foreground">{coachSuggestion.physicalCost}</b>
               </p>
@@ -570,7 +570,14 @@ function CoachPanel({
       </div>
 
       {coachSuggestion && (
-        <div data-coach-actions className="grid shrink-0 grid-cols-2 gap-2 border-t border-border/50 bg-background/95 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur">
+        // Hotfix 15.5.4 (P1 — "barra inferior ocupa espaço excessivo", QA
+        // físico): padding e gap vertical reduzidos — os botões continuam
+        // em min-h-11 (44px, piso de toque), só o espaço AO REDOR deles
+        // encolheu. `gap-y` menor que `gap-x` porque o espaço entre as duas
+        // FILEIRAS de ação é o que mais competia com a área de conteúdo em
+        // telas curtas (Android landscape); o espaço entre botões lado a
+        // lado já era só o necessário para não colarem.
+        <div data-coach-actions className="grid shrink-0 grid-cols-2 gap-x-2 gap-y-1.5 border-t border-border/50 bg-background/95 p-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] shadow-[0_-8px_24px_rgba(0,0,0,0.16)] backdrop-blur">
           <SmallAction primary onClick={onApply}>Aplicar</SmallAction>
           <SmallAction onClick={onIgnore}>Manter plano</SmallAction>
           <SmallAction subtle onClick={onPartial}>Parcial</SmallAction>

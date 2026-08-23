@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-21T11:45:40.850Z",
+  "generatedAt": "2026-08-23T13:31:32.837Z",
   "configuration": {
     "runs": 100,
     "seasons": 16,
@@ -25,12 +25,12 @@
       "top20Median": 3,
       "top10Median": 5,
       "top500Median": 1,
-      "finalOverall": 82.4,
-      "overallCeilingRatio": 0.934,
-      "coins": 392359,
+      "finalOverall": 81.8,
+      "overallCeilingRatio": 0.928,
+      "coins": 0,
       "bankruptRate": 0,
       "stagnationRate": 0,
-      "injuries": 2.6,
+      "injuries": 3.2,
       "avgFatigue": 27,
       "outliers": {
         "tooSlow": 0,
@@ -57,17 +57,17 @@
       "top20Median": 7,
       "top10Median": 11,
       "top500Median": 1,
-      "finalOverall": 80.6,
-      "overallCeilingRatio": 0.914,
-      "coins": 327890,
+      "finalOverall": 80.1,
+      "overallCeilingRatio": 0.909,
+      "coins": 0,
       "bankruptRate": 0,
       "stagnationRate": 0,
-      "injuries": 3.2,
-      "avgFatigue": 36.5,
+      "injuries": 3.9,
+      "avgFatigue": 36.4,
       "outliers": {
-        "tooSlow": 0,
+        "tooSlow": 1,
         "tooFast": 0,
-        "tooSlowPct": 0,
+        "tooSlowPct": 0.1,
         "tooFastPct": 0
       }
     },
@@ -77,7 +77,7 @@
       "peak": {
         "median": 8,
         "p25": 7,
-        "p75": 8,
+        "p75": 9,
         "neverPeakedRate": 10
       },
       "peakGateMedians": {
@@ -89,26 +89,32 @@
       "top20Median": 10,
       "top10Median": 14,
       "top500Median": 1,
-      "finalOverall": 79.3,
-      "overallCeilingRatio": 0.902,
-      "coins": 279874,
+      "finalOverall": 78.5,
+      "overallCeilingRatio": 0.893,
+      "coins": 0,
       "bankruptRate": 0,
       "stagnationRate": 0,
-      "injuries": 3.3,
-      "avgFatigue": 44.6,
+      "injuries": 4.2,
+      "avgFatigue": 44.5,
       "outliers": {
-        "tooSlow": 5,
+        "tooSlow": 98,
         "tooFast": 0,
-        "tooSlowPct": 0.5,
+        "tooSlowPct": 9.8,
         "tooFastPct": 0
       }
     }
   },
   "findings": [],
+  "perPhaseMs": {
+    "easy": 356581,
+    "normal": 297518,
+    "hard": 335187,
+    "neutral": 328696
+  },
   "hardVsNeutral": {
     "hardPeakMedian": 8,
-    "neutralPeakMedian": 8,
-    "hardFinalOverall": 79.3,
-    "neutralFinalOverall": 78.9
+    "neutralPeakMedian": 9,
+    "hardFinalOverall": 78.5,
+    "neutralFinalOverall": 78.2
   }
 }

@@ -1,136 +1,136 @@
 {
   "version": "0.9.0-rc.1.9",
-  "generated_at": "2026-08-19T20:38:35.169Z",
+  "generated_at": "2026-08-23T16:14:41.807Z",
   "summary": {
     "total": 18,
-    "passed": 18,
-    "failed": 0
+    "passed": 17,
+    "failed": 1
   },
   "results": [
     {
       "name": "test:beta",
       "ok": true,
       "code": 0,
-      "duration_ms": 1843,
-      "output": "MissionSystemV2Test: hydration, estados, recompensas, seleção, catálogo e migration aprovados.\nOnboardingV2Test: estado, migration, recomendações e introduções aprovados.\nTutorialChronologyTest: cronologia v11, capítulos, ações antecipadas, idempotência e retomada aprovados.\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 236,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 150,\n  \"games\": 21,\n  \"breaks\": 6,\n  \"deterministic\": true\n}\nDevServerConfigTest: porta sincronizada, diagnóstico, cleanup seguro e isolamento de produção aprovados.\nBetaReadiness: 6 suítes essenciais aprovadas; versão 0.9.0-rc.1.9."
+      "duration_ms": 4080,
+      "output": "MissionSystemV2Test: hydration, estados, recompensas, seleção, catálogo e migration aprovados.\nOnboardingV2Test: estado, migration, recomendações e introduções aprovados.\nTutorialChronologyTest: cronologia v12, capítulos, ações antecipadas, idempotência e retomada aprovados.\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 478,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 150,\n  \"games\": 21,\n  \"breaks\": 6,\n  \"deterministic\": true\n}\nDevServerConfigTest: porta sincronizada, diagnóstico, cleanup seguro e isolamento de produção aprovados.\nBetaReadiness: 6 suítes essenciais aprovadas; versão 0.9.0-rc.1.9."
     },
     {
       "name": "test:missions",
       "ok": true,
       "code": 0,
-      "duration_ms": 644,
+      "duration_ms": 1378,
       "output": "MissionSystemV2Test: hydration, estados, recompensas, seleção, catálogo e migration aprovados."
     },
     {
       "name": "test:tutorial-engine",
       "ok": true,
       "code": 0,
-      "duration_ms": 588,
-      "output": "TutorialEngineV2Test: 15 etapas canônicas e rotas validadas."
+      "duration_ms": 1383,
+      "output": "TutorialEngineV2Test: 27 etapas canônicas e rotas validadas."
     },
     {
       "name": "test:calendar-advance",
       "ok": true,
       "code": 0,
-      "duration_ms": 593,
+      "duration_ms": 1142,
       "output": "CalendarAdvanceV24Test: PASS\n✓ atalhos ignoram torneios passivos e atividades automáticas\n✓ torneios inscritos continuam bloqueando o avanço normal\n✓ lesão resolve torneios e treinos automaticamente\n✓ decisões administrativas continuam protegidas"
     },
     {
       "name": "test:living-world",
       "ok": true,
       "code": 0,
-      "duration_ms": 599,
+      "duration_ms": 1101,
       "output": "LivingWorldV23Test: PASS\n✓ Motor diário centralizado\n✓ Notícias contextuais e idempotentes\n✓ Boletim semanal por carreira\n✓ Linha do tempo mundial\n✓ Central Mundo com 4 abas\n✓ Dashboard integrado"
     },
     {
       "name": "test:global-market",
       "ok": true,
       "code": 0,
-      "duration_ms": 588,
+      "duration_ms": 1319,
       "output": "✓ mercado garante iniciantes\n✓ snapshot reúne atletas, duplas e técnicos\n✓ processamento mensal centralizado\n✓ página possui quatro áreas\n✓ negociação de atletas preservada\n✓ scouting preservado\n✓ export público disponível\nGlobalMarketV25Test: PASS"
     },
     {
       "name": "test:sports-economy",
       "ok": true,
       "code": 0,
-      "duration_ms": 612,
+      "duration_ms": 1595,
       "output": "SportsEconomyV26Test: PASS\n✓ 4 patrocinadores adequados à fase iniciante\n✓ 72 clubes mundiais determinísticos\n✓ Rotação mensal de equipamentos e lançamentos futuros"
     },
     {
       "name": "test:coaches-v28",
       "ok": true,
       "code": 0,
-      "duration_ms": 591,
+      "duration_ms": 1072,
       "output": "✓ catálogo ampliado\n✓ competências sem bônus negativos\n✓ sem treinador inicial automático\n✓ contrato e salário mensal\n✓ demissão não reatribui treinador automaticamente\n✓ integração com comissão\n✓ mercado completo\n✓ impacto real em partida treino\n✓ impacto real em partida de torneio\nCoachSystemV28Test: PASS"
     },
     {
       "name": "test:partnerships-v29",
       "ok": true,
       "code": 0,
-      "duration_ms": 623,
+      "duration_ms": 1139,
       "output": "LivingPartnershipsV29Test: PASS\n✓ química, confiança e moral separadas\n✓ conversas alteram vínculo\n✓ identidade da dupla é derivada do histórico\n✓ bônus esportivo é pequeno e limitado"
     },
     {
       "name": "test:staff-architecture",
       "ok": true,
       "code": 0,
-      "duration_ms": 596,
+      "duration_ms": 1196,
       "output": "StaffArchitectureV29_1Test: PASS\n✓ treinador principal não ocupa vaga\n✓ contador usa somente profissionais de apoio\n✓ comissão possui rota própria\n✓ navegação esportiva atualizada\n✓ economia mantém apenas gestão financeira"
     },
     {
       "name": "test:performance-v31",
-      "ok": true,
-      "code": 0,
-      "duration_ms": 602,
-      "output": "✓ cache de consultas configurado\n✓ pré-carregamento em lote disponível\n✓ rotas principais pré-carregadas em tempo ocioso\n✓ atletas usam busca adiada e memoização\n✓ atletas usam carregamento progressivo\n✓ ranking usa memoização pesada\n✓ ranking limita renderização inicial\n✓ mercado limita todas as listas extensas\n✓ itens fora da tela usam content-visibility\n\nPerformanceV31Test: PASS (9/9)"
+      "ok": false,
+      "code": 1,
+      "duration_ms": 1266,
+      "output": "✓ cache de consultas configurado\n✓ pré-carregamento em lote disponível\n✗ rotas principais pré-carregadas em tempo ocioso\n✓ atletas usam busca adiada e memoização\n✓ atletas usam carregamento progressivo\n✓ ranking usa memoização pesada\n✓ ranking limita renderização inicial\n✓ mercado limita todas as listas extensas\n✓ itens fora da tela usam content-visibility"
     },
     {
       "name": "test:ranking-carryover-v32",
       "ok": true,
       "code": 0,
-      "duration_ms": 669,
+      "duration_ms": 1109,
       "output": "RankingSeasonCarryoverV32Test: PASS"
     },
     {
       "name": "test:career-ai-v34",
       "ok": true,
       "code": 0,
-      "duration_ms": 757,
+      "duration_ms": 1251,
       "output": "CareerAIAndLivingStaffV34Test: PASS (6/6)"
     },
     {
       "name": "test:match-integrity",
       "ok": true,
       "code": 0,
-      "duration_ms": 975,
+      "duration_ms": 1483,
       "output": "{\n  \"ok\": true,\n  \"servicePattern\": \"ABBAABBAA\",\n  \"points\": 150,\n  \"games\": 21,\n  \"breaks\": 6,\n  \"deterministic\": true\n}"
     },
     {
       "name": "test:match-experience-v34",
       "ok": true,
       "code": 0,
-      "duration_ms": 659,
+      "duration_ms": 1131,
       "output": "MatchExperienceV34_12Test: PASS (6/6)"
     },
     {
       "name": "test:simulation-health-v35",
       "ok": true,
       "code": 0,
-      "duration_ms": 624,
+      "duration_ms": 985,
       "output": "SimulationHealthV35Test: PASS (6/6)"
     },
     {
       "name": "test:world-auditor-v35",
       "ok": true,
       "code": 0,
-      "duration_ms": 615,
+      "duration_ms": 1175,
       "output": "WorldAuditorV35Test: PASS (6/6)"
     },
     {
       "name": "test:beta-integration-v35",
       "ok": true,
       "code": 0,
-      "duration_ms": 742,
+      "duration_ms": 1219,
       "output": "✓ ranking usa circuito completo\n✓ comunidade incorpora rede\n✓ menu social removido\n✓ rota antiga redireciona\n✓ entrevista gera comunicação\n✓ comunicação abre recurso\n✓ imprensa abre entrevistas\nBetaIntegrationV35_5Test: PASS (7/7)"
     }
   ],

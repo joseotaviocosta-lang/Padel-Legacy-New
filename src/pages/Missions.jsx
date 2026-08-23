@@ -508,23 +508,41 @@ function Missions() {
         </div>
       )}
 
+      {/* Hotfix 15.5.4 (P1 — card quebrado no mobile com texto longo, QA
+          físico): a coluna de texto era `flex-1` SEM `min-w-0` ao lado de
+          uma coluna de botão `shrink-0` de largura fixa — sem `min-w-0`,
+          o mínimo de um item flex é a largura intrínseca do seu conteúdo
+          (a regra `min-width: auto` do próprio flexbox), então um
+          título/descrição longos nunca cediam espaço; a coluna de botão
+          fixa ao lado espremia ainda mais o pouco espaço restante em telas
+          estreitas, forçando quebras de palavra e um card enorme
+          verticalmente. Correção: `min-w-0` na coluna de texto (permite
+          quebra normal de palavra, sem `break-all`) + layout empilhado no
+          mobile (`flex-col`) que só vira a linha única atual a partir de
+          `sm:` — desktop com espaço mantém exatamente o layout anterior. */}
       {nextTutorial && !inlineAction ? <div className="glass rounded-2xl border border-primary/40 p-5 bg-primary/5">
-        <div className="flex items-start gap-4">
-          <div className="h-12 w-12 rounded-xl bg-primary/20 flex items-center justify-center"><GraduationCap className="h-6 w-6 text-primary" /></div>
-          <div className="flex-1"><p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p><h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2><p className="text-sm text-muted-foreground mt-1">{tutorialStep?.id === 'first-match' && firstMatchAction ? firstMatchAction.description : nextTutorial.description}</p>{nextTutorial.why_it_matters && <p className="mt-2 text-xs"><strong>Por que isso importa?</strong> {nextTutorial.why_it_matters}</p>}
-            <div className="mt-3 flex items-center gap-3"><ProgressBar value={progress[nextTutorial.id]?.progress || 0} max={nextTutorial.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{progress[nextTutorial.id]?.progress || 0}/{nextTutorial.target_count || 1}</span></div>
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start">
+          <div className="flex min-w-0 flex-1 items-start gap-4">
+            <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/20"><GraduationCap className="h-6 w-6 text-primary" /></div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] uppercase tracking-wider text-primary font-bold">Próximo passo do tutorial · {tutorialDone + 1}/{tutorialMissions.length}</p>
+              <h2 className="font-black text-lg mt-1">{nextTutorial.title}</h2>
+              <p className="text-sm text-muted-foreground mt-1">{tutorialStep?.id === 'first-match' && firstMatchAction ? firstMatchAction.description : nextTutorial.description}</p>
+              {nextTutorial.why_it_matters && <p className="mt-2 text-xs"><strong>Por que isso importa?</strong> {nextTutorial.why_it_matters}</p>}
+              <div className="mt-3 flex items-center gap-3"><ProgressBar value={progress[nextTutorial.id]?.progress || 0} max={nextTutorial.target_count || 1} className="flex-1" /><span className="text-xs font-bold">{progress[nextTutorial.id]?.progress || 0}/{nextTutorial.target_count || 1}</span></div>
+            </div>
           </div>
-          <div className="flex shrink-0 flex-col gap-2">
+          <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto">
             {tutorialStep?.id === 'first-match' ? (
               // Tutorial 4.0: nunca usa tutorial_route/action_label estáticos
               // (route='/matches') para esta etapa — sempre o destino real.
-              <button type="button" onClick={() => navigate((firstMatchAction || { to: '/tournaments' }).to)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{(firstMatchAction || { cta: 'Inscrever-se em um torneio' }).cta} <ArrowRight className="h-4 w-4" /></button>
+              <button type="button" onClick={() => navigate((firstMatchAction || { to: '/tournaments' }).to)} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground sm:w-auto">{(firstMatchAction || { cta: 'Inscrever-se em um torneio' }).cta} <ArrowRight className="h-4 w-4" /></button>
             ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind !== 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname, location.search) ? (
-              <button type="button" disabled={savingChoice} onClick={confirmUnderstanding} className="rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50">{savingChoice ? 'Confirmando...' : 'Entendi, continuar'}</button>
+              <button type="button" disabled={savingChoice} onClick={confirmUnderstanding} className="min-h-11 w-full rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground disabled:opacity-50 sm:w-auto">{savingChoice ? 'Confirmando...' : 'Entendi, continuar'}</button>
             ) : nextTutorial.completion_type === 'confirm_understanding' && tutorialStep?.kind === 'VISIT' && isTutorialRouteMatch(nextTutorial.tutorial_route, location.pathname, location.search) ? (
-              <span className="rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary">Você está no lugar certo</span>
+              <span className="flex min-h-11 w-full items-center justify-center rounded-xl border border-primary/30 bg-primary/10 px-4 py-2 text-center text-xs font-bold text-primary sm:w-auto">Você está no lugar certo</span>
             ) : nextTutorial.tutorial_route ? (
-              <button type="button" onClick={() => navigate(nextTutorial.tutorial_route)} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>
+              <button type="button" onClick={() => navigate(nextTutorial.tutorial_route)} className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground sm:w-auto">{nextTutorial.action_label || 'Ir agora'} <ArrowRight className="h-4 w-4" /></button>
             ) : null}
           </div>
         </div>

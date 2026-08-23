@@ -92,7 +92,14 @@ const partnershipSource = read('src/lib/partnershipSystem.js');
 gate('Partnership referencia AthleteProfile por id', partnershipSource.includes('partner_bot_id: bot.id') && partnershipSource.includes('athlete_b_id: bot.id'));
 const partnerOverviewSource = read('src/components/partner/PartnerOverview.jsx');
 gate('Minha dupla lê AthleteProfile canônico', partnerOverviewSource.includes('(localGame.entities).AthleteProfile') && partnerOverviewSource.includes('athleteProfiles.get(partnership.partner_bot_id)'));
-gate('Minha dupla deriva OVR do perfil canônico', partnerOverviewSource.includes('resolvePartnerOverall(partnerProfile, partnership.partner_overall)'));
+// Hotfix 15.5.4 (P1 — "OVR —" na dupla, QA físico): a asserção antiga só
+// exigia que a chamada existisse com `partnership.partner_overall` cru —
+// esse campo nunca é escrito por nenhum outro código do projeto, então sem
+// AthleteProfile persistido (o caso comum para bots do catálogo estático)
+// o OVR caía sempre em "—". Agora exige o fallback canônico real:
+// `overallRating` (padel.js, mesmo resolver de busca/ranking/cards) sobre
+// o bot do catálogo (`getPartnerBot`), nunca um cálculo paralelo.
+gate('Minha dupla deriva OVR do perfil canônico, com fallback real para overallRating(bot) quando não há AthleteProfile', partnerOverviewSource.includes('resolvePartnerOverall(partnerProfile, partnership.partner_overall ?? overallRating(getPartnerBot(profile)))'));
 const reloadStart = simulateAthlete(777, 'active-partner', 12).athlete;
 const reloaded = structuredClone(JSON.parse(JSON.stringify(reloadStart)));
 const reloadEvolution = evolveAthleteCareerMonth(reloaded, '2027-02-01');

@@ -40,17 +40,24 @@ assert.equal(resolveNotificationDestination(activeRun).route, '/tournaments?tour
 assert.equal(resolveTournamentOpenMode('run', true), 'run', 'campanha só restaura quando existe run ativo');
 assert.equal(resolveTournamentOpenMode('run', false), 'details', 'run ausente deve cair em detalhes, sem exceção');
 
-assert.equal(getTournamentReminderMilestone(7), 7);
+// Hotfix 15.5.4 (P1 — notificações redundantes, QA físico): antes havia um
+// marco por dia (7/3/1/0), cada um com sua própria chave de dedup — os
+// quatro "Miami Cup se aproxima" persistiam juntos na caixa de entrada para
+// o MESMO torneio. Reduzido a um único marco (D-3, o mais próximo do
+// sorteio real de oponentes); os demais dias não geram mais aviso genérico
+// (o próprio jogo já mostra o próximo torneio em Header/Home/Calendário/
+// Torneios).
+assert.equal(getTournamentReminderMilestone(7), null, 'D-7 não deve mais gerar aviso genérico (redundante com Header/Home/Calendário/Torneios)');
 assert.equal(getTournamentReminderMilestone(6), null, 'não deve gerar cópia diária do mesmo aviso');
-assert.equal(getTournamentReminderMilestone(3), 3);
-assert.equal(getTournamentReminderMilestone(1), 1);
-assert.equal(getTournamentReminderMilestone(0), 0);
+assert.equal(getTournamentReminderMilestone(3), 3, 'D-3 continua sendo o único marco pré-torneio');
+assert.equal(getTournamentReminderMilestone(1), null, 'D-1 não deve gerar outro "torneio se aproxima" genérico');
+assert.equal(getTournamentReminderMilestone(0), null, 'dia do torneio não deve gerar aviso genérico redundante');
 assert.equal(
-  tournamentReminderContextKey('singapore-masters', 7),
-  tournamentReminderContextKey('singapore-masters', 7),
+  tournamentReminderContextKey('singapore-masters', 3),
+  tournamentReminderContextKey('singapore-masters', 3),
   'dedupe deve ser determinístico por tipo, torneio e marco',
 );
-assert.notEqual(tournamentReminderContextKey('singapore-masters', 7), tournamentReminderContextKey('singapore-masters', 3));
+assert.notEqual(tournamentReminderContextKey('singapore-masters', 3), tournamentReminderContextKey('singapore-masters', 7));
 
 const sourceChecks = [
   ['details mode usa modal próprio na viewport', detailsSource.includes('<ModalShell') && detailsSource.includes('open={Boolean(tournament)}')],
@@ -58,7 +65,11 @@ const sourceChecks = [
   ['detalhes mostram status, parceiro, premiação, pontos e requisitos', ['Sua dupla', 'Inscrição confirmada', 'Premiação', 'Ranking', 'getEntryPathLabel'].every((token) => detailsSource.includes(token))],
   ['página separa detalhes de campanha', tournamentsSource.includes('setDetailsTournament(requested)') && tournamentsSource.includes('setActiveTournament(requested)') && tournamentsSource.includes('resolveTournamentOpenMode')],
   ['campanha ainda valida inscrição quando realmente aberta', campaignSource.includes('isPlayerRegisteredForTournament')],
-  ['aviso contextual declara details mode', communicationsSource.includes("notification_type: 'TOURNAMENT_UPCOMING'") && communicationsSource.includes("type: 'TOURNAMENT_DETAILS'")],
+  // Hotfix 15.5.4 (complemento — sorteio em D-3): o aviso deixou de abrir
+  // "details" e passou a abrir a campanha real (mode: 'run', destination
+  // type TOURNAMENT_RUN) — agora só é criado quando o sorteio (bracket_history)
+  // já existe de verdade, então "Ver chave"/CTA sempre tem conteúdo real.
+  ['aviso contextual declara run mode (sorteio real, não apenas detalhes)', communicationsSource.includes("notification_type: 'TOURNAMENT_UPCOMING'") && communicationsSource.includes("type: 'TOURNAMENT_RUN'")],
   ['dedupe não usa mais a data diária', !communicationsSource.includes('`federation-tournament:${nextTournament.id}:${careerDate}`')],
   // A auditoria de performance trocou o upsert individual por chamada por um
   // lote único via localGame.batch (menos escritas completas do save por

@@ -143,7 +143,15 @@ const scriptPath = fileURLToPath(import.meta.url);
 const results = [];
 for (const days of [30, 90, 365]) {
   for (const profileKey of ['A_raro', 'B_moderado', 'C_intenso']) {
-    const proc = spawnSync(process.execPath, [scriptPath, '--worker', '--profile', profileKey, '--days', String(days)], { encoding: 'utf8', timeout: 120_000 });
+    // Hotfix 15.5.4 (complemento — sorteio em D-3): o cenário mais pesado
+    // (C_intenso/365d, ~850 sessões de treino simuladas) já rodava perto do
+    // limite de 120s; não é um caso de correção — este teste não registra
+    // nenhum torneio, então o novo hook de sorteio (isTournamentDrawDue,
+    // dentro de processCalendarEvents) nunca executa trabalho real aqui, só
+    // uma checagem booleana por evento não-torneio. A margem foi ampliada
+    // para absorver variação normal de carga da máquina, sem alterar nenhum
+    // número de economia/balanço que o teste valida.
+    const proc = spawnSync(process.execPath, [scriptPath, '--worker', '--profile', profileKey, '--days', String(days)], { encoding: 'utf8', timeout: 180_000 });
     if (proc.status !== 0) {
       console.error(proc.stdout, proc.stderr);
       throw new Error(`Cenário ${profileKey}/${days}d falhou (exit ${proc.status}).`);

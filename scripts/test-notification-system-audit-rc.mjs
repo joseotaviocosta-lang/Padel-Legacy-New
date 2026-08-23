@@ -43,10 +43,20 @@ try {
   const profile = { id: PROFILE_ID, career_date: '2026-01-01' };
 
   // ── Cenário 1: criar notificação aumenta o badge ──────────────────────────
+  // Hotfix 15.5.4 (P1 — notificações redundantes): TOURNAMENT_REMINDER_MILESTONES
+  // passou de [7,3,1,0] para [3] (cada marco antigo tinha sua própria chave
+  // de dedup, então os quatro avisos "torneio se aproxima" persistiam juntos
+  // para o mesmo torneio). D-7 deixou de gerar lembrete; a data abaixo foi
+  // ajustada para D-3, o único marco pré-torneio que continua válido.
+  // Complemento (sorteio em D-3): a notificação só é criada quando o
+  // sorteio já existe de verdade (nextTournament.bracket_history não
+  // vazio) — `nextTournament` aqui simula a linha bruta de Tournament já
+  // pós-sorteio, exatamente como ensureTournamentDraw a deixaria antes de
+  // qualquer chamador desta função rodar.
   const created1 = await ensureContextualCareerCommunications(profile, {
-    nextTournament: { id: 'tournament-singapura', name: 'Singapura Masters Open', start_date: '2026-01-08' },
+    nextTournament: { id: 'tournament-singapura', name: 'Singapura Masters Open', start_date: '2026-01-04', bracket_history: [{ round: 'R16' }] },
   });
-  record('cenário 1: reconciliação cria o lembrete de torneio (marco de 7 dias)', created1.length === 1);
+  record('cenário 1: reconciliação cria o lembrete de torneio (marco de 3 dias)', created1.length === 1);
   let messages = await listCareerCommunications(PROFILE_ID, 50);
   record('cenário 1: badge sobe para 1 após a criação', countUnreadCareerMessages(messages) === 1);
 
@@ -68,7 +78,10 @@ try {
   record('cenário 5: clique duplo não altera read_at nem duplica leitura', afterSecondClick[0].read_at === readAtFirstClick);
 
   // ── Cenário 7: torneio abre direto (usa o objeto real gerado no cenário 1) ─
-  record('cenário 7: torneio abre direto nos detalhes do torneio', resolveNotificationDestination(tournamentReminder).route === '/tournaments?tournament=tournament-singapura&mode=details');
+  // Complemento (sorteio em D-3): o aviso agora abre a campanha real
+  // (mode: 'run'), não mais os detalhes genéricos — condizente com o
+  // sorteio já existir de verdade quando este aviso é criado.
+  record('cenário 7: torneio abre direto na campanha (chave já sorteada)', resolveNotificationDestination(tournamentReminder).route === '/tournaments?tournament=tournament-singapura&mode=run');
 
   // ── Cenário 6: entrevista abre direto ──────────────────────────────────────
   const interviewNotification = {
@@ -110,9 +123,12 @@ try {
   record('cenário 12: notificação resolvida some da lista de pendências', !pendingAfter.some((m) => m.id === coachCondition[0]?.id));
 
   // ── Cenário 13: duplicata é bloqueada (mesma condição, nova chamada) ──────
+  // Hotfix 15.5.4: mesma data do cenário 1 (D-3, único marco válido) — a
+  // intenção do cenário é provar que REPROCESSAR a MESMA condição válida não
+  // duplica, não apenas que nenhum marco bateu.
   const beforeDuplicateCount = (await listCareerCommunications(PROFILE_ID, 50)).length;
   const duplicateAttempt = await ensureContextualCareerCommunications(profile, {
-    nextTournament: { id: 'tournament-singapura', name: 'Singapura Masters Open', start_date: '2026-01-08' },
+    nextTournament: { id: 'tournament-singapura', name: 'Singapura Masters Open', start_date: '2026-01-04', bracket_history: [{ round: 'R16' }] },
   });
   const afterDuplicateCount = (await listCareerCommunications(PROFILE_ID, 50)).length;
   record('cenário 13: reprocessar a mesma condição não cria uma segunda linha', duplicateAttempt.length === 0 && afterDuplicateCount === beforeDuplicateCount);
@@ -156,8 +172,10 @@ try {
   record('regra de expiração: notificação expirada não aparece mais como pendência ativa', !selectPendingDecisions(afterExpirySweep).some((m) => m.id === expiredRow?.id));
 
   // ── Lembrete de torneio expira quando o próximo torneio muda ──────────────
+  // Hotfix 15.5.4: D-3 (único marco válido) em vez de D-7; complemento
+  // (sorteio em D-3): bracket_history simula o sorteio já persistido.
   const afterTournamentChange = await ensureContextualCareerCommunications(profile, {
-    nextTournament: { id: 'tournament-rio', name: 'Rio Open', start_date: '2026-01-08' },
+    nextTournament: { id: 'tournament-rio', name: 'Rio Open', start_date: '2026-01-04', bracket_history: [{ round: 'R16' }] },
   });
   const rowsAfterTournamentChange = await listCareerCommunications(PROFILE_ID, 50);
   const oldTournamentReminder = rowsAfterTournamentChange.find((m) => m.metadata?.tournament_id === 'tournament-singapura');

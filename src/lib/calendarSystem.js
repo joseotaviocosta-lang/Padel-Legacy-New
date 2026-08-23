@@ -6,6 +6,7 @@ import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/tr
 import { normalizeTrainingId } from '@/lib/trainingCatalog.js';
 import { registerTournament, cancelTournamentRegistration, getTournamentRegistrationWindow } from '@/lib/tournamentRegistration.js';
 import { getTournamentCommitmentDate, shouldBlockBeforeAdvance } from '@/game-core/calendarAdvancePolicy.js';
+import { ensureTournamentDraw, isTournamentDrawDue } from '@/lib/tournamentDraw.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -388,10 +389,32 @@ export async function processCalendarEvents(profile, newDate) {
   let energyChange = 0;
   const completed = [];
 
-  for (const event of events || []) {
+  for (let event of events || []) {
+    let hasTournamentRun = event.event_type === 'tournament' && Boolean(event.metadata?.tournament_run);
+
+    // Hotfix 15.5.4 (complemento — sorteio na data canônica): o sorteio de
+    // um torneio inscrito e ainda sem tournament_run só é gerado aqui, no
+    // dia em que a carreira realmente chega a D-3 (isTournamentDrawDue) —
+    // nunca ao abrir o modal do torneio (ver src/lib/tournamentDraw.js).
+    // advanceCareerDays avança um dia real por vez mesmo em saltos de
+    // vários dias, então este ponto nunca "pula" o dia exato do sorteio.
+    if (event.event_type === 'tournament' && !hasTournamentRun && event.status === 'scheduled' && event.related_id) {
+      const tournament = await (/** @type {any} */ (localGame.entities)).Tournament.get(event.related_id).catch(() => null);
+      if (tournament && isTournamentDrawDue(event, tournament, newDate)) {
+        const drawResult = await ensureTournamentDraw({
+          profile: { ...profile, career_date: newDate },
+          tournament,
+          calendarEvent: event,
+        }).catch(() => null);
+        if (drawResult?.created && drawResult.event) {
+          event = drawResult.event;
+          hasTournamentRun = true;
+        }
+      }
+    }
+
     // Mark past events as missed if they were tournaments requiring decisions
     const tournamentCommitmentDate = getTournamentCommitmentDate(event);
-    const hasTournamentRun = event.event_type === 'tournament' && Boolean(event.metadata?.tournament_run);
     const eventEnd = event.event_type === 'tournament'
       ? (tournamentCommitmentDate || (hasTournamentRun ? null : event.end_date || event.start_date))
       : (event.end_date || event.start_date);

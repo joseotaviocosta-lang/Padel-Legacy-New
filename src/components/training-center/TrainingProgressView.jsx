@@ -30,7 +30,13 @@ export default function TrainingProgressView({ profile, onProfileUpdate, initial
       })
       .catch(() => { if (!cancelled) setHistoryLoaded(true); });
     return () => { cancelled = true; };
-  }, [activeSection, entities.TrainingSession, historyLoaded, profile.id]);
+  // Hotfix 15.5.4: mesma classe de bug corrigida em TrainingFacilityView.jsx
+  // — `entities.TrainingSession` é um objeto novo a cada acesso ao Proxy
+  // (localGameClient.js, sem cache), então re-executava este efeito em todo
+  // render. Aqui o guard `historyLoaded` já impedia um loop infinito de
+  // fetch, mas o efeito ainda era invocado (e descartado) sem necessidade a
+  // cada render. `entities` em si é estável; não precisa entrar na lista.
+  }, [activeSection, historyLoaded, profile.id]);
 
   return (
     <div className="space-y-3" data-training-center-view="progress">
