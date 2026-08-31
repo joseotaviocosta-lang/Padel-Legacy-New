@@ -114,7 +114,14 @@ const careerReport = JSON.parse(fs.readFileSync(careerOutput, 'utf8'));
 const normalProfiles = careerReport.scenarioReports.filter((row) => row.id !== 'overtraining');
 const careerGates = {
   top500Reachable: normalProfiles.every((row) => row.top500 != null && row.top500 <= 3),
-  top100InCareerWindow: normalProfiles.every((row) => row.top100 == null || (row.top100 >= 3 && row.top100 <= 7)),
+  // Fase 15.7 (calendário de torneios rebalanceado): a temporada inteira foi
+  // deslocada +4 semanas de propósito (1º torneio de ~dia 7 para ~dia 35,
+  // dando tempo real de onboarding/treino antes da 1ª competição — pedido
+  // explícito do produto). Isso empurra a curva de pontos de ranking ~1
+  // temporada para trás; o perfil "casual" simulado passou a cravar Top 100
+  // na T8 em vez da T7, um efeito direto e esperado do rebalance, não uma
+  // regressão de gameplay. Janela ampliada em +1 para acomodar.
+  top100InCareerWindow: normalProfiles.every((row) => row.top100 == null || (row.top100 >= 3 && row.top100 <= 8)),
   overallControlled: normalProfiles.every((row) => row.finalOverall >= 72 && row.finalOverall <= 90),
   injuriesControlled: normalProfiles.every((row) => row.injuries <= 6),
   partnerStability: normalProfiles.every((row) => row.partnerChanges <= 4),

@@ -11,13 +11,20 @@ const expect = (name, condition) => {
 };
 
 const modal = read('src/components/design-system/ModalShell.jsx');
+// Fase de validação final (hotfix de persistência): scroll-lock e restauração
+// de foco foram extraídos de ModalShell.jsx para o hook compartilhado
+// useOverlayBehavior.js (reusado por ModalShell/BottomSheet/DrawerShell) —
+// a funcionalidade continua presente, só mudou de arquivo. Ajustado para
+// checar a fonte atual em vez de reintroduzir a implementação inline antiga.
+const overlayBehavior = read('src/components/design-system/useOverlayBehavior.js');
 const css = read('src/index.css');
 const index = read('src/components/design-system/index.js');
 const pkg = JSON.parse(read('package.json'));
 
 expect('Modal usa Portal', modal.includes('createPortal'));
-expect('Modal restaura foco', modal.includes('previousFocusRef'));
-expect('Modal trava e restaura scroll', modal.includes("document.body.style.overflow = 'hidden'"));
+expect('Modal usa o hook compartilhado de overlay', modal.includes('useOverlayBehavior'));
+expect('Modal restaura foco', overlayBehavior.includes('previousFocusRef'));
+expect('Modal trava e restaura scroll', overlayBehavior.includes("document.body.style.overflow = 'hidden'"));
 expect('Modal respeita viewport dinâmica', modal.includes('100dvh'));
 expect('Feedback global exportado', index.includes("./ActionFeedback"));
 expect('Moldura de ícones exportada', index.includes("./IconFrame"));

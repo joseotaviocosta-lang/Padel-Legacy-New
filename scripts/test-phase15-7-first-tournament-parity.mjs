@@ -86,6 +86,7 @@ try {
   } = await vite.ssrLoadModule('/src/lib/tournamentRegistration.js');
   const {
     startTournamentMatch, getTournamentRunPhase, getCurrentTournamentMatch, completePreTournamentMeeting,
+    recordTournamentMatchResult,
   } = await vite.ssrLoadModule('/src/gameplay/worldTour/TournamentRunManager.js');
   const { getVisibleTournamentBracketState } = await vite.ssrLoadModule('/src/lib/tournamentBracketView.js');
   const { BOTS_BY_DIFFICULTY } = await vite.ssrLoadModule('/src/lib/bots.js');
@@ -135,8 +136,11 @@ try {
   const opponentSignature = (run) => JSON.stringify((run?.matches || []).map((m) => m.opponent));
 
   // Exercita a campanha completa de um torneio real (registro → D-3 → D-0 →
-  // Jogar → rodada seguinte → reload → avanço em lote) e devolve um
-  // "fingerprint" comparável entre torneios diferentes.
+  // Jogar → 2ª rodada → encerramento → reload → avanço em lote) e devolve um
+  // "fingerprint" comparável entre torneios diferentes. Persiste o
+  // encerramento (eliminação na 2ª rodada) de volta no CalendarEvent — sem
+  // isso o compromisso continuaria pendente para sempre e bloquearia
+  // legitimamente qualquer torneio seguinte testado na mesma carreira.
   async function runFullTournamentCampaign(tournament, label) {
     const beforeRows = (await localGame.entities.CalendarEvent.filter({ profile_id: profile.id, related_id: tournament.id })).length;
 
@@ -173,6 +177,32 @@ try {
     const reloadedEvent = await localGame.entities.CalendarEvent.get(modalAtD0.calendarEvent.id);
     const reloadStable = opponentSignature(reloadedEvent.metadata.tournament_run) === opponentAtD3;
 
+    // Vence a 1ª rodada (avança para a 2ª) e persiste — testa "rodada
+    // seguinte" com a mesma pipeline usada pelo jogo real.
+    const { run: afterRound1 } = recordTournamentMatchResult(startedRun, { matchId: liveMatch.id, won: true, score: '6-3 6-4' });
+    const round2Advanced = afterRound1.currentRound === 1 && afterRound1.status !== 'eliminated';
+    await localGame.entities.CalendarEvent.update(modalAtD0.calendarEvent.id, {
+      metadata: { ...modalAtD0.calendarEvent.metadata, tournament_run: afterRound1 },
+    });
+
+    // Perde a 2ª rodada (elimina — estado terminal) e persiste, liberando o
+    // calendário para o próximo compromisso, exatamente como o fluxo real de
+    // "Jogar" faz ao terminar uma campanha.
+    const round2Match = getCurrentTournamentMatch(afterRound1);
+    const { run: eliminatedRun } = recordTournamentMatchResult(afterRound1, { matchId: round2Match.id, won: false, score: '4-6 3-6' });
+    const terminalStatusCorrect = eliminatedRun.status === 'eliminated';
+    await localGame.entities.CalendarEvent.update(modalAtD0.calendarEvent.id, {
+      status: 'completed',
+      requires_decision: false,
+      metadata: { ...modalAtD0.calendarEvent.metadata, tournament_run: eliminatedRun },
+    });
+
+    // Encerramento persistido corretamente = calendário não fica mais preso
+    // neste torneio: um avanço de dia normal, a partir de agora, funciona.
+    current = await localGame.entities.PlayerProfile.get(current.id);
+    let advanceAfterCompletionWorks = true;
+    try { current = await advanceCareerDay(current, {}); } catch { advanceAfterCompletionWorks = false; }
+
     return {
       label,
       exactlyOneRow,
@@ -185,6 +215,9 @@ try {
       matchStartedStatus: liveMatch.status,
       opponentUnchangedThroughFlow: opponentUnchanged,
       reloadStable,
+      round2Advanced,
+      terminalStatusCorrect,
+      advanceAfterCompletionWorks,
     };
   }
 
@@ -203,6 +236,9 @@ try {
   gate('Paridade: "Jogar" inicia a partida (status=playing) em ambos os torneios', fingerprintA.matchStartedStatus === 'playing' && fingerprintB.matchStartedStatus === 'playing');
   gate('Paridade: adversário nunca troca durante o fluxo, em nenhum dos dois torneios', fingerprintA.opponentUnchangedThroughFlow && fingerprintB.opponentUnchangedThroughFlow);
   gate('Paridade: reload preserva o estado igualmente nos dois torneios', fingerprintA.reloadStable && fingerprintB.reloadStable);
+  gate('Paridade: vitória na 1ª rodada avança currentRound em ambos os torneios (segunda rodada)', fingerprintA.round2Advanced && fingerprintB.round2Advanced);
+  gate('Paridade: eliminação na 2ª rodada chega ao estado terminal "eliminated" em ambos', fingerprintA.terminalStatusCorrect && fingerprintB.terminalStatusCorrect);
+  gate('Paridade: encerramento persistido libera o calendário (avanço normal funciona depois) em ambos', fingerprintA.advanceAfterCompletionWorks && fingerprintB.advanceAfterCompletionWorks);
 
   // ═══════════════ 4. Avanço em lote — para no primeiro compromisso, em qualquer torneio ═══════════════
   {
@@ -223,7 +259,13 @@ try {
     while (batchCurrent.career_date < firstTournament.registration_open_date) batchCurrent = await advanceCareerDay(batchCurrent, {});
     await registerTournament({ player: batchCurrent, partner: batchPartner, tournament: firstTournament, teamRank: 300 });
     batchCurrent = await localGame.entities.PlayerProfile.get(batchProfile.id);
-    const result = await advanceCareerDays(batchCurrent, 28); // salto que tentaria ultrapassar o 1º torneio inteiro
+    // advanceCareerDays satura em 28 dias por chamada — com o calendário
+    // rebalanceado (inscrição~dia 5, torneio~dia 35, ~30 dias de intervalo)
+    // uma única chamada não alcançaria o torneio de qualquer forma. Aproxima
+    // a alguns dias do torneio primeiro, depois usa um salto GRANDE o
+    // suficiente para ultrapassá-lo se não houvesse proteção nenhuma.
+    while (batchCurrent.career_date < firstTournament.registration_deadline) batchCurrent = await advanceCareerDay(batchCurrent, {});
+    const result = await advanceCareerDays(batchCurrent, 28); // salto que tentaria ultrapassar o torneio inteiro
     gate('Avanço em lote (novo calendário): PARA exatamente no dia do 1º torneio, nunca o ultrapassa', result.finalDate === firstTournament.start_date && Boolean(result.stopReason));
   }
 

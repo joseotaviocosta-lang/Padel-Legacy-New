@@ -18,7 +18,21 @@ for (const page of migrated) {
   if (!content.includes('PageSkeleton') && !content.includes('LoadingScreen')) failures.push(`${page} sem skeleton premium`);
 }
 const modal = fs.readFileSync(path.join(root, 'src/components/design-system/ModalShell.jsx'), 'utf8');
-for (const token of ['createPortal', '10000', '100dvh', 'overflow-y-auto', "event.key === 'Escape'"]) if (!modal.includes(token)) failures.push(`ModalShell sem proteção: ${token}`);
+// Fase de validação final (hotfix de persistência): 'event.key === Escape' e o
+// z-index literal '10000' migraram para fora de ModalShell.jsx num refactor
+// já em produção — Escape/foco-trap/scroll-lock foram extraídos para o hook
+// compartilhado useOverlayBehavior.js (reusado por ModalShell/BottomSheet/
+// DrawerShell, ver seu comentário de topo), e o z-index virou o token de
+// design system --z-modal (index.css), não mais um literal solto. A
+// funcionalidade nunca deixou de existir — o teste checava o arquivo/formato
+// errado. Ajustado para verificar as fontes atuais em vez de reintroduzir o
+// padrão antigo.
+for (const token of ['createPortal', '100dvh', 'overflow-y-auto']) if (!modal.includes(token)) failures.push(`ModalShell sem proteção: ${token}`);
+if (!modal.includes('useOverlayBehavior')) failures.push('ModalShell não usa useOverlayBehavior (Escape/foco-trap compartilhado)');
+const overlayBehavior = fs.readFileSync(path.join(root, 'src/components/design-system/useOverlayBehavior.js'), 'utf8');
+if (!overlayBehavior.includes("event.key === 'Escape'")) failures.push('useOverlayBehavior sem tratamento de Escape');
+const indexCss = fs.readFileSync(path.join(root, 'src/index.css'), 'utf8');
+if (!indexCss.includes('--z-modal') || !modal.includes('pl-modal-backdrop')) failures.push('ModalShell sem token de z-index (--z-modal)');
 const empty = fs.readFileSync(path.join(root, 'src/components/design-system/EmptyState.jsx'), 'utf8');
 if (!empty.includes('secondaryAction')) failures.push('EmptyState sem ação secundária');
 if (failures.length) {

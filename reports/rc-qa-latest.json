@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-31T13:24:53.086Z",
+  "generatedAt": "2026-08-31T14:26:27.378Z",
   "version": "0.9.0-rc.1.9",
   "profile": "core",
   "status": "BLOCKED",
-  "score": 83,
+  "score": 94,
   "summary": {
     "total": 36,
-    "passed": 30,
-    "failed": 6,
+    "passed": 34,
+    "failed": 2,
     "skipped": 0,
     "missing": 0
   },
@@ -16,7 +16,7 @@
     {
       "name": "validate:architecture",
       "status": "PASS",
-      "durationMs": 1446,
+      "durationMs": 1717,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -26,7 +26,7 @@
     {
       "name": "test:vite-config",
       "status": "PASS",
-      "durationMs": 956,
+      "durationMs": 1513,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -36,7 +36,7 @@
     {
       "name": "test:career-systems",
       "status": "PASS",
-      "durationMs": 13003,
+      "durationMs": 23763,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -46,17 +46,17 @@
     {
       "name": "test:players",
       "status": "PASS",
-      "durationMs": 1165,
+      "durationMs": 2208,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 255,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 599,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
       "stderr": ""
     },
     {
       "name": "test:player-builds",
       "status": "PASS",
-      "durationMs": 42088,
+      "durationMs": 93790,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -66,7 +66,7 @@
     {
       "name": "test:match-integrity",
       "status": "PASS",
-      "durationMs": 1180,
+      "durationMs": 5412,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -76,7 +76,7 @@
     {
       "name": "test:match-playback",
       "status": "PASS",
-      "durationMs": 1003,
+      "durationMs": 5144,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -86,7 +86,7 @@
     {
       "name": "test:live-coach",
       "status": "PASS",
-      "durationMs": 622,
+      "durationMs": 4625,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -96,17 +96,17 @@
     {
       "name": "test:rc-gameplay-balance",
       "status": "FAIL",
-      "durationMs": 27389,
+      "durationMs": 83833,
       "exitCode": 1,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:rc-gameplay-balance\n> node scripts/test-rc-gameplay-balance-v36.mjs\n\n{\n  \"success\": false,\n  \"configuration\": {\n    \"matchesPerScenario\": 30,\n    \"totalMatchSimulations\": 150,\n    \"careerRuns\": 10,\n    \"seasons\": 10,\n    \"totalCareerSimulations\": 100\n  },\n  \"matchReports\": [\n    {\n      \"id\": \"equal-teams\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 46.67,\n        \"B\": 53.33\n      },\n      \"serviceHoldRate\": 73.35,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 4.76\n    },\n    {\n      \"id\": \"moderate-skill-gap\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 60,\n        \"B\": 40\n      },\n      \"serviceHoldRate\": 71.56,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 7.46\n    },\n    {\n      \"id\": \"elite-skill-gap\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 80,\n        \"B\": 20\n      },\n      \"serviceHoldRate\": 70.57,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 12.9\n    },\n    {\n      \"id\": \"low-serve-not-double-faults\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 46.67,\n        \"B\": 53.33\n      },\n      \"serviceHoldRate\": 76.07,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 2.94\n    },\n    {\n      \"id\": \"aggressive-tactic\",\n      \"success\": false,\n      \"winRate\": {\n        \"A\": 50,\n        \"B\": 50\n      },\n      \"serviceHoldRate\": 75.47,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 3.08\n    }\n  ],\n  \"careerGates\": {\n    \"top500Reachable\": true,\n    \"top100InCareerWindow\": false,\n    \"overallControlled\": true,\n    \"injuriesControlled\": true,\n    \"partnerStability\": true,\n    \"bankruptcyControlled\": true\n  },\n  \"observations\": []\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:rc-gameplay-balance\n> node scripts/test-rc-gameplay-balance-v36.mjs\n\n{\n  \"success\": false,\n  \"configuration\": {\n    \"matchesPerScenario\": 30,\n    \"totalMatchSimulations\": 150,\n    \"careerRuns\": 10,\n    \"seasons\": 10,\n    \"totalCareerSimulations\": 100\n  },\n  \"matchReports\": [\n    {\n      \"id\": \"equal-teams\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 46.67,\n        \"B\": 53.33\n      },\n      \"serviceHoldRate\": 73.35,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 4.76\n    },\n    {\n      \"id\": \"moderate-skill-gap\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 60,\n        \"B\": 40\n      },\n      \"serviceHoldRate\": 71.56,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 7.46\n    },\n    {\n      \"id\": \"elite-skill-gap\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 80,\n        \"B\": 20\n      },\n      \"serviceHoldRate\": 70.57,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 12.9\n    },\n    {\n      \"id\": \"low-serve-not-double-faults\",\n      \"success\": true,\n      \"winRate\": {\n        \"A\": 46.67,\n        \"B\": 53.33\n      },\n      \"serviceHoldRate\": 76.07,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 2.94\n    },\n    {\n      \"id\": \"aggressive-tactic\",\n      \"success\": false,\n      \"winRate\": {\n        \"A\": 50,\n        \"B\": 50\n      },\n      \"serviceHoldRate\": 75.47,\n      \"doubleFaultRate\": 0,\n      \"bagelSetRate\": 3.08\n    }\n  ],\n  \"careerGates\": {\n    \"top500Reachable\": true,\n    \"top100InCareerWindow\": true,\n    \"overallControlled\": true,\n    \"injuriesControlled\": true,\n    \"partnerStability\": true,\n    \"bankruptcyControlled\": true\n  },\n  \"observations\": []\n}\n",
       "stderr": ""
     },
     {
       "name": "test:rc-match-experience",
       "status": "PASS",
-      "durationMs": 728,
+      "durationMs": 4873,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -116,7 +116,7 @@
     {
       "name": "test:training-v2",
       "status": "PASS",
-      "durationMs": 4500,
+      "durationMs": 16600,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -126,7 +126,7 @@
     {
       "name": "test:tournament-registration",
       "status": "PASS",
-      "durationMs": 4282,
+      "durationMs": 6029,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -136,7 +136,7 @@
     {
       "name": "test:partner-offers",
       "status": "PASS",
-      "durationMs": 617,
+      "durationMs": 848,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -146,7 +146,7 @@
     {
       "name": "test:career-pace",
       "status": "PASS",
-      "durationMs": 574,
+      "durationMs": 836,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -156,7 +156,7 @@
     {
       "name": "test:injuries",
       "status": "PASS",
-      "durationMs": 758,
+      "durationMs": 1017,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -166,7 +166,7 @@
     {
       "name": "test:calendar-advance",
       "status": "PASS",
-      "durationMs": 586,
+      "durationMs": 783,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -176,7 +176,7 @@
     {
       "name": "test:living-world",
       "status": "PASS",
-      "durationMs": 593,
+      "durationMs": 750,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -186,7 +186,7 @@
     {
       "name": "test:global-market",
       "status": "PASS",
-      "durationMs": 587,
+      "durationMs": 774,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -196,7 +196,7 @@
     {
       "name": "test:sports-economy",
       "status": "PASS",
-      "durationMs": 581,
+      "durationMs": 820,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -206,7 +206,7 @@
     {
       "name": "test:coaches-v28",
       "status": "PASS",
-      "durationMs": 581,
+      "durationMs": 867,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -216,7 +216,7 @@
     {
       "name": "test:partnerships-v29",
       "status": "PASS",
-      "durationMs": 570,
+      "durationMs": 1635,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -226,7 +226,7 @@
     {
       "name": "test:rc-world-ai",
       "status": "PASS",
-      "durationMs": 569,
+      "durationMs": 838,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -236,7 +236,7 @@
     {
       "name": "test:simulation-health-v35",
       "status": "PASS",
-      "durationMs": 565,
+      "durationMs": 787,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -246,7 +246,7 @@
     {
       "name": "test:world-auditor-v35",
       "status": "PASS",
-      "durationMs": 581,
+      "durationMs": 836,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -256,7 +256,7 @@
     {
       "name": "test:ui-quality",
       "status": "FAIL",
-      "durationMs": 1329,
+      "durationMs": 1324,
       "exitCode": 1,
       "signal": null,
       "launchError": null,
@@ -266,7 +266,7 @@
     {
       "name": "test:closed-beta-v35",
       "status": "PASS",
-      "durationMs": 587,
+      "durationMs": 1026,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -276,7 +276,7 @@
     {
       "name": "test:beta-safety-v35",
       "status": "PASS",
-      "durationMs": 578,
+      "durationMs": 912,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -286,7 +286,7 @@
     {
       "name": "test:beta-integration-v35",
       "status": "PASS",
-      "durationMs": 589,
+      "durationMs": 1060,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -295,48 +295,48 @@
     },
     {
       "name": "test:beta-rc",
-      "status": "FAIL",
-      "durationMs": 12666,
-      "exitCode": 1,
+      "status": "PASS",
+      "durationMs": 20544,
+      "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:beta-rc\n> node scripts/test-beta-rc-v36.mjs\n\nPASS test:beta\nPASS test:missions\nPASS test:tutorial-engine\nPASS test:calendar-advance\nPASS test:living-world\nPASS test:global-market\nPASS test:sports-economy\nPASS test:coaches-v28\nPASS test:partnerships-v29\nPASS test:staff-architecture\nFAIL test:performance-v31\n✓ cache de consultas configurado\n✓ pré-carregamento em lote disponível\n✗ rotas principais pré-carregadas em tempo ocioso\n✓ atletas usam busca adiada e memoização\n✓ atletas usam carregamento progressivo\n✓ ranking usa memoização pesada\n✓ ranking limita renderização inicial\n✓ mercado limita todas as listas extensas\n✓ itens fora da tela usam content-visibility\nPASS test:ranking-carryover-v32\nPASS test:career-ai-v34\nPASS test:match-integrity\nPASS test:match-experience-v34\nPASS test:simulation-health-v35\nPASS test:world-auditor-v35\nPASS test:beta-integration-v35\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:beta-rc\n> node scripts/test-beta-rc-v36.mjs\n\nPASS test:beta\nPASS test:missions\nPASS test:tutorial-engine\nPASS test:calendar-advance\nPASS test:living-world\nPASS test:global-market\nPASS test:sports-economy\nPASS test:coaches-v28\nPASS test:partnerships-v29\nPASS test:staff-architecture\nPASS test:performance-v31\nPASS test:ranking-carryover-v32\nPASS test:career-ai-v34\nPASS test:match-integrity\nPASS test:match-experience-v34\nPASS test:simulation-health-v35\nPASS test:world-auditor-v35\nPASS test:beta-integration-v35\nBetaAuditV36_1: PASS (18/18)\n",
       "stderr": ""
     },
     {
       "name": "test:ux-home-v36",
-      "status": "FAIL",
-      "durationMs": 605,
-      "exitCode": 1,
+      "status": "PASS",
+      "durationMs": 1082,
+      "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:ux-home-v36\n> node scripts/test-ux-home-v36-3-1.mjs\n\n✗ Painel Minha Jornada\n✗ Feed da carreira\n✗ Objetivo dinâmico\n✗ Atalhos diretos\n✗ Header inteligente\n✗ Contextos do header\n✓ Versão da entrega\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:ux-home-v36\n> node scripts/test-ux-home-v36-3-1.mjs\n\n✓ Painel \"Sua jornada\" (linha do tempo compacta da carreira)\n✓ Objetivo dinâmico usa o catálogo real de conquistas (não uma escada duplicada)\n✓ Atalhos diretos a partir da Home (painel de ações rápidas com destinos reais)\n✓ Header inteligente reage a avanço de dia (padel:career-advanced)\n✓ Contextos do header (Recuperação / Fadiga alta / Semana de desenvolvimento)\n✓ Versão da entrega\nUXHomeV36_3_1Test: PASS (6/6)\n",
       "stderr": ""
     },
     {
       "name": "test:ux-interfaces-v36",
-      "status": "FAIL",
-      "durationMs": 713,
-      "exitCode": 1,
+      "status": "PASS",
+      "durationMs": 1012,
+      "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:ux-interfaces-v36\n> node scripts/test-ux-interfaces-v36-3-2.mjs\n\n",
-      "stderr": "UXInterfacesV36_3_2Test: FAIL\n- ModalShell sem proteção: 10000\n- ModalShell sem proteção: event.key === 'Escape'\n"
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:ux-interfaces-v36\n> node scripts/test-ux-interfaces-v36-3-2.mjs\n\nUXInterfacesV36_3_2Test: PASS (5 páginas migradas + 3 componentes base)\n",
+      "stderr": ""
     },
     {
       "name": "test:polish-ui-v36",
-      "status": "FAIL",
-      "durationMs": 581,
-      "exitCode": 1,
+      "status": "PASS",
+      "durationMs": 874,
+      "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:polish-ui-v36\n> node scripts/test-polish-ui-v36-4-1.mjs\n\n",
-      "stderr": "file:///C:/Padel-Legacy-New/scripts/test-polish-ui-v36-4-1.mjs:9\r\n  if (!condition) throw new Error(`FAIL: ${name}`);\r\n                        ^\r\n\r\nError: FAIL: Modal restaura foco\r\n    at expect (file:///C:/Padel-Legacy-New/scripts/test-polish-ui-v36-4-1.mjs:9:25)\r\n    at file:///C:/Padel-Legacy-New/scripts/test-polish-ui-v36-4-1.mjs:19:1\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:439:25)\r\n    at async node:internal/modules/esm/loader:643:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5)\r\n\r\nNode.js v24.18.0\r\n"
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:polish-ui-v36\n> node scripts/test-polish-ui-v36-4-1.mjs\n\nPolishUIV36_4_1Test: PASS (12/12)\n",
+      "stderr": ""
     },
     {
       "name": "test:performance-responsive-v36",
       "status": "PASS",
-      "durationMs": 567,
+      "durationMs": 788,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -346,7 +346,7 @@
     {
       "name": "test:beta-analytics",
       "status": "PASS",
-      "durationMs": 573,
+      "durationMs": 1380,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -356,7 +356,7 @@
     {
       "name": "test:beta-analytics-pro",
       "status": "PASS",
-      "durationMs": 588,
+      "durationMs": 980,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -366,7 +366,7 @@
     {
       "name": "test:rc-beta-intelligence",
       "status": "PASS",
-      "durationMs": 579,
+      "durationMs": 842,
       "exitCode": 0,
       "signal": null,
       "launchError": null,

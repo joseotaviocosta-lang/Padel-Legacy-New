@@ -20,7 +20,12 @@ const css = read('src/index.css');
 
 check('cache de consultas configurado', queryClient.includes('staleTime') && queryClient.includes('gcTime'));
 check('pré-carregamento em lote disponível', routeModules.includes('preloadRoutes'));
-check('rotas principais pré-carregadas em tempo ocioso', layout.includes('requestIdleCallback') && layout.includes("'/game/calendar'"));
+// Fase de validação final (hotfix de persistência): o preload continua
+// usando requestIdleCallback (com fallback setTimeout e cancelamento no
+// cleanup) — o que mudou foi a rota deixar de ser um literal solto e passar
+// a vir de APP_ROUTES.CALENDAR (navigation/routes.js), evitando "magic
+// strings" duplicadas. Checa a constante em vez do literal antigo.
+check('rotas principais pré-carregadas em tempo ocioso', layout.includes('requestIdleCallback') && layout.includes('APP_ROUTES.CALENDAR'));
 check('atletas usam busca adiada e memoização', athletes.includes('useDeferredValue') && athletes.includes('useMemo'));
 check('atletas usam carregamento progressivo', athletes.includes('visibleCount') && athletes.includes('PAGE_SIZE'));
 check('ranking usa memoização pesada', ranking.includes('useMemo') && ranking.includes('circuitAthletes'));

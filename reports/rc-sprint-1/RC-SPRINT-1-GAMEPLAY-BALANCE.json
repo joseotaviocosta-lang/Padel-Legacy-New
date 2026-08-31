@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T13:24:16.355Z",
+  "generatedAt": "2026-08-31T14:25:16.732Z",
   "version": "RC Sprint 1",
   "configuration": {
     "matchesPerScenario": 30,
@@ -623,7 +623,7 @@
     ],
     "gates": {
       "top500Reachable": true,
-      "top100InCareerWindow": false,
+      "top100InCareerWindow": true,
       "overallControlled": true,
       "injuriesControlled": true,
       "partnerStability": true,
