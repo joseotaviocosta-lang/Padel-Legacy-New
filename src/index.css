@@ -1015,14 +1015,21 @@
   }
 
   .pl-page-hero--dense .pl-game-hud {
+    /* Correção UI — cabeçalho estourando (Fase 1): esta regra forçava
+       flex-wrap: nowrap + overflow-x: auto em QUALQUER largura >= 768px no
+       header "dense" (Dupla e relações, Ranking, Torneios, Atleta, Comissão
+       técnica). Com 4-5 chips (ex.: "Dupla ativa · Facundo Benítez", "70/100
+       entrosamento", "65/100 confiança", "0 ofertas"), o total facilmente
+       excede a largura da coluna do grid antes de chegar em telas realmente
+       largas — como cada chip usa white-space:nowrap (GameHud.jsx), o resultado
+       era sobreposição/vazamento em vez de uma rolagem limpa. `wrap` deixa os
+       chips quebrarem para a linha de baixo, como o restante do design system
+       já faz fora do modo dense.
+    */
     margin-top: 0;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-end;
-    overflow-x: auto;
-    scrollbar-width: none;
   }
-
-  .pl-page-hero--dense .pl-game-hud::-webkit-scrollbar { display: none; }
 }
 
 @media (max-width: 767px) {

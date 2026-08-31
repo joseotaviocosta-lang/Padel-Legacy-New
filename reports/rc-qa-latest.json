@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-31T16:01:45.938Z",
+  "generatedAt": "2026-08-31T17:49:39.296Z",
   "version": "0.9.0-rc.1.9",
   "profile": "core",
   "status": "BLOCKED",
@@ -16,7 +16,7 @@
     {
       "name": "validate:architecture",
       "status": "PASS",
-      "durationMs": 944,
+      "durationMs": 934,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -26,7 +26,7 @@
     {
       "name": "test:vite-config",
       "status": "PASS",
-      "durationMs": 814,
+      "durationMs": 779,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -36,7 +36,7 @@
     {
       "name": "test:career-systems",
       "status": "PASS",
-      "durationMs": 12984,
+      "durationMs": 10883,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -46,17 +46,17 @@
     {
       "name": "test:players",
       "status": "PASS",
-      "durationMs": 1811,
+      "durationMs": 1318,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 404,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 321,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
       "stderr": ""
     },
     {
       "name": "test:player-builds",
       "status": "PASS",
-      "durationMs": 36996,
+      "durationMs": 42217,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -66,7 +66,7 @@
     {
       "name": "test:match-integrity",
       "status": "PASS",
-      "durationMs": 784,
+      "durationMs": 1313,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -76,7 +76,7 @@
     {
       "name": "test:match-playback",
       "status": "PASS",
-      "durationMs": 780,
+      "durationMs": 1681,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -86,7 +86,7 @@
     {
       "name": "test:live-coach",
       "status": "PASS",
-      "durationMs": 614,
+      "durationMs": 1278,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -96,7 +96,7 @@
     {
       "name": "test:rc-gameplay-balance",
       "status": "FAIL",
-      "durationMs": 22000,
+      "durationMs": 32767,
       "exitCode": 1,
       "signal": null,
       "launchError": null,
@@ -106,7 +106,7 @@
     {
       "name": "test:rc-match-experience",
       "status": "PASS",
-      "durationMs": 691,
+      "durationMs": 788,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -116,7 +116,7 @@
     {
       "name": "test:training-v2",
       "status": "PASS",
-      "durationMs": 3930,
+      "durationMs": 4365,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -126,7 +126,7 @@
     {
       "name": "test:tournament-registration",
       "status": "PASS",
-      "durationMs": 3826,
+      "durationMs": 4151,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -136,7 +136,7 @@
     {
       "name": "test:partner-offers",
       "status": "PASS",
-      "durationMs": 616,
+      "durationMs": 985,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -146,7 +146,7 @@
     {
       "name": "test:career-pace",
       "status": "PASS",
-      "durationMs": 587,
+      "durationMs": 651,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -156,7 +156,7 @@
     {
       "name": "test:injuries",
       "status": "PASS",
-      "durationMs": 740,
+      "durationMs": 801,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -166,7 +166,7 @@
     {
       "name": "test:calendar-advance",
       "status": "PASS",
-      "durationMs": 585,
+      "durationMs": 620,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -176,7 +176,7 @@
     {
       "name": "test:living-world",
       "status": "PASS",
-      "durationMs": 572,
+      "durationMs": 639,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -186,7 +186,7 @@
     {
       "name": "test:global-market",
       "status": "PASS",
-      "durationMs": 570,
+      "durationMs": 627,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -196,7 +196,7 @@
     {
       "name": "test:sports-economy",
       "status": "PASS",
-      "durationMs": 584,
+      "durationMs": 635,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -206,7 +206,7 @@
     {
       "name": "test:coaches-v28",
       "status": "PASS",
-      "durationMs": 568,
+      "durationMs": 648,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -216,7 +216,7 @@
     {
       "name": "test:partnerships-v29",
       "status": "PASS",
-      "durationMs": 592,
+      "durationMs": 628,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -226,7 +226,7 @@
     {
       "name": "test:rc-world-ai",
       "status": "PASS",
-      "durationMs": 592,
+      "durationMs": 628,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -236,7 +236,7 @@
     {
       "name": "test:simulation-health-v35",
       "status": "PASS",
-      "durationMs": 580,
+      "durationMs": 631,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -246,7 +246,7 @@
     {
       "name": "test:world-auditor-v35",
       "status": "PASS",
-      "durationMs": 582,
+      "durationMs": 621,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -256,7 +256,7 @@
     {
       "name": "test:ui-quality",
       "status": "FAIL",
-      "durationMs": 758,
+      "durationMs": 847,
       "exitCode": 1,
       "signal": null,
       "launchError": null,
@@ -266,7 +266,7 @@
     {
       "name": "test:closed-beta-v35",
       "status": "PASS",
-      "durationMs": 587,
+      "durationMs": 634,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -276,7 +276,7 @@
     {
       "name": "test:beta-safety-v35",
       "status": "PASS",
-      "durationMs": 602,
+      "durationMs": 625,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -286,7 +286,7 @@
     {
       "name": "test:beta-integration-v35",
       "status": "PASS",
-      "durationMs": 569,
+      "durationMs": 623,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -296,7 +296,7 @@
     {
       "name": "test:beta-rc",
       "status": "PASS",
-      "durationMs": 12699,
+      "durationMs": 14689,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -306,7 +306,7 @@
     {
       "name": "test:ux-home-v36",
       "status": "PASS",
-      "durationMs": 595,
+      "durationMs": 799,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -316,7 +316,7 @@
     {
       "name": "test:ux-interfaces-v36",
       "status": "PASS",
-      "durationMs": 605,
+      "durationMs": 714,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -326,7 +326,7 @@
     {
       "name": "test:polish-ui-v36",
       "status": "PASS",
-      "durationMs": 625,
+      "durationMs": 647,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -336,7 +336,7 @@
     {
       "name": "test:performance-responsive-v36",
       "status": "PASS",
-      "durationMs": 591,
+      "durationMs": 635,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -346,7 +346,7 @@
     {
       "name": "test:beta-analytics",
       "status": "PASS",
-      "durationMs": 579,
+      "durationMs": 664,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -356,7 +356,7 @@
     {
       "name": "test:beta-analytics-pro",
       "status": "PASS",
-      "durationMs": 570,
+      "durationMs": 594,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -366,7 +366,7 @@
     {
       "name": "test:rc-beta-intelligence",
       "status": "PASS",
-      "durationMs": 572,
+      "durationMs": 602,
       "exitCode": 0,
       "signal": null,
       "launchError": null,

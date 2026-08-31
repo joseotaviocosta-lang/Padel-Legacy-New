@@ -52,6 +52,7 @@ export default function Ranking() {
   const [clubs, setClubs] = useState([]);
   const [teams, setTeams] = useState([]);
   const [rankingSnapshot, setRankingSnapshot] = useState(null);
+  const [seasonYear, setSeasonYear] = useState(null);
   const [loading, setLoading] = useState(true);
   const [visibleCount, setVisibleCount] = useState(LIST_PAGE_SIZE);
   const [selectedAthlete, setSelectedAthlete] = useState(null);
@@ -73,6 +74,8 @@ export default function Ranking() {
         setClubs(c || []);
         setTeams(t || []);
         setRankingSnapshot(snapshot);
+        const year = profile?.career_date ? Number(String(profile.career_date).slice(0, 4)) : null;
+        setSeasonYear(Number.isFinite(year) ? year : null);
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
     })();
@@ -80,7 +83,7 @@ export default function Ranking() {
 
   useEffect(() => { setVisibleCount(LIST_PAGE_SIZE); }, [tab]);
 
-  const { countries, circuitAthletes, raceAthletes } = useMemo(() => {
+  const { countries, circuitAthletes, raceAthletes, raceHasPoints } = useMemo(() => {
     const entries = rankingSnapshot?.entries || [];
     const circuitAthletes = entries.map(toCircuitDisplay);
 
@@ -90,6 +93,11 @@ export default function Ranking() {
     const raceAthletes = [...entries]
       .sort((a, b) => b.racePoints - a.racePoints || b.points - a.points || String(a.id).localeCompare(String(b.id)))
       .map(toCircuitDisplay);
+    // Correção UI/cronologia — Fase 3: no início da carreira/temporada
+    // ninguém pontuou no Race ainda (só o Circuito guarda histórico). Sem
+    // isso, o pódio mostrava 1º/2º/3º fantasmas com pontos do Circuito
+    // anterior copiados por engano.
+    const raceHasPoints = entries.some((entry) => Number(entry.racePoints) > 0);
 
     const countryMap = {};
     for (const entry of entries) {
@@ -103,7 +111,7 @@ export default function Ranking() {
       .map(country => ({ ...country, avgOvr: Math.round(country.totalOvr / Math.max(1, country.players)) }))
       .sort((a, b) => b.totalXp - a.totalXp || b.players - a.players || a.name.localeCompare(b.name, 'pt-BR'));
 
-    return { countries: countryRanking, circuitAthletes, raceAthletes };
+    return { countries: countryRanking, circuitAthletes, raceAthletes, raceHasPoints };
   }, [rankingSnapshot]);
 
   useEffect(() => {
@@ -121,6 +129,19 @@ export default function Ranking() {
 
   function CircuitList({ items, race = false }) {
     if (!items.length) return <EmptyState compact icon={Trophy} title="Circuito vazio" description="O circuito será preenchido após o próximo avanço semanal." />;
+    // Correção UI/cronologia — Fase 3: enquanto ninguém pontuou na Race
+    // (início de carreira/temporada), mostra um estado vazio explícito em
+    // vez de um pódio com posições e pontos fantasmas.
+    if (race && !raceHasPoints) {
+      return (
+        <EmptyState
+          compact
+          icon={CalendarDays}
+          title={`A temporada ${seasonYear || 'atual'} ainda não começou`}
+          description="Nenhum ponto foi distribuído na Race ainda — dispute torneios para começar a pontuar."
+        />
+      );
+    }
     return (
       <>
         <Podium
@@ -196,7 +217,16 @@ export default function Ranking() {
         hudLabel="Líderes do ranking"
         hudItems={[
           { label: 'líder', value: `${circuitAthletes[0]?.name || '—'} · ${Number(circuitAthletes[0]?.world_ranking_points ?? circuitAthletes[0]?.ranking_points) || 0}pts`, icon: Crown, tone: 'premium' },
-          { label: 'race', value: `${raceAthletes[0]?.name || '—'} · ${Number(raceAthletes[0]?.race_points) || 0}pts`, icon: Activity, tone: 'info' },
+          {
+            // Correção UI/cronologia — Fase 3: sem pontos de Race distribuídos
+            // ainda, o chip não pode citar um "líder" fantasma com 0pts.
+            label: 'race',
+            value: raceHasPoints
+              ? `${raceAthletes[0]?.name || '—'} · ${Number(raceAthletes[0]?.race_points) || 0}pts`
+              : 'Temporada não iniciada',
+            icon: Activity,
+            tone: 'info',
+          },
           { label: 'países', value: countries.length, icon: Medal, tone: 'success' },
           { label: 'clubes', value: clubs.length, icon: Users },
         ]}

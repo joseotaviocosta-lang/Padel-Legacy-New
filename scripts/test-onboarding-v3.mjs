@@ -104,16 +104,23 @@ try {
   gate('Nenhuma etapa referencia o Assistente de carreira removido', !TUTORIAL_STEPS.some((step) => /assistente/i.test(step.title) || /assistente de carreira/i.test(step.explanation || '')));
 
   // ── Nova sequência principal bate com a ordem pedida (Fases A-F) ────────
-  gate('Sequência: criar atleta → formar dupla → treinador → treino → calendário → torneio → autonomia', TUTORIAL_STEPS.map((s) => s.id).join(',') === [
+  // Correção UI/cronologia (v13): Competições (tournament-registered,
+  // first-match) moveu para o FIM da trilha — o 1º torneio real só abre
+  // inscrição semanas após o início da carreira (calendário rebalanceado da
+  // Fase 15.7), e o jogador travava esperando no meio do tutorial.
+  // calendar-known ("avance 1 dia", sempre cumprível) saiu de Competições e
+  // ficou junto de Desenvolvimento do atleta. Nenhum id/objectiveType/
+  // mecanismo mudou, só a posição.
+  gate('Sequência: criar atleta → formar dupla → treinador → treino → calendário → (dia 1 completo) → torneio → autonomia', TUTORIAL_STEPS.map((s) => s.id).join(',') === [
     'career-created', 'athlete-named', 'side-selected', 'difficulty-selected', 'style-selected', 'appearance-known', 'profile-reviewed',
     'offers-reviewed', 'partner-selected',
     'coaches-known',
     'first-training',
     'calendar-known',
-    'tournament-registered', 'first-match',
     'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
     'shop-known', 'equipment-known', 'athletes-known', 'ranking-known',
     'world-known', 'news-known', 'press-known', 'notifications-known',
+    'tournament-registered', 'first-match',
     'autonomy',
   ].join(','));
 
@@ -186,7 +193,20 @@ try {
   gate('Treino concluído (evento de domínio) → avança para Fase E (calendário)', getCurrentTutorialStep(state)?.id === 'calendar-known');
 
   state = await confirmStep('calendar-known');
-  gate('Fase E concluída → Fase F (primeiro torneio)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
+  // Correção UI/cronologia (v13): a expansão guiada (comissão técnica,
+  // economia, circuito) agora vem ANTES de Competições — todos cumpríveis
+  // no dia 1, diferente do torneio real que só abre inscrição semanas
+  // depois (calendário rebalanceado da Fase 15.7).
+  gate('Fase E (calendário) concluída → expansão guiada (grupos cumpríveis no dia 1)', getCurrentTutorialStep(state)?.id === 'staff-known');
+
+  for (const stepId of [
+    'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
+    'shop-known', 'equipment-known', 'athletes-known', 'ranking-known',
+    'world-known', 'news-known', 'press-known', 'notifications-known',
+  ]) {
+    state = await confirmStep(stepId);
+  }
+  gate('Expansão guiada concluída → Fase F (primeiro torneio, agora no final da trilha)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
 
   const registrations = [{ id: 'reg-1', profile_id: profile.id, tournament_id: 't1', status: 'confirmed' }];
   state = (await reconcile({ registrations, matches: [], trainings })).state;
@@ -200,16 +220,7 @@ try {
   const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Partida OFICIAL concluída (evento de domínio) → avança para a expansão guiada', getCurrentTutorialStep(state)?.id === 'staff-known');
-
-  for (const stepId of [
-    'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
-    'shop-known', 'equipment-known', 'athletes-known', 'ranking-known',
-    'world-known', 'news-known', 'press-known', 'notifications-known',
-  ]) {
-    state = await confirmStep(stepId);
-  }
-  gate('Expansão guiada concluída → avança para autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Partida OFICIAL concluída (evento de domínio) → avança para autonomy (etapa final, Competições era o último grupo)', getCurrentTutorialStep(state)?.id === 'autonomy');
 
   state = await confirmStep('autonomy');
   gate('Onboarding principal concluído de ponta a ponta (status completed)', state.status === 'completed');

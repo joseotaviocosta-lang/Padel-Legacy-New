@@ -62,7 +62,12 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
       potential: Math.min(99, overall + 2 + (seed % 10)),
       world_ranking_points: points,
       ranking_points: points,
-      race_points: Math.round(points * (0.15 + ((seed % 70) / 100))),
+      // Correção UI/cronologia — Fase 3: race_points é o placar da temporada
+      // (Race) EM ANDAMENTO, nunca deve nascer com valor > 0 — só cresce
+      // conforme torneios reais são disputados na carreira do jogador.
+      // ranking_points/world_ranking_points seguem representando o Circuito
+      // (histórico acumulado), que continua populado normalmente.
+      race_points: 0,
       world_ranking: absoluteRank,
       ranking_position: absoluteRank,
       tournaments_played: Math.max(1, 6 + (seed % 28)),
@@ -96,7 +101,8 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
       player2_name: b.name || b.sport_name,
       player2_country: b.country || b.nationality,
       ranking_points: points,
-      race_points: Math.round(points * 0.4),
+      // Ver comentário equivalente acima (Fase 3): Race começa zerada.
+      race_points: 0,
       matches_played: 8 + (hash(key) % 80),
       wins: 4 + (hash(`${key}:wins`) % 45),
       losses: 4 + (hash(`${key}:losses`) % 38),

@@ -58,7 +58,17 @@ import { APP_ROUTES } from '../navigation/routes.js';
 // completedStepIds não inclui os 12 ids novos, então
 // reconcileTutorialProgress recalcula status='in_progress' ao vivo, sem
 // revogar nenhuma recompensa nem apagar o completedAt histórico.
-export const TUTORIAL_VERSION = 12;
+// v13 (Correção UI/cronologia): reordena a trilha para nunca deixar o
+// jogador esperando o calendário no meio do onboarding. `calendar-known`
+// (só "avance 1 dia") saiu de "Competições" para "Desenvolvimento do
+// atleta" (sempre cumprível). `tournament-registered`/`first-match`
+// (Competições de verdade) foram movidas para o fim da trilha, logo antes
+// de `autonomy` — depois de todos os grupos cumpríveis no dia 1. Nenhum id,
+// objectiveType ou mecanismo de conclusão mudou, só a ORDEM — mesmo
+// raciocínio de v9: reconcileTutorialProgress escaneia por conteúdo da
+// lista atual, nunca por posição salva, então uma carreira em andamento
+// continua resolvendo corretamente.
+export const TUTORIAL_VERSION = 13;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,
@@ -176,29 +186,15 @@ export const TUTORIAL_STEPS = [
     kind: 'EVENT',
   }),
 
-  // ── Fase E — Calendário ──────────────────────────────────────────────
-  step('calendar-known', 'visit_calendar', 'Planeje pelo calendário e avance um dia', '/game/calendar', 'Competições', 'confirm_understanding', {
+  // ── Fase E — Calendário (Correção UI/cronologia: mudou de chapter
+  // "Competições" para "Desenvolvimento do atleta" — "avance 1 dia" nunca
+  // dependeu de torneio nenhum, sempre foi cumprível no dia 1. Só o
+  // registro/disputa de torneio de verdade precisa esperar o calendário
+  // chegar numa inscrição aberta — por isso ficou sozinho, mais adiante). ──
+  step('calendar-known', 'visit_calendar', 'Planeje pelo calendário e avance um dia', '/game/calendar', 'Desenvolvimento do atleta', 'confirm_understanding', {
     explanation: 'Confira treinos, recuperações, inscrições, partidas e eventos futuros, e avance um dia para ver o ciclo em ação.',
     whyItMatters: 'O calendário evita conflitos e ajuda a chegar com energia aos compromissos importantes.',
     kind: 'VISIT',
-  }),
-
-  // ── Fase F — Primeiro torneio (pode acontecer dias depois; nunca
-  // trava o resto do jogo — o Guia flutuante mostra a etapa pendente sem
-  // bloquear nenhuma outra tela enquanto o torneio não chega) ──────────
-  step('tournament-registered', 'join_tournament', 'Inscreva-se em um torneio', '/tournaments', 'Competições', 'domain_event', {
-    requirements: ['has-partner'],
-    explanation: 'Escolha um evento com inscrições abertas e confirme a vaga da dupla.',
-    whyItMatters: 'Somente inscrições confirmadas permitem jogar; torneios com datas sobrepostas geram conflito.',
-    actionLabel: 'Escolher torneio',
-    reward: { xp: 100, coins: 150 },
-    kind: 'EVENT',
-  }),
-  step('first-match', 'play_matches', 'Jogue sua primeira partida de torneio', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
-    explanation: 'No dia do torneio, jogue a partida — o técnico ao vivo orienta táticas durante o jogo. Depois do resultado, responda a entrevista pós-jogo se ela for gerada, e siga para a próxima rodada.',
-    whyItMatters: 'O resultado mostra como treino, parceiro e tática funcionaram juntos.',
-    reward: { xp: 100, coins: 150 },
-    kind: 'EVENT',
   }),
 
   // ── Fase G — Construa sua equipe (Tutorial 4.1, Parte D: comissão
@@ -279,6 +275,33 @@ export const TUTORIAL_STEPS = [
     explanation: 'O sino é a central operacional da carreira: decisões importantes, propostas, partidas e relatórios aparecem ali.',
     whyItMatters: 'Vale conferir o sino regularmente — sem precisar abrir cada notificação agora.',
     kind: 'VISIT',
+  }),
+
+  // ── Fase F — Competições (Correção UI/cronologia): movida para o FINAL
+  // da trilha, depois de todos os grupos cumpríveis no dia 1. Antes ficava
+  // no passo 13/27 (logo após o calendário), mas o 1º torneio real da
+  // temporada só abre inscrição ~5 dias e só ocorre ~35 dias após o início
+  // da carreira (Fase 15.7, calendário rebalanceado) — o jogador travava no
+  // meio do tutorial esperando o tempo passar. onboardingNextAction.js
+  // ainda evita sugerir esta etapa como CTA da Home enquanto nenhum
+  // torneio tiver inscrição aberta; o Guia flutuante mostra a etapa
+  // pendente sem bloquear nenhuma outra tela, como já documentado abaixo. ──
+  step('tournament-registered', 'join_tournament', 'Inscreva-se em um torneio', '/tournaments', 'Competições', 'domain_event', {
+    requirements: ['has-partner'],
+    explanation: 'Escolha um evento com inscrições abertas e confirme a vaga da dupla.',
+    whyItMatters: 'Somente inscrições confirmadas permitem jogar; torneios com datas sobrepostas geram conflito.',
+    actionLabel: 'Escolher torneio',
+    reward: { xp: 100, coins: 150 },
+    kind: 'EVENT',
+  }),
+  // Primeiro torneio (pode acontecer dias depois; nunca trava o resto do
+  // jogo — o Guia flutuante mostra a etapa pendente sem bloquear nenhuma
+  // outra tela enquanto o torneio não chega).
+  step('first-match', 'play_matches', 'Jogue sua primeira partida de torneio', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
+    explanation: 'No dia do torneio, jogue a partida — o técnico ao vivo orienta táticas durante o jogo. Depois do resultado, responda a entrevista pós-jogo se ela for gerada, e siga para a próxima rodada.',
+    whyItMatters: 'O resultado mostra como treino, parceiro e tática funcionaram juntos.',
+    reward: { xp: 100, coins: 150 },
+    kind: 'EVENT',
   }),
 
   step('autonomy', 'finish_tutorial', 'Comece a carreira livre', '/game', 'Gestão, história e legado', 'confirm_understanding', {

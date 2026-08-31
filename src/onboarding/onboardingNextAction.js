@@ -35,11 +35,21 @@ const STEP_ICON_BY_ID = {
  * `offers-reviewed` (que exige uma troca real de `location.pathname` para
  * `/partners`), travando o tutorial nesse ponto para sempre.
  */
-export function getOnboardingNextAction(profile) {
+// Correção UI/cronologia: "Competições" (tutorialSteps.js) foi movida para
+// o fim da trilha, mas o 1º torneio real ainda pode levar semanas para
+// abrir inscrição (Fase 15.7, calendário rebalanceado). Enquanto nenhum
+// torneio tiver inscrição aberta, esta etapa nunca deve virar o CTA
+// principal da Home — a Home volta a decidir sozinha (retorna `null`,
+// mesmo contrato já documentado abaixo) em vez de sugerir uma ação
+// impossível de cumprir hoje. `hasOpenTournamentRegistration` default=true
+// preserva o comportamento anterior para qualquer chamador que ainda não
+// passe o novo parâmetro.
+export function getOnboardingNextAction(profile, { hasOpenTournamentRegistration = true } = {}) {
   const onboarding = profile?.tutorial_onboarding;
   if (!onboarding || onboarding.status !== 'in_progress') return null;
   const step = getCurrentTutorialStep(onboarding);
   if (!step || step.kind === 'FINISH') return null;
+  if (step.chapter === 'Competições' && !hasOpenTournamentRegistration) return null;
   return {
     stepId: step.id,
     icon: STEP_ICON_BY_ID[step.id] || GraduationCap,

@@ -151,6 +151,21 @@ try {
   state = (await reconcile({ registrations: [], matches: [], trainings })).state;
   gate('Primeiro treino (evento real) avança para calendar-known', getCurrentTutorialStep(state)?.id === 'calendar-known');
   state = await confirmStep('calendar-known');
+
+  // Correção UI/cronologia (v13): "Competições" (tournament-registered,
+  // first-match) foi movida para o FIM da trilha — depois de todos os
+  // grupos cumpríveis no dia 1 (comissão técnica, economia, circuito) — em
+  // vez de logo após o calendário. As etapas VISIT intermediárias usam o
+  // mesmo mecanismo já coberto em detalhe por test-tutorial-expanded-flow.mjs;
+  // aqui só confirma que o pipeline chega ao torneio sem travar, agora na
+  // nova posição.
+  const visitStepsBeforeCompetitions = ['staff-known', 'economy-known', 'sponsors-known', 'opportunities-known', 'shop-known', 'equipment-known', 'athletes-known', 'ranking-known', 'world-known', 'news-known', 'press-known', 'notifications-known'];
+  for (const stepId of visitStepsBeforeCompetitions) {
+    gate(`Etapa "${stepId}" é a atual antes de confirmar (nova ordem v13)`, getCurrentTutorialStep(state)?.id === stepId);
+    state = await confirmStep(stepId);
+  }
+  gate('Fim dos grupos cumpríveis no dia 1 avança para tournament-registered (Competições, agora no final)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
+
   const registrations = [{ id: 'reg-1', profile_id: profile.id, tournament_id: 't1', status: 'confirmed' }];
   state = (await reconcile({ registrations, matches: [], trainings })).state;
   gate('Inscrição em torneio (evento real) avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
@@ -165,14 +180,11 @@ try {
   const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
-  // Parte A/E): a primeira partida oficial encerra só a Fase 1 agora — 12
-  // novas etapas de descoberta vêm antes de autonomy. Cobertura completa
-  // até autonomy/carreira livre é responsabilidade de
-  // test-tutorial-expanded-flow.mjs; aqui só fecha o ciclo desta suíte
-  // (destinos reais + pipeline real dos handlers ACTION).
-  gate('Primeira partida OFICIAL (evento real) avança para staff-known (fim da Fase 1)', getCurrentTutorialStep(state)?.id === 'staff-known');
-  gate('Sequência via pipeline real chega ao fim da Fase 1 sem travar (ainda in_progress, tutorial continua)', state.status === 'in_progress');
+  // Correção UI/cronologia (v13): Competições agora é o ÚLTIMO grupo real
+  // antes de autonomy (FINISH) — a primeira partida oficial fecha o
+  // tutorial principal inteiro, não só uma fase intermediária.
+  gate('Primeira partida OFICIAL (evento real) avança para autonomy (fim da trilha, Competições agora é o último grupo)', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Sequência via pipeline real chega ao fim sem travar (ainda in_progress — autonomy exige o botão dedicado, nunca auto-completa por visita)', state.status === 'in_progress');
 
   console.log(`\n${gates} gates executados, todos PASS — Home CTA (destinos reais + pipeline real + notificação de eventos).`);
 } finally {

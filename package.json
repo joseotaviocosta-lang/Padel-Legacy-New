@@ -276,6 +276,9 @@
     "test:phase15-7-first-tournament-parity": "node scripts/test-phase15-7-first-tournament-parity.mjs",
     "test:training-center-shortcut-ux": "node scripts/test-training-center-shortcut-ux.mjs",
     "test:partner-offer-notifications": "node scripts/test-partner-offer-notifications.mjs",
+    "test:onboarding-tournament-gate": "node scripts/test-onboarding-tournament-gate.mjs",
+    "test:ranking-race-season": "node scripts/test-ranking-race-season.mjs",
+    "test:match-ui-unification-phase4": "node scripts/test-match-ui-unification-phase4.mjs",
     "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs"
   },
   "dependencies": {

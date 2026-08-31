@@ -28,6 +28,7 @@ import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getOnboardingNextAction } from '@/onboarding/onboardingNextAction.js';
+import { isRegistrationOpen } from '@/lib/calendarSystem.js';
 import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
@@ -327,7 +328,18 @@ export default function CareerHub() {
   // ÚNICA fonte do CTA principal — `getCareerNextAction` (o motor canônico
   // compartilhado) só volta a decidir depois
   // que o onboarding termina (ou nunca começou/foi pulado).
-  const onboardingNextAction = useMemo(() => getOnboardingNextAction(profile), [profile]);
+  // Correção UI/cronologia: "Competições" só deve virar CTA da Home quando
+  // existir um torneio de verdade com inscrição aberta hoje — reaproveita
+  // upcomingTournaments (já carregado acima) + isRegistrationOpen (mesma
+  // função canônica usada pela tela de Torneios), nenhum cálculo novo.
+  const hasOpenTournamentRegistration = useMemo(
+    () => upcomingTournaments.some((tournament) => isRegistrationOpen(tournament, profile?.career_date)),
+    [upcomingTournaments, profile?.career_date],
+  );
+  const onboardingNextAction = useMemo(
+    () => getOnboardingNextAction(profile, { hasOpenTournamentRegistration }),
+    [profile, hasOpenTournamentRegistration],
+  );
   const fallbackHeroStep = useMemo(() => {
     const run = activeTournamentEvent?.metadata?.tournament_run;
     const activeMatch = run ? getCurrentTournamentMatch(run) : null;

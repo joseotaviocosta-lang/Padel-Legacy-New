@@ -12,7 +12,7 @@ import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
-import { ensureAnnualReportCycle, finalizeClosedCareerYear } from '@/game-core/annualCareerReportLifecycle.js';
+import { ensureAnnualReportCycle, finalizeClosedCareerYear, resetRaceSeasonPoints } from '@/game-core/annualCareerReportLifecycle.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 export const CAREER_START_DATE = '2026-01-01';
@@ -244,6 +244,16 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
           const annualReport = await finalizeClosedCareerYear(profile, updated);
           updated = annualReport.profile || updated;
         } catch (e) { console.error('finalizeClosedCareerYear', e); }
+      });
+      // Correção UI/cronologia — Fase 3: etapa IRMÃ da finalização anual —
+      // zera race_points (temporada Race) do jogador e do pool mundial na
+      // virada do ano civil, sem afetar ranking_points/world_ranking_points
+      // (Circuito, histórico acumulado).
+      await stage('annualBoundary:resetRaceSeasonPoints', async () => {
+        try {
+          const raceReset = await resetRaceSeasonPoints(profile, updated);
+          updated = raceReset.profile || updated;
+        } catch (e) { console.error('resetRaceSeasonPoints', e); }
       });
     }
     await stage('monthlyBoundary:simulatePastTournaments', () => simulatePastTournaments(newCareerDate).catch(e => console.error('simulatePastTournaments', e)));

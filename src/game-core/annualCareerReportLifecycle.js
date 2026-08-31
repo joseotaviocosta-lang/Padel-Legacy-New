@@ -137,6 +137,35 @@ export async function finalizeClosedCareerYear(previousProfile, currentProfile) 
   return { profile, report, created, generationMs: performance.now() - startedAt };
 }
 
+/**
+ * Correção UI/cronologia — Fase 3: race_points representa a temporada
+ * (Race) EM ANDAMENTO e deve reiniciar em zero a cada virada do ano civil
+ * (mesma guarda `didCareerYearChange` já usada por finalizeClosedCareerYear),
+ * sem tocar em ranking_points/world_ranking_points (Circuito, histórico
+ * acumulado, que nunca é resetado). Chamada como uma etapa IRMÃ da
+ * finalização anual em career.js, nunca substituindo-a.
+ */
+export async function resetRaceSeasonPoints(previousProfile, currentProfile) {
+  if (!previousProfile?.id || !currentProfile?.id || !didCareerYearChange(previousProfile.career_date, currentProfile.career_date)) {
+    return { profile: currentProfile, athletesReset: 0, reset: false };
+  }
+
+  const athletes = (await localGame.entities['AthleteProfile'].list('ranking_position', 1500).catch(() => [])) || [];
+  const athleteUpdates = athletes
+    .filter((athlete) => Number(athlete.race_points) > 0)
+    .map((athlete) => ({ id: athlete.id, race_points: 0 }));
+  if (athleteUpdates.length) {
+    await localGame.entities['AthleteProfile'].bulkUpdate(athleteUpdates);
+  }
+
+  let profile = currentProfile;
+  if (Number(currentProfile.race_points) > 0) {
+    profile = await localGame.entities['PlayerProfile'].update(currentProfile.id, { race_points: 0 });
+  }
+
+  return { profile, athletesReset: athleteUpdates.length, reset: true };
+}
+
 export async function listAnnualCareerReports(profileId, limit = 50) {
   if (!profileId) return [];
   return localGame.entities[REPORT_ENTITY].filter({ profileId, status: 'finalized' }, '-year', limit);

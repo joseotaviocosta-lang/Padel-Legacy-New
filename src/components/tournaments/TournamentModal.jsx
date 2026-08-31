@@ -27,6 +27,7 @@ import { getStaffSnapshot } from '@/game-core/staffLifecycle.js';
 import { formatPercent, normalizeFatigue } from '@/game-core/physicalStats.js';
 import LiveMatch from '@/components/matches/LiveMatch';
 import LiveMatchRecoveryBoundary from '@/components/matches/LiveMatchRecoveryBoundary.jsx';
+import MatchPreparationControls from '@/components/matches/MatchPreparationControls.jsx';
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { ModalShell, ContextActionBar } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
@@ -105,6 +106,18 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     showLiveMetrics: true, showConfidence: true, pauseOnImportantSuggestion: true,
     ...(initialProfile?.live_coach_settings || {}),
   }));
+  // Correção UI/cronologia — Fase 4: a preparação do torneio nunca deixava o
+  // jogador ajustar liveCoachSettings (ficava travado nos padrões acima) nem
+  // trocar o modo de narração — mesmas configurações que o treino já expõe
+  // via MatchPreparationControls, agora também disponíveis aqui.
+  const [displayMode, setDisplayMode] = useState('text');
+  const changeLiveCoachSettings = useCallback((patch) => {
+    setLiveCoachSettings((current) => {
+      const next = { ...current, ...patch };
+      if (profile?.id) localGame.entities['PlayerProfile'].update(profile.id, { live_coach_settings: next }).catch(() => {});
+      return next;
+    });
+  }, [profile?.id]);
   // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md): antes desta fase, uma rodada
   // interrompida no meio da partida ao vivo era descartada e reiniciada do
   // zero (ver o bloco "playing→scheduled" abaixo) — a campanha/chave nunca
@@ -984,6 +997,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
             <OpponentAnalysis analysis={analysis} compact />
             {medical && <PhysicalPanel medical={medical} profile={profile} staff={staff} />}
             <div className="rounded-xl bg-secondary/30 p-3 text-xs"><span className="text-muted-foreground">Tática salva: </span><strong>{TOURNAMENT_STRATEGY_OPTIONS.find((item) => item.id === run.strategy?.id)?.label}</strong></div>
+            <MatchPreparationControls
+              coach={coach}
+              liveCoachSettings={liveCoachSettings}
+              onChangeLiveCoachSettings={changeLiveCoachSettings}
+              displayMode={displayMode}
+              onChangeDisplayMode={setDisplayMode}
+            />
             <button onClick={startMatch} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
             {((profile.energy || 0) < 35 || isInjured(profile)) && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
           </div>
@@ -991,7 +1011,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
 
         {phase === 'match' && opponent.length > 0 && (
           <LiveMatchRecoveryBoundary key={`${currentMatch.id}:${liveMatchSessionKey}`} onRecoveryError={(error) => handleResumeFailure(error, recoverySession)}>
-            <div className="min-h-0 flex-1 overflow-hidden"><LiveMatch teamA={[playerForMatch, partner].filter(Boolean)} teamB={opponent} initialTacticId={run.strategy?.matchTacticId || 'equilibrado'} coach={coach} liveCoachSettings={liveCoachSettings} onFinished={handleMatchFinished} onDisplayModeChange={() => {}} initialState={resumedEngineState} onCheckpoint={saveMatchCheckpoint} matchType="tournament" matchId={currentMatch?.id || null} /></div>
+            <div className="min-h-0 flex-1 overflow-hidden"><LiveMatch teamA={[playerForMatch, partner].filter(Boolean)} teamB={opponent} initialTacticId={run.strategy?.matchTacticId || 'equilibrado'} coach={coach} liveCoachSettings={liveCoachSettings} onFinished={handleMatchFinished} displayMode={displayMode} onDisplayModeChange={setDisplayMode} initialState={resumedEngineState} onCheckpoint={saveMatchCheckpoint} matchType="tournament" matchId={currentMatch?.id || null} /></div>
           </LiveMatchRecoveryBoundary>
         )}
 

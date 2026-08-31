@@ -30,8 +30,13 @@ export function GameHud({ items = [], label = 'Status atual', className = '' }) 
             aria-label={item.label ? `${item.label}: ${item.value}` : String(item.value)}
           >
             {Icon && <Icon className={cn('pl-game-hud-icon shrink-0', TONE_TEXT[item.tone] || 'text-primary')} aria-hidden="true" />}
-            <strong className={cn('pl-game-hud-value whitespace-nowrap tabular-nums', TONE_TEXT[item.tone] || 'text-foreground')}>{item.value}</strong>
-            {item.label && <span className="pl-game-hud-label whitespace-nowrap text-muted-foreground">{item.label}</span>}
+            {/* Correção UI (Fase 1): min-w-0 + truncate + title protegem contra
+                um valor/rótulo pontualmente muito longo (ex.: nome de parceiro)
+                estourar o chip sozinho mesmo depois do container aprender a
+                quebrar linha — o texto completo continua acessível via title
+                (tooltip nativo no desktop) e aria-label (leitor de tela). */}
+            <strong title={String(item.value)} className={cn('pl-game-hud-value min-w-0 max-w-[9rem] truncate tabular-nums', TONE_TEXT[item.tone] || 'text-foreground')}>{item.value}</strong>
+            {item.label && <span title={item.label} className="pl-game-hud-label min-w-0 max-w-[11rem] truncate text-muted-foreground">{item.label}</span>}
           </span>
         );
       })}

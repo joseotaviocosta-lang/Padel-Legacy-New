@@ -36,6 +36,11 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
     level: levelForXp(newXp),
     tournaments_played: (Number(profile.tournaments_played) || 0) + 1,
     rank_points: (Number(profile.rank_points) || 0) + rewards.rankPoints,
+    // Correção UI/cronologia — Fase 3: race_points (temporada em andamento)
+    // cresce junto com o Circuito (rank_points) a cada torneio real disputado,
+    // mas é um campo isolado, zerado à parte na virada do ano civil — nunca
+    // copiado/derivado do Circuito acumulado.
+    race_points: Math.max(0, Number(profile.race_points) || 0) + rewards.rankPoints,
     processed_tournament_runs: [...processedRuns, finalizationKey].slice(-100),
     ...(champion ? {
       tournaments_won: (Number(profile.tournaments_won) || 0) + 1,

@@ -236,10 +236,17 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const athleteUpdates = athletes.filter((athlete) => athletePoints.has(athlete.id)).map((athlete) => {
     const outcomes = athleteOutcomes.get(athlete.id) || [];
     const points = Number(athlete.world_ranking_points || athlete.ranking_points || 0) + athletePoints.get(athlete.id);
+    // Correção UI/cronologia — Fase 3: race_points é a temporada (Race) EM
+    // ANDAMENTO, separada do Circuito acumulado acima. Reaproveita o mesmo
+    // ganho de pontos já calculado (athletePoints) em vez de recalcular —
+    // cresce junto com o Circuito conforme torneios reais são disputados,
+    // mas é zerada isoladamente na virada do ano (ver annualCareerReportLifecycle.js).
+    const racePoints = Math.max(0, Number(athlete.race_points) || 0) + athletePoints.get(athlete.id);
     return {
       id: athlete.id,
       world_ranking_points: points,
       ranking_points: points,
+      race_points: racePoints,
       current_region: athlete.currentRegion,
       tournaments_played: Number(athlete.tournaments_played || 0) + outcomes.length,
       career_wins: Number(athlete.career_wins || 0) + outcomes.reduce((sum, item) => sum + winsForFinish(item.finish), 0),

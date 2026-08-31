@@ -44,7 +44,13 @@ gate('PageHeader denso remove o hero visual no mobile', css.includes('.pl-page-h
 gate('título operacional mobile permanece abaixo de 40px', css.includes('font-size: 1.35rem'));
 gate('HUD compartilha tokens de gap/padding/ícone/valor/rótulo', ['--game-hud-gap', '--game-hud-padding-x', '--game-hud-icon-size', '--game-hud-value-size', '--game-hud-label-size'].every((token) => css.includes(token)));
 gate('estrutura base do HUD é aplicada antes dos breakpoints desktop/mobile', css.indexOf('.pl-game-hud {') < css.indexOf('@media (min-width: 768px)'));
-gate('HUD desktop não quebra valores e compacta o hero em uma linha operacional', css.includes('@media (min-width: 768px)') && css.includes('grid-template-columns: minmax(12rem, auto) minmax(0, 1fr)') && css.includes('flex-wrap: nowrap'));
+// Correção UI (Fase 1, cabeçalho estourando): `flex-wrap: nowrap` numa
+// única linha era exatamente a causa raiz do bug real — com 4-5 chips
+// (ex.: "Dupla ativa · Facundo Benítez"), a "uma linha operacional" não
+// cabia e os chips vazavam/sobrepunham. Mudança deliberada desta fase:
+// os chips agora quebram para a linha de baixo (flex-wrap: wrap) em vez de
+// tentar caber numa linha só.
+gate('HUD desktop compacta o hero em duas colunas e os chips quebram linha em vez de vazar', css.includes('@media (min-width: 768px)') && css.includes('grid-template-columns: minmax(12rem, auto) minmax(0, 1fr)') && css.includes('flex-wrap: wrap'));
 gate('HUD mobile preserva 44px e usa colunas horizontais sem colar valor/rótulo', css.includes('min-height: 2.75rem') && css.includes('grid-auto-flow: column') && css.includes('gap: var(--game-hud-gap)'));
 gate('Calendário usa data compacta 08 JAN · Quinta', (() => { const value = getCareerHudDatePresentation('2026-01-08'); return value.date === '08 JAN' && value.weekday === 'Quinta'; })());
 for (const [path, source] of Object.entries(pages)) {
