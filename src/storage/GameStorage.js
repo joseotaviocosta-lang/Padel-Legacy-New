@@ -3,6 +3,7 @@ import { BackupManager } from './BackupManager.js';
 import { validateSaveData, normalizeCareerMetadata, validateStoragePayload } from './SaveValidator.js';
 import { StorageError } from './StorageError.js';
 import { measureStorageOperation } from '../dev/storageIOProbe.js';
+import { registerBetaDiagnostic } from '../lib/betaDiagnostics.js';
 
 const CAREERS_DIRECTORY = 'careers';
 const BACKUPS_DIRECTORY = 'backups';
@@ -73,7 +74,9 @@ export class GameStorage {
     await this.initialize();
     const normalizedPath = relativePath;
     let pathExists = knownToExist || await this.storage.exists(normalizedPath, { caller: `${caller}:exists` });
+    let recoveredFrom = null;
     if (!pathExists) {
+      registerBetaDiagnostic({ type: 'CAREER_RECOVERY_START', path: normalizedPath, caller });
       const recoveryPath = pathJoin(TEMP_DIRECTORY, `${getFileName(normalizedPath)}.rollback.json`);
       const recoveryExists = await this.storage.exists(recoveryPath, { caller: `${caller}:recovery-exists` });
       if (recoveryExists) {
@@ -82,7 +85,30 @@ export class GameStorage {
           caller: `${caller}:recovery-restore`,
         });
         pathExists = true;
+        recoveredFrom = 'crash-rollback';
       }
+    }
+    if (!pathExists) {
+      // Segunda linha de defesa: nenhuma cópia de rollback de crash existia
+      // (ou o `crashRecovery` daquela gravação não estava ativo — ver
+      // CareerRepository.writeCareer), mas todo write bem-sucedido anterior
+      // já deixou uma cópia em backups/ (abaixo, quando destinationExists).
+      // Antes de declarar o arquivo perdido, tenta restaurar da cópia de
+      // backup mais recente — nunca tratar ausência do arquivo principal
+      // como exclusão sem antes esgotar as fontes de recuperação já
+      // existentes (pedido explícito do hotfix de persistência crítica).
+      const restoredFromBackup = await this.tryRestoreFromBackup(normalizedPath, caller);
+      if (restoredFromBackup) {
+        pathExists = true;
+        recoveredFrom = 'backup';
+      }
+    }
+    if (recoveredFrom) {
+      registerBetaDiagnostic({
+        type: 'CAREER_RECOVERY_SUCCESS', path: normalizedPath, source: recoveredFrom, caller,
+      });
+    } else if (!pathExists) {
+      registerBetaDiagnostic({ type: 'CAREER_RECOVERY_FAILURE', path: normalizedPath, caller });
     }
     if (!pathExists) {
       throw new StorageError(
@@ -118,6 +144,34 @@ export class GameStorage {
         `Falha ao analisar o arquivo JSON: ${normalizedPath}`,
         'INVALID_JSON'
       );
+    }
+  }
+
+  /**
+   * Última linha de defesa de leitura: procura a cópia de backup mais
+   * recente do arquivo (writeJsonUnlocked já cria uma em toda gravação que
+   * substitui um arquivo existente, ver `options.backup`) e a restaura no
+   * lugar do arquivo principal ausente. Nomes de backup são
+   * `${fileName}-${timestampISO}-backup.json` — ordenação lexicográfica do
+   * timestamp ISO já é ordenação cronológica.
+   */
+  async tryRestoreFromBackup(normalizedPath, caller) {
+    const fileName = getFileName(normalizedPath);
+    const entries = await this.storage.list(BACKUPS_DIRECTORY, { caller: `${caller}:backup-list` }).catch(() => []);
+    const candidates = (entries || [])
+      .filter((entry) => !entry.isDirectory && entry.name.startsWith(`${fileName}-`) && entry.name.endsWith('-backup.json'))
+      .map((entry) => entry.name)
+      .sort();
+    if (candidates.length === 0) return false;
+    const latest = candidates[candidates.length - 1];
+    try {
+      await this.storage.copy(pathJoin(BACKUPS_DIRECTORY, latest), normalizedPath, {
+        ensureParent: false,
+        caller: `${caller}:backup-restore`,
+      });
+      return true;
+    } catch (error) {
+      return false;
     }
   }
 

@@ -339,7 +339,11 @@ export async function cancelRegistration(profileId, eventId, tournamentId) {
   }
   await localGame.entities.CalendarEvent.update(eventId, { status: 'cancelled' });
   if (tournamentId) {
-    const t = await localGame.entities.Tournament.get(tournamentId);
+    // Fase 15.7: eventos ilustrativos do seed local (src/local/localSeed.js)
+    // usam um related_id sintético que nunca existe em Tournament — .catch
+    // evita que "cancelar" um evento sem torneio real por trás derrube o
+    // fluxo com um erro de entidade não encontrada.
+    const t = await localGame.entities.Tournament.get(tournamentId).catch(() => null);
     if (t) {
       const participants = (t.participants || []).filter(id => id !== profileId);
       await localGame.entities.Tournament.update(tournamentId, { participants });

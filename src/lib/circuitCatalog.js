@@ -100,14 +100,23 @@ export const WORLD_TOUR_CITIES = Object.freeze([
 const WEEK_PROGRAM = Object.freeze([
   // Calendário mais enxuto: os torneios passam a ser marcos da temporada,
   // deixando blocos reais para treino, recuperação e evolução do atleta.
-  [2,['Silver']], [4,['Gold']], [6,['Silver','Platinum']],
-  [8,['Masters']], [10,['Gold']], [12,['Silver','Elite']],
-  [14,['Crown']], [16,['Platinum']], [18,['Gold','Masters']],
-  [20,['Silver']], [22,['Elite']], [24,['Platinum','Crown']],
-  [26,['Gold']], [28,['Masters']], [30,['Silver','Elite']],
-  [32,['Platinum']], [34,['Gold','Masters']], [36,['Crown']],
-  [38,['Silver']], [40,['Elite']], [42,['Gold','Platinum']],
-  [44,['Masters']], [46,['Silver']], [48,['Platinum','Crown']],
+  //
+  // Fase 15.7: toda a temporada deslocada +4 semanas (a mesma cadência e
+  // contagem de torneios, só começando mais tarde). Antes, o 1º torneio
+  // caía na semana 2 (~dia 7 de carreira) — cedo demais para completar
+  // onboarding, treinar, evoluir atributos e conhecer a comissão técnica
+  // antes de competir. Com o deslocamento, o 1º torneio cai na semana 6
+  // (~dia 35), dentro da janela de 30–45 dias pedida. O último torneio vai
+  // da semana 48 para a 52 — ainda dentro do ano civil, sem exceder o
+  // calendário nem alterar o número total de torneios/ritmo da temporada.
+  [6,['Silver']], [8,['Gold']], [10,['Silver','Platinum']],
+  [12,['Masters']], [14,['Gold']], [16,['Silver','Elite']],
+  [18,['Crown']], [20,['Platinum']], [22,['Gold','Masters']],
+  [24,['Silver']], [26,['Elite']], [28,['Platinum','Crown']],
+  [30,['Gold']], [32,['Masters']], [34,['Silver','Elite']],
+  [36,['Platinum']], [38,['Gold','Masters']], [40,['Crown']],
+  [42,['Silver']], [44,['Elite']], [46,['Gold','Platinum']],
+  [48,['Masters']], [50,['Silver']], [52,['Platinum','Crown']],
 ]);
 
 const EVENT_BRANDS = Object.freeze({

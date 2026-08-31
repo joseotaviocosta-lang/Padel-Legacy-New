@@ -51,7 +51,14 @@ export class CareerRepository {
     await this.initialize();
     const validated = validateCareerIndex(index);
     return this.withIndexLock(async () => {
-      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: false, caller: 'CareerRepository.writeIndex' });
+      // Hotfix persistência crítica: o índice é a ÚNICA lista que diz quais
+      // carreiras existem (readIndex() cai para {careers:[]} vazio quando o
+      // arquivo não é lido — ver comentário em readIndex). Sem backup nem
+      // proteção contra crash, um índice perdido fazia TODAS as carreiras
+      // "desaparecerem" da tela mesmo com os arquivos individuais intactos.
+      // Mesma proteção que já existia para os arquivos de carreira, agora
+      // aplicada ao índice também — nenhum mecanismo novo.
+      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: true, crashRecovery: true, caller: 'CareerRepository.writeIndex' });
     });
   }
 
@@ -61,7 +68,7 @@ export class CareerRepository {
       const current = await this.readIndex();
       const updated = await fn(JSON.parse(JSON.stringify(current)));
       const validated = validateCareerIndex(updated);
-      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: false, caller: 'CareerRepository.updateIndex' });
+      return this.storage.writeJson(CAREER_INDEX_FILE_NAME, validated, { backup: true, crashRecovery: true, caller: 'CareerRepository.updateIndex' });
     });
   }
 
@@ -108,11 +115,21 @@ export class CareerRepository {
     // Gravações rotineiras não devem criar backup físico em toda pequena
     // alteração de entidade. O ActiveCareerAdapter decide quando um backup
     // completo é necessário (por padrão, no máximo uma vez a cada 5 min).
+    //
+    // Hotfix persistência crítica: `crashRecovery` agora é ligado por padrão
+    // (antes só withPersistenceTransaction o pedia explicitamente). Sem ele,
+    // GameStorage.writeJsonUnlocked apaga o arquivo antigo ANTES de renomear
+    // o temporário no lugar — se o processo morrer exatamente nessa janela
+    // (comum no Android: suspensão/OOM kill), o arquivo da carreira fica
+    // simplesmente inexistente, sem nenhuma cópia para recuperar. Com
+    // crashRecovery sempre ativo, uma cópia do arquivo anterior é feita antes
+    // da remoção; GameStorage.readJson já sabia restaurar essa cópia
+    // automaticamente na próxima leitura — só faltava este `true` por padrão.
     return this.storage.writeJson(path, validated, {
       backup: options.backup !== false,
       validate: false,
       pretty: options.pretty === true,
-      crashRecovery: options.crashRecovery === true,
+      crashRecovery: options.crashRecovery !== false,
       caller: options.caller || 'CareerRepository.writeCareer',
     });
   }

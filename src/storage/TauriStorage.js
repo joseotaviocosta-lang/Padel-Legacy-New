@@ -117,16 +117,32 @@ export class TauriStorage {
     );
   }
 
-  async exists(relativePath, { caller = 'TauriStorage.exists' } = {}) {
+  async exists(relativePath, { caller = 'TauriStorage.exists', attempts = 3, retryDelayMs = 40 } = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
-    try {
-      return await measureStorageOperation(
-        { operation: 'exists', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-        () => exists(normalizedPath, createOptions()),
-      );
-    } catch (error) {
-      return false;
+    let lastError = null;
+    for (let attempt = 1; attempt <= attempts; attempt += 1) {
+      try {
+        return await measureStorageOperation(
+          { operation: 'exists', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
+          () => exists(normalizedPath, createOptions()),
+        );
+      } catch (error) {
+        lastError = error;
+        if (attempt < attempts) await new Promise((resolve) => setTimeout(resolve, retryDelayMs * attempt));
+      }
     }
+    // Hotfix persistência crítica: antes, QUALQUER erro do plugin de FS aqui
+    // virava silenciosamente `false` — uma falha transitória de I/O (comum no
+    // Android sob pressão de memória/retomada do app) era indistinguível de
+    // "o arquivo realmente não existe", e era exatamente isso que fazia uma
+    // carreira real parecer "excluída". Só depois de esgotar as tentativas
+    // é que caímos de volta em `false`; o chamador (GameStorage.readJson)
+    // ainda tenta as camadas de recuperação (rollback de crash, backup) antes
+    // de finalmente declarar o arquivo ausente.
+    if (lastError) {
+      console.warn('[TauriStorage] exists() falhou em todas as tentativas — assumindo ausência só por exaustão, não por confirmação real', { path: normalizedPath, caller, error: lastError?.message });
+    }
+    return false;
   }
 
   async remove(relativePath, options = {}) {

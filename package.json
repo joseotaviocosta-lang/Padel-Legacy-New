@@ -271,6 +271,9 @@
     "test:phase15-5-4-critical-mobile-qa": "node scripts/test-phase15-5-4-critical-mobile-qa.mjs",
     "test:phase15-6-app-performance-calendar-hardening": "node scripts/test-phase15-6-app-performance-calendar-hardening.mjs",
     "test:phase15-6-1-tournament-draw-consistency": "node scripts/test-phase15-6-1-tournament-draw-consistency.mjs",
+    "test:phase15-6-2-tournament-canonical-state": "node scripts/test-phase15-6-2-tournament-canonical-state.mjs",
+    "test:career-persistence-integrity": "node scripts/test-career-persistence-integrity.mjs",
+    "test:phase15-7-first-tournament-parity": "node scripts/test-phase15-7-first-tournament-parity.mjs",
     "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs"
   },
   "dependencies": {

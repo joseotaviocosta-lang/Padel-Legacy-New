@@ -43,7 +43,15 @@ function remapSeedRow(row, activePlayerId) {
 // (CareerEntityRepository.js) essas coleções ainda não inicializadas caíam
 // no fallback de demonstração — marcando "primeiro treino"/"primeira
 // partida" como concluídos antes do jogador fazer qualquer coisa.
-const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress']);
+// Hotfix crítico de notícias (mesma classe de bug do comentário acima):
+// LOCAL_SEED.PressArticle traz um artigo estático de demonstração cujo
+// `content` tem o nome do atleta hardcoded ("José Costa inicia sua
+// trajetória no circuito") — remapSeedRow só troca `profile_id`/
+// `created_by_id`, nunca o texto. Qualquer carreira nova cujo primeiro
+// acesso a PressArticle caísse no fallback de demonstração (ensureCollection,
+// CareerEntityRepository.js) via essa linha ganhava essa notícia mostrando o
+// nome do perfil de demonstração, não o nome do atleta que o jogador criou.
+const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress', 'PressArticle']);
 
 export function seedCollection(entityName, activePlayerId = null) {
   if (NEVER_SEED_WITH_DEMO_DATA.has(entityName)) return [];

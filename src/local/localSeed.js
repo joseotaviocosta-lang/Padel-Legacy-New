@@ -142,7 +142,21 @@ export const LOCAL_SEED = {
   CircuitSeason: [{ id: 'circuit-season-2026', year: 2026, name: 'Circuito Mundial 2026', is_active: true, total_tournaments: tournaments.length }],
   CalendarEvent: [
     { id: 'cal-001', profile_id: LOCAL_PROFILE.id, event_type: 'training', title: 'Treino técnico', event_date: '2026-01-03', status: 'agendado', is_mandatory: false },
-    { id: 'cal-002', profile_id: LOCAL_PROFILE.id, event_type: 'tournament', title: tournaments[0].name, start_date: tournaments[0].start_date, end_date: tournaments[0].start_date, status: 'scheduled', related_id: tournaments[0].id, tournament_id: tournaments[0].id, is_mandatory: false },
+    // Fase 15.7: este evento é puramente ilustrativo (mostrar "assim é um
+    // compromisso de torneio no seu calendário" antes do jogador se inscrever
+    // em qualquer coisa) — NUNCA deve apontar para um Tournament real. Antes
+    // apontava para `tournaments[0]` (o 1º torneio da temporada, ex.: Miami
+    // Cup): se o jogador se inscrevesse exatamente nesse torneio, duas linhas
+    // de CalendarEvent passavam a compartilhar o mesmo `related_id` — uma
+    // demonstrativa (sem inscrição/sorteio) e uma real —, e qualquer consumo
+    // que não priorizasse explicitamente a linha com inscrição real podia
+    // "ver" a demonstrativa em vez da campanha de verdade (causa raiz real
+    // dos Hotfixes 15.6.1/15.6.2, que só resolviam isso lendo por preferência
+    // — nunca eliminavam a ambiguidade). Usar um id sintético que nunca
+    // existe no catálogo de Tournament elimina a colisão por construção,
+    // para qualquer torneio que venha a ser o primeiro da temporada — sem
+    // nenhum tratamento especial por nome/id de torneio.
+    { id: 'cal-002', profile_id: LOCAL_PROFILE.id, event_type: 'tournament', title: 'Torneio (exemplo do calendário)', start_date: tournaments[0].start_date, end_date: tournaments[0].start_date, status: 'scheduled', related_id: 'demo-tournament-showcase', tournament_id: 'demo-tournament-showcase', is_mandatory: false },
   ],
   TrainingSession: [
     { id: 'training-001', profile_id: LOCAL_PROFILE.id, session_date: '2025-12-28', training_type: 'tecnico', focus_attribute: 'forehand', duration_minutes: 60, energy_cost: 12, xp_gained: 20, attribute_gain: 1, status: 'concluido' },

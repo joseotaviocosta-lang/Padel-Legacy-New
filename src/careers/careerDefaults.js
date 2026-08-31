@@ -47,6 +47,11 @@ export function createDefaultCareerData({ saveName = 'Nova Carreira', playerName
 
   const career = {
     save_schema_version: CAREER_SAVE_SCHEMA_VERSION,
+    // Hotfix persistência crítica (parte 9): incrementado a cada
+    // CareerManager.saveCareer — puramente diagnóstico (não bloqueia writes),
+    // permite identificar em relatórios de beta se uma gravação antiga
+    // sobrescreveu uma mais nova.
+    save_version: 0,
     career_id: createUuid(),
     career_name: normalizedSaveName,
     career_type: normalizedCareerType,

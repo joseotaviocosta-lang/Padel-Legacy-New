@@ -3,6 +3,7 @@ import { migrateCareer, migrateIndex } from './CareerMigration.js';
 import { createDefaultCareerData, normalizeSaveName } from './careerDefaults.js';
 import { CareerRepository } from './CareerRepository.js';
 import { CAREER_INDEX_FILE_NAME, CAREER_BACKUPS_DIRECTORY } from './careerSchema.js';
+import { registerBetaDiagnostic } from '../lib/betaDiagnostics.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') {
@@ -131,60 +132,84 @@ export class CareerManager {
   }
 
   async loadCareer(careerId) {
-    const index = await this.loadFreshIndex();
-    const entry = index.careers.find((item) => item.id === careerId);
-    if (!entry) {
-      throw new Error('Carreira não encontrada no índice.');
-    }
+    registerBetaDiagnostic({ type: 'CAREER_LOAD_START', careerId });
+    try {
+      const index = await this.loadFreshIndex();
+      const entry = index.careers.find((item) => item.id === careerId);
+      if (!entry) {
+        throw new Error('Carreira não encontrada no índice.');
+      }
 
-    const career = await this.repository.readCareer(careerId);
-    const migrated = migrateCareer(career);
-    const careerData = migrated.data;
-    if (migrated.migrated) {
+      const career = await this.repository.readCareer(careerId);
+      const migrated = migrateCareer(career);
+      const careerData = migrated.data;
+      if (migrated.migrated) {
+        await this.repository.writeCareer(careerId, careerData);
+      }
+      careerData.last_played_at = new Date().toISOString();
+      careerData.updated_at = careerData.last_played_at;
       await this.repository.writeCareer(careerId, careerData);
+
+      Object.assign(entry, createSummaryFromCareer(careerData));
+      index.last_career_id = careerId;
+      await this.repository.writeIndex(index);
+      registerBetaDiagnostic({ type: 'CAREER_INDEX_UPDATE', careerId, operation: 'load' });
+      registerBetaDiagnostic({ type: 'CAREER_LOAD_SUCCESS', careerId, saveVersion: careerData.save_version });
+
+      return careerData;
+    } catch (error) {
+      registerBetaDiagnostic({ type: 'CAREER_LOAD_FAILURE', careerId, message: error?.message, code: error?.code });
+      throw error;
     }
-    careerData.last_played_at = new Date().toISOString();
-    careerData.updated_at = careerData.last_played_at;
-    await this.repository.writeCareer(careerId, careerData);
-
-    Object.assign(entry, createSummaryFromCareer(careerData));
-    index.last_career_id = careerId;
-    await this.repository.writeIndex(index);
-
-    return careerData;
   }
 
   async saveCareer(careerId, careerData, {
     backup = true,
     updateIndex = true,
-    crashRecovery = false,
+    // Hotfix persistência crítica: era `false` por padrão aqui, e o caminho
+    // mais usado de todos (ActiveCareerAdapter.mutateActiveCareer, toda
+    // atualização de entidade fora de uma transação em lote) nunca passava
+    // este parâmetro — ou seja, a maioria dos saves reais da carreira corria
+    // SEM a cópia de segurança antes de apagar o arquivo antigo. Ver
+    // CareerRepository.writeCareer para o mecanismo em si.
+    crashRecovery = true,
     caller = 'CareerManager.saveCareer',
   } = {}) {
-    const validated = validateCareerData(careerData);
-    if (validated.career_id !== careerId) {
-      throw new Error('career_id no conteúdo não pode ser alterado.');
-    }
-    validated.updated_at = new Date().toISOString();
+    registerBetaDiagnostic({ type: 'CAREER_SAVE_START', careerId, caller });
+    try {
+      const validated = validateCareerData(careerData);
+      if (validated.career_id !== careerId) {
+        throw new Error('career_id no conteúdo não pode ser alterado.');
+      }
+      validated.updated_at = new Date().toISOString();
+      validated.save_version = Number(validated.save_version || 0) + 1;
 
-    // Gravações rotineiras de entidades não precisam reler + regravar o índice
-    // de carreiras em toda pequena alteração. O índice é sincronizado de forma
-    // periódica pelo ActiveCareerAdapter e continua obrigatório em saves
-    // explícitos/gerenciamento de carreira.
-    if (!updateIndex) {
+      // Gravações rotineiras de entidades não precisam reler + regravar o índice
+      // de carreiras em toda pequena alteração. O índice é sincronizado de forma
+      // periódica pelo ActiveCareerAdapter e continua obrigatório em saves
+      // explícitos/gerenciamento de carreira.
+      if (!updateIndex) {
+        await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
+        registerBetaDiagnostic({ type: 'CAREER_SAVE_SUCCESS', careerId, saveVersion: validated.save_version, caller });
+        return validated;
+      }
+
+      const index = await this.loadFreshIndex();
+      const entry = index.careers.find((item) => item.id === careerId);
+      if (!entry) throw new Error('Carreira não encontrada no índice.');
+      const summary = createSummaryFromCareer(validated);
+
       await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
+      Object.assign(entry, summary);
+      await this.repository.writeIndex(index);
+      registerBetaDiagnostic({ type: 'CAREER_INDEX_UPDATE', careerId, operation: 'save', caller });
+      registerBetaDiagnostic({ type: 'CAREER_SAVE_SUCCESS', careerId, saveVersion: validated.save_version, caller });
+
       return validated;
+    } catch (error) {
+      registerBetaDiagnostic({ type: 'CAREER_SAVE_FAILURE', careerId, caller, message: error?.message, code: error?.code });
+      throw error;
     }
-
-    const index = await this.loadFreshIndex();
-    const entry = index.careers.find((item) => item.id === careerId);
-    if (!entry) throw new Error('Carreira não encontrada no índice.');
-    const summary = createSummaryFromCareer(validated);
-
-    await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
-    Object.assign(entry, summary);
-    await this.repository.writeIndex(index);
-
-    return validated;
   }
 
   async renameCareer(careerId, newName) {
