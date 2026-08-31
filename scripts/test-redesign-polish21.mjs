@@ -64,7 +64,14 @@ check('StatCard ainda é usado na faixa operacional (deveria ter saído — obje
 check('FloatingUtilityRail voltou a ser um dock único (BottomSheet "Ferramentas") — UX rejeitada pelo QA real', !floatingRail.includes('<BottomSheet') && !floatingRail.includes('aria-haspopup="dialog"'));
 check('botão do Guia não é mais acessado com 1 clique', onboardingGuide.includes('onClick={() => setHelpOpen(true)}'));
 check('botão de Carreiras não é mais acessado com 1 clique', /onClick=\{onOpenCareers\}/.test(floatingRail));
-check('botão de Som não é mais acessado com 1 clique', /onClick=\{toggleSound\}/.test(floatingRail) && !floatingRail.includes('DockRow'));
+// UX (validação final do hotfix de persistência): o toggle de som do rail
+// foi deliberadamente removido — pouco usado nesse espaço nobre e substituído
+// por um atalho direto ao Centro de Treinamento (mesmo lugar/tamanho/estilo).
+// O som continua controlável em Configurações → Áudio (Settings.jsx, nunca
+// dependeu deste componente); a checagem antiga de acesso a Som em 1 clique
+// não se aplica mais por design — substituída por uma equivalente para o
+// novo atalho.
+check('botão do Centro de Treinamento não é mais acessado com 1 clique', /to=\{APP_ROUTES\.TRAINING_CENTER\}/.test(floatingRail) && !floatingRail.includes('DockRow'));
 check('BETA não é mais acessado com 1 clique (voltou a exigir abrir um menu antes)', floatingRail.includes('<BetaTools compact />'));
 check('botão "Abrir guia da carreira" sem aria-label', onboardingGuide.includes('aria-label="Abrir guia da carreira"'));
 check('botão "Gerenciar carreiras" sem aria-label', floatingRail.includes('aria-label="Gerenciar carreiras"'));

@@ -418,6 +418,30 @@ export function migrateCareer(career) {
     };
     data.save_schema_version = 20; version = 20;
   }
+  if (version < 21) {
+    // Bug real (QA): ensureInitialPartnerOffers (partnerOffers.js) notificava
+    // TODAS as propostas do lote inicial (seed da tela de Duplas) — o
+    // tutorial já obriga o jogador a comparar e escolher lá, então essas
+    // notificações eram só ruído (uma cedo demais, o resto "estourando" ao
+    // interagir com a tela). Saves gravados antes da correção já têm essas
+    // mensagens persistidas; marca como resolvidas (mesmo padrão de
+    // resolveOfferMessages, partnerOffers.js) em vez de apagar — preserva o
+    // histórico, só para de contar como AÇÃO NECESSÁRIA/não lida.
+    const seedOfferIds = new Set(
+      (Array.isArray(data.entities?.PartnerOffer) ? data.entities.PartnerOffer : [])
+        .filter((offer) => offer?.source === 'initial-partner-offer')
+        .map((offer) => offer.id),
+    );
+    const messages = Array.isArray(data.entities?.CareerMessage) ? data.entities.CareerMessage : null;
+    if (seedOfferIds.size && messages) {
+      data.entities.CareerMessage = messages.map((row) => (
+        row?.message_type === 'proposta_parceria' && row?.related_entity_type === 'partner_offer' && seedOfferIds.has(row.related_entity_id)
+          ? { ...row, is_read: true, is_new: false, status: 'resolvida', chosen_action_id: row.chosen_action_id || 'seed_migration_hidden', actions: [] }
+          : row
+      ));
+    }
+    data.save_schema_version = 21; version = 21;
+  }
   const normalizedFatigue = normalizeFatigue(data.player?.fatigue);
   let repairedFatigue = Boolean(data.player) && data.player.fatigue !== normalizedFatigue;
   if (data.player) data.player = { ...data.player, fatigue: normalizedFatigue };

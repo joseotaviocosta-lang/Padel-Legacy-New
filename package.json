@@ -274,6 +274,8 @@
     "test:phase15-6-2-tournament-canonical-state": "node scripts/test-phase15-6-2-tournament-canonical-state.mjs",
     "test:career-persistence-integrity": "node scripts/test-career-persistence-integrity.mjs",
     "test:phase15-7-first-tournament-parity": "node scripts/test-phase15-7-first-tournament-parity.mjs",
+    "test:training-center-shortcut-ux": "node scripts/test-training-center-shortcut-ux.mjs",
+    "test:partner-offer-notifications": "node scripts/test-partner-offer-notifications.mjs",
     "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs"
   },
   "dependencies": {

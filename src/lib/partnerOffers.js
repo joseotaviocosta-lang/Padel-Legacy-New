@@ -44,6 +44,19 @@ async function createOfferMessage(profile, offer) {
   });
 }
 
+// Bug real (QA): o lote inicial de propostas (seed da tela de Duplas) virava
+// notificação — uma antes mesmo do jogador entrar na tela, e o resto do lote
+// de uma vez ao interagir. O tutorial já obriga o jogador a ir a Duplas e
+// comparar; notificar cada uma delas é redundante e gera "estouro" de
+// AÇÃO NECESSÁRIA. `buildInitialPartnerOffers` já marca cada oferta do lote
+// com `source: 'initial-partner-offer'` — usamos esse marcador já existente
+// como fonte canônica de "é seed?" (nenhum campo novo/paralelo). Propostas
+// dinâmicas (processSpontaneousPartnerMarket, source diferente) continuam
+// notificando normalmente, uma por proposta, no momento da criação.
+export function isSeedPartnerOffer(offer) {
+  return offer?.source === 'initial-partner-offer';
+}
+
 export async function ensureInitialPartnerOffers(profile, candidates) {
   const existing = await listPartnerOffers(profile.id).catch(() => []);
   if (existing.length || profile.partner_id) return existing;
@@ -53,7 +66,7 @@ export async function ensureInitialPartnerOffers(profile, candidates) {
     const duplicate = await localGame.entities.PartnerOffer.filter({ profile_id: profile.id, candidate_player_id: offer.candidate_player_id }, null, 1).catch(() => []);
     const saved = duplicate[0] || await localGame.entities.PartnerOffer.create(offer);
     created.push(saved);
-    await createOfferMessage(profile, saved);
+    if (!isSeedPartnerOffer(saved)) await createOfferMessage(profile, saved);
   }
   return created;
 }

@@ -70,7 +70,11 @@ check('package.json ganhou uma dependência nova nesta fase (deveria só ter nov
 // pointer-events do M1.1/M2 (agora protegendo 4 botões, não 1).
 check('botão do Guia sem aria-label', onboardingGuide.includes('aria-label="Abrir guia da carreira"'));
 check('botão de Carreiras sem aria-label', floatingRail.includes('aria-label="Gerenciar carreiras"'));
-check('botão de Som sem aria-label', /aria-label=\{soundEnabled[\s\S]{0,120}Desativar sons da interface[\s\S]{0,60}Ativar sons da interface/.test(floatingRail));
+// UX (validação final do hotfix de persistência): o botão de Som do rail
+// foi substituído por um atalho ao Centro de Treinamento — mesmo lugar,
+// mesmo estilo. Som continua em Configurações → Áudio, nunca dependeu deste
+// componente. Checagem de aria-label movida para o novo botão.
+check('botão do Centro de Treinamento sem aria-label', /aria-label="Centro de treinamento"/.test(floatingRail));
 check('FloatingUtilityRail voltou a ser um único gatilho (UX rejeitada pelo QA real)', !floatingRail.includes('aria-haspopup="dialog"') && !floatingRail.includes('MoreHorizontal'));
 
 // ── 17. Overlays continuam usando infraestrutura oficial ───────────────────
