@@ -279,7 +279,8 @@
     "test:onboarding-tournament-gate": "node scripts/test-onboarding-tournament-gate.mjs",
     "test:ranking-race-season": "node scripts/test-ranking-race-season.mjs",
     "test:match-ui-unification-phase4": "node scripts/test-match-ui-unification-phase4.mjs",
-    "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs"
+    "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs",
+    "audit:real-athletes-simulation": "node scripts/audit-real-athletes-simulation.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",

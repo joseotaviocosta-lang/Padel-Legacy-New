@@ -1,0 +1,333 @@
+{
+  "generatedAt": "2026-08-31T19:10:38.027Z",
+  "seasonsSimulated": 1,
+  "roster": {
+    "realAthletes": 24,
+    "proceduralAthletes": 970,
+    "totalAthletes": 1000,
+    "realTeams": 12,
+    "proceduralTeams": 486,
+    "totalTeams": 500
+  },
+  "worldTourSimulation": {
+    "tournamentsResolved": 30,
+    "byClassification": {
+      "100%_bots": 29,
+      "100%_reais": 1
+    },
+    "byTierClassification": {
+      "Silver": {
+        "100%_bots": 7
+      },
+      "Gold": {
+        "100%_bots": 6
+      },
+      "Platinum": {
+        "100%_bots": 5
+      },
+      "Masters": {
+        "100%_bots": 4,
+        "100%_reais": 1
+      },
+      "Elite": {
+        "100%_bots": 4
+      },
+      "Crown": {
+        "100%_bots": 3
+      }
+    },
+    "seasonSnapshots": [
+      {
+        "year": 2026,
+        "top20": [
+          {
+            "position": 1,
+            "id": "athlete_franco_stupaczuk",
+            "name": "Franco Stupaczuk",
+            "points": 13358,
+            "real": true
+          },
+          {
+            "position": 2,
+            "id": "athlete_arturo_coello",
+            "name": "Arturo Coello",
+            "points": 13000,
+            "real": true
+          },
+          {
+            "position": 3,
+            "id": "athlete_juan_lebron",
+            "name": "Juan Lebrón",
+            "points": 12928,
+            "real": true
+          },
+          {
+            "position": 4,
+            "id": "athlete_agustin_tapia",
+            "name": "Agustín Tapia",
+            "points": 12570,
+            "real": true
+          },
+          {
+            "position": 5,
+            "id": "athleteprofile-1788203339246-4e3crg",
+            "name": "João Ramos",
+            "points": 12550,
+            "real": false
+          },
+          {
+            "position": 6,
+            "id": "athleteprofile-1788203339246-j3vuyu",
+            "name": "Pedro Iglesias",
+            "points": 12509,
+            "real": false
+          },
+          {
+            "position": 7,
+            "id": "athlete_alejandro_galan",
+            "name": "Alejandro Galán",
+            "points": 12140,
+            "real": true
+          },
+          {
+            "position": 8,
+            "id": "athlete_federico_chingotto",
+            "name": "Federico Chingotto",
+            "points": 11710,
+            "real": true
+          },
+          {
+            "position": 9,
+            "id": "athlete_mike_yanguas",
+            "name": "Mike Yanguas",
+            "points": 10420,
+            "real": true
+          },
+          {
+            "position": 10,
+            "id": "athlete_coki_nieto",
+            "name": "Coki Nieto",
+            "points": 9990,
+            "real": true
+          },
+          {
+            "position": 11,
+            "id": "athlete_paquito_navarro",
+            "name": "Paquito Navarro",
+            "points": 9560,
+            "real": true
+          },
+          {
+            "position": 12,
+            "id": "athlete_jon_sanz",
+            "name": "Jon Sanz",
+            "points": 9130,
+            "real": true
+          },
+          {
+            "position": 13,
+            "id": "athleteprofile-1788203339246-pwz4qu",
+            "name": "Diego Vega",
+            "points": 9112,
+            "real": false
+          },
+          {
+            "position": 14,
+            "id": "athleteprofile-1788203339246-9u9gmm",
+            "name": "Pablo Ferrer",
+            "points": 8949,
+            "real": false
+          },
+          {
+            "position": 15,
+            "id": "athlete_martin_di_nenno",
+            "name": "Martín Di Nenno",
+            "points": 8700,
+            "real": true
+          },
+          {
+            "position": 16,
+            "id": "athlete_leo_augsburger",
+            "name": "Leo Augsburger",
+            "points": 8270,
+            "real": true
+          },
+          {
+            "position": 17,
+            "id": "athleteprofile-1788203339246-faj82i",
+            "name": "Enzo Pereira",
+            "points": 7922,
+            "real": false
+          },
+          {
+            "position": 18,
+            "id": "athlete_lucas_bergamini",
+            "name": "Lucas Bergamini",
+            "points": 7840,
+            "real": true
+          },
+          {
+            "position": 19,
+            "id": "athleteprofile-1788203339246-0iukzl",
+            "name": "Tomás Iglesias",
+            "points": 7480,
+            "real": false
+          },
+          {
+            "position": 20,
+            "id": "athlete_javi_leal",
+            "name": "Javi Leal",
+            "points": 7410,
+            "real": true
+          }
+        ],
+        "realInTop20": 14
+      }
+    ],
+    "avgTournamentsPlayedRealAthletes": 0.58,
+    "avgTournamentsPlayedBots": 20.15,
+    "realAthletesNeverInAnyDraw": [
+      {
+        "id": "athlete_arturo_coello",
+        "name": "Arturo Coello"
+      },
+      {
+        "id": "athlete_agustin_tapia",
+        "name": "Agustín Tapia"
+      },
+      {
+        "id": "athlete_alejandro_galan",
+        "name": "Alejandro Galán"
+      },
+      {
+        "id": "athlete_federico_chingotto",
+        "name": "Federico Chingotto"
+      },
+      {
+        "id": "athlete_mike_yanguas",
+        "name": "Mike Yanguas"
+      },
+      {
+        "id": "athlete_coki_nieto",
+        "name": "Coki Nieto"
+      },
+      {
+        "id": "athlete_paquito_navarro",
+        "name": "Paquito Navarro"
+      },
+      {
+        "id": "athlete_jon_sanz",
+        "name": "Jon Sanz"
+      },
+      {
+        "id": "athlete_martin_di_nenno",
+        "name": "Martín Di Nenno"
+      },
+      {
+        "id": "athlete_leo_augsburger",
+        "name": "Leo Augsburger"
+      },
+      {
+        "id": "athlete_lucas_bergamini",
+        "name": "Lucas Bergamini"
+      },
+      {
+        "id": "athlete_javi_leal",
+        "name": "Javi Leal"
+      },
+      {
+        "id": "athlete_momo_gonzalez",
+        "name": "Momo González"
+      },
+      {
+        "id": "athlete_fran_guerrero",
+        "name": "Fran Guerrero"
+      },
+      {
+        "id": "athlete_javi_garrido",
+        "name": "Javi Garrido"
+      },
+      {
+        "id": "athlete_juan_tello",
+        "name": "Juan Tello"
+      },
+      {
+        "id": "athlete_alex_arroyo",
+        "name": "Álex Arroyo"
+      },
+      {
+        "id": "athlete_inigo_jofre",
+        "name": "Íñigo Jofre"
+      },
+      {
+        "id": "athlete_sanyo_gutierrez",
+        "name": "Sanyo Gutiérrez"
+      },
+      {
+        "id": "athlete_gonza_alfonso",
+        "name": "Gonzalo Alfonso"
+      }
+    ],
+    "realAthletesNeverInAnyDrawCount": 20,
+    "realAthletesTotal": 24,
+    "coelloTapiaTogetherRate": 0,
+    "coelloTapiaSamples": 11,
+    "galanChingottoTogetherRate": 0,
+    "galanChingottoSamples": 11
+  },
+  "playerOpponentCatalog": {
+    "poolComposition": [
+      {
+        "tier": "iniciante",
+        "label": "Iniciante",
+        "total": 46,
+        "real": 0,
+        "fictional": 46
+      },
+      {
+        "tier": "amador",
+        "label": "Amador",
+        "total": 39,
+        "real": 0,
+        "fictional": 39
+      },
+      {
+        "tier": "competitivo",
+        "label": "Competitivo",
+        "total": 42,
+        "real": 0,
+        "fictional": 42
+      },
+      {
+        "tier": "avancado",
+        "label": "Avançado",
+        "total": 46,
+        "real": 0,
+        "fictional": 46
+      },
+      {
+        "tier": "elite",
+        "label": "Elite",
+        "total": 38,
+        "real": 0,
+        "fictional": 38
+      },
+      {
+        "tier": "lenda",
+        "label": "Lenda",
+        "total": 39,
+        "real": 10,
+        "fictional": 29
+      }
+    ],
+    "lendaSampling": {
+      "samples": 500,
+      "roundTested": "Crown, rodada 6 (final)",
+      "drawsWithAtLeastOneReal": 232,
+      "drawsWithAtLeastOneRealPct": 46.4,
+      "drawsWithTwoReal": 30,
+      "drawsWithTwoRealPct": 6,
+      "theoreticalAtLeastOnePct": 45.2
+    }
+  }
+}
