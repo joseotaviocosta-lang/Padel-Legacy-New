@@ -1,15 +1,31 @@
 // Auditoria — Atletas reais vs. bots no ecossistema do jogo.
 // FASE 0 do plano de correção: harness-JUIZ, instrumentado por
 // (temporada × tier), determinístico, e usado para congelar a baseline
-// pré-refactor. NÃO reimplementa nenhuma regra de jogo — só chama as
-// funções de produção reais e relata o que elas produzem.
+// pré-refactor. NÃO reimplementa nenhuma regra de jogo — chama exatamente
+// as funções que o CAMINHO REAL de avanço de dia chama (advanceDay +
+// processGameStateDay, um dia real por vez — o mesmo par que
+// game-core/calendarLifecycle.js:advanceCareerDayWork usa a cada "avançar
+// dia" de verdade), sem atalhos. Fase 0.1: uma versão anterior chamava só
+// processAiPartnershipMarket + resolveCompletedWorldTourEvents, em lotes de
+// vários dias — um teste de paridade (scripts/audit-parity-test.mjs) contra
+// este caminho real mostrou 68% dos campeões divergindo na mesma temporada
+// com a mesma seed. Corrigido: dia a dia, sem pular nenhum sistema diário
+// (simulateWorldDay, processWorldCircuit, etc. — todos os que
+// processGameStateDay já chama em produção).
 //
 // Uso:
 //   node scripts/audit-real-athletes-simulation.mjs [--seasons=5] [--seed=baseline-v1]
-//     [--proceduralAthletes=970] [--proceduralTeams=486] [--stepDays=14] [--out=reports/real-athletes-audit]
+//     [--proceduralAthletes=970] [--proceduralTeams=486] [--out=reports/real-athletes-audit]
 //
 // Saída: <out>/summary.json (por temporada × tier + cumulativo),
 // <out>/tournament-results.csv, <out>/season-tier-table.md.
+//
+// Custo: por rodar dia a dia pelo caminho real (não em lotes), este harness
+// é MUITO mais caro que a versão anterior — a camada de storage da carreira
+// clona o save inteiro a cada escrita de entidade, e processGameStateDay
+// escreve várias vezes por dia (até ~80 atletas/dia só em simulateWorldDay).
+// Reduza --proceduralAthletes/--proceduralTeams para iteração rápida; a
+// baseline oficial usa os valores de produção completos (970/486).
 import { writeFileSync, mkdirSync } from 'node:fs';
 import worldSeed from '../src/data/worldSeed2025.json' with { type: 'json' };
 
@@ -18,19 +34,8 @@ const SEASONS = Math.max(1, Number(args.seasons || 5));
 const START_YEAR = 2026;
 const OUT_DIR = args.out || 'reports/real-athletes-audit';
 const SEED = String(args.seed || 'baseline-v1');
-// A camada de storage da carreira clona o blob inteiro a cada leitura/escrita
-// de entidade — em escala de produção (1000 atletas, 500 duplas) uma
-// temporada simulada leva vários minutos. Reduz a população PROCEDURAL
-// (mesma fórmula de rankingPopulation.js, só um corte menor da mesma curva
-// por rank) e/ou aumenta o passo de calendário para iteração rápida;
-// resolveCompletedWorldTourEvents é idempotente e agrupa por (ano, semana)
-// internamente, então um passo maior não perde nenhum torneio concluído, só
-// agrupa mais resoluções por chamada. A BASELINE CONGELADA (docs/) usa os
-// valores de produção completos (970/486/14) — os defaults abaixo já
-// refletem isso; use flags menores só para depuração rápida.
 const PROCEDURAL_ATHLETE_SAMPLE = Math.max(1, Number(args.proceduralAthletes || 970));
 const PROCEDURAL_TEAM_SAMPLE = Math.max(1, Number(args.proceduralTeams || 486));
-const STEP_DAYS = Math.max(1, Number(args.stepDays || 14));
 
 // ═══════════════ Determinismo: mesma seed → mesma saída, sempre ═══════════════
 // Auditoria de código (grep em todo o grafo de chamada deste harness:
@@ -43,13 +48,21 @@ const STEP_DAYS = Math.max(1, Number(args.stepDays || 14));
 // bulkCreate` gera `id: data.id || makeId(...)` quando o chamador não passa
 // um id explícito, e `makeId` usa Date.now()+Math.random(); (2)
 // created_date/updated_date usam `new Date().toISOString()` (relógio real).
-// Corrigido SEM tocar em nenhum arquivo de jogo: (a) todo AthleteProfile/
-// TeamRanking que este harness cria recebe um id explícito e estável
-// (bot_id/team_key — nunca deixamos o fallback rodar); (b) Math.random e o
-// relógio "atual" são substituídos por versões seedadas só neste processo,
-// como rede de segurança para qualquer uso residual que a auditoria não
-// tenha capturado (ex.: ids de WorldEvent, que não afetam nenhuma métrica
-// medida aqui, mas ficam deterministas mesmo assim).
+// Corrigido SEM tocar em nenhum arquivo de jogo: Math.random e o relógio
+// "atual" são substituídos por versões seedadas ANTES de qualquer criação de
+// entidade, e todo AthleteProfile/TeamRanking é criado SEM id explícito —
+// deixando o próprio fallback `makeId()` de produção rodar (agora
+// determinístico graças ao patch acima). Fase 0.1 (achado crítico):
+// uma versão anterior FORÇAVA `id: athlete.bot_id`/`id: team.team_key` —
+// isso parecia mais "limpo", mas produz um formato/comprimento de string
+// diferente do que produção realmente usa (nem worldSeed2025.json nem
+// buildSupplementalRankingPopulation incluem `id`), e a seleção por hash em
+// aiPartnershipLifecycle.js (selectPair) não é robusta a essa variação —
+// trocar só o FORMATO do id (sem tocar em nenhuma lógica) mudou o resultado
+// de ~0% para ~90%+ de pareamento real-real no ano 1 (ver
+// scripts/diag-pairing-mechanism.mjs). bot_id/team_key nunca viram o `.id`
+// real aqui — só chaves de leitura para agrupar as 12 duplas históricas no
+// relatório.
 function hashSeed(value) {
   let h = 2166136261;
   for (const ch of String(value)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
@@ -94,11 +107,6 @@ function round(value, digits = 2) {
   const factor = 10 ** digits;
   return Math.round(Number(value) * factor) / factor;
 }
-function addDays(dateString, amount) {
-  const date = new Date(`${dateString}T00:00:00Z`);
-  date.setUTCDate(date.getUTCDate() + amount);
-  return date.toISOString().slice(0, 10);
-}
 function daysBetween(a, b) {
   return Math.round((new Date(`${b}T00:00:00Z`) - new Date(`${a}T00:00:00Z`)) / 86400000);
 }
@@ -132,10 +140,8 @@ try {
   const { activeCareerAdapter } = await vite.ssrLoadModule('/src/gameplay/services/runtime.js');
   const { localGame } = await vite.ssrLoadModule('/src/api/localGameClient.js');
   const { buildSupplementalRankingPopulation } = await vite.ssrLoadModule('/src/lib/rankingPopulation.js');
-  const { buildSeasonTournaments } = await vite.ssrLoadModule('/src/lib/circuitCatalog.js');
-  const { resolveCompletedWorldTourEvents } = await vite.ssrLoadModule('/src/gameplay/worldTour/WorldTourLifecycle.js');
-  const { processAiPartnershipMarket } = await vite.ssrLoadModule('/src/game-core/aiPartnershipLifecycle.js');
-  const { generateTournamentOpponent } = await vite.ssrLoadModule('/src/lib/career.js');
+  const { generateTournamentOpponent, advanceDay } = await vite.ssrLoadModule('/src/lib/career.js');
+  const { processGameStateDay } = await vite.ssrLoadModule('/src/game-core/gameStateLifecycle.js');
   const { BOTS_BY_DIFFICULTY, BOT_DIFFICULTIES } = await vite.ssrLoadModule('/src/lib/bots.js');
   const { getRealAthletes } = await vite.ssrLoadModule('/src/players/realAthletes.js');
   const { evaluateTournamentEntry, buildAthleteEntryContext } = await vite.ssrLoadModule('/src/gameplay/worldTour/EntryManager.js');
@@ -153,132 +159,127 @@ try {
     level: 'Amador', play_style: 'controle', court_side: 'direita', preferred_side: 'right', handedness: 'right',
     tactical_role: 'controlador', overall: 52, overall_rating: 52, ranking_position: 900, reputation: 55,
     energy: 100, fatigue: 0, coins: 5000, xp: 0, morale: 70, form: 50, weekly_training_enabled: false,
+    trainings_today: 0, practice_matches_today: 0, tournament_matches_today: 0,
   });
   const profile = await localGame.entities.PlayerProfile.get('world-sim-player');
 
-  // ═══════════════ Seed: pipeline de produção (saveFoundation.js), sem window.dispatchEvent, com ids explícitos ═══════════════
+  // ═══════════════ Seed: pipeline de produção (saveFoundation.js), sem window.dispatchEvent ═══════════════
+  // Fase 0.1 (achado crítico): nem worldSeed2025.json nem
+  // buildSupplementalRankingPopulation incluem um campo `id` — em PRODUÇÃO,
+  // create()/bulkCreate() sempre caem no fallback `makeId()`
+  // (CareerEntityRepository.js: `${prefix}-${Date.now()}-${Math.random()...}`),
+  // gerando um id "comprido" tanto para atletas reais quanto procedurais.
+  // `bot_id`/`team_key` são só chaves de upsert — NUNCA o `.id` real da
+  // entidade. Uma versão anterior deste harness usava `id: athlete.bot_id`
+  // diretamente (mais curto, mesmo formato para todo real) por engano —
+  // isso mudava DRASTICAMENTE o resultado da seleção por hash em
+  // aiPartnershipLifecycle.js (selectPair), porque o hash FNV-1a usado ali
+  // não é robusto a variação de comprimento/forma de string entre grupos
+  // (confirmado empiricamente em scripts/diag-pairing-mechanism.mjs: o MESMO
+  // código, só trocando o formato do id, vai de ~0 para ~22/24 reais
+  // pareados no ano 1). Corrigido: NÃO passar `id` explícito — o
+  // Math.random/relógio já determinísticos (installDeterminism, acima)
+  // fazem o PRÓPRIO fallback de produção gerar ids no MESMO formato real,
+  // de forma reproduzível.
   const realAthleteIds = new Set();
   const realTeamKeys = new Set();
-  const historicalDuplas = worldSeed.teams.map((team) => ({
-    team_key: team.team_key, player1_id: team.player1_id, player2_id: team.player2_id,
-    names: `${team.player1_name} & ${team.player2_name}`,
-  }));
+  const botIdToAssignedId = new Map(); // bot_id/team_key (chave do seed) -> id real atribuído pelo makeId()
+  const assignedIdToName = new Map();
   for (const athlete of worldSeed.athletes) {
-    await localGame.entities.AthleteProfile.create({ ...athlete, id: athlete.bot_id });
-    realAthleteIds.add(athlete.bot_id);
+    const created = await localGame.entities.AthleteProfile.create({ ...athlete });
+    realAthleteIds.add(created.id);
+    botIdToAssignedId.set(athlete.bot_id, created.id);
+    assignedIdToName.set(created.id, created.name);
   }
   for (const team of worldSeed.teams) {
-    await localGame.entities.TeamRanking.create({ ...team, id: team.team_key });
-    realTeamKeys.add(team.team_key);
+    const created = await localGame.entities.TeamRanking.create({
+      ...team,
+      player1_id: botIdToAssignedId.get(team.player1_id) || team.player1_id,
+      player2_id: botIdToAssignedId.get(team.player2_id) || team.player2_id,
+    });
+    realTeamKeys.add(created.id);
   }
+  const historicalDuplas = worldSeed.teams.map((team) => ({
+    team_key: team.team_key,
+    player1_id: botIdToAssignedId.get(team.player1_id) || team.player1_id,
+    player2_id: botIdToAssignedId.get(team.player2_id) || team.player2_id,
+    names: `${team.player1_name} & ${team.player2_name}`,
+  }));
   const seededAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
   const seededTeams = await localGame.entities.TeamRanking.list('-ranking_points', 600);
   const supplementalFull = buildSupplementalRankingPopulation(seededAthletes, seededTeams);
   // Amostra: os primeiros N por rank da MESMA curva de produção (não uma
-  // população paralela). Id explícito (bot_id/team_key) em vez de deixar
-  // create/bulkCreate cair no fallback makeId() — ver nota de determinismo.
-  const supplementalAthletes = supplementalFull.athletes.slice(0, PROCEDURAL_ATHLETE_SAMPLE).map((a) => ({ ...a, id: a.bot_id }));
-  const supplementalTeams = supplementalFull.teams.slice(0, PROCEDURAL_TEAM_SAMPLE).map((t) => ({ ...t, id: t.team_key }));
-  await localGame.entities.AthleteProfile.bulkCreate(supplementalAthletes);
-  await localGame.entities.TeamRanking.bulkCreate(supplementalTeams);
+  // população paralela). Sem id explícito — mesmo motivo do bloco acima.
+  const supplementalAthletesPayload = supplementalFull.athletes.slice(0, PROCEDURAL_ATHLETE_SAMPLE);
+  const supplementalTeamsPayload = supplementalFull.teams.slice(0, PROCEDURAL_TEAM_SAMPLE);
+  const supplementalAthletes = await localGame.entities.AthleteProfile.bulkCreate(supplementalAthletesPayload);
+  const supplementalTeams = await localGame.entities.TeamRanking.bulkCreate(supplementalTeamsPayload);
   const totalAthletes = seededAthletes.length + supplementalAthletes.length;
   const totalTeams = seededTeams.length + supplementalTeams.length;
 
   console.log(`Elenco: ${realAthleteIds.size} atletas reais + ${supplementalAthletes.length} bots procedurais (amostra de ${supplementalFull.athletes.length} gerados pela fórmula de produção) = ${totalAthletes} atletas.`);
   console.log(`Duplas: ${realTeamKeys.size} reais + ${supplementalTeams.length} bots = ${totalTeams} duplas.`);
 
-  // ═══════════════ Simulação de mundo — N temporadas, sem intervenção de jogador ═══════════════
+  // ═══════════════ Simulação de mundo — N temporadas, dia a dia, pelo CAMINHO REAL de produção ═══════════════
+  // Fase 0.1 (achado crítico #2): a versão anterior deste harness chamava só
+  // processAiPartnershipMarket + resolveCompletedWorldTourEvents, em passos
+  // de 14 dias — um teste de paridade contra o caminho real (advanceDay +
+  // processGameStateDay, dia a dia — o par exato que
+  // game-core/calendarLifecycle.js:advanceCareerDayWork chama a cada
+  // "avançar dia" real) mostrou 21/31 campeões DIFERENTES (68%) numa mesma
+  // temporada com a mesma seed (scripts/audit-parity-test.mjs). Causa:
+  // simulateWorldDay (game-core/worldSimulationLifecycle.js) muda
+  // overall_rating/form/energia (e pode lesionar) até 80 atletas por dia —
+  // entra direto em athleteScore/pairScore (WorldTourLifecycle.js) e não
+  // tem equivalente em lotes de 14 dias. Corrigido: o harness agora chama
+  // exatamente advanceDay + processGameStateDay, TODO dia, como o jogo
+  // realmente faz — nenhum atalho. O calendário de torneios também deixa de
+  // ser criado por este script: createPlayerProfile já popula o primeiro
+  // ano (mesmo bootstrap de uma carreira real), e advanceDay chama
+  // ensureFutureTournaments sozinho a cada virada de mês, como em produção.
   const tournamentResultsAll = [];
   const perSeason = [];
   const duplaSamplesOverall = new Map(historicalDuplas.map((d) => [d.team_key, []]));
+  const recordedTournamentIds = new Set();
 
-  let cursor = `${START_YEAR}-01-01`;
   let priorTournamentsPlayed = new Map(seededAthletes.concat(supplementalAthletes).map((a) => [a.id, 0]));
   const neverPlayedRunningSet = new Set(realAthleteIds);
 
-  for (let yearIndex = 0; yearIndex < SEASONS; yearIndex += 1) {
-    const year = START_YEAR + yearIndex;
-    const seasonTournaments = buildSeasonTournaments(year, `season-${year}`);
-    // A criação da carreira sintética já popula um calendário de demonstração
-    // (localSeed.js) que pode colidir por id com o calendário real gerado
-    // aqui para o mesmo ano — evita duplicar, sem alterar nenhum torneio já
-    // existente.
-    const existingIds = new Set((await localGame.entities.Tournament.list('-start_date', 2000)).map((t) => t.id));
-    const newTournaments = seasonTournaments.filter((t) => !existingIds.has(t.id));
-    if (newTournaments.length) await localGame.entities.Tournament.bulkCreate(newTournaments);
-
-    // ── Elegibilidade de um jogador ranqueado #1000 (fonte correta e
-    // usada de fato pela inscrição do jogador: EntryManager.js, não o
-    // chooseTournament interno do World Tour) ──
-    const eligibleDates = [];
-    for (const tournament of seasonTournaments) {
-      const entry = evaluateTournamentEntry(tournament, buildAthleteEntryContext({}, 1000, tournament));
-      if (entry.eligible) eligibleDates.push(tournament.start_date);
+  async function recordNewlyFinalizedTournaments(year, bucket) {
+    const finalized = (await localGame.entities.Tournament.list('-start_date', 2000))
+      .filter((t) => t.world_tour_event && t.status === 'finalizado' && !recordedTournamentIds.has(t.id));
+    for (const tournament of finalized) {
+      recordedTournamentIds.add(tournament.id);
+      const championPartnership = tournament.champion_partnership_id
+        ? await localGame.entities.Partnership.get(tournament.champion_partnership_id).catch(() => null) : null;
+      const championIds = championPartnership ? [championPartnership.athlete_a_id, championPartnership.athlete_b_id] : [];
+      const championRealCount = championIds.filter((id) => realAthleteIds.has(id)).length;
+      const [athleteA, athleteB] = await Promise.all(championIds.map((id) => localGame.entities.AthleteProfile.get(id).catch(() => null)));
+      const championOvrAvg = (athleteA && athleteB) ? round((Number(athleteA.overall_rating) + Number(athleteB.overall_rating)) / 2, 1) : null;
+      const mainDrawSize = Number(tournament.main_draw_size) || null;
+      const simulatedEntrants = Number(tournament.simulated_entrants) || 0;
+      const row = {
+        year, tournament_id: tournament.id, tier: tournament.tier || 'desconhecido',
+        champion_name: tournament.champion, champion_ids: championIds.join('|'),
+        champion_real_count: championRealCount, champion_ovr_avg: championOvrAvg,
+        classification: championIds.length === 0 ? 'desconhecido' : championRealCount === 2 ? '100%_reais' : championRealCount === 1 ? 'mista' : '100%_bots',
+        main_draw_size: mainDrawSize, simulated_entrants: simulatedEntrants,
+        incomplete: mainDrawSize ? simulatedEntrants < mainDrawSize : null,
+      };
+      bucket.push(row);
+      tournamentResultsAll.push(row);
     }
-    eligibleDates.sort();
-    let maxGapDays = null;
-    for (let i = 1; i < eligibleDates.length; i += 1) {
-      const gap = daysBetween(eligibleDates[i - 1], eligibleDates[i]);
-      if (maxGapDays === null || gap > maxGapDays) maxGapDays = gap;
-    }
+  }
 
-    const duplaSamplesThisSeason = new Map(historicalDuplas.map((d) => [d.team_key, []]));
-    const tournamentResultsThisSeason = [];
+  let currentProfile = profile;
+  let oldDate = currentProfile.career_date;
+  let currentYear = Number(oldDate.slice(0, 4));
+  let tournamentResultsThisSeason = [];
+  let duplaSamplesThisSeason = new Map(historicalDuplas.map((d) => [d.team_key, []]));
+  let lastSampledMonth = oldDate.slice(0, 7);
+  const finalYear = START_YEAR + SEASONS - 1;
 
-    let lastMonth = cursor.slice(0, 7);
-    const stepsPerYear = Math.ceil(366 / STEP_DAYS) + 1;
-    for (let step = 1; step <= stepsPerYear; step += 1) {
-      const previousCursor = cursor;
-      cursor = addDays(cursor, STEP_DAYS);
-      if (cursor.slice(0, 4) !== String(year) && step > Math.floor(340 / STEP_DAYS)) break;
-
-      await processAiPartnershipMarket(profile, previousCursor, cursor).catch(() => {});
-      const resolution = await resolveCompletedWorldTourEvents(cursor).catch(() => null);
-      if (resolution?.tournaments?.length) {
-        for (const tournamentUpdate of resolution.tournaments) {
-          const tournament = await localGame.entities.Tournament.get(tournamentUpdate.id).catch(() => null);
-          const [championPartnership] = await Promise.all([
-            tournamentUpdate.champion_partnership_id ? localGame.entities.Partnership.get(tournamentUpdate.champion_partnership_id).catch(() => null) : null,
-          ]);
-          const championIds = championPartnership ? [championPartnership.athlete_a_id, championPartnership.athlete_b_id] : [];
-          const championRealCount = championIds.filter((id) => realAthleteIds.has(id)).length;
-          const [athleteA, athleteB] = await Promise.all(championIds.map((id) => localGame.entities.AthleteProfile.get(id).catch(() => null)));
-          const championOvrAvg = (athleteA && athleteB) ? round((Number(athleteA.overall_rating) + Number(athleteB.overall_rating)) / 2, 1) : null;
-          const mainDrawSize = Number(tournament?.main_draw_size) || null;
-          const simulatedEntrants = Number(tournamentUpdate.simulated_entrants) || 0;
-          const row = {
-            year, tournament_id: tournamentUpdate.id, tier: tournament?.tier || 'desconhecido',
-            champion_name: tournamentUpdate.champion, champion_ids: championIds.join('|'),
-            champion_real_count: championRealCount, champion_ovr_avg: championOvrAvg,
-            classification: championIds.length === 0 ? 'desconhecido' : championRealCount === 2 ? '100%_reais' : championRealCount === 1 ? 'mista' : '100%_bots',
-            main_draw_size: mainDrawSize, simulated_entrants: simulatedEntrants,
-            incomplete: mainDrawSize ? simulatedEntrants < mainDrawSize : null,
-          };
-          tournamentResultsThisSeason.push(row);
-          tournamentResultsAll.push(row);
-        }
-      }
-
-      const currentMonth = cursor.slice(0, 7);
-      if (currentMonth !== lastMonth) {
-        lastMonth = currentMonth;
-        const partnerLookup = await Promise.all(
-          historicalDuplas.map(async (dupla) => {
-            const [p1, p2] = await Promise.all([
-              localGame.entities.AthleteProfile.get(dupla.player1_id).catch(() => null),
-              localGame.entities.AthleteProfile.get(dupla.player2_id).catch(() => null),
-            ]);
-            return Boolean(p1?.ai_partner_id === dupla.player2_id || p2?.ai_partner_id === dupla.player1_id);
-          }),
-        );
-        historicalDuplas.forEach((dupla, index) => {
-          duplaSamplesThisSeason.get(dupla.team_key).push(partnerLookup[index]);
-          duplaSamplesOverall.get(dupla.team_key).push(partnerLookup[index]);
-        });
-      }
-    }
-
-    // ── Snapshots de fim de temporada ──
+  async function finalizeSeasonRecord(year) {
     const allAthletesNow = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
     const top20 = allAthletesNow.slice(0, 20);
     const realInTop20 = top20.filter((a) => realAthleteIds.has(a.id)).length;
@@ -310,6 +311,23 @@ try {
       delete entry.championOvrs;
     }
 
+    // Elegibilidade de um jogador #1000 — lida do calendário REAL desta
+    // temporada (o que ensureFutureTournaments efetivamente criou), não de
+    // uma reconstrução paralela via buildSeasonTournaments.
+    const seasonTournaments = (await localGame.entities.Tournament.list('-start_date', 2000))
+      .filter((t) => t.world_tour_event && String(t.year || t.start_date?.slice(0, 4)) === String(year));
+    const eligibleDates = [];
+    for (const tournament of seasonTournaments) {
+      const entry = evaluateTournamentEntry(tournament, buildAthleteEntryContext({}, 1000, tournament));
+      if (entry.eligible) eligibleDates.push(tournament.start_date);
+    }
+    eligibleDates.sort();
+    let maxGapDays = null;
+    for (let i = 1; i < eligibleDates.length; i += 1) {
+      const gap = daysBetween(eligibleDates[i - 1], eligibleDates[i]);
+      if (maxGapDays === null || gap > maxGapDays) maxGapDays = gap;
+    }
+
     const seasonRecord = {
       year,
       tournaments: {
@@ -324,7 +342,7 @@ try {
         real: { mean: round(mean(realDeltas), 2), median: round(median(realDeltas), 2), n: realDeltas.length },
         bots: { mean: round(mean(botDeltas), 2), median: round(median(botDeltas), 2), n: botDeltas.length },
       },
-      realAthletesNeverPlayedSoFar: [...neverPlayedRunningSet].map((id) => ({ id, name: realAthleteIds.has(id) ? (worldSeed.athletes.find((a) => a.bot_id === id)?.name || id) : id })),
+      realAthletesNeverPlayedSoFar: [...neverPlayedRunningSet].map((id) => ({ id, name: assignedIdToName.get(id) || id })),
       historicalDuplasThisSeason: historicalDuplas.map((dupla) => {
         const samples = duplaSamplesThisSeason.get(dupla.team_key);
         return { team_key: dupla.team_key, names: dupla.names, samples: samples.length, pairedRatePct: samples.length ? round((samples.filter(Boolean).length / samples.length) * 100, 1) : null };
@@ -338,6 +356,105 @@ try {
     };
     perSeason.push(seasonRecord);
     console.log(`Temporada ${year}: Top 20 tem ${realInTop20}/20 reais · #1000 elegível para ${eligibleDates.length}/${seasonTournaments.length} torneios (maior intervalo: ${maxGapDays ?? '—'} dias) · ${seasonRecord.tournaments.incomplete}/${seasonRecord.tournaments.total} chaves incompletas.`);
+  }
+
+  dayLoop:
+  for (let day = 0; day < SEASONS * 367; day += 1) {
+    try {
+      currentProfile = await advanceDay(currentProfile, {});
+    } catch (error) {
+      console.warn(`[Universo produção] advanceDay bloqueado em ${oldDate}:`, error?.message || error);
+      break;
+    }
+    const newDate = currentProfile.career_date;
+    const result = await processGameStateDay(currentProfile, oldDate, newDate).catch((error) => {
+      console.warn(`[Universo produção] processGameStateDay falhou em ${newDate}:`, error?.message || error);
+      return null;
+    });
+    currentProfile = result?.profile || currentProfile;
+    oldDate = newDate;
+
+    await recordNewlyFinalizedTournaments(currentYear, tournamentResultsThisSeason);
+
+    const sampledMonth = newDate.slice(0, 7);
+    if (sampledMonth !== lastSampledMonth) {
+      lastSampledMonth = sampledMonth;
+
+      // Fase 0.1 (achado C — memória): nada em produção jamais APAGA
+      // WorldEvent (expireMacroEvents só marca is_active:false). Isso é uma
+      // característica real do jogo, não um bug deste harness — mas como a
+      // camada de storage clona a carreira INTEIRA a cada escrita, e este
+      // harness roda ~1800 dias reais em vez dos poucos avanços manuais de
+      // uma sessão normal, a coleção cresce sem limite e cada escrita
+      // seguinte fica mais cara, até estourar a memória (~3 temporadas,
+      // confirmado empiricamente). Poda só o WorldEvent (nunca lido por
+      // nenhuma métrica deste relatório) para manter o custo por escrita
+      // aproximadamente constante — não simula nada, só evita que o
+      // harness pague um custo de memória que uma sessão real de jogador
+      // (poucos dias por vez, não milhares seguidos) nunca paga de uma vez.
+      // Fase 0.1 — diagnóstico confirmou que WorldEvent NÃO é a única coleção
+      // sem poda: CareerMessage, TeamRanking e Partnership também crescem
+      // linearmente pelo mesmo motivo (nenhum sistema de produção jamais
+      // apaga uma dupla dissolvida ou uma mensagem antiga — só marca status).
+      // Nenhuma dessas três é lida por nenhuma métrica deste harness depois
+      // do mês em que é criada (TeamRanking nunca é lido no loop diário;
+      // Partnership só é lido no mesmo mês em que um torneio termina, via
+      // recordNewlyFinalizedTournaments, ANTES desta poda rodar). Podar é
+      // seguro para as métricas e necessário para não estourar memória.
+      const pruneOps = [];
+      const recentEvents = await localGame.entities.WorldEvent.list('-created_date', 5000).catch(() => []);
+      recentEvents.slice(300).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'WorldEvent', id: row.id }));
+      const recentMessages = await localGame.entities.CareerMessage.list('-created_date', 5000).catch(() => []);
+      recentMessages.slice(50).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'CareerMessage', id: row.id }));
+      const allTeamRankings = await localGame.entities.TeamRanking.list(null, 20000).catch(() => []);
+      allTeamRankings.filter((row) => !realTeamKeys.has(row.id)).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'TeamRanking', id: row.id }));
+      const allPartnerships = await localGame.entities.Partnership.list(null, 20000).catch(() => []);
+      allPartnerships.filter((row) => row.status !== 'ativa').forEach((row) => pruneOps.push({ type: 'delete', entityName: 'Partnership', id: row.id }));
+      // Torneios de anos já processados e distantes (o horizonte de
+      // ensureFutureTournaments nunca olha para trás) — mantém o ano atual e
+      // o anterior por segurança.
+      const allTournaments = await localGame.entities.Tournament.list(null, 20000).catch(() => []);
+      allTournaments
+        .filter((row) => recordedTournamentIds.has(row.id) && Number(row.year || String(row.start_date).slice(0, 4)) < Number(sampledMonth.slice(0, 4)) - 1)
+        .forEach((row) => pruneOps.push({ type: 'delete', entityName: 'Tournament', id: row.id }));
+      for (let i = 0; i < pruneOps.length; i += 500) {
+        await localGame.batch(pruneOps.slice(i, i + 500)).catch(() => {});
+      }
+      if (process.env.DIAG_SIZES) {
+        const names = ['WorldEvent', 'CareerMessage', 'Tournament', 'AthleteProfile', 'TeamRanking', 'Partnership', 'MonthlyCareerReport', 'AnnualCareerReport', 'PressArticle', 'Post', 'HistoryEntry', 'FinancialTransaction', 'TournamentRegistration', 'CalendarEvent'];
+        const sizes = {};
+        for (const name of names) {
+          try { sizes[name] = (await localGame.entities[name].list(null, 20000)).length; } catch { sizes[name] = 'n/a'; }
+        }
+        console.log(`[DIAG ${newDate}] tamanhos:`, JSON.stringify(sizes));
+      }
+
+      const partnerLookup = await Promise.all(
+        historicalDuplas.map(async (dupla) => {
+          const [p1, p2] = await Promise.all([
+            localGame.entities.AthleteProfile.get(dupla.player1_id).catch(() => null),
+            localGame.entities.AthleteProfile.get(dupla.player2_id).catch(() => null),
+          ]);
+          return Boolean(p1?.ai_partner_id === dupla.player2_id || p2?.ai_partner_id === dupla.player1_id);
+        }),
+      );
+      historicalDuplas.forEach((dupla, index) => {
+        duplaSamplesThisSeason.get(dupla.team_key).push(partnerLookup[index]);
+        duplaSamplesOverall.get(dupla.team_key).push(partnerLookup[index]);
+      });
+    }
+
+    const newYear = Number(newDate.slice(0, 4));
+    if (newYear !== currentYear) {
+      await finalizeSeasonRecord(currentYear);
+      if (currentYear >= finalYear) break dayLoop;
+      currentYear = newYear;
+      tournamentResultsThisSeason = [];
+      duplaSamplesThisSeason = new Map(historicalDuplas.map((d) => [d.team_key, []]));
+    }
+  }
+  if (perSeason.length < SEASONS && perSeason[perSeason.length - 1]?.year !== currentYear) {
+    await finalizeSeasonRecord(currentYear);
   }
 
   // ═══════════════ Cumulativo (toda a corrida) ═══════════════
@@ -386,12 +503,11 @@ try {
     generatedAt: new Date().toISOString(),
     seed: SEED,
     determinism: {
-      note: 'Math.random e o relógio são seedados a partir de --seed só neste processo. Auditoria de código confirma zero Math.random() no caminho de simulação — o motor já é 100% hash determinístico de (id, mês, id do torneio). Ids de AthleteProfile/TeamRanking criados por este harness são sempre explícitos (bot_id/team_key), nunca o fallback aleatório de CareerEntityRepository.js.',
+      note: 'Math.random e o relógio são seedados a partir de --seed só neste processo, ANTES de qualquer criação de entidade. Ids de AthleteProfile/TeamRanking são deixados para o PRÓPRIO fallback makeId() de produção (nunca sobrescritos com bot_id/team_key — isso mudava a forma da string e enviesava a seleção por hash de aiPartnershipLifecycle.js, achado da Fase 0.1) — como Math.random/Date.now já são determinísticos aqui, makeId() produz o MESMO formato de produção de forma reproduzível. bot_id/team_key continuam existindo só como chaves de agrupamento para leitura deste relatório (duplas históricas), nunca como o id real da entidade.',
     },
     seasonsSimulated: SEASONS,
     proceduralAthleteSample: PROCEDURAL_ATHLETE_SAMPLE,
     proceduralTeamSample: PROCEDURAL_TEAM_SAMPLE,
-    stepDays: STEP_DAYS,
     roster: {
       realAthletes: realAthleteIds.size, proceduralAthletes: supplementalAthletes.length, totalAthletes,
       realTeams: realTeamKeys.size, proceduralTeams: supplementalTeams.length, totalTeams,
