@@ -1,4 +1,5 @@
 import { createTournamentEditionId } from './tournamentIntegrity.js';
+import { fnv1aHash } from './hashUtils.js';
 
 export const WORLD_TOUR_VERSION = '0.5.0-alpha.1';
 export const WORLD_PLAYER_CAPACITY = 5000;
@@ -129,12 +130,7 @@ const EVENT_BRANDS = Object.freeze({
 });
 
 function hashString(value) {
-  let hash = 2166136261;
-  for (const char of String(value || '')) {
-    hash ^= char.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+  return fnv1aHash(String(value || ''));
 }
 
 function seededIndex(seed, length) { return length ? hashString(seed) % length : 0; }

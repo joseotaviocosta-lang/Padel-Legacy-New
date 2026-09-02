@@ -1,3 +1,5 @@
+import { fnv1aHash } from '@/lib/hashUtils.js';
+
 const STORAGE_KEY = 'padel-legacy-beta-analytics-v1';
 const MAX_SESSIONS = 50;
 const MAX_EVENTS = 2000;
@@ -10,9 +12,7 @@ function nowIso() { return new Date().toISOString(); }
 function safeParse(value, fallback) { try { return JSON.parse(value) ?? fallback; } catch { return fallback; } }
 function anonCareerId(careerId) {
   if (!careerId) return 'no-career';
-  let hash = 2166136261;
-  for (const char of String(careerId)) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
-  return `career-${(hash >>> 0).toString(16)}`;
+  return `career-${fnv1aHash(String(careerId)).toString(16)}`;
 }
 function emptyState() { return { schemaVersion: 1, sessions: [], currentSession: null, events: [], totals: { screenTimeMs: {}, counters: {} } }; }
 function loadState() {

@@ -5,6 +5,7 @@ import { normalizeFatigue } from './physicalStats.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 import { buildStaffMeeting } from '@/lib/livingStaff.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 function asNumber(value, fallback = 0) {
   const number = Number(value);
@@ -19,9 +20,7 @@ function weekKey(date) {
   return `${d.getFullYear()}-${Math.floor((d - start) / 604800000)}`;
 }
 function hashText(value = '') {
-  let hash = 2166136261;
-  for (const char of String(value)) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
-  return hash >>> 0;
+  return fnv1aHash(String(value));
 }
 function seeded01(value) { return (hashText(value) % 100000) / 100000; }
 

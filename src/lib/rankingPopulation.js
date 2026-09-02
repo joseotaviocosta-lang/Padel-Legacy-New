@@ -1,3 +1,5 @@
+import { fnv1aHash } from './hashUtils.js';
+
 export const WORLD_RANKING_TARGET = 1000;
 export const TEAM_RANKING_TARGET = 500;
 
@@ -7,12 +9,7 @@ const COUNTRIES = ['Espanha','Argentina','Brasil','França','Itália','Portugal'
 const STYLES = ['Equilibrado','Controle','Defensivo','Agressivo','Potência','Tático'];
 
 function hash(value = '') {
-  let h = 2166136261;
-  for (let i = 0; i < String(value).length; i += 1) {
-    h ^= String(value).charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h >>> 0);
+  return Math.abs(fnv1aHash(String(value)));
 }
 
 const RANKING_POINT_ANCHORS = Object.freeze([

@@ -1,3 +1,5 @@
+import { fnv1aHash } from '@/lib/hashUtils.js';
+
 const AXIS_NAMES = [
   'aggression',
   'discipline',
@@ -18,12 +20,7 @@ const clamp = (value, min = 0, max = 100) => Math.max(min, Math.min(max, Number(
 const finite = (value, fallback) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 
 function hashText(input) {
-  let hash = 2166136261;
-  for (const char of String(input || 'athlete')) {
-    hash ^= char.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+  return fnv1aHash(String(input || 'athlete'));
 }
 
 function seededAxis(key, axis, min = 38, max = 72) {

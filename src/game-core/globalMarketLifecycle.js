@@ -1,11 +1,12 @@
 import { localGame } from '@/api/localGameClient.js';
 import { COACHES_DATA, COACH_TIERS, COACH_SPECIALTY_INFO } from '@/lib/coaches';
 import { ensureWorldMarket, evolveWorldMarket, getWorldMarketSnapshot } from './worldMarketLifecycle';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const TIER_MINIMUMS = Object.freeze({ iniciante: 6, regional: 5, profissional: 4, elite: 2, lendario: 1 });
 
 function monthKey(date) { return String(date || new Date().toISOString().slice(0, 10)).slice(0, 7); }
-function hash(text) { let value = 2166136261; for (const char of String(text)) { value ^= char.charCodeAt(0); value = Math.imul(value, 16777619); } return Math.abs(value >>> 0); }
+function hash(text) { return Math.abs(fnv1aHash(String(text))); }
 function chance(seed, pct) { return (hash(seed) % 10000) < pct * 100; }
 function clamp(value, min, max) { return Math.max(min, Math.min(max, Number(value) || 0)); }
 function normalizeName(value) { return String(value || '').trim().toLocaleLowerCase('pt-BR'); }

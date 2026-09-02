@@ -1,6 +1,7 @@
 import { buildSeedings } from './EntryManager.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
-function hashString(value = '') { let h = 2166136261; for (let i=0;i<value.length;i+=1){h^=value.charCodeAt(i);h=Math.imul(h,16777619);} return Math.abs(h>>>0); }
+function hashString(value = '') { return Math.abs(fnv1aHash(String(value))); }
 function seededRandom(seed){let s=seed||1;return()=>{s=(Math.imul(s,1664525)+1013904223)>>>0;return s/4294967296;};}
 
 export function getDrawSize(tournament = {}, rounds = []) {

@@ -2,18 +2,14 @@ import { localGame } from '@/api/localGameClient.js';
 import { formPartnerContract } from '@/game-core/partnerLifecycle.js';
 export { partnerOfferId, compatibilityLabel, buildInitialPartnerOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
 import { partnerOfferId, buildInitialPartnerOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
+import { fnv1aHash } from './hashUtils.js';
 
 export const PARTNER_OFFERS_ROUTE = '/partners?view=offers';
 const acceptanceLocks = new Map();
 const useful = value => value !== undefined && value !== null && value !== '';
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text || '')) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return value >>> 0;
+  return fnv1aHash(String(text || ''));
 }
 function monthKeyOf(date) { return String(date || '').slice(0, 7); }
 const addDaysStr = (date, days) => { const value = new Date(`${date}T12:00:00`); value.setDate(value.getDate() + days); return value.toISOString().slice(0, 10); };

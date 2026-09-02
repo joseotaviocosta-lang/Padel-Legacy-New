@@ -1,5 +1,5 @@
 import { getTournamentChoiceProfile } from '@/lib/circuitCatalog.js';
-import { evaluateTournamentEntry } from './EntryManager.js';
+import { evaluateTournamentEntry, resolveEntryRank } from './EntryManager.js';
 
 export const CAREER_STRATEGIES = Object.freeze({
   MONEY: 'money', RANKING: 'ranking', PRESTIGE: 'prestige', EXPERIENCE: 'experience', BALANCED: 'balanced',
@@ -14,8 +14,16 @@ const WEIGHTS = Object.freeze({
 });
 
 export function evaluateTournamentChoice(tournament, athlete = {}, context = {}) {
+  // Fase 1A (achado #16): evaluateTournamentEntry já resolve o rank via
+  // resolveEntryRank internamente, então passar `athlete` bruto funciona
+  // para qualquer chamador (WorldTourLifecycle usa `.ranking`, o jogador
+  // usa `.rank`/`.teamRank`). O que faltava era este `||` disperso e mais
+  // estreito abaixo, que alimentava o perfil de escolha (título/prestígio)
+  // com rank 0 sempre que o campo de origem não era `rank`/`teamRank` —
+  // trocado pelo mesmo resolvedor canônico para não haver duas fontes de
+  // verdade sobre "qual é o rank deste atleta aqui".
   const entry = evaluateTournamentEntry(tournament, athlete);
-  const profile = getTournamentChoiceProfile(tournament, athlete.rank || athlete.teamRank || 0);
+  const profile = getTournamentChoiceProfile(tournament, resolveEntryRank(athlete));
   const energy = Number(athlete.energy ?? 100);
   const travelLoad = tournament?.world_region && context.currentRegion && tournament.world_region !== context.currentRegion ? 7 : 2;
   const duration = Math.max(3, Number(tournament?.end_date && tournament?.start_date ?

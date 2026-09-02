@@ -22,11 +22,40 @@ export function getEntryPathLabel(path) {
   return ENTRY_PATH_LABELS[path] || ENTRY_PATH_LABELS[ENTRY_PATHS.INELIGIBLE];
 }
 
-export function buildAthleteEntryContext(profile = {}, teamRank = 0, tournament = {}) {
+// Correção Fase 1A (achado #16 da auditoria de atletas reais vs. bots):
+// "posição de ranking" chegava até aqui com nomes de campo diferentes
+// dependendo do chamador — profile.world_ranking (jogador),
+// athlete.ranking_position/ranking (WorldTourLifecycle.js:normalizeAthlete),
+// team_rank/teamRank (torneio do jogador). WorldTourLifecycle.js gravava em
+// `ranking`, mas evaluateTournamentEntry só lia `rank`/`teamRank` — nenhuma
+// dupla do World Tour em segundo plano era considerada "com ranking", e a
+// elegibilidade por tier nunca filtrava nada ali (Silver e Crown sorteavam
+// do mesmo pool). Corrigido com UM adaptador central — nenhum `||` disperso
+// pelos chamadores: toda leitura de "rank de entrada" passa por
+// resolveEntryRank, e toda escrita do contexto de elegibilidade passa por
+// buildAthleteEntryContext. Nenhum consumidor precisou mudar seu próprio
+// campo de origem.
+const ENTRY_RANK_FIELDS = Object.freeze([
+  'rank', 'teamRank', 'team_rank', 'ranking_position', 'ranking', 'world_ranking',
+]);
+
+export function resolveEntryRank(athleteLike = {}) {
+  for (const field of ENTRY_RANK_FIELDS) {
+    const value = Number(athleteLike?.[field]);
+    if (Number.isFinite(value) && value > 0) return value;
+  }
+  return 0;
+}
+
+export function buildAthleteEntryContext(profile = {}, teamRank = null, tournament = {}) {
   const country = profile.nationality || profile.country;
+  // teamRank explícito (fonte já canônica, ex.: getTeamRank do jogador)
+  // sempre vence; na ausência, resolve a partir de qualquer campo de
+  // ranking que o objeto de origem já carregue.
+  const resolvedRank = teamRank != null && Number(teamRank) > 0 ? Number(teamRank) : resolveEntryRank(profile);
   return {
-    rank: Number(teamRank || profile.team_rank || profile.world_ranking || 0),
-    teamRank: Number(teamRank || profile.team_rank || 0),
+    rank: resolvedRank,
+    teamRank: resolvedRank,
     age: Number(profile.age || 25),
     nationality: country,
     country,
@@ -40,7 +69,7 @@ export function buildAthleteEntryContext(profile = {}, teamRank = 0, tournament 
 
 export function evaluateTournamentEntry(tournament, athlete = {}) {
   const config = getTournamentTierConfig(tournament?.tier);
-  const rank = Number(athlete.rank || athlete.teamRank || 0);
+  const rank = resolveEntryRank(athlete);
   const age = Number(athlete.age || 25);
   const nationality = athlete.nationality || athlete.country;
   const tournamentCountry = tournament?.country;

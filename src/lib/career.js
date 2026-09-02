@@ -9,6 +9,7 @@ import { simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents, executePlannedActivities, executeWeeklyTrainingPlan } from '@/lib/calendarSystem';
 import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 import { emitDayAdvanced } from '@/lib/matchDay';
 import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core/monthlyCareerReportLifecycle.js';
@@ -367,9 +368,7 @@ export function getTournamentDifficulty(tournament, profile, roundIdx = 0, teamR
 }
 
 function tournamentOpponentHash(value = '') {
-  let hash = 2166136261;
-  for (const char of String(value)) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
-  return hash >>> 0;
+  return fnv1aHash(String(value));
 }
 
 export function generateTournamentOpponent(tournament, profile, roundIdx, excludeIds = [], teamRank = 0, stage = 'main') {

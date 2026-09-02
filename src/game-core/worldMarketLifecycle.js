@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating } from '@/lib/padel';
 import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Chile', 'Uruguai'];
 const FIRST_NAMES = ['Lucas', 'Mateo', 'Thiago', 'Nicolás', 'Martín', 'Alejandro', 'João', 'Bruno', 'Enzo', 'Tomás'];
@@ -16,12 +17,7 @@ function monthKey(date) {
 }
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text)) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return Math.abs(value >>> 0);
+  return Math.abs(fnv1aHash(String(text)));
 }
 
 function seededValue(seed, min, max) {

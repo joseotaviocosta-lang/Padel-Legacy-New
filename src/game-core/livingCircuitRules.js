@@ -1,3 +1,7 @@
+// Relativo (não `@/...`): scripts/test-phase15-3-economy-progression-navigation.mjs
+// importa este módulo diretamente em Node puro, sem resolver o alias Vite.
+import { fnv1aHash } from '../lib/hashUtils.js';
+
 const DAY_MS = 86_400_000;
 
 export const WORLD_RANKING_LADDER = Object.freeze([1, 3, 5, 10, 20, 30, 50, 100, 250, 500]);
@@ -9,12 +13,7 @@ export function clampNumber(value, min = 0, max = 100, fallback = 0) {
 }
 
 export function seededHash(value = '') {
-  let hash = 2166136261;
-  for (const character of String(value)) {
-    hash ^= character.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+  return fnv1aHash(String(value));
 }
 
 export function seededInteger(seed, min, max) {

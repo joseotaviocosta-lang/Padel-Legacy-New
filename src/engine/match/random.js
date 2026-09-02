@@ -1,11 +1,7 @@
+import { fnv1aHash } from '@/lib/hashUtils.js';
+
 export function hashSeed(input = Date.now()) {
-  const text = String(input);
-  let hash = 2166136261;
-  for (let i = 0; i < text.length; i += 1) {
-    hash ^= text.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+  return fnv1aHash(String(input));
 }
 
 export function createRandom(seed, initialState) {

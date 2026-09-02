@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 import { careerDaysBetween, isAthleteRetired, partnershipRecordId, seededChance, seededInteger } from './livingCircuitRules.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 
@@ -14,12 +15,7 @@ function clamp(value, min, max) {
 }
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text || '')) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return value >>> 0;
+  return fnv1aHash(String(text || ''));
 }
 
 function integer(seed, min, max) {

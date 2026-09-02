@@ -1,3 +1,7 @@
+// Relativo (não `@/...`): scripts/test-mission-system-v2.mjs importa este
+// módulo diretamente em Node puro, sem resolver o alias Vite.
+import { fnv1aHash } from '../lib/hashUtils.js';
+
 export const MISSION_STATUSES = Object.freeze(['locked', 'available', 'in_progress', 'completed', 'rewarded', 'expired']);
 let hydrationStatus = 'idle';
 export const missionRuntime = {
@@ -16,7 +20,7 @@ export function missionStatus(row, { locked = false, expired = false } = {}) {
   if (expired) return 'expired'; if (locked) return 'locked'; if (row?.reward_delivered || row?.claimed) return 'rewarded'; if (row?.completed) return 'completed'; if (Number(row?.progress || 0) > 0) return 'in_progress'; return 'available';
 }
 
-const hash = value => { let result = 2166136261; for (const char of String(value)) { result ^= char.charCodeAt(0); result = Math.imul(result, 16777619); } return result >>> 0; };
+const hash = value => fnv1aHash(String(value));
 export function deterministicMissionSelection(missions, { careerId, cycleId, category, limit }) {
   return [...missions].sort((a,b) => hash(`${careerId}:${cycleId}:${category}:${a.id || a.title}`) - hash(`${careerId}:${cycleId}:${category}:${b.id || b.title}`)).slice(0, limit);
 }

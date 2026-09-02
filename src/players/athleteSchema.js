@@ -1,3 +1,7 @@
+// Relativo (não `@/...`): scripts/test-player-system.mjs importa este
+// módulo diretamente em Node puro, sem resolver o alias Vite.
+import { fnv1aHash } from '../lib/hashUtils.js';
+
 export const ATHLETE_SCHEMA_VERSION = 1;
 export const COURT_SIDES = Object.freeze({ RIGHT: 'right', LEFT: 'left', FLEX: 'flex' });
 export const ATHLETE_SOURCES = Object.freeze({ REAL: 'real', FICTIONAL: 'fictional', CAREER: 'career' });
@@ -20,12 +24,7 @@ export function toLegacyCourtSide(value) {
 }
 
 export function stableHash(value) {
-  let hash = 2166136261;
-  for (const char of String(value || '')) {
-    hash ^= char.charCodeAt(0);
-    hash = Math.imul(hash, 16777619);
-  }
-  return (hash >>> 0).toString(36);
+  return fnv1aHash(String(value || '')).toString(36);
 }
 
 export function stableAthleteId({ source_type = 'fictional', template_id, id, name, country } = {}) {

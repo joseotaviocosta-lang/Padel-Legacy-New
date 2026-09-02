@@ -1,12 +1,8 @@
 import { buildSeedings } from './EntryManager.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 function hashString(value = '') {
-  let hash = 2166136261;
-  for (let i = 0; i < value.length; i += 1) {
-    hash ^= value.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return Math.abs(hash >>> 0);
+  return Math.abs(fnv1aHash(String(value)));
 }
 
 function seededRandom(seed) {

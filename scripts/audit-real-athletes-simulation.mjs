@@ -410,6 +410,17 @@ try {
       allTeamRankings.filter((row) => !realTeamKeys.has(row.id)).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'TeamRanking', id: row.id }));
       const allPartnerships = await localGame.entities.Partnership.list(null, 20000).catch(() => []);
       allPartnerships.filter((row) => row.status !== 'ativa').forEach((row) => pruneOps.push({ type: 'delete', entityName: 'Partnership', id: row.id }));
+      // Achado C (continuação): AnnualCareerReport embute um SNAPSHOT
+      // COMPLETO do elenco (createAnnualCareerSnapshot → createAnnualCircuitSnapshot,
+      // src/lib/annualCareerReportModel.js — sem nenhum corte, todo
+      // AthleteProfile/TeamRanking, duas vezes por ano: início e fim). Numa
+      // sessão real isso é 1 registro/ano, irrelevante; em 5 anos de
+      // simulação sem interação, vira 5 cópias inteiras do elenco
+      // acumuladas — e cresce com o TAMANHO da população, o que explica por
+      // que 40 bots sobrevivia e 100+ não. Nenhuma métrica deste harness lê
+      // AnnualCareerReport, então poda tudo exceto o mais recente.
+      const allAnnualReports = await localGame.entities.AnnualCareerReport.list('-year', 200).catch(() => []);
+      allAnnualReports.slice(1).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'AnnualCareerReport', id: row.id }));
       // Torneios de anos já processados e distantes (o horizonte de
       // ensureFutureTournaments nunca olha para trás) — mantém o ano atual e
       // o anterior por segurança.

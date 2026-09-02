@@ -1,17 +1,14 @@
 import { localGame } from '@/api/localGameClient.js';
 import { chooseTournament } from './TournamentSelectionAI.js';
+import { evaluateTournamentEntry, buildAthleteEntryContext, resolveEntryRank } from './EntryManager.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 
 const FINISH_POINTS = Object.freeze({ champion: 1, final: 0.72, semifinal: 0.52, quarterfinal: 0.34, r16: 0.20, r32: 0.12, entry: 0.04 });
 
 function hash(value = '') {
-  let h = 2166136261;
-  for (let i = 0; i < String(value).length; i += 1) {
-    h ^= String(value).charCodeAt(i);
-    h = Math.imul(h, 16777619);
-  }
-  return Math.abs(h >>> 0);
+  return Math.abs(fnv1aHash(String(value)));
 }
 
 function athleteScore(athlete, tournament) {
@@ -19,6 +16,16 @@ function athleteScore(athlete, tournament) {
   const form = Number(athlete.form || athlete.current_form || 50);
   const energy = Number(athlete.energy || 80);
   return rating * 1.8 + form * 0.25 + energy * 0.12 + (hash(`${athlete.id}:${tournament.id}`) % 2400) / 100;
+}
+
+// Correção Fase 1A: "rank de entrada" de uma DUPLA (não existe um
+// TeamRanking dedicado para pares do World Tour em segundo plano) — média
+// do rank individual de cada atleta, mesmo adaptador canônico
+// (resolveEntryRank) usado pelo restante do pipeline de elegibilidade.
+function pairEntryRank(pair) {
+  const ranks = pair.athletes.map((athlete) => resolveEntryRank(athlete)).filter((value) => value > 0);
+  if (!ranks.length) return 0;
+  return Math.round(ranks.reduce((sum, value) => sum + value, 0) / ranks.length);
 }
 
 function pairScore(pair, tournament) {
@@ -167,13 +174,37 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     }
 
     for (const tournament of weekTournaments) {
+      // Achado #16b da auditoria (config, não lógica — corrigido na Fase 3):
+      // `tournament.draw_size` não existe (produção grava `main_draw_size`);
+      // o fallback de 32 aqui é o que faz Platinum+ (capacidade real 64)
+      // nunca preencher mais que a metade da chave. Mantido como está por
+      // enquanto — não é o escopo desta correção.
       const drawSize = Math.max(2, Math.min(Number(tournament.draw_size || 32), 32));
       let entrants = [...(assignments.get(tournament.id) || [])];
       if (entrants.length < 2) {
+        const needed = 2 - entrants.length;
         const present = new Set(entrants.map((pair) => pair.id));
-        entrants = [...entrants, ...pairs.filter((pair) => !present.has(pair.id))
+        const remaining = pairs.filter((pair) => !present.has(pair.id));
+        // Correção Fase 1A (achado #16): antes, o preenchimento de reserva
+        // ignorava elegibilidade por completo — era isso que fazia um
+        // Crown sortear do mesmo pool que um Silver. Agora que a
+        // elegibilidade funciona de verdade (rank chega correto via
+        // resolveEntryRank), tenta primeiro completar só com pares
+        // REALMENTE elegíveis para o tier deste torneio. Só recorre a
+        // qualquer par (comportamento anterior) se nem isso bastar — comum
+        // na temporada 1, quando poucos pares ainda têm ranking para tiers
+        // altos — e sempre registra quando isso acontece, em vez de
+        // mascarar silenciosamente uma chave preenchida abaixo do corte.
+        const eligibleRemaining = remaining.filter((pair) =>
+          evaluateTournamentEntry(tournament, buildAthleteEntryContext({}, pairEntryRank(pair), tournament)).eligible);
+        const usingBelowCutoffFallback = eligibleRemaining.length < needed;
+        const backfillPool = usingBelowCutoffFallback ? remaining : eligibleRemaining;
+        if (usingBelowCutoffFallback) {
+          console.warn(`[WorldTourLifecycle] ${tournament.id} (${tournament.tier}): só ${eligibleRemaining.length}/${needed} pares elegíveis disponíveis para completar a chave — preenchendo com os melhores disponíveis abaixo do corte de ranking.`);
+        }
+        entrants = [...entrants, ...backfillPool
           .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
-          .slice(0, 2 - entrants.length)];
+          .slice(0, needed)];
       }
       const ordered = entrants
         .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))

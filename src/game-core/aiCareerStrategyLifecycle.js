@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const COACH_POOL = [
   'Álvaro Serrano', 'Bruno Cardoso', 'Carlos Méndez', 'Diego Valdés',
@@ -10,12 +11,7 @@ function clamp(value, min = 0, max = 100) {
 }
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text || '')) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return value >>> 0;
+  return fnv1aHash(String(text || ''));
 }
 
 function monthKey(date) {

@@ -4,6 +4,7 @@
 import { PLAY_STYLES, ATTRIBUTES } from '@/lib/padel';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { getCareerEconomyStage } from '@/lib/sportsEconomyV26.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 export const COACH_TIERS = {
   iniciante: { label: 'Iniciante', color: 'text-slate-400', bg: 'bg-slate-500/15', border: 'border-slate-500/30', costMult: 1 },
@@ -733,7 +734,7 @@ const SPECIALTY_COMPETENCIES = {
   fisico: { technical: 3, tactical: 4, mental: 6, physical: 20, partnership: 5 },
   mental: { technical: 4, tactical: 8, mental: 19, physical: 3, partnership: 10 },
 };
-function generatedNumber(seed, min, max) { let h=2166136261; for (const c of String(seed)) { h ^= c.charCodeAt(0); h=Math.imul(h,16777619); } return min + (Math.abs(h>>>0) % (max-min+1)); }
+function generatedNumber(seed, min, max) { return min + (Math.abs(fnv1aHash(String(seed))) % (max-min+1)); }
 function buildGeneratedCoach(index, tier) {
   const profile=TIER_PROFILE[tier];
   const specialty=GENERATED_SPECIALTIES[index%GENERATED_SPECIALTIES.length];

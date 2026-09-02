@@ -2,6 +2,7 @@ import {
   Activity, Apple, BarChart3, Brain, Briefcase, Calculator, Dumbbell,
   HeartPulse, Search, ShieldCheck, Sparkles, Target, Users,
 } from 'lucide-react';
+import { fnv1aHash } from './hashUtils.js';
 
 export const STAFF_ROLE_DEFINITIONS = {
   physical_trainer: {
@@ -117,9 +118,7 @@ const CANDIDATES = [
 
 const PERSONALITIES = ['Motivador', 'Exigente', 'Calmo', 'Ambicioso', 'Metódico'];
 function hashText(value = '') {
-  let hash = 2166136261;
-  for (const char of String(value)) { hash ^= char.charCodeAt(0); hash = Math.imul(hash, 16777619); }
-  return hash >>> 0;
+  return fnv1aHash(String(value));
 }
 function seeded01(value) { return (hashText(value) % 100000) / 100000; }
 function monthKey(value) { return String(value || '2026-01-01').slice(0, 7); }

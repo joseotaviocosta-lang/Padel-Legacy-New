@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const LEVELS = {
   basico: { label: 'Básico', cost: 250, accuracy: 55 },
@@ -11,12 +12,7 @@ function clamp(value, min, max) {
 }
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text)) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return Math.abs(value >>> 0);
+  return Math.abs(fnv1aHash(String(text)));
 }
 
 function noise(seed, amplitude) {

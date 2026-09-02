@@ -3,6 +3,7 @@ import { calculateDailyRecovery } from '@/gameplay/worldTour/PhysicalConditionMa
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from './physicalStats.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const INJURIES = [
   { type: 'Sobrecarga muscular', severity: 'leve', days: [2, 4], risk: 1.0 },
@@ -12,12 +13,7 @@ const INJURIES = [
 ];
 
 function hash(text) {
-  let value = 2166136261;
-  for (let i = 0; i < String(text).length; i += 1) {
-    value ^= String(text).charCodeAt(i);
-    value = Math.imul(value, 16777619);
-  }
-  return (value >>> 0) / 4294967295;
+  return fnv1aHash(String(text)) / 4294967295;
 }
 
 function isWeeklyBoundary(previousDate, currentDate) {

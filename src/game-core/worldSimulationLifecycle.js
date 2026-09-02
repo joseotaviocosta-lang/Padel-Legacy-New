@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { normalizeFatigue } from './physicalStats.js';
 import { deriveAthleteCareerState, deriveRecentForm, isAthleteRetired } from './livingCircuitRules.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 const ACTIVE_STATUSES = new Set(['active', 'ativo', 'livre', 'contratado']);
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Suécia', 'México', 'Chile', 'Paraguai'];
@@ -12,12 +13,7 @@ function clamp(value, min, max) {
 }
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text || '')) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return value >>> 0;
+  return fnv1aHash(String(text || ''));
 }
 
 function roll(seed, min = 0, max = 1) {

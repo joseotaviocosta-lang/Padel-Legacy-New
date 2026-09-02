@@ -1,39 +1,45 @@
 {
-  "generatedAt": "2026-01-02T12:51:14.616Z",
-  "seed": "baseline-v1",
+  "_NOTA_FASE_0.2": "NÃO é referência de comparação entre fases — reetiquetado de 'baseline' para 'sensibilidade à densidade' a pedido explícito da Fase 0.2. Roda com 100 bots procedurais (razão ~4 bots por real); o jogo real usa 970 (razão ~40:1), e é exatamente essa densidade que causa o bug relatado (bots afogando os reais no sorteio de parceria). Nesta amostra reduzida, os reais dominam de forma quase oposta ao sintoma (46 torneios/temporada por atleta real, 0/24 nunca jogaram) — serve para mostrar QUE a densidade populacional é a variável determinante do resultado, não para medir o estado real do jogo. A baseline oficial (970 bots) está em docs/baseline-pre-refactor.json.",
+  "generatedAt": "2026-01-03T07:37:15.439Z",
+  "seed": "baseline-reduced-v3",
   "determinism": {
-    "note": "Math.random e o relógio são seedados a partir de --seed só neste processo. Auditoria de código confirma zero Math.random() no caminho de simulação — o motor já é 100% hash determinístico de (id, mês, id do torneio). Ids de AthleteProfile/TeamRanking criados por este harness são sempre explícitos (bot_id/team_key), nunca o fallback aleatório de CareerEntityRepository.js."
+    "note": "Math.random e o relógio são seedados a partir de --seed só neste processo, ANTES de qualquer criação de entidade. Ids de AthleteProfile/TeamRanking são deixados para o PRÓPRIO fallback makeId() de produção (nunca sobrescritos com bot_id/team_key — isso mudava a forma da string e enviesava a seleção por hash de aiPartnershipLifecycle.js, achado da Fase 0.1) — como Math.random/Date.now já são determinísticos aqui, makeId() produz o MESMO formato de produção de forma reproduzível. bot_id/team_key continuam existindo só como chaves de agrupamento para leitura deste relatório (duplas históricas), nunca como o id real da entidade."
   },
   "seasonsSimulated": 5,
-  "proceduralAthleteSample": 970,
-  "proceduralTeamSample": 486,
-  "stepDays": 14,
+  "proceduralAthleteSample": 100,
+  "proceduralTeamSample": 50,
   "roster": {
     "realAthletes": 24,
-    "proceduralAthletes": 970,
-    "totalAthletes": 1000,
+    "proceduralAthletes": 100,
+    "totalAthletes": 130,
     "realTeams": 12,
-    "proceduralTeams": 486,
-    "totalTeams": 500
+    "proceduralTeams": 50,
+    "totalTeams": 64
   },
   "perSeason": [
     {
       "year": 2026,
       "tournaments": {
-        "total": 31,
-        "incomplete": 21,
+        "total": 32,
+        "incomplete": 24,
         "incompleteList": [
           {
             "id": "tournament-2026-lax-sil-w06-1",
             "tier": "Silver",
-            "simulated_entrants": 8,
+            "simulated_entrants": 3,
             "main_draw_size": 16
           },
           {
             "id": "tournament-2026-mad-gol-w08-1",
             "tier": "Gold",
-            "simulated_entrants": 8,
+            "simulated_entrants": 3,
             "main_draw_size": 32
+          },
+          {
+            "id": "tournament-2026-riy-sil-w10-1",
+            "tier": "Silver",
+            "simulated_entrants": 8,
+            "main_draw_size": 16
           },
           {
             "id": "tournament-2026-cun-pla-w10-2",
@@ -50,12 +56,18 @@
           {
             "id": "tournament-2026-cai-gol-w14-1",
             "tier": "Gold",
-            "simulated_entrants": 24,
+            "simulated_entrants": 16,
             "main_draw_size": 32
           },
           {
             "id": "tournament-2026-tok-eli-w16-2",
             "tier": "Elite",
+            "simulated_entrants": 2,
+            "main_draw_size": 64
+          },
+          {
+            "id": "tournament-2026-cor-cro-w18-1",
+            "tier": "Crown",
             "simulated_entrants": 2,
             "main_draw_size": 64
           },
@@ -66,10 +78,10 @@
             "main_draw_size": 32
           },
           {
-            "id": "tournament-2026-cor-cro-w18-1",
-            "tier": "Crown",
-            "simulated_entrants": 2,
-            "main_draw_size": 64
+            "id": "tournament-2026-sto-gol-w22-1",
+            "tier": "Gold",
+            "simulated_entrants": 31,
+            "main_draw_size": 32
           },
           {
             "id": "tournament-2026-cph-mas-w22-2",
@@ -148,33 +160,39 @@
             "tier": "Platinum",
             "simulated_entrants": 2,
             "main_draw_size": 32
+          },
+          {
+            "id": "tournament-2026-doh-cro-w52-2",
+            "tier": "Crown",
+            "simulated_entrants": 2,
+            "main_draw_size": 64
           }
         ]
       },
       "byTier": {
         "Silver": {
           "titles": {
-            "100%_reais": 6,
+            "100%_reais": 5,
+            "mista": 0,
+            "100%_bots": 2,
+            "desconhecido": 0
+          },
+          "incompleteCount": 2,
+          "total": 7,
+          "championOvrAvg": 94.9,
+          "championOvrMedian": 97
+        },
+        "Gold": {
+          "titles": {
+            "100%_reais": 5,
             "mista": 0,
             "100%_bots": 1,
             "desconhecido": 0
           },
-          "incompleteCount": 1,
-          "total": 7,
-          "championOvrAvg": 93.8,
-          "championOvrMedian": 93.5
-        },
-        "Gold": {
-          "titles": {
-            "100%_reais": 6,
-            "mista": 0,
-            "100%_bots": 0,
-            "desconhecido": 0
-          },
-          "incompleteCount": 2,
+          "incompleteCount": 3,
           "total": 6,
-          "championOvrAvg": 93.8,
-          "championOvrMedian": 96
+          "championOvrAvg": 95.8,
+          "championOvrMedian": 97
         },
         "Platinum": {
           "titles": {
@@ -186,21 +204,33 @@
           "incompleteCount": 6,
           "total": 6,
           "championOvrAvg": 96,
-          "championOvrMedian": 96
+          "championOvrMedian": 96.8
         },
         "Masters": {
           "titles": {
-            "100%_reais": 5,
+            "100%_reais": 4,
             "mista": 0,
-            "100%_bots": 0,
+            "100%_bots": 1,
             "desconhecido": 0
           },
           "incompleteCount": 5,
           "total": 5,
-          "championOvrAvg": 94.5,
-          "championOvrMedian": 96
+          "championOvrAvg": 95.5,
+          "championOvrMedian": 97
         },
         "Elite": {
+          "titles": {
+            "100%_reais": 3,
+            "mista": 0,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 4,
+          "total": 4,
+          "championOvrAvg": 95.4,
+          "championOvrMedian": 96
+        },
+        "Crown": {
           "titles": {
             "100%_reais": 4,
             "mista": 0,
@@ -209,175 +239,163 @@
           },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 94.1,
-          "championOvrMedian": 93.5
-        },
-        "Crown": {
-          "titles": {
-            "100%_reais": 3,
-            "mista": 0,
-            "100%_bots": 0,
-            "desconhecido": 0
-          },
-          "incompleteCount": 3,
-          "total": 3,
-          "championOvrAvg": 91.8,
-          "championOvrMedian": 91
+          "championOvrAvg": 96.5,
+          "championOvrMedian": 97
         }
       },
       "top20": [
         {
           "position": 1,
-          "id": "athlete_arturo_coello",
+          "id": "athleteprofile-1767225665439-5zbure",
           "name": "Arturo Coello",
-          "points": 27041,
+          "points": 30828,
           "real": true
         },
         {
           "position": 2,
-          "id": "athlete_agustin_tapia",
+          "id": "athleteprofile-1767225672439-plnw39",
           "name": "Agustín Tapia",
-          "points": 26611,
+          "points": 30398,
           "real": true
         },
         {
           "position": 3,
-          "id": "athlete_alejandro_galan",
+          "id": "athleteprofile-1767225682439-zm5u19",
           "name": "Alejandro Galán",
-          "points": 21554,
+          "points": 21052,
           "real": true
         },
         {
           "position": 4,
-          "id": "athlete_federico_chingotto",
+          "id": "athleteprofile-1767225689439-tjm2v6",
           "name": "Federico Chingotto",
-          "points": 21124,
+          "points": 20622,
           "real": true
         },
         {
           "position": 5,
-          "id": "athlete_franco_stupaczuk",
+          "id": "athleteprofile-1767225699439-c9afdw",
           "name": "Franco Stupaczuk",
-          "points": 18636,
+          "points": 13456,
           "real": true
         },
         {
           "position": 6,
-          "id": "athlete_juan_lebron",
+          "id": "athleteprofile-1767225706439-tb2awf",
           "name": "Juan Lebrón",
-          "points": 18206,
+          "points": 13026,
           "real": true
         },
         {
           "position": 7,
-          "id": "athlete_mike_yanguas",
+          "id": "athleteprofile-1767225716439-o4nxpn",
           "name": "Mike Yanguas",
-          "points": 10768,
+          "points": 10514,
           "real": true
         },
         {
           "position": 8,
-          "id": "athlete_coki_nieto",
+          "id": "athleteprofile-1767225723439-xewema",
           "name": "Coki Nieto",
-          "points": 10338,
+          "points": 10084,
           "real": true
         },
         {
           "position": 9,
-          "id": "athlete_martin_di_nenno",
-          "name": "Martín Di Nenno",
-          "points": 9931,
+          "id": "athleteprofile-1767225733439-sof6fe",
+          "name": "Paquito Navarro",
+          "points": 9957,
           "real": true
         },
         {
           "position": 10,
-          "id": "athlete_paquito_navarro",
-          "name": "Paquito Navarro",
-          "points": 9639,
+          "id": "athleteprofile-1767225740439-dpi9be",
+          "name": "Jon Sanz",
+          "points": 9196,
           "real": true
         },
         {
           "position": 11,
-          "id": "athlete_leo_augsburger",
-          "name": "Leo Augsburger",
-          "points": 9501,
+          "id": "athleteprofile-1767225750439-etpl01",
+          "name": "Martín Di Nenno",
+          "points": 8740,
           "real": true
         },
         {
           "position": 12,
-          "id": "athlete_jon_sanz",
-          "name": "Jon Sanz",
-          "points": 9264,
+          "id": "athleteprofile-1767225757439-4iw2vq",
+          "name": "Leo Augsburger",
+          "points": 8667,
           "real": true
         },
         {
           "position": 13,
-          "id": "athlete_lucas_bergamini",
+          "id": "athleteprofile-1767225767439-nvjd86",
           "name": "Lucas Bergamini",
-          "points": 7923,
+          "points": 7880,
           "real": true
         },
         {
           "position": 14,
-          "id": "athlete_javi_leal",
+          "id": "athleteprofile-1767225774439-oztp19",
           "name": "Javi Leal",
-          "points": 7544,
+          "points": 7417,
           "real": true
         },
         {
           "position": 15,
-          "id": "athlete_momo_gonzalez",
+          "id": "athleteprofile-1767225784439-moz1ip",
           "name": "Momo González",
-          "points": 7496,
+          "points": 7046,
           "real": true
         },
         {
           "position": 16,
-          "id": "athlete_fran_guerrero",
+          "id": "athleteprofile-1767225791439-r6g6sw",
           "name": "Fran Guerrero",
-          "points": 7066,
+          "points": 6622,
           "real": true
         },
         {
           "position": 17,
-          "id": "athlete_javi_garrido",
+          "id": "athleteprofile-1767225801439-7pojlq",
           "name": "Javi Garrido",
-          "points": 6206,
+          "points": 6160,
           "real": true
         },
         {
           "position": 18,
-          "id": "athlete_pablo_cardona",
+          "id": "athleteprofile-1767225808439-zj9b0g",
           "name": "Pablo Cardona",
-          "points": 5773,
+          "points": 5762,
           "real": true
         },
         {
           "position": 19,
-          "id": "athlete_edu_alonso",
+          "id": "athleteprofile-1767225818439-71ed08",
           "name": "Edu Alonso",
-          "points": 5346,
+          "points": 5328,
           "real": true
         },
         {
           "position": 20,
-          "id": "ranking-bot-0036",
-          "name": "Álvaro Costa",
-          "points": 5237,
+          "id": "athleteprofile-1767225980439-a2snju",
+          "name": "Diego Vega",
+          "points": 5314,
           "real": false
         }
       ],
       "realInTop20": 19,
       "tournamentsPlayedThisSeason": {
         "real": {
-          "mean": 11.13,
-          "median": 9,
+          "mean": 7.17,
+          "median": 3,
           "n": 24
         },
         "bots": {
-          "mean": 19.88,
-          "median": 20,
-          "n": 976
+          "mean": 23.8,
+          "median": 25,
+          "n": 106
         }
       },
       "realAthletesNeverPlayedSoFar": [],
@@ -385,74 +403,74 @@
         {
           "team_key": "team_coello_tapia_2025",
           "names": "Arturo Coello & Agustín Tapia",
-          "samples": 11,
-          "pairedRatePct": 90.9
+          "samples": 12,
+          "pairedRatePct": 91.7
         },
         {
           "team_key": "team_chingotto_galan_2025",
           "names": "Federico Chingotto & Alejandro Galán",
-          "samples": 11,
-          "pairedRatePct": 72.7
+          "samples": 12,
+          "pairedRatePct": 83.3
         },
         {
           "team_key": "team_stupaczuk_lebron_2025",
           "names": "Franco Stupaczuk & Juan Lebrón",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 91.7
         },
         {
           "team_key": "team_nieto_yanguas_2025",
           "names": "Coki Nieto & Mike Yanguas",
-          "samples": 11,
-          "pairedRatePct": 81.8
+          "samples": 12,
+          "pairedRatePct": 50
         },
         {
           "team_key": "team_navarro_sanz_2025",
           "names": "Paquito Navarro & Jon Sanz",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_dinenno_augsburger_2025",
           "names": "Martín Di Nenno & Leo Augsburger",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_guerrero_gonzalez_2025",
           "names": "Fran Guerrero & Momo González",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_leal_bergamini_2025",
           "names": "Javi Leal & Lucas Bergamini",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_cardona_garrido_2025",
           "names": "Pablo Cardona & Javi Garrido",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_alonso_tello_2025",
           "names": "Edu Alonso & Juan Tello",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_jofre_arroyo_2025",
           "names": "Íñigo Jofre & Álex Arroyo",
-          "samples": 11,
-          "pairedRatePct": 63.6
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_sanyo_alfonso_2025",
           "names": "Sanyo Gutiérrez & Gonzalo Alfonso",
-          "samples": 11,
-          "pairedRatePct": 72.7
+          "samples": 12,
+          "pairedRatePct": 0
         }
       ],
       "player1000Eligibility": {
@@ -479,15 +497,9 @@
     {
       "year": 2027,
       "tournaments": {
-        "total": 31,
-        "incomplete": 18,
+        "total": 30,
+        "incomplete": 17,
         "incompleteList": [
-          {
-            "id": "tournament-2026-doh-cro-w52-2",
-            "tier": "Crown",
-            "simulated_entrants": 2,
-            "main_draw_size": 64
-          },
           {
             "id": "tournament-2027-rom-pla-w10-2",
             "tier": "Platinum",
@@ -593,41 +605,29 @@
         ]
       },
       "byTier": {
-        "Crown": {
-          "titles": {
-            "100%_reais": 3,
-            "mista": 0,
-            "100%_bots": 1,
-            "desconhecido": 0
-          },
-          "incompleteCount": 4,
-          "total": 4,
-          "championOvrAvg": 94.3,
-          "championOvrMedian": 96
-        },
         "Silver": {
           "titles": {
-            "100%_reais": 6,
-            "mista": 1,
-            "100%_bots": 0,
+            "100%_reais": 4,
+            "mista": 0,
+            "100%_bots": 3,
             "desconhecido": 0
           },
           "incompleteCount": 0,
           "total": 7,
-          "championOvrAvg": 94.1,
-          "championOvrMedian": 96
+          "championOvrAvg": 96,
+          "championOvrMedian": 97
         },
         "Gold": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 6,
             "mista": 0,
-            "100%_bots": 2,
+            "100%_bots": 0,
             "desconhecido": 0
           },
           "incompleteCount": 0,
           "total": 6,
-          "championOvrAvg": 92.8,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 96.9,
+          "championOvrMedian": 97.5
         },
         "Platinum": {
           "titles": {
@@ -638,20 +638,20 @@
           },
           "incompleteCount": 5,
           "total": 5,
-          "championOvrAvg": 94.5,
-          "championOvrMedian": 96
+          "championOvrAvg": 97.2,
+          "championOvrMedian": 97.5
         },
         "Masters": {
           "titles": {
-            "100%_reais": 3,
+            "100%_reais": 4,
             "mista": 0,
-            "100%_bots": 2,
+            "100%_bots": 1,
             "desconhecido": 0
           },
           "incompleteCount": 5,
           "total": 5,
-          "championOvrAvg": 93.2,
-          "championOvrMedian": 96
+          "championOvrAvg": 96.8,
+          "championOvrMedian": 97.5
         },
         "Elite": {
           "titles": {
@@ -662,163 +662,175 @@
           },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 93.3,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 95.8,
+          "championOvrMedian": 96.5
+        },
+        "Crown": {
+          "titles": {
+            "100%_reais": 3,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 3,
+          "total": 3,
+          "championOvrAvg": 97,
+          "championOvrMedian": 97.5
         }
       },
       "top20": [
         {
           "position": 1,
-          "id": "athlete_arturo_coello",
+          "id": "athleteprofile-1767225665439-5zbure",
           "name": "Arturo Coello",
-          "points": 43192,
+          "points": 47345,
           "real": true
         },
         {
           "position": 2,
-          "id": "athlete_agustin_tapia",
+          "id": "athleteprofile-1767225672439-plnw39",
           "name": "Agustín Tapia",
-          "points": 42762,
+          "points": 46915,
           "real": true
         },
         {
           "position": 3,
-          "id": "athlete_alejandro_galan",
+          "id": "athleteprofile-1767225682439-zm5u19",
           "name": "Alejandro Galán",
-          "points": 24867,
+          "points": 29764,
           "real": true
         },
         {
           "position": 4,
-          "id": "athlete_federico_chingotto",
+          "id": "athleteprofile-1767225689439-tjm2v6",
           "name": "Federico Chingotto",
-          "points": 24437,
+          "points": 29334,
           "real": true
         },
         {
           "position": 5,
-          "id": "athlete_franco_stupaczuk",
+          "id": "athleteprofile-1767225699439-c9afdw",
           "name": "Franco Stupaczuk",
-          "points": 23683,
+          "points": 14001,
           "real": true
         },
         {
           "position": 6,
-          "id": "athlete_juan_lebron",
+          "id": "athleteprofile-1767225706439-tb2awf",
           "name": "Juan Lebrón",
-          "points": 23253,
+          "points": 13571,
           "real": true
         },
         {
           "position": 7,
-          "id": "athlete_mike_yanguas",
-          "name": "Mike Yanguas",
-          "points": 11061,
-          "real": true
+          "id": "athleteprofile-1767225980439-a2snju",
+          "name": "Diego Vega",
+          "points": 11195,
+          "real": false
         },
         {
           "position": 8,
-          "id": "athlete_coki_nieto",
-          "name": "Coki Nieto",
-          "points": 10631,
-          "real": true
+          "id": "athleteprofile-1767225984439-78acj3",
+          "name": "Pablo Ferrer",
+          "points": 11032,
+          "real": false
         },
         {
           "position": 9,
-          "id": "athlete_paquito_navarro",
-          "name": "Paquito Navarro",
-          "points": 10570,
+          "id": "athleteprofile-1767225716439-o4nxpn",
+          "name": "Mike Yanguas",
+          "points": 10916,
           "real": true
         },
         {
           "position": 10,
-          "id": "athlete_martin_di_nenno",
-          "name": "Martín Di Nenno",
-          "points": 10498,
+          "id": "athleteprofile-1767225723439-xewema",
+          "name": "Coki Nieto",
+          "points": 10486,
           "real": true
         },
         {
           "position": 11,
-          "id": "athlete_leo_augsburger",
-          "name": "Leo Augsburger",
-          "points": 10068,
+          "id": "athleteprofile-1767225733439-sof6fe",
+          "name": "Paquito Navarro",
+          "points": 9957,
           "real": true
         },
         {
           "position": 12,
-          "id": "athlete_jon_sanz",
+          "id": "athleteprofile-1767225740439-dpi9be",
           "name": "Jon Sanz",
-          "points": 9412,
+          "points": 9269,
           "real": true
         },
         {
           "position": 13,
-          "id": "athlete_lucas_bergamini",
-          "name": "Lucas Bergamini",
-          "points": 8115,
+          "id": "athleteprofile-1767225750439-etpl01",
+          "name": "Martín Di Nenno",
+          "points": 8870,
           "real": true
         },
         {
           "position": 14,
-          "id": "athlete_javi_leal",
-          "name": "Javi Leal",
-          "points": 7692,
+          "id": "athleteprofile-1767225757439-4iw2vq",
+          "name": "Leo Augsburger",
+          "points": 8868,
           "real": true
         },
         {
           "position": 15,
-          "id": "athlete_momo_gonzalez",
-          "name": "Momo González",
-          "points": 7659,
+          "id": "athleteprofile-1767225767439-nvjd86",
+          "name": "Lucas Bergamini",
+          "points": 8037,
           "real": true
         },
         {
           "position": 16,
-          "id": "athlete_fran_guerrero",
-          "name": "Fran Guerrero",
-          "points": 7229,
+          "id": "athleteprofile-1767225774439-oztp19",
+          "name": "Javi Leal",
+          "points": 7482,
           "real": true
         },
         {
           "position": 17,
-          "id": "ranking-bot-0036",
-          "name": "Álvaro Costa",
-          "points": 7056,
-          "real": false
+          "id": "athleteprofile-1767225784439-moz1ip",
+          "name": "Momo González",
+          "points": 7119,
+          "real": true
         },
         {
           "position": 18,
-          "id": "ranking-bot-0037",
-          "name": "Gonzalo Giménez",
-          "points": 7015,
-          "real": false
+          "id": "athleteprofile-1767225791439-r6g6sw",
+          "name": "Fran Guerrero",
+          "points": 6798,
+          "real": true
         },
         {
           "position": 19,
-          "id": "athlete_javi_garrido",
+          "id": "athleteprofile-1767225801439-7pojlq",
           "name": "Javi Garrido",
-          "points": 6354,
+          "points": 6390,
           "real": true
         },
         {
           "position": 20,
-          "id": "athlete_pablo_cardona",
-          "name": "Pablo Cardona",
-          "points": 5897,
-          "real": true
+          "id": "athleteprofile-1767225985439-7u7znp",
+          "name": "Bruno Silva",
+          "points": 6007,
+          "real": false
         }
       ],
-      "realInTop20": 18,
+      "realInTop20": 17,
       "tournamentsPlayedThisSeason": {
         "real": {
-          "mean": 11.54,
-          "median": 10,
+          "mean": 9,
+          "median": 8,
           "n": 24
         },
         "bots": {
-          "mean": 0.64,
-          "median": 0,
-          "n": 976
+          "mean": 6.11,
+          "median": 7,
+          "n": 112
         }
       },
       "realAthletesNeverPlayedSoFar": [],
@@ -826,74 +838,74 @@
         {
           "team_key": "team_coello_tapia_2025",
           "names": "Arturo Coello & Agustín Tapia",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_chingotto_galan_2025",
           "names": "Federico Chingotto & Alejandro Galán",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_stupaczuk_lebron_2025",
           "names": "Franco Stupaczuk & Juan Lebrón",
-          "samples": 11,
-          "pairedRatePct": 90.9
+          "samples": 12,
+          "pairedRatePct": 100
         },
         {
           "team_key": "team_nieto_yanguas_2025",
           "names": "Coki Nieto & Mike Yanguas",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_navarro_sanz_2025",
           "names": "Paquito Navarro & Jon Sanz",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_dinenno_augsburger_2025",
           "names": "Martín Di Nenno & Leo Augsburger",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_guerrero_gonzalez_2025",
           "names": "Fran Guerrero & Momo González",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_leal_bergamini_2025",
           "names": "Javi Leal & Lucas Bergamini",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_cardona_garrido_2025",
           "names": "Pablo Cardona & Javi Garrido",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_alonso_tello_2025",
           "names": "Edu Alonso & Juan Tello",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_jofre_arroyo_2025",
           "names": "Íñigo Jofre & Álex Arroyo",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_sanyo_alfonso_2025",
           "names": "Sanyo Gutiérrez & Gonzalo Alfonso",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         }
       ],
       "player1000Eligibility": {
@@ -1042,27 +1054,27 @@
       "byTier": {
         "Platinum": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 3,
             "mista": 0,
-            "100%_bots": 2,
+            "100%_bots": 3,
             "desconhecido": 0
           },
           "incompleteCount": 6,
           "total": 6,
-          "championOvrAvg": 94.3,
-          "championOvrMedian": 96
+          "championOvrAvg": 96.7,
+          "championOvrMedian": 96.3
         },
         "Crown": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 2,
             "mista": 0,
-            "100%_bots": 0,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 95.4,
-          "championOvrMedian": 96
+          "championOvrAvg": 97,
+          "championOvrMedian": 97
         },
         "Silver": {
           "titles": {
@@ -1073,8 +1085,8 @@
           },
           "incompleteCount": 0,
           "total": 7,
-          "championOvrAvg": 93,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 96.2,
+          "championOvrMedian": 96
         },
         "Gold": {
           "titles": {
@@ -1085,8 +1097,8 @@
           },
           "incompleteCount": 0,
           "total": 6,
-          "championOvrAvg": 93.8,
-          "championOvrMedian": 94.8
+          "championOvrAvg": 97.7,
+          "championOvrMedian": 98
         },
         "Masters": {
           "titles": {
@@ -1097,175 +1109,175 @@
           },
           "incompleteCount": 5,
           "total": 5,
-          "championOvrAvg": 92.7,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 96.7,
+          "championOvrMedian": 96
         },
         "Elite": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 3,
             "mista": 0,
-            "100%_bots": 0,
+            "100%_bots": 1,
             "desconhecido": 0
           },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 94.8,
-          "championOvrMedian": 96
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 98
         }
       },
       "top20": [
         {
           "position": 1,
-          "id": "athlete_arturo_coello",
+          "id": "athleteprofile-1767225665439-5zbure",
           "name": "Arturo Coello",
-          "points": 60648,
+          "points": 62756,
           "real": true
         },
         {
           "position": 2,
-          "id": "athlete_agustin_tapia",
+          "id": "athleteprofile-1767225672439-plnw39",
           "name": "Agustín Tapia",
-          "points": 60218,
+          "points": 62326,
           "real": true
         },
         {
           "position": 3,
-          "id": "athlete_alejandro_galan",
+          "id": "athleteprofile-1767225682439-zm5u19",
           "name": "Alejandro Galán",
-          "points": 30294,
+          "points": 35955,
           "real": true
         },
         {
           "position": 4,
-          "id": "athlete_federico_chingotto",
+          "id": "athleteprofile-1767225689439-tjm2v6",
           "name": "Federico Chingotto",
-          "points": 29864,
+          "points": 35525,
           "real": true
         },
         {
           "position": 5,
-          "id": "athlete_franco_stupaczuk",
-          "name": "Franco Stupaczuk",
-          "points": 26036,
-          "real": true
+          "id": "athleteprofile-1767225980439-a2snju",
+          "name": "Diego Vega",
+          "points": 22185,
+          "real": false
         },
         {
           "position": 6,
-          "id": "athlete_juan_lebron",
-          "name": "Juan Lebrón",
-          "points": 25606,
-          "real": true
+          "id": "athleteprofile-1767225984439-78acj3",
+          "name": "Pablo Ferrer",
+          "points": 22022,
+          "real": false
         },
         {
           "position": 7,
-          "id": "athlete_martin_di_nenno",
-          "name": "Martín Di Nenno",
-          "points": 11459,
+          "id": "athleteprofile-1767225699439-c9afdw",
+          "name": "Franco Stupaczuk",
+          "points": 14237,
           "real": true
         },
         {
           "position": 8,
-          "id": "athlete_mike_yanguas",
-          "name": "Mike Yanguas",
-          "points": 11455,
+          "id": "athleteprofile-1767225706439-tb2awf",
+          "name": "Juan Lebrón",
+          "points": 13807,
           "real": true
         },
         {
           "position": 9,
-          "id": "athlete_leo_augsburger",
-          "name": "Leo Augsburger",
-          "points": 11029,
+          "id": "athleteprofile-1767225716439-o4nxpn",
+          "name": "Mike Yanguas",
+          "points": 11148,
           "real": true
         },
         {
           "position": 10,
-          "id": "athlete_coki_nieto",
+          "id": "athleteprofile-1767225723439-xewema",
           "name": "Coki Nieto",
-          "points": 11025,
+          "points": 10689,
           "real": true
         },
         {
           "position": 11,
-          "id": "athlete_paquito_navarro",
+          "id": "athleteprofile-1767225733439-sof6fe",
           "name": "Paquito Navarro",
-          "points": 10693,
+          "points": 9957,
           "real": true
         },
         {
           "position": 12,
-          "id": "athlete_jon_sanz",
+          "id": "athleteprofile-1767225740439-dpi9be",
           "name": "Jon Sanz",
-          "points": 9481,
+          "points": 9407,
           "real": true
         },
         {
           "position": 13,
-          "id": "athlete_lucas_bergamini",
-          "name": "Lucas Bergamini",
-          "points": 8239,
+          "id": "athleteprofile-1767225750439-etpl01",
+          "name": "Martín Di Nenno",
+          "points": 9039,
           "real": true
         },
         {
           "position": 14,
-          "id": "ranking-bot-0036",
-          "name": "Álvaro Costa",
-          "points": 8217,
-          "real": false
+          "id": "athleteprofile-1767225757439-4iw2vq",
+          "name": "Leo Augsburger",
+          "points": 8986,
+          "real": true
         },
         {
           "position": 15,
-          "id": "ranking-bot-0037",
-          "name": "Gonzalo Giménez",
-          "points": 8176,
-          "real": false
+          "id": "athleteprofile-1767225767439-nvjd86",
+          "name": "Lucas Bergamini",
+          "points": 8233,
+          "real": true
         },
         {
           "position": 16,
-          "id": "athlete_javi_leal",
+          "id": "athleteprofile-1767225774439-oztp19",
           "name": "Javi Leal",
-          "points": 7790,
+          "points": 7736,
           "real": true
         },
         {
           "position": 17,
-          "id": "athlete_momo_gonzalez",
+          "id": "athleteprofile-1767225784439-moz1ip",
           "name": "Momo González",
-          "points": 7757,
+          "points": 7257,
           "real": true
         },
         {
           "position": 18,
-          "id": "athlete_fran_guerrero",
-          "name": "Fran Guerrero",
-          "points": 7342,
-          "real": true
+          "id": "athleteprofile-1767225985439-7u7znp",
+          "name": "Bruno Silva",
+          "points": 7208,
+          "real": false
         },
         {
           "position": 19,
-          "id": "ranking-bot-0035",
-          "name": "Santiago Alonso",
-          "points": 6680,
+          "id": "athleteprofile-1767225988439-brjtuw",
+          "name": "Tomás Medina",
+          "points": 7085,
           "real": false
         },
         {
           "position": 20,
-          "id": "ranking-bot-0032",
-          "name": "João Ramos",
-          "points": 6522,
-          "real": false
+          "id": "athleteprofile-1767225791439-r6g6sw",
+          "name": "Fran Guerrero",
+          "points": 7013,
+          "real": true
         }
       ],
       "realInTop20": 16,
       "tournamentsPlayedThisSeason": {
         "real": {
-          "mean": 9.21,
-          "median": 7,
+          "mean": 10.79,
+          "median": 10,
           "n": 24
         },
         "bots": {
-          "mean": 0.7,
-          "median": 0,
-          "n": 976
+          "mean": 5.5,
+          "median": 5.5,
+          "n": 118
         }
       },
       "realAthletesNeverPlayedSoFar": [],
@@ -1273,74 +1285,74 @@
         {
           "team_key": "team_coello_tapia_2025",
           "names": "Arturo Coello & Agustín Tapia",
-          "samples": 11,
-          "pairedRatePct": 81.8
+          "samples": 12,
+          "pairedRatePct": 100
         },
         {
           "team_key": "team_chingotto_galan_2025",
           "names": "Federico Chingotto & Alejandro Galán",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_stupaczuk_lebron_2025",
           "names": "Franco Stupaczuk & Juan Lebrón",
-          "samples": 11,
-          "pairedRatePct": 63.6
+          "samples": 12,
+          "pairedRatePct": 100
         },
         {
           "team_key": "team_nieto_yanguas_2025",
           "names": "Coki Nieto & Mike Yanguas",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 58.3
         },
         {
           "team_key": "team_navarro_sanz_2025",
           "names": "Paquito Navarro & Jon Sanz",
-          "samples": 11,
-          "pairedRatePct": 45.5
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_dinenno_augsburger_2025",
           "names": "Martín Di Nenno & Leo Augsburger",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_guerrero_gonzalez_2025",
           "names": "Fran Guerrero & Momo González",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_leal_bergamini_2025",
           "names": "Javi Leal & Lucas Bergamini",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_cardona_garrido_2025",
           "names": "Pablo Cardona & Javi Garrido",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_alonso_tello_2025",
           "names": "Edu Alonso & Juan Tello",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_jofre_arroyo_2025",
           "names": "Íñigo Jofre & Álex Arroyo",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_sanyo_alfonso_2025",
           "names": "Sanyo Gutiérrez & Gonzalo Alfonso",
-          "samples": 11,
-          "pairedRatePct": 63.6
+          "samples": 12,
+          "pairedRatePct": 0
         }
       ],
       "player1000Eligibility": {
@@ -1489,39 +1501,39 @@
       "byTier": {
         "Platinum": {
           "titles": {
-            "100%_reais": 3,
-            "mista": 0,
-            "100%_bots": 3,
-            "desconhecido": 0
-          },
-          "incompleteCount": 6,
-          "total": 6,
-          "championOvrAvg": 92.5,
-          "championOvrMedian": 92.3
-        },
-        "Crown": {
-          "titles": {
-            "100%_reais": 3,
+            "100%_reais": 5,
             "mista": 0,
             "100%_bots": 1,
             "desconhecido": 0
           },
+          "incompleteCount": 6,
+          "total": 6,
+          "championOvrAvg": 97.9,
+          "championOvrMedian": 98
+        },
+        "Crown": {
+          "titles": {
+            "100%_reais": 2,
+            "mista": 0,
+            "100%_bots": 2,
+            "desconhecido": 0
+          },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 94.1,
-          "championOvrMedian": 94.8
+          "championOvrAvg": 97.8,
+          "championOvrMedian": 98
         },
         "Silver": {
           "titles": {
-            "100%_reais": 3,
+            "100%_reais": 5,
             "mista": 0,
-            "100%_bots": 4,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 0,
           "total": 7,
-          "championOvrAvg": 91.4,
-          "championOvrMedian": 91
+          "championOvrAvg": 97.6,
+          "championOvrMedian": 98
         },
         "Gold": {
           "titles": {
@@ -1532,187 +1544,187 @@
           },
           "incompleteCount": 0,
           "total": 6,
-          "championOvrAvg": 91.5,
-          "championOvrMedian": 90.5
+          "championOvrAvg": 97.1,
+          "championOvrMedian": 97.5
         },
         "Masters": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 3,
             "mista": 0,
-            "100%_bots": 1,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 5,
           "total": 5,
-          "championOvrAvg": 94.8,
-          "championOvrMedian": 96
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 98
         },
         "Elite": {
           "titles": {
-            "100%_reais": 3,
+            "100%_reais": 2,
             "mista": 0,
-            "100%_bots": 1,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 93.9,
-          "championOvrMedian": 94.8
+          "championOvrAvg": 97.8,
+          "championOvrMedian": 98
         }
       },
       "top20": [
         {
           "position": 1,
-          "id": "athlete_arturo_coello",
+          "id": "athleteprofile-1767225665439-5zbure",
           "name": "Arturo Coello",
-          "points": 74080,
+          "points": 76939,
           "real": true
         },
         {
           "position": 2,
-          "id": "athlete_agustin_tapia",
+          "id": "athleteprofile-1767225672439-plnw39",
           "name": "Agustín Tapia",
-          "points": 73650,
+          "points": 76509,
           "real": true
         },
         {
           "position": 3,
-          "id": "athlete_alejandro_galan",
+          "id": "athleteprofile-1767225682439-zm5u19",
           "name": "Alejandro Galán",
-          "points": 39063,
+          "points": 38631,
           "real": true
         },
         {
           "position": 4,
-          "id": "athlete_federico_chingotto",
+          "id": "athleteprofile-1767225689439-tjm2v6",
           "name": "Federico Chingotto",
-          "points": 38633,
+          "points": 38201,
           "real": true
         },
         {
           "position": 5,
-          "id": "athlete_franco_stupaczuk",
-          "name": "Franco Stupaczuk",
-          "points": 28073,
-          "real": true
+          "id": "athleteprofile-1767225980439-a2snju",
+          "name": "Diego Vega",
+          "points": 27261,
+          "real": false
         },
         {
           "position": 6,
-          "id": "athlete_juan_lebron",
-          "name": "Juan Lebrón",
-          "points": 27643,
-          "real": true
+          "id": "athleteprofile-1767225984439-78acj3",
+          "name": "Pablo Ferrer",
+          "points": 22844,
+          "real": false
         },
         {
           "position": 7,
-          "id": "athlete_mike_yanguas",
-          "name": "Mike Yanguas",
-          "points": 13098,
-          "real": true
+          "id": "athleteprofile-1767225987439-3knk0h",
+          "name": "Diego Martínez",
+          "points": 19088,
+          "real": false
         },
         {
           "position": 8,
-          "id": "athlete_coki_nieto",
-          "name": "Coki Nieto",
-          "points": 12668,
-          "real": true
+          "id": "athleteprofile-1767225991439-v5bzht",
+          "name": "Rafael López",
+          "points": 18925,
+          "real": false
         },
         {
           "position": 9,
-          "id": "athlete_martin_di_nenno",
-          "name": "Martín Di Nenno",
-          "points": 12350,
+          "id": "athleteprofile-1767225699439-c9afdw",
+          "name": "Franco Stupaczuk",
+          "points": 14473,
           "real": true
         },
         {
           "position": 10,
-          "id": "athlete_leo_augsburger",
-          "name": "Leo Augsburger",
-          "points": 11920,
+          "id": "athleteprofile-1767225706439-tb2awf",
+          "name": "Juan Lebrón",
+          "points": 14341,
           "real": true
         },
         {
           "position": 11,
-          "id": "ranking-bot-0032",
-          "name": "João Ramos",
-          "points": 11095,
-          "real": false
+          "id": "athleteprofile-1767225757439-4iw2vq",
+          "name": "Leo Augsburger",
+          "points": 11793,
+          "real": true
         },
         {
           "position": 12,
-          "id": "ranking-bot-0033",
-          "name": "Pedro Iglesias",
-          "points": 11054,
-          "real": false
+          "id": "athleteprofile-1767225716439-o4nxpn",
+          "name": "Mike Yanguas",
+          "points": 11321,
+          "real": true
         },
         {
           "position": 13,
-          "id": "athlete_paquito_navarro",
-          "name": "Paquito Navarro",
-          "points": 10950,
+          "id": "athleteprofile-1767225750439-etpl01",
+          "name": "Martín Di Nenno",
+          "points": 11135,
           "real": true
         },
         {
           "position": 14,
-          "id": "athlete_jon_sanz",
-          "name": "Jon Sanz",
-          "points": 9738,
+          "id": "athleteprofile-1767225723439-xewema",
+          "name": "Coki Nieto",
+          "points": 10967,
           "real": true
         },
         {
           "position": 15,
-          "id": "ranking-bot-0036",
-          "name": "Álvaro Costa",
-          "points": 9257,
-          "real": false
+          "id": "athleteprofile-1767225733439-sof6fe",
+          "name": "Paquito Navarro",
+          "points": 9957,
+          "real": true
         },
         {
           "position": 16,
-          "id": "ranking-bot-0046",
-          "name": "Diego Martínez",
-          "points": 9254,
-          "real": false
+          "id": "athleteprofile-1767225791439-r6g6sw",
+          "name": "Fran Guerrero",
+          "points": 9820,
+          "real": true
         },
         {
           "position": 17,
-          "id": "ranking-bot-0037",
-          "name": "Gonzalo Giménez",
-          "points": 9216,
-          "real": false
+          "id": "athleteprofile-1767225740439-dpi9be",
+          "name": "Jon Sanz",
+          "points": 9497,
+          "real": true
         },
         {
           "position": 18,
-          "id": "ranking-bot-0047",
-          "name": "Tomás Medina",
-          "points": 9213,
+          "id": "athleteprofile-1767225977439-9oyuam",
+          "name": "Álvaro Costa",
+          "points": 8748,
           "real": false
         },
         {
           "position": 19,
-          "id": "ranking-bot-0035",
-          "name": "Santiago Alonso",
-          "points": 8758,
-          "real": false
+          "id": "athleteprofile-1767225767439-nvjd86",
+          "name": "Lucas Bergamini",
+          "points": 8233,
+          "real": true
         },
         {
           "position": 20,
-          "id": "ranking-bot-0045",
-          "name": "Javier Ramos",
-          "points": 8350,
-          "real": false
+          "id": "athleteprofile-1767225808439-zj9b0g",
+          "name": "Pablo Cardona",
+          "points": 8176,
+          "real": true
         }
       ],
-      "realInTop20": 12,
+      "realInTop20": 15,
       "tournamentsPlayedThisSeason": {
         "real": {
-          "mean": 9.83,
-          "median": 8,
+          "mean": 10.13,
+          "median": 11,
           "n": 24
         },
         "bots": {
-          "mean": 0.69,
-          "median": 0,
-          "n": 976
+          "mean": 5.36,
+          "median": 5,
+          "n": 124
         }
       },
       "realAthletesNeverPlayedSoFar": [],
@@ -1720,73 +1732,73 @@
         {
           "team_key": "team_coello_tapia_2025",
           "names": "Arturo Coello & Agustín Tapia",
-          "samples": 11,
-          "pairedRatePct": 81.8
+          "samples": 12,
+          "pairedRatePct": 100
         },
         {
           "team_key": "team_chingotto_galan_2025",
           "names": "Federico Chingotto & Alejandro Galán",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_stupaczuk_lebron_2025",
           "names": "Franco Stupaczuk & Juan Lebrón",
-          "samples": 11,
-          "pairedRatePct": 81.8
+          "samples": 12,
+          "pairedRatePct": 8.3
         },
         {
           "team_key": "team_nieto_yanguas_2025",
           "names": "Coki Nieto & Mike Yanguas",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 58.3
         },
         {
           "team_key": "team_navarro_sanz_2025",
           "names": "Paquito Navarro & Jon Sanz",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_dinenno_augsburger_2025",
           "names": "Martín Di Nenno & Leo Augsburger",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_guerrero_gonzalez_2025",
           "names": "Fran Guerrero & Momo González",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_leal_bergamini_2025",
           "names": "Javi Leal & Lucas Bergamini",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_cardona_garrido_2025",
           "names": "Pablo Cardona & Javi Garrido",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_alonso_tello_2025",
           "names": "Edu Alonso & Juan Tello",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_jofre_arroyo_2025",
           "names": "Íñigo Jofre & Álex Arroyo",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_sanyo_alfonso_2025",
           "names": "Sanyo Gutiérrez & Gonzalo Alfonso",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         }
       ],
@@ -1814,8 +1826,8 @@
     {
       "year": 2030,
       "tournaments": {
-        "total": 32,
-        "incomplete": 19,
+        "total": 33,
+        "incomplete": 20,
         "incompleteList": [
           {
             "id": "tournament-2029-tor-pla-w52-1",
@@ -1930,6 +1942,12 @@
             "tier": "Masters",
             "simulated_entrants": 2,
             "main_draw_size": 64
+          },
+          {
+            "id": "tournament-2030-mil-pla-w52-1",
+            "tier": "Platinum",
+            "simulated_entrants": 2,
+            "main_draw_size": 32
           }
         ]
       },
@@ -1938,228 +1956,228 @@
           "titles": {
             "100%_reais": 3,
             "mista": 0,
-            "100%_bots": 3,
+            "100%_bots": 4,
             "desconhecido": 0
           },
-          "incompleteCount": 6,
-          "total": 6,
-          "championOvrAvg": 92.7,
-          "championOvrMedian": 93.3
+          "incompleteCount": 7,
+          "total": 7,
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 97.5
         },
         "Crown": {
           "titles": {
-            "100%_reais": 1,
-            "mista": 0,
-            "100%_bots": 3,
-            "desconhecido": 0
-          },
-          "incompleteCount": 4,
-          "total": 4,
-          "championOvrAvg": 91.8,
-          "championOvrMedian": 90.8
-        },
-        "Silver": {
-          "titles": {
-            "100%_reais": 6,
-            "mista": 0,
-            "100%_bots": 1,
-            "desconhecido": 0
-          },
-          "incompleteCount": 0,
-          "total": 7,
-          "championOvrAvg": 94.5,
-          "championOvrMedian": 96
-        },
-        "Gold": {
-          "titles": {
-            "100%_reais": 4,
+            "100%_reais": 2,
             "mista": 0,
             "100%_bots": 2,
             "desconhecido": 0
           },
+          "incompleteCount": 4,
+          "total": 4,
+          "championOvrAvg": 97.3,
+          "championOvrMedian": 97.5
+        },
+        "Silver": {
+          "titles": {
+            "100%_reais": 2,
+            "mista": 0,
+            "100%_bots": 5,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 7,
+          "championOvrAvg": 97.8,
+          "championOvrMedian": 98
+        },
+        "Gold": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 5,
+            "desconhecido": 0
+          },
           "incompleteCount": 0,
           "total": 6,
-          "championOvrAvg": 93.5,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 97.4,
+          "championOvrMedian": 97.5
         },
         "Masters": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 3,
             "mista": 0,
-            "100%_bots": 1,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 5,
           "total": 5,
-          "championOvrAvg": 93.8,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 97.8,
+          "championOvrMedian": 98
         },
         "Elite": {
           "titles": {
-            "100%_reais": 4,
+            "100%_reais": 2,
             "mista": 0,
-            "100%_bots": 0,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 4,
           "total": 4,
-          "championOvrAvg": 94.1,
-          "championOvrMedian": 93.5
+          "championOvrAvg": 98,
+          "championOvrMedian": 98
         }
       },
       "top20": [
         {
           "position": 1,
-          "id": "athlete_arturo_coello",
+          "id": "athleteprofile-1767225665439-5zbure",
           "name": "Arturo Coello",
-          "points": 85123,
+          "points": 87726,
           "real": true
         },
         {
           "position": 2,
-          "id": "athlete_agustin_tapia",
+          "id": "athleteprofile-1767225672439-plnw39",
           "name": "Agustín Tapia",
-          "points": 84693,
+          "points": 87296,
           "real": true
         },
         {
           "position": 3,
-          "id": "athlete_alejandro_galan",
+          "id": "athleteprofile-1767225682439-zm5u19",
           "name": "Alejandro Galán",
-          "points": 47496,
+          "points": 46477,
           "real": true
         },
         {
           "position": 4,
-          "id": "athlete_federico_chingotto",
+          "id": "athleteprofile-1767225689439-tjm2v6",
           "name": "Federico Chingotto",
-          "points": 47066,
+          "points": 46047,
           "real": true
         },
         {
           "position": 5,
-          "id": "athlete_franco_stupaczuk",
-          "name": "Franco Stupaczuk",
-          "points": 28663,
-          "real": true
+          "id": "athleteprofile-1767225980439-a2snju",
+          "name": "Diego Vega",
+          "points": 37120,
+          "real": false
         },
         {
           "position": 6,
-          "id": "athlete_juan_lebron",
-          "name": "Juan Lebrón",
-          "points": 28233,
-          "real": true
+          "id": "athleteprofile-1767225987439-3knk0h",
+          "name": "Diego Martínez",
+          "points": 28604,
+          "real": false
         },
         {
           "position": 7,
-          "id": "ranking-bot-0036",
-          "name": "Álvaro Costa",
-          "points": 15653,
+          "id": "athleteprofile-1767225991439-v5bzht",
+          "name": "Rafael López",
+          "points": 28441,
           "real": false
         },
         {
           "position": 8,
-          "id": "ranking-bot-0037",
-          "name": "Gonzalo Giménez",
-          "points": 15612,
+          "id": "athleteprofile-1767225984439-78acj3",
+          "name": "Pablo Ferrer",
+          "points": 23168,
           "real": false
         },
         {
           "position": 9,
-          "id": "ranking-bot-0032",
-          "name": "João Ramos",
-          "points": 14953,
+          "id": "athleteprofile-1767225977439-9oyuam",
+          "name": "Álvaro Costa",
+          "points": 18607,
           "real": false
         },
         {
           "position": 10,
-          "id": "ranking-bot-0033",
-          "name": "Pedro Iglesias",
-          "points": 14912,
-          "real": false
+          "id": "athleteprofile-1767225699439-c9afdw",
+          "name": "Franco Stupaczuk",
+          "points": 14711,
+          "real": true
         },
         {
           "position": 11,
-          "id": "athlete_mike_yanguas",
-          "name": "Mike Yanguas",
-          "points": 13268,
+          "id": "athleteprofile-1767225706439-tb2awf",
+          "name": "Juan Lebrón",
+          "points": 14665,
           "real": true
         },
         {
           "position": 12,
-          "id": "athlete_coki_nieto",
-          "name": "Coki Nieto",
-          "points": 12838,
+          "id": "athleteprofile-1767225750439-etpl01",
+          "name": "Martín Di Nenno",
+          "points": 13128,
           "real": true
         },
         {
           "position": 13,
-          "id": "athlete_martin_di_nenno",
-          "name": "Martín Di Nenno",
-          "points": 12570,
+          "id": "athleteprofile-1767225757439-4iw2vq",
+          "name": "Leo Augsburger",
+          "points": 12356,
           "real": true
         },
         {
           "position": 14,
-          "id": "athlete_leo_augsburger",
-          "name": "Leo Augsburger",
-          "points": 12140,
+          "id": "athleteprofile-1767225716439-o4nxpn",
+          "name": "Mike Yanguas",
+          "points": 11509,
           "real": true
         },
         {
           "position": 15,
-          "id": "athlete_paquito_navarro",
-          "name": "Paquito Navarro",
-          "points": 11072,
+          "id": "athleteprofile-1767225723439-xewema",
+          "name": "Coki Nieto",
+          "points": 11155,
           "real": true
         },
         {
           "position": 16,
-          "id": "ranking-bot-0046",
-          "name": "Diego Martínez",
-          "points": 10880,
-          "real": false
+          "id": "athleteprofile-1767225791439-r6g6sw",
+          "name": "Fran Guerrero",
+          "points": 10383,
+          "real": true
         },
         {
           "position": 17,
-          "id": "ranking-bot-0035",
-          "name": "Santiago Alonso",
-          "points": 10872,
-          "real": false
+          "id": "athleteprofile-1767225808439-zj9b0g",
+          "name": "Pablo Cardona",
+          "points": 10169,
+          "real": true
         },
         {
           "position": 18,
-          "id": "ranking-bot-0047",
-          "name": "Tomás Medina",
-          "points": 10839,
-          "real": false
+          "id": "athleteprofile-1767225733439-sof6fe",
+          "name": "Paquito Navarro",
+          "points": 9957,
+          "real": true
         },
         {
           "position": 19,
-          "id": "ranking-bot-0045",
-          "name": "Javier Ramos",
-          "points": 10464,
-          "real": false
+          "id": "athleteprofile-1767225740439-dpi9be",
+          "name": "Jon Sanz",
+          "points": 9613,
+          "real": true
         },
         {
           "position": 20,
-          "id": "athlete_jon_sanz",
-          "name": "Jon Sanz",
-          "points": 9860,
+          "id": "athleteprofile-1767225767439-nvjd86",
+          "name": "Lucas Bergamini",
+          "points": 8287,
           "real": true
         }
       ],
-      "realInTop20": 12,
+      "realInTop20": 15,
       "tournamentsPlayedThisSeason": {
         "real": {
-          "mean": 8.58,
-          "median": 5.5,
+          "mean": 9.58,
+          "median": 9.5,
           "n": 24
         },
         "bots": {
-          "mean": 0.72,
-          "median": 0,
-          "n": 976
+          "mean": 5.33,
+          "median": 5,
+          "n": 128
         }
       },
       "realAthletesNeverPlayedSoFar": [],
@@ -2167,73 +2185,73 @@
         {
           "team_key": "team_coello_tapia_2025",
           "names": "Arturo Coello & Agustín Tapia",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_chingotto_galan_2025",
           "names": "Federico Chingotto & Alejandro Galán",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_stupaczuk_lebron_2025",
           "names": "Franco Stupaczuk & Juan Lebrón",
-          "samples": 11,
-          "pairedRatePct": 81.8
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_nieto_yanguas_2025",
           "names": "Coki Nieto & Mike Yanguas",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 100
         },
         {
           "team_key": "team_navarro_sanz_2025",
           "names": "Paquito Navarro & Jon Sanz",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_dinenno_augsburger_2025",
           "names": "Martín Di Nenno & Leo Augsburger",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_guerrero_gonzalez_2025",
           "names": "Fran Guerrero & Momo González",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_leal_bergamini_2025",
           "names": "Javi Leal & Lucas Bergamini",
-          "samples": 11,
-          "pairedRatePct": 72.7
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_cardona_garrido_2025",
           "names": "Pablo Cardona & Javi Garrido",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_alonso_tello_2025",
           "names": "Edu Alonso & Juan Tello",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         },
         {
           "team_key": "team_jofre_arroyo_2025",
           "names": "Íñigo Jofre & Álex Arroyo",
-          "samples": 11,
-          "pairedRatePct": 100
+          "samples": 12,
+          "pairedRatePct": 0
         },
         {
           "team_key": "team_sanyo_alfonso_2025",
           "names": "Sanyo Gutiérrez & Gonzalo Alfonso",
-          "samples": 11,
+          "samples": 12,
           "pairedRatePct": 0
         }
       ],
@@ -2260,47 +2278,45 @@
     }
   ],
   "cumulative": {
-    "tournamentsResolved": 158,
+    "tournamentsResolved": 159,
     "byClassification": {
-      "100%_bots": 38,
-      "100%_reais": 119,
-      "mista": 1
+      "100%_bots": 54,
+      "100%_reais": 105
     },
     "byTierClassification": {
       "Silver": {
-        "100%_bots": 9,
-        "100%_reais": 25,
-        "mista": 1
+        "100%_bots": 15,
+        "100%_reais": 20
       },
       "Gold": {
+        "100%_bots": 10,
+        "100%_reais": 20
+      },
+      "Platinum": {
         "100%_reais": 22,
         "100%_bots": 8
       },
-      "Platinum": {
-        "100%_reais": 21,
-        "100%_bots": 8
-      },
       "Masters": {
-        "100%_reais": 19,
-        "100%_bots": 6
+        "100%_bots": 8,
+        "100%_reais": 17
       },
       "Elite": {
-        "100%_reais": 18,
-        "100%_bots": 2
+        "100%_reais": 13,
+        "100%_bots": 7
       },
       "Crown": {
-        "100%_reais": 14,
-        "100%_bots": 5
+        "100%_reais": 13,
+        "100%_bots": 6
       }
     },
     "tournamentsPlayed": {
       "real": {
-        "mean": 50.29,
-        "median": 33.5
+        "mean": 46.67,
+        "median": 42
       },
       "bots": {
-        "mean": 22.64,
-        "median": 21
+        "mean": 40.65,
+        "median": 44
       }
     },
     "realAthletesNeverInAnyDraw": [],
@@ -2310,74 +2326,74 @@
       {
         "team_key": "team_coello_tapia_2025",
         "names": "Arturo Coello & Agustín Tapia",
-        "samples": 55,
-        "pairedRatePct": 90.9
+        "samples": 60,
+        "pairedRatePct": 98.3
       },
       {
         "team_key": "team_chingotto_galan_2025",
         "names": "Federico Chingotto & Alejandro Galán",
-        "samples": 55,
-        "pairedRatePct": 94.5
+        "samples": 60,
+        "pairedRatePct": 96.7
       },
       {
         "team_key": "team_stupaczuk_lebron_2025",
         "names": "Franco Stupaczuk & Juan Lebrón",
-        "samples": 55,
-        "pairedRatePct": 83.6
+        "samples": 60,
+        "pairedRatePct": 60
       },
       {
         "team_key": "team_nieto_yanguas_2025",
         "names": "Coki Nieto & Mike Yanguas",
-        "samples": 55,
-        "pairedRatePct": 96.4
+        "samples": 60,
+        "pairedRatePct": 73.3
       },
       {
         "team_key": "team_navarro_sanz_2025",
         "names": "Paquito Navarro & Jon Sanz",
-        "samples": 55,
-        "pairedRatePct": 49.1
+        "samples": 60,
+        "pairedRatePct": 0
       },
       {
         "team_key": "team_dinenno_augsburger_2025",
         "names": "Martín Di Nenno & Leo Augsburger",
-        "samples": 55,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 0
       },
       {
         "team_key": "team_guerrero_gonzalez_2025",
         "names": "Fran Guerrero & Momo González",
-        "samples": 55,
-        "pairedRatePct": 40
+        "samples": 60,
+        "pairedRatePct": 0
       },
       {
         "team_key": "team_leal_bergamini_2025",
         "names": "Javi Leal & Lucas Bergamini",
-        "samples": 55,
-        "pairedRatePct": 14.5
+        "samples": 60,
+        "pairedRatePct": 0
       },
       {
         "team_key": "team_cardona_garrido_2025",
         "names": "Pablo Cardona & Javi Garrido",
-        "samples": 55,
+        "samples": 60,
         "pairedRatePct": 0
       },
       {
         "team_key": "team_alonso_tello_2025",
         "names": "Edu Alonso & Juan Tello",
-        "samples": 55,
+        "samples": 60,
         "pairedRatePct": 0
       },
       {
         "team_key": "team_jofre_arroyo_2025",
         "names": "Íñigo Jofre & Álex Arroyo",
-        "samples": 55,
-        "pairedRatePct": 92.7
+        "samples": 60,
+        "pairedRatePct": 0
       },
       {
         "team_key": "team_sanyo_alfonso_2025",
         "names": "Sanyo Gutiérrez & Gonzalo Alfonso",
-        "samples": 55,
-        "pairedRatePct": 47.3
+        "samples": 60,
+        "pairedRatePct": 0
       }
     ]
   },

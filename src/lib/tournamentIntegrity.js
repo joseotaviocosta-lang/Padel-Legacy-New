@@ -1,14 +1,11 @@
+import { fnv1aHash } from './hashUtils.js';
+
 function slug(value) {
   return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 }
 
 function hash(value) {
-  let result = 2166136261;
-  for (const char of String(value)) {
-    result ^= char.charCodeAt(0);
-    result = Math.imul(result, 16777619);
-  }
-  return (result >>> 0).toString(36);
+  return fnv1aHash(String(value)).toString(36);
 }
 
 export function createTournamentEditionId({ year, circuitCode, cityCode, tier, week, slot = 1 }) {

@@ -1,13 +1,8 @@
 import { localGame } from '@/api/localGameClient.js';
+import { fnv1aHash } from './hashUtils.js';
 
 function hashString(value) {
-  let hash = 2166136261;
-  const text = String(value || '');
-  for (let i = 0; i < text.length; i += 1) {
-    hash ^= text.charCodeAt(i);
-    hash = Math.imul(hash, 16777619);
-  }
-  return hash >>> 0;
+  return fnv1aHash(String(value || ''));
 }
 
 function seeded01(key) {

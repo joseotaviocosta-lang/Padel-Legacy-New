@@ -23,7 +23,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 1
+      "seed_rank": 1,
+      "birth_date": "2002-06-15"
     },
     {
       "bot_id": "athlete_agustin_tapia",
@@ -44,7 +45,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 2
+      "seed_rank": 2,
+      "birth_date": "1999-06-15"
     },
     {
       "bot_id": "athlete_alejandro_galan",
@@ -65,7 +67,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 3
+      "seed_rank": 3,
+      "birth_date": "1996-06-15"
     },
     {
       "bot_id": "athlete_federico_chingotto",
@@ -86,7 +89,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 4
+      "seed_rank": 4,
+      "birth_date": "1997-06-15"
     },
     {
       "bot_id": "athlete_franco_stupaczuk",
@@ -107,7 +111,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 5
+      "seed_rank": 5,
+      "birth_date": "1996-06-15"
     },
     {
       "bot_id": "athlete_juan_lebron",
@@ -128,7 +133,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 6
+      "seed_rank": 6,
+      "birth_date": "1995-06-15"
     },
     {
       "bot_id": "athlete_mike_yanguas",
@@ -149,7 +155,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 7
+      "seed_rank": 7,
+      "birth_date": "2002-06-15"
     },
     {
       "bot_id": "athlete_coki_nieto",
@@ -170,7 +177,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 8
+      "seed_rank": 8,
+      "birth_date": "1998-06-15"
     },
     {
       "bot_id": "athlete_paquito_navarro",
@@ -191,7 +199,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 9
+      "seed_rank": 9,
+      "birth_date": "1989-06-15"
     },
     {
       "bot_id": "athlete_jon_sanz",
@@ -212,7 +221,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 10
+      "seed_rank": 10,
+      "birth_date": "2000-06-15"
     },
     {
       "bot_id": "athlete_martin_di_nenno",
@@ -233,7 +243,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 11
+      "seed_rank": 11,
+      "birth_date": "1997-06-15"
     },
     {
       "bot_id": "athlete_leo_augsburger",
@@ -254,7 +265,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 12
+      "seed_rank": 12,
+      "birth_date": "2004-06-15"
     },
     {
       "bot_id": "athlete_lucas_bergamini",
@@ -275,7 +287,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 13
+      "seed_rank": 13,
+      "birth_date": "1997-06-15"
     },
     {
       "bot_id": "athlete_javi_leal",
@@ -296,7 +309,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 14
+      "seed_rank": 14,
+      "birth_date": "2003-06-15"
     },
     {
       "bot_id": "athlete_momo_gonzalez",
@@ -317,7 +331,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 15
+      "seed_rank": 15,
+      "birth_date": "1997-06-15"
     },
     {
       "bot_id": "athlete_fran_guerrero",
@@ -338,7 +353,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 16
+      "seed_rank": 16,
+      "birth_date": "2003-06-15"
     },
     {
       "bot_id": "athlete_javi_garrido",
@@ -359,7 +375,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 17
+      "seed_rank": 17,
+      "birth_date": "2000-06-15"
     },
     {
       "bot_id": "athlete_pablo_cardona",
@@ -380,7 +397,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 18
+      "seed_rank": 18,
+      "birth_date": "2004-06-15"
     },
     {
       "bot_id": "athlete_edu_alonso",
@@ -401,7 +419,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 19
+      "seed_rank": 19,
+      "birth_date": "2001-06-15"
     },
     {
       "bot_id": "athlete_juan_tello",
@@ -422,7 +441,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 20
+      "seed_rank": 20,
+      "birth_date": "1995-06-15"
     },
     {
       "bot_id": "athlete_alex_arroyo",
@@ -443,7 +463,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 21
+      "seed_rank": 21,
+      "birth_date": "2001-06-15"
     },
     {
       "bot_id": "athlete_inigo_jofre",
@@ -464,7 +485,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 22
+      "seed_rank": 22,
+      "birth_date": "2001-06-15"
     },
     {
       "bot_id": "athlete_sanyo_gutierrez",
@@ -485,7 +507,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 23
+      "seed_rank": 23,
+      "birth_date": "1984-06-15"
     },
     {
       "bot_id": "athlete_gonza_alfonso",
@@ -506,7 +529,8 @@
       "active": true,
       "retired": false,
       "seed_source": "final_2025",
-      "seed_rank": 24
+      "seed_rank": 24,
+      "birth_date": "1995-06-15"
     }
   ],
   "teams": [

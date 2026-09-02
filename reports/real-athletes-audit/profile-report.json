@@ -1,0 +1,2799 @@
+{
+  "seed": "profile-970",
+  "daysSimulated": 366,
+  "proceduralAthletes": 970,
+  "proceduralTeams": 486,
+  "totalWallMs": 2097268.1,
+  "totalWallMinutes": 34.95,
+  "avgMsPerDay": 5730.24,
+  "stageBreakdown": [
+    {
+      "stage": "aiPartnerships",
+      "totalMs": 677846.3,
+      "calls": 366,
+      "avgMsPerCall": 1852.04,
+      "pctOfTotal": 32.3
+    },
+    {
+      "stage": "world",
+      "totalMs": 305389.5,
+      "calls": 366,
+      "avgMsPerCall": 834.4,
+      "pctOfTotal": 14.6
+    },
+    {
+      "stage": "livingWorld",
+      "totalMs": 278063.5,
+      "calls": 366,
+      "avgMsPerCall": 759.74,
+      "pctOfTotal": 13.3
+    },
+    {
+      "stage": "staff",
+      "totalMs": 146155.8,
+      "calls": 366,
+      "avgMsPerCall": 399.33,
+      "pctOfTotal": 7
+    },
+    {
+      "stage": "recovery",
+      "totalMs": 144839.6,
+      "calls": 366,
+      "avgMsPerCall": 395.74,
+      "pctOfTotal": 6.9
+    },
+    {
+      "stage": "persist",
+      "totalMs": 143030.6,
+      "calls": 366,
+      "avgMsPerCall": 390.79,
+      "pctOfTotal": 6.8
+    },
+    {
+      "stage": "athleteIntelligence",
+      "totalMs": 81956.2,
+      "calls": 366,
+      "avgMsPerCall": 223.92,
+      "pctOfTotal": 3.9
+    },
+    {
+      "stage": "circuit",
+      "totalMs": 72690.1,
+      "calls": 366,
+      "avgMsPerCall": 198.61,
+      "pctOfTotal": 3.5
+    },
+    {
+      "stage": "circuitLife",
+      "totalMs": 68927.6,
+      "calls": 366,
+      "avgMsPerCall": 188.33,
+      "pctOfTotal": 3.3
+    },
+    {
+      "stage": "relationships",
+      "totalMs": 49778.2,
+      "calls": 366,
+      "avgMsPerCall": 136.01,
+      "pctOfTotal": 2.4
+    },
+    {
+      "stage": "notifications",
+      "totalMs": 24531,
+      "calls": 63,
+      "avgMsPerCall": 389.38,
+      "pctOfTotal": 1.2
+    },
+    {
+      "stage": "aiCareerStrategy",
+      "totalMs": 22865.8,
+      "calls": 366,
+      "avgMsPerCall": 62.47,
+      "pctOfTotal": 1.1
+    },
+    {
+      "stage": "monthlyBoundary:processAllClubsMonthly",
+      "totalMs": 20244.8,
+      "calls": 12,
+      "avgMsPerCall": 1687.07,
+      "pctOfTotal": 1
+    },
+    {
+      "stage": "monthlyBoundary:finalizeClosedCareerMonth",
+      "totalMs": 12001.6,
+      "calls": 11,
+      "avgMsPerCall": 1091.05,
+      "pctOfTotal": 0.6
+    },
+    {
+      "stage": "monthlyBoundary:processMonthlyFinances",
+      "totalMs": 11002.4,
+      "calls": 12,
+      "avgMsPerCall": 916.87,
+      "pctOfTotal": 0.5
+    },
+    {
+      "stage": "spontaneousPartnerMarket",
+      "totalMs": 7222.1,
+      "calls": 366,
+      "avgMsPerCall": 19.73,
+      "pctOfTotal": 0.3
+    },
+    {
+      "stage": "annualBoundary:finalizeClosedCareerYear",
+      "totalMs": 6121.9,
+      "calls": 1,
+      "avgMsPerCall": 6121.9,
+      "pctOfTotal": 0.3
+    },
+    {
+      "stage": "monthlyBoundary:evolveAthletesMonthly",
+      "totalMs": 6050.9,
+      "calls": 12,
+      "avgMsPerCall": 504.24,
+      "pctOfTotal": 0.3
+    },
+    {
+      "stage": "monthlyBoundary:ensureFutureTournaments",
+      "totalMs": 5508.9,
+      "calls": 12,
+      "avgMsPerCall": 459.08,
+      "pctOfTotal": 0.3
+    },
+    {
+      "stage": "annualBoundary:finalizeClosedCareerMonth",
+      "totalMs": 5329.3,
+      "calls": 1,
+      "avgMsPerCall": 5329.3,
+      "pctOfTotal": 0.3
+    },
+    {
+      "stage": "annualBoundary:resetRaceSeasonPoints",
+      "totalMs": 1160.9,
+      "calls": 1,
+      "avgMsPerCall": 1160.9,
+      "pctOfTotal": 0.1
+    },
+    {
+      "stage": "calendar",
+      "totalMs": 202.3,
+      "calls": 366,
+      "avgMsPerCall": 0.55,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "validation:annualReport",
+      "totalMs": 128.4,
+      "calls": 366,
+      "avgMsPerCall": 0.35,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "validation:monthlyReport",
+      "totalMs": 78,
+      "calls": 366,
+      "avgMsPerCall": 0.21,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "partner",
+      "totalMs": 43,
+      "calls": 366,
+      "avgMsPerCall": 0.12,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "training",
+      "totalMs": 38.7,
+      "calls": 366,
+      "avgMsPerCall": 0.11,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "medical",
+      "totalMs": 18.8,
+      "calls": 366,
+      "avgMsPerCall": 0.05,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "monthlyBoundary:simulatePastTournaments",
+      "totalMs": 17.9,
+      "calls": 12,
+      "avgMsPerCall": 1.49,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "missions",
+      "totalMs": 1.3,
+      "calls": 366,
+      "avgMsPerCall": 0,
+      "pctOfTotal": 0
+    },
+    {
+      "stage": "partnerMarketInterest",
+      "totalMs": 0.4,
+      "calls": 366,
+      "avgMsPerCall": 0,
+      "pctOfTotal": 0
+    }
+  ],
+  "tournamentDaysVsOther": {
+    "tournamentDays": 32,
+    "nonTournamentDays": 334,
+    "avgMsTournamentDay": 12349.19,
+    "avgMsNonTournamentDay": 5096.07
+  },
+  "pruning": {
+    "totalMs": 5061.8,
+    "calls": 12,
+    "avgMsPerCall": 421.81,
+    "pctOfTotal": 0.24
+  },
+  "firstMonthAvgMsPerDay": 1115.91,
+  "lastMonthAvgMsPerDay": 16643.3,
+  "dayTotals": [
+    {
+      "day": 0,
+      "date": "2026-01-02",
+      "totalMs": 2361.63,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 1,
+      "date": "2026-01-03",
+      "totalMs": 676.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 2,
+      "date": "2026-01-04",
+      "totalMs": 1325.56,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 3,
+      "date": "2026-01-05",
+      "totalMs": 1268.97,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 4,
+      "date": "2026-01-06",
+      "totalMs": 681.24,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 5,
+      "date": "2026-01-07",
+      "totalMs": 744.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 6,
+      "date": "2026-01-08",
+      "totalMs": 1152.28,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 7,
+      "date": "2026-01-09",
+      "totalMs": 695.54,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 8,
+      "date": "2026-01-10",
+      "totalMs": 746.71,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 9,
+      "date": "2026-01-11",
+      "totalMs": 1389.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 10,
+      "date": "2026-01-12",
+      "totalMs": 1695.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 11,
+      "date": "2026-01-13",
+      "totalMs": 730.41,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 12,
+      "date": "2026-01-14",
+      "totalMs": 743.11,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 13,
+      "date": "2026-01-15",
+      "totalMs": 1130.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 14,
+      "date": "2026-01-16",
+      "totalMs": 733.1,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 15,
+      "date": "2026-01-17",
+      "totalMs": 722.08,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 16,
+      "date": "2026-01-18",
+      "totalMs": 1340.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 17,
+      "date": "2026-01-19",
+      "totalMs": 1671.42,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 18,
+      "date": "2026-01-20",
+      "totalMs": 794.51,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 19,
+      "date": "2026-01-21",
+      "totalMs": 769.56,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 20,
+      "date": "2026-01-22",
+      "totalMs": 1256.88,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 21,
+      "date": "2026-01-23",
+      "totalMs": 774.22,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 22,
+      "date": "2026-01-24",
+      "totalMs": 792.24,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 23,
+      "date": "2026-01-25",
+      "totalMs": 1406.7,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 24,
+      "date": "2026-01-26",
+      "totalMs": 1874.05,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 25,
+      "date": "2026-01-27",
+      "totalMs": 832.21,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 26,
+      "date": "2026-01-28",
+      "totalMs": 797.38,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 27,
+      "date": "2026-01-29",
+      "totalMs": 1373.16,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 28,
+      "date": "2026-01-30",
+      "totalMs": 1576.45,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 29,
+      "date": "2026-01-31",
+      "totalMs": 1421.18,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 30,
+      "date": "2026-02-01",
+      "totalMs": 14218.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 284.53
+    },
+    {
+      "day": 31,
+      "date": "2026-02-02",
+      "totalMs": 2071.77,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 32,
+      "date": "2026-02-03",
+      "totalMs": 920.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 33,
+      "date": "2026-02-04",
+      "totalMs": 1021.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 34,
+      "date": "2026-02-05",
+      "totalMs": 1601.35,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 35,
+      "date": "2026-02-06",
+      "totalMs": 1136.14,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 36,
+      "date": "2026-02-07",
+      "totalMs": 1551.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 37,
+      "date": "2026-02-08",
+      "totalMs": 3057.21,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 38,
+      "date": "2026-02-09",
+      "totalMs": 3322.58,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 39,
+      "date": "2026-02-10",
+      "totalMs": 1200.25,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 40,
+      "date": "2026-02-11",
+      "totalMs": 1099.3,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 41,
+      "date": "2026-02-12",
+      "totalMs": 1808.69,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 42,
+      "date": "2026-02-13",
+      "totalMs": 1343.45,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 43,
+      "date": "2026-02-14",
+      "totalMs": 894.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 44,
+      "date": "2026-02-15",
+      "totalMs": 2902.93,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 45,
+      "date": "2026-02-16",
+      "totalMs": 2405.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 46,
+      "date": "2026-02-17",
+      "totalMs": 1311.91,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 47,
+      "date": "2026-02-18",
+      "totalMs": 1199.54,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 48,
+      "date": "2026-02-19",
+      "totalMs": 1418.01,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 49,
+      "date": "2026-02-20",
+      "totalMs": 970.49,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 50,
+      "date": "2026-02-21",
+      "totalMs": 1142.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 51,
+      "date": "2026-02-22",
+      "totalMs": 2197.45,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 52,
+      "date": "2026-02-23",
+      "totalMs": 2001.27,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 53,
+      "date": "2026-02-24",
+      "totalMs": 1834.73,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 54,
+      "date": "2026-02-25",
+      "totalMs": 991.28,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 55,
+      "date": "2026-02-26",
+      "totalMs": 2515.02,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 56,
+      "date": "2026-02-27",
+      "totalMs": 1271.19,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 57,
+      "date": "2026-02-28",
+      "totalMs": 1707.75,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 58,
+      "date": "2026-03-01",
+      "totalMs": 16290.57,
+      "hadTournamentEvent": false,
+      "pruneMs": 172.48
+    },
+    {
+      "day": 59,
+      "date": "2026-03-02",
+      "totalMs": 2383.35,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 60,
+      "date": "2026-03-03",
+      "totalMs": 1104.78,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 61,
+      "date": "2026-03-04",
+      "totalMs": 1155.97,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 62,
+      "date": "2026-03-05",
+      "totalMs": 2012.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 63,
+      "date": "2026-03-06",
+      "totalMs": 1457.17,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 64,
+      "date": "2026-03-07",
+      "totalMs": 1206.14,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 65,
+      "date": "2026-03-08",
+      "totalMs": 3246.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 66,
+      "date": "2026-03-09",
+      "totalMs": 3640.4,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 67,
+      "date": "2026-03-10",
+      "totalMs": 1231.56,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 68,
+      "date": "2026-03-11",
+      "totalMs": 1974.27,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 69,
+      "date": "2026-03-12",
+      "totalMs": 1703.73,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 70,
+      "date": "2026-03-13",
+      "totalMs": 1445.59,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 71,
+      "date": "2026-03-14",
+      "totalMs": 1082.79,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 72,
+      "date": "2026-03-15",
+      "totalMs": 2512.25,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 73,
+      "date": "2026-03-16",
+      "totalMs": 2435.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 74,
+      "date": "2026-03-17",
+      "totalMs": 1431,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 75,
+      "date": "2026-03-18",
+      "totalMs": 1286.41,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 76,
+      "date": "2026-03-19",
+      "totalMs": 1829,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 77,
+      "date": "2026-03-20",
+      "totalMs": 1201.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 78,
+      "date": "2026-03-21",
+      "totalMs": 1196.24,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 79,
+      "date": "2026-03-22",
+      "totalMs": 3103.19,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 80,
+      "date": "2026-03-23",
+      "totalMs": 2333.54,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 81,
+      "date": "2026-03-24",
+      "totalMs": 1722.16,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 82,
+      "date": "2026-03-25",
+      "totalMs": 1766.94,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 83,
+      "date": "2026-03-26",
+      "totalMs": 3943.49,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 84,
+      "date": "2026-03-27",
+      "totalMs": 1760.74,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 85,
+      "date": "2026-03-28",
+      "totalMs": 2232.15,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 86,
+      "date": "2026-03-29",
+      "totalMs": 2723.16,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 87,
+      "date": "2026-03-30",
+      "totalMs": 2312.15,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 88,
+      "date": "2026-03-31",
+      "totalMs": 1586.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 89,
+      "date": "2026-04-01",
+      "totalMs": 20576.83,
+      "hadTournamentEvent": false,
+      "pruneMs": 231.73
+    },
+    {
+      "day": 90,
+      "date": "2026-04-02",
+      "totalMs": 2023.72,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 91,
+      "date": "2026-04-03",
+      "totalMs": 1326.86,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 92,
+      "date": "2026-04-04",
+      "totalMs": 1302.15,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 93,
+      "date": "2026-04-05",
+      "totalMs": 3151.67,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 94,
+      "date": "2026-04-06",
+      "totalMs": 2534.7,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 95,
+      "date": "2026-04-07",
+      "totalMs": 2437.47,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 96,
+      "date": "2026-04-08",
+      "totalMs": 1624.08,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 97,
+      "date": "2026-04-09",
+      "totalMs": 2065.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 98,
+      "date": "2026-04-10",
+      "totalMs": 1404.54,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 99,
+      "date": "2026-04-11",
+      "totalMs": 1622.22,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 100,
+      "date": "2026-04-12",
+      "totalMs": 3245.15,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 101,
+      "date": "2026-04-13",
+      "totalMs": 2649.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 102,
+      "date": "2026-04-14",
+      "totalMs": 1518.73,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 103,
+      "date": "2026-04-15",
+      "totalMs": 1721.57,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 104,
+      "date": "2026-04-16",
+      "totalMs": 3163.06,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 105,
+      "date": "2026-04-17",
+      "totalMs": 1690.88,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 106,
+      "date": "2026-04-18",
+      "totalMs": 1443.7,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 107,
+      "date": "2026-04-19",
+      "totalMs": 3441.75,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 108,
+      "date": "2026-04-20",
+      "totalMs": 4125.34,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 109,
+      "date": "2026-04-21",
+      "totalMs": 1914.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 110,
+      "date": "2026-04-22",
+      "totalMs": 2027.84,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 111,
+      "date": "2026-04-23",
+      "totalMs": 4052.3,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 112,
+      "date": "2026-04-24",
+      "totalMs": 1935.09,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 113,
+      "date": "2026-04-25",
+      "totalMs": 1557.86,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 114,
+      "date": "2026-04-26",
+      "totalMs": 3312.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 115,
+      "date": "2026-04-27",
+      "totalMs": 3063.51,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 116,
+      "date": "2026-04-28",
+      "totalMs": 1952.06,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 117,
+      "date": "2026-04-29",
+      "totalMs": 1674.87,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 118,
+      "date": "2026-04-30",
+      "totalMs": 2631.47,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 119,
+      "date": "2026-05-01",
+      "totalMs": 28915.06,
+      "hadTournamentEvent": false,
+      "pruneMs": 246.75
+    },
+    {
+      "day": 120,
+      "date": "2026-05-02",
+      "totalMs": 1474.65,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 121,
+      "date": "2026-05-03",
+      "totalMs": 3229.17,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 122,
+      "date": "2026-05-04",
+      "totalMs": 2828.83,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 123,
+      "date": "2026-05-05",
+      "totalMs": 1455.29,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 124,
+      "date": "2026-05-06",
+      "totalMs": 1701.83,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 125,
+      "date": "2026-05-07",
+      "totalMs": 2616.9,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 126,
+      "date": "2026-05-08",
+      "totalMs": 2575.78,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 127,
+      "date": "2026-05-09",
+      "totalMs": 1839.99,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 128,
+      "date": "2026-05-10",
+      "totalMs": 3481.84,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 129,
+      "date": "2026-05-11",
+      "totalMs": 3499.46,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 130,
+      "date": "2026-05-12",
+      "totalMs": 1974.71,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 131,
+      "date": "2026-05-13",
+      "totalMs": 1930.21,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 132,
+      "date": "2026-05-14",
+      "totalMs": 3354.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 133,
+      "date": "2026-05-15",
+      "totalMs": 2105.31,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 134,
+      "date": "2026-05-16",
+      "totalMs": 2329.64,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 135,
+      "date": "2026-05-17",
+      "totalMs": 5073.22,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 136,
+      "date": "2026-05-18",
+      "totalMs": 3505.99,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 137,
+      "date": "2026-05-19",
+      "totalMs": 1570.53,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 138,
+      "date": "2026-05-20",
+      "totalMs": 3432.46,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 139,
+      "date": "2026-05-21",
+      "totalMs": 3851.68,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 140,
+      "date": "2026-05-22",
+      "totalMs": 2562.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 141,
+      "date": "2026-05-23",
+      "totalMs": 2469.62,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 142,
+      "date": "2026-05-24",
+      "totalMs": 5519.17,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 143,
+      "date": "2026-05-25",
+      "totalMs": 4813.75,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 144,
+      "date": "2026-05-26",
+      "totalMs": 2943.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 145,
+      "date": "2026-05-27",
+      "totalMs": 2687.67,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 146,
+      "date": "2026-05-28",
+      "totalMs": 3422.99,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 147,
+      "date": "2026-05-29",
+      "totalMs": 1667.38,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 148,
+      "date": "2026-05-30",
+      "totalMs": 2169.2,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 149,
+      "date": "2026-05-31",
+      "totalMs": 4672.51,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 150,
+      "date": "2026-06-01",
+      "totalMs": 41857.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 319.92
+    },
+    {
+      "day": 151,
+      "date": "2026-06-02",
+      "totalMs": 3453.73,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 152,
+      "date": "2026-06-03",
+      "totalMs": 2246.28,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 153,
+      "date": "2026-06-04",
+      "totalMs": 4872.49,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 154,
+      "date": "2026-06-05",
+      "totalMs": 2182.06,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 155,
+      "date": "2026-06-06",
+      "totalMs": 2286.88,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 156,
+      "date": "2026-06-07",
+      "totalMs": 4802.47,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 157,
+      "date": "2026-06-08",
+      "totalMs": 3769.5,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 158,
+      "date": "2026-06-09",
+      "totalMs": 1860.51,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 159,
+      "date": "2026-06-10",
+      "totalMs": 1839.09,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 160,
+      "date": "2026-06-11",
+      "totalMs": 2975.77,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 161,
+      "date": "2026-06-12",
+      "totalMs": 2571.86,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 162,
+      "date": "2026-06-13",
+      "totalMs": 2019.74,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 163,
+      "date": "2026-06-14",
+      "totalMs": 4803.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 164,
+      "date": "2026-06-15",
+      "totalMs": 5295.65,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 165,
+      "date": "2026-06-16",
+      "totalMs": 2109.24,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 166,
+      "date": "2026-06-17",
+      "totalMs": 2684.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 167,
+      "date": "2026-06-18",
+      "totalMs": 3386.64,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 168,
+      "date": "2026-06-19",
+      "totalMs": 2058.83,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 169,
+      "date": "2026-06-20",
+      "totalMs": 2051.97,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 170,
+      "date": "2026-06-21",
+      "totalMs": 4803.23,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 171,
+      "date": "2026-06-22",
+      "totalMs": 3999.89,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 172,
+      "date": "2026-06-23",
+      "totalMs": 2664.89,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 173,
+      "date": "2026-06-24",
+      "totalMs": 2500.2,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 174,
+      "date": "2026-06-25",
+      "totalMs": 3145.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 175,
+      "date": "2026-06-26",
+      "totalMs": 2088.95,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 176,
+      "date": "2026-06-27",
+      "totalMs": 2141.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 177,
+      "date": "2026-06-28",
+      "totalMs": 4883.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 178,
+      "date": "2026-06-29",
+      "totalMs": 3979.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 179,
+      "date": "2026-06-30",
+      "totalMs": 2154.99,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 180,
+      "date": "2026-07-01",
+      "totalMs": 51564.63,
+      "hadTournamentEvent": false,
+      "pruneMs": 339.21
+    },
+    {
+      "day": 181,
+      "date": "2026-07-02",
+      "totalMs": 6272.14,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 182,
+      "date": "2026-07-03",
+      "totalMs": 2782.6,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 183,
+      "date": "2026-07-04",
+      "totalMs": 2793.97,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 184,
+      "date": "2026-07-05",
+      "totalMs": 5701.93,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 185,
+      "date": "2026-07-06",
+      "totalMs": 4160.59,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 186,
+      "date": "2026-07-07",
+      "totalMs": 2239.27,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 187,
+      "date": "2026-07-08",
+      "totalMs": 3250.08,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 188,
+      "date": "2026-07-09",
+      "totalMs": 3299.19,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 189,
+      "date": "2026-07-10",
+      "totalMs": 2473.97,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 190,
+      "date": "2026-07-11",
+      "totalMs": 3053.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 191,
+      "date": "2026-07-12",
+      "totalMs": 5285.51,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 192,
+      "date": "2026-07-13",
+      "totalMs": 4623.85,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 193,
+      "date": "2026-07-14",
+      "totalMs": 2577.7,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 194,
+      "date": "2026-07-15",
+      "totalMs": 4182.33,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 195,
+      "date": "2026-07-16",
+      "totalMs": 4177.05,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 196,
+      "date": "2026-07-17",
+      "totalMs": 3977.62,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 197,
+      "date": "2026-07-18",
+      "totalMs": 2461.43,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 198,
+      "date": "2026-07-19",
+      "totalMs": 5250.39,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 199,
+      "date": "2026-07-20",
+      "totalMs": 4832.65,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 200,
+      "date": "2026-07-21",
+      "totalMs": 2688.88,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 201,
+      "date": "2026-07-22",
+      "totalMs": 2318.22,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 202,
+      "date": "2026-07-23",
+      "totalMs": 4919.11,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 203,
+      "date": "2026-07-24",
+      "totalMs": 2468.76,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 204,
+      "date": "2026-07-25",
+      "totalMs": 2353.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 205,
+      "date": "2026-07-26",
+      "totalMs": 6421.1,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 206,
+      "date": "2026-07-27",
+      "totalMs": 6612.09,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 207,
+      "date": "2026-07-28",
+      "totalMs": 5353.74,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 208,
+      "date": "2026-07-29",
+      "totalMs": 2793.52,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 209,
+      "date": "2026-07-30",
+      "totalMs": 3992.03,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 210,
+      "date": "2026-07-31",
+      "totalMs": 4269.06,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 211,
+      "date": "2026-08-01",
+      "totalMs": 66374.52,
+      "hadTournamentEvent": false,
+      "pruneMs": 398.14
+    },
+    {
+      "day": 212,
+      "date": "2026-08-02",
+      "totalMs": 5936.2,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 213,
+      "date": "2026-08-03",
+      "totalMs": 4909.36,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 214,
+      "date": "2026-08-04",
+      "totalMs": 2480.44,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 215,
+      "date": "2026-08-05",
+      "totalMs": 2512.3,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 216,
+      "date": "2026-08-06",
+      "totalMs": 4300.34,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 217,
+      "date": "2026-08-07",
+      "totalMs": 2567.86,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 218,
+      "date": "2026-08-08",
+      "totalMs": 2672.99,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 219,
+      "date": "2026-08-09",
+      "totalMs": 5693.5,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 220,
+      "date": "2026-08-10",
+      "totalMs": 5081.3,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 221,
+      "date": "2026-08-11",
+      "totalMs": 2585.08,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 222,
+      "date": "2026-08-12",
+      "totalMs": 2577.11,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 223,
+      "date": "2026-08-13",
+      "totalMs": 7154.18,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 224,
+      "date": "2026-08-14",
+      "totalMs": 2856.46,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 225,
+      "date": "2026-08-15",
+      "totalMs": 2842.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 226,
+      "date": "2026-08-16",
+      "totalMs": 5739.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 227,
+      "date": "2026-08-17",
+      "totalMs": 4787.01,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 228,
+      "date": "2026-08-18",
+      "totalMs": 2942.66,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 229,
+      "date": "2026-08-19",
+      "totalMs": 2511.59,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 230,
+      "date": "2026-08-20",
+      "totalMs": 4429.12,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 231,
+      "date": "2026-08-21",
+      "totalMs": 2538.53,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 232,
+      "date": "2026-08-22",
+      "totalMs": 2535.93,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 233,
+      "date": "2026-08-23",
+      "totalMs": 6241.12,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 234,
+      "date": "2026-08-24",
+      "totalMs": 7370.67,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 235,
+      "date": "2026-08-25",
+      "totalMs": 2335.38,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 236,
+      "date": "2026-08-26",
+      "totalMs": 2226.79,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 237,
+      "date": "2026-08-27",
+      "totalMs": 4818.97,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 238,
+      "date": "2026-08-28",
+      "totalMs": 2231.77,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 239,
+      "date": "2026-08-29",
+      "totalMs": 2211.89,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 240,
+      "date": "2026-08-30",
+      "totalMs": 4966.69,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 241,
+      "date": "2026-08-31",
+      "totalMs": 4442.41,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 242,
+      "date": "2026-09-01",
+      "totalMs": 65799.47,
+      "hadTournamentEvent": false,
+      "pruneMs": 358.02
+    },
+    {
+      "day": 243,
+      "date": "2026-09-02",
+      "totalMs": 2962.14,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 244,
+      "date": "2026-09-03",
+      "totalMs": 4505.79,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 245,
+      "date": "2026-09-04",
+      "totalMs": 2385.91,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 246,
+      "date": "2026-09-05",
+      "totalMs": 2206.38,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 247,
+      "date": "2026-09-06",
+      "totalMs": 5442.88,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 248,
+      "date": "2026-09-07",
+      "totalMs": 7070.44,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 249,
+      "date": "2026-09-08",
+      "totalMs": 3109.52,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 250,
+      "date": "2026-09-09",
+      "totalMs": 4817.38,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 251,
+      "date": "2026-09-10",
+      "totalMs": 4869.76,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 252,
+      "date": "2026-09-11",
+      "totalMs": 2685.16,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 253,
+      "date": "2026-09-12",
+      "totalMs": 2604.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 254,
+      "date": "2026-09-13",
+      "totalMs": 6565.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 255,
+      "date": "2026-09-14",
+      "totalMs": 5025.16,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 256,
+      "date": "2026-09-15",
+      "totalMs": 3281.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 257,
+      "date": "2026-09-16",
+      "totalMs": 2883.69,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 258,
+      "date": "2026-09-17",
+      "totalMs": 4744.1,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 259,
+      "date": "2026-09-18",
+      "totalMs": 2881.71,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 260,
+      "date": "2026-09-19",
+      "totalMs": 3295.31,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 261,
+      "date": "2026-09-20",
+      "totalMs": 6657.67,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 262,
+      "date": "2026-09-21",
+      "totalMs": 5435.01,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 263,
+      "date": "2026-09-22",
+      "totalMs": 5404.35,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 264,
+      "date": "2026-09-23",
+      "totalMs": 3197.58,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 265,
+      "date": "2026-09-24",
+      "totalMs": 6000.51,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 266,
+      "date": "2026-09-25",
+      "totalMs": 3224.94,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 267,
+      "date": "2026-09-26",
+      "totalMs": 2427.54,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 268,
+      "date": "2026-09-27",
+      "totalMs": 5864.36,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 269,
+      "date": "2026-09-28",
+      "totalMs": 4872.72,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 270,
+      "date": "2026-09-29",
+      "totalMs": 2930.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 271,
+      "date": "2026-09-30",
+      "totalMs": 2571.72,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 272,
+      "date": "2026-10-01",
+      "totalMs": 86357.08,
+      "hadTournamentEvent": false,
+      "pruneMs": 734.62
+    },
+    {
+      "day": 273,
+      "date": "2026-10-02",
+      "totalMs": 2610.67,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 274,
+      "date": "2026-10-03",
+      "totalMs": 2567.05,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 275,
+      "date": "2026-10-04",
+      "totalMs": 6368.21,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 276,
+      "date": "2026-10-05",
+      "totalMs": 5498.91,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 277,
+      "date": "2026-10-06",
+      "totalMs": 3196.85,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 278,
+      "date": "2026-10-07",
+      "totalMs": 2549.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 279,
+      "date": "2026-10-08",
+      "totalMs": 4771.48,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 280,
+      "date": "2026-10-09",
+      "totalMs": 4776.11,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 281,
+      "date": "2026-10-10",
+      "totalMs": 2728.12,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 282,
+      "date": "2026-10-11",
+      "totalMs": 6233,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 283,
+      "date": "2026-10-12",
+      "totalMs": 5012.67,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 284,
+      "date": "2026-10-13",
+      "totalMs": 2584.1,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 285,
+      "date": "2026-10-14",
+      "totalMs": 3560.9,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 286,
+      "date": "2026-10-15",
+      "totalMs": 4493.4,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 287,
+      "date": "2026-10-16",
+      "totalMs": 2638.58,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 288,
+      "date": "2026-10-17",
+      "totalMs": 2544.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 289,
+      "date": "2026-10-18",
+      "totalMs": 7297.57,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 290,
+      "date": "2026-10-19",
+      "totalMs": 7359.02,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 291,
+      "date": "2026-10-20",
+      "totalMs": 2645.71,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 292,
+      "date": "2026-10-21",
+      "totalMs": 2577.29,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 293,
+      "date": "2026-10-22",
+      "totalMs": 4694.36,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 294,
+      "date": "2026-10-23",
+      "totalMs": 2964.73,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 295,
+      "date": "2026-10-24",
+      "totalMs": 2985.65,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 296,
+      "date": "2026-10-25",
+      "totalMs": 5981.17,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 297,
+      "date": "2026-10-26",
+      "totalMs": 4821.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 298,
+      "date": "2026-10-27",
+      "totalMs": 2653.08,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 299,
+      "date": "2026-10-28",
+      "totalMs": 2671.78,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 300,
+      "date": "2026-10-29",
+      "totalMs": 4027.39,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 301,
+      "date": "2026-10-30",
+      "totalMs": 2642.26,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 302,
+      "date": "2026-10-31",
+      "totalMs": 2760.04,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 303,
+      "date": "2026-11-01",
+      "totalMs": 98863.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 428.36
+    },
+    {
+      "day": 304,
+      "date": "2026-11-02",
+      "totalMs": 4844.28,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 305,
+      "date": "2026-11-03",
+      "totalMs": 3149.93,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 306,
+      "date": "2026-11-04",
+      "totalMs": 2616.21,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 307,
+      "date": "2026-11-05",
+      "totalMs": 6283.36,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 308,
+      "date": "2026-11-06",
+      "totalMs": 2933.23,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 309,
+      "date": "2026-11-07",
+      "totalMs": 2646.58,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 310,
+      "date": "2026-11-08",
+      "totalMs": 6082.42,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 311,
+      "date": "2026-11-09",
+      "totalMs": 5414.03,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 312,
+      "date": "2026-11-10",
+      "totalMs": 2675.42,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 313,
+      "date": "2026-11-11",
+      "totalMs": 2873.01,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 314,
+      "date": "2026-11-12",
+      "totalMs": 4915.41,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 315,
+      "date": "2026-11-13",
+      "totalMs": 2717.36,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 316,
+      "date": "2026-11-14",
+      "totalMs": 2691.12,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 317,
+      "date": "2026-11-15",
+      "totalMs": 6233.44,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 318,
+      "date": "2026-11-16",
+      "totalMs": 5132.2,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 319,
+      "date": "2026-11-17",
+      "totalMs": 4762.54,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 320,
+      "date": "2026-11-18",
+      "totalMs": 5777.23,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 321,
+      "date": "2026-11-19",
+      "totalMs": 4506.65,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 322,
+      "date": "2026-11-20",
+      "totalMs": 3215.32,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 323,
+      "date": "2026-11-21",
+      "totalMs": 3420.07,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 324,
+      "date": "2026-11-22",
+      "totalMs": 6702.2,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 325,
+      "date": "2026-11-23",
+      "totalMs": 5115.37,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 326,
+      "date": "2026-11-24",
+      "totalMs": 2805.8,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 327,
+      "date": "2026-11-25",
+      "totalMs": 2743.3,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 328,
+      "date": "2026-11-26",
+      "totalMs": 5128.43,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 329,
+      "date": "2026-11-27",
+      "totalMs": 2839.53,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 330,
+      "date": "2026-11-28",
+      "totalMs": 3387.23,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 331,
+      "date": "2026-11-29",
+      "totalMs": 6421.48,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 332,
+      "date": "2026-11-30",
+      "totalMs": 5867.38,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 333,
+      "date": "2026-12-01",
+      "totalMs": 119792.81,
+      "hadTournamentEvent": false,
+      "pruneMs": 464.29
+    },
+    {
+      "day": 334,
+      "date": "2026-12-02",
+      "totalMs": 3417.03,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 335,
+      "date": "2026-12-03",
+      "totalMs": 7405.08,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 336,
+      "date": "2026-12-04",
+      "totalMs": 3832.87,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 337,
+      "date": "2026-12-05",
+      "totalMs": 4356.38,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 338,
+      "date": "2026-12-06",
+      "totalMs": 8778.56,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 339,
+      "date": "2026-12-07",
+      "totalMs": 7826.49,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 340,
+      "date": "2026-12-08",
+      "totalMs": 4766.92,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 341,
+      "date": "2026-12-09",
+      "totalMs": 4195.87,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 342,
+      "date": "2026-12-10",
+      "totalMs": 7738.23,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 343,
+      "date": "2026-12-11",
+      "totalMs": 4032,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 344,
+      "date": "2026-12-12",
+      "totalMs": 4399.73,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 345,
+      "date": "2026-12-13",
+      "totalMs": 12801.86,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 346,
+      "date": "2026-12-14",
+      "totalMs": 16638.05,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 347,
+      "date": "2026-12-15",
+      "totalMs": 9328.15,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 348,
+      "date": "2026-12-16",
+      "totalMs": 7394.82,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 349,
+      "date": "2026-12-17",
+      "totalMs": 7757.74,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 350,
+      "date": "2026-12-18",
+      "totalMs": 7805.05,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 351,
+      "date": "2026-12-19",
+      "totalMs": 9729.45,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 352,
+      "date": "2026-12-20",
+      "totalMs": 13348.98,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 353,
+      "date": "2026-12-21",
+      "totalMs": 15440.62,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 354,
+      "date": "2026-12-22",
+      "totalMs": 5448.17,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 355,
+      "date": "2026-12-23",
+      "totalMs": 6045.54,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 356,
+      "date": "2026-12-24",
+      "totalMs": 7819.72,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 357,
+      "date": "2026-12-25",
+      "totalMs": 5766.28,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 358,
+      "date": "2026-12-26",
+      "totalMs": 10670.61,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 359,
+      "date": "2026-12-27",
+      "totalMs": 23296.12,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 360,
+      "date": "2026-12-28",
+      "totalMs": 17721.3,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 361,
+      "date": "2026-12-29",
+      "totalMs": 7006.05,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 362,
+      "date": "2026-12-30",
+      "totalMs": 13466.06,
+      "hadTournamentEvent": true,
+      "pruneMs": 0
+    },
+    {
+      "day": 363,
+      "date": "2026-12-31",
+      "totalMs": 18363.33,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    },
+    {
+      "day": 364,
+      "date": "2027-01-01",
+      "totalMs": 228394.03,
+      "hadTournamentEvent": true,
+      "pruneMs": 1083.71
+    },
+    {
+      "day": 365,
+      "date": "2027-01-02",
+      "totalMs": 5130.14,
+      "hadTournamentEvent": false,
+      "pruneMs": 0
+    }
+  ]
+}

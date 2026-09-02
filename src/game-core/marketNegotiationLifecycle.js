@@ -3,18 +3,14 @@ import { overallRating } from '@/lib/padel';
 import { formPartnerContract } from './partnerLifecycle';
 import { normalizeAthlete, toLegacyCourtSide } from '@/players/athleteSchema.js';
 import { calculatePartnershipInterest, evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
 }
 
 function hash(text) {
-  let value = 2166136261;
-  for (const char of String(text)) {
-    value ^= char.charCodeAt(0);
-    value = Math.imul(value, 16777619);
-  }
-  return Math.abs(value >>> 0);
+  return Math.abs(fnv1aHash(String(text)));
 }
 
 function monthKey(date) {

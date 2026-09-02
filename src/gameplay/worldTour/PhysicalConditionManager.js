@@ -3,6 +3,8 @@ import { getMedicalModifiers } from './MedicalCenterManager.js';
 // este módulo diretamente em Node puro, sem resolver o alias Vite.
 import { getDifficultyModifier } from '../difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '../../game-core/physicalStats.js';
+// Também relativo — mesmo motivo do comentário acima (Node puro, sem alias Vite).
+import { fnv1aHash } from '../../lib/hashUtils.js';
 const ROUND_LOAD = {
   qualifying: 12,
   first_round: 14,
@@ -27,9 +29,7 @@ const INJURY_TYPES = {
 
 function clamp(value, min, max) { return Math.max(min, Math.min(max, Number(value) || 0)); }
 function hash(text) {
-  let value = 2166136261;
-  for (let i = 0; i < String(text).length; i += 1) { value ^= String(text).charCodeAt(i); value = Math.imul(value, 16777619); }
-  return (value >>> 0) / 4294967295;
+  return fnv1aHash(String(text)) / 4294967295;
 }
 function roundKey(label = '') {
   const value = String(label).toLowerCase();
