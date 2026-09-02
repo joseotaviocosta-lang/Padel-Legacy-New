@@ -1,7 +1,7 @@
 {
-  "seed": "smoke1",
-  "months": 3,
-  "proceduralAthletes": 100,
+  "seed": "market-diag-970",
+  "months": 12,
+  "proceduralAthletes": 970,
   "variants": [
     {
       "label": "normal-order",
@@ -10,9 +10,9 @@
           "month": "2026-02",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 12203,
+          "sortComparatorCalls": 64223,
           "writes": {
             "AthleteProfile.update": 16,
             "Partnership.upsert": 8
@@ -23,31 +23,163 @@
           "month": "2026-03",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 10586,
+          "sortComparatorCalls": 63316,
           "writes": {
-            "AthleteProfile.update": 32,
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
             "Partnership.upsert": 8
           },
-          "totalWrites": 40
+          "totalWrites": 25
         },
         {
           "month": "2026-04",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 8816,
+          "sortComparatorCalls": 61044,
           "writes": {
-            "AthleteProfile.update": 48,
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
             "Partnership.upsert": 8
           },
-          "totalWrites": 56
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-05",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 58728,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-06",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 56426,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-07",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 54147,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-08",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 52028,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-09",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 49722,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-10",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 47423,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-11",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 45179,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-12",
+          "formed": 8,
+          "dissolved": 3,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 43833,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2027-01",
+          "formed": 8,
+          "dissolved": 3,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 42472,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
         }
       ],
-      "realsPaired": 6,
-      "realRealPairs": 3,
+      "realsPaired": 4,
+      "realRealPairs": 2,
       "realsPairedWithBot": 0,
       "totalReals": 24
     },
@@ -58,9 +190,9 @@
           "month": "2026-02",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 12238,
+          "sortComparatorCalls": 64310,
           "writes": {
             "AthleteProfile.update": 16,
             "Partnership.upsert": 8
@@ -71,31 +203,163 @@
           "month": "2026-03",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 10607,
+          "sortComparatorCalls": 63227,
           "writes": {
-            "AthleteProfile.update": 32,
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
             "Partnership.upsert": 8
           },
-          "totalWrites": 40
+          "totalWrites": 25
         },
         {
           "month": "2026-04",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 8788,
+          "sortComparatorCalls": 60794,
           "writes": {
-            "AthleteProfile.update": 48,
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
             "Partnership.upsert": 8
           },
-          "totalWrites": 56
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-05",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 58815,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-06",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 56433,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-07",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 54155,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-08",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 52010,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-09",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 49653,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-10",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 47402,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-11",
+          "formed": 8,
+          "dissolved": 1,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 45389,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-12",
+          "formed": 8,
+          "dissolved": 3,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 43943,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2027-01",
+          "formed": 8,
+          "dissolved": 3,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 42727,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
         }
       ],
-      "realsPaired": 10,
-      "realRealPairs": 5,
+      "realsPaired": 4,
+      "realRealPairs": 2,
       "realsPairedWithBot": 0,
       "totalReals": 24
     },
@@ -106,9 +370,9 @@
           "month": "2026-02",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 12193,
+          "sortComparatorCalls": 64373,
           "writes": {
             "AthleteProfile.update": 16,
             "Partnership.upsert": 8
@@ -119,31 +383,164 @@
           "month": "2026-03",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 10613,
+          "sortComparatorCalls": 63139,
           "writes": {
-            "AthleteProfile.update": 32,
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
             "Partnership.upsert": 8
           },
-          "totalWrites": 40
+          "totalWrites": 25
         },
         {
           "month": "2026-04",
           "formed": 8,
           "dissolved": 0,
-          "athleteProfileListReturned": 130,
+          "athleteProfileListReturned": 500,
           "athleteProfileListLimit": 500,
-          "sortComparatorCalls": 8772,
+          "sortComparatorCalls": 60799,
           "writes": {
-            "AthleteProfile.update": 48,
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
             "Partnership.upsert": 8
           },
-          "totalWrites": 56
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-05",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 58603,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-06",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 56524,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-07",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 54190,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-08",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 51926,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 25
+        },
+        {
+          "month": "2026-09",
+          "formed": 8,
+          "dissolved": 1,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 49962,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-10",
+          "formed": 8,
+          "dissolved": 0,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 47733,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-11",
+          "formed": 8,
+          "dissolved": 2,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 46074,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2026-12",
+          "formed": 8,
+          "dissolved": 2,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 44309,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
+        },
+        {
+          "month": "2027-01",
+          "formed": 8,
+          "dissolved": 5,
+          "athleteProfileListReturned": 500,
+          "athleteProfileListLimit": 500,
+          "sortComparatorCalls": 43598,
+          "writes": {
+            "AthleteProfile.bulkUpdate": 1,
+            "Partnership.bulkUpdate": 1,
+            "AthleteProfile.update": 16,
+            "Partnership.upsert": 8
+          },
+          "totalWrites": 26
         }
       ],
-      "realsPaired": 8,
-      "realRealPairs": 4,
+      "realsPaired": 6,
+      "realRealPairs": 3,
       "realsPairedWithBot": 0,
       "totalReals": 24
     }

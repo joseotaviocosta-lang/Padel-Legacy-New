@@ -151,6 +151,19 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
   const processedPairs = new Set();
   const events = [];
   let dissolved = 0;
+  // Fase 1.5 (achado #5 da Fase 0.3): todo par ATIVO pagava 2 escritas
+  // individuais aqui TODO mês — mesmo quando nada muda além do contador de
+  // meses juntos. Cada updateAthlete()/entities.Partnership.update()
+  // dispara sua própria transação withCareer (CareerEntityRepository.js),
+  // que clona o save inteiro; medido: 24→205 escritas do mês 1 ao 12 numa
+  // temporada de 970 bots, a causa raiz do crescimento de custo de ~15×
+  // por dia ao longo da temporada. circuitLifecycle.js já resolveu o
+  // mesmo padrão pro sistema de ranking (comentário na função ali) —
+  // mesma solução aqui: acumula os patches e grava tudo em um único
+  // bulkUpdate por entidade ao final do laço, em vez de uma transação por
+  // atleta/parceria.
+  const athleteUpdates = [];
+  const partnershipUpdates = [];
 
   for (const athlete of athletes) {
     const partnerId = aiPartnerId(athlete);
@@ -161,7 +174,8 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
 
     const partner = byId.get(partnerId);
     if (!partner) {
-      await updateAthlete(athlete.id, {
+      athleteUpdates.push({
+        id: athlete.id,
         ai_partner_id: null,
         ai_partner_name: null,
         market_status: 'livre',
@@ -182,25 +196,22 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
     const renews = !retirementEnd && contractExpired && seededChance(`${month}:${pairKey}:renew`, Math.max(18, renewalScore - 8));
     if (renews && canonical?.id) {
       const duration = seededInteger(`${month}:${pairKey}:duration`, 210, 360);
-      await entities.Partnership.update(canonical.id, {
+      partnershipUpdates.push({
+        id: canonical.id,
         contract_status: 'renovado', contract_end_date: addDays(currentDate, duration), scheduled_end_date: addDays(currentDate, duration),
         renewal_count: safeNumber(canonical.renewal_count, 0) + 1,
         history: [...(canonical.history || []), { date: currentDate, event: 'renewed', duration_days: duration, reason: 'stability' }].slice(-30),
       });
-      await Promise.allSettled([
-        updateAthlete(athlete.id, { ai_partnership_months: monthsTogether + 1 }),
-        updateAthlete(partner.id, { ai_partnership_months: monthsTogether + 1 }),
-      ]);
+      athleteUpdates.push({ id: athlete.id, ai_partnership_months: monthsTogether + 1 });
+      athleteUpdates.push({ id: partner.id, ai_partnership_months: monthsTogether + 1 });
       continue;
     }
     const minimumStabilityReached = careerDaysBetween(startDate, currentDate) >= 120;
     const pressure = clamp((52 - chemistry) + Math.max(0, 45 - formAverage) + Math.max(0, monthsTogether - 30), 0, 42);
     const shouldDissolve = retirementEnd || contractExpired || (minimumStabilityReached && seededChance(`${month}:${pairKey}:breakup`, pressure));
     if (!shouldDissolve) {
-      await Promise.allSettled([
-        updateAthlete(athlete.id, { ai_partnership_months: monthsTogether + 1 }),
-        updateAthlete(partner.id, { ai_partnership_months: monthsTogether + 1 }),
-      ]);
+      athleteUpdates.push({ id: athlete.id, ai_partnership_months: monthsTogether + 1 });
+      athleteUpdates.push({ id: partner.id, ai_partnership_months: monthsTogether + 1 });
       continue;
     }
 
@@ -210,17 +221,12 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
       ai_partnership_status: 'encerrada',
       ai_partnership_end_date: currentDate,
       market_status: 'livre',
-      partnership_history_count: safeNumber(athlete.partnership_history_count, 0) + 1,
     };
-    await Promise.allSettled([
-      updateAthlete(athlete.id, common),
-      updateAthlete(partner.id, {
-        ...common,
-        partnership_history_count: safeNumber(partner.partnership_history_count, 0) + 1,
-      }),
-    ]);
+    athleteUpdates.push({ id: athlete.id, ...common, partnership_history_count: safeNumber(athlete.partnership_history_count, 0) + 1 });
+    athleteUpdates.push({ id: partner.id, ...common, partnership_history_count: safeNumber(partner.partnership_history_count, 0) + 1 });
     if (canonical?.id) {
-      await entities.Partnership.update(canonical.id, {
+      partnershipUpdates.push({
+        id: canonical.id,
         status: 'encerrada_parceiro', contract_status: 'encerrado', ended_career_date: currentDate,
         end_reason: retirementEnd ? 'aposentadoria' : contractExpired ? 'fim de contrato sem renovação' : chemistry < 45 ? 'incompatibilidade e resultados ruins' : 'fim natural de ciclo',
         history: [...(canonical.history || []), { date: currentDate, event: 'ended', reason: retirementEnd ? 'retirement' : contractExpired ? 'contract_expired' : 'sporting_cycle' }].slice(-30),
@@ -240,6 +246,9 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
     });
     if (event) events.push(event);
   }
+
+  if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
+  if (partnershipUpdates.length) await entities.Partnership.bulkUpdate(partnershipUpdates);
 
   return { dissolved, events };
 }
