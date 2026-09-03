@@ -141,13 +141,33 @@ function addDays(date, days) {
   return parsed.toISOString().slice(0, 10);
 }
 
-async function createWorldEvent(payload) {
-  try {
-    return await localGame.entities.WorldEvent.create(payload);
-  } catch (error) {
-    console.warn('[Game Core] WorldEvent não disponível:', error?.message || error);
-    return null;
-  }
+// Fase 2.5, item 4.3 — política de poda para aposentados antigos. Sem
+// poda, a contagem de linhas de AthleteProfile cresce sem limite (a
+// aposentadoria só MARCA, nunca remove — de propósito, pela Fase 2D.1) e o
+// save de uma carreira longa incha, mesma classe de vazamento que já
+// travou o harness na Fase 0. Investigação de código (nenhuma página do
+// jogo faz AthleteProfile.get(id) pra reler um atleta específico depois do
+// fato — Athletes.jsx/Ranking.jsx nunca filtram por `retired`; nomes de
+// campeão/dupla/evento já são denormalizados em string no momento em que
+// acontecem — WorldEvent.title, TeamRanking.player1_name/player2_name,
+// Tournament.champion — então apagar a linha da FONTE não corrompe nada
+// que o jogador já viu) confirma que é seguro remover, não só compactar.
+// Só é seguro porque o hiato de reposição (generateProspects, acima) já
+// não depende mais de contar linhas `retired:true` ao vivo — depende de um
+// contador monotônico em PlayerProfile que nunca encolhe quando uma linha
+// é removida. Sem esse desacoplamento, podar aqui quebraria o calibrador.
+// Janela de 24 meses: folga generosa sobre qualquer referência de curto
+// prazo (rivalidade da temporada, "meu último adversário").
+const PRUNE_RETIRED_AFTER_MONTHS = 24;
+const PRUNE_RETIRED_AFTER_DAYS = PRUNE_RETIRED_AFTER_MONTHS * 30;
+
+async function pruneOldRetiredAthletes(currentDate) {
+  const retiredRows = (await localGame.entities.AthleteProfile.filter({ retired: true })) || [];
+  const cutoff = addDays(currentDate, -PRUNE_RETIRED_AFTER_DAYS);
+  const toDelete = retiredRows.filter((athlete) => athlete.retirement_date && athlete.retirement_date < cutoff);
+  if (!toDelete.length) return 0;
+  await localGame.batch(toDelete.map((athlete) => ({ type: 'delete', entityName: 'AthleteProfile', id: athlete.id })));
+  return toDelete.length;
 }
 
 // Fase 2D.2: generateProspect gerava no máximo 1/mês (uma chamada, atrás de
@@ -163,17 +183,36 @@ async function createWorldEvent(payload) {
 // não um número escolhido a dedo.
 const MAX_PROSPECTS_PER_MONTH = 6;
 
-async function generateProspects(currentDate, existingAthletes) {
+async function generateProspects(currentDate, existingAthletes, profile) {
   const month = monthKey(currentDate);
   const alreadyGenerated = existingAthletes.some((athlete) => athlete.generated_month === month);
   if (alreadyGenerated) return [];
-  const retired = existingAthletes.filter((athlete) => athleteStatus(athlete) === 'retired').length;
-  const replacements = existingAthletes.filter((athlete) => athlete.generation_reason === 'retirement_replacement').length;
-  const gap = Math.max(0, retired - replacements);
+  // Fase 2.5, item 4: hiato calibrado por CONTADORES monotônicos
+  // (PlayerProfile.cumulative_retired_athletes/cumulative_prospect_replacements),
+  // nunca mais por uma contagem ao vivo de `existingAthletes` — esse array é
+  // o MESMO já cortado pelo teto de simulateWorldDay (2E.2, cobre a
+  // população ATIVA com folga, não o total de linhas). Achado 2D.4: como
+  // aposentados nunca eram podados e prospects nascem com ranking_position
+  // artificialmente alto (fim da lista), esse teto cortava
+  // desproporcionalmente reposições já geradas assim que o total de linhas
+  // ultrapassava o teto (~temporada 6-7), inflando o hiato medido e
+  // gerando mais prospects do que a taxa de saída real justifica. Contador
+  // incrementado nunca encolhe quando uma linha é podada (worldSimulationLifecycle
+  // agora poda aposentados antigos, abaixo) — só ele torna a poda segura.
+  const cumulativeRetired = Number(profile?.cumulative_retired_athletes) || 0;
+  const cumulativeReplacements = Number(profile?.cumulative_prospect_replacements) || 0;
+  const gap = Math.max(0, cumulativeRetired - cumulativeReplacements);
   const toGenerate = Math.min(MAX_PROSPECTS_PER_MONTH, gap);
   if (toGenerate <= 0) return [];
 
-  const created = [];
+  // Fase 2.5, item 3: cada prospect pagava 2 transações completas (create
+  // do AthleteProfile + create do WorldEvent) — até 12/mês, mesmo padrão já
+  // corrigido em dissolvePartnerships/circuitLifecycle.js. A decisão (nome,
+  // país, idade, overall, potencial) continua 100% seedada por índice, só a
+  // PERSISTÊNCIA muda: monta os payloads primeiro, grava os atletas num
+  // único bulkCreate, e os eventos de anúncio (que dependem do id real
+  // atribuído na criação) num segundo bulkCreate.
+  const payloads = [];
   for (let index = 0; index < toGenerate; index += 1) {
     const seed = `${month}:prospect:${index}`;
     const first = FIRST_NAMES[integer(`${seed}:first`, 0, FIRST_NAMES.length - 1)];
@@ -186,8 +225,7 @@ async function generateProspects(currentDate, existingAthletes) {
     const age = integer(`${seed}:age`, 17, 20);
     const overall = integer(`${seed}:overall`, 46, 62);
     const potential = integer(`${seed}:potential`, Math.max(70, overall + 8), 96);
-    // eslint-disable-next-line no-await-in-loop
-    const profile = await localGame.entities.AthleteProfile.create({
+    payloads.push({
       name: `${first} ${last}`,
       nationality: country,
       country,
@@ -208,24 +246,31 @@ async function generateProspects(currentDate, existingAthletes) {
       generated_month: month,
       generated_by: 'game-core-2.2',
       generation_reason: 'retirement_replacement',
+      // Fase 2.6, item 3: usado só pra "anos ativos" na linha-resumo de
+      // aposentadoria (AthleteCareerLegacy, athleteBehavior.js).
+      circuit_entry_date: currentDate,
       career_seasons: 0,
       career_titles: 0,
       career_wins: 0,
       career_losses: 0,
     });
+  }
+  if (!payloads.length) return [];
 
-    // eslint-disable-next-line no-await-in-loop
-    await createWorldEvent({
+  const created = await localGame.entities.AthleteProfile.bulkCreate(payloads);
+  try {
+    await localGame.entities.WorldEvent.bulkCreate(created.map((profile) => ({
       event_date: currentDate,
       date: currentDate,
       title: `Nova promessa: ${profile.name}`,
-      description: `${profile.name}, de ${country}, entrou no circuito aos ${age} anos e passa a integrar a nova geração profissional.`,
+      description: `${profile.name}, de ${profile.country}, entrou no circuito aos ${profile.age} anos e passa a integrar a nova geração profissional.`,
       category: 'mercado',
       event_type: 'new_prospect',
-      importance: potential >= 88 ? 'alta' : 'media',
+      importance: profile.potential >= 88 ? 'alta' : 'media',
       athlete_id: profile.id,
-    });
-    created.push(profile);
+    })));
+  } catch (error) {
+    console.warn('[Game Core] WorldEvent não disponível:', error?.message || error);
   }
   return created;
 }
@@ -251,6 +296,11 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
   // Uma gravação por atleta selecionado gerava até 80 escritas completas do
   // save por dia. Acumula os patches e grava tudo em uma única bulkUpdate.
   const athleteUpdates = [];
+  // Fase 2.5, item 3: cada lesão também pagava sua própria transação de
+  // WorldEvent (independente do bulkUpdate acima) — raro por atleta
+  // (injuryRisk é ~0,02%-0,15%/dia), mas ainda uma transação completa cada
+  // vez que acontece. Acumula e grava num único bulkCreate ao final do laço.
+  const injuryEventPayloads = [];
   for (const athlete of selected) {
     const activity = activityFor(athlete, currentDate);
     const result = evolutionFor(athlete, activity, currentDate);
@@ -277,7 +327,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
       updates.injured_until = addDays(currentDate, result.injuryDays);
       updates.market_status = 'lesionado';
       injuries += 1;
-      const event = await createWorldEvent({
+      injuryEventPayloads.push({
         event_date: currentDate,
         date: currentDate,
         title: `${athlete.name || 'Atleta'} sofre lesão`,
@@ -287,7 +337,6 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
         importance: result.injuryDays >= 14 ? 'alta' : 'media',
         athlete_id: athlete.id,
       });
-      if (event) events.push(event);
     } else if (athlete.injured_until && athlete.injured_until < currentDate) {
       updates.injured_until = null;
       updates.market_status = athlete.partner_id ? 'contratado' : 'livre';
@@ -302,11 +351,23 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
   if (athleteUpdates.length) {
     await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
   }
+  if (injuryEventPayloads.length) {
+    try {
+      events.push(...await localGame.entities.WorldEvent.bulkCreate(injuryEventPayloads));
+    } catch (error) {
+      console.warn('[Game Core] WorldEvent não disponível:', error?.message || error);
+    }
+  }
 
   let prospects = [];
+  let prunedRetired = 0;
   if (monthKey(previousDate) !== monthKey(currentDate)) {
-    prospects = await generateProspects(currentDate, athletes);
+    prospects = await generateProspects(currentDate, athletes, profile);
     events.push(...prospects);
+    prunedRetired = await pruneOldRetiredAthletes(currentDate).catch((error) => {
+      console.warn('[Game Core] Poda de aposentados antigos falhou:', error?.message || error);
+      return 0;
+    });
   }
 
   const summary = {
@@ -317,6 +378,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     earnings,
     prospects_generated: prospects.length,
     prospect_name: prospects[0]?.name || null,
+    retired_pruned: prunedRetired,
   };
 
   let updatedProfile = profile;
@@ -324,6 +386,10 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       last_world_simulation_date: currentDate,
       last_world_simulation_summary: summary,
+      // Fase 2.5, item 4: mesma transação já existente — soma os prospects
+      // gerados agora ao contador monotônico (nunca re-derivado de uma
+      // contagem ao vivo; ver generateProspects acima).
+      ...(prospects.length ? { cumulative_prospect_replacements: (Number(profile.cumulative_prospect_replacements) || 0) + prospects.length } : {}),
     });
   }
 

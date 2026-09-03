@@ -72,7 +72,10 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
   const botIdToRealId = new Map();
   const botIdToRow = new Map();
   for (const athlete of registryAthletes) {
-    const row = await upsertBy('AthleteProfile', athletes, 'bot_id', athlete.bot_id, athlete);
+    // Fase 2.6, item 3: marca quando este atleta passou a existir NESTA
+    // carreira — usado só pra "anos ativos" na linha-resumo de
+    // aposentadoria (AthleteCareerLegacy), nunca uma biografia pré-jogo.
+    const row = await upsertBy('AthleteProfile', athletes, 'bot_id', athlete.bot_id, { ...athlete, circuit_entry_date: worldSeedMeta.career_start_date });
     if (row?.id) { botIdToRealId.set(athlete.bot_id, row.id); botIdToRow.set(athlete.bot_id, row); }
   }
 
@@ -129,7 +132,7 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
   // começar fora do Top 1000 e progredir de forma visível.
   const refreshedAthletes = await safeList('AthleteProfile', '-world_ranking_points', WORLD_RANKING_TARGET + 100);
   const refreshedTeams = await safeList('TeamRanking', '-ranking_points', TEAM_RANKING_TARGET + 100);
-  const supplemental = buildSupplementalRankingPopulation(refreshedAthletes, refreshedTeams);
+  const supplemental = buildSupplementalRankingPopulation(refreshedAthletes, refreshedTeams, worldSeedMeta.career_start_date);
   if (supplemental.athletes.length) {
     try { await localGame.entities.AthleteProfile.bulkCreate(supplemental.athletes); }
     catch (error) { console.warn('[Save Foundation] população de atletas', error); }

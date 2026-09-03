@@ -316,12 +316,22 @@ try {
     const currentTournamentsPlayed = new Map(allAthletesNow.map((a) => [a.id, Number(a.tournaments_played) || 0]));
     const realDeltas = [];
     const botDeltas = [];
+    // Fase 2.7, item 5: lista NOMINAL de reais que não jogaram NESTA
+    // temporada (delta=0 de tournaments_played no ano) — diferente de
+    // `realAthletesNeverPlayedSoFar` (cumulativo, "nunca jogou em NENHUMA
+    // temporada até aqui"). É o dado que decide se os que ficam de fora
+    // são sempre os mesmos (exclusão permanente, achado antigo em escala
+    // reduzida) ou se rotacionam (realista, sem correção necessária).
+    const realNeverPlayedThisSeason = [];
     for (const a of allAthletesNow) {
       const before = priorTournamentsPlayed.get(a.id) || 0;
       const after = currentTournamentsPlayed.get(a.id) || 0;
       const delta = Math.max(0, after - before);
-      if (realAthleteIds.has(a.id)) { realDeltas.push(delta); if (after > 0) neverPlayedRunningSet.delete(a.id); }
-      else botDeltas.push(delta);
+      if (realAthleteIds.has(a.id)) {
+        realDeltas.push(delta);
+        if (after > 0) neverPlayedRunningSet.delete(a.id);
+        if (delta === 0) realNeverPlayedThisSeason.push({ id: a.id, name: assignedIdToName.get(a.id) || a.name || a.id });
+      } else botDeltas.push(delta);
     }
     priorTournamentsPlayed = currentTournamentsPlayed;
 
@@ -367,6 +377,8 @@ try {
       byTier: byTierThisSeason,
       top20: top20.map((a, index) => ({ position: index + 1, id: a.id, name: a.name, points: a.world_ranking_points, real: realAthleteIds.has(a.id) })),
       realInTop20,
+      realAthletesNeverPlayedThisSeason: realNeverPlayedThisSeason,
+      realAthletesNeverPlayedThisSeasonCount: realNeverPlayedThisSeason.length,
       tournamentsPlayedThisSeason: {
         real: { mean: round(mean(realDeltas), 2), median: round(median(realDeltas), 2), n: realDeltas.length },
         bots: { mean: round(mean(botDeltas), 2), median: round(median(botDeltas), 2), n: botDeltas.length },
@@ -384,7 +396,7 @@ try {
       },
     };
     perSeason.push(seasonRecord);
-    console.log(`Temporada ${year}: Top 20 tem ${realInTop20}/20 reais · #1000 elegível para ${eligibleDates.length}/${seasonTournaments.length} torneios (maior intervalo: ${maxGapDays ?? '—'} dias) · ${seasonRecord.tournaments.incomplete}/${seasonRecord.tournaments.total} chaves incompletas.`);
+    console.log(`Temporada ${year}: Top 20 tem ${realInTop20}/20 reais · #1000 elegível para ${eligibleDates.length}/${seasonTournaments.length} torneios (maior intervalo: ${maxGapDays ?? '—'} dias) · ${seasonRecord.tournaments.incomplete}/${seasonRecord.tournaments.total} chaves incompletas · ${realNeverPlayedThisSeason.length}/${realAthleteIds.size} reais não jogaram NESTA temporada.`);
   }
 
   dayLoop:
@@ -565,6 +577,29 @@ try {
       realAthletesNeverInAnyDrawCount: realNeverPlayed.length,
       realAthletesTotal: realAthleteIds.size,
       historicalDuplasOverall,
+      // Fase 2.7, item 5: interseção dos "nunca jogou NESTA temporada" de
+      // cada temporada individual — quem aparece em TODAS as temporadas é
+      // exclusão permanente (o achado antigo em escala reduzida, precisa
+      // de correção na Fase 5); quem varia de temporada pra temporada é
+      // rotatividade normal (perde parceiro, fica um ano fora, volta —
+      // não precisa de correção).
+      realAthletesNeverPlayedRotation: (() => {
+        const perSeasonSets = perSeason.map((s) => new Set((s.realAthletesNeverPlayedThisSeason || []).map((r) => r.id)));
+        const union = new Set();
+        perSeasonSets.forEach((set) => set.forEach((id) => union.add(id)));
+        const intersection = perSeasonSets.length
+          ? [...perSeasonSets[0]].filter((id) => perSeasonSets.every((set) => set.has(id)))
+          : [];
+        return {
+          seasonsCompared: perSeasonSets.length,
+          neverPlayedThisSeasonBySeasonCounts: perSeason.map((s) => s.realAthletesNeverPlayedThisSeasonCount),
+          unionAcrossSeasons: [...union].map((id) => ({ id, name: assignedIdToName.get(id) || id })),
+          unionCount: union.size,
+          intersectionAcrossSeasons: intersection.map((id) => ({ id, name: assignedIdToName.get(id) || id })),
+          intersectionCount: intersection.length,
+          intersectionPctOfUnion: union.size ? round((intersection.length / union.size) * 100, 1) : null,
+        };
+      })(),
     },
     playerOpponentCatalog: {
       poolComposition,

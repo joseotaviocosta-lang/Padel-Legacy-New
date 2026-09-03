@@ -124,11 +124,6 @@ async function createWorldEvent(payload) {
   }
 }
 
-async function updateAthlete(id, payload) {
-  if (!id) return null;
-  return entities.AthleteProfile.update(id, payload);
-}
-
 function availableAthletes(athletes, date) {
   return athletes.filter((athlete) => (
     athlete?.id
@@ -309,12 +304,47 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
   return { dissolved, events };
 }
 
-async function formNewPartnerships(athletes, currentDate) {
+// Fase 2.6, item 1: 8 fixo por mês, independente do tamanho do pool de
+// livres — mesmo padrão de "número escolhido pra população do momento"
+// que o teste de invariante da Fase 2.5 já combate (2E). Substituído por
+// uma FRAÇÃO do pool de livres: escala sozinho pra cima quando o mundo
+// cresce e pra baixo conforme o próprio pool de livres encolhe (o mercado
+// se autolimita — não existe outro jeito de "esvaziar" um pool
+// proporcional). Calibrado empiricamente contra um alvo de cobertura em
+// regime estável (scripts/diag-market-formation-calibration.mjs),
+// documentado em reports/real-athletes-audit/FASE-2.6-RELATORIO.md, item 1
+// (justificativa revisada na Fase 2.7, item 3).
+// Fase 2.7, item 3: era `let` exportado com um setter pra permitir o
+// script de calibração testar vários valores sem reiniciar o processo —
+// um mutável global em produção, mesmo que nada chamasse o setter fora de
+// teste hoje, era um acidente esperando acontecer (uma chamada indevida
+// mudaria o comportamento de TODA carreira ativa, silenciosamente). Trocado
+// por injeção de parâmetro: a constante volta a ser `const` de verdade, e
+// quem precisa de um valor diferente (só o script de calibração) passa
+// via `options.formationFraction`, sem tocar em estado de módulo — a
+// classe inteira de "mutação acidental em produção" deixa de existir.
+export const MARKET_FORMATION_FRACTION = 0.14;
+
+async function formNewPartnerships(athletes, currentDate, formationFraction = MARKET_FORMATION_FRACTION) {
   const month = monthKey(currentDate);
   const free = availableAthletes(athletes, currentDate);
   const events = [];
   let formed = 0;
-  const targetPairs = Math.min(8, Math.floor(free.length / 2));
+  const targetPairs = Math.max(0, Math.floor((free.length * formationFraction) / 2));
+
+  // Fase 2.6, item 1.5: com o alvo agora proporcional ao pool (em vez de
+  // travado em 8), o número de pares/mês pode subir bastante — cada par
+  // pagava 3 transações completas (2 updateAthlete + 1 Partnership.upsert)
+  // mais 1 WorldEvent.create, todas individuais. Mesmo padrão já corrigido
+  // em dissolvePartnerships/circuitLifecycle.js/generateProspects: acumula
+  // os patches e grava tudo em batches únicos ao final do laço. A seleção
+  // (quais pares se formam, em que ordem) não muda — `free`/`pair.first`/
+  // `pair.second` são mutados em memória de forma síncrona logo após a
+  // escolha (linhas abaixo), então `availableAthletes` já enxerga o par
+  // como ocupado na iteração seguinte mesmo sem esperar a escrita no banco.
+  const athleteUpdates = [];
+  const partnershipOps = [];
+  const eventPayloads = [];
 
   for (let index = 0; index < targetPairs; index += 1) {
     const remaining = availableAthletes(free, currentDate);
@@ -332,33 +362,23 @@ async function formNewPartnerships(athletes, currentDate) {
       market_status: 'contratado',
       last_updated_date: currentDate,
     };
-    await Promise.all([
-      updateAthlete(pair.first.id, {
-        ...common,
-        ai_partner_id: pair.second.id,
-        ai_partner_name: pair.second.name,
-      }),
-      updateAthlete(pair.second.id, {
-        ...common,
-        ai_partner_id: pair.first.id,
-        ai_partner_name: pair.first.name,
-      }),
-    ]);
+    athleteUpdates.push({ id: pair.first.id, ...common, ai_partner_id: pair.second.id, ai_partner_name: pair.second.name });
+    athleteUpdates.push({ id: pair.second.id, ...common, ai_partner_id: pair.first.id, ai_partner_name: pair.first.name });
 
     const partnershipId = partnershipRecordId(pair.first.id, pair.second.id, currentDate);
-    await entities.Partnership.upsert(partnershipId, {
+    partnershipOps.push({ type: 'upsert', entityName: 'Partnership', id: partnershipId, data: {
       partnership_type: 'npc', scope: 'world', athlete_a_id: pair.first.id, athlete_b_id: pair.second.id,
       athlete_ids: [pair.first.id, pair.second.id], athlete_a_name: pair.first.name, athlete_b_name: pair.second.name,
       partner_name: pair.second.name, started_career_date: currentDate, scheduled_end_date: addDays(currentDate, duration),
       contract_end_date: addDays(currentDate, duration), negotiated_duration_days: duration, contract_status: 'ativo',
       status: 'ativa', chemistry, compatibility_score: pair.compatibility, origin: 'world-partner-market',
       history: [{ date: currentDate, event: 'formed', reason: 'market_match', compatibility: pair.compatibility }], schema_version: 2,
-    });
+    } });
 
     pair.first.ai_partner_id = pair.second.id;
     pair.second.ai_partner_id = pair.first.id;
     formed += 1;
-    const event = await createWorldEvent({
+    eventPayloads.push({
       event_date: currentDate,
       date: currentDate,
       title: `Nova dupla: ${pair.first.name || 'Atleta'} e ${pair.second.name || 'Atleta'}`,
@@ -369,7 +389,16 @@ async function formNewPartnerships(athletes, currentDate) {
       athlete_id: pair.first.id,
       related_athlete_id: pair.second.id,
     });
-    if (event) events.push(event);
+  }
+
+  if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
+  if (partnershipOps.length) await localGame.batch(partnershipOps);
+  if (eventPayloads.length) {
+    try {
+      events.push(...await entities.WorldEvent.bulkCreate(eventPayloads));
+    } catch (error) {
+      console.warn('[Game Core] Evento de parceria não criado:', error?.message || error);
+    }
   }
 
   return { formed, events };
@@ -378,8 +407,13 @@ async function formNewPartnerships(athletes, currentDate) {
 /**
  * Atualiza as duplas controladas pela IA uma vez a cada mudança de mês.
  * Não interfere no atleta contratado pelo jogador humano.
+ *
+ * `options.formationFraction` (Fase 2.7, item 3): só pra
+ * scripts/diag-market-formation-calibration.mjs testar outros valores sem
+ * mexer no módulo — em produção, nunca é passado, e `formNewPartnerships`
+ * usa o `MARKET_FORMATION_FRACTION` padrão.
  */
-export async function processAiPartnershipMarket(profile, previousDate, currentDate) {
+export async function processAiPartnershipMarket(profile, previousDate, currentDate, options = {}) {
   const previousMonth = monthKey(previousDate);
   const currentMonth = monthKey(currentDate);
   if (!currentMonth || previousMonth === currentMonth) {
@@ -394,7 +428,7 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
   const worldPartnerships = await ensureCanonicalPartnerships(athletes, currentDate, await listWorldPartnerships());
   const dissolution = await dissolvePartnerships(athletes, currentDate, worldPartnerships);
   const refreshed = (await entities.AthleteProfile.list('ranking_position', POPULATION_LIST_CAP)) || athletes;
-  const formation = await formNewPartnerships(refreshed, currentDate);
+  const formation = await formNewPartnerships(refreshed, currentDate, options.formationFraction);
 
   let updatedProfile = profile;
   const summary = {

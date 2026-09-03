@@ -227,6 +227,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
           athleteOutcomes.get(athlete.id).push({
             tournament_id: tournament.id,
             tournament_name: tournament.name,
+            tier: tournament.tier,
             date: tournamentEndDate(tournament),
             finish,
             points,
@@ -278,6 +279,15 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     // cresce junto com o Circuito conforme torneios reais são disputados,
     // mas é zerada isoladamente na virada do ano (ver annualCareerReportLifecycle.js).
     const racePoints = Math.max(0, Number(athlete.race_points) || 0) + athletePoints.get(athlete.id);
+    // Fase 2.6, item 3: títulos por tier, pra linha-resumo de aposentadoria
+    // (AthleteCareerLegacy) — reaproveita os outcomes já calculados acima,
+    // nenhuma consulta nova. career_titles (total) continua existindo,
+    // sem mudança de forma.
+    const titlesByTier = { ...(athlete.career_titles_by_tier || {}) };
+    for (const outcome of outcomes) {
+      if (outcome.finish !== 'champion' || !outcome.tier) continue;
+      titlesByTier[outcome.tier] = (titlesByTier[outcome.tier] || 0) + 1;
+    }
     return {
       id: athlete.id,
       world_ranking_points: points,
@@ -288,6 +298,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       career_wins: Number(athlete.career_wins || 0) + outcomes.reduce((sum, item) => sum + winsForFinish(item.finish), 0),
       career_losses: Number(athlete.career_losses || 0) + outcomes.filter((item) => item.finish !== 'champion').length,
       career_titles: Number(athlete.career_titles || 0) + outcomes.filter((item) => item.finish === 'champion').length,
+      career_titles_by_tier: titlesByTier,
       recent_results: [...(Array.isArray(athlete.recent_results) ? athlete.recent_results : []), ...outcomes].slice(-12),
       ...(headToHeadByAthlete.has(athlete.id) ? { head_to_head: headToHeadByAthlete.get(athlete.id) } : {}),
     };

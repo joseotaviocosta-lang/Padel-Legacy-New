@@ -131,7 +131,7 @@ export function pointsForRank(rank, total = WORLD_RANKING_TARGET) {
   return 1;
 }
 
-export function buildSupplementalRankingPopulation(existingAthletes = [], existingTeams = []) {
+export function buildSupplementalRankingPopulation(existingAthletes = [], existingTeams = [], seasonStartDate = '2026-01-01') {
   const athletes = [];
   const usedNames = new Set((existingAthletes || []).map(a => String(a.name || a.sport_name || '').trim().toLowerCase()));
   const missingAthletes = Math.max(0, WORLD_RANKING_TARGET - (existingAthletes || []).length);
@@ -177,6 +177,11 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
       career_phase: overall >= 83 ? 'Elite' : overall >= 68 ? 'Profissional' : 'Desenvolvimento',
       circuit_category: absoluteRank <= 100 ? 'Premier' : absoluteRank <= 350 ? 'Challenger' : 'Future',
       ranking_seed_version: 1,
+      // Fase 2.6, item 3: marca quando este atleta passou a existir NESTA
+      // carreira (não uma biografia pré-jogo inventada — "Parte 41: nunca
+      // inventar passado") — usado só pra "anos ativos" na linha-resumo de
+      // aposentadoria (AthleteCareerLegacy).
+      circuit_entry_date: seasonStartDate,
     });
   }
 

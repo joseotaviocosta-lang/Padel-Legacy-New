@@ -92,8 +92,12 @@ try {
     const isYearBoundary = currentYear !== previousYear;
     previousYear = currentYear;
 
+    // Fase 2.5, item 4: evolveAthletesMonthly agora recebe `profile` (soma
+    // aposentadorias do mês num contador monotônico em PlayerProfile,
+    // nunca mais uma contagem ao vivo de linhas `retired:true`) — mesma
+    // assinatura que src/lib/career.js usa em produção.
     // eslint-disable-next-line no-await-in-loop
-    await evolveAthletesMonthly(currentDate, { isYearBoundary });
+    await evolveAthletesMonthly(currentDate, { isYearBoundary, profile });
     // eslint-disable-next-line no-await-in-loop
     const result = await simulateWorldDay(profile, previousDate, currentDate);
     profile = result.profile || profile;
@@ -104,9 +108,11 @@ try {
       // teto baixo, isso corta desproporcionalmente os prospects NOVOS
       // (inseridos por último), fazendo a população ativa parecer encolher
       // por artefato de medição assim que o total passa do teto, não por
-      // dinâmica real. Aposentados nunca são podados neste teste (de
-      // propósito, pra medir o total real) — o teto precisa cobrir
-      // população ativa + todo mundo que já se aposentou até aqui.
+      // dinâmica real. simulateWorldDay agora PODA aposentados com mais de
+      // 24 meses (Fase 2.5, item 4.3, worldSimulationLifecycle.js) — o
+      // teto aqui só precisa cobrir população ativa + aposentados recentes
+      // ainda não podados, não mais TODO mundo que já se aposentou desde o
+      // início da carreira.
       const all = await localGame.entities.AthleteProfile.list(null, 6000);
       const active = all.filter((a) => !a.retired);
       const retired = all.length - active.length;
@@ -140,12 +146,31 @@ try {
   const lastActive = snapshots[snapshots.length - 1].active;
   const pyramidHealthy = Object.values(lastBuckets).every((v) => v > 0) && lastBuckets['17-20'] > lastActive * 0.05;
 
+  // Fase 2.5, item 4.4: contagem TOTAL de linhas (ativos + aposentados
+  // ainda não podados) precisa ESTABILIZAR, não só a população ativa — é
+  // exatamente o que a poda de aposentados antigos (item 4.3) e o
+  // calibrador por contador monotônico (item 4.2, generateProspects) foram
+  // desenhados para garantir juntos. Compara o crescimento nas primeiras
+  // temporadas (poda ainda não alcançou ninguém — só passa a agir a partir
+  // de ~2 anos de aposentadoria) contra o crescimento nas últimas — se a
+  // poda está funcionando, o crescimento tardio precisa ser bem menor que
+  // o inicial, não igual ou maior.
+  const totalRowsSeries = snapshots.map((s) => s.totalRows);
+  const earlyWindow = Math.min(3, totalRowsSeries.length);
+  const lateWindow = Math.min(3, totalRowsSeries.length);
+  const earlyGrowth = totalRowsSeries[earlyWindow - 1] - totalRowsSeries[0];
+  const lateGrowth = totalRowsSeries[totalRowsSeries.length - 1] - totalRowsSeries[totalRowsSeries.length - lateWindow];
+  const rowCountStabilizing = totalRowsSeries.length < 6 || lateGrowth <= Math.max(earlyGrowth, targetPopulation * 0.05);
+
   console.log('\n=== resumo ===');
   console.log(`alvo de população (100 reais + ${PROCEDURAL} procedurais): ${targetPopulation} (banda ±5% = ±${band.toFixed(0)})`);
   console.log(`população ativa por temporada: ${activeSeries.join(', ')}`);
+  console.log(`total de linhas (ativos+aposentados não podados) por temporada: ${totalRowsSeries.join(', ')}`);
+  console.log(`crescimento total de linhas: primeiras ${earlyWindow} temporadas = ${earlyGrowth} | últimas ${lateWindow} temporadas = ${lateGrowth}`);
   console.log(withinBand ? `PASS — população ativa ficou dentro de ${targetPopulation}±${band.toFixed(0)} (±5%) em todas as temporadas medidas` : 'FAIL — população ativa saiu da banda de ±5% em alguma temporada');
   console.log(pyramidHealthy ? 'PASS — pirâmide etária final tem todas as faixas povoadas, sem colapso na base' : 'FAIL — pirâmide degenerou (alguma faixa zerada ou base 17-20 muito pequena)');
-  process.exitCode = withinBand && pyramidHealthy ? 0 : 1;
+  console.log(rowCountStabilizing ? 'PASS — contagem total de linhas estabilizou (crescimento tardio não maior que o inicial), a poda está compensando o acúmulo de aposentados' : 'FAIL — contagem total de linhas segue crescendo sem sinal de estabilização (poda não está compensando o acúmulo)');
+  process.exitCode = withinBand && pyramidHealthy && rowCountStabilizing ? 0 : 1;
 } finally {
   await vite.close();
 }

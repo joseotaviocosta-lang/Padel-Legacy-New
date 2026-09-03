@@ -187,6 +187,10 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       career_stage: careerState.stage,
       career_phase: careerState.legacyPhase,
       last_circuit_update: currentDate,
+      // Fase 2.6, item 3: melhor posição já alcançada, pra linha-resumo de
+      // aposentadoria (AthleteCareerLegacy) — reaproveita esta MESMA
+      // gravação semanal, nenhuma transação nova.
+      best_ranking_position: Math.min(newPosition, safeNumber(athlete.best_ranking_position, newPosition)),
     });
   }
   if (athleteUpdates.length) {

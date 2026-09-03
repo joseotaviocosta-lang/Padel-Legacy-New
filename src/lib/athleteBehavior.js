@@ -232,7 +232,48 @@ export async function updateRelationshipAfterMatch(winnerName, loserName) {
 // (1000) cobre a população inteira; a folga de +50 é margem, não exatidão.
 const EVOLUTION_POPULATION_CAP = WORLD_RANKING_TARGET + 50;
 
-export async function evolveAthletesMonthly(date, { isYearBoundary = false } = {}) {
+function yearsActive(retirementDate, entryDate) {
+  if (!entryDate) return null;
+  const retired = new Date(`${retirementDate}T00:00:00`);
+  const entered = new Date(`${entryDate}T00:00:00`);
+  if (Number.isNaN(retired.getTime()) || Number.isNaN(entered.getTime())) return null;
+  return Math.max(0, Math.round(((retired - entered) / (365.25 * 86400000)) * 10) / 10);
+}
+
+// Fase 2.6, item 3 — linha-resumo de "hall da fama", gravada no momento
+// exato da aposentadoria (antes de qualquer poda). `p` é a linha ORIGINAL
+// do AthleteProfile (com as estatísticas acumuladas até aqui) — não o
+// patch, que só tem os campos que MUDAM neste mês. `circuit_entry_date`
+// marca quando este atleta passou a existir NESTA carreira (rankingPopulation.js/
+// saveFoundation.js/generateProspects) — não uma biografia pré-jogo
+// inventada (anos ativos fica `null`, não um chute, se o campo faltar em
+// saves anteriores a esta correção — "nunca inventar passado").
+function buildRetirementLegacyRow(p, retirementDate, patch) {
+  return {
+    athlete_id: p.id,
+    name: p.name || p.sport_name || 'Atleta',
+    country: p.country || p.nationality || null,
+    is_real: Boolean(p.is_real),
+    retirement_date: retirementDate,
+    retirement_age: patch?.retirement_age ?? patch?.age ?? p.age ?? null,
+    circuit_entry_date: p.circuit_entry_date || null,
+    years_active: yearsActive(retirementDate, p.circuit_entry_date),
+    best_ranking_position: p.best_ranking_position ?? p.ranking_position ?? null,
+    career_titles: Number(p.career_titles || 0),
+    career_titles_by_tier: p.career_titles_by_tier || {},
+    career_wins: Number(p.career_wins || 0),
+    career_losses: Number(p.career_losses || 0),
+    peak_world_ranking_points: Number(p.world_ranking_points || p.ranking_points || 0),
+    // "Parceiro principal": o parceiro no momento da aposentadoria (não um
+    // histórico de todos os parceiros já tidos — essa história não é
+    // rastreada por atleta). Na maioria dos casos isso já é o parceiro de
+    // mais longa duração, porque pares protegidos (Fase 2G.1) só se
+    // desfazem por aposentadoria de um dos dois.
+    main_partner_name: p.ai_partner_name || null,
+  };
+}
+
+export async function evolveAthletesMonthly(date, { isYearBoundary = false, profile = null } = {}) {
   let profiles = [];
   try {
     profiles = await localGame.entities.AthleteProfile.list('-overall_rating', EVOLUTION_POPULATION_CAP);
@@ -246,9 +287,15 @@ export async function evolveAthletesMonthly(date, { isYearBoundary = false } = {
   }
 
   const updates = [];
+  const legacyRows = [];
+  let retiredThisMonth = 0;
   for (const p of profiles) {
     const evolution = evolveAthleteCareerMonth(p, date, { isYearBoundary });
     if (!evolution.changed) continue;
+    if (evolution.retires) {
+      retiredThisMonth += 1;
+      legacyRows.push(buildRetirementLegacyRow(p, date, evolution.patch));
+    }
     const traitEffects = computeTraitEffects(p.personality_traits || []);
     const drift = (key, modifier = 1) => ((seededHash(`${p.id}:${date}:${key}`) % 401) - 200) / 100 * modifier;
     const fanBaseline = 50 + (traitEffects.fanModifier || 0) * 100;
@@ -265,8 +312,43 @@ export async function evolveAthletesMonthly(date, { isYearBoundary = false } = {
     });
   }
 
-  if (updates.length > 0) {
-    await localGame.entities.AthleteProfile.bulkUpdate(updates);
+  // Fase 2.6, item 3: linha-resumo gravada no momento da aposentadoria,
+  // ANTES de qualquer poda (worldSimulationLifecycle.js:pruneOldRetiredAthletes
+  // remove o AthleteProfile 24 meses depois — a poda vira segura porque o
+  // resumo já existe numa coleção própria, nunca apagada). Uma única
+  // transação (localGame.batch) grava as atualizações de atletas E as
+  // linhas de legado juntas — nenhuma transação extra por atleta
+  // aposentado, mesmo padrão de dissolvePartnerships/generateProspects.
+  if (updates.length > 0 || legacyRows.length > 0) {
+    // 'upsert' (não 'update'): bulkUpdate tolera um id que não existir mais
+    // na coleção criando a linha em vez de lançar erro — batch({type:'update'})
+    // lançaria. 'upsert' cai no mesmo ramo tolerante (insere-ou-mescla) que
+    // bulkUpdate já usava, preservando o comportamento exatamente.
+    const operations = [
+      ...updates.map((update) => ({ type: 'upsert', entityName: 'AthleteProfile', id: update.id, data: update })),
+      ...legacyRows.map((row) => ({ type: 'create', entityName: 'AthleteCareerLegacy', data: row })),
+    ];
+    await localGame.batch(operations);
+  }
+
+  // Fase 2.5, item 4: contador monotônico de aposentadorias, persistido no
+  // PlayerProfile — nunca re-derivado de uma contagem ao vivo de linhas
+  // `retired:true`. Achado 2D.4: essa contagem ao vivo (do array já
+  // truncado por um teto pensado pra população ATIVA) ficava pouco
+  // confiável assim que o total de linhas cruzava o teto; e mesmo com um
+  // teto largo o bastante, uma contagem ao vivo nunca seria compatível com
+  // podar linhas antigas (abaixo, worldSimulationLifecycle.js) — o
+  // contador soma incrementalmente e nunca encolhe quando uma linha é
+  // removida. generateProspects lê este valor para calibrar o hiato de
+  // reposição.
+  if (retiredThisMonth > 0 && profile?.id) {
+    try {
+      const fresh = await localGame.entities.PlayerProfile.get(profile.id).catch(() => profile);
+      const current = Number(fresh?.cumulative_retired_athletes) || 0;
+      await localGame.entities.PlayerProfile.update(profile.id, { cumulative_retired_athletes: current + retiredThisMonth });
+    } catch (error) {
+      console.warn('[Game Core] Não foi possível persistir cumulative_retired_athletes:', error?.message || error);
+    }
   }
 }
 

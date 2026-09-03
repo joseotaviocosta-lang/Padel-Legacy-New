@@ -1,4 +1,5 @@
 {
+  "_archived_note": "Fase 2.7, item 4: ARQUIVADA, não é mais a referência de comparação ativa. Esta rodada é 970 bots + 24 reais — a população pré-Fase-2. Desde a Fase 2 (100 reais + 900 bots), toda correção roda sobre uma população diferente; os números aqui (chaves incompletas, reais no top 20, duplas pareadas etc.) não são comparáveis diretamente aos de docs/baseline-pre-fase3.json, que é a referência ativa a partir da Fase 2.7. Mantida como registro histórico do estado PRÉ-CORREÇÕES (o sintoma original que abriu toda a auditoria), não para comparação numérica.",
   "generatedAt": "2026-01-01T11:07:13.264Z",
   "seed": "official-970-s1",
   "determinism": {

@@ -278,7 +278,7 @@ export async function advanceDay(profile, { deferGlobalProcessing = false, profi
     // nunca a cada mês. Saves antigos não são corrigidos retroativamente
     // (Parte 41: nunca inventar passado) — só a taxa de incremento futura
     // para de acumular o erro.
-    await stage('monthlyBoundary:evolveAthletesMonthly', () => evolveAthletesMonthly(newCareerDate, { isYearBoundary: oldYear !== newYear }).catch(e => console.error('evolveAthletesMonthly', e)));
+    await stage('monthlyBoundary:evolveAthletesMonthly', () => evolveAthletesMonthly(newCareerDate, { isYearBoundary: oldYear !== newYear, profile: updated }).catch(e => console.error('evolveAthletesMonthly', e)));
     if (oldYear === newYear) {
       await stage('monthlyBoundary:finalizeClosedCareerMonth', async () => {
         try {

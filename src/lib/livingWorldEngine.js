@@ -1,6 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js';
-import { generateWorldEvents } from '@/lib/world.js';
+import { generateEventObject } from '@/lib/world.js';
 import { expireMacroEvents, maybeGenerateMacroEvent } from '@/lib/worldEvents.js';
 import { normalizeWorldEventIds, createWorldEventObjects } from '@/lib/worldEventIds.js';
 
@@ -121,15 +121,25 @@ function buildTournamentEvent(date, tournaments) {
 
 async function persistEvents(events) {
   const valid = normalizeWorldEventIds(createWorldEventObjects(events.filter(Boolean)));
-  const created = [];
-  for (const event of valid) {
-    const existing = await safeFilter(localGame.entities.WorldEvent, { id: event.id }, '-created_date', 1);
-    if (existing.length) continue;
-    try { created.push(await localGame.entities.WorldEvent.create(event)); } catch (error) {
-      console.warn('[LivingWorld] Não foi possível persistir evento:', error?.message || error);
-    }
+  if (!valid.length) return [];
+  // Fase 2.5, item 3: cada evento pagava sua própria transação de create()
+  // (a leitura de existência é barata — cache em memória, não clona o save;
+  // só o create() é a transação completa). Mesmo padrão já corrigido em
+  // dissolvePartnerships/circuitLifecycle.js/generateProspects — junta as
+  // leituras de existência (em paralelo) e grava tudo que ainda não existe
+  // num único bulkCreate, preservando "não sobrescreve o que já existe"
+  // (create, não upsert).
+  const existingChecks = await Promise.all(
+    valid.map((event) => safeFilter(localGame.entities.WorldEvent, { id: event.id }, '-created_date', 1))
+  );
+  const toCreate = valid.filter((_, index) => existingChecks[index].length === 0);
+  if (!toCreate.length) return [];
+  try {
+    return await localGame.entities.WorldEvent.bulkCreate(toCreate);
+  } catch (error) {
+    console.warn('[LivingWorld] Não foi possível persistir eventos:', error?.message || error);
+    return [];
   }
-  return created;
 }
 
 // Onboarding 2.0 + Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md):
@@ -151,12 +161,16 @@ export async function getWeeklyRelevantHighlights(date, { limit = 3 } = {}) {
     .filter(Boolean);
 }
 
-export async function createWeeklyWorldBulletin(profile, date) {
+// Fase 2.7, item 1.1: extraído de createWeeklyWorldBulletin — SÓ monta o
+// payload (ou devolve o boletim já existente), nunca persiste sozinho.
+// processLivingWorldDay funde essa gravação com as outras do mesmo dia
+// numa única transação (ver comentário em processLivingWorldDay).
+async function buildWeeklyWorldBulletinPayload(profile, date) {
   if (!profile?.id || !isWeeklyBulletinDay(date)) return null;
   const weekKey = livingWorldWeekKey(date);
   const bulletinId = `weekly-bulletin-${profile.id}-${weekKey}`;
   const existing = await safeFilter(localGame.entities.WorldEvent, { id: bulletinId }, '-created_date', 1);
-  if (existing.length) return existing[0];
+  if (existing.length) return { existing: existing[0] };
 
   const weekStart = new Date(parseDate(date));
   weekStart.setUTCDate(weekStart.getUTCDate() - 7);
@@ -175,28 +189,56 @@ export async function createWeeklyWorldBulletin(profile, date) {
     ? highlights.map((title, index) => `${index + 1}. ${title}`).join('\n')
     : fallback;
 
-  const bulletin = {
-    id: bulletinId,
-    event_type: 'boletim_semanal',
-    category: 'resumo',
-    title: `Resumo da semana · ${weekKey}`,
-    content,
-    description: content,
-    author_name: 'Central do Padel',
-    event_date: date,
-    tier: 'destaque',
-    tags: ['boletim', 'semanal'],
-    is_living_world: true,
-    metadata: { week_key: weekKey, categories, source_event_ids: weekEvents.slice(0, 20).map(event => event.id) },
-  };
   // Polish editorial da Central (docs/NOTIFICATION_EDITORIAL_POLISH.md): este
   // boletim ainda vira um WorldEvent — continua alimentando a página
   // Mundo/Notícias normalmente. Só não vira mais uma CareerMessage própria no
   // sino: fazia isso duplicar o "Resumo semanal do universo"
   // (gameStateLifecycle.js), que agora cita os destaques relevantes da
   // semana (getWeeklyRelevantHighlights, acima) na própria mensagem única.
-  const [created] = await persistEvents([bulletin]);
-  return created || bulletin;
+  return {
+    payload: {
+      id: bulletinId,
+      event_type: 'boletim_semanal',
+      category: 'resumo',
+      title: `Resumo da semana · ${weekKey}`,
+      content,
+      description: content,
+      author_name: 'Central do Padel',
+      event_date: date,
+      tier: 'destaque',
+      tags: ['boletim', 'semanal'],
+      is_living_world: true,
+      metadata: { week_key: weekKey, categories, source_event_ids: weekEvents.slice(0, 20).map(event => event.id) },
+    },
+  };
+}
+
+export async function createWeeklyWorldBulletin(profile, date) {
+  const result = await buildWeeklyWorldBulletinPayload(profile, date);
+  if (!result) return null;
+  if (result.existing) return result.existing;
+  const [created] = await persistEvents([result.payload]);
+  return created || result.payload;
+}
+
+// Fase 2.7, item 1.2: dado medido antes de escolher o número (não um
+// palpite) — a superfície mais vista (CareerHub, widget "Mundo", "só o
+// essencial") mostra só 3 itens; o snapshot que a alimenta busca 8; o feed
+// dedicado (Journal > aba Mundo) mostra 10/página (busca até 40); a
+// página própria (Mundo/Notícias) mostra 12/página (busca até 50).
+// Editorial gerava 1/dia (2 na sexta-feira, ~1,14/dia em média,
+// incondicional) a partir de só 3 templates de ambientação — competindo
+// pelas MESMAS janelas finas com resultados de torneio, notícias de
+// parceria, lesões e marcos de ranking (que a categorização do snapshot
+// nem reconhece como "circuito"/"mercado"/"saúde" — editorial não entra
+// em nenhuma categoria, só polui a lista bruta). Reduzido pra 1 evento a
+// cada 3 dias — corte de ~71% na geração, ainda garante ambientação
+// várias vezes por semana sem dominar um widget de 3 itens.
+const EDITORIAL_CADENCE_DAYS = 3;
+
+function isEditorialDay(date) {
+  const epochDay = Math.floor(parseDate(date).getTime() / DAY_MS);
+  return epochDay % EDITORIAL_CADENCE_DAYS === 0;
 }
 
 export async function processLivingWorldDay(profile, date, options = {}) {
@@ -217,16 +259,25 @@ export async function processLivingWorldDay(profile, date, options = {}) {
     parseDate(date).getUTCDay() === 1 ? buildRankEvent(date, athletes) : null,
     parseDate(date).getUTCDate() === 1 ? buildTeamEvent(date, teams) : null,
   ];
-  summary.createdEvents.push(...await persistEvents(contextualEvents));
 
-  // Mantém variedade editorial já existente, mas em volume pequeno e controlado.
-  if (options.generateEditorial !== false) {
-    const editorialCount = parseDate(date).getUTCDay() === 5 ? 2 : 1;
-    const editorial = await generateWorldEvents(date, editorialCount).catch(() => []);
-    summary.createdEvents.push(...(editorial || []));
-  }
+  const editorialEvents = options.generateEditorial !== false && isEditorialDay(date)
+    ? [generateEventObject(date)]
+    : [];
 
-  summary.bulletin = await createWeeklyWorldBulletin(profile, date);
+  const bulletinResult = await buildWeeklyWorldBulletinPayload(profile, date);
+  const bulletinToPersist = bulletinResult?.payload ? [bulletinResult.payload] : [];
+
+  // Fase 2.7, item 1.1: as três gravações de WorldEvent do dia (contextual,
+  // editorial, boletim) fundidas numa ÚNICA transação — cada
+  // create()/bulkCreate()/bulkUpdate() clona o save inteiro
+  // (ActiveCareerAdapter.js, achado #18 da tabela de classificação),
+  // então 3 chamadas separadas pagavam 3× o clone mesmo em dias com só 1
+  // item em cada. Mesmo conteúdo, mesma decisão de quais eventos existem —
+  // só menos transações pra persisti-los.
+  const persisted = await persistEvents([...contextualEvents, ...editorialEvents, ...bulletinToPersist]);
+  summary.createdEvents.push(...persisted);
+  summary.bulletin = bulletinResult?.existing || persisted.find((event) => event.event_type === 'boletim_semanal') || null;
+
   return summary;
 }
 

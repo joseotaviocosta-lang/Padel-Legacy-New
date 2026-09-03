@@ -1,3 +1,8 @@
+> **ARQUIVADA (Fase 2.7, item 4)** — 970 bots + 24 reais, população
+> pré-Fase-2. Não é mais a referência ativa; não comparável diretamente a
+> `docs/baseline-pre-fase3.json` (900 bots + 100 reais). Mantida como
+> registro histórico do estado pré-correções.
+
 # Baseline — temporada × tier (seed: `official-970-s1`, 1 temporadas, 970 bots)
 
 | Temporada | Tier | Títulos 100% reais | Mistos | 100% bots | OVR médio do campeão | Chaves incompletas |
