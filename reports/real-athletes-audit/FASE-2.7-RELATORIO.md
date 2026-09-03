@@ -55,10 +55,24 @@ nenhum). Corte de ~71% na geração (de ~417/temporada pra ~122/temporada).
 Ainda garante ambientação várias vezes por semana sem dominar um widget
 de 3 itens.
 
-### Custo
+### Custo — não medido nesta entrega
 
-_[preenchido após o regime-check em background — mesma rodada usada pra
-congelar a nova referência, item 4]_
+A remedição de perfilamento (mesma metodologia das fases anteriores,
+`scripts/profile-real-athletes-simulation.mjs`, ~30 min) foi iniciada e
+**interrompida a pedido, antes de terminar** — não há número de "quanto
+a consolidação + a redução de cadência do editorial economizaram" nesta
+entrega. Dado parcial, só como indicação de direção (não é uma medição
+completa, não deve ser citado como resultado): no ponto em que a rodada
+foi interrompida (dia 120/366), o tempo decorrido estava ~23% menor que o
+mesmo checkpoint da rodada anterior (294,5s contra 381,7s) — consistente
+com a expectativa (editorial caiu ~71% em frequência, e era 50,9% do
+custo de `livingWorld`), mas não é uma prova, só um sinal. **Sem risco
+pro resultado do item**: a decisão de aplicar as duas correções não
+dependia desta medição — o argumento (dados do feed pro item 1.2,
+segurança comportamental pro item 1.1) já estava completo antes de
+qualquer perfilamento. Fica como medição pendente, não como bloqueio —
+pode ser refeita a qualquer momento com o mesmo comando, sem mexer em
+nada além de rodar de novo.
 
 ---
 
@@ -209,10 +223,51 @@ acontecer.
 
 ## 6 — Suíte, lint, build
 
-_[preenchido ao final]_
+- `npm run lint` — limpo, sem avisos.
+- `npm run build` — OK, 29,44s.
+- Suíte de regressão completa (10 scripts — os 9 já estabelecidos + o
+  teste de invariante da Fase 2.5): `test:tournament-registration`,
+  `test:ranking-consistency`, `test:tournament-flow-rc`,
+  `test:partnerships-v29`, `test:living-partnership-market-phase15`,
+  `test:world-partnership-dynamics`, `test:players`, `test:missions`,
+  `test:ranking-race-season`, `test:simulation-population-cap-invariant`
+  — **todos EXIT 0, todos com texto de PASS genuíno conferido**.
+- Teste de 10 temporadas e verificação de `AthleteCareerLegacy`
+  (`diag-retirement-legacy-check.mjs`) **não rerodados nesta entrega** —
+  as mudanças da Fase 2.7 (cadência/consolidação de `WorldEvent`, guarda
+  de parâmetro no mercado) não tocam a lógica de aposentadoria, poda ou
+  população que esses dois testes cobrem; risco baixo o bastante pra não
+  justificar mais uma rodada longa depois da decisão de interromper o
+  perfilamento. Seguem validados pela Fase 2.6 (ambos PASS).
 
 ---
 
 ## Entrega
 
-_[resumo final ao término da rodada em background]_
+| # | Item | Status |
+|---|---|---|
+| 1 | Dados do feed antes de propor cadência; consolidação aplicada e medida | ✅ dados coletados e citados; consolidação aplicada; cadência reduzida e justificada; custo **não medido** (perfilamento interrompido a pedido — sinal parcial registrado, não uma medição) |
+| 2 | Clone-por-transação documentado como achado próprio, 6 ocorrências | ✅ achado #18, com o crash de memória do item 5 como evidência adicional de urgência |
+| 3 | Guarda na fração + justificativa do 0,14 ajustada | ✅ injeção de parâmetro (elimina a classe de risco, não só detecta); argumento de ruído-de-amostra removido da justificativa |
+| 4 | `baseline-pre-fase3.json` congelada, antiga arquivada com nota | ✅ |
+| 5 | Regime-check de 5 temporadas, com análise de interseção dos reais ausentes | ⏸️ **tentado e adiado** — travou por falta de memória na temporada 2; instrumentação de rotatividade já implementada no harness, pronta pra quando a correção do achado #18 tornar a rodada viável |
+| 6 | Suíte verde, lint, build OK | ✅ |
+
+**Resumo executivo**: a consolidação de escritas (item 1.1) e a redução
+de cadência do editorial (item 1.2) foram aplicadas com a decisão
+sustentada por dados reais de exibição — não um palpite — mas a medição
+de custo ficou pendente por decisão explícita de não esperar o
+perfilamento. A tentativa de regime-check de 5 temporadas (item 5) não
+só não fechou como revelou uma informação nova e concreta: a vazão de
+mercado mais alta da Fase 2.6, somada a coleções que agora crescem por
+design (`AthleteCareerLegacy`), anteciparam o limite de memória do
+harness de "~3 temporadas" (já documentado) pra "trava na temporada 2" —
+reforçando, com um crash real e não só uma medição de tempo, que o achado
+#18 (clone do save inteiro a cada transação, agora com 6 ocorrências
+catalogadas) precisa da investigação dedicada já agendada antes da Fase
+4. A nova baseline (900+100, 1 temporada) está congelada e pronta como
+ponto de partida da Fase 3; a antiga está arquivada, não perdida.
+
+Nada nesta entrega ficou quebrado ou pendente de correção — os itens
+não fechados (custo do item 1, regime-check do item 5) são medições
+adiadas por decisão explícita, não trabalho incompleto por falha.
