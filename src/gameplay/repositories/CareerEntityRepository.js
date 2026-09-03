@@ -54,10 +54,26 @@ function sortRows(items, sort) {
     for (const raw of fields) {
       const desc = raw.startsWith('-');
       const field = desc ? raw.slice(1) : raw;
-      const av = a?.[field] ?? '';
-      const bv = b?.[field] ?? '';
-      if (av === bv) continue;
-      const result = av > bv ? 1 : -1;
+      const avRaw = a?.[field];
+      const bvRaw = b?.[field];
+      const aMissing = avRaw === undefined || avRaw === null || avRaw === '';
+      const bMissing = bvRaw === undefined || bvRaw === null || bvRaw === '';
+      // Fase 2I: ausente sempre por ÚLTIMO, em qualquer direção (asc ou
+      // desc). Antes, `?? ''` fazia undefined virar '', e '' < qualquer
+      // número positivo em JS — em ordenação ascendente isso empurrava
+      // registros SEM o campo pro TOPO da lista, não pro fim. Achado da
+      // Fase 1.5: isso "ajudava por acidente" enquanto os únicos afetados
+      // eram os atletas reais aguardando o primeiro cálculo semanal de
+      // ranking_position — mas não era uma regra pedida por ninguém, e
+      // qualquer entidade nova com um campo de ordenação vazio "furava
+      // fila" por esse mesmo acidente. Seguro de corrigir agora porque a
+      // Fase 2E já eliminou os tetos de população que tornavam a posição
+      // na lista uma questão de inclusão/exclusão, não só de ordem.
+      if (aMissing && bMissing) continue;
+      if (aMissing) return 1;
+      if (bMissing) return -1;
+      if (avRaw === bvRaw) continue;
+      const result = avRaw > bvRaw ? 1 : -1;
       return desc ? -result : result;
     }
     return 0;

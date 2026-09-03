@@ -4,12 +4,18 @@ import { generateFictionalAthletes } from '../src/players/athleteGenerator.js';
 import { buildAthleteCatalog } from '../src/players/athleteCatalog.js';
 import { normalizeAthlete, validateAthlete } from '../src/players/athleteSchema.js';
 import { applySideAdaptation, calculatePartnershipInterest, evaluatePartnerCompatibility, resolveTeamCourtSides } from '../src/players/teamCompatibility.js';
+import { getRealAthleteRegistry } from '../src/players/realAthleteRegistry.js';
+import { FICTIONAL_ATHLETE_COUNT } from '../src/players/athleteCatalog.js';
+
+// Fase 2A: a contagem de reais não é mais um número fixo no código (era
+// 10, hardcoded aqui) — deriva do registro canônico, como o resto da base.
+const realCount = getRealAthleteRegistry().length;
 
 const catalog = buildAthleteCatalog({ includeReal: true });
-assert.equal(catalog.length, 250);
+assert.equal(catalog.length, realCount + FICTIONAL_ATHLETE_COUNT);
 assert.equal(new Set(catalog.map(item => item.id)).size, catalog.length, 'IDs must be unique');
 assert(catalog.every(item => validateAthlete(item).valid), 'catalog athletes must validate');
-assert.equal(catalog.filter(item => item.source_type === 'real').length, 10);
+assert.equal(catalog.filter(item => item.source_type === 'real').length, realCount);
 
 const thousand = generateFictionalAthletes({ count: 1000, seed: 'distribution-test' });
 const sideCounts = Object.groupBy ? Object.groupBy(thousand, item => item.preferred_side) : thousand.reduce((acc, item) => ((acc[item.preferred_side] ||= []).push(item), acc), {});

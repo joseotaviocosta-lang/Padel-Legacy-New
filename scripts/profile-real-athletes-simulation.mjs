@@ -10,7 +10,6 @@
 // Uso: node scripts/profile-real-athletes-simulation.mjs [--proceduralAthletes=970]
 //   [--proceduralTeams=486] [--days=366] [--seed=profile-v1] [--out=reports/real-athletes-audit]
 import { writeFileSync, mkdirSync } from 'node:fs';
-import worldSeed from '../src/data/worldSeed2025.json' with { type: 'json' };
 
 const args = Object.fromEntries(process.argv.slice(2).map((v) => v.replace(/^--/, '').split('=')));
 const OUT_DIR = args.out || 'reports/real-athletes-audit';
@@ -82,6 +81,8 @@ try {
   const { advanceDay } = await vite.ssrLoadModule('/src/lib/career.js');
   const { processGameStateDay } = await vite.ssrLoadModule('/src/game-core/gameStateLifecycle.js');
   const { createStageProfiler } = await vite.ssrLoadModule('/src/dev/performanceProbe.js');
+  const { getRealAthleteRegistry, getConfirmedRealPairs, getProbableRealPairs } = await vite.ssrLoadModule('/src/players/realAthleteRegistry.js');
+  const { teamKey } = await vite.ssrLoadModule('/src/lib/teamRanking.js');
 
   const seedInt = installDeterminism(SEED);
   console.log(`Seed: "${SEED}" (hash ${seedInt}) — ${DAYS} dias, ${PROCEDURAL_ATHLETE_SAMPLE} bots procedurais.`);
@@ -99,19 +100,29 @@ try {
   });
   let profile = await localGame.entities.PlayerProfile.get('profile-sim-player');
 
-  for (const athlete of worldSeed.athletes) await localGame.entities.AthleteProfile.create({ ...athlete });
-  for (const team of worldSeed.teams) {
-    const p1 = (await localGame.entities.AthleteProfile.filter({ bot_id: team.player1_id }))[0];
-    const p2 = (await localGame.entities.AthleteProfile.filter({ bot_id: team.player2_id }))[0];
-    await localGame.entities.TeamRanking.create({ ...team, player1_id: p1?.id || team.player1_id, player2_id: p2?.id || team.player2_id });
+  const registry = getRealAthleteRegistry();
+  const botIdToAssignedId = new Map();
+  for (const athlete of registry) {
+    const created = await localGame.entities.AthleteProfile.create({ ...athlete });
+    botIdToAssignedId.set(athlete.bot_id, created.id);
   }
+  const seedPairs = [...getConfirmedRealPairs().map((p) => ({ ...p, locked: true })), ...getProbableRealPairs().map((p) => ({ ...p, locked: false }))];
+  const pairUpdates = [];
+  for (const pair of seedPairs) {
+    const id1 = botIdToAssignedId.get(pair.a); const id2 = botIdToAssignedId.get(pair.b);
+    if (!id1 || !id2) continue;
+    await localGame.entities.TeamRanking.create({ team_key: teamKey(id1, id2), player1_id: id1, player2_id: id2, ranking_points: 100, race_points: 0 });
+    pairUpdates.push({ id: id1, ai_partner_id: id2, ai_partnership_protected: pair.locked, ai_partnership_status: 'ativa' });
+    pairUpdates.push({ id: id2, ai_partner_id: id1, ai_partnership_protected: pair.locked, ai_partnership_status: 'ativa' });
+  }
+  if (pairUpdates.length) await localGame.entities.AthleteProfile.bulkUpdate(pairUpdates);
   const realTeamKeys = new Set((await localGame.entities.TeamRanking.list(null, 2000)).map((t) => t.id));
   const seededAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
   const seededTeams = await localGame.entities.TeamRanking.list('-ranking_points', 600);
   const supplemental = buildSupplementalRankingPopulation(seededAthletes, seededTeams);
   await localGame.entities.AthleteProfile.bulkCreate(supplemental.athletes.slice(0, PROCEDURAL_ATHLETE_SAMPLE));
   await localGame.entities.TeamRanking.bulkCreate(supplemental.teams.slice(0, PROCEDURAL_TEAM_SAMPLE));
-  console.log(`Elenco pronto: ${1 + worldSeed.athletes.length - 1 + PROCEDURAL_ATHLETE_SAMPLE + 24 - 24} atletas (24 reais + ${PROCEDURAL_ATHLETE_SAMPLE} procedurais).`);
+  console.log(`Elenco pronto: ${registry.length + PROCEDURAL_ATHLETE_SAMPLE} atletas (${registry.length} reais + ${PROCEDURAL_ATHLETE_SAMPLE} procedurais).`);
 
   // ═══════════════ Perfilamento dia a dia ═══════════════
   const stageTotals = new Map(); // nome do estágio -> {totalMs, calls}

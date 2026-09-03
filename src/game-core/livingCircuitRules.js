@@ -90,8 +90,23 @@ export function deriveRecentForm(athlete = {}) {
   return { score, label: score >= 78 ? 'Excelente' : score >= 64 ? 'Boa' : score >= 45 ? 'Regular' : 'Ruim', source: 'results' };
 }
 
+// Fase 2D.1 — probabilidade de aposentadoria crescente por idade, não
+// corte rígido: baixa aos 30 (curva praticamente plana), sobe de forma
+// acentuada a partir dos 34-35, alta aos 38+. Vale igual para reais e
+// bots (não olha `is_real`). Antes desta fase, NADA no motor jamais
+// setava `retired: true` em AthleteProfile — o rastreamento de
+// "reposições >= aposentadorias" logo abaixo em generateProspect() já
+// existia, mas comparava contra uma contagem que ficava sempre em zero.
+function retirementChancePercent(age) {
+  if (age < 30) return 0.2;
+  const t = Math.max(0, age - 30);
+  // 30->0.2%, 34->2.6%, 36->5.6%, 38->9.8%, 40->15.2%, 44+->teto de 40%.
+  return Math.min(40, 0.2 + t * t * 0.15);
+}
+
 export function evolveAthleteCareerMonth(athlete = {}, currentDate = '2026-01-01', { isYearBoundary = false } = {}) {
   const month = String(currentDate).slice(0, 7);
+  if (isAthleteRetired(athlete)) return { changed: false, patch: {}, state: deriveAthleteCareerState(athlete, currentDate) };
   if (athlete.last_career_evolution_month === month) return { changed: false, patch: {}, state: deriveAthleteCareerState(athlete, currentDate) };
   const baseAge = athleteAgeAt(athlete, currentDate);
   const age = athlete.birth_date || athlete.date_of_birth ? baseAge : Math.max(16, baseAge + (isYearBoundary ? 1 : 0));
@@ -126,10 +141,12 @@ export function evolveAthleteCareerMonth(athlete = {}, currentDate = '2026-01-01
     }
   }
   const form = deriveRecentForm(athlete);
+  const retires = seededChance(`${athlete.id}:${month}:retirement`, retirementChancePercent(age));
   return {
     changed: true,
     state,
     delta,
+    retires,
     patch: {
       age,
       career_stage: state.stage,
@@ -144,6 +161,16 @@ export function evolveAthleteCareerMonth(athlete = {}, currentDate = '2026-01-01
       form_label: form.label,
       last_career_evolution_month: month,
       last_updated_date: currentDate,
+      ...(retires ? {
+        retired: true,
+        retirement_date: currentDate,
+        retirement_age: age,
+        career_status: 'aposentado',
+        market_status: 'aposentado',
+        ai_partner_id: null,
+        ai_partner_name: null,
+        ai_partnership_status: athlete.ai_partner_id ? 'encerrada' : athlete.ai_partnership_status,
+      } : {}),
     },
   };
 }

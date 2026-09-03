@@ -2,6 +2,16 @@ import { localGame } from '@/api/localGameClient.js';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 import { careerDaysBetween, isAthleteRetired, partnershipRecordId, seededChance, seededInteger } from './livingCircuitRules.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
+import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+
+// Fase 2E.2: 500 excluía metade da população de 1000 — e de forma
+// PERMANENTE, não só truncada: quem cai fora do corte de ranking_position
+// nunca mais é buscado por este `list()`, então nunca mais tem
+// ranking_position recalculado por ninguém, e fica excluído para sempre
+// (confirmado: processWorldCircuit também lê e escreve ranking_position
+// pelo MESMO corte — acompanhar `POPULATION_LIST_CAP` em circuitLifecycle.js).
+// O teto agora cobre a população inteira com folga; ninguém fica de fora.
+const POPULATION_LIST_CAP = WORLD_RANKING_TARGET + 100;
 
 const entities = /** @type {any} */ (localGame.entities);
 
@@ -129,6 +139,28 @@ function availableAthletes(athletes, date) {
   ));
 }
 
+// Fase 2H — "força da preferência" por proximidade de ranking, em config
+// pra calibrar sem tocar na lógica abaixo. 0 = neutro (comportamento
+// anterior à Fase 2H); quanto maior, mais a seleção despreza pares
+// distantes na tabela. Decaimento exponencial, não corte rígido — sempre
+// sobra uma cauda pequena de probabilidade pra pareamentos improváveis
+// (achado do próprio pedido: "duplas surpresa são material narrativo").
+export const RANKING_PROXIMITY_STRENGTH = 0.01;
+
+function rankGapWeight(rankA, rankB) {
+  const gap = Math.abs(safeNumber(rankA, 500) - safeNumber(rankB, 500));
+  return Math.exp(-gap * RANKING_PROXIMITY_STRENGTH);
+}
+
+// Fase 2H (achado da Fase 0.3, item 2): selectPair era cego a ranking na
+// escolha do SEGUNDO membro — `compatibility()` já pesava ranking em 25%,
+// mas o pico de sinergia tática (60% do peso) podia vencer mesmo com um
+// gap gigante de ranking, porque a escolha era sempre o argmax (maior
+// score, ponto final). Agora a escolha do segundo é um sorteio PONDERADO
+// (não mais "pega o melhor") — cada candidato pesa
+// compatibilidade × proximidade-de-ranking, e o sorteio respeita esse
+// peso. Isso é o que faz um gap enorme ficar IMPROVÁVEL em vez de só
+// "pontuar um pouco menos" — sem nunca zerar a chance por completo.
 function selectPair(free, month, pairIndex) {
   if (free.length < 2) return null;
   const ordered = [...free].sort((a, b) => {
@@ -137,11 +169,21 @@ function selectPair(free, month, pairIndex) {
     return scoreA - scoreB;
   });
   const first = ordered[0];
-  const candidates = ordered.slice(1)
-    .map((athlete) => ({ athlete, score: compatibility(first, athlete) }))
-    .sort((a, b) => b.score - a.score);
-  const second = candidates[0]?.athlete;
-  return second ? { first, second, compatibility: candidates[0].score } : null;
+  const firstRank = safeNumber(first.ranking_position, 500);
+  const weighted = ordered.slice(1).map((athlete) => {
+    const score = compatibility(first, athlete);
+    const weight = Math.max(0.01, score) * rankGapWeight(firstRank, athlete.ranking_position);
+    return { athlete, score, weight };
+  });
+  const totalWeight = weighted.reduce((sum, candidate) => sum + candidate.weight, 0);
+  if (!totalWeight) return null;
+  let roll = ((hash(`${month}:${pairIndex}:${first.id}:pick-second`) % 1000000) / 1000000) * totalWeight;
+  let chosen = weighted[weighted.length - 1];
+  for (const candidate of weighted) {
+    if (roll < candidate.weight) { chosen = candidate; break; }
+    roll -= candidate.weight;
+  }
+  return chosen ? { first, second: chosen.athlete, compatibility: chosen.score } : null;
 }
 
 async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
@@ -188,6 +230,20 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
     const chemistry = clamp(canonical?.chemistry ?? athlete.ai_partnership_chemistry ?? partner.ai_partnership_chemistry ?? 60, 0, 100);
     const startDate = canonical?.started_career_date || athlete.ai_partnership_start_date || currentDate;
     const monthsTogether = Math.max(0, Math.floor(careerDaysBetween(startDate, currentDate) / 30));
+
+    // Fase 2G.1: duplas históricas "confirmadas" (resultado real de
+    // torneio, semeadas em saveFoundation.js com ai_partnership_protected)
+    // não passam pelo sorteio de renovação/rompimento — só se desfazem por
+    // aposentadoria (retirementEnd, abaixo) ou evento narrativo explícito
+    // em outro sistema. "Prováveis" NÃO têm essa flag — dissolvem
+    // normalmente, de propósito (acertar uma dupla errada trancada seria
+    // pior que deixar o mercado decidir, achado do próprio pedido).
+    const protectedPair = Boolean(athlete.ai_partnership_protected || partner.ai_partnership_protected);
+    if (protectedPair && !isRetired(athlete) && !isRetired(partner)) {
+      athleteUpdates.push({ id: athlete.id, ai_partnership_months: monthsTogether + 1 });
+      athleteUpdates.push({ id: partner.id, ai_partnership_months: monthsTogether + 1 });
+      continue;
+    }
     const formAverage = (safeNumber(athlete.form ?? athlete.current_form, 60) + safeNumber(partner.form ?? partner.current_form, 60)) / 2;
     const contractEnd = canonical?.contract_end_date || canonical?.scheduled_end_date || addDays(startDate, 240);
     const contractExpired = currentDate >= contractEnd;
@@ -334,10 +390,10 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
     return { skipped: true, month: currentMonth, formed: 0, dissolved: 0, events: [] };
   }
 
-  const athletes = (await entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await entities.AthleteProfile.list('ranking_position', POPULATION_LIST_CAP)) || [];
   const worldPartnerships = await ensureCanonicalPartnerships(athletes, currentDate, await listWorldPartnerships());
   const dissolution = await dissolvePartnerships(athletes, currentDate, worldPartnerships);
-  const refreshed = (await entities.AthleteProfile.list('ranking_position', 500)) || athletes;
+  const refreshed = (await entities.AthleteProfile.list('ranking_position', POPULATION_LIST_CAP)) || athletes;
   const formation = await formNewPartnerships(refreshed, currentDate);
 
   let updatedProfile = profile;
@@ -364,7 +420,7 @@ export async function processAiPartnershipMarket(profile, previousDate, currentD
 }
 
 export async function getAiPartnershipSnapshot(profile) {
-  const athletes = (await entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await entities.AthleteProfile.list('ranking_position', POPULATION_LIST_CAP)) || [];
   const activePairs = new Set();
   let freeAgents = 0;
   for (const athlete of athletes) {

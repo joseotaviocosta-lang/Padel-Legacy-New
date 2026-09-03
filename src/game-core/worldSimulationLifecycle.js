@@ -2,6 +2,12 @@ import { localGame } from '@/api/localGameClient.js';
 import { normalizeFatigue } from './physicalStats.js';
 import { deriveAthleteCareerState, deriveRecentForm, isAthleteRetired } from './livingCircuitRules.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
+import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+
+// Fase 2E.2: mesmo achado dos outros dois arquivos que compartilham este
+// corte (aiPartnershipLifecycle.js, circuitLifecycle.js) — 500 excluía
+// permanentemente metade da população de 1000 de simulateWorldDay.
+const ATHLETE_POPULATION_CAP = WORLD_RANKING_TARGET + 100;
 
 const ACTIVE_STATUSES = new Set(['active', 'ativo', 'livre', 'contratado']);
 const COUNTRIES = ['Brasil', 'Argentina', 'Espanha', 'Portugal', 'Itália', 'França', 'Suécia', 'México', 'Chile', 'Paraguai'];
@@ -144,60 +150,84 @@ async function createWorldEvent(payload) {
   }
 }
 
-async function generateProspect(currentDate, existingAthletes) {
+// Fase 2D.2: generateProspect gerava no máximo 1/mês (uma chamada, atrás de
+// um dado de 10%) — insuficiente por uma ordem de grandeza pra repor uma
+// população de 1000 com aposentadoria ativa (Fase 2D.1: carreira média
+// ~15 anos numa faixa ranqueada ~1000 pede ~60-70 entradas/saídas por ano,
+// ou seja, 5-6/mês). O teto de replacements>=retired já existia e agora
+// finalmente compara contra uma contagem real (aposentadoria só passou a
+// setar `retired` nesta mesma fase) — vira o CALIBRADOR: cada mês, gera
+// até MAX_PROSPECTS_PER_MONTH, mas nunca mais do que o hiato real entre
+// quem já saiu e quem já foi reposto. Sem aposentadoria medida, hiato = 0,
+// e não entra ninguém — a taxa de entrada segue a taxa de saída medida,
+// não um número escolhido a dedo.
+const MAX_PROSPECTS_PER_MONTH = 6;
+
+async function generateProspects(currentDate, existingAthletes) {
   const month = monthKey(currentDate);
   const alreadyGenerated = existingAthletes.some((athlete) => athlete.generated_month === month);
-  if (alreadyGenerated) return null;
+  if (alreadyGenerated) return [];
   const retired = existingAthletes.filter((athlete) => athleteStatus(athlete) === 'retired').length;
   const replacements = existingAthletes.filter((athlete) => athlete.generation_reason === 'retirement_replacement').length;
-  if (replacements >= retired) return null;
-  // Reposição acompanha aposentadorias com pequena defasagem, sem inflar
-  // a população. A chance alta mantém o circuito estável mesmo quando as
-  // saídas se concentram no fim de uma temporada.
-  if (integer(`${month}:prospect-roll`, 0, 99) >= 90) return null;
+  const gap = Math.max(0, retired - replacements);
+  const toGenerate = Math.min(MAX_PROSPECTS_PER_MONTH, gap);
+  if (toGenerate <= 0) return [];
 
-  const first = FIRST_NAMES[integer(`${month}:first`, 0, FIRST_NAMES.length - 1)];
-  const last = LAST_NAMES[integer(`${month}:last`, 0, LAST_NAMES.length - 1)];
-  const country = COUNTRIES[integer(`${month}:country`, 0, COUNTRIES.length - 1)];
-  const overall = integer(`${month}:overall`, 48, 61);
-  const potential = integer(`${month}:potential`, Math.max(72, overall + 12), 94);
-  const profile = await localGame.entities.AthleteProfile.create({
-    name: `${first} ${last}`,
-    nationality: country,
-    age: 17,
-    birth_date: `${Number(currentDate.slice(0, 4)) - 17}-${currentDate.slice(5, 10)}`,
-    overall,
-    overall_rating: overall,
-    potential,
-    form: integer(`${month}:form`, 55, 74),
-    current_form: integer(`${month}:current-form`, 55, 74),
-    energy: 90,
-    fatigue: 5,
-    ranking_position: Math.max(200, existingAthletes.length + 120),
-    market_status: 'livre',
-    status: 'active',
-    reputation: 3,
-    wealth: 1200,
-    generated_month: month,
-    generated_by: 'game-core-2.2',
-    generation_reason: 'retirement_replacement',
-    career_seasons: 0,
-    career_titles: 0,
-    career_wins: 0,
-    career_losses: 0,
-  });
+  const created = [];
+  for (let index = 0; index < toGenerate; index += 1) {
+    const seed = `${month}:prospect:${index}`;
+    const first = FIRST_NAMES[integer(`${seed}:first`, 0, FIRST_NAMES.length - 1)];
+    const last = LAST_NAMES[integer(`${seed}:last`, 0, LAST_NAMES.length - 1)];
+    const country = COUNTRIES[integer(`${seed}:country`, 0, COUNTRIES.length - 1)];
+    // Fase 2D.3: entram jovens (17-20, não travado em 17) com OVR baixo e
+    // potencial variável — a faixa larga de potencial é o que garante que
+    // ALGUNS prospects virem challengers de verdade mais adiante, não
+    // todos medíocres.
+    const age = integer(`${seed}:age`, 17, 20);
+    const overall = integer(`${seed}:overall`, 46, 62);
+    const potential = integer(`${seed}:potential`, Math.max(70, overall + 8), 96);
+    // eslint-disable-next-line no-await-in-loop
+    const profile = await localGame.entities.AthleteProfile.create({
+      name: `${first} ${last}`,
+      nationality: country,
+      country,
+      age,
+      birth_date: `${Number(currentDate.slice(0, 4)) - age}-${currentDate.slice(5, 10)}`,
+      overall,
+      overall_rating: overall,
+      potential,
+      form: integer(`${seed}:form`, 55, 74),
+      current_form: integer(`${seed}:current-form`, 55, 74),
+      energy: 90,
+      fatigue: 5,
+      ranking_position: Math.max(200, existingAthletes.length + 120 + index),
+      market_status: 'livre',
+      status: 'active',
+      reputation: 3,
+      wealth: 1200,
+      generated_month: month,
+      generated_by: 'game-core-2.2',
+      generation_reason: 'retirement_replacement',
+      career_seasons: 0,
+      career_titles: 0,
+      career_wins: 0,
+      career_losses: 0,
+    });
 
-  await createWorldEvent({
-    event_date: currentDate,
-    date: currentDate,
-    title: `Nova promessa: ${profile.name}`,
-    description: `${profile.name}, de ${country}, entrou no circuito aos 17 anos e passa a integrar a nova geração profissional.`,
-    category: 'mercado',
-    event_type: 'new_prospect',
-    importance: potential >= 88 ? 'alta' : 'media',
-    athlete_id: profile.id,
-  });
-  return profile;
+    // eslint-disable-next-line no-await-in-loop
+    await createWorldEvent({
+      event_date: currentDate,
+      date: currentDate,
+      title: `Nova promessa: ${profile.name}`,
+      description: `${profile.name}, de ${country}, entrou no circuito aos ${age} anos e passa a integrar a nova geração profissional.`,
+      category: 'mercado',
+      event_type: 'new_prospect',
+      importance: potential >= 88 ? 'alta' : 'media',
+      athlete_id: profile.id,
+    });
+    created.push(profile);
+  }
+  return created;
 }
 
 export async function simulateWorldDay(profile, previousDate, currentDate) {
@@ -206,7 +236,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     return { profile, skipped: true, processed: 0, events: [], summary: null };
   }
 
-  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', ATHLETE_POPULATION_CAP)) || [];
   const activeAthletes = athletes.filter((athlete) => athleteStatus(athlete) !== 'retired');
   const events = [];
   let processed = 0;
@@ -273,10 +303,10 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
   }
 
-  let prospect = null;
+  let prospects = [];
   if (monthKey(previousDate) !== monthKey(currentDate)) {
-    prospect = await generateProspect(currentDate, athletes);
-    if (prospect) events.push(prospect);
+    prospects = await generateProspects(currentDate, athletes);
+    events.push(...prospects);
   }
 
   const summary = {
@@ -285,7 +315,8 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     injuries,
     improvements,
     earnings,
-    prospect_name: prospect?.name || null,
+    prospects_generated: prospects.length,
+    prospect_name: prospects[0]?.name || null,
   };
 
   let updatedProfile = profile;
@@ -301,7 +332,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
 
 export async function getWorldSimulationStatus(profile) {
   const date = profile?.career_date || new Date().toISOString().slice(0, 10);
-  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [];
+  const athletes = (await localGame.entities.AthleteProfile.list('ranking_position', ATHLETE_POPULATION_CAP)) || [];
   const active = athletes.filter((athlete) => athleteStatus(athlete) !== 'retired');
   return {
     date,

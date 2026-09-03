@@ -2,8 +2,13 @@ import { localGame } from '@/api/localGameClient.js';
 import { chooseTournament } from './TournamentSelectionAI.js';
 import { evaluateTournamentEntry, buildAthleteEntryContext, resolveEntryRank } from './EntryManager.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
+import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 
 const entities = /** @type {any} */ (localGame.entities);
+// Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
+// margem zero, e generateProspects (achado 2D.2, agora 5-6/mês) passa a
+// truncar já no primeiro mês em que a população cruzar 1000+1.
+const ATHLETE_POPULATION_CAP = WORLD_RANKING_TARGET + 100;
 
 const FINISH_POINTS = Object.freeze({ champion: 1, final: 0.72, semifinal: 0.52, quarterfinal: 0.34, r16: 0.20, r32: 0.12, entry: 0.04 });
 
@@ -132,7 +137,7 @@ function appendFinalHeadToHead(headToHeadByAthlete, winner, loser, tournament) {
 export async function resolveCompletedWorldTourEvents(careerDate) {
   const [allTournaments, rawAthletes, partnerships] = await Promise.all([
     entities.Tournament.list('-start_date', 300),
-    entities.AthleteProfile.list('-world_ranking_points', 1000),
+    entities.AthleteProfile.list('-world_ranking_points', ATHLETE_POPULATION_CAP),
     entities.Partnership.list('-created_date', 1200).catch(() => []),
   ]);
 

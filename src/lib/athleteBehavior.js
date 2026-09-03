@@ -4,6 +4,7 @@ import { getAllBotsAsProfiles } from '@/lib/bots';
 import { overallRating, ATTRIBUTE_KEYS } from '@/lib/padel';
 import { assignTraits, computeTraitEffects } from '@/lib/personalityTraits';
 import { evolveAthleteCareerMonth, seededHash } from '@/game-core/livingCircuitRules.js';
+import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 
 // ── Catalogs ────────────────────────────────────────────────────────────────
 
@@ -225,16 +226,22 @@ export async function updateRelationshipAfterMatch(winnerName, loserName) {
 
 // ── Monthly Evolution ───────────────────────────────────────────────────────
 
+// Fase 2E.1: com 200, 800 dos 1000 atletas nunca evoluíam nem envelheciam
+// — nenhum prospect subia, nenhum challenger emergia, e a Fase 2D
+// (aposentadoria por idade) nunca rodava pra eles. WORLD_RANKING_TARGET
+// (1000) cobre a população inteira; a folga de +50 é margem, não exatidão.
+const EVOLUTION_POPULATION_CAP = WORLD_RANKING_TARGET + 50;
+
 export async function evolveAthletesMonthly(date, { isYearBoundary = false } = {}) {
   let profiles = [];
   try {
-    profiles = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
+    profiles = await localGame.entities.AthleteProfile.list('-overall_rating', EVOLUTION_POPULATION_CAP);
   } catch {}
 
   if (!profiles || profiles.length === 0) {
     await ensureAthleteProfiles();
     await generateRelationships();
-    profiles = await localGame.entities.AthleteProfile.list('-overall_rating', 200);
+    profiles = await localGame.entities.AthleteProfile.list('-overall_rating', EVOLUTION_POPULATION_CAP);
     if (!profiles || profiles.length === 0) return;
   }
 

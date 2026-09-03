@@ -27,7 +27,6 @@
 // Reduza --proceduralAthletes/--proceduralTeams para iteração rápida; a
 // baseline oficial usa os valores de produção completos (970/486).
 import { writeFileSync, mkdirSync } from 'node:fs';
-import worldSeed from '../src/data/worldSeed2025.json' with { type: 'json' };
 
 const args = Object.fromEntries(process.argv.slice(2).map((v) => v.replace(/^--/, '').split('=')));
 const SEASONS = Math.max(1, Number(args.seasons || 5));
@@ -145,6 +144,8 @@ try {
   const { BOTS_BY_DIFFICULTY, BOT_DIFFICULTIES } = await vite.ssrLoadModule('/src/lib/bots.js');
   const { getRealAthletes } = await vite.ssrLoadModule('/src/players/realAthletes.js');
   const { evaluateTournamentEntry, buildAthleteEntryContext } = await vite.ssrLoadModule('/src/gameplay/worldTour/EntryManager.js');
+  const { getRealAthleteRegistry, getConfirmedRealPairs, getProbableRealPairs } = await vite.ssrLoadModule('/src/players/realAthleteRegistry.js');
+  const { teamKey } = await vite.ssrLoadModule('/src/lib/teamRanking.js');
 
   const seedInt = installDeterminism(SEED);
   console.log(`Seed: "${SEED}" (hash ${seedInt}) — Math.random e relógio determinísticos a partir daqui.`);
@@ -181,30 +182,58 @@ try {
   // Math.random/relógio já determinísticos (installDeterminism, acima)
   // fazem o PRÓPRIO fallback de produção gerar ids no MESMO formato real,
   // de forma reproduzível.
+  // Fase 2A/2B: os 100 reais vêm do registro canônico único, não mais de
+  // worldSeed2025.json (que parou de guardar athletes/teams). Fase 2F/2G:
+  // as duplas pré-existentes (6 confirmadas + 21 prováveis) são semeadas
+  // exatamente como saveFoundation.js faz em produção — team_key SEMPRE
+  // derivado dos ids REAIS pós-criação (teamKey canônico), nunca de uma
+  // string estática, e ai_partner_id/ai_partnership_protected setados
+  // reciprocamente pra que o mercado de parcerias já nasça ciente delas.
   const realAthleteIds = new Set();
   const realTeamKeys = new Set();
-  const botIdToAssignedId = new Map(); // bot_id/team_key (chave do seed) -> id real atribuído pelo makeId()
+  const botIdToAssignedId = new Map(); // bot_id (chave do registro) -> id real atribuído pelo makeId()
   const assignedIdToName = new Map();
-  for (const athlete of worldSeed.athletes) {
+  const botIdToRow = new Map();
+  for (const athlete of getRealAthleteRegistry()) {
     const created = await localGame.entities.AthleteProfile.create({ ...athlete });
     realAthleteIds.add(created.id);
     botIdToAssignedId.set(athlete.bot_id, created.id);
     assignedIdToName.set(created.id, created.name);
+    botIdToRow.set(athlete.bot_id, created);
   }
-  for (const team of worldSeed.teams) {
-    const created = await localGame.entities.TeamRanking.create({
-      ...team,
-      player1_id: botIdToAssignedId.get(team.player1_id) || team.player1_id,
-      player2_id: botIdToAssignedId.get(team.player2_id) || team.player2_id,
+
+  const seedPairs = [
+    ...getConfirmedRealPairs().map((pair) => ({ ...pair, locked: true })),
+    ...getProbableRealPairs().map((pair) => ({ ...pair, locked: false })),
+  ];
+  const historicalDuplas = [];
+  const pairAthleteUpdates = [];
+  for (const pair of seedPairs) {
+    const id1 = botIdToAssignedId.get(pair.a);
+    const id2 = botIdToAssignedId.get(pair.b);
+    const row1 = botIdToRow.get(pair.a);
+    const row2 = botIdToRow.get(pair.b);
+    if (!id1 || !id2 || !row1 || !row2) continue;
+    const chemistry = pair.locked ? 88 : 60;
+    const common = {
+      ai_partnership_status: 'ativa', ai_partnership_start_date: `${START_YEAR}-01-01`,
+      ai_partnership_chemistry: chemistry, ai_partnership_protected: pair.locked, market_status: 'contratado',
+    };
+    pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: pair.bName });
+    pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: pair.aName });
+    const key = teamKey(id1, id2);
+    const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
+    const createdTeam = await localGame.entities.TeamRanking.create({
+      team_key: key, player1_id: id1, player1_name: pair.aName, player1_country: row1.country,
+      player2_id: id2, player2_name: pair.bName, player2_country: row2.country,
+      ranking_points: points, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
+      season_id: String(START_YEAR), origin: pair.locked ? 'seed-confirmado' : 'seed-provavel',
     });
-    realTeamKeys.add(created.id);
+    realTeamKeys.add(createdTeam.id);
+    historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${pair.aName} & ${pair.bName}`, locked: pair.locked });
   }
-  const historicalDuplas = worldSeed.teams.map((team) => ({
-    team_key: team.team_key,
-    player1_id: botIdToAssignedId.get(team.player1_id) || team.player1_id,
-    player2_id: botIdToAssignedId.get(team.player2_id) || team.player2_id,
-    names: `${team.player1_name} & ${team.player2_name}`,
-  }));
+  if (pairAthleteUpdates.length) await localGame.entities.AthleteProfile.bulkUpdate(pairAthleteUpdates);
+
   const seededAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
   const seededTeams = await localGame.entities.TeamRanking.list('-ranking_points', 600);
   const supplementalFull = buildSupplementalRankingPopulation(seededAthletes, seededTeams);

@@ -25,7 +25,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { createServer } from 'vite';
-import worldSeed from '../src/data/worldSeed2025.json' with { type: 'json' };
+// Fase 2A/2B: worldSeed2025.json parou de guardar os atletas reais (agora
+// vêm do registro canônico único, src/data/realAthletesRegistry.json) —
+// o gate (a-2) abaixo passou a checar essa fonte.
+import realAthletesRegistry from '../src/data/realAthletesRegistry.json' with { type: 'json' };
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
@@ -86,12 +89,16 @@ try {
     const profile = await freshCareer('p3-fresh');
     gate('(a-1) PlayerProfile recém-criado tem race_points == 0 (sem valor herdado do Circuito)', (Number(profile.race_points) || 0) === 0);
 
-    // (a-2) A fonte estática (worldSeed2025.json): todo atleta/dupla "elite"
-    // nasce com race_points 0 — só ranking/world_ranking_points guardam o
-    // histórico acumulado (Circuito).
-    gate('(a-2) worldSeed2025.json: todos os athletes têm race_points == 0', worldSeed.athletes.every((a) => a.race_points === 0));
-    gate('(a-2) worldSeed2025.json: todas as teams têm race_points == 0', worldSeed.teams.every((t) => t.race_points === 0));
-    gate('(a-2) worldSeed2025.json preserva o histórico do Circuito (ranking_points/world_ranking_points > 0)', worldSeed.athletes.every((a) => a.world_ranking_points > 0) && worldSeed.teams.every((t) => t.ranking_points > 0));
+    // (a-2) A fonte canônica dos reais (realAthletesRegistry.json): todo
+    // atleta real nasce com race_points 0 — só world_ranking_points guarda
+    // o histórico acumulado (Circuito). Não existe mais um array estático
+    // de "teams" pra checar em paralelo (Fase 2F: team_key/duplas
+    // pré-existentes são derivados em saveFoundation.js a partir dos ids
+    // REAIS atribuídos na criação, nunca de uma linha estática) — o
+    // race_points:0 dessas duplas é um literal no próprio código de
+    // semeadura, coberto pelo smoke test de save-foundation.
+    gate('(a-2) realAthletesRegistry.json: todos os 100 reais têm race_points == 0', realAthletesRegistry.athletes.every((a) => a.race_points === 0));
+    gate('(a-2) realAthletesRegistry.json preserva o histórico do Circuito (world_ranking_points > 0)', realAthletesRegistry.athletes.every((a) => a.world_ranking_points > 0));
 
     // (a-3) A população suplementar procedural (buildSupplementalRankingPopulation):
     // mesma garantia, para o resto do universo competitivo (fora da elite nomeada).

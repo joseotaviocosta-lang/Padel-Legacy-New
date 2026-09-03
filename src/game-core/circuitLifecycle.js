@@ -8,6 +8,19 @@ import { localGame } from '@/api/localGameClient.js';
 // exatamente a mesma curva"); esta função só computa e escreve, nunca
 // mais reimplementa a regra.
 import { deriveAthleteCareerState, isAthleteRetired } from './livingCircuitRules.js';
+import { teamKey } from '@/lib/teamRanking.js';
+import { WORLD_RANKING_TARGET, TEAM_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+
+// Fase 2E.2/2E.4: os dois tetos abaixo cobriam só metade (ou menos) da
+// população de 1000 atletas / até 500 duplas possíveis — e de forma
+// PERMANENTE, não só truncada: este é o MESMO processo (processWorldCircuit)
+// que LÊ pelo corte de ranking_position/ranking_points e DEPOIS escreve de
+// volta só pra quem foi lido — quem cai fora nunca mais é recalculado e
+// fica excluído para sempre. Confirmado ao investigar o achado #2F (a
+// mesma função já precisava do teamKey canônico pra não duplicar linha de
+// TeamRanking). Os tetos agora cobrem a população/duplas inteiras com folga.
+const ATHLETE_POPULATION_CAP = WORLD_RANKING_TARGET + 100;
+const TEAM_POPULATION_CAP = TEAM_RANKING_TARGET + 100;
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -63,7 +76,7 @@ async function createWorldEvent(payload) {
 async function updateTeamRankings(athletes, currentDate) {
   if (!localGame.entities?.TeamRanking?.list || !localGame.entities?.TeamRanking?.create) return { processed: 0 };
   const byId = new Map(athletes.map((athlete) => [athlete.id, athlete]));
-  const existing = (await localGame.entities.TeamRanking.list('-ranking_points', 500)) || [];
+  const existing = (await localGame.entities.TeamRanking.list('-ranking_points', TEAM_POPULATION_CAP)) || [];
   const byKey = new Map(existing.map((team) => [team.team_key, team]));
   const processed = new Set();
   // Cada par de dupla gerava seu próprio create/update individual. Acumula
@@ -73,7 +86,11 @@ async function updateTeamRankings(athletes, currentDate) {
   for (const athlete of athletes) {
     const partnerId = athlete.ai_partner_id;
     if (!partnerId || !byId.has(partnerId)) continue;
-    const key = [athlete.id, partnerId].sort().join('_');
+    // Fase 2F: team_key precisa ser SEMPRE derivado assim (ids reais,
+    // ordenados) — inclusive na semeadura das duplas históricas
+    // (saveFoundation.js), senão a mesma dupla ganha uma segunda linha de
+    // TeamRanking na primeira vez que este laço rodar (achado #2F).
+    const key = teamKey(athlete.id, partnerId);
     if (processed.has(key)) continue;
     processed.add(key);
     const partner = byId.get(partnerId);
@@ -108,7 +125,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     return { profile, skipped: true, week: currentWeek, athletesProcessed: 0, events: [] };
   }
 
-  const athletes = ((await localGame.entities.AthleteProfile.list('ranking_position', 500)) || [])
+  const athletes = ((await localGame.entities.AthleteProfile.list('ranking_position', ATHLETE_POPULATION_CAP)) || [])
     .filter((athlete) => athlete?.id && !isRetired(athlete));
 
   // Ranking é uma ladder global: processar só os 160 maiores OVR deixava
