@@ -139,13 +139,71 @@ seção é a correção oficial da justificativa daqui em diante.
 
 ## 4 — Nova referência congelada
 
-_[preenchido após o regime-check em background]_
+Feito. Detalhes completos em
+[BASELINE-PRE-FASE3-CONGELADA.md](BASELINE-PRE-FASE3-CONGELADA.md) —
+resumo:
+
+- **1 temporada** (não 5 — ver item 5 abaixo pra por quê), seed
+  `official-900-100-s1`, 900 procedurais + 100 reais, congelada em
+  [docs/baseline-pre-fase3.json](../../docs/baseline-pre-fase3.json) /
+  [-season-tier.md](../../docs/baseline-pre-fase3-season-tier.md).
+- **Baseline antiga arquivada, não sobrescrita**:
+  `docs/baseline-pre-refactor.json` (970 bots + 24 reais) ganhou uma nota
+  (`_archived_note` no JSON + aviso no `.md`) explicando que é o registro
+  do estado pré-Fase-2 e não é comparável numericamente à nova.
+- **Números de partida pra Fase 3**: 13/32 (40,6%) chaves incompletas ·
+  31/32 campeões 100%-reais, 1 misto · 19/20 reais no top 20 · 13/100
+  reais nunca jogaram na temporada · #1000 elegível para 13/32 torneios,
+  maior intervalo 42 dias.
 
 ---
 
-## 5 — Regime-check de 5 temporadas: rotatividade dos reais ausentes
+## 5 — Regime-check de 5 temporadas: adiado, não executado
 
-_[preenchido após o regime-check em background]_
+**Tentativa real, não pulada por precaução**: rodei o regime-check de 5
+temporadas (mesma seed `official-900-100-s1`, 900 procedurais + 100
+reais) antes de decidir qualquer coisa. A temporada 1 fechou normalmente
+(13/100 reais não jogaram nela, 19/20 no top 20, 13/32 chaves
+incompletas) — mas o processo **travou durante a temporada 2** com
+`FATAL ERROR: Reached heap limit — JavaScript heap out of memory`.
+Como o harness só grava `summary.json`/`tournament-results.csv`/
+`season-tier-table.md` no disco UMA VEZ, ao final de TODAS as temporadas
+(`writeFileSync`, só depois do laço completo) — o crash no meio da
+temporada 2 significa que **nada desta rodada de 5 temporadas foi
+persistido**; os números de temporada 1 só existem no log de console,
+não em arquivo.
+
+O harness já documentava (comentário "Fase 0.1, achado C") que o mesmo
+tipo de crash acontece "~3 temporadas" por acúmulo de `WorldEvent`/
+`CareerMessage`/`TeamRanking`/`Partnership` sem poda — e já tem uma
+mitigação parcial (poda essas 4 coleções todo mês). **Desta vez travou
+na temporada 2, mais cedo que o já documentado** — explicado pela própria
+Fase 2.6: a vazão de mercado corrigida forma/dissolve dezenas de pares
+por mês (antes: ~1), e a Fase 2.6 também introduziu `AthleteCareerLegacy`,
+uma coleção que cresce pra sempre por design (é o registro permanente —
+podá-la destruiria o propósito do item). Mais dado por temporada,
+antecipa o limite de memória.
+
+**Decisão (do usuário, durante a execução): não insistir agora.** O
+argumento é o próprio achado #18 desta fase: cada escrita clona o save
+inteiro, e é exatamente esse mecanismo que faz 5 temporadas custarem
+desproporcionalmente mais que 5× uma. Rodar o regime-check completo AGORA
+seria pagar o preço máximo (a medição mais cara desta auditoria inteira)
+sobre um comportamento que a correção do #18 vai mudar de qualquer jeito —
+e ainda por cima sem sequer completar, dado o crash de memória. **Depois
+da correção do #18 (agendada para antes da Fase 4), a mesma rodada tende
+a custar uma fração do que custaria agora, e a medição passa a valer o
+esforço.**
+
+**Fica registrado, pronto pra quando fizer sentido**: a instrumentação de
+rotatividade (item 5 do pedido — lista nominal de reais que não jogaram
+EM CADA temporada + interseção entre temporadas, pra distinguir
+rotatividade normal de exclusão permanente) já está implementada no
+harness (`scripts/audit-real-athletes-simulation.mjs`,
+`realAthletesNeverPlayedThisSeason` por temporada +
+`cumulative.realAthletesNeverPlayedRotation` com união/interseção) —
+não precisa ser escrita de novo, só rodada quando o regime-check
+acontecer.
 
 ---
 
