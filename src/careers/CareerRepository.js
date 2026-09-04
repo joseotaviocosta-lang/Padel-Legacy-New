@@ -174,6 +174,70 @@ export class CareerRepository {
     return this.storage.writeJson(path, data, { backup: false, validate: false });
   }
 
+  /**
+   * Fase 2.9, item 1B (achado #20) — este é um segundo, SEPARADO acúmulo de
+   * backups do mesmo formato "criar, nunca remover": `writeBackup` (usado
+   * pelo botão manual do BetaTools e pelo backup de segurança antes de
+   * `applySafeRepairs`) grava em `career_backups/career-<id>/backup-<ts>.json`
+   * sem NENHUMA rotação — diferente do backup automático por escrita do
+   * `GameStorage` (que ganhou rotação acima), esta pasta cresce a cada clique.
+   * Reaproveita `BackupManager.pruneOldBackups` com um matcher próprio (aqui
+   * não há prefixo — a pasta já é escopada por carreira).
+   */
+  async pruneBackups(careerId, { maxBackups = 3, caller = 'CareerRepository.pruneBackups' } = {}) {
+    await this.initialize();
+    const folder = await this.backupDirectory(careerId);
+    if (!(await this.storage.exists(folder))) {
+      return { kept: 0, removed: 0, removedBytes: 0 };
+    }
+    return this.storage.backupManager.pruneOldBackups(folder, null, {
+      maxBackups,
+      caller,
+      matches: (name) => name.startsWith('backup-') && name.endsWith('.json'),
+    });
+  }
+
+  /**
+   * O índice de carreiras (`careers-index.json`) é gravado com
+   * `backup:true` a cada criar/carregar/salvar/excluir carreira — MAIS
+   * frequente que a gravação de qualquer carreira individual — e vive no
+   * MESMO diretório flat de backups que o achado #20 original. Sem isto,
+   * uma instalação antiga teria centenas de backups do índice nunca
+   * varridos, mesmo depois da carreira específica já estar limpa.
+   */
+  async pruneIndexBackups({ maxBackups = 3, caller = 'CareerRepository.pruneIndexBackups' } = {}) {
+    return this.storage.pruneBackupsFor(CAREER_INDEX_FILE_NAME, { maxBackups, caller });
+  }
+
+  /**
+   * Fase 2.9, item 1B (achado #20) — poda os TRÊS acúmulos de backup com o
+   * mesmo formato "criar, nunca remover": (A) o backup automático por
+   * escrita do `GameStorage` pro arquivo da carreira (achado #20 original,
+   * agora rotacionado por padrão de nome), (B) a pasta de backup manual por
+   * carreira do `CareerRepository` (botão do BetaTools + backup de
+   * segurança antes de `applySafeRepairs`, nunca teve rotação nenhuma) e
+   * (C) o backup automático do ÍNDICE de carreiras (mesmo mecanismo de A,
+   * mas um arquivo global, não por carreira). Ponto único reaproveitado
+   * tanto pela varredura silenciosa no carregamento da carreira
+   * (`CareerManager.loadCareer`) quanto pela ação manual de limpeza no
+   * BetaTools.
+   */
+  async pruneAllBackups(careerId, { maxBackups = 3 } = {}) {
+    const [automatic, manual, index] = await Promise.all([
+      this.storage.pruneCareerBackups(careerId, { maxBackups, caller: 'CareerRepository.pruneAllBackups:automatic' }),
+      this.pruneBackups(careerId, { maxBackups, caller: 'CareerRepository.pruneAllBackups:manual' }),
+      this.pruneIndexBackups({ maxBackups, caller: 'CareerRepository.pruneAllBackups:index' }),
+    ]);
+    return {
+      automatic,
+      manual,
+      index,
+      removed: automatic.removed + manual.removed + index.removed,
+      removedBytes: automatic.removedBytes + manual.removedBytes + index.removedBytes,
+      kept: automatic.kept + manual.kept + index.kept,
+    };
+  }
+
   async deleteBackupFolder(careerId) {
     const folder = await this.backupDirectory(careerId);
     const exists = await this.storage.exists(folder);

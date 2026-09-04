@@ -4,6 +4,7 @@ import { getAvailablePartners, getPartnerBot, canChangePartner, daysUntilPartner
 import { getRelationshipEffects, getOrCreateRelationship, getPartnerChemistryBonus } from '@/lib/relationships';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 import { applyPartnerBondEvent, derivePartnershipIdentity, getPartnerConversationEffect } from '@/lib/partnerBondSystem.js';
+import { teamKey } from '@/lib/teamRanking.js';
 
 // ─── Compatibility Calculation ──────────────────────────────────────────────
 // Computes a 0-100 compatibility score with per-factor breakdown.
@@ -112,15 +113,130 @@ export async function getActivePartnership(profileId) {
   } catch { return null; }
 }
 
+// Fase 2.9, item 1/2/3 (achado #21) — resumo permanente de uma parceria
+// dissolvida, gravado ANTES de qualquer poda (mesmo padrão de
+// AthleteCareerLegacy, Fase 2.6). `original_partnership_id` fica
+// preservado de propósito: se algum dia um Tournament.champion_partnership_id
+// precisar resolver uma dupla que já dissolveu (item 3 — grep confirmou
+// que WorldTourLifecycle.js grava esse id, mas nenhuma tela de produção o
+// lê de volta hoje), o id original continua rastreável aqui mesmo depois
+// que a linha viva de Partnership for removida pela poda com carência
+// (worldSimulationLifecycle.js:pruneOldDissolvedPartnerships).
+export function buildPartnershipLegacyRow(partnership, { profileId = null } = {}) {
+  const p = partnership || {};
+  return {
+    original_partnership_id: p.id || null,
+    profile_id: profileId,
+    involves_player: Boolean(profileId),
+    athlete_a_id: p.athlete_a_id || p.profile_id || null,
+    athlete_b_id: p.athlete_b_id || p.partner_bot_id || null,
+    athlete_a_name: p.athlete_a_name || null,
+    athlete_b_name: p.athlete_b_name || p.partner_name || null,
+    partner_name: p.partner_name || p.athlete_b_name || null,
+    partner_country: p.partner_country || null,
+    started_career_date: p.started_career_date || null,
+    ended_career_date: p.ended_career_date || null,
+    shared_matches: Number(p.shared_matches || 0),
+    shared_wins: Number(p.shared_wins || 0),
+    shared_losses: Number(p.shared_losses || 0),
+    shared_tournaments: Number(p.shared_tournaments || 0),
+    shared_titles: Number(p.shared_titles || 0),
+    chemistry: Number(p.chemistry || 0),
+    status: p.status || 'expirada',
+    end_reason: p.end_reason || null,
+  };
+}
+
+// Fase 2.9, item 4 (achado #21) — decisão de comportamento, não de faxina:
+// team_key é derivado dos ids ordenados dos dois atletas (Fase 2B), então
+// uma dupla que se separa e volta a se formar gera a MESMA chave. Apagar
+// aqui significa que ela recomeça do zero em pontos ao reformar — igual ao
+// circuito real, onde uma dupla refeita não herda ranking anterior. Nada
+// no código lê uma linha de TeamRanking de uma dupla dissolvida por id ou
+// histórico (só por team_key "ao vivo" ou em listagens do líder do
+// momento — grep confirmado), então, diferente de Partnership, não há
+// risco de referência quebrada em deletar imediatamente.
+export async function deleteTeamRankingForPair(athleteAId, athleteBId) {
+  if (!athleteAId || !athleteBId) return 0;
+  try {
+    const key = teamKey(athleteAId, athleteBId);
+    const rows = (await localGame.entities.TeamRanking.filter({ team_key: key }).catch(() => [])) || [];
+    for (const row of rows) {
+      await localGame.entities.TeamRanking.delete(row.id).catch(() => {});
+    }
+    return rows.length;
+  } catch (error) {
+    console.error('deleteTeamRankingForPair', error);
+    return 0;
+  }
+}
+
+// Fase 2.9, item 1 — migração idempotente: carreiras em andamento já têm
+// parcerias dissolvidas gravadas como status !== 'ativa' na coleção viva,
+// de ANTES de PartnershipLegacy existir. Sem isto, reapontar
+// getPartnershipHistory para a nova coleção faz esse histórico sumir da
+// tela (PartnerHub fica vazio pra tudo que aconteceu antes da mudança).
+// Idempotente por construção: só migra uma linha viva cujo id ainda não
+// aparece como `original_partnership_id` em nenhuma linha de legado já
+// existente — rodar de novo não duplica nada.
+export async function migratePartnershipHistory(profileId) {
+  if (!profileId) return { migrated: 0 };
+  try {
+    const [liveHistory, existingLegacy] = await Promise.all([
+      localGame.entities.Partnership.filter({ profile_id: profileId }, '-started_career_date', 200).catch(() => []),
+      localGame.entities.PartnershipLegacy.filter({ profile_id: profileId }, null, 200).catch(() => []),
+    ]);
+    const alreadyMigrated = new Set((existingLegacy || []).map((row) => row.original_partnership_id).filter(Boolean));
+    const toMigrate = (liveHistory || []).filter((p) => p.status !== 'ativa' && !alreadyMigrated.has(p.id));
+    if (!toMigrate.length) return { migrated: 0 };
+    const rows = toMigrate.map((p) => buildPartnershipLegacyRow(p, { profileId }));
+    await localGame.entities.PartnershipLegacy.bulkCreate(rows);
+    return { migrated: rows.length };
+  } catch (error) {
+    console.error('migratePartnershipHistory', error);
+    return { migrated: 0, error: error?.message };
+  }
+}
+
 export async function getPartnershipHistory(profileId) {
   if (!profileId) return [];
   try {
-    const list = await localGame.entities.Partnership.filter(
+    // Migração roda antes de toda leitura (idempotente e barata quando já
+    // não há nada pendente — 2 filters, sem escrita) em vez de um hook
+    // separado de "carga da carreira": a entidade `localGame.entities.*` só
+    // fica utilizável depois que a carreira já está ativa
+    // (gameRepository.setActiveCareer), não no load bruto do arquivo
+    // (CareerManager.loadCareer). Migrar em toda leitura (aqui e em
+    // getFullPartnershipTimeline, abaixo) garante que NENHUM consumidor
+    // renderize um histórico incompleto, mesmo que a página que primeiro
+    // dispara a migração não seja sempre a mesma.
+    await migratePartnershipHistory(profileId);
+    const list = await localGame.entities.PartnershipLegacy.filter(
       { profile_id: profileId },
       '-started_career_date', 50
     );
-    return (list || []).filter(p => p.status !== 'ativa');
+    return list || [];
   } catch { return []; }
+}
+
+// Fase 2.9, item 1 (achado #21) — Legacy.jsx/Press.jsx liam
+// `Partnership.filter({profile_id})` direto da coleção viva pra montar a
+// timeline de carreira (buildCareerTimeline/describePartnershipHistory) —
+// MESMO risco de "some da tela" que getPartnershipHistory tinha, só que
+// sem nenhuma migração por trás. Une a parceria ativa (se houver, ainda na
+// coleção viva — nunca podada) com o histórico dissolvido (via
+// getPartnershipHistory, já migrado) — mesmo formato de linha nos dois
+// casos (buildPartnershipLegacyRow cobre todos os campos que
+// describePartnershipHistory/buildCareerTimeline leem: partner_name,
+// shared_matches/wins/titles, started_career_date, ended_career_date,
+// status).
+export async function getFullPartnershipTimeline(profileId) {
+  if (!profileId) return [];
+  const [active, dissolved] = await Promise.all([
+    getActivePartnership(profileId),
+    getPartnershipHistory(profileId),
+  ]);
+  return active ? [active, ...dissolved] : dissolved;
 }
 
 export async function startPartnership(profile, bot, durationDays = 60, prizeSplit = 50) {
@@ -226,6 +342,24 @@ export async function endPartnership(partnershipId, endStatus, reason, endedCare
         contracted_to_profile_id: null,
         market_status: 'livre',
       }).catch(() => null);
+    }
+    // Fase 2.9, item 2 (achado #21) — endPartnership só é chamado pra
+    // parcerias do JOGADOR (todo call site passa o id de getActivePartnership),
+    // então grava legado sempre, sem checar is_real. Feito ANTES da poda com
+    // carência de worldSimulationLifecycle.js:pruneOldDissolvedPartnerships,
+    // mesmo padrão de AthleteCareerLegacy.
+    await localGame.entities.PartnershipLegacy.create(
+      buildPartnershipLegacyRow(
+        { ...p, status: endStatus, end_reason: reason, ended_career_date: careerDate },
+        { profileId: p.profile_id || null },
+      ),
+    ).catch((error) => console.error('PartnershipLegacy.create', error));
+    // Item 4 (achado #21): TeamRanking da dupla desfeita — ver justificativa
+    // completa em deleteTeamRankingForPair.
+    const athleteAId = p.athlete_a_id || p.profile_id;
+    const athleteBId = p.athlete_b_id || p.partner_bot_id;
+    if (athleteAId && athleteBId) {
+      await deleteTeamRankingForPair(athleteAId, athleteBId);
     }
     return updated;
   } catch (e) { console.error('endPartnership', e); return null; }

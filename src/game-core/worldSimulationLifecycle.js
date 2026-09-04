@@ -170,6 +170,33 @@ async function pruneOldRetiredAthletes(currentDate) {
   return toDelete.length;
 }
 
+// Fase 2.9, item 2/3 (achado #21) — Partnership dissolvida SÓ marca status
+// (nunca removia, mesmo padrão de AthleteProfile antes desta função
+// existir). Diferente de AthleteProfile, apagar uma Partnership NA HORA da
+// dissolução não é seguro: grep (item 3) encontrou
+// Tournament.champion_partnership_id/runner_up_partnership_id
+// (WorldTourLifecycle.js) guardando o id de QUEM VENCEU um torneio — se
+// essa dupla se desfizer depois, apagar a linha na hora quebraria a
+// atribuição do título retroativamente (hoje só o harness de auditoria lê
+// esse id de volta, mas o campo é de produção). Por isso a exclusão aqui é
+// um soft-delete DE VERDADE, com a mesma carência generosa de 24 meses de
+// pruneOldRetiredAthletes — folga muito maior que qualquer leitura
+// plausível desse id (resultado do torneio já foi lido/gravado como texto
+// denormalizado em Tournament.champion havia muito tempo). Não distingue
+// jogador/atleta real/bot-bot: quem precisava de história legível já tem
+// PartnershipLegacy (endPartnership/aiPartnershipLifecycle.js) ANTES desta
+// poda rodar.
+const PARTNERSHIP_LIST_CAP = 20000; // folga generosa — mesmo teto usado pela poda do harness de auditoria (scripts/audit-real-athletes-simulation.mjs)
+
+async function pruneOldDissolvedPartnerships(currentDate) {
+  const cutoff = addDays(currentDate, -PRUNE_RETIRED_AFTER_DAYS);
+  const allRows = (await localGame.entities.Partnership.list(null, PARTNERSHIP_LIST_CAP).catch(() => [])) || [];
+  const toDelete = allRows.filter((row) => row.status !== 'ativa' && row.ended_career_date && row.ended_career_date < cutoff);
+  if (!toDelete.length) return 0;
+  await localGame.batch(toDelete.map((row) => ({ type: 'delete', entityName: 'Partnership', id: row.id })));
+  return toDelete.length;
+}
+
 // Fase 2D.2: generateProspect gerava no máximo 1/mês (uma chamada, atrás de
 // um dado de 10%) — insuficiente por uma ordem de grandeza pra repor uma
 // população de 1000 com aposentadoria ativa (Fase 2D.1: carreira média
@@ -361,11 +388,19 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
 
   let prospects = [];
   let prunedRetired = 0;
+  let prunedPartnerships = 0;
   if (monthKey(previousDate) !== monthKey(currentDate)) {
     prospects = await generateProspects(currentDate, athletes, profile);
     events.push(...prospects);
     prunedRetired = await pruneOldRetiredAthletes(currentDate).catch((error) => {
       console.warn('[Game Core] Poda de aposentados antigos falhou:', error?.message || error);
+      return 0;
+    });
+    // Fase 2.9, item 2/3/4 (achado #21): mesma carência de 24 meses,
+    // mesmo gatilho mensal — ver justificativa completa em
+    // pruneOldDissolvedPartnerships, acima.
+    prunedPartnerships = await pruneOldDissolvedPartnerships(currentDate).catch((error) => {
+      console.warn('[Game Core] Poda de parcerias dissolvidas antigas falhou:', error?.message || error);
       return 0;
     });
   }
@@ -379,6 +414,7 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
     prospects_generated: prospects.length,
     prospect_name: prospects[0]?.name || null,
     retired_pruned: prunedRetired,
+    dissolved_partnerships_pruned: prunedPartnerships,
   };
 
   let updatedProfile = profile;

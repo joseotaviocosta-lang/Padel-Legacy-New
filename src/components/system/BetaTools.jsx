@@ -174,6 +174,29 @@ export default function BetaTools({ compact = false }) {
     }
   }
 
+  // Fase 2.9, item 1B (achado #20) — limpeza manual, além da varredura
+  // silenciosa que já roda a cada carregamento de carreira. Útil pra quem
+  // quer confirmar/forçar a limpeza sem trocar de tela (fechar e reabrir a
+  // carreira já dispara a varredura automática sozinha).
+  async function pruneOldBackups() {
+    if (!activeCareer?.career_id) return;
+    setSaveStatus('Limpando backups antigos…');
+    try {
+      const result = await careerRepository.pruneAllBackups(activeCareer.career_id, { maxBackups: 3 });
+      const backups = await careerRepository.listBackupFiles(activeCareer.career_id);
+      setBackupCount(backups.length);
+      const mb = (result.removedBytes / (1024 * 1024)).toFixed(1);
+      setSaveStatus(
+        result.removed > 0
+          ? `${result.removed} backup(s) antigo(s) removido(s) (~${mb} MB liberados). ${result.kept} mantido(s).`
+          : 'Nenhum backup antigo pra remover — já está no limite.',
+      );
+    } catch (error) {
+      console.error('Falha ao limpar backups antigos', error);
+      setSaveStatus(`Falha ao limpar backups: ${error?.message || 'erro desconhecido'}`);
+    }
+  }
+
   async function runWorldHealthAudit() {
     setHealthStatus('Analisando o universo…');
     try {
@@ -499,6 +522,7 @@ export default function BetaTools({ compact = false }) {
                   <div className="grid gap-2 sm:grid-cols-2">
                     <button type="button" disabled={!activeCareer?.career_id} onClick={createManualBackup} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary disabled:opacity-40"><HardDrive className="h-4 w-4" /> Criar backup interno</button>
                     <button type="button" disabled={!activeCareer?.career_id} onClick={exportActiveSave} className="inline-flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-40"><Download className="h-4 w-4" /> Exportar save</button>
+                    <button type="button" disabled={!activeCareer?.career_id} onClick={pruneOldBackups} className="inline-flex items-center justify-center gap-2 rounded-xl border border-border px-4 py-3 text-sm font-bold hover:bg-secondary disabled:opacity-40 sm:col-span-2"><Trash2 className="h-4 w-4" /> Limpar backups antigos</button>
                   </div>
                   {saveStatus && <p className="rounded-xl border border-border bg-background/45 p-3 text-xs text-muted-foreground">{saveStatus}</p>}
                   <p className="text-xs text-muted-foreground">A restauração não é automática nesta tela para evitar sobrescrever uma carreira por engano. O arquivo exportado pode ser usado pela ferramenta de importação do gerenciador de carreiras.</p>

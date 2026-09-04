@@ -156,11 +156,32 @@ export class CareerManager {
       registerBetaDiagnostic({ type: 'CAREER_INDEX_UPDATE', careerId, operation: 'load' });
       registerBetaDiagnostic({ type: 'CAREER_LOAD_SUCCESS', careerId, saveVersion: careerData.save_version });
 
+      // Fase 2.9, item 1B (achado #20) — varredura silenciosa, best-effort:
+      // instalações que já testaram versões anteriores (antes da rotação
+      // por padrão de nome existir) têm centenas/milhares de arquivos de
+      // backup acumulados que a correção da rotação, sozinha, NUNCA
+      // removeria (ela só evita acúmulo NOVO). Roda uma vez por
+      // carregamento de carreira; uma falha aqui não pode impedir o
+      // carregamento em si.
+      this.pruneCareerBackups(careerId).catch((error) => {
+        registerBetaDiagnostic({ type: 'CAREER_BACKUP_SWEEP_FAILURE', careerId, message: error?.message, code: error?.code });
+      });
+
       return careerData;
     } catch (error) {
       registerBetaDiagnostic({ type: 'CAREER_LOAD_FAILURE', careerId, message: error?.message, code: error?.code });
       throw error;
     }
+  }
+
+  /**
+   * Fase 2.9, item 1B (achado #20) — poda os DOIS acúmulos de backup
+   * (automático por escrita + manual por carreira). Ver
+   * `CareerRepository.pruneAllBackups` para o detalhe; exposto aqui pra
+   * quem só tem acesso ao `CareerManager` (ex.: `loadCareer` acima).
+   */
+  async pruneCareerBackups(careerId, { maxBackups = 3 } = {}) {
+    return this.repository.pruneAllBackups(careerId, { maxBackups });
   }
 
   async saveCareer(careerId, careerData, {

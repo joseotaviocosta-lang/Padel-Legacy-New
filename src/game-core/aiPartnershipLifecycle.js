@@ -2,7 +2,9 @@ import { localGame } from '@/api/localGameClient.js';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
 import { careerDaysBetween, isAthleteRetired, partnershipRecordId, seededChance, seededInteger } from './livingCircuitRules.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
-import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+import { WORLD_RANKING_TARGET, TEAM_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+import { teamKey } from '@/lib/teamRanking.js';
+import { buildPartnershipLegacyRow } from '@/lib/partnershipSystem.js';
 
 // Fase 2E.2: 500 excluía metade da população de 1000 — e de forma
 // PERMANENTE, não só truncada: quem cai fora do corte de ranking_position
@@ -12,6 +14,10 @@ import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 // pelo MESMO corte — acompanhar `POPULATION_LIST_CAP` em circuitLifecycle.js).
 // O teto agora cobre a população inteira com folga; ninguém fica de fora.
 const POPULATION_LIST_CAP = WORLD_RANKING_TARGET + 100;
+// Fase 2.9, item 3/4: mesmo teto usado em circuitLifecycle.js — cobre a
+// população de duplas inteira com folga, pra achar a linha de TeamRanking
+// de QUALQUER par que esteja se dissolvendo, não só os mais bem rankeados.
+const TEAM_POPULATION_CAP = TEAM_RANKING_TARGET + 100;
 
 const entities = /** @type {any} */ (localGame.entities);
 
@@ -188,6 +194,22 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
   const processedPairs = new Set();
   const events = [];
   let dissolved = 0;
+  // Fase 2.9, item 4 (achado #21) — TeamRanking da dupla desfeita é
+  // decisão de comportamento, não faxina: apagado aqui pra que uma dupla
+  // reformada (mesma team_key, Fase 2B: derivada dos ids ordenados) volte
+  // do zero em pontos, como no circuito real. Pré-busca ÚNICA (não uma
+  // query por par dissolvido) — só leituras não disparam o clone-por-
+  // transação do achado #18, mas ainda evita N idas ao repositório.
+  let teamRankingByKey = null;
+  async function findTeamRankingRow(idA, idB) {
+    if (!teamRankingByKey) {
+      const rows = (await entities.TeamRanking.list(null, TEAM_POPULATION_CAP).catch(() => [])) || [];
+      teamRankingByKey = new Map(rows.map((row) => [row.team_key, row]));
+    }
+    return teamRankingByKey.get(teamKey(idA, idB)) || null;
+  }
+  const legacyRows = [];
+  const teamRankingDeleteOps = [];
   // Fase 1.5 (achado #5 da Fase 0.3): todo par ATIVO pagava 2 escritas
   // individuais aqui TODO mês — mesmo quando nada muda além do contador de
   // meses juntos. Cada updateAthlete()/entities.Partnership.update()
@@ -284,6 +306,32 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
       });
     }
     dissolved += 1;
+
+    // Fase 2.9, item 2 (achado #21) — legado permanente só quando a dupla
+    // envolve o jogador OU um atleta real (nunca bot-bot: ~150
+    // dissoluções/ano, ninguém lê esse histórico — getPartnershipHistory
+    // filtra por profile_id do JOGADOR — e viraria uma coleção sem teto
+    // dentro do save clonado a cada transação, achado #18). O registro
+    // narrativo de dissoluções bot-bot já existe como WorldEvent, acima.
+    const endReason = retirementEnd ? 'aposentadoria' : contractExpired ? 'fim de contrato sem renovação' : chemistry < 45 ? 'incompatibilidade e resultados ruins' : 'fim natural de ciclo';
+    if (canonical?.id && (athlete.is_real || partner.is_real)) {
+      legacyRows.push(buildPartnershipLegacyRow(
+        { ...canonical, status: 'encerrada_parceiro', end_reason: endReason, ended_career_date: currentDate },
+        { profileId: null },
+      ));
+    }
+
+    // Fase 2.9, item 4 (achado #21) — TeamRanking apagado na dissolução
+    // (ver comentário no topo da função): decisão de comportamento, não de
+    // limpeza. Aplica a TODA dupla dissolvida (bot-bot inclusive) — nada no
+    // código lê uma linha de TeamRanking por id/histórico (só por
+    // team_key "ao vivo" ou em listagens do líder do momento), então
+    // diferente de Partnership, aqui não há risco de referência quebrada.
+    const teamRankingRow = await findTeamRankingRow(athlete.id, partner.id);
+    if (teamRankingRow?.id) {
+      teamRankingDeleteOps.push({ type: 'delete', entityName: 'TeamRanking', id: teamRankingRow.id });
+    }
+
     const event = await createWorldEvent({
       event_date: currentDate,
       date: currentDate,
@@ -300,6 +348,8 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
 
   if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
   if (partnershipUpdates.length) await entities.Partnership.bulkUpdate(partnershipUpdates);
+  if (legacyRows.length) await entities.PartnershipLegacy.bulkCreate(legacyRows).catch((error) => console.error('PartnershipLegacy.bulkCreate', error));
+  if (teamRankingDeleteOps.length) await localGame.batch(teamRankingDeleteOps).catch((error) => console.error('TeamRanking delete batch (dissolução)', error));
 
   return { dissolved, events };
 }

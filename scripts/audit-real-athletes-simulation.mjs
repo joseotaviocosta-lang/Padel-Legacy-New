@@ -122,7 +122,32 @@ class MemoryStorage {
   async remove(p) { return this.files.delete(p); }
   async rename(s, d) { this.files.set(d, this.files.get(s)); this.files.delete(s); return d; }
   async copy(s, d) { this.files.set(d, this.files.get(s)); return d; }
-  async list(dir = '.') { return [...this.files.keys()]; }
+  // Fase 2.9, item 1 (achado #20): antes retornava TODAS as chaves como
+  // strings cruas, ignorando `dir` — divergia do contrato real do
+  // `TauriStorage.list()` (readDir do Tauri: entradas {name, isDirectory},
+  // escopadas ao diretório pedido, não-recursivo). `GameStorage` já depende
+  // desse contrato (`tryRestoreFromBackup`, e agora `pruneOldBackups`) —
+  // com a implementação antiga, o teste de rotação passaria aqui mas a
+  // produção continuaria vazando, porque o storage real nunca se comporta
+  // assim.
+  async list(dir = '.') {
+    const normalizedDir = dir.replace(/\/+$/, '');
+    const prefix = normalizedDir === '' || normalizedDir === '.' ? '' : `${normalizedDir}/`;
+    const entries = new Map();
+    for (const filePath of this.files.keys()) {
+      if (prefix && !filePath.startsWith(prefix)) continue;
+      const rest = prefix ? filePath.slice(prefix.length) : filePath;
+      if (!rest || rest.includes('/')) continue;
+      entries.set(rest, { name: rest, isDirectory: false });
+    }
+    for (const dirPath of this.directories) {
+      if (prefix && !dirPath.startsWith(prefix)) continue;
+      const rest = prefix ? dirPath.slice(prefix.length) : dirPath;
+      if (!rest || rest.includes('/')) continue;
+      if (!entries.has(rest)) entries.set(rest, { name: rest, isDirectory: true });
+    }
+    return [...entries.values()];
+  }
   async stat(p) { return { size: this.files.get(p)?.length || 0 }; }
 }
 
@@ -151,7 +176,16 @@ try {
   console.log(`Seed: "${SEED}" (hash ${seedInt}) — Math.random e relógio determinísticos a partir daqui.`);
 
   // ═══════════════ Setup: carreira sintética só para ter storage/entities ═══════════════
-  const manager = new CareerManager(new CareerRepository(new GameStorage(new MemoryStorage())));
+  // Fase 2.8, item 1 — DIAGNÓSTICO TEMPORÁRIO: guarda a referência do
+  // MemoryStorage bruto (não exposta pelas camadas acima) pra
+  // DIAG_SIZES poder inspecionar diretamente quantos arquivos existem no
+  // "disco" simulado e o tamanho deles — GameStorage.writeJson cria um
+  // backup com nome ÚNICO (timestamp no nome do arquivo) a cada escrita
+  // com backup!==false; BackupManager.backupFile tem rotação de até 3,
+  // mas só rotaciona backups que reusam o MESMO path — com um path novo
+  // toda vez, a rotação nunca encontra nada pra rotacionar.
+  const rawMemoryStorage = new MemoryStorage();
+  const manager = new CareerManager(new CareerRepository(new GameStorage(rawMemoryStorage)));
   activeCareerAdapter.careerManager = manager;
   const { career } = await manager.createCareer({ playerName: 'world-sim' });
   activeCareerAdapter.setActiveCareer(career);
@@ -306,6 +340,8 @@ try {
   let tournamentResultsThisSeason = [];
   let duplaSamplesThisSeason = new Map(historicalDuplas.map((d) => [d.team_key, []]));
   let lastSampledMonth = oldDate.slice(0, 7);
+  let diagMonthsSeen = 0; // Fase 2.8, item 1 — só usado com DIAG_MAX_MONTHS
+  let lastCheckpoint = null; // Fase 2.8, item 2 — evita recomputar o mesmo checkpoint duas vezes
   const finalYear = START_YEAR + SEASONS - 1;
 
   async function finalizeSeasonRecord(year) {
@@ -399,6 +435,161 @@ try {
     console.log(`Temporada ${year}: Top 20 tem ${realInTop20}/20 reais · #1000 elegível para ${eligibleDates.length}/${seasonTournaments.length} torneios (maior intervalo: ${maxGapDays ?? '—'} dias) · ${seasonRecord.tournaments.incomplete}/${seasonRecord.tournaments.total} chaves incompletas · ${realNeverPlayedThisSeason.length}/${realAthleteIds.size} reais não jogaram NESTA temporada.`);
   }
 
+  // Fase 2.8, item 2: checkpoint por temporada. Antes, summary.json/
+  // tournament-results.csv/season-tier-table.md só eram gravados UMA VEZ,
+  // depois do laço de dias INTEIRO — um crash em qualquer temporada
+  // (inclusive por falta de memória, achado #18/investigação da Fase 2.8)
+  // apagava junto o resultado de TODAS as temporadas já concluídas e
+  // válidas (foi o que aconteceu na tentativa de regime-check da Fase 2.7:
+  // a temporada 1 tinha fechado, mas o crash na temporada 2 não deixou
+  // nada em disco). Esta função monta o MESMO summary/csv/md de sempre —
+  // só que a partir do estado ATÉ AQUI (perSeason com as temporadas já
+  // fechadas, tournamentResultsAll acumulado até aqui) — e é chamada logo
+  // depois de CADA finalizeSeasonRecord, não só no fim do script. Cada
+  // chamada sobrescreve o mesmo arquivo com o estado mais recente
+  // disponível: um crash na temporada N+1 deixa em disco exatamente o que
+  // a temporada N produziu, pronto pra uso — não uma retomada automática
+  // (rodar de novo ainda começa da temporada 1), mas o resultado bom não
+  // se perde mais.
+  async function writeCheckpoint(throughYear) {
+    const finalAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
+    const finalReal = finalAthletes.filter((a) => realAthleteIds.has(a.id));
+    const finalBots = finalAthletes.filter((a) => !realAthleteIds.has(a.id));
+    const realTotals = finalReal.map((a) => Number(a.tournaments_played) || 0);
+    const botTotals = finalBots.map((a) => Number(a.tournaments_played) || 0);
+    const realNeverPlayed = finalReal.filter((a) => !Number(a.tournaments_played)).map((a) => ({ id: a.id, name: a.name }));
+
+    const byClassification = tournamentResultsAll.reduce((acc, row) => { acc[row.classification] = (acc[row.classification] || 0) + 1; return acc; }, {});
+    const byTierClassification = {};
+    for (const row of tournamentResultsAll) {
+      byTierClassification[row.tier] = byTierClassification[row.tier] || {};
+      byTierClassification[row.tier][row.classification] = (byTierClassification[row.tier][row.classification] || 0) + 1;
+    }
+    const historicalDuplasOverall = historicalDuplas.map((dupla) => {
+      const samples = duplaSamplesOverall.get(dupla.team_key);
+      return { team_key: dupla.team_key, names: dupla.names, samples: samples.length, pairedRatePct: samples.length ? round((samples.filter(Boolean).length / samples.length) * 100, 1) : null };
+    });
+
+    // Amostragem do catálogo de adversários DO JOGADOR (pool separado) —
+    // determinística e independente do progresso da simulação; recomputada
+    // a cada checkpoint (barata o bastante, 500 amostras) em vez de
+    // guardada de uma rodada anterior, pra manter esta função autocontida.
+    const catalogRealIds = new Set(getRealAthletes().map((a) => a.id || a.template_id));
+    const poolComposition = BOT_DIFFICULTIES.map((tier) => {
+      const pool = BOTS_BY_DIFFICULTY[tier.id] || [];
+      const real = pool.filter((bot) => catalogRealIds.has(bot.id) || catalogRealIds.has(bot.template_id) || bot.source_type === 'real').length;
+      return { tier: tier.id, label: tier.label, total: pool.length, real, fictional: pool.length - real };
+    });
+    const lendaPool = BOTS_BY_DIFFICULTY.lenda || [];
+    const SAMPLES = 500;
+    let drawsWithAtLeastOneReal = 0;
+    let drawsWithTwoReal = 0;
+    for (let i = 0; i < SAMPLES; i += 1) {
+      const fakeTournament = { id: `sample-crown-${i}`, tier: 'Crown', start_date: '2026-11-01' };
+      const fakeProfile = { id: `sample-player-${i}` };
+      const opponents = generateTournamentOpponent(fakeTournament, fakeProfile, 5, [], 0, 'main');
+      const realCount = opponents.filter((bot) => catalogRealIds.has(bot.id) || catalogRealIds.has(bot.template_id) || bot.source_type === 'real').length;
+      if (realCount >= 1) drawsWithAtLeastOneReal += 1;
+      if (realCount === 2) drawsWithTwoReal += 1;
+    }
+
+    mkdirSync(OUT_DIR, { recursive: true });
+
+    const summary = {
+      generatedAt: new Date().toISOString(),
+      seed: SEED,
+      checkpoint: { throughYear, seasonsCompleted: perSeason.length, seasonsRequested: SEASONS, complete: perSeason.length >= SEASONS },
+      determinism: {
+        note: 'Math.random e o relógio são seedados a partir de --seed só neste processo, ANTES de qualquer criação de entidade. Ids de AthleteProfile/TeamRanking são deixados para o PRÓPRIO fallback makeId() de produção (nunca sobrescritos com bot_id/team_key — isso mudava a forma da string e enviesava a seleção por hash de aiPartnershipLifecycle.js, achado da Fase 0.1) — como Math.random/Date.now já são determinísticos aqui, makeId() produz o MESMO formato de produção de forma reproduzível. bot_id/team_key continuam existindo só como chaves de agrupamento para leitura deste relatório (duplas históricas), nunca como o id real da entidade.',
+      },
+      seasonsSimulated: SEASONS,
+      proceduralAthleteSample: PROCEDURAL_ATHLETE_SAMPLE,
+      proceduralTeamSample: PROCEDURAL_TEAM_SAMPLE,
+      roster: {
+        realAthletes: realAthleteIds.size, proceduralAthletes: supplementalAthletes.length, totalAthletes,
+        realTeams: realTeamKeys.size, proceduralTeams: supplementalTeams.length, totalTeams,
+      },
+      perSeason,
+      cumulative: {
+        tournamentsResolved: tournamentResultsAll.length,
+        byClassification,
+        byTierClassification,
+        tournamentsPlayed: {
+          real: { mean: round(mean(realTotals), 2), median: round(median(realTotals), 2) },
+          bots: { mean: round(mean(botTotals), 2), median: round(median(botTotals), 2) },
+        },
+        realAthletesNeverInAnyDraw: realNeverPlayed,
+        realAthletesNeverInAnyDrawCount: realNeverPlayed.length,
+        realAthletesTotal: realAthleteIds.size,
+        historicalDuplasOverall,
+        realAthletesNeverPlayedRotation: (() => {
+          const perSeasonSets = perSeason.map((s) => new Set((s.realAthletesNeverPlayedThisSeason || []).map((r) => r.id)));
+          const union = new Set();
+          perSeasonSets.forEach((set) => set.forEach((id) => union.add(id)));
+          const intersection = perSeasonSets.length
+            ? [...perSeasonSets[0]].filter((id) => perSeasonSets.every((set) => set.has(id)))
+            : [];
+          return {
+            seasonsCompared: perSeasonSets.length,
+            neverPlayedThisSeasonBySeasonCounts: perSeason.map((s) => s.realAthletesNeverPlayedThisSeasonCount),
+            unionAcrossSeasons: [...union].map((id) => ({ id, name: assignedIdToName.get(id) || id })),
+            unionCount: union.size,
+            intersectionAcrossSeasons: intersection.map((id) => ({ id, name: assignedIdToName.get(id) || id })),
+            intersectionCount: intersection.length,
+            intersectionPctOfUnion: union.size ? round((intersection.length / union.size) * 100, 1) : null,
+          };
+        })(),
+      },
+      playerOpponentCatalog: {
+        poolComposition,
+        lendaSampling: {
+          samples: SAMPLES, roundTested: 'Crown, rodada 6 (final)',
+          drawsWithAtLeastOneReal, drawsWithAtLeastOneRealPct: round((drawsWithAtLeastOneReal / SAMPLES) * 100, 1),
+          drawsWithTwoReal, drawsWithTwoRealPct: round((drawsWithTwoReal / SAMPLES) * 100, 1),
+          theoreticalAtLeastOnePct: (() => {
+            const total = lendaPool.length; const real = poolComposition.find((p) => p.tier === 'lenda')?.real || 0; const bots = total - real;
+            if (total < 2) return null;
+            const c2 = (n) => (n * (n - 1)) / 2;
+            return round((1 - c2(bots) / c2(total)) * 100, 1);
+          })(),
+        },
+      },
+    };
+
+    writeFileSync(`${OUT_DIR}/summary.json`, JSON.stringify(summary, null, 2));
+
+    const csvRows = ['year,tournament_id,tier,champion_name,champion_ids,champion_real_count,champion_ovr_avg,classification,main_draw_size,simulated_entrants,incomplete'];
+    for (const row of tournamentResultsAll) {
+      csvRows.push([row.year, row.tournament_id, row.tier, JSON.stringify(row.champion_name || ''), row.champion_ids, row.champion_real_count, row.champion_ovr_avg ?? '', row.classification, row.main_draw_size ?? '', row.simulated_entrants, row.incomplete].join(','));
+    }
+    writeFileSync(`${OUT_DIR}/tournament-results.csv`, csvRows.join('\n'));
+
+    const TIERS_ORDER = ['Silver', 'Gold', 'Platinum', 'Masters', 'Elite', 'Crown'];
+    const mdLines = [
+      `# Baseline — temporada × tier (seed: \`${SEED}\`, ${SEASONS} temporadas, ${PROCEDURAL_ATHLETE_SAMPLE} bots)`,
+      '',
+      '| Temporada | Tier | Títulos 100% reais | Mistos | 100% bots | OVR médio do campeão | Chaves incompletas |',
+      '|---|---|---|---|---|---|---|',
+    ];
+    for (const season of perSeason) {
+      for (const tier of TIERS_ORDER) {
+        const t = season.byTier[tier];
+        if (!t) continue;
+        mdLines.push(`| ${season.year} | ${tier} | ${t.titles['100%_reais'] || 0} | ${t.titles.mista || 0} | ${t.titles['100%_bots'] || 0} | ${t.championOvrAvg ?? '—'} | ${t.incompleteCount}/${t.total} |`);
+      }
+    }
+    mdLines.push('', '## #1000 — elegibilidade e cadência', '', '| Temporada | Eventos elegíveis | Total no calendário | Maior intervalo (dias) |', '|---|---|---|---|');
+    for (const season of perSeason) mdLines.push(`| ${season.year} | ${season.player1000Eligibility.eligibleCount} | ${season.player1000Eligibility.totalTournamentsInCalendar} | ${season.player1000Eligibility.maxGapDays ?? '—'} |`);
+    mdLines.push('', '## Duplas históricas — % pareadas por temporada', '', `| Dupla | ${perSeason.map((s) => s.year).join(' | ')} |`, `|---|${perSeason.map(() => '---').join('|')}|`);
+    for (const dupla of historicalDuplas) {
+      mdLines.push(`| ${dupla.names} | ${perSeason.map((s) => `${s.historicalDuplasThisSeason.find((d) => d.team_key === dupla.team_key)?.pairedRatePct ?? '—'}%`).join(' | ')} |`);
+    }
+    writeFileSync(`${OUT_DIR}/season-tier-table.md`, mdLines.join('\n'));
+
+    console.log(`[checkpoint] temporada ${throughYear} gravada em disco — ${perSeason.length}/${SEASONS} temporadas · ${tournamentResultsAll.length} torneios resolvidos até aqui · ${realNeverPlayed.length}/${realAthleteIds.size} reais nunca jogaram até aqui.`);
+    return { summary, realNeverPlayed, byClassification };
+  }
+
   dayLoop:
   for (let day = 0; day < SEASONS * 367; day += 1) {
     try {
@@ -442,15 +633,40 @@ try {
       // Partnership só é lido no mesmo mês em que um torneio termina, via
       // recordNewlyFinalizedTournaments, ANTES desta poda rodar). Podar é
       // seguro para as métricas e necessário para não estourar memória.
+      //
+      // Fase 2.9, item 2: a versão anterior apagava QUALQUER TeamRanking cujo
+      // `.id` não estivesse entre os 27 pares históricos seedados
+      // (`realTeamKeys`) — incluindo pares de bots ATIVOS, formados pelo
+      // mercado de parcerias no mês anterior, todo santo mês. Investigação
+      // (código de produção: WorldTourLifecycle.js/EntryManager.js) confirmou
+      // que nenhuma métrica deste harness OU elegibilidade de entrada de
+      // pares em segundo plano lê TeamRanking depois do seed inicial — então
+      // isso nunca contaminou nenhum número reportado (baseline
+      // docs/baseline-pre-fase3.json está limpo). Mas o critério em si era
+      // errado por princípio ("não está no set histórico" != "dissolvido") e
+      // é a mesma forma do padrão já registrado no achado #20 — corrigido
+      // para só apagar quando o PAR REALMENTE SE DISSOLVEU (não existe uma
+      // Partnership com status:'ativa' entre os mesmos dois atletas), nunca
+      // só por "não é um dos 27 históricos". `allPartnerships` é buscado
+      // ANTES de decidir a poda de TeamRanking (a poda de Partnership abaixo
+      // só enfileira `pruneOps`, não apaga nada ainda — a lista ainda reflete
+      // o estado real no momento desta leitura).
       const pruneOps = [];
       const recentEvents = await localGame.entities.WorldEvent.list('-created_date', 5000).catch(() => []);
       recentEvents.slice(300).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'WorldEvent', id: row.id }));
       const recentMessages = await localGame.entities.CareerMessage.list('-created_date', 5000).catch(() => []);
       recentMessages.slice(50).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'CareerMessage', id: row.id }));
-      const allTeamRankings = await localGame.entities.TeamRanking.list(null, 20000).catch(() => []);
-      allTeamRankings.filter((row) => !realTeamKeys.has(row.id)).forEach((row) => pruneOps.push({ type: 'delete', entityName: 'TeamRanking', id: row.id }));
       const allPartnerships = await localGame.entities.Partnership.list(null, 20000).catch(() => []);
+      const activePartnershipKeys = new Set(
+        allPartnerships
+          .filter((row) => row.status === 'ativa')
+          .map((row) => teamKey(row.athlete_a_id, row.athlete_b_id)),
+      );
       allPartnerships.filter((row) => row.status !== 'ativa').forEach((row) => pruneOps.push({ type: 'delete', entityName: 'Partnership', id: row.id }));
+      const allTeamRankings = await localGame.entities.TeamRanking.list(null, 20000).catch(() => []);
+      allTeamRankings
+        .filter((row) => !realTeamKeys.has(row.id) && !activePartnershipKeys.has(row.team_key))
+        .forEach((row) => pruneOps.push({ type: 'delete', entityName: 'TeamRanking', id: row.id }));
       // Achado C (continuação): AnnualCareerReport embute um SNAPSHOT
       // COMPLETO do elenco (createAnnualCareerSnapshot → createAnnualCircuitSnapshot,
       // src/lib/annualCareerReportModel.js — sem nenhum corte, todo
@@ -473,12 +689,69 @@ try {
         await localGame.batch(pruneOps.slice(i, i + 500)).catch(() => {});
       }
       if (process.env.DIAG_SIZES) {
-        const names = ['WorldEvent', 'CareerMessage', 'Tournament', 'AthleteProfile', 'TeamRanking', 'Partnership', 'MonthlyCareerReport', 'AnnualCareerReport', 'PressArticle', 'Post', 'HistoryEntry', 'FinancialTransaction', 'TournamentRegistration', 'CalendarEvent'];
+        // Fase 2.8, item 1: além da contagem de linhas já existente, mede
+        // bytes aproximados (JSON.stringify da coleção inteira) — conta
+        // sozinha não distingue uma coleção com poucas linhas GRANDES
+        // (ex.: AnnualCareerReport, que embute o elenco inteiro) de uma com
+        // muitas linhas pequenas. Também soma Partnership ativa vs.
+        // encerrada e verifica quantas linhas de TeamRanking apontam pra um
+        // par que NÃO é mais o `ai_partner_id` atual dos dois atletas
+        // (stale — dissolvido mas nunca removido nem atualizado).
+        const names = ['WorldEvent', 'CareerMessage', 'Tournament', 'AthleteProfile', 'TeamRanking', 'Partnership', 'MonthlyCareerReport', 'AnnualCareerReport', 'PressArticle', 'Post', 'HistoryEntry', 'FinancialTransaction', 'TournamentRegistration', 'CalendarEvent', 'AthleteCareerLegacy'];
         const sizes = {};
+        let totalBytes = 0;
         for (const name of names) {
-          try { sizes[name] = (await localGame.entities[name].list(null, 20000)).length; } catch { sizes[name] = 'n/a'; }
+          try {
+            const rows = await localGame.entities[name].list(null, 50000);
+            const bytes = JSON.stringify(rows).length;
+            totalBytes += bytes;
+            sizes[name] = { count: rows.length, bytes, avgBytesPerRow: rows.length ? Math.round(bytes / rows.length) : 0 };
+          } catch { sizes[name] = { count: 'n/a', bytes: 0 }; }
         }
+        sizes.__totalBytesAllCollections = totalBytes;
+        try {
+          const partnerships = await localGame.entities.Partnership.list(null, 50000);
+          sizes.__partnershipActive = partnerships.filter((row) => row.status === 'ativa').length;
+          sizes.__partnershipDead = partnerships.length - sizes.__partnershipActive;
+        } catch {}
+        try {
+          const [teams, athletes] = await Promise.all([
+            localGame.entities.TeamRanking.list(null, 50000),
+            localGame.entities.AthleteProfile.list(null, 6000),
+          ]);
+          const athleteById = new Map(athletes.map((a) => [a.id, a]));
+          const staleTeams = teams.filter((team) => {
+            const p1 = athleteById.get(team.player1_id);
+            const p2 = athleteById.get(team.player2_id);
+            return !(p1 && p2 && p1.ai_partner_id === team.player2_id && p2.ai_partner_id === team.player1_id);
+          });
+          sizes.__teamRankingStale = staleTeams.length;
+          sizes.__teamRankingLive = teams.length - staleTeams.length;
+        } catch {}
+        // Fase 2.8, item 1 — hipótese do backup com nome único (ver
+        // comentário na criação do MemoryStorage acima): conta e mede
+        // TODOS os arquivos no "disco" simulado, separando os que têm
+        // "backup" no nome dos demais.
+        try {
+          let backupCount = 0; let backupBytes = 0; let otherCount = 0; let otherBytes = 0;
+          for (const [key, value] of rawMemoryStorage.files.entries()) {
+            const len = value.length;
+            if (key.includes('backup')) { backupCount += 1; backupBytes += len; } else { otherCount += 1; otherBytes += len; }
+          }
+          sizes.__storageBackupFiles = backupCount;
+          sizes.__storageBackupBytes = backupBytes;
+          sizes.__storageOtherFiles = otherCount;
+          sizes.__storageOtherBytes = otherBytes;
+          sizes.__storageTotalFiles = rawMemoryStorage.files.size;
+        } catch (error) { sizes.__storageInspectError = error?.message; }
         console.log(`[DIAG ${newDate}] tamanhos:`, JSON.stringify(sizes));
+      }
+      if (process.env.DIAG_MAX_MONTHS) {
+        diagMonthsSeen += 1;
+        if (diagMonthsSeen >= Number(process.env.DIAG_MAX_MONTHS)) {
+          console.log(`[DIAG] limite de ${process.env.DIAG_MAX_MONTHS} meses atingido — parando o laço de dias antes de completar a temporada (uso diagnóstico, Fase 2.8).`);
+          break dayLoop;
+        }
       }
 
       const partnerLookup = await Promise.all(
@@ -499,6 +772,7 @@ try {
     const newYear = Number(newDate.slice(0, 4));
     if (newYear !== currentYear) {
       await finalizeSeasonRecord(currentYear);
+      lastCheckpoint = await writeCheckpoint(currentYear); // Fase 2.8, item 2 — checkpoint por temporada
       if (currentYear >= finalYear) break dayLoop;
       currentYear = newYear;
       tournamentResultsThisSeason = [];
@@ -507,149 +781,20 @@ try {
   }
   if (perSeason.length < SEASONS && perSeason[perSeason.length - 1]?.year !== currentYear) {
     await finalizeSeasonRecord(currentYear);
+    lastCheckpoint = await writeCheckpoint(currentYear);
   }
 
-  // ═══════════════ Cumulativo (toda a corrida) ═══════════════
-  const finalAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
-  const finalReal = finalAthletes.filter((a) => realAthleteIds.has(a.id));
-  const finalBots = finalAthletes.filter((a) => !realAthleteIds.has(a.id));
-  const realTotals = finalReal.map((a) => Number(a.tournaments_played) || 0);
-  const botTotals = finalBots.map((a) => Number(a.tournaments_played) || 0);
-  const realNeverPlayed = finalReal.filter((a) => !Number(a.tournaments_played)).map((a) => ({ id: a.id, name: a.name }));
-
-  const byClassification = tournamentResultsAll.reduce((acc, row) => { acc[row.classification] = (acc[row.classification] || 0) + 1; return acc; }, {});
-  const byTierClassification = {};
-  for (const row of tournamentResultsAll) {
-    byTierClassification[row.tier] = byTierClassification[row.tier] || {};
-    byTierClassification[row.tier][row.classification] = (byTierClassification[row.tier][row.classification] || 0) + 1;
-  }
-  const historicalDuplasOverall = historicalDuplas.map((dupla) => {
-    const samples = duplaSamplesOverall.get(dupla.team_key);
-    return { team_key: dupla.team_key, names: dupla.names, samples: samples.length, pairedRatePct: samples.length ? round((samples.filter(Boolean).length / samples.length) * 100, 1) : null };
-  });
-
-  // ═══════════════ Amostragem do catálogo de adversários DO JOGADOR (pool separado) ═══════════════
-  const catalogRealIds = new Set(getRealAthletes().map((a) => a.id || a.template_id));
-  const poolComposition = BOT_DIFFICULTIES.map((tier) => {
-    const pool = BOTS_BY_DIFFICULTY[tier.id] || [];
-    const real = pool.filter((bot) => catalogRealIds.has(bot.id) || catalogRealIds.has(bot.template_id) || bot.source_type === 'real').length;
-    return { tier: tier.id, label: tier.label, total: pool.length, real, fictional: pool.length - real };
-  });
-  const lendaPool = BOTS_BY_DIFFICULTY.lenda || [];
-  const SAMPLES = 500;
-  let drawsWithAtLeastOneReal = 0;
-  let drawsWithTwoReal = 0;
-  for (let i = 0; i < SAMPLES; i += 1) {
-    const fakeTournament = { id: `sample-crown-${i}`, tier: 'Crown', start_date: '2026-11-01' };
-    const fakeProfile = { id: `sample-player-${i}` };
-    const opponents = generateTournamentOpponent(fakeTournament, fakeProfile, 5, [], 0, 'main');
-    const realCount = opponents.filter((bot) => catalogRealIds.has(bot.id) || catalogRealIds.has(bot.template_id) || bot.source_type === 'real').length;
-    if (realCount >= 1) drawsWithAtLeastOneReal += 1;
-    if (realCount === 2) drawsWithTwoReal += 1;
-  }
-
-  // ═══════════════ Relatório ═══════════════
-  mkdirSync(OUT_DIR, { recursive: true });
-
-  const summary = {
-    generatedAt: new Date().toISOString(),
-    seed: SEED,
-    determinism: {
-      note: 'Math.random e o relógio são seedados a partir de --seed só neste processo, ANTES de qualquer criação de entidade. Ids de AthleteProfile/TeamRanking são deixados para o PRÓPRIO fallback makeId() de produção (nunca sobrescritos com bot_id/team_key — isso mudava a forma da string e enviesava a seleção por hash de aiPartnershipLifecycle.js, achado da Fase 0.1) — como Math.random/Date.now já são determinísticos aqui, makeId() produz o MESMO formato de produção de forma reproduzível. bot_id/team_key continuam existindo só como chaves de agrupamento para leitura deste relatório (duplas históricas), nunca como o id real da entidade.',
-    },
-    seasonsSimulated: SEASONS,
-    proceduralAthleteSample: PROCEDURAL_ATHLETE_SAMPLE,
-    proceduralTeamSample: PROCEDURAL_TEAM_SAMPLE,
-    roster: {
-      realAthletes: realAthleteIds.size, proceduralAthletes: supplementalAthletes.length, totalAthletes,
-      realTeams: realTeamKeys.size, proceduralTeams: supplementalTeams.length, totalTeams,
-    },
-    perSeason,
-    cumulative: {
-      tournamentsResolved: tournamentResultsAll.length,
-      byClassification,
-      byTierClassification,
-      tournamentsPlayed: {
-        real: { mean: round(mean(realTotals), 2), median: round(median(realTotals), 2) },
-        bots: { mean: round(mean(botTotals), 2), median: round(median(botTotals), 2) },
-      },
-      realAthletesNeverInAnyDraw: realNeverPlayed,
-      realAthletesNeverInAnyDrawCount: realNeverPlayed.length,
-      realAthletesTotal: realAthleteIds.size,
-      historicalDuplasOverall,
-      // Fase 2.7, item 5: interseção dos "nunca jogou NESTA temporada" de
-      // cada temporada individual — quem aparece em TODAS as temporadas é
-      // exclusão permanente (o achado antigo em escala reduzida, precisa
-      // de correção na Fase 5); quem varia de temporada pra temporada é
-      // rotatividade normal (perde parceiro, fica um ano fora, volta —
-      // não precisa de correção).
-      realAthletesNeverPlayedRotation: (() => {
-        const perSeasonSets = perSeason.map((s) => new Set((s.realAthletesNeverPlayedThisSeason || []).map((r) => r.id)));
-        const union = new Set();
-        perSeasonSets.forEach((set) => set.forEach((id) => union.add(id)));
-        const intersection = perSeasonSets.length
-          ? [...perSeasonSets[0]].filter((id) => perSeasonSets.every((set) => set.has(id)))
-          : [];
-        return {
-          seasonsCompared: perSeasonSets.length,
-          neverPlayedThisSeasonBySeasonCounts: perSeason.map((s) => s.realAthletesNeverPlayedThisSeasonCount),
-          unionAcrossSeasons: [...union].map((id) => ({ id, name: assignedIdToName.get(id) || id })),
-          unionCount: union.size,
-          intersectionAcrossSeasons: intersection.map((id) => ({ id, name: assignedIdToName.get(id) || id })),
-          intersectionCount: intersection.length,
-          intersectionPctOfUnion: union.size ? round((intersection.length / union.size) * 100, 1) : null,
-        };
-      })(),
-    },
-    playerOpponentCatalog: {
-      poolComposition,
-      lendaSampling: {
-        samples: SAMPLES, roundTested: 'Crown, rodada 6 (final)',
-        drawsWithAtLeastOneReal, drawsWithAtLeastOneRealPct: round((drawsWithAtLeastOneReal / SAMPLES) * 100, 1),
-        drawsWithTwoReal, drawsWithTwoRealPct: round((drawsWithTwoReal / SAMPLES) * 100, 1),
-        theoreticalAtLeastOnePct: (() => {
-          const total = lendaPool.length; const real = poolComposition.find((p) => p.tier === 'lenda')?.real || 0; const bots = total - real;
-          if (total < 2) return null;
-          const c2 = (n) => (n * (n - 1)) / 2;
-          return round((1 - c2(bots) / c2(total)) * 100, 1);
-        })(),
-      },
-    },
-  };
-
-  writeFileSync(`${OUT_DIR}/summary.json`, JSON.stringify(summary, null, 2));
-
-  const csvRows = ['year,tournament_id,tier,champion_name,champion_ids,champion_real_count,champion_ovr_avg,classification,main_draw_size,simulated_entrants,incomplete'];
-  for (const row of tournamentResultsAll) {
-    csvRows.push([row.year, row.tournament_id, row.tier, JSON.stringify(row.champion_name || ''), row.champion_ids, row.champion_real_count, row.champion_ovr_avg ?? '', row.classification, row.main_draw_size ?? '', row.simulated_entrants, row.incomplete].join(','));
-  }
-  writeFileSync(`${OUT_DIR}/tournament-results.csv`, csvRows.join('\n'));
-
-  // ── Tabela temporada × tier em markdown ──
-  const TIERS_ORDER = ['Silver', 'Gold', 'Platinum', 'Masters', 'Elite', 'Crown'];
-  const mdLines = [
-    `# Baseline — temporada × tier (seed: \`${SEED}\`, ${SEASONS} temporadas, ${PROCEDURAL_ATHLETE_SAMPLE} bots)`,
-    '',
-    '| Temporada | Tier | Títulos 100% reais | Mistos | 100% bots | OVR médio do campeão | Chaves incompletas |',
-    '|---|---|---|---|---|---|---|',
-  ];
-  for (const season of perSeason) {
-    for (const tier of TIERS_ORDER) {
-      const t = season.byTier[tier];
-      if (!t) continue;
-      mdLines.push(`| ${season.year} | ${tier} | ${t.titles['100%_reais'] || 0} | ${t.titles.mista || 0} | ${t.titles['100%_bots'] || 0} | ${t.championOvrAvg ?? '—'} | ${t.incompleteCount}/${t.total} |`);
-    }
-  }
-  mdLines.push('', '## #1000 — elegibilidade e cadência', '', '| Temporada | Eventos elegíveis | Total no calendário | Maior intervalo (dias) |', '|---|---|---|---|');
-  for (const season of perSeason) mdLines.push(`| ${season.year} | ${season.player1000Eligibility.eligibleCount} | ${season.player1000Eligibility.totalTournamentsInCalendar} | ${season.player1000Eligibility.maxGapDays ?? '—'} |`);
-  mdLines.push('', '## Duplas históricas — % pareadas por temporada', '', `| Dupla | ${perSeason.map((s) => s.year).join(' | ')} |`, `|---|${perSeason.map(() => '---').join('|')}|`);
-  for (const dupla of historicalDuplas) {
-    mdLines.push(`| ${dupla.names} | ${perSeason.map((s) => `${s.historicalDuplasThisSeason.find((d) => d.team_key === dupla.team_key)?.pairedRatePct ?? '—'}%`).join(' | ')} |`);
-  }
-  writeFileSync(`${OUT_DIR}/season-tier-table.md`, mdLines.join('\n'));
+  // Fase 2.8, item 2: o último writeCheckpoint (dentro do laço, logo após
+  // o finalizeSeasonRecord da última temporada) já deixou summary.json/
+  // tournament-results.csv/season-tier-table.md com o estado final em
+  // disco — reaproveita esse resultado em vez de recomputar (só recai numa
+  // chamada nova se, por algum motivo, nenhuma temporada chegou a fechar —
+  // ex.: DIAG_MAX_MONTHS interrompendo antes da 1ª virada de ano).
+  const finalCheckpoint = lastCheckpoint || await writeCheckpoint(currentYear);
+  const { summary, realNeverPlayed, byClassification } = finalCheckpoint;
 
   console.log('\n=== RESUMO CUMULATIVO ===');
-  console.log(`Torneios resolvidos (mundo, sem o jogador): ${tournamentResultsAll.length}`);
+  console.log(`Torneios resolvidos (mundo, sem o jogador): ${summary.cumulative.tournamentsResolved}`);
   console.log('Classificação dos campeões:', byClassification);
   console.log(`Torneios disputados — reais: média ${summary.cumulative.tournamentsPlayed.real.mean} / mediana ${summary.cumulative.tournamentsPlayed.real.median} · bots: média ${summary.cumulative.tournamentsPlayed.bots.mean} / mediana ${summary.cumulative.tournamentsPlayed.bots.median}`);
   console.log(`Atletas reais que NUNCA apareceram em nenhuma chave: ${realNeverPlayed.length}/${realAthleteIds.size}`);

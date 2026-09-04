@@ -272,6 +272,10 @@ export class GameStorage {
         await this.backupManager.backupFile(normalizedPath, backupDestination, {
           sourceKnownToExist: true,
           directoryReady: true,
+          // Fase 2.9, item 1 (achado #20): prefixo pro BackupManager rotacionar
+          // por padrão de nome (não por sufixo numérico sobre um path reusado
+          // — o path NUNCA se repete, o timestamp é único de propósito).
+          prefix: getFileName(normalizedPath),
           caller: `${caller}:backup`,
         });
       }
@@ -365,6 +369,29 @@ export class GameStorage {
     const validated = validateSaveData(saveData);
     await this.writeJson(this.careerPath(careerId), validated, { backup, validate: false });
     return validated;
+  }
+
+  /**
+   * Fase 2.9, item 1B (achado #20) — varredura pra instalações que já
+   * acumularam backups ANTES da correção da rotação: a correção em
+   * `writeJson`/`BackupManager.backupFile` só evita acúmulo NOVO, não
+   * remove o que já existe no disco de quem já jogou. Genérico por
+   * `relativePath` (não só carreira) porque o MESMO diretório flat de
+   * backups (`BACKUPS_DIRECTORY`) recebe qualquer arquivo gravado com
+   * `backup:true` — inclusive o índice de carreiras (`careers-index.json`,
+   * gravado a CADA criar/carregar/salvar/excluir carreira, mais vezes que
+   * qualquer carreira individual). Reaproveita a MESMA `pruneOldBackups` que
+   * a rotação automática usa.
+   */
+  async pruneBackupsFor(relativePath, { maxBackups = 3, caller = 'GameStorage.pruneBackupsFor' } = {}) {
+    await this.initialize();
+    const prefix = getFileName(relativePath);
+    return this.backupManager.pruneOldBackups(BACKUPS_DIRECTORY, prefix, { maxBackups, caller });
+  }
+
+  /** Atalho de `pruneBackupsFor` para o arquivo de uma carreira específica — chamado no carregamento (`CareerRepository`/`CareerManager`) e disponível como ação manual (`BetaTools.jsx`). */
+  async pruneCareerBackups(careerId, { maxBackups = 3, caller = 'GameStorage.pruneCareerBackups' } = {}) {
+    return this.pruneBackupsFor(this.careerPath(careerId), { maxBackups, caller });
   }
 
   async readCareer(careerId) {

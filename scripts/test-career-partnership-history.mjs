@@ -7,6 +7,14 @@
 // longa"/"melhor parceria" (Partnership já preserva histórico real, só a
 // data de fim estava errada). Também prova describePartnershipHistory
 // (pura) e a troca de parceiro (cenário 15 do briefing).
+//
+// Fase 2.9, item 1/2/4 (achado #21): estende o MESMO harness pra provar
+// (a) PartnershipLegacy é gravada por endPartnership, preservando o
+// histórico visível mesmo depois de uma futura poda da linha viva; (b) a
+// migração de parcerias dissolvidas ANTES desta mudança existir (linhas
+// que nunca passaram por endPartnership com o novo código) é idempotente e
+// não muda o que o PartnerHub mostra; (c) TeamRanking da dupla é apagado
+// na dissolução.
 import { createServer } from 'vite';
 
 let gates = 0;
@@ -74,7 +82,65 @@ try {
   const firstAfterSwitch = await localGame.entities.Partnership.get(created.id);
   gate('15. Parceria anterior à troca permanece com seu próprio fim já registrado (não sobrescrita pela troca seguinte)', firstAfterSwitch.status === 'encerrada_jogador' && firstAfterSwitch.ended_career_date === endedDate);
 
-  console.log(`\n${gates} gates executados, todos PASS — Histórico de parcerias (Fase 14): duração real corrigida, melhor parceria/mais partidas/mais longa, troca de parceiro preserva histórico.`);
+  // ── Fase 2.9, item 2: endPartnership grava PartnershipLegacy ────────────
+  const { getPartnershipHistory, getFullPartnershipTimeline } = await server.ssrLoadModule('/src/lib/partnershipSystem.js');
+  const legacyForFirst = (await localGame.entities.PartnershipLegacy.filter({ original_partnership_id: created.id })).find(Boolean);
+  gate('endPartnership grava um PartnershipLegacy com o mesmo desfecho da Partnership original', legacyForFirst?.partner_name === 'Bot Parceiro 1' && legacyForFirst?.ended_career_date === endedDate && legacyForFirst?.status === 'encerrada_jogador');
+
+  // ── Fase 2.9, item 4: TeamRanking da dupla desfeita é apagado ───────────
+  const { teamKey } = await server.ssrLoadModule('/src/lib/teamRanking.js');
+  const trKey = teamKey(profile.id, bot.id);
+  await localGame.entities.TeamRanking.create({ team_key: trKey, player1_id: profile.id, player2_id: bot.id, player1_name: profile.sport_name, player2_name: bot.name, ranking_points: 400, titles: [] });
+  gate('setup: TeamRanking da dupla existe antes da dissolução', (await localGame.entities.TeamRanking.filter({ team_key: trKey })).length === 1);
+  await endPartnership(created.id, 'encerrada_jogador', 'QA (nova dissolução pra testar TeamRanking)', '2026-06-01');
+  gate('achado #21, item 4: TeamRanking da dupla desfeita é removido na dissolução (decisão de comportamento, não faxina)', (await localGame.entities.TeamRanking.filter({ team_key: trKey })).length === 0);
+
+  // ── Fase 2.9, item 1: migração de dado JÁ existente (pré-PartnershipLegacy) ──
+  // Simula uma carreira que já tinha parcerias dissolvidas ANTES desta
+  // mudança existir: cria uma Partnership já 'encerrada' diretamente
+  // (bypassa endPartnership de propósito — é assim que uma linha antiga,
+  // gravada pelo código de ANTES desta fase, existe no save de um jogador).
+  const legacyStylePartnership = await localGame.entities.Partnership.create({
+    profile_id: profile.id, partnership_type: 'player', athlete_a_id: profile.id, athlete_b_id: 'bot-partner-pre-existing',
+    athlete_a_name: profile.sport_name, athlete_b_name: 'Bot Pré-Existente', partner_name: 'Bot Pré-Existente',
+    started_career_date: '2025-06-01', ended_career_date: '2025-09-01', shared_matches: 12, shared_wins: 7, shared_titles: 1,
+    status: 'encerrada_contrato', end_reason: 'fim de contrato sem renovação',
+  });
+  gate('setup: nenhum PartnershipLegacy existe ainda pra essa linha pré-existente (simula save de ANTES da mudança)', (await localGame.entities.PartnershipLegacy.filter({ original_partnership_id: legacyStylePartnership.id })).length === 0);
+
+  // "Antes": o que a tela mostrava com a lógica ANTIGA (ler direto da
+  // coleção viva, sem legado nenhum) — reproduzido aqui, não importado,
+  // porque getPartnershipHistory já foi reapontada.
+  const beforeMigrationView = ((await localGame.entities.Partnership.filter({ profile_id: profile.id })) || []).filter((p) => p.status !== 'ativa');
+  const beforeNames = new Set(beforeMigrationView.map((p) => p.partner_name));
+
+  const afterMigrationView = await getPartnershipHistory(profile.id);
+  const afterNames = new Set(afterMigrationView.map((p) => p.partner_name));
+  gate(
+    'migração: PartnerHub mostra o MESMO histórico visível antes e depois da migração (nenhum parceiro some da tela)',
+    [...beforeNames].every((name) => afterNames.has(name)),
+  );
+  gate('migração: a linha pré-existente (Bot Pré-Existente) aparece no histórico pós-migração, com os campos certos', (() => {
+    const row = afterMigrationView.find((p) => p.partner_name === 'Bot Pré-Existente');
+    return row && row.shared_matches === 12 && row.shared_wins === 7 && row.shared_titles === 1 && row.ended_career_date === '2025-09-01';
+  })());
+
+  const countAfterFirstMigration = afterMigrationView.length;
+  const secondCallView = await getPartnershipHistory(profile.id);
+  gate(
+    `migração é idempotente: chamar getPartnershipHistory de novo não duplica linhas (${countAfterFirstMigration} antes, ${secondCallView.length} depois)`,
+    secondCallView.length === countAfterFirstMigration,
+  );
+  const legacyRowsForPreExisting = (await localGame.entities.PartnershipLegacy.filter({ original_partnership_id: legacyStylePartnership.id }));
+  gate('migração roda 2x seguidas sem criar uma segunda linha de legado pra mesma Partnership original', legacyRowsForPreExisting.length === 1);
+
+  // getFullPartnershipTimeline: inclui a parceria ATIVA (second, criada
+  // acima) junto com todo o histórico dissolvido/migrado.
+  const timeline = await getFullPartnershipTimeline(profile.id);
+  gate('getFullPartnershipTimeline inclui a parceria ativa atual', timeline.some((p) => p.status === 'ativa' && p.partner_name === 'Bot Parceiro 2'));
+  gate('getFullPartnershipTimeline inclui o histórico dissolvido (via legado)', timeline.some((p) => p.partner_name === 'Bot Pré-Existente') && timeline.some((p) => p.partner_name === 'Bot Parceiro 1'));
+
+  console.log(`\n${gates} gates executados, todos PASS — Histórico de parcerias (Fase 14 + Fase 2.9 item 1/2/4): duração real corrigida, melhor parceria/mais partidas/mais longa, troca de parceiro preserva histórico, PartnershipLegacy gravada na dissolução, TeamRanking apagado na dissolução, migração idempotente de dado pré-existente sem perda de histórico visível.`);
 } finally {
   await server.close();
 }

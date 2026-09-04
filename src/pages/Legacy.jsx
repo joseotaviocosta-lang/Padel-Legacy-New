@@ -6,6 +6,7 @@ import { PageHeader as PremiumPageHeader, StatCard } from '@/components/design-s
 import { calculateAge, isRetired, RETIREMENT_AGE, STARTING_AGE, overallRating } from '@/lib/padel';
 import { computeLegacyScore, computeLegacyBonuses, retireProfile, startNewCareer, getUserLegacies, getCoachLegacy } from '@/lib/legacy';
 import { isOfficialMatch, describePartnershipHistory, getTopRivalry } from '@/lib/careerStory';
+import { getFullPartnershipTimeline } from '@/lib/partnershipSystem.js';
 import { getCoachTenureHistory } from '@/game-core/coachLifecycle.js';
 import { getPlayerRelationships } from '@/lib/relationships';
 import RetirementModal from '@/components/legacy/RetirementModal';
@@ -104,7 +105,13 @@ export default function Legacy() {
           // getTopRivalry são funções puras que só formatam o que já foi
           // buscado, nenhuma consulta nova dentro delas (Parte 15).
           const [partnershipRows, tenureHistory, relationshipRows] = await Promise.all([
-            localGame.entities.Partnership.filter({ profile_id: p.id }, '-started_career_date', 50).catch(() => []),
+            // Fase 2.9, item 1 (achado #21): antes lia Partnership.filter
+            // direto da coleção viva — parcerias dissolvidas há mais de 24
+            // meses somem dali (poda com carência,
+            // worldSimulationLifecycle.js:pruneOldDissolvedPartnerships).
+            // getFullPartnershipTimeline junta a parceria ativa (se houver)
+            // com o histórico já migrado pra PartnershipLegacy.
+            getFullPartnershipTimeline(p.id).catch(() => []),
             getCoachTenureHistory(p).catch(() => ({ past: [], current: null })),
             getPlayerRelationships(p.id),
           ]);
