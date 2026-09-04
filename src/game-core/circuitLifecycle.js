@@ -47,13 +47,21 @@ function isRetired(athlete) {
   return isAthleteRetired(athlete);
 }
 
+// Fase 3: rótulo de NÍVEL DE HABILIDADE do atleta (pontos/overall), não de
+// acesso a torneio — distinto de EntryManager.js (que decide elegibilidade
+// por posição de ranking, não por esta função). Adiciona Bronze como novo
+// piso abaixo de Silver (mesmo ponto de corte que Silver tinha antes,
+// deslocado); "Circuit Finals"/"Legacy Finals" não entram aqui de
+// propósito — são tipos de EVENTO (acesso por mérito/convite), não um
+// degrau contínuo de habilidade.
 function categoryFor(points, overall) {
   if (points >= 9000 || overall >= 92) return 'Crown';
   if (points >= 5000 || overall >= 86) return 'Elite';
   if (points >= 2500 || overall >= 80) return 'Masters';
   if (points >= 1100 || overall >= 72) return 'Platinum';
   if (points >= 400 || overall >= 64) return 'Gold';
-  return 'Silver';
+  if (points >= 100 || overall >= 56) return 'Silver';
+  return 'Bronze';
 }
 
 async function createWorldEvent(payload) {

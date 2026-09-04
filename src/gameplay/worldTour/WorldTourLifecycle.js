@@ -3,6 +3,7 @@ import { chooseTournament } from './TournamentSelectionAI.js';
 import { evaluateTournamentEntry, buildAthleteEntryContext, resolveEntryRank } from './EntryManager.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 // Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
@@ -10,7 +11,6 @@ const entities = /** @type {any} */ (localGame.entities);
 // truncar já no primeiro mês em que a população cruzar 1000+1.
 const ATHLETE_POPULATION_CAP = WORLD_RANKING_TARGET + 100;
 
-const FINISH_POINTS = Object.freeze({ champion: 1, final: 0.72, semifinal: 0.52, quarterfinal: 0.34, r16: 0.20, r32: 0.12, entry: 0.04 });
 
 function hash(value = '') {
   return Math.abs(fnv1aHash(String(value)));
@@ -38,18 +38,31 @@ function pairScore(pair, tournament) {
   return base + Number(pair.chemistry || 50) * 0.08 + (hash(`${pair.id}:${tournament.id}:pair`) % 900) / 100;
 }
 
-function finishForIndex(index) {
-  if (index === 0) return 'champion';
-  if (index === 1) return 'final';
-  if (index < 4) return 'semifinal';
-  if (index < 8) return 'quarterfinal';
-  if (index < 16) return 'r16';
-  if (index < 32) return 'r32';
-  return 'entry';
-}
-
-function winsForFinish(finish) {
-  return ({ champion: 5, final: 4, semifinal: 3, quarterfinal: 2, r16: 1, r32: 0, entry: 0 })[finish] || 0;
+// Fase 3, item 3A.1 — antes, uma tabela FIXA de 7 rótulos/frações
+// (FINISH_POINTS) hardcoded neste arquivo, alheia ao tamanho real da
+// chave de cada tier (uma chave de 8 nunca alcança "r32", uma de 64
+// precisava de 6 vitórias pro título mas winsForFinish só ia até 5 —
+// inconsistência que já existia antes desta fase). Substituída por uma
+// leitura direta de `getTournamentTierConfig(tier)`, que já carrega
+// roundLabels/roundPoints do tamanho de chave REAL do tier (circuitCatalog.js).
+// `index` é a posição do par na lista ordenada por pontuação (0 = campeão);
+// mapeia pra profundidade de eliminação por log2 (posições 1 → final,
+// 2-3 → semifinal, 4-7 → quartas, ... — o dobro de gente a cada rodada
+// anterior, mesma forma de qualquer chave de eliminação simples).
+function resolveFinish(tournament, index) {
+  const config = getTournamentTierConfig(tournament?.tier);
+  const roundCount = config.roundCount;
+  const depthFromChampion = index <= 0 ? 0 : Math.floor(Math.log2(index)) + 1;
+  const tierIndex = Math.max(0, roundCount - depthFromChampion);
+  return {
+    finish: config.roundLabels[tierIndex] || config.roundLabels[0],
+    points: config.roundPoints[tierIndex] ?? config.roundPoints[0] ?? 0,
+    // Vitórias = quantas rodadas foram vencidas pra chegar a este posto —
+    // exatamente o índice na tabela (0 = perdeu na entrada, roundCount =
+    // campeão, venceu todas). Mais preciso que a tabela antiga (fixa em
+    // até 5 vitórias mesmo pra chaves de 6 rodadas).
+    wins: tierIndex,
+  };
 }
 
 function addHeadToHead(rows, opponent, won, tournamentId, date) {
@@ -69,10 +82,6 @@ function addHeadToHead(rows, opponent, won, tournamentId, date) {
   if (index >= 0) nextRows[index] = next;
   else nextRows.push(next);
   return nextRows.sort((a, b) => Number(b.meetings || 0) - Number(a.meetings || 0)).slice(0, 16);
-}
-
-function pointsFor(tournament, finish) {
-  return Math.round(Number(tournament.rank_points || tournament.ranking_points || 0) * (FINISH_POINTS[finish] || FINISH_POINTS.entry));
 }
 
 function tournamentEndDate(tournament) {
@@ -179,15 +188,30 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     }
 
     for (const tournament of weekTournaments) {
-      // Achado #16b da auditoria (config, não lógica — corrigido na Fase 3):
-      // `tournament.draw_size` não existe (produção grava `main_draw_size`);
-      // o fallback de 32 aqui é o que faz Platinum+ (capacidade real 64)
-      // nunca preencher mais que a metade da chave. Mantido como está por
-      // enquanto — não é o escopo desta correção.
-      const drawSize = Math.max(2, Math.min(Number(tournament.draw_size || 32), 32));
+      // Achado #16b da auditoria, corrigido na Fase 3: lia
+      // `tournament.draw_size`, um campo que NUNCA existiu (produção grava
+      // `main_draw_size`) — o fallback de 32 fazia qualquer tier com chave
+      // real >32 (Masters/Elite/Crown na escada antiga, 64) nunca preencher
+      // mais que a metade. A nova escada (3A) não tem mais tier acima de
+      // 32, mas o campo errado continuava errado independente disso — lê
+      // `main_draw_size` (com o tamanho da config como respaldo, nunca um
+      // teto arbitrário).
+      const config = getTournamentTierConfig(tournament?.tier);
+      const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
       let entrants = [...(assignments.get(tournament.id) || [])];
-      if (entrants.length < 2) {
-        const needed = 2 - entrants.length;
+      // Fase 3, item 3B.2 (backstop de montagem de campo) — achado real: o
+      // gatilho era `entrants.length < 2`, ou seja, o preenchimento de
+      // reserva só entrava em ação pra garantir o MÍNIMO de uma partida
+      // (2 duplas), nunca pra completar a chave inteira. Uma chave de 32
+      // com 5 duplas escolhidas pela IA (chooseTournament) ficava com só 5
+      // — nunca tentava completar as 27 vagas restantes, mesmo com pares
+      // elegíveis sobrando no pool. Era EXATAMENTE a causa das 40,6% de
+      // chaves incompletas mesmo depois de triplicar as duplas ativas
+      // (Fase 2.6): mais duplas no pool não ajudava porque o preenchimento
+      // nunca as buscava. Corrigido pra sempre tentar completar até
+      // `drawSize`.
+      if (entrants.length < drawSize) {
+        const needed = drawSize - entrants.length;
         const present = new Set(entrants.map((pair) => pair.id));
         const remaining = pairs.filter((pair) => !present.has(pair.id));
         // Correção Fase 1A (achado #16): antes, o preenchimento de reserva
@@ -204,8 +228,10 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
           evaluateTournamentEntry(tournament, buildAthleteEntryContext({}, pairEntryRank(pair), tournament)).eligible);
         const usingBelowCutoffFallback = eligibleRemaining.length < needed;
         const backfillPool = usingBelowCutoffFallback ? remaining : eligibleRemaining;
-        if (usingBelowCutoffFallback) {
+        if (usingBelowCutoffFallback && remaining.length > eligibleRemaining.length) {
           console.warn(`[WorldTourLifecycle] ${tournament.id} (${tournament.tier}): só ${eligibleRemaining.length}/${needed} pares elegíveis disponíveis para completar a chave — preenchendo com os melhores disponíveis abaixo do corte de ranking.`);
+        } else if (backfillPool.length < needed) {
+          console.warn(`[WorldTourLifecycle] ${tournament.id} (${tournament.tier}): só ${backfillPool.length}/${needed} pares disponíveis no total (pool esgotado) — chave fecha incompleta por falta genuína de duplas, não por corte de elegibilidade.`);
         }
         entrants = [...entrants, ...backfillPool
           .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
@@ -219,8 +245,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const runnerUp = ordered[1];
 
       ordered.forEach((pair, index) => {
-        const finish = finishForIndex(index);
-        const points = pointsFor(tournament, finish);
+        const { finish, points, wins: finishWins } = resolveFinish(tournament, index);
         pair.athletes.forEach((athlete) => {
           athletePoints.set(athlete.id, (athletePoints.get(athlete.id) || 0) + points);
           if (!athleteOutcomes.has(athlete.id)) athleteOutcomes.set(athlete.id, []);
@@ -231,6 +256,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
             date: tournamentEndDate(tournament),
             finish,
             points,
+            wins: finishWins,
             won: finish === 'champion',
             partnership_id: pair.partnershipId,
             partner_id: pair.athletes.find((member) => member.id !== athlete.id)?.id,
@@ -248,6 +274,26 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         resolved_at: careerDate,
         champion: champion.name,
         runner_up: runnerUp.name,
+        // Fase 3, item 3E.3 — achado #21 registrava a referência órfã
+        // (champion_partnership_id/runner_up_partnership_id sobrevivem à
+        // poda de 24 meses de Partnership só por uma carência generosa, não
+        // por garantia estrutural). Escolha aqui: DENORMALIZAR os ids/nomes
+        // individuais dos dois atletas de cada dupla no PRÓPRIO Tournament
+        // — mesmo padrão que WorldEvent.title já usa pra história
+        // permanente — em vez de a poda checar referências antes de
+        // remover. Checar-antes-de-remover reintroduziria exatamente o
+        // padrão "nunca remove de verdade" que motivou a fase inteira (uma
+        // Partnership premiada em vários torneios, ou um Tournament nunca
+        // podado, bloquearia a exclusão indefinidamente). Com a
+        // denormalização, `champion_partnership_id`/`runner_up_partnership_id`
+        // viram best-effort — úteis enquanto a Partnership ainda existe,
+        // seguros como referência pendurada (dangling) depois que a poda
+        // remover — nenhum consumidor mais PRECISA deles pra saber quem
+        // venceu ou classificar reais-vs-bots.
+        champion_athlete_ids: champion.athletes.map((athlete) => athlete.id),
+        champion_athlete_names: champion.athletes.map((athlete) => athlete.name),
+        runner_up_athlete_ids: runnerUp.athletes.map((athlete) => athlete.id),
+        runner_up_athlete_names: runnerUp.athletes.map((athlete) => athlete.name),
         champion_partnership_id: champion.partnershipId,
         runner_up_partnership_id: runnerUp.partnershipId,
         simulated_entrants: ordered.length,
@@ -295,7 +341,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       race_points: racePoints,
       current_region: athlete.currentRegion,
       tournaments_played: Number(athlete.tournaments_played || 0) + outcomes.length,
-      career_wins: Number(athlete.career_wins || 0) + outcomes.reduce((sum, item) => sum + winsForFinish(item.finish), 0),
+      career_wins: Number(athlete.career_wins || 0) + outcomes.reduce((sum, item) => sum + Number(item.wins || 0), 0),
       career_losses: Number(athlete.career_losses || 0) + outcomes.filter((item) => item.finish !== 'champion').length,
       career_titles: Number(athlete.career_titles || 0) + outcomes.filter((item) => item.finish === 'champion').length,
       career_titles_by_tier: titlesByTier,
@@ -308,6 +354,14 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
   if (news.length) await entities.WorldEvent.bulkCreate(news);
 
+  // Fase 3, item 3F (achado #24) — perfilado por fase (instrumentação
+  // temporária, já revertida): 99,5% do custo desta função está NESTE
+  // bloco de persistência, não na seleção de torneio pela IA (0,3%) nem na
+  // montagem de campo do achado #22 (0,2%). `reranked` reescreve a
+  // população INTEIRA (até ~1000 atletas) toda vez que QUALQUER torneio
+  // pendente resolve — independente de quantos torneios foram resolvidos
+  // nesta chamada — clonando o save inteiro pra isso (achado #18). Ver
+  // AUDITORIA-ATLETAS-REAIS-VS-BOTS.md, achado #24, pros números completos.
   const reranked = [...athletes]
     .map((athlete) => ({ ...athlete, points: Number(athlete.world_ranking_points || athlete.ranking_points || 0) + (athletePoints.get(athlete.id) || 0) }))
     .sort((a, b) => b.points - a.points)

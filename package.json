@@ -185,6 +185,7 @@
     "test:backup-rotation-fase29": "node scripts/test-backup-rotation-fase29.mjs",
     "test:backup-cleanup-existing-installs-fase29": "node scripts/test-backup-cleanup-existing-installs-fase29.mjs",
     "test:partnership-legacy-scope-fase29": "node scripts/test-partnership-legacy-scope-fase29.mjs",
+    "test:tier-ladder-migration-fase3": "node scripts/test-tier-ladder-migration-fase3.mjs",
     "test:beta-candidate": "node scripts/test-beta-candidate.mjs",
     "test:overlay-back-stack": "node scripts/test-overlay-back-stack.mjs",
     "test:tournament-guided-flow": "node scripts/test-tournament-guided-flow.mjs",

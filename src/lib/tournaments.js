@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { enrichTournamentWeather } from '@/lib/weather';
+import { getTournamentTierConfig, TOURNAMENT_TIER_CONFIG } from '@/lib/circuitCatalog.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 
@@ -38,13 +39,18 @@ function hashString(str) {
   return Math.abs(hash);
 }
 
+// Fase 3: era uma cadeia de `if (tier === 'X')` cobrindo só os 6 tiers
+// antigos — Bronze/Circuit Finals/Legacy Finals cairiam todos no mesmo
+// fallback genérico de Silver, mesmo Circuit Finals/Legacy Finals sendo
+// eventos de alto prestígio (top 8/16) com público bem maior que um
+// torneio de entrada. Generalizado pela `prestige` (0-100) já calibrada
+// por tier em circuitCatalog.js — escala suave, nenhuma lista de nomes
+// paralela.
 function generateAudience(tier, hash) {
-  if (tier === 'Crown') return 180000 + (hash % 520000);
-  if (tier === 'Elite') return 70000 + (hash % 180000);
-  if (tier === 'Masters') return 25000 + (hash % 90000);
-  if (tier === 'Platinum') return 8000 + (hash % 32000);
-  if (tier === 'Gold') return 2500 + (hash % 11000);
-  return 600 + (hash % 3500);
+  const prestige = getTournamentTierConfig(tier).prestige;
+  const base = Math.round(400 * Math.pow(prestige / 14, 2.6));
+  const spread = Math.max(2500, Math.round(base * 2.5));
+  return base + (hash % spread);
 }
 
 export function enrichTournament(t) {
@@ -81,14 +87,14 @@ export function computePlayerTournamentStats(profile, matches) {
 export function computeCircuitStats(tournaments) {
   const finished = (tournaments || []).filter(t => t.champion);
   const totalAudience = finished.reduce((sum, t) => sum + (t.audience || 0), 0);
-  const byTier = {
-    Crown: finished.filter(t => t.tier === 'Crown').length,
-    Elite: finished.filter(t => t.tier === 'Elite').length,
-    Masters: finished.filter(t => t.tier === 'Masters').length,
-    Platinum: finished.filter(t => t.tier === 'Platinum').length,
-    Gold: finished.filter(t => t.tier === 'Gold').length,
-    Silver: finished.filter(t => t.tier === 'Silver').length,
-  };
+  // Fase 3: era uma lista fixa dos 6 tiers antigos — Bronze/Circuit
+  // Finals/Legacy Finals ficariam de fora do objeto inteiro (nem 0
+  // apareceria, `byTier.Bronze` seria `undefined`). Gerado a partir de
+  // TOURNAMENT_TIER_CONFIG, sempre com os 9 tiers presentes.
+  const byTier = {};
+  Object.keys(TOURNAMENT_TIER_CONFIG).forEach((tier) => {
+    byTier[tier] = finished.filter((t) => t.tier === tier).length;
+  });
 
   const championCounts = {};
   finished.forEach(t => {

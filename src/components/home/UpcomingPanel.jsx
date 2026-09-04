@@ -4,10 +4,19 @@ import { Trophy, Star } from 'lucide-react';
 import { GlassCard, EmptyStateCard } from '@/components/padel/ui';
 import { SPONSORS } from '@/lib/simulatedData';
 
+// Fase 3 — escada de 9 tiers (era 6). Sem estas 3 entradas, um torneio
+// Bronze/Circuit Finals/Legacy Finals caía no fallback `|| TIER_STYLES.Silver`
+// (abaixo) — Bronze é o tier mais comum pra um jogador iniciante (24/80
+// eventos), então era o caso mais visível deste widget da Home.
 const TIER_STYLES = {
+  'Legacy Finals':{bg:'bg-rose-500/15',text:'text-rose-300',label:'Legacy Finals'},
   Crown:{bg:'bg-amber-500/15',text:'text-amber-300',label:'Crown'}, Elite:{bg:'bg-fuchsia-500/15',text:'text-fuchsia-300',label:'Elite'},
-  Masters:{bg:'bg-purple-500/15',text:'text-purple-300',label:'Masters'}, Platinum:{bg:'bg-cyan-500/15',text:'text-cyan-300',label:'Platinum'},
+  Masters:{bg:'bg-purple-500/15',text:'text-purple-300',label:'Masters'},
+  'Circuit Finals':{bg:'bg-indigo-500/15',text:'text-indigo-300',label:'Circuit Finals'},
+  Platinum:{bg:'bg-cyan-500/15',text:'text-cyan-300',label:'Platinum'},
   Gold:{bg:'bg-yellow-500/15',text:'text-yellow-300',label:'Gold'}, Silver:{bg:'bg-slate-500/15',text:'text-slate-300',label:'Silver'},
+  Bronze:{bg:'bg-orange-800/15',text:'text-orange-300',label:'Bronze'},
+  Exibição:{bg:'bg-teal-500/15',text:'text-teal-300',label:'Pré-Temporada'},
 };
 
 export default function UpcomingPanel({ tournaments }) {

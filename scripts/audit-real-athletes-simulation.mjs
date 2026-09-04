@@ -313,9 +313,13 @@ try {
       .filter((t) => t.world_tour_event && t.status === 'finalizado' && !recordedTournamentIds.has(t.id));
     for (const tournament of finalized) {
       recordedTournamentIds.add(tournament.id);
-      const championPartnership = tournament.champion_partnership_id
-        ? await localGame.entities.Partnership.get(tournament.champion_partnership_id).catch(() => null) : null;
-      const championIds = championPartnership ? [championPartnership.athlete_a_id, championPartnership.athlete_b_id] : [];
+      // Fase 3, item 3E.3 (achado #21): lê os ids denormalizados
+      // diretamente no Tournament (champion_athlete_ids,
+      // WorldTourLifecycle.js) em vez de reabrir a Partnership por
+      // champion_partnership_id — funciona igual antes E depois da poda de
+      // 24 meses remover a Partnership de origem (o objetivo inteiro da
+      // denormalização), e evita uma leitura extra por torneio.
+      const championIds = Array.isArray(tournament.champion_athlete_ids) ? tournament.champion_athlete_ids : [];
       const championRealCount = championIds.filter((id) => realAthleteIds.has(id)).length;
       const [athleteA, athleteB] = await Promise.all(championIds.map((id) => localGame.entities.AthleteProfile.get(id).catch(() => null)));
       const championOvrAvg = (athleteA && athleteB) ? round((Number(athleteA.overall_rating) + Number(athleteB.overall_rating)) / 2, 1) : null;

@@ -68,7 +68,11 @@ import { APP_ROUTES } from '../navigation/routes.js';
 // raciocínio de v9: reconcileTutorialProgress escaneia por conteúdo da
 // lista atual, nunca por posição salva, então uma carreira em andamento
 // continua resolvendo corretamente.
-export const TUTORIAL_VERSION = 13;
+// Fase 3, item 3C.3: bump manual — "Competições" (tournament-registered/
+// first-match) mudou de POSIÇÃO no catálogo (voltou pra logo após o
+// calendário). Carreiras com tutorial em andamento precisam reconciliar
+// de novo pra "etapa atual" refletir a nova ordem, não a posição antiga.
+export const TUTORIAL_VERSION = 14;
 
 const step = (id, objectiveType, title, route, chapter, completionType = 'open_and_interact', extra = {}) => ({
   id,
@@ -197,6 +201,36 @@ export const TUTORIAL_STEPS = [
     kind: 'VISIT',
   }),
 
+  // ── Fase F — Competições (Fase 3, item 3C.3: volta pra cá, logo após o
+  // calendário — posição original de antes da Fase 15.7. O motivo de ter
+  // sido movida pro fim (1º torneio real só abria ~5 dias e só ocorria
+  // ~35 dias após o início da carreira) não existe mais: a Fase 3 criou
+  // um evento de Exibição/Pré-Temporada com inscrição livre desde o dia 1
+  // e chave de 8 (circuitCatalog.js:buildPreSeasonExhibition) — "Inscreva-se
+  // em um torneio" volta a ser cumprível cedo de verdade, não só na
+  // teoria. O que precisa continuar exigindo um evento do CIRCUITO
+  // MUNDIAL (não a Exibição) é a etapa seguinte, "first-match" — ver
+  // tutorialState.js:deriveTutorialFacts (`world_tour_event !== false`). ──
+  step('tournament-registered', 'join_tournament', 'Inscreva-se em um torneio', '/tournaments', 'Competições', 'domain_event', {
+    requirements: ['has-partner'],
+    explanation: 'Escolha um evento com inscrições abertas (a Exibição de pré-temporada já vale, sem esperar o calendário do circuito) e confirme a vaga da dupla.',
+    whyItMatters: 'Somente inscrições confirmadas permitem jogar; torneios com datas sobrepostas geram conflito.',
+    actionLabel: 'Escolher torneio',
+    reward: { xp: 100, coins: 150 },
+    kind: 'EVENT',
+  }),
+  // Primeiro torneio DO CIRCUITO MUNDIAL (a Exibição não conta pra esta
+  // etapa — matchCompleted em tutorialState.js exige world_tour_event
+  // !== false). Pode acontecer dias depois; nunca trava o resto do jogo —
+  // o Guia flutuante mostra a etapa pendente sem bloquear nenhuma outra
+  // tela enquanto o torneio não chega.
+  step('first-match', 'play_matches', 'Jogue sua primeira partida do circuito mundial', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
+    explanation: 'A Exibição de pré-temporada é um bom aquecimento, mas esta etapa pede uma partida de um evento do Circuito Mundial de verdade. No dia do torneio, jogue a partida — o técnico ao vivo orienta táticas durante o jogo. Depois do resultado, responda a entrevista pós-jogo se ela for gerada, e siga para a próxima rodada.',
+    whyItMatters: 'O resultado mostra como treino, parceiro e tática funcionaram juntos.',
+    reward: { xp: 100, coins: 150 },
+    kind: 'EVENT',
+  }),
+
   // ── Fase G — Construa sua equipe (Tutorial 4.1, Parte D: comissão
   // técnica + auxiliares numa página só — /staff não tem sub-view que
   // distinga um do outro, então uma visita ensina os dois) ─────────────
@@ -275,33 +309,6 @@ export const TUTORIAL_STEPS = [
     explanation: 'O sino é a central operacional da carreira: decisões importantes, propostas, partidas e relatórios aparecem ali.',
     whyItMatters: 'Vale conferir o sino regularmente — sem precisar abrir cada notificação agora.',
     kind: 'VISIT',
-  }),
-
-  // ── Fase F — Competições (Correção UI/cronologia): movida para o FINAL
-  // da trilha, depois de todos os grupos cumpríveis no dia 1. Antes ficava
-  // no passo 13/27 (logo após o calendário), mas o 1º torneio real da
-  // temporada só abre inscrição ~5 dias e só ocorre ~35 dias após o início
-  // da carreira (Fase 15.7, calendário rebalanceado) — o jogador travava no
-  // meio do tutorial esperando o tempo passar. onboardingNextAction.js
-  // ainda evita sugerir esta etapa como CTA da Home enquanto nenhum
-  // torneio tiver inscrição aberta; o Guia flutuante mostra a etapa
-  // pendente sem bloquear nenhuma outra tela, como já documentado abaixo. ──
-  step('tournament-registered', 'join_tournament', 'Inscreva-se em um torneio', '/tournaments', 'Competições', 'domain_event', {
-    requirements: ['has-partner'],
-    explanation: 'Escolha um evento com inscrições abertas e confirme a vaga da dupla.',
-    whyItMatters: 'Somente inscrições confirmadas permitem jogar; torneios com datas sobrepostas geram conflito.',
-    actionLabel: 'Escolher torneio',
-    reward: { xp: 100, coins: 150 },
-    kind: 'EVENT',
-  }),
-  // Primeiro torneio (pode acontecer dias depois; nunca trava o resto do
-  // jogo — o Guia flutuante mostra a etapa pendente sem bloquear nenhuma
-  // outra tela enquanto o torneio não chega).
-  step('first-match', 'play_matches', 'Jogue sua primeira partida de torneio', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
-    explanation: 'No dia do torneio, jogue a partida — o técnico ao vivo orienta táticas durante o jogo. Depois do resultado, responda a entrevista pós-jogo se ela for gerada, e siga para a próxima rodada.',
-    whyItMatters: 'O resultado mostra como treino, parceiro e tática funcionaram juntos.',
-    reward: { xp: 100, coins: 150 },
-    kind: 'EVENT',
   }),
 
   step('autonomy', 'finish_tutorial', 'Comece a carreira livre', '/game', 'Gestão, história e legado', 'confirm_understanding', {

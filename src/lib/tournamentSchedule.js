@@ -1,31 +1,11 @@
-const TIER_ROUNDS = Object.freeze({
-  Silver: Object.freeze([
-    { label: 'Oitavas de Final', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' },
-    { label: 'Semifinal', short: 'SF' },
-    { label: 'Final', short: 'F' },
-  ]),
-  Gold: Object.freeze([
-    { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ]),
-  Platinum: Object.freeze([
-    { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ]),
-  Masters: Object.freeze([
-    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ]),
-  Elite: Object.freeze([
-    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ]),
-  Crown: Object.freeze([
-    { label: 'R64', short: 'R64' }, { label: 'R32', short: 'R32' }, { label: 'R16', short: 'R16' },
-    { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' },
-  ]),
-});
+// Fase 3, item 3A.1 — era uma tabela hardcoded própria, com só os 6 tiers
+// antigos e (achado real encontrado ao migrar) rótulos "R64" pra chaves
+// que a config sempre teve como 32/64 dependendo do tier, sem nenhuma
+// ligação com `main_draw_size` de verdade. Delegado pra
+// getTournamentTierConfig(tier).displayRounds — mesma tabela que
+// circuitCatalog.js já gera (rótulo pela chave REAL de cada tier), uma
+// fonte só.
+import { getTournamentTierConfig } from './circuitCatalog.js';
 
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
@@ -42,7 +22,7 @@ export function addTournamentDays(value, amount) {
 }
 
 export function getTournamentRoundsForTier(tier) {
-  return (TIER_ROUNDS[tier] || TIER_ROUNDS.Silver).map((round) => ({ ...round }));
+  return getTournamentTierConfig(tier).displayRounds.map((round) => ({ ...round }));
 }
 
 export function getTournamentMainRoundCount(tournament = {}) {
@@ -75,5 +55,3 @@ export function getTournamentCampaignDates(tournament = {}, { qualifyingRequired
     days,
   };
 }
-
-export { TIER_ROUNDS as TOURNAMENT_ROUNDS };

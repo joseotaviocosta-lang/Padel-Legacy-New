@@ -27,20 +27,33 @@ import { useCareer } from '@/careers/useCareer.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { resolveTournamentOpenMode, TOURNAMENT_DEEP_LINK_MODES } from '@/lib/tournamentDeepLink.js';
 
+// Fase 3 — escada de 9 tiers (era 6). Bronze/Circuit Finals/Legacy Finals
+// adicionados com estilo próprio; sem eles, TIER_CONFIG[tier] caía no
+// fallback `|| TIER_CONFIG.Silver` (linhas abaixo) — não quebrava a tela,
+// mas rotulava/estilizava um torneio Bronze ou uma final de mérito como
+// "Legacy Silver", incorretamente.
 const TIER_CONFIG = {
+  'Legacy Finals':{label:'Legacy Finals',badge:'bg-rose-500/15 text-rose-300 border-rose-500/40',card:'border-rose-500/25 hover:border-rose-500/50',glow:'shadow-[0_0_24px_rgba(244,63,94,0.14)]',icon:Trophy,diffLabel:'Convite · Top 16 duplas',diffColor:'text-red-400'},
   Crown:{label:'Legacy Crown',badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',card:'border-amber-500/25 hover:border-amber-500/50',glow:'shadow-[0_0_24px_rgba(245,158,11,0.12)]',icon:Crown,diffLabel:'Lendário',diffColor:'text-red-400'},
   Elite:{label:'Legacy Elite',badge:'bg-fuchsia-500/15 text-fuchsia-300 border-fuchsia-500/30',card:'border-fuchsia-500/20 hover:border-fuchsia-500/40',glow:'',icon:Flame,diffLabel:'Muito Difícil',diffColor:'text-red-400'},
   Masters:{label:'Legacy Masters',badge:'bg-purple-500/15 text-purple-300 border-purple-500/30',card:'border-purple-500/20 hover:border-purple-500/40',glow:'',icon:Trophy,diffLabel:'Difícil',diffColor:'text-orange-400'},
+  'Circuit Finals':{label:'Circuit Finals',badge:'bg-indigo-500/15 text-indigo-300 border-indigo-500/40',card:'border-indigo-500/25 hover:border-indigo-500/50',glow:'',icon:Star,diffLabel:'Convite · Top 8',diffColor:'text-orange-400'},
   Platinum:{label:'Legacy Platinum',badge:'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',card:'border-cyan-500/20 hover:border-cyan-500/40',glow:'',icon:Star,diffLabel:'Competitivo',diffColor:'text-yellow-400'},
   Gold:{label:'Legacy Gold',badge:'bg-yellow-500/15 text-yellow-300 border-yellow-500/30',card:'border-yellow-500/20 hover:border-yellow-500/40',glow:'',icon:Award,diffLabel:'Acessível',diffColor:'text-emerald-400'},
   Silver:{label:'Legacy Silver',badge:'bg-slate-500/15 text-slate-300 border-slate-500/30',card:'border-slate-500/20 hover:border-slate-500/40',glow:'',icon:Shield,diffLabel:'Entrada Mundial',diffColor:'text-slate-300'},
+  Bronze:{label:'Legacy Bronze',badge:'bg-orange-800/15 text-orange-300 border-orange-800/30',card:'border-orange-800/20 hover:border-orange-800/40',glow:'',icon:Shield,diffLabel:'Iniciante',diffColor:'text-slate-400'},
+  // Fase 3, item 3C.2: evento de Exibição/Pré-Temporada — fora da escada
+  // competitiva (sem pontos de ranking), estilo próprio pra não ser
+  // confundido com um tier real na listagem.
+  Exibição:{label:'Pré-Temporada',badge:'bg-teal-500/15 text-teal-300 border-teal-500/30',card:'border-teal-500/20 hover:border-teal-500/40',glow:'',icon:Zap,diffLabel:'Amistoso · sem ranking',diffColor:'text-teal-300'},
 };
 
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
 
 const FILTERS = [
-  {id:'all',label:'Todos'}, {id:'Crown',label:'Crown'}, {id:'Elite',label:'Elite'},
-  {id:'Masters',label:'Masters'}, {id:'Platinum',label:'Platinum'}, {id:'Gold',label:'Gold'}, {id:'Silver',label:'Silver'},
+  {id:'all',label:'Todos'}, {id:'Legacy Finals',label:'Legacy Finals'}, {id:'Crown',label:'Crown'}, {id:'Elite',label:'Elite'},
+  {id:'Masters',label:'Masters'}, {id:'Circuit Finals',label:'Circuit Finals'}, {id:'Platinum',label:'Platinum'},
+  {id:'Gold',label:'Gold'}, {id:'Silver',label:'Silver'}, {id:'Bronze',label:'Bronze'}, {id:'Exibição',label:'Pré-Temporada'},
 ];
 
 function prepareTournamentList(items) {

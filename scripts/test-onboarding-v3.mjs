@@ -104,23 +104,27 @@ try {
   gate('Nenhuma etapa referencia o Assistente de carreira removido', !TUTORIAL_STEPS.some((step) => /assistente/i.test(step.title) || /assistente de carreira/i.test(step.explanation || '')));
 
   // ── Nova sequência principal bate com a ordem pedida (Fases A-F) ────────
-  // Correção UI/cronologia (v13): Competições (tournament-registered,
-  // first-match) moveu para o FIM da trilha — o 1º torneio real só abre
-  // inscrição semanas após o início da carreira (calendário rebalanceado da
-  // Fase 15.7), e o jogador travava esperando no meio do tutorial.
-  // calendar-known ("avance 1 dia", sempre cumprível) saiu de Competições e
-  // ficou junto de Desenvolvimento do atleta. Nenhum id/objectiveType/
+  // Fase 3, item 3C.3: Competições (tournament-registered, first-match)
+  // VOLTA pra logo após o calendário — posição de antes do v13. O motivo
+  // do v13 mover pro fim (1º torneio real só abria ~5 dias e só ocorria
+  // ~35 dias após o início da carreira) não existe mais: um evento de
+  // Exibição/Pré-Temporada (circuitCatalog.js:buildPreSeasonExhibition)
+  // tem inscrição livre desde o dia 1, chave de 8, sem pontos de ranking.
+  // "tournament-registered" volta a ser cumprível cedo de verdade.
+  // "first-match" continua exigindo um evento do CIRCUITO MUNDIAL
+  // especificamente (tutorialState.js: world_tour_event !== false) — a
+  // Exibição sozinha não conclui mais essa etapa. Nenhum id/objectiveType/
   // mecanismo mudou, só a posição.
-  gate('Sequência: criar atleta → formar dupla → treinador → treino → calendário → (dia 1 completo) → torneio → autonomia', TUTORIAL_STEPS.map((s) => s.id).join(',') === [
+  gate('Sequência: criar atleta → formar dupla → treinador → treino → calendário → torneio (Exibição cumpre cedo) → resto → autonomia', TUTORIAL_STEPS.map((s) => s.id).join(',') === [
     'career-created', 'athlete-named', 'side-selected', 'difficulty-selected', 'style-selected', 'appearance-known', 'profile-reviewed',
     'offers-reviewed', 'partner-selected',
     'coaches-known',
     'first-training',
     'calendar-known',
+    'tournament-registered', 'first-match',
     'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
     'shop-known', 'equipment-known', 'athletes-known', 'ranking-known',
     'world-known', 'news-known', 'press-known', 'notifications-known',
-    'tournament-registered', 'first-match',
     'autonomy',
   ].join(','));
 
@@ -193,11 +197,38 @@ try {
   gate('Treino concluído (evento de domínio) → avança para Fase E (calendário)', getCurrentTutorialStep(state)?.id === 'calendar-known');
 
   state = await confirmStep('calendar-known');
-  // Correção UI/cronologia (v13): a expansão guiada (comissão técnica,
-  // economia, circuito) agora vem ANTES de Competições — todos cumpríveis
-  // no dia 1, diferente do torneio real que só abre inscrição semanas
-  // depois (calendário rebalanceado da Fase 15.7).
-  gate('Fase E (calendário) concluída → expansão guiada (grupos cumpríveis no dia 1)', getCurrentTutorialStep(state)?.id === 'staff-known');
+  // Fase 3, item 3C.3: Competições volta pra logo após o calendário — o
+  // evento de Exibição/Pré-Temporada (inscrição livre desde o dia 1)
+  // torna "tournament-registered" cumprível cedo de verdade, então não
+  // precisa mais ficar atrás da expansão guiada esperando um torneio real
+  // do circuito abrir.
+  gate('Fase E (calendário) concluída → Fase F (torneio, cumprível cedo via Exibição)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
+
+  // Item 3C.2/3C.3: a inscrição que desbloqueia "tournament-registered"
+  // pode ser a da Exibição (sem `world_tour_event`, não é um evento do
+  // circuito) — a etapa de REGISTRO não distingue as duas, só a de JOGAR
+  // (abaixo) exige especificamente o circuito mundial.
+  const registrations = [{ id: 'reg-exhibition', profile_id: profile.id, tournament_id: 'exhibition-1', status: 'confirmed' }];
+  state = (await reconcile({ registrations, matches: [], trainings })).state;
+  gate('Inscrição na Exibição (evento de domínio) → avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
+
+  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 2):
+  // "first-match" exige explicitamente uma partida OFICIAL de torneio —
+  // os mesmos campos já gravados desde a finalização real (matchFinalization.js
+  // para treino, TournamentModal.jsx para torneio), não matches_played
+  // sozinho (contador também incrementado por treino).
+  //
+  // Fase 3, item 3C.3: e especificamente do CIRCUITO MUNDIAL, não da
+  // Exibição — uma partida com `world_tour_event:false` NÃO conclui esta
+  // etapa, mesmo sendo oficial/de torneio.
+  const exhibitionMatch = { id: 'match-exhibition', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true, world_tour_event: false };
+  state = (await reconcile({ registrations, matches: [exhibitionMatch], trainings })).state;
+  gate('Partida da EXIBIÇÃO (world_tour_event:false) NÃO conclui first-match', getCurrentTutorialStep(state)?.id === 'first-match');
+
+  const matches = [exhibitionMatch, { id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true, world_tour_event: true }];
+  profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 2 });
+  state = (await reconcile({ registrations, matches, trainings })).state;
+  gate('Partida do CIRCUITO MUNDIAL concluída (evento de domínio) → avança para a expansão guiada', getCurrentTutorialStep(state)?.id === 'staff-known');
 
   for (const stepId of [
     'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',
@@ -206,21 +237,7 @@ try {
   ]) {
     state = await confirmStep(stepId);
   }
-  gate('Expansão guiada concluída → Fase F (primeiro torneio, agora no final da trilha)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
-
-  const registrations = [{ id: 'reg-1', profile_id: profile.id, tournament_id: 't1', status: 'confirmed' }];
-  state = (await reconcile({ registrations, matches: [], trainings })).state;
-  gate('Inscrição em torneio (evento de domínio) → avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
-
-  // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 2):
-  // "first-match" exige explicitamente uma partida OFICIAL de torneio —
-  // os mesmos campos já gravados desde a finalização real (matchFinalization.js
-  // para treino, TournamentModal.jsx para torneio), não matches_played
-  // sozinho (contador também incrementado por treino).
-  const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
-  profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
-  state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Partida OFICIAL concluída (evento de domínio) → avança para autonomy (etapa final, Competições era o último grupo)', getCurrentTutorialStep(state)?.id === 'autonomy');
+  gate('Expansão guiada concluída → autonomy (etapa final)', getCurrentTutorialStep(state)?.id === 'autonomy');
 
   state = await confirmStep('autonomy');
   gate('Onboarding principal concluído de ponta a ponta (status completed)', state.status === 'completed');

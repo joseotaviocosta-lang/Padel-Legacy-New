@@ -40,7 +40,19 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
     // em todo Match desde a finalização (competition_type/is_official,
     // matchFinalization.js para treino, TournamentModal.jsx para torneio) —
     // só faltava consultá-los aqui.
-    matchCompleted: matches.some(item => item.competition_type === 'tournament' && item.is_official === true),
+    //
+    // Fase 3, item 3C.3: com o evento de Exibição/Pré-Temporada (sem
+    // pontos de ranking, aberto desde o dia 1), a etapa final do tutorial
+    // precisa continuar exigindo um evento do CIRCUITO MUNDIAL, não
+    // qualquer torneio — senão a Exibição sozinha "formatura" o jogador
+    // antes de ele nunca ter visto uma partida real do circuito.
+    // `item.world_tour_event !== false` (não `=== true`) de propósito:
+    // partidas já existentes em saves de ANTES desta mudança não têm esse
+    // campo (`undefined`) — tratadas como do circuito (era a única
+    // categoria de torneio que existia até aqui), preservando o progresso
+    // de quem já cumpriu esta etapa. Só uma partida NOVA da Exibição
+    // (que grava `world_tour_event:false` explicitamente) deixa de contar.
+    matchCompleted: matches.some(item => item.competition_type === 'tournament' && item.is_official === true && item.world_tour_event !== false),
     tutorialFinished: Boolean(player.tutorial_onboarding?.completedAt || player.onboarding_completed || facts.tutorialFinished || facts.completedObjectiveTypes?.includes('finish_tutorial')),
   };
 }

@@ -578,6 +578,13 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         competition_type: 'tournament',
         is_official: true,
         is_tournament: true,
+        // Fase 3, item 3C.3: distingue uma partida do CIRCUITO MUNDIAL de
+        // uma da Exibição/Pré-Temporada (mesmo competition_type='tournament'/
+        // is_official=true nas duas) — usado por
+        // tutorialState.js:deriveTutorialFacts pra exigir especificamente um
+        // evento do circuito na etapa final do tutorial, não qualquer
+        // torneio (a Exibição sozinha não conclui mais essa etapa).
+        world_tour_event: Boolean(tournament.world_tour_event),
         match_occurred: true,
         tournament_outcome: nextRun.status === 'champion' ? 'champion' : nextRun.status === 'eliminated' ? 'eliminated' : 'advanced',
         press_importance: completedMatch.pressImportance,

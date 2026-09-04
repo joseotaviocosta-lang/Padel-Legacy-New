@@ -7,7 +7,7 @@ import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 import { evolveAthletesMonthly } from '@/lib/athleteBehavior';
 import { simulatePastTournaments } from '@/lib/teamRanking';
 import { canAdvanceDay, processCalendarEvents, executePlannedActivities, executeWeeklyTrainingPlan } from '@/lib/calendarSystem';
-import { buildSeasonTournaments, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import { buildSeasonTournaments, buildPreSeasonExhibition, getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 import { getTournamentRoundsForTier } from '@/lib/tournamentSchedule.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 
@@ -329,23 +329,38 @@ export function getLockedPartners(profile) {
 }
 
 // Tournament helpers
+//
+// Fase 3, item 3A.1 — TIER_REWARD_TABLES (coins/xp/rankPoints por rodada
+// alcançada) era uma cópia hardcoded, em CÓDIGO, das mesmas 6 tabelas que
+// WorldTourLifecycle.js recalculava de forma DIFERENTE (frações fixas
+// sobre `tournament.rank_points`) — duas fontes de verdade que podiam
+// divergir (e cobriam só os 6 tiers antigos; Bronze/Circuit
+// Finals/Legacy Finals ficariam sem tabela nenhuma, quebrando
+// getTournamentRewards). Agora lê DIRETO de
+// getTournamentTierConfig(tier).roundCoins/roundXp/roundPoints —
+// mesmíssima tabela que a simulação de fundo usa (circuitCatalog.js,
+// buildRoundTable), gerada uma vez a partir de UM parâmetro por tier.
+//
+// TIER_DIFFICULTY_PATHS continua uma progressão desenhada à mão (não é
+// uma fração matemática como os pontos) — o comprimento de cada tier
+// precisa bater com `roundCount` da config (achado #16b: chave errada
+// quebrava exatamente por essa mesma classe de descompasso).
 const TIER_DIFFICULTY_PATHS = {
+  Bronze: ['iniciante','iniciante','iniciante','amador'],
   Silver: ['iniciante','iniciante','amador','competitivo'],
   Gold: ['iniciante','amador','competitivo','competitivo','avancado'],
   Platinum: ['amador','competitivo','competitivo','avancado','elite'],
-  Masters: ['competitivo','competitivo','avancado','avancado','elite','elite'],
-  Elite: ['avancado','avancado','elite','elite','lenda','lenda'],
-  Crown: ['avancado','elite','elite','lenda','lenda','lenda'],
+  'Circuit Finals': ['avancado','elite','elite'],
+  Masters: ['competitivo','avancado','avancado','elite','elite'],
+  Elite: ['avancado','avancado','elite','elite','lenda'],
+  Crown: ['elite','elite','lenda','lenda','lenda'],
+  'Legacy Finals': ['elite','lenda','lenda'],
 };
 
-const TIER_REWARD_TABLES = {
-  Silver: { coins:[15,45,110,260,650], xp:[12,30,70,130,220], rankPoints:[2,6,15,30,55] },
-  Gold: { coins:[30,80,180,380,760,1300], xp:[20,50,110,220,340,420], rankPoints:[5,15,35,70,120,180] },
-  Platinum: { coins:[55,140,320,700,1450,2800], xp:[35,90,190,360,560,760], rankPoints:[10,30,70,140,240,350] },
-  Masters: { coins:[90,220,500,1050,2200,3900,6200], xp:[60,140,290,520,780,1020,1250], rankPoints:[20,50,110,220,380,600,900] },
-  Elite: { coins:[140,350,800,1650,3400,7000,12500], xp:[90,220,430,760,1200,1700,2200], rankPoints:[35,85,180,350,600,950,1400] },
-  Crown: { coins:[220,550,1250,2600,5400,11000,24000], xp:[140,340,650,1100,1800,2700,3600], rankPoints:[50,120,250,500,900,1500,2200] },
-};
+function tierRewardTable(tier) {
+  const config = getTournamentTierConfig(tier);
+  return { coins: config.roundCoins, xp: config.roundXp, rankPoints: config.roundPoints };
+}
 
 export function getTournamentRounds(tournament) {
   return getTournamentRoundsForTier(tournament?.tier);
@@ -384,7 +399,7 @@ export function generateTournamentOpponent(tournament, profile, roundIdx, exclud
 }
 
 export function getTournamentRewards(tier, roundsWon, difficultySource = null) {
-  const table = TIER_REWARD_TABLES[tier] || TIER_REWARD_TABLES.Silver;
+  const table = tierRewardTable(tier);
   const idx = Math.max(0, Math.min(table.coins.length - 1, roundsWon));
   if (!difficultySource) return { coins:table.coins[idx], xp:table.xp[idx], rankPoints:table.rankPoints[idx] };
   return {
@@ -395,7 +410,7 @@ export function getTournamentRewards(tier, roundsWon, difficultySource = null) {
 }
 
 // ── Future tournament generation ──────────────────────────────────────────
-// Mantém ao menos 15 meses de calendário, usando o Padel Legacy World Tour global, com eventos simultâneos e seis níveis.
+// Mantém ao menos 15 meses de calendário, usando o Padel Legacy World Tour global, com eventos simultâneos e nove níveis (Fase 3).
 async function ensureFutureTournamentsInternal(careerDate) {
   if (!careerDate) return { created: 0, repaired: 0 };
   try {
@@ -424,6 +439,20 @@ async function ensureFutureTournamentsInternal(careerDate) {
       }
     }
 
+    // Fase 3, item 3C.2 — Exibição/Pré-Temporada é ÚNICA por carreira
+    // (não repete a cada ano, diferente da temporada regular). O gatilho é
+    // "nunca existiu uma" (`is_exhibition` em QUALQUER torneio já
+    // persistido, não só os do ano corrente), não "estamos no ano N" —
+    // esta função roda de novo a cada avanço de dia, com `careerDate`
+    // sempre no PRESENTE da carreira, não no ano de criação. Sem esse
+    // gatilho baseado em existência (em vez de ano), a exibição seria
+    // recriada indefinidamente ou nunca colocada no ano certo. Colocada no
+    // primeiro ano do horizonte (careerD.getFullYear()) — pra uma carreira
+    // nova, esse É o ano de criação; season_id é resolvido dentro do laço
+    // abaixo (a temporada daquele ano pode ainda não existir aqui em cima).
+    const needsExhibition = !tournaments.some((item) => item?.is_exhibition);
+    const exhibitionYear = careerD.getFullYear();
+
     let created = 0;
     let repaired = 0;
     let removedObsolete = 0;
@@ -445,6 +474,20 @@ async function ensureFutureTournamentsInternal(careerDate) {
         } catch (error) {
           console.warn('Não foi possível criar temporada', year, error);
         }
+      }
+
+      if (needsExhibition && year === exhibitionYear) {
+        // Sem o filtro de janela `dateObj < careerD || dateObj > horizon`
+        // que os eventos regulares abaixo aplicam, de propósito: o
+        // gatilho de criação é ÚNICO E DEFINITIVO (needsExhibition, calculado
+        // uma vez acima) — se pulasse aqui por já termos passado do dia 11,
+        // nunca mais tentaria de novo (diferente dos eventos regulares, que
+        // são reconciliados a cada chamada). Melhor existir como evento já
+        // encerrado do que nunca existir.
+        const exhibitionPayload = buildPreSeasonExhibition(year, season?.id ?? null);
+        desiredTournamentKeys.add(`${year}:${exhibitionPayload.circuit_code}`);
+        pendingTournamentUpserts.push(exhibitionPayload);
+        created += 1;
       }
 
       const annualSchedule = buildSeasonTournaments(year, season?.id);
