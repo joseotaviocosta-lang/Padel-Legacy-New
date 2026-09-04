@@ -173,7 +173,22 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
   // Uma gravação individual por atleta classificado gerava até 160 escritas
   // completas do save toda semana. Acumula os patches e grava tudo em uma
   // única bulkUpdate ao final do laço.
+  //
+  // Fase 4.0, item 2A (achado #18): ranking_history saiu do AthleteProfile
+  // (documento quente, clonado em toda transação de escrita — achado #18)
+  // pra uma coleção própria, AthleteRankingHistory. Busca em todo `src/`
+  // não encontrou NENHUM consumidor de leitura pra este campo (write-only,
+  // autorreferente — só lê pra truncar/anexar o próprio histórico) — mas
+  // como existe intenção futura plausível (gráfico de evolução de ranking),
+  // os dados são preservados numa coleção separada, não descartados.
+  // world_ranking/ranking_history entram como `undefined` no payload abaixo
+  // pra migrar saves existentes: o merge de bulkUpdate só sobrescreve uma
+  // chave se ela EXISTIR no patch (mesmo com valor undefined) — omitir a
+  // chave deixaria o valor antigo intacto. Como este bulkUpdate já toca
+  // toda a população TODA semana, a migração não custa nenhuma escrita a
+  // mais — reaproveita a única que já existia.
   const athleteUpdates = [];
+  const rankingHistoryUpdates = [];
   for (let index = 0; index < ordered.length; index += 1) {
     const entry = ordered[index];
     const athlete = entry.athlete;
@@ -191,7 +206,10 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       ranking_previous_position: oldPosition,
       ranking_trend: newPosition < oldPosition ? 'subindo' : newPosition > oldPosition ? 'caindo' : 'estavel',
       circuit_category: categoryFor(entry.generalPoints, athleteOverall(athlete)),
-      ranking_history: entry.history,
+      // Migração (ver comentário acima): remove os dois campos mortos de
+      // saves existentes na próxima vez que este atleta for tocado.
+      world_ranking: undefined,
+      ranking_history: undefined,
       career_stage: careerState.stage,
       career_phase: careerState.legacyPhase,
       last_circuit_update: currentDate,
@@ -200,9 +218,13 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       // gravação semanal, nenhuma transação nova.
       best_ranking_position: Math.min(newPosition, safeNumber(athlete.best_ranking_position, newPosition)),
     });
+    rankingHistoryUpdates.push({ id: athlete.id, history: entry.history });
   }
   if (athleteUpdates.length) {
     await localGame.entities.AthleteProfile.bulkUpdate(athleteUpdates);
+  }
+  if (rankingHistoryUpdates.length) {
+    await localGame.entities.AthleteRankingHistory.bulkUpdate(rankingHistoryUpdates);
   }
 
   // Fase 15 (Parte 24/28/37): marcos de ranking dos bots — MESMA escada

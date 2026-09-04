@@ -171,6 +171,14 @@ try {
   const { evaluateTournamentEntry, buildAthleteEntryContext } = await vite.ssrLoadModule('/src/gameplay/worldTour/EntryManager.js');
   const { getRealAthleteRegistry, getConfirmedRealPairs, getProbableRealPairs } = await vite.ssrLoadModule('/src/players/realAthleteRegistry.js');
   const { teamKey } = await vite.ssrLoadModule('/src/lib/teamRanking.js');
+  // Fase 4.0, item 1A/1B (achado #18) — instrumentação TEMPORÁRIA, reverter
+  // depois de medir. createStageProfiler já existe em produção (dev
+  // /performanceProbe.js, usado por dayAdvanceCoordinator.js) e nunca era
+  // passado pra processGameStateDay neste harness — sem ele, nenhuma medição
+  // por subsistema existia aqui. __diagTxnStats é o contador de transações
+  // por chamador que ActiveCareerAdapter.js ganhou nesta mesma fase.
+  const { createStageProfiler } = await vite.ssrLoadModule('/src/dev/performanceProbe.js');
+  const { __diagTxnStats } = await vite.ssrLoadModule('/src/gameplay/adapters/ActiveCareerAdapter.js');
 
   const seedInt = installDeterminism(SEED);
   console.log(`Seed: "${SEED}" (hash ${seedInt}) — Math.random e relógio determinísticos a partir daqui.`);
@@ -594,20 +602,74 @@ try {
     return { summary, realNeverPlayed, byClassification };
   }
 
+  // Fase 4.0, item 1A/1B (achado #18) — instrumentação TEMPORÁRIA, reverter
+  // depois de medir. DIAG_STAGE_PROFILE liga createStageProfiler (1B: custo
+  // por subsistema de topo). DIAG_WRAP_DAY_TXN envolve advanceDay +
+  // processGameStateDay do MESMO dia numa única withPersistenceTransaction —
+  // exatamente o que game-core/dayAdvanceCoordinator.js e
+  // calendarLifecycle.js:advanceCareerDays já fazem em produção pro avanço
+  // de dia real, e que este harness NUNCA fez (ver comentário no topo do
+  // arquivo — "advanceDay + processGameStateDay, dia a dia", mas sem o
+  // commit único que a produção já aplica). Serve pra medir quanto do custo
+  // medido nos achados #23/#24 é real vs. artefato deste harness chamar os
+  // dois passos soltos, sem o commit único que a produção já tem.
+  const DIAG_STAGE_PROFILE = Boolean(process.env.DIAG_TXN_COUNT);
+  const DIAG_WRAP_DAY_TXN = Boolean(process.env.DIAG_WRAP_DAY_TXN);
+  const stageTotals = {};
+  let stageDayCount = 0;
+  function accumulateStageStats(breakdown) {
+    stageDayCount += 1;
+    for (const [name, detail] of Object.entries(breakdown?.stageDetails || {})) {
+      const bucket = stageTotals[name] || (stageTotals[name] = {
+        wallMs: 0, storageMs: 0, cpuMs: 0, storageCalls: 0, reads: 0, writes: 0, bytesWritten: 0,
+      });
+      bucket.wallMs += detail.wallMs || 0;
+      bucket.storageMs += detail.storageMs || 0;
+      bucket.cpuMs += detail.cpuMs || 0;
+      bucket.storageCalls += detail.storageCalls || 0;
+      bucket.reads += detail.reads || 0;
+      bucket.writes += detail.writes || 0;
+      bucket.bytesWritten += detail.bytesWritten || 0;
+    }
+  }
+  async function runOneDay() {
+    currentProfile = await advanceDay(currentProfile, {});
+    const newDate = currentProfile.career_date;
+    const profiler = DIAG_STAGE_PROFILE ? createStageProfiler() : null;
+    const result = await processGameStateDay(currentProfile, oldDate, newDate, profiler ? { profiler } : undefined).catch((error) => {
+      console.warn(`[Universo produção] processGameStateDay falhou em ${newDate}:`, error?.message || error);
+      return null;
+    });
+    if (profiler) accumulateStageStats(profiler.finish());
+    currentProfile = result?.profile || currentProfile;
+    return newDate;
+  }
+
+  // Fase 4.0, item 1A — zera os contadores AQUI, depois que o elenco inicial
+  // (166+ creates individuais de AthleteProfile/TeamRanking, fora do laço de
+  // dias) já terminou. Sem isso, o custo de SETUP (uma vez só, existe com ou
+  // sem transação por dia) se mistura com o custo POR DIA SIMULADO, que é o
+  // que a pergunta do achado #18 realmente quer saber.
+  if (Boolean(process.env.DIAG_TXN_COUNT)) {
+    __diagTxnStats.solo = {};
+    __diagTxnStats.joined = {};
+    __diagTxnStats.opens = {};
+    __diagTxnStats.byDay = {};
+  }
+
   dayLoop:
   for (let day = 0; day < SEASONS * 367; day += 1) {
+    let newDate;
     try {
-      currentProfile = await advanceDay(currentProfile, {});
+      if (DIAG_WRAP_DAY_TXN) {
+        newDate = await activeCareerAdapter.withPersistenceTransaction('diag-day', () => runOneDay());
+      } else {
+        newDate = await runOneDay();
+      }
     } catch (error) {
       console.warn(`[Universo produção] advanceDay bloqueado em ${oldDate}:`, error?.message || error);
       break;
     }
-    const newDate = currentProfile.career_date;
-    const result = await processGameStateDay(currentProfile, oldDate, newDate).catch((error) => {
-      console.warn(`[Universo produção] processGameStateDay falhou em ${newDate}:`, error?.message || error);
-      return null;
-    });
-    currentProfile = result?.profile || currentProfile;
     oldDate = newDate;
 
     await recordNewlyFinalizedTournaments(currentYear, tournamentResultsThisSeason);
@@ -754,6 +816,39 @@ try {
         diagMonthsSeen += 1;
         if (diagMonthsSeen >= Number(process.env.DIAG_MAX_MONTHS)) {
           console.log(`[DIAG] limite de ${process.env.DIAG_MAX_MONTHS} meses atingido — parando o laço de dias antes de completar a temporada (uso diagnóstico, Fase 2.8).`);
+          if (DIAG_STAGE_PROFILE) {
+            console.log(`\n=== 1B — CUSTO POR SUBSISTEMA DE TOPO (${stageDayCount} dias, achado #18) ===`);
+            const rows = Object.entries(stageTotals).sort((a, b) => b[1].wallMs - a[1].wallMs);
+            const totalWallMs = rows.reduce((sum, [, v]) => sum + v.wallMs, 0);
+            for (const [name, v] of rows) {
+              const pct = totalWallMs ? (v.wallMs / totalWallMs * 100).toFixed(1) : '0.0';
+              console.log(`${name.padEnd(22)} wall=${(v.wallMs / 1000).toFixed(2)}s (${pct}%) storage=${(v.storageMs / 1000).toFixed(2)}s cpu=${(v.cpuMs / 1000).toFixed(2)}s calls=${v.storageCalls} writes=${v.writes} bytesWritten=${v.bytesWritten}`);
+            }
+            console.log(`TOTAL (soma dos stages)  wall=${(totalWallMs / 1000).toFixed(2)}s`);
+          }
+          if (Boolean(process.env.DIAG_TXN_COUNT)) {
+            console.log(`\n=== 1A — TRANSAÇÕES POR CHAMADOR (achado #18) ===`);
+            for (const [bucket, label] of [['solo', 'SOLO (1 clone cada)'], ['joined', 'JOINED (custo marginal ~0)'], ['opens', 'ABERTURAS DE withPersistenceTransaction']]) {
+              const entries = Object.entries(__diagTxnStats[bucket]).sort((a, b) => b[1] - a[1]);
+              const total = entries.reduce((sum, [, n]) => sum + n, 0);
+              console.log(`-- ${label}: total=${total}`);
+              for (const [name, n] of entries) console.log(`   ${name.padEnd(22)} ${n}`);
+            }
+            const days = Object.keys(__diagTxnStats.byDay).sort();
+            console.log(`-- dias distintos observados: ${days.length}`);
+            if (days.length) {
+              const totalSolo = days.reduce((sum, d) => sum + __diagTxnStats.byDay[d].solo, 0);
+              const totalOpens = days.reduce((sum, d) => sum + __diagTxnStats.byDay[d].opens, 0);
+              console.log(`-- média de transações SOLO/dia: ${(totalSolo / days.length).toFixed(1)} · média de ABERTURAS/dia: ${(totalOpens / days.length).toFixed(1)}`);
+              const sizeSamples = days.map((d) => __diagTxnStats.byDay[d].sizeBytes).filter((v) => Number.isFinite(v));
+              if (sizeSamples.length) {
+                const first = sizeSamples[0];
+                const last = sizeSamples[sizeSamples.length - 1];
+                const avg = sizeSamples.reduce((s, v) => s + v, 0) / sizeSamples.length;
+                console.log(`-- tamanho do save clonado (amostra 1x/dia): primeiro=${(first / 1024).toFixed(0)}KB último=${(last / 1024).toFixed(0)}KB média=${(avg / 1024).toFixed(0)}KB`);
+              }
+            }
+          }
           break dayLoop;
         }
       }

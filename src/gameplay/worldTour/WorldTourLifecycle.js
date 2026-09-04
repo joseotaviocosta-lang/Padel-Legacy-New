@@ -95,7 +95,11 @@ function eventRegion(tournament) {
 function normalizeAthlete(athlete) {
   return {
     ...athlete,
-    ranking: Number(athlete.world_ranking || athlete.ranking_position || athlete.ranking || 999),
+    // Fase 4.0, item 2A (achado #18): `world_ranking` foi removido — todo
+    // consumidor (aqui e fora deste arquivo) já lia ranking_position
+    // primeiro, e este próprio campo `.ranking` normalizado nunca é lido
+    // por ninguém depois de calculado (grep confirma). Campo morto.
+    ranking: Number(athlete.ranking_position || athlete.ranking || 999),
     energy: Number(athlete.energy || 80),
     careerStrategy: athlete.career_strategy || athlete.careerStrategy || 'balanced',
     currentRegion: athlete.current_region || athlete.currentRegion || 'global',
@@ -362,10 +366,40 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   // pendente resolve — independente de quantos torneios foram resolvidos
   // nesta chamada — clonando o save inteiro pra isso (achado #18). Ver
   // AUDITORIA-ATLETAS-REAIS-VS-BOTS.md, achado #24, pros números completos.
-  const reranked = [...athletes]
+  // Fase 4.0, item 3.1 (achado #18): necessário mesmo assim — alimenta o
+  // corte de elegibilidade por rank (EntryManager.js:resolveEntryRank) do
+  // Circuit Finals (minRanking:8) e Legacy Finals (minRanking:16) com
+  // granularidade mais fina que o passe semanal do circuito. Item 2A:
+  // `world_ranking` removido do payload — campo morto, todo consumidor já
+  // lia ranking_position primeiro.
+  //
+  // Fase 4.0, item 2B (achado #18): a ordenação continua sobre a população
+  // INTEIRA (precisa saber quem está acima de quem pra decidir o top 8/16
+  // corretamente) — só a GRAVAÇÃO deixa de tocar todo mundo. Nenhum
+  // consumidor confirmado precisa de ranking_position fresco no mesmo dia
+  // fora dos dois cortes acima; RERANK_WRITE_TOP_N dá margem de 3x sobre o
+  // maior deles (16). Troca-off explícito e assumido, não escondido: os
+  // tiers de corte mais largo (Gold:800, Platinum:500, Masters:300,
+  // Elite:150, Crown:80) deixam de ganhar frescor no mesmo dia por este
+  // bloco — caem pra frescor semanal (processWorldCircuit), que já era o
+  // padrão do resto da população antes deste achado existir.
+  //
+  // Achado real do teste de equivalência (scripts/test-rerank-topn-
+  // equivalence-fase4.mjs, GATE FALHOU na primeira versão): escrever só
+  // quem entra no top N por pontos NOVOS não basta — quem CAI do top N
+  // (era #3, kicked pra #55 pela rodada) precisa da mesma correção, senão
+  // fica com a ranking_position ANTIGA (ainda dentro do corte) indefinidamente,
+  // elegível pra um torneio que não devia mais poder disputar. A escrita
+  // precisa ser a UNIÃO de quem está no top N AGORA com quem estava no
+  // top N ANTES (ranking_position pré-rodada) — os dois lados da transição.
+  const RERANK_WRITE_TOP_N = 50;
+  const rankedFull = [...athletes]
     .map((athlete) => ({ ...athlete, points: Number(athlete.world_ranking_points || athlete.ranking_points || 0) + (athletePoints.get(athlete.id) || 0) }))
     .sort((a, b) => b.points - a.points)
-    .map((athlete, index) => ({ id: athlete.id, world_ranking: index + 1, ranking_position: index + 1 }));
+    .map((athlete, index) => ({ id: athlete.id, ranking_position: index + 1, previousPosition: safeNumberRerank(athlete.ranking_position) }));
+  const reranked = rankedFull
+    .filter((entry) => entry.ranking_position <= RERANK_WRITE_TOP_N || entry.previousPosition <= RERANK_WRITE_TOP_N)
+    .map(({ id, ranking_position }) => ({ id, ranking_position }));
   if (reranked.length) await entities.AthleteProfile.bulkUpdate(reranked);
 
   return { resolved: tournamentUpdates.length, tournaments: tournamentUpdates, rankingUpdates: athleteUpdates.length, news: news.length };

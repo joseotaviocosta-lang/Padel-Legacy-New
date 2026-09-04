@@ -168,7 +168,9 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
       // ranking_points/world_ranking_points seguem representando o Circuito
       // (histórico acumulado), que continua populado normalmente.
       race_points: 0,
-      world_ranking: absoluteRank,
+      // Fase 4.0, item 2A (achado #18): world_ranking removido — nascia
+      // idêntico a ranking_position (mesmo absoluteRank), e todo consumidor
+      // já lia ranking_position primeiro. Campo morto desde a origem.
       ranking_position: absoluteRank,
       tournaments_played: Math.max(1, 6 + (seed % 28)),
       matches_played: Math.max(2, 12 + (seed % 95)),

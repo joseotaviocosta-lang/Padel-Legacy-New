@@ -5,11 +5,37 @@ import { recordStorageCacheAccess } from '../../dev/storageIOProbe.js';
 import {
   createPersistenceTransaction,
   finishPersistenceTransaction,
+  getActivePersistenceTransactionContext,
   recordPersistenceLogicalMutation,
   recordPersistencePhysicalCommit,
   setActivePersistenceTransaction,
   setPersistenceTransactionDepth,
 } from '../../dev/persistenceTransactionProbe.js';
+
+// Fase 4.0, item 1A (achado #18, instrumentação TEMPORÁRIA — reverter depois
+// de medir): dev/persistenceTransactionProbe.js já conta transações e rotula
+// mutações por "stage" (nome do subsistema em processGameStateDay), mas só
+// DENTRO de uma withPersistenceTransaction ativa — o caminho solo abaixo
+// (a maioria das escritas de produção, achado #18) nunca é observado por ele.
+// Este bloco estende a mesma leitura de "stage" (getActivePersistenceTransactionContext,
+// já populado por dev/performanceProbe.js:createStageProfiler quando um
+// profiler está ativo) pro caminho solo, sem inventar um rótulo novo.
+const DIAG_TXN_COUNT = typeof process !== 'undefined' && Boolean(process.env && process.env.DIAG_TXN_COUNT);
+export const __diagTxnStats = { solo: {}, joined: {}, opens: {}, byDay: {} };
+function diagStageLabel() {
+  const ctx = getActivePersistenceTransactionContext();
+  return (ctx && ctx.stage) || 'sem-stage';
+}
+function diagBumpByDay(career, kind) {
+  // career.metadata.career_date só é gravado na criação da carreira (CareerManager.js) e
+  // nunca atualizado — career.player.career_date é o campo que avança dia a dia de verdade.
+  const day = career?.player?.career_date || career?.metadata?.career_date || 'desconhecido';
+  const bucket = __diagTxnStats.byDay[day] || (__diagTxnStats.byDay[day] = { solo: 0, joined: 0, opens: 0, sizeBytes: null });
+  bucket[kind] += 1;
+  if (kind === 'solo' && bucket.sizeBytes == null) {
+    try { bucket.sizeBytes = JSON.stringify(career).length; } catch { /* ignore */ }
+  }
+}
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -235,6 +261,11 @@ export class ActiveCareerAdapter {
           const result = await mutator(activeTransaction.draft);
           activeTransaction.dirty = true;
           recordPersistenceLogicalMutation(activeTransaction.probe, caller);
+          if (DIAG_TXN_COUNT) {
+            const label = diagStageLabel();
+            __diagTxnStats.joined[label] = (__diagTxnStats.joined[label] || 0) + 1;
+            diagBumpByDay(activeTransaction.draft, 'joined');
+          }
           return { result: clone(result), career: clone(activeTransaction.draft) };
         } catch (error) {
           activeTransaction.rollbackError = error;
@@ -260,6 +291,11 @@ export class ActiveCareerAdapter {
       // O mutator recebe um draft isolado. Assim uma falha de persistência não
       // deixa o estado quente parcialmente alterado.
       const career = clone(current);
+      if (DIAG_TXN_COUNT) {
+        const label = diagStageLabel();
+        __diagTxnStats.solo[label] = (__diagTxnStats.solo[label] || 0) + 1;
+        diagBumpByDay(career, 'solo');
+      }
       const result = await mutator(career);
       const now = Date.now();
       const shouldBackup = now - this.lastRoutineBackupAt >= ROUTINE_BACKUP_INTERVAL_MS;
@@ -318,6 +354,10 @@ export class ActiveCareerAdapter {
       });
       const probe = createPersistenceTransaction(name);
       probe.queueSizeBefore = Math.max(0, this.pendingWriteCount - 1);
+      if (DIAG_TXN_COUNT) {
+        __diagTxnStats.opens[name] = (__diagTxnStats.opens[name] || 0) + 1;
+        diagBumpByDay(current, 'opens');
+      }
       const snapshot = clone(current);
       const transaction = {
         id: probe.id,
