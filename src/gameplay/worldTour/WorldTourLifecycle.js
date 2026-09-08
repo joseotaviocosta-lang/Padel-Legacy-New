@@ -396,7 +396,10 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const rankedFull = [...athletes]
     .map((athlete) => ({ ...athlete, points: Number(athlete.world_ranking_points || athlete.ranking_points || 0) + (athletePoints.get(athlete.id) || 0) }))
     .sort((a, b) => b.points - a.points)
-    .map((athlete, index) => ({ id: athlete.id, ranking_position: index + 1, previousPosition: safeNumberRerank(athlete.ranking_position) }));
+    .map((athlete, index) => {
+      const previous = Number(athlete.ranking_position);
+      return { id: athlete.id, ranking_position: index + 1, previousPosition: Number.isFinite(previous) ? previous : Infinity };
+    });
   const reranked = rankedFull
     .filter((entry) => entry.ranking_position <= RERANK_WRITE_TOP_N || entry.previousPosition <= RERANK_WRITE_TOP_N)
     .map(({ id, ranking_position }) => ({ id, ranking_position }));
