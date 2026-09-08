@@ -188,6 +188,29 @@ try {
   const { CareerRepository } = await vite.ssrLoadModule('/src/careers/CareerRepository.js');
   const { CareerManager } = await vite.ssrLoadModule('/src/careers/CareerManager.js');
   const { activeCareerAdapter } = await vite.ssrLoadModule('/src/gameplay/services/runtime.js');
+  // Fase 4.2, item 1 (achado #27) — origem do resíduo de paridade (1
+  // atleta/147) rastreada, não totalmente eliminada: dayAdvanceCoordinator.js
+  // envolve o avanço de dia real em profileAction('advance-day', ...), que
+  // registra `at: Date.now()` ao final — um tick a mais no relógio
+  // determinístico deste processo do que o laço deste harness tinha antes.
+  // Como um atleta recém-criado embute Date.now() no próprio id (makeId), e
+  // vários campos de personalidade são hash-seedados PELO id
+  // (athletePersonalityLifecycle.js: personalityAxes, preferred_side,
+  // partnership_patience), qualquer atleta criado depois de um
+  // desalinhamento de relógio nasce com uma personalidade inteira diferente
+  // da que nasceria em produção — mas overall_rating/ranking_points batem
+  // exatos, confirmando que o resultado competitivo nunca muda, só a
+  // "personalidade" cosmética de atletas recém-criados. profileAction
+  // abaixo fecha ESSA fonte específica de tick extra; um teste comparativo
+  // contra dayAdvanceCoordinator.advanceCareerDayOnce (script descartável,
+  // não commitado) mostrou o MESMO resíduo (1/147) mesmo com essa correção
+  // — existe pelo menos mais uma fonte de tick extra não identificada,
+  // provavelmente noutro ponto da cadeia de logging/instrumentação que só
+  // produção atravessa. Não perseguido além disso: é cosmético (não afeta
+  // pontos/campeões/ranking), afeta só atributos de sabor de atletas
+  // criados no dia exato do desalinhamento. Ver
+  // AUDITORIA-ATLETAS-REAIS-VS-BOTS.md, achado #27.
+  const { profileAction } = await vite.ssrLoadModule('/src/dev/performanceProbe.js');
   const { localGame } = await vite.ssrLoadModule('/src/api/localGameClient.js');
   const { buildSupplementalRankingPopulation } = await vite.ssrLoadModule('/src/lib/rankingPopulation.js');
   const { generateTournamentOpponent, advanceDay } = await vite.ssrLoadModule('/src/lib/career.js');
@@ -379,6 +402,13 @@ try {
   // antes, que foi medida sem transação).
   let diagDayTimingSumMs = 0;
   let diagDayTimingCount = 0;
+  // Fase 4.2, item 2A — só usado com DIAG_HEAP: pico de heapUsed observado
+  // durante a temporada corrente (resetado a cada virada de ano), pra
+  // confirmar ou refutar por medição se o OOM da temporada 2 (Fase 2.7)
+  // desaparece com a transação por dia (achado #26/#27) ou só foi adiado
+  // (o crescimento de dados sem poda, ex. AthleteCareerLegacy, não foi
+  // corrigido — só a frequência de clonagem).
+  let seasonHeapPeakBytes = 0;
   let lastCheckpoint = null; // Fase 2.8, item 2 — evita recomputar o mesmo checkpoint duas vezes
   const finalYear = START_YEAR + SEASONS - 1;
 
@@ -634,10 +664,17 @@ try {
     // pro avanço de dia real (dayAdvanceCoordinator.js), mesmo nome
     // ('advance-day') — advanceDay + processGameStateDay do MESMO dia
     // pagam 1 clone/1 escrita física juntos, não um cada.
+    // Fase 4.2 (achado #27): mesmo profileAction('advance-day', ...) que
+    // produção usa por fora da transação — sem isso, o relógio determinístico
+    // deste processo desalinha de produção por um Date.now() a cada dia (o
+    // que profileAction/recordAction consome pra registrar `at`), e qualquer
+    // atleta novo criado depois do desalinhamento nasce com um id (e uma
+    // personalidade inteira hash-seedada por esse id) diferente da que
+    // nasceria em produção.
     let newDate;
     const diagDayStart = process.env.DIAG_DAY_TIMING ? performance.now() : 0;
     try {
-      newDate = await activeCareerAdapter.withPersistenceTransaction('advance-day', async () => {
+      newDate = await profileAction('advance-day', () => activeCareerAdapter.withPersistenceTransaction('advance-day', async () => {
         currentProfile = await advanceDay(currentProfile, {});
         const dayDate = currentProfile.career_date;
         const result = await processGameStateDay(currentProfile, oldDate, dayDate).catch((error) => {
@@ -646,7 +683,7 @@ try {
         });
         currentProfile = result?.profile || currentProfile;
         return dayDate;
-      });
+      }));
       if (process.env.DIAG_DAY_TIMING) {
         diagDayTimingSumMs += performance.now() - diagDayStart;
         diagDayTimingCount += 1;
@@ -656,6 +693,10 @@ try {
       break;
     }
     oldDate = newDate;
+
+    if (process.env.DIAG_HEAP) {
+      seasonHeapPeakBytes = Math.max(seasonHeapPeakBytes, process.memoryUsage().heapUsed);
+    }
 
     await recordNewlyFinalizedTournaments(currentYear, tournamentResultsThisSeason);
 
@@ -827,6 +868,10 @@ try {
 
     const newYear = Number(newDate.slice(0, 4));
     if (newYear !== currentYear) {
+      if (process.env.DIAG_HEAP) {
+        console.log(`[DIAG_HEAP] temporada ${currentYear}: pico de heapUsed = ${(seasonHeapPeakBytes / 1024 / 1024).toFixed(1)}MB`);
+        seasonHeapPeakBytes = 0;
+      }
       await finalizeSeasonRecord(currentYear);
       lastCheckpoint = await writeCheckpoint(currentYear); // Fase 2.8, item 2 — checkpoint por temporada
       if (currentYear >= finalYear) break dayLoop;
@@ -854,6 +899,21 @@ try {
   console.log('Classificação dos campeões:', byClassification);
   console.log(`Torneios disputados — reais: média ${summary.cumulative.tournamentsPlayed.real.mean} / mediana ${summary.cumulative.tournamentsPlayed.real.median} · bots: média ${summary.cumulative.tournamentsPlayed.bots.mean} / mediana ${summary.cumulative.tournamentsPlayed.bots.median}`);
   console.log(`Atletas reais que NUNCA apareceram em nenhuma chave: ${realNeverPlayed.length}/${realAthleteIds.size}`);
+  // Fase 4.2, item 2B — instrumentação já existia desde a Fase 2.7
+  // (realAthletesNeverPlayedThisSeason/realAthletesNeverPlayedRotation),
+  // nunca tinha sido impressa nem rodada com --seasons=5. Rotatividade
+  // (nomes diferentes a cada ano) é esperado; interseção alta é exclusão
+  // permanente de um subconjunto fixo.
+  const rotation = summary.cumulative.realAthletesNeverPlayedRotation;
+  if (rotation) {
+    console.log(`\n=== ROTATIVIDADE DE REAIS AUSENTES (achado #2B) ===`);
+    console.log(`Por temporada (contagem de reais que não jogaram): ${rotation.neverPlayedThisSeasonBySeasonCounts.join(', ')}`);
+    console.log(`União across ${rotation.seasonsCompared} temporadas: ${rotation.unionCount} reais distintos`);
+    console.log(`Interseção (nunca jogaram em TODAS as temporadas): ${rotation.intersectionCount} reais (${rotation.intersectionPctOfUnion}% da união)`);
+    if (rotation.intersectionCount) {
+      console.log(`Nomes na interseção: ${rotation.intersectionAcrossSeasons.map((r) => r.name).join(', ')}`);
+    }
+  }
   console.log(`\nRelatório salvo em ${OUT_DIR}/summary.json, ${OUT_DIR}/tournament-results.csv e ${OUT_DIR}/season-tier-table.md`);
 } finally {
   await vite.close();
