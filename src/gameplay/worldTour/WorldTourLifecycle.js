@@ -207,6 +207,16 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const config = getTournamentTierConfig(tournament?.tier);
       const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
       let entrants = [...(assignments.get(tournament.id) || [])];
+      // Fase 4.4, item 1 (diagnóstico temporário, revertido após medir) —
+      // demanda ANTES do preenchimento de reserva: quantos pares
+      // ESCOLHERAM este torneio (chooseTournament), contra `drawSize`. Se
+      // demanda > drawSize, o excesso é descartado na linha do `.slice`
+      // abaixo, sem aviso — é exatamente o gargalo do achado #30.
+      if (process.env.DIAG_CAPACITY) {
+        const diag = (globalThis.__diagCapacity ||= { tournamentRecords: [], chosenPairIds: new Set(), playedPairIds: new Set() });
+        diag.tournamentRecords.push({ tier: tournament.tier, chose: entrants.length, drawSize });
+        for (const pair of entrants) diag.chosenPairIds.add(pair.id);
+      }
       // Fase 3, item 3B.2 (backstop de montagem de campo) — achado real: o
       // gatilho era `entrants.length < 2`, ou seja, o preenchimento de
       // reserva só entrava em ação pra garantir o MÍNIMO de uma partida
@@ -251,6 +261,39 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       if (ordered.length < 2) continue;
       const champion = ordered[0];
       const runnerUp = ordered[1];
+
+      // Fase 4.4, item 2.3 (diagnóstico temporário, revertido após medir)
+      // — repetição de adversários: pra cada atleta que entrou na chave
+      // final, registra todo mundo que dividiu a MESMA chave com ele (não
+      // é literalmente "quem jogou contra quem" rodada a rodada — o motor
+      // não simula isso — mas é o universo de quem ele PODERIA encontrar
+      // narrativamente naquela semana, proxy razoável pra medir o quão
+      // anônimo é o pool). Chave composta `${ano}:${outroId}` permite
+      // contar distintos por temporada E no total, com uma única estrutura.
+      if (process.env.DIAG_CAPACITY) {
+        const diag = (globalThis.__diagCapacity ||= { tournamentRecords: [], chosenPairIds: new Set(), playedPairIds: new Set() });
+        for (const pair of ordered) diag.playedPairIds.add(pair.id);
+        // Restrito a um conjunto observado (reais + amostra de bots,
+        // definido pelo harness) — rastrear a população inteira (~1050)
+        // multiplicaria o custo de memória já apertado do regime-check
+        // (achado #28) sem necessidade: a pergunta é sobre reais
+        // especificamente, não sobre todo mundo.
+        const watched = globalThis.__diagWatchedIds;
+        if (watched && watched.size) {
+          const seasonYear = careerDate.slice(0, 4);
+          const opponents = (globalThis.__diagOpponents ||= new Map());
+          const allAthletesInDraw = ordered.flatMap((pair) => pair.athletes);
+          for (const athlete of allAthletesInDraw) {
+            if (!watched.has(athlete.id)) continue;
+            if (!opponents.has(athlete.id)) opponents.set(athlete.id, new Set());
+            const set = opponents.get(athlete.id);
+            for (const other of allAthletesInDraw) {
+              if (other.id === athlete.id) continue;
+              set.add(`${seasonYear}:${other.id}`);
+            }
+          }
+        }
+      }
 
       ordered.forEach((pair, index) => {
         const { finish, points, wins: finishWins } = resolveFinish(tournament, index);
