@@ -13,6 +13,28 @@
 // (simulateWorldDay, processWorldCircuit, etc. — todos os que
 // processGameStateDay já chama em produção).
 //
+// Fase 4.1 (achados #26/#27, AUDITORIA-ATLETAS-REAIS-VS-BOTS.md): a correção
+// da Fase 0.1 acima cobriu QUAIS funções chamar, mas não a FRONTEIRA
+// transacional em que produção as chama — game-core/dayAdvanceCoordinator.js
+// e calendarLifecycle.js:advanceCareerDays já envolvem advanceDay +
+// processGameStateDay do MESMO dia numa única
+// ActiveCareerAdapter.withPersistenceTransaction (Mobile M3.7). Este
+// harness chamava os dois passos soltos — chamar as funções certas fora da
+// fronteira transacional certa ainda é medir um jogo que não existe (regra
+// de método nº2, ver o mesmo documento). Corrigido: o laço de dias abaixo
+// agora envolve cada dia na mesma transação única que produção usa, mesmo
+// nome (`advance-day`). Essa mudança expôs um heisenbug pré-existente
+// (achado #27) — `clubs.js:processAllClubsMonthly` processava clubes
+// concorrentemente via Promise.all, cada um consumindo Math.random()
+// compartilhado; sequenciado. Depois da correção: reprodutibilidade sob
+// instrumentação confirmada byte-a-byte (dois wrappers de Math.random()
+// diferentes, mesma seed, saída idêntica); paridade contra o ponto de
+// entrada real de produção (dayAdvanceCoordinator.js:advanceCareerDayOnce)
+// quase completa — 146/147 atletas idênticos em teste reduzido, 1 resíduo
+// pequeno e estável não perseguido além disso (ver
+// AUDITORIA-ATLETAS-REAIS-VS-BOTS.md, achado #27, e
+// FASE-4.1-RELATORIO.md).
+//
 // Uso:
 //   node scripts/audit-real-athletes-simulation.mjs [--seasons=5] [--seed=baseline-v1]
 //     [--proceduralAthletes=970] [--proceduralTeams=486] [--out=reports/real-athletes-audit]
@@ -20,12 +42,16 @@
 // Saída: <out>/summary.json (por temporada × tier + cumulativo),
 // <out>/tournament-results.csv, <out>/season-tier-table.md.
 //
-// Custo: por rodar dia a dia pelo caminho real (não em lotes), este harness
-// é MUITO mais caro que a versão anterior — a camada de storage da carreira
-// clona o save inteiro a cada escrita de entidade, e processGameStateDay
-// escreve várias vezes por dia (até ~80 atletas/dia só em simulateWorldDay).
-// Reduza --proceduralAthletes/--proceduralTeams para iteração rápida; a
-// baseline oficial usa os valores de produção completos (970/486).
+// Custo: com a transação por dia (Fase 4.1), o tempo de parede de uma
+// temporada oficial completa (900+100) caiu de 38min16s pra 5min57,9s
+// (84,4% menos, ~6,4× mais rápido) — ver achado #26/#27. O crescimento
+// intra-temporada também caiu de 7,5× (número inflado pela ausência da
+// transação) pra 1,70× (jan→dez, medido com a correção aplicada). Reduza
+// --proceduralAthletes/--proceduralTeams para iteração rápida; a baseline
+// oficial usa os valores de produção completos (970/486).
+// DIAG_DAY_TIMING=1 imprime ms/dia médio por mês (soma/conta resetada a
+// cada virada), pra medir a curva de custo intra-temporada em qualquer
+// rodada futura sem precisar de instrumentação nova.
 import { writeFileSync, mkdirSync } from 'node:fs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((v) => v.replace(/^--/, '').split('=')));
@@ -345,6 +371,14 @@ try {
   let duplaSamplesThisSeason = new Map(historicalDuplas.map((d) => [d.team_key, []]));
   let lastSampledMonth = oldDate.slice(0, 7);
   let diagMonthsSeen = 0; // Fase 2.8, item 1 — só usado com DIAG_MAX_MONTHS
+  // Fase 4.1, item 5.2 — só usado com DIAG_DAY_TIMING: soma/conta de tempo
+  // de parede por avanço de dia (withPersistenceTransaction('advance-day')),
+  // resetado a cada virada de mês — dá ms/dia médio por mês, pra medir o
+  // crescimento intra-temporada de custo COM a transação por dia (a
+  // correção do achado #26 pode ter mudado a curva de 7,5× registrada
+  // antes, que foi medida sem transação).
+  let diagDayTimingSumMs = 0;
+  let diagDayTimingCount = 0;
   let lastCheckpoint = null; // Fase 2.8, item 2 — evita recomputar o mesmo checkpoint duas vezes
   const finalYear = START_YEAR + SEASONS - 1;
 
@@ -596,24 +630,42 @@ try {
 
   dayLoop:
   for (let day = 0; day < SEASONS * 367; day += 1) {
+    // Fase 4.1 (achado #26): mesma fronteira transacional que produção usa
+    // pro avanço de dia real (dayAdvanceCoordinator.js), mesmo nome
+    // ('advance-day') — advanceDay + processGameStateDay do MESMO dia
+    // pagam 1 clone/1 escrita física juntos, não um cada.
+    let newDate;
+    const diagDayStart = process.env.DIAG_DAY_TIMING ? performance.now() : 0;
     try {
-      currentProfile = await advanceDay(currentProfile, {});
+      newDate = await activeCareerAdapter.withPersistenceTransaction('advance-day', async () => {
+        currentProfile = await advanceDay(currentProfile, {});
+        const dayDate = currentProfile.career_date;
+        const result = await processGameStateDay(currentProfile, oldDate, dayDate).catch((error) => {
+          console.warn(`[Universo produção] processGameStateDay falhou em ${dayDate}:`, error?.message || error);
+          return null;
+        });
+        currentProfile = result?.profile || currentProfile;
+        return dayDate;
+      });
+      if (process.env.DIAG_DAY_TIMING) {
+        diagDayTimingSumMs += performance.now() - diagDayStart;
+        diagDayTimingCount += 1;
+      }
     } catch (error) {
       console.warn(`[Universo produção] advanceDay bloqueado em ${oldDate}:`, error?.message || error);
       break;
     }
-    const newDate = currentProfile.career_date;
-    const result = await processGameStateDay(currentProfile, oldDate, newDate).catch((error) => {
-      console.warn(`[Universo produção] processGameStateDay falhou em ${newDate}:`, error?.message || error);
-      return null;
-    });
-    currentProfile = result?.profile || currentProfile;
     oldDate = newDate;
 
     await recordNewlyFinalizedTournaments(currentYear, tournamentResultsThisSeason);
 
     const sampledMonth = newDate.slice(0, 7);
     if (sampledMonth !== lastSampledMonth) {
+      if (process.env.DIAG_DAY_TIMING && diagDayTimingCount > 0) {
+        console.log(`[DIAG_DAY_TIMING] ${lastSampledMonth}: ${(diagDayTimingSumMs / diagDayTimingCount).toFixed(2)}ms/dia média (${diagDayTimingCount} dias, ${(diagDayTimingSumMs / 1000).toFixed(2)}s total)`);
+        diagDayTimingSumMs = 0;
+        diagDayTimingCount = 0;
+      }
       lastSampledMonth = sampledMonth;
 
       // Fase 0.1 (achado C — memória): nada em produção jamais APAGA

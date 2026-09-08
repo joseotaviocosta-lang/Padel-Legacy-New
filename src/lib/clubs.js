@@ -222,13 +222,26 @@ export async function processAllClubsMonthly() {
   try {
     const clubs = await localGame.entities.Club.list();
     // Cada clube gravava seu próprio Club.update individual todo mês — até
-    // 72 escritas completas do save. Calcula os patches em paralelo (o
-    // crescimento de sócios de cada clube já é resolvido aqui, via
-    // ClubMember.bulkCreate/delete) e grava os clubes em uma única bulkUpdate.
-    const patches = await Promise.all(
-      (clubs || []).map(c => processClubMonthlyUpdate(c, { commit: false }).catch(() => null)),
-    );
-    const validPatches = patches.filter(Boolean);
+    // 72 escritas completas do save. Calcula os patches e grava os clubes em
+    // uma única bulkUpdate ao final.
+    //
+    // Fase 4.1 (achado #27): processClubMonthlyUpdate chama generateBotMembers
+    // (Math.random() direto) e grava ClubMember.bulkCreate/delete
+    // (mutateActiveCareer) por clube — antes rodava via Promise.all, N clubes
+    // concorrentes disputando o mesmo Math.random() global e a mesma fila de
+    // escrita, sem ordem garantida entre execuções. Não é sobre determinismo
+    // do JOGO (Math.random() cru é intencional — ver achado #27) — é sobre
+    // reprodutibilidade sob instrumentação: qualquer coisa que mude o timing
+    // relativo entre os clubes (inclusive medir o próprio timing) mudava qual
+    // clube consome qual sorteio. Laço sequencial, ordenado por id (nunca a
+    // ordem de retorno de `.list()`, que não é um contrato estável) — mesmo
+    // resultado todo santo run, sem depender de quando cada Promise resolve.
+    const orderedClubs = [...(clubs || [])].sort((a, b) => String(a.id).localeCompare(String(b.id)));
+    const validPatches = [];
+    for (const club of orderedClubs) {
+      const patch = await processClubMonthlyUpdate(club, { commit: false }).catch(() => null);
+      if (patch) validPatches.push(patch);
+    }
     if (validPatches.length) await localGame.entities.Club.bulkUpdate(validPatches);
   } catch (e) { console.error('processAllClubsMonthly', e); }
 }
