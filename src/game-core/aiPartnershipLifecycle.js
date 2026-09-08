@@ -195,9 +195,10 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
   const events = [];
   let dissolved = 0;
   // Fase 2.9, item 4 (achado #21) — TeamRanking da dupla desfeita é
-  // decisão de comportamento, não faxina: apagado aqui pra que uma dupla
-  // reformada (mesma team_key, Fase 2B: derivada dos ids ordenados) volte
-  // do zero em pontos, como no circuito real. Pré-busca ÚNICA (não uma
+  // decisão de comportamento, não faxina. Razão original (reformar volta
+  // do zero, sem herdar pontos acumulados) superada pela Fase 4 — ver
+  // justificativa completa e atualizada em
+  // partnershipSystem.js:deleteTeamRankingForPair. Pré-busca ÚNICA (não uma
   // query por par dissolvido) — só leituras não disparam o clone-por-
   // transação do achado #18, mas ainda evita N idas ao repositório.
   let teamRankingByKey = null;
@@ -322,11 +323,13 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
     }
 
     // Fase 2.9, item 4 (achado #21) — TeamRanking apagado na dissolução
-    // (ver comentário no topo da função): decisão de comportamento, não de
-    // limpeza. Aplica a TODA dupla dissolvida (bot-bot inclusive) — nada no
-    // código lê uma linha de TeamRanking por id/histórico (só por
-    // team_key "ao vivo" ou em listagens do líder do momento), então
-    // diferente de Partnership, aqui não há risco de referência quebrada.
+    // (ver comentário no topo da função e a justificativa atualizada pela
+    // Fase 4 em partnershipSystem.js:deleteTeamRankingForPair): decisão de
+    // comportamento, não de limpeza. Aplica a TODA dupla dissolvida
+    // (bot-bot inclusive) — nada no código lê uma linha de TeamRanking por
+    // id/histórico (só por team_key "ao vivo" ou em listagens do líder do
+    // momento), então diferente de Partnership, aqui não há risco de
+    // referência quebrada.
     const teamRankingRow = await findTeamRankingRow(athlete.id, partner.id);
     if (teamRankingRow?.id) {
       teamRankingDeleteOps.push({ type: 'delete', entityName: 'TeamRanking', id: teamRankingRow.id });

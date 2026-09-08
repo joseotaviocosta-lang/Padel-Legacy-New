@@ -147,15 +147,27 @@ export function buildPartnershipLegacyRow(partnership, { profileId = null } = {}
   };
 }
 
-// Fase 2.9, item 4 (achado #21) — decisão de comportamento, não de faxina:
+// Fase 2.9, item 4 (achado #21) — decisão de comportamento, não de faxina.
+// Razão ORIGINAL (Fase 2.9, SUPERADA pela Fase 4, não errada na época):
 // team_key é derivado dos ids ordenados dos dois atletas (Fase 2B), então
-// uma dupla que se separa e volta a se formar gera a MESMA chave. Apagar
-// aqui significa que ela recomeça do zero em pontos ao reformar — igual ao
-// circuito real, onde uma dupla refeita não herda ranking anterior. Nada
-// no código lê uma linha de TeamRanking de uma dupla dissolvida por id ou
-// histórico (só por team_key "ao vivo" ou em listagens do líder do
-// momento — grep confirmado), então, diferente de Partnership, não há
-// risco de referência quebrada em deletar imediatamente.
+// uma dupla que se separa e volta a se formar gera a MESMA chave — apagar
+// evitava que ela herdasse pontos ACUMULADOS ao reformar. Isso deixou de
+// ser o motivo real assim que a Fase 4 (ranking rolling de 52 semanas)
+// mudou TeamRanking.ranking_points de acumulador incremental pra valor
+// SEMPRE recalculado do zero (média dos totais rolling atuais dos dois
+// membros — circuitLifecycle.js:updateTeamRankings,
+// tournamentLifecycle.js:prepareTournamentFinalization) — reformar já não
+// herdaria nada mesmo sem apagar, porque nenhum campo é mais incrementado.
+//
+// Razão ATUAL (Fase 4): sem o delete, a linha de uma dupla dissolvida sai
+// do laço semanal (deixa de satisfazer `ai_partner_id === partnerId`) e
+// FICA CONGELADA no valor da última semana ativa — o mesmo "topo vitalício"
+// que a Fase 4 inteira existe pra eliminar, só que na camada de duplas.
+// Continua correto apagar — só o motivo mudou. Nada no código lê uma linha
+// de TeamRanking de uma dupla dissolvida por id ou histórico (só por
+// team_key "ao vivo" ou em listagens do líder do momento — grep
+// confirmado), então, diferente de Partnership, não há risco de referência
+// quebrada em deletar imediatamente.
 export async function deleteTeamRankingForPair(athleteAId, athleteBId) {
   if (!athleteAId || !athleteBId) return 0;
   try {

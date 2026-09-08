@@ -1,16 +1,16 @@
 {
-  "generatedAt": "2026-01-01T02:50:18.915Z",
+  "generatedAt": "2026-01-01T11:47:37.915Z",
   "seed": "official-900-100-s1",
   "checkpoint": {
-    "throughYear": 2026,
-    "seasonsCompleted": 1,
-    "seasonsRequested": 1,
+    "throughYear": 2030,
+    "seasonsCompleted": 5,
+    "seasonsRequested": 5,
     "complete": true
   },
   "determinism": {
     "note": "Math.random e o relógio são seedados a partir de --seed só neste processo, ANTES de qualquer criação de entidade. Ids de AthleteProfile/TeamRanking são deixados para o PRÓPRIO fallback makeId() de produção (nunca sobrescritos com bot_id/team_key — isso mudava a forma da string e enviesava a seleção por hash de aiPartnershipLifecycle.js, achado da Fase 0.1) — como Math.random/Date.now já são determinísticos aqui, makeId() produz o MESMO formato de produção de forma reproduzível. bot_id/team_key continuam existindo só como chaves de agrupamento para leitura deste relatório (duplas históricas), nunca como o id real da entidade."
   },
-  "seasonsSimulated": 1,
+  "seasonsSimulated": 5,
   "proceduralAthleteSample": 900,
   "proceduralTeamSample": 450,
   "roster": {
@@ -39,7 +39,7 @@
           },
           "incompleteCount": 0,
           "total": 24,
-          "championOvrAvg": 93.8,
+          "championOvrAvg": 93.5,
           "championOvrMedian": 96
         },
         "Elite": {
@@ -69,13 +69,13 @@
         "Gold": {
           "titles": {
             "100%_reais": 6,
-            "mista": 1,
-            "100%_bots": 1,
+            "mista": 0,
+            "100%_bots": 2,
             "desconhecido": 0
           },
           "incompleteCount": 0,
           "total": 8,
-          "championOvrAvg": 91.2,
+          "championOvrAvg": 89.7,
           "championOvrMedian": 94.5
         },
         "Masters": {
@@ -93,13 +93,13 @@
         "Platinum": {
           "titles": {
             "100%_reais": 5,
-            "mista": 1,
-            "100%_bots": 0,
+            "mista": 0,
+            "100%_bots": 1,
             "desconhecido": 0
           },
           "incompleteCount": 0,
           "total": 6,
-          "championOvrAvg": 93.3,
+          "championOvrAvg": 93.7,
           "championOvrMedian": 96
         },
         "Crown": {
@@ -135,8 +135,8 @@
           },
           "incompleteCount": 0,
           "total": 1,
-          "championOvrAvg": 89.5,
-          "championOvrMedian": 89.5
+          "championOvrAvg": 96.5,
+          "championOvrMedian": 96.5
         }
       },
       "top20": [
@@ -144,105 +144,105 @@
           "position": 1,
           "id": "real_arturo_coello",
           "name": "Arturo Coello",
-          "points": 33350,
+          "points": 31520,
           "real": true
         },
         {
           "position": 2,
           "id": "real_agustin_tapia",
           "name": "Agustín Tapia",
-          "points": 33350,
+          "points": 31520,
           "real": true
         },
         {
           "position": 3,
           "id": "real_alejandro_galan",
           "name": "Alejandro Galán",
-          "points": 31585,
+          "points": 29280,
           "real": true
         },
         {
           "position": 4,
           "id": "real_federico_chingotto",
           "name": "Federico Chingotto",
-          "points": 31585,
+          "points": 29280,
           "real": true
         },
         {
           "position": 5,
           "id": "real_juan_lebron",
           "name": "Juan Lebrón",
-          "points": 20088,
+          "points": 19308,
           "real": true
         },
         {
           "position": 6,
           "id": "real_leandro_augsburger",
           "name": "Leandro Augsburger",
-          "points": 19658,
+          "points": 18878,
           "real": true
         },
         {
           "position": 7,
           "id": "real_jorge_nieto",
           "name": "Jorge Nieto",
-          "points": 16042,
+          "points": 15010,
           "real": true
         },
         {
           "position": 8,
-          "id": "real_franco_stupaczuk",
-          "name": "Franco Stupaczuk",
-          "points": 15982,
+          "id": "real_martin_di_nenno",
+          "name": "Martín Di Nenno",
+          "points": 14580,
           "real": true
         },
         {
           "position": 9,
-          "id": "real_martin_di_nenno",
-          "name": "Martín Di Nenno",
-          "points": 15612,
+          "id": "real_miguel_yanguas",
+          "name": "Miguel Yanguas",
+          "points": 13563,
           "real": true
         },
         {
           "position": 10,
           "id": "real_francisco_navarro",
           "name": "Francisco Navarro",
-          "points": 12134,
+          "points": 12591,
           "real": true
         },
         {
           "position": 11,
-          "id": "real_miguel_yanguas",
-          "name": "Miguel Yanguas",
-          "points": 10674,
+          "id": "real_franco_stupaczuk",
+          "name": "Franco Stupaczuk",
+          "points": 12455,
           "real": true
         },
         {
           "position": 12,
-          "id": "real_juan_tello",
-          "name": "Juan Tello",
-          "points": 8794,
+          "id": "real_jon_sanz",
+          "name": "Jon Sanz",
+          "points": 10651,
           "real": true
         },
         {
           "position": 13,
-          "id": "real_jon_sanz",
-          "name": "Jon Sanz",
-          "points": 8677,
+          "id": "real_juan_tello",
+          "name": "Juan Tello",
+          "points": 8692,
           "real": true
         },
         {
           "position": 14,
           "id": "real_lucas_campagnolo",
           "name": "Lucas Campagnolo",
-          "points": 8433,
+          "points": 8476,
           "real": true
         },
         {
           "position": 15,
-          "id": "real_lucas_bergamini",
-          "name": "Lucas Bergamini",
-          "points": 8073,
+          "id": "real_javier_leal",
+          "name": "Javier Leal",
+          "points": 8160,
           "real": true
         },
         {
@@ -256,28 +256,28 @@
           "position": 17,
           "id": "real_jeronimo_gonzalez",
           "name": "Jerónimo González",
-          "points": 7410,
+          "points": 7620,
           "real": true
         },
         {
           "position": 18,
-          "id": "real_juanlu_esbri",
-          "name": "Juanlu Esbrí",
-          "points": 7336,
+          "id": "real_lucas_bergamini",
+          "name": "Lucas Bergamini",
+          "points": 7469,
           "real": true
         },
         {
           "position": 19,
-          "id": "real_javier_leal",
-          "name": "Javier Leal",
-          "points": 7115,
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí",
+          "points": 7039,
           "real": true
         },
         {
           "position": 20,
           "id": "real_alejandro_ruiz",
           "name": "Alejandro Ruiz",
-          "points": 6906,
+          "points": 6609,
           "real": true
         }
       ],
@@ -288,22 +288,6 @@
           "name": "Francisco Guerrero"
         },
         {
-          "id": "real_jeronimo_gonzalez",
-          "name": "Jerónimo González"
-        },
-        {
-          "id": "real_javier_garcia",
-          "name": "Javier García"
-        },
-        {
-          "id": "real_carlos_daniel_gutierrez",
-          "name": "Carlos Daniel Gutiérrez"
-        },
-        {
-          "id": "real_guillermo_collado",
-          "name": "Guillermo Collado"
-        },
-        {
           "id": "real_pablo_garcia",
           "name": "Pablo García"
         },
@@ -312,31 +296,39 @@
           "name": "Pablo Lijó"
         },
         {
-          "id": "real_marc_sintes_villalonga",
-          "name": "Marc Sintes Villalonga"
+          "id": "real_javier_ruiz",
+          "name": "Javier Ruiz"
         },
         {
           "id": "real_enrique_goenaga",
           "name": "Enrique Goenaga"
         },
         {
-          "id": "real_maximiliano_sanchez",
-          "name": "Maximiliano Sánchez"
+          "id": "real_ignacio_vilarino_gestoso",
+          "name": "Ignacio Vilariño Gestoso"
         },
         {
-          "id": "real_pedro_melendez_amaya",
-          "name": "Pedro Meléndez Amaya"
+          "id": "real_mario_del_castillo",
+          "name": "Mario Del Castillo"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_emilio_sanchez_chamero",
+          "name": "Emilio Sánchez Chamero"
         }
       ],
-      "realAthletesNeverPlayedThisSeasonCount": 11,
+      "realAthletesNeverPlayedThisSeasonCount": 9,
       "tournamentsPlayedThisSeason": {
         "real": {
-          "mean": 20.94,
-          "median": 16,
+          "mean": 22.51,
+          "median": 18.5,
           "n": 100
         },
         "bots": {
-          "mean": 19.29,
+          "mean": 19.13,
           "median": 19,
           "n": 972
         }
@@ -347,22 +339,6 @@
           "name": "Francisco Guerrero"
         },
         {
-          "id": "real_jeronimo_gonzalez",
-          "name": "Jerónimo González"
-        },
-        {
-          "id": "real_javier_garcia",
-          "name": "Javier García"
-        },
-        {
-          "id": "real_carlos_daniel_gutierrez",
-          "name": "Carlos Daniel Gutiérrez"
-        },
-        {
-          "id": "real_guillermo_collado",
-          "name": "Guillermo Collado"
-        },
-        {
           "id": "real_pablo_garcia",
           "name": "Pablo García"
         },
@@ -371,20 +347,28 @@
           "name": "Pablo Lijó"
         },
         {
-          "id": "real_marc_sintes_villalonga",
-          "name": "Marc Sintes Villalonga"
+          "id": "real_javier_ruiz",
+          "name": "Javier Ruiz"
         },
         {
           "id": "real_enrique_goenaga",
           "name": "Enrique Goenaga"
         },
         {
-          "id": "real_maximiliano_sanchez",
-          "name": "Maximiliano Sánchez"
+          "id": "real_ignacio_vilarino_gestoso",
+          "name": "Ignacio Vilariño Gestoso"
         },
         {
-          "id": "real_pedro_melendez_amaya",
-          "name": "Pedro Meléndez Amaya"
+          "id": "real_mario_del_castillo",
+          "name": "Mario Del Castillo"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_emilio_sanchez_chamero",
+          "name": "Emilio Sánchez Chamero"
         }
       ],
       "historicalDuplasThisSeason": [
@@ -598,274 +582,2585 @@
           "2026-11-19"
         ]
       }
+    },
+    {
+      "year": 2027,
+      "tournaments": {
+        "total": 79,
+        "incomplete": 0,
+        "incompleteList": []
+      },
+      "byTier": {
+        "Bronze": {
+          "titles": {
+            "100%_reais": 24,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 24,
+          "championOvrAvg": 96.1,
+          "championOvrMedian": 96.8
+        },
+        "Masters": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 96.3,
+          "championOvrMedian": 96.5
+        },
+        "Silver": {
+          "titles": {
+            "100%_reais": 16,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 16,
+          "championOvrAvg": 96.2,
+          "championOvrMedian": 96.5
+        },
+        "Gold": {
+          "titles": {
+            "100%_reais": 6,
+            "mista": 0,
+            "100%_bots": 2,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 8,
+          "championOvrAvg": 91.9,
+          "championOvrMedian": 95
+        },
+        "Elite": {
+          "titles": {
+            "100%_reais": 9,
+            "mista": 0,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 95,
+          "championOvrMedian": 95
+        },
+        "Platinum": {
+          "titles": {
+            "100%_reais": 6,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 6,
+          "championOvrAvg": 93.8,
+          "championOvrMedian": 96
+        },
+        "Crown": {
+          "titles": {
+            "100%_reais": 4,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 4,
+          "championOvrAvg": 95.9,
+          "championOvrMedian": 95.8
+        },
+        "Circuit Finals": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 1,
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 97.5
+        }
+      },
+      "top20": [
+        {
+          "position": 1,
+          "id": "real_arturo_coello",
+          "name": "Arturo Coello",
+          "points": 15550,
+          "real": true
+        },
+        {
+          "position": 2,
+          "id": "real_agustin_tapia",
+          "name": "Agustín Tapia",
+          "points": 15550,
+          "real": true
+        },
+        {
+          "position": 3,
+          "id": "real_alejandro_galan",
+          "name": "Alejandro Galán",
+          "points": 14720,
+          "real": true
+        },
+        {
+          "position": 4,
+          "id": "real_federico_chingotto",
+          "name": "Federico Chingotto",
+          "points": 14720,
+          "real": true
+        },
+        {
+          "position": 5,
+          "id": "real_jorge_nieto",
+          "name": "Jorge Nieto",
+          "points": 7836,
+          "real": true
+        },
+        {
+          "position": 6,
+          "id": "real_martin_di_nenno",
+          "name": "Martín Di Nenno",
+          "points": 7836,
+          "real": true
+        },
+        {
+          "position": 7,
+          "id": "real_juan_tello",
+          "name": "Juan Tello",
+          "points": 6339,
+          "real": true
+        },
+        {
+          "position": 8,
+          "id": "real_gonzalo_alfonso",
+          "name": "Gonzalo Alfonso",
+          "points": 6339,
+          "real": true
+        },
+        {
+          "position": 9,
+          "id": "real_juan_lebron",
+          "name": "Juan Lebrón",
+          "points": 4437,
+          "real": true
+        },
+        {
+          "position": 10,
+          "id": "real_leandro_augsburger",
+          "name": "Leandro Augsburger",
+          "points": 4437,
+          "real": true
+        },
+        {
+          "position": 11,
+          "id": "real_javier_leal",
+          "name": "Javier Leal",
+          "points": 3921,
+          "real": true
+        },
+        {
+          "position": 12,
+          "id": "real_jose_antonio_diestro",
+          "name": "José Antonio Diestro",
+          "points": 3579,
+          "real": true
+        },
+        {
+          "position": 13,
+          "id": "real_jon_sanz",
+          "name": "Jon Sanz",
+          "points": 3515,
+          "real": true
+        },
+        {
+          "position": 14,
+          "id": "real_luciano_capra",
+          "name": "Luciano Capra",
+          "points": 3019,
+          "real": true
+        },
+        {
+          "position": 15,
+          "id": "athleteprofile-1767226730915-3vtpvy",
+          "name": "Diego Castro",
+          "points": 3019,
+          "real": false
+        },
+        {
+          "position": 16,
+          "id": "athleteprofile-1767226746915-9uwr96",
+          "name": "Emiliano Silva",
+          "points": 2889,
+          "real": false
+        },
+        {
+          "position": 17,
+          "id": "athleteprofile-1767226795915-pj4syd",
+          "name": "Adrián Ferrer",
+          "points": 2889,
+          "real": false
+        },
+        {
+          "position": 18,
+          "id": "real_andres_fernandez_lancha",
+          "name": "Andrés Fernández Lancha",
+          "points": 2773,
+          "real": true
+        },
+        {
+          "position": 19,
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí",
+          "points": 2498,
+          "real": true
+        },
+        {
+          "position": 20,
+          "id": "real_alejandro_ruiz",
+          "name": "Alejandro Ruiz",
+          "points": 2498,
+          "real": true
+        }
+      ],
+      "realInTop20": 17,
+      "realAthletesNeverPlayedThisSeason": [
+        {
+          "id": "real_jose_antonio_diestro",
+          "name": "José Antonio Diestro"
+        },
+        {
+          "id": "real_andres_fernandez_lancha",
+          "name": "Andrés Fernández Lancha"
+        },
+        {
+          "id": "real_pablo_lijo",
+          "name": "Pablo Lijó"
+        },
+        {
+          "id": "real_alvaro_melendez_amaya",
+          "name": "Álvaro Meléndez Amaya"
+        },
+        {
+          "id": "real_manuel_castano_salguero",
+          "name": "Manuel Castaño Salguero"
+        },
+        {
+          "id": "real_mariano_agustin_gonzalez_san_martin",
+          "name": "Mariano Agustín González San Martín"
+        },
+        {
+          "id": "real_lucas_campagnolo",
+          "name": "Lucas Campagnolo"
+        },
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_enrique_goenaga",
+          "name": "Enrique Goenaga"
+        },
+        {
+          "id": "real_ignacio_vilarino_gestoso",
+          "name": "Ignacio Vilariño Gestoso"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_nuno_deus",
+          "name": "Nuno Deus"
+        },
+        {
+          "id": "real_javier_valdes",
+          "name": "Javier Valdés"
+        },
+        {
+          "id": "real_victor_mena",
+          "name": "Víctor Mena"
+        }
+      ],
+      "realAthletesNeverPlayedThisSeasonCount": 14,
+      "tournamentsPlayedThisSeason": {
+        "real": {
+          "mean": 18.32,
+          "median": 11,
+          "n": 100
+        },
+        "bots": {
+          "mean": 1.61,
+          "median": 0,
+          "n": 1000
+        }
+      },
+      "realAthletesNeverPlayedSoFar": [
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_pablo_lijo",
+          "name": "Pablo Lijó"
+        },
+        {
+          "id": "real_enrique_goenaga",
+          "name": "Enrique Goenaga"
+        },
+        {
+          "id": "real_ignacio_vilarino_gestoso",
+          "name": "Ignacio Vilariño Gestoso"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        }
+      ],
+      "historicalDuplasThisSeason": [
+        {
+          "team_key": "real_agustin_tapia_real_arturo_coello",
+          "names": "Arturo Coello & Agustín Tapia",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_galan_real_federico_chingotto",
+          "names": "Alejandro Galán & Federico Chingotto",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_juan_lebron_real_leandro_augsburger",
+          "names": "Juan Lebrón & Leandro Augsburger",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_ruiz_real_juanlu_esbri",
+          "names": "Juanlu Esbrí & Alejandro Ruiz",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_federico_mourino_real_marc_quilez",
+          "names": "Marc Quílez & Federico Mouriño",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_clement_geens_real_dylan_guichard",
+          "names": "Clément Geens & Dylan Guichard",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_jorge_nieto_real_martin_di_nenno",
+          "names": "Jorge Nieto & Martín Di Nenno",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_jairo_bautista_real_maximiliano_arce_simo",
+          "names": "Jairo Bautista & Maximiliano Arce Simo",
+          "samples": 12,
+          "pairedRatePct": 25
+        },
+        {
+          "team_key": "real_jose_jimenez_casas_real_leonel_daniel_aguirre",
+          "names": "José Jiménez Casas & Leonel Daniel Aguirre",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aimar_goni_lacabe_real_pol_hernandez_alvarez",
+          "names": "Pol Hernández Álvarez & Aimar Goñi Lacabe",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_maximiliano_sanchez_blasco_real_valentino_gabriel_libaak",
+          "names": "Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_gonzalo_rubio_real_victor_ruiz",
+          "names": "Gonzalo Rubio & Víctor Ruiz",
+          "samples": 12,
+          "pairedRatePct": 25
+        },
+        {
+          "team_key": "real_enzo_jensen_sirvent_real_luis_hernandez_quesada",
+          "names": "Enzo Jensen Sirvent & Luis Hernández Quesada",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alvaro_cepero_real_juan_ignacio_de_pascual",
+          "names": "Juan Ignacio De Pascual & Álvaro Cepero",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_javier_martinez_real_manuel_castano_salguero",
+          "names": "Javier Martínez & Manuel Castaño Salguero",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_antonio_fernandez_real_francisco_manuel_gil",
+          "names": "Antonio Fernández & Francisco Manuel Gil",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_daniel_santigosa_sastre_real_denis_tomas_perino",
+          "names": "Daniel Santigosa Sastre & Denis Tomás Perino",
+          "samples": 12,
+          "pairedRatePct": 25
+        },
+        {
+          "team_key": "real_andres_fernandez_lancha_real_juan_ignacio_rubini",
+          "names": "Andrés Fernández Lancha & Juan Ignacio Rubini",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_dominguez_real_juan_cruz_belluati",
+          "names": "Facundo Domínguez & Juan Cruz Belluati",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_alvaro_melendez_amaya_real_ignacio_sager",
+          "names": "Álvaro Meléndez Amaya & Ignacio Sager",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_mario_ortega_real_ramiro_jesus_valenzuela",
+          "names": "Mario Ortega & Ramiro Jesús Valenzuela",
+          "samples": 12,
+          "pairedRatePct": 41.7
+        },
+        {
+          "team_key": "real_aris_patiniotis_real_diego_garcia_garcia",
+          "names": "Aris Patiniotis & Diego García García",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_nuno_deus_real_teodoro_zapata",
+          "names": "Teodoro Zapata & Nuno Deus",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_anton_sans_real_martin_abud",
+          "names": "Martín Abud & Antón Sans",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_albert_roglan_pons_real_marco_cassetta",
+          "names": "Marco Cassetta & Albert Roglán Pons",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_rodrigo_luis_lopez_real_miguel_deus",
+          "names": "Miguel Deus & Facundo Rodrigo Luis López",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_salvador_oria_real_victor_mena",
+          "names": "Víctor Mena & Salvador Oria",
+          "samples": 12,
+          "pairedRatePct": 0
+        }
+      ],
+      "player1000Eligibility": {
+        "totalTournamentsInCalendar": 80,
+        "eligibleCount": 40,
+        "maxGapDays": 14,
+        "eligibleDates": [
+          "2027-01-07",
+          "2027-01-14",
+          "2027-01-21",
+          "2027-02-04",
+          "2027-02-04",
+          "2027-02-18",
+          "2027-02-25",
+          "2027-03-04",
+          "2027-03-18",
+          "2027-03-18",
+          "2027-04-01",
+          "2027-04-08",
+          "2027-04-15",
+          "2027-04-29",
+          "2027-04-29",
+          "2027-05-13",
+          "2027-05-20",
+          "2027-05-27",
+          "2027-06-10",
+          "2027-06-10",
+          "2027-06-17",
+          "2027-07-01",
+          "2027-07-01",
+          "2027-07-15",
+          "2027-07-22",
+          "2027-07-29",
+          "2027-08-12",
+          "2027-08-12",
+          "2027-08-26",
+          "2027-09-02",
+          "2027-09-09",
+          "2027-09-23",
+          "2027-09-23",
+          "2027-10-07",
+          "2027-10-14",
+          "2027-10-21",
+          "2027-11-04",
+          "2027-11-04",
+          "2027-11-18",
+          "2027-11-25"
+        ]
+      }
+    },
+    {
+      "year": 2028,
+      "tournaments": {
+        "total": 81,
+        "incomplete": 0,
+        "incompleteList": []
+      },
+      "byTier": {
+        "Legacy Finals": {
+          "titles": {
+            "100%_reais": 2,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 2,
+          "championOvrAvg": 97.8,
+          "championOvrMedian": 97.8
+        },
+        "Bronze": {
+          "titles": {
+            "100%_reais": 24,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 24,
+          "championOvrAvg": 96.7,
+          "championOvrMedian": 97.5
+        },
+        "Masters": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 96.8,
+          "championOvrMedian": 97.5
+        },
+        "Silver": {
+          "titles": {
+            "100%_reais": 16,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 16,
+          "championOvrAvg": 97.1,
+          "championOvrMedian": 97.5
+        },
+        "Gold": {
+          "titles": {
+            "100%_reais": 6,
+            "mista": 0,
+            "100%_bots": 2,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 8,
+          "championOvrAvg": 92.8,
+          "championOvrMedian": 96.5
+        },
+        "Elite": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 97.3,
+          "championOvrMedian": 97.5
+        },
+        "Platinum": {
+          "titles": {
+            "100%_reais": 5,
+            "mista": 1,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 6,
+          "championOvrAvg": 94.8,
+          "championOvrMedian": 97.5
+        },
+        "Crown": {
+          "titles": {
+            "100%_reais": 4,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 4,
+          "championOvrAvg": 96.6,
+          "championOvrMedian": 96.5
+        },
+        "Circuit Finals": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 1,
+          "championOvrAvg": 98,
+          "championOvrMedian": 98
+        }
+      },
+      "top20": [
+        {
+          "position": 1,
+          "id": "real_arturo_coello",
+          "name": "Arturo Coello",
+          "points": 17700,
+          "real": true
+        },
+        {
+          "position": 2,
+          "id": "real_agustin_tapia",
+          "name": "Agustín Tapia",
+          "points": 17700,
+          "real": true
+        },
+        {
+          "position": 3,
+          "id": "real_alejandro_galan",
+          "name": "Alejandro Galán",
+          "points": 16400,
+          "real": true
+        },
+        {
+          "position": 4,
+          "id": "real_federico_chingotto",
+          "name": "Federico Chingotto",
+          "points": 16400,
+          "real": true
+        },
+        {
+          "position": 5,
+          "id": "real_juan_lebron",
+          "name": "Juan Lebrón",
+          "points": 5670,
+          "real": true
+        },
+        {
+          "position": 6,
+          "id": "real_leandro_augsburger",
+          "name": "Leandro Augsburger",
+          "points": 5670,
+          "real": true
+        },
+        {
+          "position": 7,
+          "id": "real_jorge_nieto",
+          "name": "Jorge Nieto",
+          "points": 5274,
+          "real": true
+        },
+        {
+          "position": 8,
+          "id": "real_martin_di_nenno",
+          "name": "Martín Di Nenno",
+          "points": 5274,
+          "real": true
+        },
+        {
+          "position": 9,
+          "id": "athleteprofile-1767226739915-n0zq4t",
+          "name": "Bruno Acosta",
+          "points": 4731,
+          "real": false
+        },
+        {
+          "position": 10,
+          "id": "athleteprofile-1767226779915-t2zyz4",
+          "name": "Ignacio Medina",
+          "points": 4731,
+          "real": false
+        },
+        {
+          "position": 11,
+          "id": "athleteprofile-1767226724915-38scm9",
+          "name": "Gonzalo Méndez",
+          "points": 4095,
+          "real": false
+        },
+        {
+          "position": 12,
+          "id": "athleteprofile-1767226753915-11bsx7",
+          "name": "Santiago García",
+          "points": 4095,
+          "real": false
+        },
+        {
+          "position": 13,
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí",
+          "points": 4085,
+          "real": true
+        },
+        {
+          "position": 14,
+          "id": "real_alejandro_ruiz",
+          "name": "Alejandro Ruiz",
+          "points": 4085,
+          "real": true
+        },
+        {
+          "position": 15,
+          "id": "real_javier_leal",
+          "name": "Javier Leal",
+          "points": 3987,
+          "real": true
+        },
+        {
+          "position": 16,
+          "id": "real_eduardo_alonso",
+          "name": "Eduardo Alonso",
+          "points": 3987,
+          "real": true
+        },
+        {
+          "position": 17,
+          "id": "real_juan_tello",
+          "name": "Juan Tello",
+          "points": 3369,
+          "real": true
+        },
+        {
+          "position": 18,
+          "id": "real_gonzalo_alfonso",
+          "name": "Gonzalo Alfonso",
+          "points": 3369,
+          "real": true
+        },
+        {
+          "position": 19,
+          "id": "real_luciano_capra",
+          "name": "Luciano Capra",
+          "points": 3186,
+          "real": true
+        },
+        {
+          "position": 20,
+          "id": "athleteprofile-1767226730915-3vtpvy",
+          "name": "Diego Castro",
+          "points": 3186,
+          "real": false
+        }
+      ],
+      "realInTop20": 15,
+      "realAthletesNeverPlayedThisSeason": [
+        {
+          "id": "real_denis_tomas_perino",
+          "name": "Denis Tomás Perino"
+        },
+        {
+          "id": "real_mario_del_castillo",
+          "name": "Mario Del Castillo"
+        },
+        {
+          "id": "real_francisco_guerrero",
+          "name": "Francisco Guerrero"
+        },
+        {
+          "id": "real_mariano_agustin_gonzalez_san_martin",
+          "name": "Mariano Agustín González San Martín"
+        },
+        {
+          "id": "real_aimar_goni_lacabe",
+          "name": "Aimar Goñi Lacabe"
+        },
+        {
+          "id": "real_pedro_melendez_amaya",
+          "name": "Pedro Meléndez Amaya"
+        },
+        {
+          "id": "real_miguel_yanguas",
+          "name": "Miguel Yanguas"
+        },
+        {
+          "id": "real_jon_sanz",
+          "name": "Jon Sanz"
+        },
+        {
+          "id": "real_lucas_campagnolo",
+          "name": "Lucas Campagnolo"
+        },
+        {
+          "id": "real_pol_hernandez_alvarez",
+          "name": "Pol Hernández Álvarez"
+        },
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_gonzalo_rubio",
+          "name": "Gonzalo Rubio"
+        },
+        {
+          "id": "real_enrique_goenaga",
+          "name": "Enrique Goenaga"
+        },
+        {
+          "id": "real_daniel_santigosa_sastre",
+          "name": "Daniel Santigosa Sastre"
+        },
+        {
+          "id": "real_flavio_abbate",
+          "name": "Flavio Abbate"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_diego_garcia_garcia",
+          "name": "Diego García García"
+        },
+        {
+          "id": "real_teodoro_zapata",
+          "name": "Teodoro Zapata"
+        },
+        {
+          "id": "real_javier_valdes",
+          "name": "Javier Valdés"
+        },
+        {
+          "id": "real_martin_abud",
+          "name": "Martín Abud"
+        },
+        {
+          "id": "real_miguel_deus",
+          "name": "Miguel Deus"
+        },
+        {
+          "id": "real_facundo_rodrigo_luis_lopez",
+          "name": "Facundo Rodrigo Luis López"
+        },
+        {
+          "id": "real_victor_mena",
+          "name": "Víctor Mena"
+        },
+        {
+          "id": "real_salvador_oria",
+          "name": "Salvador Oria"
+        }
+      ],
+      "realAthletesNeverPlayedThisSeasonCount": 24,
+      "tournamentsPlayedThisSeason": {
+        "real": {
+          "mean": 16.55,
+          "median": 6,
+          "n": 95
+        },
+        "bots": {
+          "mean": 1.89,
+          "median": 0,
+          "n": 1005
+        }
+      },
+      "realAthletesNeverPlayedSoFar": [
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_pablo_lijo",
+          "name": "Pablo Lijó"
+        },
+        {
+          "id": "real_enrique_goenaga",
+          "name": "Enrique Goenaga"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        }
+      ],
+      "historicalDuplasThisSeason": [
+        {
+          "team_key": "real_agustin_tapia_real_arturo_coello",
+          "names": "Arturo Coello & Agustín Tapia",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_galan_real_federico_chingotto",
+          "names": "Alejandro Galán & Federico Chingotto",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_juan_lebron_real_leandro_augsburger",
+          "names": "Juan Lebrón & Leandro Augsburger",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_ruiz_real_juanlu_esbri",
+          "names": "Juanlu Esbrí & Alejandro Ruiz",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_federico_mourino_real_marc_quilez",
+          "names": "Marc Quílez & Federico Mouriño",
+          "samples": 12,
+          "pairedRatePct": 91.7
+        },
+        {
+          "team_key": "real_clement_geens_real_dylan_guichard",
+          "names": "Clément Geens & Dylan Guichard",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_jorge_nieto_real_martin_di_nenno",
+          "names": "Jorge Nieto & Martín Di Nenno",
+          "samples": 12,
+          "pairedRatePct": 75
+        },
+        {
+          "team_key": "real_jairo_bautista_real_maximiliano_arce_simo",
+          "names": "Jairo Bautista & Maximiliano Arce Simo",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_jose_jimenez_casas_real_leonel_daniel_aguirre",
+          "names": "José Jiménez Casas & Leonel Daniel Aguirre",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aimar_goni_lacabe_real_pol_hernandez_alvarez",
+          "names": "Pol Hernández Álvarez & Aimar Goñi Lacabe",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_maximiliano_sanchez_blasco_real_valentino_gabriel_libaak",
+          "names": "Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_gonzalo_rubio_real_victor_ruiz",
+          "names": "Gonzalo Rubio & Víctor Ruiz",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_enzo_jensen_sirvent_real_luis_hernandez_quesada",
+          "names": "Enzo Jensen Sirvent & Luis Hernández Quesada",
+          "samples": 12,
+          "pairedRatePct": 58.3
+        },
+        {
+          "team_key": "real_alvaro_cepero_real_juan_ignacio_de_pascual",
+          "names": "Juan Ignacio De Pascual & Álvaro Cepero",
+          "samples": 12,
+          "pairedRatePct": 83.3
+        },
+        {
+          "team_key": "real_javier_martinez_real_manuel_castano_salguero",
+          "names": "Javier Martínez & Manuel Castaño Salguero",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_antonio_fernandez_real_francisco_manuel_gil",
+          "names": "Antonio Fernández & Francisco Manuel Gil",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_daniel_santigosa_sastre_real_denis_tomas_perino",
+          "names": "Daniel Santigosa Sastre & Denis Tomás Perino",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_andres_fernandez_lancha_real_juan_ignacio_rubini",
+          "names": "Andrés Fernández Lancha & Juan Ignacio Rubini",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_dominguez_real_juan_cruz_belluati",
+          "names": "Facundo Domínguez & Juan Cruz Belluati",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_alvaro_melendez_amaya_real_ignacio_sager",
+          "names": "Álvaro Meléndez Amaya & Ignacio Sager",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_mario_ortega_real_ramiro_jesus_valenzuela",
+          "names": "Mario Ortega & Ramiro Jesús Valenzuela",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aris_patiniotis_real_diego_garcia_garcia",
+          "names": "Aris Patiniotis & Diego García García",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_nuno_deus_real_teodoro_zapata",
+          "names": "Teodoro Zapata & Nuno Deus",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_anton_sans_real_martin_abud",
+          "names": "Martín Abud & Antón Sans",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_albert_roglan_pons_real_marco_cassetta",
+          "names": "Marco Cassetta & Albert Roglán Pons",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_rodrigo_luis_lopez_real_miguel_deus",
+          "names": "Miguel Deus & Facundo Rodrigo Luis López",
+          "samples": 12,
+          "pairedRatePct": 33.3
+        },
+        {
+          "team_key": "real_salvador_oria_real_victor_mena",
+          "names": "Víctor Mena & Salvador Oria",
+          "samples": 12,
+          "pairedRatePct": 0
+        }
+      ],
+      "player1000Eligibility": {
+        "totalTournamentsInCalendar": 80,
+        "eligibleCount": 40,
+        "maxGapDays": 14,
+        "eligibleDates": [
+          "2028-01-06",
+          "2028-01-13",
+          "2028-01-20",
+          "2028-02-03",
+          "2028-02-03",
+          "2028-02-17",
+          "2028-02-24",
+          "2028-03-02",
+          "2028-03-16",
+          "2028-03-16",
+          "2028-03-30",
+          "2028-04-06",
+          "2028-04-13",
+          "2028-04-27",
+          "2028-04-27",
+          "2028-05-11",
+          "2028-05-18",
+          "2028-05-25",
+          "2028-06-08",
+          "2028-06-08",
+          "2028-06-15",
+          "2028-06-29",
+          "2028-06-29",
+          "2028-07-13",
+          "2028-07-20",
+          "2028-07-27",
+          "2028-08-10",
+          "2028-08-10",
+          "2028-08-24",
+          "2028-08-31",
+          "2028-09-07",
+          "2028-09-21",
+          "2028-09-21",
+          "2028-10-05",
+          "2028-10-12",
+          "2028-10-19",
+          "2028-11-02",
+          "2028-11-02",
+          "2028-11-16",
+          "2028-11-23"
+        ]
+      }
+    },
+    {
+      "year": 2029,
+      "tournaments": {
+        "total": 80,
+        "incomplete": 0,
+        "incompleteList": []
+      },
+      "byTier": {
+        "Bronze": {
+          "titles": {
+            "100%_reais": 23,
+            "mista": 0,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 24,
+          "championOvrAvg": 96.2,
+          "championOvrMedian": 96
+        },
+        "Masters": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 97,
+          "championOvrMedian": 97
+        },
+        "Silver": {
+          "titles": {
+            "100%_reais": 15,
+            "mista": 0,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 16,
+          "championOvrAvg": 96.8,
+          "championOvrMedian": 98
+        },
+        "Gold": {
+          "titles": {
+            "100%_reais": 6,
+            "mista": 1,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 8,
+          "championOvrAvg": 92.7,
+          "championOvrMedian": 96
+        },
+        "Elite": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 96.2,
+          "championOvrMedian": 97
+        },
+        "Platinum": {
+          "titles": {
+            "100%_reais": 5,
+            "mista": 0,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 6,
+          "championOvrAvg": 95.5,
+          "championOvrMedian": 97
+        },
+        "Crown": {
+          "titles": {
+            "100%_reais": 4,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 4,
+          "championOvrAvg": 98,
+          "championOvrMedian": 98
+        },
+        "Circuit Finals": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 1,
+          "championOvrAvg": 98,
+          "championOvrMedian": 98
+        },
+        "Legacy Finals": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 1,
+          "championOvrAvg": 98,
+          "championOvrMedian": 98
+        }
+      },
+      "top20": [
+        {
+          "position": 1,
+          "id": "real_arturo_coello",
+          "name": "Arturo Coello",
+          "points": 19600,
+          "real": true
+        },
+        {
+          "position": 2,
+          "id": "real_agustin_tapia",
+          "name": "Agustín Tapia",
+          "points": 19600,
+          "real": true
+        },
+        {
+          "position": 3,
+          "id": "real_alejandro_galan",
+          "name": "Alejandro Galán",
+          "points": 13140,
+          "real": true
+        },
+        {
+          "position": 4,
+          "id": "real_federico_chingotto",
+          "name": "Federico Chingotto",
+          "points": 13140,
+          "real": true
+        },
+        {
+          "position": 5,
+          "id": "real_javier_leal",
+          "name": "Javier Leal",
+          "points": 7740,
+          "real": true
+        },
+        {
+          "position": 6,
+          "id": "real_eduardo_alonso",
+          "name": "Eduardo Alonso",
+          "points": 7740,
+          "real": true
+        },
+        {
+          "position": 7,
+          "id": "athleteprofile-1767226724915-38scm9",
+          "name": "Gonzalo Méndez",
+          "points": 4275,
+          "real": false
+        },
+        {
+          "position": 8,
+          "id": "athleteprofile-1767226753915-11bsx7",
+          "name": "Santiago García",
+          "points": 4275,
+          "real": false
+        },
+        {
+          "position": 9,
+          "id": "athleteprofile-1767226739915-n0zq4t",
+          "name": "Bruno Acosta",
+          "points": 4089,
+          "real": false
+        },
+        {
+          "position": 10,
+          "id": "athleteprofile-1767226779915-t2zyz4",
+          "name": "Ignacio Medina",
+          "points": 4089,
+          "real": false
+        },
+        {
+          "position": 11,
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí",
+          "points": 4040,
+          "real": true
+        },
+        {
+          "position": 12,
+          "id": "athleteprofile-1767226718915-mxsr4t",
+          "name": "João Herrera",
+          "points": 3911,
+          "real": false
+        },
+        {
+          "position": 13,
+          "id": "athleteprofile-1767226802915-e89mmf",
+          "name": "Álvaro Costa",
+          "points": 3911,
+          "real": false
+        },
+        {
+          "position": 14,
+          "id": "athlete-003",
+          "name": "Tomás Vidal",
+          "points": 3897,
+          "real": false
+        },
+        {
+          "position": 15,
+          "id": "athleteprofile-1767226798915-dl8yev",
+          "name": "Franco López",
+          "points": 3897,
+          "real": false
+        },
+        {
+          "position": 16,
+          "id": "real_luciano_capra",
+          "name": "Luciano Capra",
+          "points": 3576,
+          "real": true
+        },
+        {
+          "position": 17,
+          "id": "athleteprofile-1767226730915-3vtpvy",
+          "name": "Diego Castro",
+          "points": 3576,
+          "real": false
+        },
+        {
+          "position": 18,
+          "id": "real_jorge_nieto",
+          "name": "Jorge Nieto",
+          "points": 3340,
+          "real": true
+        },
+        {
+          "position": 19,
+          "id": "real_enzo_jensen_sirvent",
+          "name": "Enzo Jensen Sirvent",
+          "points": 3340,
+          "real": true
+        },
+        {
+          "position": 20,
+          "id": "athleteprofile-1767226755915-m8ubjj",
+          "name": "Pedro Torres",
+          "points": 3245,
+          "real": false
+        }
+      ],
+      "realInTop20": 10,
+      "realAthletesNeverPlayedThisSeason": [
+        {
+          "id": "real_marc_quilez",
+          "name": "Marc Quílez"
+        },
+        {
+          "id": "real_luis_hernandez_quesada",
+          "name": "Luis Hernández Quesada"
+        },
+        {
+          "id": "real_santiago_jose_pineda_cabello",
+          "name": "Santiago José Pineda Cabello"
+        },
+        {
+          "id": "real_mariano_agustin_gonzalez_san_martin",
+          "name": "Mariano Agustín González San Martín"
+        },
+        {
+          "id": "real_aimar_goni_lacabe",
+          "name": "Aimar Goñi Lacabe"
+        },
+        {
+          "id": "real_pedro_melendez_amaya",
+          "name": "Pedro Meléndez Amaya"
+        },
+        {
+          "id": "real_miguel_yanguas",
+          "name": "Miguel Yanguas"
+        },
+        {
+          "id": "real_jon_sanz",
+          "name": "Jon Sanz"
+        },
+        {
+          "id": "real_lucas_bergamini",
+          "name": "Lucas Bergamini"
+        },
+        {
+          "id": "real_juan_tello",
+          "name": "Juan Tello"
+        },
+        {
+          "id": "real_jairo_bautista",
+          "name": "Jairo Bautista"
+        },
+        {
+          "id": "real_javier_barahona",
+          "name": "Javier Barahona"
+        },
+        {
+          "id": "real_jose_jimenez_casas",
+          "name": "José Jiménez Casas"
+        },
+        {
+          "id": "real_alex_chozas",
+          "name": "Álex Chozas"
+        },
+        {
+          "id": "real_pol_hernandez_alvarez",
+          "name": "Pol Hernández Álvarez"
+        },
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_daniel_santigosa_sastre",
+          "name": "Daniel Santigosa Sastre"
+        },
+        {
+          "id": "real_flavio_abbate",
+          "name": "Flavio Abbate"
+        },
+        {
+          "id": "real_maximiliano_sanchez",
+          "name": "Maximiliano Sánchez"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_diego_garcia_garcia",
+          "name": "Diego García García"
+        },
+        {
+          "id": "real_facundo_rodrigo_luis_lopez",
+          "name": "Facundo Rodrigo Luis López"
+        },
+        {
+          "id": "real_victor_mena",
+          "name": "Víctor Mena"
+        }
+      ],
+      "realAthletesNeverPlayedThisSeasonCount": 23,
+      "tournamentsPlayedThisSeason": {
+        "real": {
+          "mean": 14.4,
+          "median": 5,
+          "n": 91
+        },
+        "bots": {
+          "mean": 2.13,
+          "median": 0,
+          "n": 1009
+        }
+      },
+      "realAthletesNeverPlayedSoFar": [
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_pablo_lijo",
+          "name": "Pablo Lijó"
+        },
+        {
+          "id": "real_enrique_goenaga",
+          "name": "Enrique Goenaga"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        }
+      ],
+      "historicalDuplasThisSeason": [
+        {
+          "team_key": "real_agustin_tapia_real_arturo_coello",
+          "names": "Arturo Coello & Agustín Tapia",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_galan_real_federico_chingotto",
+          "names": "Alejandro Galán & Federico Chingotto",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_juan_lebron_real_leandro_augsburger",
+          "names": "Juan Lebrón & Leandro Augsburger",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_ruiz_real_juanlu_esbri",
+          "names": "Juanlu Esbrí & Alejandro Ruiz",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_federico_mourino_real_marc_quilez",
+          "names": "Marc Quílez & Federico Mouriño",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_clement_geens_real_dylan_guichard",
+          "names": "Clément Geens & Dylan Guichard",
+          "samples": 12,
+          "pairedRatePct": 91.7
+        },
+        {
+          "team_key": "real_jorge_nieto_real_martin_di_nenno",
+          "names": "Jorge Nieto & Martín Di Nenno",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_jairo_bautista_real_maximiliano_arce_simo",
+          "names": "Jairo Bautista & Maximiliano Arce Simo",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_jose_jimenez_casas_real_leonel_daniel_aguirre",
+          "names": "José Jiménez Casas & Leonel Daniel Aguirre",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aimar_goni_lacabe_real_pol_hernandez_alvarez",
+          "names": "Pol Hernández Álvarez & Aimar Goñi Lacabe",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_maximiliano_sanchez_blasco_real_valentino_gabriel_libaak",
+          "names": "Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",
+          "samples": 12,
+          "pairedRatePct": 41.7
+        },
+        {
+          "team_key": "real_gonzalo_rubio_real_victor_ruiz",
+          "names": "Gonzalo Rubio & Víctor Ruiz",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_enzo_jensen_sirvent_real_luis_hernandez_quesada",
+          "names": "Enzo Jensen Sirvent & Luis Hernández Quesada",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_alvaro_cepero_real_juan_ignacio_de_pascual",
+          "names": "Juan Ignacio De Pascual & Álvaro Cepero",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_javier_martinez_real_manuel_castano_salguero",
+          "names": "Javier Martínez & Manuel Castaño Salguero",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_antonio_fernandez_real_francisco_manuel_gil",
+          "names": "Antonio Fernández & Francisco Manuel Gil",
+          "samples": 12,
+          "pairedRatePct": 58.3
+        },
+        {
+          "team_key": "real_daniel_santigosa_sastre_real_denis_tomas_perino",
+          "names": "Daniel Santigosa Sastre & Denis Tomás Perino",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_andres_fernandez_lancha_real_juan_ignacio_rubini",
+          "names": "Andrés Fernández Lancha & Juan Ignacio Rubini",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_dominguez_real_juan_cruz_belluati",
+          "names": "Facundo Domínguez & Juan Cruz Belluati",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_alvaro_melendez_amaya_real_ignacio_sager",
+          "names": "Álvaro Meléndez Amaya & Ignacio Sager",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_mario_ortega_real_ramiro_jesus_valenzuela",
+          "names": "Mario Ortega & Ramiro Jesús Valenzuela",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aris_patiniotis_real_diego_garcia_garcia",
+          "names": "Aris Patiniotis & Diego García García",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_nuno_deus_real_teodoro_zapata",
+          "names": "Teodoro Zapata & Nuno Deus",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_anton_sans_real_martin_abud",
+          "names": "Martín Abud & Antón Sans",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_albert_roglan_pons_real_marco_cassetta",
+          "names": "Marco Cassetta & Albert Roglán Pons",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_rodrigo_luis_lopez_real_miguel_deus",
+          "names": "Miguel Deus & Facundo Rodrigo Luis López",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_salvador_oria_real_victor_mena",
+          "names": "Víctor Mena & Salvador Oria",
+          "samples": 12,
+          "pairedRatePct": 0
+        }
+      ],
+      "player1000Eligibility": {
+        "totalTournamentsInCalendar": 80,
+        "eligibleCount": 40,
+        "maxGapDays": 14,
+        "eligibleDates": [
+          "2029-01-04",
+          "2029-01-11",
+          "2029-01-18",
+          "2029-02-01",
+          "2029-02-01",
+          "2029-02-15",
+          "2029-02-22",
+          "2029-03-01",
+          "2029-03-15",
+          "2029-03-15",
+          "2029-03-29",
+          "2029-04-05",
+          "2029-04-12",
+          "2029-04-26",
+          "2029-04-26",
+          "2029-05-10",
+          "2029-05-17",
+          "2029-05-24",
+          "2029-06-07",
+          "2029-06-07",
+          "2029-06-14",
+          "2029-06-28",
+          "2029-06-28",
+          "2029-07-12",
+          "2029-07-19",
+          "2029-07-26",
+          "2029-08-09",
+          "2029-08-09",
+          "2029-08-23",
+          "2029-08-30",
+          "2029-09-06",
+          "2029-09-20",
+          "2029-09-20",
+          "2029-10-04",
+          "2029-10-11",
+          "2029-10-18",
+          "2029-11-01",
+          "2029-11-01",
+          "2029-11-15",
+          "2029-11-22"
+        ]
+      }
+    },
+    {
+      "year": 2030,
+      "tournaments": {
+        "total": 80,
+        "incomplete": 0,
+        "incompleteList": []
+      },
+      "byTier": {
+        "Bronze": {
+          "titles": {
+            "100%_reais": 24,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 24,
+          "championOvrAvg": 97.6,
+          "championOvrMedian": 98
+        },
+        "Masters": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 97.3,
+          "championOvrMedian": 98
+        },
+        "Silver": {
+          "titles": {
+            "100%_reais": 16,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 16,
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 98
+        },
+        "Gold": {
+          "titles": {
+            "100%_reais": 6,
+            "mista": 0,
+            "100%_bots": 2,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 8,
+          "championOvrAvg": 92.6,
+          "championOvrMedian": 98
+        },
+        "Elite": {
+          "titles": {
+            "100%_reais": 10,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 10,
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 98
+        },
+        "Platinum": {
+          "titles": {
+            "100%_reais": 5,
+            "mista": 0,
+            "100%_bots": 1,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 6,
+          "championOvrAvg": 94.3,
+          "championOvrMedian": 97
+        },
+        "Crown": {
+          "titles": {
+            "100%_reais": 4,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 4,
+          "championOvrAvg": 97.5,
+          "championOvrMedian": 98
+        },
+        "Circuit Finals": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 1,
+          "championOvrAvg": 98.5,
+          "championOvrMedian": 98.5
+        },
+        "Legacy Finals": {
+          "titles": {
+            "100%_reais": 1,
+            "mista": 0,
+            "100%_bots": 0,
+            "desconhecido": 0
+          },
+          "incompleteCount": 0,
+          "total": 1,
+          "championOvrAvg": 98.5,
+          "championOvrMedian": 98.5
+        }
+      },
+      "top20": [
+        {
+          "position": 1,
+          "id": "real_arturo_coello",
+          "name": "Arturo Coello",
+          "points": 20100,
+          "real": true
+        },
+        {
+          "position": 2,
+          "id": "real_agustin_tapia",
+          "name": "Agustín Tapia",
+          "points": 20100,
+          "real": true
+        },
+        {
+          "position": 3,
+          "id": "real_alejandro_galan",
+          "name": "Alejandro Galán",
+          "points": 14820,
+          "real": true
+        },
+        {
+          "position": 4,
+          "id": "real_federico_chingotto",
+          "name": "Federico Chingotto",
+          "points": 14820,
+          "real": true
+        },
+        {
+          "position": 5,
+          "id": "real_eduardo_alonso",
+          "name": "Eduardo Alonso",
+          "points": 5372,
+          "real": true
+        },
+        {
+          "position": 6,
+          "id": "real_javier_leal",
+          "name": "Javier Leal",
+          "points": 5153,
+          "real": true
+        },
+        {
+          "position": 7,
+          "id": "real_juan_tello",
+          "name": "Juan Tello",
+          "points": 4929,
+          "real": true
+        },
+        {
+          "position": 8,
+          "id": "athleteprofile-1767226722915-mujs4w",
+          "name": "Felipe Acosta",
+          "points": 4929,
+          "real": false
+        },
+        {
+          "position": 9,
+          "id": "athleteprofile-1767226739915-n0zq4t",
+          "name": "Bruno Acosta",
+          "points": 4653,
+          "real": false
+        },
+        {
+          "position": 10,
+          "id": "athleteprofile-1767226779915-t2zyz4",
+          "name": "Ignacio Medina",
+          "points": 4653,
+          "real": false
+        },
+        {
+          "position": 11,
+          "id": "athleteprofile-1767226755915-m8ubjj",
+          "name": "Pedro Torres",
+          "points": 4296,
+          "real": false
+        },
+        {
+          "position": 12,
+          "id": "athleteprofile-1767226777915-kv8q4c",
+          "name": "Felipe García",
+          "points": 4296,
+          "real": false
+        },
+        {
+          "position": 13,
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí",
+          "points": 4040,
+          "real": true
+        },
+        {
+          "position": 14,
+          "id": "athleteprofile-1767226802915-e89mmf",
+          "name": "Álvaro Costa",
+          "points": 3911,
+          "real": false
+        },
+        {
+          "position": 15,
+          "id": "athleteprofile-1767226719915-0fd24e",
+          "name": "Thiago Acosta",
+          "points": 3676,
+          "real": false
+        },
+        {
+          "position": 16,
+          "id": "athleteprofile-1767226807915-tu5d74",
+          "name": "Diego Vega",
+          "points": 3676,
+          "real": false
+        },
+        {
+          "position": 17,
+          "id": "athlete-003",
+          "name": "Tomás Vidal",
+          "points": 3366,
+          "real": false
+        },
+        {
+          "position": 18,
+          "id": "athleteprofile-1767226798915-dl8yev",
+          "name": "Franco López",
+          "points": 3366,
+          "real": false
+        },
+        {
+          "position": 19,
+          "id": "real_juan_lebron",
+          "name": "Juan Lebrón",
+          "points": 2961,
+          "real": true
+        },
+        {
+          "position": 20,
+          "id": "real_leandro_augsburger",
+          "name": "Leandro Augsburger",
+          "points": 2961,
+          "real": true
+        }
+      ],
+      "realInTop20": 10,
+      "realAthletesNeverPlayedThisSeason": [
+        {
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí"
+        },
+        {
+          "id": "real_leonel_daniel_aguirre",
+          "name": "Leonel Daniel Aguirre"
+        },
+        {
+          "id": "real_mariano_agustin_gonzalez_san_martin",
+          "name": "Mariano Agustín González San Martín"
+        },
+        {
+          "id": "real_juan_cruz_belluati",
+          "name": "Juan Cruz Belluati"
+        },
+        {
+          "id": "real_dylan_guichard",
+          "name": "Dylan Guichard"
+        },
+        {
+          "id": "real_gonzalo_rubio",
+          "name": "Gonzalo Rubio"
+        },
+        {
+          "id": "real_jon_sanz",
+          "name": "Jon Sanz"
+        },
+        {
+          "id": "real_jairo_bautista",
+          "name": "Jairo Bautista"
+        },
+        {
+          "id": "real_pol_hernandez_alvarez",
+          "name": "Pol Hernández Álvarez"
+        },
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_alvaro_cepero",
+          "name": "Álvaro Cepero"
+        },
+        {
+          "id": "real_antonio_fernandez",
+          "name": "Antonio Fernández"
+        },
+        {
+          "id": "real_flavio_abbate",
+          "name": "Flavio Abbate"
+        },
+        {
+          "id": "real_ignacio_vilarino_gestoso",
+          "name": "Ignacio Vilariño Gestoso"
+        },
+        {
+          "id": "real_jose_luis_gonzalez",
+          "name": "José Luis González"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_aris_patiniotis",
+          "name": "Aris Patiniotis"
+        },
+        {
+          "id": "real_diego_garcia_garcia",
+          "name": "Diego García García"
+        },
+        {
+          "id": "real_miguel_deus",
+          "name": "Miguel Deus"
+        },
+        {
+          "id": "real_victor_mena",
+          "name": "Víctor Mena"
+        },
+        {
+          "id": "real_salvador_oria",
+          "name": "Salvador Oria"
+        }
+      ],
+      "realAthletesNeverPlayedThisSeasonCount": 21,
+      "tournamentsPlayedThisSeason": {
+        "real": {
+          "mean": 14.23,
+          "median": 5.5,
+          "n": 86
+        },
+        "bots": {
+          "mean": 2.2,
+          "median": 0,
+          "n": 1014
+        }
+      },
+      "realAthletesNeverPlayedSoFar": [
+        {
+          "id": "real_pablo_garcia",
+          "name": "Pablo García"
+        },
+        {
+          "id": "real_pablo_lijo",
+          "name": "Pablo Lijó"
+        },
+        {
+          "id": "real_enrique_goenaga",
+          "name": "Enrique Goenaga"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        }
+      ],
+      "historicalDuplasThisSeason": [
+        {
+          "team_key": "real_agustin_tapia_real_arturo_coello",
+          "names": "Arturo Coello & Agustín Tapia",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_galan_real_federico_chingotto",
+          "names": "Alejandro Galán & Federico Chingotto",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_juan_lebron_real_leandro_augsburger",
+          "names": "Juan Lebrón & Leandro Augsburger",
+          "samples": 12,
+          "pairedRatePct": 100
+        },
+        {
+          "team_key": "real_alejandro_ruiz_real_juanlu_esbri",
+          "names": "Juanlu Esbrí & Alejandro Ruiz",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_federico_mourino_real_marc_quilez",
+          "names": "Marc Quílez & Federico Mouriño",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_clement_geens_real_dylan_guichard",
+          "names": "Clément Geens & Dylan Guichard",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_jorge_nieto_real_martin_di_nenno",
+          "names": "Jorge Nieto & Martín Di Nenno",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_jairo_bautista_real_maximiliano_arce_simo",
+          "names": "Jairo Bautista & Maximiliano Arce Simo",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_jose_jimenez_casas_real_leonel_daniel_aguirre",
+          "names": "José Jiménez Casas & Leonel Daniel Aguirre",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aimar_goni_lacabe_real_pol_hernandez_alvarez",
+          "names": "Pol Hernández Álvarez & Aimar Goñi Lacabe",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_maximiliano_sanchez_blasco_real_valentino_gabriel_libaak",
+          "names": "Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_gonzalo_rubio_real_victor_ruiz",
+          "names": "Gonzalo Rubio & Víctor Ruiz",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_enzo_jensen_sirvent_real_luis_hernandez_quesada",
+          "names": "Enzo Jensen Sirvent & Luis Hernández Quesada",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_alvaro_cepero_real_juan_ignacio_de_pascual",
+          "names": "Juan Ignacio De Pascual & Álvaro Cepero",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_javier_martinez_real_manuel_castano_salguero",
+          "names": "Javier Martínez & Manuel Castaño Salguero",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_antonio_fernandez_real_francisco_manuel_gil",
+          "names": "Antonio Fernández & Francisco Manuel Gil",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_daniel_santigosa_sastre_real_denis_tomas_perino",
+          "names": "Daniel Santigosa Sastre & Denis Tomás Perino",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_andres_fernandez_lancha_real_juan_ignacio_rubini",
+          "names": "Andrés Fernández Lancha & Juan Ignacio Rubini",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_dominguez_real_juan_cruz_belluati",
+          "names": "Facundo Domínguez & Juan Cruz Belluati",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_alvaro_melendez_amaya_real_ignacio_sager",
+          "names": "Álvaro Meléndez Amaya & Ignacio Sager",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_mario_ortega_real_ramiro_jesus_valenzuela",
+          "names": "Mario Ortega & Ramiro Jesús Valenzuela",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_aris_patiniotis_real_diego_garcia_garcia",
+          "names": "Aris Patiniotis & Diego García García",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_nuno_deus_real_teodoro_zapata",
+          "names": "Teodoro Zapata & Nuno Deus",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_anton_sans_real_martin_abud",
+          "names": "Martín Abud & Antón Sans",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_albert_roglan_pons_real_marco_cassetta",
+          "names": "Marco Cassetta & Albert Roglán Pons",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_facundo_rodrigo_luis_lopez_real_miguel_deus",
+          "names": "Miguel Deus & Facundo Rodrigo Luis López",
+          "samples": 12,
+          "pairedRatePct": 0
+        },
+        {
+          "team_key": "real_salvador_oria_real_victor_mena",
+          "names": "Víctor Mena & Salvador Oria",
+          "samples": 12,
+          "pairedRatePct": 0
+        }
+      ],
+      "player1000Eligibility": {
+        "totalTournamentsInCalendar": 80,
+        "eligibleCount": 40,
+        "maxGapDays": 14,
+        "eligibleDates": [
+          "2030-01-03",
+          "2030-01-10",
+          "2030-01-17",
+          "2030-01-31",
+          "2030-01-31",
+          "2030-02-14",
+          "2030-02-21",
+          "2030-02-28",
+          "2030-03-14",
+          "2030-03-14",
+          "2030-03-28",
+          "2030-04-04",
+          "2030-04-11",
+          "2030-04-25",
+          "2030-04-25",
+          "2030-05-09",
+          "2030-05-16",
+          "2030-05-23",
+          "2030-06-06",
+          "2030-06-06",
+          "2030-06-13",
+          "2030-06-27",
+          "2030-06-27",
+          "2030-07-11",
+          "2030-07-18",
+          "2030-07-25",
+          "2030-08-08",
+          "2030-08-08",
+          "2030-08-22",
+          "2030-08-29",
+          "2030-09-05",
+          "2030-09-19",
+          "2030-09-19",
+          "2030-10-03",
+          "2030-10-10",
+          "2030-10-17",
+          "2030-10-31",
+          "2030-10-31",
+          "2030-11-14",
+          "2030-11-21"
+        ]
+      }
     }
   ],
   "cumulative": {
-    "tournamentsResolved": 80,
+    "tournamentsResolved": 400,
     "byClassification": {
-      "100%_bots": 3,
-      "100%_reais": 75,
+      "100%_bots": 17,
+      "100%_reais": 381,
       "mista": 2
     },
     "byTierClassification": {
       "Bronze": {
-        "100%_bots": 2,
-        "100%_reais": 22
+        "100%_bots": 3,
+        "100%_reais": 117
       },
       "Elite": {
-        "100%_reais": 10
-      },
-      "Silver": {
-        "100%_reais": 16
-      },
-      "Gold": {
-        "100%_reais": 6,
-        "mista": 1,
+        "100%_reais": 49,
         "100%_bots": 1
       },
+      "Silver": {
+        "100%_reais": 79,
+        "100%_bots": 1
+      },
+      "Gold": {
+        "100%_reais": 30,
+        "100%_bots": 9,
+        "mista": 1
+      },
       "Masters": {
-        "100%_reais": 10
+        "100%_reais": 50
       },
       "Platinum": {
-        "100%_reais": 5,
+        "100%_reais": 26,
+        "100%_bots": 3,
         "mista": 1
       },
       "Crown": {
-        "100%_reais": 4
+        "100%_reais": 20
       },
       "Circuit Finals": {
-        "100%_reais": 1
+        "100%_reais": 5
       },
       "Legacy Finals": {
-        "100%_reais": 1
+        "100%_reais": 5
       }
     },
     "tournamentsPlayed": {
       "real": {
-        "mean": 20.94,
-        "median": 16
+        "mean": 91.55,
+        "median": 55.5
       },
       "bots": {
-        "mean": 19.29,
-        "median": 19
+        "mean": 21.65,
+        "median": 15
       }
     },
     "realAthletesNeverInAnyDraw": [
-      {
-        "id": "real_francisco_guerrero",
-        "name": "Francisco Guerrero"
-      },
-      {
-        "id": "real_jeronimo_gonzalez",
-        "name": "Jerónimo González"
-      },
-      {
-        "id": "real_javier_garcia",
-        "name": "Javier García"
-      },
-      {
-        "id": "real_carlos_daniel_gutierrez",
-        "name": "Carlos Daniel Gutiérrez"
-      },
-      {
-        "id": "real_guillermo_collado",
-        "name": "Guillermo Collado"
-      },
       {
         "id": "real_pablo_garcia",
         "name": "Pablo García"
       },
       {
-        "id": "real_pablo_lijo",
-        "name": "Pablo Lijó"
-      },
-      {
-        "id": "real_marc_sintes_villalonga",
-        "name": "Marc Sintes Villalonga"
-      },
-      {
-        "id": "real_enrique_goenaga",
-        "name": "Enrique Goenaga"
-      },
-      {
-        "id": "real_maximiliano_sanchez",
-        "name": "Maximiliano Sánchez"
-      },
-      {
-        "id": "real_pedro_melendez_amaya",
-        "name": "Pedro Meléndez Amaya"
+        "id": "real_eduardo_agustin_torre",
+        "name": "Eduardo Agustín Torre"
       }
     ],
-    "realAthletesNeverInAnyDrawCount": 11,
+    "realAthletesNeverInAnyDrawCount": 2,
     "realAthletesTotal": 100,
     "historicalDuplasOverall": [
       {
         "team_key": "real_agustin_tapia_real_arturo_coello",
         "names": "Arturo Coello & Agustín Tapia",
-        "samples": 12,
+        "samples": 60,
         "pairedRatePct": 100
       },
       {
         "team_key": "real_alejandro_galan_real_federico_chingotto",
         "names": "Alejandro Galán & Federico Chingotto",
-        "samples": 12,
+        "samples": 60,
         "pairedRatePct": 100
       },
       {
         "team_key": "real_juan_lebron_real_leandro_augsburger",
         "names": "Juan Lebrón & Leandro Augsburger",
-        "samples": 12,
+        "samples": 60,
         "pairedRatePct": 100
       },
       {
         "team_key": "real_alejandro_ruiz_real_juanlu_esbri",
         "names": "Juanlu Esbrí & Alejandro Ruiz",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 60
       },
       {
         "team_key": "real_federico_mourino_real_marc_quilez",
         "names": "Marc Quílez & Federico Mouriño",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 58.3
       },
       {
         "team_key": "real_clement_geens_real_dylan_guichard",
         "names": "Clément Geens & Dylan Guichard",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 78.3
       },
       {
         "team_key": "real_jorge_nieto_real_martin_di_nenno",
         "names": "Jorge Nieto & Martín Di Nenno",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 55
       },
       {
         "team_key": "real_jairo_bautista_real_maximiliano_arce_simo",
         "names": "Jairo Bautista & Maximiliano Arce Simo",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 25
       },
       {
         "team_key": "real_jose_jimenez_casas_real_leonel_daniel_aguirre",
         "names": "José Jiménez Casas & Leonel Daniel Aguirre",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_aimar_goni_lacabe_real_pol_hernandez_alvarez",
         "names": "Pol Hernández Álvarez & Aimar Goñi Lacabe",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_maximiliano_sanchez_blasco_real_valentino_gabriel_libaak",
         "names": "Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 68.3
       },
       {
         "team_key": "real_gonzalo_rubio_real_victor_ruiz",
         "names": "Gonzalo Rubio & Víctor Ruiz",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 25
       },
       {
         "team_key": "real_enzo_jensen_sirvent_real_luis_hernandez_quesada",
         "names": "Enzo Jensen Sirvent & Luis Hernández Quesada",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 51.7
       },
       {
         "team_key": "real_alvaro_cepero_real_juan_ignacio_de_pascual",
         "names": "Juan Ignacio De Pascual & Álvaro Cepero",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 56.7
       },
       {
         "team_key": "real_javier_martinez_real_manuel_castano_salguero",
         "names": "Javier Martínez & Manuel Castaño Salguero",
-        "samples": 12,
-        "pairedRatePct": 41.7
+        "samples": 60,
+        "pairedRatePct": 8.3
       },
       {
         "team_key": "real_antonio_fernandez_real_francisco_manuel_gil",
         "names": "Antonio Fernández & Francisco Manuel Gil",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 71.7
       },
       {
         "team_key": "real_daniel_santigosa_sastre_real_denis_tomas_perino",
         "names": "Daniel Santigosa Sastre & Denis Tomás Perino",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 25
       },
       {
         "team_key": "real_andres_fernandez_lancha_real_juan_ignacio_rubini",
         "names": "Andrés Fernández Lancha & Juan Ignacio Rubini",
-        "samples": 12,
-        "pairedRatePct": 83.3
+        "samples": 60,
+        "pairedRatePct": 16.7
       },
       {
         "team_key": "real_facundo_dominguez_real_juan_cruz_belluati",
         "names": "Facundo Domínguez & Juan Cruz Belluati",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_alvaro_melendez_amaya_real_ignacio_sager",
         "names": "Álvaro Meléndez Amaya & Ignacio Sager",
-        "samples": 12,
-        "pairedRatePct": 83.3
+        "samples": 60,
+        "pairedRatePct": 16.7
       },
       {
         "team_key": "real_mario_ortega_real_ramiro_jesus_valenzuela",
         "names": "Mario Ortega & Ramiro Jesús Valenzuela",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 28.3
       },
       {
         "team_key": "real_aris_patiniotis_real_diego_garcia_garcia",
         "names": "Aris Patiniotis & Diego García García",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_nuno_deus_real_teodoro_zapata",
         "names": "Teodoro Zapata & Nuno Deus",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_anton_sans_real_martin_abud",
         "names": "Martín Abud & Antón Sans",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_albert_roglan_pons_real_marco_cassetta",
         "names": "Marco Cassetta & Albert Roglán Pons",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       },
       {
         "team_key": "real_facundo_rodrigo_luis_lopez_real_miguel_deus",
         "names": "Miguel Deus & Facundo Rodrigo Luis López",
-        "samples": 12,
-        "pairedRatePct": 100
+        "samples": 60,
+        "pairedRatePct": 46.7
       },
       {
         "team_key": "real_salvador_oria_real_victor_mena",
         "names": "Víctor Mena & Salvador Oria",
-        "samples": 12,
-        "pairedRatePct": 58.3
+        "samples": 60,
+        "pairedRatePct": 11.7
       }
     ],
     "realAthletesNeverPlayedRotation": {
-      "seasonsCompared": 1,
+      "seasonsCompared": 5,
       "neverPlayedThisSeasonBySeasonCounts": [
-        11
+        9,
+        14,
+        24,
+        23,
+        21
       ],
       "unionAcrossSeasons": [
         {
@@ -873,22 +3168,6 @@
           "name": "Francisco Guerrero"
         },
         {
-          "id": "real_jeronimo_gonzalez",
-          "name": "Jerónimo González"
-        },
-        {
-          "id": "real_javier_garcia",
-          "name": "Javier García"
-        },
-        {
-          "id": "real_carlos_daniel_gutierrez",
-          "name": "Carlos Daniel Gutiérrez"
-        },
-        {
-          "id": "real_guillermo_collado",
-          "name": "Guillermo Collado"
-        },
-        {
           "id": "real_pablo_garcia",
           "name": "Pablo García"
         },
@@ -897,71 +3176,211 @@
           "name": "Pablo Lijó"
         },
         {
-          "id": "real_marc_sintes_villalonga",
-          "name": "Marc Sintes Villalonga"
+          "id": "real_javier_ruiz",
+          "name": "Javier Ruiz"
         },
         {
           "id": "real_enrique_goenaga",
           "name": "Enrique Goenaga"
         },
         {
-          "id": "real_maximiliano_sanchez",
-          "name": "Maximiliano Sánchez"
+          "id": "real_ignacio_vilarino_gestoso",
+          "name": "Ignacio Vilariño Gestoso"
+        },
+        {
+          "id": "real_mario_del_castillo",
+          "name": "Mario Del Castillo"
+        },
+        {
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
+        },
+        {
+          "id": "real_emilio_sanchez_chamero",
+          "name": "Emilio Sánchez Chamero"
+        },
+        {
+          "id": "real_jose_antonio_diestro",
+          "name": "José Antonio Diestro"
+        },
+        {
+          "id": "real_andres_fernandez_lancha",
+          "name": "Andrés Fernández Lancha"
+        },
+        {
+          "id": "real_alvaro_melendez_amaya",
+          "name": "Álvaro Meléndez Amaya"
+        },
+        {
+          "id": "real_manuel_castano_salguero",
+          "name": "Manuel Castaño Salguero"
+        },
+        {
+          "id": "real_mariano_agustin_gonzalez_san_martin",
+          "name": "Mariano Agustín González San Martín"
+        },
+        {
+          "id": "real_lucas_campagnolo",
+          "name": "Lucas Campagnolo"
+        },
+        {
+          "id": "real_nuno_deus",
+          "name": "Nuno Deus"
+        },
+        {
+          "id": "real_javier_valdes",
+          "name": "Javier Valdés"
+        },
+        {
+          "id": "real_victor_mena",
+          "name": "Víctor Mena"
+        },
+        {
+          "id": "real_denis_tomas_perino",
+          "name": "Denis Tomás Perino"
+        },
+        {
+          "id": "real_aimar_goni_lacabe",
+          "name": "Aimar Goñi Lacabe"
         },
         {
           "id": "real_pedro_melendez_amaya",
           "name": "Pedro Meléndez Amaya"
+        },
+        {
+          "id": "real_miguel_yanguas",
+          "name": "Miguel Yanguas"
+        },
+        {
+          "id": "real_jon_sanz",
+          "name": "Jon Sanz"
+        },
+        {
+          "id": "real_pol_hernandez_alvarez",
+          "name": "Pol Hernández Álvarez"
+        },
+        {
+          "id": "real_gonzalo_rubio",
+          "name": "Gonzalo Rubio"
+        },
+        {
+          "id": "real_daniel_santigosa_sastre",
+          "name": "Daniel Santigosa Sastre"
+        },
+        {
+          "id": "real_flavio_abbate",
+          "name": "Flavio Abbate"
+        },
+        {
+          "id": "real_diego_garcia_garcia",
+          "name": "Diego García García"
+        },
+        {
+          "id": "real_teodoro_zapata",
+          "name": "Teodoro Zapata"
+        },
+        {
+          "id": "real_martin_abud",
+          "name": "Martín Abud"
+        },
+        {
+          "id": "real_miguel_deus",
+          "name": "Miguel Deus"
+        },
+        {
+          "id": "real_facundo_rodrigo_luis_lopez",
+          "name": "Facundo Rodrigo Luis López"
+        },
+        {
+          "id": "real_salvador_oria",
+          "name": "Salvador Oria"
+        },
+        {
+          "id": "real_marc_quilez",
+          "name": "Marc Quílez"
+        },
+        {
+          "id": "real_luis_hernandez_quesada",
+          "name": "Luis Hernández Quesada"
+        },
+        {
+          "id": "real_santiago_jose_pineda_cabello",
+          "name": "Santiago José Pineda Cabello"
+        },
+        {
+          "id": "real_lucas_bergamini",
+          "name": "Lucas Bergamini"
+        },
+        {
+          "id": "real_juan_tello",
+          "name": "Juan Tello"
+        },
+        {
+          "id": "real_jairo_bautista",
+          "name": "Jairo Bautista"
+        },
+        {
+          "id": "real_javier_barahona",
+          "name": "Javier Barahona"
+        },
+        {
+          "id": "real_jose_jimenez_casas",
+          "name": "José Jiménez Casas"
+        },
+        {
+          "id": "real_alex_chozas",
+          "name": "Álex Chozas"
+        },
+        {
+          "id": "real_maximiliano_sanchez",
+          "name": "Maximiliano Sánchez"
+        },
+        {
+          "id": "real_juanlu_esbri",
+          "name": "Juanlu Esbrí"
+        },
+        {
+          "id": "real_leonel_daniel_aguirre",
+          "name": "Leonel Daniel Aguirre"
+        },
+        {
+          "id": "real_juan_cruz_belluati",
+          "name": "Juan Cruz Belluati"
+        },
+        {
+          "id": "real_dylan_guichard",
+          "name": "Dylan Guichard"
+        },
+        {
+          "id": "real_alvaro_cepero",
+          "name": "Álvaro Cepero"
+        },
+        {
+          "id": "real_antonio_fernandez",
+          "name": "Antonio Fernández"
+        },
+        {
+          "id": "real_jose_luis_gonzalez",
+          "name": "José Luis González"
+        },
+        {
+          "id": "real_aris_patiniotis",
+          "name": "Aris Patiniotis"
         }
       ],
-      "unionCount": 11,
+      "unionCount": 51,
       "intersectionAcrossSeasons": [
         {
-          "id": "real_francisco_guerrero",
-          "name": "Francisco Guerrero"
-        },
-        {
-          "id": "real_jeronimo_gonzalez",
-          "name": "Jerónimo González"
-        },
-        {
-          "id": "real_javier_garcia",
-          "name": "Javier García"
-        },
-        {
-          "id": "real_carlos_daniel_gutierrez",
-          "name": "Carlos Daniel Gutiérrez"
-        },
-        {
-          "id": "real_guillermo_collado",
-          "name": "Guillermo Collado"
-        },
-        {
           "id": "real_pablo_garcia",
           "name": "Pablo García"
         },
         {
-          "id": "real_pablo_lijo",
-          "name": "Pablo Lijó"
-        },
-        {
-          "id": "real_marc_sintes_villalonga",
-          "name": "Marc Sintes Villalonga"
-        },
-        {
-          "id": "real_enrique_goenaga",
-          "name": "Enrique Goenaga"
-        },
-        {
-          "id": "real_maximiliano_sanchez",
-          "name": "Maximiliano Sánchez"
-        },
-        {
-          "id": "real_pedro_melendez_amaya",
-          "name": "Pedro Meléndez Amaya"
+          "id": "real_eduardo_agustin_torre",
+          "name": "Eduardo Agustín Torre"
         }
       ],
-      "intersectionCount": 11,
-      "intersectionPctOfUnion": 100
+      "intersectionCount": 2,
+      "intersectionPctOfUnion": 3.9
     }
   },
   "playerOpponentCatalog": {

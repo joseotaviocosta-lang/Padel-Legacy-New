@@ -794,7 +794,12 @@ try {
         // encerrada e verifica quantas linhas de TeamRanking apontam pra um
         // par que NÃO é mais o `ai_partner_id` atual dos dois atletas
         // (stale — dissolvido mas nunca removido nem atualizado).
-        const names = ['WorldEvent', 'CareerMessage', 'Tournament', 'AthleteProfile', 'TeamRanking', 'Partnership', 'MonthlyCareerReport', 'AnnualCareerReport', 'PressArticle', 'Post', 'HistoryEntry', 'FinancialTransaction', 'TournamentRegistration', 'CalendarEvent', 'AthleteCareerLegacy'];
+        // Fase 4 (ranking rolling de 52 semanas): AthleteRankingResult é a
+        // coleção nova desta fase (resultados datados, poda semanal) — e
+        // AthleteRankingHistory (Fase 4.0) nunca tinha sido adicionada
+        // aqui apesar de já existir. As duas entram agora, permanentes,
+        // mesmo padrão das demais.
+        const names = ['WorldEvent', 'CareerMessage', 'Tournament', 'AthleteProfile', 'TeamRanking', 'Partnership', 'MonthlyCareerReport', 'AnnualCareerReport', 'PressArticle', 'Post', 'HistoryEntry', 'FinancialTransaction', 'TournamentRegistration', 'CalendarEvent', 'AthleteCareerLegacy', 'AthleteRankingResult', 'AthleteRankingHistory'];
         const sizes = {};
         let totalBytes = 0;
         for (const name of names) {

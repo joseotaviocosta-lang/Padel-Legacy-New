@@ -1,8 +1,9 @@
 import { localGame } from '@/api/localGameClient.js';
 import { ensureFutureTournaments } from '@/lib/career';
 import { levelForXp } from '@/lib/padel';
-import { applyTeamRankingSeasonCarryover } from '@/lib/teamRanking';
+import { teamKey } from '@/lib/teamRanking';
 import { safeName } from './utils';
+import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
 
 const number = (value, fallback = 0) => Number.isFinite(Number(value)) ? Number(value) : fallback;
 const dateYear = (value) => Number(String(value || '').slice(0, 4)) || 0;
@@ -139,9 +140,45 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     bonus_rank_points: totals.rankPoints,
   });
 
+  // Fase 4 (ranking rolling de 52 semanas), item 1 — aprovado, registrado
+  // como REMOÇÃO (não substituição): investigação não encontrou nenhum
+  // registro de intenção de design pro corte de 20% (commit "v36", sem
+  // mensagem descritiva; nenhum comentário de código; nenhuma menção em
+  // docs/relatórios além de "funciona e é idempotente",
+  // docs/BETA_READINESS_PHASE10.md §15 — auditoria funcional, não decisão
+  // de balanceamento). O jogo já tem um mecanismo real de "temporada nova
+  // começa fresca" — race_points, zerado no ano civil — o corte de 20%
+  // sobre o CIRCUITO (que por definição nunca deveria resetar) era
+  // redundante com ele, não complementar. Resíduo, saiu limpo.
+  //
+  // previousRankPoints deixa de ser cortado — governado só pela janela
+  // rolling a partir de agora, igual a qualquer outro ponto do jogo. O
+  // bônus de prêmios de temporada (totals.rankPoints, ex.: "dupla
+  // dominante") continua sendo concedido — mas como um resultado datado
+  // igual a qualquer outro, não mais somado direto ao total: entra na
+  // janela de 364 dias, ocupa um dos 22 slots, e expira como qualquer
+  // resultado real. Sem isso, remover o corte também apagaria em silêncio
+  // a concessão do prêmio.
   const previousRankPoints = number(profile.rank_points ?? profile.world_ranking_points, 0);
-  const carriedRankPoints = Math.max(0, Math.round(previousRankPoints * 0.80));
-  const nextRankPoints = carriedRankPoints + totals.rankPoints;
+  let nextRankPoints = previousRankPoints;
+  if (totals.rankPoints > 0) {
+    const priorRows = (await localGame.entities[RANKING_RESULT_ENTITY].filter({ athlete_id: profile.id })) || [];
+    const bonusDate = profile.career_date || `${year}-12-31`;
+    const seed = needsLegacySeed(priorRows, previousRankPoints) ? buildLegacySeedRow(profile.id, previousRankPoints, bonusDate) : null;
+    const bonusRow = {
+      id: `${profile.id}:season-bonus-${year}`,
+      athlete_id: profile.id,
+      tournament_id: null,
+      tournament_name: `Prêmios de encerramento da temporada ${year}`,
+      tier: null,
+      date: bonusDate,
+      points: totals.rankPoints,
+      finish: 'season_bonus',
+    };
+    const extraRows = seed ? [seed, bonusRow] : [bonusRow];
+    nextRankPoints = computeRollingPoints(priorRows, extraRows, bonusDate);
+    await localGame.batch(extraRows.map((row) => ({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: row.id, data: row })));
+  }
 
   const updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
     career_date: nextDate,
@@ -151,7 +188,6 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     rank_points: nextRankPoints,
     world_ranking_points: nextRankPoints,
     previous_season_rank_points: previousRankPoints,
-    ranking_carryover_rate: 0.80,
     season_year: nextYear,
     seasons_completed: number(profile.seasons_completed) + 1,
     season_awards: [...(profile.season_awards || []), ...snapshot.awards.map((award) => `${year}: ${award.label}`)],
@@ -160,8 +196,22 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     morale: Math.max(70, number(profile.morale, 70)),
   });
 
-  if (partner) {
-    await applyTeamRankingSeasonCarryover(profile, partner, 0.80, totals.rankPoints);
+  // Fase 4, item 4.2: a dupla do jogador tinha o MESMO corte de 20% na
+  // camada de TeamRanking (applyTeamRankingSeasonCarryover) — removido
+  // pela mesma razão. Recalcula como média dos dois totais rolling ATUAIS
+  // (o do jogador já com o bônus de temporada embutido, acima; o do
+  // parceiro, se for de IA, já rolling desde circuitLifecycle.js) — mesmo
+  // padrão que tournamentLifecycle.js e as duplas de IA já seguem.
+  if (partner?.id) {
+    const key = teamKey(profile.id, partner.id);
+    const rows = (await localGame.entities.TeamRanking.filter({ team_key: key })) || [];
+    const ranking = rows[0];
+    if (ranking?.id) {
+      const partnerPoints = Math.max(0, Number(partner.world_ranking_points ?? partner.ranking_points) || 0);
+      await localGame.entities.TeamRanking.update(ranking.id, {
+        ranking_points: Math.round((nextRankPoints + partnerPoints) / 2),
+      });
+    }
   }
 
   const seasons = await localGame.entities.Season.list('-start_date', 100);

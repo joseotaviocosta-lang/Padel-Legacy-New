@@ -4,6 +4,7 @@ import { getTournamentRewards } from '@/lib/career';
 import { teamKey } from '@/lib/teamRanking';
 import { buildPartnershipTitlePatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { safeName, todayForProfile } from './utils';
+import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
 
 function placementLabel(roundsWon, totalRounds, champion) {
   if (champion) return 'Campeão';
@@ -22,24 +23,57 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   const alreadyProcessed = processedRuns.includes(finalizationKey);
   const date = todayForProfile(profile);
   const rankingKey = partner?.id ? teamKey(profile.id, partner.id) : null;
-  const [calendarEvents, registrations, rankingRows, partnership] = await Promise.all([
+  const [calendarEvents, registrations, rankingRows, partnership, playerResultRows] = await Promise.all([
     localGame.entities.CalendarEvent.filter({ profile_id: profile.id, related_id: tournament.id, status: 'scheduled' }),
     localGame.entities.TournamentRegistration.filter({ profile_id: profile.id, tournament_id: tournament.id }),
     rankingKey ? localGame.entities.TeamRanking.filter({ team_key: rankingKey }) : Promise.resolve([]),
     champion ? getActivePartnership(profile.id) : Promise.resolve(null),
+    localGame.entities[RANKING_RESULT_ENTITY].filter({ athlete_id: profile.id }),
   ]);
 
   const newXp = (Number(profile.xp) || 0) + rewards.xp;
+
+  // Fase 4 (ranking rolling de 52 semanas): rank_points do jogador deixa de
+  // ser incrementado pra sempre — grava um resultado datado nesta MESMA
+  // finalização (AthleteRankingResult, coleção própria, nunca no
+  // PlayerProfile clonado a cada escrita — mesmo motivo do ranking_history
+  // na Fase 4.0) e recalcula o total como soma dos 22 melhores dentro dos
+  // últimos 364 dias, igual a qualquer atleta de IA (circuitLifecycle.js).
+  // Só roda quando a finalização é nova — idempotente, `alreadyProcessed`
+  // continua barrando reprocessamento como sempre barrou.
+  let nextRankPoints = Number(profile.rank_points) || 0;
+  let playerLegacySeed = null;
+  let playerResultRow = null;
+  if (!alreadyProcessed) {
+    const priorRows = playerResultRows || [];
+    const lifetimeFallback = Math.max(0, Number(profile.rank_points ?? profile.world_ranking_points) || 0);
+    playerLegacySeed = needsLegacySeed(priorRows, lifetimeFallback) ? buildLegacySeedRow(profile.id, lifetimeFallback, date) : null;
+    playerResultRow = {
+      id: `${profile.id}:${tournament.id}`,
+      athlete_id: profile.id,
+      tournament_id: tournament.id,
+      tournament_name: tournament.name,
+      tier: tournament.tier,
+      date,
+      points: rewards.rankPoints,
+      finish: champion ? 'champion' : placementLabel(roundsWon, totalRounds, champion),
+    };
+    const extraRows = playerLegacySeed ? [playerLegacySeed, playerResultRow] : [playerResultRow];
+    nextRankPoints = computeRollingPoints(priorRows, extraRows, date);
+  }
+
   const playerPatch = alreadyProcessed ? {} : {
     coins: (Number(profile.coins) || 0) + rewards.coins,
     xp: newXp,
     level: levelForXp(newXp),
     tournaments_played: (Number(profile.tournaments_played) || 0) + 1,
-    rank_points: (Number(profile.rank_points) || 0) + rewards.rankPoints,
+    rank_points: nextRankPoints,
+    world_ranking_points: nextRankPoints,
     // Correção UI/cronologia — Fase 3: race_points (temporada em andamento)
     // cresce junto com o Circuito (rank_points) a cada torneio real disputado,
     // mas é um campo isolado, zerado à parte na virada do ano civil — nunca
-    // copiado/derivado do Circuito acumulado.
+    // copiado/derivado do Circuito acumulado. Fase 4A.3: Race não entra na
+    // janela rolling — continua um acumulador simples do ano civil.
     race_points: Math.max(0, Number(profile.race_points) || 0) + rewards.rankPoints,
     processed_tournament_runs: [...processedRuns, finalizationKey].slice(-100),
     ...(champion ? {
@@ -51,16 +85,28 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   };
   const operations = [];
 
+  if (!alreadyProcessed && playerResultRow) {
+    if (playerLegacySeed) operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: playerLegacySeed.id, data: playerLegacySeed });
+    operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: playerResultRow.id, data: playerResultRow });
+  }
+
   if (!alreadyProcessed && rankingKey && partner) {
     const ranking = rankingRows?.[0];
     const players = [profile, partner].sort((a, b) => a.id.localeCompare(b.id));
+    // Fase 4 (achado #21, razão atualizada): a linha de TeamRanking do
+    // jogador tinha o MESMO bug do carryover de temporada um nível abaixo
+    // — incrementava pra sempre. Vira média dos dois totais rolling
+    // ATUAIS (o do jogador já recalculado acima; o do parceiro, se for de
+    // IA, já é rolling desde circuitLifecycle.js) — mesmo padrão que
+    // duplas de IA já seguem em updateTeamRankings.
+    const partnerPoints = Math.max(0, Number(partner.world_ranking_points ?? partner.ranking_points) || 0);
     operations.push({ type: 'upsert', entityName: 'TeamRanking', id: ranking?.id || `team-ranking-${rankingKey}`, data: {
       team_key: rankingKey,
       player1_id: players[0].id,
       player1_name: players[0].sport_name || players[0].name,
       player2_id: players[1].id,
       player2_name: players[1].sport_name || players[1].name,
-      ranking_points: (Number(ranking?.ranking_points) || 0) + rewards.rankPoints,
+      ranking_points: Math.round((nextRankPoints + partnerPoints) / 2),
       matches_played: Number(ranking?.matches_played || 0),
       wins: Number(ranking?.wins || 0),
       losses: Number(ranking?.losses || 0),

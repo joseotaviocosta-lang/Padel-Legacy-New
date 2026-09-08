@@ -10,6 +10,10 @@ import { localGame } from '@/api/localGameClient.js';
 import { deriveAthleteCareerState, isAthleteRetired } from './livingCircuitRules.js';
 import { teamKey } from '@/lib/teamRanking.js';
 import { WORLD_RANKING_TARGET, TEAM_RANKING_TARGET } from '@/lib/rankingPopulation.js';
+import {
+  RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP, isResultExpired,
+  buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
+} from './rankingWindow.js';
 
 // Fase 2E.2/2E.4: os dois tetos abaixo cobriam só metade (ou menos) da
 // população de 1000 atletas / até 500 duplas possíveis — e de forma
@@ -141,6 +145,18 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
   // um único bulkUpdate, portanto ordenar até 500 atletas é barato.
   const selected = athletes;
 
+  // Fase 4 (ranking rolling de 52 semanas): esta é a ÚNICA passada que lê a
+  // população inteira toda semana (achado #18 já a identificava como tal),
+  // então é o único lugar que também PODA resultados expirados — não faz
+  // sentido duplicar a lógica de poda em WorldTourLifecycle.js, que só
+  // recalcula quem jogou nesta chamada. Leitura ÚNICA de toda a coleção de
+  // resultados (não uma por atleta) — mesmo padrão de "1 leitura, N
+  // gravações" que o resto desta função já usa.
+  const existingResultRows = (await localGame.entities[RANKING_RESULT_ENTITY].list(null, RANKING_RESULT_POPULATION_CAP)) || [];
+  const resultsByAthlete = groupResultsByAthlete(existingResultRows);
+  const rankingResultUpserts = [];
+  const rankingResultDeleteIds = [];
+
   const results = [];
   for (const athlete of selected) {
     // O World Tour/Tournament é a fonte canônica de resultado e pontos. A
@@ -156,13 +172,30 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       pointsGain: 0,
       prizeMoney: 0,
     };
-    const oldGeneral = Math.max(0, safeNumber(athlete.world_ranking_points ?? athlete.ranking_points, athleteOverall(athlete) * 25));
+    // Fase 4: generalPoints deixa de ser o total vitalício congelado
+    // (`decay = 0` de antes, um no-op disfarçado) — agora é recalculado do
+    // ZERO toda semana, pra QUALQUER atleta, tenha ele jogado ou não nesta
+    // semana. É esta recomputação — não um decaimento incremental — que
+    // faz um atleta que parou de jogar cair de posição: resultados antigos
+    // saem da janela de 364 dias sozinhos, sem nenhuma escrita sobre eles.
+    const priorRows = resultsByAthlete.get(athlete.id) || [];
+    const lifetimeFallback = Math.max(0, safeNumber(athlete.world_ranking_points ?? athlete.ranking_points, athleteOverall(athlete) * 25));
+    const seedRow = needsLegacySeed(priorRows, lifetimeFallback) ? buildLegacySeedRow(athlete.id, lifetimeFallback, currentDate) : null;
+    if (seedRow) rankingResultUpserts.push(seedRow);
+    const rowsForAthlete = seedRow ? [...priorRows, seedRow] : priorRows;
+    for (const row of rowsForAthlete) {
+      if (isResultExpired(row, currentDate)) rankingResultDeleteIds.push(row.id);
+    }
+    const generalPoints = computeRollingPoints(rowsForAthlete, [], currentDate);
     const oldRace = Math.max(0, safeNumber(athlete.race_points, 0));
-    const decay = 0;
-    const generalPoints = oldGeneral;
-    const racePoints = oldRace;
+    const racePoints = oldRace; // Fase 4A.3: Race não entra na janela — acumulador simples do ano civil, sem mudança.
     const history = Array.isArray(athlete.ranking_history) ? athlete.ranking_history.slice(-51) : [];
-    history.push({ date: currentDate, week: currentWeek, points: generalPoints, race_points: racePoints, gained: result.pointsGain, decayed: decay });
+    // gained/decayed viram um delta assinado contra o total da semana
+    // passada, em vez de sempre 0 — o dado que 4C.4 (defesa de pontos)
+    // pede que exista e seja consultável, mesmo sem UI ainda.
+    const previousPoints = Math.max(0, safeNumber(athlete.world_ranking_points ?? athlete.ranking_points, 0));
+    const delta = generalPoints - previousPoints;
+    history.push({ date: currentDate, week: currentWeek, points: generalPoints, race_points: racePoints, gained: Math.max(0, delta), decayed: Math.max(0, -delta) });
     results.push({ athlete, result, generalPoints, racePoints, history });
   }
 
@@ -225,6 +258,42 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
   }
   if (rankingHistoryUpdates.length) {
     await localGame.entities.AthleteRankingHistory.bulkUpdate(rankingHistoryUpdates);
+  }
+
+  // Fase 4: o jogador entra no MESMO mecanismo de expiração que os
+  // atletas de IA — sem isso, o total dele nunca decairia mesmo parado,
+  // quebrando a comparação na mesma tabela (Ranking.jsx mescla os dois via
+  // buildWorldRankingSnapshot). PlayerProfile é uma coleção separada de
+  // AthleteProfile (não entra no `athletes` lido acima), mas reaproveita a
+  // MESMA leitura de AthleteRankingResult já feita nesta chamada — nenhuma
+  // consulta extra.
+  //
+  // Conhecido e aceito: o TeamRanking da dupla do PRÓPRIO jogador (linha
+  // única, diferente das duplas de IA que updateTeamRankings já recalcula
+  // toda semana abaixo) só é atualizado quando ele termina um torneio
+  // (tournamentLifecycle.js) — não decai passivamente semana a semana se
+  // ele para de jogar. Gap pequeno e cosmético (afeta só a aba Duplas pra
+  // uma única linha), não o "topo vitalício" que esta fase ataca — não
+  // corrigido agora.
+  let playerRankingPatch = {};
+  if (profile?.id) {
+    const playerPriorRows = resultsByAthlete.get(profile.id) || [];
+    const playerLifetimeFallback = Math.max(0, safeNumber(profile.rank_points ?? profile.world_ranking_points, 0));
+    const playerSeed = needsLegacySeed(playerPriorRows, playerLifetimeFallback) ? buildLegacySeedRow(profile.id, playerLifetimeFallback, currentDate) : null;
+    if (playerSeed) rankingResultUpserts.push(playerSeed);
+    const playerRows = playerSeed ? [...playerPriorRows, playerSeed] : playerPriorRows;
+    for (const row of playerRows) {
+      if (isResultExpired(row, currentDate)) rankingResultDeleteIds.push(row.id);
+    }
+    const playerPoints = computeRollingPoints(playerRows, [], currentDate);
+    playerRankingPatch = { rank_points: playerPoints, world_ranking_points: playerPoints };
+  }
+
+  if (rankingResultUpserts.length || rankingResultDeleteIds.length) {
+    await localGame.batch([
+      ...rankingResultUpserts.map((row) => ({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: row.id, data: row })),
+      ...rankingResultDeleteIds.map((id) => ({ type: 'delete', entityName: RANKING_RESULT_ENTITY, id })),
+    ]);
   }
 
   // Fase 15 (Parte 24/28/37): marcos de ranking dos bots — MESMA escada
@@ -331,6 +400,7 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
       last_circuit_update: currentDate,
       last_circuit_summary: summary,
       game_state_version: '2.4.0',
+      ...playerRankingPatch,
     });
   }
 

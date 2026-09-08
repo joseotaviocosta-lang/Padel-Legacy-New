@@ -4,6 +4,10 @@ import { evaluateTournamentEntry, buildAthleteEntryContext, resolveEntryRank } f
 import { fnv1aHash } from '@/lib/hashUtils.js';
 import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import {
+  RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP,
+  buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
+} from '@/game-core/rankingWindow.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 // Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
@@ -320,14 +324,46 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     }
   }
 
+  // Fase 4 (ranking rolling de 52 semanas): world_ranking_points deixa de
+  // ser um acumulador vitalício (`oldGeneral + gain`) — cada resultado vira
+  // uma linha datada própria, nunca no documento clonado a cada escrita
+  // (mesmo motivo do ranking_history na Fase 4.0), e o total é a soma dos
+  // 22 melhores dentro dos últimos 364 dias. Leitura ÚNICA de toda a
+  // coleção aqui (não uma por atleta tocado) — mesmo padrão de "1 leitura,
+  // N gravações" já usado pro resto desta função.
+  const existingResultRows = (await entities[RANKING_RESULT_ENTITY].list(null, RANKING_RESULT_POPULATION_CAP)) || [];
+  const resultsByAthlete = groupResultsByAthlete(existingResultRows);
+  const newResultRows = [];
+
   const athleteUpdates = athletes.filter((athlete) => athletePoints.has(athlete.id)).map((athlete) => {
     const outcomes = athleteOutcomes.get(athlete.id) || [];
-    const points = Number(athlete.world_ranking_points || athlete.ranking_points || 0) + athletePoints.get(athlete.id);
+    const priorRows = resultsByAthlete.get(athlete.id) || [];
+    // Migração (rankingWindow.js:buildLegacySeedRow): só dispara na
+    // primeira vez que este atleta específico é tocado depois da Fase 4 —
+    // idempotente, porque a partir daí ele sempre tem ao menos uma linha.
+    const legacySeed = needsLegacySeed(priorRows, athlete.world_ranking_points ?? athlete.ranking_points)
+      ? buildLegacySeedRow(athlete.id, athlete.world_ranking_points ?? athlete.ranking_points, careerDate)
+      : null;
+    const freshRows = outcomes.map((outcome) => ({
+      id: `${athlete.id}:${outcome.tournament_id}`,
+      athlete_id: athlete.id,
+      tournament_id: outcome.tournament_id,
+      tournament_name: outcome.tournament_name,
+      tier: outcome.tier,
+      date: outcome.date,
+      points: outcome.points,
+      finish: outcome.finish,
+    }));
+    if (legacySeed) newResultRows.push(legacySeed);
+    newResultRows.push(...freshRows);
+    const points = computeRollingPoints(priorRows, legacySeed ? [legacySeed, ...freshRows] : freshRows, careerDate);
     // Correção UI/cronologia — Fase 3: race_points é a temporada (Race) EM
     // ANDAMENTO, separada do Circuito acumulado acima. Reaproveita o mesmo
     // ganho de pontos já calculado (athletePoints) em vez de recalcular —
     // cresce junto com o Circuito conforme torneios reais são disputados,
     // mas é zerada isoladamente na virada do ano (ver annualCareerReportLifecycle.js).
+    // Fase 4A.3: Race não entra na janela rolling — continua um acumulador
+    // simples dentro do ano civil, sem mudança nesta fase.
     const racePoints = Math.max(0, Number(athlete.race_points) || 0) + athletePoints.get(athlete.id);
     // Fase 2.6, item 3: títulos por tier, pra linha-resumo de aposentadoria
     // (AthleteCareerLegacy) — reaproveita os outcomes já calculados acima,
@@ -357,6 +393,13 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   if (tournamentUpdates.length) await entities.Tournament.bulkUpdate(tournamentUpdates);
   if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
   if (news.length) await entities.WorldEvent.bulkCreate(news);
+  // Fase 4: `upsert` (não bulkCreate) — id determinístico
+  // (`${athleteId}:${tournamentId}` ou `${athleteId}:legacy-seed`), então
+  // uma reexecução acidental desta função pro mesmo torneio mescla em vez
+  // de lançar erro de id duplicado.
+  if (newResultRows.length) {
+    await localGame.batch(newResultRows.map((row) => ({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: row.id, data: row })));
+  }
 
   // Fase 3, item 3F (achado #24) — perfilado por fase (instrumentação
   // temporária, já revertida): 99,5% do custo desta função está NESTE
@@ -392,9 +435,23 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   // elegível pra um torneio que não devia mais poder disputar. A escrita
   // precisa ser a UNIÃO de quem está no top N AGORA com quem estava no
   // top N ANTES (ranking_position pré-rodada) — os dois lados da transição.
+  //
+  // Fase 4: `+ athletePoints.get(id)` somava o ganho bruto por cima do
+  // total antigo — com o total agora sendo "22 melhores de 364 dias", isso
+  // dobraria a contagem do resultado recém-criado (ele já está embutido no
+  // `points` recém-calculado em athleteUpdates, acima). Pra quem foi
+  // tocado nesta chamada, usa o total JÁ recalculado; pra todo o resto da
+  // população, usa o total vigente sem alteração — exatamente o que a
+  // rodada de hoje não mudou.
+  const updatedPointsByAthlete = new Map(athleteUpdates.map((update) => [update.id, update.world_ranking_points]));
   const RERANK_WRITE_TOP_N = 50;
   const rankedFull = [...athletes]
-    .map((athlete) => ({ ...athlete, points: Number(athlete.world_ranking_points || athlete.ranking_points || 0) + (athletePoints.get(athlete.id) || 0) }))
+    .map((athlete) => ({
+      ...athlete,
+      points: updatedPointsByAthlete.has(athlete.id)
+        ? updatedPointsByAthlete.get(athlete.id)
+        : Number(athlete.world_ranking_points || athlete.ranking_points || 0),
+    }))
     .sort((a, b) => b.points - a.points)
     .map((athlete, index) => {
       const previous = Number(athlete.ranking_position);

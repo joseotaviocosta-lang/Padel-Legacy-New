@@ -95,25 +95,17 @@ export async function addTeamRankingPoints(profile, partner, points) {
   } catch (e) { console.error('addTeamRankingPoints', e); }
 }
 
-
-export async function applyTeamRankingSeasonCarryover(profile, partner, carryoverRate = 0.65, bonusPoints = 0) {
-  if (!profile?.id || !partner?.id) return null;
-  const key = teamKey(profile.id, partner.id);
-  try {
-    const existing = await localGame.entities.TeamRanking.filter({ team_key: key });
-    if (!existing?.length) return null;
-    const team = existing[0];
-    const carried = Math.max(0, Math.round((Number(team.ranking_points) || 0) * carryoverRate));
-    return await localGame.entities.TeamRanking.update(team.id, {
-      ranking_points: carried + Math.max(0, Number(bonusPoints) || 0),
-      previous_season_points: Number(team.ranking_points) || 0,
-      ranking_carryover_rate: carryoverRate,
-    });
-  } catch (error) {
-    console.error('applyTeamRankingSeasonCarryover', error);
-    return null;
-  }
-}
+// Fase 4 (ranking rolling de 52 semanas), item 1: applyTeamRankingSeasonCarryover
+// removido — cortava 20% do ranking da dupla do jogador uma vez por ano,
+// sem nenhum registro de intenção de design encontrado (commit "v36" sem
+// mensagem descritiva, nenhum comentário, nenhuma menção além de "funciona
+// e é idempotente" em docs/BETA_READINESS_PHASE10.md §15). Redundante com
+// race_points (que já reseta no ano civil) e, com a janela rolling agora
+// no lugar, um segundo mecanismo de decaimento por cima do primeiro. A
+// chamada em seasonLifecycle.js:finalizeSeason foi substituída por um
+// recálculo de ranking_points como média dos dois totais rolling atuais —
+// mesmo padrão que tournamentLifecycle.js e as duplas de IA
+// (circuitLifecycle.js:updateTeamRankings) já seguem.
 
 export async function getTeamRankings(limit = 50) {
   try {

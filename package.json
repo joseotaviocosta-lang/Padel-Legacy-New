@@ -188,6 +188,7 @@
     "test:tier-ladder-migration-fase3": "node scripts/test-tier-ladder-migration-fase3.mjs",
     "test:athlete-hot-fields-fase4": "node scripts/test-athlete-hot-fields-fase4.mjs",
     "test:rerank-topn-equivalence-fase4": "node scripts/test-rerank-topn-equivalence-fase4.mjs",
+    "test:ranking-rolling-window-fase4": "node scripts/test-ranking-rolling-window-fase4.mjs",
     "test:beta-candidate": "node scripts/test-beta-candidate.mjs",
     "test:overlay-back-stack": "node scripts/test-overlay-back-stack.mjs",
     "test:tournament-guided-flow": "node scripts/test-tournament-guided-flow.mjs",
