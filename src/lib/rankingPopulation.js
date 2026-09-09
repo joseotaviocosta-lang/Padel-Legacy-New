@@ -172,7 +172,22 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
       // idêntico a ranking_position (mesmo absoluteRank), e todo consumidor
       // já lia ranking_position primeiro. Campo morto desde a origem.
       ranking_position: absoluteRank,
-      tournaments_played: Math.max(1, 6 + (seed % 28)),
+      // Fase 5.1 (verificação pedida sobre o achado #32) — este valor
+      // NUNCA foi "torneios disputados" no sentido que todo consumidor de
+      // `tournaments_played` espera (WorldTourLifecycle.js incrementa o
+      // MESMO campo, pra QUALQUER atleta, a cada torneio realmente
+      // resolvido na simulação — real ou bot). Escrever aqui, na criação
+      // do bot, fazia história de fundo e contagem de simulação
+      // compartilharem um único contador: todo bot procedural nascia já
+      // "tendo jogado" 6-33 torneios (média ≈19,5) que nunca aconteceram,
+      // inflando permanentemente qualquer comparação real-vs-bot que lesse
+      // `tournaments_played` (a auditoria original, Fase 2, "reais: 0,58 ·
+      // bots: 20,15" — bem perto da média deste seed sozinho). Campo
+      // renomeado para não ser lido por engano como contagem de simulação;
+      // valor e fórmula preservados (só flavor de "carreira antes de
+      // existir nesta partida", nunca exibido em nenhuma tela — confirmado
+      // por grep, zero ocorrências de `tournaments_played` em `src/**/*.jsx`).
+      backstory_tournaments_played: Math.max(1, 6 + (seed % 28)),
       matches_played: Math.max(2, 12 + (seed % 95)),
       wins: Math.max(1, Math.round((12 + (seed % 95)) * (0.35 + (overall - 35) / 130))),
       retired: false,

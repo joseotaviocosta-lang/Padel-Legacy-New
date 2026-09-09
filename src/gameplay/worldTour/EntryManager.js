@@ -1,4 +1,17 @@
-import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import { getTournamentTierConfig, TOURNAMENT_TIER_CONFIG } from '@/lib/circuitCatalog.js';
+
+// Fase 5.1, item 1 (agenda de tier) — achado #32 mediu que ampliar o
+// calendário de Bronze/Silver não reduz a fração de duplas nunca
+// escaladas (~67% travado em 3 escalas): a mesma fatia de maior
+// overall_rating reenche toda vaga nova. Causa raiz aqui, não lá — Bronze
+// e Silver (`minRanking:0`) nunca tiveram TETO, só piso; uma dupla já
+// classificada pro Gold (rank ≤ 800) continuava "elegível" pra Bronze e
+// concorrendo pela mesma vaga de quem não tem outro lugar pra jogar. Teto
+// = o próprio corte de entrada do Gold (não um número novo e arbitrário —
+// se o corte do Gold mudar, este acompanha automaticamente). Só se aplica
+// a quem JÁ tem ranking (rank>0) — um par recém-formado sem ranking ainda
+// nunca é excluído por este teto, só por já ter subido o bastante.
+const OPEN_TIER_CEILING = TOURNAMENT_TIER_CONFIG.Gold.minRanking;
 
 export const ENTRY_PATHS = Object.freeze({
   DIRECT: 'direct', QUALIFYING: 'qualifying', WILDCARD: 'wildcard',

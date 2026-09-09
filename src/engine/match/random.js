@@ -1,4 +1,10 @@
-import { fnv1aHash } from '@/lib/hashUtils.js';
+// Fase 5.1 — import relativo, não o alias `@/` (só o Vite resolve). Este
+// módulo (e tudo que o importa, incluindo o motor de partida inteiro) é
+// invocado por scripts de teste via `node` puro (ex.: test-match-
+// integrity.mjs) — o alias quebrava a cadeia inteira fora do bundler,
+// silenciosamente (nenhum teste desta família rodava desde a extração de
+// `fnv1aHash` pra `src/lib/hashUtils.js`).
+import { fnv1aHash } from '../../lib/hashUtils.js';
 
 export function hashSeed(input = Date.now()) {
   return fnv1aHash(String(input));

@@ -6,6 +6,12 @@ const root = process.cwd();
 const sourcePath = path.join(root, 'src/lib/sportsEconomyV26.js');
 let source = await fs.readFile(sourcePath, 'utf8');
 source = source.replace("import { localGame } from '@/api/localGameClient.js';", "const localGame = { entities: { Club: { list: async () => [], create: async (row) => row } } };");
+// Fase 5.1 — o arquivo copiado muda de pasta (src/lib/ → scripts/), então
+// o import relativo de hashUtils.js precisa mudar junto. Sem isto, quebra
+// desde que sportsEconomyV26.js passou a importar fnv1aHash (extração pra
+// src/lib/hashUtils.js) — o teste procurava scripts/hashUtils.js, que
+// nunca existiu.
+source = source.replace("from './hashUtils.js'", "from '../src/lib/hashUtils.js'");
 const tempPath = path.join(root, 'scripts/.sportsEconomyV26.test.mjs');
 await fs.writeFile(tempPath, source, 'utf8');
 const mod = await import(`${pathToFileURL(tempPath).href}?t=${Date.now()}`);

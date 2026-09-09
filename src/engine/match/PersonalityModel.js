@@ -1,4 +1,7 @@
-import { fnv1aHash } from '@/lib/hashUtils.js';
+// Fase 5.1 — mesma correção de random.js: import relativo, não o alias
+// `@/` (só o Vite resolve; este módulo também é alcançado por scripts de
+// teste via `node` puro).
+import { fnv1aHash } from '../../lib/hashUtils.js';
 
 const AXIS_NAMES = [
   'aggression',
