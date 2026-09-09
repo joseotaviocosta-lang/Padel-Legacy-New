@@ -1,17 +1,25 @@
-import { getTournamentTierConfig, TOURNAMENT_TIER_CONFIG } from '@/lib/circuitCatalog.js';
+import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 
 // Fase 5.1, item 1 (agenda de tier) — achado #32 mediu que ampliar o
 // calendário de Bronze/Silver não reduz a fração de duplas nunca
 // escaladas (~67% travado em 3 escalas): a mesma fatia de maior
 // overall_rating reenche toda vaga nova. Causa raiz aqui, não lá — Bronze
-// e Silver (`minRanking:0`) nunca tiveram TETO, só piso; uma dupla já
-// classificada pro Gold (rank ≤ 800) continuava "elegível" pra Bronze e
-// concorrendo pela mesma vaga de quem não tem outro lugar pra jogar. Teto
-// = o próprio corte de entrada do Gold (não um número novo e arbitrário —
-// se o corte do Gold mudar, este acompanha automaticamente). Só se aplica
-// a quem JÁ tem ranking (rank>0) — um par recém-formado sem ranking ainda
+// e Silver (`minRanking:0`) nunca tiveram TETO, só piso. Só se aplica a
+// quem JÁ tem ranking (rank>0) — um par recém-formado sem ranking ainda
 // nunca é excluído por este teto, só por já ter subido o bastante.
-const OPEN_TIER_CEILING = TOURNAMENT_TIER_CONFIG.Gold.minRanking;
+//
+// Fase 5.2, item 1.1 — na Fase 5.1 este teto reusava
+// `TOURNAMENT_TIER_CONFIG.Gold.minRanking` (800), pensado como "não
+// inventar um número novo". Efeito colateral não medido então: com 1000
+// atletas, ~800 ficam ELEGÍVEIS pro Gold (rank≤800) — ou seja, quase toda
+// a população perdia acesso a Bronze/Silver de uma vez, sobrando só ~200
+// pra ~640 vagas (daí a razão de regime cair a 0,75×, abaixo da
+// capacidade). Piso do Gold e teto do Bronze são conceitos DIFERENTES no
+// circuito real (um top 300 disputa entrada sem problema; só o top 50
+// não compensa a viagem) — coincidiam por config, não por desenho.
+// Parâmetro próprio agora, testado em vários valores (relatório da
+// Fase 5.2) antes de fixar — não decida aqui, meça primeiro.
+export const OPEN_TIER_CEILING = 800;
 
 export const ENTRY_PATHS = Object.freeze({
   DIRECT: 'direct', QUALIFYING: 'qualifying', WILDCARD: 'wildcard',
