@@ -64,6 +64,21 @@ export function evaluatePartnerCompatibility(player, partner) {
   };
 }
 
+// Fase 5.1, item 2 (portão de parceria) — desenho de 3 faixas aprovado na
+// Fase 5 (sem corte rígido único): abaixo de `low`, o candidato some da
+// lista de ofertas/convite (não "não existe" — "fora de alcance ainda");
+// entre `low` e `high`, aparece com termos mais duros
+// (getSuggestedPartnerTerms, gap-based); a partir de `high`, termos
+// normais. Calibrado por cálculo direto contra esta fórmula (perfis
+// reais de carreira, não simulado): jogador novo (#1000, reputação~10)
+// vs. candidato equivalente ≈36 (passa o `low`), vs. top 20-50 ≈23-24
+// (fica abaixo — não deveria conseguir); jogador de meio de carreira
+// (#200, reputação~50) vs. equivalente ≈66 (bem acima do `high`), vs.
+// top 20-50 ≈53-55 (na fronteira — bate com "meta de meio de carreira,
+// não escolha de menu"). Ponto de partida a confirmar por medição (item
+// 2.6 da Fase 5), não valor final.
+export const PARTNERSHIP_INTEREST_THRESHOLDS = Object.freeze({ low: 30, high: 55 });
+
 export function calculatePartnershipInterest(profile, athlete, compatibility = evaluatePartnerCompatibility(profile, athlete)) {
   const careerRank = Math.max(1, Number(profile?.ranking_position) || 1500);
   const athleteRank = Math.max(1, Number(athlete?.world_rank ?? athlete?.ranking_position) || 500);
@@ -72,8 +87,17 @@ export function calculatePartnershipInterest(profile, athlete, compatibility = e
   const eliteDemand = clamp((120 - athleteRank) / 1.2, 0, 100);
   const score = Math.round(clamp(compatibility.total * 0.35 + reputation * 0.3 + rankingProgress * 0.35 - eliteDemand * 0.15, 3, 97));
   const level = score >= 75 ? 'alto' : score >= 50 ? 'médio' : score >= 25 ? 'baixo' : 'muito baixo';
+  const friction = score < PARTNERSHIP_INTEREST_THRESHOLDS.high;
   return {
-    score, level, available: athlete?.career_status !== 'aposentado',
+    // Fase 5.1, item 2 — antes, `available` só checava aposentadoria e
+    // ignorava `score` inteiro (achado #31/#32): um jogador com
+    // reputação zero via e contratava o melhor atleta do jogo. Agora o
+    // score decide junto — abaixo de `low`, o candidato não aparece.
+    // `friction` (novo) é a faixa intermediária: aparece, mas quem
+    // monta a oferta/termos (partnerOfferRules.js, PartnerHub.jsx) sabe
+    // que precisa usar termos mais duros em vez dos padrão.
+    score, level, friction,
+    available: athlete?.career_status !== 'aposentado' && score >= PARTNERSHIP_INTEREST_THRESHOLDS.low,
     reasons: [compatibility.total >= 70 ? 'Encaixe esportivo favorável' : 'Encaixe esportivo exige trabalho', reputation >= 55 ? 'Sua reputação inspira confiança' : 'Sua reputação ainda limita o interesse'],
     requirements: score < 50 ? ['Melhore ranking, reputação ou condições da proposta'] : [],
   };

@@ -1,5 +1,8 @@
 import { getMatchTactic } from '../match/MatchTactics.js';
-import { fnv1aHash } from '@/lib/hashUtils.js';
+// Fase 5.1 — mesma correção de random.js/PersonalityModel.js: import
+// relativo, não o alias `@/` (só o Vite resolve; scripts de teste do
+// motor de partida/live-coach rodam via `node` puro).
+import { fnv1aHash } from '../../lib/hashUtils.js';
 const stable=value=>JSON.stringify(value,Object.keys(value||{}).sort());
 export const planHash=plan=>fnv1aHash(stable(plan)).toString(16);
 export class LiveTacticalAdjustmentManager {

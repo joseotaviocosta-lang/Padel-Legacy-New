@@ -57,7 +57,15 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
     return list;
   }, [available, search, sort, sideFilter]);
 
-  const locked = useMemo(() => getLockedPartners(profile).slice(0, 4), [profile]);
+  // Fase 5.1, item 2 — getLockedPartners agora mistura dois motivos:
+  // nível (XP) e interesse (reputação/ranking, calculatePartnershipInterest).
+  // Recalcula o interesse aqui só pra distinguir qual mensagem mostrar —
+  // barato (4 candidatos, mesmo teto de antes), evita reimplementar a
+  // checagem de nível em getLockedPartners só pra devolver o motivo.
+  const locked = useMemo(() => getLockedPartners(profile).slice(0, 4).map(bot => {
+    const interest = calculatePartnershipInterest(profile, bot);
+    return { bot, interestGated: !interest.available, interest };
+  }), [profile]);
 
   return (
     <div className="space-y-4">
@@ -162,13 +170,16 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
       {locked.length > 0 && (
         <div>
           <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 flex items-center gap-1">
-            <X className="h-3 w-3" /> Desbloqueie ao subir de nível
+            <X className="h-3 w-3" /> Ainda fora de alcance
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {locked.map(bot => (
+            {locked.map(({ bot, interestGated }) => (
               <div key={bot.id} className="glass rounded-xl p-3 opacity-40 text-center">
                 <p className="text-xs font-semibold truncate">{bot.name}</p>
                 <p className="text-[10px] text-muted-foreground">OVR {overallRating(bot)}</p>
+                <p className="text-[9px] text-muted-foreground mt-1">
+                  {interestGated ? 'Reputação/ranking ainda baixos' : 'Suba de nível para desbloquear'}
+                </p>
               </div>
             ))}
           </div>

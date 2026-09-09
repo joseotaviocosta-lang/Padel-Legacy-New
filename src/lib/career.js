@@ -16,6 +16,7 @@ import { ensureMonthlyReportCycle, finalizeClosedCareerMonth } from '@/game-core
 import { ensureAnnualReportCycle, finalizeClosedCareerYear, resetRaceSeasonPoints } from '@/game-core/annualCareerReportLifecycle.js';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
+import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
 export const CAREER_START_DATE = '2026-01-01';
 export const PARTNER_LOCK_DAYS = 60;
 export const MATCH_ADVANCE_DAYS = 7;
@@ -306,6 +307,20 @@ export function getPartnerBot(profile) {
   return null;
 }
 
+// Fase 5.1, item 2 — o portão de nível (XP) já existia e continua
+// valendo (eixo diferente: progresso geral de carreira). Este é o
+// SEGUNDO portão, agora ligado ao `score` de calculatePartnershipInterest
+// (reputação/ranking) — antes, PartnerHub.jsx:handleInvite ia direto a
+// startPartnership sem checar isso, e um jogador com reputação zero
+// contratava o melhor atleta do jogo (achado #31/#32). Um candidato
+// dentro do nível de XP do jogador mas com `interest.score` abaixo do
+// piso agora sai de `getAvailablePartners` e entra em
+// `getLockedPartners` — reaproveita a MESMA lista/UI que já existe pro
+// bloqueio por XP, só com um segundo motivo possível.
+function isInterestGated(profile, candidate) {
+  return !calculatePartnershipInterest(profile, candidate).available;
+}
+
 export function getAvailablePartners(profile) {
   const playerLevelIdx = LEVELS.indexOf(levelForXp(profile?.xp || 0));
   const availableDiffs = BOT_DIFFICULTIES.slice(0, playerLevelIdx + 1);
@@ -314,7 +329,7 @@ export function getAvailablePartners(profile) {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
   if (!profile?.court_side) return [];
-  return pool;
+  return pool.filter(candidate => !isInterestGated(profile, candidate));
 }
 
 export function getLockedPartners(profile) {
@@ -325,7 +340,9 @@ export function getLockedPartners(profile) {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
   if (!profile?.court_side) return [];
-  return pool;
+  const byLevel = BOT_DIFFICULTIES.slice(0, playerLevelIdx + 1).flatMap(diff => BOTS_BY_DIFFICULTY[diff.id] || []);
+  const byInterest = byLevel.filter(candidate => isInterestGated(profile, candidate));
+  return [...pool, ...byInterest];
 }
 
 // Tournament helpers

@@ -42,6 +42,46 @@ function pairScore(pair, tournament) {
   return base + Number(pair.chemistry || 50) * 0.08 + (hash(`${pair.id}:${tournament.id}:pair`) % 900) / 100;
 }
 
+// Fase 5.1, item 1 (agenda de tier) — achado #32 mediu que aumentar a
+// capacidade de Bronze/Silver não move a fração de duplas nunca escaladas
+// (~67% travado em 3 escalas): a mesma fatia de maior overall_rating
+// reenche toda vaga nova, porque a chave era truncada só por `pairScore`
+// (dominado por overall_rating — decide QUEM VENCE, papel que continua
+// intacto abaixo, em `ordered`). Esta função decide só QUEM ENTRA na
+// chave quando há mais candidatos que vagas (`entrants.length>drawSize`)
+// — antes desta fase, era a MESMA operação (um único sort+slice por
+// pairScore fazia as duas coisas). Agora: maioria das vagas por
+// prioridade de RANKING (like o circuito real aloca entry list — não
+// nunca vencido por talento bruto sem ranking pra provar), fração
+// reservada (achado #30, opção "a" já proposta) pra quem tem MENOS
+// torneios jogados na temporada até aqui — o piso que impede exclusão
+// permanente mesmo de quem nunca sobe no ranking bruto. `RESERVED_SHARE`
+// é ponto de partida, a ajustar pela medição, não um número final.
+const OPEN_TIER_RESERVED_SHARE = 0.25;
+function pairTournamentsPlayedSoFar(pair) {
+  const values = pair.athletes.map((athlete) => Number(athlete.tournaments_played) || 0);
+  return values.reduce((sum, value) => sum + value, 0) / (values.length || 1);
+}
+function applyOpenTierEntryPriority(entrants, tournament, drawSize) {
+  if (entrants.length <= drawSize) return entrants;
+  const ranked = entrants.map((pair) => ({
+    pair,
+    rank: pairEntryRank(pair) || (WORLD_RANKING_TARGET + 1),
+    played: pairTournamentsPlayedSoFar(pair),
+    skill: pairScore(pair, tournament),
+  }));
+  const reservedSlots = Math.max(0, Math.min(drawSize, Math.round(drawSize * OPEN_TIER_RESERVED_SHARE)));
+  const openSlots = drawSize - reservedSlots;
+  const byRank = [...ranked].sort((a, b) => a.rank - b.rank || b.skill - a.skill);
+  const selectedOpen = byRank.slice(0, openSlots);
+  const selectedIds = new Set(selectedOpen.map((entry) => entry.pair.id));
+  const byLeastPlayed = ranked
+    .filter((entry) => !selectedIds.has(entry.pair.id))
+    .sort((a, b) => a.played - b.played || a.rank - b.rank);
+  const selectedReserved = byLeastPlayed.slice(0, reservedSlots);
+  return [...selectedOpen, ...selectedReserved].map((entry) => entry.pair);
+}
+
 // Fase 3, item 3A.1 — antes, uma tabela FIXA de 7 rótulos/frações
 // (FINISH_POINTS) hardcoded neste arquivo, alheia ao tamanho real da
 // chave de cada tier (uma chave de 8 nunca alcança "r32", uma de 64
@@ -244,6 +284,15 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         entrants = [...entrants, ...backfillPool
           .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
           .slice(0, needed)];
+      }
+      // Fase 5.1, item 1 — só os tiers de acesso livre (Bronze/Silver,
+      // `minRanking:0`) tinham o problema de oversubscrição sem piso
+      // medido no achado #32; tiers com corte de ranking próprio já
+      // controlam demanda pela elegibilidade. Decide QUEM ENTRA antes de
+      // decidir QUEM VENCE (a linha de baixo, inalterada, continua
+      // ordenando por pairScore/skill — só entre quem já entrou).
+      if (config.minRanking === 0 && entrants.length > drawSize) {
+        entrants = applyOpenTierEntryPriority(entrants, tournament, drawSize);
       }
       const ordered = entrants
         .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))

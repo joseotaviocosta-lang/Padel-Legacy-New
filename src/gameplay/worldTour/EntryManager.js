@@ -96,6 +96,16 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
   if (age <= 20 && athlete.juniorInvite) return result(ENTRY_PATHS.JUNIOR, true, 'Convite destinado a jovem promessa.');
   if (nationality && tournamentCountry && nationality === tournamentCountry && athlete.nationalInvite) return result(ENTRY_PATHS.NATIONAL, true, 'Convite nacional do torneio.');
   if (!hasRanking && tournament?.tier === 'Silver') return result(ENTRY_PATHS.DIRECT, true, 'Legacy Silver aberto a atletas sem ranking.');
+  // Fase 5.1, item 1 — teto dos tiers de acesso livre (Bronze/Silver,
+  // `directLimit===0`): antes, `directLimit===0` sozinho já bastava pra
+  // aprovar QUALQUER rank, inclusive #1 — não havia teto, só piso. Uma
+  // dupla já classificada pro Gold (rank ≤ OPEN_TIER_CEILING) não entra
+  // mais aqui; ela tem lugar melhor pra estar. Só exclui quem JÁ tem
+  // ranking bom o bastante — nunca um par recém-formado sem ranking, que
+  // continua caindo no `directLimit===0` logo abaixo.
+  if (directLimit === 0 && hasRanking && rank <= OPEN_TIER_CEILING) {
+    return result(ENTRY_PATHS.INELIGIBLE, false, `Ranking já classifica para tiers acima (Top ${OPEN_TIER_CEILING}) — não disputa mais a base.`);
+  }
   if (directLimit === 0 || (hasRanking && rank <= directLimit)) return result(ENTRY_PATHS.DIRECT, true, 'Classificado diretamente pela posição no ranking.');
   if (Number(tournament?.qualifying_size || config.qualifyingSize || 0) > 0 && hasRanking && rank <= qualifyingLimit) {
     return result(ENTRY_PATHS.QUALIFYING, true, 'Elegível para disputar o qualifying.');

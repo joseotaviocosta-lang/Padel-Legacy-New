@@ -13,6 +13,7 @@ import {
 import { listCareerCommunications } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { getAvailablePartners } from '@/lib/career';
+import { getSuggestedPartnerTerms } from '@/game-core/partnerLifecycle.js';
 import { EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import PartnerOverview from '@/components/partner/PartnerOverview';
@@ -144,10 +145,17 @@ export default function PartnerHub() {
 
   async function handleInvite(bot) {
     try {
-      const { partnership, profile: updated } = await startPartnership(profile, bot, 60, 50);
+      // Fase 5.1, item 2 — antes, termos fixos (60 dias/50%) pra
+      // qualquer convite direto, ignorando o gap de nível entre jogador e
+      // candidato (um dos 3 caminhos de contratação hoje inconsistentes,
+      // achado da Fase 5). Mesma função já usada no onboarding e nas
+      // ofertas do PartnerHub (partnerOfferRules.js) — só falta este
+      // caminho pra unificar os três.
+      const terms = getSuggestedPartnerTerms(profile, bot);
+      const { partnership, profile: updated } = await startPartnership(profile, bot, terms.durationDays, terms.prizeSplit);
       setActivePartnership(partnership);
       setProfile(updated);
-      toast({ title: 'Parceria formada!', description: `${bot.name} é sua nova dupla por 60 dias.` });
+      toast({ title: 'Parceria formada!', description: `${bot.name} é sua nova dupla por ${terms.durationDays} dias.` });
       await load();
     } catch (e) {
       toast({ title: 'Erro', description: 'Não foi possível formar a parceria.', variant: 'destructive' });
