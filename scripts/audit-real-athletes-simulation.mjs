@@ -332,48 +332,6 @@ try {
   console.log(`Elenco: ${realAthleteIds.size} atletas reais + ${supplementalAthletes.length} bots procedurais (amostra de ${supplementalFull.athletes.length} gerados pela fórmula de produção) = ${totalAthletes} atletas.`);
   console.log(`Duplas: ${realTeamKeys.size} reais + ${supplementalTeams.length} bots = ${totalTeams} duplas.`);
 
-  // Fase 4.4, item 2.4 (diagnóstico temporário, revertido após medir) —
-  // velocidade de ascensão: um atleta sintético, talentoso (overall 85),
-  // começando no FUNDO do ranking, com parceiro GARANTIDO desde o dia 1 e
-  // protegido contra o sorteio de rompimento (ai_partnership_protected) —
-  // isolando deliberadamente a pergunta "o tamanho da população muda
-  // quanto tempo leva pra subir" da armadilha de mercado de parceria já
-  // diagnosticada no achado #30 (que é outro problema, já registrado).
-  let diagClimberId = null;
-  if (process.env.DIAG_INJECT_CLIMBER) {
-    const climber = await localGame.entities.AthleteProfile.create({
-      sport_name: 'Diag Climber', name: 'Diag Climber', overall_rating: 85, potential: 90,
-      world_ranking_points: 0, ranking_points: 0, ranking_position: totalAthletes + 20,
-      race_points: 0, retired: false, is_real: false, age: 20,
-    });
-    const climberPartner = await localGame.entities.AthleteProfile.create({
-      sport_name: 'Diag Climber Partner', name: 'Diag Climber Partner', overall_rating: 80,
-      world_ranking_points: 0, ranking_points: 0, ranking_position: totalAthletes + 21,
-      race_points: 0, retired: false, is_real: false, age: 22,
-    });
-    await localGame.entities.AthleteProfile.bulkUpdate([
-      { id: climber.id, ai_partner_id: climberPartner.id, ai_partner_name: climberPartner.name, ai_partnership_status: 'ativa', ai_partnership_protected: true, ai_partnership_start_date: `${START_YEAR}-01-01`, market_status: 'contratado' },
-      { id: climberPartner.id, ai_partner_id: climber.id, ai_partner_name: climber.name, ai_partnership_status: 'ativa', ai_partnership_protected: true, ai_partnership_start_date: `${START_YEAR}-01-01`, market_status: 'contratado' },
-    ]);
-    const climberKey = teamKey(climber.id, climberPartner.id);
-    await localGame.entities.TeamRanking.create({
-      team_key: climberKey, player1_id: climber.id, player1_name: climber.name,
-      player2_id: climberPartner.id, player2_name: climberPartner.name,
-      ranking_points: 0, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
-    });
-    diagClimberId = climber.id;
-    console.log(`[DIAG_CLIMBER] injetado: ${climber.id} (overall 85, parceiro garantido e protegido, começa em ranking_position=${totalAthletes + 20}/${totalAthletes})`);
-  }
-
-  // Fase 4.4, item 2.3 (diagnóstico temporário, revertido após medir) —
-  // conjunto observado pra repetição de adversários: reais + amostra
-  // determinística de bots (não a população inteira — multiplicaria o
-  // custo de memória do regime-check sem necessidade, a pergunta é sobre
-  // reais especificamente).
-  if (process.env.DIAG_CAPACITY) {
-    globalThis.__diagWatchedIds = new Set([...realAthleteIds, ...supplementalAthletes.slice(0, 20).map((a) => a.id)]);
-  }
-
   // ═══════════════ Simulação de mundo — N temporadas, dia a dia, pelo CAMINHO REAL de produção ═══════════════
   // Fase 0.1 (achado crítico #2): a versão anterior deste harness chamava só
   // processAiPartnershipMarket + resolveCompletedWorldTourEvents, em passos
@@ -700,25 +658,6 @@ try {
     return { summary, realNeverPlayed, byClassification };
   }
 
-  // Fase 4.4, item 1 (diagnóstico temporário, revertido após medir) —
-  // demanda vs. capacidade em Bronze/Silver e duplas que escolheram jogar
-  // mas nunca entraram numa chave, por temporada. Lido e resetado a cada
-  // virada de ano — `globalThis.__diagCapacity` é populado por
-  // WorldTourLifecycle.js a cada torneio resolvido nesta chamada.
-  function reportAndResetDiagCapacity(year) {
-    if (!process.env.DIAG_CAPACITY) return;
-    const diag = globalThis.__diagCapacity;
-    if (diag) {
-      const baseTiers = diag.tournamentRecords.filter((r) => r.tier === 'Bronze' || r.tier === 'Silver');
-      const totalChose = baseTiers.reduce((sum, r) => sum + r.chose, 0);
-      const totalCapacity = baseTiers.reduce((sum, r) => sum + r.drawSize, 0);
-      const ratio = totalCapacity ? (totalChose / totalCapacity) : null;
-      const zeroDespiteChoosing = [...diag.chosenPairIds].filter((id) => !diag.playedPairIds.has(id));
-      console.log(`[DIAG_CAPACITY] temporada ${year}: Bronze+Silver — ${baseTiers.length} chaves resolvidas, demanda=${totalChose} escolhas de dupla vs capacidade=${totalCapacity} vagas (razão ${ratio !== null ? ratio.toFixed(2) : 'n/a'}x). Duplas que escolheram tocar mas nunca entraram numa chave nesta temporada: ${zeroDespiteChoosing.length} (de ${diag.chosenPairIds.size} duplas distintas que escolheram algo).`);
-    }
-    globalThis.__diagCapacity = { tournamentRecords: [], chosenPairIds: new Set(), playedPairIds: new Set() };
-  }
-
   dayLoop:
   for (let day = 0; day < SEASONS * 367; day += 1) {
     // Fase 4.1 (achado #26): mesma fronteira transacional que produção usa
@@ -769,11 +708,6 @@ try {
         diagDayTimingCount = 0;
       }
       lastSampledMonth = sampledMonth;
-
-      if (diagClimberId) {
-        const climber = await localGame.entities.AthleteProfile.get(diagClimberId).catch(() => null);
-        if (climber) console.log(`[DIAG_CLIMBER] ${sampledMonth} pos=${climber.ranking_position} pts=${climber.world_ranking_points}`);
-      }
 
       // Fase 0.1 (achado C — memória): nada em produção jamais APAGA
       // WorldEvent (expireMacroEvents só marca is_active:false). Isso é uma
@@ -943,7 +877,6 @@ try {
         console.log(`[DIAG_HEAP] temporada ${currentYear}: pico de heapUsed = ${(seasonHeapPeakBytes / 1024 / 1024).toFixed(1)}MB`);
         seasonHeapPeakBytes = 0;
       }
-      reportAndResetDiagCapacity(currentYear);
       await finalizeSeasonRecord(currentYear);
       lastCheckpoint = await writeCheckpoint(currentYear); // Fase 2.8, item 2 — checkpoint por temporada
       if (currentYear >= finalYear) break dayLoop;
@@ -953,7 +886,6 @@ try {
     }
   }
   if (perSeason.length < SEASONS && perSeason[perSeason.length - 1]?.year !== currentYear) {
-    reportAndResetDiagCapacity(currentYear);
     await finalizeSeasonRecord(currentYear);
     lastCheckpoint = await writeCheckpoint(currentYear);
   }
@@ -987,46 +919,6 @@ try {
       console.log(`Nomes na interseção: ${rotation.intersectionAcrossSeasons.map((r) => r.name).join(', ')}`);
     }
   }
-  // Fase 4.4, item 2.3 (diagnóstico temporário, revertido após medir) —
-  // repetição de adversários, acumulado nas 5 temporadas inteiras (não
-  // resetado por temporada, ao contrário do DIAG_CAPACITY acima — a
-  // pergunta é sobre reencontro AO LONGO do tempo).
-  if (process.env.DIAG_CAPACITY && globalThis.__diagOpponents) {
-    const opponents = globalThis.__diagOpponents;
-    const mean = (arr) => arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0;
-    const realPerSeason = [];
-    const realDistinctTotal = [];
-    const realRepeatRate = [];
-    const botPerSeason = [];
-    const botDistinctTotal = [];
-    const botRepeatRate = [];
-    for (const [athleteId, entries] of opponents) {
-      const byYear = new Map();
-      const yearsByOpponent = new Map();
-      for (const entry of entries) {
-        const sep = entry.indexOf(':');
-        const year = entry.slice(0, sep);
-        const otherId = entry.slice(sep + 1);
-        if (!byYear.has(year)) byYear.set(year, new Set());
-        byYear.get(year).add(otherId);
-        if (!yearsByOpponent.has(otherId)) yearsByOpponent.set(otherId, new Set());
-        yearsByOpponent.get(otherId).add(year);
-      }
-      const seasonCounts = [...byYear.values()].map((s) => s.size);
-      const distinctTotal = yearsByOpponent.size;
-      const repeatOpponents = [...yearsByOpponent.values()].filter((ys) => ys.size >= 2).length;
-      const repeatRate = distinctTotal ? repeatOpponents / distinctTotal : 0;
-      const target = realAthleteIds.has(athleteId) ? [realPerSeason, realDistinctTotal, realRepeatRate] : [botPerSeason, botDistinctTotal, botRepeatRate];
-      target[0].push(mean(seasonCounts));
-      target[1].push(distinctTotal);
-      target[2].push(repeatRate);
-    }
-    console.log(`\n=== REPETIÇÃO DE ADVERSÁRIOS (Fase 4.4, item 2.3) ===`);
-    console.log(`Proxy: co-entrantes na MESMA chave (não é rodada-a-rodada — o motor não simula isso), população observada: ${realPerSeason.length} reais + ${botPerSeason.length} bots (amostra).`);
-    console.log(`Reais — média de adversários distintos/temporada: ${mean(realPerSeason).toFixed(1)} · distintos no total (5 anos): ${mean(realDistinctTotal).toFixed(1)} · taxa de reencontro (visto em ≥2 anos distintos): ${(mean(realRepeatRate) * 100).toFixed(1)}%`);
-    console.log(`Bots (amostra de ${botPerSeason.length}) — média de adversários distintos/temporada: ${mean(botPerSeason).toFixed(1)} · distintos no total: ${mean(botDistinctTotal).toFixed(1)} · taxa de reencontro: ${(mean(botRepeatRate) * 100).toFixed(1)}%`);
-  }
-
   console.log(`\nRelatório salvo em ${OUT_DIR}/summary.json, ${OUT_DIR}/tournament-results.csv e ${OUT_DIR}/season-tier-table.md`);
 } finally {
   await vite.close();
