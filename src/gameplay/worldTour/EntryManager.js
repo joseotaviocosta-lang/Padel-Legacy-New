@@ -111,8 +111,18 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
   // mais aqui; ela tem lugar melhor pra estar. Só exclui quem JÁ tem
   // ranking bom o bastante — nunca um par recém-formado sem ranking, que
   // continua caindo no `directLimit===0` logo abaixo.
+  //
+  // Fase 5.3, item 1 — `overqualified` marca ESTE motivo de inelegibilidade
+  // especificamente (barrado por já estar acima, não por estar abaixo do
+  // corte). O preenchimento de reserva (`WorldTourLifecycle.js`) usa a
+  // flag pra garantir que uma dupla barrada pelo teto NUNCA volte pela
+  // porta dos fundos — antes, quando o pool elegível secava, o
+  // preenchimento recorria a `pairScore` e reconvidava exatamente a elite
+  // que o teto tinha acabado de excluir (achado da Fase 5.2, 176 eventos
+  // em teto=800). `eligible` já era `false` aqui; a flag só torna o
+  // motivo legível pra quem precisa distinguir "acima" de "abaixo".
   if (directLimit === 0 && hasRanking && rank <= OPEN_TIER_CEILING) {
-    return result(ENTRY_PATHS.INELIGIBLE, false, `Ranking já classifica para tiers acima (Top ${OPEN_TIER_CEILING}) — não disputa mais a base.`);
+    return result(ENTRY_PATHS.INELIGIBLE, false, `Ranking já classifica para tiers acima (Top ${OPEN_TIER_CEILING}) — não disputa mais a base.`, { overqualified: true });
   }
   if (directLimit === 0 || (hasRanking && rank <= directLimit)) return result(ENTRY_PATHS.DIRECT, true, 'Classificado diretamente pela posição no ranking.');
   if (Number(tournament?.qualifying_size || config.qualifyingSize || 0) > 0 && hasRanking && rank <= qualifyingLimit) {
@@ -129,4 +139,4 @@ export function buildSeedings(entries = [], drawSize = 32) {
     .map((entry, index) => ({ ...entry, seed: index < seedCount ? index + 1 : null }));
 }
 
-function result(path, eligible, reason) { return { path, eligible, reason }; }
+function result(path, eligible, reason, extra) { return { path, eligible, reason, ...extra }; }

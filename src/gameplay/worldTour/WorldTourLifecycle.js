@@ -1,9 +1,9 @@
 import { localGame } from '@/api/localGameClient.js';
 import { chooseTournament } from './TournamentSelectionAI.js';
-import { evaluateTournamentEntry, buildAthleteEntryContext, resolveEntryRank } from './EntryManager.js';
+import { resolveEntryRank } from './EntryManager.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
-import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import { getTournamentTierConfig, getRoundOutcomeTable } from '@/lib/circuitCatalog.js';
 import {
   RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP,
   buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
@@ -82,29 +82,43 @@ function applyOpenTierEntryPriority(entrants, tournament, drawSize) {
   return [...selectedOpen, ...selectedReserved].map((entry) => entry.pair);
 }
 
+// Fase 5.3, item 2 — mínimo viável de chave. Sem o preenchimento forçado
+// (removido nesta fase, item 1), um campo pequeno demais não vira
+// torneio, em vez de "rodar com 3". 8 = a menor chave real da escada de
+// tiers (Circuit/Legacy Finals, Exibição) — uma chave de eliminação com
+// estrutura de verdade (quartas/semi/final). Pros tiers cuja chave-padrão
+// já é 8 ou menor, o mínimo cede pra metade dela, pra não cancelar uma
+// final de acesso restrito por causa de uma dupla que descansou.
+const MIN_VIABLE_DRAW_SIZE = 8;
+function minViableDraw(drawSize) {
+  return Math.min(MIN_VIABLE_DRAW_SIZE, Math.max(2, Math.ceil(drawSize / 2)));
+}
+
 // Fase 3, item 3A.1 — antes, uma tabela FIXA de 7 rótulos/frações
 // (FINISH_POINTS) hardcoded neste arquivo, alheia ao tamanho real da
-// chave de cada tier (uma chave de 8 nunca alcança "r32", uma de 64
-// precisava de 6 vitórias pro título mas winsForFinish só ia até 5 —
-// inconsistência que já existia antes desta fase). Substituída por uma
-// leitura direta de `getTournamentTierConfig(tier)`, que já carrega
-// roundLabels/roundPoints do tamanho de chave REAL do tier (circuitCatalog.js).
-// `index` é a posição do par na lista ordenada por pontuação (0 = campeão);
-// mapeia pra profundidade de eliminação por log2 (posições 1 → final,
-// 2-3 → semifinal, 4-7 → quartas, ... — o dobro de gente a cada rodada
-// anterior, mesma forma de qualquer chave de eliminação simples).
-function resolveFinish(tournament, index) {
-  const config = getTournamentTierConfig(tournament?.tier);
-  const roundCount = config.roundCount;
+// chave de cada tier. Substituída por uma leitura de `circuitCatalog.js`,
+// que carrega roundLabels/roundPoints do tamanho de chave do tier.
+// `index` é a posição do par na lista ordenada por pontuação (0 =
+// campeão); mapeia pra profundidade de eliminação por log2 (posições 1 →
+// final, 2-3 → semifinal, 4-7 → quartas, ... — o dobro de gente a cada
+// rodada anterior, mesma forma de qualquer chave de eliminação simples).
+//
+// Fase 5.3, item 2 — chave de tamanho variável: `getRoundOutcomeTable`
+// devolve a tabela pro TAMANHO REAL do campo (`entrantCount`), não pro
+// `mainDrawSize` do tier. Campeão continua valendo o `rankPoints`
+// canônico do tier; só as rodadas intermediárias encolhem com o campo —
+// um Bronze de 9 paga o mesmo título que um de 16, mas quem perde na
+// estreia recebe pontos de estreia, não de uma quartas que não existiu.
+function resolveFinish(tournament, index, entrantCount) {
+  const { roundCount, roundLabels, roundPoints } = getRoundOutcomeTable(tournament?.tier, entrantCount);
   const depthFromChampion = index <= 0 ? 0 : Math.floor(Math.log2(index)) + 1;
   const tierIndex = Math.max(0, roundCount - depthFromChampion);
   return {
-    finish: config.roundLabels[tierIndex] || config.roundLabels[0],
-    points: config.roundPoints[tierIndex] ?? config.roundPoints[0] ?? 0,
+    finish: roundLabels[tierIndex] || roundLabels[0],
+    points: roundPoints[tierIndex] ?? roundPoints[0] ?? 0,
     // Vitórias = quantas rodadas foram vencidas pra chegar a este posto —
     // exatamente o índice na tabela (0 = perdeu na entrada, roundCount =
-    // campeão, venceu todas). Mais preciso que a tabela antiga (fixa em
-    // até 5 vitórias mesmo pra chaves de 6 rodadas).
+    // campeão, venceu todas).
     wins: tierIndex,
   };
 }
@@ -247,44 +261,24 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const config = getTournamentTierConfig(tournament?.tier);
       const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
       let entrants = [...(assignments.get(tournament.id) || [])];
-      // Fase 3, item 3B.2 (backstop de montagem de campo) — achado real: o
-      // gatilho era `entrants.length < 2`, ou seja, o preenchimento de
-      // reserva só entrava em ação pra garantir o MÍNIMO de uma partida
-      // (2 duplas), nunca pra completar a chave inteira. Uma chave de 32
-      // com 5 duplas escolhidas pela IA (chooseTournament) ficava com só 5
-      // — nunca tentava completar as 27 vagas restantes, mesmo com pares
-      // elegíveis sobrando no pool. Era EXATAMENTE a causa das 40,6% de
-      // chaves incompletas mesmo depois de triplicar as duplas ativas
-      // (Fase 2.6): mais duplas no pool não ajudava porque o preenchimento
-      // nunca as buscava. Corrigido pra sempre tentar completar até
-      // `drawSize`.
-      if (entrants.length < drawSize) {
-        const needed = drawSize - entrants.length;
-        const present = new Set(entrants.map((pair) => pair.id));
-        const remaining = pairs.filter((pair) => !present.has(pair.id));
-        // Correção Fase 1A (achado #16): antes, o preenchimento de reserva
-        // ignorava elegibilidade por completo — era isso que fazia um
-        // Crown sortear do mesmo pool que um Silver. Agora que a
-        // elegibilidade funciona de verdade (rank chega correto via
-        // resolveEntryRank), tenta primeiro completar só com pares
-        // REALMENTE elegíveis para o tier deste torneio. Só recorre a
-        // qualquer par (comportamento anterior) se nem isso bastar — comum
-        // na temporada 1, quando poucos pares ainda têm ranking para tiers
-        // altos — e sempre registra quando isso acontece, em vez de
-        // mascarar silenciosamente uma chave preenchida abaixo do corte.
-        const eligibleRemaining = remaining.filter((pair) =>
-          evaluateTournamentEntry(tournament, buildAthleteEntryContext({}, pairEntryRank(pair), tournament)).eligible);
-        const usingBelowCutoffFallback = eligibleRemaining.length < needed;
-        const backfillPool = usingBelowCutoffFallback ? remaining : eligibleRemaining;
-        if (usingBelowCutoffFallback && remaining.length > eligibleRemaining.length) {
-          console.warn(`[WorldTourLifecycle] ${tournament.id} (${tournament.tier}): só ${eligibleRemaining.length}/${needed} pares elegíveis disponíveis para completar a chave — preenchendo com os melhores disponíveis abaixo do corte de ranking.`);
-        } else if (backfillPool.length < needed) {
-          console.warn(`[WorldTourLifecycle] ${tournament.id} (${tournament.tier}): só ${backfillPool.length}/${needed} pares disponíveis no total (pool esgotado) — chave fecha incompleta por falta genuína de duplas, não por corte de elegibilidade.`);
-        }
-        entrants = [...entrants, ...backfillPool
-          .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
-          .slice(0, needed)];
-      }
+      // Fase 5.3, itens 1 e 2 — o preenchimento de reserva que completava
+      // a chave até `drawSize` foi REMOVIDO. O campo agora é exatamente
+      // quem ESCOLHEU o torneio (`chooseTournament`, que já filtra por
+      // elegibilidade). Quando os inscritos não enchem a chave, ela roda
+      // menor — informação honesta sobre o estado do circuito, não
+      // defeito a mascarar (desenho aprovado da Fase 5.2, item 3.3b:
+      // "roda com quem se inscreveu ... sem preenchimento").
+      //
+      // Isso zera por construção o vazamento do achado da Fase 5.2 (item
+      // 1 do pedido): o ramo antigo `usingBelowCutoffFallback` recorria a
+      // `pairs` inteiro sem filtro de elegibilidade, ordenado por
+      // `pairScore` — reconvidava as duplas mais FORTES disponíveis,
+      // exatamente a elite que o teto (`OPEN_TIER_CEILING`) tinha acabado
+      // de barrar (Coello/Tapia, rank 2, entrando em Bronze — 176 eventos
+      // em teto=800). Sem preenchimento, não há porta dos fundos: nenhuma
+      // dupla barrada pelo teto volta, e "inverter o critério" do
+      // preenchimento (item 1.1) fica sem objeto — não há mais critério.
+      // Abaixo de `minViableDraw` inscritos o torneio não acontece (item 2).
       // Fase 5.1, item 1 — só os tiers de acesso livre (Bronze/Silver,
       // `minRanking:0`) tinham o problema de oversubscrição sem piso
       // medido no achado #32; tiers com corte de ranking próprio já
@@ -297,12 +291,26 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const ordered = entrants
         .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
         .slice(0, drawSize);
-      if (ordered.length < 2) continue;
+      // Fase 5.3, item 2 — campo pequeno demais não vira torneio. Marca
+      // resolvido + cancelado (sai da fila de pendentes), sem campeão e
+      // sem distribuir pontos. Antes o gatilho era `< 2` — qualquer par
+      // de duplas já "resolvia" o evento com o preenchimento forçado.
+      const belowMinViable = ordered.length < minViableDraw(drawSize);
+      if (belowMinViable) {
+        tournamentUpdates.push({
+          id: tournament.id,
+          world_tour_resolved: true,
+          world_tour_cancelled: true,
+          resolved_at: careerDate,
+          simulated_entrants: ordered.length,
+        });
+        continue;
+      }
       const champion = ordered[0];
       const runnerUp = ordered[1];
 
       ordered.forEach((pair, index) => {
-        const { finish, points, wins: finishWins } = resolveFinish(tournament, index);
+        const { finish, points, wins: finishWins } = resolveFinish(tournament, index, ordered.length);
         pair.athletes.forEach((athlete) => {
           athletePoints.set(athlete.id, (athletePoints.get(athlete.id) || 0) + points);
           if (!athleteOutcomes.has(athlete.id)) athleteOutcomes.set(athlete.id, []);

@@ -339,6 +339,34 @@ export function getTournamentTierConfig(tier) {
   return TOURNAMENT_TIER_CONFIG[tier] || TOURNAMENT_TIER_CONFIG.Silver;
 }
 
+// Fase 5.3, item 2 — tabela de resultado por rodada para um campo REAL
+// menor que o `mainDrawSize` do tier. A simulação de fundo
+// (WorldTourLifecycle.js) deixou de forçar o preenchimento da chave até
+// `mainDrawSize` (item 1); quando os inscritos não enchem a chave, ela
+// roda menor — e uma chave menor tem MENOS rodadas, com os pontos
+// definidos por rodada. Resolução: pontos do CAMPEÃO fixos no valor
+// canônico do tier (`rankPoints` — `buildRoundTable` sempre mapeia a
+// razão 1.0 pro valor do campeão, seja qual for `roundCount`), rodadas
+// intermediárias recalculadas pro número de rodadas que o campo real
+// produz (`roundCountForDrawSize`). Um Bronze de 9 duplas paga o mesmo
+// título que um de 16; quem perde na estreia recebe pontos de estreia,
+// não de uma quartas que nunca existiu. A tabela só encolhe abaixo de 9
+// entrantes (≤8 → 3 rodadas); 9-16 mantêm as 4 rodadas da chave de 16
+// (ceil(log2(12))=4), 17+ mantêm 5. `entrantCount` ausente ou ≥
+// `mainDrawSize` devolve a tabela cheia do tier, byte a byte.
+export function getRoundOutcomeTable(tier, entrantCount) {
+  const config = getTournamentTierConfig(tier);
+  if (!Number.isFinite(entrantCount) || entrantCount >= config.mainDrawSize) {
+    return { roundCount: config.roundCount, roundLabels: config.roundLabels, roundPoints: config.roundPoints };
+  }
+  const roundCount = Math.max(1, Math.min(config.roundCount, roundCountForDrawSize(entrantCount)));
+  return {
+    roundCount,
+    roundLabels: ROUND_LABELS_BY_COUNT[roundCount] || config.roundLabels,
+    roundPoints: buildRoundTable(config.rankPoints, roundCount),
+  };
+}
+
 export function buildSeasonTournaments(year, seasonId = null) {
   const usedCities = new Map();
   const events = [];
