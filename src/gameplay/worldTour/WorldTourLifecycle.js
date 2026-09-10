@@ -1,6 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { chooseTournament } from './TournamentSelectionAI.js';
-import { resolveEntryRank } from './EntryManager.js';
+import { resolveEntryRank, OPEN_TIER_CEILING } from './EntryManager.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 import { getTournamentTierConfig, getRoundOutcomeTable } from '@/lib/circuitCatalog.js';
@@ -238,9 +238,22 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   for (const weekTournaments of tournamentsByWeek.values()) {
     const assignments = new Map(weekTournaments.map((tournament) => [tournament.id, []]));
     for (const pair of pairs) {
+      // Fase 5.5, item 1 — a elegibilidade da dupla passava por
+      // `chooseTournament(..., pair.athletes[0])`: `resolveEntryRank` lia
+      // o rank do PRIMEIRO atleta (o `athlete_a` da Partnership, ordem
+      // arbitrária), não o da dupla. Uma dupla [#82, #189] com o #82 como
+      // `athlete_b` passava o teto de acesso livre pelo rank 189 do
+      // `athlete_a` e entrava em Bronze/Silver com um top-82 dentro
+      // (medido: Pineda/Piotto, 1 dos 7 títulos reais de base em regime).
+      // O `overall_rating` já era a média dos dois aqui; o rank passa a
+      // ser `pairEntryRank` (média, mesmo adaptador de
+      // `applyOpenTierEntryPriority` e da redistribuição do item 1 da
+      // Fase 5.4) — a porta enxerga a dupla, não um membro sorteado.
+      const pairRank = pairEntryRank(pair);
       const representative = {
         ...pair.athletes[0],
         overall_rating: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / 2,
+        ...(pairRank > 0 ? { rank: pairRank, ranking_position: pairRank } : {}),
       };
       const choice = chooseTournament(weekTournaments, representative, {
         strategy: representative.careerStrategy,
@@ -266,9 +279,18 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     // (mesmo princípio da chave de tamanho variável da Fase 5.3). Move só
     // os pares de MENOR força (`pairScore`) entre os que o doador cortaria
     // de qualquer forma: o tier de baixo fica com um campo genuinamente
-    // fraco, e uma dupla forte cortada do doador continua cortada. Todo par
-    // elegível pra um tier livre é elegível pro outro (ambos `minRanking:0`,
-    // o teto barra os mesmos), então mover não precisa de recheque.
+    // fraco, e uma dupla forte cortada do doador continua cortada.
+    //
+    // Fase 5.5, item 1 — invariante explícita: uma dupla barrada pelo teto
+    // de acesso livre (`pairEntryRank <= OPEN_TIER_CEILING`) NUNCA é movida
+    // pra um evento de base, nem pra salvar um cancelamento. Depois da
+    // correção da elegibilidade (representative usa `pairEntryRank`) o
+    // `donor.list` já não contém essas duplas; o filtro abaixo é a rede de
+    // segurança que torna a garantia local e legível.
+    const barredFromOpen = (p) => {
+      const r = pairEntryRank(p);
+      return r > 0 && r <= OPEN_TIER_CEILING;
+    };
     const openEvents = weekTournaments.filter((t) => getTournamentTierConfig(t?.tier).minRanking === 0);
     if (openEvents.length > 1) {
       const drawOf = (t) => Math.max(2, Number(t.main_draw_size) || getTournamentTierConfig(t?.tier).mainDrawSize || 16);
@@ -284,7 +306,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         if (!donor || !receiver) break;
         const present = new Set(receiver.list.map((p) => p.id));
         const cutCandidates = [...donor.list].sort(keepFirst).slice(donor.draw)
-          .filter((p) => !present.has(p.id))
+          .filter((p) => !present.has(p.id) && !barredFromOpen(p))
           .sort((a, b) => pairScore(a, receiver.t) - pairScore(b, receiver.t));
         const n = Math.min(donor.list.length - donor.draw, receiver.min - receiver.list.length, cutCandidates.length);
         if (n <= 0) break;
