@@ -18,18 +18,25 @@ import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 // circuito real (um top 300 disputa entrada sem problema; só o top 50
 // não compensa a viagem) — coincidiam por config, não por desenho.
 //
-// Fase 5.4 — FIXADO EM 150. A Fase 5.3 mediu a dominância real de
-// Bronze/Silver por título como ~0% a partir de 150, mas a Fase 5.4
-// (item 1) mostrou que aquele número estava deflacionado por 8 chaves de
-// base/temporada que cancelavam sem distribuir título. Com o circuito
-// rodando inteiro a curva honesta é 17,5% (teto 50) → 7,5% (100) → 8,8%
-// (150): nenhum teto na faixa que preserva a capacidade da base leva a
-// dominância real abaixo de ~8% (a cauda fraca do elenco real, rank
-// ~151-600, joga o tier de entrada — discutivelmente correto). Só teto
-// ≥ 350 zera, e aí a razão de regime da base colapsa (9× a 350, 0,6× a
-// 800). 150 é o piso da faixa utilizável: barra a elite real da base,
-// preserva a capacidade, e entre dois valores equivalentes é o menos
-// restritivo. Ver reports/real-athletes-audit/FASE-5.4-RELATORIO.md §0/§4.
+// Fase 5.4/5.5 — FIXADO EM 150, confirmado com o mundo corrigido. A
+// dominância real de Bronze/Silver por título em regime é **6,2%** a
+// teto=150 e **13,8%** a teto=100 (a Fase 5.5 fechou a brecha em que a
+// elegibilidade da dupla era decidida pelo rank de um atleta só; a curva
+// da Fase 5.4 que favorecia 100 media o mundo com a brecha). Teto 100
+// solta ~8 duplas reais de rank 100-150 (fortes) na base — 150 é
+// claramente melhor.
+//
+// **Não existe alvo zero para esse número, e nunca deveria ter existido.**
+// A dominância residual (6,2% na Fase 5.5, ~8,8% em regime com a escada
+// do Candidato B da Fase 5.6) NÃO é erro a perseguir: o elenco de 100
+// reais entrou pelo ranking FIP de ago/2026, mas dentro do mundo
+// simulado tem ranking próprio, e ~3-5 duplas caem pra faixa 151-450.
+// Uma dupla real que caiu no ranking disputando a base é o circuito
+// FUNCIONANDO — o teto de 150 diz que ela pode, e ela pode. O objetivo
+// do teto sempre foi barrar a ELITE real da base (Galán/Tapia/Coello
+// nunca aparecem lá), não zerar a presença real.
+// Ver reports/real-athletes-audit/FASE-5.5-RELATORIO.md §1/§2 e
+// FASE-5.6-RELATORIO.md §2.
 export const OPEN_TIER_CEILING = 150;
 
 export const ENTRY_PATHS = Object.freeze({
@@ -118,10 +125,11 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
   // Fase 5.1, item 1 — teto dos tiers de acesso livre (Bronze/Silver,
   // `directLimit===0`): antes, `directLimit===0` sozinho já bastava pra
   // aprovar QUALQUER rank, inclusive #1 — não havia teto, só piso. Uma
-  // dupla já classificada pro Gold (rank ≤ OPEN_TIER_CEILING) não entra
-  // mais aqui; ela tem lugar melhor pra estar. Só exclui quem JÁ tem
-  // ranking bom o bastante — nunca um par recém-formado sem ranking, que
-  // continua caindo no `directLimit===0` logo abaixo.
+  // dupla no top `OPEN_TIER_CEILING` (150) não entra mais aqui; ela tem
+  // lugar melhor pra estar (o corte mais baixo do topo é o Elite, 140 —
+  // Fase 5.6). Só exclui quem JÁ tem ranking bom o bastante — nunca um
+  // par recém-formado sem ranking, que continua caindo no
+  // `directLimit===0` logo abaixo.
   //
   // Fase 5.3, item 1 — `overqualified` marca ESTE motivo de inelegibilidade
   // especificamente (barrado por já estar acima, não por estar abaixo do

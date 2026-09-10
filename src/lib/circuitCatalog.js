@@ -40,6 +40,12 @@ const ROUND_LABELS_BY_COUNT = Object.freeze({
 const DISPLAY_ROUNDS_BY_DRAW_SIZE = Object.freeze({
   8: Object.freeze([{ label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' }]),
   16: Object.freeze([{ label: 'Oitavas de Final', short: 'R16' }, { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' }]),
+  // Fase 5.6 — chave de 20 (Elite/Crown, escada recalibrada). Mesma
+  // contagem de rodadas (5) e formato da de 24: a 1ª rodada é comprimida
+  // com byes (a simulação de fundo não os desenha, só classifica por
+  // posição), então o rótulo genérico "Primeira Rodada" evita alegar
+  // uma rodada de tamanho fixo que a chave não tem.
+  20: Object.freeze([{ label: 'Primeira Rodada', short: 'R20' }, { label: 'Oitavas de Final', short: 'R16' }, { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' }]),
   24: Object.freeze([{ label: 'Primeira Rodada', short: 'R24' }, { label: 'Oitavas de Final', short: 'R16' }, { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' }]),
   32: Object.freeze([{ label: 'Rodada de 32', short: 'R32' }, { label: 'Oitavas de Final', short: 'R16' }, { label: 'Quartas de Final', short: 'QF' }, { label: 'Semifinal', short: 'SF' }, { label: 'Final', short: 'F' }]),
 });
@@ -116,6 +122,19 @@ function buildTier(definition) {
 // de corte de acesso por tier — EntryManager.js já lê `config.minRanking`
 // (nenhuma regra paralela hardcoded por nome de tier a corrigir aqui;
 // achado #16 da auditoria original já garantia isso desde a Fase 1A).
+//
+// Fase 5.6 — escada recalibrada (Candidato B, FASE-5.5-RELATORIO §3.4).
+// A Fase 5.4/5.5 mediu a demanda/capacidade de regime por tier em
+// Gold 9,6× → Platinum 4,7× → Masters 3,7× → Elite 1,3× → Crown 1,4× —
+// os cortes da Fase 3 (800/500/300/150/80) foram calibrados pra uma
+// pergunta diferente, e a capacidade estava invertida (Elite tinha a
+// MAIOR chave, 32, e o menor pool). Cortes apertados pra
+// 450/320/230/140/75 (a razão segue `≈ k · pool / drawSize`, medido);
+// chaves de Elite e Crown de 32 → 20 (a demanda deles nunca encheu 32).
+// O Gold fica em ~5× de propósito — a primeira porta acima da base é
+// onde mais gente empurra, como no circuito real; forçá-lo a ~3× ou
+// devolve transbordo à base (corte a ~350) ou não move a razão (mais
+// eventos — medido). Característica, não defeito.
 export const TOURNAMENT_TIER_CONFIG = Object.freeze({
   Bronze: buildTier({
     label: 'Legacy Bronze', shortLabel: 'Bronze', order: 0,
@@ -135,14 +154,14 @@ export const TOURNAMENT_TIER_CONFIG = Object.freeze({
     label: 'Legacy Gold', shortLabel: 'Gold', order: 2,
     description: 'Evento internacional de desenvolvimento, com boa relação entre risco, pontos e custos.',
     entryFee: 45, rankPoints: 100, difficultyModifier: -1,
-    mainDrawSize: 24, minLevel: 'Iniciante', minRanking: 800,
+    mainDrawSize: 24, minLevel: 'Iniciante', minRanking: 450, // Fase 5.6: 800 → 450
     prestige: 38, exposure: 32, tradition: 40, durationDays: 5,
   }),
   Platinum: buildTier({
     label: 'Legacy Platinum', shortLabel: 'Platinum', order: 3,
     description: 'Principal nível do circuito de acesso, capaz de transformar uma temporada com um grande resultado.',
     entryFee: 90, rankPoints: 200, difficultyModifier: 0,
-    mainDrawSize: 32, minLevel: 'Amador', minRanking: 500,
+    mainDrawSize: 32, minLevel: 'Amador', minRanking: 320, // Fase 5.6: 500 → 320
     prestige: 56, exposure: 52, tradition: 58, durationDays: 6,
   }),
   'Circuit Finals': buildTier({
@@ -156,21 +175,21 @@ export const TOURNAMENT_TIER_CONFIG = Object.freeze({
     label: 'Legacy Masters', shortLabel: 'Masters', order: 5,
     description: 'Primeiro nível da elite mundial, com chaves competitivas e presença frequente de atletas de ponta.',
     entryFee: 180, rankPoints: 500, difficultyModifier: 1,
-    mainDrawSize: 24, minLevel: 'Competitivo', minRanking: 300,
+    mainDrawSize: 24, minLevel: 'Competitivo', minRanking: 230, // Fase 5.6: 300 → 230
     prestige: 72, exposure: 70, tradition: 68, durationDays: 5,
   }),
   Elite: buildTier({
     label: 'Legacy Elite', shortLabel: 'Elite', order: 6,
     description: 'Grandes eventos da temporada, reservados às melhores duplas ou a convidados de alto prestígio.',
     entryFee: 320, rankPoints: 1000, difficultyModifier: 2,
-    mainDrawSize: 32, minLevel: 'Avançado', minRanking: 150,
+    mainDrawSize: 20, minLevel: 'Avançado', minRanking: 140, // Fase 5.6: draw 32 → 20, corte 150 → 140
     prestige: 88, exposure: 88, tradition: 82, durationDays: 6,
   }),
   Crown: buildTier({
     label: 'Legacy Crown', shortLabel: 'Crown', order: 7,
     description: 'Os eventos máximos do Padel Legacy World Tour, onde história, pressão e legado se encontram.',
     entryFee: 500, rankPoints: 2000, difficultyModifier: 3,
-    mainDrawSize: 32, qualifyingSize: 16, minLevel: 'Avançado', minRanking: 80,
+    mainDrawSize: 20, qualifyingSize: 16, minLevel: 'Avançado', minRanking: 75, // Fase 5.6: draw 32 → 20, corte 80 → 75
     prestige: 100, exposure: 100, tradition: 96, durationDays: 8,
   }),
   'Legacy Finals': buildTier({
