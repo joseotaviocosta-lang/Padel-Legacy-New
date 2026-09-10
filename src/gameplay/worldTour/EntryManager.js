@@ -17,9 +17,20 @@ import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 // capacidade). Piso do Gold e teto do Bronze são conceitos DIFERENTES no
 // circuito real (um top 300 disputa entrada sem problema; só o top 50
 // não compensa a viagem) — coincidiam por config, não por desenho.
-// Parâmetro próprio agora, testado em vários valores (relatório da
-// Fase 5.2) antes de fixar — não decida aqui, meça primeiro.
-export const OPEN_TIER_CEILING = 800;
+//
+// Fase 5.4 — FIXADO EM 150. A Fase 5.3 mediu a dominância real de
+// Bronze/Silver por título como ~0% a partir de 150, mas a Fase 5.4
+// (item 1) mostrou que aquele número estava deflacionado por 8 chaves de
+// base/temporada que cancelavam sem distribuir título. Com o circuito
+// rodando inteiro a curva honesta é 17,5% (teto 50) → 7,5% (100) → 8,8%
+// (150): nenhum teto na faixa que preserva a capacidade da base leva a
+// dominância real abaixo de ~8% (a cauda fraca do elenco real, rank
+// ~151-600, joga o tier de entrada — discutivelmente correto). Só teto
+// ≥ 350 zera, e aí a razão de regime da base colapsa (9× a 350, 0,6× a
+// 800). 150 é o piso da faixa utilizável: barra a elite real da base,
+// preserva a capacidade, e entre dois valores equivalentes é o menos
+// restritivo. Ver reports/real-athletes-audit/FASE-5.4-RELATORIO.md §0/§4.
+export const OPEN_TIER_CEILING = 150;
 
 export const ENTRY_PATHS = Object.freeze({
   DIRECT: 'direct', QUALIFYING: 'qualifying', WILDCARD: 'wildcard',

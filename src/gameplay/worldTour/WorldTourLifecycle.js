@@ -249,6 +249,51 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       if (choice?.decision === 'play' && choice.tournament?.id && assignments.has(choice.tournament.id)) assignments.get(choice.tournament.id).push(pair);
     }
 
+    // Fase 5.4, item 1 — redistribuição de excedente entre tiers de acesso
+    // livre (Bronze/Silver) concorrentes na mesma semana. `chooseTournament`
+    // + `scoreOption` pontuam Silver acima de Bronze pra quase toda
+    // estratégia de carreira (mais pontos, mais prêmio, mais prestígio),
+    // então numa semana com os dois TODO par elegível escolhe Silver e o
+    // Bronze fecha com ZERO inscritos (medido: 8 Bronze/temporada
+    // cancelados, todos em semanas Bronze+Silver — Fase 5.3/5.4). A IA não
+    // modela que o Silver vai estar lotado: um par que seria CORTADO do
+    // Silver superlotado está estritamente melhor jogando o Bronze.
+    //
+    // Redistribuição CONSERVADORA: só resgata um evento livre concorrente
+    // que ficaria abaixo do mínimo viável (senão cancelaria), e o traz
+    // exatamente até `minViableDraw` — não até `drawSize`. Um evento que
+    // ninguém escolheu roda no tamanho mínimo honesto, não cheio à força
+    // (mesmo princípio da chave de tamanho variável da Fase 5.3). Move só
+    // os pares de MENOR força (`pairScore`) entre os que o doador cortaria
+    // de qualquer forma: o tier de baixo fica com um campo genuinamente
+    // fraco, e uma dupla forte cortada do doador continua cortada. Todo par
+    // elegível pra um tier livre é elegível pro outro (ambos `minRanking:0`,
+    // o teto barra os mesmos), então mover não precisa de recheque.
+    const openEvents = weekTournaments.filter((t) => getTournamentTierConfig(t?.tier).minRanking === 0);
+    if (openEvents.length > 1) {
+      const drawOf = (t) => Math.max(2, Number(t.main_draw_size) || getTournamentTierConfig(t?.tier).mainDrawSize || 16);
+      const keepFirst = (a, b) => {
+        const ra = pairEntryRank(a) || (WORLD_RANKING_TARGET + 1);
+        const rb = pairEntryRank(b) || (WORLD_RANKING_TARGET + 1);
+        return (ra - rb) || (pairTournamentsPlayedSoFar(a) - pairTournamentsPlayedSoFar(b));
+      };
+      for (let guard = 0; guard < 200; guard += 1) {
+        const state = openEvents.map((t) => ({ t, draw: drawOf(t), min: minViableDraw(drawOf(t)), list: assignments.get(t.id) }));
+        const donor = state.filter((s) => s.list.length > s.draw).sort((x, y) => (y.list.length - y.draw) - (x.list.length - x.draw))[0];
+        const receiver = state.filter((s) => s.list.length < s.min).sort((x, y) => x.list.length - y.list.length)[0];
+        if (!donor || !receiver) break;
+        const present = new Set(receiver.list.map((p) => p.id));
+        const cutCandidates = [...donor.list].sort(keepFirst).slice(donor.draw)
+          .filter((p) => !present.has(p.id))
+          .sort((a, b) => pairScore(a, receiver.t) - pairScore(b, receiver.t));
+        const n = Math.min(donor.list.length - donor.draw, receiver.min - receiver.list.length, cutCandidates.length);
+        if (n <= 0) break;
+        const moveIds = new Set(cutCandidates.slice(0, n).map((p) => p.id));
+        assignments.set(donor.t.id, donor.list.filter((p) => !moveIds.has(p.id)));
+        receiver.list.push(...cutCandidates.slice(0, n));
+      }
+    }
+
     for (const tournament of weekTournaments) {
       // Achado #16b da auditoria, corrigido na Fase 3: lia
       // `tournament.draw_size`, um campo que NUNCA existiu (produção grava
