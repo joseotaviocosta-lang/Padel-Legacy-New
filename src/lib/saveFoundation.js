@@ -119,6 +119,60 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
     });
     row1.ai_partner_id = id2; row2.ai_partner_id = id1; // evita re-processar no mesmo load se a lista de pairs tiver o mesmo par duas vezes
   }
+
+  // Fase 6.2, item 2 — os outros 46 reais (fora dos 27 pares confirmados/
+  // prováveis) não têm parceiro real conhecido no registro
+  // (`partner_confidence: null`) — decisão da Fase 2 era deixá-los entrar
+  // "normalmente" no mercado de IA, junto dos ~900 bots, assumindo que o
+  // mercado os separaria. Medido na Fase 6.1: essa loteria de formação
+  // pode nunca sortear alguém (2 dos 5 casos rastreados nunca formaram
+  // par em 2 temporadas inteiras), e quem fica livre por mais de ~12
+  // meses cruza o penhasco do `legacy_seed` (`rankingWindow.js`) e fica
+  // praticamente impossível de reparear depois — a origem raiz da
+  // interseção de reais permanentemente ausentes (Fase 6, item 1).
+  // "Parceiro desconhecido" não precisa virar "sem parceiro": um top 100
+  // do FIP tem parceiro, só não sabemos qual pelo registro que temos.
+  // Pareia os restantes entre si por proximidade de `fip_rank` (mesma
+  // noção de "proximidade de ranking" que já orienta o mercado de IA em
+  // produção — `aiPartnershipLifecycle.js:rankGapWeight`) — estado
+  // INICIAL, `ai_partnership_protected:false` (mesma química de um par
+  // "provável"), ao contrário das 6 duplas históricas CONFIRMADAS: o
+  // mercado dissolve e reforma essas duplas normalmente dali em diante,
+  // como qualquer par de IA. Não muda nenhuma regra para o resto da
+  // população (bots inclusive) — só preenche um estado inicial que o
+  // registro já sabia mas não estava sendo aplicado.
+  const unseededReals = registryAthletes
+    .filter((athlete) => !botIdToRow.get(athlete.bot_id)?.ai_partner_id)
+    .sort((a, b) => (Number(a.fip_rank) || 999) - (Number(b.fip_rank) || 999));
+  for (let i = 0; i + 1 < unseededReals.length; i += 2) {
+    const a = unseededReals[i];
+    const b = unseededReals[i + 1];
+    const id1 = botIdToRealId.get(a.bot_id);
+    const id2 = botIdToRealId.get(b.bot_id);
+    const row1 = botIdToRow.get(a.bot_id);
+    const row2 = botIdToRow.get(b.bot_id);
+    if (!id1 || !id2 || !row1 || !row2 || row1.ai_partner_id || row2.ai_partner_id) continue;
+    const chemistry = SEED_PAIR_CHEMISTRY.unlocked;
+    const common = {
+      ai_partnership_status: 'ativa',
+      ai_partnership_start_date: worldSeedMeta.career_start_date,
+      ai_partnership_chemistry: chemistry,
+      ai_partnership_protected: false,
+      market_status: 'contratado',
+    };
+    athletePairUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: b.name });
+    athletePairUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: a.name });
+    const key = teamKey(id1, id2);
+    const points = Math.round((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2;
+    teamPairPayloads.push({
+      team_key: key, player1_id: id1, player1_name: a.name, player1_country: row1.country,
+      player2_id: id2, player2_name: b.name, player2_country: row2.country,
+      ranking_points: Math.round(points), race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
+      season_id: String(worldSeedMeta.career_start_date || '').slice(0, 4), origin: 'seed-inicial',
+    });
+    row1.ai_partner_id = id2; row2.ai_partner_id = id1;
+  }
+
   if (athletePairUpdates.length) {
     try { await localGame.entities.AthleteProfile.bulkUpdate(athletePairUpdates); }
     catch (error) { console.warn('[Save Foundation] parcerias pré-existentes', error); }

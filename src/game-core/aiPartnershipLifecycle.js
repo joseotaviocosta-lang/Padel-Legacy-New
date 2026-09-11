@@ -239,6 +239,7 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
         ai_partner_id: null,
         ai_partner_name: null,
         market_status: 'livre',
+        market_status_since: currentDate,
         ai_partnership_status: 'sem_parceiro',
       });
       continue;
@@ -295,6 +296,15 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
       ai_partnership_status: 'encerrada',
       ai_partnership_end_date: currentDate,
       market_status: 'livre',
+      // Fase 6.2, item 3 — campo que faltava pra priorizar por tempo de
+      // espera na reformação (ver formNewPartnerships). Semântica: a
+      // CORRENTE atual de estar livre, não o acumulado da carreira —
+      // reseta a cada nova formação (a própria formação nunca escreve
+      // este campo, só a dissolução), porque o risco que isto existe pra
+      // evitar (o penhasco do `legacy_seed`, Fase 6.1/6.2 item 1) é sobre
+      // a corrente ATUAL sem resultado datado, não sobre quanto tempo já
+      // se passou livre ao longo de toda a carreira.
+      market_status_since: currentDate,
     };
     athleteUpdates.push({ id: athlete.id, ...common, partnership_history_count: safeNumber(athlete.partnership_history_count, 0) + 1 });
     athleteUpdates.push({ id: partner.id, ...common, partnership_history_count: safeNumber(partner.partnership_history_count, 0) + 1 });
@@ -378,12 +388,32 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
 // classe inteira de "mutação acidental em produção" deixa de existir.
 export const MARKET_FORMATION_FRACTION = 0.14;
 
+// Fase 6.2, item 3 — a Fase 5.1 já resolveu o mesmo formato de problema
+// um andar acima (entrada de torneio, `applyOpenTierEntryPriority`):
+// uma fila sem memória favorece sempre a mesma fatia. Aqui,
+// `selectPair` pesa só compatibilidade × proximidade de rank — quem
+// tem um rank outlier pode nunca vencer o sorteio ponderado, e quanto
+// mais tempo espera, pior fica o rank (o penhasco do `legacy_seed` aos
+// 364 dias, achado da Fase 6.1/6.2 item 1), reforçando a própria causa.
+// Reserva uma fração de `targetPairs` por mês pra quem está livre há
+// mais tempo (`market_status_since`), pareando os mais antigos ENTRE
+// SI, ignorando compatibilidade/proximidade pra essa fração — mesmo
+// desenho do piso de `OPEN_TIER_RESERVED_SHARE`: garante progresso num
+// número finito de meses, em vez de só melhorar as odds.
+export const MARKET_WAIT_RESERVED_SHARE = 0.2;
+
+function daysSinceFree(athlete, currentDate) {
+  if (!athlete?.market_status_since) return 0;
+  return Math.max(0, careerDaysBetween(athlete.market_status_since, currentDate));
+}
+
 async function formNewPartnerships(athletes, currentDate, formationFraction = MARKET_FORMATION_FRACTION) {
   const month = monthKey(currentDate);
   const free = availableAthletes(athletes, currentDate);
   const events = [];
   let formed = 0;
   const targetPairs = Math.max(0, Math.floor((free.length * formationFraction) / 2));
+  const reservedTarget = Math.round(targetPairs * MARKET_WAIT_RESERVED_SHARE);
 
   // Fase 2.6, item 1.5: com o alvo agora proporcional ao pool (em vez de
   // travado em 8), o número de pares/mês pode subir bastante — cada par
@@ -399,14 +429,9 @@ async function formNewPartnerships(athletes, currentDate, formationFraction = MA
   const partnershipOps = [];
   const eventPayloads = [];
 
-  for (let index = 0; index < targetPairs; index += 1) {
-    const remaining = availableAthletes(free, currentDate);
-    const pair = selectPair(remaining, month, index);
-    if (!pair) break;
-    if (pair.compatibility < 48 && integer(`${month}:${index}:weak-pair`, 0, 99) > 25) break;
-
-    const chemistry = clamp(42 + Math.round(pair.compatibility * 0.45), 45, 88);
-    const duration = seededInteger(`${month}:${pair.first.id}:${pair.second.id}:contract`, 210, 360);
+  function formPair(first, second, compatibilityScore) {
+    const chemistry = clamp(42 + Math.round(compatibilityScore * 0.45), 45, 88);
+    const duration = seededInteger(`${month}:${first.id}:${second.id}:contract`, 210, 360);
     const common = {
       ai_partnership_status: 'ativa',
       ai_partnership_start_date: currentDate,
@@ -415,33 +440,59 @@ async function formNewPartnerships(athletes, currentDate, formationFraction = MA
       market_status: 'contratado',
       last_updated_date: currentDate,
     };
-    athleteUpdates.push({ id: pair.first.id, ...common, ai_partner_id: pair.second.id, ai_partner_name: pair.second.name });
-    athleteUpdates.push({ id: pair.second.id, ...common, ai_partner_id: pair.first.id, ai_partner_name: pair.first.name });
+    athleteUpdates.push({ id: first.id, ...common, ai_partner_id: second.id, ai_partner_name: second.name });
+    athleteUpdates.push({ id: second.id, ...common, ai_partner_id: first.id, ai_partner_name: first.name });
 
-    const partnershipId = partnershipRecordId(pair.first.id, pair.second.id, currentDate);
+    const partnershipId = partnershipRecordId(first.id, second.id, currentDate);
     partnershipOps.push({ type: 'upsert', entityName: 'Partnership', id: partnershipId, data: {
-      partnership_type: 'npc', scope: 'world', athlete_a_id: pair.first.id, athlete_b_id: pair.second.id,
-      athlete_ids: [pair.first.id, pair.second.id], athlete_a_name: pair.first.name, athlete_b_name: pair.second.name,
-      partner_name: pair.second.name, started_career_date: currentDate, scheduled_end_date: addDays(currentDate, duration),
+      partnership_type: 'npc', scope: 'world', athlete_a_id: first.id, athlete_b_id: second.id,
+      athlete_ids: [first.id, second.id], athlete_a_name: first.name, athlete_b_name: second.name,
+      partner_name: second.name, started_career_date: currentDate, scheduled_end_date: addDays(currentDate, duration),
       contract_end_date: addDays(currentDate, duration), negotiated_duration_days: duration, contract_status: 'ativo',
-      status: 'ativa', chemistry, compatibility_score: pair.compatibility, origin: 'world-partner-market',
-      history: [{ date: currentDate, event: 'formed', reason: 'market_match', compatibility: pair.compatibility }], schema_version: 2,
+      status: 'ativa', chemistry, compatibility_score: compatibilityScore, origin: 'world-partner-market',
+      history: [{ date: currentDate, event: 'formed', reason: 'market_match', compatibility: compatibilityScore }], schema_version: 2,
     } });
 
-    pair.first.ai_partner_id = pair.second.id;
-    pair.second.ai_partner_id = pair.first.id;
+    first.ai_partner_id = second.id;
+    second.ai_partner_id = first.id;
     formed += 1;
     eventPayloads.push({
       event_date: currentDate,
       date: currentDate,
-      title: `Nova dupla: ${pair.first.name || 'Atleta'} e ${pair.second.name || 'Atleta'}`,
-      description: `A dupla foi formada com compatibilidade estimada em ${pair.compatibility}/100 e entrosamento inicial ${chemistry}/100.`,
+      title: `Nova dupla: ${first.name || 'Atleta'} e ${second.name || 'Atleta'}`,
+      description: `A dupla foi formada com compatibilidade estimada em ${compatibilityScore}/100 e entrosamento inicial ${chemistry}/100.`,
       category: 'mercado',
       event_type: 'ai_partnership_formed',
-      importance: athleteOverall(pair.first) >= 82 || athleteOverall(pair.second) >= 82 ? 'alta' : 'media',
-      athlete_id: pair.first.id,
-      related_athlete_id: pair.second.id,
+      importance: athleteOverall(first) >= 82 || athleteOverall(second) >= 82 ? 'alta' : 'media',
+      athlete_id: first.id,
+      related_athlete_id: second.id,
     });
+  }
+
+  // Fase 6.2, item 3 — fase reservada, ANTES do sorteio ponderado: pareia
+  // quem espera há mais tempo entre si, sem pesar compatibilidade/rank.
+  // Sai do pool antes de competir de novo pelas vagas normais abaixo.
+  // Se ninguém tem `market_status_since` ainda (bootstrap do mundo, ou um
+  // mês sem dissolução alguma), `daysSinceFree` é 0 pra todo mundo e esta
+  // fase não pareia nada à força — vira no-op, o sorteio normal decide
+  // tudo como antes.
+  let reservedFormed = 0;
+  while (reservedFormed < reservedTarget) {
+    const remaining = availableAthletes(free, currentDate);
+    if (remaining.length < 2) break;
+    const oldest = [...remaining].sort((a, b) => daysSinceFree(b, currentDate) - daysSinceFree(a, currentDate));
+    if (daysSinceFree(oldest[0], currentDate) <= 0) break;
+    const [first, second] = oldest;
+    formPair(first, second, compatibility(first, second));
+    reservedFormed += 1;
+  }
+
+  for (let index = 0; index < targetPairs - reservedFormed; index += 1) {
+    const remaining = availableAthletes(free, currentDate);
+    const pair = selectPair(remaining, month, index);
+    if (!pair) break;
+    if (pair.compatibility < 48 && integer(`${month}:${index}:weak-pair`, 0, 99) > 25) break;
+    formPair(pair.first, pair.second, pair.compatibility);
   }
 
   if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);

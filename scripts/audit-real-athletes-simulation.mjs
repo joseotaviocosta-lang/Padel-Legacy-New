@@ -304,6 +304,14 @@ try {
     };
     pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: pair.bName });
     pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: pair.aName });
+    // Fase 6.2, item 2 — mutação em memória que faltava aqui (existe em
+    // saveFoundation.js: "evita re-processar... se a lista de pairs tiver
+    // o mesmo par duas vezes"): sem isso, `botIdToRow` nunca reflete quem
+    // já foi pareado pelos 27 confirmados/prováveis, e o bloco de
+    // pareamento inicial abaixo (que LÊ `row.ai_partner_id` pra decidir
+    // quem ainda está livre) via todo mundo como livre — achado ao medir
+    // "Duplas: 77 reais" em vez dos 50 esperados (27+23).
+    row1.ai_partner_id = id2; row2.ai_partner_id = id1;
     const key = teamKey(id1, id2);
     const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
     const createdTeam = await localGame.entities.TeamRanking.create({
@@ -314,6 +322,46 @@ try {
     });
     realTeamKeys.add(createdTeam.id);
     historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${pair.aName} & ${pair.bName}`, locked: pair.locked });
+  }
+
+  // Fase 6.2, item 2 — espelha exatamente a mesma correção de
+  // saveFoundation.js (produção não pode ser chamada aqui, ver comentário
+  // no topo deste bloco): os 46 reais fora dos 27 pares confirmados/
+  // prováveis não têm parceiro real conhecido no registro
+  // (`partner_confidence: null`) e dependiam inteiramente da loteria
+  // genérica de `aiPartnershipLifecycle.js` — medido na Fase 6.1 como a
+  // origem da interseção de reais permanentemente ausentes. Pareia os
+  // restantes entre si por proximidade de `fip_rank`, estado INICIAL não
+  // travado (`ai_partnership_protected:false`) — dissolve e reforma
+  // normalmente dali em diante.
+  const unseededReals = getRealAthleteRegistry()
+    .filter((athlete) => !botIdToRow.get(athlete.bot_id)?.ai_partner_id)
+    .sort((a, b) => (Number(a.fip_rank) || 999) - (Number(b.fip_rank) || 999));
+  for (let i = 0; i + 1 < unseededReals.length; i += 2) {
+    const a = unseededReals[i];
+    const b = unseededReals[i + 1];
+    const id1 = botIdToAssignedId.get(a.bot_id);
+    const id2 = botIdToAssignedId.get(b.bot_id);
+    const row1 = botIdToRow.get(a.bot_id);
+    const row2 = botIdToRow.get(b.bot_id);
+    if (!id1 || !id2 || !row1 || !row2 || row1.ai_partner_id || row2.ai_partner_id) continue;
+    const common = {
+      ai_partnership_status: 'ativa', ai_partnership_start_date: `${START_YEAR}-01-01`,
+      ai_partnership_chemistry: 60, ai_partnership_protected: false, market_status: 'contratado',
+    };
+    pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: b.name });
+    pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: a.name });
+    row1.ai_partner_id = id2; row2.ai_partner_id = id1;
+    const key = teamKey(id1, id2);
+    const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
+    const createdTeam = await localGame.entities.TeamRanking.create({
+      team_key: key, player1_id: id1, player1_name: a.name, player1_country: row1.country,
+      player2_id: id2, player2_name: b.name, player2_country: row2.country,
+      ranking_points: points, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
+      season_id: String(START_YEAR), origin: 'seed-inicial',
+    });
+    realTeamKeys.add(createdTeam.id);
+    historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${a.name} & ${b.name}`, locked: false });
   }
   if (pairAthleteUpdates.length) await localGame.entities.AthleteProfile.bulkUpdate(pairAthleteUpdates);
 
