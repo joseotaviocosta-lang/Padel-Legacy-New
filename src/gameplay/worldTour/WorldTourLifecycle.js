@@ -57,12 +57,26 @@ function pairScore(pair, tournament) {
 // torneios jogados na temporada até aqui — o piso que impede exclusão
 // permanente mesmo de quem nunca sobe no ranking bruto. `RESERVED_SHARE`
 // é ponto de partida, a ajustar pela medição, não um número final.
-const OPEN_TIER_RESERVED_SHARE = 0.25;
+//
+// Fase 6.5, item 2 — renomeada de `applyOpenTierEntryPriority` /
+// `OPEN_TIER_RESERVED_SHARE`: a Fase 4.3 (achado #29) diagnosticou o
+// corte por capacidade sem fila em Bronze/Silver (92 decisões de jogar,
+// 0 pontos); a Fase 5.1 corrigiu SÓ ali (`minRanking===0` no ponto de
+// chamada, abaixo) porque em 2026 eram os únicos tiers que um atleta de
+// rank baixo podia escolher. Reincidência confirmada na Fase 6.4: o
+// MESMO `entrants.sort(pairScore).slice(0, drawSize)`, intocado, segue
+// sendo a via de corte pra Gold/Platinum/Masters/Elite/Crown — Gold
+// cortava 79% de quem escolhia (razão de regime 4,69×), sem fila, sem
+// exceção. A correção nunca foi específica de "acesso livre" — é
+// genérica pra qualquer tier oversubscrito; só o nome e o gate no
+// ponto de chamada eram. Generalizada aqui; medida por tier na
+// Fase 6.5.
+const ENTRY_RESERVED_SHARE = 0.25;
 function pairTournamentsPlayedSoFar(pair) {
   const values = pair.athletes.map((athlete) => Number(athlete.tournaments_played) || 0);
   return values.reduce((sum, value) => sum + value, 0) / (values.length || 1);
 }
-function applyOpenTierEntryPriority(entrants, tournament, drawSize) {
+function applyEntryPriority(entrants, tournament, drawSize) {
   if (entrants.length <= drawSize) return entrants;
   const ranked = entrants.map((pair) => ({
     pair,
@@ -70,7 +84,7 @@ function applyOpenTierEntryPriority(entrants, tournament, drawSize) {
     played: pairTournamentsPlayedSoFar(pair),
     skill: pairScore(pair, tournament),
   }));
-  const reservedSlots = Math.max(0, Math.min(drawSize, Math.round(drawSize * OPEN_TIER_RESERVED_SHARE)));
+  const reservedSlots = Math.max(0, Math.min(drawSize, Math.round(drawSize * ENTRY_RESERVED_SHARE)));
   const openSlots = drawSize - reservedSlots;
   const byRank = [...ranked].sort((a, b) => a.rank - b.rank || b.skill - a.skill);
   const selectedOpen = byRank.slice(0, openSlots);
@@ -235,8 +249,26 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const tournamentUpdates = [];
   const news = [];
 
+  // DIAG_SELECT (Fase 6.4/6.5, temporário) — mesma instrumentação da
+  // Fase 6.4, reaplicada pra medir o efeito do item 2 (prioridade
+  // estendida) e do item 3 (fallback de tier) sobre a divisão
+  // 45/22/19/14 e a taxa de corte por tier. Reverter após medir.
+  const diagSelect = process.env.DIAG_SELECT ? true : false;
+
   for (const weekTournaments of tournamentsByWeek.values()) {
     const assignments = new Map(weekTournaments.map((tournament) => [tournament.id, []]));
+    const diagChoiceByPair = diagSelect ? new Map() : null;
+    // Fase 6.5, item 3 — fallback de tier na mesma semana. `chooseTournament`
+    // já devolve `options`, a lista INTEIRA de torneios elegíveis da
+    // semana, ordenada por pontuação (`scoreOption`) — não só o
+    // escolhido. Guarda essa lista + em qual posição dela a dupla está
+    // atualmente, pra tentar a próxima se for cortada da atual. Como
+    // `options` já passou pelo filtro de elegibilidade de
+    // `evaluateTournamentEntry` (inclusive `OPEN_TIER_CEILING`), uma
+    // dupla barrada da base por ser boa demais nunca a vê nesta lista —
+    // o fallback respeita o teto de acesso livre por construção, sem
+    // checagem extra.
+    const pairOptionState = new Map();
     for (const pair of pairs) {
       // Fase 5.5, item 1 — a elegibilidade da dupla passava por
       // `chooseTournament(..., pair.athletes[0])`: `resolveEntryRank` lia
@@ -247,7 +279,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       // (medido: Pineda/Piotto, 1 dos 7 títulos reais de base em regime).
       // O `overall_rating` já era a média dos dois aqui; o rank passa a
       // ser `pairEntryRank` (média, mesmo adaptador de
-      // `applyOpenTierEntryPriority` e da redistribuição do item 1 da
+      // `applyEntryPriority` e da redistribuição do item 1 da
       // Fase 5.4) — a porta enxerga a dupla, não um membro sorteado.
       const pairRank = pairEntryRank(pair);
       const representative = {
@@ -259,7 +291,19 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         strategy: representative.careerStrategy,
         currentRegion: representative.currentRegion,
       });
-      if (choice?.decision === 'play' && choice.tournament?.id && assignments.has(choice.tournament.id)) assignments.get(choice.tournament.id).push(pair);
+      if (choice?.decision === 'play' && choice.tournament?.id && assignments.has(choice.tournament.id)) {
+        assignments.get(choice.tournament.id).push(pair);
+        pairOptionState.set(pair.id, { pair, options: choice.options || [], index: 0, currentTournamentId: choice.tournament.id });
+      }
+      if (diagChoiceByPair && pair.athletes.some((a) => a.is_real)) {
+        diagChoiceByPair.set(pair.id, {
+          decision: choice?.decision,
+          tournamentId: choice?.decision === 'play' ? choice.tournament?.id : null,
+          tier: choice?.decision === 'play' ? choice.tournament?.tier : null,
+          eligibleOptions: choice?.options?.length || 0,
+          pair,
+        });
+      }
     }
 
     // Fase 5.4, item 1 — redistribuição de excedente entre tiers de acesso
@@ -316,6 +360,59 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       }
     }
 
+    // Fase 6.5, item 3 — fallback de tier na mesma semana. Hoje, se uma
+    // dupla é cortada da montagem de campo do tier escolhido, a semana
+    // acaba ali — a redistribuição acima só move ENTRE tiers de acesso
+    // livre concorrentes, nunca de um tier fechado pra outro. No circuito
+    // real, quem não entra num evento joga outro. Reavalia
+    // iterativamente: quem foi cortado do tier atual tenta o PRÓXIMO
+    // melhor da própria lista de opções elegíveis (`chooseTournament` já
+    // devolve essa lista ordenada — não é um recálculo novo, é a mesma
+    // pontuação que decidiu a escolha original). Convirja num número
+    // limitado de rodadas (a escada de tiers tem profundidade finita —
+    // não pode ciclar) em vez de reprocessar até estabilizar sozinho.
+    const drawSizeOf = (t) => {
+      const cfg = getTournamentTierConfig(t?.tier);
+      return Math.max(2, Number(t.main_draw_size) || cfg.mainDrawSize || 16);
+    };
+    // A redistribuição de Bronze/Silver acima já pode ter movido alguém
+    // pra fora da 1ª escolha registrada em `pairOptionState` — sincroniza
+    // `currentTournamentId` com onde `assignments` realmente tem cada
+    // dupla agora, antes da 1ª rodada de fallback usar essa referência.
+    for (const [tournamentId, list] of assignments) {
+      for (const p of list) {
+        const state = pairOptionState.get(p.id);
+        if (state) state.currentTournamentId = tournamentId;
+      }
+    }
+    const MAX_FALLBACK_ROUNDS = 6;
+    for (let round = 0; round < MAX_FALLBACK_ROUNDS; round += 1) {
+      const survivedByTournament = new Map();
+      for (const tournament of weekTournaments) {
+        const drawSize = drawSizeOf(tournament);
+        let candidates = [...(assignments.get(tournament.id) || [])];
+        if (candidates.length > drawSize) candidates = applyEntryPriority(candidates, tournament, drawSize);
+        const ordered = candidates.sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament)).slice(0, drawSize);
+        survivedByTournament.set(tournament.id, new Set(ordered.map((p) => p.id)));
+      }
+      let anyMoved = false;
+      for (const state of pairOptionState.values()) {
+        if (survivedByTournament.get(state.currentTournamentId)?.has(state.pair.id)) continue;
+        // Cortada — tenta a próxima opção elegível da lista, se houver.
+        let nextIndex = state.index + 1;
+        while (nextIndex < state.options.length && !weekTournaments.some((t) => t.id === state.options[nextIndex].tournament?.id)) nextIndex += 1;
+        if (nextIndex >= state.options.length) continue; // esgotou as opções — perde a semana, como hoje.
+        const nextTournamentId = state.options[nextIndex].tournament.id;
+        const oldList = assignments.get(state.currentTournamentId);
+        if (oldList) assignments.set(state.currentTournamentId, oldList.filter((p) => p.id !== state.pair.id));
+        assignments.get(nextTournamentId)?.push(state.pair);
+        state.currentTournamentId = nextTournamentId;
+        state.index = nextIndex;
+        anyMoved = true;
+      }
+      if (!anyMoved) break;
+    }
+
     for (const tournament of weekTournaments) {
       // Achado #16b da auditoria, corrigido na Fase 3: lia
       // `tournament.draw_size`, um campo que NUNCA existiu (produção grava
@@ -328,6 +425,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const config = getTournamentTierConfig(tournament?.tier);
       const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
       let entrants = [...(assignments.get(tournament.id) || [])];
+      const diagEntrantsBeforePriority = diagSelect ? entrants.length : 0;
       // Fase 5.3, itens 1 e 2 — o preenchimento de reserva que completava
       // a chave até `drawSize` foi REMOVIDO. O campo agora é exatamente
       // quem ESCOLHEU o torneio (`chooseTournament`, que já filtra por
@@ -346,18 +444,45 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       // dupla barrada pelo teto volta, e "inverter o critério" do
       // preenchimento (item 1.1) fica sem objeto — não há mais critério.
       // Abaixo de `minViableDraw` inscritos o torneio não acontece (item 2).
-      // Fase 5.1, item 1 — só os tiers de acesso livre (Bronze/Silver,
-      // `minRanking:0`) tinham o problema de oversubscrição sem piso
-      // medido no achado #32; tiers com corte de ranking próprio já
-      // controlam demanda pela elegibilidade. Decide QUEM ENTRA antes de
-      // decidir QUEM VENCE (a linha de baixo, inalterada, continua
-      // ordenando por pairScore/skill — só entre quem já entrou).
-      if (config.minRanking === 0 && entrants.length > drawSize) {
-        entrants = applyOpenTierEntryPriority(entrants, tournament, drawSize);
+      // Fase 5.1, item 1 — desenhado só pros tiers de acesso livre
+      // (Bronze/Silver, `minRanking:0`), na premissa de que tiers com
+      // corte de ranking próprio já controlavam demanda pela
+      // elegibilidade. Premissa refutada pela Fase 6.4: elegibilidade
+      // decide QUEM PODE tentar um tier, não QUANTOS CABEM na chave — Gold
+      // (corte 450, ~metade da população elegível) cortava 79% de quem
+      // escolhia jogar, sem fila, o mesmo `sort+slice` que a Fase 4.3
+      // (achado #29, Bronze/Silver, 92 decisões de jogar/0 pontos) já
+      // tinha diagnosticado num contexto diferente. Fase 6.5, item 2 —
+      // generalizada pra qualquer tier oversubscrito, não só os de acesso
+      // livre; nenhuma outra regra de elegibilidade muda (quem PODE
+      // escolher o tier continua exatamente como antes). Decide QUEM
+      // ENTRA antes de decidir QUEM VENCE (a linha de baixo, inalterada,
+      // continua ordenando por pairScore/skill — só entre quem já
+      // entrou).
+      if (entrants.length > drawSize) {
+        entrants = applyEntryPriority(entrants, tournament, drawSize);
       }
       const ordered = entrants
         .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
         .slice(0, drawSize);
+      // DIAG_SELECT (Fase 6.4/6.5, temporário) — ver acima. `diagEntrantsBeforePriority`
+      // conta quem ESCOLHEU antes de qualquer prioridade/corte (pra
+      // comparar com a Fase 6.4, medida antes do item 2 existir).
+      if (diagSelect) {
+        const cutCount = Math.max(0, diagEntrantsBeforePriority - drawSize);
+        if (diagEntrantsBeforePriority > 0) {
+          console.log(`[DIAG_SELECT] ${careerDate} torneio ${tournament.id} tier=${tournament.tier} drawSize=${drawSize} escolheram=${diagEntrantsBeforePriority} cortados=${cutCount}`);
+        }
+        const survivedIds = new Set(ordered.map((p) => p.id));
+        for (const [pairId, info] of diagChoiceByPair) {
+          const finalTournamentId = pairOptionState.get(pairId)?.currentTournamentId ?? info.tournamentId;
+          if (finalTournamentId === tournament.id) {
+            const cut = !survivedIds.has(pairId);
+            const fellBack = info.tournamentId != null && info.tournamentId !== finalTournamentId;
+            console.log(`[DIAG_SELECT]   dupla-real ${info.pair.name} (${pairId}) escolheu tier=${info.tier} eligibleOptions=${info.eligibleOptions}${fellBack ? ` FALLBACK->${tournament.tier}` : ''} -> ${cut ? 'CORTADA' : 'jogou'}`);
+          }
+        }
+      }
       // Fase 5.3, item 2 — campo pequeno demais não vira torneio. Marca
       // resolvido + cancelado (sai da fila de pendentes), sem campeão e
       // sem distribuir pontos. Antes o gatilho era `< 2` — qualquer par
@@ -445,6 +570,16 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       });
 
       ordered.slice(0, 8).flatMap((pair) => pair.athletes).forEach((athlete) => { athlete.currentRegion = eventRegion(tournament); });
+    }
+
+    // DIAG_SELECT (Fase 6.4/6.5, temporário) — duplas reais que
+    // descansaram ou não tinham NENHUMA opção elegível esta semana.
+    if (diagChoiceByPair) {
+      for (const [pairId, info] of diagChoiceByPair) {
+        if (info.decision !== 'play') {
+          console.log(`[DIAG_SELECT]   dupla-real ${info.pair.name} (${pairId}) decisão=${info.decision} eligibleOptions=${info.eligibleOptions}`);
+        }
+      }
     }
   }
 

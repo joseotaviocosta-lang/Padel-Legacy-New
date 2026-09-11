@@ -389,17 +389,19 @@ async function dissolvePartnerships(athletes, currentDate, partnerships = []) {
 export const MARKET_FORMATION_FRACTION = 0.14;
 
 // Fase 6.2, item 3 — a Fase 5.1 já resolveu o mesmo formato de problema
-// um andar acima (entrada de torneio, `applyOpenTierEntryPriority`):
-// uma fila sem memória favorece sempre a mesma fatia. Aqui,
-// `selectPair` pesa só compatibilidade × proximidade de rank — quem
-// tem um rank outlier pode nunca vencer o sorteio ponderado, e quanto
-// mais tempo espera, pior fica o rank (o penhasco do `legacy_seed` aos
-// 364 dias, achado da Fase 6.1/6.2 item 1), reforçando a própria causa.
-// Reserva uma fração de `targetPairs` por mês pra quem está livre há
-// mais tempo (`market_status_since`), pareando os mais antigos ENTRE
-// SI, ignorando compatibilidade/proximidade pra essa fração — mesmo
-// desenho do piso de `OPEN_TIER_RESERVED_SHARE`: garante progresso num
-// número finito de meses, em vez de só melhorar as odds.
+// um andar acima (entrada de torneio, `applyEntryPriority` em
+// `WorldTourLifecycle.js` — generalizada na Fase 6.5, item 2, pra além
+// dos tiers de acesso livre): uma fila sem memória favorece sempre a
+// mesma fatia. Aqui, `selectPair` pesa só compatibilidade × proximidade
+// de rank — quem tem um rank outlier pode nunca vencer o sorteio
+// ponderado, e quanto mais tempo espera, pior fica o rank (o penhasco
+// do `legacy_seed` aos 364 dias, achado da Fase 6.1/6.2 item 1),
+// reforçando a própria causa. Reserva uma fração de `targetPairs` por
+// mês pra quem está livre há mais tempo (`market_status_since`),
+// pareando os mais antigos ENTRE SI, ignorando compatibilidade/
+// proximidade pra essa fração — mesmo desenho do piso de
+// `ENTRY_RESERVED_SHARE`: garante progresso num número finito de
+// meses, em vez de só melhorar as odds.
 export const MARKET_WAIT_RESERVED_SHARE = 0.2;
 
 function daysSinceFree(athlete, currentDate) {
@@ -407,9 +409,25 @@ function daysSinceFree(athlete, currentDate) {
   return Math.max(0, careerDaysBetween(athlete.market_status_since, currentDate));
 }
 
+// DIAG_WAIT2 (Fase 6.5, item 1, temporário) — reconcilia a discrepância
+// 365 (Fase 6.4, "o mais antigo do pool inteiro") vs. 1.429 (Fase 6.3,
+// classificação por real ocioso): hipótese de que o pool tem uma cauda
+// longa de VÁRIOS atletas (majoritariamente bots, ~894 contra ~50 pares
+// reais) igualmente ou mais atrasados que qualquer real específico,
+// escondendo o atraso real por trás de "o pool-wide #1 é sempre outra
+// pessoa". Reverter após medir.
+function diagWaitTail(free, currentDate) {
+  if (!process.env.DIAG_WAIT2) return;
+  const over365 = free.filter((a) => daysSinceFree(a, currentDate) > 365);
+  const overReais = over365.filter((a) => a.is_real);
+  const maxReal = free.filter((a) => a.is_real).reduce((max, a) => Math.max(max, daysSinceFree(a, currentDate)), 0);
+  console.log(`[DIAG_WAIT2] ${currentDate} livres_totais=${free.length} com_espera>365d=${over365.length} (reais=${overReais.length}) maior_espera_de_um_real=${maxReal}d`);
+}
+
 async function formNewPartnerships(athletes, currentDate, formationFraction = MARKET_FORMATION_FRACTION) {
   const month = monthKey(currentDate);
   const free = availableAthletes(athletes, currentDate);
+  diagWaitTail(free, currentDate);
   const events = [];
   let formed = 0;
   const targetPairs = Math.max(0, Math.floor((free.length * formationFraction) / 2));
