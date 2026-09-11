@@ -8,83 +8,89 @@
 > que a 6.4 só diagnosticou, mede cada correção separadamente, e
 > reconcilia a discrepância de espera (365 vs. 1.429 dias).
 
-> ## ⚠️ ESTE RELATÓRIO É PARCIAL — checkpoint intermediário, não o
-> ## fechamento da fase
+> ## ⚠️ ESTE RELATÓRIO É PARCIAL PARA OS ITENS 2-3 — o item 1 fechou
+> ## com dado completo antes do desligamento
 >
-> Interrompido para desligar a máquina. As três rodadas de regime (5
-> temporadas cada) que sustentam os itens 1-3 tinham, no momento da
-> interrupção: `wait2-regime5` em **3/5** temporadas (indo pra 4/5),
-> `item2-regime5` em **3/5**, `item23-regime5` em **3/5**. Os números
-> abaixo são os do ÚLTIMO CHECKPOINT gravado em disco de cada uma —
-> reais, não simulados — mas cobrem só o trecho INICIAL do regime. Onde
-> a curva às temporadas 4-5 pode mudar a leitura, isso está marcado
-> explicitamente. Nada aqui deve ser lido como o número final da fase.
-> Amanhã: essas 3 rodadas específicas precisam ser **relançadas do
-> zero** (foram lançadas antes do mecanismo de retomada existir — ver
-> item 3-bis e o aviso na seção "Próximos passos"); toda rodada longa
-> lançada DAQUI PRA FRENTE já é retomável de onde parar.
+> Interrompido para desligar a máquina. Das três rodadas de regime (5
+> temporadas cada): `wait2-regime5` **completou as 5/5 temporadas** (o
+> item 1 abaixo usa dado completo, não parcial — está FECHADO, com
+> veredito); `item2-regime5` e `item23-regime5` pararam em **4/5**
+> temporadas cada — os itens 2 e 3 seguem PARCIAIS, com os números do
+> último checkpoint gravado em disco (reais, não simulados), mas ainda
+> falta a temporada 5 de cada. Onde a temporada 5 pode mudar a leitura,
+> isso está marcado explicitamente. Amanhã: `item2-regime5` e
+> `item23-regime5` precisam ser **relançadas do zero** (foram lançadas
+> antes do mecanismo de retomada existir — ver item 3-bis e o aviso na
+> seção "Próximos passos"); toda rodada longa lançada DAQUI PRA FRENTE
+> já é retomável de onde parar.
 
-## 1 — Reconciliar 365 vs 1.429 dias (PARCIAL — ainda não reconciliado)
+## 1 — Reconciliar 365 vs 1.429 dias (FECHADO — 5/5 temporadas completas)
 
 Instrumentação temporária `diagWaitTail`/`DIAG_WAIT2`
 (`aiPartnershipLifecycle.js`), hooked em `formNewPartnerships` logo
 após `const free = availableAthletes(...)`: por mês, conta quantos
 atletas livres têm mais de 365 dias de espera (`daysSinceFree`),
 quantos desses são reais, e a maior espera entre os reais livres
-naquele instante.
+naquele instante. `wait2-regime5` completou as 5 temporadas antes do
+desligamento — este item fecha com dado completo, não hipótese.
 
-### O que os dados mostram até a temporada 3/4 (checkpoint 3/5)
+### Os dados completos (5/5 temporadas, 60 leituras mensais)
 
 | Temporada | `maior_espera_de_um_real` no fim do ano | `com_espera>365d` (pool inteiro) |
 |---|---|---|
 | 2026 | 91d | 0 |
 | 2027 | 275d | 0 |
 | 2028 | 335d | 1-5 (oscilando) |
-| 2029 (em andamento) | 335-365d (últimas leituras) | 0-4 |
+| 2029 | 275d | 0-4 (oscilando) |
+| 2030 (fim da rodada) | **396d** (única leitura acima de 365d em toda a rodada, real=1) | 0-5 (oscilando) |
 
-A métrica **não mostra nenhum sinal de crescer rumo a 1.429 dias** —
-ela oscila numa faixa de 300-365 dias desde a temporada 3, o mesmo
-padrão de plateau que a Fase 6.4 já tinha visto (`DIAG_WAIT`, medição
-mensal do pool inteiro). Isso aponta na mesma direção da minha hipótese
-de reconciliação (a classificação de fim de temporada da Fase 6.3 mede
-a história de UM indivíduo específico através de múltiplos ciclos de
-dissolução/reformação — um artefato de amostragem daquela medição
-específica — enquanto o scan mensal do pool inteiro, usado tanto pela
-Fase 6.4 quanto por este `DIAG_WAIT2`, nunca vê passar de ~365 dias).
+Ao longo das 60 leituras mensais da rodada inteira, `maior_espera_de_um_real`
+nunca passou de **396 dias** — e passou de 365d uma única vez, na
+ÚLTIMA leitura da rodada (2031-01-01, fim da temporada 5). Fora disso,
+oscila numa faixa de 275-365 dias desde a temporada 3, o mesmo padrão
+de plateau que a Fase 6.4 já tinha visto (`DIAG_WAIT`, medição mensal
+do pool inteiro) — 5 temporadas completas, sem tendência de subir sem
+limite, é evidência suficiente pra fechar o item, ao contrário do
+checkpoint parcial anterior (3-4/5) que só sustentava uma hipótese.
 
-**Por que ainda não posso declarar isso reconciliado**: faltam as
-temporadas 4 e 5 — exatamente o trecho onde, se a curva da Fase 6.3
-tem alguma dinâmica de cauda longa (um real específico acumulando
-esperas sucessivas ao longo de VÁRIOS anos, não só um), ela apareceria.
-Três/quatro temporadas de plateau é evidência a favor da minha
-hipótese, não uma prova — declarar "365 dias está correto, 1.429 está
-errado" agora seria repetir o erro que a própria Fase 6.4 já cometeu
-(a subseção 2.4 daquele relatório registrou a mesma discrepância como
-"não totalmente reconciliada" e a passou pra frente em vez de forçar um
-veredito sem dado suficiente). Mantida como pendência explícita, não
-como duas respostas convivendo como se fossem igualmente válidas — a
-essa altura dos dados, a leitura mais provável é que **365-380 dias é
-o número real do plateau em regime, e 1.429 dias é um artefato da
-medição por classificação de fim de temporada** (que soma esperas de
-ciclos diferentes de um mesmo indivíduo como se fossem uma espera
-contínua), mas isso só vira veredito fechado com as temporadas 4-5.
+### Veredito
 
-## 2 — Prioridade estendida aos tiers fechados (PARCIAL — checkpoint 3/5 temporadas)
+**O número correto é ~365-400 dias, não 1.429 dias.** A discrepância
+não vem de dois mecanismos diferentes — vem de duas METODOLOGIAS DE
+MEDIÇÃO diferentes do MESMO fenômeno: a Fase 6.4 (`DIAG_WAIT`) e este
+`DIAG_WAIT2` fazem um SCAN MENSAL DO POOL INTEIRO (qual é a maior espera
+de um real livre *agora*, um instantâneo recorrente); a Fase 6.3 usou a
+CLASSIFICAÇÃO DE FIM DE TEMPORADA de um real específico, que soma
+ciclos de espera de dissolução/reformação diferentes ao longo de vários
+anos como se fossem uma única espera contínua — um artefato de
+amostragem daquela medição específica, não uma segunda realidade do
+jogo. As duas medições de pool mensal (Fase 6.4 e esta) convergem
+independentemente pro mesmo teto de ~365-400 dias; a medição de
+classificação anual (Fase 6.3) é a que estava errada.
+
+**Correção do registro**: onde a Fase 6.3 publicou "espera máxima de um
+real: 1.429 dias", o número correto e daqui pra frente válido é
+**~365-400 dias (pico observado: 396d, 5 temporadas, mesma seed)**. O
+valor de 1.429 dias não deve ser citado de novo como o pior caso do
+mecanismo de espera — é um artefato de método, registrado aqui como
+tal, não uma medição alternativa igualmente válida.
+
+## 2 — Prioridade estendida aos tiers fechados (PARCIAL — checkpoint 4/5 temporadas)
 
 `applyOpenTierEntryPriority` → `applyEntryPriority`
 (`WorldTourLifecycle.js`): removido o gate `config.minRanking === 0`,
 agora roda pra QUALQUER tier oversubscrito (Bronze a Crown). Correção
 permanente, já aplicada e mantida independente deste checkpoint.
 
-### 2.1 — Taxa de corte por tier, antes (Fase 6.4) vs. depois (checkpoint 3/5 temporadas)
+### 2.1 — Taxa de corte por tier, antes (Fase 6.4) vs. depois (checkpoint 4/5 temporadas)
 
-| Tier | Corte ANTES (Fase 6.4, 5 temporadas completas) | Corte DEPOIS (checkpoint 3/5, item 2 isolado) |
+| Tier | Corte ANTES (Fase 6.4, 5 temporadas completas) | Corte DEPOIS (checkpoint 4/5, item 2 isolado) |
 |---|---|---|
-| Gold | 79% | 43,4% |
-| Masters | 61% | 37,9% |
+| Gold | 79% | 43,7% |
+| Masters | 61% | 38,0% |
 | Platinum | 61% | 37,5% |
-| Crown | 50% | 33,8% |
-| Elite | 44% | 31,2% |
+| Crown | 50% | 33,9% |
+| Elite | 44% | 31,1% |
 | Bronze | não medido (artefato, ver Fase 6.4 §1.2) | 47,8% |
 | Silver | não medido (artefato, ver Fase 6.4 §1.2) | 48,1% |
 
@@ -100,12 +106,16 @@ comportamento ESPERADO em todo tier, corrigido capturando
 
 ### 2.2 — Divisão semanal por dupla real (recalculada, PARCIAL)
 
-| Resultado da semana | Fase 6.4 (baseline, 5 temp. completas) | Checkpoint (item 2 isolado, 3/5 temp.) |
+| Resultado da semana | Fase 6.4 (baseline, 5 temp. completas) | Checkpoint (item 2 isolado, 4/5 temp.) |
 |---|---|---|
-| Sem opção elegível | 45,2% | 43,2% |
-| Cortada | 22,2% | 26,2% |
-| Jogou | 18,9% | 16,3% |
-| Descanso por escolha | 13,7% | 14,3% |
+| Sem opção elegível | 45,2% | 44,9% |
+| Cortada | 22,2% | 28,1% |
+| Jogou | 18,9% | 13,4% |
+| Descanso por escolha | 13,7% | 13,5% |
+
+*(No checkpoint anterior, 3/5 temporadas: sem opção 43,2%, cortada
+26,2%, jogou 16,3%, descanso 14,3% — a piora continua, não estabilizou
+entre 3/5 e 4/5.)*
 
 **Achado que não esperava e que precisa das temporadas 4-5 pra
 fechar**: apesar da taxa de corte por tier cair bastante em TODOS os
@@ -124,27 +134,34 @@ redistribuindo entre os cortados de sempre. Não é uma correção de
 capacidade, é uma correção de justiça na fila — o que bate com o
 desenho pretendido do item 2, mas contraria a expectativa implícita de
 que "menos corte por tier" viraria "menos corte por dupla real
-especificamente". Fica registrado como leitura provisória: com só 3/5
-temporadas, não dá pra separar "o efeito líquido pra reais é
-negativo" de "ainda não convergiu" — mas o sinal, ao contrário do que a
-tabela 2.1 sozinha sugeriria, **não é inequivocamente positivo para as
-duplas reais** e precisa ser fechado com dado completo antes de
-declarar o item 2 um sucesso sem ressalvas.
+especificamente". Com o checkpoint agora em 4/5 temporadas (era 3/5), a
+piora NÃO estabilizou — cortada seguiu subindo (26,2%→28,1%) e jogou
+seguiu caindo (16,3%→13,4%). Quatro pontos de dado (2026-2029) em vez
+de três tornam mais difícil descartar isso como ruído de bootstrap: o
+sinal, ao contrário do que a tabela 2.1 sozinha sugeriria, **é
+negativo e crescente para as duplas reais especificamente**, mesmo com
+a taxa de corte por tier (agregada, reais+bots) caindo. Só falta a
+temporada 5 pra fechar com certeza se isso é uma tendência monotônica
+real ou se ainda pode virar.
 
-**Segundo achado que reforça a mesma bandeira**: `neverPlayedThisSeasonCount`
-subiu de forma parecida nas DUAS rodadas na temporada 2028 — **46** em
-item-2-isolado e **37** em item-2+3-combinado (ambas acima de 18/12 na
-temporada 2027, e de 0 na temporada 2026). Como o fallback (item 3)
-reduz o número em vez de eliminá-lo, isso sugere que a subida É um
-efeito real do item 2 (a fila de prioridade), não ruído de uma única
-rodada — mas com só 3 pontos de dado (2026/2027/2028) em cada série,
-ainda não dá pra distinguir "tendência real de piora ano a ano" de
-"a população ainda está saindo do bootstrap inicial (temporadas 1-2
-favorecidas por todo mundo começar com 0 torneios jogados)". Checar
-nas temporadas 4-5 antes de declarar o item 2 um sucesso sem ressalvas
-é o próximo passo, não uma formalidade.
+**Segundo achado, agora com 4 pontos de dado em cada série**:
+`neverPlayedThisSeasonCount` segue subindo nas DUAS rodadas —
+item-2-isolado: 0 → 18 → 46 → **65** (2026-2029); item-2+3-combinado:
+0 → 12 → 37 → **58** no mesmo período. Quatro temporadas de subida
+monotônica em AMBAS as séries é evidência bem mais forte do que os 3
+pontos do checkpoint anterior de que isso é uma tendência real, não
+ruído de bootstrap. Como o padrão aparece nas DUAS configurações
+(fallback presente ou não, só a magnitude difere), a leitura mais
+provável não é "o item 2 piora coisas por si só" — é que algo
+estrutural degrada com a IDADE do mundo simulado independente de qual
+correção está ativa (ver item 5: a curva de expansão da base/calendário
+é a suspeita natural, population crescendo/tornando-se mais competitiva
+ano a ano contra uma capacidade de calendário que não muda). Falta a
+temporada 5 de cada rodada pra confirmar se a subida desacelera (efeito
+de regime se estabilizando) ou continua sem limite (sintoma mais grave,
+que mudaria a prioridade da fase seguinte).
 
-## 3 — Fallback de tier na mesma semana (PARCIAL — checkpoint 3/5 temporadas)
+## 3 — Fallback de tier na mesma semana (PARCIAL — checkpoint 4/5 temporadas)
 
 `pairOptionState` (Map por dupla, por semana) + laço de até
 `MAX_FALLBACK_ROUNDS=6` em `resolveCompletedWorldTourEvents`: uma
@@ -156,27 +173,31 @@ cometeu várias vezes").
 
 ### 3.1 — Efeito incremental sobre o item 2 isolado
 
-Ambas as rodadas alcançaram checkpoint 3/5 temporadas antes do
-desligamento — comparação agora no MESMO ponto do regime:
+Ambas as rodadas alcançaram checkpoint 4/5 temporadas antes do
+desligamento — comparação no MESMO ponto do regime:
 
-| Resultado da semana | Item 2 isolado (checkpoint 3/5) | Item 2+3 combinado (checkpoint 3/5) |
+| Resultado da semana | Item 2 isolado (checkpoint 4/5) | Item 2+3 combinado (checkpoint 4/5) |
 |---|---|---|
-| Sem opção elegível | 43,2% | 42,9% |
-| Cortada | 26,2% | **21,6%** |
-| Jogou | 16,3% | **19,0%** |
-| Descanso por escolha | 14,3% | 16,4% |
+| Sem opção elegível | 44,9% | 44,4% |
+| Cortada | 28,1% | **23,6%** |
+| Jogou | 13,4% | **16,1%** |
+| Descanso por escolha | 13,5% | 15,9% |
 
-`FALLBACK->` disparou **314 vezes** no checkpoint de 3/5 temporadas —
-o efeito incremental do item 3 sobre o item 2 é claro e na direção
-esperada: cortada cai 4,6pp (26,2%→21,6%), jogou sobe 2,7pp
-(16,3%→19,0%), sem opção elegível praticamente inalterado (43,2%→42,9%,
-dentro do ruído — confirma a resposta estrutural do §3.2). O item 3
-COMPENSA PARTE do efeito negativo do item 2 sozinho sobre duplas reais
-(§2.2) mas não o reverte por completo: mesmo com o fallback, cortada
-(21,6%) ainda está acima do baseline da Fase 6.4 (22,2%)... na
-verdade abaixo por uma margem pequena (0,6pp) — perto o bastante do
-baseline pra não declarar nem melhora nem piora com confiança neste
-checkpoint. Recalcular com os dois lados em 5/5 antes de fechar.
+`FALLBACK->` disparou **607 vezes** no checkpoint de 4/5 temporadas
+(era 314 em 3/5 — mais que dobrou, coerente com o crescimento normal de
+oportunidades ao longo de mais temporadas). O efeito incremental do
+item 3 sobre o item 2 continua claro e na mesma direção: cortada cai
+4,5pp (28,1%→23,6%), jogou sobe 2,7pp (13,4%→16,1%) — praticamente os
+MESMOS deltas absolutos do checkpoint de 3/5 (eram 4,6pp/2,7pp), o que
+sugere que o efeito incremental do item 3 é estável e proporcional,
+mesmo enquanto o nível base (item 2 sozinho) piora com o tempo. Sem
+opção elegível seguiu praticamente inalterado entre as duas rodadas
+(44,9%→44,4%, dentro do ruído — confirma de novo a resposta estrutural
+do §3.2). **Leitura consolidada**: o item 3 não resolve a tendência de
+piora identificada no item 2 (§2.2) — ele desloca a curva pra um nível
+melhor, mas ambas as curvas (com e sem fallback) parecem estar piorando
+temporada a temporada pelo mesmo motivo estrutural. Falta a temporada 5
+de cada lado pra confirmar se essa proporcionalidade se mantém.
 
 ### 3.2 — Resposta à pergunta do pedido: quanto do 45,2% era "tier errado"?
 
@@ -242,6 +263,17 @@ por temporada, ~78-80 torneios ÷ 52 semanas ÷ 7-9 tiers) é pequena
 demais pra população que precisa jogar nela** — não é mais um item
 pendente entre outros, é o próximo item depois que 2 e 3 estiverem
 medidos por completo (5/5 temporadas cada).
+
+**Quarto sinal, achado durante esta mesma fase (§2.2/§3.1)**: o
+`neverPlayedThisSeasonCount` sobe de forma monotônica temporada a
+temporada nas DUAS rodadas desta fase (item-2-isolado e
+item-2+3-combinado), com e sem fallback de tier — o que aponta pra uma
+causa que nenhuma das duas correções desta fase ataca: a população
+(reais e bots) crescendo em competitividade/quantidade ano a ano contra
+uma capacidade de calendário que não muda. Prioridade de fila (item 2)
+e fallback de tier (item 3) redistribuem quem é cortado e reduzem a
+MAGNITUDE do problema, mas nenhum dos dois aumenta o número de vagas
+disponíveis — só a curva de expansão da base faz isso.
 
 ## 3-bis — Mecanismo de retomada (implementado nesta sessão, por necessidade)
 
@@ -338,9 +370,9 @@ pré-existente, fora do escopo desta fase.)*
 
 | # | Item | Status |
 |---|---|---|
-| 1 | Discrepância reconciliada, com o registro corrigido | 🟡 parcial — hipótese (365-380d é o plateau real, 1.429d é artefato de amostragem) sustentada por 3-4/5 temporadas de plateau estável, mas não fechada; sem 4-5 completas não declaro um veredito final |
-| 2 | Prioridade estendida aos tiers fechados, taxa de corte antes/depois | 🟡 parcial — corte por tier caiu em todos os tiers fechados medidos (Gold 79%→43,4%), mas o efeito LÍQUIDO por dupla real PIOROU no checkpoint atual (cortada 22,2%→26,2%, jogou 18,9%→16,3%) e uma bandeira vermelha (neverPlayed subindo em ambas as séries na temporada 3) precisa das temporadas 4-5 antes de qualquer veredito |
-| 3 | Fallback de tier, medido separadamente, divisão 45/22/19/14 recalculada | 🟡 parcial — efeito incremental sobre o item 2 confirmado no mesmo checkpoint (3/5 vs 3/5): cortada 26,2%→21,6%, jogou 16,3%→19,0%, 314 fallbacks; compensa boa parte da piora do item 2 mas o líquido ainda está perto do baseline da Fase 6.4, não claramente melhor; resposta estrutural sobre "tier errado" (≈0%) já É definitiva, não depende de mais dado |
+| 1 | Discrepância reconciliada, com o registro corrigido | ✅ **fechado com 5/5 temporadas completas** — o correto é ~365-400 dias (pico observado: 396d); 1.429 dias é artefato da medição por classificação de fim de temporada (soma ciclos de espera de um mesmo indivíduo), registrado como tal e não mais citável como o pior caso do mecanismo |
+| 2 | Prioridade estendida aos tiers fechados, taxa de corte antes/depois | 🟡 parcial (checkpoint 4/5) — corte por tier caiu em todos os tiers fechados medidos (Gold 79%→43,7%), mas o efeito LÍQUIDO por dupla real PIOROU e a piora não estabilizou entre 3/5 e 4/5 (cortada 22,2%→28,1%, jogou 18,9%→13,4%); neverPlayed subiu de forma monotônica em 4 temporadas seguidas (0→18→46→65) — sinal forte o bastante pra não ser só bootstrap, mas falta a temporada 5 pra veredito final |
+| 3 | Fallback de tier, medido separadamente, divisão 45/22/19/14 recalculada | 🟡 parcial (checkpoint 4/5) — efeito incremental sobre o item 2 estável e proporcional nos dois checkpoints (cortada -4,5/-4,6pp, jogou +2,7pp): compensa PARTE da piora do item 2 mas não a reverte — as duas curvas parecem piorar pelo mesmo motivo estrutural; resposta sobre "tier errado" (≈0%) já É definitiva, não depende de mais dado |
 | 4 | Regra de método registrada | ✅ registrada — terceira da série |
 | 5 | Registro do item 2 da Fase 6 como problema principal | ✅ registrado, não medido (por instrução) |
 | 6 | Mecanismo de retomada (não pedido originalmente, adicionado por necessidade) | 🟢 implementado, revisado e validado funcionalmente (carrega/continua certo); diff byte-a-byte determinístico ainda pendente; NÃO se aplica às 3 rodadas já em andamento (lançadas antes de existir) |
