@@ -38,9 +38,35 @@
 // Uso:
 //   node scripts/audit-real-athletes-simulation.mjs [--seasons=5] [--seed=baseline-v1]
 //     [--proceduralAthletes=970] [--proceduralTeams=486] [--out=reports/real-athletes-audit]
+//     [--resumeFrom=<out>/resume-state.json]
 //
 // Saída: <out>/summary.json (por temporada × tier + cumulativo),
-// <out>/tournament-results.csv, <out>/season-tier-table.md.
+// <out>/tournament-results.csv, <out>/season-tier-table.md,
+// <out>/resume-state.json (Fase 6.5, item 3 do pedido de retomada —
+// ver comentário logo acima de writeResumeState).
+//
+// Retomada (--resumeFrom): antes desta correção, um checkpoint só
+// gravava o RELATÓRIO (summary/csv/md) — rodar de novo sempre recomeçava
+// da temporada 1, mesmo com N temporadas já fechadas em disco (era uma
+// gravação de resultado, não um snapshot de estado). Pra uma rodada de
+// 5 temporadas (~1-2h), isso custava a rodada inteira de novo a cada
+// interrupção (desligar a máquina, um crash) — aconteceu 2 vezes.
+// Agora, a cada checkpoint, writeResumeState() também serializa o MUNDO
+// INTEIRO (rawMemoryStorage.files/directories — que é onde
+// GameStorage/CareerEntityRepository escrevem toda entidade, então É o
+// estado do jogo), o estado do PRNG/relógio determinísticos
+// (installDeterminism), e os acumuladores do laço de temporadas
+// (tournamentResultsAll, perSeason, os Maps/Sets de reais etc.) em
+// <out>/resume-state.json. Passar --resumeFrom=<esse arquivo> pula todo
+// o bloco de seed (carreira/elenco/duplas — já existem no storage
+// restaurado) e continua o laço de dias exatamente de onde parou, dia a
+// dia, pelo mesmo caminho de produção — não uma re-simulação mais curta,
+// uma CONTINUAÇÃO determinística (mesma seed, mesmo PRNG, byte-a-byte
+// idêntica a uma rodada ininterrupta). --seed/--seasons/
+// --proceduralAthletes/--proceduralTeams são LIDOS do snapshot quando
+// omitidos; se informados, são conferidos contra o snapshot e a rodada
+// aborta em caso de divergência (evita continuar com seed errada por
+// engano).
 //
 // Custo: com a transação por dia (Fase 4.1), o tempo de parede de uma
 // temporada oficial completa (900+100) caiu de 38min16s pra 5min57,9s
@@ -52,15 +78,35 @@
 // DIAG_DAY_TIMING=1 imprime ms/dia médio por mês (soma/conta resetada a
 // cada virada), pra medir a curva de custo intra-temporada em qualquer
 // rodada futura sem precisar de instrumentação nova.
-import { writeFileSync, mkdirSync } from 'node:fs';
+import { writeFileSync, mkdirSync, existsSync, readFileSync } from 'node:fs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((v) => v.replace(/^--/, '').split('=')));
-const SEASONS = Math.max(1, Number(args.seasons || 5));
+
+// --resumeFrom (Fase 6.5, item 3 do pedido de retomada) — lido ANTES dos
+// demais parâmetros porque seed/seasons/amostras procedurais, se
+// omitidos na linha de comando, vêm do snapshot em vez do default.
+// Divergência explícita (CLI informou um valor diferente do snapshot)
+// aborta cedo — continuar uma seed errada silenciosamente é pior do que
+// recomeçar do zero.
+const RESUME_FROM = args.resumeFrom || null;
+const resumeState = RESUME_FROM ? JSON.parse(readFileSync(RESUME_FROM, 'utf8')) : null;
+function resumableArg(name, cliValue, fallbackDefault) {
+  const fromSnapshot = resumeState?.meta?.[name];
+  if (cliValue !== undefined) {
+    if (resumeState && fromSnapshot !== undefined && String(cliValue) !== String(fromSnapshot)) {
+      throw new Error(`--resumeFrom: ${name} informado (${cliValue}) diverge do snapshot (${fromSnapshot}). Omita --${name} para usar o valor gravado, ou confirme que a divergência é intencional antes de forçar.`);
+    }
+    return cliValue;
+  }
+  return fromSnapshot !== undefined ? fromSnapshot : fallbackDefault;
+}
+
+const SEASONS = Math.max(1, Number(resumableArg('seasons', args.seasons, 5)));
 const START_YEAR = 2026;
 const OUT_DIR = args.out || 'reports/real-athletes-audit';
-const SEED = String(args.seed || 'baseline-v1');
-const PROCEDURAL_ATHLETE_SAMPLE = Math.max(1, Number(args.proceduralAthletes || 970));
-const PROCEDURAL_TEAM_SAMPLE = Math.max(1, Number(args.proceduralTeams || 486));
+const SEED = String(resumableArg('seed', args.seed, 'baseline-v1'));
+const PROCEDURAL_ATHLETE_SAMPLE = Math.max(1, Number(resumableArg('proceduralAthletes', args.proceduralAthletes, 970)));
+const PROCEDURAL_TEAM_SAMPLE = Math.max(1, Number(resumableArg('proceduralTeams', args.proceduralTeams, 486)));
 
 // ═══════════════ Determinismo: mesma seed → mesma saída, sempre ═══════════════
 // Auditoria de código (grep em todo o grafo de chamada deste harness:
@@ -93,20 +139,39 @@ function hashSeed(value) {
   for (const ch of String(value)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); }
   return h >>> 0;
 }
+// Fase 6.5, item 3 do pedido de retomada — `a` era uma variável de
+// closure inacessível de fora, então uma retomada não tinha como
+// continuar a MESMA sequência de Math.random() em vez de recomeçar do
+// seed puro. `state.a` expõe o único número inteiro que descreve toda a
+// posição do gerador (mulberry32 é puro: a saída depende só desse
+// valor), get/setState bastam pra serializar/restaurar exatamente.
 function mulberry32(seedInt) {
-  let a = seedInt >>> 0;
-  return function () {
-    a |= 0; a = (a + 0x6D2B79F5) | 0;
-    let t = Math.imul(a ^ (a >>> 15), 1 | a);
+  const state = { a: seedInt >>> 0 };
+  const generator = function () {
+    state.a |= 0; state.a = (state.a + 0x6D2B79F5) | 0;
+    let t = Math.imul(state.a ^ (state.a >>> 15), 1 | state.a);
     t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
     return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
   };
+  generator.getState = () => state.a;
+  generator.setState = (value) => { state.a = value >>> 0; };
+  return generator;
 }
-function installDeterminism(seedString) {
+// `resumeState` ({ randomState, clockMs }), quando passado, retoma o
+// PRNG e o relógio determinístico EXATAMENTE de onde o snapshot parou —
+// sem isso, um --resumeFrom continuaria com Math.random()/Date novos a
+// partir do seed puro, divergindo de uma rodada ininterrupta a partir do
+// primeiro id/personalidade gerados depois da retomada (mesmo bug de
+// forma que o achado #27 documentou pra desalinhamento de relógio).
+function installDeterminism(seedString, determinismResumeState) {
   const seedInt = hashSeed(seedString);
-  Math.random = mulberry32(seedInt);
+  const random = mulberry32(seedInt);
+  if (determinismResumeState) random.setState(determinismResumeState.randomState);
+  Math.random = random;
   const RealDate = Date;
-  let fakeClockMs = new RealDate('2026-01-01T00:00:00.000Z').getTime() + (seedInt % 100000);
+  let fakeClockMs = determinismResumeState
+    ? determinismResumeState.clockMs
+    : new RealDate('2026-01-01T00:00:00.000Z').getTime() + (seedInt % 100000);
   function tick() { fakeClockMs += 1000; return fakeClockMs; }
   class DeterministicDate extends RealDate {
     constructor(...ctorArgs) {
@@ -116,7 +181,7 @@ function installDeterminism(seedString) {
     static now() { return tick(); }
   }
   globalThis.Date = DeterministicDate;
-  return seedInt;
+  return { seedInt, getRandomState: () => random.getState(), getClockMs: () => fakeClockMs };
 }
 
 function median(numbers) {
@@ -221,8 +286,8 @@ try {
   const { getRealAthleteRegistry, getConfirmedRealPairs, getProbableRealPairs } = await vite.ssrLoadModule('/src/players/realAthleteRegistry.js');
   const { teamKey } = await vite.ssrLoadModule('/src/lib/teamRanking.js');
 
-  const seedInt = installDeterminism(SEED);
-  console.log(`Seed: "${SEED}" (hash ${seedInt}) — Math.random e relógio determinísticos a partir daqui.`);
+  const determinism = installDeterminism(SEED, resumeState?.determinism || null);
+  console.log(`Seed: "${SEED}" (hash ${determinism.seedInt}) — Math.random e relógio determinísticos a partir daqui.${resumeState ? ` Retomado de ${RESUME_FROM}.` : ''}`);
 
   // ═══════════════ Setup: carreira sintética só para ter storage/entities ═══════════════
   // Fase 2.8, item 1 — DIAGNÓSTICO TEMPORÁRIO: guarda a referência do
@@ -233,152 +298,196 @@ try {
   // com backup!==false; BackupManager.backupFile tem rotação de até 3,
   // mas só rotaciona backups que reusam o MESMO path — com um path novo
   // toda vez, a rotação nunca encontra nada pra rotacionar.
+  // Fase 6.5, item 3 do pedido de retomada — esse MESMO MemoryStorage é
+  // agora também o que --resumeFrom restaura (rawMemoryStorage.files/
+  // directories É o mundo inteiro: toda entidade que GameStorage/
+  // CareerEntityRepository grava passa por aqui). Com --resumeFrom, os
+  // dois blocos abaixo (carreira/perfil e elenco/duplas) são pulados
+  // inteiros — os dados já existem no storage restaurado — em favor de
+  // reconstruir as mesmas referências (career/profile/Sets/Maps) a
+  // partir dele.
   const rawMemoryStorage = new MemoryStorage();
-  const manager = new CareerManager(new CareerRepository(new GameStorage(rawMemoryStorage)));
-  activeCareerAdapter.careerManager = manager;
-  const { career } = await manager.createCareer({ playerName: 'world-sim' });
-  activeCareerAdapter.setActiveCareer(career);
-  await activeCareerAdapter.createPlayerProfile({
-    id: 'world-sim-player', sport_name: 'World Sim', career_date: `${START_YEAR}-01-01`, birth_date: '2000-01-01',
-    level: 'Amador', play_style: 'controle', court_side: 'direita', preferred_side: 'right', handedness: 'right',
-    tactical_role: 'controlador', overall: 52, overall_rating: 52, ranking_position: 900, reputation: 55,
-    energy: 100, fatigue: 0, coins: 5000, xp: 0, morale: 70, form: 50, weekly_training_enabled: false,
-    trainings_today: 0, practice_matches_today: 0, tournament_matches_today: 0,
-  });
-  const profile = await localGame.entities.PlayerProfile.get('world-sim-player');
+  let career;
+  let profile;
+  let realAthleteIds;
+  let realTeamKeys;
+  let botIdToAssignedId; // bot_id (chave do registro) -> id real atribuído pelo makeId()
+  let assignedIdToName;
+  let historicalDuplas;
+  let totalAthletes;
+  let totalTeams;
+  let proceduralAthleteCount;
+  let proceduralTeamCount;
 
-  // ═══════════════ Seed: pipeline de produção (saveFoundation.js), sem window.dispatchEvent ═══════════════
-  // Fase 0.1 (achado crítico): nem worldSeed2025.json nem
-  // buildSupplementalRankingPopulation incluem um campo `id` — em PRODUÇÃO,
-  // create()/bulkCreate() sempre caem no fallback `makeId()`
-  // (CareerEntityRepository.js: `${prefix}-${Date.now()}-${Math.random()...}`),
-  // gerando um id "comprido" tanto para atletas reais quanto procedurais.
-  // `bot_id`/`team_key` são só chaves de upsert — NUNCA o `.id` real da
-  // entidade. Uma versão anterior deste harness usava `id: athlete.bot_id`
-  // diretamente (mais curto, mesmo formato para todo real) por engano —
-  // isso mudava DRASTICAMENTE o resultado da seleção por hash em
-  // aiPartnershipLifecycle.js (selectPair), porque o hash FNV-1a usado ali
-  // não é robusto a variação de comprimento/forma de string entre grupos
-  // (confirmado empiricamente em scripts/diag-pairing-mechanism.mjs: o MESMO
-  // código, só trocando o formato do id, vai de ~0 para ~22/24 reais
-  // pareados no ano 1). Corrigido: NÃO passar `id` explícito — o
-  // Math.random/relógio já determinísticos (installDeterminism, acima)
-  // fazem o PRÓPRIO fallback de produção gerar ids no MESMO formato real,
-  // de forma reproduzível.
-  // Fase 2A/2B: os 100 reais vêm do registro canônico único, não mais de
-  // worldSeed2025.json (que parou de guardar athletes/teams). Fase 2F/2G:
-  // as duplas pré-existentes (6 confirmadas + 21 prováveis) são semeadas
-  // exatamente como saveFoundation.js faz em produção — team_key SEMPRE
-  // derivado dos ids REAIS pós-criação (teamKey canônico), nunca de uma
-  // string estática, e ai_partner_id/ai_partnership_protected setados
-  // reciprocamente pra que o mercado de parcerias já nasça ciente delas.
-  const realAthleteIds = new Set();
-  const realTeamKeys = new Set();
-  const botIdToAssignedId = new Map(); // bot_id (chave do registro) -> id real atribuído pelo makeId()
-  const assignedIdToName = new Map();
-  const botIdToRow = new Map();
-  for (const athlete of getRealAthleteRegistry()) {
-    const created = await localGame.entities.AthleteProfile.create({ ...athlete });
-    realAthleteIds.add(created.id);
-    botIdToAssignedId.set(athlete.bot_id, created.id);
-    assignedIdToName.set(created.id, created.name);
-    botIdToRow.set(athlete.bot_id, created);
-  }
+  if (resumeState) {
+    rawMemoryStorage.files = new Map(resumeState.storage.files);
+    rawMemoryStorage.directories = new Set(resumeState.storage.directories);
+    const manager = new CareerManager(new CareerRepository(new GameStorage(rawMemoryStorage)));
+    activeCareerAdapter.careerManager = manager;
+    const lastCareerId = await manager.getLastCareer();
+    career = await manager.loadCareer(lastCareerId);
+    activeCareerAdapter.setActiveCareer(career);
+    profile = await localGame.entities.PlayerProfile.get('world-sim-player');
 
-  const seedPairs = [
-    ...getConfirmedRealPairs().map((pair) => ({ ...pair, locked: true })),
-    ...getProbableRealPairs().map((pair) => ({ ...pair, locked: false })),
-  ];
-  const historicalDuplas = [];
-  const pairAthleteUpdates = [];
-  for (const pair of seedPairs) {
-    const id1 = botIdToAssignedId.get(pair.a);
-    const id2 = botIdToAssignedId.get(pair.b);
-    const row1 = botIdToRow.get(pair.a);
-    const row2 = botIdToRow.get(pair.b);
-    if (!id1 || !id2 || !row1 || !row2) continue;
-    const chemistry = pair.locked ? 88 : 60;
-    const common = {
-      ai_partnership_status: 'ativa', ai_partnership_start_date: `${START_YEAR}-01-01`,
-      ai_partnership_chemistry: chemistry, ai_partnership_protected: pair.locked, market_status: 'contratado',
-    };
-    pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: pair.bName });
-    pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: pair.aName });
-    // Fase 6.2, item 2 — mutação em memória que faltava aqui (existe em
-    // saveFoundation.js: "evita re-processar... se a lista de pairs tiver
-    // o mesmo par duas vezes"): sem isso, `botIdToRow` nunca reflete quem
-    // já foi pareado pelos 27 confirmados/prováveis, e o bloco de
-    // pareamento inicial abaixo (que LÊ `row.ai_partner_id` pra decidir
-    // quem ainda está livre) via todo mundo como livre — achado ao medir
-    // "Duplas: 77 reais" em vez dos 50 esperados (27+23).
-    row1.ai_partner_id = id2; row2.ai_partner_id = id1;
-    const key = teamKey(id1, id2);
-    const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
-    const createdTeam = await localGame.entities.TeamRanking.create({
-      team_key: key, player1_id: id1, player1_name: pair.aName, player1_country: row1.country,
-      player2_id: id2, player2_name: pair.bName, player2_country: row2.country,
-      ranking_points: points, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
-      season_id: String(START_YEAR), origin: pair.locked ? 'seed-confirmado' : 'seed-provavel',
+    realAthleteIds = new Set(resumeState.loop.realAthleteIds);
+    realTeamKeys = new Set(resumeState.loop.realTeamKeys);
+    botIdToAssignedId = new Map(resumeState.loop.botIdToAssignedId);
+    assignedIdToName = new Map(resumeState.loop.assignedIdToName);
+    historicalDuplas = resumeState.loop.historicalDuplas;
+    proceduralAthleteCount = resumeState.loop.proceduralAthleteCount;
+    proceduralTeamCount = resumeState.loop.proceduralTeamCount;
+    totalAthletes = realAthleteIds.size + proceduralAthleteCount;
+    totalTeams = realTeamKeys.size + proceduralTeamCount;
+    console.log(`Retomado: ${realAthleteIds.size} atletas reais + ${proceduralAthleteCount} bots procedurais = ${totalAthletes} atletas · ${realTeamKeys.size} duplas reais + ${proceduralTeamCount} bots = ${totalTeams} duplas.`);
+  } else {
+    const manager = new CareerManager(new CareerRepository(new GameStorage(rawMemoryStorage)));
+    activeCareerAdapter.careerManager = manager;
+    ({ career } = await manager.createCareer({ playerName: 'world-sim' }));
+    activeCareerAdapter.setActiveCareer(career);
+    await activeCareerAdapter.createPlayerProfile({
+      id: 'world-sim-player', sport_name: 'World Sim', career_date: `${START_YEAR}-01-01`, birth_date: '2000-01-01',
+      level: 'Amador', play_style: 'controle', court_side: 'direita', preferred_side: 'right', handedness: 'right',
+      tactical_role: 'controlador', overall: 52, overall_rating: 52, ranking_position: 900, reputation: 55,
+      energy: 100, fatigue: 0, coins: 5000, xp: 0, morale: 70, form: 50, weekly_training_enabled: false,
+      trainings_today: 0, practice_matches_today: 0, tournament_matches_today: 0,
     });
-    realTeamKeys.add(createdTeam.id);
-    historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${pair.aName} & ${pair.bName}`, locked: pair.locked });
+    profile = await localGame.entities.PlayerProfile.get('world-sim-player');
+
+    // ═══════════════ Seed: pipeline de produção (saveFoundation.js), sem window.dispatchEvent ═══════════════
+    // Fase 0.1 (achado crítico): nem worldSeed2025.json nem
+    // buildSupplementalRankingPopulation incluem um campo `id` — em PRODUÇÃO,
+    // create()/bulkCreate() sempre caem no fallback `makeId()`
+    // (CareerEntityRepository.js: `${prefix}-${Date.now()}-${Math.random()...}`),
+    // gerando um id "comprido" tanto para atletas reais quanto procedurais.
+    // `bot_id`/`team_key` são só chaves de upsert — NUNCA o `.id` real da
+    // entidade. Uma versão anterior deste harness usava `id: athlete.bot_id`
+    // diretamente (mais curto, mesmo formato para todo real) por engano —
+    // isso mudava DRASTICAMENTE o resultado da seleção por hash em
+    // aiPartnershipLifecycle.js (selectPair), porque o hash FNV-1a usado ali
+    // não é robusto a variação de comprimento/forma de string entre grupos
+    // (confirmado empiricamente em scripts/diag-pairing-mechanism.mjs: o MESMO
+    // código, só trocando o formato do id, vai de ~0 para ~22/24 reais
+    // pareados no ano 1). Corrigido: NÃO passar `id` explícito — o
+    // Math.random/relógio já determinísticos (installDeterminism, acima)
+    // fazem o PRÓPRIO fallback de produção gerar ids no MESMO formato real,
+    // de forma reproduzível.
+    // Fase 2A/2B: os 100 reais vêm do registro canônico único, não mais de
+    // worldSeed2025.json (que parou de guardar athletes/teams). Fase 2F/2G:
+    // as duplas pré-existentes (6 confirmadas + 21 prováveis) são semeadas
+    // exatamente como saveFoundation.js faz em produção — team_key SEMPRE
+    // derivado dos ids REAIS pós-criação (teamKey canônico), nunca de uma
+    // string estática, e ai_partner_id/ai_partnership_protected setados
+    // reciprocamente pra que o mercado de parcerias já nasça ciente delas.
+    realAthleteIds = new Set();
+    realTeamKeys = new Set();
+    botIdToAssignedId = new Map();
+    assignedIdToName = new Map();
+    const botIdToRow = new Map();
+    for (const athlete of getRealAthleteRegistry()) {
+      const created = await localGame.entities.AthleteProfile.create({ ...athlete });
+      realAthleteIds.add(created.id);
+      botIdToAssignedId.set(athlete.bot_id, created.id);
+      assignedIdToName.set(created.id, created.name);
+      botIdToRow.set(athlete.bot_id, created);
+    }
+
+    const seedPairs = [
+      ...getConfirmedRealPairs().map((pair) => ({ ...pair, locked: true })),
+      ...getProbableRealPairs().map((pair) => ({ ...pair, locked: false })),
+    ];
+    historicalDuplas = [];
+    const pairAthleteUpdates = [];
+    for (const pair of seedPairs) {
+      const id1 = botIdToAssignedId.get(pair.a);
+      const id2 = botIdToAssignedId.get(pair.b);
+      const row1 = botIdToRow.get(pair.a);
+      const row2 = botIdToRow.get(pair.b);
+      if (!id1 || !id2 || !row1 || !row2) continue;
+      const chemistry = pair.locked ? 88 : 60;
+      const common = {
+        ai_partnership_status: 'ativa', ai_partnership_start_date: `${START_YEAR}-01-01`,
+        ai_partnership_chemistry: chemistry, ai_partnership_protected: pair.locked, market_status: 'contratado',
+      };
+      pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: pair.bName });
+      pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: pair.aName });
+      // Fase 6.2, item 2 — mutação em memória que faltava aqui (existe em
+      // saveFoundation.js: "evita re-processar... se a lista de pairs tiver
+      // o mesmo par duas vezes"): sem isso, `botIdToRow` nunca reflete quem
+      // já foi pareado pelos 27 confirmados/prováveis, e o bloco de
+      // pareamento inicial abaixo (que LÊ `row.ai_partner_id` pra decidir
+      // quem ainda está livre) via todo mundo como livre — achado ao medir
+      // "Duplas: 77 reais" em vez dos 50 esperados (27+23).
+      row1.ai_partner_id = id2; row2.ai_partner_id = id1;
+      const key = teamKey(id1, id2);
+      const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
+      const createdTeam = await localGame.entities.TeamRanking.create({
+        team_key: key, player1_id: id1, player1_name: pair.aName, player1_country: row1.country,
+        player2_id: id2, player2_name: pair.bName, player2_country: row2.country,
+        ranking_points: points, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
+        season_id: String(START_YEAR), origin: pair.locked ? 'seed-confirmado' : 'seed-provavel',
+      });
+      realTeamKeys.add(createdTeam.id);
+      historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${pair.aName} & ${pair.bName}`, locked: pair.locked });
+    }
+
+    // Fase 6.2, item 2 — espelha exatamente a mesma correção de
+    // saveFoundation.js (produção não pode ser chamada aqui, ver comentário
+    // no topo deste bloco): os 46 reais fora dos 27 pares confirmados/
+    // prováveis não têm parceiro real conhecido no registro
+    // (`partner_confidence: null`) e dependiam inteiramente da loteria
+    // genérica de `aiPartnershipLifecycle.js` — medido na Fase 6.1 como a
+    // origem da interseção de reais permanentemente ausentes. Pareia os
+    // restantes entre si por proximidade de `fip_rank`, estado INICIAL não
+    // travado (`ai_partnership_protected:false`) — dissolve e reforma
+    // normalmente dali em diante.
+    const unseededReals = getRealAthleteRegistry()
+      .filter((athlete) => !botIdToRow.get(athlete.bot_id)?.ai_partner_id)
+      .sort((a, b) => (Number(a.fip_rank) || 999) - (Number(b.fip_rank) || 999));
+    for (let i = 0; i + 1 < unseededReals.length; i += 2) {
+      const a = unseededReals[i];
+      const b = unseededReals[i + 1];
+      const id1 = botIdToAssignedId.get(a.bot_id);
+      const id2 = botIdToAssignedId.get(b.bot_id);
+      const row1 = botIdToRow.get(a.bot_id);
+      const row2 = botIdToRow.get(b.bot_id);
+      if (!id1 || !id2 || !row1 || !row2 || row1.ai_partner_id || row2.ai_partner_id) continue;
+      const common = {
+        ai_partnership_status: 'ativa', ai_partnership_start_date: `${START_YEAR}-01-01`,
+        ai_partnership_chemistry: 60, ai_partnership_protected: false, market_status: 'contratado',
+      };
+      pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: b.name });
+      pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: a.name });
+      row1.ai_partner_id = id2; row2.ai_partner_id = id1;
+      const key = teamKey(id1, id2);
+      const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
+      const createdTeam = await localGame.entities.TeamRanking.create({
+        team_key: key, player1_id: id1, player1_name: a.name, player1_country: row1.country,
+        player2_id: id2, player2_name: b.name, player2_country: row2.country,
+        ranking_points: points, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
+        season_id: String(START_YEAR), origin: 'seed-inicial',
+      });
+      realTeamKeys.add(createdTeam.id);
+      historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${a.name} & ${b.name}`, locked: false });
+    }
+    if (pairAthleteUpdates.length) await localGame.entities.AthleteProfile.bulkUpdate(pairAthleteUpdates);
+
+    const seededAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
+    const seededTeams = await localGame.entities.TeamRanking.list('-ranking_points', 600);
+    const supplementalFull = buildSupplementalRankingPopulation(seededAthletes, seededTeams);
+    // Amostra: os primeiros N por rank da MESMA curva de produção (não uma
+    // população paralela). Sem id explícito — mesmo motivo do bloco acima.
+    const supplementalAthletesPayload = supplementalFull.athletes.slice(0, PROCEDURAL_ATHLETE_SAMPLE);
+    const supplementalTeamsPayload = supplementalFull.teams.slice(0, PROCEDURAL_TEAM_SAMPLE);
+    const supplementalAthletes = await localGame.entities.AthleteProfile.bulkCreate(supplementalAthletesPayload);
+    const supplementalTeams = await localGame.entities.TeamRanking.bulkCreate(supplementalTeamsPayload);
+    totalAthletes = seededAthletes.length + supplementalAthletes.length;
+    totalTeams = seededTeams.length + supplementalTeams.length;
+    proceduralAthleteCount = supplementalAthletes.length;
+    proceduralTeamCount = supplementalTeams.length;
+
+    console.log(`Elenco: ${realAthleteIds.size} atletas reais + ${supplementalAthletes.length} bots procedurais (amostra de ${supplementalFull.athletes.length} gerados pela fórmula de produção) = ${totalAthletes} atletas.`);
+    console.log(`Duplas: ${realTeamKeys.size} reais + ${supplementalTeams.length} bots = ${totalTeams} duplas.`);
   }
-
-  // Fase 6.2, item 2 — espelha exatamente a mesma correção de
-  // saveFoundation.js (produção não pode ser chamada aqui, ver comentário
-  // no topo deste bloco): os 46 reais fora dos 27 pares confirmados/
-  // prováveis não têm parceiro real conhecido no registro
-  // (`partner_confidence: null`) e dependiam inteiramente da loteria
-  // genérica de `aiPartnershipLifecycle.js` — medido na Fase 6.1 como a
-  // origem da interseção de reais permanentemente ausentes. Pareia os
-  // restantes entre si por proximidade de `fip_rank`, estado INICIAL não
-  // travado (`ai_partnership_protected:false`) — dissolve e reforma
-  // normalmente dali em diante.
-  const unseededReals = getRealAthleteRegistry()
-    .filter((athlete) => !botIdToRow.get(athlete.bot_id)?.ai_partner_id)
-    .sort((a, b) => (Number(a.fip_rank) || 999) - (Number(b.fip_rank) || 999));
-  for (let i = 0; i + 1 < unseededReals.length; i += 2) {
-    const a = unseededReals[i];
-    const b = unseededReals[i + 1];
-    const id1 = botIdToAssignedId.get(a.bot_id);
-    const id2 = botIdToAssignedId.get(b.bot_id);
-    const row1 = botIdToRow.get(a.bot_id);
-    const row2 = botIdToRow.get(b.bot_id);
-    if (!id1 || !id2 || !row1 || !row2 || row1.ai_partner_id || row2.ai_partner_id) continue;
-    const common = {
-      ai_partnership_status: 'ativa', ai_partnership_start_date: `${START_YEAR}-01-01`,
-      ai_partnership_chemistry: 60, ai_partnership_protected: false, market_status: 'contratado',
-    };
-    pairAthleteUpdates.push({ id: id1, ...common, ai_partner_id: id2, ai_partner_name: b.name });
-    pairAthleteUpdates.push({ id: id2, ...common, ai_partner_id: id1, ai_partner_name: a.name });
-    row1.ai_partner_id = id2; row2.ai_partner_id = id1;
-    const key = teamKey(id1, id2);
-    const points = Math.round(((Number(row1.world_ranking_points) || 0) + (Number(row2.world_ranking_points) || 0)) / 2);
-    const createdTeam = await localGame.entities.TeamRanking.create({
-      team_key: key, player1_id: id1, player1_name: a.name, player1_country: row1.country,
-      player2_id: id2, player2_name: b.name, player2_country: row2.country,
-      ranking_points: points, race_points: 0, matches_played: 0, wins: 0, losses: 0, titles: [],
-      season_id: String(START_YEAR), origin: 'seed-inicial',
-    });
-    realTeamKeys.add(createdTeam.id);
-    historicalDuplas.push({ team_key: key, player1_id: id1, player2_id: id2, names: `${a.name} & ${b.name}`, locked: false });
-  }
-  if (pairAthleteUpdates.length) await localGame.entities.AthleteProfile.bulkUpdate(pairAthleteUpdates);
-
-  const seededAthletes = await localGame.entities.AthleteProfile.list('-world_ranking_points', 1100);
-  const seededTeams = await localGame.entities.TeamRanking.list('-ranking_points', 600);
-  const supplementalFull = buildSupplementalRankingPopulation(seededAthletes, seededTeams);
-  // Amostra: os primeiros N por rank da MESMA curva de produção (não uma
-  // população paralela). Sem id explícito — mesmo motivo do bloco acima.
-  const supplementalAthletesPayload = supplementalFull.athletes.slice(0, PROCEDURAL_ATHLETE_SAMPLE);
-  const supplementalTeamsPayload = supplementalFull.teams.slice(0, PROCEDURAL_TEAM_SAMPLE);
-  const supplementalAthletes = await localGame.entities.AthleteProfile.bulkCreate(supplementalAthletesPayload);
-  const supplementalTeams = await localGame.entities.TeamRanking.bulkCreate(supplementalTeamsPayload);
-  const totalAthletes = seededAthletes.length + supplementalAthletes.length;
-  const totalTeams = seededTeams.length + supplementalTeams.length;
-
-  console.log(`Elenco: ${realAthleteIds.size} atletas reais + ${supplementalAthletes.length} bots procedurais (amostra de ${supplementalFull.athletes.length} gerados pela fórmula de produção) = ${totalAthletes} atletas.`);
-  console.log(`Duplas: ${realTeamKeys.size} reais + ${supplementalTeams.length} bots = ${totalTeams} duplas.`);
 
   // ═══════════════ Simulação de mundo — N temporadas, dia a dia, pelo CAMINHO REAL de produção ═══════════════
   // Fase 0.1 (achado crítico #2): a versão anterior deste harness chamava só
@@ -397,13 +506,28 @@ try {
   // ser criado por este script: createPlayerProfile já popula o primeiro
   // ano (mesmo bootstrap de uma carreira real), e advanceDay chama
   // ensureFutureTournaments sozinho a cada virada de mês, como em produção.
-  const tournamentResultsAll = [];
-  const perSeason = [];
-  const duplaSamplesOverall = new Map(historicalDuplas.map((d) => [d.team_key, []]));
-  const recordedTournamentIds = new Set();
+  // Fase 6.5, item 3 do pedido de retomada — estes são os ÚNICOS
+  // acumuladores que precisam sobreviver a um --resumeFrom: tudo que
+  // reseta a cada temporada (tournamentResultsThisSeason,
+  // duplaSamplesThisSeason, lastSampledMonth, currentYear) já é
+  // recomputável a partir de `profile.career_date` restaurado +
+  // `historicalDuplas`, então nasce igual nos dois caminhos mais abaixo
+  // sem precisar de um campo próprio no snapshot.
+  const tournamentResultsAll = resumeState ? resumeState.loop.tournamentResultsAll : [];
+  const perSeason = resumeState ? resumeState.loop.perSeason : [];
+  const duplaSamplesOverall = resumeState
+    ? new Map(resumeState.loop.duplaSamplesOverall)
+    : new Map(historicalDuplas.map((d) => [d.team_key, []]));
+  const recordedTournamentIds = resumeState ? new Set(resumeState.loop.recordedTournamentIds) : new Set();
 
-  let priorTournamentsPlayed = new Map(seededAthletes.concat(supplementalAthletes).map((a) => [a.id, 0]));
-  const neverPlayedRunningSet = new Set(realAthleteIds);
+  let priorTournamentsPlayed;
+  if (resumeState) {
+    priorTournamentsPlayed = new Map(resumeState.loop.priorTournamentsPlayed);
+  } else {
+    const allAthletesAtStart = await localGame.entities.AthleteProfile.list(null, 1100);
+    priorTournamentsPlayed = new Map(allAthletesAtStart.map((a) => [a.id, 0]));
+  }
+  const neverPlayedRunningSet = resumeState ? new Set(resumeState.loop.neverPlayedRunningSet) : new Set(realAthleteIds);
 
   async function recordNewlyFinalizedTournaments(year, bucket) {
     const finalized = (await localGame.entities.Tournament.list('-start_date', 2000))
@@ -622,8 +746,8 @@ try {
       proceduralAthleteSample: PROCEDURAL_ATHLETE_SAMPLE,
       proceduralTeamSample: PROCEDURAL_TEAM_SAMPLE,
       roster: {
-        realAthletes: realAthleteIds.size, proceduralAthletes: supplementalAthletes.length, totalAthletes,
-        realTeams: realTeamKeys.size, proceduralTeams: supplementalTeams.length, totalTeams,
+        realAthletes: realAthleteIds.size, proceduralAthletes: proceduralAthleteCount, totalAthletes,
+        realTeams: realTeamKeys.size, proceduralTeams: proceduralTeamCount, totalTeams,
       },
       perSeason,
       cumulative: {
@@ -704,6 +828,58 @@ try {
 
     console.log(`[checkpoint] temporada ${throughYear} gravada em disco — ${perSeason.length}/${SEASONS} temporadas · ${tournamentResultsAll.length} torneios resolvidos até aqui · ${realNeverPlayed.length}/${realAthleteIds.size} reais nunca jogaram até aqui.`);
     return { summary, realNeverPlayed, byClassification };
+  }
+
+  // Fase 6.5, item 3 do pedido de retomada — writeCheckpoint (acima) só
+  // grava o RELATÓRIO; isso bastava pra não perder um resultado já
+  // fechado, mas uma rodada interrompida (desligar a máquina, um crash)
+  // ainda tinha que recomeçar da temporada 1 pra CONTINUAR simulando —
+  // aconteceu 2 vezes numa auditoria de ~5 temporadas (~1-2h cada). Esta
+  // função grava tudo que uma retomada precisa pra ser uma CONTINUAÇÃO
+  // determinística e não uma re-simulação: o storage bruto inteiro
+  // (rawMemoryStorage.files/directories — todo AthleteProfile,
+  // TeamRanking, Tournament, Partnership etc. que o jogo já escreveu É
+  // isso), o estado exato do PRNG/relógio seedados (installDeterminism),
+  // e só os acumuladores que NÃO são recomputáveis a partir do storage
+  // restaurado sozinho (ver comentário acima de tournamentResultsAll).
+  // Chamada nos MESMOS pontos que writeCheckpoint, sempre depois do
+  // reset de tournamentResultsThisSeason/duplaSamplesThisSeason — o
+  // snapshot fica pronto pra entrar direto na próxima temporada, não
+  // pra refazer a que acabou de fechar.
+  async function writeResumeState(throughYear) {
+    const state = {
+      meta: {
+        generatedAt: new Date().toISOString(),
+        seed: SEED, seasons: SEASONS,
+        proceduralAthletes: PROCEDURAL_ATHLETE_SAMPLE, proceduralTeams: PROCEDURAL_TEAM_SAMPLE,
+        throughYear, seasonsCompleted: perSeason.length,
+      },
+      determinism: {
+        randomState: determinism.getRandomState(),
+        clockMs: determinism.getClockMs(),
+      },
+      storage: {
+        files: [...rawMemoryStorage.files.entries()],
+        directories: [...rawMemoryStorage.directories],
+      },
+      loop: {
+        tournamentResultsAll,
+        perSeason,
+        duplaSamplesOverall: [...duplaSamplesOverall.entries()],
+        recordedTournamentIds: [...recordedTournamentIds],
+        priorTournamentsPlayed: [...priorTournamentsPlayed.entries()],
+        neverPlayedRunningSet: [...neverPlayedRunningSet],
+        realAthleteIds: [...realAthleteIds],
+        realTeamKeys: [...realTeamKeys],
+        botIdToAssignedId: [...botIdToAssignedId.entries()],
+        assignedIdToName: [...assignedIdToName.entries()],
+        historicalDuplas,
+        proceduralAthleteCount,
+        proceduralTeamCount,
+      },
+    };
+    writeFileSync(`${OUT_DIR}/resume-state.json`, JSON.stringify(state));
+    console.log(`[resume-state] temporada ${throughYear} — snapshot completo gravado em ${OUT_DIR}/resume-state.json (retome com --resumeFrom=${OUT_DIR}/resume-state.json).`);
   }
 
   dayLoop:
@@ -931,6 +1107,10 @@ try {
       currentYear = newYear;
       tournamentResultsThisSeason = [];
       duplaSamplesThisSeason = new Map(historicalDuplas.map((d) => [d.team_key, []]));
+      // Fase 6.5, item 3 do pedido de retomada — DEPOIS do reset acima:
+      // o snapshot precisa refletir o início da PRÓXIMA temporada (season
+      // arrays vazios), não repetir a que acabou de fechar.
+      await writeResumeState(currentYear);
     }
   }
   if (perSeason.length < SEASONS && perSeason[perSeason.length - 1]?.year !== currentYear) {
