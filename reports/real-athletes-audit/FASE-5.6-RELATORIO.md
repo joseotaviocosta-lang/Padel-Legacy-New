@@ -3,6 +3,27 @@
 > Fecha a Fase 5. Pré-requisito: FASE-5.5-RELATORIO.md (brecha de
 > elegibilidade fechada, teto 150 confirmado, escada proposta).
 
+> ## ⚠️ Correção de registro (Fase 6.7)
+>
+> Este relatório classificou **Gold ~5× como "de propósito"** (§1.1,
+> §4.3, Resumo executivo) e leu a checagem de presença real em
+> Elite/Crown (§1.2 — títulos idênticos, fração real do campo em alta)
+> como prova de que "o sistema estava funcionando". Essa leitura usou
+> uma checagem de PRESENÇA/TÍTULOS de curto prazo — não mediu
+> sobreposição de ociosos entre temporadas, que não existia como
+> instrumentação até a Fase 6.5/6.6. Com esse dado agora em mãos (Fase
+> 6.6: sobreposição de ociosos reais sobe de 0% pra 84% entre as
+> temporadas 4 e 5; 68 de 100 reais ficam sem jogar NENHUM torneio na
+> temporada 5), **a classificação "Gold ~5×, de propósito, sem
+> problema" não se sustenta mais** — títulos idênticos e fração real em
+> alta são compatíveis com uma MINORIA de duplas reais concentrando toda
+> a presença enquanto a MAIORIA fica de fora ano após ano; a checagem
+> da época não conseguia distinguir as duas situações. Não é um erro de
+> cálculo desta fase — é uma lacuna de instrumentação que só a Fase 6.5
+> preencheu. Ver [FASE-6.7-RELATORIO.md](FASE-6.7-RELATORIO.md) §1 para
+> o registro completo e a medição do topo que decide se a causa é
+> capacidade ou o teto de acesso.
+
 ## Decisões aplicadas
 
 - **Teto = 150** (mantido — `OPEN_TIER_CEILING`, sem mudança de código).
