@@ -249,15 +249,8 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const tournamentUpdates = [];
   const news = [];
 
-  // DIAG_SELECT (Fase 6.4/6.5, temporário) — mesma instrumentação da
-  // Fase 6.4, reaplicada pra medir o efeito do item 2 (prioridade
-  // estendida) e do item 3 (fallback de tier) sobre a divisão
-  // 45/22/19/14 e a taxa de corte por tier. Reverter após medir.
-  const diagSelect = process.env.DIAG_SELECT ? true : false;
-
   for (const weekTournaments of tournamentsByWeek.values()) {
     const assignments = new Map(weekTournaments.map((tournament) => [tournament.id, []]));
-    const diagChoiceByPair = diagSelect ? new Map() : null;
     // Fase 6.5, item 3 — fallback de tier na mesma semana. `chooseTournament`
     // já devolve `options`, a lista INTEIRA de torneios elegíveis da
     // semana, ordenada por pontuação (`scoreOption`) — não só o
@@ -294,15 +287,6 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       if (choice?.decision === 'play' && choice.tournament?.id && assignments.has(choice.tournament.id)) {
         assignments.get(choice.tournament.id).push(pair);
         pairOptionState.set(pair.id, { pair, options: choice.options || [], index: 0, currentTournamentId: choice.tournament.id });
-      }
-      if (diagChoiceByPair && pair.athletes.some((a) => a.is_real)) {
-        diagChoiceByPair.set(pair.id, {
-          decision: choice?.decision,
-          tournamentId: choice?.decision === 'play' ? choice.tournament?.id : null,
-          tier: choice?.decision === 'play' ? choice.tournament?.tier : null,
-          eligibleOptions: choice?.options?.length || 0,
-          pair,
-        });
       }
     }
 
@@ -425,7 +409,6 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const config = getTournamentTierConfig(tournament?.tier);
       const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
       let entrants = [...(assignments.get(tournament.id) || [])];
-      const diagEntrantsBeforePriority = diagSelect ? entrants.length : 0;
       // Fase 5.3, itens 1 e 2 — o preenchimento de reserva que completava
       // a chave até `drawSize` foi REMOVIDO. O campo agora é exatamente
       // quem ESCOLHEU o torneio (`chooseTournament`, que já filtra por
@@ -465,24 +448,6 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       const ordered = entrants
         .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
         .slice(0, drawSize);
-      // DIAG_SELECT (Fase 6.4/6.5, temporário) — ver acima. `diagEntrantsBeforePriority`
-      // conta quem ESCOLHEU antes de qualquer prioridade/corte (pra
-      // comparar com a Fase 6.4, medida antes do item 2 existir).
-      if (diagSelect) {
-        const cutCount = Math.max(0, diagEntrantsBeforePriority - drawSize);
-        if (diagEntrantsBeforePriority > 0) {
-          console.log(`[DIAG_SELECT] ${careerDate} torneio ${tournament.id} tier=${tournament.tier} drawSize=${drawSize} escolheram=${diagEntrantsBeforePriority} cortados=${cutCount}`);
-        }
-        const survivedIds = new Set(ordered.map((p) => p.id));
-        for (const [pairId, info] of diagChoiceByPair) {
-          const finalTournamentId = pairOptionState.get(pairId)?.currentTournamentId ?? info.tournamentId;
-          if (finalTournamentId === tournament.id) {
-            const cut = !survivedIds.has(pairId);
-            const fellBack = info.tournamentId != null && info.tournamentId !== finalTournamentId;
-            console.log(`[DIAG_SELECT]   dupla-real ${info.pair.name} (${pairId}) escolheu tier=${info.tier} eligibleOptions=${info.eligibleOptions}${fellBack ? ` FALLBACK->${tournament.tier}` : ''} -> ${cut ? 'CORTADA' : 'jogou'}`);
-          }
-        }
-      }
       // Fase 5.3, item 2 — campo pequeno demais não vira torneio. Marca
       // resolvido + cancelado (sai da fila de pendentes), sem campeão e
       // sem distribuir pontos. Antes o gatilho era `< 2` — qualquer par
@@ -570,16 +535,6 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       });
 
       ordered.slice(0, 8).flatMap((pair) => pair.athletes).forEach((athlete) => { athlete.currentRegion = eventRegion(tournament); });
-    }
-
-    // DIAG_SELECT (Fase 6.4/6.5, temporário) — duplas reais que
-    // descansaram ou não tinham NENHUMA opção elegível esta semana.
-    if (diagChoiceByPair) {
-      for (const [pairId, info] of diagChoiceByPair) {
-        if (info.decision !== 'play') {
-          console.log(`[DIAG_SELECT]   dupla-real ${info.pair.name} (${pairId}) decisão=${info.decision} eligibleOptions=${info.eligibleOptions}`);
-        }
-      }
     }
   }
 
