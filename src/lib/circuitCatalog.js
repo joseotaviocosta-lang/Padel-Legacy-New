@@ -281,8 +281,14 @@ export const WORLD_TOUR_CITIES = Object.freeze([
 // que a maior parte do "circuito base" do ano já aconteceu, pra que
 // "top 8"/"top 16" already reflita uma temporada real, não um sorteio de
 // janeiro.
+// Fase 7.3, item 1 — reusa o mesmo override de topo já testado nas
+// Fases 6.7/7/7.1/7.2 (`DIAG_TOP_EVENTS=76`), agora rodando uma 2ª seed
+// pra confirmar (ou refutar) a inversão de sinal medida com 1 seed só.
+// Reverter depois de medir.
+const DIAG_TOP_EVENTS_OVERRIDE = { 76: { Gold: 21, Platinum: 15, Masters: 26 }, 120: { Gold: 35, Platinum: 27, Masters: 44 } }[Number(process.env.DIAG_TOP_EVENTS)] || null;
 const TIER_EVENTS_PER_YEAR = Object.freeze({
   Bronze: 24, Silver: 16, Gold: 8, Platinum: 6, Masters: 10, Elite: 10, Crown: 4,
+  ...DIAG_TOP_EVENTS_OVERRIDE,
 });
 const REGULAR_SEASON_LAST_WEEK = 47;
 const SEASON_FINALE_WEEKS = Object.freeze({ 'Circuit Finals': 49, 'Legacy Finals': 52 });

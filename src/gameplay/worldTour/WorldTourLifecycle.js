@@ -120,21 +120,53 @@ function resolveQualifyingBracket(candidates, winnersNeeded) {
   }
   return pool.slice(0, winnersNeeded);
 }
-function applyEntryPriority(entrants, tournament, drawSize) {
-  if (entrants.length <= drawSize) return entrants;
-  const ranked = entrants.map((pair) => ({
+function applyEntryPriority(entrants, tournament, drawSize, commitWindow = false) {
+  // Fase 7.3, item 3 (temporário) — `commitWindow` default false porque
+  // esta função também é chamada de forma ESPECULATIVA (loop de fallback
+  // de tier, mais abaixo, avaliando "quem sobreviveria" pra decidir
+  // remanejamento — não é a rodada final). Só o chamador do resultado
+  // JÁ COMMITADO (loop principal, onde `ordered` vira pontuação/notícia
+  // de verdade) passa `true`; senão uma dupla podia "ganhar" uma janela
+  // numa simulação hipotética que nem é o torneio onde ela acaba jogando.
+  // Quem ainda tem janela de prioridade ativa
+  // (`windowRemainingByPairId`, ver abaixo) entra garantido, fora de toda
+  // disputa abaixo; o resto do mecanismo roda normalmente sobre o espaço
+  // que sobra (`effectiveDrawSize`). Sem `DIAG_WINDOW_N` (variável nunca
+  // populada), `windowed` é sempre vazio e `effectiveDrawSize ===
+  // drawSize` — comportamento idêntico ao de antes desta fase.
+  let windowed = [];
+  let pool = entrants;
+  if (windowRemainingByPairId && windowRemainingByPairId.size) {
+    windowed = entrants.filter((pair) => windowRemainingByPairId.has(pair.id));
+    if (windowed.length) {
+      const windowedIds = new Set(windowed.map((pair) => pair.id));
+      pool = entrants.filter((pair) => !windowedIds.has(pair.id));
+      if (commitWindow) {
+        console.log(`[DIAG_WINDOW] ${windowed.length} dupla(s) entraram por janela garantida em ${tournament.name || tournament.id} (restam: ${windowed.map((p) => `${p.id}:${windowRemainingByPairId.get(p.id)}`).join(', ')}).`);
+      }
+    }
+  }
+  const effectiveDrawSize = Math.max(0, drawSize - windowed.length);
+  if (pool.length <= effectiveDrawSize) return [...windowed, ...pool];
+  const ranked = pool.map((pair) => ({
     pair,
     rank: pairEntryRank(pair) || (WORLD_RANKING_TARGET + 1),
     played: pairTournamentsPlayedSoFar(pair),
     skill: pairScore(pair, tournament),
   }));
-  const reservedSlots = Math.max(0, Math.min(drawSize, Math.round(drawSize * ENTRY_RESERVED_SHARE)));
-  const openSlots = drawSize - reservedSlots;
+  const reservedSlots = Math.max(0, Math.min(effectiveDrawSize, Math.round(effectiveDrawSize * ENTRY_RESERVED_SHARE)));
+  const openSlots = effectiveDrawSize - reservedSlots;
   const byRank = [...ranked].sort((a, b) => a.rank - b.rank || b.skill - a.skill);
   const selectedOpen = byRank.slice(0, openSlots);
   const selectedIds = new Set(selectedOpen.map((entry) => entry.pair.id));
   const remaining = ranked.filter((entry) => !selectedIds.has(entry.pair.id));
-  const qualifyingSlots = Math.round(reservedSlots * QUALIFYING_SHARE);
+  // Fase 7.3, item 3 (temporário) — `qualifyingScaleFactorDiag` (1 por
+  // padrão, sem efeito) reescala a fatia de `QUALIFYING_SHARE` dentro do
+  // MESMO `reservedSlots` (nunca estoura `effectiveDrawSize` — só
+  // realoca entre qualifying e vaga reservada direta), testando a
+  // hipótese A da Fase 7.2 junto com a janela.
+  const qualifyingShareEffective = Math.min(1, QUALIFYING_SHARE * qualifyingScaleFactorDiag);
+  const qualifyingSlots = Math.round(reservedSlots * qualifyingShareEffective);
   const reservedDirectSlots = reservedSlots - qualifyingSlots;
   const byLeastPlayed = [...remaining].sort((a, b) => a.played - b.played || a.rank - b.rank);
   const selectedReservedDirect = byLeastPlayed.slice(0, reservedDirectSlots);
@@ -158,7 +190,40 @@ function applyEntryPriority(entrants, tournament, drawSize) {
   const byWorstRank = [...stillRemaining].sort((a, b) => b.rank - a.rank);
   const qualifyingPool = byWorstRank.slice(0, qualifyingSlots * QUALIFYING_POOL_MULTIPLIER);
   const qualifyingWinners = qualifyingSlots > 0 ? resolveQualifyingBracket(qualifyingPool, qualifyingSlots) : [];
-  return [...selectedOpen, ...selectedReservedDirect, ...qualifyingWinners].map((entry) => entry.pair);
+  if (commitWindow && windowRemainingByPairId && DIAG_WINDOW_N > 0) {
+    for (const entry of qualifyingWinners) {
+      windowRemainingByPairId.set(entry.pair.id, DIAG_WINDOW_N);
+      console.log(`[DIAG_WINDOW] dupla ${entry.pair.id} venceu o qualifying e ganhou janela de ${DIAG_WINDOW_N} torneios (${tournament.name || tournament.id}).`);
+    }
+  }
+  return [...windowed, ...[...selectedOpen, ...selectedReservedDirect, ...qualifyingWinners].map((entry) => entry.pair)];
+}
+
+// Fase 7.3, item 3 (temporário) — mede se uma reincidência de 90-100%
+// (Fase 7.2: uma dupla resgatada pelo qualifying quase sempre volta pra
+// rank>300 na temporada seguinte) se explica por o resgate ser PONTUAL
+// (1 torneio não rende rank suficiente, porque o resto do mundo continua
+// jogando e subindo — rank é relativo). Testa dar uma JANELA de entrada
+// garantida por `DIAG_WINDOW_N` aparições seguidas depois de vencer o
+// qualifying, em vez de uma só. `qualifyingScaleFactorDiag` testa, em
+// paralelo, se essa fatia reservada pra qualifying precisa escalar junto
+// (Fase 7.2, item 1.6, hipótese A) — e se deve escalar com o TAMANHO do
+// grupo rank>300 (acumulado, cresce) ou com a TAXA de casos novos por
+// temporada (achado 1.2: 39-76%, estruturalmente mais estável). O
+// harness chama `setQualifyingScaleDiag` uma vez por temporada; aqui só
+// se aplica o fator já decidido lá. Reverter depois de medir.
+const DIAG_WINDOW_N = Number(process.env.DIAG_WINDOW_N) || 0;
+const windowRemainingByPairId = DIAG_WINDOW_N > 0 ? new Map() : null;
+let qualifyingScaleFactorDiag = 1;
+export function setQualifyingScaleDiag(factor) {
+  qualifyingScaleFactorDiag = Number(factor) > 0 ? Number(factor) : 1;
+}
+export function consumeWindowTurnDiag(pairId) {
+  if (!windowRemainingByPairId) return;
+  const remaining = windowRemainingByPairId.get(pairId);
+  if (!remaining) return;
+  if (remaining <= 1) windowRemainingByPairId.delete(pairId);
+  else windowRemainingByPairId.set(pairId, remaining - 1);
 }
 
 // Fase 5.3, item 2 — mínimo viável de chave. Sem o preenchimento forçado
@@ -508,7 +573,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       // continua ordenando por pairScore/skill — só entre quem já
       // entrou).
       if (entrants.length > drawSize) {
-        entrants = applyEntryPriority(entrants, tournament, drawSize);
+        entrants = applyEntryPriority(entrants, tournament, drawSize, true);
       }
       const ordered = entrants
         .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
@@ -527,6 +592,12 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
           simulated_entrants: ordered.length,
         });
         continue;
+      }
+      // Fase 7.3, item 3 (temporário) — cada aparição EFETIVA num torneio
+      // que rodou (não cancelado) desconta 1 da janela de prioridade,
+      // independente de ter sido a janela a garantir a entrada ou não.
+      if (windowRemainingByPairId) {
+        for (const pair of ordered) consumeWindowTurnDiag(pair.id);
       }
       const champion = ordered[0];
       const runnerUp = ordered[1];

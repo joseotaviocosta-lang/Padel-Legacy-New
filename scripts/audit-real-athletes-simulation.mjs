@@ -285,6 +285,12 @@ try {
   const { evaluateTournamentEntry, buildAthleteEntryContext } = await vite.ssrLoadModule('/src/gameplay/worldTour/EntryManager.js');
   const { getRealAthleteRegistry, getConfirmedRealPairs, getProbableRealPairs } = await vite.ssrLoadModule('/src/players/realAthleteRegistry.js');
   const { teamKey } = await vite.ssrLoadModule('/src/lib/teamRanking.js');
+  // Fase 7.3, item 3 (temporário) — setter da janela de prioridade
+  // elevada (WorldTourLifecycle.js). Mesmo grafo de módulos do vite SSR
+  // usado pelo resto do harness, então o estado de módulo que ele seta
+  // é o MESMO que `advanceDay`/`processGameStateDay` enxergam por baixo
+  // ao processar o world tour. Reverter depois de medir.
+  const { setQualifyingScaleDiag } = await vite.ssrLoadModule('/src/gameplay/worldTour/WorldTourLifecycle.js');
 
   const determinism = installDeterminism(SEED, resumeState?.determinism || null);
   console.log(`Seed: "${SEED}" (hash ${determinism.seedInt}) — Math.random e relógio determinísticos a partir daqui.${resumeState ? ` Retomado de ${RESUME_FROM}.` : ''}`);
@@ -528,6 +534,15 @@ try {
     priorTournamentsPlayed = new Map(allAthletesAtStart.map((a) => [a.id, 0]));
   }
   const neverPlayedRunningSet = resumeState ? new Set(resumeState.loop.neverPlayedRunningSet) : new Set(realAthleteIds);
+  // DIAG_TAPER (Fase 7.3, item 3, temporário, reaproveitado literalmente
+  // da Fase 7.2) — mede reincidência (rank>300 no início da temporada
+  // anterior E jogou; ainda rank>300 agora) pra comparar contra a
+  // baseline de 90-100% já medida, agora com a janela de prioridade
+  // elevada (WorldTourLifecycle.js) em vigor. Reverter depois de medir.
+  const priorRankByAthleteDiag = process.env.DIAG_TAPER
+    ? new Map((await localGame.entities.AthleteProfile.list(null, 1100)).map((a) => [a.id, Number(a.ranking_position) || 9999]))
+    : null;
+  let previousSeasonRescuedIdsDiag = process.env.DIAG_TAPER ? new Set() : null;
 
   async function recordNewlyFinalizedTournaments(year, bucket) {
     const finalized = (await localGame.entities.Tournament.list('-start_date', 2000))
@@ -599,6 +614,8 @@ try {
     // são sempre os mesmos (exclusão permanente, achado antigo em escala
     // reduzida) ou se rotacionam (realista, sem correção necessária).
     const realNeverPlayedThisSeason = [];
+    const currentGT300IdsDiag = priorRankByAthleteDiag ? new Set() : null;
+    const rescuedThisSeasonDiag = priorRankByAthleteDiag ? new Set() : null;
     for (const a of allAthletesNow) {
       const before = priorTournamentsPlayed.get(a.id) || 0;
       const after = currentTournamentsPlayed.get(a.id) || 0;
@@ -607,9 +624,28 @@ try {
         realDeltas.push(delta);
         if (after > 0) neverPlayedRunningSet.delete(a.id);
         if (delta === 0) realNeverPlayedThisSeason.push({ id: a.id, name: assignedIdToName.get(a.id) || a.name || a.id });
+        if (priorRankByAthleteDiag) {
+          const priorRank = priorRankByAthleteDiag.get(a.id) || 9999;
+          if (priorRank > 300) {
+            currentGT300IdsDiag.add(a.id);
+            if (delta > 0) rescuedThisSeasonDiag.add(a.id);
+          }
+        }
       } else botDeltas.push(delta);
     }
     priorTournamentsPlayed = currentTournamentsPlayed;
+    if (priorRankByAthleteDiag) {
+      const fellBackIds = [...previousSeasonRescuedIdsDiag].filter((id) => currentGT300IdsDiag.has(id));
+      console.log(`[DIAG_TAPER] temporada ${year} — grupo rank>300 no início: ${currentGT300IdsDiag.size} · resgatadas na temporada anterior: ${previousSeasonRescuedIdsDiag.size} · dessas, ainda em rank>300 agora: ${fellBackIds.length} (${previousSeasonRescuedIdsDiag.size ? round(100 * fellBackIds.length / previousSeasonRescuedIdsDiag.size, 1) : 0}%)`);
+      previousSeasonRescuedIdsDiag = rescuedThisSeasonDiag;
+      for (const a of allAthletesNow) priorRankByAthleteDiag.set(a.id, Number(a.ranking_position) || 9999);
+      if (process.env.DIAG_WINDOW_SCALE) {
+        const groupSize = currentGT300IdsDiag.size;
+        const factor = process.env.DIAG_WINDOW_SCALE === 'group' ? 1 + groupSize / 50 : 1.4;
+        setQualifyingScaleDiag(factor);
+        console.log(`[DIAG_WINDOW] próxima temporada usa fator de escala de qualifying = ${round(factor, 3)} (política: ${process.env.DIAG_WINDOW_SCALE}, grupo rank>300 atual: ${groupSize})`);
+      }
+    }
 
     const byTierThisSeason = {};
     for (const row of tournamentResultsThisSeason) {
