@@ -72,9 +72,53 @@ function pairScore(pair, tournament) {
 // ponto de chamada eram. Generalizada aqui; medida por tier na
 // Fase 6.5.
 const ENTRY_RESERVED_SHARE = 0.25;
+// Fase 7.1, item 1 — segunda porta de entrada (qualifying), a peça que
+// faltava depois da Fase 7 identificar o mecanismo (rank ruim → menos
+// vagas pela prioridade por rank → menos pontos, que só vêm de jogar →
+// rank relativo pior, porque o resto do mundo continua jogando → menos
+// vagas ainda — nenhuma peça nova de código, só as três já existentes
+// compondo). Metade da fatia reservada (`QUALIFYING_SHARE` de
+// `ENTRY_RESERVED_SHARE`, ~12,5% do draw) deixa de ser concedida direto
+// e vira um mini-bracket de eliminação simples, decidido por
+// `pairScore` — a MESMA função que já decide a chave principal — entre
+// um pool maior (`QUALIFYING_POOL_MULTIPLIER`×) formado pelos PIORES
+// ranks entre quem não ganhou vaga aberta nem reservada direta. Usa
+// rank (não "menos torneios jogados") de propósito: é a variável que a
+// Fase 7 mediu como o discriminador de 98,8% de acurácia entre o
+// núcleo ocioso e quem joga, e cai em tempo real (posição relativa,
+// nunca "vitalícia") — uma primeira versão usava o critério de
+// menos-torneios-jogados já existente pra montar o pool e NÃO
+// funcionou (`pairTournamentsPlayedSoFar` é contagem vitalícia; uma
+// dupla presa que teve uma temporada 1 boa não tem "poucos jogos" nesse
+// contador, mesmo travada há 2 temporadas — ver comentário mais abaixo,
+// em `applyEntryPriority`). Dá uma chance RECORRENTE (toda semana
+// elegível) contra um pool restrito às piores colocações, não contra o
+// campo inteiro — ainda exige vencer algo (não é uma passagem livre),
+// mas não é a mesma disputa por rank que a dupla já está perdendo.
+const QUALIFYING_SHARE = 0.5;
+const QUALIFYING_POOL_MULTIPLIER = 4;
 function pairTournamentsPlayedSoFar(pair) {
   const values = pair.athletes.map((athlete) => Number(athlete.tournaments_played) || 0);
   return values.reduce((sum, value) => sum + value, 0) / (values.length || 1);
+}
+// Eliminação simples entre `candidates` (já ordenados por prioridade de
+// entrada no pool, não por skill — o emparceiramento é sequencial,
+// como um chaveamento cabeça-a-cabeça comum) até sobrar `winnersNeeded`.
+// Cada confronto usa o MESMO `skill` (pairScore) já calculado — sem
+// lógica de partida nova. Pool ímpar numa rodada: quem sobra avança
+// direto (bye), like qualquer chave real com número não-potência-de-2.
+function resolveQualifyingBracket(candidates, winnersNeeded) {
+  let pool = candidates;
+  if (pool.length <= winnersNeeded) return pool;
+  while (pool.length > winnersNeeded) {
+    const nextRound = [];
+    for (let i = 0; i < pool.length; i += 2) {
+      if (i + 1 >= pool.length) { nextRound.push(pool[i]); continue; }
+      nextRound.push(pool[i].skill >= pool[i + 1].skill ? pool[i] : pool[i + 1]);
+    }
+    pool = nextRound;
+  }
+  return pool.slice(0, winnersNeeded);
 }
 function applyEntryPriority(entrants, tournament, drawSize) {
   if (entrants.length <= drawSize) return entrants;
@@ -89,11 +133,32 @@ function applyEntryPriority(entrants, tournament, drawSize) {
   const byRank = [...ranked].sort((a, b) => a.rank - b.rank || b.skill - a.skill);
   const selectedOpen = byRank.slice(0, openSlots);
   const selectedIds = new Set(selectedOpen.map((entry) => entry.pair.id));
-  const byLeastPlayed = ranked
-    .filter((entry) => !selectedIds.has(entry.pair.id))
-    .sort((a, b) => a.played - b.played || a.rank - b.rank);
-  const selectedReserved = byLeastPlayed.slice(0, reservedSlots);
-  return [...selectedOpen, ...selectedReserved].map((entry) => entry.pair);
+  const remaining = ranked.filter((entry) => !selectedIds.has(entry.pair.id));
+  const qualifyingSlots = Math.round(reservedSlots * QUALIFYING_SHARE);
+  const reservedDirectSlots = reservedSlots - qualifyingSlots;
+  const byLeastPlayed = [...remaining].sort((a, b) => a.played - b.played || a.rank - b.rank);
+  const selectedReservedDirect = byLeastPlayed.slice(0, reservedDirectSlots);
+  const reservedDirectIds = new Set(selectedReservedDirect.map((entry) => entry.pair.id));
+  // Fase 7.1, medição — a 1ª versão desta função montava o pool de
+  // qualifying tirando da MESMA fila de menos-torneios-jogados
+  // (`byLeastPlayed`) que já alimenta `reservedDirectSlots`. Não
+  // funcionou: `pairTournamentsPlayedSoFar` é uma contagem VITALÍCIA
+  // (nunca reseta por temporada) — uma dupla que teve uma temporada 1
+  // boa (todo mundo tem, é o bootstrap) acumula um total vitalício que
+  // não cai só porque ela ficou 2 temporadas inteiras sem jogar depois;
+  // outras duplas (bots recém-criados, parcerias recém-formadas) têm
+  // menos jogos vitalícios sem estar presas em nenhuma espiral, e
+  // furavam a frente da fila. Resultado medido: grupo rank>300 da Fase 7
+  // continuava em 0% de "jogou" mesmo com qualifying ativo. Corrigido
+  // usando RANK direto (a variável que a Fase 7 mediu como o
+  // discriminador de 98,8% de acurácia, e que cai em tempo real por ser
+  // posição relativa) pra montar o pool — mira exatamente quem a Fase 7
+  // identificou como preso, em vez de um proxy que podia não incluí-los.
+  const stillRemaining = remaining.filter((entry) => !reservedDirectIds.has(entry.pair.id));
+  const byWorstRank = [...stillRemaining].sort((a, b) => b.rank - a.rank);
+  const qualifyingPool = byWorstRank.slice(0, qualifyingSlots * QUALIFYING_POOL_MULTIPLIER);
+  const qualifyingWinners = qualifyingSlots > 0 ? resolveQualifyingBracket(qualifyingPool, qualifyingSlots) : [];
+  return [...selectedOpen, ...selectedReservedDirect, ...qualifyingWinners].map((entry) => entry.pair);
 }
 
 // Fase 5.3, item 2 — mínimo viável de chave. Sem o preenchimento forçado
