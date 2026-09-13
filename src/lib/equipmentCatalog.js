@@ -13,6 +13,19 @@ export const RARITY_STYLES = {
   exclusivo: { badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',      card: 'from-cyan-500/10 to-transparent',      label: 'Exclusivo',  color: 'text-cyan-300' },
 };
 
+// Mesma família de cor de RARITY_STYLES/RARITY_ACCENT (generate-item-icons.mjs),
+// em hex — para uso em `style` inline (CSS-in-JS), onde classes Tailwind não
+// servem (ex.: tingir a boneca de Aparência pela raridade do item equipado).
+export const RARITY_HEX = {
+  comum: '#64748b',
+  incomum: '#22c55e',
+  raro: '#3b82f6',
+  epico: '#a855f7',
+  lendario: '#f59e0b',
+  mitico: '#f43f5e',
+  exclusivo: '#06b6d4',
+};
+
 export const CATEGORY_META = {
   raquete:        { label: 'Raquetes',           icon: 'Disc',      emoji: '🎾' },
   grip:           { label: 'Grips',              icon: 'Circle',    emoji: '🔘' },

@@ -4,6 +4,29 @@ export function SectionLabel({ children }) {
   return <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-2">{children}</p>;
 }
 
+// Aviso de que um controle cosmético está sendo ofuscado por um item
+// equipado na Loja/Inventário — a escolha continua salva e volta a valer
+// assim que o item for desequipado; por isso o controle abaixo continua
+// interativo (envolva com FallbackControl, não com `disabled`).
+export function OverrideNotice({ itemName }) {
+  return (
+    <p className="text-[10px] text-amber-400/90 font-semibold mb-1.5 flex items-center gap-1">
+      🔒 Sobrescrito pelo item equipado{itemName ? `: ${itemName}` : ''} — volta a valer ao desequipar
+    </p>
+  );
+}
+
+export function FallbackControl({ overridden, itemName, children }) {
+  return (
+    <div>
+      {overridden && <OverrideNotice itemName={itemName} />}
+      <div className={overridden ? 'opacity-50 transition-opacity' : 'transition-opacity'}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function ColorPicker({ label, options, value, onChange }) {
   const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   return (
