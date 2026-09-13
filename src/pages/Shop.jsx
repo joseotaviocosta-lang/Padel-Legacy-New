@@ -7,8 +7,9 @@ import { Page, PageContent, PageHeader, PageSkeleton, CardGrid, StatCard, Surfac
 import { useToast } from '@/components/ui/use-toast';
 import EquippedView from '@/components/shop/EquippedView';
 import ItemDetailModal from '@/components/shop/ItemDetailModal';
+import ItemImage from '@/components/shop/ItemImage';
 import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
-import { RARITY_STYLES, RARITY_ORDER, CATEGORY_META } from '@/lib/equipmentCatalog';
+import { RARITY_STYLES, RARITY_ORDER } from '@/lib/equipmentCatalog';
 import { computeItemPrice, BADGE_COLORS, isMarketEventActive, normalizeMarketEvent, seedMarket } from '@/lib/marketEngine';
 import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
@@ -97,7 +98,12 @@ export default function Shop() {
         setEquippedItems((inventory || []).filter(i => i.equipped));
         setMarketEvents((events || []).map(normalizeMarketEvent).filter((event) => isMarketEventActive(event, p?.career_date)));
         setPriceHistories(histories || []);
-        setPlayerSponsors((contracts || []).map(c => c.sponsor_name));
+        // Fase 1: playerSponsors carrega sponsor_id junto do nome —
+        // computeItemPrice() usa sponsor_id para o desconto de 15% por
+        // correspondência exata (fallback de 10% por nome/fuzzy só quando o
+        // item não tem sponsor_id). Só contratos ATIVOS entram aqui (filtro
+        // acima), então "contrato inativo não desconta" já vem de graça.
+        setPlayerSponsors((contracts || []).map(c => ({ sponsor_id: c.sponsor_id, sponsor_name: c.sponsor_name })));
       } catch (e) { console.error(e); }
       finally { setLoading(false); }
     })();
@@ -123,7 +129,9 @@ export default function Shop() {
 
   const marketAvailabilityMap = useMemo(() => {
     const map = {};
-    const marketProfile = { ...(profile || {}), active_sponsor_names: playerSponsors };
+    // getEquipmentMarketState (sportsEconomyV26.js) espera nomes puros —
+    // playerSponsors agora carrega {sponsor_id, sponsor_name} (Fase 1).
+    const marketProfile = { ...(profile || {}), active_sponsor_names: playerSponsors.map(s => s.sponsor_name) };
     items.forEach(item => { map[item.id] = getEquipmentMarketState(item, marketProfile); });
     return map;
   }, [items, profile, playerSponsors]);
@@ -419,7 +427,6 @@ export default function Shop() {
             <>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-3 animate-stagger">
                 {paged.map(item => {
-                  const cat = CATEGORY_META[item.category] || CATEGORY_META.acessorio;
                   const rarityStyle = RARITY_STYLES[item.rarity] || RARITY_STYLES.comum;
                   const owned = ownedIds.has(item.id);
                   const pricing = priceMap[item.id];
@@ -453,8 +460,8 @@ export default function Shop() {
                         </span>
                       )}
                       <div className="flex items-start justify-between">
-                        <div className="h-10 w-10 rounded-xl bg-secondary/60 flex items-center justify-center text-xl">
-                          {cat.emoji}
+                        <div className="h-10 w-10 rounded-xl bg-secondary/60 flex items-center justify-center overflow-hidden">
+                          <ItemImage item={item} className="h-full w-full" />
                         </div>
                         {!pricing?.badge && (
                           <span className={`inline-flex items-center rounded-full border px-1.5 py-0.5 text-[8px] font-bold uppercase ${rarityStyle.badge}`}>

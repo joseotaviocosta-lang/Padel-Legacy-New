@@ -1,10 +1,9 @@
 import React from 'react';
-import { Check, Package, Disc, Crown, Circle, Target, Shirt, Briefcase, Zap } from 'lucide-react';
+import { Check, Package } from 'lucide-react';
 import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
 import { ATTRIBUTES } from '@/lib/padel';
 import { EmptyState, Surface } from '@/components/design-system';
-
-const ICON_MAP = { Disc, Crown, Circle, Target, Shirt, Briefcase, Zap, Package };
+import ItemImage from '@/components/shop/ItemImage';
 
 const CATEGORY_LABELS = {
   raquete: 'Raquetes',
@@ -39,14 +38,13 @@ export default function EquippedView({ equippedItems, items }) {
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {equippedItems.filter(i => i.category === cat).map(invItem => {
               const shopItem = shopMap[invItem.item_id];
-              const Icon = (shopItem && ICON_MAP[shopItem.icon]) || Package;
               const rarity = RARITY_STYLES[invItem.rarity] || RARITY_STYLES.comum;
               const bonus = shopItem?.attribute_bonus || {};
               return (
                 <div key={invItem.id} className={`glass rounded-2xl p-4 flex flex-col gap-2 bg-gradient-to-br ${rarity.card} ring-2 ring-primary/50`}>
                   <div className="flex items-start justify-between">
-                    <div className="h-12 w-12 rounded-xl bg-secondary/60 flex items-center justify-center">
-                      <Icon className="h-6 w-6 text-primary" />
+                    <div className="h-12 w-12 rounded-xl bg-secondary/60 flex items-center justify-center overflow-hidden">
+                      <ItemImage item={shopItem} variant="icon" className="h-full w-full" glyphClassName="h-6 w-6 text-primary" />
                     </div>
                     <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/15 text-primary text-[9px] font-bold px-1.5 py-0.5">
                       <Check className="h-2.5 w-2.5" /> Equipado

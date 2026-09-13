@@ -368,6 +368,18 @@ export const SPONSOR_CATALOG = [
   }
 ];
 
+// ─── Loja Fase 1: ponte marca-patrocínio ↔ marca-item ──────────────────────
+// Correspondência exata (normalizada por trim+lowercase), sem substring —
+// isso é o fuzzy match que já existe em marketEngine.js para o fallback.
+// Nome vazio nunca corresponde a nada.
+
+export function findSponsorIdByManufacturer(manufacturer) {
+  const normalized = String(manufacturer || '').trim().toLowerCase();
+  if (!normalized) return null;
+  const match = SPONSOR_CATALOG.find((sponsor) => String(sponsor?.name || '').trim().toLowerCase() === normalized);
+  return match ? match.id : null;
+}
+
 // ─── Marketing Requirements Labels ──────────────────────────────────────────
 
 export const MARKETING_LABELS = {

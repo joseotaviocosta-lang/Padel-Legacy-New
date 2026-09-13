@@ -15,7 +15,10 @@ export { isMarketEventActive, normalizeMarketEvent } from '@/lib/marketPromotion
  * @param {Object} item - ShopItem entity
  * @param {Array} marketEvents - Active MarketEvent entities
  * @param {Object|null} priceHistory - MarketPriceHistory for this item (optional)
- * @param {Array} playerSponsors - Active sponsor names from PlayerContract
+ * @param {Array} playerSponsors - Contratos ATIVOS do jogador, como
+ *   {sponsor_id, sponsor_name}[] (Fase 1 da Loja — antes era string[] só de
+ *   nome; sponsor_id habilita o desconto de 15% por correspondência exata,
+ *   sponsor_name mantém o fallback de 10% por fuzzy match)
  * @returns {Object} { currentPrice, basePrice, modifier, discount, badge, trend, demandScore, events }
  */
 export function computeItemPrice(item, marketEvents = [], priceHistory = null, playerSponsors = []) {
@@ -52,16 +55,24 @@ export function computeItemPrice(item, marketEvents = [], priceHistory = null, p
   const supplyFactor = 1 + ((50 - supplyLevel) / 100) * 0.3; // ±15%
   modifier *= demandFactor * supplyFactor;
 
-  // 3. Player sponsor discount (if item manufacturer matches active sponsor)
+  // 3. Player sponsor discount — Fase 1: 15% quando o item tem sponsor_id
+  // (ponte exata marca-patrocínio, storeCatalog.js) batendo o sponsor_id de
+  // um contrato ativo; cai para o fuzzy match de nome (10%, comportamento
+  // anterior) só quando o item não tem sponsor_id — nunca os dois juntos.
   let sponsorDiscount = 0;
-  if (playerSponsors.length > 0) {
-    // Map sponsor names to manufacturers (fuzzy)
-    const sponsorMatch = playerSponsors.some(s =>
-      String(item?.manufacturer || '').toLowerCase().includes(String(s || '').toLowerCase()) ||
-      String(s || '').toLowerCase().includes(String(item?.manufacturer || '').toLowerCase())
-    );
+  const itemSponsorId = item?.sponsor_id;
+  if (itemSponsorId && playerSponsors.some((s) => s?.sponsor_id === itemSponsorId)) {
+    sponsorDiscount = 0.15;
+    modifier *= (1 - sponsorDiscount);
+  } else if (playerSponsors.length > 0) {
+    const manufacturer = String(item?.manufacturer || '').trim().toLowerCase();
+    const sponsorMatch = manufacturer.length > 0 && playerSponsors.some((s) => {
+      const sponsorName = String(s?.sponsor_name || '').trim().toLowerCase();
+      if (!sponsorName) return false; // nome de patrocinador vazio não casa com nada
+      return manufacturer.includes(sponsorName) || sponsorName.includes(manufacturer);
+    });
     if (sponsorMatch) {
-      sponsorDiscount = 0.1; // 10% off for sponsored brands
+      sponsorDiscount = 0.1; // 10% off for sponsored brands (fuzzy, sem sponsor_id)
       modifier *= (1 - sponsorDiscount);
     }
   }

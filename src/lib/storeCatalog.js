@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { ATTRIBUTE_KEYS } from '@/lib/attributes.js';
+import { findSponsorIdByManufacturer } from '@/lib/sponsors.js';
 
 const CATEGORY_ALIASES = {
   racket: 'raquete', raquetes: 'raquete', pala: 'raquete', palas: 'raquete',
@@ -166,6 +167,12 @@ function catalogItem({ name, category, subcategory, rarity, basePrice, manufactu
     rarity,
     price: Math.max(requirement.priceFloor, Math.round(basePrice)),
     manufacturer,
+    // Fase 1: ponte marca-patrocínio — correspondência exata de manufacturer
+    // contra SPONSOR_CATALOG (sponsors.js). null quando a marca não tem
+    // patrocinador correspondente (marcas fictícias do catálogo, "Padel
+    // Heritage" etc.) — nesse caso o item cai no fallback de fuzzy match de
+    // 10% em computeItemPrice (marketEngine.js), não neste sponsor_id.
+    sponsor_id: findSponsorIdByManufacturer(manufacturer),
     attribute_bonus: scaleBonus(bonus, rarity),
     description,
     durability: tier.durability,
@@ -234,6 +241,14 @@ const SUPPORT_ITEMS = [
   ['Wilson Tacky Pro','grip','tacky','raro',320,'Wilson',{forehand:1,backhand:1},'Aderência firme para acelerar golpes.'],
   ['Bullpadel Hesacore Elite','grip','replacement','epico',620,'Bullpadel',{volley:1,control:1},'Grip ergonômico de competição.'],
   ['Nox Custom Legend','grip','replacement','lendario',900,'Nox',{control:1,concentration:1},'Ajuste profissional para atletas internacionais.'],
+  // Fase 1 da Loja — 3 itens novos por categoria com só 5 hoje (grip, roupa,
+  // tenis, mochila, acessorio_tec, acessorio): 1 épico, 1 lendário, 1
+  // mítico, dentro do teto recalibrado na Fase 0 (item mais caro do jogo em
+  // 90.000). Bônus só nas 10 chaves reais consumidas pela simulação
+  // (ATTRIBUTE_KEYS) — nada de stamina/concentration/reflexes/etc.
+  ['Babolat Pro Touch Elite','grip','tacky','epico',8500,'Babolat',{forehand:1,volley:1},'Grip de competição com aderência texturizada, usado por especialistas em toque de rede.'],
+  ['Wilson Championship Grip','grip','replacement','lendario',26000,'Wilson',{backhand:1,strategy:1},'Edição de torneio desenvolvida para manter precisão de golpe em partidas de alta pressão.'],
+  ['Bullpadel Master Grip Pro','grip','replacement','mitico',58000,'Bullpadel',{volley:1,strategy:1},'Referência técnica da Bullpadel para o Top 10 mundial, equilíbrio absoluto entre controle e conforto.'],
   // Bolas
   ['Padel Start Training x3','bola','training','comum',45,'Padel Start',{},'Bolas duráveis para sessões iniciais.'],
   ['Head Club Match x3','bola','match','incomum',130,'Head',{strategy:1},'Quique estável para jogos de clube.'],
@@ -246,30 +261,45 @@ const SUPPORT_ITEMS = [
   ['Bullpadel Competition Set','roupa','conjunto','raro',1200,'Bullpadel',{stamina:1,reputation:1},'Conjunto para o circuito regional.'],
   ['Nox Travel Team','roupa','jaqueta','epico',2400,'Nox',{reputation:1,emotional_control:1},'Jaqueta oficial de viagem.'],
   ['Wilson Signature Tour','roupa','agasalho','lendario',4500,'Wilson',{reputation:1,followers:5},'Linha limitada para atletas reconhecidos.'],
+  ['Nox Pro Competition Kit','roupa','conjunto','epico',9500,'Nox',{emotional_control:1,agility:1},'Conjunto técnico de competição com tecido de alta respirabilidade para partidas longas.'],
+  ['Adidas Elite Tour Jacket','roupa','jaqueta','lendario',28000,'Adidas',{emotional_control:1,strategy:1},'Jaqueta oficial de viagem do circuito internacional, usada por atletas de elite entre partidas.'],
+  ['Bullpadel Champion Series','roupa','agasalho','mitico',60000,'Bullpadel',{emotional_control:1,agility:1},'Linha limitada reservada aos campeões do circuito, corte profissional e identidade de elite mundial.'],
   // Tênis
   ['Joma Court Basic','tenis','all_court','comum',480,'Joma',{speed:1},'Estabilidade e proteção para iniciantes.'],
   ['Asics Clay Motion','tenis','clay','incomum',850,'Asics',{agility:1},'Tração segura em superfícies abrasivas.'],
   ['Mizuno Indoor Flash','tenis','indoor','raro',1800,'Mizuno',{speed:1,reflexes:1},'Resposta rápida em quadras indoor.'],
   ['Adidas Pro Stability','tenis','all_court','epico',3200,'Adidas',{agility:1,stamina:1},'Estabilidade profissional em mudanças de direção.'],
   ['Babolat Jet Legend','tenis','all_court','lendario',5800,'Babolat',{agility:1,speed:1},'Calçado de elite para o circuito internacional.'],
+  ['Joma Elite Court','tenis','all_court','epico',9000,'Joma',{agility:1,defense:1},'Calçado multicancha de competição com estabilidade lateral reforçada.'],
+  ['Asics Pro Tour Legend','tenis','clay','lendario',30000,'Asics',{agility:1,smash:1},'Modelo de saibro desenvolvido para tração máxima em mudanças de direção explosivas.'],
+  ['Adidas Master Series','tenis','all_court','mitico',55000,'Adidas',{agility:1,smash:1},'Calçado de elite usado pelos maiores nomes do circuito internacional, resposta imediata em qualquer superfície.'],
   // Mochilas
   ['Padel Start Compact','mochila','compact','comum',260,'Padel Start',{},'Espaço para uma raquete e acessórios.'],
   ['Head Team Backpack','mochila','compact','incomum',620,'Head',{durability:1},'Mochila resistente para treinos semanais.'],
   ['Nox Thermal Duo','mochila','thermal','raro',1400,'Nox',{durability:1,reputation:1},'Compartimento térmico para duas raquetes.'],
   ['Bullpadel Pro 12','mochila','pro','epico',2700,'Bullpadel',{reputation:1},'Raqueteira completa para viagens.'],
   ['Wilson Tour Vault','mochila','thermal','lendario',5200,'Wilson',{reputation:1,emotional_control:1},'Proteção premium para equipamentos de elite.'],
+  ['Head Tour Elite Bag','mochila','pro','epico',8800,'Head',{emotional_control:1,strategy:1},'Raqueteira de competição com compartimentos organizados para viagens longas do circuito.'],
+  ['Wilson Champion Vault','mochila','thermal','lendario',25000,'Wilson',{emotional_control:1,strategy:1},'Proteção térmica premium para equipamentos de atletas de elite em viagens internacionais.'],
+  ['Bullpadel Master Pro 20','mochila','pro','mitico',52000,'Bullpadel',{strategy:1,emotional_control:1},'A raqueteira oficial dos maiores campeões do circuito, capacidade e prestígio em um só equipamento.'],
   // Tecnologia
   ['Pulse Training Band','acessorio_tec','smartwatch','incomum',900,'Pulse',{stamina:1},'Monitoramento básico de carga.'],
   ['PlaySight Shot Sensor','acessorio_tec','sensor','raro',2600,'PlaySight',{strategy:1,concentration:1},'Analisa velocidade e ponto de impacto.'],
   ['Garmin Athlete Pro','acessorio_tec','smartwatch','epico',5200,'Garmin',{stamina:1,health:1},'Controle de carga e recuperação.'],
   ['PlaySight Match Vision','acessorio_tec','camera','lendario',9800,'PlaySight',{strategy:1,tactics:1},'Análise automática de partidas.'],
   ['NeuroCourt Tactical Lab','acessorio_tec','sensor','mitico',16000,'NeuroCourt',{strategy:1,concentration:1,tactics:1},'Tecnologia avançada de leitura tática.'],
+  ['Garmin Padel Elite','acessorio_tec','smartwatch','epico',11000,'Garmin',{strategy:1,agility:1},'Monitoramento avançado de performance para atletas competitivos.'],
+  ['Playtomic Court Vision','acessorio_tec','sensor','lendario',32000,'Playtomic',{strategy:1,defense:1},'Sensor de análise tática usado por academias de referência do circuito mundial.'],
+  ['Movistar Smart Analytics Pro','acessorio_tec','camera','mitico',54000,'Movistar',{strategy:1,agility:1},'Sistema de análise conectada de última geração, usado por comissões técnicas de elite.'],
   // Acessórios
   ['Joma Wristband Base','acessorio','wristband','comum',60,'Joma',{},'Pulseira absorvente para treinos.'],
   ['Adidas Focus Headband','acessorio','headband','incomum',160,'Adidas',{concentration:1},'Mantém o foco durante rallies longos.'],
   ['Nox Racket Protector','acessorio','protetor','raro',380,'Nox',{durability:2},'Proteção adicional contra impactos.'],
   ['HydroSport Thermal Pro','acessorio','garrafa','epico',750,'HydroSport',{stamina:1},'Garrafa térmica de alto rendimento.'],
   ['Therabody Recovery Kit','acessorio','recovery','lendario',1800,'Therabody',{health:1,stamina:1},'Kit portátil de recuperação muscular.'],
+  ['Nox Elite Wristband','acessorio','wristband','epico',7200,'Nox',{agility:1},'Pulseira de competição com tecido de alta absorção para rallies longos.'],
+  ['Adidas Focus Master','acessorio','headband','lendario',22000,'Adidas',{emotional_control:1,strategy:1},'Faixa de cabeça de edição limitada usada por atletas de elite em finais de torneio.'],
+  ['Therabody Recovery Master','acessorio','recovery','mitico',48000,'Therabody',{emotional_control:1,defense:1},'Kit de recuperação de ponta usado por comissões médicas de times de elite mundial.'],
   // Colecionáveis: bônus leves e alto valor, não atalho para força esportiva
   ['Medalha Circuito Local','colecionavel','medalha','raro',1100,'Padel Heritage',{reputation:1},'Peça comemorativa do circuito local.'],
   ['Réplica Troféu Major','colecionavel','replica','epico',3200,'Padel Heritage',{reputation:1,followers:5},'Réplica oficial de um Major histórico.'],
@@ -324,6 +354,12 @@ export async function ensureExpandedShopCatalog() {
       if (template[field] !== undefined && normalized[field] !== template[field]) patch[field] = template[field];
     });
     if (JSON.stringify(normalized.attribute_bonus || {}) !== JSON.stringify(template.attribute_bonus || {})) patch.attribute_bonus = template.attribute_bonus;
+    // Fase 1: sponsor_id é preenchido só quando AUSENTE — diferente do resto
+    // de `fields` acima (que sempre sincroniza com o template), aqui um
+    // valor explícito já salvo (mesmo que divirja do template) nunca é
+    // sobrescrito. image_url não entra em `fields` — nunca foi, permanece
+    // intocado por este reparo.
+    if (!normalized.sponsor_id && template.sponsor_id) patch.sponsor_id = template.sponsor_id;
     if (Object.keys(patch).length > 0) {
       await localGame.entities.ShopItem.update(item.id, patch);
       repaired += 1;

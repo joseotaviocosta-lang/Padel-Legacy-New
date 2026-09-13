@@ -53,3 +53,17 @@ export function getRarityStyle(rarity) {
 export function rarityValue(rarity) {
   return RARITY_ORDER.indexOf(rarity);
 }
+
+// ─── Loja Fase 1: convenção de asset de ícone (nenhum arquivo gerado ainda) ──
+// Decisão já aprovada: ícone estilizado por CATEGORIA, com cor/acabamento
+// por RARIDADE — não é arte única por item. Um arquivo por combinação
+// categoria×raridade é reaproveitado por todo item dessa combinação. Fundo
+// transparente, silhueta neutra, acento visual pela cor de RARITY_STYLES
+// (o verde-lima da identidade do jogo fica só na interface). Quando os
+// assets existirem, popular ShopItem.image_url com este caminho — via
+// migração em ensureExpandedShopCatalog() (mesmo padrão do reparo de
+// sponsor_id) — faz todo item da combinação exibir o ícone automaticamente,
+// sem mudar ItemImage.jsx nem seus consumidores.
+export function getCategoryRarityIconAssetPath(category, rarity) {
+  return `/assets/items/${category}-${rarity}.png`;
+}
