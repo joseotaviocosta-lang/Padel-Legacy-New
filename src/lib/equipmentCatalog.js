@@ -54,7 +54,7 @@ export function rarityValue(rarity) {
   return RARITY_ORDER.indexOf(rarity);
 }
 
-// ─── Loja Fase 1: convenção de asset de ícone (nenhum arquivo gerado ainda) ──
+// ─── Ícones de item (categoria×raridade) ──
 // Decisão já aprovada: ícone estilizado por CATEGORIA, com cor/acabamento
 // por RARIDADE — não é arte única por item. Um arquivo por combinação
 // categoria×raridade é reaproveitado por todo item dessa combinação. Fundo
@@ -65,5 +65,5 @@ export function rarityValue(rarity) {
 // sponsor_id) — faz todo item da combinação exibir o ícone automaticamente,
 // sem mudar ItemImage.jsx nem seus consumidores.
 export function getCategoryRarityIconAssetPath(category, rarity) {
-  return `/assets/items/${category}-${rarity}.png`;
+  return `/assets/items/${category}-${rarity}.svg`;
 }
