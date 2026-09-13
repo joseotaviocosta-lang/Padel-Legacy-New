@@ -50,6 +50,24 @@ export function LockedControl({ locked, children }) {
   );
 }
 
+// Sugestão de altura/biotipo (Fase B) com base no estilo/lado/mão já
+// escolhidos no onboarding — nunca um bloqueio, só orientação contextual.
+// Some sozinha quando o campo trava (Fase A) ou quando ainda não há
+// estilo/lado escolhido (guard de getSuggestedPhysicalRange).
+export function SuggestionNotice({ heightRange, buildLabel, secondaryBuildLabel, rationale, sideNote }) {
+  return (
+    <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2 text-[11px] leading-snug">
+      <p className="font-semibold text-primary">
+        💡 Sugestão pro seu perfil: {heightRange[0]}–{heightRange[1]}cm, biotipo {buildLabel}
+        {secondaryBuildLabel ? ` (ou ${secondaryBuildLabel})` : ''}
+      </p>
+      <p className="text-muted-foreground mt-1">{rationale}</p>
+      {sideNote && <p className="text-muted-foreground mt-1">{sideNote}</p>}
+      <p className="text-muted-foreground/70 mt-1">Só uma sugestão — você pode escolher qualquer valor.</p>
+    </div>
+  );
+}
+
 export function ColorPicker({ label, options, value, onChange }) {
   const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   return (

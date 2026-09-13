@@ -163,7 +163,7 @@ export default function CharacterEditor() {
             </Surface>
 
             <Surface variant="elevated" padding="default" className="min-h-[420px]">
-              {activeTab === 'appearance' && <AppearanceEditor data={customization} update={update} />}
+              {activeTab === 'appearance' && <AppearanceEditor data={customization} update={update} profile={profile} />}
               {activeTab === 'clothing' && <ClothingEditor data={customization} update={update} overriddenCategories={equipmentOverrides.overriddenCategories} overriddenItemNames={equipmentOverrides.overriddenItemNames} />}
               {activeTab === 'equipment' && <EquipmentEditor data={customization} update={update} overriddenCategories={equipmentOverrides.overriddenCategories} overriddenItemNames={equipmentOverrides.overriddenItemNames} />}
               {activeTab === 'style' && <StyleEditor data={customization} update={update} />}
