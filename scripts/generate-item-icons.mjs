@@ -5,18 +5,32 @@
 // desenhadas à mão via coordenadas manuais (três rodadas de ajuste manual
 // não chegaram a um resultado reconhecível de forma confiável):
 //
-// - Lucide (ISC, já usado em outras telas do jogo) para 7 categorias que
+// - Lucide (ISC, já usado em outras telas do jogo) para 8 categorias que
 //   têm ícone genérico adequado: grip→cylinder, bola→circle, roupa→shirt,
-//   mochila→backpack, acessorio_tec→watch, colecionavel→trophy,
-//   acessorio→package. Node data copiada literalmente de
+//   mochila→backpack, tenis→shoe (Tabler, ver abaixo — mesma família
+//   visual), acessorio_tec→watch, colecionavel→trophy, acessorio→package.
+//   Node data copiada literalmente de
 //   node_modules/lucide-react/dist/esm/icons/*.js (viewBox nativo 24×24,
 //   stroke-width 2) — normalizada aqui só por transform (translate+scale),
 //   nenhuma coordenada de path foi editada à mão.
-// - Game-icons.net (CC BY 3.0 — atribuição em ASSET_CREDITS.md) para as 2
-//   categorias sem ícone genérico adequado no Lucide: raquete→tennis-racket
-//   (autor: Delapouite), tenis→running-shoe (autor: Delapouite). ViewBox
-//   nativo 512×512, path original preenchido (fill), só recolorido para o
-//   material neutro e normalizado por transform — path `d` intocado.
+// - Tabler Icons (MIT) para tenis→shoe.svg: Lucide não tinha ícone de
+//   calçado; Tabler usa a MESMA convenção (viewBox 24×24, stroke-width 2,
+//   fill=none) — não precisou de fator de escala diferente do Lucide.
+// - raquete: construída a partir de elementos geométricos simples (não é
+//   mais Game-icons.net). Nenhuma biblioteca (Lucide, Tabler, Phosphor,
+//   Iconoir, nem Game-icons.net além do tennis-racket já descartado) tem
+//   ícone de PADEL/paddle — só raquete de tênis (cabeça alongada, cordas)
+//   ou ping-pong (cena de jogada). Padel tem cabeça curta e larga, corpo
+//   sólido sem cordas, cabo curto com cordão de pulso — geometricamente
+//   simples o bastante para construir sem repetir o erro das rodadas
+//   manuais anteriores (aquelas tentavam simular categorias arbitrárias;
+//   esta é literalmente 3 primitivas: oval + linha + ponto). Cabeça e
+//   ponta do cabo são preenchidas (fill), não contornadas — um contorno
+//   fino (fill=none) lia como espelho de mão/pirulito, não como uma
+//   raquete de face sólida. O cabo usa o MESMO stroke-width das outras 8
+//   categorias (não um traço mais fino) — só o preenchimento muda, nunca a
+//   espessura de linha. Resultado: 9 categorias na mesma convenção 24×24 /
+//   peso de traço, zero assimetria fill-vs-stroke entre categorias.
 //
 // Sistema de raridade (anel + halo) já aprovado — não alterado aqui.
 import { writeFileSync, mkdirSync } from 'node:fs';
@@ -75,6 +89,13 @@ const LUCIDE_ICON_NODES = {
     ['path', { d: 'M8 22v-6a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v6' }],
     ['path', { d: 'M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2' }],
   ],
+  tenis: [ // Tabler Icons, icons/outline/shoe.svg (MIT) — mesmo viewBox
+    // 24×24 e stroke-width 2 do Lucide, mesma linhagem visual (Feather).
+    ['path', { d: 'M4 6h5.426a1 1 0 0 1 .863 .496l1.064 1.823a3 3 0 0 0 1.896 1.407l4.677 1.114a4 4 0 0 1 3.074 3.89v2.27a1 1 0 0 1 -1 1h-16a1 1 0 0 1 -1 -1v-10a1 1 0 0 1 1 -1' }],
+    ['path', { d: 'M14 13l1 -2' }],
+    ['path', { d: 'M8 18v-1a4 4 0 0 0 -4 -4h-1' }],
+    ['path', { d: 'M10 12l1.5 -3' }],
+  ],
   acessorio_tec: [ // watch.js
     ['circle', { cx: 12, cy: 12, r: 6 }],
     ['polyline', { points: '12 10 12 12 13 13' }],
@@ -126,40 +147,59 @@ function renderLucideIcon(category) {
   </g>`;
 }
 
-// ─── Fonte 2: Game-icons.net (fill) ─────────────────────────────────────────
-// path `d` original de game-icons.net (autor Delapouite, CC BY 3.0 — ver
-// ASSET_CREDITS.md), viewBox nativo 512×512. O path de fundo do arquivo
-// original (retângulo preto cobrindo o viewBox) foi descartado — só o
-// glyph em si (originalmente fill="#fff") é usado aqui, recolorido para o
-// material neutro. O `d` do glyph não foi editado.
-const GAME_ICONS_PATHS = {
-  // delapouite/tennis-racket.svg
-  raquete: 'M365.6 31c-6.6 0-13.2.6-19.7 1.59-34.5 5.44-66.5 23.14-88.3 44.96-28.8 28.85-49.6 70.85-58.4 111.65-1.6 6.7-2.6 13.6-3.5 20.4L162.2 334l15.8 15.8 124.3-33.5c6.8-.9 13.7-2 20.5-3.5 40.8-8.8 82.8-29.6 111.6-58.4 21.9-21.9 39.6-53.9 45-88.4 5.2-34.5-2.4-72.3-31.9-101.71-23.8-23.93-53.1-33.44-81.9-33.29zm.1 19.29c24.3-.28 47.9 7.49 68.2 27.71 25 24.9 31 55.2 26.3 85-4.6 29.9-20.7 58.8-39.5 77.6-25.4 25.4-64.7 45.2-102 53.2-37.2 8.2-71.2 3.8-87.8-12.9-16.5-16.5-20.9-50.4-12.8-87.7 8.1-37.2 27.8-76.6 53.3-101.94 18.7-18.78 47.7-34.84 77.6-39.55 5.5-.88 11.2-1.36 16.7-1.42zm-166 214.81c3.7 11.3 9.3 21.5 17.5 29.5 8.1 8.2 18.2 14 29.5 17.6l-63 16zm-50.3 83.6L50 448.2l-5.25-5.1-13.71 13.7L55.41 481l13.7-13.6-5.41-5.4 99.5-99.6zm211 45.1c-19.5 0-35.6 16-35.6 35.5s16.1 35.5 35.6 35.5c19.4 0 35.5-16 35.5-35.5s-16.1-35.5-35.5-35.5z',
-  // delapouite/running-shoe.svg
-  tenis: 'M135.6 38.35l-17 6.17c6.2 16.99 9.1 34.17 2.3 51.32 4.5 4.76 8.9 9.46 13.3 14.06 12.5-24.41 9.2-50.15 1.4-71.55zm-25.8 71.95c-6.8 2.6-12.82 5.9-18.27 9.7 27.17 29.8 50.17 61.6 63.77 92.1 12.7 28.7 17.4 57.3 7.2 81.1l219.8 158.9c27.5-1.4 45.3-8.1 57.5-17.5 12.8-9.8 20.1-22.9 25.4-38.4-2.9-3.2-6.1-6.3-9.6-9.4-25.7 4.5-48.2-.6-66.9-12.4-19.5-12.2-34.8-31.1-47.8-53-24.5-41.3-41-94-57.7-137.5-44.5 4.5-77.1-1.7-102.7-14.2-30.6-15-50.7-38.1-70.7-59.4zm-31.92 21.5c-4.57 4.9-8.65 10.3-12.34 16.1-10.56 16.7-17.8 37-23.99 57.9l105.85 76.5c5.7-17.1 2.3-38.5-8.6-62.9-12.5-27.9-34.6-58.6-60.92-87.6zm238.92 47c-5.2 1-10.2 1.9-15.2 2.7 3.7 9.7 7.4 19.7 11.1 29.8l26 13.1c-6.9-16.1-13.7-31.5-21.9-45.6zm-285.29 42c-2.72 2.9-4.48 5.9-5.39 9-1.23 4-1.07 8.4 1.01 13.8L266 398c21.8 14 41.4 25.6 59.2 35.1zm290.29 15.3c6.9 18.3 14.2 36.4 22.3 53.1l33.2 14.7c-11.2-18.1-19.8-36.1-27.5-53.7zm36.2 78.8c11.7 19.2 25 34.7 40.3 44.3 11 6.9 22.9 10.9 36.8 11.3-14.8-12.4-27.1-25.2-37.6-38.2zm119.8 98.4c-5.9 13.3-14.2 25.8-27 35.6-11.4 8.7-26 15.2-44.7 18.6 17.5 4.9 31.2 6.5 41.6 6.1 14.9-.6 23.4-4.7 28.6-8.8 5.2-4.1 7.2-8.2 8.1-10.2 3.5-7.8 3.2-19.9-2.5-33.3-1.1-2.6-2.5-5.3-4.1-8z',
-};
-
-// Normaliza 512×512 (nativo game-icons.net) para o mesmo footprint de ~70
-// unidades: scale=70/512, translate=50-256*scale=15.
-const GAME_ICON_SCALE = 70 / 512;
-const GAME_ICON_TRANSLATE = 50 - 256 * GAME_ICON_SCALE; // 15
-
-function renderGameIcon(category) {
-  const d = GAME_ICONS_PATHS[category];
-  if (!d) return null;
-  return `<g transform="translate(${GAME_ICON_TRANSLATE},${GAME_ICON_TRANSLATE}) scale(${GAME_ICON_SCALE})">
-    <path d="${d}" fill="${MATERIAL}"/>
+// ─── Fonte 2: raquete de padel, construída (mesmo viewBox 24×24 do Lucide) ──
+// Cabeça curta e larga preenchida (fill) + cabo em trapézio (mesma peça,
+// "pescoço" quase inexistente) — corpo sólido sem cordas, diferente de uma
+// raquete de tênis. Grade densa de 16 furos pequenos e uniformes (mesmo
+// raio) crua transparência real via <mask> — testado: poucos furos grandes
+// ou 2 furos simétricos leem como rosto/chocalho; a grade densa lê como
+// superfície perfurada de verdade. Recorte de "garganta" (elipse vazada, ↑
+// mesma máscara) na junção cabeça↔cabo interrompe o contorno contínuo que
+// fazia ler como "alfinete/chupeta" mesmo com a cabeça achatada. Laço do
+// cordão de pulso usa stroke mais fino (1.3, não STROKE_WIDTH_LOCAL) só
+// nesse detalhe — no raio pequeno do laço, o peso padrão fecha o furo e
+// vira ponto sólido de novo.
+function renderRacketIcon(category, maskId) {
+  if (category !== 'raquete') return null;
+  return `<g transform="translate(${LUCIDE_TRANSLATE},${LUCIDE_TRANSLATE}) scale(${LUCIDE_SCALE})">
+    <defs>
+      <mask id="${maskId}">
+        <rect x="0" y="0" width="24" height="24" fill="white"/>
+        <circle cx="8.25" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="8.25" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="8.25" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="8.25" cy="9.0" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="9.0" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="9.0" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="9.0" r="0.38" fill="black"/>
+        <ellipse cx="12" cy="11.3" rx="2.1" ry="1.4" fill="black"/>
+      </mask>
+    </defs>
+    <g mask="url(#${maskId})">
+      <ellipse cx="12" cy="8" rx="7" ry="5.4" fill="${MATERIAL}"/>
+      <polygon points="8,11 16,11 14,17 10,17" fill="${MATERIAL}"/>
+    </g>
+    <circle cx="12" cy="19" r="1.8" fill="none" stroke="${MATERIAL}" stroke-width="1.3"/>
   </g>`;
 }
 
-function renderSilhouette(category) {
-  return renderLucideIcon(category) || renderGameIcon(category);
+function renderSilhouette(category, rarity) {
+  return renderLucideIcon(category) || renderRacketIcon(category, `racketThroat-${rarity}`);
 }
 
 function buildIconSvg(category, rarity) {
   const accent = RARITY_ACCENT[rarity];
   const backdrop = RARITY_BACKDROP[rarity];
-  const silhouette = renderSilhouette(category);
+  const silhouette = renderSilhouette(category, rarity);
   if (!accent || !backdrop) throw new Error(`Raridade sem configuração: ${rarity}`);
   if (!silhouette) throw new Error(`Categoria sem ícone-fonte definido: ${category}`);
 
@@ -197,4 +237,4 @@ for (const arg of args) {
   console.log('Gerado:', path.relative(process.cwd(), filePath));
 }
 
-export { buildIconSvg, writeIcon, RARITY_ACCENT, RARITY_BACKDROP, LUCIDE_ICON_NODES, GAME_ICONS_PATHS };
+export { buildIconSvg, writeIcon, RARITY_ACCENT, RARITY_BACKDROP, LUCIDE_ICON_NODES };

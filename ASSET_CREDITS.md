@@ -13,17 +13,28 @@ Grip, bola, roupa, mochila, acessorio_tec, colecionavel e acessorio usam ícones
 `trophy`, `package`) — mesma biblioteca já usada em outras telas do jogo via
 `lucide-react`. Licença ISC, não exige atribuição, incluída aqui por completude.
 
-### Game-icons.net (CC BY 3.0)
+### Tabler Icons (MIT)
 
-Raquete e tênis usam ícones do [game-icons.net](https://game-icons.net), que não têm
-equivalente genérico adequado no Lucide:
+Tênis usa o ícone [`shoe`](https://tabler.io/icons/icon/shoe) do
+[Tabler Icons](https://tabler.io/icons) — Lucide não tinha ícone de calçado genérico.
+Tabler usa a mesma convenção de desenho do Lucide (viewBox 24×24, stroke-width 2,
+contorno sem preenchimento — mesma linhagem visual, derivada de Feather Icons), então
+entra na mesma família visual sem precisar de tratamento diferente. Licença MIT, não
+exige atribuição, incluída aqui por completude.
 
-- **Raquete** — [`tennis-racket`](https://game-icons.net/1x1/delapouite/tennis-racket.html), por **Delapouite** ([site](https://delapouite.com))
-- **Tênis** — [`running-shoe`](https://game-icons.net/1x1/delapouite/running-shoe.html), por **Delapouite** ([site](https://delapouite.com))
+### Raquete — construída, não vem de biblioteca
 
-Licenciados sob [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) — uso
-permitido com atribuição ao autor, mantida aqui conforme exigido pela licença. Os
-arquivos originais (fundo preto + glyph branco, viewBox 512×512) foram normalizados
-para o padrão do jogo (fundo transparente, cor neutra de material, viewBox 100×100) via
-`transform` (translate + scale); o `path` original do glyph não foi alterado. Fonte:
-[github.com/game-icons/icons](https://github.com/game-icons/icons).
+Nenhuma biblioteca verificada (Lucide, Tabler, Phosphor, Iconoir, Game-icons.net) tem um
+ícone de raquete de PADEL como objeto genérico isolado: as únicas opções eram raquete de
+tênis (cabeça alongada, cordas — [`tennis-racket`](https://game-icons.net/1x1/delapouite/tennis-racket.html)
+do Game-icons.net, autor Delapouite, CC BY 3.0) ou uma cena de jogada de ping-pong
+(raquete+bola+trajetória — `ping-pong` do Tabler/Phosphor), nenhuma das duas fiel ao
+formato de uma raquete de padel real (cabeça curta e larga, corpo sólido sem cordas).
+O ícone de raquete é por isso construído a partir de primitivas SVG na mesma convenção
+24×24 das demais 8 categorias — sem depender de nenhuma licença de terceiros: cabeça
+curta e larga (elipse) + cabo em trapézio (mesma peça, pescoço mínimo), com uma grade
+densa de 16 furos pequenos e uniformes e um recorte oval vazado na junção cabeça↔cabo,
+ambos via `<mask>` SVG (transparência real, não cor fixa) — e um laço aberto de cordão de
+pulso. Passou por várias rodadas de iteração: tentativas com poucos furos grandes ou
+simétricos liam como rosto/chocalho/alfinete; a grade densa e uniforme foi o que
+resolveu, e o recorte na garganta evita a leitura de "objeto sólido numa vara".

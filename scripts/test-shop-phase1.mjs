@@ -2,9 +2,15 @@
 // Prova: sponsor_id só em correspondência exata; migração idempotente e não
 // destrutiva (preserva valor explícito já salvo); desconto 15%/10% nunca
 // acumula, contrato inativo e nome vazio não descontam; nenhum item novo
-// usa chave morta; teto de preço do catálogo continua respeitado.
+// usa chave morta; teto de preço do catálogo continua respeitado; todo
+// image_url do catálogo real aponta para um arquivo que existe de verdade.
 import assert from 'node:assert/strict';
+import { existsSync } from 'node:fs';
+import path from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { createServer } from 'vite';
+
+const PROJECT_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 
 let gates = 0;
 function gate(label, condition) {
@@ -52,6 +58,7 @@ try {
   const { ensureExpandedShopCatalog, getExpandedCatalogSummary } = await vite.ssrLoadModule('/src/lib/storeCatalog.js');
   const { SPONSOR_CATALOG, findSponsorIdByManufacturer } = await vite.ssrLoadModule('/src/lib/sponsors.js');
   const { computeItemPrice } = await vite.ssrLoadModule('/src/lib/marketEngine.js');
+  const { getCategoryRarityIconAssetPath } = await vite.ssrLoadModule('/src/lib/equipmentCatalog.js');
 
   const { GameStorage } = await vite.ssrLoadModule('/src/storage/GameStorage.js');
   const { CareerRepository } = await vite.ssrLoadModule('/src/careers/CareerRepository.js');
@@ -145,6 +152,20 @@ try {
     return false;
   });
   gate('Todo item novo cai dentro da faixa de preço da sua raridade', newItemsOutOfBand.length === 0);
+
+  // ── 6. Ícones de item: image_url correto e arquivo existe de verdade ────
+  const finalItems = await localGame.entities.ShopItem.list('-created_date', 5000);
+  const catalogItems = finalItems.filter((i) => i.id !== target.id); // exclui o item com override manual do passo 3
+  const expectedUrl = (i) => getCategoryRarityIconAssetPath(i.category, i.rarity);
+  const itemsWithWrongImageUrl = catalogItems.filter((i) => i.image_url !== expectedUrl(i));
+  gate('Todo item do catálogo tem image_url derivado de category+rarity (getCategoryRarityIconAssetPath)', itemsWithWrongImageUrl.length === 0);
+
+  const uniqueImageUrls = [...new Set(catalogItems.map((i) => i.image_url).filter(Boolean))];
+  const missingFiles = uniqueImageUrls.filter((url) => !existsSync(path.join(PROJECT_ROOT, 'public', url.replace(/^\//, ''))));
+  gate(`Todo image_url referenciado (${uniqueImageUrls.length} combinações únicas) aponta para um arquivo .svg que existe em public/`, missingFiles.length === 0);
+
+  const legacyItems = finalItems.filter((i) => ['shop-001', 'shop-002', 'shop-003', 'shop-004'].includes(i.id));
+  gate('Os 4 itens de localSeed.js (sem template no catálogo) também recebem image_url pela migração', legacyItems.length === 4 && legacyItems.every((i) => i.image_url === expectedUrl(i)));
 
   const summary = getExpandedCatalogSummary();
   console.log(`\n${gates} gates executados, todos PASS — Shop Phase 1.`);

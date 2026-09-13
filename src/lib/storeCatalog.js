@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { ATTRIBUTE_KEYS } from '@/lib/attributes.js';
 import { findSponsorIdByManufacturer } from '@/lib/sponsors.js';
+import { getCategoryRarityIconAssetPath } from '@/lib/equipmentCatalog.js';
 
 const CATEGORY_ALIASES = {
   racket: 'raquete', raquetes: 'raquete', pala: 'raquete', palas: 'raquete',
@@ -173,6 +174,13 @@ function catalogItem({ name, category, subcategory, rarity, basePrice, manufactu
     // Heritage" etc.) — nesse caso o item cai no fallback de fuzzy match de
     // 10% em computeItemPrice (marketEngine.js), não neste sponsor_id.
     sponsor_id: findSponsorIdByManufacturer(manufacturer),
+    // Ícone de item (categoria×raridade) — ver equipmentCatalog.js. Sempre
+    // definido: toda combinação que catalogItem() realmente gera tem um
+    // arquivo correspondente em public/assets/items/ (scripts/
+    // generate-item-icons.mjs). Se algum dia não tiver (asset removido,
+    // combinação nova sem ícone gerado), ItemImage.jsx cai no emoji/ícone
+    // lucide sozinho — comportamento inofensivo, não quebra o card.
+    image_url: getCategoryRarityIconAssetPath(category, rarity),
     attribute_bonus: scaleBonus(bonus, rarity),
     description,
     durability: tier.durability,
@@ -357,8 +365,9 @@ export async function ensureExpandedShopCatalog() {
     // Fase 1: sponsor_id é preenchido só quando AUSENTE — diferente do resto
     // de `fields` acima (que sempre sincroniza com o template), aqui um
     // valor explícito já salvo (mesmo que divirja do template) nunca é
-    // sobrescrito. image_url não entra em `fields` — nunca foi, permanece
-    // intocado por este reparo.
+    // sobrescrito. image_url segue a mesma regra, mas é tratado abaixo (loop
+    // separado) porque também se aplica a itens sem template (ex.: os 4 de
+    // localSeed.js) — deriva de category+rarity, não do nome do item.
     if (!normalized.sponsor_id && template.sponsor_id) patch.sponsor_id = template.sponsor_id;
     if (Object.keys(patch).length > 0) {
       await localGame.entities.ShopItem.update(item.id, patch);
@@ -390,6 +399,20 @@ export async function ensureExpandedShopCatalog() {
     if (item.rarity !== fix.rarity) patch.rarity = fix.rarity;
     if (Object.keys(patch).length > 0) {
       await localGame.entities.ShopItem.update(item.id, patch);
+      repaired += 1;
+    }
+  }
+
+  // Ícones de item: preenche image_url quando AUSENTE, para QUALQUER item
+  // (com ou sem template no catálogo — cobre também os 4 de localSeed.js e
+  // qualquer item futuro fora de EXPANDED_ITEMS), derivado só de
+  // category+rarity. Mesma regra do sponsor_id: nunca sobrescreve um
+  // image_url explícito já salvo.
+  for (const item of existing) {
+    if (!item?.id || item.image_url) continue;
+    const iconPath = getCategoryRarityIconAssetPath(item.category, item.rarity);
+    if (iconPath) {
+      await localGame.entities.ShopItem.update(item.id, { image_url: iconPath });
       repaired += 1;
     }
   }
