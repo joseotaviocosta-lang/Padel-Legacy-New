@@ -15,7 +15,7 @@ import HistoryEditor from '@/components/character/HistoryEditor';
 import EquippedBadgeRow from '@/components/character/EquippedBadgeRow';
 import { applyCharacterCustomizationChange, DEFAULT_CHARACTER_CUSTOMIZATION, normalizeCharacterCustomization } from '@/lib/characterCustomization';
 import { deriveEquipmentOverrides } from '@/lib/characterEquipmentOverrides';
-import { isFieldLocked, lockPhysicalFieldsIfNeeded, preserveLockedFieldsOnReset } from '@/lib/characterFieldLocks';
+import { isFieldLocked, isAppearanceConfirmed, lockPhysicalFieldsIfNeeded, preserveLockedFieldsOnReset } from '@/lib/characterFieldLocks';
 
 const TABS = [
   { key: 'appearance', label: 'Aparência', icon: Palette },
@@ -51,12 +51,17 @@ export default function CharacterEditor() {
       ]);
       const existingRow = existing?.[0] || null;
       let loadedCustomization = normalizeCharacterCustomization(existingRow, p.id);
-      // Migração: carreira já existente (linha já persistida) sem
-      // locked_fields ainda — trava os campos físicos agora, usando os
-      // valores JÁ salvos como base (sem forçar redefinição). Uma
-      // customização nunca salva (existingRow null) NÃO é travada aqui —
-      // só passa a valer no primeiro save de verdade (handleSave).
-      if (existingRow?.id) {
+      // Migração: carreira já existente e CONFIRMADA por uma ação real do
+      // jogador (appearance_confirmed) sem locked_fields ainda — trava os
+      // campos físicos agora, usando os valores JÁ salvos como base (sem
+      // forçar redefinição). Bug real corrigido aqui: `existingRow?.id`
+      // sozinho não bastava como sinal — LOCAL_SEED.CharacterCustomization e
+      // a migração de schema v6 podiam fabricar uma linha com `id` sem o
+      // jogador nunca ter salvo nada, travando altura/biotipo com defaults
+      // antes da sugestão da Fase B aparecer. Uma customização nunca
+      // confirmada por save real NÃO é travada aqui — só passa a valer no
+      // primeiro save de verdade (handleSave).
+      if (isAppearanceConfirmed(loadedCustomization)) {
         const migrated = lockPhysicalFieldsIfNeeded(loadedCustomization);
         if (migrated.locked_fields !== loadedCustomization.locked_fields) {
           const persisted = await localGame.entities.CharacterCustomization.update(existingRow.id, { locked_fields: migrated.locked_fields });
@@ -89,6 +94,9 @@ export default function CharacterEditor() {
     setSaving(true);
     try {
       let payload = normalizeCharacterCustomization(customization, profile?.id);
+      // handleSave só roda por uma ação real de UI (clique em "Salvar") —
+      // este é o único lugar do sistema que deve gravar appearance_confirmed.
+      payload.appearance_confirmed = true;
       // Trava no primeiro save de verdade (decisão confirmada): uma
       // customização sem id ainda está sendo criada agora — os campos
       // físicos ficam fixos a partir deste exato save, com os valores que o

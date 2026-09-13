@@ -15,6 +15,7 @@ export const DEFAULT_CHARACTER_CUSTOMIZATION = Object.freeze({
   voice_type: 'medio', voice_pitch: 50, voice_speed: 50,
   primary_color: '#a3e635', secondary_color: '#0ea5e9', signature_emoji: '🎾', backstory: '',
   locked_fields: [],
+  appearance_confirmed: false,
 });
 
 const ids = items => items.map(item => typeof item === 'string' ? item : item.id);
@@ -88,6 +89,7 @@ export function normalizeCharacterCustomization(value, profileId = '') {
     : [...DEFAULT_CHARACTER_CUSTOMIZATION.languages];
   if (normalized.languages.length === 0) normalized.languages = [...DEFAULT_CHARACTER_CUSTOMIZATION.languages];
   normalized.locked_fields = Array.isArray(source.locked_fields) ? [...new Set(source.locked_fields)] : [];
+  normalized.appearance_confirmed = Boolean(source.appearance_confirmed);
 
   normalized.height_cm = finiteInRange(source.height_cm ?? source.height, 178, 155, 210);
   normalized.voice_pitch = finiteInRange(source.voice_pitch, 50, 0, 100);

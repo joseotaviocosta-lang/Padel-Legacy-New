@@ -17,7 +17,7 @@ function gate(label, condition) {
 
 const vite = await createServer({ server: { middlewareMode: true }, appType: 'custom', logLevel: 'error' });
 try {
-  const { LOCKED_FIELDS, isFieldLocked, lockPhysicalFieldsIfNeeded, preserveLockedFieldsOnReset } =
+  const { LOCKED_FIELDS, isFieldLocked, isAppearanceConfirmed, lockPhysicalFieldsIfNeeded, preserveLockedFieldsOnReset } =
     await vite.ssrLoadModule('/src/lib/characterFieldLocks.js');
   const { DEFAULT_CHARACTER_CUSTOMIZATION, normalizeCharacterCustomization } =
     await vite.ssrLoadModule('/src/lib/characterCustomization.js');
@@ -113,6 +113,33 @@ try {
   const afterResetUnlocked = normalizeCharacterCustomization(resetPayloadUnlocked, 'profile-6');
   gate('Reset de customização nunca travada continua resetando height_cm/build ao default (178cm/atletico) — sem regressão',
     afterResetUnlocked.height_cm === 178 && afterResetUnlocked.build === 'atletico');
+
+  // ─── isAppearanceConfirmed: sinal real de "salvo pela UI", não `id` ─────
+  // Bug real corrigido nesta sessão: `existingRow?.id` sozinho não bastava
+  // como prova de "já foi salvo" — seed e migração podiam fabricar um `id`
+  // sem o jogador nunca ter interagido. appearance_confirmed é setado só
+  // por CharacterEditor.jsx handleSave() (ação real de UI).
+  gate('isAppearanceConfirmed: false quando ausente (linha nunca confirmada por save real)',
+    !isAppearanceConfirmed({ id: 'fabricado-por-seed-ou-migracao', height_cm: 178 }));
+  gate('isAppearanceConfirmed: true só quando o campo está explicitamente true',
+    isAppearanceConfirmed({ id: 'row-1', appearance_confirmed: true }));
+  gate('isAppearanceConfirmed: valores truthy não-boolean (ex.: string) não colam — precisa ser exatamente true-ish via Boolean()',
+    isAppearanceConfirmed({ appearance_confirmed: 1 }) === true && !isAppearanceConfirmed({ appearance_confirmed: 0 }));
+  gate('DEFAULT_CHARACTER_CUSTOMIZATION começa com appearance_confirmed=false',
+    DEFAULT_CHARACTER_CUSTOMIZATION.appearance_confirmed === false);
+  const normalizedConfirmed = normalizeCharacterCustomization({ appearance_confirmed: true }, 'profile-7');
+  gate('normalizeCharacterCustomization preserva appearance_confirmed=true quando presente',
+    normalizedConfirmed.appearance_confirmed === true);
+  const normalizedUnconfirmed = normalizeCharacterCustomization({}, 'profile-8');
+  gate('normalizeCharacterCustomization normaliza appearance_confirmed ausente para false (nunca undefined)',
+    normalizedUnconfirmed.appearance_confirmed === false);
+
+  // ─── Reset preserva appearance_confirmed (fato histórico, não cosmético) ─
+  const confirmedCustomization = normalizeCharacterCustomization({ id: 'row-5', appearance_confirmed: true, locked_fields: ['height_cm', 'build'], height_cm: 195, build: 'musculoso' }, 'profile-9');
+  const resetOfConfirmed = preserveLockedFieldsOnReset(confirmedCustomization, DEFAULT_CHARACTER_CUSTOMIZATION);
+  const afterResetConfirmed = normalizeCharacterCustomization(resetOfConfirmed, 'profile-9');
+  gate('Reset não apaga appearance_confirmed=true (é histórico, não preferência cosmética)',
+    afterResetConfirmed.appearance_confirmed === true);
 
   console.log(`\n${gates} gates executados, todos PASS — Aparência Fase A (trava de campos físicos).`);
 } finally {

@@ -86,14 +86,35 @@ export function migrateCareer(career) {
       : [];
     if (rows.length > 0) {
       data.entities.CharacterCustomization = rows.map(item => normalizeCharacterCustomization(item, item.profile_id || playerId));
-    } else if (playerId) {
-      const legacyAppearance = data.player?.appearance || data.player?.customization || null;
+    } else if (playerId && data.player?.appearance && typeof data.player.appearance === 'object') {
+      // Só sintetiza uma linha quando existe dado legado GENUÍNO pra
+      // carregar adiante (appearance/customization real do formato antigo)
+      // — isso representa uma ação de personalização que o jogador de fato
+      // fez, então appearance_confirmed=true é honesto aqui (Aparência
+      // Fase A/B: appearance_confirmed é o sinal que decide se a Fase A
+      // trava altura/biotipo na próxima leitura).
       data.entities.CharacterCustomization = [normalizeCharacterCustomization({
-        ...(legacyAppearance && typeof legacyAppearance === 'object' ? legacyAppearance : {}),
+        ...data.player.appearance,
         id: `character-customization-${playerId}`,
         profile_id: playerId,
+        appearance_confirmed: true,
+      }, playerId)];
+    } else if (playerId && data.player?.customization && typeof data.player.customization === 'object') {
+      data.entities.CharacterCustomization = [normalizeCharacterCustomization({
+        ...data.player.customization,
+        id: `character-customization-${playerId}`,
+        profile_id: playerId,
+        appearance_confirmed: true,
       }, playerId)];
     } else {
+      // Bug real corrigido: este branch fabricava uma linha com defaults
+      // (178cm/atlético) e um `id`, mesmo quando não havia NENHUM dado
+      // legado — a Fase A via esse `id` fabricado e travava altura/biotipo
+      // antes do jogador nunca ter visto a aba Aparência (mesma classe do
+      // bug de LOCAL_SEED.CharacterCustomization). Sem dado real pra
+      // migrar, o correto é `[]` — exatamente como uma carreira nova nunca
+      // vista, deixando a Fase B/A funcionarem normalmente na primeira
+      // visita.
       data.entities.CharacterCustomization = [];
     }
     data.save_schema_version = 6;
