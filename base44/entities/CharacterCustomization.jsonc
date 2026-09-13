@@ -137,6 +137,14 @@
     "backstory": {
       "type": "string",
       "default": ""
+    },
+    "locked_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Campos travados pós-criação (Fase A: height_cm, build) — trava rígida, sem resgate"
     }
   },
   "required": [

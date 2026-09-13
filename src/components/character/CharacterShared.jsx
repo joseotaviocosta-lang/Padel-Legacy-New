@@ -27,6 +27,29 @@ export function FallbackControl({ overridden, itemName, children }) {
   );
 }
 
+// Campo travado pós-criação (Fase A: height_cm/build) — diferente de
+// FallbackControl: aqui não há valor de fallback esperando por trás, o
+// valor É o definitivo. Trava rígida (sem resgate nesta fase), por isso o
+// controle fica realmente inerte (pointer-events-none), não só dimmed.
+export function LockedNotice() {
+  return (
+    <p className="text-[10px] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1">
+      🔒 Definido na criação do personagem — não pode ser alterado depois
+    </p>
+  );
+}
+
+export function LockedControl({ locked, children }) {
+  return (
+    <div>
+      {locked && <LockedNotice />}
+      <div className={locked ? 'opacity-50 pointer-events-none select-none' : undefined} aria-disabled={locked || undefined}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
 export function ColorPicker({ label, options, value, onChange }) {
   const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   return (

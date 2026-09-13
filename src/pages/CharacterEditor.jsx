@@ -15,6 +15,7 @@ import HistoryEditor from '@/components/character/HistoryEditor';
 import EquippedBadgeRow from '@/components/character/EquippedBadgeRow';
 import { applyCharacterCustomizationChange, DEFAULT_CHARACTER_CUSTOMIZATION, normalizeCharacterCustomization } from '@/lib/characterCustomization';
 import { deriveEquipmentOverrides } from '@/lib/characterEquipmentOverrides';
+import { isFieldLocked, lockPhysicalFieldsIfNeeded, preserveLockedFieldsOnReset } from '@/lib/characterFieldLocks';
 
 const TABS = [
   { key: 'appearance', label: 'Aparência', icon: Palette },
@@ -48,7 +49,21 @@ export default function CharacterEditor() {
         localGame.entities.PlayerInventory.filter({ profile_id: p.id, equipped: true }),
         localGame.entities.ShopItem.list(),
       ]);
-      setCustomization(normalizeCharacterCustomization(existing?.[0] || null, p.id));
+      const existingRow = existing?.[0] || null;
+      let loadedCustomization = normalizeCharacterCustomization(existingRow, p.id);
+      // Migração: carreira já existente (linha já persistida) sem
+      // locked_fields ainda — trava os campos físicos agora, usando os
+      // valores JÁ salvos como base (sem forçar redefinição). Uma
+      // customização nunca salva (existingRow null) NÃO é travada aqui —
+      // só passa a valer no primeiro save de verdade (handleSave).
+      if (existingRow?.id) {
+        const migrated = lockPhysicalFieldsIfNeeded(loadedCustomization);
+        if (migrated.locked_fields !== loadedCustomization.locked_fields) {
+          const persisted = await localGame.entities.CharacterCustomization.update(existingRow.id, { locked_fields: migrated.locked_fields });
+          loadedCustomization = normalizeCharacterCustomization(persisted, p.id);
+        }
+      }
+      setCustomization(loadedCustomization);
       const shopMap = {};
       (shopItems || []).forEach(item => { shopMap[item.id] = item; });
       setEquipmentOverrides(deriveEquipmentOverrides(equippedItems || [], shopMap));
@@ -64,15 +79,21 @@ export default function CharacterEditor() {
   useEffect(() => { load(); }, [load]);
 
   const update = useCallback((key, value) => {
+    if (customization && isFieldLocked(customization, key)) return;
     setCustomization(previous => previous ? applyCharacterCustomizationChange(previous, key, value) : previous);
     setDirty(true);
-  }, []);
+  }, [customization]);
 
   const handleSave = async () => {
     if (!customization) return;
     setSaving(true);
     try {
-      const payload = normalizeCharacterCustomization(customization, profile?.id);
+      let payload = normalizeCharacterCustomization(customization, profile?.id);
+      // Trava no primeiro save de verdade (decisão confirmada): uma
+      // customização sem id ainda está sendo criada agora — os campos
+      // físicos ficam fixos a partir deste exato save, com os valores que o
+      // jogador acabou de escolher.
+      if (!payload.id) payload = lockPhysicalFieldsIfNeeded(payload);
       const saved = payload.id
         ? await localGame.entities.CharacterCustomization.update(payload.id, payload)
         : await localGame.entities.CharacterCustomization.create(payload);
@@ -88,10 +109,10 @@ export default function CharacterEditor() {
   };
 
   const handleReset = () => {
-    setCustomization(normalizeCharacterCustomization({
-      ...DEFAULT_CHARACTER_CUSTOMIZATION,
-      ...(customization?.id ? { id: customization.id } : {}),
-    }, profile?.id));
+    setCustomization(normalizeCharacterCustomization(
+      preserveLockedFieldsOnReset(customization, DEFAULT_CHARACTER_CUSTOMIZATION),
+      profile?.id,
+    ));
     setDirty(true);
   };
 
