@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { ATTRIBUTE_KEYS } from '@/lib/attributes.js';
 
 const CATEGORY_ALIASES = {
   racket: 'raquete', raquetes: 'raquete', pala: 'raquete', palas: 'raquete',
@@ -22,14 +23,20 @@ const RARITY_ALIASES = {
   exclusivo: 'exclusivo', exclusive: 'exclusivo',
 };
 
+// Piso de preço por raridade — a ÚNICA rampa de preço do catálogo (Fase 0 do
+// redesenho da Loja). mitico/exclusivo recalibrados: o item mais caro do
+// jogo deve ficar entre 1x-3x um título de Crown (30.000 moedas, a maior
+// premiação do circuito — circuitCatalog.js) em vez de 40x-108x como antes
+// da correção do bug de dupla rampa em catalogItem() (ver comentário na
+// tabela TIERS, abaixo).
 export const SHOP_PROGRESSION = {
   comum:     { minCareerLevel: 1,  maxRanking: null, minReputation: 0,  priceFloor: 40,     label: 'Início da carreira' },
   incomum:  { minCareerLevel: 3,  maxRanking: null, minReputation: 0,  priceFloor: 250,    label: 'Circuito amador' },
   raro:     { minCareerLevel: 8,  maxRanking: 500,  minReputation: 8,  priceFloor: 1200,   label: 'Circuito regional' },
   epico:    { minCareerLevel: 15, maxRanking: 200,  minReputation: 20, priceFloor: 5000,   label: 'Circuito nacional' },
   lendario: { minCareerLevel: 25, maxRanking: 100,  minReputation: 40, priceFloor: 16000,  label: 'Circuito internacional' },
-  mitico:   { minCareerLevel: 35, maxRanking: 40,   minReputation: 65, priceFloor: 45000,  label: 'Elite mundial' },
-  exclusivo:{ minCareerLevel: 45, maxRanking: 10,   minReputation: 85, priceFloor: 120000, label: 'Lendas do circuito' },
+  mitico:   { minCareerLevel: 35, maxRanking: 40,   minReputation: 65, priceFloor: 35000,  label: 'Elite mundial' },
+  exclusivo:{ minCareerLevel: 45, maxRanking: 10,   minReputation: 85, priceFloor: 65000,  label: 'Lendas do circuito' },
 };
 
 function cleanKey(value) {
@@ -105,19 +112,48 @@ export function getShopItemAccess(profile, item) {
   };
 }
 
+// Fase 0 do redesenho da Loja — `price` foi removido daqui. Ele multiplicava
+// basePrice de novo por cima de uma raridade que, para todo item que NÃO é
+// gerado por linha de raquete, o basePrice já embutia (ex.: colecionáveis
+// iam de 1.100 a 18.000 SÓ para refletir a raridade pretendida). Dupla
+// rampa: é por isso que a Coroa do Grand Slam custava 3,24M de moedas —
+// 108x um título de Crown, a maior premiação do circuito. Preço agora tem
+// UMA rampa só: o piso de SHOP_PROGRESSION, acima. A única exceção real —
+// linhas de raquete, onde um único basePrice por linha precisa mesmo virar
+// 6 variantes de raridade — recebe seu próprio multiplicador aplicado no
+// loop que as gera (RACKET_TIER_PRICE_MULTIPLIER, abaixo), não aqui.
 const TIERS = {
-  comum:      { price: 1,  bonus: 1, durability: 72, year: 2021 },
-  incomum:    { price: 2,  bonus: 1, durability: 80, year: 2022 },
-  raro:       { price: 5,  bonus: 2, durability: 88, year: 2023 },
-  epico:      { price: 12, bonus: 3, durability: 94, year: 2024 },
-  lendario:   { price: 30, bonus: 4, durability: 100, year: 2025 },
-  mitico:     { price: 75, bonus: 5, durability: 105, year: 2026 },
-  exclusivo:  { price: 180,bonus: 6, durability: 110, year: 2026 },
+  comum:      { bonus: 1, durability: 72,  year: 2021 },
+  incomum:    { bonus: 1, durability: 80,  year: 2022 },
+  raro:       { bonus: 2, durability: 88,  year: 2023 },
+  epico:      { bonus: 3, durability: 94,  year: 2024 },
+  lendario:   { bonus: 4, durability: 100, year: 2025 },
+  mitico:     { bonus: 5, durability: 105, year: 2026 },
+  exclusivo:  { bonus: 6, durability: 110, year: 2026 },
 };
 
+// Fase 0 do redesenho da Loja, item 4: scripts/test-equipment-bonus-integrity.mjs
+// achou 12 chaves de bônus declaradas no catálogo (concentration, control,
+// durability, followers, health, positioning, reflexes, reputation, speed,
+// stamina, strength, tactics) que não são nenhum dos 10 ATTRIBUTE_KEYS reais
+// e não são lidas por nenhum outro sistema do jogo — bônus puramente
+// decorativo, sem efeito nenhum ao equipar. Decisão: sai do catálogo (não
+// vira sistema novo agora — plugar em energy/fatigue/morale/confidence/form,
+// que já existem, exigiria integrar um delta permanente de equip com estado
+// dinâmico diário, isso é trabalho de implementação, não uma decisão de
+// rumo). Filtra aqui, na função compartilhada, em vez de editar cada item —
+// os itens abaixo (RACKET_LINES/SUPPORT_ITEMS) ainda declaram as chaves
+// órfãs nos literais de origem, mas elas nunca chegam ao attribute_bonus
+// final; isso também impede uma chave órfã nova de entrar despercebida
+// quando o redesenho adicionar itens de tier alto.
 function scaleBonus(base, rarity) {
   const mult = TIERS[rarity]?.bonus || 1;
-  return Object.fromEntries(Object.entries(base || {}).map(([key, value]) => [key, Math.round(value * mult)]).filter(([, value]) => value !== 0));
+  return Object.fromEntries(
+    Object.entries(base || {})
+      .filter(([key]) => ATTRIBUTE_KEYS.includes(key))
+      .map(([key, value]) => [key, Math.round(value * mult)])
+      .filter(([, value]) => value !== 0)
+  );
 }
 
 function catalogItem({ name, category, subcategory, rarity, basePrice, manufacturer, bonus, description, country = 'Global', collection, history, ...extra }) {
@@ -128,7 +164,7 @@ function catalogItem({ name, category, subcategory, rarity, basePrice, manufactu
     category,
     subcategory,
     rarity,
-    price: Math.max(requirement.priceFloor, Math.round(basePrice * tier.price)),
+    price: Math.max(requirement.priceFloor, Math.round(basePrice)),
     manufacturer,
     attribute_bonus: scaleBonus(bonus, rarity),
     description,
@@ -165,14 +201,24 @@ const RACKET_TIERS = [
   ['comum', 'Club'], ['incomum', 'Sport'], ['raro', 'Pro'], ['epico', 'Elite'], ['lendario', 'Legend'], ['mitico', 'Mythic'],
 ];
 
+// Única rampa de preço para linhas de raquete: um basePrice por LINHA
+// (~rarity-neutro, só varia ±40% entre linhas) vira as 6 variantes de tier
+// multiplicando aqui — não dentro de catalogItem(), que agora só recebe
+// preço final (ver comentário na tabela TIERS). Escolhido para que a linha
+// mais cara em mitico fique perto do piso de exclusivo (65.000) sem passá-lo.
+const RACKET_TIER_PRICE_MULTIPLIER = {
+  comum: 1, incomum: 1.8, raro: 4, epico: 9, lendario: 18, mitico: 32,
+};
+
 const racketItems = [];
 RACKET_LINES.forEach(([brand, model, subcategory, bonus, basePrice, description], lineIndex) => {
   RACKET_TIERS.forEach(([rarity, suffix], tierIndex) => {
     // Mantém variedade sem gerar todas as combinações de topo para cada linha.
     if (tierIndex >= 4 && lineIndex % 2 !== tierIndex % 2) return;
+    const lineBasePrice = basePrice * (1 + lineIndex * 0.04);
     racketItems.push(catalogItem({
       name: `${brand} ${model} ${suffix}`,
-      category: 'raquete', subcategory, rarity, basePrice: basePrice * (1 + lineIndex * 0.04), manufacturer: brand,
+      category: 'raquete', subcategory, rarity, basePrice: lineBasePrice * RACKET_TIER_PRICE_MULTIPLIER[rarity], manufacturer: brand,
       bonus, description, collection: `${brand} ${model}`,
       shape: subcategory === 'power' ? 'diamante' : subcategory === 'control' ? 'redonda' : 'lagrima',
       balance: subcategory === 'power' ? 'alto' : subcategory === 'control' ? 'baixo' : 'medio',
@@ -278,6 +324,34 @@ export async function ensureExpandedShopCatalog() {
       if (template[field] !== undefined && normalized[field] !== template[field]) patch[field] = template[field];
     });
     if (JSON.stringify(normalized.attribute_bonus || {}) !== JSON.stringify(template.attribute_bonus || {})) patch.attribute_bonus = template.attribute_bonus;
+    if (Object.keys(patch).length > 0) {
+      await localGame.entities.ShopItem.update(item.id, patch);
+      repaired += 1;
+    }
+  }
+
+  // Fase 0.1 do redesenho da Loja: 4 itens de demonstração vêm de
+  // @/local/localSeed.js (via initializeCareerInitialData, ids fixos
+  // shop-001..004) — antes da correção lá, usavam base_price/current_price
+  // em vez do campo `price` do schema, e 2 deles estavam com rarity 'raro'
+  // incoerente com o próprio preço (custavam menos que o item 'comum' ao
+  // lado). O loop acima não os alcança: seus nomes não batem com nenhum
+  // template de EXPANDED_ITEMS. Saves criados antes da correção em
+  // localSeed.js já persistiram esses 4 registros com os campos errados —
+  // repara pelos ids conhecidos para não deixar saves existentes presos no
+  // estado antigo (a correção na fonte só vale para carreira nova).
+  const LEGACY_LOCAL_SEED_SHOP_ITEM_FIX = {
+    'shop-001': { price: 500, rarity: 'comum' },
+    'shop-002': { price: 350, rarity: 'comum' },
+    'shop-003': { price: 80, rarity: 'comum' },
+    'shop-004': { price: 220, rarity: 'comum' },
+  };
+  for (const item of existing) {
+    const fix = LEGACY_LOCAL_SEED_SHOP_ITEM_FIX[item?.id];
+    if (!fix) continue;
+    const patch = {};
+    if (item.price !== fix.price) patch.price = fix.price;
+    if (item.rarity !== fix.rarity) patch.rarity = fix.rarity;
     if (Object.keys(patch).length > 0) {
       await localGame.entities.ShopItem.update(item.id, patch);
       repaired += 1;

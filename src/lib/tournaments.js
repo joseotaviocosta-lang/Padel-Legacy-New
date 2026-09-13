@@ -1,14 +1,16 @@
 import { localGame } from '@/api/localGameClient.js';
 import { enrichTournamentWeather } from '@/lib/weather';
 import { getTournamentTierConfig, TOURNAMENT_TIER_CONFIG } from '@/lib/circuitCatalog.js';
+import { SPONSOR_CATALOG } from '@/lib/sponsors.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 
-export const TOURNAMENT_SPONSORS = [
-  'Red Bull', 'Estrella Damm', 'Mapfre', 'Vodafone', 'Movistar',
-  'Head', 'Bullpad', 'Nox', 'Adidas', 'Wilson', 'Babolat',
-  'Coca-Cola', 'Nike', 'Rolex', 'Mercedes-Benz', 'INEOS',
-];
+// Nomes de patrocinador de torneio vêm do mesmo catálogo que patrocina
+// atletas (@/lib/sponsors) — antes era uma lista própria, com marcas fora de
+// contexto esportivo (Coca-Cola, Rolex, Mercedes-Benz, INEOS) e grafias
+// divergentes ("Bullpad" vs "Bullpadel"). Uma fonte só evita as duas coisas
+// e já cria a sintonia marca-de-patrocínio ↔ marca-do-torneio.
+export const TOURNAMENT_SPONSORS = SPONSOR_CATALOG.map((sponsor) => sponsor.name);
 
 export const TOURNAMENT_LOCATIONS = [
   'Madrid, Espanha', 'Barcelona, Espanha', 'Buenos Aires, Argentina',

@@ -56,9 +56,6 @@ const vite = await createServer({ server: { middlewareMode: true }, appType: 'cu
 try {
   const { ATTRIBUTE_KEYS } = await vite.ssrLoadModule('/src/lib/attributes.js');
   const { ensureExpandedShopCatalog, getExpandedCatalogSummary } = await vite.ssrLoadModule('/src/lib/storeCatalog.js');
-  const racketsModule = await vite.ssrLoadModule('/src/lib/catalog/rackets.js');
-  const gripsModule = await vite.ssrLoadModule('/src/lib/catalog/gripsBallsBags.js');
-  const apparelModule = await vite.ssrLoadModule('/src/lib/catalog/apparelTechCollectibles.js');
 
   const { GameStorage } = await vite.ssrLoadModule('/src/storage/GameStorage.js');
   const { CareerRepository } = await vite.ssrLoadModule('/src/careers/CareerRepository.js');
