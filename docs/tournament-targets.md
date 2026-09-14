@@ -17,7 +17,7 @@ auditoria (ver `reports/real-athletes-audit/AUDITORIA-ATLETAS-REAIS-VS-BOTS.md`)
 |---|---|---|
 | Major / P1 (equivalente a Elite/Crown no catálogo atual) | ≥ 70% | Temporadas 1-3 |
 | P2 (equivalente a Masters) | 40-60% | Todas |
-| Gold / Platinum | < 15% | Todas |
+| Gold / Platinum | referência: até ~23% em Platinum, ~13% em Gold (teto observado — ver nota abaixo, não é meta ativa de correção) | Todas |
 | Bronze / Silver | ~0% (não deveriam nem ter atletas reais na chave) | Todas |
 
 **Nota de mapeamento de nomenclatura:** os tiers do calendário atual
@@ -29,6 +29,31 @@ Masters↔P2 — a fase de implementação que fizer a correção real da elegib
 por tier (achado #16 da auditoria, `rank` vs. `ranking` em
 `WorldTourLifecycle.js`) deve fixar esse mapeamento explicitamente antes de
 medir contra estas metas.
+
+**Nota sobre a meta de Gold/Platinum (revisada na Fase 8.6):** a meta
+original desta linha ("< 15%" de títulos reais, ou seja, bots deveriam
+vencer ≥ 85% ali) se mostrou **estruturalmente inatingível** e foi
+substituída por uma referência de teto realista, não uma meta ativa de
+correção. Quatro configurações estruturalmente diferentes foram medidas
+(produção sem alteração; `potential` de bot aberto para toda a
+população, Fase 8.3; `potential` aberto só numa faixa de rank, Fase 8.4;
+teto de OVR travado no tier de destino, Fase 8.5) — a melhor delas
+chegou a 23,3% de títulos de bot em Platinum e 12,5% em Gold (nenhuma
+configuração testada passou disso em nenhum dos dois tiers), ainda 62-73
+pontos percentuais abaixo do alvo original de 85%, e qualquer tentativa
+de fechar essa distância vazou força para Elite/Crown/Masters (ameaçando
+a meta de Major/P1 ≥ 70%, mais crítica) ou não fechou gap nenhum. A
+causa é estrutural, não uma questão de calibração: os 100 atletas reais
+foram inseridos como o topo do elenco por desenho (Fase 2,
+`absoluteRank = existingAthletes.length + i + 1` —
+`src/lib/rankingPopulation.js`), e qualquer geração de bot forte o
+bastante para dominar Gold/Platinum precisa de um teto de OVR ou de
+crescimento alto o bastante que a mesma população, ao evoluir ao longo
+de uma carreira simulada, não tem como saber "pare neste tier" — ela
+continua subindo até onde o teto permitir. Ver
+`reports/real-athletes-audit/FECHAMENTO-DOMINANCIA-TIER-8.2-8.5.md` para
+o histórico completo da investigação e a decisão de não perseguir
+correção adicional por esta via.
 
 ## Metas de participação
 
