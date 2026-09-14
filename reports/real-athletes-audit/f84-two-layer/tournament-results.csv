@@ -1,0 +1,396 @@
+year,tournament_id,tier,champion_name,champion_ids,champion_real_count,champion_ovr_avg,classification,main_draw_size,simulated_entrants,incomplete
+2026,tournament-2026-lis-bro-w03-1,Bronze,"Carlos Vega & Pablo Herrera",athleteprofile-1767226939915-4nim4c|athleteprofile-1767227069915-7czior,0,78.5,100%_bots,16,16,false
+2026,tournament-2026-rom-eli-w03-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,20,20,false
+2026,tournament-2026-mia-sil-w02-1,Silver,"Emiliano Medina & Franco Castro",athleteprofile-1767226993915-rsxjdl|athleteprofile-1767226963915-9dgbi5,0,82.5,100%_bots,16,16,false
+2026,tournament-2026-seo-gol-w02-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,24,24,false
+2026,tournament-2026-bcn-bro-w01-1,Bronze,"Emiliano Medina & Franco Castro",athleteprofile-1767226993915-rsxjdl|athleteprofile-1767226963915-9dgbi5,0,82.5,100%_bots,16,16,false
+2026,tournament-2026-par-mas-w01-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,24,24,false
+2026,tournament-2026-lon-bro-w05-1,Bronze,"João Torres & Enzo Santos",athleteprofile-1767227476915-766f0s|athleteprofile-1767227140915-xeeooa,0,71.5,100%_bots,16,16,false
+2026,tournament-2026-cph-sil-w05-2,Silver,"Rafael Santos & Franco Costa",athleteprofile-1767227022915-cv7rrg|athleteprofile-1767227024915-b272ve,0,76,100%_bots,16,16,false
+2026,tournament-2026-rio-mas-w05-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,24,24,false
+2026,tournament-2026-bog-pla-w06-1,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,32,32,false
+2026,tournament-2026-pra-cro-w06-2,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,20,20,false
+2026,tournament-2026-dub-bro-w07-1,Bronze,"Pablo Rojas & Javier Fernández 340",athleteprofile-1767226943915-02qiim|athleteprofile-1767227135915-ms0lmp,0,75.5,100%_bots,16,16,false
+2026,tournament-2026-bcn-sil-w08-1,Silver,"Pablo Rojas & Javier Fernández 340",athleteprofile-1767226943915-02qiim|athleteprofile-1767227135915-ms0lmp,0,75.5,100%_bots,16,16,false
+2026,tournament-2026-doh-gol-w08-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96,100%_reais,24,24,false
+2026,tournament-2026-lim-eli-w08-3,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,93.5,100%_reais,20,20,false
+2026,tournament-2026-riy-bro-w09-1,Bronze,"Rafael Molina & Miguel Ferrer",athleteprofile-1767227139915-88ai9q|athleteprofile-1767227007915-6lvmyi,0,86,100%_bots,16,16,false
+2026,tournament-2026-nai-mas-w10-1,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96,100%_reais,24,24,false
+2026,tournament-2026-bkk-bro-w11-1,Bronze,"Rafael Molina & Miguel Ferrer",athleteprofile-1767227139915-88ai9q|athleteprofile-1767227007915-6lvmyi,0,86,100%_bots,16,16,false
+2026,tournament-2026-sha-sil-w11-2,Silver,"Emiliano Medina & Franco Castro",athleteprofile-1767226993915-rsxjdl|athleteprofile-1767226963915-9dgbi5,0,83,100%_bots,16,16,false
+2026,tournament-2026-akl-bro-w13-1,Bronze,"Emiliano Medina & Franco Castro",athleteprofile-1767226993915-rsxjdl|athleteprofile-1767226963915-9dgbi5,0,83,100%_bots,16,16,false
+2026,tournament-2026-mil-eli-w13-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94,100%_reais,20,20,false
+2026,tournament-2026-cun-sil-w14-1,Silver,"Rafael Molina & Miguel Ferrer",athleteprofile-1767227139915-88ai9q|athleteprofile-1767227007915-6lvmyi,0,86.5,100%_bots,16,16,false
+2026,tournament-2026-ist-gol-w14-2,Gold,"Javier Valdés & Pedro Meléndez Amaya",real_javier_valdes|real_pedro_melendez_amaya,2,78,100%_reais,24,24,false
+2026,tournament-2026-sin-mas-w14-4,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96,100%_reais,24,24,false
+2026,tournament-2026-mia-pla-w14-3,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94,100%_reais,32,32,false
+2026,tournament-2026-lon-bro-w15-1,Bronze,"Lucas Cabrera & Thiago Martínez",athleteprofile-1767227178915-fur9kk|athleteprofile-1767227149915-jdidw6,0,75.5,100%_bots,16,16,false
+2026,tournament-2026-nyc-bro-w17-1,Bronze,"Rubén Giménez & Thiago Pereira",athleteprofile-1767227097915-tb7azt|athleteprofile-1767226904915-hm24k2,0,78.5,100%_bots,16,16,false
+2026,tournament-2026-cas-sil-w17-2,Silver,"Samuel Acosta 348 & Carlos Suárez",athleteprofile-1767227143915-lcslls|athleteprofile-1767227089915-lqz5fu,0,78.5,100%_bots,16,16,false
+2026,tournament-2026-mex-eli-w17-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96,100%_reais,20,20,false
+2026,tournament-2026-cor-cro-w18-1,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96,100%_reais,20,20,false
+2026,tournament-2026-akl-bro-w19-1,Bronze,"Lucas Miranda & Ignacio Cabrera",athleteprofile-1767226987915-xife0f|athleteprofile-1767226991915-cdstq8,0,83,100%_bots,16,16,false
+2026,tournament-2026-bog-mas-w19-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94,100%_reais,24,24,false
+2026,tournament-2026-mon-sil-w20-1,Silver,"João Silva & Marco Ferrer",athleteprofile-1767226955915-szhxro|athleteprofile-1767226908915-hwgysa,0,82.5,100%_bots,16,16,false
+2026,tournament-2026-mel-gol-w20-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94,100%_reais,24,24,false
+2026,tournament-2026-seo-bro-w21-1,Bronze,"João Silva & Marco Ferrer",athleteprofile-1767226955915-szhxro|athleteprofile-1767226908915-hwgysa,0,82.5,100%_bots,16,16,false
+2026,tournament-2026-cas-pla-w22-1,Platinum,"Pablo Lijó & Javier Ruiz",real_pablo_lijo|real_javier_ruiz,2,82,100%_reais,32,32,false
+2026,tournament-2026-nyc-eli-w22-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94.5,100%_reais,20,20,false
+2026,tournament-2026-bcn-bro-w23-1,Bronze,"Ignacio Santos & Pedro Herrera",athleteprofile-1767226964915-1622oy|athleteprofile-1767226956915-m8aidu,0,82,100%_bots,16,16,false
+2026,tournament-2026-doh-sil-w23-2,Silver,"Tomás Rojas & Thiago Acosta",athleteprofile-1767226923915-455f2s|athleteprofile-1767226913915-6koxs5,0,85.5,100%_bots,16,16,false
+2026,tournament-2026-syd-bro-w24-1,Bronze,"Álvaro Cabrera & Mateo Acosta",athleteprofile-1767227005915-cl7qa5|athleteprofile-1767226975915-sxbb2n,0,79,100%_bots,16,16,false
+2026,tournament-2026-nai-mas-w24-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94.5,100%_reais,24,24,false
+2026,tournament-2026-sao-gol-w25-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,24,24,false
+2026,tournament-2026-cpt-bro-w26-1,Bronze,"Rafael Molina & Miguel Ferrer",athleteprofile-1767227139915-88ai9q|athleteprofile-1767227007915-6lvmyi,0,87,100%_bots,16,16,false
+2026,tournament-2026-dub-sil-w26-2,Silver,"João Silva & Marco Ferrer",athleteprofile-1767226955915-szhxro|athleteprofile-1767226908915-hwgysa,0,83,100%_bots,16,16,false
+2026,tournament-2026-bog-eli-w27-1,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94.5,100%_reais,20,20,false
+2026,tournament-2026-riy-bro-w28-1,Bronze,"Ignacio Rojas 963 & Martín Castro",athleteprofile-1767227758915-2d2o09|athleteprofile-1767227741915-xaopzm,0,88,100%_bots,16,16,false
+2026,tournament-2026-cun-sil-w29-1,Silver,"Ignacio Rojas 963 & Martín Castro",athleteprofile-1767227758915-2d2o09|athleteprofile-1767227741915-xaopzm,0,88,100%_bots,16,16,false
+2026,tournament-2026-san-mas-w29-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94.5,100%_reais,24,24,false
+2026,tournament-2026-tor-pla-w29-2,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94.5,100%_reais,32,32,false
+2026,tournament-2026-sin-cro-w29-4,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,94.5,100%_reais,20,20,false
+2026,tournament-2026-lis-bro-w30-1,Bronze,"Tomás Rojas & Thiago Acosta",athleteprofile-1767226923915-455f2s|athleteprofile-1767226913915-6koxs5,0,85.5,100%_bots,16,16,false
+2026,tournament-2026-syd-gol-w31-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2026,tournament-2026-ath-bro-w32-1,Bronze,"Rafael Molina & Miguel Ferrer",athleteprofile-1767227139915-88ai9q|athleteprofile-1767227007915-6lvmyi,0,87,100%_bots,16,16,false
+2026,tournament-2026-mia-sil-w32-2,Silver,"Daniel Ferrer 165 & Carlos Castro",athleteprofile-1767226960915-ool99f|athleteprofile-1767226983915-ciovwa,0,90.5,100%_bots,16,16,false
+2026,tournament-2026-mel-eli-w32-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,20,20,false
+2026,tournament-2026-bue-mas-w33-1,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,24,24,false
+2026,tournament-2026-sao-bro-w34-1,Bronze,"João Herrera & Santiago Suárez",athleteprofile-1767226912915-b9mtgt|athleteprofile-1767226920915-itxqn9,0,84.5,100%_bots,16,16,false
+2026,tournament-2026-cph-sil-w35-1,Silver,"Diego Castro & Hugo Pereira",athleteprofile-1767226924915-11bsx7|athleteprofile-1767226909915-3bq63r,0,83.5,100%_bots,16,16,false
+2026,tournament-2026-rom-bro-w36-1,Bronze,"Diego Castro & Hugo Pereira",athleteprofile-1767226924915-11bsx7|athleteprofile-1767226909915-3bq63r,0,83.5,100%_bots,16,16,false
+2026,tournament-2026-mex-eli-w36-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2026,tournament-2026-cor-gol-w37-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,24,24,false
+2026,tournament-2026-mon-pla-w37-2,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,32,32,false
+2026,tournament-2026-sin-bro-w38-1,Bronze,"Hugo Alonso & Adrián Castro",athleteprofile-1767226962915-85pzfk|athleteprofile-1767226925915-3feq9a,0,85,100%_bots,16,16,false
+2026,tournament-2026-bcn-sil-w38-2,Silver,"Santiago Alonso & Bruno Romero",athleteprofile-1767226997915-zvc1aa|athleteprofile-1767227017915-to59ch,0,81.5,100%_bots,16,16,false
+2026,tournament-2026-cun-mas-w38-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2026,tournament-2026-sto-bro-w40-1,Bronze,"Tomás Herrera & Diego Castro 352",athleteprofile-1767227174915-468nwk|athleteprofile-1767227147915-kqnthb,0,80.5,100%_bots,16,16,false
+2026,tournament-2026-rio-sil-w41-1,Silver,"Javier Giménez & Diego García",athleteprofile-1767227146915-7au8c5|athleteprofile-1767227320915-s1o4hj,0,72.5,100%_bots,16,16,false
+2026,tournament-2026-lax-eli-w41-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,20,20,false
+2026,tournament-2026-tor-cro-w41-3,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2026,tournament-2026-riy-bro-w42-1,Bronze,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92,100%_bots,16,16,false
+2026,tournament-2026-ams-gol-w43-1,Gold,"Guillermo Collado & Francisco Cabeza Teres",real_guillermo_collado|real_francisco_cabeza_teres,2,82.5,100%_reais,24,24,false
+2026,tournament-2026-lis-mas-w43-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2026,tournament-2026-bog-bro-w44-1,Bronze,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92,100%_bots,16,16,false
+2026,tournament-2026-bkk-sil-w44-2,Silver,"Enzo Santos 932 & Rafael Costa 955",athleteprofile-1767227727915-sqhn69|athleteprofile-1767227750915-gbfeg6,0,85.5,100%_bots,16,16,false
+2026,tournament-2026-mel-pla-w45-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,32,32,false
+2026,tournament-2026-par-bro-w46-1,Bronze,"Nicolás Pereira 464 & Gonzalo Castro",athleteprofile-1767227259915-btl87h|athleteprofile-1767227228915-dghetr,0,76,100%_bots,16,16,false
+2026,tournament-2026-osa-eli-w46-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,20,20,false
+2026,tournament-2026-akl-sil-w47-1,Silver,"João Silva & Samuel Fernández",athleteprofile-1767226955915-szhxro|athleteprofile-1767226990915-841v1u,0,88,100%_bots,16,16,false
+2026,tournament-2026-ams-leg-w52-1,Legacy Finals,"Juan Lebrón & Leandro Augsburger",real_juan_lebron|real_leandro_augsburger,2,89.5,100%_reais,8,7,true
+2027,tournament-2027-pra-bro-w01-1,Bronze,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92.5,100%_bots,16,16,false
+2027,tournament-2027-bog-mas-w01-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-nai-sil-w02-1,Silver,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92.5,100%_bots,16,16,false
+2027,tournament-2027-riy-gol-w02-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-bkk-bro-w03-1,Bronze,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92.5,100%_bots,16,16,false
+2027,tournament-2027-cor-eli-w03-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2027,tournament-2027-san-bro-w05-1,Bronze,"Thiago Silva & Gonzalo Méndez",athleteprofile-1767227105915-lwmxmc|athleteprofile-1767226918915-bhbzf9,0,81,100%_bots,16,16,false
+2027,tournament-2027-sha-sil-w05-2,Silver,"Gonzalo Giménez & Diego Vega",athleteprofile-1767226995915-ofb73e|athleteprofile-1767227001915-vg4klk,0,86.5,100%_bots,16,16,false
+2027,tournament-2027-mex-mas-w05-3,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,24,24,false
+2027,tournament-2027-mia-pla-w06-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,32,32,false
+2027,tournament-2027-lon-cro-w06-2,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,20,20,false
+2027,tournament-2027-riy-bro-w07-1,Bronze,"Tomás Romero & Nicolás Alonso",athleteprofile-1767227141915-uyrosi|athleteprofile-1767227116915-y788mn,0,82,100%_bots,16,16,false
+2027,tournament-2027-tor-sil-w08-1,Silver,"Franco López & Rubén Romero 243",athleteprofile-1767226992915-php43i|athleteprofile-1767227038915-7kmr7d,0,83,100%_bots,16,16,false
+2027,tournament-2027-nyc-gol-w08-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-osa-eli-w08-3,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2027,tournament-2027-dub-bro-w09-1,Bronze,"Lucas Miranda & Ignacio Cabrera",athleteprofile-1767226987915-xife0f|athleteprofile-1767226991915-cdstq8,0,84,100%_bots,16,16,false
+2027,tournament-2027-doh-mas-w10-1,Masters,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92.5,100%_bots,24,24,false
+2027,tournament-2027-mex-bro-w11-1,Bronze,"Rubén Iglesias & Franco Méndez",athleteprofile-1767226928915-l2809c|athleteprofile-1767227091915-c9p3ko,0,82.5,100%_bots,16,16,false
+2027,tournament-2027-mel-sil-w11-2,Silver,"Gonzalo Giménez & Diego Vega",athleteprofile-1767226995915-ofb73e|athleteprofile-1767227001915-vg4klk,0,87,100%_bots,16,16,false
+2027,tournament-2027-lim-bro-w13-1,Bronze,"Franco López & Rubén Romero 243",athleteprofile-1767226992915-php43i|athleteprofile-1767227038915-7kmr7d,0,83,100%_bots,16,16,false
+2027,tournament-2027-ams-eli-w13-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2027,tournament-2027-bue-sil-w14-1,Silver,"Alonso Rodríguez Martínez & Lucas Costa",real_alonso_rodriguez_martinez|athleteprofile-1767226982915-maep29,1,88,mista,16,16,false
+2027,tournament-2027-sin-gol-w14-2,Gold,"Daniel Ferrer 165 & Carlos Castro",athleteprofile-1767226960915-ool99f|athleteprofile-1767226983915-ciovwa,0,91,100%_bots,24,24,false
+2027,tournament-2027-bog-mas-w14-4,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,24,24,false
+2027,tournament-2027-cas-pla-w14-3,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,96.5,100%_reais,32,32,false
+2027,tournament-2027-ath-bro-w15-1,Bronze,"Juan Cruz Belluati & Pol Hernández Álvarez",real_juan_cruz_belluati|real_pol_hernandez_alvarez,2,80.5,100%_reais,16,16,false
+2027,tournament-2027-lis-bro-w17-1,Bronze,"Javier Valdés & Aris Patiniotis",real_javier_valdes|real_aris_patiniotis,2,79.5,100%_reais,16,16,false
+2027,tournament-2027-mum-sil-w17-2,Silver,"Albert Roglán Pons & Diego Castro",real_albert_roglan_pons|athleteprofile-1767226924915-11bsx7,1,82.5,mista,16,16,false
+2027,tournament-2027-nai-eli-w17-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,20,20,false
+2027,tournament-2027-lax-cro-w18-1,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,20,20,false
+2027,tournament-2027-tok-bro-w19-1,Bronze,"Tomás Romero & Nicolás Alonso",athleteprofile-1767227141915-uyrosi|athleteprofile-1767227116915-y788mn,0,82,100%_bots,16,16,false
+2027,tournament-2027-bue-mas-w19-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-tor-sil-w20-1,Silver,"Tomás Romero & Nicolás Alonso",athleteprofile-1767227141915-uyrosi|athleteprofile-1767227116915-y788mn,0,82,100%_bots,16,16,false
+2027,tournament-2027-cun-gol-w20-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-sha-bro-w21-1,Bronze,"Javier Miranda 577 & Álvaro Miranda",athleteprofile-1767227372915-bcmh12|athleteprofile-1767227227915-6vu1c2,0,77.5,100%_bots,16,16,false
+2027,tournament-2027-bcn-pla-w22-1,Platinum,"Gonzalo Giménez & Diego Vega",athleteprofile-1767226995915-ofb73e|athleteprofile-1767227001915-vg4klk,0,87.5,100%_bots,32,32,false
+2027,tournament-2027-cor-eli-w22-2,Elite,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92.5,100%_bots,20,20,false
+2027,tournament-2027-sao-bro-w23-1,Bronze,"Felipe Vega & Samuel Acosta",athleteprofile-1767226958915-1mrae5|athleteprofile-1767227085915-0arzhg,0,81.5,100%_bots,16,16,false
+2027,tournament-2027-san-sil-w23-2,Silver,"Samuel Giménez & Rubén Iglesias 278",athleteprofile-1767227031915-yo4j39|athleteprofile-1767227073915-ilmluo,0,79.5,100%_bots,16,16,false
+2027,tournament-2027-bue-bro-w24-1,Bronze,"Pedro Torres & Nicolás Suárez",athleteprofile-1767226949915-kqur3p|athleteprofile-1767227026915-i0uwrg,0,81.5,100%_bots,16,16,false
+2027,tournament-2027-mex-mas-w24-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,24,24,false
+2027,tournament-2027-tor-gol-w25-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-mon-bro-w26-1,Bronze,"Rubén Iglesias & Franco Méndez",athleteprofile-1767226928915-l2809c|athleteprofile-1767227091915-c9p3ko,0,84,100%_bots,16,16,false
+2027,tournament-2027-lim-sil-w26-2,Silver,"Ignacio Santos & Pedro Herrera",athleteprofile-1767226964915-1622oy|athleteprofile-1767226956915-m8aidu,0,86,100%_bots,16,16,false
+2027,tournament-2027-rom-eli-w27-1,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,20,20,false
+2027,tournament-2027-mel-bro-w28-1,Bronze,"Javier Valdés & Aris Patiniotis",real_javier_valdes|real_aris_patiniotis,2,79.5,100%_reais,16,16,false
+2027,tournament-2027-seo-sil-w29-1,Silver,"Ignacio Santos & Pedro Herrera",athleteprofile-1767226964915-1622oy|athleteprofile-1767226956915-m8aidu,0,86,100%_bots,16,16,false
+2027,tournament-2027-mum-mas-w29-3,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,24,24,false
+2027,tournament-2027-ams-pla-w29-2,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,32,32,false
+2027,tournament-2027-sto-cro-w29-4,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2027,tournament-2027-bkk-bro-w30-1,Bronze,"Carlos García & Diego Alonso 956",athleteprofile-1767227114915-3n3mzs|athleteprofile-1767227751915-1eltgy,0,85,100%_bots,16,16,false
+2027,tournament-2027-cpt-gol-w31-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,24,24,false
+2027,tournament-2027-pra-bro-w32-1,Bronze,"Carlos García & Diego Alonso 956",athleteprofile-1767227114915-3n3mzs|athleteprofile-1767227751915-1eltgy,0,85,100%_bots,16,16,false
+2027,tournament-2027-cor-sil-w32-2,Silver,"Thiago Silva & Gonzalo Méndez",athleteprofile-1767227105915-lwmxmc|athleteprofile-1767226918915-bhbzf9,0,82,100%_bots,16,16,false
+2027,tournament-2027-sao-eli-w32-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,20,20,false
+2027,tournament-2027-dub-mas-w33-1,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97,100%_reais,24,24,false
+2027,tournament-2027-sha-bro-w34-1,Bronze,"Enzo Santos 932 & Rafael Costa 955",athleteprofile-1767227727915-sqhn69|athleteprofile-1767227750915-gbfeg6,0,87.5,100%_bots,16,16,false
+2027,tournament-2027-doh-sil-w35-1,Silver,"Tomás Herrera & Diego Castro 352",athleteprofile-1767227174915-468nwk|athleteprofile-1767227147915-kqnthb,0,82,100%_bots,16,16,false
+2027,tournament-2027-cas-bro-w36-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,84.5,mista,16,16,false
+2027,tournament-2027-tor-eli-w36-2,Elite,"Daniel Ferrer 165 & Carlos Castro",athleteprofile-1767226960915-ool99f|athleteprofile-1767226983915-ciovwa,0,91.5,100%_bots,20,20,false
+2027,tournament-2027-ath-gol-w37-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-mad-pla-w37-2,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,32,32,false
+2027,tournament-2027-osa-bro-w38-1,Bronze,"Ignacio Santos & Pedro Herrera",athleteprofile-1767226964915-1622oy|athleteprofile-1767226956915-m8aidu,0,86.5,100%_bots,16,16,false
+2027,tournament-2027-nai-sil-w38-2,Silver,"Bruno Ferrer 341 & Thiago Miranda",athleteprofile-1767227136915-9rjkk7|athleteprofile-1767227171915-pm1vug,0,83.5,100%_bots,16,16,false
+2027,tournament-2027-mum-mas-w38-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,24,24,false
+2027,tournament-2027-seo-bro-w40-1,Bronze,"Martín Castro & Ignacio Rojas 963",athleteprofile-1767227741915-xaopzm|athleteprofile-1767227758915-2d2o09,0,89,100%_bots,16,16,false
+2027,tournament-2027-sin-sil-w41-1,Silver,"Bruno Ferrer 341 & Thiago Miranda",athleteprofile-1767227136915-9rjkk7|athleteprofile-1767227171915-pm1vug,0,83.5,100%_bots,16,16,false
+2027,tournament-2027-bcn-eli-w41-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2027,tournament-2027-sao-cro-w41-3,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95,100%_reais,20,20,false
+2027,tournament-2027-mex-bro-w42-1,Bronze,"Teodoro Zapata & Nuno Deus",real_teodoro_zapata|real_nuno_deus,2,80.5,100%_reais,16,16,false
+2027,tournament-2027-bkk-gol-w43-1,Gold,"Leonel Daniel Aguirre & Íñigo Jofre",real_leonel_daniel_aguirre|real_inigo_jofre,2,85.5,100%_reais,24,24,false
+2027,tournament-2027-tor-mas-w43-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2027,tournament-2027-sha-bro-w44-1,Bronze,"Martín Martínez & Martín Cabrera 339",athleteprofile-1767227115915-cyer16|athleteprofile-1767227134915-2rc53l,0,88.5,100%_bots,16,16,false
+2027,tournament-2027-rio-sil-w44-2,Silver,"Gonzalo Santos & Felipe Campos",athleteprofile-1767226969915-dl8yev|athleteprofile-1767227201915-toqdir,0,79,100%_bots,16,16,false
+2027,tournament-2027-bog-pla-w45-1,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,32,32,false
+2027,tournament-2027-tok-bro-w46-1,Bronze,"Ignacio Santos & Pedro Herrera",athleteprofile-1767226964915-1622oy|athleteprofile-1767226956915-m8aidu,0,86.5,100%_bots,16,16,false
+2027,tournament-2027-lax-eli-w46-2,Elite,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,92.5,100%_bots,20,20,false
+2027,tournament-2027-mon-sil-w47-1,Silver,"Rafael Molina & Pablo Rojas",athleteprofile-1767227139915-88ai9q|athleteprofile-1767226943915-02qiim,0,87.5,100%_bots,16,16,false
+2027,tournament-2027-cas-cir-w49-1,Circuit Finals,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,8,4,true
+2028,tournament-2027-cpt-leg-w52-1,Legacy Finals,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,8,8,false
+2028,tournament-2028-mia-bro-w01-1,Bronze,"Martín Martínez & Martín Cabrera 339",athleteprofile-1767227115915-cyer16|athleteprofile-1767227134915-2rc53l,0,88.5,100%_bots,16,16,false
+2028,tournament-2028-lim-mas-w01-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-bog-sil-w02-1,Silver,"Martín Martínez & Martín Cabrera 339",athleteprofile-1767227115915-cyer16|athleteprofile-1767227134915-2rc53l,0,88.5,100%_bots,16,16,false
+2028,tournament-2028-sao-gol-w02-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-seo-bro-w03-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,84.5,mista,16,16,false
+2028,tournament-2028-sha-eli-w03-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,20,20,false
+2028,tournament-2028-mex-bro-w05-1,Bronze,"Martín Castro & Ignacio Rojas 963",athleteprofile-1767227741915-xaopzm|athleteprofile-1767227758915-2d2o09,0,89,100%_bots,16,16,false
+2028,tournament-2028-sin-sil-w05-2,Silver,"Miguel Romero & Bruno Acosta",athleteprofile-1767226915915-wcvivp|athleteprofile-1767226933915-lprwx4,0,87,100%_bots,16,16,false
+2028,tournament-2028-pra-mas-w05-3,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-osa-pla-w06-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,32,32,false
+2028,tournament-2028-akl-cro-w06-2,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,20,20,false
+2028,tournament-2028-bcn-bro-w07-1,Bronze,"Martín Castro & Ignacio Rojas 963",athleteprofile-1767227741915-xaopzm|athleteprofile-1767227758915-2d2o09,0,89,100%_bots,16,16,false
+2028,tournament-2028-cai-sil-w08-1,Silver,"Martín Castro & Ignacio Rojas 963",athleteprofile-1767227741915-xaopzm|athleteprofile-1767227758915-2d2o09,0,89,100%_bots,16,16,false
+2028,tournament-2028-cph-gol-w08-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-bue-eli-w08-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,20,20,false
+2028,tournament-2028-lis-bro-w09-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,85,mista,16,16,false
+2028,tournament-2028-mil-mas-w10-1,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-dub-bro-w11-1,Bronze,"Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",real_valentino_gabriel_libaak|real_maximiliano_sanchez_blasco,2,84,100%_reais,16,16,false
+2028,tournament-2028-pra-sil-w11-2,Silver,"Lucas Miranda & Ignacio Cabrera",athleteprofile-1767226987915-xife0f|athleteprofile-1767226991915-cdstq8,0,85,100%_bots,16,16,false
+2028,tournament-2028-sha-bro-w13-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,85,mista,16,16,false
+2028,tournament-2028-sin-eli-w13-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,20,20,false
+2028,tournament-2028-cor-sil-w14-1,Silver,"Bruno Ferrer 341 & Marco Pereira",athleteprofile-1767227136915-9rjkk7|athleteprofile-1767226959915-le534g,0,88.5,100%_bots,16,16,false
+2028,tournament-2028-syd-gol-w14-2,Gold,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,24,24,false
+2028,tournament-2028-rom-mas-w14-4,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-bcn-pla-w14-3,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,32,32,false
+2028,tournament-2028-mon-bro-w15-1,Bronze,"Lucas Ortiz & Miguel Martínez",athleteprofile-1767226927915-cay818|athleteprofile-1767227723915-zr1nl6,0,93,100%_bots,16,16,false
+2028,tournament-2028-san-bro-w17-1,Bronze,"Martín Castro & Ignacio Rojas 963",athleteprofile-1767227741915-xaopzm|athleteprofile-1767227758915-2d2o09,0,89,100%_bots,16,16,false
+2028,tournament-2028-tor-sil-w17-2,Silver,"Lucas Ortiz & Miguel Martínez",athleteprofile-1767226927915-cay818|athleteprofile-1767227723915-zr1nl6,0,93,100%_bots,16,16,false
+2028,tournament-2028-mil-eli-w17-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,20,20,false
+2028,tournament-2028-bkk-cro-w18-1,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,20,20,false
+2028,tournament-2028-sha-bro-w19-1,Bronze,"Franco López & David Gala",athleteprofile-1767226992915-php43i|real_david_gala,1,88,mista,16,16,false
+2028,tournament-2028-bog-mas-w19-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,97.5,100%_reais,24,24,false
+2028,tournament-2028-cph-sil-w20-1,Silver,"Thiago Silva & Gonzalo Méndez",athleteprofile-1767227105915-lwmxmc|athleteprofile-1767226918915-bhbzf9,0,83,100%_bots,16,16,false
+2028,tournament-2028-sao-gol-w20-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,24,24,false
+2028,tournament-2028-lim-bro-w21-1,Bronze,"Rubén Medina & Gonzalo Miranda",athleteprofile-1767227366915-mmf6p9|athleteprofile-1767227421915-9cgkmz,0,78,100%_bots,16,16,false
+2028,tournament-2028-nai-pla-w22-1,Platinum,"Lucas Ortiz & Miguel Martínez",athleteprofile-1767226927915-cay818|athleteprofile-1767227723915-zr1nl6,0,93,100%_bots,32,32,false
+2028,tournament-2028-ber-eli-w22-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,20,20,false
+2028,tournament-2028-mum-bro-w23-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,85.5,mista,16,16,false
+2028,tournament-2028-mia-sil-w23-2,Silver,"Carlos García & Diego Alonso 956",athleteprofile-1767227114915-3n3mzs|athleteprofile-1767227751915-1eltgy,0,87,100%_bots,16,16,false
+2028,tournament-2028-bog-bro-w24-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,85.5,mista,16,16,false
+2028,tournament-2028-sha-mas-w24-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,24,24,false
+2028,tournament-2028-mex-gol-w25-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,24,24,false
+2028,tournament-2028-dub-bro-w26-1,Bronze,"Diego Ortiz & Enzo Santos",athleteprofile-1767227055915-x9s318|athleteprofile-1767227140915-xeeooa,0,84.5,100%_bots,16,16,false
+2028,tournament-2028-tor-sil-w26-2,Silver,"Franco López & David Gala",athleteprofile-1767226992915-php43i|real_david_gala,1,88.5,mista,16,16,false
+2028,tournament-2028-akl-eli-w27-1,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2028,tournament-2028-cor-bro-w28-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,85.5,mista,16,16,false
+2028,tournament-2028-mil-sil-w29-1,Silver,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,85,100%_bots,16,16,false
+2028,tournament-2028-cas-mas-w29-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,24,24,false
+2028,tournament-2028-bkk-pla-w29-2,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2028,tournament-2028-bcn-cro-w29-4,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2028,tournament-2028-mon-bro-w30-1,Bronze,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,85,100%_bots,16,16,false
+2028,tournament-2028-san-gol-w31-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2028,tournament-2028-mel-bro-w32-1,Bronze,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,85,100%_bots,16,16,false
+2028,tournament-2028-cpt-sil-w32-2,Silver,"Thiago Silva & Gonzalo Méndez",athleteprofile-1767227105915-lwmxmc|athleteprofile-1767226918915-bhbzf9,0,83,100%_bots,16,16,false
+2028,tournament-2028-nai-eli-w32-3,Elite,"Lucas Ortiz & Miguel Martínez",athleteprofile-1767226927915-cay818|athleteprofile-1767227723915-zr1nl6,0,93,100%_bots,20,20,false
+2028,tournament-2028-mex-mas-w33-1,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2028,tournament-2028-ams-bro-w34-1,Bronze,"Hugo Alonso & Mateo Ruiz",athleteprofile-1767226962915-85pzfk|athlete-001,0,86.5,100%_bots,16,16,false
+2028,tournament-2028-sin-sil-w35-1,Silver,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,85.5,100%_bots,16,16,false
+2028,tournament-2028-lon-bro-w36-1,Bronze,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,85.5,100%_bots,16,16,false
+2028,tournament-2028-tok-eli-w36-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2028,tournament-2028-nyc-gol-w37-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2028,tournament-2028-bcn-pla-w37-2,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2028,tournament-2028-sao-bro-w38-1,Bronze,"Tomás Herrera & Diego Castro 352",athleteprofile-1767227174915-468nwk|athleteprofile-1767227147915-kqnthb,0,83.5,100%_bots,16,16,false
+2028,tournament-2028-mia-sil-w38-2,Silver,"Adrián Navarro & Rubén Méndez",athleteprofile-1767227032915-x6q8e4|athleteprofile-1767226981915-xwn19k,0,85.5,100%_bots,16,16,false
+2028,tournament-2028-dub-mas-w38-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,24,24,false
+2028,tournament-2028-ber-bro-w40-1,Bronze,"Thiago Rojas 945 & Rafael Vega",athleteprofile-1767227740915-hebhsa|athleteprofile-1767227071915-32pk42,0,88,100%_bots,16,16,false
+2028,tournament-2028-cas-sil-w41-1,Silver,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,85.5,100%_bots,16,16,false
+2028,tournament-2028-lax-eli-w41-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2028,tournament-2028-mad-cro-w41-3,Crown,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,93,100%_bots,20,20,false
+2028,tournament-2028-akl-bro-w42-1,Bronze,"Valentino Gabriel Libaak & Maximiliano Sánchez Blasco",real_valentino_gabriel_libaak|real_maximiliano_sanchez_blasco,2,84,100%_reais,16,16,false
+2028,tournament-2028-tok-gol-w43-1,Gold,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,24,24,false
+2028,tournament-2028-bcn-mas-w43-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,95.5,100%_reais,24,24,false
+2028,tournament-2028-syd-bro-w44-1,Bronze,"Thiago Medina & Tomás Molina 706",athleteprofile-1767227268915-cfkjk1|athleteprofile-1767227501915-0dunkl,0,79.5,100%_bots,16,16,false
+2028,tournament-2028-par-sil-w44-2,Silver,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90,100%_bots,16,16,false
+2028,tournament-2028-doh-pla-w45-1,Platinum,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,93,100%_bots,32,32,false
+2028,tournament-2028-mia-bro-w46-1,Bronze,"Tomás Herrera & Diego Castro 352",athleteprofile-1767227174915-468nwk|athleteprofile-1767227147915-kqnthb,0,84,100%_bots,16,16,false
+2028,tournament-2028-sto-eli-w46-2,Elite,"Miguel Yanguas & Juan Tello",real_miguel_yanguas|real_juan_tello,2,90.5,100%_reais,20,20,false
+2028,tournament-2028-pra-sil-w47-1,Silver,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90,100%_bots,16,16,false
+2028,tournament-2028-mex-leg-w52-1,Legacy Finals,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,8,6,true
+2029,tournament-2029-bkk-bro-w01-1,Bronze,"Bruno Ferrer 341 & Marco Pereira",athleteprofile-1767227136915-9rjkk7|athleteprofile-1767226959915-le534g,0,90.5,100%_bots,16,16,false
+2029,tournament-2029-sto-mas-w01-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-bog-sil-w02-1,Silver,"Hugo Alonso & Mateo Ruiz",athleteprofile-1767226962915-85pzfk|athlete-001,0,88.5,100%_bots,16,16,false
+2029,tournament-2029-par-gol-w02-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-mil-bro-w03-1,Bronze,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90,100%_bots,16,16,false
+2029,tournament-2029-mum-eli-w03-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-nyc-bro-w05-1,Bronze,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90,100%_bots,16,16,false
+2029,tournament-2029-sha-sil-w05-2,Silver,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,16,16,false
+2029,tournament-2029-doh-mas-w05-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-mex-pla-w06-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2029,tournament-2029-bcn-cro-w06-2,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-ams-bro-w07-1,Bronze,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90,100%_bots,16,16,false
+2029,tournament-2029-san-sil-w08-1,Silver,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90,100%_bots,16,16,false
+2029,tournament-2029-ber-gol-w08-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-lim-eli-w08-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-syd-bro-w09-1,Bronze,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90.5,100%_bots,16,16,false
+2029,tournament-2029-mia-mas-w10-1,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-mel-bro-w11-1,Bronze,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-tok-sil-w11-2,Silver,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,86,100%_bots,16,16,false
+2029,tournament-2029-lim-bro-w13-1,Bronze,"Marco Molina & Enzo Costa 619",athleteprofile-1767226937915-nckzz8|athleteprofile-1767227414915-hw603z,0,90.5,100%_bots,16,16,false
+2029,tournament-2029-ath-eli-w13-2,Elite,"André Romero & Emiliano Silva",athleteprofile-1767226935915-kztevz|athleteprofile-1767226940915-udi6n5,0,93.5,100%_bots,20,20,false
+2029,tournament-2029-akl-sil-w14-1,Silver,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,86,100%_bots,16,16,false
+2029,tournament-2029-lon-gol-w14-2,Gold,"Franco López & David Gala",athleteprofile-1767226992915-php43i|real_david_gala,1,89,mista,24,24,false
+2029,tournament-2029-syd-mas-w14-4,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-pra-pla-w14-3,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2029,tournament-2029-osa-bro-w15-1,Bronze,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,86,100%_bots,16,16,false
+2029,tournament-2029-sao-bro-w17-1,Bronze,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,16,16,false
+2029,tournament-2029-lis-sil-w17-2,Silver,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,86,100%_bots,16,16,false
+2029,tournament-2029-seo-eli-w17-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-vie-cro-w18-1,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-sha-bro-w19-1,Bronze,"Mateo Cabrera 964 & Daniel Santigosa Sastre",athleteprofile-1767227759915-fabwu7|real_daniel_santigosa_sastre,1,89,mista,16,16,false
+2029,tournament-2029-rio-mas-w19-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-mil-sil-w20-1,Silver,"Hugo Alonso & Mateo Ruiz",athleteprofile-1767226962915-85pzfk|athlete-001,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-pra-gol-w20-2,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-ams-bro-w21-1,Bronze,"Hugo Alonso & Mateo Ruiz",athleteprofile-1767226962915-85pzfk|athlete-001,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-mel-pla-w22-1,Platinum,"Jorge Nieto & Carlos Castro",real_jorge_nieto|athleteprofile-1767226983915-ciovwa,1,94,mista,32,32,false
+2029,tournament-2029-sao-eli-w22-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2029,tournament-2029-cor-bro-w23-1,Bronze,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,16,16,false
+2029,tournament-2029-san-sil-w23-2,Silver,"Hugo Alonso & Mateo Ruiz",athleteprofile-1767226962915-85pzfk|athlete-001,0,90.5,100%_bots,16,16,false
+2029,tournament-2029-sto-bro-w24-1,Bronze,"Felipe Vega & Samuel Acosta",athleteprofile-1767226958915-1mrae5|athleteprofile-1767227085915-0arzhg,0,83.5,100%_bots,16,16,false
+2029,tournament-2029-mon-mas-w24-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-mad-gol-w25-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-cph-bro-w26-1,Bronze,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,16,16,false
+2029,tournament-2029-lax-sil-w26-2,Silver,"Eduardo Alonso & Martín Cabrera 339",real_eduardo_alonso|athleteprofile-1767227134915-2rc53l,1,92,mista,16,16,false
+2029,tournament-2029-mel-eli-w27-1,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2029,tournament-2029-rom-bro-w28-1,Bronze,"Hugo Alonso & Mateo Ruiz",athleteprofile-1767226962915-85pzfk|athlete-001,0,90.5,100%_bots,16,16,false
+2029,tournament-2029-bue-sil-w29-1,Silver,"Mateo Cabrera 964 & Daniel Santigosa Sastre",athleteprofile-1767227759915-fabwu7|real_daniel_santigosa_sastre,1,89,mista,16,16,false
+2029,tournament-2029-lis-mas-w29-3,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2029,tournament-2029-ath-pla-w29-2,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,32,32,false
+2029,tournament-2029-pra-cro-w29-4,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-akl-bro-w30-1,Bronze,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,87.5,100%_bots,16,16,false
+2029,tournament-2029-mon-gol-w31-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-mil-bro-w32-1,Bronze,"Santiago Martínez & Diego Miranda",athleteprofile-1767227012915-4gp8kc|athleteprofile-1767227142915-9losaf,0,87.5,100%_bots,16,16,false
+2029,tournament-2029-ams-sil-w32-2,Silver,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,16,16,false
+2029,tournament-2029-san-eli-w32-3,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2029,tournament-2029-ist-mas-w33-1,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-cor-bro-w34-1,Bronze,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-riy-sil-w35-1,Silver,"Mateo Cabrera 964 & Daniel Santigosa Sastre",athleteprofile-1767227759915-fabwu7|real_daniel_santigosa_sastre,1,89,mista,16,16,false
+2029,tournament-2029-tor-bro-w36-1,Bronze,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-cai-eli-w36-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2029,tournament-2029-vie-gol-w37-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-sha-pla-w37-2,Platinum,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,32,32,false
+2029,tournament-2029-mon-bro-w38-1,Bronze,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-pra-sil-w38-2,Silver,"Mateo Cabrera 964 & Daniel Santigosa Sastre",athleteprofile-1767227759915-fabwu7|real_daniel_santigosa_sastre,1,89,mista,16,16,false
+2029,tournament-2029-ath-mas-w38-3,Masters,"Jorge Nieto & Carlos Castro",real_jorge_nieto|athleteprofile-1767226983915-ciovwa,1,94,mista,24,24,false
+2029,tournament-2029-ist-bro-w40-1,Bronze,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-sin-sil-w41-1,Silver,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-lon-eli-w41-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-bcn-cro-w41-3,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2029,tournament-2029-vie-bro-w42-1,Bronze,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2029,tournament-2029-dub-gol-w43-1,Gold,"Eduardo Alonso & Martín Cabrera 339",real_eduardo_alonso|athleteprofile-1767227134915-2rc53l,1,92,mista,24,24,false
+2029,tournament-2029-cas-mas-w43-2,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2029,tournament-2029-cai-bro-w44-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2029,tournament-2029-mex-sil-w44-2,Silver,"Lucas Navarro & Mateo Molina",athleteprofile-1767227098915-igmloo|athleteprofile-1767226986915-x3j50n,0,82.5,100%_bots,16,16,false
+2029,tournament-2029-cpt-pla-w45-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2029,tournament-2029-mel-bro-w46-1,Bronze,"Lucas Navarro & Mateo Molina",athleteprofile-1767227098915-igmloo|athleteprofile-1767226986915-x3j50n,0,82.5,100%_bots,16,16,false
+2029,tournament-2029-lim-eli-w46-2,Elite,"Jorge Nieto & Carlos Castro",real_jorge_nieto|athleteprofile-1767226983915-ciovwa,1,94,mista,20,20,false
+2029,tournament-2029-tok-sil-w47-1,Silver,"Rubén Romero & Rubén Iglesias",athleteprofile-1767226988915-dvil7g|athleteprofile-1767226928915-l2809c,0,89.5,100%_bots,16,16,false
+2030,tournament-2030-cas-bro-w01-1,Bronze,"Ignacio Sager & Tomás Vidal",real_ignacio_sager|athlete-003,1,87,mista,16,16,false
+2030,tournament-2030-ber-mas-w01-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-mad-sil-w02-1,Silver,"Pablo Ramos & Tomás Navarro",athleteprofile-1767227033915-w0xqoq|athleteprofile-1767239760915-w47uv2,0,81,100%_bots,16,16,false
+2030,tournament-2030-nai-gol-w02-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-par-bro-w03-1,Bronze,"Javier Rojas 360 & Guillermo Collado",athleteprofile-1767227155915-vn6l73|real_guillermo_collado,1,80.5,mista,16,16,false
+2030,tournament-2030-san-eli-w03-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2030,tournament-2030-lim-bro-w05-1,Bronze,"Rubén Giménez & Thiago Pereira",athleteprofile-1767227097915-tb7azt|athleteprofile-1767226904915-hm24k2,0,83.5,100%_bots,16,16,false
+2030,tournament-2030-rom-sil-w05-2,Silver,"Emiliano Alonso & Samuel López",athleteprofile-1767227288915-hmwr13|athleteprofile-1767227168915-ow4v22,0,87.5,100%_bots,16,16,false
+2030,tournament-2030-mil-mas-w05-3,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-mon-pla-w06-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2030,tournament-2030-mum-cro-w06-2,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-akl-bro-w07-1,Bronze,"Pablo Ramos & Tomás Navarro",athleteprofile-1767227033915-w0xqoq|athleteprofile-1767239760915-w47uv2,0,81,100%_bots,16,16,false
+2030,tournament-2030-cor-sil-w08-1,Silver,"José Luis González & Enzo Santos",real_jose_luis_gonzalez|athleteprofile-1767227140915-xeeooa,1,83.5,mista,16,16,false
+2030,tournament-2030-sto-gol-w08-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-san-eli-w08-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-mad-bro-w09-1,Bronze,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,16,16,false
+2030,tournament-2030-lim-mas-w10-1,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2030,tournament-2030-seo-bro-w11-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-sao-sil-w11-2,Silver,"Rafael Santos & Mateo Costa",athleteprofile-1767227022915-cv7rrg|athleteprofile-1767226914915-lgx32y,0,87.5,100%_bots,16,16,false
+2030,tournament-2030-lis-bro-w13-1,Bronze,"Thiago Pereira & Gonzalo Castro",athleteprofile-1767234317915-n131jc|athleteprofile-1767227228915-dghetr,0,81.5,100%_bots,16,16,false
+2030,tournament-2030-sha-eli-w13-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-rio-sil-w14-1,Silver,"Diego Vega & Ramiro Pereyra",athleteprofile-1767227001915-vg4klk|real_ramiro_pereyra,1,88,mista,16,16,false
+2030,tournament-2030-mex-gol-w14-2,Gold,"Francisco Cabeza Teres & Felipe Cabrera",real_francisco_cabeza_teres|athleteprofile-1767227724915-58ud3y,1,89,mista,24,24,false
+2030,tournament-2030-nyc-mas-w14-4,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-akl-pla-w14-3,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2030,tournament-2030-lim-bro-w15-1,Bronze,"Diego Castro 352 & Miguel Campos",athleteprofile-1767227147915-kqnthb|athleteprofile-1767226957915-k4xdrq,0,87.5,100%_bots,16,16,false
+2030,tournament-2030-mia-bro-w17-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-mum-sil-w17-2,Silver,"Thiago Pereira & Gonzalo Castro",athleteprofile-1767234317915-n131jc|athleteprofile-1767227228915-dghetr,0,81.5,100%_bots,16,16,false
+2030,tournament-2030-sin-eli-w17-3,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-doh-cro-w18-1,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-cph-bro-w19-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-bkk-mas-w19-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-ber-sil-w20-1,Silver,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-pra-gol-w20-2,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-ath-bro-w21-1,Bronze,"Javier Rojas 360 & Guillermo Collado",athleteprofile-1767227155915-vn6l73|real_guillermo_collado,1,80.5,mista,16,16,false
+2030,tournament-2030-vie-pla-w22-1,Platinum,"Javier Garrido & José Jiménez Casas",real_javier_garrido|real_jose_jimenez_casas,2,88,100%_reais,32,32,false
+2030,tournament-2030-ist-eli-w22-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-tor-bro-w23-1,Bronze,"Lucas Ramos & Santiago García",athleteprofile-1767227088915-aioebn|athleteprofile-1767226947915-8w8p9e,0,84.5,100%_bots,16,16,false
+2030,tournament-2030-cun-sil-w23-2,Silver,"Javier Rojas 360 & Guillermo Collado",athleteprofile-1767227155915-vn6l73|real_guillermo_collado,1,80.5,mista,16,16,false
+2030,tournament-2030-mon-bro-w24-1,Bronze,"Diego Romero & Álvaro Castro",athleteprofile-1767227111915-pp8n6h|athleteprofile-1767226970915-loecw3,0,85,100%_bots,16,16,false
+2030,tournament-2030-doh-mas-w24-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-pra-gol-w25-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-san-bro-w26-1,Bronze,"Diego Vega & Ramiro Pereyra",athleteprofile-1767227001915-vg4klk|real_ramiro_pereyra,1,88,mista,16,16,false
+2030,tournament-2030-bcn-sil-w26-2,Silver,"Miguel Yanguas & Gael García",real_miguel_yanguas|athleteprofile-1767241874915-08nqu0,1,82,mista,16,16,false
+2030,tournament-2030-sin-eli-w27-1,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-mum-bro-w28-1,Bronze,"Daniel Ferrer & Bruno Silva",athleteprofile-1767226902915-pm8m9c|athleteprofile-1767228770915-3ipht8,0,87.5,100%_bots,16,16,false
+2030,tournament-2030-lon-sil-w29-1,Silver,"Daniel Ferrer & Bruno Silva",athleteprofile-1767226902915-pm8m9c|athleteprofile-1767228770915-3ipht8,0,87.5,100%_bots,16,16,false
+2030,tournament-2030-mel-mas-w29-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2030,tournament-2030-mex-pla-w29-2,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,32,32,false
+2030,tournament-2030-riy-cro-w29-4,Crown,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,20,20,false
+2030,tournament-2030-pra-bro-w30-1,Bronze,"Bruno López & Carlos Vega",athleteprofile-1767231545915-jgavhb|athleteprofile-1767226939915-4nim4c,0,86.5,100%_bots,16,16,false
+2030,tournament-2030-cai-gol-w31-1,Gold,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98,100%_reais,24,24,false
+2030,tournament-2030-bog-bro-w32-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-dub-sil-w32-2,Silver,"Mateo García & Samuel Molina",athleteprofile-1767226930915-rv1yyi|athleteprofile-1767227154915-f4fdyl,0,85,100%_bots,16,16,false
+2030,tournament-2030-akl-eli-w32-3,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2030,tournament-2030-rio-mas-w33-1,Masters,"Marco Pereira & Miguel Martínez",athleteprofile-1767226959915-le534g|athleteprofile-1767227723915-zr1nl6,0,93.5,100%_bots,24,24,false
+2030,tournament-2030-osa-bro-w34-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-riy-sil-w35-1,Silver,"Bruno Navarro & Rafael Alonso",athleteprofile-1767243868915-zi6sa7|athleteprofile-1767228768915-3pnwai,0,78.5,100%_bots,16,16,false
+2030,tournament-2030-mil-bro-w36-1,Bronze,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-pra-eli-w36-2,Elite,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2030,tournament-2030-lon-gol-w37-1,Gold,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2030,tournament-2030-cun-pla-w37-2,Platinum,"Jorge Nieto & Carlos Castro",real_jorge_nieto|athleteprofile-1767226983915-ciovwa,1,94,mista,32,32,false
+2030,tournament-2030-ber-bro-w38-1,Bronze,"Diego Vega & Ramiro Pereyra",athleteprofile-1767227001915-vg4klk|real_ramiro_pereyra,1,88,mista,16,16,false
+2030,tournament-2030-vie-sil-w38-2,Silver,"Santiago Rojas & Gonzalo Alfonso",athleteprofile-1767227215915-2odsvn|real_gonzalo_alfonso,1,91.5,mista,16,16,false
+2030,tournament-2030-bcn-mas-w38-3,Masters,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,24,24,false
+2030,tournament-2030-doh-bro-w40-1,Bronze,"Gonzalo Sánchez & Mateo Ortiz",athleteprofile-1767226945915-x2pj6y|athleteprofile-1767227080915-5eoyrh,0,86,100%_bots,16,16,false
+2030,tournament-2030-dub-sil-w41-1,Silver,"Javier Leal & Nicolás Alonso",real_javier_leal|athleteprofile-1767239764915-0sct6x,1,80.5,mista,16,16,false
+2030,tournament-2030-nyc-eli-w41-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98.5,100%_reais,20,20,false
+2030,tournament-2030-riy-cro-w41-3,Crown,"Alejandro Galán & Federico Chingotto",real_alejandro_galan|real_federico_chingotto,2,96,100%_reais,20,20,false
+2030,tournament-2030-mel-bro-w42-1,Bronze,"Diego Vega & Ramiro Pereyra",athleteprofile-1767227001915-vg4klk|real_ramiro_pereyra,1,88,mista,16,16,false
+2030,tournament-2030-cor-gol-w43-1,Gold,"Emiliano Alonso & Samuel López",athleteprofile-1767227288915-hmwr13|athleteprofile-1767227168915-ow4v22,0,88,100%_bots,24,24,false
+2030,tournament-2030-cun-mas-w43-2,Masters,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98.5,100%_reais,24,24,false
+2030,tournament-2030-cph-bro-w44-1,Bronze,"Thiago Rojas 945 & Lucas Costa",athleteprofile-1767227740915-hebhsa|athleteprofile-1767228769915-y899vr,0,84.5,100%_bots,16,16,false
+2030,tournament-2030-ath-sil-w44-2,Silver,"Gonzalo Sánchez & Mateo Ortiz",athleteprofile-1767226945915-x2pj6y|athleteprofile-1767227080915-5eoyrh,0,86,100%_bots,16,16,false
+2030,tournament-2030-rio-pla-w45-1,Platinum,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98.5,100%_reais,32,32,false
+2030,tournament-2030-seo-bro-w46-1,Bronze,"Pedro Sánchez & Thiago Santos",athleteprofile-1767226965915-gvug3w|athleteprofile-1767232914915-iviv7p,0,88,100%_bots,16,16,false
+2030,tournament-2030-sin-eli-w46-2,Elite,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98.5,100%_reais,20,20,false
+2030,tournament-2030-lax-sil-w47-1,Silver,"Pedro Sánchez & Thiago Santos",athleteprofile-1767226965915-gvug3w|athleteprofile-1767232914915-iviv7p,0,88,100%_bots,16,16,false
+2030,tournament-2030-nai-leg-w52-1,Legacy Finals,"Arturo Coello & Agustín Tapia",real_arturo_coello|real_agustin_tapia,2,98.5,100%_reais,8,7,true
