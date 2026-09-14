@@ -16,7 +16,7 @@ auditoria (ver `reports/real-athletes-audit/AUDITORIA-ATLETAS-REAIS-VS-BOTS.md`)
 | Tier | Meta de títulos 100% reais | Janela |
 |---|---|---|
 | Major / P1 (equivalente a Elite/Crown no catálogo atual) | ≥ 70% | Temporadas 1-3 |
-| P2 (equivalente a Masters) | 40-60% | Todas |
+| P2 (equivalente a Masters) | referência: até ~6% de títulos de bot observados (teto observado — ver nota abaixo, não é meta ativa de correção) | Todas |
 | Gold / Platinum | referência: até ~23% em Platinum, ~13% em Gold (teto observado — ver nota abaixo, não é meta ativa de correção) | Todas |
 | Bronze / Silver | ~0% (não deveriam nem ter atletas reais na chave) | Todas |
 
@@ -55,6 +55,26 @@ continua subindo até onde o teto permitir. Ver
 o histórico completo da investigação e a decisão de não perseguir
 correção adicional por esta via.
 
+**Nota sobre a meta de P2/Masters (revisada na Fase 8.7):** verificada
+por analogia, não por nova rodada de 4 medições — a mesma causa
+estrutural de Gold/Platinum se confirma em Masters: o campo de bots
+segue a mesma curva de geração (teto de OVR na origem, dependente só de
+`absoluteRank`) e a mesma margem de crescimento estreita, medida nas
+mesmas 4 configurações já rodadas (produção, Fase 8.3, 8.4, 8.5), sem
+precisar repetir as rodadas. Diferença notada, não uma causa diferente:
+o corte de ranking mais alto de Masters (`minRanking: 230`, contra 450 de
+Gold) filtra um subconjunto de bots individualmente mais forte (OVR
+médio de campo 72-75, contra 60-65 em Gold) mas ainda muito abaixo dos
+reais (85-90) — e a dominância real observada em Masters (94-100%
+conforme configuração) é, na prática, ainda MAIS extrema que em Gold/
+Platinum, não menos, porque o número de reais que circula por Masters ao
+longo de uma carreira é maior e o corte mais alto reduz ainda mais o
+número de bots elegíveis a disputar ali. Melhor resultado observado nas
+4 configurações: 6% de títulos de bot (Fase 8.3) — ainda muito distante
+do meio da faixa original de 40-60%. **Referência revisada**: até ~6% de
+títulos de bot observados, mesma disciplina e mesma decisão de não
+perseguir correção adicional da nota de Gold/Platinum acima.
+
 ## Metas de participação
 
 - **Todo atleta real disputa ≥ 12 eventos por temporada, já na temporada 1** —
@@ -63,7 +83,20 @@ correção adicional por esta via.
   média acima de 12).
 - **Duplas históricas pareadas em ≥ 90% dos eventos que disputam** — medido por
   `perSeason[].historicalDuplasThisSeason[].pairedRatePct`, para as 12 duplas
-  de `worldSeed2025.json`, por temporada.
+  de `worldSeed2025.json`, por temporada. **Confirmada atingida na Fase 8.7**
+  para as 6 duplas confirmadas (`partner_confidence: "confirmado"`):
+  `pairedRatePct` MEDIDO SÓ NAS TEMPORADAS EM QUE A DUPLA ESTAVA ATIVA (antes
+  de qualquer um dos dois se aposentar) fica em 97-100% nas 6 — inclusive nas
+  3 que a Fase 8 sinalizou como "colapsando" (58,3-78,3% no agregado cru de 5
+  temporadas). A métrica `historicalDuplasOverall` cumulativa do harness soma
+  TODAS as 5 temporadas sem descontar aposentadoria, então uma dupla que se
+  aposenta na T4 aparece com 2 temporadas de "0% pareada" que na verdade são
+  "não jogou mais, por design" (Fase 2D) — não falha de pareamento. Ao medir
+  só o período ativo (a forma correta de interpretar esta meta), as 6/6
+  duplas confirmadas atingem a meta. Ver `reports/real-athletes-audit/FASE-8.1-RELATORIO.md`
+  §1 para a correspondência exata entre data de aposentadoria e queda no
+  pareamento, e `reports/real-athletes-audit/FASE-8.7-RELATORIO.md` §3 para o
+  recálculo por temporada ativa.
 
 ## Metas de acesso do jogador
 

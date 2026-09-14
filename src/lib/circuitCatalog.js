@@ -284,14 +284,16 @@ export const WORLD_TOUR_CITIES = Object.freeze([
 // que a maior parte do "circuito base" do ano já aconteceu, pra que
 // "top 8"/"top 16" already reflita uma temporada real, não um sorteio de
 // janeiro.
-// Fase 7.3, item 1 — reusa o mesmo override de topo já testado nas
-// Fases 6.7/7/7.1/7.2 (`DIAG_TOP_EVENTS=76`), agora rodando uma 2ª seed
-// pra confirmar (ou refutar) a inversão de sinal medida com 1 seed só.
-// Reverter depois de medir.
-const DIAG_TOP_EVENTS_OVERRIDE = { 76: { Gold: 21, Platinum: 15, Masters: 26 }, 120: { Gold: 35, Platinum: 27, Masters: 44 } }[Number(process.env.DIAG_TOP_EVENTS)] || null;
+// Fase 8.7, item 1 — "topo-120" promovido a produção. Medido em modo
+// diagnóstico (`DIAG_TOP_EVENTS=120`) desde a Fase 6.7, recomendado pela
+// Fase 8 (participação individual: 63%→11% de reais abaixo do piso de 12
+// eventos/temporada) e reconfirmado pela Fase 8.2 (dominância de tier é
+// causa separada — calendário não a resolve nem piora, decisão
+// independente). Descartado o cenário "topo-76" por instabilidade de
+// forma (Fase 7.4) — só topo-120 vira padrão. Valores idênticos aos já
+// validados nas medições diagnósticas; nenhuma fórmula nova.
 const TIER_EVENTS_PER_YEAR = Object.freeze({
-  Bronze: 24, Silver: 16, Gold: 8, Platinum: 6, Masters: 10, Elite: 10, Crown: 4,
-  ...DIAG_TOP_EVENTS_OVERRIDE,
+  Bronze: 24, Silver: 16, Gold: 35, Platinum: 27, Masters: 44, Elite: 10, Crown: 4,
 });
 const REGULAR_SEASON_LAST_WEEK = 47;
 const SEASON_FINALE_WEEKS = Object.freeze({ 'Circuit Finals': 49, 'Legacy Finals': 52 });
