@@ -39,10 +39,24 @@ import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 // FASE-5.6-RELATORIO.md §2.
 export const OPEN_TIER_CEILING = 150;
 
+// Fase 8.1, item 2 — mesma constante que `WorldTourLifecycle.js` usa pra IA
+// (janela de prioridade, validada na Fase 7.3/7.4: zera a reincidência de
+// 90-100% pra 0%). Declarada AQUI (não lá) porque `WorldTourLifecycle.js`
+// já importa deste módulo (`resolveEntryRank`/`OPEN_TIER_CEILING`) — import
+// no sentido contrário criaria um ciclo. Uma constante só, os dois
+// caminhos de entrada (IA em segundo plano, jogador aqui) leem o mesmo
+// valor — nunca dois números que podem divergir silenciosamente.
+export const PRIORITY_WINDOW_N = 4;
+
 export const ENTRY_PATHS = Object.freeze({
   DIRECT: 'direct', QUALIFYING: 'qualifying', WILDCARD: 'wildcard',
   PROTECTED: 'protected_ranking', SPECIAL_EXEMPT: 'special_exempt',
   JUNIOR: 'junior_invite', NATIONAL: 'national_invite', INELIGIBLE: 'ineligible',
+  // Fase 8.1, item 2 — equivalente pro jogador da janela de prioridade da
+  // IA (Fase 7.3/7.4): entrada garantida, fora de qualquer corte de rank,
+  // pelas próximas `PRIORITY_WINDOW_N` inscrições depois de vencer o
+  // qualifying. Ver `priorityWindowRemaining` em `buildAthleteEntryContext`.
+  PRIORITY_WINDOW: 'priority_window',
 });
 
 
@@ -54,6 +68,7 @@ export const ENTRY_PATH_LABELS = Object.freeze({
   [ENTRY_PATHS.SPECIAL_EXEMPT]: 'Special Exempt',
   [ENTRY_PATHS.JUNIOR]: 'Junior Invite',
   [ENTRY_PATHS.NATIONAL]: 'National Invite',
+  [ENTRY_PATHS.PRIORITY_WINDOW]: 'Janela de Prioridade',
   [ENTRY_PATHS.INELIGIBLE]: 'Não elegível',
 });
 
@@ -103,6 +118,13 @@ export function buildAthleteEntryContext(profile = {}, teamRank = null, tourname
     specialExempt: Boolean(profile.special_exempt_until && tournament.start_date && profile.special_exempt_until >= tournament.start_date),
     juniorInvite: Boolean((profile.age || 25) <= 20 && (profile.junior_reputation || 0) >= 50),
     nationalInvite: Boolean(country && tournament.country && country === tournament.country && (profile.national_reputation || 0) >= 40),
+    // Fase 8.1, item 2 — vive em `Partnership.priority_window_remaining`
+    // (mesmo campo que a IA usa, Fase 7.4), não em `PlayerProfile`; o
+    // chamador (tournamentRegistration.js) mescla o valor da parceria ativa
+    // aqui antes de montar o contexto, mesma convenção de todo outro campo
+    // desta função (lido de `profile`, qualquer que seja a entidade de
+    // origem real).
+    priorityWindowRemaining: Number(profile.priority_window_remaining) || 0,
   };
 }
 
@@ -116,6 +138,16 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
   const directLimit = Number(tournament?.min_ranking || config.minRanking || 0);
   const qualifyingLimit = directLimit > 0 ? Math.max(directLimit * 2, directLimit + 80) : 800;
 
+  // Fase 8.1, item 2 — checado ANTES de qualquer outro critério, mesma
+  // prioridade que a IA dá a `priorityWindowRemaining > 0` em
+  // `WorldTourLifecycle.js:applyEntryPriority` (entra garantido, fora de
+  // toda disputa por rank). Só a CONCESSÃO da janela (ao vencer o
+  // qualifying) e o DESCONTO (a cada inscrição usada) ficam a cargo do
+  // chamador (`tournamentRegistration.js`/`TournamentModal.jsx`) — esta
+  // função só LÊ o valor já resolvido.
+  if (Number(athlete.priorityWindowRemaining) > 0) {
+    return result(ENTRY_PATHS.PRIORITY_WINDOW, true, 'Entrada garantida por janela de prioridade (venceu o qualifying).');
+  }
   if (athlete.specialExempt) return result(ENTRY_PATHS.SPECIAL_EXEMPT, true, 'Entrada por Special Exempt.');
   if (athlete.protectedRanking && Number(athlete.protectedRanking) <= directLimit) return result(ENTRY_PATHS.PROTECTED, true, 'Entrada por ranking protegido.');
   if (athlete.wildcard) return result(ENTRY_PATHS.WILDCARD, true, 'Entrada por wildcard.');

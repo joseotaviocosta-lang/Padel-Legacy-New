@@ -1,6 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { chooseTournament } from './TournamentSelectionAI.js';
-import { resolveEntryRank, OPEN_TIER_CEILING } from './EntryManager.js';
+import { resolveEntryRank, OPEN_TIER_CEILING, PRIORITY_WINDOW_N } from './EntryManager.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 import { getTournamentTierConfig, getRoundOutcomeTable } from '@/lib/circuitCatalog.js';
@@ -210,10 +210,11 @@ function applyEntryPriority(entrants, tournament, drawSize, commitWindow = false
 // em vez de uma só — medida na Fase 7.3 como a peça que faltava (0% de
 // reincidência com N=4, contra 90,9% com N=2 e 40% com o fator de
 // qualifying escalando pelo grupo em vez de fixo — ver
-// FASE-7.3-RELATORIO.md §3.3). `PRIORITY_WINDOW_N`/`QUALIFYING_SCALE_FACTOR`
-// são constantes fixas de produção (Fase 7.4) — não mais variáveis de
-// ambiente de diagnóstico.
-const PRIORITY_WINDOW_N = 4;
+// FASE-7.3-RELATORIO.md §3.3). `QUALIFYING_SCALE_FACTOR` é constante fixa
+// de produção (Fase 7.4) — não mais variável de ambiente de diagnóstico.
+// `PRIORITY_WINDOW_N` — importado de `EntryManager.js` (Fase 8.1, item 2):
+// o caminho de entrada do JOGADOR reusa a mesma constante, uma fonte só
+// pro tamanho da janela nos dois caminhos (IA em segundo plano, jogador).
 const QUALIFYING_SCALE_FACTOR = 1.4;
 
 // Fase 5.3, item 2 — mínimo viável de chave. Sem o preenchimento forçado

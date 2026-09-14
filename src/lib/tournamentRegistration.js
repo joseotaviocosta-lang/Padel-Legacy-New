@@ -1,7 +1,8 @@
 import { localGame } from '@/api/localGameClient.js';
 import { incrementMissionProgress } from '@/lib/padel.js';
-import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
+import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel, ENTRY_PATHS } from '@/gameplay/worldTour/EntryManager.js';
 import { getTournamentCampaignDates } from '@/lib/tournamentSchedule.js';
+import { getActivePartnership } from '@/lib/partnershipSystem.js';
 
 export const TOURNAMENT_REGISTRATION_RULES = Object.freeze({
   defaultOpenDaysBeforeStart: 30,
@@ -59,7 +60,7 @@ export function isConfirmedRegistration(registration, profileId, tournamentId) {
 
 function reason(code, message, details = {}) { return { code, message, ...details }; }
 
-export function evaluateTournamentRegistration({ player, partner, tournament, currentDate, registrations = [], tournaments = [], teamRank = 0, rules = TOURNAMENT_REGISTRATION_RULES }) {
+export function evaluateTournamentRegistration({ player, partner, tournament, currentDate, registrations = [], tournaments = [], teamRank = 0, priorityWindowRemaining = 0, rules = TOURNAMENT_REGISTRATION_RULES }) {
   const date = normalizeGameDate(currentDate || player?.career_date || CAREER_START_DATE);
   const interval = getTournamentEffectiveInterval(tournament);
   const window = getTournamentRegistrationWindow(tournament, rules);
@@ -74,7 +75,12 @@ export function evaluateTournamentRegistration({ player, partner, tournament, cu
   if (!player?.id || player?.retired) reasons.push(reason('PLAYER_INACTIVE', 'O atleta não está ativo para competir.'));
   if (!partner?.id || partner?.unavailable || partner?.status === 'indisponivel') reasons.push(reason('PARTNER_UNAVAILABLE', 'É necessário um parceiro ativo e disponível.'));
   if (player?.partner_id && partner?.id && player.partner_id !== partner.id) reasons.push(reason('PARTNER_CHANGED', 'O parceiro selecionado não corresponde à dupla ativa.'));
-  const entry = evaluateTournamentEntry(tournament, buildAthleteEntryContext(player, teamRank, tournament));
+  // Fase 8.1, item 2 — `priority_window_remaining` vive na Partnership
+  // ativa do jogador (mesmo campo que a IA usa, Fase 7.4), não em
+  // PlayerProfile; mesclado aqui como qualquer outro campo que
+  // buildAthleteEntryContext já lê de `profile` (wildcard_tokens,
+  // protected_ranking, etc.), sem mudar a assinatura dessa função.
+  const entry = evaluateTournamentEntry(tournament, buildAthleteEntryContext({ ...player, priority_window_remaining: priorityWindowRemaining }, teamRank, tournament));
   if (!entry.eligible) reasons.push(reason('SPORTING_INELIGIBLE', entry.reason || 'A dupla não atende aos critérios esportivos.'));
   const fee = Math.max(0, Number(tournament?.entry_fee) || 0);
   if (Number(player?.coins || 0) < fee) reasons.push(reason('INSUFFICIENT_FUNDS', `São necessárias ${fee} moedas para a inscrição.`));
@@ -171,10 +177,19 @@ export async function registerTournament({ player, partner, tournament, teamRank
   const existingById = await localGame.entities.TournamentRegistration.filter({ profile_id: player.id, tournament_id: tournament.id });
   const activeExisting = existingById.find(item => ACTIVE_REGISTRATION_STATUSES.has(item.status));
   if (activeExisting) return { success: true, idempotent: true, registration: activeExisting, profile: player, entry: { path: activeExisting.entry_path } };
-  const [registrations, tournaments] = await Promise.all([listTournamentRegistrations(player.id), localGame.entities.Tournament.list('-start_date', 500)]);
+  const [registrations, tournaments, activePartnership] = await Promise.all([
+    listTournamentRegistrations(player.id), localGame.entities.Tournament.list('-start_date', 500), getActivePartnership(player.id),
+  ]);
   const partnerRegistrations = partner?.id ? await localGame.entities.TournamentRegistration.filter({ partner_id: partner.id }) : [];
-  const validation = evaluateTournamentRegistration({ player, partner, tournament, currentDate: player.career_date, registrations: [...registrations, ...partnerRegistrations], tournaments, teamRank });
+  const priorityWindowRemaining = Number(activePartnership?.priority_window_remaining) || 0;
+  const validation = evaluateTournamentRegistration({ player, partner, tournament, currentDate: player.career_date, registrations: [...registrations, ...partnerRegistrations], tournaments, teamRank, priorityWindowRemaining });
   if (!validation.allowed) return { success: false, reasons: validation.reasons, warnings: validation.warnings, validation };
+  // Fase 8.1, item 2 — cada inscrição USADA com a janela ativa desconta 1,
+  // mesmo desenho da IA (WorldTourLifecycle.js: desconta a cada aparição
+  // efetiva, não só ao vencer o qualifying de novo).
+  if (validation.entry.path === ENTRY_PATHS.PRIORITY_WINDOW && activePartnership) {
+    await localGame.entities.Partnership.update(activePartnership.id, { priority_window_remaining: Math.max(0, priorityWindowRemaining - 1) });
+  }
   const qualifyingRequired = validation.entry.path === 'qualifying';
   const planned = getTournamentCampaignDates(tournament, { qualifyingRequired });
   const interval = { start: planned.start || validation.interval.start, end: planned.end || validation.interval.end };
@@ -184,7 +199,15 @@ export async function registerTournament({ player, partner, tournament, teamRank
     status: 'confirmed', registered_at: player.career_date, cancelled_at: null, effective_start_date: interval.start, effective_end_date: interval.end,
     entry_path: validation.entry.path, entry_label: getEntryPathLabel(validation.entry.path), entry_fee_paid: fee,
   });
-  const updatedProfile = fee ? await localGame.entities.PlayerProfile.update(player.id, { coins: Number(player.coins || 0) - fee }) : player;
+  // Fase 8.1, item 3 — consome a wildcard só quando ela foi de fato o
+  // motivo da entrada (nunca no caminho `tournament.player_wildcard`,
+  // que não é um recurso do jogador pra gastar).
+  const usedWildcard = validation.entry.path === ENTRY_PATHS.WILDCARD && Number(player.wildcard_tokens) > 0;
+  const profilePatch = {
+    ...(fee ? { coins: Number(player.coins || 0) - fee } : {}),
+    ...(usedWildcard ? { wildcard_tokens: Number(player.wildcard_tokens) - 1 } : {}),
+  };
+  const updatedProfile = Object.keys(profilePatch).length ? await localGame.entities.PlayerProfile.update(player.id, profilePatch) : player;
   await localGame.entities.CalendarEvent.upsert(`calendar-${id}`, {
     id: `calendar-${id}`, profile_id: player.id, event_type: 'tournament', title: tournament.name, start_date: interval.start, end_date: interval.end,
     related_id: tournament.id, related_name: tournament.name, status: 'scheduled', is_mandatory: true, requires_decision: true, decision_type: 'play_tournament',

@@ -33,6 +33,7 @@ import { ModalShell, ContextActionBar } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { buildPhysicalPatch, getCoachPhysicalRecommendation } from '@/gameplay/worldTour/PhysicalConditionManager.js';
 import { isPlayerRegisteredForTournament, isTournamentParticipationConfirmed, resolveTournamentCampaignEvent } from '@/lib/tournamentRegistration.js';
+import { PRIORITY_WINDOW_N } from '@/gameplay/worldTour/EntryManager.js';
 import { getTournamentDrawAnchorDate } from '@/lib/tournamentDraw.js';
 import {
   postMatchInterviewIdentity,
@@ -57,6 +58,15 @@ import {
 import { buildFreshTournamentRoundRecovery, probeTournamentRecoverySession } from '@/game-core/tournamentMatchRecoveryEngine.js';
 import { buildInterviewRoute } from '@/lib/tournamentNextAction.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
+
+// Fase 8.1, item 3 — primeira porta de exceção do jogador concedida de
+// fato (as outras 4 checadas em EntryManager.js nunca eram setadas por
+// nenhum sistema, achado da Fase 8 §3). Wildcard é a mais natural pro
+// jogador humano: motivo narrativo de "forma recente" que uma IA em
+// segundo plano não precisa simular. 5 vitórias oficiais seguidas — sem
+// stackar (só concede se `wildcard_tokens` está zerado) e só no momento
+// em que a sequência CRUZA o limiar, não a cada vitória depois disso.
+const WILDCARD_STREAK_THRESHOLD = 5;
 
 const TIER_STYLES = {
   Crown:{icon:Crown,color:'text-amber-400'}, Elite:{icon:Crown,color:'text-fuchsia-400'},
@@ -607,7 +617,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // para o mesmo matchId, para nunca incrementar duas vezes o mesmo
       // resultado reprocessado.
       if (!rewardAlreadyApplied) {
-        updatedDraft = { ...updatedDraft, current_win_streak: won ? (Number(updatedDraft.current_win_streak) || 0) + 1 : 0 };
+        const priorStreak = Number(freshProfile.current_win_streak) || 0;
+        const nextStreak = won ? priorStreak + 1 : 0;
+        updatedDraft = { ...updatedDraft, current_win_streak: nextStreak };
+        // Fase 8.1, item 3 — cruzou o limiar agora (não apenas está acima
+        // dele) e não tem wildcard parada: concede 1. Consumida no
+        // registro (tournamentRegistration.js:registerTournament) quando
+        // usada de fato pra entrar num torneio.
+        if (nextStreak >= WILDCARD_STREAK_THRESHOLD && priorStreak < WILDCARD_STREAK_THRESHOLD && !(Number(updatedDraft.wildcard_tokens) > 0)) {
+          updatedDraft = { ...updatedDraft, wildcard_tokens: (Number(updatedDraft.wildcard_tokens) || 0) + 1 };
+        }
       }
       const physicalKeys = Array.isArray(updatedDraft.processed_tournament_physical_keys) ? updatedDraft.processed_tournament_physical_keys : [];
       let physical = null;
@@ -648,6 +667,14 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         }
         if (activePartnership) {
           const partnershipPatch = buildPartnershipMatchPatch(activePartnership, won, tournament.name, profile.career_date);
+          // Fase 8.1, item 2 — mesma concessão de janela de prioridade da IA
+          // (WorldTourLifecycle.js, Fase 7.3/7.4): vencer a ÚLTIMA rodada de
+          // qualifying (a próxima rodada agendada já é `stage:'main'`) dá
+          // entrada garantida nas próximas `PRIORITY_WINDOW_N` inscrições —
+          // mesmo campo persistido (`Partnership.priority_window_remaining`),
+          // mesma constante (`EntryManager.js`), sem segunda implementação.
+          const clearedQualifying = won && freshMatch.stage === 'qualifying' && getCurrentTournamentMatch(nextRun)?.stage === 'main';
+          if (clearedQualifying) partnershipPatch.priority_window_remaining = PRIORITY_WINDOW_N;
           operations.push({ type: 'update', entityName: 'Partnership', id: activePartnership.id, data: partnershipPatch });
           updatedDraft = { ...updatedDraft, partner_chemistry: partnershipPatch.chemistry, partner_trust: partnershipPatch.partner_trust, partner_morale: partnershipPatch.partner_morale };
         }
@@ -663,7 +690,12 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       operations.push(...buildTournamentRoundCoreOperations({
         matchRecord,
         profileId: freshProfile.id,
-        playerPatch: { ...reward.updates, ...(physical?.patch || {}), partner_chemistry: updatedDraft.partner_chemistry, partner_trust: updatedDraft.partner_trust, partner_morale: updatedDraft.partner_morale, processed_tournament_physical_keys: updatedDraft.processed_tournament_physical_keys },
+        // Fase 8.1, item 3 — `current_win_streak`/`wildcard_tokens` (achado
+        // no caminho: `current_win_streak` era calculado em `updatedDraft`,
+        // linha acima, mas nunca entrava neste patch — gravação silenciosa
+        // no vazio, nenhum consumidor via o valor persistir de verdade).
+        // Necessário aqui pra concessão de wildcard por sequência funcionar.
+        playerPatch: { ...reward.updates, ...(physical?.patch || {}), partner_chemistry: updatedDraft.partner_chemistry, partner_trust: updatedDraft.partner_trust, partner_morale: updatedDraft.partner_morale, processed_tournament_physical_keys: updatedDraft.processed_tournament_physical_keys, current_win_streak: updatedDraft.current_win_streak, wildcard_tokens: updatedDraft.wildcard_tokens },
         event: freshEvent,
         eventPatch: {
           title: terminalStatus ? tournament.name : `${tournament.name} — ${nextScheduledMatch?.round || 'Torneio'}`,

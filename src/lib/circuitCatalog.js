@@ -154,14 +154,17 @@ export const TOURNAMENT_TIER_CONFIG = Object.freeze({
     label: 'Legacy Gold', shortLabel: 'Gold', order: 2,
     description: 'Evento internacional de desenvolvimento, com boa relação entre risco, pontos e custos.',
     entryFee: 45, rankPoints: 100, difficultyModifier: -1,
-    mainDrawSize: 24, minLevel: 'Iniciante', minRanking: 450, // Fase 5.6: 800 → 450
+    // Fase 8.1, item 2 — `qualifyingSize` habilita o caminho de qualifying
+    // do JOGADOR (EntryManager.js) neste tier; antes só Crown tinha. Mesmo
+    // valor de Crown (16 → 3 rodadas, getTournamentQualifyingRoundCount).
+    mainDrawSize: 24, qualifyingSize: 16, minLevel: 'Iniciante', minRanking: 450, // Fase 5.6: 800 → 450
     prestige: 38, exposure: 32, tradition: 40, durationDays: 5,
   }),
   Platinum: buildTier({
     label: 'Legacy Platinum', shortLabel: 'Platinum', order: 3,
     description: 'Principal nível do circuito de acesso, capaz de transformar uma temporada com um grande resultado.',
     entryFee: 90, rankPoints: 200, difficultyModifier: 0,
-    mainDrawSize: 32, minLevel: 'Amador', minRanking: 320, // Fase 5.6: 500 → 320
+    mainDrawSize: 32, qualifyingSize: 16, minLevel: 'Amador', minRanking: 320, // Fase 5.6: 500 → 320
     prestige: 56, exposure: 52, tradition: 58, durationDays: 6,
   }),
   'Circuit Finals': buildTier({
@@ -175,14 +178,14 @@ export const TOURNAMENT_TIER_CONFIG = Object.freeze({
     label: 'Legacy Masters', shortLabel: 'Masters', order: 5,
     description: 'Primeiro nível da elite mundial, com chaves competitivas e presença frequente de atletas de ponta.',
     entryFee: 180, rankPoints: 500, difficultyModifier: 1,
-    mainDrawSize: 24, minLevel: 'Competitivo', minRanking: 230, // Fase 5.6: 300 → 230
+    mainDrawSize: 24, qualifyingSize: 16, minLevel: 'Competitivo', minRanking: 230, // Fase 5.6: 300 → 230
     prestige: 72, exposure: 70, tradition: 68, durationDays: 5,
   }),
   Elite: buildTier({
     label: 'Legacy Elite', shortLabel: 'Elite', order: 6,
     description: 'Grandes eventos da temporada, reservados às melhores duplas ou a convidados de alto prestígio.',
     entryFee: 320, rankPoints: 1000, difficultyModifier: 2,
-    mainDrawSize: 20, minLevel: 'Avançado', minRanking: 140, // Fase 5.6: draw 32 → 20, corte 150 → 140
+    mainDrawSize: 20, qualifyingSize: 16, minLevel: 'Avançado', minRanking: 140, // Fase 5.6: draw 32 → 20, corte 150 → 140
     prestige: 88, exposure: 88, tradition: 82, durationDays: 6,
   }),
   Crown: buildTier({
