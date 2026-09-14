@@ -9,6 +9,15 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+// Date.now()/Math.random() reais aqui são intencionais (Fase 4.2 — saves
+// não devem ser determinísticos). Reprodutibilidade em teste NÃO exige
+// mudar este formato: o harness de auditoria (installDeterminism em
+// scripts/audit-real-athletes-simulation.mjs) substitui Math.random/Date
+// globalmente ANTES de qualquer criação de entidade, tornando o id
+// resultante determinístico sem alterar seu formato — mudar o formato
+// quebraria selectPair (aiPartnershipLifecycle.js), sensível a
+// comprimento/formato de string via hash FNV-1a (achado da Fase 0.1,
+// FASE-0.1-VALIDACAO-HARNESS.md §1.1; revalidado na Fase 8.8).
 function makeId(prefix = 'entity') {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
