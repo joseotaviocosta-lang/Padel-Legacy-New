@@ -3,6 +3,7 @@ import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js'
 import { generateEventObject } from '@/lib/world.js';
 import { expireMacroEvents, maybeGenerateMacroEvent } from '@/lib/worldEvents.js';
 import { normalizeWorldEventIds, createWorldEventObjects } from '@/lib/worldEventIds.js';
+import { getRealAthleteNameSet } from '@/players/realAthleteRegistry.js';
 
 const DAY_MS = 86400000;
 const WEEKDAY_NAMES = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
@@ -281,21 +282,47 @@ export async function processLivingWorldDay(profile, date, options = {}) {
   return summary;
 }
 
+// Fase 9.3, item 1 — ponderação de reais na SELEÇÃO/exibição, não na
+// geração (os geradores em worldMarketLifecycle.js/circuitLifecycle.js/
+// athletePersonalityLifecycle.js/aiPartnershipLifecycle.js/
+// worldSimulationLifecycle.js continuam intocados, gerando pra reais e
+// bots igual). `related_players` grava NOMES (não `id`), então o único
+// jeito de saber se um WorldEvent já existente envolve um real é cruzar
+// contra o registro canônico — nunca duplicar essa lista.
+export function eventInvolvesReal(event) {
+  const names = getRealAthleteNameSet();
+  return (event?.related_players || []).some((name) => names.has(name));
+}
+
 export async function getLivingWorldSnapshot(profile, limit = 24) {
   const date = profile?.career_date || '2026-01-01';
   const rows = uniqueById(await safeList(localGame.entities.WorldEvent, '-event_date', Math.max(limit * 4, 80)))
     .filter(event => !event.event_date || event.event_date <= date)
     .slice(0, limit);
   const bulletin = rows.find(event => event.event_type === 'boletim_semanal') || null;
+  // Fase 9.3, item 1 — dentre os eventos recentes, um envolvendo real tem
+  // prioridade pro slot "breaking" (o item destacado que WorldHighlights/
+  // CareerHub.jsx usa como primeiro item dos 3): `tier==='breaking'`
+  // envolvendo real > qualquer `tier==='breaking'` > qualquer real > mais
+  // recente. Critério de seleção só — nenhum evento ganha um `tier` novo.
+  const breaking = rows.find(event => event.tier === 'breaking' && eventInvolvesReal(event))
+    || rows.find(event => event.tier === 'breaking')
+    || rows.find(eventInvolvesReal)
+    || rows[0]
+    || null;
   return {
     date,
     events: rows,
     bulletin,
-    breaking: rows.find(event => event.tier === 'breaking') || rows[0] || null,
+    breaking,
     categories: {
       circuito: rows.filter(event => ['resultado', 'campeao', 'torneio', 'ranking'].includes(event.event_type)),
       mercado: rows.filter(event => ['duplas', 'transferencia', 'mercado', 'aposentadoria', 'promessa'].includes(event.event_type)),
       saude: rows.filter(event => ['lesao', 'recuperacao'].includes(event.event_type)),
+      // Fase 9.3, item 1/2 — eventos envolvendo atleta real, independente
+      // de categoria, pra dar destaque adicional no CareerHub e no WorldHub
+      // sem esperar o jogador clicar "ver mais".
+      reais: rows.filter(eventInvolvesReal),
     },
   };
 }

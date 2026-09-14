@@ -802,11 +802,32 @@ function AttentionList({ items, pendingOffers, profile, onChoosePartner }) {
 
 function WorldHighlights({ snapshot, posts }) {
   const featured = snapshot?.bulletin || snapshot?.breaking;
-  const highlights = featured ? [featured, ...posts.filter((post) => post.id !== featured.id)] : posts;
-  const items = highlights.slice(0, 3);
+  // Fase 9.3, item 1 — eventos envolvendo atleta real (`categories.reais`,
+  // já calculado em getLivingWorldSnapshot) entram ANTES dos `Post`
+  // genéricos no corte de 3 itens, sem remover nem re-priorizar a geração
+  // em si — só a ordem de exibição aqui, onde o corte acontece.
+  const realHighlights = snapshot?.categories?.reais || [];
+  const seenIds = new Set(featured ? [featured.id] : []);
+  const merged = [
+    ...(featured ? [featured] : []),
+    ...realHighlights.filter((event) => !seenIds.has(event.id) && (seenIds.add(event.id) || true)),
+    ...posts.filter((post) => !seenIds.has(post.id)),
+  ];
+  const items = merged.slice(0, 3);
+  const hasUnseenRealHighlight = realHighlights.some((event) => event.id !== featured?.id);
   return (
     <Surface className="h-full">
-      <SurfaceHeader icon={Globe2} title="Mundo" description="Só o essencial — o resto está no hub do Mundo." action={<Link to="/world" className="text-xs font-bold text-primary">Ver mundo</Link>} />
+      <SurfaceHeader
+        icon={Globe2}
+        title="Mundo"
+        description="Só o essencial — o resto está no hub do Mundo."
+        action={(
+          <Link to="/world" className="flex items-center gap-1.5 text-xs font-bold text-primary">
+            {hasUnseenRealHighlight && <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden="true" />}
+            Ver mundo
+          </Link>
+        )}
+      />
       {items.length ? (
         <ul className="space-y-2">
           {items.map((item) => (

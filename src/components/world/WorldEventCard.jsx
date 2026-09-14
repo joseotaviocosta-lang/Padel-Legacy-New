@@ -4,6 +4,7 @@ import { EVENT_TYPE_META } from '@/lib/world';
 import { MACRO_EVENT_META, IMPACT_META } from '@/lib/worldEvents';
 import { PlayerAvatar } from '@/components/design-system';
 import { formatWorldDate } from '@/lib/worldTime';
+import { getRealAthleteNameSet } from '@/players/realAthleteRegistry.js';
 
 const ICON_MAP = {
   Newspaper, Mic, Swords, Share2, HelpCircle, ArrowRightLeft, Clock,
@@ -59,6 +60,12 @@ export default function WorldEventCard({ event, profile, variant = 'default' }) 
   const relatedToPlayer = Boolean(playerName) && (event.related_players || []).some(
     (name) => String(name || '').trim().toLowerCase() === playerName,
   );
+  // Fase 9.3, item 2 — mesmo destaque visual de "Relacionado a você",
+  // aplicado a qualquer evento envolvendo um nome do registro canônico de
+  // atletas reais, pra reforçar as telas já existentes (WorldHub, hero,
+  // WorldEvents.jsx, WorldMarket) sem criar nenhuma tela nova.
+  const realNames = getRealAthleteNameSet();
+  const involvesRealAthlete = (event.related_players || []).some((name) => realNames.has(name));
 
   return (
     <div className={`glass rounded-2xl border transition-all hover:scale-[1.01] ${isHero ? 'p-5 sm:p-6' : 'p-4'} ${isMacro ? meta.border : tier.border} ${isMacro && isActive ? 'ring-1 ring-primary/10' : ''}`}>
@@ -91,10 +98,19 @@ export default function WorldEventCard({ event, profile, variant = 'default' }) 
         <span className="text-[9px] text-muted-foreground shrink-0 ml-auto">{dateStr}</span>
       </div>
 
-      {relatedToPlayer && (
-        <span className="inline-flex items-center gap-1 mb-2 rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">
-          <UserRound className="h-2.5 w-2.5" /> Relacionado a você
-        </span>
+      {(relatedToPlayer || involvesRealAthlete) && (
+        <div className="mb-2 flex flex-wrap gap-1.5">
+          {relatedToPlayer && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-primary/15 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-primary">
+              <UserRound className="h-2.5 w-2.5" /> Relacionado a você
+            </span>
+          )}
+          {involvesRealAthlete && (
+            <span className="inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[8px] font-black uppercase tracking-wider text-amber-400">
+              <Crown className="h-2.5 w-2.5" /> Atleta real
+            </span>
+          )}
+        </div>
       )}
 
       {/* Title */}

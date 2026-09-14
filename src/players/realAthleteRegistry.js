@@ -22,6 +22,19 @@ export function getRealAthleteRegistryMeta() {
   return { generatedAt: registryData.generatedAt, source: registryData.source, snapshotDate: registryData.snapshot_date, count: registryData.count };
 }
 
+// Fase 9.3 — nome (não id) é a chave disponível em contextos que só têm
+// texto livre pra cruzar contra "é um atleta real?" (ex.: `WorldEvent.
+// related_players`, que grava nomes). Memoizado aqui, não em cada
+// consumidor, seguindo a mesma regra do topo do arquivo: nunca duplicar a
+// lista de atletas reais.
+let realAthleteNameSetCache = null;
+export function getRealAthleteNameSet() {
+  if (!realAthleteNameSetCache) {
+    realAthleteNameSetCache = new Set(registryData.athletes.map((athlete) => athlete.name).filter(Boolean));
+  }
+  return realAthleteNameSetCache;
+}
+
 // Pares "confirmado" (resultado de torneio real) — travados, só se desfazem
 // por evento narrativo explícito (Fase 2G.1).
 export function getConfirmedRealPairs() {

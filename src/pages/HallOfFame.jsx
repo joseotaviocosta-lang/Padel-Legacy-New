@@ -1,17 +1,39 @@
-import React, { useMemo, useState } from 'react';
-import { Award, Crown, FileText, Search, Trophy, Users } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Award, Crown, FileText, History, Search, Trophy, Users } from 'lucide-react';
 import { HOF_CRITERIA, HOF_LEGENDS, HOF_TYPE_CONFIG } from '@/lib/hallOfFameData';
 import { EmptyStateCard, FilterPills, TabBar } from '@/components/padel/ui';
 import { CardGrid, Page, PageContent, PageHeader, PageSection, StatCard, StatusBadge, Surface } from '@/components/design-system';
 import HallOfFameCard from '@/components/hof/HallOfFameCard';
 import HallOfFameDetail from '@/components/hof/HallOfFameDetail';
 import LegendComparison from '@/components/hof/LegendComparison';
+import RetiredRealAthletesSection from '@/components/hof/RetiredRealAthletesSection';
+import { localGame } from '@/api/localGameClient.js';
+import { safeModuleTask } from '@/lib/moduleLoading';
 
 export default function HallOfFame() {
   const [activeTab, setActiveTab] = useState('legends');
   const [activeType, setActiveType] = useState('all');
   const [search, setSearch] = useState('');
   const [selected, setSelected] = useState(null);
+  // Fase 9.3, item 3 — coexistência decidida: HOF_LEGENDS (lore fixo,
+  // escrito à mão) continua como está; esta seção nova lê `AthleteCareerLegacy`
+  // (dado dinâmico, gravado a cada aposentadoria — real ou bot — desde a
+  // Fase 2.6, mas sem NENHUM leitor até agora). Filtra só `is_real:true`
+  // aqui — a tela é sobre nomes reais que passaram pela carreira do
+  // jogador, não sobre todo bot aposentado.
+  const [retiredReals, setRetiredReals] = useState([]);
+  const [retiredLoading, setRetiredLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const rows = await safeModuleTask(
+        () => localGame.entities.AthleteCareerLegacy.filter({ is_real: true }, '-retirement_date', 200),
+        { label: 'aposentados reais (Hall da Fama)', fallback: [] },
+      );
+      setRetiredReals(rows || []);
+      setRetiredLoading(false);
+    })();
+  }, []);
 
   const filtered = useMemo(() => HOF_LEGENDS.filter((entry) => {
     if (activeType !== 'all' && entry.entity_type !== activeType) return false;
@@ -51,6 +73,7 @@ export default function HallOfFame() {
           <TabBar
             tabs={[
               { key: 'legends', label: 'Lendas', icon: Crown },
+              { key: 'retired', label: 'Sua carreira', icon: History },
               { key: 'criteria', label: 'Critérios', icon: FileText },
               { key: 'compare', label: 'Comparações', icon: Award },
             ]}
@@ -82,6 +105,7 @@ export default function HallOfFame() {
           </PageSection>
         )}
 
+        {activeTab === 'retired' && <RetiredRealAthletesSection rows={retiredReals} loading={retiredLoading} />}
         {activeTab === 'criteria' && <CriteriaView />}
         {activeTab === 'compare' && <LegendComparison legends={HOF_LEGENDS} />}
 

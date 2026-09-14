@@ -4,6 +4,7 @@ import {
   Activity,
   CalendarDays,
   Clock3,
+  Crown,
   Flame,
   Globe2,
   History,
@@ -201,6 +202,12 @@ export default function WorldHub() {
   // geração do Universo Vivo).
   const circuitEvents = snapshot?.categories?.circuito || [];
   const marketEvents = snapshot?.categories?.mercado || [];
+  // Fase 9.3, item 2 — grupo dedicado a eventos envolvendo atleta real
+  // (`categories.reais`, calculado em getLivingWorldSnapshot cruzando
+  // `related_players` contra o registro canônico), cruzando categoria —
+  // o mesmo evento pode já aparecer em Ranking/Torneios/Mercado também;
+  // o objetivo aqui é dar um lugar de destaque fixo, não desduplicar.
+  const realAthleteEvents = snapshot?.categories?.reais || [];
   const bulletinStatus = snapshot?.bulletin ? 'Atualizado' : 'Próxima segunda';
 
   // Agrupamentos temáticos da aba "Hoje" (seção 21): Ranking/Torneios/Mercado
@@ -312,6 +319,15 @@ export default function WorldHub() {
                 profile={profile}
                 moreTo="/world-events"
                 emptyMessage="A comunidade está tranquila no momento."
+              />
+              <CompactEventGroup
+                title="Atletas reais"
+                description="Envolvendo nomes do circuito de verdade"
+                icon={Crown}
+                events={realAthleteEvents}
+                profile={profile}
+                moreTo="/world-events"
+                emptyMessage="Nenhum acontecimento recente envolvendo atletas reais."
               />
             </div>
           </PageSection>
