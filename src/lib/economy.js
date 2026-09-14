@@ -3,17 +3,11 @@ import { STAFF_MARKET, STAFF_ROLE_DEFINITIONS, createStaffContract, getStaffSlot
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
-
-export const SPONSORS = [
-  { id: 'babolat', name: 'Babolat', tier: 'Bronze', monthly_salary: 1500, sign_bonus: 300, min_xp: 0, min_titles: 0 },
-  { id: 'siux', name: 'Siux', tier: 'Bronze', monthly_salary: 1800, sign_bonus: 400, min_xp: 0, min_titles: 0 },
-  { id: 'varlion', name: 'Varlion', tier: 'Bronze', monthly_salary: 2000, sign_bonus: 500, min_xp: 0, min_titles: 0 },
-  { id: 'nox', name: 'Nox', tier: 'Prata', monthly_salary: 3000, sign_bonus: 1000, min_xp: 500, min_titles: 0 },
-  { id: 'wilson', name: 'Wilson', tier: 'Prata', monthly_salary: 3500, sign_bonus: 1200, min_xp: 1000, min_titles: 0 },
-  { id: 'adidas', name: 'Adidas', tier: 'Prata', monthly_salary: 3800, sign_bonus: 1500, min_xp: 1500, min_titles: 0 },
-  { id: 'bullpad', name: 'Bullpad', tier: 'Ouro', monthly_salary: 5000, sign_bonus: 2000, min_xp: 3000, min_titles: 1 },
-  { id: 'head', name: 'Head', tier: 'Ouro', monthly_salary: 6000, sign_bonus: 2500, min_xp: 5000, min_titles: 3 },
-];
+// Patrocínio (catálogo, negociação, contratos) vive só em @/lib/sponsors —
+// era duplicado aqui como `SPONSORS`/`signSponsor`/`terminateContract`/
+// `getSponsorTierStyle`, mas nada importava essas versões (Economy.jsx usa
+// signSponsorContract/renewContract/terminateSponsorContract de sponsors.js).
+// Consolidado no levantamento da Loja, Fase 0, item 2.
 
 export const STAFF_TYPES = Object.values(STAFF_ROLE_DEFINITIONS).map((role) => ({
   id: role.id, name: role.name, icon: role.icon, description: role.purpose,
@@ -37,16 +31,6 @@ export const INVESTMENTS = [
   { id: 'crypto', name: 'Criptomoedas', type: 'Alto Risco', min_amount: 5000, risk: 'Alto', return_rate: 0.12, description: '12% ao mês · risco alto' },
   { id: 'venture', name: 'Venture Capital', type: 'Alto Risco', min_amount: 100000, risk: 'Alto', return_rate: 0.15, description: '15% ao mês · risco alto' },
 ];
-
-const TIER_STYLES = {
-  'Ouro': { badge: 'bg-amber-500/15 text-amber-300 border-amber-500/30', label: 'Ouro' },
-  'Prata': { badge: 'bg-blue-500/15 text-blue-300 border-blue-500/30', label: 'Prata' },
-  'Bronze': { badge: 'bg-purple-500/15 text-purple-300 border-purple-500/30', label: 'Bronze' },
-};
-
-export function getSponsorTierStyle(tier) {
-  return TIER_STYLES[tier] || TIER_STYLES['Bronze'];
-}
 
 const RISK_STYLES = {
   'Baixo': 'text-green-400',
@@ -196,35 +180,6 @@ export async function processMonthlyFinances(profile) {
 }
 
 // ── Actions ──────────────────────────────────────────────────────────────
-
-export async function signSponsor(profile, sponsor) {
-  if ((profile.xp || 0) < sponsor.min_xp) throw new Error(`Requer ${sponsor.min_xp} XP`);
-  if ((profile.tournaments_won || 0) < sponsor.min_titles) throw new Error(`Requer ${sponsor.min_titles} título(s)`);
-
-  const careerDate = profile.career_date || '2026-01-01';
-  const d = new Date(careerDate + 'T00:00:00');
-  d.setMonth(d.getMonth() + 6);
-
-  await localGame.entities.PlayerContract.create({
-    profile_id: profile.id,
-    sponsor_id: sponsor.id,
-    sponsor_name: sponsor.name,
-    sponsor_tier: sponsor.tier,
-    monthly_salary: sponsor.monthly_salary,
-    sign_bonus: sponsor.sign_bonus,
-    started_date: careerDate,
-    end_date: d.toISOString().slice(0, 10),
-    is_active: true,
-  });
-
-  return await localGame.entities.PlayerProfile.update(profile.id, {
-    coins: (profile.coins || 0) + sponsor.sign_bonus,
-  });
-}
-
-export async function terminateContract(contract) {
-  await localGame.entities.PlayerContract.update(contract.id, { is_active: false });
-}
 
 export async function hireStaff(profile, staffCandidate) {
   if (!profile?.id || !staffCandidate?.id) throw new Error('Profissional inválido.');

@@ -1,13 +1,19 @@
 import React from 'react';
 import { COLORS } from '@/lib/characterCatalog';
-import { ColorPicker, ToggleRow, SectionLabel } from './CharacterShared';
+import { ColorPicker, ToggleRow, SectionLabel, FallbackControl } from './CharacterShared';
 
-export default function ClothingEditor({ data, update }) {
+export default function ClothingEditor({ data, update, overriddenCategories = [], overriddenItemNames = {} }) {
+  const roupaOverridden = overriddenCategories.includes('roupa');
+  const tenisOverridden = overriddenCategories.includes('tenis');
   return (
     <div className="space-y-5">
-      <ColorPicker label="Cor da Camisa" options={COLORS} value={data.shirt_color} onChange={v => update('shirt_color', v)} />
+      <FallbackControl overridden={roupaOverridden} itemName={overriddenItemNames.roupa}>
+        <ColorPicker label="Cor da Camisa" options={COLORS} value={data.shirt_color} onChange={v => update('shirt_color', v)} />
+      </FallbackControl>
       <ColorPicker label="Cor do Shorts" options={COLORS} value={data.shorts_color} onChange={v => update('shorts_color', v)} />
-      <ColorPicker label="Cor do Calçado" options={COLORS} value={data.shoes_color} onChange={v => update('shoes_color', v)} />
+      <FallbackControl overridden={tenisOverridden} itemName={overriddenItemNames.tenis}>
+        <ColorPicker label="Cor do Calçado" options={COLORS} value={data.shoes_color} onChange={v => update('shoes_color', v)} />
+      </FallbackControl>
 
       <SectionLabel>Acessórios de Quadra</SectionLabel>
       <ToggleRow label="Headband" value={data.headband} onChange={v => update('headband', v)} />

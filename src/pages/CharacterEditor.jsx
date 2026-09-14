@@ -12,7 +12,10 @@ import EquipmentEditor from '@/components/character/EquipmentEditor';
 import StyleEditor from '@/components/character/StyleEditor';
 import IdentityEditor from '@/components/character/IdentityEditor';
 import HistoryEditor from '@/components/character/HistoryEditor';
+import EquippedBadgeRow from '@/components/character/EquippedBadgeRow';
 import { applyCharacterCustomizationChange, DEFAULT_CHARACTER_CUSTOMIZATION, normalizeCharacterCustomization } from '@/lib/characterCustomization';
+import { deriveEquipmentOverrides } from '@/lib/characterEquipmentOverrides';
+import { isFieldLocked, isAppearanceConfirmed, lockPhysicalFieldsIfNeeded, preserveLockedFieldsOnReset } from '@/lib/characterFieldLocks';
 
 const TABS = [
   { key: 'appearance', label: 'Aparência', icon: Palette },
@@ -26,6 +29,7 @@ const TABS = [
 export default function CharacterEditor() {
   const [profile, setProfile] = useState(null);
   const [customization, setCustomization] = useState(null);
+  const [equipmentOverrides, setEquipmentOverrides] = useState({ overrides: {}, overriddenCategories: [], overriddenItemNames: {}, badges: [] });
   const [activeTab, setActiveTab] = useState('appearance');
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -40,8 +44,34 @@ export default function CharacterEditor() {
       const user = await localGame.auth.me();
       const p = await ensureMyProfile(user);
       setProfile(p);
-      const existing = await localGame.entities.CharacterCustomization.filter({ profile_id: p.id }, null, 1);
-      setCustomization(normalizeCharacterCustomization(existing?.[0] || null, p.id));
+      const [existing, equippedItems, shopItems] = await Promise.all([
+        localGame.entities.CharacterCustomization.filter({ profile_id: p.id }, null, 1),
+        localGame.entities.PlayerInventory.filter({ profile_id: p.id, equipped: true }),
+        localGame.entities.ShopItem.list(),
+      ]);
+      const existingRow = existing?.[0] || null;
+      let loadedCustomization = normalizeCharacterCustomization(existingRow, p.id);
+      // Migração: carreira já existente e CONFIRMADA por uma ação real do
+      // jogador (appearance_confirmed) sem locked_fields ainda — trava os
+      // campos físicos agora, usando os valores JÁ salvos como base (sem
+      // forçar redefinição). Bug real corrigido aqui: `existingRow?.id`
+      // sozinho não bastava como sinal — LOCAL_SEED.CharacterCustomization e
+      // a migração de schema v6 podiam fabricar uma linha com `id` sem o
+      // jogador nunca ter salvo nada, travando altura/biotipo com defaults
+      // antes da sugestão da Fase B aparecer. Uma customização nunca
+      // confirmada por save real NÃO é travada aqui — só passa a valer no
+      // primeiro save de verdade (handleSave).
+      if (isAppearanceConfirmed(loadedCustomization)) {
+        const migrated = lockPhysicalFieldsIfNeeded(loadedCustomization);
+        if (migrated.locked_fields !== loadedCustomization.locked_fields) {
+          const persisted = await localGame.entities.CharacterCustomization.update(existingRow.id, { locked_fields: migrated.locked_fields });
+          loadedCustomization = normalizeCharacterCustomization(persisted, p.id);
+        }
+      }
+      setCustomization(loadedCustomization);
+      const shopMap = {};
+      (shopItems || []).forEach(item => { shopMap[item.id] = item; });
+      setEquipmentOverrides(deriveEquipmentOverrides(equippedItems || [], shopMap));
       setDirty(false);
     } catch (error) {
       console.error(error);
@@ -54,15 +84,24 @@ export default function CharacterEditor() {
   useEffect(() => { load(); }, [load]);
 
   const update = useCallback((key, value) => {
+    if (customization && isFieldLocked(customization, key)) return;
     setCustomization(previous => previous ? applyCharacterCustomizationChange(previous, key, value) : previous);
     setDirty(true);
-  }, []);
+  }, [customization]);
 
   const handleSave = async () => {
     if (!customization) return;
     setSaving(true);
     try {
-      const payload = normalizeCharacterCustomization(customization, profile?.id);
+      let payload = normalizeCharacterCustomization(customization, profile?.id);
+      // handleSave só roda por uma ação real de UI (clique em "Salvar") —
+      // este é o único lugar do sistema que deve gravar appearance_confirmed.
+      payload.appearance_confirmed = true;
+      // Trava no primeiro save de verdade (decisão confirmada): uma
+      // customização sem id ainda está sendo criada agora — os campos
+      // físicos ficam fixos a partir deste exato save, com os valores que o
+      // jogador acabou de escolher.
+      if (!payload.id) payload = lockPhysicalFieldsIfNeeded(payload);
       const saved = payload.id
         ? await localGame.entities.CharacterCustomization.update(payload.id, payload)
         : await localGame.entities.CharacterCustomization.create(payload);
@@ -78,10 +117,10 @@ export default function CharacterEditor() {
   };
 
   const handleReset = () => {
-    setCustomization(normalizeCharacterCustomization({
-      ...DEFAULT_CHARACTER_CUSTOMIZATION,
-      ...(customization?.id ? { id: customization.id } : {}),
-    }, profile?.id));
+    setCustomization(normalizeCharacterCustomization(
+      preserveLockedFieldsOnReset(customization, DEFAULT_CHARACTER_CUSTOMIZATION),
+      profile?.id,
+    ));
     setDirty(true);
   };
 
@@ -117,8 +156,9 @@ export default function CharacterEditor() {
         <div className="grid gap-5 lg:grid-cols-[minmax(250px,0.78fr)_minmax(0,1.7fr)]">
           <div className="space-y-4 lg:sticky lg:top-24 lg:self-start">
             <Surface variant="premium" padding="compact">
-              <CharacterPreview data={customization} profile={profile} />
+              <CharacterPreview data={customization} profile={profile} equipmentOverrides={equipmentOverrides} />
             </Surface>
+            <EquippedBadgeRow badges={equipmentOverrides.badges} />
             <div className="grid grid-cols-2 gap-3">
               <StatCard label="Nome em quadra" value={profile?.name || 'Atleta'} detail="Identidade pública" icon={User} tone="brand" />
               <StatCard label="Prévia" value="Ao vivo" detail="Atualização imediata" icon={Eye} tone="info" />
@@ -131,9 +171,9 @@ export default function CharacterEditor() {
             </Surface>
 
             <Surface variant="elevated" padding="default" className="min-h-[420px]">
-              {activeTab === 'appearance' && <AppearanceEditor data={customization} update={update} />}
-              {activeTab === 'clothing' && <ClothingEditor data={customization} update={update} />}
-              {activeTab === 'equipment' && <EquipmentEditor data={customization} update={update} />}
+              {activeTab === 'appearance' && <AppearanceEditor data={customization} update={update} profile={profile} />}
+              {activeTab === 'clothing' && <ClothingEditor data={customization} update={update} overriddenCategories={equipmentOverrides.overriddenCategories} overriddenItemNames={equipmentOverrides.overriddenItemNames} />}
+              {activeTab === 'equipment' && <EquipmentEditor data={customization} update={update} overriddenCategories={equipmentOverrides.overriddenCategories} overriddenItemNames={equipmentOverrides.overriddenItemNames} />}
               {activeTab === 'style' && <StyleEditor data={customization} update={update} />}
               {activeTab === 'identity' && <IdentityEditor data={customization} update={update} />}
               {activeTab === 'history' && <HistoryEditor data={customization} update={update} />}

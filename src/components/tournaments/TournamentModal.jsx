@@ -892,7 +892,17 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       closeOnBackdrop={phase !== 'match'}
       closeOnEscape={phase !== 'match'}
       title={tournament.name}
-      description="Campanha de torneio"
+      // Correção de layout (partida ao vivo): a faixa de tier + RoundTimeline
+      // abaixo somem durante phase==='match' pra devolver ~79px à área de
+      // conteúdo de LiveMatch (narração/técnico) — essa info não muda ponto a
+      // ponto, então não precisa ficar ocupando espaço competindo com o jogo.
+      // A informação em si não desaparece: dobra pro subtítulo do cabeçalho
+      // do modal (sempre visível, shrink-0, custo de altura zero — já existia
+      // uma linha de descrição estática aqui, só o texto passa a ser
+      // contextual durante a partida).
+      description={phase === 'match' && currentMatch
+        ? `${currentMatch.round} · ${TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}`
+        : 'Campanha de torneio'}
       size="md"
       // Hotfix 14.1 (Parte 1/4): a auditoria achou a causa raiz real da
       // narração/Técnico espremidos no desktop — não faltava min-h-0/flex-1
@@ -906,9 +916,11 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       contentClassName={phase === 'match' ? 'flex flex-col overflow-hidden' : ''}
     >
       <div className={`flex min-h-0 flex-col ${phase === 'match' ? 'h-full' : ''}`}>
-        <div className="mb-3 flex shrink-0 items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
+        {phase !== 'match' && (
+          <div className="mb-3 flex shrink-0 items-center gap-2 text-xs font-black text-primary"><TierIcon className={`h-5 w-5 ${tierStyle.color}`} />{TIER_STYLES[tournament.tier] ? tournament.tier : 'Torneio oficial'}</div>
+        )}
 
-        {run && <RoundTimeline run={run} />}
+        {phase !== 'match' && run && <RoundTimeline run={run} />}
 
         {phase === 'loading' && <div className="py-12 text-center text-sm text-muted-foreground">Restaurando campanha e calendário…</div>}
         {phase === 'error' && <StateMessage icon={XCircle} title="Não foi possível abrir o torneio" body="A inscrição e o calendário foram preservados. Feche e tente novamente." tone="red" />}

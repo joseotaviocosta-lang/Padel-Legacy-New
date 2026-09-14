@@ -221,33 +221,6 @@ export const SPONSOR_CATALOG = [
     renewal_bonus_pct: 25,
   },
   {
-    id: 'red_bull',
-    name: 'Red Bull Padel',
-    tier: 'Ouro',
-    industry: 'Bebidas',
-    country: 'Áustria',
-    logo_emoji: '🐂',
-    description: 'Gigante de bebidas energéticas com forte presença no padel',
-    reputation: 88,
-    monthly_budget: 55000,
-    base_monthly_value: 5500,
-    base_sign_bonus: 2200,
-    preferred_styles: ['Agressivo', 'Potência'],
-    preferred_levels: ['Avançado', 'Elite', 'Lenda'],
-    preferred_positions: ['esquerda'],
-    min_age: 18, max_age: 35,
-    min_xp: 2500, min_titles: 1, min_fan_appeal: 60,
-    marketing_requirements: ['equipment_usage', 'social_posts', 'interviews', 'events', 'photo_shoots', 'logo_visibility'],
-    commercial_goals: [
-      { type: 'win_matches', target: 10, period: 'monthly', reward: 1300, penalty: -400 },
-      { type: 'win_tournament', target: 1, period: 'seasonal', reward: 6000, penalty: -1200 },
-      { type: 'social_posts', target: 10, period: 'monthly', reward: 700, penalty: -250 },
-    ],
-    performance_clauses: { min_win_rate: 55, tournament_participation: 3, termination_threshold: 40 },
-    contract_duration_months: 18,
-    renewal_bonus_pct: 20,
-  },
-  {
     id: 'joma',
     name: 'Joma',
     tier: 'Prata',
@@ -272,7 +245,7 @@ export const SPONSOR_CATALOG = [
     performance_clauses: { min_win_rate: 45, tournament_participation: 2, termination_threshold: 35 },
     contract_duration_months: 12,
     renewal_bonus_pct: 12,
-  },,
+  },
   {
     id: 'asics', name: 'Asics', tier: 'Bronze', industry: 'Calçados', country: 'Japão', logo_emoji: '👟',
     description: 'Marca focada em estabilidade, velocidade e prevenção de lesões', reputation: 76,
@@ -394,6 +367,18 @@ export const SPONSOR_CATALOG = [
     performance_clauses: { min_win_rate: 15, tournament_participation: 0, termination_threshold: 15 }, contract_duration_months: 4, renewal_bonus_pct: 6, is_available: true,
   }
 ];
+
+// ─── Loja Fase 1: ponte marca-patrocínio ↔ marca-item ──────────────────────
+// Correspondência exata (normalizada por trim+lowercase), sem substring —
+// isso é o fuzzy match que já existe em marketEngine.js para o fallback.
+// Nome vazio nunca corresponde a nada.
+
+export function findSponsorIdByManufacturer(manufacturer) {
+  const normalized = String(manufacturer || '').trim().toLowerCase();
+  if (!normalized) return null;
+  const match = SPONSOR_CATALOG.find((sponsor) => String(sponsor?.name || '').trim().toLowerCase() === normalized);
+  return match ? match.id : null;
+}
 
 // ─── Marketing Requirements Labels ──────────────────────────────────────────
 

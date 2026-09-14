@@ -1,8 +1,14 @@
 import React from 'react';
 import { SKIN_TONES, HAIR_COLORS, EYE_COLORS, FLAGS, VOICE_TYPES, CELEBRATIONS } from '@/lib/characterCatalog';
 
-export default function CharacterPreview({ data, profile }) {
+export default function CharacterPreview({ data, profile, equipmentOverrides }) {
   if (!data) return null;
+
+  const overrides = equipmentOverrides?.overrides || {};
+  const racketColor = overrides.racket_color || data.racket_color;
+  const shirtColor = overrides.shirt_color || data.shirt_color;
+  const shoesColor = overrides.shoes_color || data.shoes_color;
+  const racketLabel = overrides.racket_label || data.racket_model;
 
   const skin = SKIN_TONES.find(s => s.id === data.skin_tone)?.color || '#e8b88a';
   const hair = HAIR_COLORS.find(h => h.id === data.hair_color)?.color || '#1a1a1a';
@@ -48,13 +54,13 @@ export default function CharacterPreview({ data, profile }) {
         data-hair-color={data.hair_color}
         data-eye-color={data.eye_color}
         data-face-type={data.face_type}
-        data-shirt={data.shirt_color}
+        data-shirt={shirtColor}
         data-shorts={data.shorts_color}
-        data-shoes={data.shoes_color}
+        data-shoes={shoesColor}
         className={`flex flex-col items-center origin-top transition-transform ${heightScale}`}
       >
         {/* Hat layer */}
-        {hasCap && <div className="w-20 h-3 rounded-t-full mb-[-2px] z-10" style={{ background: data.shirt_color }} />}
+        {hasCap && <div className="w-20 h-3 rounded-t-full mb-[-2px] z-10" style={{ background: shirtColor }} />}
         {hasTiara && <div className="w-16 h-2 rounded-full mb-[-1px] z-10 bg-amber-400" />}
 
         {/* Head */}
@@ -85,7 +91,7 @@ export default function CharacterPreview({ data, profile }) {
         <div className="w-3 h-2" style={{ background: skin }} />
 
         {/* Body (shirt) */}
-        <div className={`relative ${bodyWidth} h-14 rounded-t-xl`} style={{ background: data.shirt_color }}>
+        <div className={`relative ${bodyWidth} h-14 rounded-t-xl`} style={{ background: shirtColor }}>
           {/* Necklace */}
           {hasNecklace && <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-1 rounded-full bg-amber-400" />}
           {/* Wristbands */}
@@ -108,17 +114,17 @@ export default function CharacterPreview({ data, profile }) {
 
         {/* Shoes */}
         <div className="flex gap-1">
-          <div className="w-5 h-2.5 rounded-full rounded-bl-none" style={{ background: data.shoes_color }} />
-          <div className="w-5 h-2.5 rounded-full rounded-br-none" style={{ background: data.shoes_color }} />
+          <div className="w-5 h-2.5 rounded-full rounded-bl-none" style={{ background: shoesColor }} />
+          <div className="w-5 h-2.5 rounded-full rounded-br-none" style={{ background: shoesColor }} />
         </div>
       </div>
 
       {/* Racket */}
       <div className="flex items-center justify-center gap-2 mt-3 pt-3 border-t border-border/40">
-        <div className="h-6 w-4 rounded-full border-2" style={{ borderColor: data.racket_color, background: data.racket_color + '30' }}>
+        <div className="h-6 w-4 rounded-full border-2" style={{ borderColor: racketColor, background: racketColor + '30' }}>
           <div className="h-3 w-px mx-auto mt-3" style={{ background: data.grip_color }} />
         </div>
-        <span className="text-[10px] text-muted-foreground">Raquete {data.racket_model}</span>
+        <span className="text-[10px] text-muted-foreground">Raquete {racketLabel}</span>
       </div>
 
       {/* Visual identity */}

@@ -4,6 +4,7 @@ import { RARITY_STYLES, CATEGORY_META, SUBCATEGORY_LABELS } from '@/lib/equipmen
 import { ATTRIBUTES } from '@/lib/padel';
 import { BADGE_COLORS } from '@/lib/marketEngine';
 import { ModalShell, Button } from '@/components/design-system';
+import ItemImage from '@/components/shop/ItemImage';
 
 export default function ItemDetailModal({ item, owned, canAfford, access, onBuy, buying, onClose, pricing, currentEquipped = null }) {
   const rarity = RARITY_STYLES[item.rarity] || RARITY_STYLES.comum;
@@ -13,6 +14,9 @@ export default function ItemDetailModal({ item, owned, canAfford, access, onBuy,
   return (
     <ModalShell open={Boolean(item)} onClose={onClose} title={item.name} description={`${rarity.label} · ${cat.label}`} size="sm">
       <div>
+        <div className="h-16 w-16 rounded-xl bg-secondary/60 flex items-center justify-center overflow-hidden mb-3">
+          <ItemImage item={item} className="h-full w-full" glyphClassName="text-3xl" />
+        </div>
         <p className="text-xs text-muted-foreground mb-4">{item.description}</p>
 
         {/* Specs grid */}

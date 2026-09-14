@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" role="img" aria-hidden="true">
+  
+  <circle cx="50" cy="50" r="46" fill="#22c55e" fill-opacity="0.04"/>
+  <circle cx="50" cy="50" r="46" fill="none" stroke="#22c55e" stroke-width="1.2" stroke-opacity="0.28"/>
+  <g transform="translate(14,14) scale(3)">
+    <defs>
+      <mask id="racketThroat-incomum">
+        <rect x="0" y="0" width="24" height="24" fill="white"/>
+        <circle cx="8.25" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="4.8" r="0.38" fill="black"/>
+        <circle cx="8.25" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="6.2" r="0.38" fill="black"/>
+        <circle cx="8.25" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="7.6" r="0.38" fill="black"/>
+        <circle cx="8.25" cy="9.0" r="0.38" fill="black"/>
+        <circle cx="10.75" cy="9.0" r="0.38" fill="black"/>
+        <circle cx="13.25" cy="9.0" r="0.38" fill="black"/>
+        <circle cx="15.75" cy="9.0" r="0.38" fill="black"/>
+        <ellipse cx="12" cy="11.3" rx="2.1" ry="1.4" fill="black"/>
+      </mask>
+    </defs>
+    <g mask="url(#racketThroat-incomum)">
+      <ellipse cx="12" cy="8" rx="7" ry="5.4" fill="#6b7280"/>
+      <polygon points="8,11 16,11 14,17 10,17" fill="#6b7280"/>
+    </g>
+    <circle cx="12" cy="19" r="1.8" fill="none" stroke="#6b7280" stroke-width="1.3"/>
+  </g>
+</svg>

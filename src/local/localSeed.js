@@ -116,13 +116,23 @@ const missions = [
   { id: 'mission-days-1', title: 'Rotina profissional', description: 'Avance 7 dias na carreira.', objective_type: 'advance_days', target_count: 7, reward_xp: 120, reward_coins: 100, is_active: true, points: 15 },
 ];
 
+// Fase 0.1 do redesenho da Loja: `base_price`/`current_price` não existem
+// no schema de ShopItem (base44/entities/ShopItem.jsonc só tem `price`) —
+// o preço pretendido aqui nunca era lido; cada item caía no fallback de
+// piso de raridade do normalizeShopItem() (storeCatalog.js) e mostrava um
+// valor sem relação com o pretendido (ex.: a raquete inicial de 500
+// aparecia por 40, o piso de 'comum'). 'raro' também estava incoerente:
+// Tênis Court Pro (350) e Mochila Tour (220) custavam MENOS que a raquete
+// 'comum' (500) — tag de raridade errada, não uma escolha de preço.
+// Corrigido: campo `price` certo, e os quatro na mesma raridade 'comum'
+// que seus preços (todos abaixo do piso de 'raro', 1200) já indicavam.
 const shopItems = [
   ['shop-001', 'Raquete Starter Control', 'raquete', 500, 'comum'],
-  ['shop-002', 'Tênis Court Pro', 'tenis', 350, 'raro'],
+  ['shop-002', 'Tênis Court Pro', 'tenis', 350, 'comum'],
   ['shop-003', 'Grip Performance', 'grip', 80, 'comum'],
-  ['shop-004', 'Mochila Tour', 'mochila', 220, 'raro'],
-].map(([id, name, category, base_price, rarity], index) => ({
-  id, name, category, base_price, current_price: base_price,
+  ['shop-004', 'Mochila Tour', 'mochila', 220, 'comum'],
+].map(([id, name, category, price, rarity], index) => ({
+  id, name, category, price,
   rarity, manufacturer: index === 0 ? 'Padel Legacy' : 'Court Labs',
   is_available: true, durability: 100, attribute_bonus: index === 0 ? { strategy: 1 } : {},
   created_date: `2026-01-0${index + 1}T00:00:00.000Z`,
@@ -199,7 +209,13 @@ export const LOCAL_SEED = {
   ShopItem: shopItems,
   PlayerInventory: [{ id: 'inventory-001', profile_id: LOCAL_PROFILE.id, item_id: 'shop-003', item_name: 'Grip Performance', category: 'grip', quantity: 2, equipped: false, durability: 100 }],
   MarketEvent: [{ id: 'market-event-001', title: 'Semana de lançamento', description: 'Descontos em itens iniciais.', event_type: 'promocao', price_modifier: 0.9, discount_percent: 10, affected_item_ids: [], affected_categories: [], affected_manufacturers: [], affected_rarities: [], is_active: true, priority: 1, start_date: '2026-01-01', end_date: '2026-01-07' }],
-  MarketPriceHistory: shopItems.map((item, index) => ({ id: `price-${index + 1}`, item_id: item.id, item_name: item.name, price: item.current_price, last_updated_date: '2026-01-01T00:00:00.000Z' })),
+  // Mesma classe de bug do ShopItem acima: `price` não existe no schema de
+  // MarketPriceHistory (base44/entities/MarketPriceHistory.jsonc usa
+  // `base_price`/`current_price`) — inofensivo hoje porque computeItemPrice()
+  // (marketEngine.js) nunca lê preço do histórico, só demand_score/
+  // supply_level/estoque, mas corrigido para não ficar um segundo campo
+  // fantasma ao lado do que acabou de ser corrigido.
+  MarketPriceHistory: shopItems.map((item, index) => ({ id: `price-${index + 1}`, item_id: item.id, item_name: item.name, base_price: item.price, current_price: item.price, last_updated_date: '2026-01-01T00:00:00.000Z' })),
   Mission: missions,
   MissionProgress: missions.map((mission, index) => ({ id: `progress-${index + 1}`, mission_id: mission.id, profile_id: LOCAL_PROFILE.id, current_count: index === 0 ? 1 : 0, completed: false, claimed: false })),
   Achievement: achievements,

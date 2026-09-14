@@ -1,13 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Package, ShoppingBag, Check, Disc, Crown, Circle, Target, Shirt, Briefcase, Zap, Coins } from 'lucide-react';
+import { Package, ShoppingBag, Check, Zap, Coins } from 'lucide-react';
 import { ensureMyProfile, ATTRIBUTES, incrementMissionProgress } from '@/lib/padel';
 import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
 import { Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader, StatCard, StatusBadge, EmptyState, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
-
-const ICON_MAP = { Disc, Crown, Circle, Target, Shirt, Briefcase, Zap };
+import ItemImage from '@/components/shop/ItemImage';
 const CATEGORY_LABELS = {
   raquete: 'Raquetes',
   grip: 'Grips',
@@ -207,18 +206,25 @@ export default function Inventory() {
               const shopItem = equippedItem ? shopMap[equippedItem.item_id] : null;
               const bonus = shopItem?.attribute_bonus || {};
               return (
-                <div key={slot.category} className="rounded-xl bg-secondary/30 p-3">
-                  <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{slot.label}</p>
-                  {equippedItem ? (
-                    <>
-                      <p className="mt-1 truncate text-xs font-bold">{equippedItem.item_name}</p>
-                      {Object.keys(bonus).length > 0 && (
-                        <p className="mt-0.5 truncate text-[9px] text-primary">{Object.entries(bonus).map(([key, val]) => `+${val} ${ATTRIBUTES.find(a => a.key === key)?.label || key}`).join(' · ')}</p>
-                      )}
-                    </>
-                  ) : (
-                    <p className="mt-1 text-xs text-muted-foreground">Vazio</p>
+                <div key={slot.category} className="rounded-xl bg-secondary/30 p-3 flex items-start gap-2">
+                  {equippedItem && (
+                    <div className="h-8 w-8 shrink-0 rounded-lg bg-secondary/60 flex items-center justify-center overflow-hidden">
+                      <ItemImage item={shopItem} variant="icon" className="h-full w-full" glyphClassName="h-4 w-4 text-primary" />
+                    </div>
                   )}
+                  <div className="min-w-0">
+                    <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{slot.label}</p>
+                    {equippedItem ? (
+                      <>
+                        <p className="mt-1 truncate text-xs font-bold">{equippedItem.item_name}</p>
+                        {Object.keys(bonus).length > 0 && (
+                          <p className="mt-0.5 truncate text-[9px] text-primary">{Object.entries(bonus).map(([key, val]) => `+${val} ${ATTRIBUTES.find(a => a.key === key)?.label || key}`).join(' · ')}</p>
+                        )}
+                      </>
+                    ) : (
+                      <p className="mt-1 text-xs text-muted-foreground">Vazio</p>
+                    )}
+                  </div>
                 </div>
               );
             })}
@@ -230,14 +236,13 @@ export default function Inventory() {
             <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 xl:grid-cols-3">
               {inventory.filter(i => i.category === cat).map(invItem => {
                 const shopItem = shopMap[invItem.item_id];
-                const Icon = (shopItem && ICON_MAP[shopItem.icon]) || Package;
                 const rarity = RARITY_STYLES[invItem.rarity] || RARITY_STYLES.comum;
                 const bonus = shopItem?.attribute_bonus || {};
                 return (
                   <div key={invItem.id} className={`glass rounded-2xl p-4 flex flex-col gap-2 bg-gradient-to-br ${rarity.card} ${invItem.equipped ? 'ring-2 ring-primary/50' : ''}`}>
                     <div className="flex items-start justify-between">
-                      <div className="h-12 w-12 rounded-xl bg-secondary/60 flex items-center justify-center">
-                        <Icon className="h-6 w-6 text-primary" />
+                      <div className="h-12 w-12 rounded-xl bg-secondary/60 flex items-center justify-center overflow-hidden">
+                        <ItemImage item={shopItem} variant="icon" className="h-full w-full" glyphClassName="h-6 w-6 text-primary" />
                       </div>
                       {invItem.equipped && (
                         <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/15 text-primary text-[9px] font-bold px-1.5 py-0.5">

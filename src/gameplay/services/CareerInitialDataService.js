@@ -51,7 +51,16 @@ function remapSeedRow(row, activePlayerId) {
 // acesso a PressArticle caísse no fallback de demonstração (ensureCollection,
 // CareerEntityRepository.js) via essa linha ganhava essa notícia mostrando o
 // nome do perfil de demonstração, não o nome do atleta que o jogador criou.
-const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress', 'PressArticle']);
+// CharacterCustomization entrou aqui após um bug real (Aparência Fase A/B):
+// LOCAL_SEED.CharacterCustomization tem um `id` fixo ('customization-001')
+// desde antes da Fase A existir — ensureCollection() o devolvia como se
+// fosse uma linha real na primeiríssima leitura de uma carreira nova, e a
+// heurística da Fase A ("tem id -> já foi salvo, migrar") travava
+// altura/biotipo com os valores default ANTES do jogador nunca ter visto a
+// aba Aparência. Mesma classe de bug que o comentário acima já descreve
+// para PressArticle/Match/etc — dado de demonstração vazando como se fosse
+// ação real do jogador.
+const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress', 'PressArticle', 'CharacterCustomization']);
 
 export function seedCollection(entityName, activePlayerId = null) {
   if (NEVER_SEED_WITH_DEMO_DATA.has(entityName)) return [];
@@ -101,4 +110,4 @@ export function initializeCareerInitialData(career, { entityNames = CORE_ENTITY_
   };
 }
 
-export { CORE_ENTITY_NAMES };
+export { CORE_ENTITY_NAMES, NEVER_SEED_WITH_DEMO_DATA };

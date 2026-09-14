@@ -13,6 +13,19 @@ export const RARITY_STYLES = {
   exclusivo: { badge: 'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',      card: 'from-cyan-500/10 to-transparent',      label: 'Exclusivo',  color: 'text-cyan-300' },
 };
 
+// Mesma família de cor de RARITY_STYLES/RARITY_ACCENT (generate-item-icons.mjs),
+// em hex — para uso em `style` inline (CSS-in-JS), onde classes Tailwind não
+// servem (ex.: tingir a boneca de Aparência pela raridade do item equipado).
+export const RARITY_HEX = {
+  comum: '#64748b',
+  incomum: '#22c55e',
+  raro: '#3b82f6',
+  epico: '#a855f7',
+  lendario: '#f59e0b',
+  mitico: '#f43f5e',
+  exclusivo: '#06b6d4',
+};
+
 export const CATEGORY_META = {
   raquete:        { label: 'Raquetes',           icon: 'Disc',      emoji: '🎾' },
   grip:           { label: 'Grips',              icon: 'Circle',    emoji: '🔘' },
@@ -52,4 +65,18 @@ export function getRarityStyle(rarity) {
 
 export function rarityValue(rarity) {
   return RARITY_ORDER.indexOf(rarity);
+}
+
+// ─── Ícones de item (categoria×raridade) ──
+// Decisão já aprovada: ícone estilizado por CATEGORIA, com cor/acabamento
+// por RARIDADE — não é arte única por item. Um arquivo por combinação
+// categoria×raridade é reaproveitado por todo item dessa combinação. Fundo
+// transparente, silhueta neutra, acento visual pela cor de RARITY_STYLES
+// (o verde-lima da identidade do jogo fica só na interface). Quando os
+// assets existirem, popular ShopItem.image_url com este caminho — via
+// migração em ensureExpandedShopCatalog() (mesmo padrão do reparo de
+// sponsor_id) — faz todo item da combinação exibir o ícone automaticamente,
+// sem mudar ItemImage.jsx nem seus consumidores.
+export function getCategoryRarityIconAssetPath(category, rarity) {
+  return `/assets/items/${category}-${rarity}.svg`;
 }

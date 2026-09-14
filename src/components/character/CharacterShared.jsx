@@ -4,6 +4,70 @@ export function SectionLabel({ children }) {
   return <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold mb-2">{children}</p>;
 }
 
+// Aviso de que um controle cosmético está sendo ofuscado por um item
+// equipado na Loja/Inventário — a escolha continua salva e volta a valer
+// assim que o item for desequipado; por isso o controle abaixo continua
+// interativo (envolva com FallbackControl, não com `disabled`).
+export function OverrideNotice({ itemName }) {
+  return (
+    <p className="text-[10px] text-amber-400/90 font-semibold mb-1.5 flex items-center gap-1">
+      🔒 Sobrescrito pelo item equipado{itemName ? `: ${itemName}` : ''} — volta a valer ao desequipar
+    </p>
+  );
+}
+
+export function FallbackControl({ overridden, itemName, children }) {
+  return (
+    <div>
+      {overridden && <OverrideNotice itemName={itemName} />}
+      <div className={overridden ? 'opacity-50 transition-opacity' : 'transition-opacity'}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Campo travado pós-criação (Fase A: height_cm/build) — diferente de
+// FallbackControl: aqui não há valor de fallback esperando por trás, o
+// valor É o definitivo. Trava rígida (sem resgate nesta fase), por isso o
+// controle fica realmente inerte (pointer-events-none), não só dimmed.
+export function LockedNotice() {
+  return (
+    <p className="text-[10px] text-muted-foreground font-semibold mb-1.5 flex items-center gap-1">
+      🔒 Definido na criação do personagem — não pode ser alterado depois
+    </p>
+  );
+}
+
+export function LockedControl({ locked, children }) {
+  return (
+    <div>
+      {locked && <LockedNotice />}
+      <div className={locked ? 'opacity-50 pointer-events-none select-none' : undefined} aria-disabled={locked || undefined}>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Sugestão de altura/biotipo (Fase B) com base no estilo/lado/mão já
+// escolhidos no onboarding — nunca um bloqueio, só orientação contextual.
+// Some sozinha quando o campo trava (Fase A) ou quando ainda não há
+// estilo/lado escolhido (guard de getSuggestedPhysicalRange).
+export function SuggestionNotice({ heightRange, buildLabel, secondaryBuildLabel, rationale, sideNote }) {
+  return (
+    <div className="rounded-lg bg-primary/8 border border-primary/20 px-3 py-2 text-[11px] leading-snug">
+      <p className="font-semibold text-primary">
+        💡 Sugestão pro seu perfil: {heightRange[0]}–{heightRange[1]}cm, biotipo {buildLabel}
+        {secondaryBuildLabel ? ` (ou ${secondaryBuildLabel})` : ''}
+      </p>
+      <p className="text-muted-foreground mt-1">{rationale}</p>
+      {sideNote && <p className="text-muted-foreground mt-1">{sideNote}</p>}
+      <p className="text-muted-foreground/70 mt-1">Só uma sugestão — você pode escolher qualquer valor.</p>
+    </div>
+  );
+}
+
 export function ColorPicker({ label, options, value, onChange }) {
   const validOptions = (Array.isArray(options) ? options : []).filter(Boolean);
   return (

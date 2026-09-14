@@ -137,6 +137,19 @@
     "backstory": {
       "type": "string",
       "default": ""
+    },
+    "locked_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Campos travados pós-criação (Fase A: height_cm, build) — trava rígida, sem resgate"
+    },
+    "appearance_confirmed": {
+      "type": "boolean",
+      "default": false,
+      "description": "true somente quando o jogador salvou a aba Aparência pela própria UI (CharacterEditor.jsx handleSave) pelo menos uma vez. Nunca setado por seed ou migração de schema sem dado legado real — é o sinal que a Fase A usa pra decidir se uma linha representa uma ação real do jogador, em vez de confiar só em ter um `id` (um bug real mostrou que id sozinho não é confiável: LOCAL_SEED e a migração v6 podiam fabricar um id sem o jogador nunca ter interagido)."
     }
   },
   "required": [

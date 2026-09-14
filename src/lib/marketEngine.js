@@ -15,7 +15,10 @@ export { isMarketEventActive, normalizeMarketEvent } from '@/lib/marketPromotion
  * @param {Object} item - ShopItem entity
  * @param {Array} marketEvents - Active MarketEvent entities
  * @param {Object|null} priceHistory - MarketPriceHistory for this item (optional)
- * @param {Array} playerSponsors - Active sponsor names from PlayerContract
+ * @param {Array} playerSponsors - Contratos ATIVOS do jogador, como
+ *   {sponsor_id, sponsor_name}[] (Fase 1 da Loja — antes era string[] só de
+ *   nome; sponsor_id habilita o desconto de 15% por correspondência exata,
+ *   sponsor_name mantém o fallback de 10% por fuzzy match)
  * @returns {Object} { currentPrice, basePrice, modifier, discount, badge, trend, demandScore, events }
  */
 export function computeItemPrice(item, marketEvents = [], priceHistory = null, playerSponsors = []) {
@@ -52,16 +55,24 @@ export function computeItemPrice(item, marketEvents = [], priceHistory = null, p
   const supplyFactor = 1 + ((50 - supplyLevel) / 100) * 0.3; // ±15%
   modifier *= demandFactor * supplyFactor;
 
-  // 3. Player sponsor discount (if item manufacturer matches active sponsor)
+  // 3. Player sponsor discount — Fase 1: 15% quando o item tem sponsor_id
+  // (ponte exata marca-patrocínio, storeCatalog.js) batendo o sponsor_id de
+  // um contrato ativo; cai para o fuzzy match de nome (10%, comportamento
+  // anterior) só quando o item não tem sponsor_id — nunca os dois juntos.
   let sponsorDiscount = 0;
-  if (playerSponsors.length > 0) {
-    // Map sponsor names to manufacturers (fuzzy)
-    const sponsorMatch = playerSponsors.some(s =>
-      String(item?.manufacturer || '').toLowerCase().includes(String(s || '').toLowerCase()) ||
-      String(s || '').toLowerCase().includes(String(item?.manufacturer || '').toLowerCase())
-    );
+  const itemSponsorId = item?.sponsor_id;
+  if (itemSponsorId && playerSponsors.some((s) => s?.sponsor_id === itemSponsorId)) {
+    sponsorDiscount = 0.15;
+    modifier *= (1 - sponsorDiscount);
+  } else if (playerSponsors.length > 0) {
+    const manufacturer = String(item?.manufacturer || '').trim().toLowerCase();
+    const sponsorMatch = manufacturer.length > 0 && playerSponsors.some((s) => {
+      const sponsorName = String(s?.sponsor_name || '').trim().toLowerCase();
+      if (!sponsorName) return false; // nome de patrocinador vazio não casa com nada
+      return manufacturer.includes(sponsorName) || sponsorName.includes(manufacturer);
+    });
     if (sponsorMatch) {
-      sponsorDiscount = 0.1; // 10% off for sponsored brands
+      sponsorDiscount = 0.1; // 10% off for sponsored brands (fuzzy, sem sponsor_id)
       modifier *= (1 - sponsorDiscount);
     }
   }
@@ -335,11 +346,19 @@ async function generateRandomEvent(today) {
 
 // ─── Historical Rare Items Generator ─────────────────────────────────────────
 
+// Fase 0 do redesenho da Loja — preços recalibrados. Estes itens têm price
+// fixo (não passam por catalogItem()/storeCatalog.js), mas ainda são
+// carregados como rarity 'exclusivo' e por isso herdam o piso de
+// SHOP_PROGRESSION.exclusivo (65.000) em normalizeShopItem() — valores
+// abaixo do piso seriam sobrescritos de qualquer forma. Faixa escolhida:
+// 65.000-90.000 (o mesmo teto de 1x-3x um título de Crown do resto do
+// catálogo), preservando a ordem relativa de prestígio original (o troféu
+// do primeiro Mundial continua o item mais caro do jogo).
 export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Raquete de Madeira Original (1969)',
     description: 'Réplica da primeira raquete de padel usada por Enrique Corcuera no México.',
-    category: 'raquete', subcategory: 'power', rarity: 'exclusivo', price: 250000,
+    category: 'raquete', subcategory: 'power', rarity: 'exclusivo', price: 84000,
     manufacturer: 'Padel Heritage', country: 'México', icon: 'Disc',
     attribute_bonus: { emotional_control: 15, strategy: 5, forehand: 3 },
     durability: 100, weight: 420, balance: 'alto', shape: 'redonda',
@@ -350,7 +369,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Raquete Vintage Marplatense (1975)',
     description: 'Raquete de madeira usada nos primórdios do padel argentino em Mar del Plata.',
-    category: 'raquete', subcategory: 'control', rarity: 'exclusivo', price: 180000,
+    category: 'raquete', subcategory: 'control', rarity: 'exclusivo', price: 76000,
     manufacturer: 'Padel Heritage', country: 'Argentina', icon: 'Disc',
     attribute_bonus: { emotional_control: 12, strategy: 8, defense: 3 },
     durability: 100, weight: 400, balance: 'medio', shape: 'redonda',
@@ -361,7 +380,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Raquete Espanhola Clássica (1980)',
     description: 'Primeira raquete com estrutura metálica fabricada na Espanha.',
-    category: 'raquete', subcategory: 'hybrid', rarity: 'exclusivo', price: 150000,
+    category: 'raquete', subcategory: 'hybrid', rarity: 'exclusivo', price: 73000,
     manufacturer: 'Padel Heritage', country: 'Espanha', icon: 'Disc',
     attribute_bonus: { emotional_control: 10, strategy: 6, volley: 3 },
     durability: 100, weight: 380, balance: 'medio', shape: 'lagrima',
@@ -372,7 +391,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Bola de Padel Original (1970)',
     description: 'Réplica da primeira bola de padel, feita de borracha natural.',
-    category: 'bola', subcategory: 'premium', rarity: 'exclusivo', price: 80000,
+    category: 'bola', subcategory: 'premium', rarity: 'exclusivo', price: 65000,
     manufacturer: 'Padel Heritage', country: 'México', icon: 'Target',
     attribute_bonus: { emotional_control: 8, strategy: 4 },
     durability: 100, weight: 56, balance: 'medio', shape: 'redonda',
@@ -383,7 +402,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Raquete Carbono Pioneer (1995)',
     description: 'Primeira raquete com fibra de carbono, revolucionou o padel moderno.',
-    category: 'raquete', subcategory: 'power', rarity: 'exclusivo', price: 120000,
+    category: 'raquete', subcategory: 'power', rarity: 'exclusivo', price: 70000,
     manufacturer: 'Padel Heritage', country: 'Espanha', icon: 'Disc',
     attribute_bonus: { smash: 10, forehand: 8, emotional_control: 5 },
     durability: 100, weight: 360, balance: 'alto', shape: 'diamante',
@@ -394,7 +413,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Raquete WPT First Edition (2013)',
     description: 'Edição comemorativa do primeiro ano do World Padel Tour.',
-    category: 'raquete', subcategory: 'hybrid', rarity: 'exclusivo', price: 90000,
+    category: 'raquete', subcategory: 'hybrid', rarity: 'exclusivo', price: 66000,
     manufacturer: 'Padel Heritage', country: 'Espanha', icon: 'Disc',
     attribute_bonus: { strategy: 8, emotional_control: 8, volley: 5 },
     durability: 100, weight: 365, balance: 'medio', shape: 'lagrima',
@@ -405,7 +424,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Troféu Primeiro Campeão Mundial (1992)',
     description: 'Réplica do troféu do primeiro Campeonato Mundial de Padel em 1992.',
-    category: 'colecionavel', subcategory: 'trofeu', rarity: 'exclusivo', price: 300000,
+    category: 'colecionavel', subcategory: 'trofeu', rarity: 'exclusivo', price: 90000,
     manufacturer: 'Padel Heritage', country: 'Internacional', icon: 'Crown',
     attribute_bonus: { emotional_control: 20, strategy: 8 },
     durability: 100, weight: 1000, balance: 'medio', shape: 'redonda',
@@ -416,7 +435,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Raquete Olímpica Paris 2024',
     description: 'Edição limitada comemorativa da estreia do padel nos Jogos Olímpicos.',
-    category: 'raquete', subcategory: 'power', rarity: 'exclusivo', price: 200000,
+    category: 'raquete', subcategory: 'power', rarity: 'exclusivo', price: 79000,
     manufacturer: 'Padel Heritage', country: 'França', icon: 'Disc',
     attribute_bonus: { smash: 12, forehand: 8, emotional_control: 15, strategy: 5 },
     durability: 100, weight: 355, balance: 'alto', shape: 'diamante',
@@ -427,7 +446,7 @@ export const HISTORICAL_RARE_ITEMS = [
   {
     name: 'Bola Dourada WPT Final (2023)',
     description: 'Bola de ouro maciço comemorativa da final do World Padel Tour 2023.',
-    category: 'colecionavel', subcategory: 'replica', rarity: 'exclusivo', price: 150000,
+    category: 'colecionavel', subcategory: 'replica', rarity: 'exclusivo', price: 73000,
     manufacturer: 'Padel Heritage', country: 'Espanha', icon: 'Target',
     attribute_bonus: { emotional_control: 15, strategy: 5, forehand: 3 },
     durability: 100, weight: 100, balance: 'medio', shape: 'redonda',
@@ -436,14 +455,20 @@ export const HISTORICAL_RARE_ITEMS = [
     is_available: false, is_exclusive: true, collection: 'Golden Moments',
   },
   {
-    name: 'Raquete Galán Golden Edition',
-    description: 'Raquete banhada a ouro assinada por Ale Galán, #1 do mundo.',
-    category: 'colecionavel', subcategory: 'replica', rarity: 'exclusivo', price: 220000,
+    // Renomeado no levantamento da Loja, Fase 0: o nome/descrição/história
+    // originais citavam um jogador real e ativo do circuito ("Ale Galán",
+    // #1 do ranking mundial) como se tivesse assinado o item — o mesmo
+    // risco de imagem/publicidade já corrigido para os atletas do jogo,
+    // aqui reaparecendo do lado da loja. Substituído por lore fictício no
+    // mesmo tom dos outros itens "Golden Legends".
+    name: 'Raquete Dourada do Circuito (2024)',
+    description: 'Raquete banhada a ouro que celebra o topo do ranking mundial na temporada de sua consagração.',
+    category: 'colecionavel', subcategory: 'replica', rarity: 'exclusivo', price: 81000,
     manufacturer: 'Padel Heritage', country: 'Espanha', icon: 'Disc',
     attribute_bonus: { smash: 15, forehand: 10, emotional_control: 10, strategy: 8 },
     durability: 100, weight: 370, balance: 'alto', shape: 'diamante',
     release_year: 2024,
-    history: 'Alejandro Galán Romo, número 1 do mundo, revolucionou o padel com seu estilo explosivo. Esta raquete dourada homenageia o jogador que dominou a era moderna do esporte.',
+    history: 'A temporada de 2024 consagrou um novo nome no topo do ranking mundial, com um estilo ofensivo que redefiniu o padrão do circuito moderno. Esta raquete dourada homenageia o auge dessa geração de jogadores.',
     is_available: false, is_exclusive: true, collection: 'Golden Legends',
   },
 ];
@@ -455,6 +480,29 @@ export const HISTORICAL_RARE_ITEMS = [
  */
 export async function seedMarket() {
   const today = new Date().toISOString().slice(0, 10);
+
+  // Repara saves que já semearam os itens históricos com o preço antigo
+  // (250k-300k, até 10x acima do teto de 90.000 recalibrado na Fase 0 do
+  // redesenho da Loja) ou com o nome antigo que citava um jogador real
+  // ("Raquete Galán Golden Edition"). Roda ANTES do "já semeado, sai" logo
+  // abaixo — depois do primeiro dia de jogo esse retorno antecipado sempre
+  // dispara e nunca deixaria a correção alcançar um save existente. Casa
+  // por release_year+category — estável mesmo com o rename, já que nenhum
+  // dos 10 itens repete esse par (`manufacturer` sozinho não serve:
+  // colecionáveis comuns de storeCatalog.js também usam "Padel Heritage").
+  const existingHistorical = await localGame.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
+  const historicalByKey = new Map(HISTORICAL_RARE_ITEMS.map((item) => [`${item.release_year}:${item.category}`, item]));
+  for (const existingItem of existingHistorical) {
+    const template = historicalByKey.get(`${existingItem.release_year}:${existingItem.category}`);
+    if (!template) continue;
+    const patch = {};
+    ['name', 'description', 'price', 'history', 'collection'].forEach((field) => {
+      if (template[field] !== undefined && existingItem[field] !== template[field]) patch[field] = template[field];
+    });
+    if (Object.keys(patch).length > 0) {
+      await localGame.asServiceRole.entities.ShopItem.update(existingItem.id, patch);
+    }
+  }
 
   // Check if already seeded
   const existing = await localGame.asServiceRole.entities.MarketEvent.filter({ is_active: true });
@@ -568,8 +616,8 @@ export async function seedMarket() {
 
   await localGame.asServiceRole.entities.MarketEvent.bulkCreate(events);
 
-  // Add historical rare items to ShopItem
-  const existingHistorical = await localGame.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
+  // Add historical rare items to ShopItem (reparo dos já existentes já
+  // rodou no topo da função, antes do "já semeado, sai" acima)
   if (existingHistorical.length === 0) {
     const historicalItems = HISTORICAL_RARE_ITEMS.map(item => ({ ...item, is_available: true }));
     await localGame.asServiceRole.entities.ShopItem.bulkCreate(historicalItems);

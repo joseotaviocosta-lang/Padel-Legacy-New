@@ -53,6 +53,10 @@
       "type": "string",
       "description": "Fabricante/marca"
     },
+    "sponsor_id": {
+      "type": "string",
+      "description": "ID de um patrocinador de SPONSOR_CATALOG (sponsors.js) cujo nome bate exatamente (normalizado) com manufacturer — opcional, ponte marca-patrocínio para desconto de patrocínio ativo"
+    },
     "country": {
       "type": "string",
       "description": "Pa\u00eds de origem do fabricante"

@@ -58,6 +58,10 @@ VITE_BASE44_APP_BASE_URL=https://your-app.base44.app
 
 `VITE_BASE44_APP_BASE_URL` tells the Base44 Vite plugin where to send local `/api` requests. Point it at your deployed Base44 app URL when you want the local frontend to use the hosted backend.
 
+## Asset Credits
+
+Some game assets are sourced from open source icon libraries under licenses that require attribution. See [ASSET_CREDITS.md](ASSET_CREDITS.md).
+
 When you use `base44 dev`, the command injects the local Base44 values for you, so `.env.local` is mainly needed for frontend-only workflows.
 
 ## Publish Your Changes
