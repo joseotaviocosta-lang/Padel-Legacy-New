@@ -602,6 +602,7 @@ try {
 
     const currentTournamentsPlayed = new Map(allAthletesNow.map((a) => [a.id, Number(a.tournaments_played) || 0]));
     const realDeltas = [];
+    const realDeltaEntries = []; // Fase 8, item 2 — {id, name, delta}, pra verificar a meta de >=12 INDIVIDUALMENTE, não só a média/mediana.
     const botDeltas = [];
     // Fase 2.7, item 5: lista NOMINAL de reais que não jogaram NESTA
     // temporada (delta=0 de tournaments_played no ano) — diferente de
@@ -618,6 +619,7 @@ try {
       const delta = Math.max(0, after - before);
       if (realAthleteIds.has(a.id)) {
         realDeltas.push(delta);
+        realDeltaEntries.push({ id: a.id, name: assignedIdToName.get(a.id) || a.name || a.id, delta });
         if (after > 0) neverPlayedRunningSet.delete(a.id);
         if (delta === 0) realNeverPlayedThisSeason.push({ id: a.id, name: assignedIdToName.get(a.id) || a.name || a.id });
         if (priorRankByAthleteDiag) {
@@ -682,7 +684,14 @@ try {
       realAthletesNeverPlayedThisSeason: realNeverPlayedThisSeason,
       realAthletesNeverPlayedThisSeasonCount: realNeverPlayedThisSeason.length,
       tournamentsPlayedThisSeason: {
-        real: { mean: round(mean(realDeltas), 2), median: round(median(realDeltas), 2), n: realDeltas.length },
+        real: {
+          mean: round(mean(realDeltas), 2), median: round(median(realDeltas), 2), n: realDeltas.length,
+          // Fase 8, item 2 — meta de >=12 eventos/temporada exige verificação
+          // INDIVIDUAL (docs/tournament-targets.md), não só média/mediana.
+          min: realDeltas.length ? Math.min(...realDeltas) : null,
+          belowTargetCount: realDeltaEntries.filter((e) => e.delta < 12).length,
+          belowTargetSample: realDeltaEntries.filter((e) => e.delta < 12).sort((a, b) => a.delta - b.delta).slice(0, 15),
+        },
         bots: { mean: round(mean(botDeltas), 2), median: round(median(botDeltas), 2), n: botDeltas.length },
       },
       realAthletesNeverPlayedSoFar: [...neverPlayedRunningSet].map((id) => ({ id, name: assignedIdToName.get(id) || id })),
