@@ -224,6 +224,42 @@ cenários diferentes com uma limpeza (98,8%) rara nesta auditoria. A
 região é um bug de código real, com efeito medido mas provavelmente
 menor e parcialmente confundido com o próprio rank.
 
+### Fechamento da linha de investigação (Fase 7.4)
+
+O espiral auto-reforçado identificado em §1.2 acima ficou fechado por
+uma cadeia de 3 fases subsequentes, todas partindo diretamente deste
+diagnóstico:
+
+- **Fase 7.1** deu à dupla presa uma segunda porta de entrada
+  (qualifying) — quebrou a espiral em 32-67% dos casos, mas uma
+  vitória pontual não rendia rank suficiente pra sair do bucket
+  `rank>300` antes da rodada seguinte.
+- **Fase 7.2** mediu essa reincidência em 90-100% — o resgate era real,
+  mas não durava.
+- **Fase 7.3** implementou e mediu a correção: uma JANELA de entrada
+  garantida por `N` torneios seguidos depois de vencer o qualifying
+  (em vez de uma vitória isolada). `N=4` com o fator de escala do
+  qualifying fixo (política "rate") zerou a reincidência (0% em T4 e
+  T5, contra 90,9% com `N=2` e 40% com o fator escalando pelo tamanho
+  do grupo em vez de fixo) — ver
+  [FASE-7.3-RELATORIO.md](FASE-7.3-RELATORIO.md) §3.3.
+- **Fase 7.4** promoveu o mecanismo de diagnóstico (`DIAG_WINDOW_N`/
+  `DIAG_WINDOW_SCALE`, variáveis de ambiente) a comportamento
+  permanente de produção em `WorldTourLifecycle.js`
+  (`PRIORITY_WINDOW_N=4`, `QUALIFYING_SCALE_FACTOR=1,4`, sempre ativos,
+  sem flag) — e corrigiu, no caminho, o estado da janela pra sobreviver
+  a reinício de app/`--resumeFrom` (persistido em
+  `Partnership.priority_window_remaining`, não mais um Map em memória
+  como na medição original). Regime-check de 5 temporadas sem
+  variáveis de ambiente confirmou paridade com os números medidos em
+  modo diagnóstico — ver FASE-7.4-RELATORIO.md.
+
+**A causa raiz (rank como posição relativa que só sobe pra quem joga)
+continua existindo por design** — a janela não elimina o mecanismo,
+dá à dupla presa tempo suficiente pra escapar dele antes que a posição
+relativa volte a cair. Linha de investigação aberta nesta fase:
+**fechada**.
+
 ## 5 — Validação
 
 Fase puramente diagnóstica, como pedido — nenhuma correção

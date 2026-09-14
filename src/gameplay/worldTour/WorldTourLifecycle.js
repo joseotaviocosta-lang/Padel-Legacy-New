@@ -121,31 +121,20 @@ function resolveQualifyingBracket(candidates, winnersNeeded) {
   return pool.slice(0, winnersNeeded);
 }
 function applyEntryPriority(entrants, tournament, drawSize, commitWindow = false) {
-  // Fase 7.3, item 3 (temporário) — `commitWindow` default false porque
-  // esta função também é chamada de forma ESPECULATIVA (loop de fallback
-  // de tier, mais abaixo, avaliando "quem sobreviveria" pra decidir
-  // remanejamento — não é a rodada final). Só o chamador do resultado
-  // JÁ COMMITADO (loop principal, onde `ordered` vira pontuação/notícia
-  // de verdade) passa `true`; senão uma dupla podia "ganhar" uma janela
-  // numa simulação hipotética que nem é o torneio onde ela acaba jogando.
-  // Quem ainda tem janela de prioridade ativa
-  // (`windowRemainingByPairId`, ver abaixo) entra garantido, fora de toda
-  // disputa abaixo; o resto do mecanismo roda normalmente sobre o espaço
-  // que sobra (`effectiveDrawSize`). Sem `DIAG_WINDOW_N` (variável nunca
-  // populada), `windowed` é sempre vazio e `effectiveDrawSize ===
-  // drawSize` — comportamento idêntico ao de antes desta fase.
-  let windowed = [];
-  let pool = entrants;
-  if (windowRemainingByPairId && windowRemainingByPairId.size) {
-    windowed = entrants.filter((pair) => windowRemainingByPairId.has(pair.id));
-    if (windowed.length) {
-      const windowedIds = new Set(windowed.map((pair) => pair.id));
-      pool = entrants.filter((pair) => !windowedIds.has(pair.id));
-      if (commitWindow) {
-        console.log(`[DIAG_WINDOW] ${windowed.length} dupla(s) entraram por janela garantida em ${tournament.name || tournament.id} (restam: ${windowed.map((p) => `${p.id}:${windowRemainingByPairId.get(p.id)}`).join(', ')}).`);
-      }
-    }
-  }
+  // Fase 7.3/7.4 — `commitWindow` default false porque esta função
+  // também é chamada de forma ESPECULATIVA (loop de fallback de tier,
+  // mais abaixo, avaliando "quem sobreviveria" pra decidir remanejamento
+  // — não é a rodada final). Só o chamador do resultado JÁ COMMITADO
+  // (loop principal, onde `ordered` vira pontuação/notícia de verdade)
+  // passa `true`; senão uma dupla podia "ganhar" uma janela numa
+  // simulação hipotética que nem é o torneio onde ela acaba jogando.
+  // Quem ainda tem `priorityWindowRemaining > 0` entra garantido, fora
+  // de toda disputa abaixo (lido sempre, mesmo em chamada especulativa —
+  // só a CONCESSÃO de janela nova, mais abaixo, é que exige
+  // `commitWindow`); o resto do mecanismo roda normalmente sobre o
+  // espaço que sobra (`effectiveDrawSize`).
+  const windowed = entrants.filter((pair) => pair.priorityWindowRemaining > 0);
+  const pool = windowed.length ? entrants.filter((pair) => pair.priorityWindowRemaining <= 0) : entrants;
   const effectiveDrawSize = Math.max(0, drawSize - windowed.length);
   if (pool.length <= effectiveDrawSize) return [...windowed, ...pool];
   const ranked = pool.map((pair) => ({
@@ -160,12 +149,24 @@ function applyEntryPriority(entrants, tournament, drawSize, commitWindow = false
   const selectedOpen = byRank.slice(0, openSlots);
   const selectedIds = new Set(selectedOpen.map((entry) => entry.pair.id));
   const remaining = ranked.filter((entry) => !selectedIds.has(entry.pair.id));
-  // Fase 7.3, item 3 (temporário) — `qualifyingScaleFactorDiag` (1 por
-  // padrão, sem efeito) reescala a fatia de `QUALIFYING_SHARE` dentro do
-  // MESMO `reservedSlots` (nunca estoura `effectiveDrawSize` — só
-  // realoca entre qualifying e vaga reservada direta), testando a
-  // hipótese A da Fase 7.2 junto com a janela.
-  const qualifyingShareEffective = Math.min(1, QUALIFYING_SHARE * qualifyingScaleFactorDiag);
+  // Fase 7.4 — `QUALIFYING_SCALE_FACTOR` (1,4×) reescala a fatia de
+  // `QUALIFYING_SHARE` dentro do MESMO `reservedSlots` (nunca estoura
+  // `effectiveDrawSize` — só realoca entre qualifying e vaga reservada
+  // direta). Medido na Fase 7.3 junto com a janela de prioridade
+  // (hipótese A da Fase 7.2): das 3 configurações testadas até 5
+  // temporadas completas, N=4 com este fator fixo (política "rate") foi
+  // a que zerou a reincidência (0% em T4 e T5, contra 90,9% com N=2 e
+  // 40% com o fator escalando pelo tamanho do grupo em vez de fixo) —
+  // ver FASE-7.3-RELATORIO.md §3.3. Fixo desde o primeiro torneio (não
+  // só a partir da 2ª temporada, como na medição original): a Fase 7.3
+  // aplicava o fator a partir da temporada 2 porque a instrumentação de
+  // medição só descobria o tamanho do grupo rank>300 ao fim da
+  // temporada 1 — mas o valor "rate" nunca dependeu do tamanho do grupo
+  // (ao contrário de "group"), então não há razão pra atrasar sua
+  // aplicação além do que a própria medição exigia; a temporada 1 é
+  // bootstrap universal (nenhum real fica de fora, em toda medição já
+  // feita), então isso não muda nenhum número já registrado.
+  const qualifyingShareEffective = Math.min(1, QUALIFYING_SHARE * QUALIFYING_SCALE_FACTOR);
   const qualifyingSlots = Math.round(reservedSlots * qualifyingShareEffective);
   const reservedDirectSlots = reservedSlots - qualifyingSlots;
   const byLeastPlayed = [...remaining].sort((a, b) => a.played - b.played || a.rank - b.rank);
@@ -190,41 +191,30 @@ function applyEntryPriority(entrants, tournament, drawSize, commitWindow = false
   const byWorstRank = [...stillRemaining].sort((a, b) => b.rank - a.rank);
   const qualifyingPool = byWorstRank.slice(0, qualifyingSlots * QUALIFYING_POOL_MULTIPLIER);
   const qualifyingWinners = qualifyingSlots > 0 ? resolveQualifyingBracket(qualifyingPool, qualifyingSlots) : [];
-  if (commitWindow && windowRemainingByPairId && DIAG_WINDOW_N > 0) {
-    for (const entry of qualifyingWinners) {
-      windowRemainingByPairId.set(entry.pair.id, DIAG_WINDOW_N);
-      console.log(`[DIAG_WINDOW] dupla ${entry.pair.id} venceu o qualifying e ganhou janela de ${DIAG_WINDOW_N} torneios (${tournament.name || tournament.id}).`);
-    }
+  if (commitWindow) {
+    for (const entry of qualifyingWinners) entry.pair.priorityWindowRemaining = PRIORITY_WINDOW_N;
   }
   return [...windowed, ...[...selectedOpen, ...selectedReservedDirect, ...qualifyingWinners].map((entry) => entry.pair)];
 }
 
-// Fase 7.3, item 3 (temporário) — mede se uma reincidência de 90-100%
-// (Fase 7.2: uma dupla resgatada pelo qualifying quase sempre volta pra
-// rank>300 na temporada seguinte) se explica por o resgate ser PONTUAL
-// (1 torneio não rende rank suficiente, porque o resto do mundo continua
-// jogando e subindo — rank é relativo). Testa dar uma JANELA de entrada
-// garantida por `DIAG_WINDOW_N` aparições seguidas depois de vencer o
-// qualifying, em vez de uma só. `qualifyingScaleFactorDiag` testa, em
-// paralelo, se essa fatia reservada pra qualifying precisa escalar junto
-// (Fase 7.2, item 1.6, hipótese A) — e se deve escalar com o TAMANHO do
-// grupo rank>300 (acumulado, cresce) ou com a TAXA de casos novos por
-// temporada (achado 1.2: 39-76%, estruturalmente mais estável). O
-// harness chama `setQualifyingScaleDiag` uma vez por temporada; aqui só
-// se aplica o fator já decidido lá. Reverter depois de medir.
-const DIAG_WINDOW_N = Number(process.env.DIAG_WINDOW_N) || 0;
-const windowRemainingByPairId = DIAG_WINDOW_N > 0 ? new Map() : null;
-let qualifyingScaleFactorDiag = 1;
-export function setQualifyingScaleDiag(factor) {
-  qualifyingScaleFactorDiag = Number(factor) > 0 ? Number(factor) : 1;
-}
-export function consumeWindowTurnDiag(pairId) {
-  if (!windowRemainingByPairId) return;
-  const remaining = windowRemainingByPairId.get(pairId);
-  if (!remaining) return;
-  if (remaining <= 1) windowRemainingByPairId.delete(pairId);
-  else windowRemainingByPairId.set(pairId, remaining - 1);
-}
+// Fase 7.3 (medição) / Fase 7.4 (permanente) — fecha a espiral
+// auto-reforçada identificada na Fase 7 (rank pior → menos vagas pela
+// prioridade por rank → menos pontos, que só vêm de jogar → rank
+// relativo pior, porque o resto do mundo continua jogando → menos
+// vagas ainda). O qualifying (Fase 7.1) já dava uma porta de entrada
+// pra quem está preso, mas uma vitória PONTUAL não rende rank
+// suficiente pra sair do bucket rank>300 antes da próxima rodada — a
+// Fase 7.2 mediu 90-100% de reincidência (dupla resgatada que volta a
+// ficar presa na temporada seguinte). A janela dá entrada GARANTIDA por
+// `PRIORITY_WINDOW_N` aparições seguidas depois de vencer o qualifying,
+// em vez de uma só — medida na Fase 7.3 como a peça que faltava (0% de
+// reincidência com N=4, contra 90,9% com N=2 e 40% com o fator de
+// qualifying escalando pelo grupo em vez de fixo — ver
+// FASE-7.3-RELATORIO.md §3.3). `PRIORITY_WINDOW_N`/`QUALIFYING_SCALE_FACTOR`
+// são constantes fixas de produção (Fase 7.4) — não mais variáveis de
+// ambiente de diagnóstico.
+const PRIORITY_WINDOW_N = 4;
+const QUALIFYING_SCALE_FACTOR = 1.4;
 
 // Fase 5.3, item 2 — mínimo viável de chave. Sem o preenchimento forçado
 // (removido nesta fase, item 1), um campo pequeno demais não vira
@@ -329,6 +319,12 @@ function buildCanonicalPairs(partnerships, athletes) {
       athletes: members,
       name: members.map((member) => member.name).join(' & '),
       chemistry: Number(partnership.chemistry || partnership.partner_chemistry || 50),
+      // Fase 7.4 — persistido em Partnership.priority_window_remaining (não
+      // mais um Map em memória, ver applyEntryPriority): sobrevive a
+      // reinício de app/--resumeFrom por construção, porque é lido do
+      // mesmo `partnerships` já carregado no topo desta função a cada
+      // chamada, igual qualquer outro campo de estado deste pipeline.
+      priorityWindowRemaining: Number(partnership.priority_window_remaining) || 0,
     });
   }
   return pairs;
@@ -365,6 +361,10 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');
   const pairs = buildCanonicalPairs(partnerships, athletes);
   if (!pairs.length) return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0, waitingForCanonicalPairs: true };
+  // Fase 7.4 — janela de prioridade persistida em Partnership (ver
+  // buildCanonicalPairs); grava só quem mudou nesta chamada, comparando
+  // contra o valor lido no início.
+  const priorityWindowInitialByPairId = new Map(pairs.map((pair) => [pair.id, pair.priorityWindowRemaining]));
 
   const tournamentsByWeek = new Map();
   pending.forEach((tournament) => {
@@ -593,11 +593,11 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         });
         continue;
       }
-      // Fase 7.3, item 3 (temporário) — cada aparição EFETIVA num torneio
-      // que rodou (não cancelado) desconta 1 da janela de prioridade,
-      // independente de ter sido a janela a garantir a entrada ou não.
-      if (windowRemainingByPairId) {
-        for (const pair of ordered) consumeWindowTurnDiag(pair.id);
+      // Fase 7.4 — cada aparição EFETIVA num torneio que rodou (não
+      // cancelado) desconta 1 da janela de prioridade, independente de
+      // ter sido a janela a garantir a entrada ou não.
+      for (const pair of ordered) {
+        if (pair.priorityWindowRemaining > 0) pair.priorityWindowRemaining -= 1;
       }
       const champion = ordered[0];
       const runnerUp = ordered[1];
@@ -743,6 +743,12 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   if (tournamentUpdates.length) await entities.Tournament.bulkUpdate(tournamentUpdates);
   if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
   if (news.length) await entities.WorldEvent.bulkCreate(news);
+  // Fase 7.4 — só grava quem mudou (concedeu ou descontou janela) nesta
+  // chamada; a maioria das duplas nunca toca priority_window_remaining.
+  const priorityWindowUpdates = pairs
+    .filter((pair) => pair.priorityWindowRemaining !== priorityWindowInitialByPairId.get(pair.id))
+    .map((pair) => ({ id: pair.partnershipId, priority_window_remaining: pair.priorityWindowRemaining }));
+  if (priorityWindowUpdates.length) await entities.Partnership.bulkUpdate(priorityWindowUpdates);
   // Fase 4: `upsert` (não bulkCreate) — id determinístico
   // (`${athleteId}:${tournamentId}` ou `${athleteId}:legacy-seed`), então
   // uma reexecução acidental desta função pro mesmo torneio mescla em vez

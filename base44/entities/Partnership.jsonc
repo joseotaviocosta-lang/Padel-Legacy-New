@@ -161,6 +161,11 @@
     "compatibility_breakdown": {
       "type": "object",
       "description": "Detalhamento: {position, style, personality, level, schedule}"
+    },
+    "priority_window_remaining": {
+      "type": "number",
+      "default": 0,
+      "description": "Fase 7.4 — torneios restantes de entrada garantida no World Tour depois de vencer o qualifying (WorldTourLifecycle.js). 0 = sem janela ativa."
     }
   },
   "required": [
