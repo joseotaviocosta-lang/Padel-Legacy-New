@@ -16,6 +16,21 @@ export const TOURNAMENT_REGISTRATION_RULES = Object.freeze({
   allowSameDayRegistration: false,
   preventOverlappingEvents: true,
   cancellationRefundRate: 1,
+  // Proposta B (piso de descanso) — dias mínimos entre o FIM de um torneio
+  // já disputado e o INÍCIO do próximo. Sem isso o jogador encadeia eventos
+  // sem espaço para treinar, comissão técnica ou loja: medido em 47
+  // torneios/ano com folga média de 3,7 dias no meio de carreira (mín. 2) e
+  // 2,8 dias no topo. Energia não cria barreira nenhuma aqui (custo 20
+  // contra recuperação de 84 em 7 dias), então o piso é a barreira.
+  //
+  // N=7 escolhido sobre a curva medida. Ela é uma função DEGRAU, não uma
+  // rampa: o calendário é alinhado por semana (eventos de 4 dias em cadências
+  // de 7 e 14), então todo N de 5 a 11 produz o MESMO resultado — ~24
+  // torneios/ano com ~10 dias de folga, 1,5× a meta de ≥15 da Fase 0. N≤4 não
+  // muda nada frente ao estado atual; N≥12 cai para 16/ano, encostando no
+  // piso da meta. 7 fica no meio do patamar, tolerando variação futura do
+  // calendário sem mudar de faixa.
+  restFloorDays: 7,
 });
 const CAREER_START_DATE = '2026-01-01';
 function addDays(value, amount) {
@@ -42,6 +57,39 @@ export function getTournamentEffectiveInterval(tournament) {
   const explicitEnd = normalizeGameDate(tournament?.effective_end_date || tournament?.end_date || tournament?.endDate);
   const end = explicitEnd || campaign.end || start;
   return { start, end: end && start && end >= start ? end : start };
+}
+
+export function daysBetweenGameDates(from, to) {
+  const start = normalizeGameDate(from);
+  const end = normalizeGameDate(to);
+  if (!start || !end) return null;
+  return Math.round((Date.parse(`${end}T00:00:00Z`) - Date.parse(`${start}T00:00:00Z`)) / 86400000);
+}
+
+// Proposta B — status de inscrição que contam como "a dupla entrou em quadra".
+// `missed` fica de fora de propósito: o torneio foi ultrapassado sem disputa,
+// não houve desgaste físico a respeitar. `cancelled`/`withdrawn` idem.
+const PLAYED_REGISTRATION_STATUSES = new Set(['completed']);
+
+export function findRestFloorConflict({ player, partner, tournament, interval, registrations = [], tournaments = [], restFloorDays = 0 }) {
+  if (!(restFloorDays > 0) || !interval?.start) return null;
+  for (const registration of registrations) {
+    if (!PLAYED_REGISTRATION_STATUSES.has(registration?.status)) continue;
+    if (registration.tournament_id === tournament?.id) continue;
+    const belongsToTeam = [registration.profile_id, registration.partner_id]
+      .some((id) => id && (id === player?.id || id === partner?.id));
+    if (!belongsToTeam) continue;
+    const other = tournaments.find((item) => item.id === registration.tournament_id);
+    const end = normalizeGameDate(registration.effective_end_date)
+      || (other ? getTournamentEffectiveInterval(other).end : null);
+    if (!end) continue;
+    const rest = daysBetweenGameDates(end, interval.start);
+    // rest < 0 significa sobreposição — já coberta por DATE_CONFLICT, não é
+    // caso de descanso; não reporta duas vezes o mesmo problema.
+    if (rest == null || rest < 0 || rest >= restFloorDays) continue;
+    return { rest, end, registration };
+  }
+  return null;
 }
 
 export function doTournamentDatesOverlap(a, b) {
@@ -105,6 +153,18 @@ export function evaluateTournamentRegistration({ player, partner, tournament, cu
       if (doTournamentDatesOverlap(tournament, other)) reasons.push(reason('DATE_CONFLICT', `Sua dupla já está inscrita em ${registration.tournament_name || 'outro torneio'} entre ${getTournamentEffectiveInterval(other).start} e ${getTournamentEffectiveInterval(other).end}. Cancele essa inscrição antes de escolher outro evento.`, { conflictingRegistrationId: registration.id, conflictingTournamentId: registration.tournament_id }));
     }
   }
+
+  // Proposta B — piso de descanso entre torneios efetivamente disputados.
+  const restConflict = findRestFloorConflict({ player, partner, tournament, interval, registrations, tournaments, restFloorDays: rules.restFloorDays });
+  if (restConflict) {
+    const missing = rules.restFloorDays - restConflict.rest;
+    reasons.push(reason(
+      'REST_FLOOR',
+      `A dupla encerrou ${restConflict.registration.tournament_name || 'outro torneio'} em ${restConflict.end} e precisa de ${rules.restFloorDays} dias de descanso entre competições. Faltam ${missing} dia(s) — use esse intervalo para treinar, ajustar a comissão técnica ou renovar equipamento.`,
+      { restDays: restConflict.rest, requiredRestDays: rules.restFloorDays, previousTournamentId: restConflict.registration.tournament_id },
+    ));
+  }
+
   return { allowed: reasons.length === 0, reasons, warnings, registrationWindow: window, interval, entry };
 }
 

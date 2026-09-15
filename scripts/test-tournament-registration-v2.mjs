@@ -35,6 +35,27 @@ try {
   assert.equal(model.isConfirmedRegistration(registration, player.id, first.id), true);
   assert.equal(model.isConfirmedRegistration({ ...registration, status: 'cancelled' }, player.id, first.id), false);
 
+  // Proposta B — piso de descanso (restFloorDays: 7) entre o FIM de um
+  // torneio DISPUTADO e o INÍCIO do próximo. Só conta inscrição 'completed':
+  // um torneio 'missed' (ultrapassado sem entrar em quadra) não gera desgaste
+  // e não pode travar o próximo.
+  const restRules = model.TOURNAMENT_REGISTRATION_RULES;
+  assert.equal(restRules.restFloorDays, 7);
+  const finished = { id: 'played', profile_id: player.id, partner_id: partner.id, tournament_id: 'earlier', tournament_name: 'Miami Cup', status: 'completed', effective_start_date: '2026-02-04', effective_end_date: '2026-02-07' };
+  const tooSoon = { id: 'soon', name: 'Logo Depois', tier: 'Silver', start_date: '2026-02-11', end_date: '2026-02-14' };
+  const farEnough = { id: 'far', name: 'Com Descanso', tier: 'Silver', start_date: '2026-02-15', end_date: '2026-02-18' };
+  const restBlocked = model.evaluateTournamentRegistration({ player, partner, tournament: tooSoon, currentDate: '2026-02-08', registrations: [finished], tournaments: [tooSoon, farEnough] });
+  assert.equal(restBlocked.allowed, false, 'torneio 4 dias após o anterior deve ser barrado pelo piso de descanso');
+  assert.ok(restBlocked.reasons.some(item => item.code === 'REST_FLOOR'), JSON.stringify(restBlocked.reasons));
+  const restOk = model.evaluateTournamentRegistration({ player, partner, tournament: farEnough, currentDate: '2026-02-08', registrations: [finished], tournaments: [tooSoon, farEnough] });
+  assert.equal(restOk.allowed, true, `8 dias de folga deve passar: ${JSON.stringify(restOk.reasons)}`);
+  // Um torneio não disputado (missed) não impõe descanso nenhum.
+  const missedInstead = model.evaluateTournamentRegistration({ player, partner, tournament: tooSoon, currentDate: '2026-02-08', registrations: [{ ...finished, status: 'missed' }], tournaments: [tooSoon, farEnough] });
+  assert.equal(missedInstead.allowed, true, `torneio 'missed' não deve impor descanso: ${JSON.stringify(missedInstead.reasons)}`);
+  // Sobreposição continua sendo DATE_CONFLICT, não vira REST_FLOOR duplicado.
+  const overlapNotRest = model.evaluateTournamentRegistration({ player, partner, tournament: { id: 'ov', name: 'Sobreposto', tier: 'Silver', start_date: '2026-02-05', end_date: '2026-02-08' }, currentDate: '2026-02-01', registrations: [finished], tournaments: [] });
+  assert.ok(!overlapNotRest.reasons.some(item => item.code === 'REST_FLOOR'), 'sobreposição não deve ser reportada como falta de descanso');
+
   const oldCareer = { save_schema_version: 12, career_id: 'legacy', created_at: '2026-01-01', updated_at: '2026-01-01', metadata: {}, player, world: {}, calendar: {}, ranking: {}, market: {}, tournaments: {}, training: {}, economy: {}, inventory: {}, statistics: {}, history: {}, entities: { Tournament: [first], CalendarEvent: [{ id: 'event-1', profile_id: player.id, event_type: 'tournament', related_id: first.id, related_name: first.name, title: first.name, status: 'scheduled', start_date: first.start_date, end_date: first.end_date, metadata: { partner_id: partner.id } }] } };
   const migrated = migration.migrateCareer(oldCareer).data;
   assert.equal(migrated.save_schema_version, schema.CAREER_SAVE_SCHEMA_VERSION);
