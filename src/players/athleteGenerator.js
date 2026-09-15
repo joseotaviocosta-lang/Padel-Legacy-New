@@ -17,10 +17,43 @@ const ATTRIBUTES = ['serve', 'forehand', 'backhand', 'volley', 'lob', 'smash', '
 function number(seed, min, max) { return min + (parseInt(stableHash(seed), 36) % (max - min + 1)); }
 
 export function generateFictionalAthletes({ count = 240, seed = 'padel-legacy-world-v1' } = {}) {
+  // Hotfix — nomes coincidiam entre ENTIDADES DIFERENTES (ids distintos,
+  // mesmo nome de exibição). Medido: com o hash direto abaixo, o índice de
+  // `first`/`last` correlaciona fortemente com o índice de `country` (mesmo
+  // prefixo `${seed}:${index}`, sufixo curto diferente) — cada país só
+  // alcança ~4 dos 8 nomes/sobrenomes possíveis (16 combinações efetivas,
+  // não 64), e ~40 atletas/país esgotam isso muitas vezes (até 13
+  // repetições do mesmo nome). Isso é a causa raiz do bug "sorteio coloca o
+  // jogador contra a própria dupla": duas entidades DIFERENTES (ids
+  // distintos, corretamente excluídas uma da outra por id) podem ter o
+  // MESMO nome de exibição — a tela mostra o mesmo nome nos dois lados da
+  // partida, mesmo a lógica de exclusão por id estando correta. Corrigido
+  // por unicidade explícita, garantida por construção (ver varredura linear
+  // abaixo) — não por reamostrar o hash com um sufixo diferente, que
+  // reintroduz a MESMA correlação (medido, ainda sobravam colisões).
+  const usedNamesByCountry = new Map();
   return Array.from({ length: count }, (_, index) => {
     const country = COUNTRIES[number(`${seed}:${index}:country`, 0, COUNTRIES.length - 1)];
     const [firstNames, lastNames] = NAMES[country];
-    const name = `${firstNames[number(`${seed}:${index}:first`, 0, firstNames.length - 1)]} ${lastNames[number(`${seed}:${index}:last`, 0, lastNames.length - 1)]}`;
+    const usedNames = usedNamesByCountry.get(country) || new Set();
+    usedNamesByCountry.set(country, usedNames);
+    // Amostrar o hash de novo com um sufixo diferente ("retry1", "retry2"...)
+    // não resolve: a MESMA correlação estrutural entre sufixos curtos e
+    // parecidos reaparece (medido — ainda sobravam colisões). Em vez disso,
+    // varredura linear DETERMINÍSTICA sobre o espaço completo de combinações
+    // (firstNames.length × lastNames.length), começando no par natural do
+    // hash — não depende da qualidade do hash pra garantir unicidade, só do
+    // tamanho do espaço (64 combinações, bem acima dos ~40 atletas/país).
+    const totalCombos = firstNames.length * lastNames.length;
+    const naturalCombo = number(`${seed}:${index}:first`, 0, firstNames.length - 1) * lastNames.length
+      + number(`${seed}:${index}:last`, 0, lastNames.length - 1);
+    let name;
+    for (let offset = 0; offset < totalCombos; offset += 1) {
+      const combo = (naturalCombo + offset) % totalCombos;
+      name = `${firstNames[Math.floor(combo / lastNames.length)]} ${lastNames[combo % lastNames.length]}`;
+      if (!usedNames.has(name)) break;
+    }
+    usedNames.add(name);
     const tier = Math.min(5, Math.floor(index * 6 / count));
     const overall = number(`${seed}:${index}:overall`, 10 + tier * 14, 23 + tier * 14);
     const sideRoll = index % 20;

@@ -251,12 +251,51 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const readiness = Math.max(0, Math.min(100, Math.round(((Number(profile?.energy) || 0) * 0.7) + ((100 - (Number(profile?.fatigue) || 0)) * 0.3))));
   const phaseLabel = phase === 'config' ? 'Preparação' : phase === 'live' ? 'Ao vivo' : 'Resumo';
 
+  // Hotfix — o Resumo Premium (MatchRecapPremium) é longo o bastante pra
+  // empurrar o botão de continuar pra fora da viewport, exigindo rolagem
+  // extensa pra alcançá-lo. ModalShell já resolve exatamente esse padrão
+  // (conteúdo rolável + `footer` fixo abaixo dele) — só faltava este botão
+  // usar o slot em vez de ficar dentro de `children`, ao final do resumo.
+  // Nenhuma estatística é cortada: o conteúdo continua 100% rolável, só o
+  // CTA fica sempre acessível.
+  const resultPrimaryAction = phase === 'result' && result && teams ? (
+    onReturnToTrainingCenter ? (
+      <button
+        onClick={() => { onClose?.(); onReturnToTrainingCenter(); }}
+        className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-secondary/50 px-4 text-sm font-bold text-foreground transition-colors hover:bg-secondary"
+      >
+        <Home className="h-4 w-4" /> Voltar ao Centro de Treinamento
+      </button>
+    ) : (() => {
+      const primaryAction = getPostMatchPrimaryAction(profile);
+      if (primaryAction.key === 'back-to-career') {
+        return (
+          <button
+            onClick={() => { onClose?.(); navigate('/'); }}
+            className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
+          >
+            <Home className="h-4 w-4" /> {primaryAction.label}
+          </button>
+        );
+      }
+      return (
+        <button
+          onClick={reset}
+          className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
+        >
+          <RefreshCw className="h-4 w-4" /> {primaryAction.label}
+        </button>
+      );
+    })()
+  ) : null;
+
   return (
     <ModalShell
       open
       onClose={onClose}
       closeOnBackdrop={phase !== 'live'}
       closeOnEscape={phase !== 'live'}
+      footer={resultPrimaryAction}
       title={(
         <span className="flex items-center gap-2.5">
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary"><Cpu className="h-4.5 w-4.5" /></span>
@@ -464,38 +503,6 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
               rewards={{ XP: `+${result.won ? 10 : 5}`, Moedas: `+${result.won ? 8 : 3}`, Ranking: 'Sem impacto' }}
             />
             {result.matchState.liveCoachReport && <div className="glass rounded-2xl p-4"><p className="text-xs font-black mb-2">Decisões durante a partida</p><p className="text-[11px] text-muted-foreground">{result.matchState.liveCoachReport.suggestionsReceived} sugestões · {result.matchState.liveCoachReport.suggestionsApplied} aplicadas · {result.matchState.liveCoachReport.suggestionsIgnored} ignoradas</p><p className="mt-2 text-[9px] text-muted-foreground">{result.matchState.liveCoachReport.disclaimer}</p></div>}
-
-            {(() => {
-              if (onReturnToTrainingCenter) {
-                return (
-                  <button
-                    onClick={() => { onClose?.(); onReturnToTrainingCenter(); }}
-                    className="flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-secondary/50 px-4 text-sm font-bold text-foreground transition-colors hover:bg-secondary"
-                  >
-                    <Home className="h-4 w-4" /> Voltar ao Centro de Treinamento
-                  </button>
-                );
-              }
-              const primaryAction = getPostMatchPrimaryAction(profile);
-              if (primaryAction.key === 'back-to-career') {
-                return (
-                  <button
-                    onClick={() => { onClose?.(); navigate('/'); }}
-                    className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
-                  >
-                    <Home className="h-4 w-4" /> {primaryAction.label}
-                  </button>
-                );
-              }
-              return (
-                <button
-                  onClick={reset}
-                  className="w-full py-3 rounded-xl bg-secondary/50 text-foreground font-bold text-sm hover:bg-secondary transition-colors flex items-center justify-center gap-2"
-                >
-                  <RefreshCw className="h-4 w-4" /> {primaryAction.label}
-                </button>
-              );
-            })()}
           </div>
         )}
     </ModalShell>

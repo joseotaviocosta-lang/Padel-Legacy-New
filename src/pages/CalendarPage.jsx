@@ -342,16 +342,28 @@ export default function CalendarPage() {
 
   async function handleResolveDecision(event, action) {
     try {
-      await resolveDecision(event.id, action);
-      const pending = await getPendingDecisions(profile.id, careerDate);
-      setPendingDecisions(pending || []);
-      if (action === 'play' && event.related_id) {
+      // Hotfix — "Confirmar Presença" (action:'play') num torneio NÃO
+      // resolve o compromisso: só abre a partida. `resolveDecision` limpava
+      // `requires_decision` no clique, antes de a partida ser jogada — se o
+      // jogador fechasse o modal sem terminar (ou navegasse pra outra
+      // página), `canAdvanceDay`/`shouldBlockBeforeAdvance` não tinham mais
+      // nada pra bloquear, e o torneio era pulado em silêncio ao avançar o
+      // dia de novo. Só `prepareTournamentFinalization`
+      // (game-core/tournamentLifecycle.js), chamada quando a campanha do
+      // jogador no torneio realmente termina (eliminação ou título), pode
+      // legitimamente limpar essa flag. Mesmo padrão que `handlePlayTournament`
+      // (botão "Jogar Torneio" da tela de detalhe do dia) já usava — só
+      // faltava replicar aqui.
+      if (action === 'play' && event.event_type === 'tournament' && event.related_id) {
         const tournament = tournaments.find(t => t.id === event.related_id);
         if (tournament) {
           setActiveTournament(tournament);
           return;
         }
       }
+      await resolveDecision(event.id, action);
+      const pending = await getPendingDecisions(profile.id, careerDate);
+      setPendingDecisions(pending || []);
       const events = await getEventsForRange(profile.id, '2026-01-01', '2027-12-31');
       setCalendarEvents(events || []);
       toast({ title: action === 'play' ? 'Decisão confirmada' : 'Compromisso cancelado' });

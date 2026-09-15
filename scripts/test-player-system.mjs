@@ -17,6 +17,16 @@ assert.equal(new Set(catalog.map(item => item.id)).size, catalog.length, 'IDs mu
 assert(catalog.every(item => validateAthlete(item).valid), 'catalog athletes must validate');
 assert.equal(catalog.filter(item => item.source_type === 'real').length, realCount);
 
+// Hotfix — "sorteio coloca o jogador contra a própria dupla": duas
+// entidades fictícias DIFERENTES (ids distintos, corretamente excluídas
+// uma da outra por id) podiam ter o MESMO nome de exibição (medido: só 24
+// nomes únicos entre 240 atletas antes da correção), fazendo a tela
+// mostrar o mesmo nome nos dois lados de uma partida. Nome+país precisa
+// ser único por entidade fictícia — real athletes ficam fora (não passam
+// por generateFictionalAthletes).
+const fictionalNames = catalog.filter(item => item.source_type !== 'real').map(item => `${item.country}:${item.name}`);
+assert.equal(new Set(fictionalNames).size, fictionalNames.length, 'fictional athletes must have unique display names per country');
+
 const thousand = generateFictionalAthletes({ count: 1000, seed: 'distribution-test' });
 const sideCounts = Object.groupBy ? Object.groupBy(thousand, item => item.preferred_side) : thousand.reduce((acc, item) => ((acc[item.preferred_side] ||= []).push(item), acc), {});
 assert.equal(sideCounts.right.length, 450);
