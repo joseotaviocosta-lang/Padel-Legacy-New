@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
-import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getDifficultyForPlayer } from '@/lib/bots';
+import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getDifficultyForPlayer, levelLabelForOverall } from '@/lib/bots';
+import { normalizeCourtSide } from '@/players/athleteSchema.js';
 import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, ATTRIBUTE_KEYS, ageAtDate, RETIREMENT_AGE, incrementMissionProgress } from '@/lib/padel';
 import { processMonthlyFinances } from '@/lib/economy';
 import { processAllClubsMonthly } from '@/lib/clubs';
@@ -343,6 +344,36 @@ export function getLockedPartners(profile) {
   const byLevel = BOT_DIFFICULTIES.slice(0, playerLevelIdx + 1).flatMap(diff => BOTS_BY_DIFFICULTY[diff.id] || []);
   const byInterest = byLevel.filter(candidate => isInterestGated(profile, candidate));
   return [...pool, ...byInterest];
+}
+
+// Fase 9.4 — busca manual (PartnerSearch.jsx) passa a incluir os 100
+// atletas reais, pelo MESMO pool que o mercado espontâneo já usa
+// (AthleteProfile.filter({market_status:'livre'}), partnerOffers.js) e a
+// MESMA fricção (calculatePartnershipInterest/isInterestGated) — nunca um
+// segundo cálculo de interesse, nunca um caminho que ignore a fricção já
+// calibrada na Fase 5. Funções separadas de getAvailablePartners/
+// getLockedPartners (não uma extensão in-place) porque esta precisa ser
+// assíncrona (consulta AthleteProfile) — getAvailablePartners também é
+// usada de forma síncrona em PartnerSelection.jsx (seleção de parceiro no
+// onboarding), fora do escopo desta fase (só a busca manual do PartnerHub).
+//
+// Diferente dos bots (que ficam INVISÍVEIS na lista principal quando
+// `interestGated`, reaparecendo só na seção "Ainda fora de alcance"), o
+// pedido desta fase é explícito: um real de baixo interesse continua
+// visível como candidato de busca — o consumidor (PartnerSearch.jsx)
+// decide onde mostrar, não esta função.
+function adaptRealAthleteForPartnerSearch(real) {
+  return {
+    ...real,
+    preferred_side: normalizeCourtSide(real.preferred_side ?? real.court_side ?? real.position),
+    level: real.level || levelLabelForOverall(real.overall_rating),
+  };
+}
+
+export async function getRealPartnerCandidates(profile) {
+  if (!profile?.court_side) return [];
+  const rows = await localGame.entities.AthleteProfile.filter({ market_status: 'livre', is_real: true }).catch(() => []);
+  return (rows || []).map(adaptRealAthleteForPartnerSearch);
 }
 
 // Tournament helpers

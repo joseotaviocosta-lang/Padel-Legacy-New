@@ -10,12 +10,20 @@ export const BOT_DIFFICULTIES = [
   { id: 'lenda', label: 'Lenda', base: 90, min: 85, max: 100, pill: 'bg-amber-500/15 text-amber-300' },
 ];
 
+// Fase 9.4 — extraído de dentro de `compatibilityBot` pra ser reaproveitado
+// também pelos candidatos reais da busca manual (`career.js`,
+// `getRealPartnerCandidates`), que não têm um "nível de dificuldade" próprio
+// — a mesma escala de OVR já usada pros bots serve de rótulo de exibição.
+export function levelLabelForOverall(overall) {
+  return BOT_DIFFICULTIES.find(tier => overall >= tier.min && overall <= tier.max)?.label || 'Iniciante';
+}
+
 const catalog = buildAthleteCatalog();
 const compatibilityBot = athlete => ({
   ...athlete,
   bot_id: athlete.template_id,
   position: athlete.position,
-  level: BOT_DIFFICULTIES.find(tier => athlete.overall_rating >= tier.min && athlete.overall_rating <= tier.max)?.label || 'Iniciante',
+  level: levelLabelForOverall(athlete.overall_rating),
   ...athlete.attributes,
 });
 

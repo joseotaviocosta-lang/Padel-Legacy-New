@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Users, X } from 'lucide-react';
-import { getAvailablePartners, getLockedPartners, canChangePartner, daysUntilPartnerUnlock } from '@/lib/career';
+import { Search, Users, X, Crown } from 'lucide-react';
+import { getAvailablePartners, getLockedPartners, getRealPartnerCandidates, canChangePartner, daysUntilPartnerUnlock } from '@/lib/career';
 import { overallRating } from '@/lib/padel';
 import { computeCompatibility, compatibilityLabel } from '@/lib/partnershipSystem';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
@@ -21,17 +21,42 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
   // sempre retorna vazio, então sem fallback a idade nunca aparecia. bot.age
   // (gerado uma única vez no catálogo) é usado só quando não há registro vivo.
   const [athleteAges, setAthleteAges] = useState({});
+  // Fase 9.4 — atletas reais livres (`AthleteProfile.filter({market_status:
+  // 'livre', is_real:true})`, mesmo pool que o mercado espontâneo já usa),
+  // buscados à parte por serem assíncronos — mesmo padrão já usado acima
+  // pra `athleteAges`. Somam-se ao catálogo de bots (`BOTS_BY_DIFFICULTY`),
+  // nunca o substituem.
+  const [realCandidates, setRealCandidates] = useState([]);
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
 
-  const available = useMemo(() => {
+  useEffect(() => {
+    let active = true;
+    if (!profile) { setRealCandidates([]); return undefined; }
+    getRealPartnerCandidates(profile).then((rows) => { if (active) setRealCandidates(rows || []); }).catch(() => { if (active) setRealCandidates([]); });
+    return () => { active = false; };
+  }, [profile]);
+
+  // Fase 9.4 — mesma pontuação/fricção do mercado espontâneo
+  // (`calculatePartnershipInterest`, nunca um segundo cálculo): candidato
+  // real com `interest.available` cai no mesmo grupo "disponível" que um
+  // bot equivalente; abaixo do piso, some pra "Ainda fora de alcance"
+  // (mesma seção que já existe pra bots travados por reputação/ranking) —
+  // aparece sinalizado, nunca oculto por completo.
+  const allCandidates = useMemo(() => {
     if (!profile) return [];
-    const partners = getAvailablePartners(profile);
-    return partners.map(bot => {
-      const compat = computeCompatibility(profile, bot, relationships);
-      return { bot, compat, interest: calculatePartnershipInterest(profile, bot, compat) };
-    });
-  }, [profile, relationships]);
+    const scored = (candidate) => {
+      const compat = computeCompatibility(profile, candidate, relationships);
+      return { bot: candidate, compat, interest: calculatePartnershipInterest(profile, candidate, compat) };
+    };
+    return [...getAvailablePartners(profile), ...realCandidates].map(scored);
+  }, [profile, relationships, realCandidates]);
+
+  const available = useMemo(() => allCandidates.filter(({ interest }) => interest.available), [allCandidates]);
+  const realInterestGatedLocked = useMemo(
+    () => allCandidates.filter(({ bot, interest }) => bot.is_real && !interest.available).map(({ bot, interest }) => ({ bot, interestGated: true, interest })),
+    [allCandidates],
+  );
 
   useEffect(() => {
     let active = true;
@@ -62,10 +87,18 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
   // Recalcula o interesse aqui só pra distinguir qual mensagem mostrar —
   // barato (4 candidatos, mesmo teto de antes), evita reimplementar a
   // checagem de nível em getLockedPartners só pra devolver o motivo.
-  const locked = useMemo(() => getLockedPartners(profile).slice(0, 4).map(bot => {
-    const interest = calculatePartnershipInterest(profile, bot);
-    return { bot, interestGated: !interest.available, interest };
-  }), [profile]);
+  const locked = useMemo(() => {
+    const lockedBots = getLockedPartners(profile).slice(0, 4).map(bot => {
+      const interest = calculatePartnershipInterest(profile, bot);
+      return { bot, interestGated: !interest.available, interest };
+    });
+    // Fase 9.4, item 2 — real de baixo interesse nunca some da tela: cai
+    // aqui, na MESMA seção "Ainda fora de alcance" que bots travados por
+    // reputação/ranking já usam — sinalizado (nome, OVR, nível de
+    // interesse calculado), nunca oculto.
+    const lockedReals = [...realInterestGatedLocked].sort((a, b) => b.interest.score - a.interest.score).slice(0, 4);
+    return [...lockedBots, ...lockedReals];
+  }, [profile, realInterestGatedLocked]);
 
   return (
     <div className="space-y-4">
@@ -127,7 +160,10 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
                   <span className="font-black text-primary">{bot.name[0]}</span>
                 </div>
                 <div className="flex-1 min-w-0">
-                  <p className="font-semibold text-sm truncate">{bot.name}</p>
+                  <p className="flex items-center gap-1 font-semibold text-sm truncate">
+                    {bot.is_real && <Crown className="h-3 w-3 shrink-0 text-amber-400" aria-label="Atleta real" />}
+                    {bot.name}
+                  </p>
                   <p className="text-[10px] text-muted-foreground">{bot.country}{(athleteAges[bot.id] ?? bot.age) ? ` · ${athleteAges[bot.id] ?? bot.age} anos` : ''} · OVR {overallRating(bot)} · {bot.level}</p>
                 </div>
                 <div className="text-right">
@@ -135,7 +171,10 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
                   <p className={`text-[8px] uppercase font-bold ${cl.color}`}>{cl.label}</p>
                 </div>
               </div>
-              <p className="mb-2 text-[10px] text-muted-foreground">Lado: {sideLabel(bot.preferred_side)} · Interesse {interest.level}</p>
+              <p className="mb-2 text-[10px] text-muted-foreground">
+                Lado: {sideLabel(bot.preferred_side)} · Interesse {interest.level}
+                {interest.friction && <span className="text-amber-400"> (condições mais exigentes)</span>}
+              </p>
               <PlayStyleSummary profile={bot} compact />
               {selected === bot.id && (
                 <div className="mt-3 pt-3 border-t border-border/40 space-y-2 animate-fade-in">
@@ -173,12 +212,15 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
             <X className="h-3 w-3" /> Ainda fora de alcance
           </p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-            {locked.map(({ bot, interestGated }) => (
+            {locked.map(({ bot, interestGated, interest }) => (
               <div key={bot.id} className="glass rounded-xl p-3 opacity-40 text-center">
-                <p className="text-xs font-semibold truncate">{bot.name}</p>
+                <p className="flex items-center justify-center gap-1 text-xs font-semibold truncate">
+                  {bot.is_real && <Crown className="h-2.5 w-2.5 shrink-0 text-amber-400" aria-label="Atleta real" />}
+                  {bot.name}
+                </p>
                 <p className="text-[10px] text-muted-foreground">OVR {overallRating(bot)}</p>
                 <p className="text-[9px] text-muted-foreground mt-1">
-                  {interestGated ? 'Reputação/ranking ainda baixos' : 'Suba de nível para desbloquear'}
+                  {interestGated ? `Interesse ${interest?.level || 'muito baixo'} (${interest?.score ?? 0}/100) — reputação/ranking ainda baixos` : 'Suba de nível para desbloquear'}
                 </p>
               </div>
             ))}
