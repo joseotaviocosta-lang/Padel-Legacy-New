@@ -49,6 +49,7 @@
     "test:tournament-registration": "node scripts/test-tournament-registration-v2.mjs",
     "test:tournament-flow-rc": "node scripts/test-tournament-flow-rc.mjs",
     "test:partner-offers": "node scripts/test-partner-offers-v2.mjs",
+    "test:partner-day1-gate": "node scripts/test-partner-day1-gate.mjs",
     "test:match-playback": "node scripts/test-match-playback-tactics.mjs",
     "test:vite-config": "node scripts/test-vite-config.mjs",
     "test:dev-server-config": "node scripts/test-dev-server-config.mjs",

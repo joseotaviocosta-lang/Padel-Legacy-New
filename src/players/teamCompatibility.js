@@ -85,7 +85,21 @@ export function calculatePartnershipInterest(profile, athlete, compatibility = e
   const reputation = clamp(profile?.reputation, 0, 100);
   const rankingProgress = clamp((1500 - careerRank) / 15, 0, 100);
   const eliteDemand = clamp((120 - athleteRank) / 1.2, 0, 100);
-  const score = Math.round(clamp(compatibility.total * 0.35 + reputation * 0.3 + rankingProgress * 0.35 - eliteDemand * 0.15, 3, 97));
+  // Hotfix — em dia 1 de carreira nova, `ensureMyProfile` (src/lib/padel.js)
+  // nunca seta `reputation`/`ranking_position` — os dois caem no fallback
+  // (reputation=0, rankingProgress=0), zerando 65% do peso da fórmula pra
+  // QUALQUER candidato, inclusive o bot mais fraco do catálogo (Iniciante,
+  // OVR 1-24). A fricção da Fase 5.1 foi calibrada pra barrar acesso
+  // precoce a candidatos FORTES (achado #31/#32: jogador de reputação zero
+  // contratando o melhor atleta do jogo) — nunca deveria se aplicar a um
+  // candidato já trivialmente fraco. `noviceEase` espelha `eliteDemand` na
+  // direção oposta: dado pela força do CANDIDATO (OVR), não do jogador,
+  // então nunca afeta reals (OVR 83-96) nem bots Avançado+ (OVR ≥55) — só
+  // compensa quando o próprio candidato não exige prova nenhuma de
+  // reputação/ranking pra ser um parceiro razoável.
+  const partnerOverall = ratingOf(athlete);
+  const noviceEase = clamp((42 - partnerOverall) * 1.6, 0, 40);
+  const score = Math.round(clamp(compatibility.total * 0.35 + reputation * 0.3 + rankingProgress * 0.35 - eliteDemand * 0.15 + noviceEase, 3, 97));
   const level = score >= 75 ? 'alto' : score >= 50 ? 'médio' : score >= 25 ? 'baixo' : 'muito baixo';
   const friction = score < PARTNERSHIP_INTEREST_THRESHOLDS.high;
   return {

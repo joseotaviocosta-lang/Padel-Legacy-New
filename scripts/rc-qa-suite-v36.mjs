@@ -15,7 +15,7 @@ const GROUPS = {
   foundation: ['validate:architecture','test:vite-config','test:career-systems','test:players','test:player-builds'],
   onboarding: ['test:onboarding-v2','test:tutorial-chronology','test:missions','test:tutorial-engine'],
   gameplay: ['test:match-integrity','test:match-playback','test:live-coach','test:rc-gameplay-balance','test:rc-match-experience'],
-  career: ['test:training-v2','test:tournament-registration','test:partner-offers','test:career-pace','test:injuries','test:calendar-advance'],
+  career: ['test:training-v2','test:tournament-registration','test:partner-offers','test:partner-day1-gate','test:career-pace','test:injuries','test:calendar-advance'],
   world: ['test:living-world','test:global-market','test:sports-economy','test:coaches-v28','test:partnerships-v29','test:rc-world-ai','test:simulation-health-v35','test:world-auditor-v35'],
   ux: ['test:ui-quality','test:closed-beta-v35','test:beta-safety-v35','test:beta-integration-v35','test:beta-rc','test:ux-home-v36','test:ux-interfaces-v36','test:polish-ui-v36','test:performance-responsive-v36'],
   beta: ['test:beta-analytics','test:beta-analytics-pro','test:rc-beta-intelligence'],
