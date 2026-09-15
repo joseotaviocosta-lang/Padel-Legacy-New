@@ -10,6 +10,7 @@ import JournalistCard from '@/components/press/JournalistCard';
 import InterviewModal from '@/components/press/InterviewModal';
 import { getPendingInterviews, pickJournalist, applyReputationEffects, reconcileJournalistCatalog } from '@/lib/pressData';
 import { getPlayerRelationships } from '@/lib/relationships';
+import { selectActivePartnership } from '@/lib/partnershipSystem';
 import { getTopRivalry } from '@/lib/careerStory';
 import { useToast } from '@/components/ui/use-toast';
 import {
@@ -79,7 +80,12 @@ export default function Press() {
         setArticles(arts || []);
         setRecentMatches(mats || []);
         setCalendarEvents(events || []);
-        setPartnership((partnerships || []).find(item => item.is_active || item.status === 'active') || null);
+        // `is_active` não existe em Partnership e o status real é 'ativa'
+        // (não 'active'): esta busca nunca encontrava nada, então entrevistas
+        // que dependem da parceria (ex.: "Parceria em Alta") jamais apareciam
+        // aqui — enquanto o sino, com outra regra, já anunciava a mesma
+        // entrevista. Fonte canônica única agora.
+        setPartnership(selectActivePartnership(partnerships));
         setRegistrations(tournamentRegistrations || []);
         setRivalry(getTopRivalry(relationships));
 

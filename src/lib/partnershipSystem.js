@@ -102,6 +102,21 @@ export function compatibilityLabel(score) {
 
 // ─── Partnership Lifecycle ──────────────────────────────────────────────────
 
+// Fonte canônica para "esta linha de Partnership está ativa?" quando a lista
+// JÁ está em memória (sem nova consulta). Existe porque os consumidores
+// divergiam: o sino de notificações usava `partnerships[0]` (qualquer linha,
+// inclusive dissolvida) e a tela de Imprensa usava `is_active ||
+// status === 'active'` — campo que não existe e valor em inglês, enquanto o
+// real é 'ativa' (ver getActivePartnership abaixo). Resultado: o sino
+// anunciava uma entrevista que a tela nunca mostrava.
+export const ACTIVE_PARTNERSHIP_STATUS = 'ativa';
+export function isActivePartnership(row) {
+  return Boolean(row) && row.status === ACTIVE_PARTNERSHIP_STATUS;
+}
+export function selectActivePartnership(rows) {
+  return (rows || []).find(isActivePartnership) || null;
+}
+
 export async function getActivePartnership(profileId) {
   if (!profileId) return null;
   try {

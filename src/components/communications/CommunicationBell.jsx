@@ -17,6 +17,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 import { useRenderCounter } from '@/dev/performanceProbe.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
+import { selectActivePartnership } from '@/lib/partnershipSystem';
 
 // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): memoizado — montado 2x no
 // shell global (header compacto + barra desktop) e antes re-renderizava a
@@ -62,7 +63,10 @@ function CommunicationBell({ compact = false }) {
     const created = await ensureContextualCareerCommunications(profile, {
       nextTournament,
       matches,
-      partnership: partnerships?.[0] || null,
+      // Antes: `partnerships?.[0]` — a primeira linha, ativa ou dissolvida.
+      // A tela de Imprensa usa a MESMA fonte canônica, então o sino não pode
+      // mais anunciar uma entrevista que a tela não tem como oferecer.
+      partnership: selectActivePartnership(partnerships),
       sponsorContracts,
       recentWins,
       partnerName: profile.partner_name,

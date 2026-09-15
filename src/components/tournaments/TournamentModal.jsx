@@ -917,6 +917,41 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     }) * 40,
   };
 
+  // Correção de layout (medida em 1366×768, estado atual do código): o
+  // tratamento de altura total só valia para `phase === 'match'`. Nas fases
+  // em volta o conteúdo cai em fluxo natural dentro de ~613px úteis, e as
+  // pilhas medem ~776px ('playable': card + análise + painel físico +
+  // controles) e ~884px ('round_result': StateMessage + MatchRecapPremium
+  // ~400px + entrevista) — com a AÇÃO PRINCIPAL no fim da pilha, exigindo
+  // rolar até o fim para jogar ou para seguir. O ModalShell já tem um
+  // `footer` fixo abaixo da área rolável (mesma correção aplicada ao resumo
+  // de partida treino); as estatísticas continuam inteiras e roláveis, só o
+  // CTA deixa de depender de rolagem.
+  const nextRunPhase = run ? getTournamentRunPhase(run, profile.career_date) : null;
+  const nextRoundPlayableToday = nextRunPhase === 'playable' || nextRunPhase === 'round_preparation';
+  const lowEnergyOrInjured = (profile.energy || 0) < 35 || isInjured(profile);
+  const modalFooter = phase === 'playable' && currentMatch ? (
+    <div className="space-y-2">
+      <button onClick={startMatch} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
+      {lowEnergyOrInjured && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
+    </div>
+  ) : phase === 'round_result' && lastResult ? (
+    <div className="space-y-2">
+      {postMatchInterviewActionable && <button onClick={openPostMatchInterview} className="min-h-11 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>}
+      {nextRoundPlayableToday ? (
+        <button onClick={() => setPhase(nextRunPhase)} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">
+          Jogar {currentMatch?.round || 'próxima rodada'} agora
+        </button>
+      ) : (
+        <ContextActionBar
+          description={lastResult.nextMatch ? `Próxima rodada · ${formatDay(lastResult.nextMatch.date)}` : undefined}
+          primary={{ label: 'Voltar para a carreira', icon: 'crown', onClick: goBackToCareer }}
+          secondary={{ label: 'Ver calendário', icon: 'calendar', onClick: () => { onClose?.(); navigate('/game/calendar'); } }}
+        />
+      )}
+    </div>
+  ) : null;
+
   return (
     <ModalShell
       open
@@ -946,6 +981,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       // real (1366×768/1440×900/1920×1080) em vez de um valor fixo.
       className={phase === 'match' ? 'h-[calc(100dvh-1rem)] sm:h-[calc(100dvh-2rem)]' : ''}
       contentClassName={phase === 'match' ? 'flex flex-col overflow-hidden' : ''}
+      footer={modalFooter}
     >
       <div className={`flex min-h-0 flex-col ${phase === 'match' ? 'h-full' : ''}`}>
         {phase !== 'match' && (
@@ -1055,8 +1091,6 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
               displayMode={displayMode}
               onChangeDisplayMode={setDisplayMode}
             />
-            <button onClick={startMatch} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
-            {((profile.energy || 0) < 35 || isInjured(profile)) && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
           </div>
         )}
 
@@ -1066,17 +1100,12 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           </LiveMatchRecoveryBoundary>
         )}
 
-        {phase === 'round_result' && lastResult && (() => {
+        {phase === 'round_result' && lastResult && (
           // Hotfix UX — itens 17/18/20: `run` já foi atualizado para a
           // próxima rodada nesta transição (setRun(nextRun) acima), então
           // `currentMatch`/`getTournamentRunPhase` já refletem o que vem a
-          // seguir. Se a próxima rodada é HOJE, oferece jogá-la direto (sem
-          // fechar e reabrir o torneio); se é no futuro, o retorno natural é
-          // fechar e deixar o Home/bloqueio de avanço guiar o jogador de
-          // volta quando a data chegar (itens 8-11).
-          const nextPhase = getTournamentRunPhase(run, profile.career_date);
-          const playableToday = nextPhase === 'playable' || nextPhase === 'round_preparation';
-          return (
+          // seguir. A decisão "jogar agora vs. voltar" vive no rodapé fixo do
+          // modal (nextRoundPlayableToday, acima) — aqui fica só o conteúdo.
           <div className="space-y-4 text-center">
             <StateMessage icon={CheckCircle} title="Vitória e fim do dia competitivo" body={`${lastResult.match.round}: ${lastResult.matchState.setsA}-${lastResult.matchState.setsB}. ${lastResult.nextMatch?.round} foi agendada para ${formatDay(lastResult.nextMatch?.date)}.`} tone="green" />
             <MatchRecapPremium matchState={lastResult.matchState} title={`Vitória · ${lastResult.match.round}`} />
@@ -1085,26 +1114,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
               <p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p>
               <p className="mt-1 text-muted-foreground">Ela é opcional. Ao concluir, você retorna diretamente à campanha deste torneio.</p>
             </div>}
-            {postMatchInterviewActionable && <button onClick={openPostMatchInterview} className="min-h-11 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>}
-            {playableToday ? (
-              <button onClick={() => setPhase(nextPhase)} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">
-                Jogar {currentMatch?.round || 'próxima rodada'} agora
-              </button>
-            ) : (
-              // M4.3 (Parte I): "Continuar no torneio" era genérico e só
-              // fechava o modal (sem navegar) — Parte I pede exatamente
-              // "Próxima rodada · DATA" + [Voltar para carreira] ou [Ver
-              // calendário], nunca um botão que tenta jogar uma rodada
-              // futura (playableToday já garante isso acima).
-              <ContextActionBar
-                description={lastResult.nextMatch ? `Próxima rodada · ${formatDay(lastResult.nextMatch.date)}` : undefined}
-                primary={{ label: 'Voltar para a carreira', icon: 'crown', onClick: goBackToCareer }}
-                secondary={{ label: 'Ver calendário', icon: 'calendar', onClick: () => { onClose?.(); navigate('/game/calendar'); } }}
-              />
-            )}
           </div>
-          );
-        })()}
+        )}
 
         {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} interviewActionable={postMatchInterviewActionable} profile={profile} />}
         {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} interviewActionable={postMatchInterviewActionable} profile={profile} />}
