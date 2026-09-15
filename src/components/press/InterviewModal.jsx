@@ -78,15 +78,23 @@ export default function InterviewModal({ interview, journalist, profile, recentQ
     const opponent = interview.opponent || 'o adversário';
     const vars = { player: playerName, opponent };
 
+    // Hotfix — `praise` era o fallback de QUALQUER categoria não listada
+    // (inclusive `pre_match`, a entrevista mais comum no começo de carreira),
+    // e a família `praise` incluía "Prova por Que É um dos Melhores do Mundo".
+    // Resultado: a primeira notícia de um atleta rank #1000+ o declarava
+    // elite mundial. Agora `pre_match` tem família própria e o fallback é ela,
+    // nunca elogio; além disso o ranking real vai junto, pra que afirmação de
+    // status só apareça quando o jogador de fato a sustenta.
     let headlineType = interview.questionCategory === 'post_win' ? 'win_convincing'
       : interview.questionCategory === 'post_loss' ? 'loss_close'
       : interview.questionCategory === 'rumor' ? 'rumor_partner'
       : interview.questionCategory === 'speculation' ? 'speculation'
       : interview.questionCategory === 'prediction' ? 'prediction'
-      : 'praise';
+      : 'pre_match';
 
-    const headline = generateHeadline(headlineType, vars);
-    const content = generateArticleContent(headlineType, tone, journalist, vars);
+    const rank = Number(profile?.ranking_position || profile?.world_ranking || 0);
+    const headline = generateHeadline(headlineType, vars, { rank });
+    const content = generateArticleContent(headlineType, tone, journalist, vars, { rank });
 
     setSaving(true);
     try {

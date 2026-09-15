@@ -106,8 +106,13 @@ export default function Tournaments() {
           await ensureFutureTournaments(p.career_date);
         }
 
-        // Fetch all tournaments — the calendar spans multiple seasons now
-        const list = await localGame.entities.Tournament.list('-start_date', 200);
+        // Fetch all tournaments — the calendar spans multiple seasons now.
+        // Hotfix — 200 com ordenação DESCENDENTE ia truncando o passado à
+        // medida que `ensureFutureTournaments` criava eventos futuros: depois
+        // de ~9 meses de carreira o torneio mais antigo visível já era de
+        // setembro (medido), e um torneio disputado/perdido antes disso sumia
+        // de "Passados". 2000 cobre ~12 temporadas (162 eventos/ano).
+        const list = await localGame.entities.Tournament.list('-start_date', 2000);
         setTournaments(prepareTournamentList(list));
 
         // Determine the current season based on career year
@@ -197,7 +202,7 @@ export default function Tournaments() {
     setProfile(p);
     const [matches, tournamentList, runEvents] = await Promise.all([
       localGame.entities.Match.list('-created_date', 100),
-      localGame.entities.Tournament.list('-start_date', 200),
+      localGame.entities.Tournament.list('-start_date', 2000),
       localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }).catch(() => []),
     ]);
     setMatches(matches || []);
@@ -277,6 +282,11 @@ export default function Tournaments() {
   const { filtered, byMonth } = (() => {
     const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
     const inSelectedView = ordered.filter(tournament => {
+      // Hotfix (redundância de navegação) — o torneio em destaque já é
+      // mostrado por inteiro no TournamentFocusMode acima, com as mesmas
+      // ações (jogar / ver chave / detalhes). Repeti-lo na listagem era o
+      // mesmo evento duas vezes na mesma tela.
+      if (focusTournament && tournament.id === focusTournament.id) return false;
       const isPast = activeRunEvents.has(tournament.id) ? false : tournament.start_date && careerDate
         ? tournament.start_date < careerDate
         : (tournament.month || 0) < currentMonth;

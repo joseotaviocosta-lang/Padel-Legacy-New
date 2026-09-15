@@ -134,6 +134,12 @@ export const QUESTION_BANKS = {
     {
       id: 'win_2',
       category: 'post_win',
+      // Hotfix — sem guarda, "cada vez mais perto do título" disparava em
+      // qualquer vitória, inclusive a primeira partida treino de um atleta
+      // rank #1000+. Só faz sentido quando o jogador está de fato perto do
+      // título (semifinal/final), usando os mesmos campos de ctx já
+      // calculados por buildInterviewMatchContext.
+      when: (ctx) => ctx.isSemifinalWin || ctx.isFinalRound,
       text: 'Você está cada vez mais perto do título. Como lida com a pressão?',
       answers: [
         { text: 'Pressão é privilégio. Significa que estamos fazendo história.', effects: { fan_appeal: +5, sponsor_appeal: +4, morale: +3, reputation: +3, journalist_bias: +5 }, tone: 'confiante' },
@@ -340,6 +346,10 @@ export const QUESTION_BANKS = {
     {
       id: 'loss_2',
       category: 'post_loss',
+      // Hotfix (mesma classe de win_2) — "seu melhor momento já passou"
+      // pressupõe uma carreira já consolidada e em declínio; sem guarda,
+      // aparecia na primeira derrota de um atleta de 16 anos estreando.
+      when: (ctx) => ctx.lossStreak >= 3,
       text: 'Alguns dizem que seu melhor momento já passou. O que responde?',
       answers: [
         { text: 'Respeito as opiniões, mas vou responder dentro de quadra.', effects: { fan_appeal: +4, sponsor_appeal: +3, morale: +2, reputation: +3, journalist_bias: +5 }, tone: 'humilde' },
@@ -588,14 +598,28 @@ export const HEADLINE_TEMPLATES = {
     'Crítica: {player} Tem Repassado por Maus Resultados',
     'Análise: O Que Está Errado com {player}?',
   ],
+  // Hotfix — manchetes que afirmam STATUS ("um dos melhores do mundo",
+  // "favorito ao título") eram sorteadas sem olhar nenhum dado do jogador:
+  // um atleta de OVR 10, rank #1000+ e carreira recém-começada recebia
+  // "Prova por Que É um dos Melhores do Mundo" como primeira notícia da
+  // carreira. `maxRank` amarra a afirmação ao ranking real — quem não
+  // qualifica só sorteia entre as manchetes sem afirmação de status (toda
+  // família mantém pelo menos uma).
   praise: [
-    '{player} Está em Forma Espetacular: Favorito ao Título',
+    { text: '{player} Está em Forma Espetacular: Favorito ao Título', maxRank: 50 },
     'Elogio: Especialistas Destacam Evolução de {player}',
-    '{player} Prova por Que É um dos Melhores do Mundo',
+    { text: '{player} Prova por Que É um dos Melhores do Mundo', maxRank: 20 },
+    'Bom Momento: {player} Colhe Resultados do Trabalho Recente',
+  ],
+  pre_match: [
+    '{player} Entra em Quadra Contra {opponent}',
+    'Tudo Pronto: {player} Encara {opponent}',
+    '{player} Fala Sobre o Duelo com {opponent}',
   ],
   prediction: [
-    '{player} É Apontado como Favorito ao Título',
-    'Previsão: Especialistas Veem {player} Dominando a Temporada',
+    { text: '{player} É Apontado como Favorito ao Título', maxRank: 50 },
+    { text: 'Previsão: Especialistas Veem {player} Dominando a Temporada', maxRank: 20 },
+    'Previsão: O Que Esperar de {player} na Sequência da Temporada',
   ],
   speculation: [
     'Futuro Incerto: {player} Deixará o Padel Profissional?',
@@ -624,15 +648,35 @@ export function formatDaysUntilPhrase(daysUntil) {
   return `em ${value} dias`;
 }
 
-export function generateHeadline(type, vars) {
+// `rank` é a posição real no ranking mundial (0/ausente = fora do ranking,
+// que NUNCA qualifica). Manchetes marcadas com `maxRank` só entram no sorteio
+// quando o jogador de fato alcançou aquela faixa; as demais valem sempre.
+export function eligibleHeadlineTemplates(type, rank = 0) {
   const templates = HEADLINE_TEMPLATES[type];
-  if (!templates || templates.length === 0) return 'Notícia do Dia';
-  return fillTemplate(pickRandom(templates), vars);
+  if (!Array.isArray(templates) || templates.length === 0) return [];
+  const position = Number(rank) || 0;
+  const eligible = templates.filter((template) => {
+    if (typeof template === 'string') return true;
+    return position > 0 && position <= template.maxRank;
+  });
+  const pool = eligible.length ? eligible : templates.filter((template) => typeof template === 'string');
+  return pool.map((template) => (typeof template === 'string' ? template : template.text));
 }
 
-export function generateArticleContent(type, tone, journalist, vars) {
+export function generateHeadline(type, vars, { rank = 0 } = {}) {
+  const pool = eligibleHeadlineTemplates(type, rank);
+  if (pool.length === 0) return 'Notícia do Dia';
+  return fillTemplate(pickRandom(pool), vars);
+}
+
+export function generateArticleContent(type, tone, journalist, vars, { rank = 0 } = {}) {
   const playerName = vars.player || 'O jogador';
   const opponent = vars.opponent || 'o adversário';
+  // Mesma regra das manchetes: elogio de nível mundial exige ranking que
+  // sustente a afirmação — sem isso, o texto fala do momento/progresso.
+  const position = Number(rank) || 0;
+  const isElite = position > 0 && position <= 20;
+  const isContender = position > 0 && position <= 50;
   const contents = {
     win_convincing: `${journalist.name}, do ${journalist.outlet}, destaca a vitória dominante de ${playerName} sobre ${opponent}. "${playerName} demonstrou um nível técnico superior e não deixou brechas para o adversário", escreveu.`,
     win_close: `Em reportagem emocionante, ${journalist.name} narra a vitória de ${playerName} sobre ${opponent}. "Foi um espetáculo do começo ao fim. ${playerName} mostrou muita fibra para sair com a vitória."`,
@@ -641,8 +685,13 @@ export function generateArticleContent(type, tone, journalist, vars) {
     rumor_partner: `${journalist.name} relata que fontes próximas indicam uma possível separação. "A química não está a mesma e as conversas sobre uma mudança são reais."`,
     rumor_sponsor: `Segundo ${journalist.name}, um grande patrocinador estaria disposto a investir pesado em ${playerName}. "As conversas estão avançadas e o valor seria significativo."`,
     critique: `Em sua coluna, ${journalist.name} faz uma análise afiada: "${playerName} precisa encontrar seu melhor jogo rapidamente. Os números não mentem — há uma queda de performance evidente."`,
-    praise: `${journalist.name} não economiza elogios: "${playerName} está jogando em um nível que poucos alcançam. É um prazer assistir."`,
-    prediction: `Em sua previsão, ${journalist.name} aposta firme: "Se continuar neste ritmo, ${playerName} é o grande favorito ao título."`,
+    praise: isElite
+      ? `${journalist.name} não economiza elogios: "${playerName} está jogando em um nível que poucos alcançam. É um prazer assistir."`
+      : `${journalist.name} destaca a evolução recente: "${playerName} vem mostrando progresso consistente. É um caminho que ainda tem muito a percorrer, mas a direção está certa."`,
+    prediction: isContender
+      ? `Em sua previsão, ${journalist.name} aposta firme: "Se continuar neste ritmo, ${playerName} é o grande favorito ao título."`
+      : `Em sua análise, ${journalist.name} pondera: "${playerName} ainda está construindo caminho no circuito. O próximo passo é ganhar consistência nos torneios de base."`,
+    pre_match: `${journalist.name} antecipa o duelo entre ${playerName} e ${opponent}. "É mais um teste no calendário — e o tipo de jogo que ajuda a medir o momento da dupla."`,
     speculation: `${journalist.name} levanta uma questão interessante: "O futuro de ${playerName} é incerto. Poderia seguir carreira como treinador, dada sua visão tática."`,
   };
   return contents[type] || `${journalist.name} traz mais uma reportagem sobre ${playerName}.`;

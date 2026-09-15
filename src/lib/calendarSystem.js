@@ -4,7 +4,7 @@ import { levelForXp, LEVELS, incrementMissionProgress, TOURNAMENT_ENERGY_COST } 
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { executeTraining, TRAINING_ACTIVITIES, INTENSITY_LEVELS } from '@/lib/trainingSystemV2.js';
 import { normalizeTrainingId } from '@/lib/trainingCatalog.js';
-import { registerTournament, cancelTournamentRegistration, getTournamentRegistrationWindow } from '@/lib/tournamentRegistration.js';
+import { registerTournament, cancelTournamentRegistration, getTournamentRegistrationWindow, ACTIVE_REGISTRATION_STATUSES } from '@/lib/tournamentRegistration.js';
 import { getTournamentCommitmentDate, shouldBlockBeforeAdvance } from '@/game-core/calendarAdvancePolicy.js';
 import { ensureTournamentDraw, isTournamentDrawDue } from '@/lib/tournamentDraw.js';
 
@@ -380,6 +380,32 @@ export async function canAdvanceDay(profileId, careerDate) {
   return { canAdvance: true, reason: null, blockingEvent: null };
 }
 
+// Estado terminal de um torneio ultrapassado sem disputa. Idempotente: só
+// mexe em inscrições ainda ativas e usa id determinístico no histórico, então
+// reprocessar o mesmo evento não duplica nada.
+async function markTournamentAsMissed(profile, event, date) {
+  const tournamentId = event.related_id;
+  if (!tournamentId) return;
+  const registrations = await localGame.entities.TournamentRegistration
+    .filter({ profile_id: profile.id, tournament_id: tournamentId }).catch(() => []);
+  const active = (registrations || []).filter((item) => ACTIVE_REGISTRATION_STATUSES.has(item.status));
+  for (const registration of active) {
+    await localGame.entities.TournamentRegistration
+      .update(registration.id, { status: 'missed', cancelled_at: date })
+      .catch(() => {});
+  }
+  const name = event.related_name || event.title || 'Torneio';
+  const key = String(`${profile.id}-${tournamentId}`).replace(/[^a-zA-Z0-9_-]/g, '-');
+  await localGame.entities.HistoryEntry.upsert(`tournament-missed-${key}`, {
+    profile_id: profile.id,
+    year: Number(String(date).slice(0, 4)),
+    event_date: date,
+    title: `Ausência no ${name}`,
+    description: `A dupla estava inscrita mas não entrou em quadra no ${name}. Registrado como não disputado.`,
+    category: 'carreira',
+  }).catch(() => {});
+}
+
 // ── Process calendar events on day advance ───────────────────────────────
 export async function processCalendarEvents(profile, newDate) {
   const events = await localGame.entities.CalendarEvent.filter({
@@ -423,7 +449,14 @@ export async function processCalendarEvents(profile, newDate) {
       ? (tournamentCommitmentDate || (hasTournamentRun ? null : event.end_date || event.start_date))
       : (event.end_date || event.start_date);
     if (eventEnd && eventEnd < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
-      await localGame.entities.CalendarEvent.update(event.id, { status: 'missed' });
+      await localGame.entities.CalendarEvent.update(event.id, { status: 'missed', requires_decision: false });
+      // Hotfix — antes, só o CalendarEvent virava 'missed'. A inscrição
+      // continuava 'confirmed' PARA SEMPRE (limbo: nem ativa de verdade, nem
+      // encerrada) e nada registrava o torneio na carreira — ele sumia de
+      // todas as telas sem deixar rastro. Todo torneio ultrapassado sem
+      // disputa passa a ter estado terminal explícito ('missed' na inscrição)
+      // e uma entrada de histórico, para nunca mais desaparecer em silêncio.
+      await markTournamentAsMissed(profile, event, newDate);
       // Penalty for missing a tournament
       coinChange -= 50;
       completed.push({ ...event, newStatus: 'missed' });
@@ -497,13 +530,36 @@ export async function getEventsForRange(profileId, startDate, endDate) {
 }
 
 // ── Resolve a pending decision ────────────────────────────────────────────
+// Invariante do hotfix, isolado como função pura para poder ser testado sem
+// a camada de entidades (que exige Tauri): confirmar presença num TORNEIO
+// nunca encerra o compromisso — só disputar a partida (ou o torneio ser
+// ultrapassado, virando `missed`) encerra.
+export function shouldClearPendingDecision(event, action) {
+  if (action === 'skip') return true;
+  return !(event?.event_type === 'tournament' && event?.decision_type === 'play_tournament');
+}
+
 export async function resolveDecision(eventId, action) {
   // action: 'play' | 'skip' | 'confirm'
   if (action === 'skip') {
     await localGame.entities.CalendarEvent.update(eventId, { status: 'cancelled', requires_decision: false });
-  } else {
-    await localGame.entities.CalendarEvent.update(eventId, { requires_decision: false });
+    return;
   }
+  // Hotfix (2ª ocorrência do mesmo bug) — confirmar presença num TORNEIO não
+  // resolve nada: a partida ainda precisa ser disputada. A correção anterior
+  // vivia só no chamador (CalendarPage.jsx) e tinha um fall-through: quando o
+  // torneio não estava na lista local (truncada por `Tournament.list(...,100)`,
+  // que no início de carreira não devolve NENHUM torneio de janeiro — medido),
+  // o fluxo caía aqui e limpava a flag mesmo sem abrir a partida, liberando o
+  // avanço do dia. A garantia passa a ser desta função, não do chamador:
+  // nenhum caminho — atual ou futuro — limpa `requires_decision` de um
+  // compromisso de torneio por aqui. Só `prepareTournamentFinalization`
+  // (game-core/tournamentLifecycle.js), quando a campanha realmente termina,
+  // e a marcação de `missed` em processCalendarEvents (estado terminal
+  // explícito, acima) podem encerrar esse compromisso.
+  const event = await localGame.entities.CalendarEvent.get(eventId).catch(() => null);
+  if (!shouldClearPendingDecision(event, action)) return;
+  await localGame.entities.CalendarEvent.update(eventId, { requires_decision: false });
 }
 
 // ── Tournament phase computation ──────────────────────────────────────────

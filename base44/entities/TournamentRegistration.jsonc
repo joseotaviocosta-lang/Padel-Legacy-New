@@ -7,7 +7,7 @@
     "partner_id": { "type": "string" },
     "tournament_id": { "type": "string" },
     "tournament_name": { "type": "string" },
-    "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled", "withdrawn", "rejected", "completed"] },
+    "status": { "type": "string", "enum": ["pending", "confirmed", "cancelled", "withdrawn", "rejected", "completed", "missed"] },
     "registered_at": { "type": "string", "format": "date" },
     "cancelled_at": { "type": "string", "format": "date" },
     "effective_start_date": { "type": "string", "format": "date" },

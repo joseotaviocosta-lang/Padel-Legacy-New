@@ -74,7 +74,12 @@ export default function CalendarPage() {
       setTeamRank(rank);
 
       const { t, m, tr, events, pending } = await loadModuleTasks({
-        t: { task: () => localGame.entities.Tournament.list('-start_date', 100), fallback: [], label: 'torneios do calendário' },
+        // Hotfix — 100 é menor que o calendário de UMA temporada (162
+        // eventos/ano) e a ordenação é DESCENDENTE: no início de carreira a
+        // consulta não devolvia nenhum torneio de janeiro (mais antigo
+        // visível: julho — medido), escondendo justamente o torneio do dia.
+        // 2000 cobre ~12 temporadas, acima de qualquer carreira real.
+        t: { task: () => localGame.entities.Tournament.list('-start_date', 2000), fallback: [], label: 'torneios do calendário' },
         m: { task: () => localGame.entities.Match.list('-created_date', 50), fallback: [], label: 'partidas do calendário' },
         tr: { task: () => localGame.entities.TrainingSession.filter({ profile_id: p.id }), fallback: [], label: 'treinos do calendário' },
         events: { task: () => getEventsForRange(p.id, '2026-01-01', '2027-12-31'), fallback: [], label: 'eventos do calendário' },
@@ -354,12 +359,22 @@ export default function CalendarPage() {
       // legitimamente limpar essa flag. Mesmo padrão que `handlePlayTournament`
       // (botão "Jogar Torneio" da tela de detalhe do dia) já usava — só
       // faltava replicar aqui.
+      // 2ª correção do mesmo bug: o `return` acima dependia de achar o torneio
+      // na lista local — e a consulta de torneios (ordenada por data
+      // DESCENDENTE, com limite) não devolvia NENHUM torneio de janeiro numa
+      // carreira nova (medido: o mais antigo visível era julho, com limite
+      // 100). Quando `find` falhava, o fluxo caía em
+      // `resolveDecision`, que limpava a flag sem abrir a partida: o torneio
+      // não abria, o avanço era liberado e o dia pulava. A busca agora nunca
+      // depende da lista truncada (`openTournamentById` busca por id) e, se
+      // ainda assim não der, a flag NÃO é limpa — o compromisso continua
+      // bloqueando o avanço em vez de sumir.
       if (action === 'play' && event.event_type === 'tournament' && event.related_id) {
-        const tournament = tournaments.find(t => t.id === event.related_id);
-        if (tournament) {
-          setActiveTournament(tournament);
-          return;
+        const opened = await openTournamentById(event.related_id);
+        if (!opened) {
+          toast({ title: 'Não foi possível abrir o torneio', description: 'O compromisso segue pendente no calendário.', variant: 'destructive' });
         }
+        return;
       }
       await resolveDecision(event.id, action);
       const pending = await getPendingDecisions(profile.id, careerDate);
@@ -377,10 +392,23 @@ export default function CalendarPage() {
     setDayDetailsOpen(true);
   }
 
-  function handlePlayTournament(event) {
-    const tournament = tournaments.find(t => t.id === event.related_id);
-    if (tournament) {
-      setActiveTournament(tournament);
+  // Fonte única pra abrir um torneio a partir de um CalendarEvent: tenta a
+  // lista local (já carregada) e, se não achar, busca por id — a lista é
+  // truncada por limite de consulta e não serve como fonte de verdade.
+  async function openTournamentById(tournamentId) {
+    const local = tournaments.find(t => t.id === tournamentId);
+    if (local) { setActiveTournament(local); return true; }
+    const fetched = await localGame.entities.Tournament.get(tournamentId).catch(() => null);
+    if (!fetched) return false;
+    setActiveTournament(enrichTournament(fetched));
+    return true;
+  }
+
+  async function handlePlayTournament(event) {
+    if (!event?.related_id) return;
+    const opened = await openTournamentById(event.related_id);
+    if (!opened) {
+      toast({ title: 'Não foi possível abrir o torneio', description: 'O compromisso segue pendente no calendário.', variant: 'destructive' });
     }
   }
 
@@ -580,7 +608,7 @@ export default function CalendarPage() {
             setProfile(updatedProfile);
             const events = await getEventsForRange(profile.id, '2026-01-01', '2027-12-31');
             setCalendarEvents(events || []);
-            const tList = await localGame.entities.Tournament.list('-start_date', 100);
+            const tList = await localGame.entities.Tournament.list('-start_date', 2000);
             setTournaments((tList || []).map(enrichTournament));
           }}
         />

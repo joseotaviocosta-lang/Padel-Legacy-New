@@ -19,7 +19,10 @@ function addDays(value, amount) {
 }
 
 export const ACTIVE_REGISTRATION_STATUSES = new Set(['pending', 'confirmed']);
-export const REGISTRATION_STATUSES = new Set(['pending', 'confirmed', 'cancelled', 'withdrawn', 'rejected', 'completed']);
+// `missed` (hotfix) — torneio ultrapassado sem disputa. Estado TERMINAL
+// explícito: antes a inscrição ficava 'confirmed' para sempre (limbo, nem
+// ativa nem encerrada) e o torneio sumia de todas as telas sem rastro.
+export const REGISTRATION_STATUSES = new Set(['pending', 'confirmed', 'cancelled', 'withdrawn', 'rejected', 'completed', 'missed']);
 const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
 
 export function normalizeGameDate(value) {
