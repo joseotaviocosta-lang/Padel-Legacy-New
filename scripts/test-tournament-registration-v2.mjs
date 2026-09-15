@@ -11,7 +11,12 @@ try {
   const first = { id: 'first', name: 'Primeiro Silver', tier: 'Silver', start_date: '2026-01-08', end_date: '2026-01-10', entry_fee: 100, max_participants: 16 };
   const allowed = model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-01' });
   assert.equal(allowed.allowed, true, JSON.stringify(allowed.reasons));
-  assert.deepEqual(allowed.registrationWindow, { opensAt: '2025-12-09', closesAt: '2026-01-07' });
+  // Proposta A (ritmo do calendário): inscrição fecha em D-3, alinhada ao
+  // sorteio da chave (TOURNAMENT_DRAW_LEAD_DAYS), não mais em D-1 — uma
+  // inscrição aceita em D-1 nascia com a janela de preparação já vencida.
+  assert.deepEqual(allowed.registrationWindow, { opensAt: '2025-12-09', closesAt: '2026-01-05' });
+  assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-06' }).reasons.some(item => item.code === 'REGISTRATION_CLOSED'), true, 'D-2 deve estar fechado');
+  assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-05' }).allowed, true, 'D-3 ainda aceita inscrição');
   assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2025-12-08' }).reasons[0].code, 'REGISTRATION_NOT_OPEN');
   assert(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-08' }).reasons.some(item => item.code === 'TOURNAMENT_STARTED'));
   const custom = { ...first, registration_open_date: '2026-01-03', registration_deadline: '2026-01-06' };

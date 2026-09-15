@@ -6,7 +6,13 @@ import { getActivePartnership } from '@/lib/partnershipSystem.js';
 
 export const TOURNAMENT_REGISTRATION_RULES = Object.freeze({
   defaultOpenDaysBeforeStart: 30,
-  defaultCloseDaysBeforeStart: 1,
+  // Proposta A (ritmo do calendário): fechar em D-3, não D-1. O sorteio da
+  // chave já acontece em D-3 (TOURNAMENT_DRAW_LEAD_DAYS, tournamentDraw.js),
+  // então uma inscrição aceita em D-1 nascia com a janela de preparação já
+  // vencida — a entrevista pré-torneio e o sorteio não tinham quando
+  // disparar, e a sequência inscrição -> entrevista -> sorteio -> jogo
+  // colapsava. Alinhar o prazo ao sorteio devolve essa cronologia.
+  defaultCloseDaysBeforeStart: 3,
   allowSameDayRegistration: false,
   preventOverlappingEvents: true,
   cancellationRefundRate: 1,
