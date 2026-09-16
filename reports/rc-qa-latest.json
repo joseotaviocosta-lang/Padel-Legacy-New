@@ -1,13 +1,13 @@
 {
-  "generatedAt": "2026-08-31T19:39:20.392Z",
+  "generatedAt": "2026-09-16T20:25:17.197Z",
   "version": "0.9.0-rc.1.9",
   "profile": "core",
   "status": "BLOCKED",
-  "score": 94,
+  "score": 93,
   "summary": {
-    "total": 36,
-    "passed": 34,
-    "failed": 2,
+    "total": 40,
+    "passed": 37,
+    "failed": 3,
     "skipped": 0,
     "missing": 0
   },
@@ -16,7 +16,7 @@
     {
       "name": "validate:architecture",
       "status": "PASS",
-      "durationMs": 927,
+      "durationMs": 2219,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -26,7 +26,7 @@
     {
       "name": "test:vite-config",
       "status": "PASS",
-      "durationMs": 1081,
+      "durationMs": 1950,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -36,27 +36,27 @@
     {
       "name": "test:career-systems",
       "status": "PASS",
-      "durationMs": 52204,
+      "durationMs": 6432,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:career-systems\n> node scripts/test-career-systems.mjs\n\n\u001b[2m16:36:12\u001b[22m \u001b[36m\u001b[1m[vite]\u001b[22m\u001b[39m \u001b[90m\u001b[2m(client)\u001b[22m\u001b[39m Re-optimizing dependencies because vite config has changed\nCareerSystemsAuditTest: persistência, migration e Missions aprovadas.\n",
-      "stderr": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m\n"
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:career-systems\n> node scripts/test-career-systems.mjs\n\nCareerSystemsAuditTest: persistência, migration e Missions aprovadas.\n",
+      "stderr": ""
     },
     {
       "name": "test:players",
       "status": "PASS",
-      "durationMs": 1771,
+      "durationMs": 2223,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 250,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 305,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:players\n> node scripts/test-player-system.mjs\n\n{\n  \"success\": true,\n  \"catalog\": 340,\n  \"generated\": 1000,\n  \"sides\": {\n    \"right\": 450,\n    \"left\": 450,\n    \"flex\": 100\n  },\n  \"tenThousandEvaluationsMs\": 104,\n  \"noviceInterest\": 11,\n  \"topInterest\": 77\n}\n",
       "stderr": ""
     },
     {
       "name": "test:player-builds",
       "status": "PASS",
-      "durationMs": 45196,
+      "durationMs": 15450,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -66,7 +66,7 @@
     {
       "name": "test:match-integrity",
       "status": "PASS",
-      "durationMs": 1172,
+      "durationMs": 4476,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -76,7 +76,7 @@
     {
       "name": "test:match-playback",
       "status": "PASS",
-      "durationMs": 1044,
+      "durationMs": 2059,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -86,7 +86,7 @@
     {
       "name": "test:live-coach",
       "status": "PASS",
-      "durationMs": 761,
+      "durationMs": 1944,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -96,7 +96,7 @@
     {
       "name": "test:rc-gameplay-balance",
       "status": "FAIL",
-      "durationMs": 32997,
+      "durationMs": 12646,
       "exitCode": 1,
       "signal": null,
       "launchError": null,
@@ -106,7 +106,7 @@
     {
       "name": "test:rc-match-experience",
       "status": "PASS",
-      "durationMs": 894,
+      "durationMs": 2219,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -116,27 +116,27 @@
     {
       "name": "test:training-v2",
       "status": "PASS",
-      "durationMs": 6371,
+      "durationMs": 4721,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
       "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:training-v2\n> node scripts/test-training-system-v2.mjs\n\n{\n  \"catalog\": 15,\n  \"groups\": 4,\n  \"scenarios\": [\n    {\n      \"level\": 20,\n      \"plan\": \"balanced\",\n      \"progress\": 39.34,\n      \"energy\": 312\n    },\n    {\n      \"level\": 20,\n      \"plan\": \"repeated\",\n      \"progress\": 35.72,\n      \"energy\": 312\n    },\n    {\n      \"level\": 50,\n      \"plan\": \"balanced\",\n      \"progress\": 38.46,\n      \"energy\": 312\n    },\n    {\n      \"level\": 50,\n      \"plan\": \"repeated\",\n      \"progress\": 30.4,\n      \"energy\": 312\n    },\n    {\n      \"level\": 80,\n      \"plan\": \"balanced\",\n      \"progress\": 37.58,\n      \"energy\": 312\n    },\n    {\n      \"level\": 80,\n      \"plan\": \"repeated\",\n      \"progress\": 25.04,\n      \"energy\": 312\n    }\n  ]\n}\n",
-      "stderr": "emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:177:7:\n\u001b[37m      177 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14380:32\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:178:7:\n\u001b[37m      178 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14380:32\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:179:7:\n\u001b[37m      179 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14380:32\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:180:7:\n\u001b[37m      180 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14534:34\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14529:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    html:C:/Padel-Legacy-New/index.html:1:7:\n\u001b[37m      1 │ import \u001b[32m\"/src/main.jsx\"\u001b[37m\n        ╵        \u001b[32m~~~~~~~~~~~~~~~\u001b[0m\n\n\n    at failureErrorWithLog (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:926:25\n    at runOnEndCallbacks (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1307:45)\n    at buildResponseToResult (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:924:7)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:936:9\n    at new Promise (<anonymous>)\n    at requestCallbacks.on-end (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:935:54)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n"
+      "stderr": ""
     },
     {
       "name": "test:tournament-registration",
       "status": "PASS",
-      "durationMs": 6351,
+      "durationMs": 6328,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:tournament-registration\n> node scripts/test-tournament-registration-v2.mjs\n\n{\n  \"firstTournament\": {\n    \"allowed\": true,\n    \"reasons\": [],\n    \"warnings\": [],\n    \"registrationWindow\": {\n      \"opensAt\": \"2025-12-09\",\n      \"closesAt\": \"2026-01-07\"\n    },\n    \"interval\": {\n      \"start\": \"2026-01-08\",\n      \"end\": \"2026-01-10\"\n    },\n    \"entry\": {\n      \"path\": \"direct\",\n      \"eligible\": true,\n      \"reason\": \"Legacy Silver aberto a atletas sem ranking.\"\n    }\n  },\n  \"overlapBlocked\": [\n    \"DATE_CONFLICT\"\n  ],\n  \"migrationRegistrations\": 1,\n  \"scenarios\": [\n    \"registered-reload-play-gate\",\n    \"unregistered-play-blocked\",\n    \"overlap-cancel-reselect\"\n  ]\n}\n",
-      "stderr": "emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:177:7:\n\u001b[37m      177 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14380:32\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:178:7:\n\u001b[37m      178 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14380:32\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:179:7:\n\u001b[37m      179 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14380:32\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14379:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    <stdin>:180:7:\n\u001b[37m      180 │ import \u001b[32m\"c:/Padel-Legacy-New/src-tauri/target/x86_64-linux-android\u001b[37m...\n          ╵        \u001b[32m~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\u001b[0m\n\n\n\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m\n\n    node_modules/esbuild/lib/main.js:1217:27:\n\u001b[37m      1217 │         let result = await \u001b[32m\u001b[37mcallback({\n           ╵                            \u001b[32m^\u001b[0m\n\n    at throwClosedServerError (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42185:15)\n    at EnvironmentPluginContainer.resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:42364:9)\n    at resolveId (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14314:40)\n    at resolve (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14325:28)\n    at file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14534:34\n    at requestCallbacks.on-resolve (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1217:28)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n    at Socket.emit (node:events:509:28)\n\n  This error came from the \"onResolve\" callback registered here:\n\n    node_modules/esbuild/lib/main.js:1141:20:\n\u001b[37m      1141 │       let promise = \u001b[32m\u001b[37msetup({\n           ╵                     \u001b[32m^\u001b[0m\n\n    at setup (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14529:13)\n    at handlePlugins (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1141:21)\n    at buildOrContextImpl (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:854:5)\n    at Object.buildOrContext (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:680:5)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:68\n    at new Promise (<anonymous>)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:2035:27)\n    at Object.context (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1877:58)\n    at prepareEsbuildScanner (file:///c:/Padel-Legacy-New/node_modules/vite/dist/node/chunks/dep-Dm0c1Wj2.js:14266:24)\n\n  The plugin \"vite:dep-scan\" was triggered by this import\n\n    html:C:/Padel-Legacy-New/index.html:1:7:\n\u001b[37m      1 │ import \u001b[32m\"/src/main.jsx\"\u001b[37m\n        ╵        \u001b[32m~~~~~~~~~~~~~~~\u001b[0m\n\n\n    at failureErrorWithLog (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:926:25\n    at runOnEndCallbacks (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1307:45)\n    at buildResponseToResult (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:924:7)\n    at c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:936:9\n    at new Promise (<anonymous>)\n    at requestCallbacks.on-end (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:935:54)\n    at handleRequest (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:628:17)\n    at handleIncomingPacket (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:653:7)\n    at Socket.readFromStdout (c:\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:581:7)\n"
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:tournament-registration\n> node scripts/test-tournament-registration-v2.mjs\n\n{\n  \"firstTournament\": {\n    \"allowed\": true,\n    \"reasons\": [],\n    \"warnings\": [],\n    \"registrationWindow\": {\n      \"opensAt\": \"2025-12-09\",\n      \"closesAt\": \"2026-01-05\"\n    },\n    \"interval\": {\n      \"start\": \"2026-01-08\",\n      \"end\": \"2026-01-10\"\n    },\n    \"entry\": {\n      \"path\": \"direct\",\n      \"eligible\": true,\n      \"reason\": \"Legacy Silver aberto a atletas sem ranking.\"\n    }\n  },\n  \"overlapBlocked\": [\n    \"DATE_CONFLICT\"\n  ],\n  \"migrationRegistrations\": 1,\n  \"scenarios\": [\n    \"registered-reload-play-gate\",\n    \"unregistered-play-blocked\",\n    \"overlap-cancel-reselect\"\n  ]\n}\n",
+      "stderr": ""
     },
     {
       "name": "test:partner-offers",
       "status": "PASS",
-      "durationMs": 870,
+      "durationMs": 5867,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -144,19 +144,29 @@
       "stderr": ""
     },
     {
-      "name": "test:career-pace",
+      "name": "test:partner-day1-gate",
       "status": "PASS",
-      "durationMs": 791,
+      "durationMs": 5914,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
-      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:career-pace\n> node scripts/test-career-pace-v17.mjs\n\n{\n  \"status\": \"ok\",\n  \"maxCareerXp\": 100000,\n  \"level20Xp\": 17331,\n  \"level40Xp\": 65555,\n  \"tournamentsPerYear\": 32,\n  \"tournamentWeeks\": 24,\n  \"automaticTraining\": true,\n  \"potentialCeilings\": true\n}\n",
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:partner-day1-gate\n> node scripts/test-partner-day1-gate.mjs\n\npartner-day1-gate: jogador de dia 1 tem parceiro disponível; elite continua gated; progressão intacta — OK\n",
       "stderr": ""
+    },
+    {
+      "name": "test:career-pace",
+      "status": "FAIL",
+      "durationMs": 2027,
+      "exitCode": 1,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:career-pace\n> node scripts/test-career-pace-v17.mjs\n\n",
+      "stderr": "node:internal/modules/run_main:107\r\n    triggerUncaughtException(\r\n    ^\r\n\r\nAssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n\r\n0 !== 24\r\n\r\n    at file:///C:/Projetos/Padel-Legacy-New/scripts/test-career-pace-v17.mjs:21:8\r\n    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)\r\n    at async node:internal/modules/esm/loader:647:26\r\n    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:101:5) {\r\n  generatedMessage: true,\r\n  code: 'ERR_ASSERTION',\r\n  actual: 0,\r\n  expected: 24,\r\n  operator: 'strictEqual',\r\n  diff: 'simple'\r\n}\r\n\r\nNode.js v24.21.0\r\n"
     },
     {
       "name": "test:injuries",
       "status": "PASS",
-      "durationMs": 1033,
+      "durationMs": 2055,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -166,7 +176,7 @@
     {
       "name": "test:calendar-advance",
       "status": "PASS",
-      "durationMs": 767,
+      "durationMs": 2042,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -174,9 +184,39 @@
       "stderr": ""
     },
     {
+      "name": "test:tournament-draw-name-collision",
+      "status": "PASS",
+      "durationMs": 5568,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:tournament-draw-name-collision\n> node scripts/test-tournament-draw-name-collision.mjs\n\ntournament-draw-name-collision: nenhum torneio sorteou um adversário com o mesmo nome do parceiro do jogador — OK\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:tournament-confirm-no-skip",
+      "status": "PASS",
+      "durationMs": 5285,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:tournament-confirm-no-skip\n> node scripts/test-tournament-confirm-no-skip.mjs\n\ntournament-confirm-no-skip: invariante central + fluxos A/B + limites de consulta — OK\n",
+      "stderr": ""
+    },
+    {
+      "name": "test:tournament-result-authority",
+      "status": "PASS",
+      "durationMs": 4677,
+      "exitCode": 0,
+      "signal": null,
+      "launchError": null,
+      "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:tournament-result-authority\n> node scripts/test-tournament-result-authority.mjs\n\nOK test-tournament-result-authority: chave e circuito com uma única verdade por torneio\n",
+      "stderr": ""
+    },
+    {
       "name": "test:living-world",
       "status": "PASS",
-      "durationMs": 721,
+      "durationMs": 2022,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -186,7 +226,7 @@
     {
       "name": "test:global-market",
       "status": "PASS",
-      "durationMs": 936,
+      "durationMs": 1909,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -196,7 +236,7 @@
     {
       "name": "test:sports-economy",
       "status": "PASS",
-      "durationMs": 767,
+      "durationMs": 1892,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -206,7 +246,7 @@
     {
       "name": "test:coaches-v28",
       "status": "PASS",
-      "durationMs": 745,
+      "durationMs": 1973,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -216,7 +256,7 @@
     {
       "name": "test:partnerships-v29",
       "status": "PASS",
-      "durationMs": 921,
+      "durationMs": 1967,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -226,7 +266,7 @@
     {
       "name": "test:rc-world-ai",
       "status": "PASS",
-      "durationMs": 760,
+      "durationMs": 2058,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -236,7 +276,7 @@
     {
       "name": "test:simulation-health-v35",
       "status": "PASS",
-      "durationMs": 720,
+      "durationMs": 2185,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -246,7 +286,7 @@
     {
       "name": "test:world-auditor-v35",
       "status": "PASS",
-      "durationMs": 744,
+      "durationMs": 2126,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -256,17 +296,17 @@
     {
       "name": "test:ui-quality",
       "status": "FAIL",
-      "durationMs": 1049,
+      "durationMs": 2273,
       "exitCode": 1,
       "signal": null,
       "launchError": null,
       "stdout": "\n> padel-legacy@0.9.0-rc.1.9 test:ui-quality\n> node scripts/audit-ui-quality.mjs\n\n",
-      "stderr": "Auditoria de interface falhou com 14 ocorrência(s):\nsrc\\components\\matches\\SimulationModal.jsx:113 — mojibake UTF-8\nsrc\\components\\training-center\\PracticeMatchView.jsx:39 — mojibake UTF-8\nsrc\\game-core\\coachLifecycle.js:100 — mojibake UTF-8\nsrc\\game-core\\coachLifecycle.js:101 — mojibake UTF-8\nsrc\\game-core\\coachLifecycle.js:108 — mojibake UTF-8\nsrc\\game-core\\practiceMatchSession.js:12 — mojibake UTF-8\nsrc\\game-core\\practiceMatchSession.js:13 — mojibake UTF-8\nsrc\\game-core\\practiceMatchSession.js:21 — mojibake UTF-8\nsrc\\pages\\Coaches.jsx:249 — mojibake UTF-8\nsrc\\pages\\Coaches.jsx:256 — mojibake UTF-8\nNavegação sem o destino obrigatório: /game/training\nNavegação sem o destino obrigatório: /training-center\nNavegação sem o destino obrigatório: /achievements\nsrc/pages/Matches.jsx não contém o estado vazio esperado: Nenhuma partida registrada\n"
+      "stderr": "Auditoria de interface falhou com 14 ocorrência(s):\nsrc\\components\\matches\\SimulationModal.jsx:113 — mojibake UTF-8\nsrc\\components\\training-center\\PracticeMatchView.jsx:39 — mojibake UTF-8\nsrc\\game-core\\coachLifecycle.js:101 — mojibake UTF-8\nsrc\\game-core\\coachLifecycle.js:102 — mojibake UTF-8\nsrc\\game-core\\coachLifecycle.js:109 — mojibake UTF-8\nsrc\\game-core\\practiceMatchSession.js:12 — mojibake UTF-8\nsrc\\game-core\\practiceMatchSession.js:13 — mojibake UTF-8\nsrc\\game-core\\practiceMatchSession.js:21 — mojibake UTF-8\nsrc\\pages\\Coaches.jsx:249 — mojibake UTF-8\nsrc\\pages\\Coaches.jsx:256 — mojibake UTF-8\nNavegação sem o destino obrigatório: /game/training\nNavegação sem o destino obrigatório: /training-center\nNavegação sem o destino obrigatório: /achievements\nsrc/pages/Matches.jsx não contém o estado vazio esperado: Nenhuma partida registrada\n"
     },
     {
       "name": "test:closed-beta-v35",
       "status": "PASS",
-      "durationMs": 785,
+      "durationMs": 2125,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -276,7 +316,7 @@
     {
       "name": "test:beta-safety-v35",
       "status": "PASS",
-      "durationMs": 806,
+      "durationMs": 2200,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -286,7 +326,7 @@
     {
       "name": "test:beta-integration-v35",
       "status": "PASS",
-      "durationMs": 786,
+      "durationMs": 2207,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -296,7 +336,7 @@
     {
       "name": "test:beta-rc",
       "status": "PASS",
-      "durationMs": 20500,
+      "durationMs": 50152,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -306,7 +346,7 @@
     {
       "name": "test:ux-home-v36",
       "status": "PASS",
-      "durationMs": 859,
+      "durationMs": 2074,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -316,7 +356,7 @@
     {
       "name": "test:ux-interfaces-v36",
       "status": "PASS",
-      "durationMs": 1286,
+      "durationMs": 2172,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -326,7 +366,7 @@
     {
       "name": "test:polish-ui-v36",
       "status": "PASS",
-      "durationMs": 834,
+      "durationMs": 2162,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -336,7 +376,7 @@
     {
       "name": "test:performance-responsive-v36",
       "status": "PASS",
-      "durationMs": 1156,
+      "durationMs": 2137,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -346,7 +386,7 @@
     {
       "name": "test:beta-analytics",
       "status": "PASS",
-      "durationMs": 880,
+      "durationMs": 2111,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -356,7 +396,7 @@
     {
       "name": "test:beta-analytics-pro",
       "status": "PASS",
-      "durationMs": 839,
+      "durationMs": 1902,
       "exitCode": 0,
       "signal": null,
       "launchError": null,
@@ -366,7 +406,7 @@
     {
       "name": "test:rc-beta-intelligence",
       "status": "PASS",
-      "durationMs": 870,
+      "durationMs": 1973,
       "exitCode": 0,
       "signal": null,
       "launchError": null,

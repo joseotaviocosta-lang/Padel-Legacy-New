@@ -281,6 +281,31 @@ function tournamentEndDate(tournament) {
   return tournament.end_date || tournament.start_date;
 }
 
+/**
+ * Invariante pura de "este torneio ainda precisa ser resolvido pelo circuito
+ * da IA?". Extraída de resolveCompletedWorldTourEvents para ser testável sem
+ * storage — mesmo padrão de shouldClearPendingDecision (calendarSystem.js).
+ *
+ * Playthrough 4, item 1/2: a campanha do jogador passou a fechar o Tournament
+ * (status 'finalizado') em QUALQUER desfecho, não só no título — era esse
+ * buraco que deixava o torneio do jogador voltar para esta fila e ganhar um
+ * SEGUNDO campeão, diferente do da chave (ver tournamentLifecycle.js). Quando
+ * a chave do jogador decide a final, ela marca `world_tour_resolved` e a
+ * checagem correspondente barra aqui. Quando o jogador cai ANTES da final, o
+ * título fica genuinamente indefinido — o `tournament_run` só modela o
+ * caminho do jogador (item 8b) — e o circuito PRECISA resolver o evento, ou o
+ * torneio fica sem campeão, sem notícia e sem pontos para o resto do campo.
+ * Por isso 'finalizado' sozinho não exclui mais: só exclui junto com um
+ * campeão já gravado.
+ */
+export function isWorldTourResolutionPending(tournament, careerDate) {
+  const end = tournamentEndDate(tournament || {});
+  if (!tournament?.world_tour_event || !end || !careerDate || end >= careerDate) return false;
+  if (tournament.world_tour_resolved) return false;
+  if (tournament.status === 'finalizado' && tournament.champion) return false;
+  return true;
+}
+
 function eventRegion(tournament) {
   return tournament.region || tournament.continent || tournament.country || tournament.location || 'global';
 }
@@ -362,10 +387,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     entities.Partnership.list('-created_date', 1200).catch(() => []),
   ]);
 
-  const pending = (allTournaments || []).filter((tournament) => {
-    const end = tournamentEndDate(tournament);
-    return tournament.world_tour_event && end && end < careerDate && tournament.status !== 'finalizado' && !tournament.world_tour_resolved;
-  });
+  const pending = (allTournaments || []).filter((tournament) => isWorldTourResolutionPending(tournament, careerDate));
   if (!pending.length) return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0 };
 
   const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');

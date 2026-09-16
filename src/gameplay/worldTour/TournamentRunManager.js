@@ -224,10 +224,27 @@ export function withdrawTournamentRun(run, reason = 'Abandono', now = new Date()
 }
 
 export function buildTournamentBracketHistory(run, playerTeamName = 'Sua dupla') {
-  return (run?.matches || []).map((match) => ({
+  const allMatches = run?.matches || [];
+  // Playthrough 4, item 3 (Roma Pré-Temporada, "dados corrompidos"): o run
+  // pré-gera TODAS as rodadas do caminho do jogador já no sorteio, inclusive
+  // as que ele nunca vai disputar. Quando a campanha termina numa derrota, as
+  // rodadas seguintes continuavam no bracket_history como partidas agendadas
+  // da dupla do jogador — e a projeção temporal de tournamentBracketView, ao
+  // promover o vencedor da rodada anterior para a seguinte, desenhava o algoz
+  // do jogador contra "Vencedor Jogo 2" em rodadas que nunca aconteceram. Não
+  // era dado corrompido: era o caminho futuro de uma dupla já eliminada. A
+  // chave passa a terminar onde a campanha terminou. `is_final` preserva qual
+  // rodada ERA a final do torneio, informação que o truncamento apagaria —
+  // sem ela, quem lê a chave trataria a rodada da eliminação como decisão do
+  // título (ver getVisibleTournamentBracketState).
+  const lostIndex = allMatches.findIndex((match) => match.status === 'completed' && match.result && !match.result.won);
+  const lastIndex = allMatches.length - 1;
+  const visibleMatches = lostIndex >= 0 ? allMatches.slice(0, lostIndex + 1) : allMatches;
+  return visibleMatches.map((match, index) => ({
     round: match.round,
     date: match.date,
     status: match.status,
+    is_final: index === lastIndex,
     matches: [{
       match_id: match.id,
       date: match.date,

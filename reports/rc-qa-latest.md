@@ -3,44 +3,48 @@
 - Version: 0.9.0-rc.1.9
 - Profile: core
 - Status: **BLOCKED**
-- Score: **94/100**
-- PASS: 34 | FAIL: 2 | SKIP: 0 | Missing: 0
+- Score: **93/100**
+- PASS: 37 | FAIL: 3 | SKIP: 0 | Missing: 0
 
 ## Suites
 
-- ✅ **validate:architecture** — 0.9s
-- ✅ **test:vite-config** — 1.1s
-- ✅ **test:career-systems** — 52.2s
-- ✅ **test:players** — 1.8s
-- ✅ **test:player-builds** — 45.2s
-- ✅ **test:match-integrity** — 1.2s
-- ✅ **test:match-playback** — 1.0s
-- ✅ **test:live-coach** — 0.8s
-- ❌ **test:rc-gameplay-balance** — 33.0s
-- ✅ **test:rc-match-experience** — 0.9s
-- ✅ **test:training-v2** — 6.4s
-- ✅ **test:tournament-registration** — 6.4s
-- ✅ **test:partner-offers** — 0.9s
-- ✅ **test:career-pace** — 0.8s
-- ✅ **test:injuries** — 1.0s
-- ✅ **test:calendar-advance** — 0.8s
-- ✅ **test:living-world** — 0.7s
-- ✅ **test:global-market** — 0.9s
-- ✅ **test:sports-economy** — 0.8s
-- ✅ **test:coaches-v28** — 0.7s
-- ✅ **test:partnerships-v29** — 0.9s
-- ✅ **test:rc-world-ai** — 0.8s
-- ✅ **test:simulation-health-v35** — 0.7s
-- ✅ **test:world-auditor-v35** — 0.7s
-- ❌ **test:ui-quality** — 1.0s
-- ✅ **test:closed-beta-v35** — 0.8s
-- ✅ **test:beta-safety-v35** — 0.8s
-- ✅ **test:beta-integration-v35** — 0.8s
-- ✅ **test:beta-rc** — 20.5s
-- ✅ **test:ux-home-v36** — 0.9s
-- ✅ **test:ux-interfaces-v36** — 1.3s
-- ✅ **test:polish-ui-v36** — 0.8s
-- ✅ **test:performance-responsive-v36** — 1.2s
-- ✅ **test:beta-analytics** — 0.9s
-- ✅ **test:beta-analytics-pro** — 0.8s
-- ✅ **test:rc-beta-intelligence** — 0.9s
+- ✅ **validate:architecture** — 2.2s
+- ✅ **test:vite-config** — 1.9s
+- ✅ **test:career-systems** — 6.4s
+- ✅ **test:players** — 2.2s
+- ✅ **test:player-builds** — 15.4s
+- ✅ **test:match-integrity** — 4.5s
+- ✅ **test:match-playback** — 2.1s
+- ✅ **test:live-coach** — 1.9s
+- ❌ **test:rc-gameplay-balance** — 12.6s
+- ✅ **test:rc-match-experience** — 2.2s
+- ✅ **test:training-v2** — 4.7s
+- ✅ **test:tournament-registration** — 6.3s
+- ✅ **test:partner-offers** — 5.9s
+- ✅ **test:partner-day1-gate** — 5.9s
+- ❌ **test:career-pace** — 2.0s
+- ✅ **test:injuries** — 2.1s
+- ✅ **test:calendar-advance** — 2.0s
+- ✅ **test:tournament-draw-name-collision** — 5.6s
+- ✅ **test:tournament-confirm-no-skip** — 5.3s
+- ✅ **test:tournament-result-authority** — 4.7s
+- ✅ **test:living-world** — 2.0s
+- ✅ **test:global-market** — 1.9s
+- ✅ **test:sports-economy** — 1.9s
+- ✅ **test:coaches-v28** — 2.0s
+- ✅ **test:partnerships-v29** — 2.0s
+- ✅ **test:rc-world-ai** — 2.1s
+- ✅ **test:simulation-health-v35** — 2.2s
+- ✅ **test:world-auditor-v35** — 2.1s
+- ❌ **test:ui-quality** — 2.3s
+- ✅ **test:closed-beta-v35** — 2.1s
+- ✅ **test:beta-safety-v35** — 2.2s
+- ✅ **test:beta-integration-v35** — 2.2s
+- ✅ **test:beta-rc** — 50.2s
+- ✅ **test:ux-home-v36** — 2.1s
+- ✅ **test:ux-interfaces-v36** — 2.2s
+- ✅ **test:polish-ui-v36** — 2.2s
+- ✅ **test:performance-responsive-v36** — 2.1s
+- ✅ **test:beta-analytics** — 2.1s
+- ✅ **test:beta-analytics-pro** — 1.9s
+- ✅ **test:rc-beta-intelligence** — 2.0s

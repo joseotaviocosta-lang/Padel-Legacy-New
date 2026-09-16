@@ -12,23 +12,6 @@ const TIER_STYLES = {
   Silver:{badge:'bg-slate-500/15 text-slate-300 border-slate-500/30',label:'Legacy Silver'},
 };
 
-const LEGACY_TEAMS = [
-  'Arturo Coello & Agustín Tapia',
-  'Federico Chingotto & Paquito Navarro',
-  'Franco Stupaczuk & Martín Di Nenno',
-  'Alejandro Galán & Juan Lebrón',
-  'Sanyo Gutiérrez & Fernando Belasteguín',
-  'Pablo Lima & Juani Mieres',
-  'Momo González & Álex Ruiz',
-  'Juan Tello & Álex Arroyo',
-];
-
-function hashString(str) {
-  let hash = 0;
-  for (let i = 0; i < (str || '').length; i++) hash = ((hash << 5) - hash) + str.charCodeAt(i);
-  return Math.abs(hash);
-}
-
 function normalizeTeamName(value) {
   if (!value) return 'Dupla não registrada';
   if (Array.isArray(value)) return value.filter(Boolean).join(' & ');
@@ -37,39 +20,29 @@ function normalizeTeamName(value) {
   return text.includes(' & ') ? text : `${text} & parceiro não registrado`;
 }
 
-function reconstructLegacyHistory(tournament) {
-  const seed = hashString(`${tournament.name || ''}-${tournament.start_date || ''}`);
+// Playthrough 4, item 2. Aqui existia `reconstructLegacyHistory`: quando um
+// torneio encerrado não tinha `bracket_history` (o caso de TODO torneio da
+// IA — o `tournament_run` só modela o caminho do jogador, item 8b), a tela
+// INVENTAVA a chave inteira. Quartas e semifinais com duplas reais tiradas de
+// uma lista fixa no arquivo (Coello & Tapia, Galán & Lebrón...) e placares
+// escritos à mão ('6-3 6-4'), apresentados como histórico. Mesma classe do
+// achado "número publicado enquanto o mecanismo fazia outra coisa": nada
+// daquilo tinha acontecido na simulação, e um jogador que conferisse a chave
+// do Doha contra o Jornal leria duas histórias diferentes do mesmo torneio.
+// O que o motor REALMENTE sabe de um torneio de IA é o resultado da final —
+// campeão e vice, denormalizados no próprio Tournament. É só isso que a chave
+// mostra agora, explicitamente rotulado.
+function buildFinalOnlyHistory(tournament) {
   const champion = normalizeTeamName(tournament.champion);
-  const runnerUp = normalizeTeamName(tournament.runner_up || LEGACY_TEAMS[(seed + 1) % LEGACY_TEAMS.length]);
-  const pool = LEGACY_TEAMS.filter(name => name !== champion && name !== runnerUp);
-  const semiA = pool[seed % pool.length];
-  const semiB = pool[(seed + 3) % pool.length];
-  const quarterTeams = pool.slice(0, 4);
-
-  return [
-    {
-      round: 'Quartas de final',
-      matches: [
-        { team_a: champion, team_b: quarterTeams[0], winner: champion, score: '6-3 6-4' },
-        { team_a: semiA, team_b: quarterTeams[1], winner: semiA, score: '7-5 6-4' },
-        { team_a: runnerUp, team_b: quarterTeams[2], winner: runnerUp, score: '6-4 6-2' },
-        { team_a: semiB, team_b: quarterTeams[3], winner: semiB, score: '4-6 6-3 6-4' },
-      ],
-    },
-    {
-      round: 'Semifinais',
-      matches: [
-        { team_a: champion, team_b: semiA, winner: champion, score: '6-4 7-5' },
-        { team_a: runnerUp, team_b: semiB, winner: runnerUp, score: '6-3 4-6 6-2' },
-      ],
-    },
-    {
-      round: 'Final',
-      matches: [
-        { team_a: champion, team_b: runnerUp, winner: champion, score: '6-4 6-3' },
-      ],
-    },
-  ];
+  const runnerUp = tournament.runner_up ? normalizeTeamName(tournament.runner_up) : null;
+  if (!runnerUp) return [];
+  return [{
+    round: 'Final',
+    date: tournament.end_date || tournament.start_date || null,
+    status: 'completed',
+    is_final: true,
+    matches: [{ team_a: champion, team_b: runnerUp, winner: champion, score: null, status: 'completed' }],
+  }];
 }
 
 function normalizeHistory(tournament, careerDate) {
@@ -77,7 +50,7 @@ function normalizeHistory(tournament, careerDate) {
   const sourceTournament = canonical
     ? tournament
     : isTournamentCompletedAt(tournament, careerDate) && tournament.champion
-      ? { ...tournament, bracket_history: reconstructLegacyHistory(tournament) }
+      ? { ...tournament, bracket_history: buildFinalOnlyHistory(tournament) }
       : tournament;
   const bracketState = getVisibleTournamentBracketState(sourceTournament, careerDate);
 

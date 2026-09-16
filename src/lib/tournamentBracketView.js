@@ -66,7 +66,10 @@ export function getVisibleTournamentBracketState(tournament, careerDate) {
   const history = Array.isArray(tournament?.bracket_history) ? tournament.bracket_history : [];
   const completed = isTournamentCompletedAt(tournament, careerDate);
   if (!history.length) {
-    return { drawn: false, completed, rounds: [], champion: null, focusRoundIndex: 0 };
+    // Torneio da IA nunca desenha chave (item 8b): sem histórico, o campeão
+    // gravado no Tournament é a única fonte — e precisa ser a MESMA que o
+    // Jornal e o Race leem.
+    return { drawn: false, completed, rounds: [], champion: completed ? teamName(tournament?.champion) : null, focusRoundIndex: 0 };
   }
 
   const rounds = [];
@@ -123,8 +126,21 @@ export function getVisibleTournamentBracketState(tournament, careerDate) {
     });
   }
 
-  const finalMatch = rounds.at(-1)?.matches?.[0] || null;
-  const champion = completed && finalMatch?.terminal ? finalMatch.winner : null;
+  const lastRound = rounds[rounds.length - 1] || null;
+  const finalMatch = lastRound?.matches?.[0] || null;
+  // Playthrough 4, itens 1 e 2: a última rodada PRESENTE na chave nem sempre
+  // é a final do torneio. Desde que buildTournamentBracketHistory trunca a
+  // campanha na eliminação, ela costuma ser a rodada em que o jogador caiu —
+  // e tratar o vencedor dela como campeão coroaria o algoz do jogador. Só a
+  // rodada marcada `is_final` decide o título; históricos legados (e a
+  // reconstrução de TournamentBracket.jsx) não têm a flag e mantêm o
+  // comportamento anterior.
+  const lastRoundIsFinal = lastRound ? lastRound.is_final !== false : false;
+  const bracketChampion = completed && lastRoundIsFinal && finalMatch?.terminal ? finalMatch.winner : null;
+  // Quando a chave não decide o título, o campeão gravado no Tournament é a
+  // única fonte. Era esse buraco que fazia a aba da chave dizer "sem campeão"
+  // enquanto o Jornal e o Race exibiam um.
+  const champion = bracketChampion || (completed ? teamName(tournament?.champion) : null);
   const firstIncomplete = rounds.findIndex((round) => round.matches.some((match) => !match.terminal));
   const focusRoundIndex = firstIncomplete >= 0 ? firstIncomplete : Math.max(0, rounds.length - 1);
   return { drawn: true, completed, rounds, champion, focusRoundIndex };
@@ -135,7 +151,5 @@ export function sanitizeBracketHistory(tournament, careerDate) {
 }
 
 export function visibleTournamentChampion(tournament, careerDate) {
-  const state = getVisibleTournamentBracketState(tournament, careerDate);
-  if (state.drawn) return state.champion;
-  return state.completed ? teamName(tournament?.champion) : null;
+  return getVisibleTournamentBracketState(tournament, careerDate).champion;
 }

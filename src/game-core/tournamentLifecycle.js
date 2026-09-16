@@ -122,15 +122,39 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
       partner_morale: partnershipPatch.partner_morale,
     });
   }
-  if (champion) {
-    operations.push({ type: 'update', entityName: 'Tournament', id: tournament.id, data: {
-      status: 'finalizado',
-      champion: `${safeName(profile)} & ${partner?.name || 'Parceiro'}`,
-      runner_up: runnerUp || 'Dupla finalista',
-      ...(Array.isArray(bracketHistory) ? { bracket_history: bracketHistory } : {}),
-      current_phase: 'concluido',
-    } });
-  }
+  // Playthrough 4, item 1 (Londres Challenge: chave e Jornal anunciando
+  // campeões DIFERENTES para o mesmo torneio). O Tournament só era atualizado
+  // quando o jogador era CAMPEÃO. Perdendo, o evento seguia com
+  // `status !== 'finalizado'` e sem `world_tour_resolved` — exatamente o
+  // predicado de pendência de resolveCompletedWorldTourEvents
+  // (WorldTourLifecycle.js) — e o circuito da IA re-resolvia o MESMO torneio
+  // no avanço de dia seguinte: sobrescrevia `champion`/`runner_up`, publicava
+  // a notícia do Jornal e distribuía os pontos de Race do título para uma
+  // dupla que nunca entrou na chave. Duas verdades para um evento só; a
+  // chave, que tem o placar real da partida disputada, é a certa. Agora a
+  // campanha do jogador SEMPRE encerra o Tournament.
+  const finalRound = Array.isArray(bracketHistory) ? bracketHistory[bracketHistory.length - 1] : null;
+  const finalMatch = finalRound?.is_final ? finalRound.matches?.[0] : null;
+  // A final só está decidida se o jogador chegou até ela (como campeão ou
+  // como vice, com a derrota já registrada). Eliminado antes, o título é
+  // decidido numa parte do quadro que o `tournament_run` não modela (item
+  // 8b) — nesse caso `world_tour_resolved` NÃO é marcado e o circuito da IA
+  // continua sendo quem define o campeão, sem nada a contradizer, porque a
+  // chave agora termina na eliminação (buildTournamentBracketHistory).
+  const finalDecided = Boolean(finalMatch?.winner);
+  operations.push({ type: 'update', entityName: 'Tournament', id: tournament.id, data: {
+    status: 'finalizado',
+    current_phase: 'concluido',
+    player_participated: true,
+    ...(Array.isArray(bracketHistory) ? { bracket_history: bracketHistory } : {}),
+    ...(finalDecided ? {
+      world_tour_resolved: true,
+      player_decided_result: true,
+      resolved_at: date,
+      champion: finalMatch.winner,
+      runner_up: (finalMatch.team_a === finalMatch.winner ? finalMatch.team_b : finalMatch.team_a) || runnerUp || 'Dupla finalista',
+    } : {}),
+  } });
   for (const event of calendarEvents || []) operations.push({ type: 'update', entityName: 'CalendarEvent', id: event.id, data: { status: 'completed', requires_decision: false } });
   for (const registration of (registrations || []).filter((item) => ['pending', 'confirmed'].includes(item.status))) {
     operations.push({ type: 'update', entityName: 'TournamentRegistration', id: registration.id, data: { status: 'completed', completed_at: new Date().toISOString() } });
