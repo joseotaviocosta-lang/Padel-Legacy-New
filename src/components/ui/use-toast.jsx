@@ -3,7 +3,14 @@ import { useState, useEffect } from "react";
 import { emitUiSound } from "@/lib/uiSound.js";
 
 const TOAST_LIMIT = 20;
+// Atraso entre dispensar o toast e removê-lo do estado (tempo da animação de
+// saída) — não é o tempo que ele fica na tela.
 const TOAST_REMOVE_DELAY = 300;
+// Tempo de exibição antes do toast se dispensar sozinho. Sem isto o toast só
+// saía no clique do X e as mensagens iam se empilhando no canto da tela.
+// Erros ficam mais tempo porque costumam trazer instrução para o jogador.
+const TOAST_AUTO_DISMISS_MS = 5000;
+const TOAST_AUTO_DISMISS_ERROR_MS = 8000;
 
 const actionTypes = {
   ADD_TOAST: "ADD_TOAST",
@@ -35,6 +42,28 @@ const addToRemoveQueue = (toastId) => {
   }, TOAST_REMOVE_DELAY);
 
   toastTimeouts.set(toastId, timeout);
+};
+
+// Timers de auto-dismiss, separados dos de remoção: um marca "hora de sair
+// da tela", o outro "hora de sumir do estado". Guardados por id para que o X
+// (dismiss manual) possa cancelar o automático e não disparar duas vezes.
+const autoDismissTimeouts = new Map();
+
+const clearAutoDismiss = (toastId) => {
+  const timeout = autoDismissTimeouts.get(toastId);
+  if (timeout) {
+    clearTimeout(timeout);
+    autoDismissTimeouts.delete(toastId);
+  }
+};
+
+const scheduleAutoDismiss = (toastId, duration) => {
+  if (!(duration > 0) || autoDismissTimeouts.has(toastId)) return;
+  const timeout = setTimeout(() => {
+    autoDismissTimeouts.delete(toastId);
+    dispatch({ type: actionTypes.DISMISS_TOAST, toastId });
+  }, duration);
+  autoDismissTimeouts.set(toastId, timeout);
 };
 
 const _clearFromRemoveQueue = (toastId) => {
@@ -122,8 +151,10 @@ function toast({ ...props }) {
       toast: { ...props, id },
     });
 
-  const dismiss = () =>
+  const dismiss = () => {
+    clearAutoDismiss(id);
     dispatch({ type: actionTypes.DISMISS_TOAST, toastId: id });
+  };
 
   dispatch({
     type: actionTypes.ADD_TOAST,
@@ -136,6 +167,13 @@ function toast({ ...props }) {
       },
     },
   });
+
+  // `duration: 0` (ou negativo) mantém o toast até o jogador fechar — útil
+  // para uma mensagem que exija ação. O padrão é sumir sozinho.
+  const duration = props.duration !== undefined
+    ? props.duration
+    : (props.variant === 'destructive' ? TOAST_AUTO_DISMISS_ERROR_MS : TOAST_AUTO_DISMISS_MS);
+  scheduleAutoDismiss(id, duration);
 
   return {
     id,

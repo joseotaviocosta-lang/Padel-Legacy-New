@@ -22,7 +22,7 @@ import { isRegistrationOpen } from '@/lib/calendarSystem';
 import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
-import { cancelTournamentRegistration, isPlayerRegisteredForTournament, isTournamentParticipationConfirmed, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
+import { cancelTournamentRegistration, isPlayerRegisteredForTournament, isTournamentParticipationConfirmed, listTournamentRegistrations, wasTournamentUnreachableAtCareerStart } from '@/lib/tournamentRegistration.js';
 import { useCareer } from '@/careers/useCareer.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { resolveTournamentOpenMode, TOURNAMENT_DEEP_LINK_MODES } from '@/lib/tournamentDeepLink.js';
@@ -57,7 +57,15 @@ const FILTERS = [
 ];
 
 function prepareTournamentList(items) {
-  const enriched = (Array.isArray(items) ? items : []).filter(Boolean).map(enrichTournament);
+  const enriched = (Array.isArray(items) ? items : [])
+    .filter(Boolean)
+    // Grupo A — eventos cuja inscrição já tinha fechado antes de a carreira
+    // começar nunca estiveram ao alcance do jogador; sem este filtro eles
+    // apareciam em "Torneios Passados" como ENCERRADOS já no dia 1 (6 eventos
+    // em 2026-01-01, medidos). Continuam existindo no mundo e nos totais do
+    // Circuito — só saem do arquivo pessoal do jogador.
+    .filter((item) => !wasTournamentUnreachableAtCareerStart(item))
+    .map(enrichTournament);
   const errors = validateTournamentIntegrity(enriched);
   const identityErrors = errors.filter(error => error.type === 'missing-id' || error.type === 'duplicate-id');
   if (identityErrors.length > 0) {
@@ -282,11 +290,16 @@ export default function Tournaments() {
   const { filtered, byMonth } = (() => {
     const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
     const inSelectedView = ordered.filter(tournament => {
-      // Hotfix (redundância de navegação) — o torneio em destaque já é
-      // mostrado por inteiro no TournamentFocusMode acima, com as mesmas
-      // ações (jogar / ver chave / detalhes). Repeti-lo na listagem era o
-      // mesmo evento duas vezes na mesma tela.
-      if (focusTournament && tournament.id === focusTournament.id) return false;
+      // Redundância de navegação: o torneio EM DISPUTA já aparece por inteiro
+      // no TournamentFocusMode, com as mesmas ações — repeti-lo na listagem é
+      // o mesmo evento duas vezes na tela.
+      //
+      // Mas isso vale só para o que está sendo DISPUTADO. Um torneio apenas
+      // INSCRITO (ainda futuro) precisa continuar na listagem do mês, marcado
+      // como inscrito: some-lo fazia o jogador perder a referência de quando
+      // o evento acontece — o card de destaque não substitui a posição dele
+      // no calendário do mês.
+      if (focusRunTournament && tournament.id === focusRunTournament.id) return false;
       const isPast = activeRunEvents.has(tournament.id) ? false : tournament.start_date && careerDate
         ? tournament.start_date < careerDate
         : (tournament.month || 0) < currentMonth;

@@ -71,8 +71,17 @@ export function daysBetweenGameDates(from, to) {
 // não houve desgaste físico a respeitar. `cancelled`/`withdrawn` idem.
 const PLAYED_REGISTRATION_STATUSES = new Set(['completed']);
 
+// A exibição de pré-temporada não entra no piso de descanso, em nenhuma das
+// duas pontas. O catálogo já a modela como aquecimento de baixo impacto
+// (rankPoints 0, entryFee 0, difficultyModifier -3, "primeiro contato do
+// circuito"), e ela ocupa a folga imediatamente anterior à primeira onda do
+// calendário: cobrar 7 dias de descanso por ela custaria ao jogador
+// justamente a primeira semana de circuito que a abertura deveria preparar.
+const REST_FLOOR_EXEMPT_TIERS = new Set(['Exibição']);
+
 export function findRestFloorConflict({ player, partner, tournament, interval, registrations = [], tournaments = [], restFloorDays = 0 }) {
   if (!(restFloorDays > 0) || !interval?.start) return null;
+  if (REST_FLOOR_EXEMPT_TIERS.has(tournament?.tier)) return null;
   for (const registration of registrations) {
     if (!PLAYED_REGISTRATION_STATUSES.has(registration?.status)) continue;
     if (registration.tournament_id === tournament?.id) continue;
@@ -80,6 +89,7 @@ export function findRestFloorConflict({ player, partner, tournament, interval, r
       .some((id) => id && (id === player?.id || id === partner?.id));
     if (!belongsToTeam) continue;
     const other = tournaments.find((item) => item.id === registration.tournament_id);
+    if (other && REST_FLOOR_EXEMPT_TIERS.has(other.tier)) continue;
     const end = normalizeGameDate(registration.effective_end_date)
       || (other ? getTournamentEffectiveInterval(other).end : null);
     if (!end) continue;
@@ -104,6 +114,24 @@ export function getTournamentRegistrationWindow(tournament, rules = TOURNAMENT_R
     opensAt: normalizeGameDate(tournament.registration_open_date || tournament.registrationOpensAt) || addDays(start, -Math.max(0, Number(tournament.registration_open_days_before ?? rules.defaultOpenDaysBeforeStart))),
     closesAt: normalizeGameDate(tournament.registration_deadline || tournament.registrationClosesAt) || addDays(start, -Math.max(0, Number(tournament.registration_close_days_before ?? rules.defaultCloseDaysBeforeStart))),
   };
+}
+
+// Grupo A do playthrough — o calendário canônico coloca 6 eventos em
+// 2026-01-01, exatamente o dia em que toda carreira começa. A inscrição deles
+// fecha em 2025-12-31, antes de a carreira existir: são estruturalmente
+// inalcançáveis. Como são `world_tour_event`, a IA os resolve normalmente e
+// eles viram "ENCERRADOS" já no dia 1, aparecendo na lista do jogador como um
+// histórico que ele nunca teve chance de disputar.
+//
+// Não é vazamento de seed de demonstração (hipótese inicial, descartada: os
+// nomes vêm de buildSeasonTournaments, não de localSeed/demoData) e o volume
+// do calendário NÃO é alterado — os eventos continuam existindo no mundo e
+// contam nos totais do Circuito. Eles só deixam de ser apresentados como
+// arquivo do JOGADOR, porque nunca estiveram ao alcance dele.
+export function wasTournamentUnreachableAtCareerStart(tournament, careerStartDate = CAREER_START_DATE) {
+  const start = normalizeGameDate(careerStartDate) || CAREER_START_DATE;
+  const { closesAt } = getTournamentRegistrationWindow(tournament);
+  return Boolean(closesAt && closesAt < start);
 }
 
 export function deterministicRegistrationId(profileId, tournamentId) {

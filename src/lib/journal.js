@@ -5,7 +5,14 @@ export async function generateJournal() {
   try {
     const [matches, tournaments, rankings] = await Promise.all([
       localGame.entities.Match.list('-created_date', 30),
-      localGame.entities.Tournament.filter({ status: 'finalizado' }),
+      // Antes: filter({ status: 'finalizado' }). Um torneio resolvido pode
+      // ter campeão sem passar por esse status exato — a finalização pelo
+      // caminho do JOGADOR (prepareTournamentFinalization) só grava
+      // `status`/`champion` quando o jogador VENCE, então um torneio que ele
+      // disputou e perdeu depende inteiramente do caminho da IA. Consultar
+      // por presença de campeão cobre todas as vias de resolução e não pode
+      // perder nada que a consulta anterior encontrava.
+      localGame.entities.Tournament.list('-start_date', 2000),
       getTeamRankings(10),
     ]);
 

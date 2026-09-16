@@ -930,7 +930,19 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   const nextRunPhase = run ? getTournamentRunPhase(run, profile.career_date) : null;
   const nextRoundPlayableToday = nextRunPhase === 'playable' || nextRunPhase === 'round_preparation';
   const lowEnergyOrInjured = (profile.energy || 0) < 35 || isInjured(profile);
-  const modalFooter = phase === 'playable' && currentMatch ? (
+  const modalFooter = phase === 'pre_tournament' && currentMatch ? (
+    <button onClick={savePreTournamentMeeting} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Salvar plano do torneio <ChevronRight className="h-4 w-4" /></button>
+  ) : phase === 'round_preparation' && currentMatch ? (
+    <div className="grid grid-cols-2 gap-2">
+      <button onClick={() => saveRoundPreparation({ keepPlan: true })} className="rounded-xl bg-secondary py-3 text-xs font-bold">Manter plano</button>
+      <button onClick={() => saveRoundPreparation({ keepPlan: false })} className="rounded-xl bg-primary py-3 text-xs font-bold text-primary-foreground">Salvar ajuste tático</button>
+    </div>
+  ) : (phase === 'champion' || phase === 'eliminated') && lastResult ? (
+    <div className="space-y-2">
+      {postMatchInterviewActionable && <button onClick={openPostMatchInterview} className="min-h-11 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button>}
+      <button onClick={goBackToCareer} className="min-h-11 w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>
+    </div>
+  ) : phase === 'playable' && currentMatch ? (
     <div className="space-y-2">
       <button onClick={startMatch} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
       {lowEnergyOrInjured && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
@@ -1020,7 +1032,6 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
             <TeamVoices coach={coach} partner={partner} analysis={analysis} staff={staff} profile={profile} />
             <OpponentAnalysis analysis={analysis} />
             <StrategyPicker value={selectedStrategy} onChange={setSelectedStrategy} />
-            <button onClick={savePreTournamentMeeting} className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Salvar plano do torneio <ChevronRight className="h-4 w-4" /></button>
           </div>
         )}
 
@@ -1035,9 +1046,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
             {run.lastMatchStats && <LastMatchStats stats={run.lastMatchStats} />}
             <OpponentAnalysis analysis={analysis} compact />
             <div className="rounded-xl bg-secondary/30 p-3 text-xs"><span className="text-muted-foreground">Plano atual: </span><strong>{TOURNAMENT_STRATEGY_OPTIONS.find((item) => item.id === run.strategy?.id)?.label || 'Jogo equilibrado'}</strong></div>
-            <div className="grid grid-cols-2 gap-2"><button onClick={() => saveRoundPreparation({ keepPlan: true })} className="rounded-xl bg-secondary py-3 text-xs font-bold">Manter plano</button><button onClick={() => setSelectedStrategy(coachSuggestion.optionId)} className="rounded-xl border border-primary/30 py-3 text-xs font-bold text-primary">Usar sugestão</button></div>
+            {/* "Usar sugestão" edita o plano e fica junto do seletor; as duas
+                ações que AVANÇAM (manter/salvar) vivem no rodapé fixo. */}
+            <button onClick={() => setSelectedStrategy(coachSuggestion.optionId)} className="w-full rounded-xl border border-primary/30 py-3 text-xs font-bold text-primary">Usar sugestão</button>
             <StrategyPicker value={selectedStrategy} onChange={setSelectedStrategy} compact />
-            <button onClick={() => saveRoundPreparation({ keepPlan: false })} className="w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Salvar ajuste tático</button>
           </div>
         )}
 
@@ -1117,8 +1129,8 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           </div>
         )}
 
-        {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} interviewActionable={postMatchInterviewActionable} profile={profile} />}
-        {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} onClose={goBackToCareer} onInterview={openPostMatchInterview} interviewActionable={postMatchInterviewActionable} profile={profile} />}
+        {phase === 'champion' && lastResult && <FinalState champion tournament={tournament} result={lastResult} rewards={tournamentRewards} interviewActionable={postMatchInterviewActionable} profile={profile} />}
+        {phase === 'eliminated' && lastResult && <FinalState tournament={tournament} result={lastResult} rewards={tournamentRewards} interviewActionable={postMatchInterviewActionable} profile={profile} />}
         {phase === 'withdrawn' && <StateMessage icon={Shield} title="Torneio encerrado por abandono" body="A comissão priorizou sua recuperação. A participação, premiação aplicável e calendário foram encerrados sem criar outra rodada." tone="orange" action={<button onClick={goBackToCareer} className="w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button>} />}
       </div>
     </ModalShell>
@@ -1158,5 +1170,5 @@ function TeamMember({ name, ovr, highlight = false, rightAlign = false }) { retu
 
 function StateMessage({ icon: Icon, title, body, tone, action = null }) { const colors = { green:'border-emerald-500/35 bg-emerald-500/5 text-emerald-300', cyan:'border-cyan-500/35 bg-cyan-500/5 text-cyan-300', red:'border-red-500/35 bg-red-500/5 text-red-300', orange:'border-orange-500/35 bg-orange-500/5 text-orange-300' }; return <div className="space-y-4 text-center"><div className={`rounded-2xl border p-6 ${colors[tone] || colors.cyan}`}><Icon className="mx-auto mb-2 h-12 w-12" /><p className="text-xl font-black">{title}</p><p className="mt-2 text-sm text-muted-foreground">{body}</p></div>{action}</div>; }
 
-function FinalState({ champion = false, tournament, result, rewards, onInterview, onClose, interviewActionable, profile }) { return <div className="space-y-4 text-center"><StateMessage icon={champion ? Crown : XCircle} title={champion ? 'CAMPEÃO!' : 'Eliminado do torneio'} body={champion ? `Título conquistado no ${tournament.name}. Cerimônia, ranking e imprensa foram processados.` : `${result.match.round}: ${result.matchState.setsA}-${result.matchState.setsB}. Não existe próxima rodada agendada.`} tone={champion ? 'green' : 'red'} />{rewards && <div className="grid grid-cols-3 gap-2"><Reward icon={Coins} label="Moedas" value={`+${rewards.coins}`} /><Reward icon={Zap} label="XP" value={`+${rewards.xp}`} /><Reward icon={Star} label="Ranking" value={`+${rewards.rankPoints}`} /></div>}<MatchRecapPremium matchState={result.matchState} title={`${champion ? 'Título' : 'Eliminação'} · ${result.match.round}`} /><p className="text-xs text-muted-foreground">Energia {formatPercent(profile.energy)}% · Fadiga {normalizeFatigue(profile.fatigue)}%</p>{interviewActionable && <><div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs"><p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p><p className="mt-1 text-muted-foreground">A mesma entrevista criada para este resultado pode ser respondida agora.</p></div><button onClick={onInterview} className="min-h-11 w-full rounded-xl bg-primary py-3 text-sm font-bold text-primary-foreground">Dar entrevista</button></>}<button onClick={onClose} className="min-h-11 w-full rounded-xl bg-secondary py-3 text-sm font-bold">Voltar à carreira</button></div>; }
+function FinalState({ champion = false, tournament, result, rewards, interviewActionable, profile }) { return <div className="space-y-4 text-center"><StateMessage icon={champion ? Crown : XCircle} title={champion ? 'CAMPEÃO!' : 'Eliminado do torneio'} body={champion ? `Título conquistado no ${tournament.name}. Cerimônia, ranking e imprensa foram processados.` : `${result.match.round}: ${result.matchState.setsA}-${result.matchState.setsB}. Não existe próxima rodada agendada.`} tone={champion ? 'green' : 'red'} />{rewards && <div className="grid grid-cols-3 gap-2"><Reward icon={Coins} label="Moedas" value={`+${rewards.coins}`} /><Reward icon={Zap} label="XP" value={`+${rewards.xp}`} /><Reward icon={Star} label="Ranking" value={`+${rewards.rankPoints}`} /></div>}<MatchRecapPremium matchState={result.matchState} title={`${champion ? 'Título' : 'Eliminação'} · ${result.match.round}`} /><p className="text-xs text-muted-foreground">Energia {formatPercent(profile.energy)}% · Fadiga {normalizeFatigue(profile.fatigue)}%</p>{interviewActionable && <div className="rounded-xl border border-cyan-500/20 bg-cyan-500/5 p-3 text-left text-xs"><p className="font-black text-cyan-300"><Mic className="mr-1 inline h-3.5 w-3.5" />Entrevista pós-jogo disponível</p><p className="mt-1 text-muted-foreground">A mesma entrevista criada para este resultado pode ser respondida agora.</p></div>}</div>; }
 function Reward({ icon: Icon, label, value }) { return <div className="rounded-xl bg-secondary/30 p-3"><Icon className="mx-auto h-4 w-4 text-primary" /><p className="mt-1 text-sm font-black">{value}</p><p className="text-[9px] text-muted-foreground">{label}</p></div>; }

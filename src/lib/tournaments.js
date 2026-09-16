@@ -137,7 +137,14 @@ export function getCircuitEvolution(tournaments) {
 export function generateTournamentNews(tournaments, profile) {
   const news = [];
   const finished = (tournaments || []).filter(t => t.champion).sort((a, b) => (b.start_date || '').localeCompare(a.start_date || ''));
-  const upcoming = (tournaments || []).filter(t => !t.champion && t.start_date).sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
+  // Grupo A — "Próximo" só olhava `!t.champion`, nunca a data: um torneio JÁ
+  // PASSADO que ainda não tinha campeão resolvido era anunciado como o
+  // próximo do circuito (relato: "Próximo: Barcelona Rising Cup · 2026-01-01"
+  // com a carreira no dia 10).
+  const newsDate = profile?.career_date || null;
+  const upcoming = (tournaments || [])
+    .filter(t => !t.champion && t.start_date && (!newsDate || t.start_date >= newsDate))
+    .sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
 
   finished.slice(0, 5).forEach(t => {
     news.push({

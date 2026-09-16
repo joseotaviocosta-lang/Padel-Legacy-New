@@ -496,7 +496,20 @@ export function buildSeasonTournaments(year, seasonId = null) {
 // de um caminho especial pra reconhecer este torneio.
 export function buildPreSeasonExhibition(year, seasonId = null) {
   const config = getTournamentTierConfig('Exibição');
-  const startDate = `${year}-01-11`;
+  // Exclusividade de janela (achado de playthrough): em 01-11 a exibição caía
+  // DENTRO da onda de 08/01 do circuito regular (eventos de 4 dias, 08→11),
+  // competindo com ela em vez de abrir a carreira — e, com
+  // `preventOverlappingEvents`, obrigando o jogador a escolher entre a
+  // abertura única da carreira e um evento real do circuito.
+  //
+  // As ondas do calendário são semanais (01, 08, 15...). A de 01/01 é
+  // inalcançável (inscrição fecha antes de a carreira existir, ver
+  // wasTournamentUnreachableAtCareerStart), então a primeira onda que o
+  // jogador realmente disputa é a de 08/01. A exibição passa a ocupar a folga
+  // anterior a ela (05→07, 3 dias), que é o único intervalo livre da abertura
+  // — assim ela precede de fato a temporada que o jogador vive, sem sobrepor
+  // nada. A janela de inscrição não muda (aberta desde 01/01, prazo D-1).
+  const startDate = `${year}-01-05`;
   const city = WORLD_TOUR_CITIES[seededIndex(`${year}:exhibition`, WORLD_TOUR_CITIES.length)];
   const code = `${city.code}-EXH-${year}`;
   return {

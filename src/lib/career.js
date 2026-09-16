@@ -438,12 +438,28 @@ export function generateTournamentOpponent(tournament, profile, roundIdx, exclud
   const diffId = getTournamentDifficulty(tournament, profile, roundIdx, teamRank);
   const pool = BOTS_BY_DIFFICULTY[diffId] || BOTS_BY_DIFFICULTY.iniciante;
   const seed = `${tournament?.id}:${tournament?.start_date}:${profile?.id}:${stage}:${roundIdx}:${teamRank}`;
-  return pool
+  const ordered = pool
     .filter((bot) => !excludeIds.includes(bot.id))
     .map((bot) => ({ bot, order: tournamentOpponentHash(`${seed}:${bot.id}`) }))
     .sort((a, b) => a.order - b.order || String(a.bot.id).localeCompare(String(b.bot.id)))
-    .slice(0, 2)
     .map((item) => item.bot);
+  if (ordered.length < 2) return ordered.slice(0, 2);
+  // Uma dupla de padel tem um jogador de cada lado da quadra (ou um versátil
+  // cobrindo o lado que faltar). Antes, os dois adversários eram só os dois
+  // primeiros do sorteio por hash, sem olhar `preferred_side` — daí duplas
+  // "left/left" aparecendo na chave. A ordem do hash continua mandando (o
+  // primeiro é sempre o mesmo de antes, e o desempate segue determinístico):
+  // muda só a escolha do PARCEIRO dele, que passa a preferir um lado
+  // complementar. Se nenhum candidato complementa (pool pequeno), mantém o
+  // segundo do sorteio em vez de devolver dupla incompleta.
+  const [anchor] = ordered;
+  const anchorSide = normalizeCourtSide(anchor.preferred_side ?? anchor.position);
+  const complements = (bot) => {
+    const side = normalizeCourtSide(bot.preferred_side ?? bot.position);
+    return side === 'flex' || anchorSide === 'flex' || side !== anchorSide;
+  };
+  const partner = ordered.slice(1).find(complements) || ordered[1];
+  return [anchor, partner];
 }
 
 export function getTournamentRewards(tier, roundsWon, difficultySource = null) {
