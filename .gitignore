@@ -30,3 +30,5 @@ Thumbs.db
 
 # Arquivos gerados pelo Android
 **/build/
+# APKs gerados localmente (build Android) — nunca versionar binario
+dist-apk/
