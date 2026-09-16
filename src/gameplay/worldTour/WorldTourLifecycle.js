@@ -401,7 +401,14 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const tournamentUpdates = [];
   const news = [];
 
-  for (const weekTournaments of tournamentsByWeek.values()) {
+  // Um torneio com dado corrompido não pode travar a resolução do dia
+  // inteiro. Cada SEMANA é resolvida isoladamente: se uma falhar, o erro é
+  // registrado (com os ids envolvidos) e as demais seguem normalmente, em vez
+  // de a exceção subir e zerar tudo — que é como o circuito conseguia parar
+  // de registrar campeões sem nada aparecer na tela.
+  const resolutionErrors = [];
+  for (const [weekKey, weekTournaments] of tournamentsByWeek.entries()) {
+   try {
     const assignments = new Map(weekTournaments.map((tournament) => [tournament.id, []]));
     // Fase 6.5, item 3 — fallback de tier na mesma semana. `chooseTournament`
     // já devolve `options`, a lista INTEIRA de torneios elegíveis da
@@ -694,6 +701,16 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
 
       ordered.slice(0, 8).flatMap((pair) => pair.athletes).forEach((athlete) => { athlete.currentRegion = eventRegion(tournament); });
     }
+   } catch (error) {
+    resolutionErrors.push({
+      week: weekKey,
+      tournamentIds: weekTournaments.map((tournament) => tournament.id),
+      tournamentNames: weekTournaments.map((tournament) => tournament.name),
+      message: error?.message || String(error),
+      stack: String(error?.stack || '').split('\n').slice(0, 5).join(' | '),
+    });
+    console.error('[WorldTour] semana não resolvida, seguindo para as demais:', weekKey, error);
+   }
   }
 
   // Fase 4 (ranking rolling de 52 semanas): world_ranking_points deixa de
@@ -840,14 +857,38 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     .map(({ id, ranking_position }) => ({ id, ranking_position }));
   if (reranked.length) await entities.AthleteProfile.bulkUpdate(reranked);
 
-  return { resolved: tournamentUpdates.length, tournaments: tournamentUpdates, rankingUpdates: athleteUpdates.length, news: news.length };
+  return {
+    resolved: tournamentUpdates.length,
+    tournaments: tournamentUpdates,
+    rankingUpdates: athleteUpdates.length,
+    news: news.length,
+    // Instrumentação: o que o dia TENTOU resolver e o que falhou, para o
+    // relatório diário poder responder "é exceção, pending vazio, ou
+    // resolução acontecendo?" sem precisar de novo diagnóstico.
+    pending: pending.length,
+    errors: resolutionErrors,
+  };
 }
 
 export async function processWorldTourDay(careerDate) {
   try {
     return await resolveCompletedWorldTourEvents(careerDate);
   } catch (error) {
+    // Antes devolvia só `error.message` e ficava no console — indistinguível,
+    // no relatório, de "não havia nada para resolver". Agora o erro viaja com
+    // stack para o relatório diário, que é o que o jogador e o diagnóstico
+    // conseguem ver.
     console.error('processWorldTourDay', error);
-    return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0, error: error.message };
+    return {
+      resolved: 0,
+      tournaments: [],
+      rankingUpdates: 0,
+      news: 0,
+      errors: [{
+        scope: 'resolveCompletedWorldTourEvents',
+        message: error?.message || String(error),
+        stack: String(error?.stack || '').split('\n').slice(0, 5).join(' | '),
+      }],
+    };
   }
 }

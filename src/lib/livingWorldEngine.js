@@ -245,7 +245,32 @@ function isEditorialDay(date) {
 export async function processLivingWorldDay(profile, date, options = {}) {
   const summary = { date, weekday: WEEKDAY_NAMES[parseDate(date).getUTCDay()], createdEvents: [], bulletin: null };
 
-  await processWorldTourDay(date).catch(error => console.error('[LivingWorld] circuito:', error));
+  // O resultado do circuito era DESCARTADO (`.catch` que só logava): o
+  // relatório diário nunca soube se o mundo resolveu algo, se não havia nada
+  // pendente, ou se estourou. Agora ele entra no summary — que é o que
+  // gameStateLifecycle persiste no perfil.
+  const worldTourResult = await processWorldTourDay(date).catch((error) => {
+    console.error('[LivingWorld] circuito:', error);
+    return {
+      resolved: 0,
+      errors: [{
+        scope: 'processWorldTourDay',
+        message: error?.message || String(error),
+        stack: String(error?.stack || '').split('\n').slice(0, 5).join(' | '),
+      }],
+    };
+  });
+  // Só contadores e erros vão para o relatório persistido — a lista completa
+  // de torneios/atualizações é grande e o relatório vive dentro do perfil,
+  // que é clonado a cada escrita (achado #18).
+  summary.worldTour = {
+    resolved: Number(worldTourResult?.resolved) || 0,
+    pending: Number(worldTourResult?.pending) || 0,
+    rankingUpdates: Number(worldTourResult?.rankingUpdates) || 0,
+    news: Number(worldTourResult?.news) || 0,
+    ...(worldTourResult?.waitingForCanonicalPairs ? { waitingForCanonicalPairs: true } : {}),
+    ...(worldTourResult?.errors?.length ? { errors: worldTourResult.errors.slice(0, 3) } : {}),
+  };
   await expireMacroEvents(date).catch(error => console.error('[LivingWorld] expiração:', error));
   await maybeGenerateMacroEvent(date).catch(error => console.error('[LivingWorld] macroevento:', error));
 

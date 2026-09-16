@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { CAREER_START_DATE, daysBetween } from '@/lib/career';
 import { safeName } from './utils';
+import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import { processLivingWorldDay, getWeeklyRelevantHighlights } from '@/lib/livingWorldEngine.js';
 import { processPartnerDay, processPartnerMarketInterest } from './partnerLifecycle';
 import { processSpontaneousPartnerMarket } from '@/lib/partnerOffers.js';
@@ -207,8 +208,33 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
   try {
     const summary = await stage('livingWorld', () => processLivingWorldDay(updatedProfile, currentDate));
     report.livingWorld = compactGameStateReport(summary).report;
+    // Sinal discreto: uma falha na resolução do circuito ia só para o console
+    // e o jogador nunca sabia que o mundo parou de registrar resultados.
+    // `registerBetaDiagnostic` é o mesmo canal que o avanço de dia já usa para
+    // falhas (calendarLifecycle.js) — aparece nas ferramentas de beta, sem
+    // modal bloqueante no meio da partida.
+    const worldTourErrors = summary?.worldTour?.errors;
+    if (worldTourErrors?.length) {
+      registerBetaDiagnostic({
+        type: 'world-tour-resolution',
+        code: 'WORLD_TOUR_RESOLUTION_FAILED',
+        message: `Circuito não resolveu ${worldTourErrors.length} lote(s) de torneios em ${currentDate}.`,
+        context: { date: currentDate, pending: summary.worldTour.pending, resolved: summary.worldTour.resolved },
+        stack: worldTourErrors[0]?.stack,
+      });
+    }
   } catch (error) {
-    report.livingWorld = { processed: false, error: error?.message || String(error) };
+    // Guarda o stack, não só a mensagem: sem ele, uma falha do universo vivo
+    // (que inclui a resolução do circuito) era indistinguível no relatório de
+    // um dia em que simplesmente não havia nada a resolver.
+    report.livingWorld = {
+      processed: false,
+      errors: [{
+        scope: 'processLivingWorldDay',
+        message: error?.message || String(error),
+        stack: String(error?.stack || '').split('\n').slice(0, 5).join(' | '),
+      }],
+    };
     console.warn('[Game Core] Universo vivo não processado:', error);
   }
 
