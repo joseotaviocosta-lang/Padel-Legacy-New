@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { COACHES_DATA, canHireCoach, getCoachEffects, resolveCoachCanonicalSalary } from '@/lib/coaches.js';
 import { incrementMissionProgress, overallRating } from '@/lib/padel.js';
+import { publishContractEvent } from '@/lib/contractNews.js';
 
 // Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 7): achado real na
 // auditoria — trocar de treinador sempre sobrescrevia coach_id/coach_name
@@ -186,6 +187,10 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
     coach_partnership_bonus: effects?.partnershipBonus || 0,
   });
   await openCoachTenure(updated, coach, date);
+  await publishContractEvent({
+    profileId: profile.id, playerName: profile.sport_name || profile.name,
+    kind: 'coach', partyName: coach.name, careerDate: date, months,
+  });
   // Hotfix "Starter Coach Flow" (docs/STARTER_COACH_FLOW.md, Parte B/G): a
   // etapa coaches-known do tutorial virou DECISION — só conclui numa
   // contratação real, nunca por visitar /coaches. objectiveType continua
@@ -242,6 +247,10 @@ export async function renewPrimaryCoach(profile, coach, months = 12) {
   if (!(baseline > 0)) throw new Error(`Salário do treinador "${coach.name || coach.id}" não encontrado no catálogo — renovação cancelada.`);
   const salary = Math.round(baseline * 1.06);
   const date = profile.career_date || '2026-01-01';
+  await publishContractEvent({
+    profileId: profile.id, playerName: profile.sport_name || profile.name,
+    kind: 'coach', partyName: coach.name, careerDate: date, months, renewal: true,
+  });
   return localGame.entities.PlayerProfile.update(profile.id, {
     coach_contract_started_date: date,
     coach_contract_end_date: addMonths(date, months),

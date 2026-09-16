@@ -497,8 +497,15 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     const headline = won
       ? `${teamName(profile, partner)} avança no ${tournament.name}`
       : `${teamName(profile, partner)} se despede do ${tournament.name}`;
+    // Deduplicação por evento: quando a rodada ENCERRA a campanha (eliminação
+    // ou título), `prepareTournamentFinalization` já publica a matéria de
+    // desfecho ("encerra campanha no X" / "conquista o X"), com colocação e
+    // premiação. Publicar também "se despede do X" aqui era o MESMO fato em
+    // duas matérias no mesmo dia. A notícia por rodada fica só para rodadas em
+    // que a dupla AVANÇA — aí ela informa algo que nenhuma outra cobre.
+    const campaignEnded = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
     return [
-      { type: 'upsert', entityName: 'PressArticle', id: `round-news-${safeMatchId}`, data: {
+      ...(campaignEnded ? [] : [{ type: 'upsert', entityName: 'PressArticle', id: `round-news-${safeMatchId}`, data: {
         profile_id: profile.id,
         title: headline,
         content: won
@@ -507,7 +514,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         article_type: 'noticia', sentiment: won ? 'positivo' : 'neutro', outlet: 'Padel Legacy News',
         journalist_name: 'Redação PL', published_date: profile.career_date,
         related_tournament_id: tournament.id, round_importance: importance,
-      } },
+      } }]),
       { type: 'upsert', entityName: 'CareerMessage', id: interviewMessageId, data: {
         profile_id: profile.id, sender_type: 'imprensa', sender_name: 'Assessoria de Imprensa',
         title: nextRun.status === 'champion' ? 'Entrevista especial de campeão' : won ? 'Entrevista pós-vitória disponível' : 'Entrevista pós-eliminação disponível',

@@ -303,11 +303,22 @@ const SEASON_FINALE_WEEKS = Object.freeze({ 'Circuit Finals': 49, 'Legacy Finals
 // nunca coincidem por causa do deslocamento relativo de 1 semana).
 const TIER_WEEK_OFFSET = Object.freeze({ Bronze: 0, Silver: 1, Gold: -1, Platinum: 2, Masters: -2, Elite: 1, Crown: 0 });
 
+// Semana em que a temporada regular ABRE. As semanas 1-4 ficam livres de
+// propósito: a carreira começa em 01/01 e, com eventos já na semana 1, o
+// jogador era jogado no circuito antes de conhecer treino, comissão técnica,
+// loja e mercado de parceria. Com 5, a primeira onda oficial cai em 29/01
+// (quinta) e vai até 01/02 — o último fim de semana de janeiro — deixando a
+// pré-temporada (12/01) sozinha na abertura, com janela livre dos dois lados.
+// O VOLUME não muda: `TIER_EVENTS_PER_YEAR` continua igual, só a distribuição
+// se concentra em 43 semanas em vez de 47.
+const REGULAR_SEASON_FIRST_WEEK = 5;
+
 function distributeTierWeeks(count, offset) {
   const weeks = [];
+  const span = REGULAR_SEASON_LAST_WEEK - REGULAR_SEASON_FIRST_WEEK + 1;
   for (let index = 0; index < count; index += 1) {
-    const target = Math.round(((index + 0.5) * REGULAR_SEASON_LAST_WEEK) / count) + offset;
-    weeks.push(Math.max(1, Math.min(REGULAR_SEASON_LAST_WEEK, target)));
+    const target = REGULAR_SEASON_FIRST_WEEK - 1 + Math.round(((index + 0.5) * span) / count) + offset;
+    weeks.push(Math.max(REGULAR_SEASON_FIRST_WEEK, Math.min(REGULAR_SEASON_LAST_WEEK, target)));
   }
   return weeks;
 }
@@ -505,20 +516,14 @@ export function buildSeasonTournaments(year, seasonId = null) {
 // de um caminho especial pra reconhecer este torneio.
 export function buildPreSeasonExhibition(year, seasonId = null) {
   const config = getTournamentTierConfig('Exibição');
-  // Exclusividade de janela (achado de playthrough): em 01-11 a exibição caía
-  // DENTRO da onda de 08/01 do circuito regular (eventos de 4 dias, 08→11),
-  // competindo com ela em vez de abrir a carreira — e, com
-  // `preventOverlappingEvents`, obrigando o jogador a escolher entre a
-  // abertura única da carreira e um evento real do circuito.
-  //
-  // As ondas do calendário são semanais (01, 08, 15...). A de 01/01 é
-  // inalcançável (inscrição fecha antes de a carreira existir, ver
-  // wasTournamentUnreachableAtCareerStart), então a primeira onda que o
-  // jogador realmente disputa é a de 08/01. A exibição passa a ocupar a folga
-  // anterior a ela (05→07, 3 dias), que é o único intervalo livre da abertura
-  // — assim ela precede de fato a temporada que o jogador vive, sem sobrepor
-  // nada. A janela de inscrição não muda (aberta desde 01/01, prazo D-1).
-  const startDate = `${year}-01-05`;
+  // Abertura da carreira (decisão de design, playthrough 4): a temporada
+  // regular agora só abre na semana 5 (29/01, o último fim de semana de
+  // janeiro — ver REGULAR_SEASON_FIRST_WEEK). A pré-temporada fica sozinha
+  // em 12→14/01: depois de 10/01, dando ao jogador os primeiros 11 dias para
+  // conhecer treino, comissão técnica, loja e mercado de parceria antes de
+  // competir, e ainda 15 dias de folga até a primeira onda oficial — bem
+  // acima do piso de descanso de 7 dias, sem sobrepor nada.
+  const startDate = `${year}-01-12`;
   const city = WORLD_TOUR_CITIES[seededIndex(`${year}:exhibition`, WORLD_TOUR_CITIES.length)];
   const code = `${city.code}-EXH-${year}`;
   return {

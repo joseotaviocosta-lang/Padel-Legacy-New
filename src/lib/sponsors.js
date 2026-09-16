@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { publishContractEvent } from '@/lib/contractNews.js';
 
 // ─── Expanded Sponsor Catalog ────────────────────────────────────────────────
 // Each sponsor has own objectives, budget, preferences, marketing demands,
@@ -630,6 +631,11 @@ export async function signSponsorContract(profile, sponsor) {
     last_payment_month: null,
   });
 
+  await publishContractEvent({
+    profileId: profile.id, playerName: profile.sport_name || profile.name,
+    kind: 'sponsor', partyName: sponsor.name, careerDate, months: offer.duration_months,
+  });
+
   return await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + offer.sign_bonus,
   });
@@ -668,6 +674,11 @@ export async function renewContract(contract, sponsor, profile) {
     goals_progress: {},
     satisfaction_score: Math.max(50, contract.satisfaction_score || 50),
     is_renewable: true,
+  });
+
+  await publishContractEvent({
+    profileId: profile.id, playerName: profile.sport_name || profile.name,
+    kind: 'sponsor', partyName: sponsor.name, careerDate, months: offer.duration_months, renewal: true,
   });
 
   return await localGame.entities.PlayerProfile.update(profile.id, {

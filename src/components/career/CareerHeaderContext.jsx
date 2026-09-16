@@ -37,7 +37,14 @@ export default function CareerHeaderContext({ profile, compact = false }) {
     if (!profileId) return;
     try {
       const [tournaments, calendarEvents] = await Promise.all([
-        localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
+        // A página de Torneios lista os eventos por data, sem filtrar por
+        // `status`. O cabeçalho filtrava por `status: 'inscricoes'` e por isso
+        // podia não enxergar um evento que a página enxergava — daí anunciar
+        // "Miami Cup · 8d" enquanto a página mostrava a pré-temporada em 6d,
+        // e "corrigir" sozinho depois que a página era aberta. Mesma consulta
+        // dos dois lados: a pergunta "qual é o próximo torneio?" não pode ter
+        // duas respostas.
+        localGame.entities.Tournament.list('start_date', 2000).catch(() => []),
         localGame.entities['CalendarEvent'].filter({ profile_id: profileId, event_type: 'tournament' }, 'start_date', 30).catch(() => []),
       ]);
       // Mesmo filtro da listagem de torneios: eventos cuja inscrição já tinha
