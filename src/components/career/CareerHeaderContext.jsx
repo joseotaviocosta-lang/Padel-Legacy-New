@@ -4,6 +4,7 @@ import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerHeaderContext } from '@/lib/careerHeaderContext.js';
 import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
+import { wasTournamentUnreachableAtCareerStart } from '@/lib/tournamentRegistration.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
 const ICON_BY_KIND = {
@@ -39,7 +40,12 @@ export default function CareerHeaderContext({ profile, compact = false }) {
         localGame.entities.Tournament.filter({ status: 'inscricoes' }).catch(() => []),
         localGame.entities['CalendarEvent'].filter({ profile_id: profileId, event_type: 'tournament' }, 'start_date', 30).catch(() => []),
       ]);
-      setFetchedData({ tournaments, calendarEvents });
+      // Mesmo filtro da listagem de torneios: eventos cuja inscrição já tinha
+      // fechado antes de a carreira começar nunca estiveram ao alcance do
+      // jogador. Sem isto o cabeçalho anunciava "Hoje · <torneio>" no dia 1
+      // apontando justamente para um evento impossível de disputar.
+      const reachable = (tournaments || []).filter((item) => !wasTournamentUnreachableAtCareerStart(item));
+      setFetchedData({ tournaments: reachable, calendarEvents });
     } catch (error) {
       console.warn('[CareerHeaderContext] contexto indisponível', error);
     }

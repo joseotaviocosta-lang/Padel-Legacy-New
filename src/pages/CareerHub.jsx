@@ -29,6 +29,7 @@ import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tuto
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getOnboardingNextAction } from '@/onboarding/onboardingNextAction.js';
 import { isRegistrationOpen } from '@/lib/calendarSystem.js';
+import { evaluateTournamentRegistration, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
 import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
@@ -103,6 +104,10 @@ export default function CareerHub() {
   const [recentTrainings, setRecentTrainings] = useState([]);
   const [worldRank, setWorldRank] = useState({ rank: 0, total: 0 });
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
+  // Necessários para a sugestão consultar evaluateTournamentRegistration com
+  // os mesmos dados que a tela de inscrição usa.
+  const [partnerBot, setPartnerBot] = useState(null);
+  const [tournamentRegistrations, setTournamentRegistrations] = useState([]);
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -230,8 +235,12 @@ export default function CareerHub() {
 
         if (p?.partner_id) {
           const partner = Array.isArray(teamRankings) ? teamRankings[0] : null;
+          if (mounted) setPartnerBot(partner);
           const resolvedTeamRank = partner ? await safe(getTeamRank(p, partner), { rank: 0, total: 0, unranked: true }) : { rank: 0, total: 0, unranked: true };
           if (mounted) setTeamRank(resolvedTeamRank);
+        }
+        if (p?.id && mounted) {
+          setTournamentRegistrations(await safe(listTournamentRegistrations(p.id), []));
         }
 
         const careerDate = p?.career_date || '2026-01-01';
@@ -279,6 +288,24 @@ export default function CareerHub() {
   const unreadCount = unreadMessages.length + pendingOffers.length;
 
   const nextTournament = upcomingTournaments[0];
+  // A sugestão de "inscreva-se" precisa passar pela MESMA regra que a
+  // inscrição vai aplicar — antes ela era só o próximo torneio por data, e
+  // sugeria eventos que `evaluateTournamentRegistration` recusa (o relato:
+  // sugerir um torneio em 5 dias que o piso de descanso de 7 bloqueia). Um
+  // torneio já inscrito também sai daqui: ele não precisa de inscrição, e o
+  // caminho de jogá-lo é outro (partida ativa / calendário).
+  const suggestableTournament = useMemo(() => {
+    if (!profile) return null;
+    return upcomingTournaments.find((tournament) => evaluateTournamentRegistration({
+      player: profile,
+      partner: partnerBot,
+      tournament,
+      currentDate: profile.career_date,
+      registrations: tournamentRegistrations,
+      tournaments: upcomingTournaments,
+      teamRank: teamRank?.rank || 0,
+    }).allowed) || null;
+  }, [profile, partnerBot, tournamentRegistrations, upcomingTournaments, teamRank]);
   const activeTournamentRecovery = useMemo(() => {
     if (activeMatchCheckpoint?.type !== 'tournament' || !activeTournamentEvent || !profile) return null;
     const run = activeTournamentEvent.metadata?.tournament_run;
@@ -353,8 +380,8 @@ export default function CareerHub() {
       mandatoryDecision: mandatoryDecision
         ? { route: mandatoryDecision.route, label: mandatoryDecision.title, description: mandatoryDecision.description }
         : null,
-      tournamentRegistrationNeeded: !activeMatch && nextTournament
-        ? { route: APP_ROUTES.TOURNAMENTS, name: nextTournament.name, daysUntil: daysUntil(profile?.career_date, nextTournament.start_date) }
+      tournamentRegistrationNeeded: !activeMatch && suggestableTournament
+        ? { route: APP_ROUTES.TOURNAMENTS, name: suggestableTournament.name, daysUntil: daysUntil(profile?.career_date, suggestableTournament.start_date) }
         : null,
       urgentMessage: interviewMessage
         ? { route: interviewDestination?.route || APP_ROUTES.PRESS, label: 'Dar entrevista', description: interviewMessage.title }

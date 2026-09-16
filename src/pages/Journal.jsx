@@ -163,7 +163,12 @@ export default function Journal() {
                     {journal.recentResults.slice(0, 6).map((result, index) => (
                       <div key={`${result.teamA}-${result.teamB}-${index}`} className="grid grid-cols-[1fr_auto_1fr] items-center gap-2 rounded-xl border border-border/50 bg-secondary/25 px-3 py-2.5 text-xs">
                         <span className={`truncate text-right font-bold ${result.winner === result.teamA ? 'text-primary' : 'text-muted-foreground'}`}>{result.teamA}</span>
-                        <span className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-black tabular-nums">{result.scoreA}-{result.scoreB}</span>
+                        {/* Decisão de torneio do circuito traz campeão e vice,
+                            não o placar em sets — mostrar "0-0" ali seria dado
+                            inventado. */}
+                        <span className="rounded-lg bg-secondary px-2 py-1 text-[10px] font-black tabular-nums">
+                          {result.scoreA == null || result.scoreB == null ? 'Final' : `${result.scoreA}-${result.scoreB}`}
+                        </span>
                         <span className={`truncate font-bold ${result.winner === result.teamB ? 'text-primary' : 'text-muted-foreground'}`}>{result.teamB}</span>
                       </div>
                     ))}

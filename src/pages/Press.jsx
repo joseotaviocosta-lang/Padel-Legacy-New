@@ -299,6 +299,14 @@ export default function Press() {
     }
   }
 
+  // Mesma validação de closeInterview, em forma de rótulo — as duas precisam
+  // concordar, senão o botão promete um destino que a navegação não cumpre.
+  function interviewReturnLabel(returnTo) {
+    if (returnTo?.startsWith(APP_ROUTES.TOURNAMENTS)) return 'Voltar para o torneio';
+    if (returnTo === APP_ROUTES.HOME) return 'Voltar para a carreira';
+    return 'Concluir';
+  }
+
   function closeInterview() {
     setActiveInterview(null);
     setActiveJournalist(null);
@@ -460,7 +468,12 @@ export default function Press() {
           recentQuestionIds={profile?.recent_interview_question_ids || []}
           onClose={closeInterview}
           onComplete={handleCompleteInterview}
-          completionLabel={searchParams.get('returnTo') === APP_ROUTES.HOME ? 'Voltar para a carreira' : 'Voltar para o torneio'}
+          // O rótulo espelha EXATAMENTE o destino que closeInterview vai
+          // usar. Antes, a ausência do parâmetro (`null`) caía no `else` e
+          // prometia "Voltar para o torneio" em toda entrevista que não viesse
+          // de um torneio — inclusive quando closeInterview não navega para
+          // lugar nenhum e o jogador simplesmente volta para a Imprensa.
+          completionLabel={interviewReturnLabel(searchParams.get('returnTo'))}
         />
       )}
 

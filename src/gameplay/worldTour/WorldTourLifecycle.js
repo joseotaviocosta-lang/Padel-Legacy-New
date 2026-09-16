@@ -348,7 +348,16 @@ function appendFinalHeadToHead(headToHeadByAthlete, winner, loser, tournament) {
 
 export async function resolveCompletedWorldTourEvents(careerDate) {
   const [allTournaments, rawAthletes, partnerships] = await Promise.all([
-    entities.Tournament.list('-start_date', 300),
+    // Ordenação ASCENDENTE de propósito. Com '-start_date' a consulta trazia
+    // os torneios mais FUTUROS primeiro e truncava no limite — exatamente ao
+    // contrário do que esta função precisa, que é o passado já encerrado e
+    // ainda não resolvido. Enquanto o calendário coube no limite isso era
+    // inofensivo (por isso o harness, que roda 1 temporada, nunca reproduziu),
+    // mas `ensureFutureTournaments` mantém 15 meses à frente e o total cresce
+    // a cada avanço: passado do limite, os eventos vencidos são os PRIMEIROS a
+    // sair da janela e deixam de ser resolvidos para sempre — sem campeão,
+    // sem notícia, sem pontos de ranking. Mesma classe do achado #32.
+    entities.Tournament.list('start_date', 2000),
     entities.AthleteProfile.list('-world_ranking_points', ATHLETE_POPULATION_CAP),
     entities.Partnership.list('-created_date', 1200).catch(() => []),
   ]);
@@ -361,7 +370,19 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
 
   const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');
   const pairs = buildCanonicalPairs(partnerships, athletes);
-  if (!pairs.length) return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0, waitingForCanonicalPairs: true };
+  if (!pairs.length) {
+    // Aborto silencioso: se o mundo ficar sem duplas canônicas, NENHUM torneio
+    // é resolvido — sem campeão, notícia, rivalidade ou ponto de ranking — e
+    // nada na tela indica que o circuito parou. `simulatePastTournaments`
+    // também não cobre esses eventos (ignora `world_tour_event` de propósito),
+    // então o estado é permanente. Medido como não reproduzível em harness
+    // (resolve 115/115 torneios mesmo com zero duplas procedurais semeadas),
+    // mas o caminho existe — e sem este aviso ele é invisível no diagnóstico.
+    console.warn('[WorldTour] nenhuma dupla canônica disponível — nenhum torneio será resolvido nesta chamada.', {
+      pendentes: pending.length, atletas: athletes.length, parcerias: (partnerships || []).length,
+    });
+    return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0, waitingForCanonicalPairs: true };
+  }
   // Fase 7.4 — janela de prioridade persistida em Partnership (ver
   // buildCanonicalPairs); grava só quem mudou nesta chamada, comparando
   // contra o valor lido no início.

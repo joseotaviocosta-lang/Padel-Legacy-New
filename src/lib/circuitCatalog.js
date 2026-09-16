@@ -436,7 +436,16 @@ export function buildSeasonTournaments(year, seasonId = null) {
         status: 'inscricoes',
         start_date: startDate,
         end_date: addDays(startDate, config.durationDays - 1),
-        registration_deadline: addDays(startDate, -1),
+        // O prazo de inscrição NÃO é fixado aqui de propósito. Gravar
+        // `registration_deadline` explícito sobrepõe a regra global
+        // (TOURNAMENT_REGISTRATION_RULES.defaultCloseDaysBeforeStart, hoje
+        // D-3) porque getTournamentRegistrationWindow prefere o campo do
+        // torneio — era por isso que o D-3 não tinha efeito nenhum no
+        // calendário real, mesmo depois de a regra ser alterada: todo evento
+        // nascia com D-1 embutido. Sem o campo, a regra global vale, e o
+        // prazo passa a coincidir com a antecedência do sorteio da chave
+        // (TOURNAMENT_DRAW_LEAD_DAYS), que é o que dá tempo à entrevista
+        // pré-torneio e ao sorteio acontecerem.
         registration_open_date: addDays(startDate, -30),
         week,
         month: Number(startDate.slice(5, 7)),
@@ -525,9 +534,13 @@ export function buildPreSeasonExhibition(year, seasonId = null) {
     status: 'inscricoes',
     start_date: startDate,
     end_date: addDays(startDate, config.durationDays - 1),
-    registration_deadline: addDays(startDate, -1),
+    // Mesmo motivo do gerador regular: sem `registration_deadline` explícito,
+    // a exibição passa a respeitar o D-3 global como qualquer outro torneio.
+    // A isenção concedida à pré-temporada foi só do PISO DE DESCANSO — nunca
+    // do prazo de inscrição nem do sorteio de chave, que ela continua tendo.
     // Item 3C.2: "inscrição livre desde o dia 1" — explícito, não incidental
-    // (mesmo que o evento em si só ocorra no dia 11).
+    // (a abertura da janela continua no dia 1; só o fechamento passa a ser
+    // o D-3 padrão).
     registration_open_date: `${year}-01-01`,
     week: 2,
     month: 1,

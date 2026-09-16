@@ -39,15 +39,39 @@ export async function generateJournal() {
       .filter(r => r.count >= 2)
       .sort((a, b) => b.count - a.count);
 
-    // Recent results
-    const recentResults = allMatches.slice(0, 6).map(m => ({
+    // Resultados recentes: o Jornal é do CIRCUITO, não um diário do jogador.
+    // Antes, `recentResults` vinha 100% de `Match` (só partidas do jogador),
+    // então o feed inteiro era sobre ele — e, com os campeões do circuito
+    // ausentes por outro bug, não sobrava mais nada. As partidas próprias
+    // entram limitadas e dividem espaço com as decisões dos demais torneios,
+    // que já existem como campeão/vice em Tournament.
+    const ownResults = allMatches.slice(0, 3).map(m => ({
       teamA: (m.team_a || []).join(' & '),
       teamB: (m.team_b || []).join(' & '),
       scoreA: m.score_a,
       scoreB: m.score_b,
       winner: m.winner === 'A' ? (m.team_a || []).join(' & ') : (m.team_b || []).join(' & '),
       tournament: m.tournament_name,
+      date: m.created_date || m.date || '',
+      scope: 'player',
     }));
+    const circuitResults = (tournaments || [])
+      .filter(t => t.champion && t.runner_up)
+      .sort((a, b) => String(b.start_date || '').localeCompare(String(a.start_date || '')))
+      .slice(0, 6)
+      .map(t => ({
+        teamA: t.champion,
+        teamB: t.runner_up,
+        scoreA: null,
+        scoreB: null,
+        winner: t.champion,
+        tournament: t.name,
+        date: t.start_date || '',
+        scope: 'circuit',
+      }));
+    const recentResults = [...ownResults, ...circuitResults]
+      .sort((a, b) => String(b.date || '').localeCompare(String(a.date || '')))
+      .slice(0, 8);
 
     // Top teams
     const topTeams = (rankings || []).slice(0, 5).map((t, i) => ({
