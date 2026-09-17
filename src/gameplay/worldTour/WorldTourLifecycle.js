@@ -642,10 +642,23 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       if (belowMinViable) {
         tournamentUpdates.push({
           id: tournament.id,
+          status: 'cancelado',
+          current_phase: 'cancelado',
           world_tour_resolved: true,
           world_tour_cancelled: true,
+          cancellation_reason: 'inscritos_insuficientes',
           resolved_at: careerDate,
           simulated_entrants: ordered.length,
+        });
+        news.push({
+          event_type: 'tournament_cancelled',
+          title: `${tournament.name} cancelado por falta de inscritos`,
+          content: `O ${tournament.name} foi encerrado sem chave competitiva porque recebeu ${ordered.length} dupla(s), abaixo do mínimo viável.`,
+          author_name: 'Redação Padel Legacy World Tour',
+          tier: String(tournament.tier || 'normal').toLowerCase(),
+          event_date: tournamentEndDate(tournament),
+          tags: ['world-tour', 'torneio', 'cancelamento'],
+          related_tournament_id: tournament.id,
         });
         continue;
       }
@@ -690,6 +703,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       appendFinalHeadToHead(headToHeadByAthlete, champion, runnerUp, tournament);
       tournamentUpdates.push({
         id: tournament.id,
+        bracket_schema_version: 2,
         ...settlement.patch,
         // Fase 3, item 3E.3 — achado #21 registrava a referência órfã
         // (champion_partnership_id/runner_up_partnership_id sobrevivem à

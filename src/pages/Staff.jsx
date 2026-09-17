@@ -4,7 +4,7 @@ import { Page, PageContent, PageHeader, PageSkeleton } from '@/components/design
 import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
-import { hireStaff, fireStaff, renewStaffContract } from '@/lib/economy';
+import { hireStaff, fireStaff, renewStaffContract, getStaffSlots } from '@/lib/economy';
 import StaffPanel from '@/components/economy/StaffPanel';
 import { syncStaffEffects } from '@/game-core/staffLifecycle';
 import { upgradeStaffFacility } from '@/lib/staffFacilities';
@@ -70,7 +70,7 @@ export default function Staff() {
 
   const activeStaff = staff.filter((member) => member.status !== 'encerrado' && member.contract_status !== 'expired');
   const monthlyPayroll = activeStaff.reduce((sum, member) => sum + (Number(member.monthly_salary ?? member.salary) || 0), 0);
-  const maxSlots = Number(profile.staff_slots ?? profile.max_staff_slots ?? 2);
+  const maxSlots = getStaffSlots(profile.career_level || 1);
   const synergy = Number(profile.staff_synergy ?? profile.team_synergy ?? 0);
 
   return (

@@ -281,7 +281,17 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         requires_decision: !['eliminated', 'champion', 'finished'].includes(tournamentRun.status),
         metadata: { ...(calendarEvent.metadata || {}), tournament_run: tournamentRun, tournament_run_schema_version: 2 },
       });
-      await localGame.entities.Tournament.update(tournament.id, {
+      // Playthrough 4.3 — preservar chave canônica v2. O mount da campanha
+      // NUNCA sobrescreve bracket_history de um torneio que já possui a chave
+      // completa (bracket_schema_version >= 2, gerada por createDrawnRun em
+      // tournamentDraw.js). A versão legada (buildTournamentBracketHistory)
+      // só se aplica a saves antigos sem essa marca.
+      const freshTournamentForBracket = await localGame.entities.Tournament.get(tournament.id).catch(() => null);
+      const preserveCanonicalBracket = Number(freshTournamentForBracket?.bracket_schema_version) >= 2
+        && Array.isArray(freshTournamentForBracket?.bracket_history) && freshTournamentForBracket.bracket_history.length > 0;
+      await localGame.entities.Tournament.update(tournament.id, preserveCanonicalBracket ? {
+        current_phase: tournamentRun.status,
+      } : {
         bracket_history: buildTournamentBracketHistory(tournamentRun, playerTeam),
         current_phase: tournamentRun.status,
       }).catch(() => {});
@@ -343,10 +353,20 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       ...eventPatch,
       metadata: { ...(freshEvent.metadata || {}), ...(eventPatch.metadata || {}), tournament_run: nextRun, tournament_run_schema_version: 2 },
     };
-    const bracket = buildTournamentBracketHistory(nextRun, teamName(profile, partner));
+    // Playthrough 4.3 — preservar chave canônica v2. persistRun é chamada em
+    // contextos não-competitivos (reunião pré-torneio, descanso entre rodadas)
+    // onde NENHUM resultado real aconteceu. A chave canônica (schema v2) já
+    // contém todos os confrontos pré-gerados e nunca deve ser substituída pelo
+    // caminho legado de uma só partida por rodada.
+    const freshTournamentForBracket = await localGame.entities.Tournament.get(tournament.id).catch(() => null);
+    const preserveCanonicalBracket = Number(freshTournamentForBracket?.bracket_schema_version) >= 2
+      && Array.isArray(freshTournamentForBracket?.bracket_history) && freshTournamentForBracket.bracket_history.length > 0;
+    const bracket = preserveCanonicalBracket
+      ? freshTournamentForBracket.bracket_history
+      : buildTournamentBracketHistory(nextRun, teamName(profile, partner));
     const persisted = await localGame.batch([
       { type: 'update', entityName: 'CalendarEvent', id: freshEvent.id, data: eventData },
-      { type: 'update', entityName: 'Tournament', id: tournament.id, data: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status } },
+      { type: 'update', entityName: 'Tournament', id: tournament.id, data: { ...(preserveCanonicalBracket ? {} : { bracket_history: bracket }), current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status } },
     ]);
     const savedEvent = persisted.records?.[0] || { ...freshEvent, ...eventData };
     setEvent(savedEvent);

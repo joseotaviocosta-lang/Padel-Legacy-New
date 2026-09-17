@@ -333,7 +333,8 @@ export default function Press() {
   const fanAppeal = profile?.fan_appeal || 50;
   const sponsorAppeal = profile?.sponsor_appeal || 50;
   const morale = profile?.morale || 70;
-  const unreadCount = articles.filter(a => !a.is_read).length;
+  const visibleFeedArticles = articles.filter(a => a.article_type !== 'treino');
+  const unreadCount = visibleFeedArticles.filter(a => !a.is_read).length;
 
   return (
     <Page size="default">
@@ -406,11 +407,11 @@ export default function Press() {
 
       {/* Feed Tab */}
       {activeTab === 'feed' && (
-        articles.length === 0 ? (
+        visibleFeedArticles.length === 0 ? (
           <EmptyStateCard icon={Newspaper} title="Nenhuma notícia ainda" message="Complete entrevistas e jogue partidas para gerar manchetes." />
         ) : (
           <div className="space-y-3 animate-stagger">
-            {articles.map(a => (
+            {visibleFeedArticles.map(a => (
               <ArticleCard key={a.id} article={a} onClick={() => handleReadArticle(a)} />
             ))}
           </div>

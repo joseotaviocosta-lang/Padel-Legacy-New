@@ -35,7 +35,7 @@ async function buildSecondaryOperations({ profile, won, partnerName, opponents, 
     },
     {
       type: 'upsert', entityName: 'PressArticle', id: `press-${recordId}`,
-      data: { profile_id: profile.id, title: newsTitle, content: newsContent, sentiment: won ? 'positivo' : 'neutro', outlet: 'Padel Legacy News', journalist_name: 'Redação PL', published_date: date },
+      data: { profile_id: profile.id, article_type: 'treino', source_type: 'practice', match_type: 'practice', title: newsTitle, content: newsContent, sentiment: won ? 'positivo' : 'neutro', outlet: 'Padel Legacy News', journalist_name: 'Redação PL', published_date: date },
     },
     {
       type: 'upsert', entityName: 'Post', id: `post-${recordId}`,

@@ -18,11 +18,19 @@ export async function generateJournal() {
 
     const allMatches = matches || [];
 
-    // Recent champions (from finished tournaments only)
+    // Playthrough 4.3 — prioridade editorial por tier. O Jornal do Circuito
+    // cobre o mundo inteiro, não só o jogador. Campeões de tiers mais altos
+    // aparecem primeiro, sem apagar completamente os tiers menores.
+    const TIER_PRIORITY = { Crown: 0, Elite: 1, Masters: 2, Platinum: 3, Gold: 4, Silver: 5, Bronze: 6 };
     const champions = (tournaments || [])
       .filter(t => t.champion)
-      .map(t => ({ tournament: t.name, team: t.champion, tier: t.tier, month: t.month }))
-      .sort((a, b) => (b.month || 0) - (a.month || 0));
+      .map(t => ({ tournament: t.name, team: t.champion, tier: t.tier, month: t.month, date: t.start_date || '' }))
+      .sort((a, b) => {
+        const tierDiff = (TIER_PRIORITY[a.tier] ?? 99) - (TIER_PRIORITY[b.tier] ?? 99);
+        if (tierDiff !== 0) return tierDiff;
+        return String(b.date).localeCompare(String(a.date)) || (b.month || 0) - (a.month || 0);
+      })
+      .slice(0, 10);
 
     // Rivalries (teams that appear in multiple matches)
     const rivalryMap = {};
@@ -58,7 +66,7 @@ export async function generateJournal() {
     const circuitResults = (tournaments || [])
       .filter(t => t.champion && t.runner_up)
       .sort((a, b) => String(b.start_date || '').localeCompare(String(a.start_date || '')))
-      .slice(0, 6)
+      .slice(0, 8)
       .map(t => ({
         teamA: t.champion,
         teamB: t.runner_up,
