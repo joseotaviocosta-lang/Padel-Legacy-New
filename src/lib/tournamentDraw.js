@@ -16,7 +16,34 @@ import { getQualifyingRoundLabels } from '@/gameplay/worldTour/QualifyingManager
 import {
   buildTournamentBracketHistory, createTournamentRun, getCurrentTournamentMatch,
 } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { buildPlayerTournamentBracket } from '@/gameplay/worldTour/tournamentSettlement.js';
 import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
+
+// Playthrough 4.2, item 1/3 — gera as duplas de preenchimento que ocupam as
+// posições da chave que nunca cruzam o caminho do jogador (o "outro lado"
+// do quadro). Reaproveita o MESMO gerador de adversários do jogador
+// (`generateTournamentOpponent`) com índices de rodada fora da faixa usada
+// pelas rodadas reais — nenhum novo catálogo de bots, nenhuma mudança de
+// dificuldade/balanceamento (item "não fazer").
+function buildFillerFactory({ tournament, profile, rank, usedIds }) {
+  let cursor = 1000;
+  return (count) => {
+    const fillers = [];
+    let guard = 0;
+    while (fillers.length < count && guard < count * 6 + 20) {
+      guard += 1;
+      const members = generateTournamentOpponent(tournament, profile, cursor, usedIds, rank, 'main');
+      cursor += 1;
+      if (members.length < 2) continue;
+      usedIds.push(...members.map((item) => item.id));
+      fillers.push({
+        name: members.map((item) => item.name).filter(Boolean).join(' & ') || `Dupla ${fillers.length + 1}`,
+        strength: members.reduce((sum, item) => sum + Number(item.overall_rating || 50), 0) / members.length,
+      });
+    }
+    return fillers;
+  };
+}
 
 export const TOURNAMENT_DRAW_LEAD_DAYS = 3;
 
@@ -103,7 +130,36 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
     requires_decision: !['eliminated', 'champion', 'finished'].includes(tournamentRun.status),
     metadata: { ...(calendarEvent.metadata || {}), tournament_run: tournamentRun, tournament_run_schema_version: 2 },
   });
-  await entities.Tournament.update(tournament.id, {
+  // Playthrough 4.2, item 1/8 — a chave persistida deixa de ser só o
+  // caminho da dupla do jogador (`buildTournamentBracketHistory`, mantida
+  // abaixo só como fallback) e passa a ser a chave COMPLETA do main draw,
+  // com todos os confrontos que não envolvem o jogador já decididos pelo
+  // motor determinístico do AI-only. `bracket_schema_version` marca saves
+  // novos para a leitura em tournamentLifecycle.js/TournamentModal.jsx
+  // saber qual formato está lendo (item 9 — nunca reinterpreta uma chave
+  // legada como se fosse completa).
+  const mainOpponents = opponents.slice(qualifyingRounds.length).map((entry) => ({
+    name: Array.isArray(entry.members) && entry.members.length
+      ? entry.members.map((item) => item.name).filter(Boolean).join(' & ')
+      : 'Adversário a definir',
+  }));
+  let canonicalBracket = null;
+  try {
+    canonicalBracket = buildPlayerTournamentBracket({
+      tournamentId: tournament.id,
+      date: getTournamentDrawAnchorDate(calendarEvent, tournament),
+      playerTeamName: playerTeam,
+      mainOpponents,
+      fillerFactory: buildFillerFactory({ tournament, profile, rank: rank.rank, usedIds }),
+    });
+  } catch (error) {
+    canonicalBracket = null;
+  }
+  await entities.Tournament.update(tournament.id, canonicalBracket ? {
+    bracket_history: canonicalBracket,
+    bracket_schema_version: 2,
+    current_phase: tournamentRun.status,
+  } : {
     bracket_history: buildTournamentBracketHistory(tournamentRun, playerTeam),
     current_phase: tournamentRun.status,
   }).catch(() => {});

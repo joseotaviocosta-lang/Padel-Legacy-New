@@ -5,6 +5,7 @@ import { teamKey } from '@/lib/teamRanking';
 import { buildPartnershipTitlePatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { safeName, todayForProfile } from './utils';
 import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
+import { bracketFactsFromHistory, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket } from '@/gameplay/worldTour/tournamentSettlement.js';
 
 function placementLabel(roundsWon, totalRounds, champion) {
   if (champion) return 'Campeão';
@@ -18,7 +19,7 @@ function placementLabel(roundsWon, totalRounds, champion) {
 export async function prepareTournamentFinalization({ profile, tournament, partner, roundsWon, totalRounds, runId = null, bracketHistory = null, runnerUp = null }) {
   const rewards = getTournamentRewards(tournament.tier, roundsWon, profile);
   const champion = roundsWon >= totalRounds;
-  const finalizationKey = String(runId || `${profile.id}:${tournament.id}:${tournament.start_date || 'edition'}`);
+  const finalizationKey = `tournament:${tournament.id}:canonical-settlement`;
   const processedRuns = Array.isArray(profile.processed_tournament_runs) ? profile.processed_tournament_runs : [];
   const alreadyProcessed = processedRuns.includes(finalizationKey);
   const date = todayForProfile(profile);
@@ -135,25 +136,46 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   // campanha do jogador SEMPRE encerra o Tournament.
   const finalRound = Array.isArray(bracketHistory) ? bracketHistory[bracketHistory.length - 1] : null;
   const finalMatch = finalRound?.is_final ? finalRound.matches?.[0] : null;
-  // A final só está decidida se o jogador chegou até ela (como campeão ou
-  // como vice, com a derrota já registrada). Eliminado antes, o título é
-  // decidido numa parte do quadro que o `tournament_run` não modela (item
-  // 8b) — nesse caso `world_tour_resolved` NÃO é marcado e o circuito da IA
-  // continua sendo quem define o campeão, sem nada a contradizer, porque a
-  // chave agora termina na eliminação (buildTournamentBracketHistory).
+  // Caminho legado (item 9, ver comentário abaixo): só decide o título
+  // quando o jogador chegou à própria final.
   const finalDecided = Boolean(finalMatch?.winner);
+  // Playthrough 4.2, item 4/6 — com a chave COMPLETA (bracket_schema_version
+  // 2, sorteada em tournamentDraw.js), a campanha do jogador terminar não
+  // significa mais que o título ficou indefinido: toda derrota já dispara,
+  // na hora, a continuação AI-only do resto do quadro até a final
+  // (applyPlayerMatchToCanonicalBracket) — a chave chega SEMPRE completa
+  // neste ponto, eliminado cedo ou campeão. `deriveTournamentFactsFromFullBracket`
+  // lê essa chave inteira (todos os confrontos, não só o caminho do
+  // jogador) e devolve colocação para o campo inteiro, exatamente como o
+  // AI-only já fazia — sem isso, o resto do quadro nunca recebia pontos
+  // quando o jogador caía antes da final (o buraco que esta fase fecha).
+  // Saves sem a marca (item 9) continuam pelo caminho legado, que só decide
+  // o título quando a própria final do jogador está resolvida.
+  const canonicalBracket = Number(tournament.bracket_schema_version) >= 2 && Array.isArray(bracketHistory) && bracketHistory.length > 0
+    ? deriveTournamentFactsFromFullBracket(bracketHistory)
+    : (finalDecided ? bracketFactsFromHistory(bracketHistory, [finalMatch.team_a, finalMatch.team_b]) : null);
+  const canonicalSettlement = canonicalBracket
+    ? finalizeTournamentFromBracket({ tournament, bracket: canonicalBracket, date })
+    : null;
+  if (canonicalSettlement?.result?.champion) {
+    operations.push({ type: 'upsert', entityName: 'WorldEvent', id: `tournament-result-${tournament.id}`, data: {
+      event_type: 'tournament_result',
+      title: `${canonicalSettlement.result.champion} conquista o ${tournament.name}`,
+      content: `${canonicalSettlement.result.champion} venceu ${canonicalSettlement.result.runner_up} na final do ${tournament.name}.`,
+      event_date: date,
+      related_tournament_id: tournament.id,
+      related_players: [canonicalSettlement.result.champion, canonicalSettlement.result.runner_up],
+      tier: String(tournament.tier || 'normal').toLowerCase(),
+      author_name: 'Redação Padel Legacy World Tour',
+      tags: ['tournament-result', String(tournament.tier || '').toLowerCase()],
+    } });
+  }
   operations.push({ type: 'update', entityName: 'Tournament', id: tournament.id, data: {
     status: 'finalizado',
     current_phase: 'concluido',
     player_participated: true,
     ...(Array.isArray(bracketHistory) ? { bracket_history: bracketHistory } : {}),
-    ...(finalDecided ? {
-      world_tour_resolved: true,
-      player_decided_result: true,
-      resolved_at: date,
-      champion: finalMatch.winner,
-      runner_up: (finalMatch.team_a === finalMatch.winner ? finalMatch.team_b : finalMatch.team_a) || runnerUp || 'Dupla finalista',
-    } : {}),
+    ...(canonicalSettlement ? { ...canonicalSettlement.patch, player_decided_result: true } : {}),
   } });
   for (const event of calendarEvents || []) operations.push({ type: 'update', entityName: 'CalendarEvent', id: event.id, data: { status: 'completed', requires_decision: false } });
   for (const registration of (registrations || []).filter((item) => ['pending', 'confirmed'].includes(item.status))) {

@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
 import { ModalShell, Surface, Tabs } from '@/components/design-system';
-import { getVisibleTournamentBracketState, isTournamentCompletedAt } from '@/lib/tournamentBracketView.js';
+import { getVisibleTournamentBracketState } from '@/lib/tournamentBracketView.js';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
@@ -20,39 +20,9 @@ function normalizeTeamName(value) {
   return text.includes(' & ') ? text : `${text} & parceiro não registrado`;
 }
 
-// Playthrough 4, item 2. Aqui existia `reconstructLegacyHistory`: quando um
-// torneio encerrado não tinha `bracket_history` (o caso de TODO torneio da
-// IA — o `tournament_run` só modela o caminho do jogador, item 8b), a tela
-// INVENTAVA a chave inteira. Quartas e semifinais com duplas reais tiradas de
-// uma lista fixa no arquivo (Coello & Tapia, Galán & Lebrón...) e placares
-// escritos à mão ('6-3 6-4'), apresentados como histórico. Mesma classe do
-// achado "número publicado enquanto o mecanismo fazia outra coisa": nada
-// daquilo tinha acontecido na simulação, e um jogador que conferisse a chave
-// do Doha contra o Jornal leria duas histórias diferentes do mesmo torneio.
-// O que o motor REALMENTE sabe de um torneio de IA é o resultado da final —
-// campeão e vice, denormalizados no próprio Tournament. É só isso que a chave
-// mostra agora, explicitamente rotulado.
-function buildFinalOnlyHistory(tournament) {
-  const champion = normalizeTeamName(tournament.champion);
-  const runnerUp = tournament.runner_up ? normalizeTeamName(tournament.runner_up) : null;
-  if (!runnerUp) return [];
-  return [{
-    round: 'Final',
-    date: tournament.end_date || tournament.start_date || null,
-    status: 'completed',
-    is_final: true,
-    matches: [{ team_a: champion, team_b: runnerUp, winner: champion, score: null, status: 'completed' }],
-  }];
-}
-
 function normalizeHistory(tournament, careerDate) {
   const canonical = Array.isArray(tournament.bracket_history) && tournament.bracket_history.length;
-  const sourceTournament = canonical
-    ? tournament
-    : isTournamentCompletedAt(tournament, careerDate) && tournament.champion
-      ? { ...tournament, bracket_history: buildFinalOnlyHistory(tournament) }
-      : tournament;
-  const bracketState = getVisibleTournamentBracketState(sourceTournament, careerDate);
+  const bracketState = getVisibleTournamentBracketState(tournament, careerDate);
 
   const rounds = bracketState.rounds.map((round) => ({
     round: round.round || round.label || 'Rodada',

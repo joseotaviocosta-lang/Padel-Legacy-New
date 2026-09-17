@@ -8,6 +8,7 @@ import {
   RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP,
   buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
 } from '@/game-core/rankingWindow.js';
+import { buildCanonicalTournamentBracket, finalizeTournamentFromBracket } from './tournamentSettlement.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 // Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
@@ -289,14 +290,18 @@ function tournamentEndDate(tournament) {
  * Playthrough 4, item 1/2: a campanha do jogador passou a fechar o Tournament
  * (status 'finalizado') em QUALQUER desfecho, não só no título — era esse
  * buraco que deixava o torneio do jogador voltar para esta fila e ganhar um
- * SEGUNDO campeão, diferente do da chave (ver tournamentLifecycle.js). Quando
- * a chave do jogador decide a final, ela marca `world_tour_resolved` e a
- * checagem correspondente barra aqui. Quando o jogador cai ANTES da final, o
- * título fica genuinamente indefinido — o `tournament_run` só modela o
- * caminho do jogador (item 8b) — e o circuito PRECISA resolver o evento, ou o
- * torneio fica sem campeão, sem notícia e sem pontos para o resto do campo.
- * Por isso 'finalizado' sozinho não exclui mais: só exclui junto com um
- * campeão já gravado.
+ * SEGUNDO campeão, diferente do da chave (ver tournamentLifecycle.js).
+ *
+ * Playthrough 4.2: com a chave COMPLETA (bracket_schema_version 2), a
+ * derrota do jogador em QUALQUER rodada já dispara a continuação AI-only do
+ * resto do quadro na hora (tournamentSettlement.js:
+ * applyPlayerMatchToCanonicalBracket) — `world_tour_resolved`/`champion` são
+ * gravados sempre, não só quando o jogador chega à final. Só um save
+ * ANTIGO, sem essa chave completa (item 9), ainda deixa o título
+ * genuinamente indefinido numa eliminação antes da final; nesse caso o
+ * circuito da IA continua sendo quem completa o evento, como antes.
+ * 'finalizado' sozinho não exclui mais: só exclui junto com um campeão já
+ * gravado.
  */
 export function isWorldTourResolutionPending(tournament, careerDate) {
   const end = tournamentEndDate(tournament || {});
@@ -650,11 +655,19 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       for (const pair of ordered) {
         if (pair.priorityWindowRemaining > 0) pair.priorityWindowRemaining -= 1;
       }
-      const champion = ordered[0];
-      const runnerUp = ordered[1];
+      const bracket = buildCanonicalTournamentBracket({
+        tournamentId: tournament.id,
+        date: tournamentEndDate(tournament),
+        participants: ordered.map((pair) => ({ name: pair.name, strength: pairScore(pair, tournament) })),
+      });
+      const settlement = finalizeTournamentFromBracket({ tournament, bracket, date: careerDate });
+      const champion = ordered.find((pair) => pair.name === settlement.result.champion) || ordered[0];
+      const runnerUp = ordered.find((pair) => pair.name === settlement.result.runner_up) || ordered[1];
+      const placementByTeam = new Map(settlement.result.placements.map((placement) => [placement.team, placement.position]));
 
       ordered.forEach((pair, index) => {
-        const { finish, points, wins: finishWins } = resolveFinish(tournament, index, ordered.length);
+        const position = Math.max(1, Number(placementByTeam.get(pair.name) || index + 1));
+        const { finish, points, wins: finishWins } = resolveFinish(tournament, position - 1, ordered.length);
         pair.athletes.forEach((athlete) => {
           athletePoints.set(athlete.id, (athletePoints.get(athlete.id) || 0) + points);
           if (!athleteOutcomes.has(athlete.id)) athleteOutcomes.set(athlete.id, []);
@@ -677,12 +690,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       appendFinalHeadToHead(headToHeadByAthlete, champion, runnerUp, tournament);
       tournamentUpdates.push({
         id: tournament.id,
-        status: 'finalizado',
-        current_phase: 'concluido',
-        world_tour_resolved: true,
-        resolved_at: careerDate,
-        champion: champion.name,
-        runner_up: runnerUp.name,
+        ...settlement.patch,
         // Fase 3, item 3E.3 — achado #21 registrava a referência órfã
         // (champion_partnership_id/runner_up_partnership_id sobrevivem à
         // poda de 24 meses de Partnership só por uma carência generosa, não

@@ -47,6 +47,7 @@ import {
   recordTournamentMatchResult, startTournamentMatch, summarizeTournamentMatch,
   withdrawTournamentRun,
 } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { applyPlayerMatchToCanonicalBracket } from '@/gameplay/worldTour/tournamentSettlement.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import {
@@ -540,9 +541,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     const won = matchState.winner === 'A';
     const profiler = createMatchEndProfiler();
     try {
-      const [freshEvent, freshProfile] = await Promise.all([
+      const [freshEvent, freshProfile, freshTournament] = await Promise.all([
         localGame.entities.CalendarEvent.get(event.id),
         localGame.entities.PlayerProfile.get(profile.id),
+        localGame.entities.Tournament.get(tournament.id),
       ]);
       const freshRun = freshEvent.metadata?.tournament_run || run;
       const freshMatch = getCurrentTournamentMatch(freshRun);
@@ -687,7 +689,27 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         }
       }
 
-      const bracket = buildTournamentBracketHistory(nextRun, teamName(updatedDraft, partner));
+      // Playthrough 4.2, item 2/3/4 — torneios com chave completa
+      // (`bracket_schema_version:2`, sorteada em tournamentDraw.js) atualizam
+      // o confronto correspondente na chave canônica em vez de reconstruir só
+      // o caminho da dupla; a derrota já dispara a continuação AI-only do
+      // restante do quadro dentro da própria função. Saves antigos sem essa
+      // marca (item 9) continuam no algoritmo legado, sem inventar histórico.
+      const baseTournament = freshTournament || tournament;
+      const hasCanonicalBracket = Number(baseTournament?.bracket_schema_version) >= 2
+        && Array.isArray(baseTournament?.bracket_history) && baseTournament.bracket_history.length > 0;
+      const bracket = hasCanonicalBracket && completedMatch.stage === 'main'
+        ? applyPlayerMatchToCanonicalBracket(baseTournament.bracket_history, {
+          roundIndex: completedMatch.stageRoundIndex,
+          playerTeamName: teamName(updatedDraft, partner),
+          opponentTeamName: Array.isArray(completedMatch.opponent) && completedMatch.opponent.length
+            ? completedMatch.opponent.map((item) => item.name).filter(Boolean).join(' & ')
+            : null,
+          won,
+          score: completedMatch.result?.score || null,
+          date: completedMatch.date,
+        }).rounds
+        : (hasCanonicalBracket ? baseTournament.bracket_history : buildTournamentBracketHistory(nextRun, teamName(updatedDraft, partner)));
       const nextScheduledMatch = getCurrentTournamentMatch(nextRun);
       const terminalStatus = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
       // O lote principal é atômico. Em retry de uma rodada já finalizada não
@@ -883,8 +905,28 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   async function abandonTournament() {
     const reason = profile?.injury_status === 'lesionado' ? `Abandono por ${profile.injury_type || 'lesão'}` : 'Abandono por desgaste físico';
     try {
+      const abandonedMatch = getCurrentTournamentMatch(run);
       const withdrawn = withdrawTournamentRun(run, reason).run;
-      const bracket = buildTournamentBracketHistory(withdrawn, teamName(profile, partner));
+      // Playthrough 4.2, item 2/4 — mesmo tratamento de derrota: a chave
+      // canônica registra o adversário como vencedor por W.O. e continua o
+      // restante do quadro pelo motor AI-only, em vez de truncar a chave no
+      // abandono (o que faria o resto do torneio nunca ter campeão).
+      const freshTournament = await localGame.entities.Tournament.get(tournament.id).catch(() => null);
+      const baseTournament = freshTournament || tournament;
+      const hasCanonicalBracket = Number(baseTournament?.bracket_schema_version) >= 2
+        && Array.isArray(baseTournament?.bracket_history) && baseTournament.bracket_history.length > 0;
+      const bracket = hasCanonicalBracket && abandonedMatch?.stage === 'main' && abandonedMatch.status !== 'completed'
+        ? applyPlayerMatchToCanonicalBracket(baseTournament.bracket_history, {
+          roundIndex: abandonedMatch.stageRoundIndex,
+          playerTeamName: teamName(profile, partner),
+          opponentTeamName: Array.isArray(abandonedMatch.opponent) && abandonedMatch.opponent.length
+            ? abandonedMatch.opponent.map((item) => item.name).filter(Boolean).join(' & ')
+            : null,
+          won: false,
+          score: null,
+          date: abandonedMatch.date,
+        }).rounds
+        : (hasCanonicalBracket ? baseTournament.bracket_history : buildTournamentBracketHistory(withdrawn, teamName(profile, partner)));
       const completion = await finalizeTournamentRun({
         profile, tournament, partner, roundsWon: countMainDrawWins(withdrawn), totalRounds: mainRounds.length,
         runId: `${tournament.id}:${withdrawn.createdAt}`, bracketHistory: bracket,

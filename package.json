@@ -53,6 +53,7 @@
     "test:tournament-draw-name-collision": "node scripts/test-tournament-draw-name-collision.mjs",
     "test:tournament-confirm-no-skip": "node scripts/test-tournament-confirm-no-skip.mjs",
     "test:tournament-result-authority": "node scripts/test-tournament-result-authority.mjs",
+    "test:tournament-canonical-results": "node scripts/test-tournament-canonical-results.mjs",
     "test:match-playback": "node scripts/test-match-playback-tactics.mjs",
     "test:vite-config": "node scripts/test-vite-config.mjs",
     "test:dev-server-config": "node scripts/test-dev-server-config.mjs",
