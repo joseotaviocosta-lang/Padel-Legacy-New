@@ -24,13 +24,17 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   const alreadyProcessed = processedRuns.includes(finalizationKey);
   const date = todayForProfile(profile);
   const rankingKey = partner?.id ? teamKey(profile.id, partner.id) : null;
-  const [calendarEvents, registrations, rankingRows, partnership, playerResultRows] = await Promise.all([
+  const [calendarEvents, registrations, rankingRows, partnership, playerResultRows, partnerWorldRows] = await Promise.all([
     localGame.entities.CalendarEvent.filter({ profile_id: profile.id, related_id: tournament.id, status: 'scheduled' }),
     localGame.entities.TournamentRegistration.filter({ profile_id: profile.id, tournament_id: tournament.id }),
     rankingKey ? localGame.entities.TeamRanking.filter({ team_key: rankingKey }) : Promise.resolve([]),
     champion ? getActivePartnership(profile.id) : Promise.resolve(null),
     localGame.entities[RANKING_RESULT_ENTITY].filter({ athlete_id: profile.id }),
+    partner?.id
+      ? localGame.entities.AthleteProfile.filter({ bot_id: partner.id }).catch(() => [])
+      : Promise.resolve([]),
   ]);
+  const partnerWorld = partnerWorldRows?.[0] || null;
 
   const newXp = (Number(profile.xp) || 0) + rewards.xp;
 
@@ -45,6 +49,7 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   let nextRankPoints = Number(profile.rank_points) || 0;
   let playerLegacySeed = null;
   let playerResultRow = null;
+  let partnerResultRow = null;
   if (!alreadyProcessed) {
     const priorRows = playerResultRows || [];
     const lifetimeFallback = Math.max(0, Number(profile.rank_points ?? profile.world_ranking_points) || 0);
@@ -59,6 +64,18 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
       points: rewards.rankPoints,
       finish: champion ? 'champion' : placementLabel(roundsWon, totalRounds, champion),
     };
+    if (partnerWorld?.id) {
+      partnerResultRow = {
+        id: `${partnerWorld.id}:${tournament.id}`,
+        athlete_id: partnerWorld.id,
+        tournament_id: tournament.id,
+        tournament_name: tournament.name,
+        tier: tournament.tier,
+        date,
+        points: rewards.rankPoints,
+        finish: champion ? 'champion' : placementLabel(roundsWon, totalRounds, champion),
+      };
+    }
     const extraRows = playerLegacySeed ? [playerLegacySeed, playerResultRow] : [playerResultRow];
     nextRankPoints = computeRollingPoints(priorRows, extraRows, date);
   }
@@ -89,6 +106,12 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   if (!alreadyProcessed && playerResultRow) {
     if (playerLegacySeed) operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: playerLegacySeed.id, data: playerLegacySeed });
     operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: playerResultRow.id, data: playerResultRow });
+    if (partnerResultRow) operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: partnerResultRow.id, data: partnerResultRow });
+  }
+  if (!alreadyProcessed && partnerWorld?.id) {
+    operations.push({ type: 'update', entityName: 'AthleteProfile', id: partnerWorld.id, data: {
+      race_points: Math.max(0, Number(partnerWorld.race_points) || 0) + rewards.rankPoints,
+    } });
   }
 
   if (!alreadyProcessed && rankingKey && partner) {

@@ -8,7 +8,7 @@ import {
   RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP,
   buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
 } from '@/game-core/rankingWindow.js';
-import { buildCanonicalTournamentBracket, finalizeTournamentFromBracket } from './tournamentSettlement.js';
+import { buildCanonicalTournamentBracket, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket } from './tournamentSettlement.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 // Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
@@ -311,6 +311,101 @@ export function isWorldTourResolutionPending(tournament, careerDate) {
   return true;
 }
 
+function daysUntil(date, target) {
+  if (!date || !target) return null;
+  return Math.round((new Date(`${target}T00:00:00Z`) - new Date(`${date}T00:00:00Z`)) / 86400000);
+}
+
+/**
+ * Materializa a chave do mundo no mesmo relógio do calendário do jogador.
+ * Antes, somente CalendarEvent com registration_id passava por
+ * ensureTournamentDraw; eventos AI-only não tinham esse evento e só eram
+ * resolvidos depois do end_date, deixando a UI sem chave durante todo o
+ * torneio. A chave é factual e determinística, mas o settlement continua
+ * reservado para o fim do evento.
+ */
+export async function ensureWorldTourDraws(careerDate) {
+  if (!careerDate) return { drawn: 0, cancelled: 0, errors: [] };
+  const [tournaments, rawAthletes, partnerships, registrations] = await Promise.all([
+    entities.Tournament.list('start_date', 2000),
+    entities.AthleteProfile.list('-world_ranking_points', ATHLETE_POPULATION_CAP),
+    entities.Partnership.list('-created_date', 1200).catch(() => []),
+    entities.TournamentRegistration.list('-created_date', 2000).catch(() => []),
+  ]);
+  const playerTournamentIds = new Set((registrations || [])
+    .filter((registration) => ['pending', 'confirmed'].includes(registration.status))
+    .map((registration) => registration.tournament_id)
+    .filter(Boolean));
+  for (const tournament of tournaments || []) {
+    if (Number(tournament.bracket_schema_version) < 2 || tournament.world_tour_resolved || !tournament.start_date) continue;
+    const end = tournamentEndDate(tournament);
+    if (tournament.start_date <= careerDate && careerDate <= end && tournament.status !== 'em_andamento') {
+      await entities.Tournament.update(tournament.id, { status: 'em_andamento', current_phase: 'em_andamento' });
+    }
+  }
+  const due = (tournaments || []).filter((tournament) => (
+    tournament.world_tour_event
+    && !playerTournamentIds.has(tournament.id)
+    && !tournament.world_tour_cancelled
+    && !tournament.bracket_schema_version
+    && daysUntil(careerDate, tournament.start_date) >= 0
+    && daysUntil(careerDate, tournament.start_date) <= 3
+  ));
+  if (!due.length) return { drawn: 0, cancelled: 0, errors: [] };
+  const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');
+  const pairs = buildCanonicalPairs(partnerships, athletes);
+  const assignments = new Map(due.map((tournament) => [tournament.id, []]));
+  for (const pair of pairs) {
+    const representative = {
+      ...pair.athletes[0],
+      overall_rating: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / 2,
+      ranking_position: pairEntryRank(pair) || 9999,
+    };
+    const choice = chooseTournament(due, representative, {
+      strategy: representative.careerStrategy,
+      currentRegion: representative.currentRegion,
+    });
+    if (choice?.decision === 'play' && assignments.has(choice.tournament?.id)) assignments.get(choice.tournament.id).push(pair);
+  }
+  const drawn = [];
+  const cancelled = [];
+  const errors = [];
+  for (const tournament of due) {
+    try {
+      const config = getTournamentTierConfig(tournament.tier);
+      const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
+      const entrants = [...(assignments.get(tournament.id) || [])]
+        .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
+        .slice(0, drawSize);
+      if (entrants.length < minViableDraw(drawSize)) {
+        // A população de duplas pode ainda estar sendo formada pelo mercado
+        // no mesmo avanço. Não transforma uma observação precoce do D-3 em
+        // cancelamento: o settlement no fim do evento continua sendo a única
+        // autoridade para decidir se o campo ficou abaixo do mínimo viável.
+        continue;
+      }
+      const bracket = buildCanonicalTournamentBracket({
+        tournamentId: tournament.id,
+        date: tournament.start_date,
+        participants: entrants.map((pair) => ({ name: pair.name, strength: pairScore(pair, tournament) })),
+      });
+      await entities.Tournament.update(tournament.id, {
+        bracket_history: bracket.bracket_history,
+        bracket_schema_version: 2,
+        participants: entrants.map((pair) => pair.name),
+        status: 'chaveamento',
+        current_phase: 'chaveamento',
+        draw_date: careerDate,
+        draw_participant_count: entrants.length,
+      });
+      drawn.push(tournament.id);
+    } catch (error) {
+      errors.push({ tournamentId: tournament.id, message: error?.message || String(error) });
+    }
+  }
+  return { drawn: drawn.length, cancelled: cancelled.length, errors };
+}
+
 function eventRegion(tournament) {
   return tournament.region || tournament.continent || tournament.country || tournament.location || 'global';
 }
@@ -356,6 +451,27 @@ function buildCanonicalPairs(partnerships, athletes) {
       // mesmo `partnerships` já carregado no topo desta função a cada
       // chamada, igual qualquer outro campo de estado deste pipeline.
       priorityWindowRemaining: Number(partnership.priority_window_remaining) || 0,
+    });
+  }
+  // Saves recém-criados podem ter a dupla canônica já materializada no
+  // AthleteProfile pelo save foundation, antes de o mercado criar a linha
+  // Partnership correspondente. O ID do parceiro é a mesma identidade
+  // persistida, então não há motivo para deixar o mundo sem pares durante
+  // essa janela: aceita o vínculo por ID e mantém partnershipId nulo até o
+  // registro de Partnership existir.
+  for (const athlete of athletes || []) {
+    const partnerId = athlete.ai_partner_id;
+    if (!partnerId || athlete.id === partnerId || seen.has(athlete.id) || seen.has(partnerId) || !byId.has(partnerId)) continue;
+    const partner = byId.get(partnerId);
+    const ids = [athlete.id, partner.id].sort();
+    ids.forEach((id) => seen.add(id));
+    pairs.push({
+      id: `profile-pair:${ids.join(':')}`,
+      partnershipId: null,
+      athletes: [athlete, partner],
+      name: [athlete, partner].map((member) => member.name).join(' & '),
+      chemistry: Number(athlete.ai_partnership_chemistry || partner.ai_partnership_chemistry || 50),
+      priorityWindowRemaining: 0,
     });
   }
   return pairs;
@@ -668,11 +784,13 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       for (const pair of ordered) {
         if (pair.priorityWindowRemaining > 0) pair.priorityWindowRemaining -= 1;
       }
-      const bracket = buildCanonicalTournamentBracket({
-        tournamentId: tournament.id,
-        date: tournamentEndDate(tournament),
-        participants: ordered.map((pair) => ({ name: pair.name, strength: pairScore(pair, tournament) })),
-      });
+      const bracket = Number(tournament.bracket_schema_version) >= 2 && Array.isArray(tournament.bracket_history)
+        ? { ...deriveTournamentFactsFromFullBracket(tournament.bracket_history), bracket_history: tournament.bracket_history }
+        : buildCanonicalTournamentBracket({
+          tournamentId: tournament.id,
+          date: tournamentEndDate(tournament),
+          participants: ordered.map((pair) => ({ name: pair.name, strength: pairScore(pair, tournament) })),
+        });
       const settlement = finalizeTournamentFromBracket({ tournament, bracket, date: careerDate });
       const champion = ordered.find((pair) => pair.name === settlement.result.champion) || ordered[0];
       const runnerUp = ordered.find((pair) => pair.name === settlement.result.runner_up) || ordered[1];
@@ -916,7 +1034,14 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
 
 export async function processWorldTourDay(careerDate) {
   try {
-    return await resolveCompletedWorldTourEvents(careerDate);
+    const draw = await ensureWorldTourDraws(careerDate);
+    const settlement = await resolveCompletedWorldTourEvents(careerDate);
+    return {
+      ...settlement,
+      drawn: draw.drawn,
+      cancelled: draw.cancelled,
+      errors: [...(draw.errors || []), ...(settlement.errors || [])],
+    };
   } catch (error) {
     // Antes devolvia só `error.message` e ficava no console — indistinguível,
     // no relatório, de "não havia nada para resolver". Agora o erro viaja com

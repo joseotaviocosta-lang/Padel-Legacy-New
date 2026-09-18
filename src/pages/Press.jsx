@@ -230,6 +230,15 @@ export default function Press() {
         career_date: profile.career_date,
         is_read: false,
       });
+      await localGame.entities.PressInterview
+        .filter({ profile_id: profile.id, source_id: interview.sourceId }, null, 1)
+        .then((records) => records?.[0]?.id
+          ? localGame.entities.PressInterview.update(records[0].id, {
+            interview_status: 'answered',
+            answered_at: new Date().toISOString(),
+          })
+          : null)
+        .catch(() => null);
 
       // Efeitos e contadores são aplicados uma única vez por sourceId, mesmo
       // após retry/reload. O artigo usa upsert com a mesma identidade.

@@ -160,6 +160,10 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   const operations = [];
   const careerDate = profile.career_date || '2026-01-01';
   const existing = await listCareerCommunications(profile.id, 200);
+  const existingInterviewRecords = await localGame.entities.PressInterview
+    .filter({ profile_id: profile.id }, '-created_date', 200)
+    .catch(() => []);
+  const interviewRecordsBySource = new Map((existingInterviewRecords || []).map((row) => [row.source_id, row]));
   const existingKeys = new Set(existing.map((row) => row.metadata?.context_key).filter(Boolean));
   const existingInterviewMatchIds = new Set(existing.map(matchIdFromInterviewMessage).filter(Boolean));
   const memory = buildCareerMemory(profile, context);
@@ -358,7 +362,10 @@ export async function ensureContextualCareerCommunications(profile, context = {}
     const sourceId = message.metadata?.interview_source_id;
     if (!sourceId || ['resolvida', 'invalidada', 'expirada'].includes(message.status)) continue;
     const completed = completedSources.has(sourceId);
-    const staleDerivedInterview = !isPostMatchInterviewMessage(message) && !actionableInterviewSources.has(sourceId);
+    const persistedInterview = interviewRecordsBySource.get(sourceId);
+    const staleDerivedInterview = !isPostMatchInterviewMessage(message)
+      && !actionableInterviewSources.has(sourceId)
+      && !persistedInterview;
     if (!completed && !staleDerivedInterview) continue;
     operations.push({
       type: 'update',
@@ -403,6 +410,20 @@ export async function ensureContextualCareerCommunications(profile, context = {}
   for (const interview of pendingInterviews.filter(item => !answeredSources.has(item.sourceId)).slice(0, 3)) {
     const interviewMatchId = /** @type {any} */ (interview).matchId;
     if (interviewMatchId && existingInterviewMatchIds.has(String(interviewMatchId))) continue;
+    const interviewRecordId = `press-interview-${profile.id}-${interview.sourceId}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
+    operations.push({ type: 'upsert', entityName: 'PressInterview', id: interviewRecordId, data: {
+      id: interviewRecordId,
+      profile_id: profile.id,
+      source_id: interview.sourceId,
+      interview_id: interview.id,
+      type: interview.type,
+      title: interview.title,
+      question_category: interview.questionCategory,
+      interview_status: 'available',
+      available_career_date: interview.availableFrom || careerDate,
+      expires_career_date: interview.expiresAt || interview.expires_career_date || null,
+      payload: interview,
+    } });
     await createOnce(`press-interview:${interview.sourceId}`, {
       sender_type: 'imprensa',
       sender_name: 'Assessoria de Imprensa',
@@ -423,6 +444,7 @@ export async function ensureContextualCareerCommunications(profile, context = {}
         interview_source_id: interview.sourceId,
         match_id: interviewMatchId || null,
         memory_type: 'press_opportunity',
+        interview_record_id: interviewRecordId,
       },
     });
   }

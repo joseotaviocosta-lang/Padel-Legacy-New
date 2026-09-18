@@ -274,7 +274,7 @@ export const WORLD_TOUR_CITIES = Object.freeze([
   { code:'BOG', city:'Bogotá', country:'Colômbia', region:'América do Sul', surface:'indoor' },
 ]);
 
-// Fase 3, item 3A/3C — 80 eventos/ano (era 24), distribuídos por config em
+// Playthrough 4.4 — calendário anual distribuído por config em
 // vez de uma lista de 80 tuplas escritas à mão. `Bronze`+`Silver` (os
 // únicos tiers com `minRanking:0`, item 3C.1) somam 40 eventos/ano — a
 // densidade que sustenta a meta de intervalo do jogador em #1000 (medida
@@ -284,16 +284,15 @@ export const WORLD_TOUR_CITIES = Object.freeze([
 // que a maior parte do "circuito base" do ano já aconteceu, pra que
 // "top 8"/"top 16" already reflita uma temporada real, não um sorteio de
 // janeiro.
-// Fase 8.7, item 1 — "topo-120" promovido a produção. Medido em modo
-// diagnóstico (`DIAG_TOP_EVENTS=120`) desde a Fase 6.7, recomendado pela
-// Fase 8 (participação individual: 63%→11% de reais abaixo do piso de 12
-// eventos/temporada) e reconfirmado pela Fase 8.2 (dominância de tier é
-// causa separada — calendário não a resolve nem piora, decisão
-// independente). Descartado o cenário "topo-76" por instabilidade de
-// forma (Fase 7.4) — só topo-120 vira padrão. Valores idênticos aos já
-// validados nas medições diagnósticas; nenhuma fórmula nova.
+// Playthrough 4.4 — calendário de elite rebalanceado: Masters=12, Elite=6,
+// Crown=2 (antes 44/10/4, o "topo-120" da Fase 8.7). Validado empiricamente
+// (regime-check da espiral de exclusão, reincidência 0% igual ao baseline
+// anterior; top-10 convergindo para os grandes eventos; 0% de cancelamento
+// em todos os tiers) contra os invariantes das Fases 7-8. Cada tier
+// top-tier tem no máximo 1 evento simultâneo — Masters/Elite/Crown nunca
+// competem entre si na mesma semana, evitando fragmentar a elite.
 const TIER_EVENTS_PER_YEAR = Object.freeze({
-  Bronze: 24, Silver: 16, Gold: 35, Platinum: 27, Masters: 44, Elite: 10, Crown: 4,
+  Bronze: 24, Silver: 16, Gold: 35, Platinum: 27, Masters: 12, Elite: 6, Crown: 2,
 });
 const REGULAR_SEASON_LAST_WEEK = 47;
 const SEASON_FINALE_WEEKS = Object.freeze({ 'Circuit Finals': 49, 'Legacy Finals': 52 });
