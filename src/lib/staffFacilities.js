@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { recordFinancialEntry } from '@/lib/financialLedger.js';
 export const STAFF_FACILITIES = {
   courts: {
     id: 'courts', name: 'Quadras de treinamento', icon: 'PanelsTopLeft', maxLevel: 5,
@@ -150,8 +151,10 @@ export async function upgradeStaffFacility(profile, facilityId) {
   const cost = getFacilityUpgradeCost(facilityId, currentLevel);
   if (Number(profile.coins || 0) < cost) throw new Error(`Saldo insuficiente. Necessário: ${cost.toLocaleString('pt-BR')} moedas.`);
   const nextFacilities = { ...levels, [facilityId]: currentLevel + 1 };
-  return localGame.entities.PlayerProfile.update(profile.id, {
+  const upgraded = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: Number(profile.coins || 0) - cost,
     staff_facilities: nextFacilities,
   });
+  await recordFinancialEntry({ id: `facility-${profile.id}-${facilityId}-${currentLevel + 1}`, profileId: profile.id, date: profile.career_date, type: 'expense', category: 'instalacoes', description: `Instalação: ${facility.name || facilityId} nível ${currentLevel + 1}`, amount: cost });
+  return upgraded;
 }

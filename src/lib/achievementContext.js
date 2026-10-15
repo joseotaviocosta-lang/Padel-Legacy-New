@@ -4,6 +4,7 @@
 // conquista avaliada. Mesmo formato que `context.worldRank` já usava antes
 // desta fase, só que reunido num só lugar.
 import { localGame } from '@/api/localGameClient.js';
+import { getExpandedCatalogSummary, normalizeShopItem } from '@/lib/storeCatalog.js';
 import { resolveActiveCoach } from '@/game-core/coachLifecycle.js';
 import { calculateAffinity } from '@/lib/coaches.js';
 import { isOfficialRankedTournament } from '@/lib/circuitCatalog.js';
@@ -87,7 +88,16 @@ async function fetchInventoryStats(profileId) {
     if (countKey) categoryCounts[countKey] += 1;
   }
   const totalCategoriesInCatalog = new Set(shopItems.map((item) => item.category).filter(Boolean)).size;
-  const totalRaritiesInCatalog = new Set(shopItems.map((item) => item.rarity).filter(Boolean)).size;
+  // 5.27-M: "Rainbow Collection" (4.000 moedas) comparava com a tabela
+  // ShopItem da carreira, que numa carreira nova só tem os 4 itens de
+  // demonstração, todos 'comum' — o grip inicial bastava para "todas as
+  // raridades". A referência passa a ser o catálogo canônico da Loja
+  // (storeCatalog.js), sempre completo; raridades normalizadas dos dois lados.
+  const canonicalRarities = Object.keys(getExpandedCatalogSummary().byRarity || {});
+  const totalRaritiesInCatalog = new Set([...shopItems.map((item) => normalizeShopItem(item).rarity), ...canonicalRarities].filter(Boolean)).size;
+  const ownedRarities = new Set(owned.map((row) => itemById.get(row.item_id)).filter(Boolean).map((item) => normalizeShopItem(item).rarity).filter(Boolean));
+  rarities.clear();
+  ownedRarities.forEach((rarity) => rarities.add(rarity));
   return { totalOwned: owned.length, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, ...categoryCounts };
 }
 
@@ -96,9 +106,13 @@ async function fetchTrainingCenter(profileId) {
   return rows[0] || null;
 }
 
+// 5.27-M: linhas `starter_seed` são o kit de partida da carreira (ver
+// CareerInitialDataService.remapSeedRow), não ações do jogador.
+const playerOwned = (rows) => (rows || []).filter((row) => !row?.starter_seed);
+
 async function fetchSponsorContracts(profileId) {
   const rows = await localGame.entities.PlayerContract.filter({ profile_id: profileId, is_active: true }).catch(() => []);
-  return { active: rows.length };
+  return { active: playerOwned(rows).length };
 }
 
 async function fetchPropertyCount(profileId) {
@@ -108,7 +122,7 @@ async function fetchPropertyCount(profileId) {
 
 async function fetchInvestmentCount(profileId) {
   const rows = await localGame.entities.PlayerInvestment.filter({ profile_id: profileId }).catch(() => []);
-  return rows.length;
+  return playerOwned(rows).length;
 }
 
 async function fetchCoachContext(profile) {

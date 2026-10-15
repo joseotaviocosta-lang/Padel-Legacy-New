@@ -121,10 +121,15 @@ export function getVisibleTournamentBracketState(tournament, careerDate) {
   const canonicalSchema = Number(tournament?.bracket_schema_version) >= 2;
 
   const rounds = [];
+  // Numeração global das partidas: offset = partidas de todas as rodadas anteriores.
+  const roundOffsets = [];
+  history.reduce((offset, round, index) => { roundOffsets[index] = offset; return offset + (Array.isArray(round?.matches) ? round.matches.length : 0); }, 0);
   for (let roundIndex = 0; roundIndex < history.length; roundIndex += 1) {
     const rawRound = history[roundIndex] || {};
     const rawMatches = Array.isArray(rawRound.matches) ? rawRound.matches : [];
     const previous = rounds[roundIndex - 1] || null;
+    const roundOffset = roundOffsets[roundIndex] || 0;
+    const previousRoundOffset = roundIndex > 0 ? roundOffsets[roundIndex - 1] || 0 : 0;
 
     let matches;
     if (canonicalSchema) {
@@ -157,21 +162,29 @@ export function getVisibleTournamentBracketState(tournament, careerDate) {
       // resolviam pro MESMO "Vencedor Jogo N" (o índice do primeiro id da
       // lista, buscado por inclusão) — uma dupla fantasma nos dois lados do
       // mesmo confronto.
-      const resolveSide = (rawName, rawSourceIds, isSideA) => {
+      // Playthrough 5.27-M — "Vencedor Jogo N" passa a usar a numeração
+      // GLOBAL da chave (quartas 1-4, semis 5-6, final 7 numa chave de 8),
+      // a mesma do rótulo "Partida N" do card. Antes N era o índice dentro
+      // da rodada anterior: a final mostrava "Vencedor Jogo 1 x Vencedor
+      // Jogo 2" (as semis), lido no celular como os jogos 1 e 2 das quartas
+      // — e o campeão real parecia não pertencer à árvore sorteada. Sem
+      // source_match_ids (saves antigos), o alimentador é o posicional
+      // (2·índice e 2·índice+1), que é o desenho da chave do jogador.
+      const resolveSide = (rawName, rawSourceIds, isSideA, matchIndex) => {
         if (roundIndex === 0) return rawName || 'Participante a definir';
-        if (!rawName) return placeholder(isSideA ? 1 : 2);
-        if (previousRoundByes.has(rawName)) return rawName; // BYE: fato desde o sorteio, não desde a data da rodada.
-        if (previousRoundDateReached) return rawName;
+        if (rawName && previousRoundByes.has(rawName)) return rawName; // BYE: fato desde o sorteio, não desde a data da rodada.
+        if (rawName && previousRoundDateReached) return rawName;
         const feederId = rawSourceIds.length === 2 ? rawSourceIds[isSideA ? 0 : 1] : (rawSourceIds[0] ?? null);
         const feederIndex = feederId != null ? previousRoundMatchIndexById.get(feederId) : undefined;
-        return placeholder(Number.isInteger(feederIndex) ? feederIndex + 1 : (isSideA ? 1 : 2));
+        const localNumber = Number.isInteger(feederIndex) ? feederIndex + 1 : (matchIndex * 2) + (isSideA ? 1 : 2);
+        return placeholder(previousRoundOffset + localNumber);
       };
-      matches = rawMatches.map((rawMatch) => {
+      matches = rawMatches.map((rawMatch, matchIndex) => {
         const rawTeamA = rawTeam(rawMatch, 'a');
         const rawTeamB = rawTeam(rawMatch, 'b');
         const rawSourceIds = Array.isArray(rawMatch.source_match_ids) ? rawMatch.source_match_ids.filter(Boolean) : [];
-        const teamA = resolveSide(rawTeamA, rawSourceIds, true);
-        const teamB = resolveSide(rawTeamB, rawSourceIds, false);
+        const teamA = resolveSide(rawTeamA, rawSourceIds, true, matchIndex);
+        const teamB = resolveSide(rawTeamB, rawSourceIds, false, matchIndex);
         const candidate = { ...rawMatch, team_a: teamA, team_b: teamB };
         const entrantsResolved = !isPlaceholder(teamA) && !isPlaceholder(teamB)
           && teamA !== 'Participante a definir' && teamB !== 'Participante a definir';
@@ -180,6 +193,7 @@ export function getVisibleTournamentBracketState(tournament, careerDate) {
           && [teamA, teamB].includes(teamName(rawMatch.winner));
         return {
           ...candidate,
+          match_number: roundOffset + matchIndex + 1,
           date: rawMatch.date || rawRound.date || null,
           status: terminal ? 'completed' : 'scheduled',
           winner: terminal ? teamName(rawMatch.winner) : null,

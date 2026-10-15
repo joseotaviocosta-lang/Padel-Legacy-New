@@ -511,7 +511,15 @@ export function buildPlayerTournamentBracket({
     });
   }
 
+  // Playthrough 5.27-M — o confronto da dupla do jogador nas rodadas >= 1
+  // nascia SEM source_match_ids: o grafo não dizia de onde vinham os dois
+  // lados, e a projeção da UI caía no rótulo fixo "Vencedor Jogo 1/2" (na
+  // final, lido como os jogos 1 e 2 das quartas). Os dois alimentadores são
+  // conhecidos desde o sorteio: a partida do jogador da rodada anterior
+  // (lado A) e a final da sub-chave que decide o adversário (lado B), sempre
+  // em `rounds[r-1].matches[1]` (ver `nextDecidedOpponent`).
   for (let r = 1; r < roundCount; r += 1) {
+    const opponentFeeder = roundsMatches[r - 1][1]?.match_id || null;
     roundsMatches[r].unshift({
       match_id: `${tournamentId || 'tournament'}:player:r${r}`,
       date: dateFor(r),
@@ -521,6 +529,7 @@ export function buildPlayerTournamentBracket({
       winner: null,
       score: null,
       player_match: true,
+      source_match_ids: [`${tournamentId || 'tournament'}:player:r${r - 1}`, opponentFeeder].filter(Boolean),
     });
   }
 
@@ -562,9 +571,16 @@ export function applyPlayerMatchToCanonicalBracket(rounds, {
   const match = next[roundIndex].matches[0];
   if (match.status === 'completed' && match.winner) return { rounds: next, idempotent: true };
 
-  match.team_a = playerTeamName;
-  match.team_b = opponentTeamName || match.team_b || 'Adversário a definir';
-  match.winner = won ? playerTeamName : match.team_b;
+  // Playthrough 5.27-M — IDENTIDADE CONGELADA NO SORTEIO. O nome da dupla do
+  // jogador e o do adversário já estão gravados na chave (rodada 0 pelo
+  // sorteio; rodadas seguintes pela propagação do vencedor). Antes, o nome
+  // ATUAL (perfil renomeado, parceiro resolvido em outro formato) sobrescrevia
+  // o lado gravado e a chave histórica mudava de composição depois do jogo.
+  // O nome atual só preenche um lado que o sorteio deixou vazio (saves antigos).
+  const frozenPlayerName = next[0]?.matches?.[0]?.team_a || playerTeamName;
+  match.team_a = match.team_a || frozenPlayerName;
+  match.team_b = match.team_b || opponentTeamName || 'Adversário a definir';
+  match.winner = won ? match.team_a : match.team_b;
   match.score = score;
   match.status = 'completed';
   if (date) match.date = date;

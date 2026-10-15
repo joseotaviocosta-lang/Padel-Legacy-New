@@ -828,6 +828,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         tournament,
         tournamentPatch: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status },
         mediaOperations,
+        rewardCoins: rewardAlreadyApplied ? 0 : Number(reward.updates?.coins ?? freshProfile.coins) - Number(freshProfile.coins || 0),
       }));
       const coreResult = await profiler.measure('persistSave', async () => localGame.batch(operations, { idempotencyKey: `tournament:${freshMatch.id}` }));
       if (careerId) {

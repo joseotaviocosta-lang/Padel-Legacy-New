@@ -151,11 +151,16 @@ export function buildTournamentRoundCoreOperations({
   tournament,
   tournamentPatch,
   mediaOperations = [],
+  rewardCoins = 0,
 }) {
   if (!matchRecord?.id || !profileId || !event?.id || !tournament?.id) throw new Error('Transição de rodada incompleta.');
+  // 5.27-M: a recompensa da partida entra no extrato no mesmo lote atômico
+  // da rodada; id = o da partida (idempotente em retry).
+  const coins = Math.max(0, Math.round(Number(rewardCoins) || 0));
   return [
     { type: 'upsert', entityName: 'Match', id: matchRecord.id, data: matchRecord },
     { type: 'playerUpdate', id: profileId, data: playerPatch || {} },
+    ...(coins > 0 ? [{ type: 'upsert', entityName: 'FinancialTransaction', id: `match-reward-${matchRecord.id}`, data: { profile_id: profileId, date: String(matchRecord.career_date || matchRecord.date || '').slice(0, 10) || null, type: 'income', category: 'partida', description: `Partida — ${tournament.name || 'torneio'}${matchRecord.tournament_round ? ` (${matchRecord.tournament_round})` : ''}`, amount: coins } }] : []),
     { type: 'update', entityName: 'CalendarEvent', id: event.id, data: eventPatch || {} },
     { type: 'update', entityName: 'Tournament', id: tournament.id, data: tournamentPatch || {} },
     ...mediaOperations,

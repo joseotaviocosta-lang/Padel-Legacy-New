@@ -250,6 +250,8 @@ export async function playTournamentRound(rt, A, { eventId, strategyId = 'balanc
     },
     tournament, tournamentPatch: { bracket_history: bracket, current_phase: nextRun.status === 'champion' ? 'concluido' : nextRun.status },
     mediaOperations: [],
+    // 5.27-M: mesmo argumento do TournamentModal (linha do extrato da partida).
+    rewardCoins: rewardAlreadyApplied ? 0 : Number(reward.updates?.coins ?? freshProfile.coins) - Number(freshProfile.coins || 0),
   }));
   const core = await localGame.batch(operations, { idempotencyKey: `tournament:${freshMatch.id}` });
   let updated = core.player || draft;

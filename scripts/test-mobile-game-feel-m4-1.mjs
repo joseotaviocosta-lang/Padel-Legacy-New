@@ -135,7 +135,7 @@ gate('Botões preservam feedback disabled e loading existente', baseButton.inclu
 gate('Bottom nav preserva cinco grupos e altura tokenizada', bottomNav.includes('grid-cols-5') && bottomNav.includes('--pl-bottom-nav-h'));
 gate('Bottom nav dá mais peso ao ícone e label menor', bottomNav.includes("h-[1.35rem]") && bottomNav.includes('text-[8.5px]'));
 gate('Bottom nav ativa é clara e a transição é curta', bottomNav.includes('bg-primary/15') && bottomNav.includes("duration: 0.15"));
-gate('Header global compacto preserva aria-label completo do evento', headerContext.includes("max-w-[6.75rem]") && headerContext.includes('aria-label={context.ariaLabel'));
+gate('Header global compacto preserva aria-label completo do evento', headerContext.includes("max-w-[6.75rem]") && headerContext.includes('context.ariaLabel || label') && headerContext.includes('aria-label={ariaLabel}'));
 gate('Shell usa tokens de header/bottom-nav e safe areas', appLayout.includes('--pl-header-h') && appLayout.includes('--pl-bottom-nav-h') && appLayout.includes('safe-area-inset-bottom'));
 // M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 2): folga acima da nav
 // aumentada de 0.5rem para 0.875rem — QA físico achou o botão "muito

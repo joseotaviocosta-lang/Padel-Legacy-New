@@ -14,6 +14,7 @@ import { computeItemPrice, BADGE_COLORS, isMarketEventActive, normalizeMarketEve
 import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
 import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
 import { getEquipmentMarketState } from '@/lib/sportsEconomyV26';
+import { recordFinancialEntry } from '@/lib/financialLedger.js';
 
 const PAGE_SIZE = 24;
 
@@ -237,6 +238,7 @@ export default function Shop() {
       const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         coins: (profile.coins || 0) - currentPrice,
       });
+      await recordFinancialEntry({ profileId: profile.id, date: profile.career_date, type: 'expense', category: 'loja', description: `Compra: ${item.name}`, amount: currentPrice });
       setProfile(updated);
       setOwnedIds(prev => new Set([...prev, item.id]));
       incrementMissionProgress(profile.id, 'buy_item').catch(() => {});

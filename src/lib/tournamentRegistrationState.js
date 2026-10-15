@@ -9,6 +9,7 @@
 // a janela de inscrição (tournamentRegistration.js, já canônica) e o
 // tournament_run (quando existe).
 import { getTournamentRegistrationWindow, normalizeGameDate } from '@/lib/tournamentRegistration.js';
+import { isTournamentCompletedAt } from '@/lib/tournamentBracketView.js';
 
 export const TOURNAMENT_REGISTRATION_STATE = Object.freeze({
   NOT_REGISTERED: 'NOT_REGISTERED',
@@ -38,7 +39,16 @@ export function getPlayerTournamentRegistrationState({ tournament, registration 
 
   if (registration?.status === 'withdrawn') return TOURNAMENT_REGISTRATION_STATE.WITHDRAWN;
   if (registration?.status === 'cancelled') return TOURNAMENT_REGISTRATION_STATE.CANCELLED;
-  if (registration?.status === 'completed') return TOURNAMENT_REGISTRATION_STATE.COMPLETED;
+  if (registration?.status === 'completed') {
+    // Playthrough 5.27-M — a inscrição vira 'completed' quando a CAMPANHA do
+    // jogador acaba (eliminação), não quando o torneio acaba. Com o torneio
+    // ainda em andamento o card dizia "Concluído" e a chave mostrava "A
+    // definir" nas rodadas seguintes — leitura de chave quebrada no playtest.
+    // Até o torneio terminar o estado honesto é "Eliminado"; "Concluído"
+    // (fix da 5.27-K) continua valendo quando o torneio termina.
+    if (tournament && !isTournamentCompletedAt(tournament, date)) return TOURNAMENT_REGISTRATION_STATE.ELIMINATED;
+    return TOURNAMENT_REGISTRATION_STATE.COMPLETED;
+  }
   if (registration?.status === 'missed') return TOURNAMENT_REGISTRATION_STATE.WITHDRAWN;
 
   const isActiveRegistration = registration?.status === 'confirmed' || registration?.status === 'pending';

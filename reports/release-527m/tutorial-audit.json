@@ -1,0 +1,942 @@
+{
+  "phase": "5.27-M",
+  "steps": [
+    {
+      "id": "tournament-registered",
+      "title": "Inscreva-se em um torneio",
+      "objective": "join_tournament",
+      "completion": "registerTournament → incrementMissionProgress(join_tournament) na inscrição confirmada",
+      "reward": {
+        "xp": 100,
+        "coins": 150
+      },
+      "changed": false
+    },
+    {
+      "id": "first-match",
+      "titleBefore": "Jogue sua primeira partida do circuito mundial",
+      "titleAfter": "Jogue sua primeira partida de torneio",
+      "objective": "play_matches",
+      "completionReal": "qualquer partida oficial de torneio (a Pré-Temporada inclusive) via incrementMissionProgress(play_matches)",
+      "reward": {
+        "xp": 100,
+        "coins": 150
+      },
+      "rewardChanged": false
+    }
+  ],
+  "observedBug": "Com a etapa first-match ativa e o jogador JÁ inscrito antes do sorteio (sem tournament_run), resolveFirstMatchAction caía no fallback \"Inscrever-se em um torneio\" — o jogador via \"Inscrever-se\" e a etapa só concluía depois da partida. O texto também dizia que a Pré-Temporada não valia, mas ela conclui a etapa.",
+  "fix": [
+    "CTA \"Ver torneios\" + \"a etapa conclui quando você jogar essa partida\" quando inscrito sem chave",
+    "texto da etapa alinhado à condição real",
+    "fato de reconciliação (tutorialState.matchCompleted) alinhado ao objetivo"
+  ],
+  "evidence": {
+    "continuous": [
+      {
+        "date": "2026-01-01",
+        "event": "career-created",
+        "coins": 950,
+        "currentStepId": "career-created",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "identity",
+        "coins": 1055,
+        "currentStepId": "career-created",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "partner",
+        "coins": 1260,
+        "currentStepId": "coaches-known",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "coach",
+        "coins": 1078,
+        "currentStepId": "first-training",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "training",
+        "coins": 1133,
+        "currentStepId": "calendar-known",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "registered",
+        "coins": 1318,
+        "currentStepId": "first-match",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "visits-done",
+        "coins": 1318,
+        "currentStepId": "first-match",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "sponsors",
+        "coins": 1318,
+        "currentStepId": "first-match",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-12",
+        "event": "match-0",
+        "outcome": "played",
+        "won": false,
+        "error": null,
+        "finalization": {
+          "status": "eliminated",
+          "coins": 12
+        }
+      },
+      {
+        "date": "2026-01-12",
+        "event": "after-match-0",
+        "coins": 2490,
+        "currentStepId": "staff-known",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-match",
+            "silent": false
+          }
+        ]
+      }
+    ],
+    "reload": [
+      {
+        "date": "2026-01-01",
+        "event": "career-created",
+        "coins": 950,
+        "currentStepId": "career-created",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "identity",
+        "coins": 1055,
+        "currentStepId": "career-created",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "partner",
+        "coins": 1260,
+        "currentStepId": "coaches-known",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "coach",
+        "coins": 1078,
+        "currentStepId": "first-training",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "training",
+        "coins": 1133,
+        "currentStepId": "calendar-known",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "registered",
+        "coins": 1318,
+        "currentStepId": "first-match",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "reload:after-registration"
+      },
+      {
+        "date": "2026-01-01",
+        "event": "visits-done",
+        "coins": 1318,
+        "currentStepId": "first-match",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-01",
+        "event": "sponsors",
+        "coins": 1318,
+        "currentStepId": "first-match",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-09",
+        "event": "reload:after-draw"
+      },
+      {
+        "date": "2026-01-12",
+        "event": "match-0",
+        "outcome": "played",
+        "won": false,
+        "error": null,
+        "finalization": {
+          "status": "eliminated",
+          "coins": 12
+        }
+      },
+      {
+        "date": "2026-01-12",
+        "event": "after-match-0",
+        "coins": 2490,
+        "currentStepId": "staff-known",
+        "rewarded": [
+          {
+            "key": "tutorial-difficulty-selected",
+            "silent": true
+          },
+          {
+            "key": "tutorial-career-created",
+            "silent": false
+          },
+          {
+            "key": "tutorial-athlete-named",
+            "silent": false
+          },
+          {
+            "key": "tutorial-side-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-style-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-appearance-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-profile-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-offers-reviewed",
+            "silent": false
+          },
+          {
+            "key": "tutorial-partner-selected",
+            "silent": false
+          },
+          {
+            "key": "tutorial-coaches-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-training",
+            "silent": false
+          },
+          {
+            "key": "tutorial-calendar-known",
+            "silent": false
+          },
+          {
+            "key": "tutorial-tournament-registered",
+            "silent": false
+          },
+          {
+            "key": "tutorial-first-match",
+            "silent": false
+          }
+        ]
+      },
+      {
+        "date": "2026-01-12",
+        "event": "reload:after-settlement"
+      },
+      {
+        "date": "2026-01-15",
+        "event": "reload:final"
+      }
+    ]
+  }
+}

@@ -21,7 +21,7 @@ export async function resolveFirstMatchAction(profile, careerId) {
   const fallback = {
     to: '/tournaments',
     cta: 'Inscrever-se em um torneio',
-    description: 'Escolha um torneio com inscrições abertas e confirme a vaga da dupla para disputar sua primeira partida oficial.',
+    description: 'Você não tem inscrição ativa: escolha um torneio com inscrições abertas e confirme a vaga da dupla. A etapa conclui quando você jogar a primeira partida.',
   };
   if (!profile?.id) return fallback;
 
@@ -32,7 +32,28 @@ export async function resolveFirstMatchAction(profile, careerId) {
   ]);
 
   const activeTournamentEvent = (tournamentEvents || []).find((event) => event.metadata?.tournament_run) || null;
-  if (!activeTournamentEvent) return fallback;
+  if (!activeTournamentEvent) {
+    // Playthrough 5.27-M — inscrito, mas a chave (e o tournament_run) só
+    // nasce no sorteio (D-3). Antes caía no fallback "Inscrever-se em um
+    // torneio" com o jogador JÁ inscrito — o playtest leu a etapa como
+    // "inscreva-se" enquanto ela só concluía depois da partida.
+    const registeredEvent = (tournamentEvents || [])
+      .filter((event) => event.metadata?.registration_id && event.related_id)
+      .sort((a, b) => String(a.start_date || '').localeCompare(String(b.start_date || '')))[0] || null;
+    if (registeredEvent) {
+      const name = registeredEvent.related_name || registeredEvent.title || 'o torneio';
+      const days = registeredEvent.start_date ? daysBetween(careerDate, registeredEvent.start_date) : null;
+      return {
+        // Sem chave ainda não há campanha para abrir em modo run.
+        to: '/tournaments',
+        cta: 'Ver torneios',
+        description: days != null && days > 0
+          ? `Você está inscrito em ${name}. A estreia é em ${days} dia${days === 1 ? '' : 's'} — a etapa conclui quando você jogar essa partida. Até lá, treine e avance o calendário.`
+          : `Você está inscrito em ${name}. A etapa conclui quando você jogar a primeira partida.`,
+      };
+    }
+    return fallback;
+  }
 
   const run = activeTournamentEvent.metadata?.tournament_run;
   const tournament = { id: activeTournamentEvent.related_id, name: run?.tournamentName || activeTournamentEvent.related_name };

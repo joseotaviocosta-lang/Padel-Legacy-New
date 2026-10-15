@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerHeaderContext } from '@/lib/careerHeaderContext.js';
-import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
 import { wasTournamentUnreachableAtCareerStart } from '@/lib/tournamentRegistration.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
@@ -83,22 +82,14 @@ export default function CareerHeaderContext({ profile, compact = false }) {
     </>
   );
 
-  // Hotfix page chrome (docs/PAGE_CHROME_TUTORIAL_HOTFIX.md, item 3): só o
-  // contexto de "próximo torneio" tem um destino único e óbvio — clicar
-  // reaproveita o mesmo deep link canônico do bloqueio de avanço/CTA "Ir
-  // para o torneio" (buildTournamentPlayRoute já cai em detalhes quando não
-  // há campanha ativa, via resolveTournamentOpenMode em Tournaments.jsx —
-  // nenhuma lógica nova de roteamento aqui).
-  if (context.tournamentId) {
-    return (
-      <Link to={buildTournamentPlayRoute(context.tournamentId)} className={`${className} transition-colors hover:border-primary/40 hover:bg-card/70`} title={context.ariaLabel || label} aria-label={context.ariaLabel || label}>
-        {inner}
-      </Link>
-    );
-  }
-
+  // Playthrough 5.27-M (playtest físico): o atalho continua MOSTRANDO o
+  // próximo torneio, mas o toque leva sempre à página geral de Torneios — o
+  // evento é aberto lá dentro ("Ver evento"/"Ver detalhes"). Antes o deep
+  // link (buildTournamentPlayRoute) abria o evento direto a partir do header.
+  // O atalho inteiro continua sendo um único alvo de toque.
+  const ariaLabel = context.tournamentId ? `${context.ariaLabel || label} — abrir Torneios` : 'Abrir torneios';
   return (
-    <Link to={APP_ROUTES.TOURNAMENTS} className={`${className} transition-colors hover:border-primary/40 hover:bg-card/70`} title="Abrir torneios" aria-label="Abrir torneios">
+    <Link to={APP_ROUTES.TOURNAMENTS} className={`${className} transition-colors hover:border-primary/40 hover:bg-card/70`} title={ariaLabel} aria-label={ariaLabel} data-header-tournament-shortcut="true">
       {inner}
     </Link>
   );

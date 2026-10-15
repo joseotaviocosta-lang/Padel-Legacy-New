@@ -1,0 +1,97 @@
+{
+  "createdAt": "2026-10-15T21:47:48.707Z",
+  "passed": 15,
+  "total": 15,
+  "results": [
+    {
+      "label": "repro: contínuo (Conquistas no dia 1)",
+      "ok": true,
+      "seconds": 14,
+      "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "label": "repro: sem abrir Conquistas",
+      "ok": true,
+      "seconds": 15,
+      "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "label": "repro: com save/reload",
+      "ok": true,
+      "seconds": 31,
+      "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "label": "test-historical-bracket-integrity-v527m",
+      "ok": true,
+      "seconds": 1,
+      "tail": "test-historical-bracket-integrity-v527m: 16/16 passaram"
+    },
+    {
+      "label": "test-bracket-winner-propagation-v527m",
+      "ok": true,
+      "seconds": 1,
+      "tail": "test-bracket-winner-propagation-v527m: 14/14 passaram"
+    },
+    {
+      "label": "test-historical-bracket-after-reload-v527m",
+      "ok": true,
+      "seconds": 0,
+      "tail": "test-historical-bracket-after-reload-v527m: 8/8 passaram"
+    },
+    {
+      "label": "test-no-current-partnership-bracket-rebuild-v527m",
+      "ok": true,
+      "seconds": 1,
+      "tail": "test-no-current-partnership-bracket-rebuild-v527m: 8/8 passaram"
+    },
+    {
+      "label": "test-reward-ledger-balance-v527m",
+      "ok": true,
+      "seconds": 0,
+      "tail": "test-reward-ledger-balance-v527m: 16/16 passaram"
+    },
+    {
+      "label": "test-reward-no-duplicate-first-week-v527m",
+      "ok": true,
+      "seconds": 12,
+      "tail": "test-reward-no-duplicate-first-week-v527m: 13/13 passaram | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "label": "test-financial-flow-dates-v527m",
+      "ok": true,
+      "seconds": 3,
+      "tail": "test-financial-flow-dates-v527m: 14/14 passaram"
+    },
+    {
+      "label": "test-financial-flow-reconciliation-v527m",
+      "ok": true,
+      "seconds": 0,
+      "tail": "test-financial-flow-reconciliation-v527m: 11/11 passaram"
+    },
+    {
+      "label": "test-tutorial-registration-condition-v527m",
+      "ok": true,
+      "seconds": 9,
+      "tail": "test-tutorial-registration-condition-v527m: 14/14 passaram | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "label": "test-header-tournament-shortcut-v527m",
+      "ok": true,
+      "seconds": 3,
+      "tail": "test-header-tournament-shortcut-v527m: 7/7 passaram"
+    },
+    {
+      "label": "test-name-save-android-path-v527m",
+      "ok": true,
+      "seconds": 13,
+      "tail": "test-name-save-android-path-v527m: 5/5 passaram | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "label": "test-completed-tournament-card-v527m",
+      "ok": true,
+      "seconds": 4,
+      "tail": "test-completed-tournament-card-v527m: 7/7 passaram"
+    }
+  ]
+}

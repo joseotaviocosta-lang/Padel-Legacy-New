@@ -1,0 +1,7 @@
+{
+  "phase": "5.27-M",
+  "component": "src/components/career/CareerHeaderContext.jsx",
+  "before": "Link to={buildTournamentPlayRoute(context.tournamentId)} → /tournaments?tournament=<id>&mode=run (abria o evento direto)",
+  "after": "Link to={APP_ROUTES.TOURNAMENTS} → /tournaments (página geral); rótulo e aria-label continuam com o próximo torneio; atalho inteiro é um único alvo",
+  "platforms": "mesmo componente no desktop e no mobile (compact só encurta o rótulo)"
+}

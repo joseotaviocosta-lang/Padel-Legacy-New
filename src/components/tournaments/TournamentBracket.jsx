@@ -94,7 +94,12 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
             <p className="mt-2 text-[10px] text-muted-foreground">Data prevista: {formatDate(tournament.start_date)}</p>
           )}
         </Surface>
-      ) : history.length > 0 ? <><div className="mb-3">
+      ) : history.length > 0 ? <>{!completed && (
+        // 5.27-M: com a campanha do jogador encerrada o card já não pede
+        // ação, mas o torneio continua — sem este aviso, "A definir" nas
+        // rodadas seguintes parecia uma chave quebrada.
+        <p className="mb-3 rounded-lg border border-border/40 bg-secondary/20 px-3 py-2 text-[11px] text-muted-foreground">Torneio em andamento: o resultado de cada rodada aparece na data em que ela é disputada.</p>
+      )}<div className="mb-3">
         <Tabs
           tabs={history.map((round, index) => ({ key: String(index), label: round.round }))}
           activeTab={String(activeRound)}
@@ -106,7 +111,7 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
 
       <div className="space-y-2">
         {(history[activeRound]?.matches || []).map((match, index) => (
-          <MatchCard key={`${activeRound}-${index}`} match={match} number={index + 1} byeNames={new Set(history[activeRound]?.byes || [])} />
+          <MatchCard key={`${activeRound}-${index}`} match={match} number={match.match_number || index + 1} byeNames={new Set(history[activeRound]?.byes || [])} />
         ))}
       </div>
       </> : (

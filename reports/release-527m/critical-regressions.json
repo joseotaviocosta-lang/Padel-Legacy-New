@@ -1,0 +1,369 @@
+{
+  "phase": "5.27-M",
+  "createdAt": "2026-10-15T22:14:57.413Z",
+  "critical527kSuite": {
+    "passed": 20,
+    "total": 20,
+    "results": [
+      {
+        "group": "Lifecycle",
+        "name": "test-partnership-registration-after-exit-v527j",
+        "ok": true,
+        "code": 0,
+        "seconds": 22,
+        "summary": "test-partnership-registration-after-exit-v527j: 9/9 passaram"
+      },
+      {
+        "group": "Lifecycle",
+        "name": "test-no-new-commitment-after-exit-v527j",
+        "ok": true,
+        "code": 0,
+        "seconds": 12,
+        "summary": "test-no-new-commitment-after-exit-v527j: 5/5 passaram"
+      },
+      {
+        "group": "Lifecycle",
+        "name": "test-preexisting-commitment-preserved-v527j",
+        "ok": true,
+        "code": 0,
+        "seconds": 22,
+        "summary": "test-preexisting-commitment-preserved-v527j: 5/5 passaram"
+      },
+      {
+        "group": "Lifecycle",
+        "name": "test-partnership-expiry-with-committed-tournament-v517",
+        "ok": true,
+        "code": 0,
+        "seconds": 9,
+        "summary": "test-partnership-expiry-with-committed-tournament-v517: PASS"
+      },
+      {
+        "group": "Lifecycle",
+        "name": "test-save-reload-pending-separation-v527j",
+        "ok": true,
+        "code": 0,
+        "seconds": 0,
+        "summary": "test-save-reload-pending-separation-v527j: 8/8 passaram"
+      },
+      {
+        "group": "Engine",
+        "name": "test-match-engine-identical-teams-v527f",
+        "ok": true,
+        "code": 0,
+        "seconds": 190,
+        "summary": "test-match-engine-identical-teams-v527f: 21/21 passaram"
+      },
+      {
+        "group": "Engine",
+        "name": "test-energy-sensitivity-v527f",
+        "ok": true,
+        "code": 0,
+        "seconds": 171,
+        "summary": "test-energy-sensitivity-v527f: 9/9 passaram"
+      },
+      {
+        "group": "Engine",
+        "name": "test-energy-single-application-v527f",
+        "ok": true,
+        "code": 0,
+        "seconds": 2,
+        "summary": "test-energy-single-application-v527f: 5/5 passaram"
+      },
+      {
+        "group": "Ranking",
+        "name": "test-zero-win-ranking-progression-v527f",
+        "ok": true,
+        "code": 0,
+        "seconds": 0,
+        "summary": "test-zero-win-ranking-progression-v527f: 4/4 passaram"
+      },
+      {
+        "group": "Ranking",
+        "name": "test-team-ranking-sum-formula-v522e",
+        "ok": true,
+        "code": 0,
+        "seconds": 0,
+        "summary": "test-team-ranking-sum-formula-v522e: PASS"
+      },
+      {
+        "group": "Ranking",
+        "name": "test-race-year-reset-v526c",
+        "ok": true,
+        "code": 0,
+        "seconds": 26,
+        "summary": "test-race-year-reset-v526c: 8/8 passaram"
+      },
+      {
+        "group": "Torneio",
+        "name": "test-registration-deadline-authority",
+        "ok": true,
+        "code": 0,
+        "seconds": 5,
+        "summary": "test-registration-deadline-authority: PASS"
+      },
+      {
+        "group": "Torneio",
+        "name": "test-bye-visible-from-draw",
+        "ok": true,
+        "code": 0,
+        "seconds": 3,
+        "summary": "test-bye-visible-from-draw: PASS"
+      },
+      {
+        "group": "Torneio",
+        "name": "test-masters-24-8byes-r16-v522f",
+        "ok": true,
+        "code": 0,
+        "seconds": 0,
+        "summary": "test-masters-24-8byes-r16-v522f: PASS (24 entrantes · 8 BYEs · seeds 1-8 · R16 com 16)"
+      },
+      {
+        "group": "Torneio",
+        "name": "test-settlement-uses-persisted-draw-roster",
+        "ok": true,
+        "code": 0,
+        "seconds": 182,
+        "summary": "test-settlement-uses-persisted-draw-roster: PASS"
+      },
+      {
+        "group": "Torneio",
+        "name": "test-tournament-result-authority",
+        "ok": true,
+        "code": 0,
+        "seconds": 5,
+        "summary": null
+      },
+      {
+        "group": "Parceria",
+        "name": "test-normal-partner-score-v527g",
+        "ok": true,
+        "code": 0,
+        "seconds": 2,
+        "summary": "test-normal-partner-score-v527g: 6/6 passaram"
+      },
+      {
+        "group": "Parceria",
+        "name": "test-optimizer-partner-refresh-v527i",
+        "ok": true,
+        "code": 0,
+        "seconds": 0,
+        "summary": "test-optimizer-partner-refresh-v527i: 5/5 passaram"
+      },
+      {
+        "group": "Parceria",
+        "name": "test-partner-resign-loop-v526c",
+        "ok": true,
+        "code": 0,
+        "seconds": 24,
+        "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+      },
+      {
+        "group": "Persistência",
+        "name": "test-achievement-reward-atomicity-v524e",
+        "ok": true,
+        "code": 0,
+        "seconds": 8,
+        "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+      }
+    ]
+  },
+  "phase527mTests": {
+    "passed": 15,
+    "total": 15,
+    "results": [
+      {
+        "label": "repro: contínuo (Conquistas no dia 1)",
+        "ok": true,
+        "seconds": 14,
+        "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+      },
+      {
+        "label": "repro: sem abrir Conquistas",
+        "ok": true,
+        "seconds": 15,
+        "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+      },
+      {
+        "label": "repro: com save/reload",
+        "ok": true,
+        "seconds": 31,
+        "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+      },
+      {
+        "label": "test-historical-bracket-integrity-v527m",
+        "ok": true,
+        "seconds": 1,
+        "tail": "test-historical-bracket-integrity-v527m: 16/16 passaram"
+      },
+      {
+        "label": "test-bracket-winner-propagation-v527m",
+        "ok": true,
+        "seconds": 1,
+        "tail": "test-bracket-winner-propagation-v527m: 14/14 passaram"
+      },
+      {
+        "label": "test-historical-bracket-after-reload-v527m",
+        "ok": true,
+        "seconds": 0,
+        "tail": "test-historical-bracket-after-reload-v527m: 8/8 passaram"
+      },
+      {
+        "label": "test-no-current-partnership-bracket-rebuild-v527m",
+        "ok": true,
+        "seconds": 1,
+        "tail": "test-no-current-partnership-bracket-rebuild-v527m: 8/8 passaram"
+      },
+      {
+        "label": "test-reward-ledger-balance-v527m",
+        "ok": true,
+        "seconds": 0,
+        "tail": "test-reward-ledger-balance-v527m: 16/16 passaram"
+      },
+      {
+        "label": "test-reward-no-duplicate-first-week-v527m",
+        "ok": true,
+        "seconds": 12,
+        "tail": "test-reward-no-duplicate-first-week-v527m: 13/13 passaram | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+      },
+      {
+        "label": "test-financial-flow-dates-v527m",
+        "ok": true,
+        "seconds": 3,
+        "tail": "test-financial-flow-dates-v527m: 14/14 passaram"
+      },
+      {
+        "label": "test-financial-flow-reconciliation-v527m",
+        "ok": true,
+        "seconds": 0,
+        "tail": "test-financial-flow-reconciliation-v527m: 11/11 passaram"
+      },
+      {
+        "label": "test-tutorial-registration-condition-v527m",
+        "ok": true,
+        "seconds": 9,
+        "tail": "test-tutorial-registration-condition-v527m: 14/14 passaram | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+      },
+      {
+        "label": "test-header-tournament-shortcut-v527m",
+        "ok": true,
+        "seconds": 3,
+        "tail": "test-header-tournament-shortcut-v527m: 7/7 passaram"
+      },
+      {
+        "label": "test-name-save-android-path-v527m",
+        "ok": true,
+        "seconds": 13,
+        "tail": "test-name-save-android-path-v527m: 5/5 passaram | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+      },
+      {
+        "label": "test-completed-tournament-card-v527m",
+        "ok": true,
+        "seconds": 4,
+        "tail": "test-completed-tournament-card-v527m: 7/7 passaram"
+      }
+    ]
+  },
+  "tournamentBracketTutorialHeader": {
+    "passed": 28,
+    "total": 28,
+    "note": "registration-v2, flow-rc, draw-ui-persistence, bracket-cta, bye, draw-notification x3, non-power-of-two, playthrough 4.3/4.4/4.5/4.5b, bracket-bye-ui, cancellation, canonical-results, result-authority, walkover, graph-integrity, onboarding v2/v3, tutorial x3, preseason-achievement-isolation, achievement-atomicity, settlement-uses-persisted-roster, partnership-change-does-not-rewrite-draw"
+  },
+  "touchedAreas": {
+    "results": [
+      {
+        "test": "test-achievements-audit",
+        "result": "ok"
+      },
+      {
+        "test": "test-career-atomicity",
+        "result": "ok"
+      },
+      {
+        "test": "test-career-beta-readiness",
+        "result": "ok"
+      },
+      {
+        "test": "test-career-coach-history",
+        "result": "ok"
+      },
+      {
+        "test": "test-career-null-safety",
+        "result": "ok"
+      },
+      {
+        "test": "test-career-pace-production",
+        "result": "now=124 head=124"
+      },
+      {
+        "test": "test-career-persistence-integrity",
+        "result": "now=1 head=1"
+      },
+      {
+        "test": "test-character-appearance-confirmed-bug",
+        "result": "ok"
+      },
+      {
+        "test": "test-coach-salary-consistency",
+        "result": "ok"
+      },
+      {
+        "test": "test-mission-reward-regression-v524e",
+        "result": "now=1 head=1"
+      },
+      {
+        "test": "test-phase15-5-1-critical-training-center",
+        "result": "now=1 head=1"
+      },
+      {
+        "test": "test-phase15-5-3-training-center-effects",
+        "result": "ok"
+      },
+      {
+        "test": "test-phase15-5-4-critical-mobile-qa",
+        "result": "now=1 head=1"
+      },
+      {
+        "test": "test-sponsor-eligibility-authority-v526c",
+        "result": "now=1 head=1"
+      },
+      {
+        "test": "test-starter-coach-flow",
+        "result": "ok"
+      },
+      {
+        "test": "test-training-center-unification-phase15-5",
+        "result": "now=1 head=1"
+      },
+      {
+        "test": "test-training-economy-balance-m4-2-1",
+        "result": "ok"
+      },
+      {
+        "test": "test-training-economy-m4-2-1",
+        "result": "ok"
+      },
+      {
+        "test": "test-tutorial-complete-flow",
+        "result": "ok"
+      },
+      {
+        "test": "test-tutorial-expanded-flow",
+        "result": "ok"
+      },
+      {
+        "test": "test-tutorial-reward-single-write-v524d",
+        "result": "ok"
+      },
+      {
+        "test": "test-tutorial-visit-auto-completion",
+        "result": "ok"
+      }
+    ],
+    "note": "now=X head=Y: falha idêntica no HEAD 565437f (worktree limpo) — preexistente, não introduzida nesta fase"
+  },
+  "updatedLegacyTests": [
+    "test-header-next-tournament (regra nova do atalho)",
+    "test-mobile-game-feel-m4-1 (aria-label)",
+    "test-onboarding-v3 (Pré-Temporada conta para first-match)"
+  ]
+}

@@ -221,14 +221,18 @@ try {
   // Fase 3, item 3C.3: e especificamente do CIRCUITO MUNDIAL, não da
   // Exibição — uma partida com `world_tour_event:false` NÃO conclui esta
   // etapa, mesmo sendo oficial/de torneio.
-  const exhibitionMatch = { id: 'match-exhibition', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true, world_tour_event: false };
-  state = (await reconcile({ registrations, matches: [exhibitionMatch], trainings })).state;
-  gate('Partida da EXIBIÇÃO (world_tour_event:false) NÃO conclui first-match', getCurrentTutorialStep(state)?.id === 'first-match');
+  // Playthrough 5.27-M: a etapa virou "Jogue sua primeira partida de
+  // torneio" — a Pré-Temporada vale (era o que o objetivo play_matches já
+  // fazia na prática). Partida de TREINO continua não valendo.
+  const practiceMatch = { id: 'match-practice', profile_id: profile.id, competition_type: 'practice', is_official: false, is_tournament: false };
+  state = (await reconcile({ registrations, matches: [practiceMatch], trainings })).state;
+  gate('Partida de TREINO NÃO conclui first-match', getCurrentTutorialStep(state)?.id === 'first-match');
 
-  const matches = [exhibitionMatch, { id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true, world_tour_event: true }];
+  const exhibitionMatch = { id: 'match-exhibition', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true, world_tour_event: false };
+  const matches = [practiceMatch, exhibitionMatch];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 2 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  gate('Partida do CIRCUITO MUNDIAL concluída (evento de domínio) → avança para a expansão guiada', getCurrentTutorialStep(state)?.id === 'staff-known');
+  gate('Primeira partida oficial de torneio (Pré-Temporada) concluída → avança para a expansão guiada', getCurrentTutorialStep(state)?.id === 'staff-known');
 
   for (const stepId of [
     'staff-known', 'economy-known', 'sponsors-known', 'opportunities-known',

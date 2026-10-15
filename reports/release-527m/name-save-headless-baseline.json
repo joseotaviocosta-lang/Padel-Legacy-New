@@ -1,0 +1,53 @@
+{
+  "phase": "5.27-M",
+  "runs": [
+    {
+      "run": 1,
+      "name": "Atleta Teste 1",
+      "ms": 39,
+      "fullCareerWrites": 2,
+      "bytesWritten": 4233757,
+      "coinsDelta": 35,
+      "persistedName": "Atleta Teste 1"
+    },
+    {
+      "run": 2,
+      "name": "Atleta Teste 2",
+      "ms": 19,
+      "fullCareerWrites": 1,
+      "bytesWritten": 2117402,
+      "coinsDelta": 0,
+      "persistedName": "Atleta Teste 2"
+    },
+    {
+      "run": 3,
+      "name": "Atleta Teste 3",
+      "ms": 20,
+      "fullCareerWrites": 1,
+      "bytesWritten": 2117402,
+      "coinsDelta": 0,
+      "persistedName": "Atleta Teste 3"
+    },
+    {
+      "run": 4,
+      "name": "Atleta Teste 4",
+      "ms": 21,
+      "fullCareerWrites": 1,
+      "bytesWritten": 2117402,
+      "coinsDelta": 0,
+      "persistedName": "Atleta Teste 4"
+    },
+    {
+      "run": 5,
+      "name": "Atleta Teste 5",
+      "ms": 21,
+      "fullCareerWrites": 1,
+      "bytesWritten": 2117402,
+      "coinsDelta": 0,
+      "persistedName": "Atleta Teste 5"
+    }
+  ],
+  "saveSizeBytes": 2117402,
+  "reloadedName": "Atleta Teste 5",
+  "errors": []
+}

@@ -1,0 +1,113 @@
+{
+  "phase": "5.27-M",
+  "path": "Missions.jsx saveAthleteName",
+  "cause": "Duas gravações COMPLETAS da carreira por salvamento (PlayerProfile.update + recompensa do tutorial em incrementMissionProgress). Cada gravação serializa ~2,1 MB e atravessa a ponte IPC do Tauri; no Android isso é sentido como congelamento curto. Botão já ficava desabilitado com \"Salvando...\".",
+  "fix": "src/onboarding/athleteNameSave.js: nome + recompensa numa única transação de persistência (mesmo mecanismo do treino): 1 gravação.",
+  "headlessBefore": {
+    "phase": "5.27-M",
+    "runs": [
+      {
+        "run": 1,
+        "name": "Atleta Teste 1",
+        "ms": 39,
+        "fullCareerWrites": 2,
+        "bytesWritten": 4233757,
+        "coinsDelta": 35,
+        "persistedName": "Atleta Teste 1"
+      },
+      {
+        "run": 2,
+        "name": "Atleta Teste 2",
+        "ms": 19,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117402,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 2"
+      },
+      {
+        "run": 3,
+        "name": "Atleta Teste 3",
+        "ms": 20,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117402,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 3"
+      },
+      {
+        "run": 4,
+        "name": "Atleta Teste 4",
+        "ms": 21,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117402,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 4"
+      },
+      {
+        "run": 5,
+        "name": "Atleta Teste 5",
+        "ms": 21,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117402,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 5"
+      }
+    ],
+    "saveSizeBytes": 2117402,
+    "reloadedName": "Atleta Teste 5",
+    "errors": []
+  },
+  "headlessAfter": {
+    "phase": "5.27-M",
+    "runs": [
+      {
+        "run": 1,
+        "name": "Atleta Teste 1",
+        "ms": 30,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117404,
+        "coinsDelta": 35,
+        "persistedName": "Atleta Teste 1"
+      },
+      {
+        "run": 2,
+        "name": "Atleta Teste 2",
+        "ms": 24,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117404,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 2"
+      },
+      {
+        "run": 3,
+        "name": "Atleta Teste 3",
+        "ms": 26,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117404,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 3"
+      },
+      {
+        "run": 4,
+        "name": "Atleta Teste 4",
+        "ms": 32,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117404,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 4"
+      },
+      {
+        "run": 5,
+        "name": "Atleta Teste 5",
+        "ms": 26,
+        "fullCareerWrites": 1,
+        "bytesWritten": 2117404,
+        "coinsDelta": 0,
+        "persistedName": "Atleta Teste 5"
+      }
+    ],
+    "saveSizeBytes": 2117404,
+    "reloadedName": "Atleta Teste 5",
+    "errors": []
+  },
+  "androidMeasurement": null
+}

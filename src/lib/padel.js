@@ -424,6 +424,12 @@ export async function ensureMyProfile(user) {
       weekly_training_plan: {},
       development_goals: [],
       did_physio_today: false,
+      // 5.27-M: perfil novo não tem conquistas antigas a reconhecer — a
+      // reconciliação silenciosa da Fase 12 (AchievementsPanel) é só para
+      // saves anteriores. Sem isto, abrir Conquistas antes da 1ª partida
+      // zerava a recompensa de conquistas legítimas (ex.: "Encontrou um
+      // Guia"), enquanto a 1ª sincronização pós-partida pagava tudo.
+      achievements_v2_reconciled: true,
     });
     return created;
   } catch (e) {
@@ -788,6 +794,25 @@ async function rewardMissionAutomatically(profileId, mission, progressRow, optio
 // / reward_delivered por mission_id + period_key) — nenhuma fonte nova.
 // `options.progressPatch` carrega o progresso que antes era gravado numa
 // escrita separada logo antes desta: 1ª aplicação = 1 escrita.
+// Playthrough 5.27-M — toda recompensa que muda o saldo vira uma linha do
+// extrato (FinancialTransaction), gravada NO MESMO lote da recompensa: o
+// playtest físico viu o saldo crescer milhares de moedas sem nenhuma entrada
+// no Fluxo Financeiro. Id determinístico = a mesma chave de idempotência da
+// recompensa (o MissionProgress): reprocessar nunca duplica a linha.
+export function missionRewardTransactionOperation(profileId, mission, progressId, careerDate) {
+  const amount = Number(mission?.coins_reward || 0);
+  if (!amount || !progressId) return null;
+  const tutorial = mission.mission_type === 'tutorial';
+  return {
+    type: 'upsert', entityName: 'FinancialTransaction', id: `reward-${progressId}`,
+    data: {
+      profile_id: profileId, date: String(careerDate || '').slice(0, 10) || null, type: 'income',
+      category: tutorial ? 'tutorial' : 'missao', source_id: progressId,
+      description: `${tutorial ? 'Tutorial' : 'Missão'}: ${mission.title || mission.catalog_key || mission.id}`, amount,
+    },
+  };
+}
+
 async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow, options = {}) {
   if (!progressRow || progressRow.claimed) return progressRow;
   const latestRows = await localGame.entities.MissionProgress.filter({ id: progressRow.id, profile_id: profileId });
@@ -831,7 +856,8 @@ async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRo
         medals,
       },
     },
-  ], { caller: 'missions.rewardMissionAutomatically' });
+    missionRewardTransactionOperation(profileId, mission, progressRow.id, profile.career_date),
+  ].filter(Boolean), { caller: 'missions.rewardMissionAutomatically' });
   const claimed = records?.[0] || { ...latest, status: 'rewarded', claimed: true, reward_delivered: true };
   // Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
   if (typeof window !== 'undefined' && player) {
@@ -980,6 +1006,8 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
                 medals: medal && !(batchedProfile.medals || []).includes(medal) ? [...(batchedProfile.medals || []), medal] : (batchedProfile.medals || []),
               };
               batchedPlayerChanged = true;
+              const rewardTx = missionRewardTransactionOperation(profileId, m, progressId, careerDate);
+              if (rewardTx) batchedOperations.push(rewardTx);
               batchedCompletionEvents.push({ mission: m, completedAt, cycleId: periodKey, medal });
             }
           } else {

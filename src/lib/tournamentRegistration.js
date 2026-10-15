@@ -331,6 +331,8 @@ export async function registerTournament({ player, partner, tournament, teamRank
     ...(usedWildcard ? { wildcard_tokens: Number(player.wildcard_tokens) - 1 } : {}),
   };
   const updatedProfile = Object.keys(profilePatch).length ? await localGame.entities.PlayerProfile.update(player.id, profilePatch) : player;
+  // 5.27-M: a taxa de inscrição entra no extrato (id = o da inscrição: idempotente).
+  if (fee) await localGame.entities.FinancialTransaction.upsert(`entry-fee-${id}`, { profile_id: player.id, date: normalizeGameDate(player.career_date), type: 'expense', category: 'inscricao', description: `Inscrição — ${tournament.name}`, amount: fee });
   await localGame.entities.CalendarEvent.upsert(`calendar-${id}`, {
     id: `calendar-${id}`, profile_id: player.id, event_type: 'tournament', title: tournament.name, start_date: interval.start, end_date: interval.end,
     related_id: tournament.id, related_name: tournament.name, status: 'scheduled', is_mandatory: true, requires_decision: true, decision_type: 'play_tournament',
@@ -362,6 +364,7 @@ export async function cancelTournamentRegistration({ player, registration, tourn
   const events = await localGame.entities.CalendarEvent.filter({ profile_id: player.id, related_id: registration.tournament_id, status: 'scheduled' });
   await Promise.all(events.map(event => localGame.entities.CalendarEvent.update(event.id, { status: 'cancelled', metadata: { ...(event.metadata || {}), cancellation_reason: 'registration_cancelled' } })));
   const profile = refund ? await localGame.entities.PlayerProfile.update(player.id, { coins: Number(player.coins || 0) + refund }) : player;
+  if (refund) await localGame.entities.FinancialTransaction.upsert(`entry-refund-${registration.id}`, { profile_id: player.id, date, type: 'income', category: 'inscricao', description: `Reembolso de inscrição — ${tournament?.name || registration.tournament_name || ''}`.trim(), amount: refund });
   return { success: true, registration: updated, profile, refund };
 }
 

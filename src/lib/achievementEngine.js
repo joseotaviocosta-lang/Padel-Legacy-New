@@ -245,6 +245,16 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
         reward_coins: rewardCoins,
       },
     });
+    // 5.27-M: a moeda paga entra no extrato no MESMO lote (id = o do registro
+    // da conquista, que já é a guarda de idempotência).
+    if (rewardCoins > 0) {
+      operations.push({
+        type: 'upsert',
+        entityName: 'FinancialTransaction',
+        id: `reward-pa-${achievement.id}-${profile.id}`,
+        data: { profile_id: profile.id, date: String(profile.career_date || '').slice(0, 10) || null, type: 'income', category: 'conquista', source_id: `pa-${achievement.id}-${profile.id}`, description: `Conquista: ${achievement.name}`, amount: rewardCoins },
+      });
+    }
     xpGain += rewardXp;
     coinsGain += rewardCoins;
     unlocked.push(achievement);

@@ -19,6 +19,7 @@ import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
 import { useCareer } from '@/careers/useCareer.js';
 import AchievementsPanel from '@/components/achievements/AchievementsPanel.jsx';
 import { summarizeAchievements } from '@/lib/achievementEngine.js';
+import { saveAthleteNameFlow } from '@/onboarding/athleteNameSave.js';
 
 // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 7/8): as
 // missões diárias/semanais/mensais/sazonais (antes definidas aqui em
@@ -276,8 +277,8 @@ function Missions() {
     setSavingChoice(true);
     setActionError(''); setActionFeedback('Salvando nome...');
     try {
-      const updated = await localGame.entities.PlayerProfile.update(profile.id, { sport_name: name });
-      await incrementMissionProgress(updated.id, 'set_player_name', 1, updated.career_date);
+      // 5.27-M: nome + recompensa do tutorial numa única gravação da carreira.
+      await saveAthleteNameFlow(profile, name);
       setAthleteName(name);
       setActionFeedback('Nome salvo. Próximo passo: escolha seu lado de jogo.');
       notifyProfileUpdated(await load(), 'athlete-named');

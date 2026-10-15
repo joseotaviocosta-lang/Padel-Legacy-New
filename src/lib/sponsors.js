@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { publishContractEvent } from '@/lib/contractNews.js';
 import { ageAtDate } from '@/lib/padel.js';
 import { getBalance527, hasSponsorProof } from '@/lib/balance527.js';
+import { recordFinancialEntry } from '@/lib/financialLedger.js';
 
 // ─── Expanded Sponsor Catalog ────────────────────────────────────────────────
 // Each sponsor has own objectives, budget, preferences, marketing demands,
@@ -658,9 +659,11 @@ export async function signSponsorContract(profile, sponsor) {
     kind: 'sponsor', partyName: sponsor.name, careerDate, months: offer.duration_months,
   });
 
-  return await localGame.entities.PlayerProfile.update(profile.id, {
+  const signed = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + offer.sign_bonus,
   });
+  await recordFinancialEntry({ id: `sponsor-signing-${profile.id}-${sponsor.id}-${careerDate}`, profileId: profile.id, date: careerDate, type: 'income', category: 'patrocinio', description: `Luvas de patrocínio — ${sponsor.name}`, amount: offer.sign_bonus });
+  return signed;
 }
 
 export async function renewContract(contract, sponsor, profile) {
@@ -703,9 +706,11 @@ export async function renewContract(contract, sponsor, profile) {
     kind: 'sponsor', partyName: sponsor.name, careerDate, months: offer.duration_months, renewal: true,
   });
 
-  return await localGame.entities.PlayerProfile.update(profile.id, {
+  const renewed = await localGame.entities.PlayerProfile.update(profile.id, {
     coins: (profile.coins || 0) + renewalBonus,
   });
+  await recordFinancialEntry({ id: `sponsor-renewal-${contract.id}-${careerDate}`, profileId: profile.id, date: careerDate, type: 'income', category: 'patrocinio', description: `Renovação de patrocínio — ${sponsor.name}`, amount: renewalBonus });
+  return renewed;
 }
 
 export async function terminateSponsorContract(contract, reason = 'Rescisão voluntária') {

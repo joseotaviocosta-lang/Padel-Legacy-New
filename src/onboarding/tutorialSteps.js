@@ -224,8 +224,13 @@ export const TUTORIAL_STEPS = [
   // !== false). Pode acontecer dias depois; nunca trava o resto do jogo —
   // o Guia flutuante mostra a etapa pendente sem bloquear nenhuma outra
   // tela enquanto o torneio não chega.
-  step('first-match', 'play_matches', 'Jogue sua primeira partida do circuito mundial', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
-    explanation: 'A Exibição de pré-temporada é um bom aquecimento, mas esta etapa pede uma partida de um evento do Circuito Mundial de verdade. No dia do torneio, jogue a partida — o técnico ao vivo orienta táticas durante o jogo. Depois do resultado, responda a entrevista pós-jogo se ela for gerada, e siga para a próxima rodada.',
+  // Playthrough 5.27-M — o texto dizia "do circuito mundial" e que a
+  // Exibição não valia, mas a etapa conclui pelo objetivo `play_matches`,
+  // disparado por QUALQUER partida oficial de torneio (a Pré-Temporada
+  // inclusive — medido no playtest e no repro headless). Texto alinhado à
+  // condição real; id/objectiveType/recompensa inalterados.
+  step('first-match', 'play_matches', 'Jogue sua primeira partida de torneio', APP_ROUTES.TOURNAMENTS, 'Competições', 'domain_event', {
+    explanation: 'Você já está inscrito: esta etapa conclui quando você jogar a primeira partida do torneio (a Pré-Temporada vale). Até o dia da estreia, treine e avance o calendário; no dia, jogue a partida — o técnico ao vivo orienta táticas durante o jogo.',
     whyItMatters: 'O resultado mostra como treino, parceiro e tática funcionaram juntos.',
     reward: { xp: 100, coins: 150 },
     kind: 'EVENT',

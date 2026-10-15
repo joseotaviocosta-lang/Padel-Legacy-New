@@ -1,0 +1,2943 @@
+{
+  "phase": "5.27-M",
+  "seed": "v527m-playtest",
+  "reload": true,
+  "startDate": "2026-01-01",
+  "endDate": "2026-01-15",
+  "days": 14,
+  "financialFlow": [
+    {
+      "month": "2026-01",
+      "label": "Jan/2026",
+      "lines": [
+        {
+          "key": "conquista",
+          "label": "Conquistas",
+          "amount": 1000
+        },
+        {
+          "key": "tutorial",
+          "label": "Recompensas do tutorial",
+          "amount": 805
+        },
+        {
+          "key": "treinador",
+          "label": "Treinador",
+          "amount": -217
+        },
+        {
+          "key": "treino",
+          "label": "Treinos",
+          "amount": -20
+        },
+        {
+          "key": "torneio",
+          "label": "Prêmios de torneio",
+          "amount": 12
+        },
+        {
+          "key": "partida",
+          "label": "Partidas",
+          "amount": 10
+        }
+      ],
+      "income": 1827,
+      "expense": 237,
+      "net": 1590
+    }
+  ],
+  "financialFlowNet": 1590,
+  "financialFlowReconciled": true,
+  "undatedTransactions": 0,
+  "startCoins": 900,
+  "endCoins": 2490,
+  "delta": 1590,
+  "ledgerSum": 1590,
+  "reconciled": true,
+  "registration": "ok",
+  "signedSponsors": [],
+  "partner": "Clément Fontaine",
+  "coach": "Caio Silva",
+  "bySource": {
+    "tutorial:visit_career(Começar tutorial)": 50,
+    "onboarding": 105,
+    "tutorial:visit_character": 35,
+    "tutorial:review_profile": 35,
+    "tutorial:review_partner_offer": 35,
+    "partner": 100,
+    "coach": -182,
+    "training": 55,
+    "tutorial:visit_calendar": 35,
+    "registration": 150,
+    "achievements-panel:day1": 500,
+    "tournament-match": 672
+  },
+  "ledger": [
+    {
+      "date": null,
+      "label": "tutorial:visit_career(Começar tutorial)",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 900,
+      "after": 950,
+      "delta": 50,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "onboarding",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 950,
+      "after": 985,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "onboarding",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 985,
+      "after": 1020,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "onboarding",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1020,
+      "after": 1055,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "tutorial:visit_character",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1055,
+      "after": 1090,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "tutorial:review_profile",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1090,
+      "after": 1125,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "tutorial:review_partner_offer",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1125,
+      "after": 1160,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "partner",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1160,
+      "after": 1260,
+      "delta": 100,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "coach",
+      "via": "batch[playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1260,
+      "after": 1043,
+      "delta": -217,
+      "site": "async Module.hirePrimaryCoach src/game-core/coachLifecycle.js:200:21"
+    },
+    {
+      "date": null,
+      "label": "coach",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1043,
+      "after": 1078,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": "2026-01-01",
+      "label": "training",
+      "via": "PlayerProfile.update",
+      "before": 1078,
+      "after": 1058,
+      "delta": -20,
+      "site": "async executeTrainingWork src/lib/trainingSystemV2.js:306:19"
+    },
+    {
+      "date": null,
+      "label": "training",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1058,
+      "after": 1133,
+      "delta": 75,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "tutorial:visit_calendar",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1133,
+      "after": 1168,
+      "delta": 35,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "registration",
+      "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+      "before": 1168,
+      "after": 1318,
+      "delta": 150,
+      "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+    },
+    {
+      "date": null,
+      "label": "achievements-panel:day1",
+      "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+      "before": 1318,
+      "after": 1818,
+      "delta": 500,
+      "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+    },
+    {
+      "date": null,
+      "label": "tournament-match:2026-01-12",
+      "via": "batch[upsert:TeamRanking,update:Partnership,upsert:Match,playerUpdate:,upsert:FinancialTransaction,update:CalendarEvent,update:Tournament]",
+      "before": 1818,
+      "after": 1828,
+      "delta": 10,
+      "site": "async playTournamentRound (filscripts/lib/v526Tournament.mjs:256:16"
+    },
+    {
+      "date": null,
+      "label": "tournament-match:2026-01-12",
+      "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+      "before": 1828,
+      "after": 2328,
+      "delta": 500,
+      "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+    },
+    {
+      "date": null,
+      "label": "tournament-match:2026-01-12",
+      "via": "batch[upsert:MissionProgress,upsert:FinancialTransaction,upsert:AthleteRankingResult,update:AthleteProfile,upsert:TeamRanking,update:Tournament,update:Tournamen",
+      "before": 2328,
+      "after": 2490,
+      "delta": 162,
+      "site": "async Module.incrementMissionProgress src/lib/padel.js:1102:9"
+    }
+  ],
+  "daily": [
+    {
+      "day": 1,
+      "date": "2026-01-02",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 2,
+      "date": "2026-01-03",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 3,
+      "date": "2026-01-04",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 4,
+      "date": "2026-01-05",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 5,
+      "date": "2026-01-06",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 6,
+      "date": "2026-01-07",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 7,
+      "date": "2026-01-08",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": null
+      }
+    },
+    {
+      "day": 8,
+      "date": "2026-01-09",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": "preparing"
+      }
+    },
+    {
+      "day": 9,
+      "date": "2026-01-10",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": "preparing"
+      }
+    },
+    {
+      "day": 10,
+      "date": "2026-01-11",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": "preparing"
+      }
+    },
+    {
+      "day": 11,
+      "date": "2026-01-12",
+      "coins": 1818,
+      "tutorialStep": "first-match",
+      "tutorialCompleted": 13,
+      "missionsRewarded": 13,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "scheduled",
+        "run": "preparing"
+      }
+    },
+    {
+      "day": 12,
+      "date": "2026-01-13",
+      "coins": 2490,
+      "tutorialStep": "staff-known",
+      "tutorialCompleted": 14,
+      "missionsRewarded": 14,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "completed",
+        "run": "eliminated"
+      }
+    },
+    {
+      "day": 13,
+      "date": "2026-01-14",
+      "coins": 2490,
+      "tutorialStep": "staff-known",
+      "tutorialCompleted": 14,
+      "missionsRewarded": 14,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "completed",
+        "run": "eliminated"
+      }
+    },
+    {
+      "day": 14,
+      "date": "2026-01-15",
+      "coins": 2490,
+      "tutorialStep": "staff-known",
+      "tutorialCompleted": 14,
+      "missionsRewarded": 14,
+      "partner": {
+        "name": "Clément Fontaine",
+        "status": "ativo"
+      },
+      "tournament": {
+        "status": "completed",
+        "run": "eliminated"
+      }
+    }
+  ],
+  "tutorialLog": [
+    {
+      "date": "2026-01-01",
+      "event": "career-created",
+      "coins": 950,
+      "currentStepId": "career-created",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "identity",
+      "coins": 1055,
+      "currentStepId": "career-created",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "partner",
+      "coins": 1260,
+      "currentStepId": "coaches-known",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "coach",
+      "coins": 1078,
+      "currentStepId": "first-training",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-coaches-known",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "training",
+      "coins": 1133,
+      "currentStepId": "calendar-known",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-coaches-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-first-training",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "registered",
+      "coins": 1318,
+      "currentStepId": "first-match",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-coaches-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-first-training",
+          "silent": false
+        },
+        {
+          "key": "tutorial-calendar-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-tournament-registered",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "reload:after-registration"
+    },
+    {
+      "date": "2026-01-01",
+      "event": "visits-done",
+      "coins": 1318,
+      "currentStepId": "first-match",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-coaches-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-first-training",
+          "silent": false
+        },
+        {
+          "key": "tutorial-calendar-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-tournament-registered",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-01",
+      "event": "sponsors",
+      "coins": 1318,
+      "currentStepId": "first-match",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-coaches-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-first-training",
+          "silent": false
+        },
+        {
+          "key": "tutorial-calendar-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-tournament-registered",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-09",
+      "event": "reload:after-draw"
+    },
+    {
+      "date": "2026-01-12",
+      "event": "match-0",
+      "outcome": "played",
+      "won": false,
+      "error": null,
+      "finalization": {
+        "status": "eliminated",
+        "coins": 12
+      }
+    },
+    {
+      "date": "2026-01-12",
+      "event": "after-match-0",
+      "coins": 2490,
+      "currentStepId": "staff-known",
+      "rewarded": [
+        {
+          "key": "tutorial-difficulty-selected",
+          "silent": true
+        },
+        {
+          "key": "tutorial-career-created",
+          "silent": false
+        },
+        {
+          "key": "tutorial-athlete-named",
+          "silent": false
+        },
+        {
+          "key": "tutorial-side-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-style-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-appearance-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-profile-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-offers-reviewed",
+          "silent": false
+        },
+        {
+          "key": "tutorial-partner-selected",
+          "silent": false
+        },
+        {
+          "key": "tutorial-coaches-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-first-training",
+          "silent": false
+        },
+        {
+          "key": "tutorial-calendar-known",
+          "silent": false
+        },
+        {
+          "key": "tutorial-tournament-registered",
+          "silent": false
+        },
+        {
+          "key": "tutorial-first-match",
+          "silent": false
+        }
+      ]
+    },
+    {
+      "date": "2026-01-12",
+      "event": "reload:after-settlement"
+    },
+    {
+      "date": "2026-01-15",
+      "event": "reload:final"
+    }
+  ],
+  "bracketMoments": [
+    {
+      "moment": "pre-registration",
+      "careerDate": "2026-01-01",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "inscricoes",
+      "current_phase": "inscricoes",
+      "bracket_schema_version": null,
+      "champion": null,
+      "runner_up": null,
+      "registrationRoster": [],
+      "drawPairIds": null,
+      "runMatches": null,
+      "raw": [],
+      "view": {
+        "drawn": false,
+        "completed": false,
+        "champion": null,
+        "rounds": []
+      },
+      "viewPlaceholders": 0
+    },
+    {
+      "moment": "pre-draw",
+      "careerDate": "2026-01-01",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "inscricoes",
+      "current_phase": "inscricoes",
+      "bracket_schema_version": null,
+      "champion": null,
+      "runner_up": null,
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "confirmed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": null,
+      "runMatches": null,
+      "raw": [],
+      "view": {
+        "drawn": false,
+        "completed": false,
+        "champion": null,
+        "rounds": []
+      },
+      "viewPlaceholders": 0
+    },
+    {
+      "moment": "post-draw",
+      "careerDate": "2026-01-09",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "chaveamento",
+      "current_phase": "preparing",
+      "bracket_schema_version": 2,
+      "champion": null,
+      "runner_up": null,
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "confirmed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": [
+        "partnership-athleteprofile-1791117550019-2vm4jn-athleteprofile-1791117574019-hzimug-2026-01-01",
+        "partnership-athleteprofile-1791117502019-hen7p7-athleteprofile-1791117536019-264lpc-2026-01-01",
+        "partnership-athleteprofile-1791117453019-bgmp7t-athleteprofile-1791117503019-pml4f4-2026-01-01",
+        "partnership-athleteprofile-1791117505019-tz5hyw-athleteprofile-1791117579019-zrlres-2026-01-01",
+        "partnership-athleteprofile-1791117523019-nu6tu3-athleteprofile-1791117538019-umavek-2026-01-01",
+        "partnership-athleteprofile-1791117518019-w23b10-athleteprofile-1791117567019-k36zc7-2026-01-01",
+        "partnership-athleteprofile-1791117490019-5ino4k-athleteprofile-1791117529019-1fhsno-2026-01-01"
+      ],
+      "runMatches": [
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "round": "Quartas de Final",
+          "stage": "main",
+          "date": "2026-01-12",
+          "status": "scheduled",
+          "opponent": [
+            "Samuel Silva 971",
+            "Samuel Miranda"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-1",
+          "round": "Semifinal",
+          "stage": "main",
+          "date": "2026-01-13",
+          "status": "scheduled",
+          "opponent": [
+            "Tomás Sánchez 957",
+            "Bruno Fernández"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-2",
+          "round": "Final",
+          "stage": "main",
+          "date": "2026-01-14",
+          "status": "scheduled",
+          "opponent": [
+            "Martín Ortiz",
+            "Miguel Iglesias"
+          ],
+          "won": null,
+          "score": null
+        }
+      ],
+      "raw": [
+        {
+          "round": "Quartas de final",
+          "date": "2026-01-12",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r0",
+              "team_a": "Atleta Repro & Clément Fontaine",
+              "team_b": "Samuel Silva 971 & Samuel Miranda",
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+              "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+              "team_b": "Tomás Navarro & Mateo Castro",
+              "winner": "Tomás Sánchez 957 & Bruno Fernández",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+              "team_a": "Martín Romero 911 & Bruno Herrera 950",
+              "team_b": "Rubén Campos 939 & Rafael Miranda",
+              "winner": "Martín Romero 911 & Bruno Herrera 950",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Semifinais",
+          "date": "2026-01-13",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r1",
+              "team_a": null,
+              "team_b": null,
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r0",
+                "tournament-2026-rom-exh-2026:opp1:r0:m0"
+              ],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Martín Romero 911 & Bruno Herrera 950",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "tournament-2026-rom-exh-2026:opp2:r0:m1"
+              ],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Final",
+          "date": "2026-01-14",
+          "is_final": true,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r2",
+              "team_a": null,
+              "team_b": null,
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r1",
+                "tournament-2026-rom-exh-2026:opp2:r1:m0"
+              ],
+              "player_match": true
+            }
+          ]
+        }
+      ],
+      "view": {
+        "drawn": true,
+        "completed": false,
+        "champion": null,
+        "rounds": [
+          {
+            "round": "Quartas de final",
+            "date": "2026-01-12",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r0",
+                "team_a": "Atleta Repro & Clément Fontaine",
+                "team_b": "Samuel Silva 971 & Samuel Miranda",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+                "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+                "team_b": "Tomás Navarro & Mateo Castro",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+                "team_a": "Martín Romero 911 & Bruno Herrera 950",
+                "team_b": "Rubén Campos 939 & Rafael Miranda",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Semifinais",
+            "date": "2026-01-13",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r1",
+                "team_a": "Vencedor Jogo 1",
+                "team_b": "Vencedor Jogo 2",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r0",
+                  "tournament-2026-rom-exh-2026:opp1:r0:m0"
+                ],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+                "team_a": "Vencedor Jogo 3",
+                "team_b": "Vencedor Jogo 4",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                  "tournament-2026-rom-exh-2026:opp2:r0:m1"
+                ],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Final",
+            "date": "2026-01-14",
+            "is_final": true,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r2",
+                "team_a": "Vencedor Jogo 5",
+                "team_b": "Vencedor Jogo 6",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r1",
+                  "tournament-2026-rom-exh-2026:opp2:r1:m0"
+                ],
+                "player_match": true
+              }
+            ]
+          }
+        ]
+      },
+      "viewPlaceholders": 6
+    },
+    {
+      "moment": "post-draw-reload",
+      "careerDate": "2026-01-09",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "chaveamento",
+      "current_phase": "preparing",
+      "bracket_schema_version": 2,
+      "champion": null,
+      "runner_up": null,
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "confirmed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": [
+        "partnership-athleteprofile-1791117550019-2vm4jn-athleteprofile-1791117574019-hzimug-2026-01-01",
+        "partnership-athleteprofile-1791117502019-hen7p7-athleteprofile-1791117536019-264lpc-2026-01-01",
+        "partnership-athleteprofile-1791117453019-bgmp7t-athleteprofile-1791117503019-pml4f4-2026-01-01",
+        "partnership-athleteprofile-1791117505019-tz5hyw-athleteprofile-1791117579019-zrlres-2026-01-01",
+        "partnership-athleteprofile-1791117523019-nu6tu3-athleteprofile-1791117538019-umavek-2026-01-01",
+        "partnership-athleteprofile-1791117518019-w23b10-athleteprofile-1791117567019-k36zc7-2026-01-01",
+        "partnership-athleteprofile-1791117490019-5ino4k-athleteprofile-1791117529019-1fhsno-2026-01-01"
+      ],
+      "runMatches": [
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "round": "Quartas de Final",
+          "stage": "main",
+          "date": "2026-01-12",
+          "status": "scheduled",
+          "opponent": [
+            "Samuel Silva 971",
+            "Samuel Miranda"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-1",
+          "round": "Semifinal",
+          "stage": "main",
+          "date": "2026-01-13",
+          "status": "scheduled",
+          "opponent": [
+            "Tomás Sánchez 957",
+            "Bruno Fernández"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-2",
+          "round": "Final",
+          "stage": "main",
+          "date": "2026-01-14",
+          "status": "scheduled",
+          "opponent": [
+            "Martín Ortiz",
+            "Miguel Iglesias"
+          ],
+          "won": null,
+          "score": null
+        }
+      ],
+      "raw": [
+        {
+          "round": "Quartas de final",
+          "date": "2026-01-12",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r0",
+              "team_a": "Atleta Repro & Clément Fontaine",
+              "team_b": "Samuel Silva 971 & Samuel Miranda",
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+              "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+              "team_b": "Tomás Navarro & Mateo Castro",
+              "winner": "Tomás Sánchez 957 & Bruno Fernández",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+              "team_a": "Martín Romero 911 & Bruno Herrera 950",
+              "team_b": "Rubén Campos 939 & Rafael Miranda",
+              "winner": "Martín Romero 911 & Bruno Herrera 950",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Semifinais",
+          "date": "2026-01-13",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r1",
+              "team_a": null,
+              "team_b": null,
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r0",
+                "tournament-2026-rom-exh-2026:opp1:r0:m0"
+              ],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Martín Romero 911 & Bruno Herrera 950",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "tournament-2026-rom-exh-2026:opp2:r0:m1"
+              ],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Final",
+          "date": "2026-01-14",
+          "is_final": true,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r2",
+              "team_a": null,
+              "team_b": null,
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r1",
+                "tournament-2026-rom-exh-2026:opp2:r1:m0"
+              ],
+              "player_match": true
+            }
+          ]
+        }
+      ],
+      "view": {
+        "drawn": true,
+        "completed": false,
+        "champion": null,
+        "rounds": [
+          {
+            "round": "Quartas de final",
+            "date": "2026-01-12",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r0",
+                "team_a": "Atleta Repro & Clément Fontaine",
+                "team_b": "Samuel Silva 971 & Samuel Miranda",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+                "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+                "team_b": "Tomás Navarro & Mateo Castro",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+                "team_a": "Martín Romero 911 & Bruno Herrera 950",
+                "team_b": "Rubén Campos 939 & Rafael Miranda",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Semifinais",
+            "date": "2026-01-13",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r1",
+                "team_a": "Vencedor Jogo 1",
+                "team_b": "Vencedor Jogo 2",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r0",
+                  "tournament-2026-rom-exh-2026:opp1:r0:m0"
+                ],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+                "team_a": "Vencedor Jogo 3",
+                "team_b": "Vencedor Jogo 4",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                  "tournament-2026-rom-exh-2026:opp2:r0:m1"
+                ],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Final",
+            "date": "2026-01-14",
+            "is_final": true,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r2",
+                "team_a": "Vencedor Jogo 5",
+                "team_b": "Vencedor Jogo 6",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r1",
+                  "tournament-2026-rom-exh-2026:opp2:r1:m0"
+                ],
+                "player_match": true
+              }
+            ]
+          }
+        ]
+      },
+      "viewPlaceholders": 6
+    },
+    {
+      "moment": "pre-match-0",
+      "careerDate": "2026-01-12",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "em_andamento",
+      "current_phase": "em_andamento",
+      "bracket_schema_version": 2,
+      "champion": null,
+      "runner_up": null,
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "confirmed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": [
+        "partnership-athleteprofile-1791117550019-2vm4jn-athleteprofile-1791117574019-hzimug-2026-01-01",
+        "partnership-athleteprofile-1791117502019-hen7p7-athleteprofile-1791117536019-264lpc-2026-01-01",
+        "partnership-athleteprofile-1791117453019-bgmp7t-athleteprofile-1791117503019-pml4f4-2026-01-01",
+        "partnership-athleteprofile-1791117505019-tz5hyw-athleteprofile-1791117579019-zrlres-2026-01-01",
+        "partnership-athleteprofile-1791117523019-nu6tu3-athleteprofile-1791117538019-umavek-2026-01-01",
+        "partnership-athleteprofile-1791117518019-w23b10-athleteprofile-1791117567019-k36zc7-2026-01-01",
+        "partnership-athleteprofile-1791117490019-5ino4k-athleteprofile-1791117529019-1fhsno-2026-01-01"
+      ],
+      "runMatches": [
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "round": "Quartas de Final",
+          "stage": "main",
+          "date": "2026-01-12",
+          "status": "scheduled",
+          "opponent": [
+            "Samuel Silva 971",
+            "Samuel Miranda"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-1",
+          "round": "Semifinal",
+          "stage": "main",
+          "date": "2026-01-13",
+          "status": "scheduled",
+          "opponent": [
+            "Tomás Sánchez 957",
+            "Bruno Fernández"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-2",
+          "round": "Final",
+          "stage": "main",
+          "date": "2026-01-14",
+          "status": "scheduled",
+          "opponent": [
+            "Martín Ortiz",
+            "Miguel Iglesias"
+          ],
+          "won": null,
+          "score": null
+        }
+      ],
+      "raw": [
+        {
+          "round": "Quartas de final",
+          "date": "2026-01-12",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r0",
+              "team_a": "Atleta Repro & Clément Fontaine",
+              "team_b": "Samuel Silva 971 & Samuel Miranda",
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+              "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+              "team_b": "Tomás Navarro & Mateo Castro",
+              "winner": "Tomás Sánchez 957 & Bruno Fernández",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+              "team_a": "Martín Romero 911 & Bruno Herrera 950",
+              "team_b": "Rubén Campos 939 & Rafael Miranda",
+              "winner": "Martín Romero 911 & Bruno Herrera 950",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Semifinais",
+          "date": "2026-01-13",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r1",
+              "team_a": null,
+              "team_b": null,
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r0",
+                "tournament-2026-rom-exh-2026:opp1:r0:m0"
+              ],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Martín Romero 911 & Bruno Herrera 950",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "tournament-2026-rom-exh-2026:opp2:r0:m1"
+              ],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Final",
+          "date": "2026-01-14",
+          "is_final": true,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r2",
+              "team_a": null,
+              "team_b": null,
+              "winner": null,
+              "score": null,
+              "status": "scheduled",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r1",
+                "tournament-2026-rom-exh-2026:opp2:r1:m0"
+              ],
+              "player_match": true
+            }
+          ]
+        }
+      ],
+      "view": {
+        "drawn": true,
+        "completed": false,
+        "champion": null,
+        "rounds": [
+          {
+            "round": "Quartas de final",
+            "date": "2026-01-12",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r0",
+                "team_a": "Atleta Repro & Clément Fontaine",
+                "team_b": "Samuel Silva 971 & Samuel Miranda",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+                "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+                "team_b": "Tomás Navarro & Mateo Castro",
+                "winner": "Tomás Sánchez 957 & Bruno Fernández",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+                "team_a": "Martín Romero 911 & Bruno Herrera 950",
+                "team_b": "Rubén Campos 939 & Rafael Miranda",
+                "winner": "Martín Romero 911 & Bruno Herrera 950",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Semifinais",
+            "date": "2026-01-13",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r1",
+                "team_a": "Vencedor Jogo 1",
+                "team_b": "Vencedor Jogo 2",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r0",
+                  "tournament-2026-rom-exh-2026:opp1:r0:m0"
+                ],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Martín Romero 911 & Bruno Herrera 950",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                  "tournament-2026-rom-exh-2026:opp2:r0:m1"
+                ],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Final",
+            "date": "2026-01-14",
+            "is_final": true,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r2",
+                "team_a": "Vencedor Jogo 5",
+                "team_b": "Vencedor Jogo 6",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r1",
+                  "tournament-2026-rom-exh-2026:opp2:r1:m0"
+                ],
+                "player_match": true
+              }
+            ]
+          }
+        ]
+      },
+      "viewPlaceholders": 4
+    },
+    {
+      "moment": "post-match-0-settled",
+      "careerDate": "2026-01-12",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "em_andamento",
+      "current_phase": "eliminated",
+      "bracket_schema_version": 2,
+      "champion": null,
+      "runner_up": null,
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "completed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": [
+        "partnership-athleteprofile-1791117550019-2vm4jn-athleteprofile-1791117574019-hzimug-2026-01-01",
+        "partnership-athleteprofile-1791117502019-hen7p7-athleteprofile-1791117536019-264lpc-2026-01-01",
+        "partnership-athleteprofile-1791117453019-bgmp7t-athleteprofile-1791117503019-pml4f4-2026-01-01",
+        "partnership-athleteprofile-1791117505019-tz5hyw-athleteprofile-1791117579019-zrlres-2026-01-01",
+        "partnership-athleteprofile-1791117523019-nu6tu3-athleteprofile-1791117538019-umavek-2026-01-01",
+        "partnership-athleteprofile-1791117518019-w23b10-athleteprofile-1791117567019-k36zc7-2026-01-01",
+        "partnership-athleteprofile-1791117490019-5ino4k-athleteprofile-1791117529019-1fhsno-2026-01-01"
+      ],
+      "runMatches": [
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "round": "Quartas de Final",
+          "stage": "main",
+          "date": "2026-01-12",
+          "status": "completed",
+          "opponent": [
+            "Samuel Silva 971",
+            "Samuel Miranda"
+          ],
+          "won": false,
+          "score": "4-6, 6-7"
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-1",
+          "round": "Semifinal",
+          "stage": "main",
+          "date": "2026-01-13",
+          "status": "scheduled",
+          "opponent": [
+            "Tomás Sánchez 957",
+            "Bruno Fernández"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-2",
+          "round": "Final",
+          "stage": "main",
+          "date": "2026-01-14",
+          "status": "scheduled",
+          "opponent": [
+            "Martín Ortiz",
+            "Miguel Iglesias"
+          ],
+          "won": null,
+          "score": null
+        }
+      ],
+      "raw": [
+        {
+          "round": "Quartas de final",
+          "date": "2026-01-12",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r0",
+              "team_a": "Atleta Repro & Clément Fontaine",
+              "team_b": "Samuel Silva 971 & Samuel Miranda",
+              "winner": "Samuel Silva 971 & Samuel Miranda",
+              "score": "4-6, 6-7",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+              "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+              "team_b": "Tomás Navarro & Mateo Castro",
+              "winner": "Tomás Sánchez 957 & Bruno Fernández",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+              "team_a": "Martín Romero 911 & Bruno Herrera 950",
+              "team_b": "Rubén Campos 939 & Rafael Miranda",
+              "winner": "Martín Romero 911 & Bruno Herrera 950",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Semifinais",
+          "date": "2026-01-13",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r1",
+              "team_a": "Samuel Silva 971 & Samuel Miranda",
+              "team_b": "Tomás Sánchez 957 & Bruno Fernández",
+              "winner": "Samuel Silva 971 & Samuel Miranda",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r0",
+                "tournament-2026-rom-exh-2026:opp1:r0:m0"
+              ],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Martín Romero 911 & Bruno Herrera 950",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "tournament-2026-rom-exh-2026:opp2:r0:m1"
+              ],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Final",
+          "date": "2026-01-14",
+          "is_final": true,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r2",
+              "team_a": "Samuel Silva 971 & Samuel Miranda",
+              "team_b": "Martín Ortiz & Miguel Iglesias",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "3-6 4-6",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r1",
+                "tournament-2026-rom-exh-2026:opp2:r1:m0"
+              ],
+              "player_match": true
+            }
+          ]
+        }
+      ],
+      "view": {
+        "drawn": true,
+        "completed": false,
+        "champion": null,
+        "rounds": [
+          {
+            "round": "Quartas de final",
+            "date": "2026-01-12",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r0",
+                "team_a": "Atleta Repro & Clément Fontaine",
+                "team_b": "Samuel Silva 971 & Samuel Miranda",
+                "winner": "Samuel Silva 971 & Samuel Miranda",
+                "score": "4-6, 6-7",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+                "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+                "team_b": "Tomás Navarro & Mateo Castro",
+                "winner": "Tomás Sánchez 957 & Bruno Fernández",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+                "team_a": "Martín Romero 911 & Bruno Herrera 950",
+                "team_b": "Rubén Campos 939 & Rafael Miranda",
+                "winner": "Martín Romero 911 & Bruno Herrera 950",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Semifinais",
+            "date": "2026-01-13",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r1",
+                "team_a": "Samuel Silva 971 & Samuel Miranda",
+                "team_b": "Tomás Sánchez 957 & Bruno Fernández",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r0",
+                  "tournament-2026-rom-exh-2026:opp1:r0:m0"
+                ],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Martín Romero 911 & Bruno Herrera 950",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                  "tournament-2026-rom-exh-2026:opp2:r0:m1"
+                ],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Final",
+            "date": "2026-01-14",
+            "is_final": true,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r2",
+                "team_a": "Vencedor Jogo 5",
+                "team_b": "Vencedor Jogo 6",
+                "winner": null,
+                "score": null,
+                "status": "scheduled",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r1",
+                  "tournament-2026-rom-exh-2026:opp2:r1:m0"
+                ],
+                "player_match": true
+              }
+            ]
+          }
+        ]
+      },
+      "viewPlaceholders": 2
+    },
+    {
+      "moment": "historical-final",
+      "careerDate": "2026-01-15",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "finalizado",
+      "current_phase": "concluido",
+      "bracket_schema_version": 2,
+      "champion": "Martín Ortiz & Miguel Iglesias",
+      "runner_up": "Samuel Silva 971 & Samuel Miranda",
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "completed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": [
+        "partnership-athleteprofile-1791117550019-2vm4jn-athleteprofile-1791117574019-hzimug-2026-01-01",
+        "partnership-athleteprofile-1791117502019-hen7p7-athleteprofile-1791117536019-264lpc-2026-01-01",
+        "partnership-athleteprofile-1791117453019-bgmp7t-athleteprofile-1791117503019-pml4f4-2026-01-01",
+        "partnership-athleteprofile-1791117505019-tz5hyw-athleteprofile-1791117579019-zrlres-2026-01-01",
+        "partnership-athleteprofile-1791117523019-nu6tu3-athleteprofile-1791117538019-umavek-2026-01-01",
+        "partnership-athleteprofile-1791117518019-w23b10-athleteprofile-1791117567019-k36zc7-2026-01-01",
+        "partnership-athleteprofile-1791117490019-5ino4k-athleteprofile-1791117529019-1fhsno-2026-01-01"
+      ],
+      "runMatches": [
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "round": "Quartas de Final",
+          "stage": "main",
+          "date": "2026-01-12",
+          "status": "completed",
+          "opponent": [
+            "Samuel Silva 971",
+            "Samuel Miranda"
+          ],
+          "won": false,
+          "score": "4-6, 6-7"
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-1",
+          "round": "Semifinal",
+          "stage": "main",
+          "date": "2026-01-13",
+          "status": "scheduled",
+          "opponent": [
+            "Tomás Sánchez 957",
+            "Bruno Fernández"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-2",
+          "round": "Final",
+          "stage": "main",
+          "date": "2026-01-14",
+          "status": "scheduled",
+          "opponent": [
+            "Martín Ortiz",
+            "Miguel Iglesias"
+          ],
+          "won": null,
+          "score": null
+        }
+      ],
+      "raw": [
+        {
+          "round": "Quartas de final",
+          "date": "2026-01-12",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r0",
+              "team_a": "Atleta Repro & Clément Fontaine",
+              "team_b": "Samuel Silva 971 & Samuel Miranda",
+              "winner": "Samuel Silva 971 & Samuel Miranda",
+              "score": "4-6, 6-7",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+              "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+              "team_b": "Tomás Navarro & Mateo Castro",
+              "winner": "Tomás Sánchez 957 & Bruno Fernández",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+              "team_a": "Martín Romero 911 & Bruno Herrera 950",
+              "team_b": "Rubén Campos 939 & Rafael Miranda",
+              "winner": "Martín Romero 911 & Bruno Herrera 950",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Semifinais",
+          "date": "2026-01-13",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r1",
+              "team_a": "Samuel Silva 971 & Samuel Miranda",
+              "team_b": "Tomás Sánchez 957 & Bruno Fernández",
+              "winner": "Samuel Silva 971 & Samuel Miranda",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r0",
+                "tournament-2026-rom-exh-2026:opp1:r0:m0"
+              ],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Martín Romero 911 & Bruno Herrera 950",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "tournament-2026-rom-exh-2026:opp2:r0:m1"
+              ],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Final",
+          "date": "2026-01-14",
+          "is_final": true,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r2",
+              "team_a": "Samuel Silva 971 & Samuel Miranda",
+              "team_b": "Martín Ortiz & Miguel Iglesias",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "3-6 4-6",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r1",
+                "tournament-2026-rom-exh-2026:opp2:r1:m0"
+              ],
+              "player_match": true
+            }
+          ]
+        }
+      ],
+      "view": {
+        "drawn": true,
+        "completed": true,
+        "champion": "Martín Ortiz & Miguel Iglesias",
+        "rounds": [
+          {
+            "round": "Quartas de final",
+            "date": "2026-01-12",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r0",
+                "team_a": "Atleta Repro & Clément Fontaine",
+                "team_b": "Samuel Silva 971 & Samuel Miranda",
+                "winner": "Samuel Silva 971 & Samuel Miranda",
+                "score": "4-6, 6-7",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+                "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+                "team_b": "Tomás Navarro & Mateo Castro",
+                "winner": "Tomás Sánchez 957 & Bruno Fernández",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+                "team_a": "Martín Romero 911 & Bruno Herrera 950",
+                "team_b": "Rubén Campos 939 & Rafael Miranda",
+                "winner": "Martín Romero 911 & Bruno Herrera 950",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Semifinais",
+            "date": "2026-01-13",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r1",
+                "team_a": "Samuel Silva 971 & Samuel Miranda",
+                "team_b": "Tomás Sánchez 957 & Bruno Fernández",
+                "winner": "Samuel Silva 971 & Samuel Miranda",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r0",
+                  "tournament-2026-rom-exh-2026:opp1:r0:m0"
+                ],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Martín Romero 911 & Bruno Herrera 950",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                  "tournament-2026-rom-exh-2026:opp2:r0:m1"
+                ],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Final",
+            "date": "2026-01-14",
+            "is_final": true,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r2",
+                "team_a": "Samuel Silva 971 & Samuel Miranda",
+                "team_b": "Martín Ortiz & Miguel Iglesias",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "3-6 4-6",
+                "status": "completed",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r1",
+                  "tournament-2026-rom-exh-2026:opp2:r1:m0"
+                ],
+                "player_match": true
+              }
+            ]
+          }
+        ]
+      },
+      "viewPlaceholders": 0
+    },
+    {
+      "moment": "historical-final-after-reload",
+      "careerDate": "2026-01-15",
+      "tournamentId": "tournament-2026-rom-exh-2026",
+      "name": "Roma Pré-Temporada",
+      "status": "finalizado",
+      "current_phase": "concluido",
+      "bracket_schema_version": 2,
+      "champion": "Martín Ortiz & Miguel Iglesias",
+      "runner_up": "Samuel Silva 971 & Samuel Miranda",
+      "registrationRoster": [
+        {
+          "id": "registration-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026",
+          "status": "completed",
+          "partner_id": "player-fictional-965x47",
+          "partner_name": null
+        }
+      ],
+      "drawPairIds": [
+        "partnership-athleteprofile-1791117550019-2vm4jn-athleteprofile-1791117574019-hzimug-2026-01-01",
+        "partnership-athleteprofile-1791117502019-hen7p7-athleteprofile-1791117536019-264lpc-2026-01-01",
+        "partnership-athleteprofile-1791117453019-bgmp7t-athleteprofile-1791117503019-pml4f4-2026-01-01",
+        "partnership-athleteprofile-1791117505019-tz5hyw-athleteprofile-1791117579019-zrlres-2026-01-01",
+        "partnership-athleteprofile-1791117523019-nu6tu3-athleteprofile-1791117538019-umavek-2026-01-01",
+        "partnership-athleteprofile-1791117518019-w23b10-athleteprofile-1791117567019-k36zc7-2026-01-01",
+        "partnership-athleteprofile-1791117490019-5ino4k-athleteprofile-1791117529019-1fhsno-2026-01-01"
+      ],
+      "runMatches": [
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "round": "Quartas de Final",
+          "stage": "main",
+          "date": "2026-01-12",
+          "status": "completed",
+          "opponent": [
+            "Samuel Silva 971",
+            "Samuel Miranda"
+          ],
+          "won": false,
+          "score": "4-6, 6-7"
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-1",
+          "round": "Semifinal",
+          "stage": "main",
+          "date": "2026-01-13",
+          "status": "scheduled",
+          "opponent": [
+            "Tomás Sánchez 957",
+            "Bruno Fernández"
+          ],
+          "won": null,
+          "score": null
+        },
+        {
+          "id": "tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-2",
+          "round": "Final",
+          "stage": "main",
+          "date": "2026-01-14",
+          "status": "scheduled",
+          "opponent": [
+            "Martín Ortiz",
+            "Miguel Iglesias"
+          ],
+          "won": null,
+          "score": null
+        }
+      ],
+      "raw": [
+        {
+          "round": "Quartas de final",
+          "date": "2026-01-12",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r0",
+              "team_a": "Atleta Repro & Clément Fontaine",
+              "team_b": "Samuel Silva 971 & Samuel Miranda",
+              "winner": "Samuel Silva 971 & Samuel Miranda",
+              "score": "4-6, 6-7",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+              "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+              "team_b": "Tomás Navarro & Mateo Castro",
+              "winner": "Tomás Sánchez 957 & Bruno Fernández",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-3 6-4",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+              "team_a": "Martín Romero 911 & Bruno Herrera 950",
+              "team_b": "Rubén Campos 939 & Rafael Miranda",
+              "winner": "Martín Romero 911 & Bruno Herrera 950",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Semifinais",
+          "date": "2026-01-13",
+          "is_final": false,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r1",
+              "team_a": "Samuel Silva 971 & Samuel Miranda",
+              "team_b": "Tomás Sánchez 957 & Bruno Fernández",
+              "winner": "Samuel Silva 971 & Samuel Miranda",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r0",
+                "tournament-2026-rom-exh-2026:opp1:r0:m0"
+              ],
+              "player_match": true
+            },
+            {
+              "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+              "team_a": "Martín Ortiz & Miguel Iglesias",
+              "team_b": "Martín Romero 911 & Bruno Herrera 950",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "6-4 4-6 6-3",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "tournament-2026-rom-exh-2026:opp2:r0:m1"
+              ],
+              "player_match": false
+            }
+          ]
+        },
+        {
+          "round": "Final",
+          "date": "2026-01-14",
+          "is_final": true,
+          "byes": [],
+          "matches": [
+            {
+              "match_id": "tournament-2026-rom-exh-2026:player:r2",
+              "team_a": "Samuel Silva 971 & Samuel Miranda",
+              "team_b": "Martín Ortiz & Miguel Iglesias",
+              "winner": "Martín Ortiz & Miguel Iglesias",
+              "score": "3-6 4-6",
+              "status": "completed",
+              "source_match_ids": [
+                "tournament-2026-rom-exh-2026:player:r1",
+                "tournament-2026-rom-exh-2026:opp2:r1:m0"
+              ],
+              "player_match": true
+            }
+          ]
+        }
+      ],
+      "view": {
+        "drawn": true,
+        "completed": true,
+        "champion": "Martín Ortiz & Miguel Iglesias",
+        "rounds": [
+          {
+            "round": "Quartas de final",
+            "date": "2026-01-12",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r0",
+                "team_a": "Atleta Repro & Clément Fontaine",
+                "team_b": "Samuel Silva 971 & Samuel Miranda",
+                "winner": "Samuel Silva 971 & Samuel Miranda",
+                "score": "4-6, 6-7",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp1:r0:m0",
+                "team_a": "Tomás Sánchez 957 & Bruno Fernández",
+                "team_b": "Tomás Navarro & Mateo Castro",
+                "winner": "Tomás Sánchez 957 & Bruno Fernández",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Álvaro Ramos 959 & Mateo Navarro 944",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "6-3 6-4",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r0:m1",
+                "team_a": "Martín Romero 911 & Bruno Herrera 950",
+                "team_b": "Rubén Campos 939 & Rafael Miranda",
+                "winner": "Martín Romero 911 & Bruno Herrera 950",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Semifinais",
+            "date": "2026-01-13",
+            "is_final": false,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r1",
+                "team_a": "Samuel Silva 971 & Samuel Miranda",
+                "team_b": "Tomás Sánchez 957 & Bruno Fernández",
+                "winner": "Samuel Silva 971 & Samuel Miranda",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r0",
+                  "tournament-2026-rom-exh-2026:opp1:r0:m0"
+                ],
+                "player_match": true
+              },
+              {
+                "match_id": "tournament-2026-rom-exh-2026:opp2:r1:m0",
+                "team_a": "Martín Ortiz & Miguel Iglesias",
+                "team_b": "Martín Romero 911 & Bruno Herrera 950",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "6-4 4-6 6-3",
+                "status": "completed",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:opp2:r0:m0",
+                  "tournament-2026-rom-exh-2026:opp2:r0:m1"
+                ],
+                "player_match": false
+              }
+            ]
+          },
+          {
+            "round": "Final",
+            "date": "2026-01-14",
+            "is_final": true,
+            "byes": [],
+            "matches": [
+              {
+                "match_id": "tournament-2026-rom-exh-2026:player:r2",
+                "team_a": "Samuel Silva 971 & Samuel Miranda",
+                "team_b": "Martín Ortiz & Miguel Iglesias",
+                "winner": "Martín Ortiz & Miguel Iglesias",
+                "score": "3-6 4-6",
+                "status": "completed",
+                "source_match_ids": [
+                  "tournament-2026-rom-exh-2026:player:r1",
+                  "tournament-2026-rom-exh-2026:opp2:r1:m0"
+                ],
+                "player_match": true
+              }
+            ]
+          }
+        ]
+      },
+      "viewPlaceholders": 0
+    }
+  ],
+  "financialTransactions": [
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-career-created-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 50,
+      "net": null,
+      "description": "Tutorial: Conheça o painel da carreira"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-athlete-named-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Dê um nome ao atleta"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-side-selected-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Escolha mão dominante e lado"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-style-selected-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Escolha o estilo de jogo"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-appearance-known-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Personalize a aparência"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-profile-reviewed-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Confirme seu atleta"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-offers-reviewed-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Analise propostas de parceria"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-partner-selected-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 100,
+      "net": null,
+      "description": "Tutorial: Escolha sua primeira dupla"
+    },
+    {
+      "id": "coach-signing-playerprofile-1791115490019-impy4u-catalog-coach-036-2026-01-01",
+      "type": "expense",
+      "category": "treinador",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 217,
+      "net": null,
+      "description": "Luvas do treinador Caio Silva"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-coaches-known-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Escolha seu primeiro treinador"
+    },
+    {
+      "id": "training-playerprofile-1791115490019-impy4u-2026-01-01-1",
+      "type": "expense",
+      "category": "treino",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 20,
+      "net": null,
+      "description": "Treino: Golpes de fundo"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-training-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 75,
+      "net": null,
+      "description": "Tutorial: Faça o primeiro treino"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-calendar-known-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 35,
+      "net": null,
+      "description": "Tutorial: Planeje pelo calendário e avance um dia"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-tournament-registered-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 150,
+      "net": null,
+      "description": "Tutorial: Inscreva-se em um torneio"
+    },
+    {
+      "id": "reward-pa-achv-nascido-para-vencer-playerprofile-1791115490019-impy4u",
+      "type": "income",
+      "category": "conquista",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 100,
+      "net": null,
+      "description": "Conquista: Nascido para Vencer"
+    },
+    {
+      "id": "reward-pa-achv-encontrou-um-guia-playerprofile-1791115490019-impy4u",
+      "type": "income",
+      "category": "conquista",
+      "date": "2026-01-01",
+      "month": null,
+      "amount": 400,
+      "net": null,
+      "description": "Conquista: Encontrou um Guia"
+    },
+    {
+      "id": "match-reward-tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+      "type": "income",
+      "category": "partida",
+      "date": "2026-01-12",
+      "month": null,
+      "amount": 10,
+      "net": null,
+      "description": "Partida — Roma Pré-Temporada (Quartas de Final)"
+    },
+    {
+      "id": "reward-pa-achv-estreia-em-torneios-playerprofile-1791115490019-impy4u",
+      "type": "income",
+      "category": "conquista",
+      "date": "2026-01-12",
+      "month": null,
+      "amount": 200,
+      "net": null,
+      "description": "Conquista: Estreia em Torneios"
+    },
+    {
+      "id": "reward-pa-achv-primeiro-dia-playerprofile-1791115490019-impy4u",
+      "type": "income",
+      "category": "conquista",
+      "date": "2026-01-12",
+      "month": null,
+      "amount": 100,
+      "net": null,
+      "description": "Conquista: Primeiro Dia"
+    },
+    {
+      "id": "reward-pa-achv-uma-semana-playerprofile-1791115490019-impy4u",
+      "type": "income",
+      "category": "conquista",
+      "date": "2026-01-12",
+      "month": null,
+      "amount": 200,
+      "net": null,
+      "description": "Conquista: Uma Semana"
+    },
+    {
+      "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-match-tutorial-career",
+      "type": "income",
+      "category": "tutorial",
+      "date": "2026-01-12",
+      "month": null,
+      "amount": 150,
+      "net": null,
+      "description": "Tutorial: Jogue sua primeira partida de torneio"
+    },
+    {
+      "id": "tournament-prize-tournament-tournament-2026-rom-exh-2026-canonical-settlement",
+      "type": "income",
+      "category": "torneio",
+      "date": "2026-01-12",
+      "month": null,
+      "amount": 12,
+      "net": null,
+      "description": "Quartas de final — Roma Pré-Temporada"
+    }
+  ],
+  "achievementsUnlocked": [
+    {
+      "id": "achv-nascido-para-vencer",
+      "name": "Nascido para Vencer",
+      "coins": 100,
+      "unlocked": "2026-10-04T13:02:52.019Z"
+    },
+    {
+      "id": "achv-encontrou-um-guia",
+      "name": "Encontrou um Guia",
+      "coins": 400,
+      "unlocked": "2026-10-04T13:02:52.019Z"
+    },
+    {
+      "id": "achv-estreia-em-torneios",
+      "name": "Estreia em Torneios",
+      "coins": 200,
+      "unlocked": "2026-10-04T13:15:00.019Z"
+    },
+    {
+      "id": "achv-primeiro-dia",
+      "name": "Primeiro Dia",
+      "coins": 100,
+      "unlocked": "2026-10-04T13:15:00.019Z"
+    },
+    {
+      "id": "achv-uma-semana",
+      "name": "Uma Semana",
+      "coins": 200,
+      "unlocked": "2026-10-04T13:15:00.019Z"
+    }
+  ]
+}

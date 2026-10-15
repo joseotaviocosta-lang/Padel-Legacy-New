@@ -166,7 +166,9 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
   const date = profile.career_date || '2026-01-01';
   const effects = getCoachEffects(coach, profile);
   await closeActiveCoachTenure(profile, date);
-  const updated = await localGame.entities.PlayerProfile.update(profile.id, {
+  // 5.27-M: as luvas do treinador saem do saldo e entram no extrato no
+  // mesmo lote (antes: só o débito, invisível no Fluxo Financeiro).
+  const coachPatch = {
     coins: Math.max(0, (Number(profile.coins) || 0) - signing),
     coach_id: coach.id,
     coach_name: coach.name,
@@ -185,7 +187,16 @@ export async function hirePrimaryCoach(profile, coach, months = 12) {
     coach_training_bonus: effects?.trainingBoost || 1,
     coach_strategy_bonus: effects?.strategyBonus || 0,
     coach_partnership_bonus: effects?.partnershipBonus || 0,
-  });
+  };
+  const hireBatch = await localGame.batch([
+    { type: 'playerUpdate', id: profile.id, data: coachPatch },
+    ...(signing > 0 ? [{ type: 'upsert', entityName: 'FinancialTransaction', id: `coach-signing-${profile.id}-${coach.id}-${date}`, data: { profile_id: profile.id, date, type: 'expense', category: 'treinador', description: `Luvas do treinador ${coach.name || ''}`.trim(), amount: signing } }] : []),
+  ], { caller: 'coachLifecycle.hirePrimaryCoach' });
+  const updated = hireBatch?.player ? { ...profile, ...hireBatch.player } : { ...profile, ...coachPatch };
+  // Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
+  if (typeof window !== 'undefined' && typeof CustomEvent !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile: updated, profileId: updated.id, careerDate: updated.career_date, source: 'player-adapter-balance' } }));
+  }
   await openCoachTenure(updated, coach, date);
   await publishContractEvent({
     profileId: profile.id, playerName: profile.sport_name || profile.name,

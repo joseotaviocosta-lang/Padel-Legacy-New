@@ -25,6 +25,13 @@ function clone(value) {
 
 function remapSeedRow(row, activePlayerId) {
   const seeded = { ...clone(row) };
+  // Playthrough 5.27-M — linha PESSOAL de partida (contrato Sul Energia,
+  // fundo conservador, grip inicial...). Continua existindo (é o estado
+  // inicial da economia validada), mas fica marcada: conquistas como
+  // "Primeiro Patrocinador"/"Investidor" medem ações do jogador, não o kit
+  // de partida — sem a marca, a primeira sincronização pagava 800 moedas
+  // por elas no playtest físico.
+  if (seeded.profile_id === LOCAL_PROFILE.id) seeded.starter_seed = true;
   if (!activePlayerId) return seeded;
 
   if (seeded.profile_id === LOCAL_PROFILE.id) seeded.profile_id = activePlayerId;
@@ -60,7 +67,14 @@ function remapSeedRow(row, activePlayerId) {
 // aba Aparência. Mesma classe de bug que o comentário acima já descreve
 // para PressArticle/Match/etc — dado de demonstração vazando como se fosse
 // ação real do jogador.
-const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress', 'PressArticle', 'CharacterCustomization']);
+// Playthrough 5.27-M (mesma classe): FinancialTransaction trazia
+// "Adiantamento Sul Energia +300" e "Mensalidade do centro −250" — moedas
+// que nunca entraram nem saíram do saldo (aparecem como "Data não
+// informada +0" no Fluxo Financeiro e impedem o extrato de fechar com o
+// saldo). PlayerAchievement trazia "Primeiro Treino" desbloqueada em
+// 28/12/2025, antes da carreira existir — o jogador nunca recebia a
+// conquista ao treinar de verdade.
+const NEVER_SEED_WITH_DEMO_DATA = new Set(['User', 'PlayerProfile', 'Match', 'TrainingSession', 'MissionProgress', 'PressArticle', 'CharacterCustomization', 'FinancialTransaction', 'PlayerAchievement']);
 
 export function seedCollection(entityName, activePlayerId = null) {
   if (NEVER_SEED_WITH_DEMO_DATA.has(entityName)) return [];

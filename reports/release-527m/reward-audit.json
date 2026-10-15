@@ -1,0 +1,892 @@
+{
+  "phase": "5.27-M",
+  "classification": "D — combinação: (B/bug de estado inicial) conquistas satisfeitas pelo kit de partida da carreira nova (Rainbow Collection 4.000 por catálogo de loja incompleto; Primeiro Patrocinador 500 e Investidor 300 pelos registros de demonstração) + (C) nenhuma recompensa aparecia no Fluxo Financeiro. Duplicidade: 0.",
+  "where7kCameFrom": "Repro do playtest (sem abrir Conquistas antes da 1ª partida): 900 → 7.290 em 14 dias; 5.800 vieram de UMA sincronização de conquistas após a 1ª partida (Rainbow Collection 4.000, Primeiro Patrocinador 500, Encontrou um Guia 400, Investidor 300, Primeiro Dia 100, Nascido para Vencer 100, Uma Semana 200, Estreia em Torneios 200). Abrir Conquistas antes zerava todas (reconciliação de save antigo) — dois resultados para a mesma carreira.",
+  "before": {
+    "startingBalance": 900,
+    "tutorialRewards": 655,
+    "achievements": 5800,
+    "tournamentAndMatch": 172,
+    "otherIncome": 0,
+    "expenses": 237,
+    "observedBalance": 7290,
+    "closes": true,
+    "achievementsUnlocked": [
+      {
+        "id": "achv-primeiro-treino",
+        "name": null,
+        "coins": null,
+        "unlocked": "2025-12-28"
+      },
+      {
+        "id": "achv-estreia-em-torneios",
+        "name": "Estreia em Torneios",
+        "coins": 200,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-investidor",
+        "name": "Investidor",
+        "coins": 300,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-primeiro-patrocinador",
+        "name": "Primeiro Patrocinador",
+        "coins": 500,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-rainbow-collection",
+        "name": "Rainbow Collection",
+        "coins": 4000,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-nascido-para-vencer",
+        "name": "Nascido para Vencer",
+        "coins": 100,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-primeiro-dia",
+        "name": "Primeiro Dia",
+        "coins": 100,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-uma-semana",
+        "name": "Uma Semana",
+        "coins": 200,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      },
+      {
+        "id": "achv-encontrou-um-guia",
+        "name": "Encontrou um Guia",
+        "coins": 400,
+        "unlocked": "2026-10-04T13:14:17.019Z"
+      }
+    ],
+    "bySource": {
+      "tutorial:visit_career(Começar tutorial)": 50,
+      "onboarding": 105,
+      "tutorial:visit_character": 35,
+      "tutorial:review_profile": 35,
+      "tutorial:review_partner_offer": 35,
+      "partner": 100,
+      "coach": -182,
+      "training": 55,
+      "tutorial:visit_calendar": 35,
+      "registration": 150,
+      "tournament-match": 5972
+    },
+    "ledger": [
+      {
+        "date": null,
+        "label": "tutorial:visit_career(Começar tutorial)",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 900,
+        "after": 950,
+        "delta": 50,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "onboarding",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 950,
+        "after": 985,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "onboarding",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 985,
+        "after": 1020,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "onboarding",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1020,
+        "after": 1055,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "tutorial:visit_character",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1055,
+        "after": 1090,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "tutorial:review_profile",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1090,
+        "after": 1125,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "tutorial:review_partner_offer",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1125,
+        "after": 1160,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "partner",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1160,
+        "after": 1260,
+        "delta": 100,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": "2026-01-01",
+        "label": "coach",
+        "via": "PlayerProfile.update",
+        "before": 1260,
+        "after": 1043,
+        "delta": -217,
+        "site": "async Module.hirePrimaryCoach src/game-core/coachLifecycle.js:178:19"
+      },
+      {
+        "date": null,
+        "label": "coach",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1043,
+        "after": 1078,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": "2026-01-01",
+        "label": "training",
+        "via": "PlayerProfile.update",
+        "before": 1078,
+        "after": 1058,
+        "delta": -20,
+        "site": "async executeTrainingWork src/lib/trainingSystemV2.js:306:19"
+      },
+      {
+        "date": null,
+        "label": "training",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1058,
+        "after": 1133,
+        "delta": 75,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "tutorial:visit_calendar",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1133,
+        "after": 1168,
+        "delta": 35,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "registration",
+        "via": "batch[upsert:MissionProgress,playerUpdate:]",
+        "before": 1168,
+        "after": 1318,
+        "delta": 150,
+        "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:887:31"
+      },
+      {
+        "date": null,
+        "label": "tournament-match:2026-01-12",
+        "via": "batch[upsert:TeamRanking,update:Partnership,upsert:Match,playerUpdate:,update:CalendarEvent,update:Tournament]",
+        "before": 1318,
+        "after": 1328,
+        "delta": 10,
+        "site": "async playTournamentRound (filscripts/lib/v526Tournament.mjs:254:16"
+      },
+      {
+        "date": null,
+        "label": "tournament-match:2026-01-12",
+        "via": "batch[create:PlayerAchievement,playerUpdate:]",
+        "before": 1328,
+        "after": 7128,
+        "delta": 5800,
+        "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:273:16"
+      },
+      {
+        "date": null,
+        "label": "tournament-match:2026-01-12",
+        "via": "batch[upsert:MissionProgress,upsert:AthleteRankingResult,update:AthleteProfile,upsert:TeamRanking,update:Tournament,update:TournamentRegistration,upsert:Financi",
+        "before": 7128,
+        "after": 7290,
+        "delta": 162,
+        "site": "async Module.incrementMissionProgress src/lib/padel.js:1073:9"
+      }
+    ]
+  },
+  "after": {
+    "continuous": {
+      "startingBalance": 900,
+      "tutorialRewards": 655,
+      "achievements": 1000,
+      "tournamentAndMatch": 172,
+      "otherIncome": 0,
+      "expenses": 237,
+      "observedBalance": 2490,
+      "closes": true,
+      "achievementsUnlocked": [
+        {
+          "id": "achv-nascido-para-vencer",
+          "name": "Nascido para Vencer",
+          "coins": 100,
+          "unlocked": "2026-10-04T13:02:51.019Z"
+        },
+        {
+          "id": "achv-encontrou-um-guia",
+          "name": "Encontrou um Guia",
+          "coins": 400,
+          "unlocked": "2026-10-04T13:02:51.019Z"
+        },
+        {
+          "id": "achv-estreia-em-torneios",
+          "name": "Estreia em Torneios",
+          "coins": 200,
+          "unlocked": "2026-10-04T13:14:53.019Z"
+        },
+        {
+          "id": "achv-primeiro-dia",
+          "name": "Primeiro Dia",
+          "coins": 100,
+          "unlocked": "2026-10-04T13:14:53.019Z"
+        },
+        {
+          "id": "achv-uma-semana",
+          "name": "Uma Semana",
+          "coins": 200,
+          "unlocked": "2026-10-04T13:14:53.019Z"
+        }
+      ],
+      "bySource": {
+        "tutorial:visit_career(Começar tutorial)": 50,
+        "onboarding": 105,
+        "tutorial:visit_character": 35,
+        "tutorial:review_profile": 35,
+        "tutorial:review_partner_offer": 35,
+        "partner": 100,
+        "coach": -182,
+        "training": 55,
+        "tutorial:visit_calendar": 35,
+        "registration": 150,
+        "achievements-panel:day1": 500,
+        "tournament-match": 672
+      },
+      "ledger": [
+        {
+          "date": null,
+          "label": "tutorial:visit_career(Começar tutorial)",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 900,
+          "after": 950,
+          "delta": 50,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 950,
+          "after": 985,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 985,
+          "after": 1020,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1020,
+          "after": 1055,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:visit_character",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1055,
+          "after": 1090,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:review_profile",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1090,
+          "after": 1125,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:review_partner_offer",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1125,
+          "after": 1160,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "partner",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1160,
+          "after": 1260,
+          "delta": 100,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "coach",
+          "via": "batch[playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1260,
+          "after": 1043,
+          "delta": -217,
+          "site": "async Module.hirePrimaryCoach src/game-core/coachLifecycle.js:200:21"
+        },
+        {
+          "date": null,
+          "label": "coach",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1043,
+          "after": 1078,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": "2026-01-01",
+          "label": "training",
+          "via": "PlayerProfile.update",
+          "before": 1078,
+          "after": 1058,
+          "delta": -20,
+          "site": "async executeTrainingWork src/lib/trainingSystemV2.js:306:19"
+        },
+        {
+          "date": null,
+          "label": "training",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1058,
+          "after": 1133,
+          "delta": 75,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:visit_calendar",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1133,
+          "after": 1168,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "registration",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1168,
+          "after": 1318,
+          "delta": 150,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "achievements-panel:day1",
+          "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+          "before": 1318,
+          "after": 1818,
+          "delta": 500,
+          "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[upsert:TeamRanking,update:Partnership,upsert:Match,playerUpdate:,upsert:FinancialTransaction,update:CalendarEvent,update:Tournament]",
+          "before": 1818,
+          "after": 1828,
+          "delta": 10,
+          "site": "async playTournamentRound (filscripts/lib/v526Tournament.mjs:256:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+          "before": 1828,
+          "after": 2328,
+          "delta": 500,
+          "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[upsert:MissionProgress,upsert:FinancialTransaction,upsert:AthleteRankingResult,update:AthleteProfile,upsert:TeamRanking,update:Tournament,update:Tournamen",
+          "before": 2328,
+          "after": 2490,
+          "delta": 162,
+          "site": "async Module.incrementMissionProgress src/lib/padel.js:1102:9"
+        }
+      ]
+    },
+    "noPanel": {
+      "startingBalance": 900,
+      "tutorialRewards": 655,
+      "achievements": 1000,
+      "tournamentAndMatch": 172,
+      "otherIncome": 0,
+      "expenses": 237,
+      "observedBalance": 2490,
+      "closes": true,
+      "achievementsUnlocked": [
+        {
+          "id": "achv-estreia-em-torneios",
+          "name": "Estreia em Torneios",
+          "coins": 200,
+          "unlocked": "2026-10-04T13:14:45.019Z"
+        },
+        {
+          "id": "achv-nascido-para-vencer",
+          "name": "Nascido para Vencer",
+          "coins": 100,
+          "unlocked": "2026-10-04T13:14:45.019Z"
+        },
+        {
+          "id": "achv-primeiro-dia",
+          "name": "Primeiro Dia",
+          "coins": 100,
+          "unlocked": "2026-10-04T13:14:45.019Z"
+        },
+        {
+          "id": "achv-uma-semana",
+          "name": "Uma Semana",
+          "coins": 200,
+          "unlocked": "2026-10-04T13:14:45.019Z"
+        },
+        {
+          "id": "achv-encontrou-um-guia",
+          "name": "Encontrou um Guia",
+          "coins": 400,
+          "unlocked": "2026-10-04T13:14:45.019Z"
+        }
+      ],
+      "bySource": {
+        "tutorial:visit_career(Começar tutorial)": 50,
+        "onboarding": 105,
+        "tutorial:visit_character": 35,
+        "tutorial:review_profile": 35,
+        "tutorial:review_partner_offer": 35,
+        "partner": 100,
+        "coach": -182,
+        "training": 55,
+        "tutorial:visit_calendar": 35,
+        "registration": 150,
+        "tournament-match": 1172
+      },
+      "ledger": [
+        {
+          "date": null,
+          "label": "tutorial:visit_career(Começar tutorial)",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 900,
+          "after": 950,
+          "delta": 50,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 950,
+          "after": 985,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 985,
+          "after": 1020,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1020,
+          "after": 1055,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:visit_character",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1055,
+          "after": 1090,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:review_profile",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1090,
+          "after": 1125,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:review_partner_offer",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1125,
+          "after": 1160,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "partner",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1160,
+          "after": 1260,
+          "delta": 100,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "coach",
+          "via": "batch[playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1260,
+          "after": 1043,
+          "delta": -217,
+          "site": "async Module.hirePrimaryCoach src/game-core/coachLifecycle.js:200:21"
+        },
+        {
+          "date": null,
+          "label": "coach",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1043,
+          "after": 1078,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": "2026-01-01",
+          "label": "training",
+          "via": "PlayerProfile.update",
+          "before": 1078,
+          "after": 1058,
+          "delta": -20,
+          "site": "async executeTrainingWork src/lib/trainingSystemV2.js:306:19"
+        },
+        {
+          "date": null,
+          "label": "training",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1058,
+          "after": 1133,
+          "delta": 75,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:visit_calendar",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1133,
+          "after": 1168,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "registration",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1168,
+          "after": 1318,
+          "delta": 150,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[upsert:TeamRanking,update:Partnership,upsert:Match,playerUpdate:,upsert:FinancialTransaction,update:CalendarEvent,update:Tournament]",
+          "before": 1318,
+          "after": 1328,
+          "delta": 10,
+          "site": "async playTournamentRound (filscripts/lib/v526Tournament.mjs:256:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+          "before": 1328,
+          "after": 2328,
+          "delta": 1000,
+          "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[upsert:MissionProgress,upsert:FinancialTransaction,upsert:AthleteRankingResult,update:AthleteProfile,upsert:TeamRanking,update:Tournament,update:Tournamen",
+          "before": 2328,
+          "after": 2490,
+          "delta": 162,
+          "site": "async Module.incrementMissionProgress src/lib/padel.js:1102:9"
+        }
+      ]
+    },
+    "reload": {
+      "startingBalance": 900,
+      "tutorialRewards": 655,
+      "achievements": 1000,
+      "tournamentAndMatch": 172,
+      "otherIncome": 0,
+      "expenses": 237,
+      "observedBalance": 2490,
+      "closes": true,
+      "achievementsUnlocked": [
+        {
+          "id": "achv-nascido-para-vencer",
+          "name": "Nascido para Vencer",
+          "coins": 100,
+          "unlocked": "2026-10-04T13:02:52.019Z"
+        },
+        {
+          "id": "achv-encontrou-um-guia",
+          "name": "Encontrou um Guia",
+          "coins": 400,
+          "unlocked": "2026-10-04T13:02:52.019Z"
+        },
+        {
+          "id": "achv-estreia-em-torneios",
+          "name": "Estreia em Torneios",
+          "coins": 200,
+          "unlocked": "2026-10-04T13:15:00.019Z"
+        },
+        {
+          "id": "achv-primeiro-dia",
+          "name": "Primeiro Dia",
+          "coins": 100,
+          "unlocked": "2026-10-04T13:15:00.019Z"
+        },
+        {
+          "id": "achv-uma-semana",
+          "name": "Uma Semana",
+          "coins": 200,
+          "unlocked": "2026-10-04T13:15:00.019Z"
+        }
+      ],
+      "bySource": {
+        "tutorial:visit_career(Começar tutorial)": 50,
+        "onboarding": 105,
+        "tutorial:visit_character": 35,
+        "tutorial:review_profile": 35,
+        "tutorial:review_partner_offer": 35,
+        "partner": 100,
+        "coach": -182,
+        "training": 55,
+        "tutorial:visit_calendar": 35,
+        "registration": 150,
+        "achievements-panel:day1": 500,
+        "tournament-match": 672
+      },
+      "ledger": [
+        {
+          "date": null,
+          "label": "tutorial:visit_career(Começar tutorial)",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 900,
+          "after": 950,
+          "delta": 50,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 950,
+          "after": 985,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 985,
+          "after": 1020,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "onboarding",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1020,
+          "after": 1055,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:visit_character",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1055,
+          "after": 1090,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:review_profile",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1090,
+          "after": 1125,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:review_partner_offer",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1125,
+          "after": 1160,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "partner",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1160,
+          "after": 1260,
+          "delta": 100,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "coach",
+          "via": "batch[playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1260,
+          "after": 1043,
+          "delta": -217,
+          "site": "async Module.hirePrimaryCoach src/game-core/coachLifecycle.js:200:21"
+        },
+        {
+          "date": null,
+          "label": "coach",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1043,
+          "after": 1078,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": "2026-01-01",
+          "label": "training",
+          "via": "PlayerProfile.update",
+          "before": 1078,
+          "after": 1058,
+          "delta": -20,
+          "site": "async executeTrainingWork src/lib/trainingSystemV2.js:306:19"
+        },
+        {
+          "date": null,
+          "label": "training",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1058,
+          "after": 1133,
+          "delta": 75,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "tutorial:visit_calendar",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1133,
+          "after": 1168,
+          "delta": 35,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "registration",
+          "via": "batch[upsert:MissionProgress,playerUpdate:,upsert:FinancialTransaction]",
+          "before": 1168,
+          "after": 1318,
+          "delta": 150,
+          "site": "async rewardMissionAutomaticallyUnlocked src/lib/padel.js:913:31"
+        },
+        {
+          "date": null,
+          "label": "achievements-panel:day1",
+          "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+          "before": 1318,
+          "after": 1818,
+          "delta": 500,
+          "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[upsert:TeamRanking,update:Partnership,upsert:Match,playerUpdate:,upsert:FinancialTransaction,update:CalendarEvent,update:Tournament]",
+          "before": 1818,
+          "after": 1828,
+          "delta": 10,
+          "site": "async playTournamentRound (filscripts/lib/v526Tournament.mjs:256:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[create:PlayerAchievement,upsert:FinancialTransaction,playerUpdate:]",
+          "before": 1828,
+          "after": 2328,
+          "delta": 500,
+          "site": "async Module.syncPlayerAchievements src/lib/achievementEngine.js:283:16"
+        },
+        {
+          "date": null,
+          "label": "tournament-match:2026-01-12",
+          "via": "batch[upsert:MissionProgress,upsert:FinancialTransaction,upsert:AthleteRankingResult,update:AthleteProfile,upsert:TeamRanking,update:Tournament,update:Tournamen",
+          "before": 2328,
+          "after": 2490,
+          "delta": 162,
+          "site": "async Module.incrementMissionProgress src/lib/padel.js:1102:9"
+        }
+      ]
+    }
+  },
+  "duplicateRewards": 0
+}

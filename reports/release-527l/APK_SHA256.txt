@@ -1,0 +1,15 @@
+commit: 565437f
+version: Padel Legacy 0.9.0 RC (versionName 0.9.0, versionCode 9001)
+signature: valid (APK Signature Scheme v2), cert SHA-256 3150fe71e2ea54a0718cec43d42f5d0c242b6b848cdd51b98d9c6f3c66d01ddb
+
+# APK para testers (celulares ARM64)
+file: PadelLegacy-0.9.0-RC-build9001-arm64.apk
+size_bytes: 16973014
+abi: arm64-v8a
+sha256: 09ac4248cafd109f35d6db8e7f74c00463e56e66b19a17186ee6ba29dcd2eb0f
+
+# APK universal (todas as ABIs)
+file: PadelLegacy-0.9.0-RC-build9001.apk
+size_bytes: 56016757
+abi: arm64-v8a, armeabi-v7a, x86, x86_64
+sha256: 571ea0b17cb9f366141e9b5eeefa1ecabba0dcbe811d002782a6de0308f88238

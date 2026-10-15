@@ -1,0 +1,872 @@
+{
+  "phase": "5.27-M",
+  "dataNaoInformadaCause": "FinancialFlow.jsx lia só o formato do fechamento mensal (month/net/breakdown). Linhas datadas (date/amount/category) — prêmio de torneio, salário de parceiro e as 2 transações de DEMONSTRAÇÃO que toda carreira nova herdava (Adiantamento Sul Energia +300, Mensalidade do centro −250, moedas que nunca existiram no saldo) — viravam \"Data não informada +0\".",
+  "fix": [
+    "src/lib/financialFlow.js agrega todas as formas por mês/categoria",
+    "FinancialTransaction e PlayerAchievement fora do seed de demonstração",
+    "linhas de extrato para tutorial/missão, conquista, partida, luvas do treinador, treino, inscrição/reembolso, loja, patrocínio (luvas/renovação), instalações — no mesmo lote da recompensa quando é recompensa"
+  ],
+  "notLedgered": [
+    "clubes (mensalidade/instalações do clube)",
+    "imóveis (compra/venda)",
+    "multa de rescisão em economy.js",
+    "caminho legado de inscrição em calendarSystem.js",
+    "treino legado trainingSystem.js"
+  ],
+  "before": {
+    "startCoins": 900,
+    "endCoins": 7290,
+    "delta": 6390,
+    "financialFlowNet": null,
+    "reconciled": null,
+    "undatedTransactions": null,
+    "months": null,
+    "transactions": [
+      {
+        "id": "finance-001",
+        "type": "income",
+        "category": "patrocinio",
+        "date": "2026-01-01",
+        "month": null,
+        "amount": 300,
+        "net": null,
+        "description": "Adiantamento Sul Energia"
+      },
+      {
+        "id": "finance-002",
+        "type": "expense",
+        "category": "treinamento",
+        "date": "2026-01-01",
+        "month": null,
+        "amount": 250,
+        "net": null,
+        "description": "Mensalidade do centro"
+      },
+      {
+        "id": "tournament-prize-tournament-tournament-2026-rom-exh-2026-canonical-settlement",
+        "type": "income",
+        "category": "torneio",
+        "date": "2026-01-12",
+        "month": null,
+        "amount": 12,
+        "net": null,
+        "description": "Quartas de final — Roma Pré-Temporada"
+      }
+    ]
+  },
+  "after": {
+    "continuous": {
+      "startCoins": 900,
+      "endCoins": 2490,
+      "delta": 1590,
+      "financialFlowNet": 1590,
+      "reconciled": true,
+      "undatedTransactions": 0,
+      "months": [
+        {
+          "month": "2026-01",
+          "label": "Jan/2026",
+          "lines": [
+            {
+              "key": "conquista",
+              "label": "Conquistas",
+              "amount": 1000
+            },
+            {
+              "key": "tutorial",
+              "label": "Recompensas do tutorial",
+              "amount": 805
+            },
+            {
+              "key": "treinador",
+              "label": "Treinador",
+              "amount": -217
+            },
+            {
+              "key": "treino",
+              "label": "Treinos",
+              "amount": -20
+            },
+            {
+              "key": "torneio",
+              "label": "Prêmios de torneio",
+              "amount": 12
+            },
+            {
+              "key": "partida",
+              "label": "Partidas",
+              "amount": 10
+            }
+          ],
+          "income": 1827,
+          "expense": 237,
+          "net": 1590
+        }
+      ],
+      "transactions": [
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-career-created-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 50,
+          "net": null,
+          "description": "Tutorial: Conheça o painel da carreira"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-athlete-named-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Dê um nome ao atleta"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-side-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha mão dominante e lado"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-style-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha o estilo de jogo"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-appearance-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Personalize a aparência"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-profile-reviewed-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Confirme seu atleta"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-offers-reviewed-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Analise propostas de parceria"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-partner-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Tutorial: Escolha sua primeira dupla"
+        },
+        {
+          "id": "coach-signing-playerprofile-1791115490019-impy4u-catalog-coach-036-2026-01-01",
+          "type": "expense",
+          "category": "treinador",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 217,
+          "net": null,
+          "description": "Luvas do treinador Caio Silva"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-coaches-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha seu primeiro treinador"
+        },
+        {
+          "id": "training-playerprofile-1791115490019-impy4u-2026-01-01-1",
+          "type": "expense",
+          "category": "treino",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 20,
+          "net": null,
+          "description": "Treino: Golpes de fundo"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-training-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 75,
+          "net": null,
+          "description": "Tutorial: Faça o primeiro treino"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-calendar-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Planeje pelo calendário e avance um dia"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-tournament-registered-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 150,
+          "net": null,
+          "description": "Tutorial: Inscreva-se em um torneio"
+        },
+        {
+          "id": "reward-pa-achv-nascido-para-vencer-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Conquista: Nascido para Vencer"
+        },
+        {
+          "id": "reward-pa-achv-encontrou-um-guia-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 400,
+          "net": null,
+          "description": "Conquista: Encontrou um Guia"
+        },
+        {
+          "id": "match-reward-tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "type": "income",
+          "category": "partida",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 10,
+          "net": null,
+          "description": "Partida — Roma Pré-Temporada (Quartas de Final)"
+        },
+        {
+          "id": "reward-pa-achv-estreia-em-torneios-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 200,
+          "net": null,
+          "description": "Conquista: Estreia em Torneios"
+        },
+        {
+          "id": "reward-pa-achv-primeiro-dia-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Conquista: Primeiro Dia"
+        },
+        {
+          "id": "reward-pa-achv-uma-semana-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 200,
+          "net": null,
+          "description": "Conquista: Uma Semana"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-match-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 150,
+          "net": null,
+          "description": "Tutorial: Jogue sua primeira partida de torneio"
+        },
+        {
+          "id": "tournament-prize-tournament-tournament-2026-rom-exh-2026-canonical-settlement",
+          "type": "income",
+          "category": "torneio",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 12,
+          "net": null,
+          "description": "Quartas de final — Roma Pré-Temporada"
+        }
+      ]
+    },
+    "noPanel": {
+      "startCoins": 900,
+      "endCoins": 2490,
+      "delta": 1590,
+      "financialFlowNet": 1590,
+      "reconciled": true,
+      "undatedTransactions": 0,
+      "months": [
+        {
+          "month": "2026-01",
+          "label": "Jan/2026",
+          "lines": [
+            {
+              "key": "conquista",
+              "label": "Conquistas",
+              "amount": 1000
+            },
+            {
+              "key": "tutorial",
+              "label": "Recompensas do tutorial",
+              "amount": 805
+            },
+            {
+              "key": "treinador",
+              "label": "Treinador",
+              "amount": -217
+            },
+            {
+              "key": "treino",
+              "label": "Treinos",
+              "amount": -20
+            },
+            {
+              "key": "torneio",
+              "label": "Prêmios de torneio",
+              "amount": 12
+            },
+            {
+              "key": "partida",
+              "label": "Partidas",
+              "amount": 10
+            }
+          ],
+          "income": 1827,
+          "expense": 237,
+          "net": 1590
+        }
+      ],
+      "transactions": [
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-career-created-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 50,
+          "net": null,
+          "description": "Tutorial: Conheça o painel da carreira"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-athlete-named-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Dê um nome ao atleta"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-side-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha mão dominante e lado"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-style-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha o estilo de jogo"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-appearance-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Personalize a aparência"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-profile-reviewed-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Confirme seu atleta"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-offers-reviewed-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Analise propostas de parceria"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-partner-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Tutorial: Escolha sua primeira dupla"
+        },
+        {
+          "id": "coach-signing-playerprofile-1791115490019-impy4u-catalog-coach-036-2026-01-01",
+          "type": "expense",
+          "category": "treinador",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 217,
+          "net": null,
+          "description": "Luvas do treinador Caio Silva"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-coaches-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha seu primeiro treinador"
+        },
+        {
+          "id": "training-playerprofile-1791115490019-impy4u-2026-01-01-1",
+          "type": "expense",
+          "category": "treino",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 20,
+          "net": null,
+          "description": "Treino: Golpes de fundo"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-training-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 75,
+          "net": null,
+          "description": "Tutorial: Faça o primeiro treino"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-calendar-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Planeje pelo calendário e avance um dia"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-tournament-registered-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 150,
+          "net": null,
+          "description": "Tutorial: Inscreva-se em um torneio"
+        },
+        {
+          "id": "match-reward-tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "type": "income",
+          "category": "partida",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 10,
+          "net": null,
+          "description": "Partida — Roma Pré-Temporada (Quartas de Final)"
+        },
+        {
+          "id": "reward-pa-achv-estreia-em-torneios-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 200,
+          "net": null,
+          "description": "Conquista: Estreia em Torneios"
+        },
+        {
+          "id": "reward-pa-achv-nascido-para-vencer-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Conquista: Nascido para Vencer"
+        },
+        {
+          "id": "reward-pa-achv-primeiro-dia-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Conquista: Primeiro Dia"
+        },
+        {
+          "id": "reward-pa-achv-uma-semana-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 200,
+          "net": null,
+          "description": "Conquista: Uma Semana"
+        },
+        {
+          "id": "reward-pa-achv-encontrou-um-guia-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 400,
+          "net": null,
+          "description": "Conquista: Encontrou um Guia"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-match-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 150,
+          "net": null,
+          "description": "Tutorial: Jogue sua primeira partida de torneio"
+        },
+        {
+          "id": "tournament-prize-tournament-tournament-2026-rom-exh-2026-canonical-settlement",
+          "type": "income",
+          "category": "torneio",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 12,
+          "net": null,
+          "description": "Quartas de final — Roma Pré-Temporada"
+        }
+      ]
+    },
+    "reload": {
+      "startCoins": 900,
+      "endCoins": 2490,
+      "delta": 1590,
+      "financialFlowNet": 1590,
+      "reconciled": true,
+      "undatedTransactions": 0,
+      "months": [
+        {
+          "month": "2026-01",
+          "label": "Jan/2026",
+          "lines": [
+            {
+              "key": "conquista",
+              "label": "Conquistas",
+              "amount": 1000
+            },
+            {
+              "key": "tutorial",
+              "label": "Recompensas do tutorial",
+              "amount": 805
+            },
+            {
+              "key": "treinador",
+              "label": "Treinador",
+              "amount": -217
+            },
+            {
+              "key": "treino",
+              "label": "Treinos",
+              "amount": -20
+            },
+            {
+              "key": "torneio",
+              "label": "Prêmios de torneio",
+              "amount": 12
+            },
+            {
+              "key": "partida",
+              "label": "Partidas",
+              "amount": 10
+            }
+          ],
+          "income": 1827,
+          "expense": 237,
+          "net": 1590
+        }
+      ],
+      "transactions": [
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-career-created-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 50,
+          "net": null,
+          "description": "Tutorial: Conheça o painel da carreira"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-athlete-named-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Dê um nome ao atleta"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-side-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha mão dominante e lado"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-style-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha o estilo de jogo"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-appearance-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Personalize a aparência"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-profile-reviewed-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Confirme seu atleta"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-offers-reviewed-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Analise propostas de parceria"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-partner-selected-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Tutorial: Escolha sua primeira dupla"
+        },
+        {
+          "id": "coach-signing-playerprofile-1791115490019-impy4u-catalog-coach-036-2026-01-01",
+          "type": "expense",
+          "category": "treinador",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 217,
+          "net": null,
+          "description": "Luvas do treinador Caio Silva"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-coaches-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Escolha seu primeiro treinador"
+        },
+        {
+          "id": "training-playerprofile-1791115490019-impy4u-2026-01-01-1",
+          "type": "expense",
+          "category": "treino",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 20,
+          "net": null,
+          "description": "Treino: Golpes de fundo"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-training-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 75,
+          "net": null,
+          "description": "Tutorial: Faça o primeiro treino"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-calendar-known-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 35,
+          "net": null,
+          "description": "Tutorial: Planeje pelo calendário e avance um dia"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-tournament-registered-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 150,
+          "net": null,
+          "description": "Tutorial: Inscreva-se em um torneio"
+        },
+        {
+          "id": "reward-pa-achv-nascido-para-vencer-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Conquista: Nascido para Vencer"
+        },
+        {
+          "id": "reward-pa-achv-encontrou-um-guia-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-01",
+          "month": null,
+          "amount": 400,
+          "net": null,
+          "description": "Conquista: Encontrou um Guia"
+        },
+        {
+          "id": "match-reward-tournament-match-playerprofile-1791115490019-impy4u-tournament-2026-rom-exh-2026-main-0",
+          "type": "income",
+          "category": "partida",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 10,
+          "net": null,
+          "description": "Partida — Roma Pré-Temporada (Quartas de Final)"
+        },
+        {
+          "id": "reward-pa-achv-estreia-em-torneios-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 200,
+          "net": null,
+          "description": "Conquista: Estreia em Torneios"
+        },
+        {
+          "id": "reward-pa-achv-primeiro-dia-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 100,
+          "net": null,
+          "description": "Conquista: Primeiro Dia"
+        },
+        {
+          "id": "reward-pa-achv-uma-semana-playerprofile-1791115490019-impy4u",
+          "type": "income",
+          "category": "conquista",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 200,
+          "net": null,
+          "description": "Conquista: Uma Semana"
+        },
+        {
+          "id": "reward-mission-progress-playerprofile-1791115490019-impy4u-tutorial-first-match-tutorial-career",
+          "type": "income",
+          "category": "tutorial",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 150,
+          "net": null,
+          "description": "Tutorial: Jogue sua primeira partida de torneio"
+        },
+        {
+          "id": "tournament-prize-tournament-tournament-2026-rom-exh-2026-canonical-settlement",
+          "type": "income",
+          "category": "torneio",
+          "date": "2026-01-12",
+          "month": null,
+          "amount": 12,
+          "net": null,
+          "description": "Quartas de final — Roma Pré-Temporada"
+        }
+      ]
+    }
+  }
+}

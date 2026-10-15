@@ -1,0 +1,167 @@
+{
+  "at": "2026-10-15T21:59:22.994Z",
+  "passed": 20,
+  "total": 20,
+  "results": [
+    {
+      "group": "Lifecycle",
+      "name": "test-partnership-registration-after-exit-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 22,
+      "summary": "test-partnership-registration-after-exit-v527j: 9/9 passaram"
+    },
+    {
+      "group": "Lifecycle",
+      "name": "test-no-new-commitment-after-exit-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 12,
+      "summary": "test-no-new-commitment-after-exit-v527j: 5/5 passaram"
+    },
+    {
+      "group": "Lifecycle",
+      "name": "test-preexisting-commitment-preserved-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 22,
+      "summary": "test-preexisting-commitment-preserved-v527j: 5/5 passaram"
+    },
+    {
+      "group": "Lifecycle",
+      "name": "test-partnership-expiry-with-committed-tournament-v517",
+      "ok": true,
+      "code": 0,
+      "seconds": 9,
+      "summary": "test-partnership-expiry-with-committed-tournament-v517: PASS"
+    },
+    {
+      "group": "Lifecycle",
+      "name": "test-save-reload-pending-separation-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-save-reload-pending-separation-v527j: 8/8 passaram"
+    },
+    {
+      "group": "Engine",
+      "name": "test-match-engine-identical-teams-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 190,
+      "summary": "test-match-engine-identical-teams-v527f: 21/21 passaram"
+    },
+    {
+      "group": "Engine",
+      "name": "test-energy-sensitivity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 171,
+      "summary": "test-energy-sensitivity-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Engine",
+      "name": "test-energy-single-application-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-energy-single-application-v527f: 5/5 passaram"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-zero-win-ranking-progression-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-zero-win-ranking-progression-v527f: 4/4 passaram"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-team-ranking-sum-formula-v522e",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-team-ranking-sum-formula-v522e: PASS"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-race-year-reset-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 26,
+      "summary": "test-race-year-reset-v526c: 8/8 passaram"
+    },
+    {
+      "group": "Torneio",
+      "name": "test-registration-deadline-authority",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": "test-registration-deadline-authority: PASS"
+    },
+    {
+      "group": "Torneio",
+      "name": "test-bye-visible-from-draw",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-bye-visible-from-draw: PASS"
+    },
+    {
+      "group": "Torneio",
+      "name": "test-masters-24-8byes-r16-v522f",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-masters-24-8byes-r16-v522f: PASS (24 entrantes · 8 BYEs · seeds 1-8 · R16 com 16)"
+    },
+    {
+      "group": "Torneio",
+      "name": "test-settlement-uses-persisted-draw-roster",
+      "ok": true,
+      "code": 0,
+      "seconds": 182,
+      "summary": "test-settlement-uses-persisted-draw-roster: PASS"
+    },
+    {
+      "group": "Torneio",
+      "name": "test-tournament-result-authority",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": null
+    },
+    {
+      "group": "Parceria",
+      "name": "test-normal-partner-score-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-normal-partner-score-v527g: 6/6 passaram"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-optimizer-partner-refresh-v527i",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-optimizer-partner-refresh-v527i: 5/5 passaram"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partner-resign-loop-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 24,
+      "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-achievement-reward-atomicity-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+    }
+  ]
+}

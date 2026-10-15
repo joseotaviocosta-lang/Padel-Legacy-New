@@ -7,6 +7,7 @@ import { RarityBadge, RARITY_STYLES } from '@/components/padel/GameShared';
 import { Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader, StatCard, StatusBadge, EmptyState, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import ItemImage from '@/components/shop/ItemImage';
+import { recordFinancialEntry } from '@/lib/financialLedger.js';
 const CATEGORY_LABELS = {
   raquete: 'Raquetes',
   grip: 'Grips',
@@ -156,6 +157,7 @@ export default function Inventory() {
       const updated = await localGame.entities.PlayerProfile.update(profile.id, {
         coins: (profile.coins || 0) + sellPrice,
       });
+      await recordFinancialEntry({ id: `inventory-sale-${invItem.id}`, profileId: profile.id, date: profile.career_date, type: 'income', category: 'loja', description: `Venda: ${invItem.item_name}`, amount: sellPrice });
       setProfile(updated);
       setInventory(prev => prev.filter(i => i.id !== invItem.id));
       toast({ title: 'Item vendido!', description: `${invItem.item_name} vendido por ${sellPrice} moedas.` });

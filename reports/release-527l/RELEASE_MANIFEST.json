@@ -1,0 +1,24 @@
+{
+  "commitHash": "565437f",
+  "branch": "feature/live-coach-dynamic-adaptation",
+  "versionName": "0.9.0",
+  "versionCode": 9001,
+  "apkFilename": "PadelLegacy-0.9.0-RC-build9001-arm64.apk",
+  "apkSize": 16973014,
+  "apkSha256": "09ac4248cafd109f35d6db8e7f74c00463e56e66b19a17186ee6ba29dcd2eb0f",
+  "apkAbi": "arm64-v8a",
+  "universalApk": {
+    "filename": "PadelLegacy-0.9.0-RC-build9001.apk",
+    "size": 56016757,
+    "sha256": "571ea0b17cb9f366141e9b5eeefa1ecabba0dcbe811d002782a6de0308f88238"
+  },
+  "signatureVerified": true,
+  "signatureSchemes": ["v2"],
+  "certificateSha256": "3150fe71e2ea54a0718cec43d42f5d0c242b6b848cdd51b98d9c6f3c66d01ddb",
+  "androidDeviceTested": false,
+  "smokePassed": null,
+  "lintPassed": true,
+  "buildPassed": true,
+  "criticalTestsPassed": "20/20 + tournaments 4/4",
+  "createdAt": "2026-10-15"
+}

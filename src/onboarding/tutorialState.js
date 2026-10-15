@@ -52,7 +52,14 @@ export function deriveTutorialFacts(career = {}, facts = {}) {
     // categoria de torneio que existia até aqui), preservando o progresso
     // de quem já cumpriu esta etapa. Só uma partida NOVA da Exibição
     // (que grava `world_tour_event:false` explicitamente) deixa de contar.
-    matchCompleted: matches.some(item => item.competition_type === 'tournament' && item.is_official === true && item.world_tour_event !== false),
+    //
+    // Playthrough 5.27-M — a regra acima nunca valeu na prática: a etapa
+    // conclui pelo objetivo `play_matches` (incrementMissionProgress), que a
+    // partida da Pré-Temporada também dispara — e o texto da etapa dizia o
+    // contrário. Decisão do playtest físico: "Jogue sua primeira partida de
+    // torneio" vale para qualquer partida oficial de torneio (Pré-Temporada
+    // inclusive); o fato da reconciliação passa a dizer o mesmo que o objetivo.
+    matchCompleted: matches.some(item => item.competition_type === 'tournament' && item.is_official === true),
     tutorialFinished: Boolean(player.tutorial_onboarding?.completedAt || player.onboarding_completed || facts.tutorialFinished || facts.completedObjectiveTypes?.includes('finish_tutorial')),
   };
 }

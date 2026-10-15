@@ -278,6 +278,14 @@ async function executeTrainingWork(profile, activity, intensityId, coachBonus = 
   // permanente. Nenhuma outra parte do código depende da sessão existir
   // antes do perfil ser atualizado.
   const updated = await localGame.entities.PlayerProfile.update(profile.id, updates);
+  // 5.27-M: o custo do treino entra no extrato. Mesma transação de
+  // persistência do débito (executeTraining → withPersistenceTransaction).
+  if (preview.cost > 0) {
+    const trainingDate = profile.career_date || todayStr();
+    await localGame.entities.FinancialTransaction.upsert(`training-${profile.id}-${trainingDate}-${doneToday + 1}`, {
+      profile_id: profile.id, date: trainingDate, type: 'expense', category: 'treino', description: `Treino: ${training.label || training.id}`, amount: preview.cost,
+    });
+  }
   await localGame.entities.TrainingSession.create({
     profile_id: profile.id, training_type: training.id, training_label: training.label, category: training.groupId,
     group_id: training.groupId, focus_id: training.focusId, intensity: preview.intensity.id,

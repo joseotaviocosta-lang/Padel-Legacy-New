@@ -92,11 +92,13 @@ try {
   gate('Múltiplos torneios: escolhe o mais próximo (não o primeiro da lista)', multi.tournamentId === soonTournament.id);
   gate('Múltiplos torneios: torneio já passado nunca é escolhido como "próximo"', multi.tournamentId !== 'past-one');
 
-  // ── Componente ficou clicável reaproveitando o deep link canônico ───────
+  // ── Componente clicável (5.27-M: leva à página geral de Torneios) ───────
+  // O playtest físico pediu: o atalho continua mostrando o próximo torneio,
+  // mas o toque abre /tournaments; o evento é aberto lá dentro.
   const componentSrc = readFileSync('src/components/career/CareerHeaderContext.jsx', 'utf8');
-  gate('CareerHeaderContext importa buildTournamentPlayRoute (deep link canônico, sem lógica paralela)', componentSrc.includes("buildTournamentPlayRoute") && componentSrc.includes("from '@/lib/tournamentNextAction.js'"));
-  gate('CareerHeaderContext usa <Link> quando há tournamentId (chip vira clicável)', /context\.tournamentId[\s\S]{0,200}<Link/.test(componentSrc));
-  gate('Destino do clique é exatamente buildTournamentPlayRoute(context.tournamentId)', componentSrc.includes('buildTournamentPlayRoute(context.tournamentId)'));
+  gate('CareerHeaderContext não abre mais o evento direto (sem buildTournamentPlayRoute)', !componentSrc.includes('buildTournamentPlayRoute('));
+  gate('CareerHeaderContext usa um único <Link> (atalho inteiro clicável)', (componentSrc.match(/<Link /g) || []).length === 1);
+  gate('Destino do clique é a página geral de Torneios (APP_ROUTES.TOURNAMENTS)', componentSrc.includes('<Link to={APP_ROUTES.TOURNAMENTS}'));
 
   console.log(`\n${gates} gates executados, todos PASS.`);
 } finally {
