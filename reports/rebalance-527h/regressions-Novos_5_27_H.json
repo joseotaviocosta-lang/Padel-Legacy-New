@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-13T23:12:16.227Z",
+  "passed": 11,
+  "total": 12,
+  "results": [
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-stage1-balanced-e-completeness-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-stage1-balanced-e-completeness-v527h: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-partnership-state-segmentation-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-partnership-state-segmentation-v527h: 4/4 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-commitment-limbo-duration-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-commitment-limbo-duration-v527h: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-partner-quality-over-time-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-partner-quality-over-time-v527h: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-medium-main-draw-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-medium-main-draw-v527h: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-qualifying-vs-main-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-qualifying-vs-main-v527h: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-balanced-e-competition-gates-v527h",
+      "ok": false,
+      "code": 1,
+      "seconds": 1,
+      "summary": "test-balanced-e-competition-gates-v527h: 4/5 passaram",
+      "tail": "✗ R1 ≥ 40%"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-balanced-e-economy-gates-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-balanced-e-economy-gates-v527h: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-preset-classification-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-preset-classification-v527h: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-no-tuning-during-stage1-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-no-tuning-during-stage1-v527h: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-engine-parity-regression-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 857,
+      "summary": "test-engine-parity-regression-v527h: 8/8 passaram"
+    },
+    {
+      "group": "Novos 5.27-H",
+      "name": "test-ranking-regression-v527h",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-regression-v527h: 4/4 passaram"
+    }
+  ]
+}

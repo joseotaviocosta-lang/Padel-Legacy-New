@@ -1,0 +1,8 @@
+job,preset,seed,debtDay,coins,minCash,debtWeeks,staffMonthlyBefore,coachSalaryBefore,sponsorMonthlyBefore,gear90d,dismissals90d,classification
+balanced-casual-seed002-2y,balanced,2,490,-143,-545,5,2000,250,1440,1950,0,BAD POLICY (folha > receita recorrente)
+balanced-casual-seed004-2y,balanced,4,399,-205,-205,1,1300,250,1169,7433,0,BAD POLICY (folha > receita recorrente)
+conservative-casual-seed004-2y,conservative,4,154,-177,-672,4,1950,2400,3263,2687,0,BAD POLICY (folha > receita recorrente)
+hardcore-casual-seed001-2y,hardcore,1,273,-615,-1087,8,1100,446,1090,723,0,BAD POLICY (folha > receita recorrente)
+hardcore-casual-seed003-2y,hardcore,3,273,-474,-1035,9,1200,266,1197,1799,0,BAD POLICY (folha > receita recorrente)
+hardcore-casual-seed004-2y,hardcore,4,245,-902,-1199,4,1500,266,1151,1213,0,BAD POLICY (folha > receita recorrente)
+hardcore-casual-seed005-2y,hardcore,5,273,-20,-568,7,900,286,1200,3182,0,EXPECTED PRESSURE

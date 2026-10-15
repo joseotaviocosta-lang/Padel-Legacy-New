@@ -1,0 +1,9 @@
+kind,ovrA,ovrB,energyA,energyB,tacticA,n,winPctA,ci95
+identical,35,35,100,100,tatico,1200,55.7,2.8
+identical,35,35,80,80,tatico,1200,54.8,2.8
+identical,35,35,60,60,tatico,1200,50.4,2.8
+identical,35,35,40,40,tatico,1200,29.8,2.6
+identical,50,50,100,100,tatico,1200,57.4,2.8
+identical,50,50,80,80,tatico,1200,56.3,2.8
+identical,50,50,60,60,tatico,1200,46.4,2.8
+identical,50,50,40,40,tatico,1200,31,2.6

@@ -1,0 +1,70 @@
+{
+  "generatedAt": "2026-10-10T22:20:19.630Z",
+  "note": "Presets implementados e versionados. Simulação de carreira completa por preset NÃO executada nesta sessão (runtime) — ver REBALANCE_527B.md.",
+  "presets": {
+    "conservative": {
+      "id": "conservative",
+      "label": "Conservative",
+      "version": "5.27-B",
+      "startingCoins": 900,
+      "initialAttributeMultiplier": 1.8,
+      "prizeMultiplier": 2.6,
+      "investmentRateMultiplier": 0.3,
+      "sponsor": {
+        "monthlyMultiplier": 0.45,
+        "signMultiplier": 0.4,
+        "requireProof": true,
+        "proofMinTournaments": 1
+      },
+      "staffMultiplier": 1.12,
+      "shopPriceMultiplier": 1.15,
+      "shopBonusMultiplier": 1
+    },
+    "balanced": {
+      "id": "balanced",
+      "label": "Balanced",
+      "version": "5.27-B",
+      "startingCoins": 900,
+      "initialAttributeMultiplier": 1.8,
+      "prizeMultiplier": 3,
+      "investmentRateMultiplier": 0.23,
+      "sponsor": {
+        "monthlyMultiplier": 0.22,
+        "signMultiplier": 0.21,
+        "requireProof": true,
+        "proofMinTournaments": 1
+      },
+      "staffMultiplier": 1.25,
+      "shopPriceMultiplier": 1.2,
+      "shopBonusMultiplier": 1
+    },
+    "hardcore": {
+      "id": "hardcore",
+      "label": "Hardcore",
+      "version": "5.27-B",
+      "startingCoins": 700,
+      "initialAttributeMultiplier": 1.8,
+      "prizeMultiplier": 2,
+      "investmentRateMultiplier": 0.18,
+      "sponsor": {
+        "monthlyMultiplier": 0.16,
+        "signMultiplier": 0.15,
+        "requireProof": true,
+        "proofMinTournaments": 2
+      },
+      "staffMultiplier": 1.4,
+      "shopPriceMultiplier": 1.3,
+      "shopBonusMultiplier": 1
+    }
+  },
+  "simulated": {
+    "conservative": false,
+    "balanced": "partial (5.27 balanced 3x1x2y, antes do fine-tune 5.27-B)",
+    "hardcore": false
+  },
+  "sameSeeds": {
+    "shortMatrix": "5 seeds × 3 profiles",
+    "planned": 45,
+    "completed": 3
+  }
+}

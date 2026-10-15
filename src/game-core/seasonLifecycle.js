@@ -1,7 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { ensureFutureTournaments } from '@/lib/career';
 import { levelForXp } from '@/lib/padel';
-import { teamKey } from '@/lib/teamRanking';
+import { teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
 import { safeName } from './utils';
 import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
 
@@ -209,7 +209,8 @@ export async function finalizeSeason({ profile, partner, force = false }) {
     if (ranking?.id) {
       const partnerPoints = Math.max(0, Number(partner.world_ranking_points ?? partner.ranking_points) || 0);
       await localGame.entities.TeamRanking.update(ranking.id, {
-        ranking_points: Math.round((nextRankPoints + partnerPoints) / 2),
+        // Playthrough 5.11, Parte S — fórmula única em teamRanking.js.
+        ranking_points: computeCanonicalTeamRankingPoints(nextRankPoints, partnerPoints),
       });
     }
   }

@@ -1,0 +1,424 @@
+{
+  "generatedAt": "2026-10-11T02:37:50.547Z",
+  "seeds": [
+    1
+  ],
+  "profiles": [
+    "casual",
+    "normal",
+    "optimizer"
+  ],
+  "presets": {
+    "conservative": {
+      "careers": 1,
+      "profiles": {
+        "casual": {
+          "careers": 1,
+          "easyWR": 20,
+          "mediumWR": 6,
+          "hardWR": 0,
+          "r1WR": 19,
+          "rank1y": {
+            "n": 1,
+            "mean": 374,
+            "median": 374,
+            "p10": 374,
+            "p25": 374,
+            "p75": 374,
+            "p90": 374,
+            "min": 374,
+            "max": 374
+          },
+          "rank2y": {
+            "n": 1,
+            "mean": 211,
+            "median": 211,
+            "p10": 211,
+            "p25": 211,
+            "p75": 211,
+            "p90": 211,
+            "min": 211,
+            "max": 211
+          },
+          "titles2y": {
+            "n": 1,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "sponsorShareY1": 72,
+          "prizeShareY1": 7,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        },
+        "normal": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        },
+        "optimizer": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        }
+      }
+    },
+    "balanced": {
+      "careers": 0,
+      "profiles": {
+        "casual": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        },
+        "normal": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        },
+        "optimizer": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        }
+      }
+    },
+    "hardcore": {
+      "careers": 0,
+      "profiles": {
+        "casual": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        },
+        "normal": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        },
+        "optimizer": {
+          "careers": 0,
+          "easyWR": null,
+          "mediumWR": null,
+          "hardWR": null,
+          "r1WR": null,
+          "rank1y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "rank2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "titles2y": {
+            "n": 0,
+            "mean": null,
+            "median": null,
+            "p10": null,
+            "p25": null,
+            "p75": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "sponsorShareY1": null,
+          "prizeShareY1": null,
+          "insolvent": 0,
+          "moneySolvedMonthIndex": null
+        }
+      }
+    }
+  }
+}

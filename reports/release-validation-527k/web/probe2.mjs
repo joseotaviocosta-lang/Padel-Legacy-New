@@ -1,0 +1,12 @@
+import puppeteer from 'puppeteer-core';
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--no-sandbox'] });
+const page = await browser.newPage();
+await page.setViewport({ width: 1280, height: 900 });
+const errors = []; page.on('pageerror', (e) => errors.push(String(e.message).slice(0, 200)));
+const clickText = async (t) => { const ok = await page.evaluate((t) => { const el = [...document.querySelectorAll('button, a, [role=button]')].find((b) => (b.innerText || '').trim().includes(t)); if (el) { el.click(); return true; } return false; }, t); await new Promise((r) => setTimeout(r, 1500)); return ok; };
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle2', timeout: 60000 });
+console.log('click', await clickText('Nova carreira'));
+await page.screenshot({ path: 'reports/release-validation-527k/web/01-new.png' });
+console.log(JSON.stringify(await page.evaluate(() => ({ url: location.href, inputs: [...document.querySelectorAll('input,select,textarea')].map((i) => i.name || i.placeholder || i.type), buttons: [...document.querySelectorAll('button')].map((b) => b.innerText.trim()).filter(Boolean).slice(0, 40), text: document.body.innerText.slice(0, 600) })), null, 1));
+console.log('errors', JSON.stringify(errors));
+await browser.close();

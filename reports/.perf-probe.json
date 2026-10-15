@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-08-23T20:30:17.763Z",
+  "generatedAt": "2026-09-20T21:27:08.081Z",
   "configuration": {
     "runs": 6,
     "seasons": 4,
@@ -121,10 +121,10 @@
     }
   ],
   "perPhaseMs": {
-    "easy": 5907,
-    "normal": 5500,
-    "hard": 5819,
-    "neutral": 5802
+    "easy": 2484,
+    "normal": 2385,
+    "hard": 2390,
+    "neutral": 2698
   },
   "hardVsNeutral": {
     "hardPeakMedian": null,

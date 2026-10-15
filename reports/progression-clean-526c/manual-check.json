@@ -1,0 +1,271 @@
+[
+  {
+    "run": "reports/progression-clean-526c/runs/raw/casual-001.json",
+    "profile": "casual",
+    "seed": 1,
+    "careerDate": "2031-01-01",
+    "rank": 5,
+    "rankInRunLog": 5,
+    "rankingPositionField": 5,
+    "coins": 100337,
+    "coinsInRunLog": 100337,
+    "sponsors": [
+      "Movistar (Prata)",
+      "Siux (Bronze)",
+      "Garmin (Prata)",
+      "Cupra (Ouro)",
+      "Adidas (Prata)",
+      "Asics (Bronze)"
+    ],
+    "sponsorsInRunLog": 6,
+    "coach": "catalog-coach-037",
+    "staff": [
+      "accountant",
+      "nutritionist",
+      "physio",
+      "scout",
+      "physical_trainer",
+      "psychologist"
+    ],
+    "staffInRunLog": 6,
+    "partner": {
+      "name": "Nathan Leroy",
+      "ovr": 60,
+      "retired": false
+    },
+    "titles": 1,
+    "titlesInRunLog": 1,
+    "equipment": {
+      "owned": 47,
+      "equipped": 9
+    },
+    "age": 21,
+    "ageInRunLog": 21,
+    "reputation": 100,
+    "reputationInRunLog": 100,
+    "saveMB": 34.51,
+    "largestTables": [
+      {
+        "table": "entities.Tournament",
+        "rows": 773,
+        "MB": 9.92
+      },
+      {
+        "table": "entities.AthleteProfile",
+        "rows": 1122,
+        "MB": 6.41
+      },
+      {
+        "table": "entities.WorldEvent",
+        "rows": 6595,
+        "MB": 3.67
+      },
+      {
+        "table": "entities.AnnualCareerReport",
+        "rows": 5,
+        "MB": 3.1
+      },
+      {
+        "table": "entities.CalendarEvent",
+        "rows": 126,
+        "MB": 1.93
+      },
+      {
+        "table": "entities.AthleteRankingResult",
+        "rows": 5560,
+        "MB": 1.91
+      },
+      {
+        "table": "entities.CareerMessage",
+        "rows": 1438,
+        "MB": 1.74
+      },
+      {
+        "table": "entities.TrainingSession",
+        "rows": 1160,
+        "MB": 1.47
+      }
+    ],
+    "consistent": true
+  },
+  {
+    "run": "reports/progression-clean-526c/runs/raw/normal-001.json",
+    "profile": "normal",
+    "seed": 1,
+    "careerDate": "2031-01-01",
+    "rank": 2,
+    "rankInRunLog": 2,
+    "rankingPositionField": 2,
+    "coins": 799091,
+    "coinsInRunLog": 799091,
+    "sponsors": [
+      "Red Bull (Ouro)",
+      "Adidas (Prata)",
+      "Garmin (Prata)",
+      "Bullpadel (Ouro)",
+      "Playtomic (Prata)",
+      "Asics (Bronze)"
+    ],
+    "sponsorsInRunLog": 6,
+    "coach": "catalog-coach-005",
+    "staff": [
+      "nutritionist",
+      "psychologist",
+      "physio",
+      "physical_trainer",
+      "scout",
+      "manager",
+      "performance_analyst"
+    ],
+    "staffInRunLog": 7,
+    "partner": {
+      "name": "Nuno Teixeira",
+      "ovr": 87,
+      "retired": false
+    },
+    "titles": 16,
+    "titlesInRunLog": 16,
+    "equipment": {
+      "owned": 49,
+      "equipped": 9
+    },
+    "age": 21,
+    "ageInRunLog": 21,
+    "reputation": 100,
+    "reputationInRunLog": 100,
+    "saveMB": 36.97,
+    "largestTables": [
+      {
+        "table": "entities.Tournament",
+        "rows": 773,
+        "MB": 9.6
+      },
+      {
+        "table": "entities.AthleteProfile",
+        "rows": 1122,
+        "MB": 6.23
+      },
+      {
+        "table": "entities.WorldEvent",
+        "rows": 6735,
+        "MB": 3.73
+      },
+      {
+        "table": "entities.TrainingSession",
+        "rows": 2619,
+        "MB": 3.34
+      },
+      {
+        "table": "entities.AnnualCareerReport",
+        "rows": 5,
+        "MB": 3.1
+      },
+      {
+        "table": "entities.CalendarEvent",
+        "rows": 190,
+        "MB": 2.72
+      },
+      {
+        "table": "entities.AthleteRankingResult",
+        "rows": 4912,
+        "MB": 1.68
+      },
+      {
+        "table": "entities.CareerMessage",
+        "rows": 1198,
+        "MB": 1.39
+      }
+    ],
+    "consistent": true
+  },
+  {
+    "run": "reports/progression-clean-526c/runs/raw/optimizer-001.json",
+    "profile": "optimizer",
+    "seed": 1,
+    "careerDate": "2031-01-01",
+    "rank": 2,
+    "rankInRunLog": 2,
+    "rankingPositionField": 2,
+    "coins": 162844,
+    "coinsInRunLog": 162844,
+    "sponsors": [
+      "Red Bull (Ouro)",
+      "Movistar (Prata)",
+      "Adidas (Prata)",
+      "Garmin (Prata)",
+      "Asics (Bronze)",
+      "Bullpadel (Ouro)"
+    ],
+    "sponsorsInRunLog": 6,
+    "coach": "catalog-coach-005",
+    "staff": [
+      "nutritionist",
+      "manager",
+      "physical_trainer",
+      "physio",
+      "accountant",
+      "psychologist",
+      "scout"
+    ],
+    "staffInRunLog": 7,
+    "partner": {
+      "name": "Miguel Yanguas",
+      "ovr": 93,
+      "retired": false
+    },
+    "titles": 14,
+    "titlesInRunLog": 14,
+    "equipment": {
+      "owned": 43,
+      "equipped": 9
+    },
+    "age": 21,
+    "ageInRunLog": 21,
+    "reputation": 100,
+    "reputationInRunLog": 100,
+    "saveMB": 36.55,
+    "largestTables": [
+      {
+        "table": "entities.Tournament",
+        "rows": 773,
+        "MB": 9.62
+      },
+      {
+        "table": "entities.AthleteProfile",
+        "rows": 1123,
+        "MB": 6.21
+      },
+      {
+        "table": "entities.WorldEvent",
+        "rows": 6567,
+        "MB": 3.64
+      },
+      {
+        "table": "entities.AnnualCareerReport",
+        "rows": 5,
+        "MB": 3.09
+      },
+      {
+        "table": "entities.TrainingSession",
+        "rows": 2392,
+        "MB": 3.07
+      },
+      {
+        "table": "entities.CalendarEvent",
+        "rows": 191,
+        "MB": 2.71
+      },
+      {
+        "table": "entities.AthleteRankingResult",
+        "rows": 5092,
+        "MB": 1.74
+      },
+      {
+        "table": "entities.CareerMessage",
+        "rows": 1054,
+        "MB": 1.24
+      }
+    ],
+    "consistent": true
+  }
+]

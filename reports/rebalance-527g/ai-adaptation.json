@@ -1,0 +1,44 @@
+{
+  "at": "2026-10-13T02:01:58.241Z",
+  "setup": "times idênticos, energia 100, táticas neutralizadas (5.27-G); lado A estático em Equilibrado × lado B com troca automática (chooseBotTactic + OpponentAdaptationTracker, cadência mínima de 2 pontos)",
+  "cells": [
+    {
+      "ovr": 35,
+      "n": 4000,
+      "playerSideStaticWinPct": 49.2,
+      "ci95": 1.5,
+      "aiAdvantagePp": 0.8
+    },
+    {
+      "ovr": 50,
+      "n": 4000,
+      "playerSideStaticWinPct": 49.7,
+      "ci95": 1.5,
+      "aiAdvantagePp": 0.3
+    },
+    {
+      "ovr": 65,
+      "n": 4000,
+      "playerSideStaticWinPct": 49.3,
+      "ci95": 1.5,
+      "aiAdvantagePp": 0.7
+    },
+    {
+      "ovr": 80,
+      "n": 4000,
+      "playerSideStaticWinPct": 55.4,
+      "ci95": 1.5,
+      "aiAdvantagePp": -5.4
+    }
+  ],
+  "maxAdvantagePp": 5.4,
+  "inputs": [
+    "sets/games do placar",
+    "energia média do próprio time",
+    "smash médio do próprio time"
+  ],
+  "futureInformation": "não (sem RNG, sem resultado futuro; teste test-no-future-info-adaptation-v527g)",
+  "symmetricAuthority": "não: o jogador só ajusta tática manualmente ou por sugestões menores do live coach (com coach)",
+  "defaultEnabled": false,
+  "reason": "Em OVR 80 a adaptação muda o resultado em 5,4 pp (> 5 pp do gate) e o jogador não tem autoridade equivalente; permanece desligada por padrão (opponentAdaptive só com true explícito)."
+}

@@ -1,0 +1,24 @@
+{
+  "at": "2026-10-04T12:01:05.021Z",
+  "n": 1500,
+  "results": [
+    {
+      "name": "symmetry: bots uniformes 35×35",
+      "n": 1500,
+      "winPct": 42.4,
+      "meanBaseOvrA": 35
+    },
+    {
+      "name": "symmetry: bots uniformes 50×50",
+      "n": 1500,
+      "winPct": 41.5,
+      "meanBaseOvrA": 50
+    },
+    {
+      "name": "symmetry: bots uniformes 75×75",
+      "n": 1500,
+      "winPct": 84.3,
+      "meanBaseOvrA": 75
+    }
+  ]
+}

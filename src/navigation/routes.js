@@ -23,6 +23,19 @@ export function isTrainingCenterView(value) {
 
 export const APP_ROUTES = Object.freeze({
   HOME: '/game',
+  // Playthrough 5.20, Partes B/E/F/G/H/N/P/S — ROTAS CANONICAS DOS HUBS.
+  //
+  // A auditoria da Parte A mediu 38 itens de menu para 57 rotas, com 11 itens
+  // so em "Carreira" e paginas de 135-157 linhas ocupando entrada propria.
+  // Cada hub agrupa paginas que JA EXISTEM em abas (?tab=), sem reescrever
+  // nenhuma. As rotas antigas seguem atendidas por redirect que preserva query
+  // params (LegacyRedirect) — nada de deep link quebrado (Parte AH).
+  CAREER_ATHLETE: '/career/athlete',
+  CAREER_TRAINING: '/career/training',
+  CAREER_TEAM: '/career/team',
+  CAREER_RELATIONS: '/career/relations',
+  WORLD_CIRCUIT: '/world/circuit',
+  WORLD_DIRECTORY: '/world/directory',
   TRAINING_CENTER: TRAINING_CENTER_PATH,
   TRAINING: buildTrainingCenterRoute(TRAINING_CENTER_VIEWS.TRAINING),
   MATCHES: buildTrainingCenterRoute(TRAINING_CENTER_VIEWS.MATCH),

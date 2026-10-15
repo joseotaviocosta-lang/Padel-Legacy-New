@@ -1,0 +1,7 @@
+kind,ovrA,ovrB,energyA,energyB,tacticA,n,winPctA,ci95
+energy-curve,50,50,90,100,equilibrado,1200,39,2.8
+energy-curve,50,50,80,100,equilibrado,1200,35.6,2.7
+energy-curve,50,50,70,100,equilibrado,1200,26.5,2.5
+energy-curve,50,50,60,100,equilibrado,1200,20.8,2.3
+energy-curve,50,50,50,100,equilibrado,1200,13.1,1.9
+energy-curve,50,50,40,100,equilibrado,1200,12,1.8

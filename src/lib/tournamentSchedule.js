@@ -38,6 +38,17 @@ export function getTournamentQualifyingRoundCount(tournament = {}) {
   return 4;
 }
 
+// Item 2 (cronologia por rodada) — uma data real por rodada da chave
+// canônica (`buildCanonicalTournamentBracket`/`buildPlayerTournamentBracket`,
+// tournamentSettlement.js), em vez da mesma data para toda a chave. Cada
+// rodada consome exatamente 1 dia de carreira, começando em `startDate`
+// (mesma âncora que `createTournamentRun` já usa) — é a mesma cadência de
+// `addTournamentDays(startDate, index)` que o `tournament_run` do jogador já
+// segue para as próprias rodadas, agora também para a chave completa.
+export function getCanonicalRoundDates(startDate, roundCount) {
+  return Array.from({ length: Math.max(0, Number(roundCount) || 0) }, (_, index) => addTournamentDays(startDate, index));
+}
+
 export function getTournamentCampaignDates(tournament = {}, { qualifyingRequired = false } = {}) {
   const start = normalizeTournamentDate(
     qualifyingRequired

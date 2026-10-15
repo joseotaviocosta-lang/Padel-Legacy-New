@@ -46,7 +46,16 @@ export class ActiveCareerAdapter {
   }
 
   setActiveCareer(career) {
-    this.activeCareer = career ? clone(career) : null;
+    this.adoptActiveCareer(career ? clone(career) : null);
+  }
+
+  // Playthrough 5.25 — assume a POSSE de um objeto de carreira que ninguém
+  // mais referencia (ex.: o `validated` recém-criado por saveCareer), sem
+  // clonar de novo. Medido no aparelho (Redmi 12, save de 3,2MB): cada
+  // structuredClone da carreira custa ~50ms e era a função mais quente do
+  // avanço de dia.
+  adoptActiveCareer(career) {
+    this.activeCareer = career || null;
     if (this.activeCareer?.player) {
       this.activeCareer.player = normalizePlayerPhysicalStats(this.activeCareer.player);
     }
@@ -235,7 +244,11 @@ export class ActiveCareerAdapter {
           const result = await mutator(activeTransaction.draft);
           activeTransaction.dirty = true;
           recordPersistenceLogicalMutation(activeTransaction.probe, caller);
-          return { result: clone(result), career: clone(activeTransaction.draft) };
+          // Playthrough 5.25 — `career` sob demanda: nenhum chamador o lê, e
+          // o clone do save inteiro POR MUTAÇÃO (dezenas num avanço de dia)
+          // dominava o perfil do aparelho.
+          const draft = activeTransaction.draft;
+          return { result: clone(result), get career() { return clone(draft); } };
         } catch (error) {
           activeTransaction.rollbackError = error;
           throw error;
@@ -268,11 +281,16 @@ export class ActiveCareerAdapter {
         backup: shouldBackup,
         updateIndex: shouldSyncIndex,
         caller,
+        owned: true, // `career` é o draft privado clonado acima
       });
       if (shouldBackup) this.lastRoutineBackupAt = now;
       if (shouldSyncIndex) this.lastIndexSyncAt = now;
-      this.setActiveCareer(saved);
-      return { result: clone(result), career: clone(saved) };
+      // `saved` é o objeto validado recém-criado por saveCareer (cloneDeep do
+      // validador): ninguém mais o referencia, então vira o estado quente sem
+      // um terceiro clone; `career` é clonado só se alguém pedir.
+      this.adoptActiveCareer(saved);
+      const adopted = this.activeCareer;
+      return { result: clone(result), get career() { return clone(adopted); } };
     });
 
     this.writeChain = operation.then(() => undefined, () => undefined);
@@ -318,7 +336,12 @@ export class ActiveCareerAdapter {
       });
       const probe = createPersistenceTransaction(name);
       probe.queueSizeBefore = Math.max(0, this.pendingWriteCount - 1);
-      const snapshot = clone(current);
+      // Playthrough 5.25 — o snapshot é só a referência do estado confirmado
+      // (comparação no commit / descarte no rollback). A carreira ativa nunca
+      // é mutada no lugar (escritas trabalham sobre drafts), então apontar
+      // para ela poupa um clone completo do save por transação; o draft
+      // continua sendo uma cópia isolada.
+      const snapshot = current;
       const transaction = {
         id: probe.id,
         name: probe.name,
@@ -357,13 +380,14 @@ export class ActiveCareerAdapter {
           // posterior mantém a política periódica já existente para o índice.
           updateIndex: false,
           caller: `transaction-commit:${name}`,
+          owned: true, // o draft é exclusivo da transação, que termina aqui
         });
         const commitIOms = (typeof performance !== 'undefined' && performance.now
           ? performance.now()
           : Date.now()) - commitStartedAt;
         recordPersistencePhysicalCommit(probe, commitIOms);
         if (shouldBackup) this.lastRoutineBackupAt = commitNow;
-        this.setActiveCareer(saved);
+        this.adoptActiveCareer(saved); // objeto validado recém-criado, sem outro dono
         probe.queueSizeAfter = Math.max(0, this.pendingWriteCount - 1);
         finishPersistenceTransaction(probe);
         return result;
@@ -418,7 +442,7 @@ export class ActiveCareerAdapter {
     }
     const career = careerData ? clone(careerData) : await this.ensureActiveCareer({ fresh: true });
     const saved = await this.careerManager.saveCareer(career.career_id, career);
-    this.setActiveCareer(saved);
+    this.adoptActiveCareer(saved);
     return clone(saved);
   }
 }

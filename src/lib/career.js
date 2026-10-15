@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getDifficultyForPlayer, levelLabelForOverall } from '@/lib/bots';
 import { normalizeCourtSide } from '@/players/athleteSchema.js';
+import { isRetiredAthlete } from '@/lib/partnerAthlete.js';
 import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, ATTRIBUTE_KEYS, ageAtDate, RETIREMENT_AGE, incrementMissionProgress } from '@/lib/padel';
 import { processMonthlyFinances } from '@/lib/economy';
 import { processAllClubsMonthly } from '@/lib/clubs';
@@ -373,7 +374,8 @@ function adaptRealAthleteForPartnerSearch(real) {
 export async function getRealPartnerCandidates(profile) {
   if (!profile?.court_side) return [];
   const rows = await localGame.entities.AthleteProfile.filter({ market_status: 'livre', is_real: true }).catch(() => []);
-  return (rows || []).map(adaptRealAthleteForPartnerSearch);
+  // 5.26-C, Bloco D — aposentado não volta como candidato (mesma regra de processPartnerDay).
+  return (rows || []).filter((row) => !isRetiredAthlete(row)).map(adaptRealAthleteForPartnerSearch);
 }
 
 // Tournament helpers
@@ -474,6 +476,15 @@ export function getTournamentRewards(tier, roundsWon, difficultySource = null) {
 }
 
 // ── Future tournament generation ──────────────────────────────────────────
+// Igualdade de valor para o diff de upsert (campos ausentes/null/undefined
+// equivalem; objetos e listas comparados por conteúdo).
+function sameTournamentValue(a, b) {
+  if (a == null && b == null) return true;
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 // Mantém ao menos 15 meses de calendário, usando o Padel Legacy World Tour global, com eventos simultâneos e nove níveis (Fase 3).
 async function ensureFutureTournamentsInternal(careerDate) {
   if (!careerDate) return { created: 0, repaired: 0 };
@@ -564,15 +575,23 @@ async function ensureFutureTournamentsInternal(careerDate) {
         const existing = existingByCodeAndYear.get(key);
         if (existing?.id) {
             const { id: _generatedId, ...updatePayload } = payload;
-            pendingTournamentUpserts.push({
+            const upsert = {
               ...updatePayload,
               id: existing.id,
               champion: existing.status === 'finalizado' ? existing.champion : null,
               runner_up: existing.status === 'finalizado' ? existing.runner_up : null,
               completed_date: existing.status === 'finalizado' ? existing.completed_date : null,
               participants: existing.participants || [],
-            });
-            repaired += 1;
+            };
+            // Playthrough 5.24-B, Parte E — a página Torneios chama esta
+            // reconciliação a cada montagem, e todo torneio existente virava
+            // upsert mesmo idêntico: uma gravação completa da carreira por
+            // visita (~1,9s→3,4s medidos com CPU 4x). bulkUpdate faz merge
+            // campo a campo, então um upsert sem diferença é no-op de dado.
+            if (Object.keys(upsert).some((field) => !sameTournamentValue(existing[field], upsert[field]))) {
+              pendingTournamentUpserts.push(upsert);
+              repaired += 1;
+            }
         } else {
             pendingTournamentUpserts.push(payload);
             existingByCodeAndYear.set(key, payload);

@@ -1,0 +1,15 @@
+import { attach } from './attach.mjs';
+import { mobile } from './mob.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const { tap, waitFor } = mobile(page, sleep, state, shot);
+const log = [];
+const step = async (name, fn) => { const t0 = Date.now(); let r; try { r = await fn(); } catch (e) { r = `erro ${e.message.slice(0, 100)}`; } log.push({ name, r, ms: Date.now() - t0, errors: errors.splice(0) }); console.log(JSON.stringify(log.at(-1))); };
+await step('Ir para o torneio', async () => (await tap(/^Ir para o torneio$/, 4000)) && waitFor(/Preparar|Reunião pré-torneio|PLANO TÁTICO/i, 90000));
+await step('Preparar (se preciso)', async () => { const s = await state(3000); if (/PLANO TÁTICO|Reunião pré-torneio/i.test(s.text)) return 'já aberto'; return (await tap(/^Preparar$/, 4000)) && waitFor(/PLANO TÁTICO|Reunião pré-torneio/i, 60000); });
+await step('Plano tático', async () => (await tap(/^Jogo equilibrado$/, 2000)) && (await tap(/^Salvar plano do torneio$/, 5000)) && waitFor(/Jogar Quartas|Jogar /i, 60000));
+await step('Jogar partida', async () => (await tap(/^Jogar Quartas de Final$|^Jogar /, 5000)) && waitFor(/Eliminado do torneio|Classificado|Vitória|Derrota|Campeão|RESUMO/i, 240000));
+await shot('a13-resultado');
+const res = (await state(2500)).text.match(/(Eliminado do torneio[^]{0,160}|Classificado[^]{0,160}|Campeão[^]{0,160})/i)?.[0] || null;
+console.log('resultado', res);
+await step('Voltar à carreira', async () => (await tap(/^Voltar à carreira$|^Continuar$/, 4000)) && true);
+browser.disconnect();

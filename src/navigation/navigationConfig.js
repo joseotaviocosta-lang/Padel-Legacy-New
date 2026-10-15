@@ -1,4 +1,4 @@
-import { Award, BarChart3, BookOpen, Building2, Calendar, CloudSun, Cog, Crown, Database, Dumbbell, Globe, GraduationCap, Handshake, Heart, History, Home, Inbox, LayoutDashboard, MessageCircle, Mic, MoreHorizontal, Newspaper, Package, Palette, ShoppingBag, Target, TrendingUp, Trophy, User, UserCog, Users, Wallet } from 'lucide-react';
+import { Award, BarChart3, BookOpen, Cog, Crown, Dumbbell, Globe, GraduationCap, Handshake, Heart, Home, MoreHorizontal, Newspaper, Target, TrendingUp, Trophy, User, UserCog, Wallet } from 'lucide-react';
 import { APP_ROUTES } from './routes.js';
 
 /**
@@ -27,87 +27,71 @@ export const NAV_GROUPS = [
   {
     id: 'career',
     label: 'Carreira',
-    description: 'Atleta, treinos, equipe e equipamentos.',
+    description: 'Atleta, treinos, dupla e equipe.',
     to: '/development',
-    aliases: ['/team-hub'],
+    aliases: ['/team-hub', '/profile', '/character', '/coaches', '/staff', '/relationships', '/fans', '/game/inventory', '/game/shop', '/training-center', APP_ROUTES.TRAINING_CENTER],
     icon: Dumbbell,
     items: [
-      { to: '/profile', icon: User, label: 'Atleta' },
-      { to: '/character', icon: Palette, label: 'Aparência' },
+      { to: APP_ROUTES.CAREER_ATHLETE, icon: User, label: 'Meu atleta' },
       { to: '/game/missions', icon: Target, label: 'Objetivos' },
-      { to: APP_ROUTES.TRAINING_CENTER, icon: Building2, label: 'Centro de treinamento' },
-      { to: '/game/inventory', icon: Package, label: 'Equipamentos' },
-      { to: '/game/shop', icon: ShoppingBag, label: 'Loja' },
-      { to: '/partners', icon: Handshake, label: 'Minha dupla e propostas' },
-      { to: '/coaches', icon: GraduationCap, label: 'Treinador principal' },
-      { to: '/staff', icon: Users, label: 'Comissão técnica' },
-      { to: '/relationships', icon: Heart, label: 'Relacionamentos' },
-      { to: '/fans', icon: Users, label: 'Fãs e torcidas' },
+      { to: APP_ROUTES.CAREER_TRAINING, icon: Dumbbell, label: 'Treinos e equipamentos' },
+      { to: '/partners', icon: Handshake, label: 'Minha dupla' },
+      { to: APP_ROUTES.CAREER_TEAM, icon: GraduationCap, label: 'Equipe' },
+      { to: APP_ROUTES.CAREER_RELATIONS, icon: Heart, label: 'Relações' },
     ],
   },
   {
     id: 'competition',
     label: 'Competir',
-    description: 'Torneios, calendário, ranking e partidas.',
+    description: 'Torneios e ranking.',
     to: '/competitions',
+    aliases: ['/game/calendar', '/game/season', '/matches'],
     icon: Trophy,
     items: [
       { to: '/tournaments', icon: Award, label: 'Torneios' },
-      { to: '/game/calendar', icon: Calendar, label: 'Calendário' },
       { to: '/ranking', icon: Trophy, label: 'Ranking' },
-      { to: '/game/season', icon: BarChart3, label: 'Temporada' },
     ],
   },
   {
     id: 'world',
     label: 'Mundo',
-    description: 'Notícias, comunidade, imprensa e o circuito ao vivo.',
+    description: 'O circuito, seus atletas e clubes.',
     to: '/world',
+    aliases: ['/journal', '/world-events', '/press', '/community', '/athletes', '/clubs', '/weather'],
     icon: Globe,
     items: [
-      { to: '/journal', icon: Newspaper, label: 'Notícias' },
-      { to: '/world-events', icon: Globe, label: 'Eventos mundiais' },
-      { to: '/press', icon: Mic, label: 'Imprensa' },
-      { to: '/community', icon: MessageCircle, label: 'Comunidade e rede' },
-      { to: '/athletes', icon: UserCog, label: 'Atletas' },
-      { to: '/clubs', icon: Users, label: 'Clubes' },
-      { to: '/weather', icon: CloudSun, label: 'Clima' },
+      { to: APP_ROUTES.WORLD_CIRCUIT, icon: Newspaper, label: 'Central do circuito' },
+      { to: APP_ROUTES.WORLD_DIRECTORY, icon: UserCog, label: 'Atletas e clubes' },
     ],
   },
   {
     id: 'management',
     label: 'Gestão',
-    description: 'Economia, mercado e administração da carreira.',
+    description: 'Finanças e mercado.',
     to: '/management',
     icon: Wallet,
     items: [
-      { to: '/game/economy', icon: Wallet, label: 'Economia' },
-      { to: '/world-market', icon: TrendingUp, label: 'Mercado mundial' },
-      { to: '/admin', icon: LayoutDashboard, label: 'Administração' },
-      { to: '/database', icon: Database, label: 'Banco de dados' },
+      { to: '/game/economy', icon: Wallet, label: 'Finanças' },
+      { to: '/world-market', icon: TrendingUp, label: 'Mercado' },
     ],
   },
   {
     id: 'more',
     label: 'Mais',
-    description: 'Estatísticas, histórico e utilidades da carreira.',
-    // Sem rota própria — no desktop expande inline na sidebar, no mobile
-    // abre um BottomSheet (ver BottomNav.jsx). Nenhuma dessas páginas
-    // depende de um hub dedicado para funcionar.
+    // Sem rota própria — no desktop expande inline na sidebar, no mobile abre
+    // um BottomSheet (ver BottomNav.jsx).
+    description: 'Estatísticas, legado e utilidades.',
     to: null,
+    aliases: ['/history', '/hall-of-fame', '/communications'],
     icon: MoreHorizontal,
     items: [
       { to: '/game/stats', icon: BarChart3, label: 'Estatísticas' },
       { to: '/game/legacy', icon: Crown, label: 'Legado' },
-      { to: '/communications', icon: Inbox, label: 'Notificações' },
-      { to: '/history', icon: History, label: 'História do padel' },
-      { to: '/hall-of-fame', icon: Crown, label: 'Hall da fama' },
       { to: '/encyclopedia', icon: BookOpen, label: 'Enciclopédia' },
       { to: '/settings', icon: Cog, label: 'Configurações' },
     ],
   },
 ];
-
 export const ALL_SHELL_ITEMS = NAV_GROUPS.flatMap((group) => [
   ...(group.to ? [{ to: group.to, label: group.label, icon: group.icon }] : []),
   ...group.items,

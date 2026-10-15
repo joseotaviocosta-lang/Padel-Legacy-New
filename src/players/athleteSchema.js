@@ -80,3 +80,47 @@ export function validateAthlete(athlete) {
   if (athlete?.overall_rating < 1 || athlete?.overall_rating > 100) errors.push('overall fora de 1–100');
   return { valid: errors.length === 0, errors };
 }
+
+// Playthrough 5.6 — integridade do registro persistido. Saves antigos podem
+// trazer apenas o alias histórico `overall`; ele é uma origem canônica e
+// suficiente para preencher `overall_rating`, mas nunca deve sobrescrever um
+// valor moderno válido.
+export function athleteProfileOverallRepair(athlete = {}) {
+  const current = Number(athlete.overall_rating);
+  if (Number.isFinite(current) && current >= 1 && current <= 100) return null;
+  const legacy = Number(athlete.overall);
+  if (!Number.isFinite(legacy) || legacy < 1 || legacy > 100) return null;
+  return { overall_rating: legacy };
+}
+
+export function validateAthleteProfileRankingIntegrity(athletes = []) {
+  const issues = [];
+  for (const athlete of athletes || []) {
+    const active = athlete?.retired !== true && athlete?.active !== false && athlete?.is_active !== false && athlete?.career_status !== 'aposentado';
+    if (!active) continue;
+    const rank = Number(athlete?.ranking_position);
+    const worldPoints = Number(athlete?.world_ranking_points ?? athlete?.ranking_points ?? athlete?.rank_points);
+    const racePoints = Number(athlete?.race_points);
+    const coherentStatus = typeof athlete?.career_status === 'string'
+      || typeof athlete?.retired === 'boolean'
+      || typeof athlete?.active === 'boolean'
+      || typeof athlete?.is_active === 'boolean';
+    if (!String(athlete?.id || '').trim()) issues.push({ id: null, name: athlete?.name || athlete?.sport_name || null, rank, issue: 'missing-id', recoverable: false });
+    if ((!Number.isFinite(rank) || rank <= 0) && worldPoints > 0) {
+      issues.push({ id: athlete?.id || null, name: athlete?.name || athlete?.sport_name || null, rank, issue: 'ranked-points-without-position', recoverable: false });
+    }
+    if (Number.isFinite(rank) && rank > 0 && (!Number.isFinite(worldPoints) || worldPoints < 0)) {
+      issues.push({ id: athlete?.id || null, name: athlete?.name || athlete?.sport_name || null, rank, issue: 'invalid-world-ranking-points', recoverable: false });
+    }
+    if (!Number.isFinite(racePoints) || racePoints < 0) {
+      issues.push({ id: athlete?.id || null, name: athlete?.name || athlete?.sport_name || null, rank, issue: 'invalid-race-points', recoverable: false });
+    }
+    if (!coherentStatus) issues.push({ id: athlete?.id || null, name: athlete?.name || athlete?.sport_name || null, rank, issue: 'missing-career-status', recoverable: false });
+    if (!Number.isFinite(rank) || rank <= 0) continue;
+    const overall = Number(athlete?.overall_rating);
+    if (!Number.isFinite(overall) || overall < 1 || overall > 100) {
+      issues.push({ id: athlete?.id || null, name: athlete?.name || athlete?.sport_name || null, rank, issue: 'invalid-overall-rating', recoverable: Boolean(athleteProfileOverallRepair(athlete)) });
+    }
+  }
+  return { ok: issues.length === 0, checked: (athletes || []).length, issues };
+}

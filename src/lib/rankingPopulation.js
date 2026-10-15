@@ -1,4 +1,5 @@
 import { fnv1aHash } from './hashUtils.js';
+import { computeCanonicalTeamRankingPoints } from './teamRankingFormula.js';
 
 export const WORLD_RANKING_TARGET = 1000;
 export const TEAM_RANKING_TARGET = 500;
@@ -116,6 +117,56 @@ const RANKING_POINT_ANCHORS = Object.freeze([
   [200, 650], [350, 340], [500, 200], [750, 65], [1000, 1],
 ]);
 
+// Playthrough 5.5, Parte D/E — a curva antiga (`96 - (rank/1000)^0.72*57`,
+// removida) era uma função de potência PURA de `absoluteRank`, sem
+// nenhuma variância por atleta, e `ranking_position` nasce como o MESMO
+// `absoluteRank` usado pra calcular `overall` — ou seja, rank e OVR eram
+// um espelho perfeito um do outro no nascimento (correlação de Spearman
+// implícita = 1,0), sem nenhuma sobreposição natural entre atletas de
+// rank vizinho (medido: P90 da faixa 201-300 e P10 da 301-450 mal se
+// tocavam). Isso não mudava numa temporada inteira de jogo real (medido
+// na 5.4/5.5: gap Silver-Gold de 8,9 pontos tanto na curva de nascimento
+// quanto no estado final pós-temporada) — a maior parte da população joga
+// poucos torneios/ano, insuficiente pra perturbar uma correlação tão
+// forte quanto essa.
+//
+// Duas mudanças, mesmo padrão de âncoras+interpolação linear que
+// `pointsForRank` já usa acima (não uma família de curva nova):
+// (1) ACHATA especificamente a faixa 100-600 (onde Silver/Gold/Platinum
+// vivem) — os extremos (1-50 e 800-1000) continuam com queda íngreme,
+// preservando Crown/Masters claramente fortes e Bronze/base claramente
+// fraca (Parte L, itens 4-6). Reduz o gap bruto Silver-Gold de ~8,9 pra
+// ~4 pontos (calculado pelas âncoras) — não elimina (matematicamente
+// impossível achatar uma função monotônica o bastante pra inverter a
+// ordem de dois trechos, um deles estritamente mais fundo que o outro —
+// ver `plateauTilt` em circuitCatalog.js pro resto do fix). (2) Adiciona
+// um JITTER determinístico por atleta (`mulberry32`, já usado nesta
+// função pra idade — mesma fonte de aleatoriedade seedada, nunca
+// `Math.random()`) — cria a "sobreposição natural" que a Parte E pede
+// (um atleta de rank 310 pode legitimamente ter OVR mais alto que um de
+// rank 280), sem mudar a MÉDIA de nenhuma faixa (ruído simétrico).
+const OVERALL_RANK_ANCHORS = Object.freeze([
+  [1, 96], [10, 93], [25, 90], [50, 87], [100, 83], [150, 80],
+  [250, 77], [350, 77], [450, 76], [600, 70], [800, 48], [900, 32], [1000, 20],
+]);
+const OVERALL_JITTER_SPREAD = 7; // ± pontos, uniforme, em torno da curva.
+
+export function overallForRank(rank) {
+  const safeRank = Math.max(1, Math.min(WORLD_RANKING_TARGET, Math.round(Number(rank) || WORLD_RANKING_TARGET)));
+  let trend = OVERALL_RANK_ANCHORS[OVERALL_RANK_ANCHORS.length - 1][1];
+  for (let index = 0; index < OVERALL_RANK_ANCHORS.length - 1; index += 1) {
+    const [rankA, ovrA] = OVERALL_RANK_ANCHORS[index];
+    const [rankB, ovrB] = OVERALL_RANK_ANCHORS[index + 1];
+    if (safeRank < rankA || safeRank > rankB) continue;
+    const ratio = (safeRank - rankA) / Math.max(1, rankB - rankA);
+    trend = ovrA + (ovrB - ovrA) * ratio;
+    break;
+  }
+  const jitterRoll = mulberry32(hash(`ranking-athlete-${safeRank}-overall-jitter`))();
+  const jitter = (jitterRoll * 2 - 1) * OVERALL_JITTER_SPREAD;
+  return Math.max(35, Math.min(96, Math.round(trend + jitter)));
+}
+
 export function pointsForRank(rank, total = WORLD_RANKING_TARGET) {
   const safeRank = Math.max(1, Math.min(total, Math.round(Number(rank) || total)));
   const scaledRank = total === WORLD_RANKING_TARGET
@@ -144,7 +195,7 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
     if (usedNames.has(name.toLowerCase())) name = `${name} ${absoluteRank}`;
     usedNames.add(name.toLowerCase());
     const points = pointsForRank(absoluteRank);
-    const overall = Math.max(35, Math.min(96, Math.round(96 - Math.pow(absoluteRank / WORLD_RANKING_TARGET, 0.72) * 57)));
+    const overall = overallForRank(absoluteRank);
     const country = weightedCountryFor(absoluteRank, `ranking-athlete-${absoluteRank}-country`);
     const ageBucket = ageAssignments[i] || bucketFor(27);
     const age = ageBucket.min + (hash(`ranking-athlete-${absoluteRank}-age`) % (ageBucket.max - ageBucket.min + 1));
@@ -203,17 +254,93 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
   }
 
   const allAthletes = [...(existingAthletes || []), ...athletes];
+  const teams = buildSupplementalTeamRows(allAthletes, existingTeams);
+  return { athletes, teams };
+}
+
+// Playthrough 5.10, Parte K — extraído de buildSupplementalRankingPopulation
+// para poder rodar DEPOIS do bulkCreate dos atletas.
+//
+// Achado da 5.9/Parte E: este laço pareava com `a.id || a.bot_id`, e os
+// atletas recém-gerados ainda NÃO têm `id` (só `bot_id`) porque o id é
+// atribuído no bulkCreate, que acontece depois. Resultado: ~395 linhas de
+// TeamRanking gravadas com membros `ranking-bot-NNNN`, irresolvíveis contra
+// AthleteProfile e invisíveis para a UI.
+//
+// A correção é de ORDEM, não de identidade inventada: saveFoundation.js
+// persiste os atletas primeiro e chama esta função com os registros já
+// portando `id` canônico. Continua aceitando atletas sem `id` (o fallback
+// para `bot_id` permanece) para não quebrar chamadores que só querem
+// dimensionar a população.
+export function buildSupplementalTeamRows(allAthletes = [], existingTeams = []) {
   const teams = [];
+  // Playthrough 5.5, Parte I — achado: este laço pareava por ÍNDICE puro,
+  // sem checar `ai_partner_id` nem `existingTeams` — para os pares reais
+  // seedados (Coello/Tapia etc., escritos ANTES desta chamada,
+  // saveFoundation.js), que ficam ADJACENTES em `existingAthletes`
+  // (ordenado por world_ranking_points, parceiros têm pontos quase
+  // idênticos), o par `(i*2, i*2+1)` frequentemente recriava a MESMA
+  // dupla que já tinha uma linha de TeamRanking — gravada por
+  // `bulkCreate` (nunca upsert) logo abaixo, criando uma segunda linha
+  // duplicada pro mesmo `team_key`. Corrigido descartando qualquer par
+  // gerado cujo `team_key` já exista em `existingTeams` (o mesmo dado que
+  // esta função já recebe, nenhuma leitura nova).
+  const existingTeamKeys = new Set((existingTeams || []).map((t) => t.team_key).filter(Boolean));
+
+  // Playthrough 5.15, Partes F/Q/R — achado central da fase.
+  //
+  // Este laço pareava por ÍNDICE sobre `allAthletes`, que inclui os ~100
+  // atletas REAIS já semeados e JÁ PAREADOS entre si (Coello/Tapia,
+  // Galán/Chingotto, ...). O guard de `existingTeamKeys` só evitava
+  // recriar a MESMA chave — não impedia formar uma combinação NOVA entre
+  // dois reais que já tinham parceiro.
+  //
+  // Resultado medido num mundo recém-semeado: 50 duplas curadas + **25
+  // duplas RR fantasma** (ex.: "Francisco Navarro / Jorge Nieto" com 9343
+  // pts, "Martín Di Nenno / Jon Sanz" com 8482 pts), e **50 atletas reais
+  // aparecendo em DUAS duplas ao mesmo tempo**. Di Nenno existia tanto em
+  // Nieto/Di Nenno (#6, a dupla real) quanto numa dupla fantasma — as duas
+  // elegíveis, as duas disputando as mesmas vagas de Masters.
+  //
+  // É a explicação estrutural de "a elite real some do Masters": a vaga
+  // podia ser ocupada por uma dupla que não existe de verdade, montada com
+  // um membro da dupla real.
+  //
+  // Atleta com `ai_partner_id` está COMPROMETIDO: não pode ser matéria-prima
+  // da população suplementar. Só entram os genuinamente livres.
+  const availableAthletes = (allAthletes || []).filter((athlete) => athlete && !athlete.ai_partner_id);
   const missingTeams = Math.max(0, TEAM_RANKING_TARGET - (existingTeams || []).length);
   for (let i = 0; i < missingTeams; i += 1) {
+    if (availableAthletes.length < 2) break;
     const teamRank = (existingTeams || []).length + i + 1;
-    const a = allAthletes[(i * 2) % allAthletes.length];
-    const b = allAthletes[(i * 2 + 1) % allAthletes.length];
-    if (!a || !b) break;
+    const a = availableAthletes[(i * 2) % availableAthletes.length];
+    const b = availableAthletes[(i * 2 + 1) % availableAthletes.length];
+    if (!a || !b || a === b) break;
     const p1Id = a.id || a.bot_id;
     const p2Id = b.id || b.bot_id;
     const key = [p1Id, p2Id].sort().join('_');
-    const points = Math.max(1, Math.round(pointsForRank(Math.min(WORLD_RANKING_TARGET, teamRank * 2), WORLD_RANKING_TARGET) * 0.72));
+    if (existingTeamKeys.has(key)) continue;
+    // Playthrough 5.10, critério 3 — a semeadura usava uma ESCALA PARALELA
+    // (`pointsForRank(teamRank * 2) * 0.72`), derivada da posição inventada
+    // da dupla em vez dos pontos reais dos seus dois membros. Como estas
+    // linhas nunca são recalculadas por circuitLifecycle:updateTeamRankings
+    // (que só percorre parcerias reais, via ai_partner_id), o valor ficava
+    // CONGELADO para sempre: medido 423 de 921 linhas (45,9%) fora da
+    // fórmula canônica depois de uma temporada inteira.
+    //
+    // Agora nasce já na unidade única da tabela — média dos rolling dos dois
+    // membros, exatamente o que updateTeamRankings e finalizeTournamentRun
+    // gravam. O `Math.max(1, ...)` preserva a garantia de ranking_points > 0
+    // que o resto da semeadura assume.
+    // Playthrough 5.22-E, Partes M/N/Y — a semeadura nasce já na fórmula
+    // canônica única (SOMA dos pontos atuais dos dois membros), a mesma que
+    // circuitLifecycle/tournamentLifecycle/seasonLifecycle gravam. O antigo
+    // piso `Math.max(1, ...)` saiu: com a regra da soma, 0 + 0 = 0 é o
+    // estado legítimo de "sem ranking" (Parte Y), e os bots da semeadura
+    // têm pontos >= 1, então qualquer par real continua positivo.
+    const points = computeCanonicalTeamRankingPoints(
+      Number(a.world_ranking_points ?? a.ranking_points) || 0,
+      Number(b.world_ranking_points ?? b.ranking_points) || 0);
     teams.push({
       team_key: key,
       player1_id: p1Id,
@@ -225,15 +352,26 @@ export function buildSupplementalRankingPopulation(existingAthletes = [], existi
       ranking_points: points,
       // Ver comentário equivalente acima (Fase 3): Race começa zerada.
       race_points: 0,
-      matches_played: 8 + (hash(key) % 80),
-      wins: 4 + (hash(`${key}:wins`) % 45),
-      losses: 4 + (hash(`${key}:losses`) % 38),
+      // Playthrough 5.17, Parte J — V · D · títulos deixaram de ser semeados.
+      //
+      // A 5.13 já havia tornado o histórico semeado internamente coerente
+      // (partidas = V + D), mas ele continuava sendo um número derivado de
+      // HASH exibido ao jogador como se fosse resultado. A regra da Parte J
+      // é explícita: não derivar V/D de hash, e preferir "histórico
+      // indisponível" a inventar passado que nunca foi jogado.
+      //
+      // A dupla nasce sem contadores e só passa a tê-los quando disputa
+      // eventos de verdade (ledger gravado no settlement do World Tour).
+      matches_played: 0,
+      wins: 0,
+      losses: 0,
+      stats_source: 'unavailable',
       titles: [],
       circuit_category: teamRank <= 50 ? 'Premier' : teamRank <= 180 ? 'Challenger' : 'Future',
       ranking_seed_version: 1,
     });
   }
-  return { athletes, teams };
+  return teams;
 }
 
 export function formatRankingPosition(rank, { unranked = false, threshold = 1000 } = {}) {

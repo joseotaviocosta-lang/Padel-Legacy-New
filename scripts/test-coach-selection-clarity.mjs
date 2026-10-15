@@ -74,7 +74,11 @@ try {
   const page = fs.readFileSync('src/pages/Coaches.jsx', 'utf8');
   gate('Coaches.jsx tem estado de paginação (visibleCount)', page.includes('visibleCount'));
   gate('Coaches.jsx tem um controle de "Mostrar mais"', /Mostrar mais/.test(page));
-  gate('Coaches.jsx zera a paginação quando os filtros mudam', /setVisibleCount\(12\)/.test(page) || /useState\(12\)/.test(page));
+  // Playthrough 4.8, Parte M — o tamanho do "chunk" mudou de 12 pra 4
+  // (cards compactos, 4 por página, mesmo padrão da vitrine de duplas); o
+  // que este gate precisa continuar garantindo é só que a paginação ZERA
+  // ao trocar de filtro, não o valor mágico específico.
+  gate('Coaches.jsx zera a paginação quando os filtros mudam', /setVisibleCount\(4\)/.test(page) && /useState\(4\)/.test(page));
   gate('buildCoachDiscovery continua importado e chamado (mesma descoberta de sempre)', page.includes('buildCoachDiscovery'));
   gate('filterCoachDiscovery continua importado e chamado', page.includes('filterCoachDiscovery'));
   gate('sortCoachDiscovery continua importado e chamado', page.includes('sortCoachDiscovery'));

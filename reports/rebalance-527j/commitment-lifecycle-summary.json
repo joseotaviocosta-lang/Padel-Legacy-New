@@ -1,0 +1,54 @@
+{
+  "before": {
+    "source": "reports/rebalance-527i/runs balanced-e normal (recusa do harness → troca)",
+    "exits": 5,
+    "newCommitmentsAfterDecision": 26,
+    "limboDays": {
+      "n": 5,
+      "mean": 67.4,
+      "median": 50,
+      "p25": 50,
+      "p75": 50,
+      "min": 36,
+      "max": 151,
+      "std": 42.2
+    },
+    "illegitimateDays": {
+      "n": 5,
+      "mean": 52.2,
+      "median": 29,
+      "p25": 29,
+      "p75": 40,
+      "min": 26,
+      "max": 137,
+      "std": 42.7
+    }
+  },
+  "after": {
+    "source": "smoke 5 seeds (estado do jogo por inscrição)",
+    "exits": 15,
+    "illegitimateRegistrations": 0,
+    "limboDays": {
+      "n": 15,
+      "mean": 20.6,
+      "median": 22,
+      "p25": 16.5,
+      "p75": 24.5,
+      "min": 8,
+      "max": 32,
+      "std": 6.3
+    },
+    "legitimateDays": {
+      "n": 15,
+      "mean": 17.7,
+      "median": 24,
+      "p25": 8.5,
+      "p75": 25.5,
+      "min": 0,
+      "max": 30,
+      "std": 11.3
+    },
+    "maxExtensionDays": 0,
+    "schedulePushes": 0
+  }
+}

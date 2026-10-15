@@ -1,0 +1,123 @@
+{
+  "rule": "vitória sobre dupla com posição canônica menor (melhor) que a do jogador; adversário sem rank nunca conta (teamRanking.isUpsetResult)",
+  "smoke": {
+    "all": {
+      "matches": 1022,
+      "opponentRankCoverage": {
+        "teamRanking": 922,
+        "unranked": 100,
+        "missingRoster": 0,
+        "pct": 90.2
+      },
+      "opponentOrigin": {
+        "catalogFictionalAll": 0,
+        "worldPair": 1022,
+        "fallbackSynthetic": 0
+      },
+      "attempted": 373,
+      "won": 4,
+      "lost": 369,
+      "ratePct": 1.1,
+      "flaggedUpsets": 4,
+      "missingWhenCanonicalExists": 0,
+      "canonicalRowExists": 1021,
+      "rankDelta": {
+        "n": 922,
+        "p25": -202,
+        "median": -65.5,
+        "p75": 110.8,
+        "min": -738,
+        "max": 9582
+      }
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 231,
+        "opponentRankCoverage": {
+          "teamRanking": 224,
+          "unranked": 7,
+          "missingRoster": 0,
+          "pct": 97
+        },
+        "opponentOrigin": {
+          "catalogFictionalAll": 0,
+          "worldPair": 231,
+          "fallbackSynthetic": 0
+        },
+        "attempted": 105,
+        "won": 0,
+        "lost": 105,
+        "ratePct": 0,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 231,
+        "rankDelta": {
+          "n": 224,
+          "p25": -128.2,
+          "median": -21.5,
+          "p75": 132,
+          "min": -463,
+          "max": 9582
+        }
+      },
+      "normal": {
+        "matches": 418,
+        "opponentRankCoverage": {
+          "teamRanking": 371,
+          "unranked": 47,
+          "missingRoster": 0,
+          "pct": 88.8
+        },
+        "opponentOrigin": {
+          "catalogFictionalAll": 0,
+          "worldPair": 418,
+          "fallbackSynthetic": 0
+        },
+        "attempted": 149,
+        "won": 4,
+        "lost": 145,
+        "ratePct": 2.7,
+        "flaggedUpsets": 4,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 417,
+        "rankDelta": {
+          "n": 371,
+          "p25": -177,
+          "median": -52,
+          "p75": 95.5,
+          "min": -612,
+          "max": 9551
+        }
+      },
+      "optimizer": {
+        "matches": 373,
+        "opponentRankCoverage": {
+          "teamRanking": 327,
+          "unranked": 46,
+          "missingRoster": 0,
+          "pct": 87.7
+        },
+        "opponentOrigin": {
+          "catalogFictionalAll": 0,
+          "worldPair": 373,
+          "fallbackSynthetic": 0
+        },
+        "attempted": 119,
+        "won": 0,
+        "lost": 119,
+        "ratePct": 0,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 373,
+        "rankDelta": {
+          "n": 327,
+          "p25": -302,
+          "median": -137,
+          "p75": 103.5,
+          "min": -738,
+          "max": 9225
+        }
+      }
+    }
+  }
+}

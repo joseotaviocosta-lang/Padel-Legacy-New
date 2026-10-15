@@ -1,0 +1,8 @@
+set,formula,markets,chosenOvrMedian,bestOvrMedian,ovrRatioMedian,ovrGapMedian,compatMedian,compatLossMedian,salaryShareOfCashMedian,sameAsOptimizerPct
+search,CURRENT_COMPAT,25,39,89,0.451,46,87,0,0.056,0
+search,NORMAL_A,25,85,89,0.976,2,75,12,0.084,72
+search,NORMAL_B,25,85,89,0.978,2,75,12,0.084,76
+search,NORMAL_C,25,85,89,0.978,2,75,12,0.084,76
+search,NORMAL_D,25,82,89,0.944,5,78,8,0.081,8
+search,NORMAL_E,25,82,89,0.944,5,78,8,0.081,8
+search,OPTIMIZER_STRONGEST,25,85,89,0.978,2,73,14,0.084,100

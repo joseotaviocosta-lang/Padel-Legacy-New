@@ -1,0 +1,564 @@
+{
+  "at": "2026-10-12T14:59:30.905Z",
+  "note": "execução antes do ruído (random±14) — mesmo atleta nos dois lados; lado A recebe os campos do modal (_chemistryBonus/_energyPenalty), lado B o snapshot da chave. Serviço comparado na posição equivalente (A sacando × B sacando).",
+  "pipeline": [
+    "atributos-base",
+    "baseOverallRating (attributes.js)",
+    "+ _chemistryBonus/_coachMatchBonus/_partnerBondBonus (só lado do jogador; contexto de dupla/coach)",
+    "clamp 1–100",
+    "skill = 50 + (atributo do golpe − 50) × 0,2",
+    "+ confiança (moral−50)×0,14×0,2",
+    "− energia (100−e)×0,12×0,2",
+    "− risco do golpe × riskModifier da tática",
+    "± iniciativa de saque (2 nas 4 primeiras bolas)",
+    "+ ruído uniforme ±14",
+    "× pressão/dificuldade (iguais para os dois lados)"
+  ],
+  "cases": [
+    {
+      "label": "OVR 50, energia 100, moral 70",
+      "input": {
+        "id": "pA1",
+        "name": "p",
+        "serve": 50,
+        "forehand": 50,
+        "backhand": 50,
+        "volley": 50,
+        "bandeja": 50,
+        "smash": 50,
+        "defense": 50,
+        "agility": 50,
+        "strategy": 50,
+        "emotional_control": 50,
+        "energy": 100,
+        "morale": 70
+      },
+      "normalized": {
+        "A0": {
+          "overall": 50,
+          "energy": 100,
+          "confidence": 70
+        },
+        "B0": {
+          "overall": 50,
+          "energy": 100,
+          "confidence": 70
+        }
+      },
+      "perShot": {
+        "serve": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 4,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 48.56
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 4,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 44.56
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 4,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 48.56
+          }
+        },
+        "drive": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 44.56
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 8,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 40.56
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 44.56
+          }
+        },
+        "volley": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 44.56
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 8,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 40.56
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 44.56
+          }
+        },
+        "smash": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 10,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 42.56
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 10,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 38.56
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 10,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 42.56
+          }
+        },
+        "lob": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 6,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 46.56
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 6,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 42.56
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 0,
+            "risk": 6,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 46.56
+          }
+        }
+      },
+      "identicalPreRng": true
+    },
+    {
+      "label": "OVR 50, energia 55, moral 70",
+      "input": {
+        "id": "pA1",
+        "name": "p",
+        "serve": 50,
+        "forehand": 50,
+        "backhand": 50,
+        "volley": 50,
+        "bandeja": 50,
+        "smash": 50,
+        "defense": 50,
+        "agility": 50,
+        "strategy": 50,
+        "emotional_control": 50,
+        "energy": 55,
+        "morale": 70
+      },
+      "normalized": {
+        "A0": {
+          "overall": 50,
+          "energy": 55,
+          "confidence": 70
+        },
+        "B0": {
+          "overall": 50,
+          "energy": 55,
+          "confidence": 70
+        }
+      },
+      "perShot": {
+        "serve": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 4,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 47.48
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 4,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 43.48
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 4,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 47.48
+          }
+        },
+        "drive": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 43.48
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 8,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 39.48
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 43.48
+          }
+        },
+        "volley": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 43.48
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 8,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 39.48
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 43.48
+          }
+        },
+        "smash": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 10,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 41.48
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 10,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 37.48
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 10,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 41.48
+          }
+        },
+        "lob": {
+          "A": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 6,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 45.48
+          },
+          "B_receiving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 6,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 41.48
+          },
+          "B_serving": {
+            "rawSkill": 50,
+            "skill": 50,
+            "confidence": 0.56,
+            "energyPenalty": 1.08,
+            "risk": 6,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 45.48
+          }
+        }
+      },
+      "identicalPreRng": true
+    },
+    {
+      "label": "OVR 35, energia 80, moral 100",
+      "input": {
+        "id": "pA1",
+        "name": "p",
+        "serve": 35,
+        "forehand": 35,
+        "backhand": 35,
+        "volley": 35,
+        "bandeja": 35,
+        "smash": 35,
+        "defense": 35,
+        "agility": 35,
+        "strategy": 35,
+        "emotional_control": 35,
+        "energy": 80,
+        "morale": 100
+      },
+      "normalized": {
+        "A0": {
+          "overall": 35,
+          "energy": 80,
+          "confidence": 100
+        },
+        "B0": {
+          "overall": 35,
+          "energy": 80,
+          "confidence": 100
+        }
+      },
+      "perShot": {
+        "serve": {
+          "A": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 4,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 45.92
+          },
+          "B_receiving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 4,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 41.92
+          },
+          "B_serving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 4,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 45.92
+          }
+        },
+        "drive": {
+          "A": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 41.92
+          },
+          "B_receiving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 8,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 37.92
+          },
+          "B_serving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 41.92
+          }
+        },
+        "volley": {
+          "A": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 41.92
+          },
+          "B_receiving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 8,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 37.92
+          },
+          "B_serving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 8,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 41.92
+          }
+        },
+        "smash": {
+          "A": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 10,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 39.92
+          },
+          "B_receiving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 10,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 35.92
+          },
+          "B_serving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 10,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 39.92
+          }
+        },
+        "lob": {
+          "A": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 6,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 43.92
+          },
+          "B_receiving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 6,
+            "serviceInitiative": -2,
+            "executionBeforeNoise": 39.92
+          },
+          "B_serving": {
+            "rawSkill": 35,
+            "skill": 47,
+            "confidence": 1.4,
+            "energyPenalty": 0.48,
+            "risk": 6,
+            "serviceInitiative": 2,
+            "executionBeforeNoise": 43.92
+          }
+        }
+      },
+      "identicalPreRng": true
+    }
+  ],
+  "sideSpecificFindings": {
+    "before527F": [
+      "_energyPenalty somado ao OVR só do jogador (2ª aplicação da energia)",
+      "troca automática de tática só no lado B, com táticas não neutras",
+      "energia/confiança sem a inclinação calibrada (×0,2)"
+    ],
+    "after527F": "nenhum modificador de fórmula exclusivo de lado; diferenças restantes são de ESTADO de entrada (jogador leva energia/moral reais; snapshot do adversário não leva → 100/70) e de contexto da dupla do jogador (química/coach), documentadas como dívida de design"
+  }
+}

@@ -1,0 +1,20 @@
+import { attach } from './tauri.mjs';
+const { browser, page, errors, shot, sleep, clickText, state } = await attach();
+await page.evaluate(() => { const b = [...document.querySelectorAll('[role=dialog] button')].find((x) => x.innerText.includes('Voltar à carreira')); b?.click(); });
+await sleep(2000);
+const snap = async () => page.evaluate(() => { const t = document.body.innerText.replace(/\s+/g, ' '); return { date: (t.match(/\b\d{2}\/\d{2}\/2026\b/) || [])[0], partner: (t.match(/T Tomás Acosta OVR \d+/) || [])[0], top: t.slice(t.indexOf('RANKING'), t.indexOf('RANKING') + 80) }; });
+await page.goto('http://127.0.0.1:5174/matches', { waitUntil: 'networkidle2' }); await sleep(2500);
+const before = { ...(await snap()), matches: (await state(3000)).text.match(/Rubén Medina[^]{0,80}/)?.[0] || null };
+await shot('t12-before-reload');
+// SAVE → RELOAD: recarga completa da janela (o runtime é recriado do armazenamento Tauri).
+await page.reload({ waitUntil: 'networkidle2' }); await sleep(3000);
+await page.goto('http://127.0.0.1:5174/careers', { waitUntil: 'networkidle2' }); await sleep(2500);
+const cont = await clickText('Smoke 527K'); await sleep(1000);
+const cont2 = await clickText('Continuar carreira'); await sleep(3500);
+await page.goto('http://127.0.0.1:5174/matches', { waitUntil: 'networkidle2' }); await sleep(2500);
+const after = { ...(await snap()), matches: (await state(3000)).text.match(/Rubén Medina[^]{0,80}/)?.[0] || null };
+await shot('t12-after-reload');
+await page.goto('http://127.0.0.1:5174/tournaments', { waitUntil: 'networkidle2' }); await sleep(2500);
+const roma = (await state(4000)).text.match(/Roma Pré-Temporada PRÉ-TEMPORADA[^]{0,200}/)?.[0] || null;
+console.log(JSON.stringify({ cont, cont2, before, after, roma }, null, 1)); console.log('errors', JSON.stringify(errors));
+browser.disconnect();

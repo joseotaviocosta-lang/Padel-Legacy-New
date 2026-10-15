@@ -1,10 +1,12 @@
 import { localGame } from '@/api/localGameClient.js';
 import { formPartnerContract } from '@/game-core/partnerLifecycle.js';
 export { partnerOfferId, compatibilityLabel, buildInitialPartnerOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
-import { partnerOfferId, buildInitialPartnerOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
+import { partnerOfferId, buildInitialPartnerOffers, buildFirstPartnershipOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
+import { BOTS_BY_DIFFICULTY } from './bots.js';
 import { fnv1aHash } from './hashUtils.js';
 
 export const PARTNER_OFFERS_ROUTE = '/partners?view=offers';
+export const PARTNER_REJECTION_COOLDOWN_DAYS = 14;
 const acceptanceLocks = new Map();
 const useful = value => value !== undefined && value !== null && value !== '';
 
@@ -53,10 +55,39 @@ export function isSeedPartnerOffer(offer) {
   return offer?.source === 'initial-partner-offer';
 }
 
+// Playthrough 4.8, Parte C — a busca da PRIMEIRA parceria amplia o campo
+// além do que getAvailablePartners normalmente libera (só o(s) tier(s) até
+// o nível de XP do jogador — pra um jogador novo, xp=0, isso é só
+// 'iniciante'). Sem isso, nenhum candidato "veterano mentor" plausível
+// (OVR claramente acima do iniciante comum) jamais apareceria pra um
+// atleta que ainda não jogou partida nenhuma — o próprio arquétipo pedido
+// na Parte A ficaria inatingível. Escopado só a este ponto de entrada
+// (nunca ensureFutureTournaments/getAvailablePartners em si, usados em
+// todo o resto do jogo) — mescla só com o tier 'amador' (nunca
+// competitivo+, fora do alcance narrativo de uma busca inicial), sem
+// duplicar quem já veio no pool padrão.
+function widenedFirstPartnershipPool(baseCandidates) {
+  const seen = new Set((baseCandidates || []).map((candidate) => candidate?.id).filter(Boolean));
+  const extra = (BOTS_BY_DIFFICULTY.amador || []).filter((candidate) => candidate?.id && !seen.has(candidate.id));
+  return [...(baseCandidates || []), ...extra];
+}
+
+export function getRecentRejectionCooldowns(offers = [], currentDate) {
+  return new Set((offers || [])
+    .filter((offer) => offer?.status === 'rejected'
+      && offer?.rejection_cooldown_until
+      && String(offer.rejection_cooldown_until) >= String(currentDate))
+    .map((offer) => offer.candidate_player_id)
+    .filter(Boolean));
+}
+
 export async function ensureInitialPartnerOffers(profile, candidates) {
   const existing = await listPartnerOffers(profile.id).catch(() => []);
-  if (existing.length || profile.partner_id) return existing;
-  const built = buildInitialPartnerOffers(profile, candidates);
+  if (profile.partner_id) return existing;
+  const coolingDownIds = getRecentRejectionCooldowns(existing, profile.career_date);
+  const activePending = existing.filter((offer) => offer?.status === 'pending' || offer?.status === 'accepted');
+  if (activePending.length) return existing;
+  const built = buildFirstPartnershipOffers(profile, widenedFirstPartnershipPool(candidates).filter((candidate) => !coolingDownIds.has(candidate.id)));
   const created = [];
   for (const offer of built) {
     const duplicate = await localGame.entities.PartnerOffer.filter({ profile_id: profile.id, candidate_player_id: offer.candidate_player_id }, null, 1).catch(() => []);
@@ -97,7 +128,13 @@ export async function rejectPartnerOffer(profile, offer) {
   const rows = await localGame.entities.PartnerOffer.filter({ id: offer.id }, null, 1);
   const fresh = rows[0] || offer;
   if (fresh.status !== 'pending') return fresh;
-  const updated = await localGame.entities.PartnerOffer.update(fresh.id, { status: 'rejected', resolved_career_date: profile.career_date });
+  const cooldownUntil = addDaysStr(profile.career_date, PARTNER_REJECTION_COOLDOWN_DAYS);
+  const updated = await localGame.entities.PartnerOffer.update(fresh.id, {
+    status: 'rejected',
+    resolved_career_date: profile.career_date,
+    rejected_career_date: profile.career_date,
+    rejection_cooldown_until: cooldownUntil,
+  });
   await resolveOfferMessages(profile.id, fresh.id, 'decline');
   return updated;
 }
@@ -139,8 +176,9 @@ export async function processSpontaneousPartnerMarket(profile, previousDate, cur
   if (expired.length) {
     await Promise.all(expired.map((item) => localGame.entities.PartnerOffer.update(item.id, { status: 'expired', resolved_career_date: currentDate })));
   }
+  const cooledDownIds = getRecentRejectionCooldowns(existingOffers, currentDate);
   const alreadyOfferedIds = new Set(existingOffers.filter((item) => item.status === 'pending' && (!item.expires_career_date || item.expires_career_date >= currentDate)).map((item) => item.candidate_player_id));
-  const pool = candidates.filter((candidate) => !alreadyOfferedIds.has(candidate.id));
+  const pool = candidates.filter((candidate) => !alreadyOfferedIds.has(candidate.id) && !cooledDownIds.has(candidate.id));
   const built = buildInitialPartnerOffers(profile, pool, 1);
   if (!built.length) return localGame.entities.PlayerProfile.update(profile.id, marked);
 

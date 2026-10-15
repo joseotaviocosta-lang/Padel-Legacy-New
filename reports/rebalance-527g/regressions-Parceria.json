@@ -1,0 +1,79 @@
+{
+  "at": "2026-10-13T02:54:09.733Z",
+  "passed": 9,
+  "total": 9,
+  "results": [
+    {
+      "group": "Parceria",
+      "name": "test-first-partnership-100-careers",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-first-partnership-100-careers: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-first-partnership-ranking",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-first-partnership-ranking: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partner-offer-overall-integrity-v519",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "[registro] candidatos com OVR divergente do declarado (>2): 0/22"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partnership-expiry-with-committed-tournament-v517",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "test-partnership-expiry-with-committed-tournament-v517: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partner-resign-loop-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 20,
+      "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-former-partner-reintegration-v518",
+      "ok": true,
+      "code": 0,
+      "seconds": 168,
+      "summary": "test-former-partner-reintegration-v518: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partner-athlete-save-reload-v512",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-partner-athlete-save-reload-v512: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-living-partnerships-v29",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "LivingPartnershipsV29Test: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-ai-market-headless-integration-v518",
+      "ok": true,
+      "code": 0,
+      "seconds": 239,
+      "summary": "test-ai-market-headless-integration-v518: PASS"
+    }
+  ]
+}

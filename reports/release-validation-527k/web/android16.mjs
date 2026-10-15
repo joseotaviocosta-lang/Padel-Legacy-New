@@ -1,0 +1,13 @@
+import { attach } from './attach.mjs';
+import { mobile } from './mob.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const { tap, waitFor } = mobile(page, sleep, state, shot);
+const vis = async () => page.evaluate(() => { const v = (e) => e.getClientRects().length > 0; return { url: location.pathname + location.search, dialogs: [...document.querySelectorAll('[role=dialog],[aria-modal=true]')].filter(v).map((d) => ({ text: d.innerText.replace(/\s+/g, ' ').slice(0, 220), buttons: [...d.querySelectorAll('button')].filter(v).map((b) => b.innerText.trim().replace(/\s+/g, ' ')).filter(Boolean) })) }; });
+await tap(/^Fechar$/, 2000);
+console.log('avançar', await tap(/^Avançar$/, 6000));
+let v = await vis(); console.log(JSON.stringify(v, null, 1)); await shot('a16-bloqueio');
+const ir = await tap(/^Ir para o torneio$/, 8000); console.log('ir', ir);
+v = await vis(); console.log(JSON.stringify(v, null, 1)); await shot('a16-torneio');
+const s = await state(3000); console.log((s.text.match(/(VOCÊ ESTÁ DISPUTANDO[^]{0,160}|Aguardando sorteio[^]{0,80})/i) || [])[0]);
+console.log('errors', JSON.stringify(errors));
+browser.disconnect();

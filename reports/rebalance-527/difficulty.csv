@@ -1,0 +1,17 @@
+dimension,key,matches,winPct
+overall,all,213,21
+class,Fácil,102,19
+class,Médio,95,21
+class,Difícil,16,38
+tier,Bronze,62,21
+tier,Silver,40,15
+tier,Gold,46,22
+tier,Platinum,49,20
+tier,Masters,14,43
+tier,Elite,2,0
+round,R1,151,15
+round,QF,13,62
+round,Q,26,12
+round,R2,14,36
+round,SF,5,80
+round,F,4,50

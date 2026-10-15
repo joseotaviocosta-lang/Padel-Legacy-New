@@ -1,0 +1,11 @@
+import { attach } from './attach.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const tapEl = async (pred) => { const box = await page.evaluate((src) => { const f = new Function('t', `return ${src}`); const el = [...document.querySelectorAll('a, button, [role=button], li, div')].filter((b) => b.offsetParent && b.children.length < 6).find((b) => f((b.innerText || '').trim())); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, pred); if (!box) return false; await page.touchscreen.tap(box.x, box.y); return true; };
+const waitFor = async (re, max) => { const t0 = Date.now(); while (Date.now() - t0 < max) { const s = await state(1500); if (re.test(s.text)) return Date.now() - t0; await sleep(2000); } return null; };
+const r = {};
+r.tap = await tapEl("t === 'Torneios'"); await sleep(1500); r.url = (await state()).url;
+r.loadMs = await waitFor(/INSCRIÇÕES|Ver detalhes|Inscrever/, 120000);
+await shot('android-torneios-tap');
+const s = await state(900); r.text = s.text.slice(0, 400); r.errors = errors;
+console.log(JSON.stringify(r, null, 1));
+browser.disconnect();

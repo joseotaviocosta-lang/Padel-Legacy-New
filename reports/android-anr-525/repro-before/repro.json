@@ -1,0 +1,18 @@
+{
+  "label": "repro-before",
+  "mode": "plugin",
+  "cycles": 1,
+  "anrBefore": 1,
+  "anrAfter": 1,
+  "newAnrs": 0,
+  "startPid": "15293",
+  "endPid": "15293",
+  "log": [
+    {
+      "cycle": 1,
+      "responsive": false,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{9cde2f9 u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    }
+  ]
+}

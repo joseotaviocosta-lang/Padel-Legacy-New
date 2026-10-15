@@ -12,7 +12,16 @@ import { cn } from '@/lib/utils';
 // físico (Loja/Economia).
 export function FilterPills({ filters, activeFilter, onFilterChange, className = '' }) {
   return (
-    <div className={cn('flex flex-nowrap gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none', className)} style={{ WebkitOverflowScrolling: 'touch' }}>
+    // Playthrough 5.20-B — a faixa rolavel resolveu o "filtros apertados" da
+    // M4.2.2 (shrink-0 impedindo a compressao), mas trocou um problema por
+    // outro: medido em 360px, ela ESCONDIA 496px de filtros em Notificacoes,
+    // 424px em Financas e 266px em Relacoes. O jogador nao via a maior parte
+    // das opcoes, e nada na tela anunciava que o trilho rolava.
+    //
+    // No mobile as pilhas passam a quebrar linha: ocupam mais altura, mas toda
+    // opcao fica visivel de uma vez. Acima de md: nada muda — ali sobra largura
+    // e a faixa unica continua sendo a forma certa.
+    <div className={cn('flex flex-wrap gap-2 pb-1 md:flex-nowrap md:overflow-x-auto md:scrollbar-none', className)} style={{ WebkitOverflowScrolling: 'touch' }}>
       {filters.map((f) => {
         const Icon = f.icon;
         return (

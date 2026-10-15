@@ -1,0 +1,434 @@
+--- a/src/components/tournaments/TournamentModal.jsx
++++ b/src/components/tournaments/TournamentModal.jsx
+@@ -938,6 +938,9 @@
+             batchWrites: true,
+             additionalOperations: secondaryOperations,
+             playerPatch: transition.terminal && !completion.idempotent ? completion.playerPatch : null,
++            // Playthrough 5.26-B — ganho do torneio aplicado sobre o perfil
++            // fresco: não apaga as moedas de conquista desta última partida.
++            playerIncrements: transition.terminal && !completion.idempotent ? completion.playerIncrements : null,
+           },
+         );
+       if (transition.terminal) await profiler.measure('missions', secondaryTask);
+--- a/src/engine/match/playerModel.js
++++ b/src/engine/match/playerModel.js
+@@ -1,11 +1,20 @@
+ import { createBehaviorProfile } from './PersonalityModel.js';
++import { baseOverallRating } from '../../lib/attributes.js';
+ 
+-const ATTRIBUTE_KEYS = ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense', 'agility', 'strategy', 'emotional_control'];
+-
++// Playthrough 5.26-B — o OVR-base vem da MESMA autoridade da UI
++// (attributes.js:baseOverallRating). Antes, a média aqui dividia por 10
++// chaves planas e tinha piso 1: o parceiro materializado e todo atleta do
++// mundo (só `overall_rating`, sem atributos planos) entravam na partida com
++// OVR 1, e templates parciais (6/10 atributos) com ~60% do OVR real.
++// Só o INPUT mudou: os modificadores de contexto e o clamp abaixo são os
++// mesmos de antes, e nenhuma fórmula de rally/probabilidade foi tocada.
+ function overallRating(profile) {
+   if (!profile) return 0;
+-  const sum = ATTRIBUTE_KEYS.reduce((total, key) => total + (Number(profile[key]) || 0), 0);
+-  let rating = Math.round(sum / ATTRIBUTE_KEYS.length);
++  const base = baseOverallRating(profile);
++  // Sem nenhuma fonte de OVR: 0 → normalizePlayer aplica o fallback já
++  // existente (`|| 50`), em vez de mascarar como OVR 1.
++  if (base == null) return 0;
++  let rating = base;
+   if (profile._chemistryBonus) rating += Number(profile._chemistryBonus) || 0;
+   if (profile._energyPenalty) rating += Number(profile._energyPenalty) || 0;
+   if (profile._coachMatchBonus) rating += Math.max(0, Math.min(3, Number(profile._coachMatchBonus) || 0));
+--- a/src/game-core/circuitLifecycle.js
++++ b/src/game-core/circuitLifecycle.js
+@@ -1,4 +1,5 @@
+ import { localGame } from '@/api/localGameClient.js';
++import { buildWorldRankingSnapshot } from '@/lib/padel.js';
+ // Fase 15 (Parte 0/1/4/10): auditoria achou 2 fórmulas de career_phase
+ // conflitantes escrevendo no MESMO campo em cadências diferentes — esta
+ // (semanal, só idade + peak_age-1) e a de athleteBehavior.js (mensal,
+@@ -497,12 +498,23 @@
+ 
+   let updatedProfile = profile;
+   if (profile?.id) {
++    // Playthrough 5.26-B — posição do jogador no ranking. Loja, estágio de
++    // patrocínio, missões, treinadores, mercado de duplas etc. leem
++    // `profile.ranking_position` de forma síncrona, mas NADA a gravava para o
++    // jogador: todos o tratavam como #9999/#2000 para sempre (loja travada em
++    // "incomum", patrocínio nunca passava do estágio regional). A posição vem
++    // da MESMA autoridade da tela de Ranking (buildWorldRankingSnapshot), com
++    // os pontos que acabaram de ser recalculados, na mesma escrita semanal
++    // do circuito. Sem ranking (sem pontos/partidas oficiais) → null.
++    const snapshot = await buildWorldRankingSnapshot({ ...profile, ...playerRankingPatch }).catch(() => null);
++    const rankingPosition = snapshot && !snapshot.unranked && snapshot.playerRank > 0 ? snapshot.playerRank : null;
+     updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
+       last_circuit_week: currentWeek,
+       last_circuit_update: currentDate,
+       last_circuit_summary: summary,
+       game_state_version: '2.4.0',
+       ...playerRankingPatch,
++      ranking_position: rankingPosition,
+     });
+   }
+ 
+--- a/src/game-core/tournamentLifecycle.js
++++ b/src/game-core/tournamentLifecycle.js
+@@ -1,5 +1,5 @@
+ import { localGame } from '@/api/localGameClient.js';
+-import { levelForXp } from '@/lib/padel';
++import { levelForXp, rebasePlayerPatchIncrements } from '@/lib/padel';
+ import { getTournamentRewards } from '@/lib/career';
+ import { teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
+ import { buildPartnershipTitlePatch, getActivePartnership } from '@/lib/partnershipSystem';
+@@ -568,13 +568,23 @@
+     { type: 'upsert', entityName: 'Post', id: `tournament-post-${recordKey}`, data: { author_name: 'Padel Legacy News', author_type: 'media', content: champion ? `🏆 ${safeName(profile)} e ${partner?.name || 'Parceiro'} são campeões do ${tournament.name}!` : `${safeName(profile)} terminou o ${tournament.name} como ${placement.toLowerCase()}.`, likes: champion ? 95 : 24, comments_count: champion ? 21 : 5, created_date: new Date().toISOString() } },
+   );
+ 
+-  return { operations, playerPatch, updatedProfile: { ...profile, ...playerPatch }, rewards, champion, placement, idempotent: alreadyProcessed };
++  // Playthrough 5.26-B — `playerIncrements` é o ganho do torneio (moedas/XP)
++  // para quem grava o patch: aplicado sobre o perfil lido NA HORA DA ESCRITA
++  // (padel.js:rebasePlayerPatchIncrements). Os `coins`/`xp` absolutos do
++  // `playerPatch` foram calculados sobre `profile` — que ainda não tem as
++  // moedas de conquista da última partida — e, gravados como estão,
++  // apagavam essas moedas.
++  const playerIncrements = alreadyProcessed ? null : { coins: rewards.coins, xp: rewards.xp };
++  return { operations, playerPatch, playerIncrements, updatedProfile: { ...profile, ...playerPatch }, rewards, champion, placement, idempotent: alreadyProcessed };
+ }
+ 
+ export async function finalizeTournamentRun(input) {
+   const prepared = await prepareTournamentFinalization(input);
+   const operations = [...prepared.operations];
+-  if (!prepared.idempotent) operations.push({ type: 'playerUpdate', id: input.profile.id, data: prepared.playerPatch });
++  if (!prepared.idempotent) {
++    const fresh = await localGame.entities.PlayerProfile.get(input.profile.id).catch(() => null);
++    operations.push({ type: 'playerUpdate', id: input.profile.id, data: rebasePlayerPatchIncrements(prepared.playerPatch, prepared.playerIncrements, fresh || input.profile) });
++  }
+   const transaction = await localGame.batch(operations);
+   return { ...prepared, updatedProfile: transaction.player || prepared.updatedProfile, writes: 1 };
+ }
+--- a/src/lib/attributes.js
++++ b/src/lib/attributes.js
+@@ -25,3 +25,30 @@
+ ];
+ 
+ export const ATTRIBUTE_KEYS = ATTRIBUTES.map((a) => a.key);
++
++// Playthrough 5.26-B — AUTORIDADE ÚNICA do OVR-base de qualquer atleta.
++// É a mesma regra que padel.js:overallRating já usava na UI (Playthrough
++// 5.22): entidade treinável → média dos atributos PRESENTES (ausente é
++// desconhecido, não zero); atleta do mundo sem atributos planos → o
++// `overall_rating`/`overall` declarado. Mora aqui (módulo-folha, sem
++// imports) para que o motor de partida use exatamente a mesma regra sem
++// puxar o grafo inteiro de padel.js. Antes, o motor (engine/match/
++// playerModel.js) tinha a sua própria média sobre as 10 chaves com piso 1:
++// todo AthleteProfile sem atributos planos (parceiro materializado, atletas
++// do mundo) entrava na partida com OVR 1.
++// Devolve `null` quando não há nenhuma fonte (desconhecido); sem
++// modificadores de contexto (química, energia…) e sem clamp — cada chamador
++// aplica os seus.
++export function baseOverallRating(profile) {
++  if (!profile) return null;
++  const attributeValues = ATTRIBUTE_KEYS
++    .map((key) => Number(profile[key]))
++    .filter((value) => Number.isFinite(value));
++  if (attributeValues.length) {
++    const sum = attributeValues.reduce((a, b) => a + b, 0);
++    return Math.round(sum / attributeValues.length);
++  }
++  const declared = Number(profile.overall_rating ?? profile.overall);
++  if (!Number.isFinite(declared) || declared <= 0) return null;
++  return Math.round(declared);
++}
+--- a/src/lib/padel.js
++++ b/src/lib/padel.js
+@@ -2,7 +2,7 @@
+ import { normalizeCourtSide, sideMissionRepair } from '@/lib/tutorialSideState.js';
+ import { deterministicMissionSelection, missionRuntime, missionStatus, requirementsMet, validateMissionReward } from '@/missions/missionSystem.js';
+ import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
+-import { ATTRIBUTES, ATTRIBUTE_KEYS } from '@/lib/attributes.js';
++import { ATTRIBUTES, ATTRIBUTE_KEYS, baseOverallRating } from '@/lib/attributes.js';
+ import { APP_ROUTES } from '@/navigation/routes.js';
+ import { activeCareerAdapter } from '@/gameplay/services/runtime.js';
+ 
+@@ -224,30 +224,14 @@
+ // (`_chemistryBonus`, `_energyPenalty`) continuam valendo nos dois caminhos.
+ export function overallRating(profile) {
+   if (!profile) return 0;
+-  const attributeValues = ATTRIBUTE_KEYS
+-    .map((key) => Number(profile[key]))
+-    .filter((value) => Number.isFinite(value));
+-
+-  let rating;
+-  if (attributeValues.length) {
+-    // Entidade treinável: os atributos SÃO o overall.
+-    //
+-    // A média divide pelos atributos PRESENTES, não pelo total de chaves. Para
+-    // o jogador (todas presentes) o resultado é idêntico ao de antes. A
+-    // diferença aparece em registros PARCIAIS, como os templates de bot: um
+-    // template com `overall_rating: 31` e 6 de 10 atributos preenchidos dava
+-    // 19, porque os 4 ausentes entravam como zero na média. Atributo ausente é
+-    // desconhecido, não zero — um zero EXPLÍCITO continua contando.
+-    const sum = attributeValues.reduce((a, b) => a + b, 0);
+-    rating = Math.round(sum / attributeValues.length);
+-  } else {
+-    // Atleta do mundo: o overall declarado é a autoridade.
+-    const declared = Number(profile.overall_rating ?? profile.overall);
+-    // Sem nenhuma das duas fontes, devolve 0 — "desconhecido" é honesto e
+-    // distinguível de "muito ruim", que era o que o piso 1 mascarava.
+-    if (!Number.isFinite(declared) || declared <= 0) return 0;
+-    rating = Math.round(declared);
+-  }
++  // Playthrough 5.26-B — a regra (atributos PRESENTES → média; sem atributos
++  // planos → overall declarado; nada → desconhecido) agora mora em
++  // attributes.js:baseOverallRating, a mesma que o motor de partida usa.
++  // Comportamento idêntico ao desta função antes da extração.
++  let rating = baseOverallRating(profile);
++  // Sem nenhuma fonte, devolve 0 — "desconhecido" é honesto e distinguível
++  // de "muito ruim", que era o que o piso 1 mascarava.
++  if (rating == null) return 0;
+ 
+   if (profile._chemistryBonus) rating += profile._chemistryBonus;
+   if (profile._energyPenalty) rating += profile._energyPenalty;
+@@ -887,6 +871,24 @@
+   return synced;
+ }
+ 
++// Playthrough 5.26-B — o `playerPatch` da finalização de torneio carrega
++// `coins`/`xp`/`level` ABSOLUTOS, calculados sobre o perfil de ANTES das
++// conquistas da última partida. Aplicado depois de `syncPlayerAchievements`,
++// ele regravava o saldo antigo e apagava as moedas da conquista (medido na
++// 5.26: ~46k em 5 anos). Com `increments`, o valor final é o perfil LIDO NA
++// HORA DA ESCRITA + o ganho do torneio — nada é creditado duas vezes nem
++// perdido. `level` é rederivado do XP final.
++export function rebasePlayerPatchIncrements(patch, increments, freshProfile) {
++  if (!patch || !increments) return patch;
++  const next = { ...patch };
++  if (increments.coins != null) next.coins = (Number(freshProfile?.coins) || 0) + (Number(increments.coins) || 0);
++  if (increments.xp != null) {
++    next.xp = (Number(freshProfile?.xp) || 0) + (Number(increments.xp) || 0);
++    if ('level' in next) next.level = levelForXp(next.xp);
++  }
++  return next;
++}
++
+ export async function incrementMissionProgress(profileId, objectiveTypes, count = 1, careerDateOverride = null, options = {}) {
+   const completedNow = [];
+   const additionalOperations = Array.isArray(options.additionalOperations) ? options.additionalOperations : [];
+@@ -894,7 +896,10 @@
+   const persistFallbackBatch = async () => {
+     if (!options.batchWrites) return;
+     const operations = [...additionalOperations];
+-    if (options.playerPatch) operations.push({ type: 'playerUpdate', id: profileId, data: options.playerPatch });
++    if (options.playerPatch) {
++      const fresh = options.playerIncrements ? (await localGame.entities.PlayerProfile.filter({ id: profileId }))?.[0] : null;
++      operations.push({ type: 'playerUpdate', id: profileId, data: rebasePlayerPatchIncrements(options.playerPatch, options.playerIncrements, fresh) });
++    }
+     if (operations.length) await localGame.batch(operations);
+   };
+   try {
+@@ -917,7 +922,10 @@
+     /** @type {any[]} */
+     const batchedOperations = [];
+     const batchedCompletionEvents = [];
+-    let batchedProfile = options.playerPatch ? { ...selectionProfile, ...options.playerPatch } : selectionProfile;
++    // Playthrough 5.26-B — patch do torneio rebaseado sobre o perfil fresco
++    // (inclui moedas de conquista já gravadas), em vez de sobrescrevê-lo.
++    const effectivePlayerPatch = options.playerPatch ? rebasePlayerPatchIncrements(options.playerPatch, options.playerIncrements, selectionProfile) : null;
++    let batchedProfile = effectivePlayerPatch ? { ...selectionProfile, ...effectivePlayerPatch } : selectionProfile;
+     let batchedPlayerChanged = Boolean(options.playerPatch);
+     for (const type of types) {
+       const excludedMissionTypes = new Set(options.excludeMissionTypes || []);
+@@ -983,7 +991,7 @@
+     }
+     if (options.batchWrites) {
+       batchedOperations.push(...additionalOperations);
+-      if (batchedPlayerChanged) batchedOperations.push({ type: 'playerUpdate', id: profileId, data: { ...(options.playerPatch || {}), xp: batchedProfile.xp, coins: batchedProfile.coins, medals: batchedProfile.medals } });
++      if (batchedPlayerChanged) batchedOperations.push({ type: 'playerUpdate', id: profileId, data: { ...(effectivePlayerPatch || {}), xp: batchedProfile.xp, coins: batchedProfile.coins, medals: batchedProfile.medals } });
+       if (batchedOperations.length) {
+         batchAttempted = true;
+         await localGame.batch(batchedOperations);
+--- a/src/lib/pressData.js
++++ b/src/lib/pressData.js
+@@ -1078,5 +1078,12 @@
+   if (effects.fan_appeal) updates.fan_appeal = Math.max(0, Math.min(100, (profile.fan_appeal || 50) + effects.fan_appeal));
+   if (effects.sponsor_appeal) updates.sponsor_appeal = Math.max(0, Math.min(100, (profile.sponsor_appeal || 50) + effects.sponsor_appeal));
+   if (effects.morale) updates.morale = Math.max(0, Math.min(100, (profile.morale || 70) + effects.morale));
++  // Playthrough 5.26-B — as respostas de entrevista sempre declararam
++  // `reputation` (QUESTION_BANKS), mas o efeito nunca chegava ao perfil: a
++  // reputação do jogador ficava 0 para sempre e travava a loja (raro+ exige
++  // reputação) e o estágio de patrocínio. Aplica exatamente o valor declarado,
++  // com o mesmo clamp 0–100 dos demais campos. Base 0 (o perfil nasce sem
++  // reputação) — valores novos de ganho NÃO foram decididos aqui.
++  if (effects.reputation) updates.reputation = Math.max(0, Math.min(100, (Number(profile.reputation) || 0) + effects.reputation));
+   return updates;
+ }
+--- a/src/lib/saveFoundation.js
++++ b/src/lib/saveFoundation.js
+@@ -57,9 +57,12 @@
+ const SEED_PAIR_CHEMISTRY = Object.freeze({ locked: 88, unlocked: 60 });
+ 
+ export async function ensureWorldSeed2025({ force = false } = {}) {
+-  const [athletes, teams, profiles] = await Promise.all([
+-    safeList('AthleteProfile', '-world_ranking_points', 500),
+-    safeList('TeamRanking', '-ranking_points', 500),
++  // Playthrough 5.26-B — identidade na coleção INTEIRA (antes: top 500 por
++  // pontos, que recriava atletas reais e TeamRanking já existentes fora do
++  // recorte). Ver verifySaveFoundation.
++  const [{ athletes, byKey: realByKey, retiredIds }, teams, profiles] = await Promise.all([
++    loadRealAthleteIdentity(),
++    safeList('TeamRanking', '-ranking_points', FULL_COLLECTION_LIMIT),
+     safeList('PlayerProfile', '-created_date', 20),
+   ]);
+ 
+@@ -99,6 +102,8 @@
+   const botIdToRealId = new Map();
+   const botIdToRow = new Map();
+   for (const athlete of registryAthletes) {
++    // Playthrough 5.26-B — aposentado e podado: conhecido pelo legado, nunca recriado.
++    if (!realByKey.has(String(athlete.bot_id)) && retiredIds.has(String(athlete.bot_id))) continue;
+     // Playthrough 4.5D, item 4 — o registro real (src/data/realAthletesRegistry.json)
+     // só traz `world_ranking_points`/`fip_rank`/`seed_rank`, nunca
+     // `ranking_position` — o campo que EntryManager.js:resolveEntryRank
+@@ -141,7 +146,11 @@
+     const row1 = botIdToRow.get(pair.a);
+     const row2 = botIdToRow.get(pair.b);
+     if (!id1 || !id2 || !row1 || !row2) continue;
+-    if (row1.ai_partner_id || row2.ai_partner_id) continue; // já tem parceiro (evoluído em jogo ou seed anterior)
++    // Playthrough 5.26-B — já pareado alguma vez (tem parceiro hoje OU o ciclo
++    // da IA já registrou status, inclusive depois de o par se desfazer no
++    // mercado): evoluído em jogo, não re-semear. Antes só olhava
++    // ai_partner_id e re-pareava à força quem o mercado tinha separado.
++    if (wasEverPairSeeded(row1) || wasEverPairSeeded(row2)) continue;
+     const chemistry = pair.locked ? SEED_PAIR_CHEMISTRY.locked : SEED_PAIR_CHEMISTRY.unlocked;
+     const common = {
+       ai_partnership_status: 'ativa',
+@@ -190,7 +199,7 @@
+   // população (bots inclusive) — só preenche um estado inicial que o
+   // registro já sabia mas não estava sendo aplicado.
+   const unseededReals = registryAthletes
+-    .filter((athlete) => !botIdToRow.get(athlete.bot_id)?.ai_partner_id)
++    .filter((athlete) => botIdToRow.get(athlete.bot_id) && !wasEverPairSeeded(botIdToRow.get(athlete.bot_id)))
+     .sort((a, b) => (Number(a.fip_rank) || 999) - (Number(b.fip_rank) || 999));
+   for (let i = 0; i + 1 < unseededReals.length; i += 2) {
+     const a = unseededReals[i];
+@@ -199,7 +208,7 @@
+     const id2 = botIdToRealId.get(b.bot_id);
+     const row1 = botIdToRow.get(a.bot_id);
+     const row2 = botIdToRow.get(b.bot_id);
+-    if (!id1 || !id2 || !row1 || !row2 || row1.ai_partner_id || row2.ai_partner_id) continue;
++    if (!id1 || !id2 || !row1 || !row2 || wasEverPairSeeded(row1) || wasEverPairSeeded(row2)) continue;
+     const chemistry = SEED_PAIR_CHEMISTRY.unlocked;
+     const common = {
+       ai_partnership_status: 'ativa',
+@@ -350,25 +359,73 @@
+ // `ai_partner_id` cruzado dos dois lados. Uma semeadura parcial passa a ser
+ // detectada e reparada no próximo mount, sem reescrever nada que já esteja
+ // correto (`ensureWorldSeed2025` só toca quem ainda não tem parceiro).
++//
++// Playthrough 5.26-B — causa raiz do congelamento anual (P0). Esta
++// verificação lia só os 500 primeiros AthleteProfile por pontos. Num mundo
++// vivo, atletas reais do registro caem para fora desse recorte (perdem
++// pontos, aposentam) e o par confirmado se desfaz no mercado da IA — duas
++// evoluções LEGÍTIMAS que viravam "semeadura incompleta". O reparo então
++// tentava CRIAR de novo o atleta real que já existia fora do recorte
++// (`AthleteProfile já existe com o id: real_…`), a transação do dia falhava
++// e o calendário nunca mais avançava (dias 366–452 em 100% das carreiras
++// medidas na 5.26). A identidade agora é resolvida na coleção INTEIRA, por
++// `bot_id`/`id`, e "par semeado" significa "o pareamento foi aplicado ao
++// menos uma vez" — que é o que o reparo de semeadura interrompida (4.5A)
++// precisa detectar.
++const FULL_COLLECTION_LIMIT = 100000;
++
++export async function loadRealAthleteIdentity() {
++  const [athletes, legacy] = await Promise.all([
++    safeList('AthleteProfile', '-world_ranking_points', FULL_COLLECTION_LIMIT),
++    safeList('AthleteCareerLegacy', '-created_date', FULL_COLLECTION_LIMIT),
++  ]);
++  const byKey = new Map();
++  for (const athlete of athletes) {
++    if (athlete?.bot_id) byKey.set(String(athlete.bot_id), athlete);
++    if (athlete?.id && !byKey.has(String(athlete.id))) byKey.set(String(athlete.id), athlete);
++  }
++  // Aposentado e já podado da coleção viva (pruneOldRetiredAthletes) continua
++  // conhecido pelo legado — nunca é "ressuscitado" pela semeadura.
++  const retiredIds = new Set((legacy || []).map((row) => String(row?.athlete_id || '')).filter(Boolean));
++  return { athletes, byKey, retiredIds };
++}
++
++// Já passou pela semeadura de pares ao menos uma vez: tem parceiro hoje OU o
++// ciclo de parceria da IA já registrou um status (inclusive 'sem_parceiro' /
++// 'encerrada' depois de o par se desfazer no mercado).
++export function wasEverPairSeeded(row) {
++  return Boolean(row?.ai_partner_id || row?.ai_partnership_status);
++}
++
+ export async function verifySaveFoundation() {
+-  const [athletes, teams] = await Promise.all([
+-    safeList('AthleteProfile', '-world_ranking_points', 500),
++  const [{ athletes, byKey, retiredIds }, teams] = await Promise.all([
++    loadRealAthleteIdentity(),
+     safeList('TeamRanking', '-ranking_points', 500),
+   ]);
+   const registryAthletes = getRealAthleteRegistry();
+-  const athleteIds = new Set(athletes.map(a => a.bot_id));
+-  const byBotId = new Map(athletes.map(a => [a.bot_id, a]));
++  const isKnown = (botId) => byKey.has(String(botId)) || retiredIds.has(String(botId));
++  const missingRealAthletes = registryAthletes.filter((a) => !isKnown(a.bot_id)).map((a) => a.bot_id);
+   const confirmedPairs = getConfirmedRealPairs();
+-  const confirmedPairsSeeded = confirmedPairs.every((pair) => {
+-    const rowA = byBotId.get(pair.a);
+-    const rowB = byBotId.get(pair.b);
+-    return Boolean(rowA?.ai_partner_id && rowB?.ai_partner_id);
++  const unseededConfirmedPairs = confirmedPairs.filter((pair) => {
++    if (retiredIds.has(String(pair.a)) || retiredIds.has(String(pair.b))) return false;
++    const rowA = byKey.get(String(pair.a));
++    const rowB = byKey.get(String(pair.b));
++    if (!rowA || !rowB) return true;
++    // Semeadura interrompida (o caso que esta checagem existe para pegar)
++    // deixa os DOIS membros sem pareamento. Se um deles já evoluiu (tem
++    // histórico de parceria), a rotina de semeadura nunca vai — corretamente
++    // — re-parear o par; tratá-lo como "não semeado" deixaria o reparo
++    // rodando todo dia sem efeito.
++    return !wasEverPairSeeded(rowA) && !wasEverPairSeeded(rowB);
+   });
++  const confirmedPairsSeeded = unseededConfirmedPairs.length === 0;
+   return {
+-    ok: registryAthletes.every(a => athleteIds.has(a.bot_id)) && confirmedPairsSeeded,
++    ok: missingRealAthletes.length === 0 && confirmedPairsSeeded,
+     athletes: athletes.length,
+     teams: teams.length,
+     confirmedPairsSeeded,
++    missingRealAthletes,
++    unseededConfirmedPairs: unseededConfirmedPairs.map((pair) => `${pair.a}+${pair.b}`),
+     version: SAVE_FOUNDATION_VERSION,
+   };
+ }
+--- a/src/lib/sponsors.js
++++ b/src/lib/sponsors.js
+@@ -1,5 +1,6 @@
+ import { localGame } from '@/api/localGameClient.js';
+ import { publishContractEvent } from '@/lib/contractNews.js';
++import { ageAtDate } from '@/lib/padel.js';
+ 
+ // ─── Expanded Sponsor Catalog ────────────────────────────────────────────────
+ // Each sponsor has own objectives, budget, preferences, marketing demands,
+@@ -508,14 +509,15 @@
+   return { score: Math.max(0, Math.min(100, score)), reasons };
+ }
+ 
++// Playthrough 5.26-B — idade pela DATA DA CARREIRA (mesma autoridade de
++// padel.js:calculateAge/ageAtDate, com o limite do aniversário), não pelo
++// relógio do computador. Antes, `new Date()` mantinha o atleta nascido em
++// 2010 com "16 anos" durante toda a carreira (2026→2036): os patrocinadores
++// Prata com idade mínima 17/18 recusavam para sempre e 100% das assinaturas
++// medidas na 5.26 ficaram no Bronze. Faixas etárias NÃO foram alteradas.
+ function calculateAge(profile) {
+   if (!profile?.birth_date) return 20;
+-  const birth = new Date(profile.birth_date + 'T00:00:00');
+-  const now = new Date();
+-  let age = now.getFullYear() - birth.getFullYear();
+-  const m = now.getMonth() - birth.getMonth();
+-  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
+-  return age;
++  return ageAtDate(profile.birth_date, profile.career_date || '2026-01-01');
+ }
+ 
+ // ─── Negotiation ────────────────────────────────────────────────────────────

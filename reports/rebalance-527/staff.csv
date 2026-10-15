@@ -1,0 +1,9 @@
+profile,day,role,quality,tier,monthly
+casual,105,nutritionist,57,Formação,950
+casual,483,accountant,60,Formação,900
+casual,490,psychologist,59,Formação,1150
+casual,728,nutritionist,57,Formação,850
+normal,518,physical_trainer,58,Formação,950
+optimizer,427,accountant,60,Formação,850
+optimizer,609,physical_trainer,58,Formação,1200
+optimizer,672,manager,63,Formação,1550

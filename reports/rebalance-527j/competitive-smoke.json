@@ -1,0 +1,58 @@
+{
+  "config": "balanced-e · Normal · seeds 1–5 · 730 dias · v4 · Silver 15%",
+  "before": {
+    "source": "5.27-I Stage 1",
+    "careers": 5,
+    "easy": 52.9,
+    "medium": 43.8,
+    "hard": 32.6,
+    "r1": 46.7,
+    "bronze": 57.5,
+    "silver": 45.3,
+    "gold": 48.2,
+    "platinum": 41.5,
+    "partnerOvr1y": 79,
+    "partnerOvr2y": 80,
+    "rank1y": 275,
+    "rank2y": 38,
+    "titlesY1": 1,
+    "titlesY2Cum": 2
+  },
+  "after": {
+    "careers": 5,
+    "easy": 65.4,
+    "medium": 45.3,
+    "hard": 54.7,
+    "r1": 48.6,
+    "bronze": 66.3,
+    "silver": 64,
+    "gold": 42.7,
+    "platinum": 44.2,
+    "partnerOvr1y": 80,
+    "partnerOvr2y": 82,
+    "rank1y": 244,
+    "rank2y": 23,
+    "titlesY1": 5,
+    "titlesY2Cum": 5
+  },
+  "delta": {
+    "careers": 0,
+    "easy": 12.5,
+    "medium": 1.5,
+    "hard": 22.1,
+    "r1": 1.9,
+    "bronze": 8.8,
+    "silver": 18.7,
+    "gold": -5.5,
+    "platinum": 2.7,
+    "partnerOvr1y": 1,
+    "partnerOvr2y": 2,
+    "rank1y": -31,
+    "rank2y": -15,
+    "titlesY1": 4,
+    "titlesY2Cum": 3
+  },
+  "hardRegressionSignal": [
+    "easy"
+  ]
+}

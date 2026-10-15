@@ -56,6 +56,11 @@ export function createTournamentRun({
     date: addTournamentDays(startDate, index),
     opponent: clone(opponentMembers),
     opponentRank: Number(opponentEntry?.rank || opponentEntry?.teamRank || 0) || null,
+    // 5.26-D — identidade da dupla adversária (Bloco D): pair_id canônico do
+    // mundo quando o adversário veio do campo real, e a origem do campo
+    // (world-pair / fallback-synthetic / qualifying). Nunca inventado.
+    opponentPairId: opponentEntry?.pair_id || null,
+    opponentSource: opponentEntry?.source || null,
     status: 'scheduled',
     preparationCompleted: false,
     result: null,
@@ -104,6 +109,53 @@ export function getTournamentRunPhase(run, careerDate) {
   if (careerDate > match.date) return 'missed';
   if (match.status === 'playing' || run.status === 'playing') return 'playing';
   return 'playable';
+}
+
+// Playthrough 5.9, BUG 1 — o Centro da Carreira escolhia o torneio "ativo"
+// com `events.find(e => e.metadata?.tournament_run)` e derivava o CTA de
+// `getCurrentTournamentMatch(run)` CRU, sem nenhuma guarda de status/data.
+// Três consequências, todas reproduzidas em carreira real
+// (test-careerhub-stale-tournament-action-v59.mjs): (1) a busca traz TODO
+// evento de torneio da carreira, inclusive encerrados, e `.find` devolve o
+// MAIS ANTIGO — Roma Pré-Temporada ficava "ativa" mesmo depois de Londres
+// e Dubai; (2) `getCurrentTournamentMatch` devolve `matches[currentRound]`
+// mesmo com `run.status === 'eliminated'` (numa derrota o currentRound NÃO
+// avança, então ele aponta pra sempre à rodada perdida); (3) a condição de
+// data era `match.date <= career_date`, aberta pra sempre.
+//
+// `getTournamentRunPhase` JÁ era a autoridade correta (trata terminal,
+// 'waiting', 'missed'); faltava alguém usá-la. Esta função é o seletor
+// único: devolve `{ event, run, match, phase }` SÓ quando existe uma ação
+// real de torneio hoje, e `null` em qualquer outro caso.
+const PLAYABLE_RUN_PHASES = new Set(['pre_tournament', 'round_preparation', 'playable', 'playing']);
+const CLOSED_CALENDAR_EVENT_STATUSES = new Set(['completed', 'missed', 'cancelled']);
+
+export function selectActiveTournamentRun(events, careerDate) {
+  if (!careerDate) return null;
+  const candidates = [];
+  for (const event of events || []) {
+    if (!event || event.event_type !== 'tournament') continue;
+    if (CLOSED_CALENDAR_EVENT_STATUSES.has(String(event.status || '').toLowerCase())) continue;
+    const run = event.metadata?.tournament_run;
+    if (!run) continue;
+    const phase = getTournamentRunPhase(run, careerDate);
+    if (!PLAYABLE_RUN_PHASES.has(phase)) continue;
+    const match = getCurrentTournamentMatch(run);
+    if (!match || match.status === 'completed' || match.status === 'cancelled') continue;
+    candidates.push({ event, run, match, phase });
+  }
+  if (!candidates.length) return null;
+  // Mais de um torneio jogável no mesmo dia é anômalo (exclusividade de
+  // agenda), mas se acontecer a ação de HOJE vence a de preparação, e entre
+  // iguais vence a partida de data mais próxima — nunca "a primeira da
+  // lista", que era justamente o critério que fixava o torneio mais antigo.
+  candidates.sort((a, b) => {
+    const aToday = a.match.date === careerDate ? 0 : 1;
+    const bToday = b.match.date === careerDate ? 0 : 1;
+    if (aToday !== bToday) return aToday - bToday;
+    return String(a.match.date || '').localeCompare(String(b.match.date || ''));
+  });
+  return candidates[0];
 }
 
 export function completePreTournamentMeeting(run, optionId, now = new Date()) {
@@ -292,7 +344,14 @@ export function buildTournamentCoachSuggestion(run, profile = {}, opponentAnalys
   return { optionId: run?.strategy?.id || 'balanced', text: 'O plano-base continua coerente. Ajustaremos apenas os gatilhos contra o próximo adversário.' };
 }
 
-export function buildOpponentAnalysis(opponent = [], { teamRank = null, analysisLevel = 0 } = {}) {
+// Playthrough 4.6B, item 3 — `worldRank` (antes chamado `teamRank`, nome que
+// convidava a confundir com o seed/slot do sorteio sintético) é SEMPRE um
+// rank factual (getCanonicalTeamWorldRank, teamRanking.js) ou `null`/
+// unranked — nunca mais o número de posição no bracket. Um adversário sem
+// rank canônico (o caso comum: bots procedurais do catálogo não disputam o
+// circuito de duplas) simplesmente não mostra `ranking` nenhum — a UI trata
+// isso como "Sem ranking", nunca inventa um valor.
+export function buildOpponentAnalysis(opponent = [], { worldRank = null, analysisLevel = 0 } = {}) {
   const members = Array.isArray(opponent) ? opponent.filter(Boolean) : [];
   const attributeKeys = ['smash', 'volley', 'serve', 'lob', 'defense', 'speed', 'control', 'tactics'];
   const averages = attributeKeys.map((key) => ({
@@ -303,7 +362,25 @@ export function buildOpponentAnalysis(opponent = [], { teamRank = null, analysis
   const knownForm = analysisLevel >= 2 ? members.map((item) => Number(item.form)).filter(Number.isFinite) : [];
   return {
     name: members.map((item) => item.name).filter(Boolean).join(' / ') || 'Adversário a definir',
-    ranking: teamRank || members.map((item) => Number(item.ranking_position || item.world_rank)).find((value) => value > 0) || null,
+    // Playthrough 5.15 (continuação), Partes A/B/C/E — AUTORIDADE ÚNICA do
+    // ranking exibido do adversário.
+    //
+    // O chamador (TournamentModal) já resolve o rank CANÔNICO via
+    // `getCanonicalTeamWorldRank` e passa `null` quando a dupla não tem
+    // TeamRanking — exatamente o caso dos adversários de
+    // `BOTS_BY_DIFFICULTY`, que vivem no catálogo e não no mundo. Mas aqui
+    // havia um fallback que descia no próprio bot e lia
+    // `ranking_position`/`world_rank`, campos do CATÁLOGO. O resultado era
+    // a tela anunciar "#20/#30/#40" para uma dupla que a fonte canônica
+    // classifica como "Sem ranking" — posição inventada, sem nenhuma
+    // sustentação competitiva (medido: 0 de 200 adversários iniciais
+    // existem como AthleteProfile do mundo).
+    //
+    // Sem TeamRanking canônico não há posição a mostrar. `null` faz a UI
+    // renderizar "Sem ranking", que é a verdade. Seed de chave, slot de
+    // bracket e bucket de dificuldade continuam existindo internamente —
+    // só não viram "#37" na tela.
+    ranking: Number(worldRank) > 0 ? Number(worldRank) : null,
     dominantSide: members.map((item) => item.preferred_side || item.court_side || item.position).filter(Boolean).join(' / ') || 'não informada',
     handedness: members.map((item) => item.handedness || item.dominant_hand).filter(Boolean).join(' / ') || 'não informada',
     style,

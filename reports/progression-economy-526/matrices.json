@@ -1,0 +1,2074 @@
+{
+  "difficultyByTierLabel": [
+    {
+      "key": "Bronze · Iniciante",
+      "n": 1131,
+      "winPct": 28,
+      "displayDelta": 15.5,
+      "engineDelta": 14,
+      "enginePartner": 1,
+      "partnerDisplay": 21.8
+    },
+    {
+      "key": "Silver · Entrada Mundial",
+      "n": 759,
+      "winPct": 32.5,
+      "displayDelta": 14.8,
+      "engineDelta": 14.7,
+      "enginePartner": 1,
+      "partnerDisplay": 20.1
+    },
+    {
+      "key": "Gold · Acessível",
+      "n": 3683,
+      "winPct": 53.3,
+      "displayDelta": 29.8,
+      "engineDelta": 23.7,
+      "enginePartner": 1,
+      "partnerDisplay": 40.7
+    },
+    {
+      "key": "Platinum · Competitivo",
+      "n": 4635,
+      "winPct": 45.9,
+      "displayDelta": 32,
+      "engineDelta": 22.9,
+      "enginePartner": 1,
+      "partnerDisplay": 50.4
+    },
+    {
+      "key": "Masters · Difícil",
+      "n": 1939,
+      "winPct": 31.4,
+      "displayDelta": 24.2,
+      "engineDelta": 17.5,
+      "enginePartner": 1,
+      "partnerDisplay": 53.3
+    },
+    {
+      "key": "Elite · Muito Difícil",
+      "n": 636,
+      "winPct": 12.1,
+      "displayDelta": 17,
+      "engineDelta": 13.8,
+      "enginePartner": 1,
+      "partnerDisplay": 52.8
+    },
+    {
+      "key": "Crown · Lendário",
+      "n": 181,
+      "winPct": 10.5,
+      "displayDelta": 2.8,
+      "engineDelta": 10.4,
+      "enginePartner": 1,
+      "partnerDisplay": 54.3
+    }
+  ],
+  "difficultyByRound": [
+    {
+      "key": "Primeira Rodada",
+      "n": 3423,
+      "winPct": 54.5,
+      "displayDelta": 34.1,
+      "engineDelta": 24.9,
+      "enginePartner": 1,
+      "partnerDisplay": 48.6
+    },
+    {
+      "key": "Rodada de 32",
+      "n": 2381,
+      "winPct": 77.4,
+      "displayDelta": 45,
+      "engineDelta": 30.8,
+      "enginePartner": 1,
+      "partnerDisplay": 51.1
+    },
+    {
+      "key": "Oitavas de Final",
+      "n": 5015,
+      "winPct": 22.6,
+      "displayDelta": 17.4,
+      "engineDelta": 14.9,
+      "enginePartner": 1,
+      "partnerDisplay": 40.8
+    },
+    {
+      "key": "Quartas de Final",
+      "n": 1122,
+      "winPct": 20.7,
+      "displayDelta": 16.1,
+      "engineDelta": 15.2,
+      "enginePartner": 1,
+      "partnerDisplay": 35.7
+    },
+    {
+      "key": "Semifinal",
+      "n": 222,
+      "winPct": 19.8,
+      "displayDelta": 12.9,
+      "engineDelta": 13.7,
+      "enginePartner": 1,
+      "partnerDisplay": 31.5
+    },
+    {
+      "key": "Final",
+      "n": 41,
+      "winPct": 4.9,
+      "displayDelta": 8.7,
+      "engineDelta": 10,
+      "enginePartner": 1,
+      "partnerDisplay": 30.4
+    }
+  ],
+  "difficultyByRoundFromEnd": [
+    {
+      "key": "Final",
+      "n": 41,
+      "winPct": 4.9,
+      "displayDelta": 8.7,
+      "engineDelta": 10,
+      "enginePartner": 1,
+      "partnerDisplay": 30.4
+    },
+    {
+      "key": "Semifinal",
+      "n": 222,
+      "winPct": 19.8,
+      "displayDelta": 12.9,
+      "engineDelta": 13.7,
+      "enginePartner": 1,
+      "partnerDisplay": 31.5
+    },
+    {
+      "key": "Quartas de Final",
+      "n": 1122,
+      "winPct": 20.7,
+      "displayDelta": 16.1,
+      "engineDelta": 15.2,
+      "enginePartner": 1,
+      "partnerDisplay": 35.7
+    },
+    {
+      "key": "Oitavas de Final",
+      "n": 5015,
+      "winPct": 22.6,
+      "displayDelta": 17.4,
+      "engineDelta": 14.9,
+      "enginePartner": 1,
+      "partnerDisplay": 40.8
+    }
+  ],
+  "difficultyByStage": [
+    {
+      "key": "main",
+      "n": 12204,
+      "winPct": 42,
+      "displayDelta": 27.3,
+      "engineDelta": 20.8,
+      "enginePartner": 1,
+      "partnerDisplay": 44.3
+    },
+    {
+      "key": "qualifying",
+      "n": 763,
+      "winPct": 31.6,
+      "displayDelta": 16.6,
+      "engineDelta": 15.2,
+      "enginePartner": 1,
+      "partnerDisplay": 38
+    }
+  ],
+  "difficultyByRankBand": [
+    {
+      "key": "11-50",
+      "n": 1153,
+      "winPct": 45.8,
+      "displayDelta": 37.8,
+      "engineDelta": 22.7,
+      "enginePartner": 1,
+      "partnerDisplay": 66.7
+    },
+    {
+      "key": "51-100",
+      "n": 6464,
+      "winPct": 42.7,
+      "displayDelta": 30.3,
+      "engineDelta": 22.1,
+      "enginePartner": 1,
+      "partnerDisplay": 50.9
+    },
+    {
+      "key": "101-250",
+      "n": 2304,
+      "winPct": 46.8,
+      "displayDelta": 21.1,
+      "engineDelta": 21.1,
+      "enginePartner": 1,
+      "partnerDisplay": 33.2
+    },
+    {
+      "key": "251-500",
+      "n": 1310,
+      "winPct": 41.2,
+      "displayDelta": 27.2,
+      "engineDelta": 19.3,
+      "enginePartner": 1,
+      "partnerDisplay": 42
+    },
+    {
+      "key": "501-1000",
+      "n": 1694,
+      "winPct": 27,
+      "displayDelta": 12.8,
+      "engineDelta": 13.1,
+      "enginePartner": 1,
+      "partnerDisplay": 19
+    },
+    {
+      "key": ">1000",
+      "n": 42,
+      "winPct": 2.4,
+      "displayDelta": 2.1,
+      "engineDelta": 2.1,
+      "enginePartner": 1,
+      "partnerDisplay": 18
+    }
+  ],
+  "winByDisplayDelta": [
+    {
+      "key": "≤-15",
+      "n": 115,
+      "winPct": 11.3,
+      "displayDelta": -21,
+      "engineDelta": 7.5,
+      "enginePartner": 1,
+      "partnerDisplay": 17.1
+    },
+    {
+      "key": "-15..-5",
+      "n": 377,
+      "winPct": 3.4,
+      "displayDelta": -8.9,
+      "engineDelta": 5.9,
+      "enginePartner": 1,
+      "partnerDisplay": 21.2
+    },
+    {
+      "key": "-5..+5",
+      "n": 1186,
+      "winPct": 10.7,
+      "displayDelta": 0.8,
+      "engineDelta": 10.1,
+      "enginePartner": 1,
+      "partnerDisplay": 21.6
+    },
+    {
+      "key": "+5..+15",
+      "n": 2187,
+      "winPct": 19.8,
+      "displayDelta": 10.1,
+      "engineDelta": 14,
+      "enginePartner": 1,
+      "partnerDisplay": 26.6
+    },
+    {
+      "key": "≥+15",
+      "n": 9102,
+      "winPct": 52.5,
+      "displayDelta": 36,
+      "engineDelta": 24.1,
+      "enginePartner": 1,
+      "partnerDisplay": 52.3
+    }
+  ],
+  "winByEngineDelta": [
+    {
+      "key": "-15..-5",
+      "n": 8,
+      "winPct": 0,
+      "displayDelta": -19.7,
+      "engineDelta": -7.8,
+      "enginePartner": 1,
+      "partnerDisplay": 37.1
+    },
+    {
+      "key": "-5..+5",
+      "n": 627,
+      "winPct": 2.9,
+      "displayDelta": -0.1,
+      "engineDelta": 2.4,
+      "enginePartner": 1,
+      "partnerDisplay": 35.9
+    },
+    {
+      "key": "+5..+15",
+      "n": 3239,
+      "winPct": 9,
+      "displayDelta": 11.8,
+      "engineDelta": 10.8,
+      "enginePartner": 1,
+      "partnerDisplay": 40.7
+    },
+    {
+      "key": "≥+15",
+      "n": 9093,
+      "winPct": 55.6,
+      "displayDelta": 33.8,
+      "engineDelta": 25.1,
+      "enginePartner": 1,
+      "partnerDisplay": 45.7
+    }
+  ],
+  "difficultyByTierAndProfile": [
+    {
+      "profile": "casual",
+      "rows": [
+        {
+          "key": "Bronze",
+          "n": 321,
+          "winPct": 35.2,
+          "displayDelta": 12.9,
+          "engineDelta": 12.5,
+          "enginePartner": 1,
+          "partnerDisplay": 21.7
+        },
+        {
+          "key": "Silver",
+          "n": 182,
+          "winPct": 39,
+          "displayDelta": 11.8,
+          "engineDelta": 12.6,
+          "enginePartner": 1,
+          "partnerDisplay": 20.8
+        },
+        {
+          "key": "Gold",
+          "n": 1746,
+          "winPct": 56.5,
+          "displayDelta": 20.4,
+          "engineDelta": 23,
+          "enginePartner": 1,
+          "partnerDisplay": 25.3
+        },
+        {
+          "key": "Platinum",
+          "n": 916,
+          "winPct": 49.6,
+          "displayDelta": 16.7,
+          "engineDelta": 21.1,
+          "enginePartner": 1,
+          "partnerDisplay": 26
+        },
+        {
+          "key": "Masters",
+          "n": 235,
+          "winPct": 33.2,
+          "displayDelta": 6,
+          "engineDelta": 14.1,
+          "enginePartner": 1,
+          "partnerDisplay": 27.3
+        },
+        {
+          "key": "Elite",
+          "n": 85,
+          "winPct": 9.4,
+          "displayDelta": -2.4,
+          "engineDelta": 10.3,
+          "enginePartner": 1,
+          "partnerDisplay": 25.8
+        },
+        {
+          "key": "Crown",
+          "n": 26,
+          "winPct": 46.2,
+          "displayDelta": -29.8,
+          "engineDelta": 22.2,
+          "enginePartner": 1,
+          "partnerDisplay": 19.3
+        }
+      ]
+    },
+    {
+      "profile": "normal",
+      "rows": [
+        {
+          "key": "Bronze",
+          "n": 377,
+          "winPct": 33.2,
+          "displayDelta": 15,
+          "engineDelta": 15.6,
+          "enginePartner": 1,
+          "partnerDisplay": 18.2
+        },
+        {
+          "key": "Silver",
+          "n": 361,
+          "winPct": 32.4,
+          "displayDelta": 13.3,
+          "engineDelta": 15.3,
+          "enginePartner": 1,
+          "partnerDisplay": 16.1
+        },
+        {
+          "key": "Gold",
+          "n": 955,
+          "winPct": 53,
+          "displayDelta": 35.6,
+          "engineDelta": 24.6,
+          "enginePartner": 1,
+          "partnerDisplay": 50.1
+        },
+        {
+          "key": "Platinum",
+          "n": 1990,
+          "winPct": 47,
+          "displayDelta": 32.2,
+          "engineDelta": 23.6,
+          "enginePartner": 1,
+          "partnerDisplay": 50.3
+        },
+        {
+          "key": "Masters",
+          "n": 932,
+          "winPct": 35.1,
+          "displayDelta": 22.7,
+          "engineDelta": 18,
+          "enginePartner": 1,
+          "partnerDisplay": 51
+        },
+        {
+          "key": "Elite",
+          "n": 295,
+          "winPct": 15.9,
+          "displayDelta": 16.5,
+          "engineDelta": 14.8,
+          "enginePartner": 1,
+          "partnerDisplay": 50.4
+        },
+        {
+          "key": "Crown",
+          "n": 87,
+          "winPct": 5.7,
+          "displayDelta": 4.7,
+          "engineDelta": 9.6,
+          "enginePartner": 1,
+          "partnerDisplay": 51.7
+        }
+      ]
+    },
+    {
+      "profile": "optimizer",
+      "rows": [
+        {
+          "key": "Bronze",
+          "n": 433,
+          "winPct": 18.2,
+          "displayDelta": 17.8,
+          "engineDelta": 13.8,
+          "enginePartner": 1,
+          "partnerDisplay": 24.8
+        },
+        {
+          "key": "Silver",
+          "n": 216,
+          "winPct": 27.3,
+          "displayDelta": 19.7,
+          "engineDelta": 15.4,
+          "enginePartner": 1,
+          "partnerDisplay": 26
+        },
+        {
+          "key": "Gold",
+          "n": 982,
+          "winPct": 48,
+          "displayDelta": 40.9,
+          "engineDelta": 24,
+          "enginePartner": 1,
+          "partnerDisplay": 58.9
+        },
+        {
+          "key": "Platinum",
+          "n": 1729,
+          "winPct": 42.7,
+          "displayDelta": 39.9,
+          "engineDelta": 23,
+          "enginePartner": 1,
+          "partnerDisplay": 63.5
+        },
+        {
+          "key": "Masters",
+          "n": 772,
+          "winPct": 26.3,
+          "displayDelta": 31.7,
+          "engineDelta": 18.1,
+          "enginePartner": 1,
+          "partnerDisplay": 63.9
+        },
+        {
+          "key": "Elite",
+          "n": 256,
+          "winPct": 8.6,
+          "displayDelta": 24,
+          "engineDelta": 13.8,
+          "enginePartner": 1,
+          "partnerDisplay": 64.4
+        },
+        {
+          "key": "Crown",
+          "n": 68,
+          "winPct": 2.9,
+          "displayDelta": 12.9,
+          "engineDelta": 7,
+          "enginePartner": 1,
+          "partnerDisplay": 70.9
+        }
+      ]
+    }
+  ],
+  "enginePartnerOvr": {
+    "n": 12967,
+    "mean": 1,
+    "std": 0,
+    "p10": 1,
+    "p25": 1,
+    "median": 1,
+    "p75": 1,
+    "p90": 1,
+    "min": 1,
+    "max": 1
+  },
+  "displayPartnerOvr": {
+    "n": 12967,
+    "mean": 44,
+    "std": 26.9,
+    "p10": 15,
+    "p25": 19,
+    "median": 35,
+    "p75": 70,
+    "p90": 86,
+    "min": 10,
+    "max": 99
+  },
+  "engineOppVsDisplayOpp": {
+    "engine": {
+      "n": 12967,
+      "mean": 18.9,
+      "std": 8.9,
+      "p10": 8.5,
+      "p25": 10.5,
+      "median": 18.5,
+      "p75": 26.5,
+      "p90": 30.5,
+      "min": 1,
+      "max": 52.5
+    },
+    "display": {
+      "n": 12967,
+      "mean": 31.6,
+      "std": 15,
+      "p10": 14,
+      "p25": 18,
+      "median": 31,
+      "p75": 44,
+      "p90": 50.5,
+      "min": 10,
+      "max": 92
+    }
+  },
+  "sponsorship": [
+    {
+      "profile": "casual",
+      "byBand": {
+        ">1000": {
+          "signings": 24,
+          "monthly": {
+            "n": 24,
+            "mean": 1361.1,
+            "std": 258,
+            "p10": 1061,
+            "p25": 1124,
+            "median": 1371,
+            "p75": 1579.8,
+            "p90": 1620.4,
+            "min": 1033,
+            "max": 1994
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "501-1000": {
+          "signings": 66,
+          "monthly": {
+            "n": 66,
+            "mean": 1702.4,
+            "std": 446.7,
+            "p10": 1098.5,
+            "p25": 1244.3,
+            "median": 1763,
+            "p75": 2046.8,
+            "p90": 2286,
+            "min": 1006,
+            "max": 2439
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "251-500": {
+          "signings": 43,
+          "monthly": {
+            "n": 43,
+            "mean": 1692.9,
+            "std": 469.3,
+            "p10": 1128.8,
+            "p25": 1248.5,
+            "median": 1607,
+            "p75": 2029.5,
+            "p90": 2351.6,
+            "min": 931,
+            "max": 2556
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "101-250": {
+          "signings": 149,
+          "monthly": {
+            "n": 149,
+            "mean": 1570.5,
+            "std": 466.6,
+            "p10": 1002.8,
+            "p25": 1166,
+            "median": 1482,
+            "p75": 1868,
+            "p90": 2264,
+            "min": 893,
+            "max": 2731
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "51-100": {
+          "signings": 90,
+          "monthly": {
+            "n": 90,
+            "mean": 1536.3,
+            "std": 439.3,
+            "p10": 983.8,
+            "p25": 1077.5,
+            "median": 1542,
+            "p75": 1902.3,
+            "p90": 2161.9,
+            "min": 886,
+            "max": 2445
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        }
+      }
+    },
+    {
+      "profile": "normal",
+      "byBand": {
+        ">1000": {
+          "signings": 40,
+          "monthly": {
+            "n": 40,
+            "mean": 1582.3,
+            "std": 450.2,
+            "p10": 1098.7,
+            "p25": 1226,
+            "median": 1454,
+            "p75": 2012.3,
+            "p90": 2278.1,
+            "min": 1017,
+            "max": 2473
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "501-1000": {
+          "signings": 52,
+          "monthly": {
+            "n": 52,
+            "mean": 1766.1,
+            "std": 421.7,
+            "p10": 1209.4,
+            "p25": 1464.3,
+            "median": 1776.5,
+            "p75": 2122.3,
+            "p90": 2284.1,
+            "min": 998,
+            "max": 2521
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "251-500": {
+          "signings": 33,
+          "monthly": {
+            "n": 33,
+            "mean": 1549.5,
+            "std": 344.2,
+            "p10": 1108.6,
+            "p25": 1311,
+            "median": 1549,
+            "p75": 1754,
+            "p90": 1905.6,
+            "min": 993,
+            "max": 2472
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "101-250": {
+          "signings": 30,
+          "monthly": {
+            "n": 30,
+            "mean": 1614.8,
+            "std": 409.8,
+            "p10": 993.4,
+            "p25": 1271.3,
+            "median": 1775.5,
+            "p75": 1894.5,
+            "p90": 2076.5,
+            "min": 904,
+            "max": 2168
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "51-100": {
+          "signings": 187,
+          "monthly": {
+            "n": 187,
+            "mean": 1542.7,
+            "std": 341.2,
+            "p10": 1032.6,
+            "p25": 1273.5,
+            "median": 1533,
+            "p75": 1797.5,
+            "p90": 1986,
+            "min": 886,
+            "max": 2224
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "11-50": {
+          "signings": 41,
+          "monthly": {
+            "n": 41,
+            "mean": 1562,
+            "std": 369,
+            "p10": 1052,
+            "p25": 1335,
+            "median": 1482,
+            "p75": 1813,
+            "p90": 2068,
+            "min": 907,
+            "max": 2178
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        }
+      }
+    },
+    {
+      "profile": "optimizer",
+      "byBand": {
+        ">1000": {
+          "signings": 44,
+          "monthly": {
+            "n": 44,
+            "mean": 1718.4,
+            "std": 448.4,
+            "p10": 1188.8,
+            "p25": 1359.5,
+            "median": 1645,
+            "p75": 2131.3,
+            "p90": 2314.1,
+            "min": 1011,
+            "max": 2455
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "501-1000": {
+          "signings": 48,
+          "monthly": {
+            "n": 48,
+            "mean": 1739.1,
+            "std": 394.4,
+            "p10": 1221.4,
+            "p25": 1450,
+            "median": 1693.5,
+            "p75": 2057.8,
+            "p90": 2271.2,
+            "min": 933,
+            "max": 2531
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "251-500": {
+          "signings": 35,
+          "monthly": {
+            "n": 35,
+            "mean": 1460.6,
+            "std": 363.4,
+            "p10": 979.6,
+            "p25": 1230,
+            "median": 1447,
+            "p75": 1717.5,
+            "p90": 1841.4,
+            "min": 896,
+            "max": 2327
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "101-250": {
+          "signings": 39,
+          "monthly": {
+            "n": 39,
+            "mean": 1570.4,
+            "std": 389.9,
+            "p10": 1010.6,
+            "p25": 1273,
+            "median": 1584,
+            "p75": 1865,
+            "p90": 2048.4,
+            "min": 884,
+            "max": 2208
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "51-100": {
+          "signings": 212,
+          "monthly": {
+            "n": 212,
+            "mean": 1592.3,
+            "std": 373.3,
+            "p10": 1072.4,
+            "p25": 1302.5,
+            "median": 1575,
+            "p75": 1874.5,
+            "p90": 2070.2,
+            "min": 885,
+            "max": 2400
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        },
+        "11-50": {
+          "signings": 7,
+          "monthly": {
+            "n": 7,
+            "mean": 1800.7,
+            "std": 438.9,
+            "p10": 1333,
+            "p25": 1389.5,
+            "median": 1906,
+            "p75": 2186.5,
+            "p90": 2266.2,
+            "min": 1276,
+            "max": 2271
+          },
+          "tiers": [
+            "Bronze"
+          ]
+        }
+      }
+    }
+  ],
+  "staff": [
+    {
+      "profile": "casual",
+      "firstCoach": {
+        "pctHired": 100,
+        "day": {
+          "n": 15,
+          "mean": 26.1,
+          "std": 21.7,
+          "p10": 0,
+          "p25": 10.5,
+          "median": 21,
+          "p75": 38.5,
+          "p90": 54.6,
+          "min": 0,
+          "max": 70
+        },
+        "rank": {
+          "n": 15,
+          "mean": 995.3,
+          "std": 11.1,
+          "p10": 978.8,
+          "p25": 995,
+          "median": 1002,
+          "p75": 1002,
+          "p90": 1002,
+          "min": 967,
+          "max": 1002
+        },
+        "salary": {
+          "n": 15,
+          "mean": 397.3,
+          "std": 338.3,
+          "p10": 252,
+          "p25": 266,
+          "median": 328,
+          "p75": 345,
+          "p90": 434,
+          "min": 250,
+          "max": 1600
+        },
+        "affordabilityPct": {
+          "n": 15,
+          "mean": 6.2,
+          "std": 12.3,
+          "p10": 0,
+          "p25": 0,
+          "median": 0,
+          "p75": 7.7,
+          "p90": 15,
+          "min": 0,
+          "max": 45.9
+        },
+        "tiers": {
+          "iniciante": 14,
+          "profissional": 1
+        }
+      },
+      "byRole": {
+        "performance_analyst": 23,
+        "accountant": 40,
+        "physical_trainer": 35,
+        "physio": 26,
+        "scout": 25,
+        "psychologist": 26,
+        "nutritionist": 33,
+        "manager": 15
+      }
+    },
+    {
+      "profile": "normal",
+      "firstCoach": {
+        "pctHired": 100,
+        "day": {
+          "n": 15,
+          "mean": 63,
+          "std": 0,
+          "p10": 63,
+          "p25": 63,
+          "median": 63,
+          "p75": 63,
+          "p90": 63,
+          "min": 63,
+          "max": 63
+        },
+        "rank": {
+          "n": 15,
+          "mean": 954.9,
+          "std": 8.1,
+          "p10": 943.4,
+          "p25": 952.5,
+          "median": 958,
+          "p75": 959.5,
+          "p90": 962.6,
+          "min": 936,
+          "max": 964
+        },
+        "salary": {
+          "n": 15,
+          "mean": 283.6,
+          "std": 9.3,
+          "p10": 286,
+          "p25": 286,
+          "median": 286,
+          "p75": 286,
+          "p90": 286,
+          "min": 250,
+          "max": 286
+        },
+        "affordabilityPct": {
+          "n": 15,
+          "mean": 14.1,
+          "std": 4.7,
+          "p10": 10.2,
+          "p25": 10.8,
+          "median": 11.5,
+          "p75": 19.6,
+          "p90": 20.3,
+          "min": 9.9,
+          "max": 22
+        },
+        "tiers": {
+          "iniciante": 15
+        }
+      },
+      "byRole": {
+        "nutritionist": 37,
+        "accountant": 27,
+        "physical_trainer": 28,
+        "physio": 40,
+        "psychologist": 3,
+        "scout": 1,
+        "manager": 1
+      }
+    },
+    {
+      "profile": "optimizer",
+      "firstCoach": {
+        "pctHired": 100,
+        "day": {
+          "n": 15,
+          "mean": 63,
+          "std": 0,
+          "p10": 63,
+          "p25": 63,
+          "median": 63,
+          "p75": 63,
+          "p90": 63,
+          "min": 63,
+          "max": 63
+        },
+        "rank": {
+          "n": 15,
+          "mean": 957.1,
+          "std": 5.3,
+          "p10": 950.4,
+          "p25": 955,
+          "median": 959,
+          "p75": 960,
+          "p90": 962,
+          "min": 945,
+          "max": 965
+        },
+        "salary": {
+          "n": 15,
+          "mean": 1146.3,
+          "std": 639.2,
+          "p10": 286,
+          "p25": 286,
+          "median": 1500,
+          "p75": 1600,
+          "p90": 1600,
+          "min": 250,
+          "max": 1800
+        },
+        "affordabilityPct": {
+          "n": 15,
+          "mean": 42.7,
+          "std": 22.1,
+          "p10": 11.5,
+          "p25": 15.8,
+          "median": 57.1,
+          "p75": 57.9,
+          "p90": 59,
+          "min": 8.7,
+          "max": 59.3
+        },
+        "tiers": {
+          "iniciante": 5,
+          "profissional": 10
+        }
+      },
+      "byRole": {
+        "physio": 55,
+        "accountant": 31,
+        "physical_trainer": 36,
+        "nutritionist": 17,
+        "manager": 27,
+        "performance_analyst": 1,
+        "psychologist": 3,
+        "scout": 1
+      }
+    }
+  ],
+  "equipment": [
+    {
+      "profile": "casual",
+      "firstPurchaseByRarity": {
+        "comum": {
+          "boughtPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 15.9,
+            "std": 14.6,
+            "p10": 0,
+            "p25": 3.5,
+            "median": 14,
+            "p75": 24.5,
+            "p90": 36.4,
+            "min": 0,
+            "max": 42
+          }
+        },
+        "incomum": {
+          "boughtPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 79.3,
+            "std": 59.5,
+            "p10": 35,
+            "p25": 42,
+            "median": 63,
+            "p75": 91,
+            "p90": 105,
+            "min": 28,
+            "max": 273
+          }
+        },
+        "raro": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "epico": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "lendario": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "mitico": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "exclusivo": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "unlockByRarity": {
+        "comum": {
+          "unlockedPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "incomum": {
+          "unlockedPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 30.3,
+            "std": 9.4,
+            "p10": 21,
+            "p25": 24.5,
+            "median": 28,
+            "p75": 35,
+            "p90": 39.2,
+            "min": 21,
+            "max": 56
+          }
+        },
+        "raro": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "epico": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "lendario": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "mitico": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "exclusivo": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      }
+    },
+    {
+      "profile": "normal",
+      "firstPurchaseByRarity": {
+        "comum": {
+          "boughtPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "incomum": {
+          "boughtPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 50.9,
+            "std": 4.9,
+            "p10": 49,
+            "p25": 49,
+            "median": 49,
+            "p75": 49,
+            "p90": 57.4,
+            "min": 49,
+            "max": 63
+          }
+        },
+        "raro": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "epico": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "lendario": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "mitico": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "exclusivo": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "unlockByRarity": {
+        "comum": {
+          "unlockedPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "incomum": {
+          "unlockedPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 7,
+            "std": 0,
+            "p10": 7,
+            "p25": 7,
+            "median": 7,
+            "p75": 7,
+            "p90": 7,
+            "min": 7,
+            "max": 7
+          }
+        },
+        "raro": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "epico": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "lendario": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "mitico": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "exclusivo": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      }
+    },
+    {
+      "profile": "optimizer",
+      "firstPurchaseByRarity": {
+        "comum": {
+          "boughtPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "incomum": {
+          "boughtPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 83.1,
+            "std": 16.9,
+            "p10": 77,
+            "p25": 77,
+            "median": 77,
+            "p75": 91,
+            "p90": 99.4,
+            "min": 49,
+            "max": 126
+          }
+        },
+        "raro": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "epico": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "lendario": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "mitico": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "exclusivo": {
+          "boughtPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "unlockByRarity": {
+        "comum": {
+          "unlockedPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "incomum": {
+          "unlockedPct": 100,
+          "day": {
+            "n": 15,
+            "mean": 7,
+            "std": 0,
+            "p10": 7,
+            "p25": 7,
+            "median": 7,
+            "p75": 7,
+            "p90": 7,
+            "min": 7,
+            "max": 7
+          }
+        },
+        "raro": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "epico": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "lendario": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "mitico": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "exclusivo": {
+          "unlockedPct": 0,
+          "day": {
+            "n": 15,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      }
+    }
+  ],
+  "expectedRoundMethod": "rodada esperada = rodadas consecutivas em que a força EXIBIDA da dupla ≥ mediana da força exibida dos adversários daquela rodada/tier",
+  "required": {
+    "note": "O jogo não tem Fácil/Médio/Difícil por partida; o card do torneio mostra um rótulo FIXO por tier. Agrupamento: Fácil = Bronze/Silver (Iniciante/Entrada Mundial), Médio = Gold/Platinum (Acessível/Competitivo), Difícil = Masters/Elite/Crown (Difícil/Muito Difícil/Lendário).",
+    "difficulty": [
+      {
+        "classe": "Fácil",
+        "partidas": 1890,
+        "winPct": 29.8,
+        "ovrDeltaExibido": 15.2,
+        "ovrDeltaMotor": 14.3,
+        "rankingDeltaMediano": null
+      },
+      {
+        "classe": "Médio",
+        "partidas": 8318,
+        "winPct": 49.2,
+        "ovrDeltaExibido": 31.1,
+        "ovrDeltaMotor": 23.2,
+        "rankingDeltaMediano": null
+      },
+      {
+        "classe": "Difícil",
+        "partidas": 2756,
+        "winPct": 25.5,
+        "ovrDeltaExibido": 21.2,
+        "ovrDeltaMotor": 16.2,
+        "rankingDeltaMediano": null
+      }
+    ],
+    "sponsorship": [
+      {
+        "faixa": ">1000",
+        "assinaturasPorAno": 28.8,
+        "valorMensalMedio": 1589,
+        "rendaPatrocinioPct": 56.3
+      },
+      {
+        "faixa": "751–1000",
+        "assinaturasPorAno": 3.68,
+        "valorMensalMedio": 1678,
+        "rendaPatrocinioPct": 90.9
+      },
+      {
+        "faixa": "501–750",
+        "assinaturasPorAno": 5.4,
+        "valorMensalMedio": 1881,
+        "rendaPatrocinioPct": 92.7
+      },
+      {
+        "faixa": "251–500",
+        "assinaturasPorAno": 4.52,
+        "valorMensalMedio": 1577,
+        "rendaPatrocinioPct": 70.5
+      },
+      {
+        "faixa": "101–250",
+        "assinaturasPorAno": 4.93,
+        "valorMensalMedio": 1577,
+        "rendaPatrocinioPct": 79.3
+      },
+      {
+        "faixa": "Top100",
+        "assinaturasPorAno": 4.67,
+        "valorMensalMedio": 1566,
+        "rendaPatrocinioPct": 67.8
+      }
+    ],
+    "staff": [
+      {
+        "faixa": ">1000",
+        "staffMedio": 0,
+        "custoMensalStaffMaisCoach": 0,
+        "rendaPct": 0
+      },
+      {
+        "faixa": "751–1000",
+        "staffMedio": 1.7,
+        "custoMensalStaffMaisCoach": 2450,
+        "rendaPct": 43.4
+      },
+      {
+        "faixa": "501–750",
+        "staffMedio": 2.1,
+        "custoMensalStaffMaisCoach": 1886,
+        "rendaPct": 42.4
+      },
+      {
+        "faixa": "251–500",
+        "staffMedio": 2.3,
+        "custoMensalStaffMaisCoach": 3166,
+        "rendaPct": 46.6
+      },
+      {
+        "faixa": "101–250",
+        "staffMedio": 2.7,
+        "custoMensalStaffMaisCoach": 3428,
+        "rendaPct": 58.6
+      },
+      {
+        "faixa": "Top100",
+        "staffMedio": 2.3,
+        "custoMensalStaffMaisCoach": 3950,
+        "rendaPct": 58.4
+      }
+    ],
+    "equipment": [
+      {
+        "faixa": ">1000",
+        "gearTierMediano": "comum",
+        "custoAcumuladoMediano": 577,
+        "rendaAcumuladaPct": 7.56
+      },
+      {
+        "faixa": "751–1000",
+        "gearTierMediano": "incomum",
+        "custoAcumuladoMediano": 2344,
+        "rendaAcumuladaPct": 6.73
+      },
+      {
+        "faixa": "501–750",
+        "gearTierMediano": "incomum",
+        "custoAcumuladoMediano": 2345,
+        "rendaAcumuladaPct": 3.92
+      },
+      {
+        "faixa": "251–500",
+        "gearTierMediano": "incomum",
+        "custoAcumuladoMediano": 2351,
+        "rendaAcumuladaPct": 2.68
+      },
+      {
+        "faixa": "101–250",
+        "gearTierMediano": "incomum",
+        "custoAcumuladoMediano": 2955,
+        "rendaAcumuladaPct": 1.64
+      },
+      {
+        "faixa": "Top100",
+        "gearTierMediano": "incomum",
+        "custoAcumuladoMediano": 2344,
+        "rendaAcumuladaPct": 0.83
+      }
+    ]
+  },
+  "tierEfficiency": [
+    {
+      "tier": "Bronze",
+      "entradas": 762,
+      "inscricao": 10,
+      "premioMedio": 23,
+      "roiMedio": 1.27,
+      "pontosMedios": 1.8,
+      "winPct": 28,
+      "rewardEfficiency": 31,
+      "rankingEfficiency": 2.5,
+      "riskAdjusted": 1.24,
+      "titulos": 1,
+      "rodadaMediana": 0
+    },
+    {
+      "tier": "Silver",
+      "entradas": 478,
+      "inscricao": 20,
+      "premioMedio": 58,
+      "roiMedio": 1.9,
+      "pontosMedios": 5,
+      "winPct": 32.5,
+      "rewardEfficiency": 86,
+      "rankingEfficiency": 7.4,
+      "riskAdjusted": 1.51,
+      "titulos": 0,
+      "rodadaMediana": 0
+    },
+    {
+      "tier": "Gold",
+      "entradas": 1516,
+      "inscricao": 45,
+      "premioMedio": 173,
+      "roiMedio": 2.85,
+      "pontosMedios": 14.6,
+      "winPct": 53.3,
+      "rewardEfficiency": 372,
+      "rankingEfficiency": 31.3,
+      "riskAdjusted": 1.42,
+      "titulos": 1,
+      "rodadaMediana": 1
+    },
+    {
+      "tier": "Platinum",
+      "entradas": 2174,
+      "inscricao": 90,
+      "premioMedio": 277,
+      "roiMedio": 2.07,
+      "pontosMedios": 22.8,
+      "winPct": 45.9,
+      "rewardEfficiency": 512,
+      "rankingEfficiency": 42.2,
+      "riskAdjusted": 2.04,
+      "titulos": 0,
+      "rodadaMediana": 1
+    },
+    {
+      "tier": "Masters",
+      "entradas": 1145,
+      "inscricao": 180,
+      "premioMedio": 524,
+      "roiMedio": 1.91,
+      "pontosMedios": 44.1,
+      "winPct": 31.4,
+      "rewardEfficiency": 763,
+      "rankingEfficiency": 64.3,
+      "riskAdjusted": 2.78,
+      "titulos": 0,
+      "rodadaMediana": 0
+    },
+    {
+      "tier": "Elite",
+      "entradas": 484,
+      "inscricao": 320,
+      "premioMedio": 816,
+      "roiMedio": 1.55,
+      "pontosMedios": 68.3,
+      "winPct": 12.1,
+      "rewardEfficiency": 929,
+      "rankingEfficiency": 77.7,
+      "riskAdjusted": 3.26,
+      "titulos": 0,
+      "rodadaMediana": 0
+    },
+    {
+      "tier": "Crown",
+      "entradas": 135,
+      "inscricao": 500,
+      "premioMedio": 1469,
+      "roiMedio": 1.94,
+      "pontosMedios": 122.9,
+      "winPct": 10.5,
+      "rewardEfficiency": 1641,
+      "rankingEfficiency": 137.3,
+      "riskAdjusted": 11.71,
+      "titulos": 0,
+      "rodadaMediana": 0
+    }
+  ],
+  "topTournaments": [
+    {
+      "torneio": "Auckland Platinum Open (Platinum)",
+      "entradas": 10,
+      "roi": 4.51,
+      "rankingRoi": 0.458,
+      "riskAdjusted": 1.29
+    },
+    {
+      "torneio": "Los Angeles Classic (Gold)",
+      "entradas": 11,
+      "roi": 4.31,
+      "rankingRoi": 0.436,
+      "riskAdjusted": 3.24
+    },
+    {
+      "torneio": "Madri Classic (Gold)",
+      "entradas": 39,
+      "roi": 3.96,
+      "rankingRoi": 0.414,
+      "riskAdjusted": 1.28
+    },
+    {
+      "torneio": "Milão Gold Series (Gold)",
+      "entradas": 74,
+      "roi": 3.82,
+      "rankingRoi": 0.401,
+      "riskAdjusted": 1.77
+    },
+    {
+      "torneio": "Nairóbi Gold Series (Gold)",
+      "entradas": 40,
+      "roi": 3.68,
+      "rankingRoi": 0.387,
+      "riskAdjusted": 1.36
+    },
+    {
+      "torneio": "Nova York Championship (Gold)",
+      "entradas": 33,
+      "roi": 3.42,
+      "rankingRoi": 0.368,
+      "riskAdjusted": 1.62
+    },
+    {
+      "torneio": "Atenas Open (Bronze)",
+      "entradas": 34,
+      "roi": 3.39,
+      "rankingRoi": 0.376,
+      "riskAdjusted": 1.35
+    },
+    {
+      "torneio": "Melbourne Classic (Gold)",
+      "entradas": 36,
+      "roi": 3.37,
+      "rankingRoi": 0.364,
+      "riskAdjusted": 1.81
+    },
+    {
+      "torneio": "Buenos Aires Gold Series (Gold)",
+      "entradas": 36,
+      "roi": 3.37,
+      "rankingRoi": 0.362,
+      "riskAdjusted": 1.97
+    },
+    {
+      "torneio": "Atenas World Gold (Gold)",
+      "entradas": 40,
+      "roi": 3.3,
+      "rankingRoi": 0.358,
+      "riskAdjusted": 1.82
+    }
+  ]
+}

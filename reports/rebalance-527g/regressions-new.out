@@ -1,0 +1,14 @@
+✓ [Novos 5.27-G] test-normal-partner-score-v527g (2s) test-normal-partner-score-v527g: 6/6 passaram
+✓ [Novos 5.27-G] test-normal-partner-strength-floor-v527g (1s) test-normal-partner-strength-floor-v527g: 4/4 passaram
+✓ [Novos 5.27-G] test-normal-vs-optimizer-partner-choice-v527g (1s) test-normal-vs-optimizer-partner-choice-v527g: 3/3 passaram
+✓ [Novos 5.27-G] test-partner-choice-compatibility-preserved-v527g (1s) test-partner-choice-compatibility-preserved-v527g: 4/4 passaram
+✓ [Novos 5.27-G] test-tactic-matrix-v527g (1s) test-tactic-matrix-v527g: 6/6 passaram
+✓ [Novos 5.27-G] test-tactic-neutrality-v527g (1s) test-tactic-neutrality-v527g: 13/13 passaram
+✓ [Novos 5.27-G] test-tactic-side-swap-v527g (1s) test-tactic-side-swap-v527g: 4/4 passaram
+✓ [Novos 5.27-G] test-tactic-archetype-interaction-v527g (1s) test-tactic-archetype-interaction-v527g: 6/6 passaram
+✓ [Novos 5.27-G] test-ai-adaptation-parity-v527g (1s) test-ai-adaptation-parity-v527g: 3/3 passaram
+✓ [Novos 5.27-G] test-no-future-info-adaptation-v527g (3s) test-no-future-info-adaptation-v527g: 4/4 passaram
+✓ [Novos 5.27-G] test-medium-breakdown-v527g (1s) test-medium-breakdown-v527g: 2/2 passaram
+✗ [Novos 5.27-G] test-micro-gate-post-partner-tactics-v527g (1s) test-micro-gate-post-partner-tactics-v527g: 3/5 passaram
+
+11/12 passaram

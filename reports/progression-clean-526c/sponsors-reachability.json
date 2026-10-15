@@ -1,0 +1,464 @@
+[
+  {
+    "id": "babolat",
+    "name": "Babolat",
+    "tier": "Bronze",
+    "category": "raquete",
+    "requirements": {
+      "xp": 0,
+      "titles": 0,
+      "fans": 20,
+      "age": [
+        16,
+        35
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      16,
+      35
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": null
+  },
+  {
+    "id": "siux",
+    "name": "Siux",
+    "tier": "Bronze",
+    "category": "raquete",
+    "requirements": {
+      "xp": 0,
+      "titles": 0,
+      "fans": 25,
+      "age": [
+        16,
+        32
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      16,
+      32
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": null
+  },
+  {
+    "id": "varlion",
+    "name": "Varlion",
+    "tier": "Bronze",
+    "category": "raquete",
+    "requirements": {
+      "xp": 100,
+      "titles": 0,
+      "fans": 30,
+      "age": [
+        18,
+        38
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      18,
+      38
+    ],
+    "monthsToAppearAtThreshold": 1,
+    "explicitAvailability": null
+  },
+  {
+    "id": "nox",
+    "name": "Nox",
+    "tier": "Prata",
+    "category": "raquete",
+    "requirements": {
+      "xp": 500,
+      "titles": 0,
+      "fans": 40,
+      "age": [
+        18,
+        36
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      18,
+      36
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": null
+  },
+  {
+    "id": "wilson",
+    "name": "Wilson",
+    "tier": "Prata",
+    "category": "raquete",
+    "requirements": {
+      "xp": 1000,
+      "titles": 0,
+      "fans": 45,
+      "age": [
+        18,
+        37
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      18,
+      37
+    ],
+    "monthsToAppearAtThreshold": 1,
+    "explicitAvailability": null
+  },
+  {
+    "id": "adidas",
+    "name": "Adidas",
+    "tier": "Prata",
+    "category": "vestuario",
+    "requirements": {
+      "xp": 1500,
+      "titles": 0,
+      "fans": 50,
+      "age": [
+        20,
+        36
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      20,
+      36
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": null
+  },
+  {
+    "id": "bullpadel",
+    "name": "Bullpadel",
+    "tier": "Ouro",
+    "category": "raquete",
+    "requirements": {
+      "xp": 3000,
+      "titles": 1,
+      "fans": 55,
+      "age": [
+        20,
+        38
+      ]
+    },
+    "marketStage": "professional",
+    "careerAgeWindow": [
+      20,
+      38
+    ],
+    "monthsToAppearAtThreshold": 1,
+    "explicitAvailability": null
+  },
+  {
+    "id": "head",
+    "name": "Head",
+    "tier": "Ouro",
+    "category": "raquete",
+    "requirements": {
+      "xp": 5000,
+      "titles": 3,
+      "fans": 65,
+      "age": [
+        22,
+        39
+      ]
+    },
+    "marketStage": "professional",
+    "careerAgeWindow": [
+      22,
+      39
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": null
+  },
+  {
+    "id": "joma",
+    "name": "Joma",
+    "tier": "Prata",
+    "category": "vestuario",
+    "requirements": {
+      "xp": 800,
+      "titles": 0,
+      "fans": 40,
+      "age": [
+        18,
+        37
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      18,
+      37
+    ],
+    "monthsToAppearAtThreshold": 2,
+    "explicitAvailability": null
+  },
+  {
+    "id": "asics",
+    "name": "Asics",
+    "tier": "Bronze",
+    "category": "calcado",
+    "requirements": {
+      "xp": 300,
+      "titles": 0,
+      "fans": 20,
+      "age": [
+        16,
+        35
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      16,
+      35
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  },
+  {
+    "id": "garmin",
+    "name": "Garmin",
+    "tier": "Prata",
+    "category": "comercial",
+    "requirements": {
+      "xp": 1400,
+      "titles": 0,
+      "fans": 45,
+      "age": [
+        18,
+        38
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      18,
+      38
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  },
+  {
+    "id": "redbull",
+    "name": "Red Bull",
+    "tier": "Ouro",
+    "category": "principal",
+    "requirements": {
+      "xp": 4200,
+      "titles": 2,
+      "fans": 72,
+      "age": [
+        18,
+        32
+      ]
+    },
+    "marketStage": "professional",
+    "careerAgeWindow": [
+      18,
+      32
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  },
+  {
+    "id": "decathlon",
+    "name": "Decathlon",
+    "tier": "Bronze",
+    "category": "comercial",
+    "requirements": {
+      "xp": 0,
+      "titles": 0,
+      "fans": 10,
+      "age": [
+        16,
+        42
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      16,
+      40
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  },
+  {
+    "id": "playtomic",
+    "name": "Playtomic",
+    "tier": "Prata",
+    "category": "comercial",
+    "requirements": {
+      "xp": 1600,
+      "titles": 0,
+      "fans": 48,
+      "age": [
+        17,
+        38
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      17,
+      38
+    ],
+    "monthsToAppearAtThreshold": 1,
+    "explicitAvailability": true
+  },
+  {
+    "id": "estrelladamm",
+    "name": "Estrella Damm",
+    "tier": "Ouro",
+    "category": "principal",
+    "requirements": {
+      "xp": 3500,
+      "titles": 1,
+      "fans": 68,
+      "age": [
+        21,
+        38
+      ]
+    },
+    "marketStage": "professional",
+    "careerAgeWindow": [
+      21,
+      38
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  },
+  {
+    "id": "cupra",
+    "name": "Cupra",
+    "tier": "Ouro",
+    "category": "principal",
+    "requirements": {
+      "xp": 3800,
+      "titles": 1,
+      "fans": 70,
+      "age": [
+        20,
+        36
+      ]
+    },
+    "marketStage": "professional",
+    "careerAgeWindow": [
+      20,
+      36
+    ],
+    "monthsToAppearAtThreshold": 17,
+    "explicitAvailability": true
+  },
+  {
+    "id": "therabody",
+    "name": "Therabody",
+    "tier": "Prata",
+    "category": "comercial",
+    "requirements": {
+      "xp": 1100,
+      "titles": 0,
+      "fans": 38,
+      "age": [
+        18,
+        40
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      18,
+      40
+    ],
+    "monthsToAppearAtThreshold": 2,
+    "explicitAvailability": true
+  },
+  {
+    "id": "paddleague",
+    "name": "Padel League",
+    "tier": "Bronze",
+    "category": "comercial",
+    "requirements": {
+      "xp": 0,
+      "titles": 0,
+      "fans": 0,
+      "age": [
+        16,
+        45
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      16,
+      40
+    ],
+    "monthsToAppearAtThreshold": 1,
+    "explicitAvailability": true
+  },
+  {
+    "id": "movistar",
+    "name": "Movistar",
+    "tier": "Prata",
+    "category": "comercial",
+    "requirements": {
+      "xp": 2200,
+      "titles": 0,
+      "fans": 55,
+      "age": [
+        18,
+        38
+      ]
+    },
+    "marketStage": "regional",
+    "careerAgeWindow": [
+      18,
+      38
+    ],
+    "monthsToAppearAtThreshold": 4,
+    "explicitAvailability": true
+  },
+  {
+    "id": "iberdrola",
+    "name": "Iberdrola",
+    "tier": "Ouro",
+    "category": "principal",
+    "requirements": {
+      "xp": 3200,
+      "titles": 1,
+      "fans": 62,
+      "age": [
+        18,
+        40
+      ]
+    },
+    "marketStage": "professional",
+    "careerAgeWindow": [
+      18,
+      40
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  },
+  {
+    "id": "localfit",
+    "name": "LocalFit",
+    "tier": "Bronze",
+    "category": "comercial",
+    "requirements": {
+      "xp": 0,
+      "titles": 0,
+      "fans": 0,
+      "age": [
+        16,
+        45
+      ]
+    },
+    "marketStage": "beginner",
+    "careerAgeWindow": [
+      16,
+      40
+    ],
+    "monthsToAppearAtThreshold": 0,
+    "explicitAvailability": true
+  }
+]

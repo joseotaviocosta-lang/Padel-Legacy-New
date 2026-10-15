@@ -1,0 +1,135 @@
+{
+  "career": "balanced-e · Normal · seed 3 · 730 dias",
+  "reloadEvery": 7,
+  "segments": 105,
+  "checkpoints": 104,
+  "equalByField": {
+    "registrations": true,
+    "exitEvents": true,
+    "partners": true,
+    "matches": true,
+    "renewalDecisions": true,
+    "tournaments": true
+  },
+  "outcomeHash": {
+    "continuous": "69fb99513787e3930a908aeba306812cf9b7abfbd636bacd228b155807345fca",
+    "reloaded": "69fb99513787e3930a908aeba306812cf9b7abfbd636bacd228b155807345fca"
+  },
+  "continuousEqualsReloaded": true,
+  "exitStatePreserved": true,
+  "commitmentSetPreserved": true,
+  "separationDatePreserved": true,
+  "reloadReopenedRegistration": false,
+  "limbo": [
+    {
+      "partnershipId": "partnership-1791118513212-vkgt32",
+      "decisionDay": 49,
+      "status": "encerra_apos_compromisso",
+      "nominalEnd": "2026-03-02",
+      "preexisting": 6,
+      "newAfterExit": 0,
+      "illegitimateAfterExit": 0,
+      "lastLegitimateDay": 66,
+      "scheduledSeparationDay": 66,
+      "scheduleHistory": [
+        "2026-03-08"
+      ],
+      "newPartnerDay": 67,
+      "limboDays": 18,
+      "legitimateDays": 17,
+      "extensionDays": 0
+    },
+    {
+      "partnershipId": "partnership-1791131490212-a80pl0",
+      "decisionDay": 436,
+      "status": "encerra_apos_compromisso",
+      "nominalEnd": "2027-03-05",
+      "preexisting": 36,
+      "newAfterExit": 0,
+      "illegitimateAfterExit": 0,
+      "lastLegitimateDay": 460,
+      "scheduledSeparationDay": 460,
+      "scheduleHistory": [
+        "2027-04-06"
+      ],
+      "newPartnerDay": 468,
+      "limboDays": 32,
+      "legitimateDays": 24,
+      "extensionDays": 0
+    }
+  ],
+  "daily": [
+    {
+      "label": "seed3",
+      "days": 110,
+      "reloads": 110,
+      "equal": true,
+      "limbo": [
+        {
+          "partnershipId": "partnership-1791118513212-vkgt32",
+          "decisionDay": 49,
+          "status": "encerra_apos_compromisso",
+          "nominalEnd": "2026-03-02",
+          "preexisting": 6,
+          "newAfterExit": 0,
+          "illegitimateAfterExit": 0,
+          "lastLegitimateDay": 66,
+          "scheduledSeparationDay": 66,
+          "scheduleHistory": [
+            "2026-03-08"
+          ],
+          "newPartnerDay": 67,
+          "limboDays": 18,
+          "legitimateDays": 17,
+          "extensionDays": 0
+        }
+      ],
+      "illegitimate": 0
+    },
+    {
+      "label": "seed4",
+      "days": 100,
+      "reloads": 100,
+      "equal": true,
+      "limbo": [
+        {
+          "partnershipId": "partnership-1791118535593-atjg9z",
+          "decisionDay": 35,
+          "status": "encerra_apos_compromisso",
+          "nominalEnd": "2026-02-15",
+          "preexisting": 5,
+          "newAfterExit": 0,
+          "illegitimateAfterExit": 0,
+          "lastLegitimateDay": 59,
+          "scheduledSeparationDay": 59,
+          "scheduleHistory": [
+            "2026-03-01"
+          ],
+          "newPartnerDay": 58,
+          "limboDays": 23,
+          "legitimateDays": 24,
+          "extensionDays": 0
+        },
+        {
+          "partnershipId": "partnership-1791130132593-qqfx95",
+          "decisionDay": 77,
+          "status": "encerra_apos_compromisso",
+          "nominalEnd": "2026-03-30",
+          "preexisting": 2,
+          "newAfterExit": 0,
+          "illegitimateAfterExit": 0,
+          "lastLegitimateDay": 94,
+          "scheduledSeparationDay": 94,
+          "scheduleHistory": [
+            "2026-04-05"
+          ],
+          "newPartnerDay": 95,
+          "limboDays": 18,
+          "legitimateDays": 17,
+          "extensionDays": 0
+        }
+      ],
+      "illegitimate": 0
+    }
+  ]
+}

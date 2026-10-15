@@ -1,4 +1,5 @@
 import { localGame } from '@/api/localGameClient.js';
+import { buildWorldRankingSnapshot } from '@/lib/padel.js';
 // Fase 15 (Parte 0/1/4/10): auditoria achou 2 fórmulas de career_phase
 // conflitantes escrevendo no MESMO campo em cadências diferentes — esta
 // (semanal, só idade + peak_age-1) e a de athleteBehavior.js (mensal,
@@ -8,7 +9,8 @@ import { localGame } from '@/api/localGameClient.js';
 // exatamente a mesma curva"); esta função só computa e escreve, nunca
 // mais reimplementa a regra.
 import { deriveAthleteCareerState, isAthleteRetired } from './livingCircuitRules.js';
-import { teamKey } from '@/lib/teamRanking.js';
+import { teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking.js';
+import { resolveTeamRankingMemberPoints } from '@/lib/teamRankingFormula.js';
 import { WORLD_RANKING_TARGET, TEAM_RANKING_TARGET } from '@/lib/rankingPopulation.js';
 import {
   RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP, isResultExpired,
@@ -24,7 +26,22 @@ import {
 // mesma função já precisava do teamKey canônico pra não duplicar linha de
 // TeamRanking). Os tetos agora cobrem a população/duplas inteiras com folga.
 const ATHLETE_POPULATION_CAP = WORLD_RANKING_TARGET + 100;
-const TEAM_POPULATION_CAP = TEAM_RANKING_TARGET + 100;
+// Playthrough 5.5, Parte I — achado: `TEAM_RANKING_TARGET + 100 = 600`
+// pressupunha que a população de duplas nunca passaria de ~500 (só a
+// semeadura suplementar fixa, rankingPopulation.js). Falso na prática: o
+// mercado de parcerias forma MAIS pares ao longo da carreira (qualquer
+// atleta que ganha `ai_partner_id` via jogo, não só os 500 seedados),
+// então a coleção real cresce além do teto — medido numa temporada: 922
+// pares distintos, só 575 visíveis dentro do corte de 600. `updateTeamRankings`
+// usa esta leitura só pra montar um mapa de busca por `team_key` (nunca
+// pra exibir "top N" — isso é `getTeamRankings`, uma chamada separada,
+// sem teto artificial de população) — um par fora do corte fica
+// invisível pro `byKey.has(key)`, e toda passada semanal recria uma linha
+// nova pro mesmo par em vez de atualizar (achado: duplas fora do top-600
+// por pontos acumulavam ~20+ linhas numa única temporada). Elevado com
+// folga real (não mais "+100" sobre um teto fixo que a própria dinâmica
+// do jogo já violava).
+const TEAM_POPULATION_CAP = 5000;
 
 function clamp(value, min, max) {
   return Math.max(min, Math.min(max, Number(value) || 0));
@@ -85,7 +102,7 @@ async function createWorldEvent(payload) {
   }
 }
 
-async function updateTeamRankings(athletes, currentDate) {
+async function updateTeamRankings(athletes, currentDate, playerContext = null) {
   if (!localGame.entities?.TeamRanking?.list || !localGame.entities?.TeamRanking?.create) return { processed: 0 };
   const byId = new Map(athletes.map((athlete) => [athlete.id, athlete]));
   const existing = (await localGame.entities.TeamRanking.list('-ranking_points', TEAM_POPULATION_CAP)) || [];
@@ -106,7 +123,9 @@ async function updateTeamRankings(athletes, currentDate) {
     if (processed.has(key)) continue;
     processed.add(key);
     const partner = byId.get(partnerId);
-    const points = Math.round((safeNumber(athlete.world_ranking_points, 0) + safeNumber(partner.world_ranking_points, 0)) / 2);
+    // Playthrough 5.11, Parte S — fórmula única em teamRanking.js.
+    const points = computeCanonicalTeamRankingPoints(
+      safeNumber(athlete.world_ranking_points, 0), safeNumber(partner.world_ranking_points, 0));
     const payload = {
       team_key: key,
       player1_id: athlete.id,
@@ -114,19 +133,93 @@ async function updateTeamRankings(athletes, currentDate) {
       player2_id: partner.id,
       player2_name: partner.name,
       ranking_points: points,
-      matches_played: safeNumber(athlete.career_wins, 0) + safeNumber(athlete.career_losses, 0),
-      wins: Math.min(safeNumber(athlete.career_wins, 0), safeNumber(partner.career_wins, 0)),
-      losses: Math.max(safeNumber(athlete.career_losses, 0), safeNumber(partner.career_losses, 0)),
-      titles: Array.from({ length: Math.min(safeNumber(athlete.career_titles, 0), safeNumber(partner.career_titles, 0)) }, (_, index) => `Título ${index + 1}`),
+      // Playthrough 5.13, Partes N/O — estas três linhas são o que a aba
+      // Duplas exibe como "V · D · títulos". NÃO são um ledger da dupla:
+      // são uma ESTIMATIVA derivada dos contadores de carreira INDIVIDUAIS
+      // dos dois membros (a dupla não mantém histórico compartilhado
+      // próprio para pares de IA).
+      //
+      // Como estavam, a estimativa era internamente incoerente: as partidas
+      // vinham de UM membro só, as vitórias do `min` dos dois e as derrotas
+      // do `max` — misturando membros e direções. Resultado medido numa
+      // temporada: 2 linhas do Top20 com V+D MAIOR que o total de partidas
+      // (ex.: 27V + 18D sobre 17 partidas), um número que a tela mostrava
+      // ao jogador como se fosse fato.
+      //
+      // Agora as três grandezas são coerentes POR CONSTRUÇÃO: vitórias e
+      // derrotas usam a mesma redução conservadora (`min`, o que os dois
+      // plausivelmente disputaram juntos) e as partidas são a soma delas.
+      // Continua uma estimativa — mas uma estimativa que nunca se
+      // contradiz. Um par sem contadores segue em 0/0/0, que é honesto:
+      // significa "sem histórico compartilhado registrado", não "zero
+      // falso".
       season_id: currentDate.slice(0, 4),
     };
     const current = byKey.get(key);
+
+    // Playthrough 5.17, Parte J — V/D/títulos saíram DAQUI.
+    //
+    // A estimativa acima (min dos contadores individuais) era o motivo de a
+    // tela mostrar "0V · 0D" em duplas com milhares de pontos: os pontos
+    // vinham de um caminho real e as partidas de uma derivação que
+    // frequentemente dava zero. Pior, ela SOBRESCREVIA o número a cada
+    // passada do circuito, de modo que nenhum ledger real sobreviveria.
+    //
+    // Agora quem escreve esses campos é o settlement do World Tour, com o
+    // resultado real da dupla (WorldTourLifecycle: pairLedger). Aqui eles
+    // são apenas PRESERVADOS. Uma linha que nunca passou pelo ledger fica
+    // marcada como histórico indisponível — honesto, e distinguível de uma
+    // dupla que realmente jogou zero partidas.
+    if (current?.stats_source === 'ledger') {
+      payload.wins = safeNumber(current.wins, 0);
+      payload.losses = safeNumber(current.losses, 0);
+      payload.matches_played = safeNumber(current.matches_played, 0);
+      payload.stats_source = 'ledger';
+    } else if (current) {
+      payload.stats_source = current.stats_source || 'unavailable';
+    } else {
+      payload.stats_source = 'unavailable';
+    }
     if (current?.id && localGame.entities.TeamRanking.update) {
       operations.push({ type: 'update', entityName: 'TeamRanking', id: current.id, data: payload });
     } else {
       operations.push({ type: 'create', entityName: 'TeamRanking', data: payload });
     }
   }
+  // Playthrough 5.10, critério 3 — o laço acima só percorre atletas com
+  // `ai_partner_id`, ou seja, PARCERIAS REAIS. As duplas da semeadura
+  // suplementar (rankingPopulation.js) são pareadas por índice e não
+  // correspondem a nenhuma parceria, então nunca passavam por aqui: o valor
+  // escrito na criação do mundo ficava CONGELADO para sempre, enquanto os
+  // rolling points dos seus membros seguiam mudando. Medido antes desta
+  // passada: 423 de 921 linhas (45,9%) fora da fórmula canônica ao fim de
+  // uma temporada — a "escala paralela" que esta fase precisa eliminar.
+  //
+  // Esta segunda passada reprojeta QUALQUER linha remanescente cujos dois
+  // membros sejam resolvíveis, usando exatamente a MESMA fórmula. Não cria
+  // linha nova, não inventa membro e não toca em estatísticas — só mantém
+  // `ranking_points` na unidade única da tabela.
+  //
+  // Playthrough 5.12 (continuação), Partes A/D/E — antes os membros eram
+  // resolvidos só no índice de ATLETAS, então a dupla do JOGADOR
+  // (PlayerProfile + AthleteProfile) nunca resolvia e ficava fora da
+  // reprojeção: guardava os pontos de quando a linha foi escrita até o
+  // próximo torneio (medido: 0 guardado contra 6000 canônico). Agora a
+  // resolução passa por `resolveTeamRankingMemberPoints`, que conhece os
+  // dois tipos de membro. O jogador continua sendo PlayerProfile — nenhum
+  // AthleteProfile é criado para ele.
+  const memberContext = { athletesById: byId, playerId: playerContext?.id || null, playerPoints: playerContext?.points };
+  for (const team of existing) {
+    if (!team?.id || processed.has(team.team_key)) continue;
+    const a = resolveTeamRankingMemberPoints(team.player1_id, memberContext);
+    const b = resolveTeamRankingMemberPoints(team.player2_id, memberContext);
+    if (a === null || b === null) continue;
+    const points = computeCanonicalTeamRankingPoints(a, b);
+    if (points === safeNumber(team.ranking_points, -1)) continue;
+    processed.add(team.team_key);
+    operations.push({ type: 'update', entityName: 'TeamRanking', id: team.id, data: { ranking_points: points } });
+  }
+
   if (operations.length) await localGame.batch(operations);
   return { processed: operations.length };
 }
@@ -382,7 +475,17 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
     if (event) events.push(event);
   }
 
-  const teamRanking = await updateTeamRankings(ordered.map((entry) => ({ ...entry.athlete, world_ranking_points: entry.generalPoints })), currentDate);
+  // Playthrough 5.12 (continuação) — o contexto do jogador entra junto para
+  // que a dupla dele participe da mesma reprojeção das duplas de IA. Usa os
+  // pontos ROLLING recém-recalculados acima (`playerRankingPatch`), não o
+  // valor antigo do perfil.
+  const teamRanking = await updateTeamRankings(
+    ordered.map((entry) => ({ ...entry.athlete, world_ranking_points: entry.generalPoints })),
+    currentDate,
+    profile?.id
+      ? { id: profile.id, points: safeNumber(playerRankingPatch.world_ranking_points ?? profile.world_ranking_points ?? profile.rank_points, 0) }
+      : null,
+  );
 
   const summary = {
     week: currentWeek,
@@ -395,12 +498,23 @@ export async function processWorldCircuit(profile, previousDate, currentDate) {
 
   let updatedProfile = profile;
   if (profile?.id) {
+    // Playthrough 5.26-B — posição do jogador no ranking. Loja, estágio de
+    // patrocínio, missões, treinadores, mercado de duplas etc. leem
+    // `profile.ranking_position` de forma síncrona, mas NADA a gravava para o
+    // jogador: todos o tratavam como #9999/#2000 para sempre (loja travada em
+    // "incomum", patrocínio nunca passava do estágio regional). A posição vem
+    // da MESMA autoridade da tela de Ranking (buildWorldRankingSnapshot), com
+    // os pontos que acabaram de ser recalculados, na mesma escrita semanal
+    // do circuito. Sem ranking (sem pontos/partidas oficiais) → null.
+    const snapshot = await buildWorldRankingSnapshot({ ...profile, ...playerRankingPatch }).catch(() => null);
+    const rankingPosition = snapshot && !snapshot.unranked && snapshot.playerRank > 0 ? snapshot.playerRank : null;
     updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, {
       last_circuit_week: currentWeek,
       last_circuit_update: currentDate,
       last_circuit_summary: summary,
       game_state_version: '2.4.0',
       ...playerRankingPatch,
+      ranking_position: rankingPosition,
     });
   }
 

@@ -39,7 +39,16 @@ export default function TournamentRegistrationModal({ tournament, profile, teamR
       const { registerForTournament } = await import('@/lib/calendarSystem');
       const result = await registerForTournament(profile, tournament, teamRank, { replaceConflicts });
       if (result.success) {
-        toast({ title: 'Inscrição confirmada!', description: `${getEntryPathLabel(result.entry?.path)} em ${tournament.name}.` });
+        // Playthrough 4.6, item 11 — a inscrição não é mais bloqueada pelo
+        // piso de descanso, mas a consequência (fadiga/energia residual)
+        // precisa continuar visível, não silenciosa. `warnings` já viajava
+        // no retorno de sucesso (tournamentRegistration.js); só faltava
+        // aparecer em algum lugar.
+        const restAdvisory = (result.warnings || []).find((item) => item.code === 'REST_ADVISORY');
+        toast({
+          title: 'Inscrição confirmada!',
+          description: [`${getEntryPathLabel(result.entry?.path)} em ${tournament.name}.`, restAdvisory?.message].filter(Boolean).join(' '),
+        });
         onRegistered?.(result.profile);
         onClose();
       } else if (result.requiresConfirmation) {

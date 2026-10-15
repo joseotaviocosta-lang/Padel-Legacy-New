@@ -25,7 +25,7 @@ export default function CoachCard({ evaluation, profile, onDetails, onHire }) {
   const impact = getCoachImpactSummary(coach, profile);
 
   return (
-    <article className={`pl-roster-row border-b border-border/45 p-3 transition last:border-b-0 ${available ? 'hover:bg-secondary/20' : 'opacity-70'}`}>
+    <article className={`glass rounded-2xl border p-4 transition ${evaluation.recommended ? 'border-primary/50' : 'border-transparent'} ${available ? 'hover:bg-secondary/20' : 'opacity-70'}`}>
       <div className="flex items-start gap-3">
         <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${tier.bg} ${tier.border}`}>
           <span className={`text-lg font-black ${tier.color}`}>{(coach.name || '?')[0]}</span>

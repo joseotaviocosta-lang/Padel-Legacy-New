@@ -203,28 +203,85 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
   const existing = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id }).catch(() => []);
   const existingIds = new Set((existing || []).map((row) => row.achievement_id));
 
-  let updatedProfile = profile;
+  // Playthrough 5.24-E — DESBLOQUEIO + RECOMPENSA ATÔMICOS.
+  //
+  // Antes: para CADA conquista, PlayerAchievement.create (uma gravação
+  // completa da carreira) e depois PlayerProfile.update com XP/moedas (outra).
+  // Um encerramento entre as duas deixava a conquista registrada SEM a
+  // recompensa — e como o registro é a guarda de idempotência abaixo, a
+  // recompensa nunca mais era paga (reproduzido: "Estreia em Torneios"
+  // gravada, +200 moedas/+100 XP perdidos para sempre). Agora todos os
+  // registros novos deste sync + a soma de XP/moedas vão numa ÚNICA mutação
+  // (localGame.batch): ou o save tem conquistas E recompensas, ou nenhuma.
+  // Medalha/título não são gravados à parte: a UI os deriva do próprio
+  // registro da conquista. O registro passa a guardar o que foi pago
+  // (reward_delivered/reward_xp/reward_coins) — dentro da mesma linha, sem
+  // fonte paralela — para auditoria de saves futuros.
+  const unlockedDate = new Date().toISOString();
   const unlocked = [];
+  const operations = [];
+  let xpGain = 0;
+  let coinsGain = 0;
   for (const { achievement } of candidates) {
     if (existingIds.has(achievement.id)) continue;
-    await localGame.entities.PlayerAchievement.create({
+    existingIds.add(achievement.id);
+    const rewardXp = reconciliation ? 0 : Math.max(0, Number(achievement.xp_reward) || 0);
+    const rewardCoins = reconciliation ? 0 : Math.max(0, Number(achievement.coins_reward) || 0);
+    operations.push({
+      type: 'create',
+      entityName: 'PlayerAchievement',
       id: `pa-${achievement.id}-${profile.id}`,
-      profile_id: profile.id,
-      achievement_id: achievement.id,
-      achievement_name: achievement.name,
-      unlocked_date: new Date().toISOString(),
-      career_date: profile.career_date || null,
-      is_new: !reconciliation,
-      progress: achievement.threshold,
-      reconciled: reconciliation,
+      data: {
+        profile_id: profile.id,
+        achievement_id: achievement.id,
+        achievement_name: achievement.name,
+        unlocked_date: unlockedDate,
+        career_date: profile.career_date || null,
+        is_new: !reconciliation,
+        progress: achievement.threshold,
+        reconciled: reconciliation,
+        reward_delivered: !reconciliation,
+        reward_xp: rewardXp,
+        reward_coins: rewardCoins,
+      },
     });
-    if (!reconciliation) {
-      const patch = {};
-      if (Number(achievement.xp_reward) > 0) patch.xp = (Number(updatedProfile.xp) || 0) + Number(achievement.xp_reward);
-      if (Number(achievement.coins_reward) > 0) patch.coins = (Number(updatedProfile.coins) || 0) + Number(achievement.coins_reward);
-      if (Object.keys(patch).length) updatedProfile = await localGame.entities.PlayerProfile.update(updatedProfile.id, patch);
-    }
+    xpGain += rewardXp;
+    coinsGain += rewardCoins;
     unlocked.push(achievement);
+  }
+
+  let updatedProfile = profile;
+  if (operations.length) {
+    const current = (await localGame.entities.PlayerProfile.filter({ id: profile.id }).catch(() => []))?.[0] || profile;
+    if (xpGain > 0 || coinsGain > 0) {
+      const patch = {};
+      if (xpGain > 0) patch.xp = (Number(current.xp) || 0) + xpGain;
+      if (coinsGain > 0) patch.coins = (Number(current.coins) || 0) + coinsGain;
+      operations.push({ type: 'playerUpdate', id: profile.id, data: patch });
+    }
+    let result;
+    try {
+      result = await localGame.batch(operations, { caller: 'achievements.syncPlayerAchievements' });
+    } catch (error) {
+      // Sync concorrente (ex.: efeito duplo do StrictMode) já registrou estas
+      // conquistas: o `create` duplicado aborta ESTE batch inteiro — nada
+      // dele é aplicado, nem as moedas. Se todas já existem, não há o que
+      // pagar; qualquer outra falha sobe normalmente.
+      const nowExisting = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id }).catch(() => []);
+      const nowIds = new Set((nowExisting || []).map((row) => row.achievement_id));
+      if (unlocked.every((achievement) => nowIds.has(achievement.id))) {
+        const fresh = (await localGame.entities.PlayerProfile.filter({ id: profile.id }).catch(() => []))?.[0] || current;
+        return { profile: fresh, unlocked: [] };
+      }
+      throw error;
+    }
+    updatedProfile = result?.player ? { ...current, ...result.player } : current;
+    // Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
+    if (coinsGain > 0 && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {
+      window.dispatchEvent(new CustomEvent('padel:profile-updated', {
+        detail: { profile: updatedProfile, profileId: updatedProfile.id, careerDate: updatedProfile.career_date, source: 'player-adapter-balance' },
+      }));
+    }
   }
 
   if (!reconciliation && unlocked.length && typeof window !== 'undefined' && typeof window.dispatchEvent === 'function' && typeof CustomEvent !== 'undefined') {

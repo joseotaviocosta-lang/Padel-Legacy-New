@@ -1,19 +1,24 @@
-import {
-  BaseDirectory,
-  copyFile,
-  exists,
-  mkdir,
-  readDir,
-  readTextFile,
-  remove,
-  rename,
-  stat,
-  writeTextFile,
-} from '@tauri-apps/plugin-fs';
+import { invoke } from '@tauri-apps/api/core';
 import { StorageError } from './StorageError.js';
 import { measureStorageOperation } from '../dev/storageIOProbe.js';
 
-const STORAGE_BASE_DIRECTORY = BaseDirectory.AppData;
+// Playthrough 5.25 — o save usa os comandos async do PRÓPRIO app
+// (src-tauri/src/storage.rs) em vez do plugin-fs. No Android, os comandos
+// síncronos do plugin (exists/rename/remove/stat/mkdir) rodavam segurando o
+// lock global de plugins do Tauri e, para resolver AppData, bloqueavam
+// esperando a main thread a CADA chamada — com a main thread em
+// onPageFinished pedindo o mesmo lock, o app travava (ANR capturado no
+// aparelho). Mesmo contrato: caminhos relativos a AppData, sem traversal.
+// ENVIO como string: no Android o IPC é postMessage+JSON e bytes
+// (Uint8Array) viravam um array JSON de milhões de números. LEITURA em bytes
+// crus: o caminho de resposta é rápido (medido no aparelho: ~100ms x ~370ms).
+const decoder = typeof TextDecoder !== 'undefined' ? new TextDecoder('utf-8') : null;
+
+function decodeText(result) {
+  if (typeof result === 'string') return result;
+  const bytes = result instanceof ArrayBuffer ? new Uint8Array(result) : Uint8Array.from(result || []);
+  return decoder ? decoder.decode(bytes) : String.fromCharCode(...bytes);
+}
 
 function normalizeRelativePath(relativePath, { allowCurrentDirectory = false } = {}) {
   if (typeof relativePath !== 'string') {
@@ -60,13 +65,6 @@ function normalizeRelativePath(relativePath, { allowCurrentDirectory = false } =
   return segments.join('/');
 }
 
-function createOptions(options = {}) {
-  return {
-    ...options,
-    baseDir: options.baseDir ?? STORAGE_BASE_DIRECTORY,
-  };
-}
-
 function byteLength(value) {
   const text = String(value ?? '');
   if (typeof TextEncoder !== 'undefined') return new TextEncoder().encode(text).byteLength;
@@ -98,21 +96,20 @@ export class TauriStorage {
     }
     return measureStorageOperation(
       { operation: 'read', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => readTextFile(normalizedPath, createOptions()),
+      async () => decodeText(await invoke('storage_read_text', { path: normalizedPath })),
       { bytes: byteLength },
     );
   }
 
   async writeText(relativePath, content, { ensureParent = true, caller = 'TauriStorage.writeText' } = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
-    const parentDirectory = normalizedPath.includes('/') ? normalizedPath.split('/').slice(0, -1).join('/') : null;
-    if (parentDirectory && ensureParent) {
-      await this.ensureDirectory(parentDirectory, { caller: `${caller}:parent` });
-    }
+    // O comando nativo cria a pasta-pai na mesma operação (ensureParent fica
+    // implícito; sem o mkdir separado de antes — uma ida ao IPC a menos).
+    void ensureParent;
     const serialized = String(content);
     return measureStorageOperation(
       { operation: 'write', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => writeTextFile(normalizedPath, serialized, createOptions()),
+      () => invoke('storage_write_text', { path: normalizedPath, content: serialized }),
       { bytes: byteLength(serialized) },
     );
   }
@@ -124,7 +121,7 @@ export class TauriStorage {
       try {
         return await measureStorageOperation(
           { operation: 'exists', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-          () => exists(normalizedPath, createOptions()),
+          () => invoke('storage_exists', { path: normalizedPath }),
         );
       } catch (error) {
         lastError = error;
@@ -147,13 +144,13 @@ export class TauriStorage {
 
   async remove(relativePath, options = {}) {
     const normalizedPath = normalizeRelativePath(relativePath);
-    const { knownToExist = false, caller = 'TauriStorage.remove', ...fsOptions } = options;
+    const { knownToExist = false, caller = 'TauriStorage.remove', recursive = false } = options;
     if (!knownToExist && !(await this.exists(normalizedPath, { caller: `${caller}:preflight` }))) {
       return false;
     }
     await measureStorageOperation(
       { operation: 'remove', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => remove(normalizedPath, createOptions(fsOptions)),
+      () => invoke('storage_remove', { path: normalizedPath, recursive: Boolean(recursive) }),
     );
     return true;
   }
@@ -161,17 +158,10 @@ export class TauriStorage {
   async copy(sourcePath, destinationPath, { ensureParent = true, caller = 'TauriStorage.copy' } = {}) {
     const normalizedSource = normalizeRelativePath(sourcePath);
     const normalizedDestination = normalizeRelativePath(destinationPath);
-    const parentDirectory = normalizedDestination.includes('/') ? normalizedDestination.split('/').slice(0, -1).join('/') : null;
-    if (parentDirectory && ensureParent) {
-      await this.ensureDirectory(parentDirectory, { caller: `${caller}:parent` });
-    }
+    void ensureParent; // a pasta-pai é criada pelo comando nativo
     await measureStorageOperation(
       { operation: 'copy', key: `${normalizedSource} -> ${normalizedDestination}`, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => copyFile(normalizedSource, normalizedDestination, {
-        ...createOptions(),
-        fromPathBaseDir: STORAGE_BASE_DIRECTORY,
-        toPathBaseDir: STORAGE_BASE_DIRECTORY,
-      }),
+      () => invoke('storage_copy', { from: normalizedSource, to: normalizedDestination }),
     );
     return normalizedDestination;
   }
@@ -179,16 +169,10 @@ export class TauriStorage {
   async rename(sourcePath, destinationPath, { ensureParent = true, caller = 'TauriStorage.rename' } = {}) {
     const normalizedSource = normalizeRelativePath(sourcePath);
     const normalizedDestination = normalizeRelativePath(destinationPath);
-    const parentDirectory = normalizedDestination.includes('/') ? normalizedDestination.split('/').slice(0, -1).join('/') : null;
-    if (parentDirectory && ensureParent) {
-      await this.ensureDirectory(parentDirectory, { caller: `${caller}:parent` });
-    }
+    void ensureParent; // a pasta-pai é criada pelo comando nativo
     await measureStorageOperation(
       { operation: 'rename', key: `${normalizedSource} -> ${normalizedDestination}`, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => rename(normalizedSource, normalizedDestination, {
-        oldPathBaseDir: STORAGE_BASE_DIRECTORY,
-        newPathBaseDir: STORAGE_BASE_DIRECTORY,
-      }),
+      () => invoke('storage_rename', { from: normalizedSource, to: normalizedDestination }),
     );
     return normalizedDestination;
   }
@@ -198,7 +182,7 @@ export class TauriStorage {
     if (normalizedPath === '.') {
       const entries = await measureStorageOperation(
         { operation: 'list', key: '.', caller, layer: 'tauri-ipc', cache: 'miss' },
-        () => readDir('', createOptions()),
+        () => invoke('storage_list', { path: '' }),
       );
       return entries;
     }
@@ -210,7 +194,7 @@ export class TauriStorage {
 
     return measureStorageOperation(
       { operation: 'list', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => readDir(normalizedPath, createOptions()),
+      () => invoke('storage_list', { path: normalizedPath }),
     );
   }
 
@@ -221,7 +205,7 @@ export class TauriStorage {
     }
     await measureStorageOperation(
       { operation: 'mkdir', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => mkdir(normalizedPath, { recursive: true, ...createOptions() }),
+      () => invoke('storage_mkdir', { path: normalizedPath }),
     );
     return true;
   }
@@ -230,7 +214,7 @@ export class TauriStorage {
     const normalizedPath = normalizeRelativePath(relativePath);
     return measureStorageOperation(
       { operation: 'stat', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
-      () => stat(normalizedPath, createOptions()),
+      () => invoke('storage_stat', { path: normalizedPath }),
     );
   }
 

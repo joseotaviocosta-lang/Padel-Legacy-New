@@ -1,0 +1,25 @@
+import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
+import { formatIndividualRankLabel, formatTeamRankLabel } from '../src/lib/rankingDisplay.js';
+
+assert.equal(formatIndividualRankLabel({ rank: 123, displayRank: '123', unranked: false }), '#123');
+assert.equal(formatIndividualRankLabel({ rank: 1001, displayRank: '1000+', unranked: true }), '#1000+');
+assert.equal(formatIndividualRankLabel(null), '#1000+');
+assert.equal(formatTeamRankLabel({ rank: 0, unranked: true }), 'Sem ranking');
+assert.equal(formatTeamRankLabel({ rank: 12, displayRank: '12', unranked: false }), '#12');
+const ranking = await readFile(new URL('../src/pages/Ranking.jsx', import.meta.url), 'utf8');
+const season = await readFile(new URL('../src/pages/Season.jsx', import.meta.url), 'utf8');
+const hud = await readFile(new URL('../src/components/career/CareerHud.jsx', import.meta.url), 'utf8');
+const partner = await readFile(new URL('../src/components/partner/PartnerOverview.jsx', import.meta.url), 'utf8');
+const tournament = await readFile(new URL('../src/components/tournaments/TournamentModal.jsx', import.meta.url), 'utf8');
+const appLayout = await readFile(new URL('../src/components/AppLayout.jsx', import.meta.url), 'utf8');
+assert.match(ranking, /buildWorldRankingSnapshot/);
+assert.match(ranking, /getTeamRankings\(600\)/);
+assert.match(season, /formatIndividualRankLabel\(worldRank\)/);
+assert.match(hud, /formatIndividualRankLabel\(ranking\)/);
+assert.match(appLayout, /getWorldRank\(nextProfile\)/);
+assert.match(partner, /getTeamRank\(profile, partnerBot\)/);
+assert.match(partner, /getWorldRank\(profile\)/);
+assert.match(tournament, /getTeamRank\(loadedProfile, loadedPartner\)/);
+assert.match(tournament, /getCanonicalTeamWorldRank\(ids\)/);
+console.log('test-ranking-ui-authority-v56: PASS');

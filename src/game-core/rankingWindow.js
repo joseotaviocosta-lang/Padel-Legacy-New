@@ -85,11 +85,31 @@ export function needsLegacySeed(existingRows, currentLifetimePoints) {
 // antes do corte, pra que um torneio que acabou de terminar já entre na
 // conta na mesma chamada que o gerou — feedback imediato, mesmo padrão de
 // antes desta fase.
+// Playthrough 5.26-C — o PENHASCO da âncora. A âncora (`legacy_seed`) também
+// é usada para os pontos INICIAIS do mundo numa carreira nova: um registro
+// por atleta valendo o total inteiro, datado na primeira semana de circuito.
+// Como todas têm a MESMA data, todas saíam da janela no mesmo dia (início de
+// 2027): medido na 5.26-B, 884 âncoras expirando juntas, −64% dos pontos do
+// mundo e o jogador subindo ~300 posições sem resultado novo. A âncora
+// representa resultados espalhados pelas 52 semanas anteriores, cujas datas
+// reais não existem; o equivalente fiel é ela perder valor de forma linear
+// ao longo da própria janela (100% ao ser criada → 0% aos 364 dias), em vez
+// de valer 100% até o último dia. Resultados reais, best-22, a janela de 364
+// dias e a Race (que este módulo não toca) não mudam.
+export function effectiveResultPoints(row, currentDate) {
+  const points = resultPoints(row);
+  if (!row?.is_legacy_seed && row?.finish !== 'legacy_seed') return points;
+  const age = Math.max(0, careerDaysBetween(row?.date, currentDate) || 0);
+  const remaining = Math.max(0, Math.min(1, (RANKING_WINDOW_DAYS - age) / RANKING_WINDOW_DAYS));
+  return Math.round(points * remaining);
+}
+
 export function computeRollingPoints(existingRows, extraRows, currentDate) {
   const all = [...(existingRows || []), ...(extraRows || [])];
   const unexpired = all.filter((row) => !isResultExpired(row, currentDate));
-  const best = [...unexpired].sort((a, b) => resultPoints(b) - resultPoints(a)).slice(0, RANKING_BEST_N);
-  return best.reduce((sum, row) => sum + resultPoints(row), 0);
+  const scored = unexpired.map((row) => effectiveResultPoints(row, currentDate));
+  const best = scored.sort((a, b) => b - a).slice(0, RANKING_BEST_N);
+  return best.reduce((sum, value) => sum + value, 0);
 }
 
 export function groupResultsByAthlete(rows) {

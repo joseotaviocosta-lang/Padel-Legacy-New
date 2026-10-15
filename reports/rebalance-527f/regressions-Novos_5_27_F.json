@@ -1,0 +1,104 @@
+{
+  "at": "2026-10-12T20:17:03.787Z",
+  "passed": 11,
+  "total": 12,
+  "results": [
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-match-engine-identical-teams-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 123,
+      "summary": "test-match-engine-identical-teams-v527f: 21/21 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-match-engine-side-swap-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 165,
+      "summary": "test-match-engine-side-swap-v527f: 16/16 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-energy-sensitivity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 103,
+      "summary": "test-energy-sensitivity-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-energy-single-application-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-energy-single-application-v527f: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-player-opponent-strength-parity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-player-opponent-strength-parity-v527f: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-bot-energy-assumption-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-bot-energy-assumption-v527f: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-zero-win-ranking-progression-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-zero-win-ranking-progression-v527f: 4/4 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-ranking-points-by-source-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-points-by-source-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-ranking-world-vs-player-decomposition-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-world-vs-player-decomposition-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-ranking-success-monotonicity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-success-monotonicity-v527f: 4/4 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-old-presets-semantic-freeze-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-old-presets-semantic-freeze-v527f: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-micro-gate-post-engine-v527f",
+      "ok": false,
+      "code": 1,
+      "seconds": 1,
+      "summary": "test-micro-gate-post-engine-v527f: 7/8 passaram",
+      "tail": "✗ Medium >= 28% com amostra real (2 anos: 18.2% em 137 partidas)\n    assert.ok(y2.mediumWR >= 28)"
+    }
+  ]
+}

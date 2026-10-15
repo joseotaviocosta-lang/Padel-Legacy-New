@@ -3,16 +3,22 @@ import { incrementMissionProgress } from '@/lib/padel.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel, ENTRY_PATHS } from '@/gameplay/worldTour/EntryManager.js';
 import { getTournamentCampaignDates } from '@/lib/tournamentSchedule.js';
 import { getActivePartnership } from '@/lib/partnershipSystem.js';
+import { evaluatePartnershipRegistrationAuthority } from '@/lib/committedRoster.js';
 
 export const TOURNAMENT_REGISTRATION_RULES = Object.freeze({
   defaultOpenDaysBeforeStart: 30,
-  // Proposta A (ritmo do calendário): fechar em D-3, não D-1. O sorteio da
-  // chave já acontece em D-3 (TOURNAMENT_DRAW_LEAD_DAYS, tournamentDraw.js),
-  // então uma inscrição aceita em D-1 nascia com a janela de preparação já
-  // vencida — a entrevista pré-torneio e o sorteio não tinham quando
-  // disparar, e a sequência inscrição -> entrevista -> sorteio -> jogo
-  // colapsava. Alinhar o prazo ao sorteio devolve essa cronologia.
-  defaultCloseDaysBeforeStart: 3,
+  // Proposta A (ritmo do calendário): fechar em D-4, não D-1. O sorteio da
+  // chave acontece em D-3 (TOURNAMENT_DRAW_LEAD_DAYS, tournamentDraw.js) —
+  // uma inscrição aceita em D-1 nascia com a janela de preparação já
+  // vencida, e a sequência inscrição -> entrevista -> sorteio -> jogo
+  // colapsava. Fechar em D-4 preserva essa cronologia E satisfaz o
+  // invariante obrigatório da Playthrough 4.9 (Parte C):
+  // registration_deadline < draw_date, NUNCA igual. Antes desta fase os
+  // dois caiam no MESMO dia (D-3 == D-3) — tecnicamente "fechado" só depois
+  // que o sorteio já tinha rodado no mesmo tick, uma corrida sem vencedor
+  // definido dependendo da ordem de processamento do dia. D-4/D-3 dá 1 dia
+  // de folga real entre o fechamento e o sorteio oficial.
+  defaultCloseDaysBeforeStart: 4,
   allowSameDayRegistration: false,
   preventOverlappingEvents: true,
   cancellationRefundRate: 1,
@@ -145,7 +151,7 @@ export function isConfirmedRegistration(registration, profileId, tournamentId) {
 
 function reason(code, message, details = {}) { return { code, message, ...details }; }
 
-export function evaluateTournamentRegistration({ player, partner, tournament, currentDate, registrations = [], tournaments = [], teamRank = 0, priorityWindowRemaining = 0, rules = TOURNAMENT_REGISTRATION_RULES }) {
+export function evaluateTournamentRegistration({ player, partner, tournament, currentDate, registrations = [], tournaments = [], teamRank = 0, priorityWindowRemaining = 0, partnership = null, rules = TOURNAMENT_REGISTRATION_RULES }) {
   const date = normalizeGameDate(currentDate || player?.career_date || CAREER_START_DATE);
   const interval = getTournamentEffectiveInterval(tournament);
   const window = getTournamentRegistrationWindow(tournament, rules);
@@ -160,6 +166,10 @@ export function evaluateTournamentRegistration({ player, partner, tournament, cu
   if (!player?.id || player?.retired) reasons.push(reason('PLAYER_INACTIVE', 'O atleta não está ativo para competir.'));
   if (!partner?.id || partner?.unavailable || partner?.status === 'indisponivel') reasons.push(reason('PARTNER_UNAVAILABLE', 'É necessário um parceiro ativo e disponível.'));
   if (player?.partner_id && partner?.id && player.partner_id !== partner.id) reasons.push(reason('PARTNER_CHANGED', 'O parceiro selecionado não corresponde à dupla ativa.'));
+  // Playthrough 5.27-J — autoridade única de saída da parceria (committedRoster):
+  // dupla com saída decidida não cria compromisso novo que a estenda.
+  const exitAuthority = evaluatePartnershipRegistrationAuthority(partnership, { careerDate: date, tournament });
+  if (!exitAuthority.allowed) reasons.push(reason(exitAuthority.code, exitAuthority.reason, { nominalEnd: exitAuthority.nominalEnd ?? null }));
   // Fase 8.1, item 2 — `priority_window_remaining` vive na Partnership
   // ativa do jogador (mesmo campo que a IA usa, Fase 7.4), não em
   // PlayerProfile; mesclado aqui como qualquer outro campo que
@@ -182,13 +192,29 @@ export function evaluateTournamentRegistration({ player, partner, tournament, cu
     }
   }
 
-  // Proposta B — piso de descanso entre torneios efetivamente disputados.
+  // Playthrough 4.6, itens 9/10/11 — a Proposta B (piso de descanso) era um
+  // BLOQUEIO absoluto: um circuito profissional real tem torneios em
+  // semanas consecutivas o tempo todo (Londres 01/02 → Los Angeles 05/02,
+  // só 4 dias, é um calendário normal, não uma violação de agenda). A
+  // própria justificativa original desta regra (comentário de
+  // TOURNAMENT_REGISTRATION_RULES.restFloorDays, acima) já registrava que a
+  // energia/fadiga natural NÃO cria barreira nenhuma sozinha (recuperação
+  // de ~84 em 7 dias contra um custo de torneio de ~20) — por isso o piso
+  // rígido foi inventado como barreira artificial por cima. Decisão nova:
+  // descanso vira CONSEQUÊNCIA (energia/fadiga residual, o sistema físico
+  // que já existe em PhysicalConditionManager.js — recuperação diária via
+  // calculateDailyRecovery, sem nenhuma rebalanceada nesta fase), nunca
+  // IMPEDIMENTO de inscrição. `findRestFloorConflict` continua calculando
+  // o descanso restante (ainda útil como aviso), mas vira `warnings`, não
+  // `reasons` — não conta mais para `allowed`. Sobreposição REAL de datas
+  // (DATE_CONFLICT, acima) continua bloqueando normalmente — exclusividade
+  // de agenda nunca foi a regra removida aqui.
   const restConflict = findRestFloorConflict({ player, partner, tournament, interval, registrations, tournaments, restFloorDays: rules.restFloorDays });
   if (restConflict) {
     const missing = rules.restFloorDays - restConflict.rest;
-    reasons.push(reason(
-      'REST_FLOOR',
-      `A dupla encerrou ${restConflict.registration.tournament_name || 'outro torneio'} em ${restConflict.end} e precisa de ${rules.restFloorDays} dias de descanso entre competições. Faltam ${missing} dia(s) — use esse intervalo para treinar, ajustar a comissão técnica ou renovar equipamento.`,
+    warnings.push(reason(
+      'REST_ADVISORY',
+      `A dupla encerrou ${restConflict.registration.tournament_name || 'outro torneio'} em ${restConflict.end} há apenas ${restConflict.rest} dia(s) — espere energia e fadiga residuais nas primeiras rodadas (faltariam ${missing} dia(s) para a recuperação completa habitual).`,
       { restDays: restConflict.rest, requiredRestDays: rules.restFloorDays, previousTournamentId: restConflict.registration.tournament_id },
     ));
   }
@@ -279,7 +305,7 @@ export async function registerTournament({ player, partner, tournament, teamRank
   ]);
   const partnerRegistrations = partner?.id ? await localGame.entities.TournamentRegistration.filter({ partner_id: partner.id }) : [];
   const priorityWindowRemaining = Number(activePartnership?.priority_window_remaining) || 0;
-  const validation = evaluateTournamentRegistration({ player, partner, tournament, currentDate: player.career_date, registrations: [...registrations, ...partnerRegistrations], tournaments, teamRank, priorityWindowRemaining });
+  const validation = evaluateTournamentRegistration({ player, partner, tournament, currentDate: player.career_date, registrations: [...registrations, ...partnerRegistrations], tournaments, teamRank, priorityWindowRemaining, partnership: activePartnership });
   if (!validation.allowed) return { success: false, reasons: validation.reasons, warnings: validation.warnings, validation };
   // Fase 8.1, item 2 — cada inscrição USADA com a janela ativa desconta 1,
   // mesmo desenho da IA (WorldTourLifecycle.js: desconta a cada aparição

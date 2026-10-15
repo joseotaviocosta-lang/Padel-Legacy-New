@@ -1,0 +1,14 @@
+✓ [Novos 5.27-F] test-match-engine-identical-teams-v527f (123s) test-match-engine-identical-teams-v527f: 21/21 passaram
+✓ [Novos 5.27-F] test-match-engine-side-swap-v527f (165s) test-match-engine-side-swap-v527f: 16/16 passaram
+✓ [Novos 5.27-F] test-energy-sensitivity-v527f (103s) test-energy-sensitivity-v527f: 9/9 passaram
+✓ [Novos 5.27-F] test-energy-single-application-v527f (2s) test-energy-single-application-v527f: 5/5 passaram
+✓ [Novos 5.27-F] test-player-opponent-strength-parity-v527f (3s) test-player-opponent-strength-parity-v527f: 7/7 passaram
+✓ [Novos 5.27-F] test-bot-energy-assumption-v527f (2s) test-bot-energy-assumption-v527f: 3/3 passaram
+✓ [Novos 5.27-F] test-zero-win-ranking-progression-v527f (1s) test-zero-win-ranking-progression-v527f: 4/4 passaram
+✓ [Novos 5.27-F] test-ranking-points-by-source-v527f (1s) test-ranking-points-by-source-v527f: 9/9 passaram
+✓ [Novos 5.27-F] test-ranking-world-vs-player-decomposition-v527f (1s) test-ranking-world-vs-player-decomposition-v527f: 9/9 passaram
+✓ [Novos 5.27-F] test-ranking-success-monotonicity-v527f (1s) test-ranking-success-monotonicity-v527f: 4/4 passaram
+✓ [Novos 5.27-F] test-old-presets-semantic-freeze-v527f (1s) test-old-presets-semantic-freeze-v527f: 6/6 passaram
+✗ [Novos 5.27-F] test-micro-gate-post-engine-v527f (1s) test-micro-gate-post-engine-v527f: 7/8 passaram
+
+11/12 passaram

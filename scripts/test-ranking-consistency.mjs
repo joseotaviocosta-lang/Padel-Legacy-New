@@ -161,9 +161,11 @@ try {
   }
   gate('a mesma lista produz sempre a mesma ordem em execuções repetidas', new Set(runs).size === 1);
   const tieSnapshot = await buildWorldRankingSnapshot(freshTieProfile);
-  const topFour = tieSnapshot.entries.slice(0, 4);
-  gate('maior Overall desempata pontos iguais (tie-m antes de tie-a/tie-z)', topFour[0].id === 'tie-m');
-  gate('id ordena alfabeticamente quando pontos E overall empatam (tie-a antes de tie-z)', topFour.findIndex((e) => e.id === 'tie-a') < topFour.findIndex((e) => e.id === 'tie-z'));
+  // O mundo pode conter atletas legítimos acima de 800 pontos; este cenário
+  // verifica apenas a ordem relativa do grupo empatado que ele próprio criou.
+  const tiedEntries = tieSnapshot.entries.filter((entry) => tiedAthletes.some((athlete) => athlete.id === entry.id));
+  gate('maior Overall desempata pontos iguais (tie-m antes de tie-a/tie-z)', tiedEntries[0]?.id === 'tie-m');
+  gate('id ordena alfabeticamente quando pontos E overall empatam (tie-a antes de tie-z)', tiedEntries.findIndex((entry) => entry.id === 'tie-a') < tiedEntries.findIndex((entry) => entry.id === 'tie-z'));
   gate('nenhuma posição repetida (ranking sequencial, sem "empate compartilhado")', new Set(tieSnapshot.entries.map((e) => e.rank)).size === tieSnapshot.entries.length);
 
   // ═══════════════════════════════════════════════════════════════════════

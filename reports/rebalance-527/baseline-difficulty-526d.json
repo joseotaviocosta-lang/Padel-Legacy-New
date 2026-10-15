@@ -1,0 +1,458 @@
+{
+  "smoke": {
+    "all": {
+      "matches": 1022,
+      "winPct": 14,
+      "byTier": {
+        "Bronze": {
+          "n": 342,
+          "winPct": 10.2
+        },
+        "Silver": {
+          "n": 230,
+          "winPct": 4.3
+        },
+        "Gold": {
+          "n": 265,
+          "winPct": 21.5
+        },
+        "Platinum": {
+          "n": 153,
+          "winPct": 23.5
+        },
+        "Masters": {
+          "n": 26,
+          "winPct": 11.5
+        },
+        "Elite": {
+          "n": 6,
+          "winPct": 33.3
+        }
+      },
+      "byRound": {
+        "Q": {
+          "n": 137,
+          "winPct": 23.4
+        },
+        "R1": {
+          "n": 778,
+          "winPct": 10.8
+        },
+        "R2": {
+          "n": 49,
+          "winPct": 22.4
+        },
+        "QF": {
+          "n": 44,
+          "winPct": 31.8
+        },
+        "SF": {
+          "n": 12,
+          "winPct": 16.7
+        },
+        "F": {
+          "n": 2,
+          "winPct": 0
+        }
+      },
+      "byClass": {
+        "Fácil": {
+          "n": 572,
+          "winPct": 7.9
+        },
+        "Médio": {
+          "n": 418,
+          "winPct": 22.2
+        },
+        "Difícil": {
+          "n": 32,
+          "winPct": 15.6
+        }
+      },
+      "byEngineStrengthDelta": {
+        "≤-15": {
+          "n": 488,
+          "winPct": 0.4
+        },
+        "-15..-5": {
+          "n": 100,
+          "winPct": 6
+        },
+        "-5..+5": {
+          "n": 231,
+          "winPct": 20.3
+        },
+        "+5..+15": {
+          "n": 158,
+          "winPct": 38.6
+        },
+        "≥+15": {
+          "n": 45,
+          "winPct": 60
+        }
+      },
+      "engineStrengthDelta": {
+        "n": 1022,
+        "p25": -32.8,
+        "median": -12.4,
+        "p75": 2.5,
+        "min": -61.804,
+        "max": 40.980000000000004
+      }
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 231,
+        "winPct": 2.2,
+        "byTier": {
+          "Bronze": {
+            "n": 65,
+            "winPct": 1.5
+          },
+          "Silver": {
+            "n": 35,
+            "winPct": 0
+          },
+          "Gold": {
+            "n": 75,
+            "winPct": 4
+          },
+          "Platinum": {
+            "n": 41,
+            "winPct": 2.4
+          },
+          "Masters": {
+            "n": 13,
+            "winPct": 0
+          },
+          "Elite": {
+            "n": 2,
+            "winPct": 0
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 72,
+            "winPct": 4.2
+          },
+          "R1": {
+            "n": 157,
+            "winPct": 1.3
+          },
+          "R2": {
+            "n": 1,
+            "winPct": 0
+          },
+          "QF": {
+            "n": 1,
+            "winPct": 0
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 100,
+            "winPct": 1
+          },
+          "Médio": {
+            "n": 116,
+            "winPct": 3.4
+          },
+          "Difícil": {
+            "n": 15,
+            "winPct": 0
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 199,
+            "winPct": 1
+          },
+          "-15..-5": {
+            "n": 23,
+            "winPct": 0
+          },
+          "-5..+5": {
+            "n": 7,
+            "winPct": 28.6
+          },
+          "+5..+15": {
+            "n": 2,
+            "winPct": 50
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 231,
+          "p25": -37.8,
+          "median": -32.5,
+          "p75": -21.3,
+          "min": -60.438,
+          "max": 8.652000000000001
+        }
+      },
+      "normal": {
+        "matches": 418,
+        "winPct": 18.9,
+        "byTier": {
+          "Bronze": {
+            "n": 131,
+            "winPct": 13.7
+          },
+          "Silver": {
+            "n": 106,
+            "winPct": 4.7
+          },
+          "Gold": {
+            "n": 111,
+            "winPct": 32.4
+          },
+          "Platinum": {
+            "n": 63,
+            "winPct": 28.6
+          },
+          "Masters": {
+            "n": 7,
+            "winPct": 28.6
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 62,
+            "winPct": 41.9
+          },
+          "R1": {
+            "n": 304,
+            "winPct": 13.8
+          },
+          "R2": {
+            "n": 24,
+            "winPct": 20.8
+          },
+          "QF": {
+            "n": 22,
+            "winPct": 22.7
+          },
+          "SF": {
+            "n": 5,
+            "winPct": 20
+          },
+          "F": {
+            "n": 1,
+            "winPct": 0
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 237,
+            "winPct": 9.7
+          },
+          "Médio": {
+            "n": 174,
+            "winPct": 31
+          },
+          "Difícil": {
+            "n": 7,
+            "winPct": 28.6
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 144,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 69,
+            "winPct": 8.7
+          },
+          "-5..+5": {
+            "n": 134,
+            "winPct": 26.1
+          },
+          "+5..+15": {
+            "n": 52,
+            "winPct": 46.2
+          },
+          "≥+15": {
+            "n": 19,
+            "winPct": 73.7
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 418,
+          "p25": -27.3,
+          "median": -5.2,
+          "p75": 1.2,
+          "min": -61.804,
+          "max": 40.980000000000004
+        }
+      },
+      "optimizer": {
+        "matches": 373,
+        "winPct": 15.8,
+        "byTier": {
+          "Bronze": {
+            "n": 146,
+            "winPct": 11
+          },
+          "Silver": {
+            "n": 89,
+            "winPct": 5.6
+          },
+          "Gold": {
+            "n": 79,
+            "winPct": 22.8
+          },
+          "Platinum": {
+            "n": 49,
+            "winPct": 34.7
+          },
+          "Masters": {
+            "n": 6,
+            "winPct": 16.7
+          },
+          "Elite": {
+            "n": 4,
+            "winPct": 50
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 3,
+            "winPct": 100
+          },
+          "R1": {
+            "n": 317,
+            "winPct": 12.6
+          },
+          "R2": {
+            "n": 24,
+            "winPct": 25
+          },
+          "QF": {
+            "n": 21,
+            "winPct": 42.9
+          },
+          "SF": {
+            "n": 7,
+            "winPct": 14.3
+          },
+          "F": {
+            "n": 1,
+            "winPct": 0
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 235,
+            "winPct": 8.9
+          },
+          "Médio": {
+            "n": 128,
+            "winPct": 27.3
+          },
+          "Difícil": {
+            "n": 10,
+            "winPct": 30
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 145,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 8,
+            "winPct": 0
+          },
+          "-5..+5": {
+            "n": 90,
+            "winPct": 11.1
+          },
+          "+5..+15": {
+            "n": 104,
+            "winPct": 34.6
+          },
+          "≥+15": {
+            "n": 26,
+            "winPct": 50
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 373,
+          "p25": -26.3,
+          "median": -0.5,
+          "p75": 7.4,
+          "min": -59.288,
+          "max": 29.534000000000006
+        }
+      }
+    }
+  },
+  "fieldImpact": {
+    "Bronze": {
+      "matches": 342,
+      "medianOppTeamRank": 776,
+      "p25OppTeamRank": 751.8,
+      "p75OppTeamRank": 800,
+      "medianOppOvr": 58,
+      "medianTeamOvr": 33,
+      "rankedShare": 71.3,
+      "unrankedShare": 28.7,
+      "fallbackShare": 0
+    },
+    "Silver": {
+      "matches": 230,
+      "medianOppTeamRank": 453,
+      "p25OppTeamRank": 418,
+      "p75OppTeamRank": 523,
+      "medianOppOvr": 76.5,
+      "medianTeamOvr": 35.8,
+      "rankedShare": 99.6,
+      "unrankedShare": 0.4,
+      "fallbackShare": 0
+    },
+    "Gold": {
+      "matches": 187,
+      "medianOppTeamRank": 477,
+      "p25OppTeamRank": 348,
+      "p75OppTeamRank": 515,
+      "medianOppOvr": 77,
+      "medianTeamOvr": 73.5,
+      "rankedShare": 100,
+      "unrankedShare": 0,
+      "fallbackShare": 0
+    },
+    "Platinum": {
+      "matches": 107,
+      "medianOppTeamRank": 264.5,
+      "p25OppTeamRank": 246.3,
+      "p75OppTeamRank": 297.5,
+      "medianOppOvr": 79.5,
+      "medianTeamOvr": 74,
+      "rankedShare": 99.1,
+      "unrankedShare": 0.9,
+      "fallbackShare": 0
+    },
+    "Masters": {
+      "matches": 15,
+      "medianOppTeamRank": 190,
+      "p25OppTeamRank": 169.5,
+      "p75OppTeamRank": 209,
+      "medianOppOvr": 80,
+      "medianTeamOvr": 74,
+      "rankedShare": 100,
+      "unrankedShare": 0,
+      "fallbackShare": 0
+    },
+    "Elite": {
+      "matches": 4,
+      "medianOppTeamRank": 114.5,
+      "p25OppTeamRank": 97.8,
+      "p75OppTeamRank": 120.5,
+      "medianOppOvr": 80.3,
+      "medianTeamOvr": 86,
+      "rankedShare": 100,
+      "unrankedShare": 0,
+      "fallbackShare": 0
+    }
+  }
+}

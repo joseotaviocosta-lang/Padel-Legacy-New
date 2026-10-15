@@ -1,0 +1,11 @@
+import { attach } from './attach.mjs';
+import { mobile } from './mob.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const { tap, waitFor } = mobile(page, sleep, state, shot);
+await tap(/^Avançar$/, 1000);
+const found = await page.evaluate(() => { const el = [...document.querySelectorAll('*')].filter((e) => e.getClientRects().length && e.children.length === 0).find((e) => e.textContent.trim() === 'Ir para o torneio'); if (!el) return null; const t = el.closest('button,a,[role=button],[tabindex]') || el; const info = { tag: t.tagName, role: t.getAttribute('role'), cls: (t.className || '').toString().slice(0, 80) }; t.click(); return info; });
+console.log('toast-click', JSON.stringify(found));
+const ms = await waitFor(/VOCÊ ESTÁ DISPUTANDO|Preparar|PLANO TÁTICO|Reunião pré-torneio/i, 60000);
+console.log('run visível em', ms, (await state(1500)).url);
+await shot('a18-run');
+browser.disconnect();

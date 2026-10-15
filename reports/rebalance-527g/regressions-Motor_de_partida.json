@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-13T03:04:51.929Z",
+  "passed": 3,
+  "total": 3,
+  "results": [
+    {
+      "group": "Motor de partida",
+      "name": "test-match-integrity",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": null
+    },
+    {
+      "group": "Motor de partida",
+      "name": "test-live-coach-tournament",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": "PASS — a UI real mostra o banner \"Nova sugestão do técnico\" em partida de torneio"
+    },
+    {
+      "group": "Motor de partida",
+      "name": "test-tournament-result-authority",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": null
+    }
+  ]
+}

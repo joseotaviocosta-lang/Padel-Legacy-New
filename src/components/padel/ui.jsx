@@ -107,8 +107,12 @@ export function TabBar({ tabs, activeTab, onTabChange, variant = 'buttons' }) {
 // sem ícone), reaproveitado por Loja/Economia/Comunicações em vez de cada
 // uma reimplementar a mesma faixa.
 export function FilterPills({ filters, activeFilter, onFilterChange }) {
+  // Playthrough 5.20-B — mesma correcao da copia do design-system: a faixa
+  // rolavel escondia 266px de filtros em Relacoes (a pagina que ainda consome
+  // esta versao legada). No mobile as pilulas quebram linha; acima de md: a
+  // faixa unica continua.
   return (
-    <div className="flex flex-nowrap gap-2 overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
+    <div className="flex flex-wrap gap-2 pb-1 md:flex-nowrap md:overflow-x-auto md:scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
       {filters.map(f => {
         const Icon = f.icon;
         return (

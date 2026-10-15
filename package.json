@@ -140,6 +140,7 @@
     "test:tournament-notification-deeplink": "node scripts/test-tournament-notification-deeplink-rc.mjs",
     "test:notification-system-audit": "node scripts/test-notification-system-audit-rc.mjs",
     "test:notification-100day-simulation": "node scripts/test-notification-100day-simulation-rc.mjs",
+    "test:interview-notification-deeplink-v521": "node test-interview-notification-deeplink-v521.mjs",
     "test:communication-deduplication": "node scripts/test-communication-deduplication.mjs",
     "test:notification-editorial-quality": "node scripts/test-notification-editorial-quality.mjs",
     "test:global-advance-release": "node scripts/test-global-advance-release-rc.mjs",
@@ -293,7 +294,17 @@
     "test:simulation-population-cap-invariant": "node scripts/test-simulation-population-cap-invariant.mjs",
     "test:match-ui-unification-phase4": "node scripts/test-match-ui-unification-phase4.mjs",
     "test:equipment-bonus-integrity": "node scripts/test-equipment-bonus-integrity.mjs",
-    "audit:real-athletes-simulation": "node scripts/audit-real-athletes-simulation.mjs"
+    "audit:real-athletes-simulation": "node scripts/audit-real-athletes-simulation.mjs",
+    "test:team-ranking-sum-v522e": "node scripts/test-team-ranking-sum-formula-v522e.mjs && node scripts/test-team-ranking-new-pair-inherits-points-v522e.mjs && node scripts/test-team-ranking-pair-change-sum-v522e.mjs && node scripts/test-team-ranking-zero-zero-unranked-v522e.mjs && node scripts/test-team-ranking-existing-save-recalc-v522e.mjs && node scripts/test-team-ranking-seeding-after-sum-v522e.mjs",
+    "test:ranking-ui-v522e": "node scripts/test-ranking-world-compact-v522e.mjs && node scripts/test-ranking-race-distinct-v522e.mjs && node scripts/test-ranking-race-no-duplicate-summary-v522e.mjs && node scripts/test-ranking-world-race-divergent-fixture-v522e.mjs && node scripts/test-ranking-player-pair-points-breakdown-v522e.mjs && node scripts/test-ranking-country-club-links-v522e.mjs && node scripts/test-world-directory-clubs-v522e.mjs && node scripts/test-world-directory-countries-v522e.mjs",
+    "test:team-ranking-no-geometric-v522f": "node scripts/test-team-ranking-no-geometric-authority-v522f.mjs",
+    "test:team-ranking-fallback-v522f": "node scripts/test-team-ranking-pair-entry-fallback-v522f.mjs",
+    "test:team-ranking-old-pair-v522f": "node scripts/test-team-ranking-old-pair-history-v522f.mjs",
+    "test:masters-24-v522f": "node scripts/test-masters-24-8byes-r16-v522f.mjs",
+    "test:admission-matrix-v522f": "node scripts/test-player-tier-eligibility-matrix.mjs",
+    "test:player-team-ranking-v522g": "node scripts/test-player-team-ranking-materialization-v522g.mjs && node scripts/test-player-team-ranking-existing-save-repair-v522g.mjs && node scripts/test-player-team-ranking-active-pair-key-v522g.mjs && node scripts/test-player-team-ranking-position-v522g.mjs && node scripts/test-player-team-ranking-zero-zero-v522g.mjs && node scripts/test-player-team-ranking-pair-change-v522g.mjs && node scripts/test-player-team-ranking-points-reprojection-v522g.mjs && node scripts/test-ranking-player-pair-card-authority-v522g.mjs",
+    "test:ranking-architecture-v523": "node scripts/test-ranking-four-view-architecture-v523.mjs && node scripts/test-ranking-world-individual-view-v523.mjs && node scripts/test-ranking-world-doubles-view-v523.mjs && node scripts/test-ranking-race-individual-view-v523.mjs && node scripts/test-ranking-race-doubles-view-v523.mjs && node scripts/test-ranking-world-race-team-authority-v523.mjs && node scripts/test-ranking-race-doubles-player-context-v523.mjs && node scripts/test-ranking-finals-cut-semantic-v523.mjs && node scripts/test-ranking-legacy-tab-redirects-v523.mjs && node scripts/test-ranking-mobile-two-level-tabs-v523.mjs && node scripts/test-ranking-history-navigation-v523.mjs && node scripts/test-ranking-no-active-partner-states-v523.mjs",
+    "test:header-ranking-v524": "node scripts/test-ranking-race-doubles-card-v524.mjs && node scripts/test-header-rank-shortcuts-v524.mjs && node scripts/test-countries-authority-v524.mjs && node scripts/test-mobile-header-two-rows-v524.mjs"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.3",
@@ -361,6 +372,7 @@
     "eslint-plugin-unused-imports": "^4.3.0",
     "globals": "^15.14.0",
     "postcss": "^8.5.3",
+    "puppeteer-core": "^25.12.0",
     "tailwindcss": "^3.4.17",
     "typescript": "^5.8.2",
     "vite": "^6.1.0"

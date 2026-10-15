@@ -28,7 +28,13 @@ export function Tabs({ tabs, activeTab, onTabChange, variant = 'segmented', clas
       <TabsList
         className={cn(
           'h-auto w-full min-w-0 flex-nowrap justify-start gap-1 overflow-x-auto scroll-px-2 rounded-2xl border border-border/60 bg-card/55 p-1 pr-3 scrollbar-none',
-          variant === 'buttons' && 'gap-2 border-none bg-transparent p-0 pl-1 pr-3',
+          // Playthrough 5.20-B — a variante 'buttons' nao e navegacao, e fila
+          // de filtros (Torneios usa as 11 categorias por aqui). Medido em
+          // 360px: escondia 466px, ou seja, a maioria das categorias nascia
+          // fora da tela. No mobile ela quebra linha, como as FilterPills;
+          // acima de md: volta a ser faixa unica. A variante 'segmented', que
+          // e navegacao de verdade, continua intocada.
+          variant === 'buttons' && 'gap-2 border-none bg-transparent p-0 pl-1 pr-3 flex-wrap md:flex-nowrap',
         )}
         style={{ WebkitOverflowScrolling: 'touch' }}
       >

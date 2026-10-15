@@ -1,0 +1,103 @@
+{
+  "at": "2026-10-12T02:45:20.230Z",
+  "passed": 12,
+  "total": 12,
+  "results": [
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-job-manifest-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-job-manifest-v527d: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-job-checkpoint-resume-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 79,
+      "summary": "test-job-checkpoint-resume-v527d: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-stale-running-recovery-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-stale-running-recovery-v527d: 11/11 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-result-hash-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-result-hash-v527d: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-cross-machine-result-import-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-cross-machine-result-import-v527d: 11/11 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-stage1-matrix-completeness-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-stage1-matrix-completeness-v527d: 8/8 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-stage2-matrix-completeness-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-stage2-matrix-completeness-v527d: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-longrun-completeness-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-longrun-completeness-v527d: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-incremental-analysis-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-incremental-analysis-v527d: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-no-balance-mutation-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-no-balance-mutation-v527d: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-job-determinism-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 1244,
+      "summary": "test-job-determinism-v527d: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-validation-final-gates-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-validation-final-gates-v527d: 8/8 passaram"
+    }
+  ]
+}

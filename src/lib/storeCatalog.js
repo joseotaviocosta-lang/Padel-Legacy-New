@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { ATTRIBUTE_KEYS } from '@/lib/attributes.js';
 import { findSponsorIdByManufacturer } from '@/lib/sponsors.js';
 import { getCategoryRarityIconAssetPath } from '@/lib/equipmentCatalog.js';
+import { getBalance527 } from '@/lib/balance527.js';
 
 const CATEGORY_ALIASES = {
   racket: 'raquete', raquetes: 'raquete', pala: 'raquete', palas: 'raquete',
@@ -77,9 +78,14 @@ export function normalizeShopItem(item) {
     price: (() => {
       const stored = Number(item?.price);
       const floor = SHOP_PROGRESSION[rarity]?.priceFloor || 100;
-      if (Number.isFinite(stored) && stored > 0) return Math.max(stored, floor);
-      const row = EXPANDED_ITEMS.find(entry => cleanKey(entry.name) === cleanKey(item?.name));
-      return row ? Number(row.price) : SHOP_PROGRESSION[rarity]?.priceFloor || 100;
+      const base = (() => {
+        if (Number.isFinite(stored) && stored > 0) return Math.max(stored, floor);
+        const row = EXPANDED_ITEMS.find(entry => cleanKey(entry.name) === cleanKey(item?.name));
+        return row ? Number(row.price) : SHOP_PROGRESSION[rarity]?.priceFloor || 100;
+      })();
+      // Playthrough 5.27 — preço reescalado pela config central (compra deixa
+      // de ser trivial); o bônus não muda aqui (ROI é medido no harness).
+      return Math.round(base * getBalance527().shopPriceMultiplier);
     })(),
     durability: Number.isFinite(Number(item?.durability)) ? Number(item.durability) : 100,
     is_available: item?.is_available !== false,

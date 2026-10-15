@@ -1,0 +1,119 @@
+{
+  "config": "balanced-e · Otimizador v4 · 1 ano",
+  "careers": [
+    {
+      "seed": 6,
+      "profile": "optimizer",
+      "days": 365,
+      "easy": {
+        "wr": 58.3,
+        "n": 48
+      },
+      "medium": {
+        "wr": 0,
+        "n": 3
+      },
+      "hard": {
+        "wr": null,
+        "n": 0
+      },
+      "r1": {
+        "wr": 48.1,
+        "n": 27
+      },
+      "bronze": {
+        "wr": 59.4,
+        "n": 32
+      },
+      "silver": {
+        "wr": 56.3,
+        "n": 16
+      },
+      "gold": {
+        "wr": 0,
+        "n": 3
+      },
+      "platinum": {
+        "wr": null,
+        "n": 0
+      },
+      "rank": {
+        "6m": 675,
+        "1y": 250,
+        "2y": null
+      },
+      "firstTop100Day": null,
+      "firstTop10Day": null,
+      "firstNo1Day": null,
+      "titlesY1": 4,
+      "titlesY2Cum": null,
+      "finals": 5,
+      "partnerOvr": {
+        "6m": 40,
+        "1y": 91,
+        "2y": null
+      },
+      "bestAttainable1y": 90,
+      "teamOvrMedian": 39.5,
+      "energyAtMatchMedian": 100,
+      "sponsorShareY1": 43.4,
+      "prizeShareY1": 15.5,
+      "cash": {
+        "6m": 9963,
+        "1y": -879,
+        "2y": null
+      },
+      "debtEvents": 1,
+      "staffCostShare": 21.4,
+      "lifecycle": {
+        "exitDecisions": 2,
+        "limboDays": [
+          2,
+          21
+        ],
+        "registrationsBlockedAfterExit": 0,
+        "illegitimateRegistrations": 0,
+        "maxExtensionDays": 0
+      },
+      "health": {
+        "errors": 0,
+        "advanceFailures": 0,
+        "softLock": 0,
+        "forfeits": 0,
+        "registrations": 27,
+        "matches": 51,
+        "resignLoop": 0
+      },
+      "partnerTimeline": [
+        "0:22",
+        "211:82",
+        "270:91"
+      ],
+      "partnerMarks": [
+        {
+          "day": 91,
+          "partner": 38,
+          "best": 34
+        },
+        {
+          "day": 182,
+          "partner": 40,
+          "best": 82
+        },
+        {
+          "day": 273,
+          "partner": 91,
+          "best": 90
+        },
+        {
+          "day": 365,
+          "partner": 91,
+          "best": 90
+        }
+      ],
+      "longestGapOver30Days": 0,
+      "gate": true
+    }
+  ],
+  "pass": true
+}

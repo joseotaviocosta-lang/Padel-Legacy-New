@@ -1,0 +1,164 @@
+{
+  "tag": "compatfix",
+  "markets": 23,
+  "searchMarkets": 23,
+  "initialMarkets": 0,
+  "search": {
+    "CURRENT_COMPAT": {
+      "markets": 23,
+      "chosenOvrMedian": 41,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.457,
+      "ovrGapMedian": 46,
+      "compatMedian": 87,
+      "compatLossMedian": 0,
+      "salaryShareOfCashMedian": 0.058,
+      "sameAsOptimizerPct": 0
+    },
+    "NORMAL_A": {
+      "markets": 23,
+      "chosenOvrMedian": 85,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.976,
+      "ovrGapMedian": 2,
+      "compatMedian": 75,
+      "compatLossMedian": 12,
+      "salaryShareOfCashMedian": 0.088,
+      "sameAsOptimizerPct": 70
+    },
+    "NORMAL_B": {
+      "markets": 23,
+      "chosenOvrMedian": 85,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.976,
+      "ovrGapMedian": 2,
+      "compatMedian": 75,
+      "compatLossMedian": 12,
+      "salaryShareOfCashMedian": 0.094,
+      "sameAsOptimizerPct": 74
+    },
+    "NORMAL_C": {
+      "markets": 23,
+      "chosenOvrMedian": 85,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.976,
+      "ovrGapMedian": 2,
+      "compatMedian": 75,
+      "compatLossMedian": 12,
+      "salaryShareOfCashMedian": 0.094,
+      "sameAsOptimizerPct": 74
+    },
+    "NORMAL_D": {
+      "markets": 23,
+      "chosenOvrMedian": 82,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.944,
+      "ovrGapMedian": 5,
+      "compatMedian": 79,
+      "compatLossMedian": 8,
+      "salaryShareOfCashMedian": 0.087,
+      "sameAsOptimizerPct": 9
+    },
+    "NORMAL_E": {
+      "markets": 23,
+      "chosenOvrMedian": 82,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.944,
+      "ovrGapMedian": 5,
+      "compatMedian": 79,
+      "compatLossMedian": 8,
+      "salaryShareOfCashMedian": 0.087,
+      "sameAsOptimizerPct": 9
+    },
+    "OPTIMIZER_STRONGEST": {
+      "markets": 23,
+      "chosenOvrMedian": 84,
+      "bestOvrMedian": 88,
+      "ovrRatioMedian": 0.976,
+      "ovrGapMedian": 2,
+      "compatMedian": 74,
+      "compatLossMedian": 13,
+      "salaryShareOfCashMedian": 0.094,
+      "sameAsOptimizerPct": 100
+    }
+  },
+  "initial": {
+    "CURRENT_COMPAT": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    },
+    "NORMAL_A": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    },
+    "NORMAL_B": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    },
+    "NORMAL_C": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    },
+    "NORMAL_D": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    },
+    "NORMAL_E": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    },
+    "OPTIMIZER_STRONGEST": {
+      "markets": 0,
+      "chosenOvrMedian": null,
+      "bestOvrMedian": null,
+      "ovrRatioMedian": null,
+      "ovrGapMedian": null,
+      "compatMedian": null,
+      "compatLossMedian": null,
+      "salaryShareOfCashMedian": null,
+      "sameAsOptimizerPct": 0
+    }
+  }
+}

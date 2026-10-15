@@ -92,8 +92,8 @@ export default function Relationships() {
       </div>}
 
       <div className="flex gap-2">
-        <div className="glass rounded-2xl p-3 flex items-center gap-2 flex-1"><Search className="h-4 w-4 text-muted-foreground" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar atleta..." className="flex-1 bg-transparent text-sm outline-none" /></div>
-        <button onClick={handleSeed} disabled={seeding} className="glass rounded-2xl px-4 flex items-center gap-2 text-xs font-bold hover:bg-secondary/60 disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${seeding ? 'animate-spin' : ''}`} /> Sincronizar</button>
+        <div className="glass rounded-2xl p-3 flex items-center gap-2 flex-1 min-w-0"><Search className="h-4 w-4 text-muted-foreground" /><input value={search} onChange={e => setSearch(e.target.value)} placeholder="Buscar atleta..." className="w-full min-w-0 flex-1 bg-transparent text-sm outline-none" /></div>
+        <button onClick={handleSeed} disabled={seeding} className="glass rounded-2xl px-4 shrink-0 flex items-center gap-2 text-xs font-bold hover:bg-secondary/60 disabled:opacity-50"><RefreshCw className={`h-4 w-4 ${seeding ? 'animate-spin' : ''}`} /> Sincronizar</button>
       </div>
 
       <FilterPills filters={filters} activeFilter={activeFilter} onFilterChange={setActiveFilter} />

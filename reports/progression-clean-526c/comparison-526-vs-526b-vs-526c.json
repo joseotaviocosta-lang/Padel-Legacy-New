@@ -1,0 +1,196 @@
+{
+  "horizon730": [
+    {
+      "label": "5.26 (com shim)",
+      "careers": 15,
+      "matches": 1299,
+      "easy": {
+        "n": 577,
+        "winPct": 29.6
+      },
+      "medium": {
+        "n": 635,
+        "winPct": 40.8
+      },
+      "hard": {
+        "n": 87,
+        "winPct": 24.1
+      },
+      "overallWinPct": 34.7,
+      "freezeCareersPct": 100,
+      "shimUsed": "sim",
+      "partnerEngineEqualsCardPct": 0,
+      "rankMedian1y": 702,
+      "rankMedianEnd": 96,
+      "ovrMedianEnd": 68,
+      "rankJumpNewYear2027Median": 302,
+      "rankJumpNewYear2027Max": 372,
+      "titlesPerCareerYear": 0.03,
+      "finalsPerCareerYear": 0.33,
+      "sponsorTiers": "Bronze",
+      "originalSponsorsSigned": 0,
+      "reputationMedianEnd": 0,
+      "opponentRankedPct": 0,
+      "upsetsWon": 0,
+      "samePartnerMaxSignings": 81,
+      "careersWithResignLoopPct": 13.3,
+      "achievementCoinLossMedian": 14400,
+      "saveMBEnd": 18.58,
+      "errorsPerCareer": 0
+    },
+    {
+      "label": "5.26-B",
+      "careers": 14,
+      "matches": 1932,
+      "easy": {
+        "n": 641,
+        "winPct": 44.1
+      },
+      "medium": {
+        "n": 1034,
+        "winPct": 72.3
+      },
+      "hard": {
+        "n": 240,
+        "winPct": 55
+      },
+      "overallWinPct": 60.7,
+      "freezeCareersPct": 0,
+      "shimUsed": "não (opt-in)",
+      "partnerEngineEqualsCardPct": 100,
+      "rankMedian1y": 663,
+      "rankMedianEnd": 20,
+      "ovrMedianEnd": "77 †",
+      "rankJumpNewYear2027Median": "307 †",
+      "rankJumpNewYear2027Max": "311 †",
+      "titlesPerCareerYear": 0.5,
+      "finalsPerCareerYear": "3 †",
+      "sponsorTiers": "Bronze/Prata",
+      "originalSponsorsSigned": "0 †",
+      "reputationMedianEnd": 100,
+      "opponentRankedPct": "0 †",
+      "upsetsWon": "0 †",
+      "samePartnerMaxSignings": "1 †",
+      "careersWithResignLoopPct": "0 †",
+      "achievementCoinLossMedian": 0,
+      "saveMBEnd": "19.11 †",
+      "errorsPerCareer": "0 †"
+    },
+    {
+      "label": "5.26-C (limpa)",
+      "careers": 15,
+      "matches": 2116,
+      "easy": {
+        "n": 677,
+        "winPct": 44.9
+      },
+      "medium": {
+        "n": 1138,
+        "winPct": 73.1
+      },
+      "hard": {
+        "n": 301,
+        "winPct": 53.8
+      },
+      "overallWinPct": 61.3,
+      "freezeCareersPct": 0,
+      "shimUsed": "não",
+      "partnerEngineEqualsCardPct": 100,
+      "rankMedian1y": 368,
+      "rankMedianEnd": 9,
+      "ovrMedianEnd": 72,
+      "rankJumpNewYear2027Median": 13,
+      "rankJumpNewYear2027Max": 24,
+      "titlesPerCareerYear": 0.73,
+      "finalsPerCareerYear": 2.73,
+      "sponsorTiers": "Bronze/Prata",
+      "originalSponsorsSigned": 56,
+      "reputationMedianEnd": 100,
+      "opponentRankedPct": 0,
+      "upsetsWon": 0,
+      "samePartnerMaxSignings": 4,
+      "careersWithResignLoopPct": 0,
+      "achievementCoinLossMedian": 0,
+      "saveMBEnd": 19.29,
+      "errorsPerCareer": 0
+    }
+  ],
+  "horizon5y": [
+    {
+      "label": "5.26 (com shim, 45)",
+      "careers": 45,
+      "matches": 11265,
+      "easy": {
+        "n": 1771,
+        "winPct": 30
+      },
+      "medium": {
+        "n": 7146,
+        "winPct": 48.4
+      },
+      "hard": {
+        "n": 2348,
+        "winPct": 24.7
+      },
+      "overallWinPct": 40.6,
+      "freezeCareersPct": 100,
+      "shimUsed": "sim",
+      "partnerEngineEqualsCardPct": 0,
+      "rankMedian1y": 694,
+      "rankMedianEnd": 54,
+      "ovrMedianEnd": 83,
+      "rankJumpNewYear2027Median": 307,
+      "rankJumpNewYear2027Max": 372,
+      "titlesPerCareerYear": 0.01,
+      "finalsPerCareerYear": 0.17,
+      "sponsorTiers": "Bronze",
+      "originalSponsorsSigned": 0,
+      "reputationMedianEnd": 0,
+      "opponentRankedPct": 0,
+      "upsetsWon": 0,
+      "samePartnerMaxSignings": 123,
+      "careersWithResignLoopPct": 8.9,
+      "achievementCoinLossMedian": 37200,
+      "saveMBEnd": 37.47,
+      "errorsPerCareer": 0
+    },
+    {
+      "label": "5.26-C (limpa, 35)",
+      "careers": 35,
+      "matches": 16182,
+      "easy": {
+        "n": 1704,
+        "winPct": 49.2
+      },
+      "medium": {
+        "n": 10254,
+        "winPct": 78.8
+      },
+      "hard": {
+        "n": 4224,
+        "winPct": 63.6
+      },
+      "overallWinPct": 71.7,
+      "freezeCareersPct": 0,
+      "shimUsed": "não",
+      "partnerEngineEqualsCardPct": 100,
+      "rankMedian1y": 361,
+      "rankMedianEnd": 4,
+      "ovrMedianEnd": 84,
+      "rankJumpNewYear2027Median": 13,
+      "rankJumpNewYear2027Max": 24,
+      "titlesPerCareerYear": 1.79,
+      "finalsPerCareerYear": 5.23,
+      "sponsorTiers": "Bronze/Prata/Ouro",
+      "originalSponsorsSigned": 354,
+      "reputationMedianEnd": 100,
+      "opponentRankedPct": 0,
+      "upsetsWon": 0,
+      "samePartnerMaxSignings": 4,
+      "careersWithResignLoopPct": 0,
+      "achievementCoinLossMedian": 0,
+      "saveMBEnd": 36.69,
+      "errorsPerCareer": 0
+    }
+  ]
+}

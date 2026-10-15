@@ -1,20 +1,71 @@
 import { localGame } from '@/api/localGameClient.js';
 import { chooseTournament } from './TournamentSelectionAI.js';
-import { resolveEntryRank, OPEN_TIER_CEILING, PRIORITY_WINDOW_N } from './EntryManager.js';
+import { resolveEntryRank, OPEN_TIER_CEILING, PRIORITY_WINDOW_N, evaluateTournamentEntry } from './EntryManager.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
 import { WORLD_RANKING_TARGET } from '@/lib/rankingPopulation.js';
-import { getTournamentTierConfig, getRoundOutcomeTable } from '@/lib/circuitCatalog.js';
+import { getTournamentTierConfig, getRoundOutcomeTable, getTierRankingFit } from '@/lib/circuitCatalog.js';
 import {
   RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP,
   buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
 } from '@/game-core/rankingWindow.js';
-import { buildCanonicalTournamentBracket, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket } from './tournamentSettlement.js';
+import { buildCanonicalTournamentBracket, buildSeededDrawSlots, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket } from './tournamentSettlement.js';
+import { getCanonicalRoundDates } from '@/lib/tournamentSchedule.js';
+import { verifySaveFoundation, ensureWorldSeed2025 } from '@/lib/saveFoundation.js';
+import { getTeamRankings } from '@/lib/teamRanking.js';
+import { getBalance527 } from '@/lib/balance527.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 // Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
 // margem zero, e generateProspects (achado 2D.2, agora 5-6/mês) passa a
 // truncar já no primeiro mês em que a população cruzar 1000+1.
 const ATHLETE_POPULATION_CAP = WORLD_RANKING_TARGET + 100;
+
+// Finals não são mais um degrau da escada semanal. São convites fechados por
+// mérito da DUPLA: Circuit Finals chama as 8 melhores, Legacy Finals chama
+// as 16 melhores. Este limite também espelha `minRanking` de cada config e
+// é aplicado sobre TeamRanking, a fonte canônica de ranking de dupla.
+export const FINALS_TEAM_RANKING_LIMITS = Object.freeze({
+  'Circuit Finals': 8,
+  'Legacy Finals': 16,
+});
+
+export function isFinalsTournament(tournament) {
+  return Boolean(FINALS_TEAM_RANKING_LIMITS[tournament?.tier]);
+}
+
+function pairTeamKey(pair) {
+  return (pair?.athletes || []).map((athlete) => athlete?.id).filter(Boolean).sort().join('_');
+}
+
+export function selectFinalsEntrants(tournament, availablePairs = [], teamRankings = []) {
+  const limit = FINALS_TEAM_RANKING_LIMITS[tournament?.tier];
+  if (!limit) return null;
+  const pairByTeamKey = new Map((availablePairs || []).map((pair) => [pairTeamKey(pair), pair]));
+  const seen = new Set();
+  const rows = [...(teamRankings || [])]
+    .filter((row) => row?.team_key && Number(row.ranking_points) > 0)
+    .sort((a, b) => (Number(b.ranking_points) || 0) - (Number(a.ranking_points) || 0));
+  const entrants = [];
+  for (const row of rows) {
+    const pair = pairByTeamKey.get(row.team_key);
+    if (!pair || seen.has(pair.id)) continue;
+    seen.add(pair.id);
+    entrants.push(pair);
+    if (entrants.length === limit) break;
+  }
+  return entrants;
+}
+
+async function applyFinalsEntryAuthority(tournaments, availablePairs, assignments) {
+  const finals = (tournaments || []).filter(isFinalsTournament);
+  if (!finals.length) return assignments;
+  const rankings = await getTeamRankings(600);
+  for (const tournament of finals) {
+    const entrants = selectFinalsEntrants(tournament, availablePairs, rankings);
+    if (entrants) assignments.set(tournament.id, entrants);
+  }
+  return assignments;
+}
 
 
 function hash(value = '') {
@@ -41,6 +92,46 @@ function pairEntryRank(pair) {
 function pairScore(pair, tournament) {
   const base = pair.athletes.reduce((sum, athlete) => sum + athleteScore(athlete, tournament), 0) / pair.athletes.length;
   return base + Number(pair.chemistry || 50) * 0.08 + (hash(`${pair.id}:${tournament.id}:pair`) % 900) / 100;
+}
+
+// Playthrough 5.27 — AUTORIDADE DE ADMISSÃO (mesma para IA e jogador).
+// `blendedCutScore` original = pairScore · (0.35 + 0.65·tierFit/100), que
+// ordenava por FORÇA: nos tiers abertos (Bronze/Silver) o topo elegível
+// (OVR 58–76) enchia a chave contra um iniciante de OVR 12. Para os tiers
+// abertos a ordem é invertida (FRACO-PRIMEIRO, ainda ponderada por tierFit):
+// a base é a porta de entrada e deve bater com quem começa. Tiers com corte
+// mantêm a autoridade original. Exportada para o teste medir a mesma fonte.
+export function fieldAdmissionScore(pair, tournament) {
+  const fit = getTierRankingFit(tournament.tier, pairEntryRank(pair));
+  const blended = pairScore(pair, tournament) * (0.35 + 0.65 * fit / 100);
+  const openTier = (getTournamentTierConfig(tournament?.tier).minRanking || 0) === 0;
+  return openTier ? -blended : blended;
+}
+
+// Playthrough 5.1, Parte I/W — extraída do laço de resgate (abaixo) pra
+// ser testável isoladamente (test-tier-rescue-quality.mjs). Prioridade:
+// 1) duplas ADEQUADAS ao tier (getTierRankingFit alto — a MESMA curva que
+// chooseTournament usa, nunca uma segunda fórmula divergente de
+// "adequação"); 2) duplas PRÓXIMAS (fit médio); 3) resgate excepcional
+// (fit baixo/piso), só quando não sobra ninguém mais adequado — nunca
+// "qualquer dupla livre" ordenada só por talento bruto (pairScore era a
+// única ordenação antes desta fase, cega ao nível do tier).
+// Playthrough 5.18-G, Partes B/C — gancho de diagnóstico do sorteio.
+//
+// Só para teste/dev. Nada é persistido e o schema do save não muda: em
+// produção `drawAdmissionObserver` é null e o bloco de captura em
+// `ensureWorldTourDraws` nem roda. Existe porque a autoridade de admissão é
+// interna e a 5.18-F provou que reconstruí-la de fora produz 62% de deriva —
+// o registro precisa nascer no instante da decisão, não depois dela.
+let drawAdmissionObserver = null;
+export function setDrawAdmissionObserver(fn) {
+  drawAdmissionObserver = typeof fn === 'function' ? fn : null;
+}
+
+export function rankCandidatesByTierFit(idleCandidates, tournament) {
+  return [...idleCandidates].sort((a, b) => (
+    getTierRankingFit(tournament.tier, pairEntryRank(b)) - getTierRankingFit(tournament.tier, pairEntryRank(a))
+  ) || (pairScore(b, tournament) - pairScore(a, tournament)));
 }
 
 // Fase 5.1, item 1 (agenda de tier) — achado #32 mediu que aumentar a
@@ -230,6 +321,48 @@ function minViableDraw(drawSize) {
   return Math.min(MIN_VIABLE_DRAW_SIZE, Math.max(2, Math.ceil(drawSize / 2)));
 }
 
+// Playthrough 5.26-D — AUTORIDADE ÚNICA do rank canônico de dupla (posição de
+// exibição/seeding). Extraída de ensureWorldTourDraws (5.16/5.22-F) para que o
+// campo do torneio do JOGADOR seja montado com a MESMA resolução, sem uma
+// segunda fórmula de posição. `pairSeedRank(pair)` devolve, em ordem: posição
+// da linha canônica de TeamRanking (quando existe); posição equivalente da
+// SOMA dos pontos rolling dos membros contra a distribuição canônica
+// (mesma unidade, 5.22-F); e, só no fim, `pairEntryRank` (média dos ranks
+// individuais) como piso. Nunca inventa posição, nunca usa seed de chave.
+export async function createPairSeedRankResolver() {
+  const canonicalTeamRanks = new Map();
+  const canonicalTeamPointsDesc = [];
+  try {
+    for (const row of await getTeamRankings(5000)) {
+      const key = [row.player1_id, row.player2_id].filter(Boolean).sort().join('_');
+      const position = Number(row.ranking_display_position) || 0;
+      if (key && position > 0 && !canonicalTeamRanks.has(key)) canonicalTeamRanks.set(key, position);
+      const points = Math.max(0, Number(row.ranking_points) || 0);
+      if (points > 0) canonicalTeamPointsDesc.push(points);
+    }
+    canonicalTeamPointsDesc.sort((a, b) => b - a);
+  } catch { /* sem ranking de duplas, o fallback abaixo assume */ }
+  const positionForCanonicalPoints = (points) => {
+    if (!(points > 0) || !canonicalTeamPointsDesc.length) return 0;
+    let index = 0;
+    while (index < canonicalTeamPointsDesc.length && canonicalTeamPointsDesc[index] > points) index += 1;
+    return index + 1;
+  };
+  const pairSeedRank = (pair) => {
+    const ids = (pair?.athletes || []).map((athlete) => athlete?.id).filter(Boolean).sort();
+    if (ids.length === 2) {
+      const canonical = canonicalTeamRanks.get(ids.join('_'));
+      if (canonical > 0) return canonical;
+      const memberPoints = (pair.athletes || []).reduce(
+        (sum, athlete) => sum + Math.max(0, Number(athlete?.world_ranking_points ?? athlete?.ranking_points) || 0), 0);
+      const canonicalPosition = positionForCanonicalPoints(memberPoints);
+      if (canonicalPosition > 0) return canonicalPosition;
+    }
+    return pairEntryRank(pair);
+  };
+  return { pairSeedRank, canonicalTeamRanks, positionForCanonicalPoints };
+}
+
 // Fase 3, item 3A.1 — antes, uma tabela FIXA de 7 rótulos/frações
 // (FINISH_POINTS) hardcoded neste arquivo, alheia ao tamanho real da
 // chave de cada tier. Substituída por uma leitura de `circuitCatalog.js`,
@@ -303,11 +436,49 @@ function tournamentEndDate(tournament) {
  * 'finalizado' sozinho não exclui mais: só exclui junto com um campeão já
  * gravado.
  */
+// Playthrough 4.7, item 7 — `player_participated` só é gravado por
+// prepareTournamentFinalization (game-core/tournamentLifecycle.js), que só
+// roda depois que o jogador de fato terminou uma partida ou clicou
+// abandonar. Um jogador inscrito que se lesiona ANTES da primeira partida
+// e nunca chega a acionar nenhum desses dois caminhos deixava
+// `player_participated` para sempre falso — o torneio caía nesta fila
+// AI-only, `resolveCompletedWorldTourEvents` tentava resolvê-lo sem fatos
+// suficientes (o match do jogador nunca teve vencedor) e falhava a semana
+// inteira, todo dia, pra sempre (Playthrough 4.7, W.O. automático corrige
+// a causa: resolveUnavailablePlayerMatch chama prepareTournamentFinalization
+// e passa a gravar player_participated mesmo num W.O. sem nenhuma partida
+// jogada). Esta função continua servindo de defesa em profundidade:
+// `player_match:true` já é gravado em bracket_history no PRÓPRIO SORTEIO
+// (buildPlayerTournamentBracket, tournamentSettlement.js) — um sinal
+// disponível desde o D-3, nunca dependente de uma partida ter acontecido.
+function hasPlayerMatchInBracket(tournament) {
+  return Array.isArray(tournament?.bracket_history)
+    && tournament.bracket_history.some((round) => (round?.matches || []).some((match) => match?.player_match === true));
+}
+
 export function isWorldTourResolutionPending(tournament, careerDate) {
   const end = tournamentEndDate(tournament || {});
   if (!tournament?.world_tour_event || !end || !careerDate || end >= careerDate) return false;
   if (tournament.world_tour_resolved) return false;
   if (tournament.status === 'finalizado' && tournament.champion) return false;
+  // Playthrough 4.5, itens 3/4/15 — um torneio com participação do jogador E
+  // chave canônica completa (bracket_schema_version 2) nunca é resolvido por
+  // esta fila (simulação semanal de pares AI-only, que nem inclui o jogador
+  // como "par" candidato). Sua autoridade única passa a ser
+  // game-core/tournamentLifecycle.js: prepareTournamentFinalization decide na
+  // hora quando a final real já foi alcançada, e
+  // resolvePendingPlayerCanonicalTournaments retoma no day-tick quando não
+  // foi (Roma eliminado cedo — a final chega dias depois, sem mais nenhuma
+  // partida do jogador para disparar a finalização). Duas filas resolvendo o
+  // mesmo Tournament era exatamente o bug original da Fase 4 (Londres:
+  // "duas verdades para um evento só").
+  //
+  // Item 9 (saves legados, sem chave completa) — mantém o comportamento
+  // anterior: eliminado antes da final, sem chave capaz de derivar fatos do
+  // campo inteiro, o título genuinamente fica indefinido e só o circuito da
+  // IA pode completá-lo (Playthrough 4, Caso B do teste de autoridade).
+  const bracketReady = Number(tournament.bracket_schema_version) >= 2;
+  if (bracketReady && (tournament.player_participated || hasPlayerMatchInBracket(tournament))) return false;
   return true;
 }
 
@@ -343,6 +514,50 @@ export async function ensureWorldTourDraws(careerDate) {
       await entities.Tournament.update(tournament.id, { status: 'em_andamento', current_phase: 'em_andamento' });
     }
   }
+  // Item 2B (Playthrough 4.5B) — Cidade do Cabo aparecia sem chave durante
+  // todo o torneio e ganhava uma chave completa (com campeão) já pronta
+  // depois do end_date: o loop de sorteio (`due`, abaixo) só tenta enquanto
+  // `daysUntil(careerDate, start_date)` está em [0,3] — no dia seguinte ao
+  // início (`daysUntil < 0`), o evento simplesmente PARAVA de ser
+  // considerado, sem nunca ser cancelado nem sorteado, até
+  // resolveCompletedWorldTourEvents encontrá-lo no fim (`end_date` já
+  // passado) e criar uma chave nova do zero SÓ ALI — a "chave retroativa"
+  // relatada. Nunca deve existir esse limbo silencioso: se o evento chega
+  // ao próprio início sem ter conseguido campo mínimo (D-3/D-2/D-1/D0 já
+  // tentaram via `due`, abaixo), cancela EXPLICITAMENTE aqui, no primeiro
+  // dia em que isso é verdade — data e motivo preservados, nunca uma
+  // chave fingindo que existia desde o começo.
+  for (const tournament of tournaments || []) {
+    if (!tournament.world_tour_event || tournament.world_tour_cancelled || Number(tournament.bracket_schema_version) >= 2) continue;
+    if (playerTournamentIds.has(tournament.id) || !tournament.start_date) continue;
+    const days = daysUntil(careerDate, tournament.start_date);
+    if (days === null || days >= 0) continue; // ainda não passou do início — due (abaixo) ainda pode tentar.
+    await entities.Tournament.update(tournament.id, {
+      status: 'cancelado',
+      current_phase: 'cancelado',
+      world_tour_cancelled: true,
+      world_tour_resolved: true,
+      cancellation_reason: 'sem_chave_ate_o_inicio',
+      resolved_at: careerDate,
+      draw_pending_reason: null,
+    }).catch(() => {});
+    // Item 4 (Playthrough 4.5C) — o cancelamento por campo insuficiente já
+    // publicava WorldEvent quando descoberto no settlement (belowMinViable,
+    // abaixo); este segundo ponto de cancelamento (item 2B, descoberto no
+    // próprio D+1) precisa da MESMA cobertura — sem isso, um evento
+    // cancelado por este caminho específico não deixava rastro nenhum no
+    // Jornal, mesmo com o Tournament corretamente marcado.
+    await entities.WorldEvent.create({
+      event_type: 'tournament_cancelled',
+      title: `${tournament.name} cancelado por falta de inscritos`,
+      content: `O ${tournament.name} foi cancelado sem chave oficial: não reuniu duplas elegíveis suficientes até o início do evento.`,
+      author_name: 'Redação Padel Legacy World Tour',
+      tier: String(tournament.tier || 'normal').toLowerCase(),
+      event_date: careerDate,
+      tags: ['world-tour', 'torneio', 'cancelamento'],
+      related_tournament_id: tournament.id,
+    }).catch(() => {});
+  }
   const due = (tournaments || []).filter((tournament) => (
     tournament.world_tour_event
     && !playerTournamentIds.has(tournament.id)
@@ -352,51 +567,218 @@ export async function ensureWorldTourDraws(careerDate) {
     && daysUntil(careerDate, tournament.start_date) <= 3
   ));
   if (!due.length) return { drawn: 0, cancelled: 0, errors: [] };
+  // Playthrough 5.16, Partes Y/Z — autoridade de CABEÇA DE CHAVE.
+  //
+  // O comentário histórico em pairEntryRank dizia que "não existe TeamRanking
+  // dedicado para pares do World Tour"; desde a 5.10/5.11 existe, e é a
+  // autoridade canônica de dupla (updateTeamRankings mantém as linhas de IA).
+  // Medido: usar a média dos ranks INDIVIDUAIS diverge do ranking de duplas a
+  // ponto de o bye da chave ir para a dupla #308 enquanto a #1 jogava a
+  // rodada 0. O rank canônico da dupla é lido aqui uma vez por sorteio;
+  // pairEntryRank continua como fallback para pares ainda sem linha.
+  // Pair 5.26-D — a resolução canônica de posição de dupla (5.16/5.22-F) foi
+  // extraída para `createPairSeedRankResolver`, reusada também pelo campo do
+  // torneio do jogador. Mesma autoridade, nenhuma segunda fórmula.
+  const { pairSeedRank } = await createPairSeedRankResolver();
   const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');
-  const pairs = buildCanonicalPairs(partnerships, athletes);
-  const assignments = new Map(due.map((tournament) => [tournament.id, []]));
-  for (const pair of pairs) {
-    const representative = {
-      ...pair.athletes[0],
-      overall_rating: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / 2,
-      ranking_position: pairEntryRank(pair) || 9999,
-    };
-    const choice = chooseTournament(due, representative, {
-      strategy: representative.careerStrategy,
-      currentRegion: representative.currentRegion,
-    });
-    if (choice?.decision === 'play' && assignments.has(choice.tournament?.id)) assignments.get(choice.tournament.id).push(pair);
-  }
+  const allPairs = buildCanonicalPairs(partnerships, athletes);
+  // Item 6 — exclusividade de agenda. Uma dupla já sorteada (chave existente,
+  // ainda não resolvida) em outro torneio cuja janela [start_date, end_date]
+  // cruza a de QUALQUER torneio `due` nesta chamada não concorre a uma
+  // segunda chave sobreposta — Coello/Tapia não podem estar em Madri E Doha
+  // ao mesmo tempo.
+  const committedPairIds = committedPairIdsForWindow(due, tournaments);
+  const pairs = allPairs.filter((pair) => !committedPairIds.has(pair.id));
+  // Itens 5/6/7 — mesma autoridade de atribuição semanal do settlement
+  // (chooseTournament + redistribuição entre tiers de acesso livre + fallback
+  // de tier), aplicada agora no sorteio: o campo que o D-3 desenha deixa de
+  // divergir de quem o settlement creditaria semanas depois, e um tier de
+  // elite concorrente (Doha Masters) tem prioridade de fato sobre um tier
+  // aberto concorrente (Madri Gold) pela mesma pontuação de `chooseTournament`
+  // — o Gold recebe as melhores duplas RESTANTES, não as mesmas do Masters.
+  const assignments = await applyFinalsEntryAuthority(due, pairs, assignPairsForWeek(due, pairs));
+  // Item 3 (Playthrough 4.5D) — fallback de campo. Depois da atribuição
+  // semanal normal (economia + fallback de tier já embutidos em
+  // assignPairsForWeek), qualquer dupla CANÔNICA que não foi escolhida por
+  // NENHUM torneio `due` fica ociosa nesta semana. Antes de aceitar um
+  // evento como pendente, uma última rodada de resgate oferece essas
+  // duplas ociosas — sempre reais (Partnership/ai_partner_id, nunca
+  // inventadas), sempre respeitando a exclusividade de agenda (já vieram
+  // de `pairs`, que já exclui `committedPairIds`) — só quando o campo
+  // normal não bastou. Tiers mais altos processam primeiro (mesma
+  // hierarquia Crown>...>Bronze), então o resgate nunca esvazia o pool
+  // ocioso às custas de um evento de elite.
+  const TIER_PRIORITY_ORDER = { Crown: 0, Elite: 1, Masters: 2, Platinum: 3, 'Circuit Finals': 3, Gold: 4, Silver: 5, Bronze: 6 };
+  const orderedDue = [...due].sort((a, b) => (TIER_PRIORITY_ORDER[a.tier] ?? 9) - (TIER_PRIORITY_ORDER[b.tier] ?? 9));
+  const assignedPairIds = new Set([...assignments.values()].flatMap((list) => list.map((pair) => pair.id)));
+  const idlePairs = pairs.filter((pair) => !assignedPairIds.has(pair.id));
   const drawn = [];
   const cancelled = [];
   const errors = [];
-  for (const tournament of due) {
+  for (const tournament of orderedDue) {
     try {
       const config = getTournamentTierConfig(tournament.tier);
       const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
-      const entrants = [...(assignments.get(tournament.id) || [])]
-        .sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament))
-        .slice(0, drawSize);
+      // Playthrough 5.1, Parte C/N — este corte final pra `drawSize` (o
+      // sorteio D-3, o caminho que grava draw_pair_ids de verdade) sempre
+      // ordenou só por pairScore/OVR, cego a rank. Duas tentativas medidas
+      // e descartadas antes desta: (1) applyEntryPriority — seu mecanismo
+      // de reserva/qualifying existe pra impedir exclusão PERMANENTE ao
+      // longo de várias semanas, não pra ser seletor de qualidade de UM
+      // sorteio, e já roda dentro de assignPairsForWeek; reaplicado aqui
+      // derrubou a força média de TODOS os tiers. (2) corte 100% por
+      // getTierRankingFit (rankCandidatesByTierFit puro) — Gold tem uma
+      // rede de elegibilidade tão mais ampla que sua própria zona ideal
+      // que um corte estrito por adequação simplesmente não encontra gente
+      // adequada o bastante pra preencher o draw inteiro (Bronze avgOVR
+      // caiu de ~78 pra ~55 numa simulação real de 1 ano — Gold/Silver só
+      // trocaram de lugar, o desequilíbrio migrou, não sumiu).
+      // Blend (esta versão): fit não FILTRA, DESCONTA — de 100% do
+      // pairScore (fit=100, encaixe perfeito) a 50% dele (fit=0, fora da
+      // faixa) — nunca elimina um candidato de OVR muito alto só por fit
+      // baixo (preserva profundidade de talento pro corte, evitando a
+      // fome de resgate do corte estrito), mas dá vantagem real e
+      // consistente a quem tem o rank certo pro tier. `chooseTournament`
+      // (Parte C, causa raiz) já mudou QUEM TENTA entrar em cada torneio
+      // antes deste corte — este blend completa o efeito no corte final
+      // sem repetir a fome de população dos dois caminhos descartados.
+      const blendedCutScore = (pair) => fieldAdmissionScore(pair, tournament);
+      // Playthrough 5.18-G, Partes B/C — OBSERVABILIDADE DA ADMISSÃO.
+      //
+      // A 5.18-F tentou auditar o corte reconstruindo a fila DE FORA, depois
+      // do sorteio, e mediu 62% de deriva: a reconstrução não representava a
+      // decisão. A causa era dupla — o instante era outro E a autoridade era
+      // outra (a reconstrução usava a semântica de `applyEntryPriority`,
+      // enquanto QUEM CORTA AQUI é `blendedCutScore`; ver o comentário acima,
+      // que registra applyEntryPriority como tentada e descartada neste
+      // ponto). Em vez de reconstruir melhor, o observador registra a decisão
+      // no instante em que ela é tomada.
+      //
+      // Não é fonte de verdade e não persiste nada: `drawAdmissionObserver` é
+      // null em produção (custo zero), e só um harness de teste o instala.
+      const observing = typeof drawAdmissionObserver === 'function';
+      const queue = [...(assignments.get(tournament.id) || [])];
+      const ranked = queue
+        .map((pair) => ({ pair, cut: blendedCutScore(pair) }))
+        .sort((a, b) => b.cut - a.cut);
+      let entrants = ranked.slice(0, drawSize).map((e) => e.pair);
+      const admittedByCut = new Set(entrants.map((p) => p.id));
+      let rescued = [];
+      const sizeBeforeRescue = entrants.length;
+      if (entrants.length < minViableDraw(drawSize) && idlePairs.length) {
+        const usedIds = new Set(entrants.map((pair) => pair.id));
+        const stillNeeded = Math.min(drawSize, minViableDraw(drawSize)) - entrants.length;
+        const rescue = rankCandidatesByTierFit(idlePairs.filter((pair) => !usedIds.has(pair.id)), tournament).slice(0, stillNeeded);
+        if (rescue.length) {
+          rescued = rescue;
+          entrants = [...entrants, ...rescue];
+          for (const pair of rescue) idlePairs.splice(idlePairs.indexOf(pair), 1);
+        }
+      }
+      if (observing) {
+        const rescuedIds = new Set(rescued.map((p) => p.id));
+        drawAdmissionObserver({
+          tournamentId: tournament.id,
+          careerDate,
+          tier: tournament.tier,
+          drawSize,
+          queueSize: queue.length,
+          // A linha de corte: a pontuação da última vaga preenchida pelo
+          // corte normal. Quem fica abaixo dela só entra por resgate.
+          cutLine: ranked.length > drawSize ? (ranked[drawSize - 1]?.cut ?? null) : null,
+          candidates: ranked.map((entry, index) => ({
+            pairId: entry.pair.id,
+            teamRank: pairSeedRank(entry.pair) || null,
+            pairEntryRank: pairEntryRank(entry.pair) || null,
+            tournamentsPlayed: pairTournamentsPlayedSoFar(entry.pair),
+            pairScore: pairScore(entry.pair, tournament),
+            tierFit: getTierRankingFit(tournament.tier, pairEntryRank(entry.pair)),
+            blendedCutScore: entry.cut,
+            priorityWindow: Number(entry.pair.priorityWindowRemaining) || 0,
+            finalOrder: index,
+            admitted: admittedByCut.has(entry.pair.id),
+            viaRescue: false,
+          })).concat(rescued.map((pair, index) => ({
+            pairId: pair.id,
+            teamRank: pairSeedRank(pair) || null,
+            pairEntryRank: pairEntryRank(pair) || null,
+            tournamentsPlayed: pairTournamentsPlayedSoFar(pair),
+            pairScore: pairScore(pair, tournament),
+            tierFit: getTierRankingFit(tournament.tier, pairEntryRank(pair)),
+            blendedCutScore: blendedCutScore(pair),
+            priorityWindow: Number(pair.priorityWindowRemaining) || 0,
+            finalOrder: ranked.length + index,
+            admitted: true,
+            viaRescue: true,
+          }))),
+          rescue: {
+            triggered: rescued.length > 0,
+            sizeBefore: sizeBeforeRescue,
+            minViable: minViableDraw(drawSize),
+            poolSize: idlePairs.length + rescued.length,
+            added: rescued.length,
+            addedIds: [...rescuedIds],
+            reason: rescued.length ? 'campo_abaixo_do_minimo_viavel' : null,
+          },
+        });
+      }
       if (entrants.length < minViableDraw(drawSize)) {
-        // A população de duplas pode ainda estar sendo formada pelo mercado
-        // no mesmo avanço. Não transforma uma observação precoce do D-3 em
-        // cancelamento: o settlement no fim do evento continua sendo a única
-        // autoridade para decidir se o campo ficou abaixo do mínimo viável.
+        // Item 5 — não aceitar silent skip. A população de duplas pode ainda
+        // estar sendo formada pelo mercado no mesmo avanço, então isto NÃO
+        // vira cancelamento aqui (o settlement no fim do evento continua
+        // sendo a única autoridade para decidir se o campo ficou abaixo do
+        // mínimo viável) — mas o motivo de não ter sorteado ainda fica
+        // persistido e visível, nunca um `continue` silencioso.
+        await entities.Tournament.update(tournament.id, {
+          draw_pending_reason: 'inscritos_insuficientes_ate_agora',
+          draw_pending_participant_count: entrants.length,
+          draw_pending_checked_at: careerDate,
+        }).catch(() => {});
         continue;
       }
+      const roundCount = Math.ceil(Math.log2(Math.max(2, entrants.length)));
+      const roundDates = getCanonicalRoundDates(tournament.start_date, roundCount);
       const bracket = buildCanonicalTournamentBracket({
         tournamentId: tournament.id,
         date: tournament.start_date,
-        participants: entrants.map((pair) => ({ name: pair.name, strength: pairScore(pair, tournament) })),
+        roundDates,
+        // Playthrough 5.16, Parte Z — `seedRank` separa as duas autoridades
+        // que antes se confundiam: quem é cabeça de chave (ranking) e quem
+        // ganha o jogo (força). Sem isso, um bot de OVR alto mas rank ruim
+        // virava cabeça de chave acima da elite real.
+        participants: entrants.map((pair) => ({
+          name: pair.name,
+          strength: pairScore(pair, tournament),
+          seedRank: pairSeedRank(pair),
+        })),
       });
       await entities.Tournament.update(tournament.id, {
         bracket_history: bracket.bracket_history,
         bracket_schema_version: 2,
         participants: entrants.map((pair) => pair.name),
+        draw_pair_ids: entrants.map((pair) => pair.id),
         status: 'chaveamento',
         current_phase: 'chaveamento',
         draw_date: careerDate,
         draw_participant_count: entrants.length,
+        draw_pending_reason: null,
+        // Playthrough 5.17, Parte M — SNAPSHOT DE RANKING NO SORTEIO.
+        //
+        // Fecha a dívida metodológica registrada na 5.16: auditar seeding
+        // comparando o ranking do FIM da temporada com uma chave sorteada
+        // meses antes é inválido — a dupla que era #4 no D-3 pode terminar o
+        // ano em #243. Sem snapshot, não havia como provar nada depois.
+        //
+        // Guarda só o necessário para auditoria determinística (nome + rank
+        // canônico no instante do sorteio), não uma cópia do banco. Isto é
+        // registro histórico: NUNCA deve ser lido como fonte de ranking.
+        draw_generated_at: careerDate,
+        field_origin_version: '5.17',
+        draw_ranking_snapshot: entrants.map((pair) => ({
+          pair_id: pair.id,
+          name: pair.name,
+          rank: pairSeedRank(pair) || null,
+        })),
       });
       drawn.push(tournament.id);
     } catch (error) {
@@ -428,7 +810,7 @@ function partnershipAthleteIds(partnership) {
   return [partnership.athlete_a_id || partnership.participant_a_id, partnership.athlete_b_id || partnership.participant_b_id].filter(Boolean);
 }
 
-function buildCanonicalPairs(partnerships, athletes) {
+export function buildCanonicalPairs(partnerships, athletes) {
   const byId = new Map(athletes.map((athlete) => [athlete.id, athlete]));
   const seen = new Set();
   const pairs = [];
@@ -477,6 +859,449 @@ function buildCanonicalPairs(partnerships, athletes) {
   return pairs;
 }
 
+// Playthrough 5.4, Parte F/M — achado: mesmo com ensureWorldTourDraws e
+// resolveCompletedWorldTourEvents chamando a MESMA lógica de atribuição
+// (Fase 4.5, comentário abaixo), elas rodam em MOMENTOS diferentes (sorteio
+// no D-3, settlement só depois que o torneio termina, 4-8 dias depois) sobre
+// um `pairs` reconstruído do zero a cada chamada — se o rank/região de um
+// atleta mudou nesse intervalo (o normal: outros torneios da MESMA semana
+// resolvem em paralelo), `chooseTournament` pode preferir outro torneio na
+// segunda chamada, e a dupla historicamente sorteada (`draw_pair_ids`,
+// gravado no sorteio) some do campo recalculado no settlement — mesmo sem
+// nunca ter trocado de parceiro. Medido numa temporada real: 73% das
+// aparições não-campeãs perdiam o crédito de ranking inteiro por causa
+// disso (concentrado nos tiers de chave maior — Gold, Platinum, Bronze — 4
+// vezes mais raro em Crown/Masters). O campeão nunca era afetado (o
+// fallback `ordered.find(...) || ordered[0]` sempre resolvia certo por
+// coincidência de posição), mas o RESTO do campo perdia pontos por um
+// torneio que genuinamente jogou, comprovado pelo próprio bracket_history
+// salvo. Resolve os IDs de `draw_pair_ids` (Partnership real OU sintético
+// `profile-pair:`) direto, sem depender do `pairs` recém-recomputado.
+function resolveDrawnPairMembers(pairId, partnershipById, athleteById) {
+  if (typeof pairId !== 'string') return null;
+  let ids;
+  if (pairId.startsWith('profile-pair:')) {
+    ids = pairId.slice('profile-pair:'.length).split(':').filter(Boolean);
+  } else {
+    const partnership = partnershipById.get(pairId);
+    ids = partnership ? partnershipAthleteIds(partnership) : null;
+  }
+  if (!ids || ids.length !== 2) return null;
+  const members = ids.map((id) => athleteById.get(id));
+  return members.every(Boolean) ? members : null;
+}
+
+// Devolve o MESMO formato de objeto de `pairs` (buildCanonicalPairs) —
+// preferindo a instância já existente em `pairsById` (traz
+// priorityWindowRemaining/chemistry atuais) e só reconstruindo um
+// equivalente mínimo quando a dupla sorteada não sobreviveu como par
+// canônico ATUAL (ex.: parceria dissolvida depois do sorteio — caso raro,
+// não o mecanismo dominante medido acima). `priorityWindowRemaining:0`
+// nesse fallback é seguro: não existe mais janela de prioridade de uma
+// parceria que não existe mais pra descontar.
+function resolveDrawnPair(pairId, partnershipById, athleteById, pairsById) {
+  const existing = pairsById.get(pairId);
+  if (existing) return existing;
+  const members = resolveDrawnPairMembers(pairId, partnershipById, athleteById);
+  if (!members) return null;
+  const partnership = partnershipById.get(pairId);
+  return {
+    id: pairId, partnershipId: partnership?.id || null, athletes: members,
+    name: members.map((member) => member.name).join(' & '),
+    chemistry: Number(partnership?.chemistry || partnership?.partner_chemistry || 50),
+    priorityWindowRemaining: 0,
+  };
+}
+
+// Fase 4.5 (circuito cronológico) — pipeline de atribuição semanal EXTRAÍDA
+// (antes vivia só dentro de resolveCompletedWorldTourEvents) para virar a
+// MESMA autoridade usada por ensureWorldTourDraws (D-3) e pelo settlement.
+// Antes, o sorteio do D-3 usava uma seleção independente mais simples (só
+// chooseTournament + corte por pairScore, sem o fallback de tier nem a
+// redistribuição entre tiers de acesso livre) — o campo que a chave
+// mostrava no D-3 podia divergir de quem o settlement escolhia semanas
+// depois para o MESMO torneio (duas fontes de verdade para "quem joga",
+// itens 5/6/7 do circuito cronológico). Agora as duas chamadas resolvem a
+// mesma pergunta com a mesma lógica, sobre o mesmo `weekTournaments`/`pairs`.
+export function assignPairsForWeek(weekTournaments, pairs) {
+  const assignments = new Map(weekTournaments.map((tournament) => [tournament.id, []]));
+  // Fase 6.5, item 3 — fallback de tier na mesma semana. `chooseTournament`
+  // já devolve `options`, a lista INTEIRA de torneios elegíveis da semana,
+  // ordenada por pontuação (`scoreOption`) — não só o escolhido. Guarda essa
+  // lista + em qual posição dela a dupla está atualmente, pra tentar a
+  // próxima se for cortada da atual.
+  const pairOptionState = new Map();
+  for (const pair of pairs) {
+    // Fase 5.5, item 1 — elegibilidade pela dupla (pairEntryRank), não pelo
+    // rank de um atleta sorteado arbitrariamente.
+    const pairRank = pairEntryRank(pair);
+    const representative = {
+      ...pair.athletes[0],
+      overall_rating: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / 2,
+      ...(pairRank > 0 ? { rank: pairRank, ranking_position: pairRank } : {}),
+    };
+    // Playthrough 5.3, Parte D — único chamador com aiFieldContext:true
+    // neste arquivo (o campo de fundo AI-only, nunca o jogador).
+    const choice = chooseTournament(weekTournaments, representative, {
+      strategy: representative.careerStrategy,
+      currentRegion: representative.currentRegion,
+      aiFieldContext: true,
+    });
+    if (choice?.decision === 'play' && choice.tournament?.id && assignments.has(choice.tournament.id)) {
+      assignments.get(choice.tournament.id).push(pair);
+      pairOptionState.set(pair.id, { pair, options: choice.options || [], index: 0, currentTournamentId: choice.tournament.id });
+    }
+  }
+
+  // Fase 5.4, item 1 — redistribuição de excedente entre tiers de acesso
+  // livre (Bronze/Silver) concorrentes na mesma semana (ver histórico
+  // completo no comentário original desta função, agora aqui).
+  const barredFromOpen = (p) => {
+    const r = pairEntryRank(p);
+    return r > 0 && r <= OPEN_TIER_CEILING;
+  };
+  const openEvents = weekTournaments.filter((t) => getTournamentTierConfig(t?.tier).minRanking === 0);
+  if (openEvents.length > 1) {
+    const drawOf = (t) => Math.max(2, Number(t.main_draw_size) || getTournamentTierConfig(t?.tier).mainDrawSize || 16);
+    const keepFirst = (a, b) => {
+      const ra = pairEntryRank(a) || (WORLD_RANKING_TARGET + 1);
+      const rb = pairEntryRank(b) || (WORLD_RANKING_TARGET + 1);
+      return (ra - rb) || (pairTournamentsPlayedSoFar(a) - pairTournamentsPlayedSoFar(b));
+    };
+    for (let guard = 0; guard < 200; guard += 1) {
+      const state = openEvents.map((t) => ({ t, draw: drawOf(t), min: minViableDraw(drawOf(t)), list: assignments.get(t.id) }));
+      const donor = state.filter((s) => s.list.length > s.draw).sort((x, y) => (y.list.length - y.draw) - (x.list.length - x.draw))[0];
+      const receiver = state.filter((s) => s.list.length < s.min).sort((x, y) => x.list.length - y.list.length)[0];
+      if (!donor || !receiver) break;
+      const present = new Set(receiver.list.map((p) => p.id));
+      const cutCandidates = [...donor.list].sort(keepFirst).slice(donor.draw)
+        .filter((p) => !present.has(p.id) && !barredFromOpen(p))
+        .sort((a, b) => pairScore(a, receiver.t) - pairScore(b, receiver.t));
+      const n = Math.min(donor.list.length - donor.draw, receiver.min - receiver.list.length, cutCandidates.length);
+      if (n <= 0) break;
+      const moveIds = new Set(cutCandidates.slice(0, n).map((p) => p.id));
+      assignments.set(donor.t.id, donor.list.filter((p) => !moveIds.has(p.id)));
+      receiver.list.push(...cutCandidates.slice(0, n));
+    }
+  }
+
+  // Fase 6.5, item 3 — fallback de tier na mesma semana: quem é cortado do
+  // tier escolhido tenta a PRÓXIMA melhor opção elegível da própria lista.
+  const drawSizeOf = (t) => {
+    const cfg = getTournamentTierConfig(t?.tier);
+    return Math.max(2, Number(t.main_draw_size) || cfg.mainDrawSize || 16);
+  };
+  for (const [tournamentId, list] of assignments) {
+    for (const p of list) {
+      const state = pairOptionState.get(p.id);
+      if (state) state.currentTournamentId = tournamentId;
+    }
+  }
+  const MAX_FALLBACK_ROUNDS = 6;
+  for (let round = 0; round < MAX_FALLBACK_ROUNDS; round += 1) {
+    const survivedByTournament = new Map();
+    for (const tournament of weekTournaments) {
+      const drawSize = drawSizeOf(tournament);
+      let candidates = [...(assignments.get(tournament.id) || [])];
+      if (candidates.length > drawSize) candidates = applyEntryPriority(candidates, tournament, drawSize);
+      const ordered = candidates.sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament)).slice(0, drawSize);
+      survivedByTournament.set(tournament.id, new Set(ordered.map((p) => p.id)));
+    }
+    let anyMoved = false;
+    for (const state of pairOptionState.values()) {
+      if (survivedByTournament.get(state.currentTournamentId)?.has(state.pair.id)) continue;
+      let nextIndex = state.index + 1;
+      while (nextIndex < state.options.length && !weekTournaments.some((t) => t.id === state.options[nextIndex].tournament?.id)) nextIndex += 1;
+      if (nextIndex >= state.options.length) continue; // esgotou as opções — perde a semana.
+      const nextTournamentId = state.options[nextIndex].tournament.id;
+      const oldList = assignments.get(state.currentTournamentId);
+      if (oldList) assignments.set(state.currentTournamentId, oldList.filter((p) => p.id !== state.pair.id));
+      assignments.get(nextTournamentId)?.push(state.pair);
+      state.currentTournamentId = nextTournamentId;
+      state.index = nextIndex;
+      anyMoved = true;
+    }
+    if (!anyMoved) break;
+  }
+  return assignments;
+}
+
+// Item 6 — exclusividade de agenda. Uma Partnership não pode ser sorteada em
+// dois torneios cujas janelas [start_date, end_date] se sobrepõem. Devolve o
+// conjunto de pair.id já comprometidos (chave sorteada, ainda não resolvida)
+// em algum torneio cuja janela cruza a de QUALQUER torneio em `dueTournaments`.
+function overlaps(aStart, aEnd, bStart, bEnd) {
+  return aStart <= (bEnd || bStart) && bStart <= (aEnd || aStart);
+}
+export function committedPairIdsForWindow(dueTournaments, allTournaments) {
+  const committed = new Set();
+  const drawnElsewhere = (allTournaments || []).filter((t) => (
+    Number(t.bracket_schema_version) >= 2
+    && !t.world_tour_resolved
+    && Array.isArray(t.draw_pair_ids)
+    && t.draw_pair_ids.length
+  ));
+  for (const due of dueTournaments) {
+    const dueEnd = tournamentEndDate(due);
+    for (const other of drawnElsewhere) {
+      if (other.id === due.id) continue;
+      const otherEnd = tournamentEndDate(other);
+      if (!overlaps(due.start_date, dueEnd, other.start_date, otherEnd)) continue;
+      for (const pairId of other.draw_pair_ids) committed.add(pairId);
+    }
+  }
+  return committed;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// Playthrough 5.26-D — CAMPO REAL DO TORNEIO DO JOGADOR
+// ═══════════════════════════════════════════════════════════════════════
+//
+// Até a 5.26-C os adversários dos torneios do jogador vinham do catálogo
+// SINTÉTICO BOTS_BY_DIFFICULTY (career.js:generateTournamentOpponent), nunca
+// inscritas no circuito: quase nenhuma tinha TeamRanking canônica (5 de
+// 21.332 partidas) e a detecção de zebra quase nunca tinha dado real.
+//
+// Esta função ADAPTA A FONTE (duplas reais ativas do mundo) sem mudar a
+// LÓGICA: o MESMO pool canônico do ensureWorldTourDraws (buildCanonicalPairs),
+// a MESMA exclusividade de agenda (committedPairIdsForWindow) e a MESMA
+// autoridade de admissão (blendedCutScore = pairScore · (0.35 + 0.65·tierFit/100)
+// — nunca "top TeamRanking puro"), sem tocar em drawSize, BYEs, capacity ou
+// fórmula de partida.
+//
+// Devolve o campo real selecionado + a projeção do adversário por rodada do
+// main draw, pelo MESMO motor de seed da IA (buildSeededDrawSlots). Quem
+// preenche eventual lacuna com o catálogo é o chamador (tournamentDraw.js),
+// que marca o fallback e nunca atribui rank falso.
+export async function buildPlayerTournamentField({
+  tournament,
+  profile,
+  playerRank = 0,
+  playerTeamName = 'Sua dupla',
+  partnerAthleteId = null,
+  qualifyingRoundCount = 0,
+} = {}) {
+  const nowMs = () => (typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now());
+  const startedAt = nowMs();
+  const config = getTournamentTierConfig(tournament?.tier);
+  const mainDrawSize = Math.max(2, Number(tournament?.main_draw_size) || config.mainDrawSize || 16);
+  const roundCount = Math.max(1, Number(config.roundCount) || Math.ceil(Math.log2(mainDrawSize)));
+  // O bracket do caminho do jogador SEMPRE foi o esqueleto potência-de-2
+  // (2^roundCount), com preenchimento nas posições que o jogador nunca
+  // cruza. Preservamos esse tamanho (não é `main_draw_size`): para Gold/
+  // Masters (24) e Elite/Crown (20) são 32 slots. A capacidade oficial do
+  // tier (main_draw_size) fica intacta para a entrada/admissão da IA.
+  const bracketSize = 2 ** roundCount;
+  const diagnostics = {
+    fieldOrigin: 'world-pairs-v526d', drawSize: bracketSize, mainDrawSize, roundCount,
+    candidatePool: 0, eligiblePool: 0, preferredPool: 0, committedExcluded: 0, realSelected: 0, rescueSelected: 0,
+    unrankedSelected: 0, qualifyingReal: 0, admissionMs: 0, buildMs: 0,
+  };
+  const empty = {
+    entrants: [], pairsById: new Map(), mainOpponentIds: new Array(roundCount).fill(null),
+    qualifyingOpponentIds: [], strengthByPairId: new Map(), rankByPairId: new Map(), pointsByPairId: new Map(), diagnostics,
+  };
+  if (!tournament?.id) return empty;
+
+  const [allTournaments, rawAthletes, partnerships] = await Promise.all([
+    entities.Tournament.list('start_date', 2000),
+    entities.AthleteProfile.list('-world_ranking_points', ATHLETE_POPULATION_CAP),
+    entities.Partnership.list('-created_date', 1200).catch(() => []),
+  ]);
+  const { pairSeedRank } = await createPairSeedRankResolver();
+
+  const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');
+  const committed = committedPairIdsForWindow([tournament], allTournaments);
+  const allPairs = buildCanonicalPairs(partnerships, athletes);
+  const playerProfileId = profile?.id || null;
+  const pool = allPairs.filter((pair) => {
+    if (committed.has(pair.id)) return false;
+    const memberIds = pair.athletes.map((athlete) => athlete?.id).filter(Boolean);
+    if (partnerAthleteId && memberIds.includes(partnerAthleteId)) return false;
+    // O jogador é PlayerProfile, nunca AthleteProfile — mas defesa em
+    // profundidade: nenhuma dupla do mundo carrega a identidade do jogador.
+    if (playerProfileId && memberIds.includes(playerProfileId)) return false;
+    return true;
+  });
+  diagnostics.candidatePool = pool.length;
+  diagnostics.committedExcluded = allPairs.length - pool.length;
+
+  // ── ADMISSÃO (autoridade preservada, 5.18) ──────────────────────────────
+  // A MESMA pergunta de elegibilidade que a IA faz (chooseTournament →
+  // evaluateTournamentEntry com aiFieldContext) e a MESMA pontuação de corte
+  // do ensureWorldTourDraws (blendedCutScore = pairScore · (0.35 + 0.65·tierFit/100)).
+  // Nunca "top TeamRanking puro".
+  const representativeOf = (pair) => {
+    const pairRank = pairEntryRank(pair);
+    return {
+      ...pair.athletes[0],
+      overall_rating: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / pair.athletes.length,
+      ...(pairRank > 0 ? { rank: pairRank, ranking_position: pairRank } : {}),
+    };
+  };
+  const need = Math.max(0, bracketSize - 1);
+  // Autoridade de admissão compartilhada com a IA (fieldAdmissionScore):
+  // fraco-primeiro nos tiers abertos, blendedCutScore nos tiers com corte.
+  const cutOf = (pair) => fieldAdmissionScore(pair, tournament);
+  const orderField = (list) => [...list].sort((a, b) => cutOf(b) - cutOf(a) || String(a.id).localeCompare(String(b.id)));
+  const isOpenTier = (getTournamentTierConfig(tournament.tier).minRanking || 0) === 0;
+
+  // Paridade com o chooseTournament semanal da IA (dívida registrada na
+  // 5.26-D): uma dupla só entra no field do jogador se, realisticamente,
+  // ESCOLHERIA este torneio na semana — o torneio do jogador concorre com os
+  // eventos da mesma janela, reusando a MESMA autoridade da IA.
+  const weekTournaments = (() => {
+    const start = tournament?.start_date;
+    if (!start) return [tournament];
+    const t0 = new Date(`${start}T00:00:00Z`).getTime();
+    const same = (allTournaments || []).filter((t) => t?.id !== tournament.id && t?.start_date
+      && Math.abs(new Date(`${t.start_date}T00:00:00Z`).getTime() - t0) <= 4 * 86400000);
+    return [tournament, ...same];
+  })();
+
+  const eligiblePairs = [];
+  const ineligiblePairs = [];
+  const preferredPairs = [];
+  for (const pair of pool) {
+    const rep = representativeOf(pair);
+    const entry = evaluateTournamentEntry(tournament, rep, { aiFieldContext: true });
+    if (!entry.eligible) { ineligiblePairs.push(pair); continue; }
+    eligiblePairs.push(pair);
+    try {
+      const choice = chooseTournament(weekTournaments, rep, {
+        strategy: rep.careerStrategy, currentRegion: rep.currentRegion, aiFieldContext: true,
+      });
+      if (choice?.decision === 'play' && choice?.tournament?.id === tournament.id) preferredPairs.push(pair);
+    } catch { /* preferência é best-effort; a elegibilidade já decidiu */ }
+  }
+  diagnostics.eligiblePool = eligiblePairs.length;
+  diagnostics.preferredPool = preferredPairs.length;
+  const primary = orderField(preferredPairs);
+  const primaryIds = new Set(primary.map((pair) => pair.id));
+  const secondary = orderField(eligiblePairs.filter((pair) => !primaryIds.has(pair.id)));
+  const ordered = [...primary, ...secondary];
+  // Bronze = banda mais fraca; Silver = a banda SEGUINTE (percentil 25% do
+  // pool ordenado), para a escada Bronze < Silver existir de fato. Tiers com
+  // corte mantêm o blendedCutScore (topo).
+  // 5.27-I: a largura dessa janela vem do preset (`competition.silverFieldOffsetPct`);
+  // sem `competition` (presets antigos) continua 25%.
+  const silverOffsetPct = Number(getBalance527().competition?.silverFieldOffsetPct ?? 0.25);
+  const openTierOffset = isOpenTier && tournament.tier === 'Silver'
+    ? Math.max(need, Math.round(ordered.length * silverOffsetPct))
+    : 0;
+  const selected = ordered.slice(openTierOffset, openTierOffset + need);
+  // Se o deslocamento da banda deixou o quadro curto, completa com o restante
+  // ordenado (nunca repete dupla).
+  if (selected.length < need) {
+    const usedIds = new Set(selected.map((pair) => pair.id));
+    for (const pair of ordered) {
+      if (selected.length >= need) break;
+      if (!usedIds.has(pair.id)) { selected.push(pair); usedIds.add(pair.id); }
+    }
+  }
+  // Resgate (mesma autoridade da IA, só quando o pool elegível não cobre o
+  // quadro): candidatos por adequação ao tier, nunca elite aleatória.
+  if (selected.length < need) {
+    const usedIds = new Set(selected.map((pair) => pair.id));
+    const rescue = rankCandidatesByTierFit(ineligiblePairs.filter((pair) => !usedIds.has(pair.id)), tournament)
+      .slice(0, need - selected.length);
+    diagnostics.rescueSelected = rescue.length;
+    selected.push(...rescue);
+  }
+  diagnostics.realSelected = selected.length;
+  diagnostics.admissionMs = nowMs() - startedAt;
+  // 5.27-I — só harness (nunca setado pelo app): observa o campo montado
+  // (composição por OVR/rank/fit/força) sem alterar nada.
+  if (typeof globalThis.__PL527I_FIELD_OBSERVER === 'function') {
+    try {
+      globalThis.__PL527I_FIELD_OBSERVER({
+        tournamentId: tournament.id, tier: tournament.tier, startDate: tournament.start_date, need,
+        orderedSize: ordered.length, preferredSize: primary.length, eligibleSize: eligiblePairs.length, offset: openTierOffset, rescue: diagnostics.rescueSelected,
+        field: selected.map((pair) => ({
+          ovr: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / pair.athletes.length,
+          rank: pairEntryRank(pair) || null, fit: getTierRankingFit(tournament.tier, pairEntryRank(pair)), strength: pairScore(pair, tournament), preferred: primaryIds.has(pair.id),
+        })),
+      });
+    } catch { /* diagnóstico nunca interfere */ }
+  }
+
+  const pairsById = new Map();
+  const strengthByPairId = new Map();
+  const rankByPairId = new Map();
+  const pointsByPairId = new Map();
+  const registerPair = (pair) => {
+    if (!pair || pairsById.has(pair.id)) return;
+    const strength = pairScore(pair, tournament);
+    const rank = pairSeedRank(pair) || 0;
+    pair.strength = strength;
+    pair.seedRank = rank;
+    pairsById.set(pair.id, pair);
+    strengthByPairId.set(pair.id, strength);
+    rankByPairId.set(pair.id, rank);
+    if (!(rank > 0)) diagnostics.unrankedSelected += 1;
+    pointsByPairId.set(pair.id, pair.athletes.reduce(
+      (sum, athlete) => sum + Math.max(0, Number(athlete?.world_ranking_points ?? athlete?.ranking_points) || 0), 0));
+  };
+  selected.forEach(registerPair);
+
+  // Qualifying REAL (fora do main field): as duplas elegíveis mais fracas —
+  // o caminho de qualifying do jogador também usa identidade/rank/OVR reais.
+  // Nenhuma dupla do main field é reaproveitada.
+  const qualifyingOpponentIds = [];
+  if (qualifyingRoundCount > 0) {
+    const mainIds = new Set(selected.map((pair) => pair.id));
+    // Qualifying = as duplas MAIS FRACAS por posição (pior rank primeiro),
+    // nunca por blendedCutScore (que desconta elite e devolveria um top-5).
+    const qualifyingPool = [...eligiblePairs]
+      .filter((pair) => !mainIds.has(pair.id))
+      .sort((a, b) => {
+        const ra = pairEntryRank(a) > 0 ? pairEntryRank(a) : Number.MAX_SAFE_INTEGER;
+        const rb = pairEntryRank(b) > 0 ? pairEntryRank(b) : Number.MAX_SAFE_INTEGER;
+        return rb - ra;
+      });
+    for (let index = 0; index < qualifyingRoundCount && index < qualifyingPool.length; index += 1) {
+      registerPair(qualifyingPool[index]);
+      qualifyingOpponentIds.push(qualifyingPool[index].id);
+    }
+  }
+  diagnostics.qualifyingReal = qualifyingOpponentIds.length;
+
+  // ── PROJEÇÃO DO CAMINHO DO JOGADOR ──────────────────────────────────────
+  const effectivePlayerRank = Number(playerRank) > 0
+    ? Math.min(Math.round(Number(playerRank)), Math.max(1, bracketSize))
+    : Math.max(1, Math.min(bracketSize - 1, Math.round(bracketSize * 0.75)));
+  const playerEntrant = {
+    id: `__player__:${playerProfileId || 'career'}`, name: playerTeamName,
+    seedRank: effectivePlayerRank, strength: 0, isPlayer: true,
+  };
+  const { slots } = buildSeededDrawSlots({
+    entrants: [...selected, playerEntrant], tournamentId: `${tournament.id}:player-field`,
+  });
+  const playerSlot = slots.findIndex((entrant) => entrant?.isPlayer);
+  const mainOpponentIds = new Array(roundCount).fill(null);
+  const usedOpponentPairIds = new Set();
+  if (playerSlot >= 0) {
+    for (let roundIndex = 0; roundIndex < roundCount; roundIndex += 1) {
+      const blockSize = 2 ** roundIndex;
+      const blockStart = Math.floor(playerSlot / blockSize) * blockSize;
+      const siblingStart = (Math.floor(blockStart / blockSize) % 2 === 0) ? blockStart + blockSize : blockStart - blockSize;
+      const sibling = slots.slice(siblingStart, siblingStart + blockSize).filter((entrant) => entrant && !entrant.isPlayer);
+      if (!sibling.length) continue;
+      const seedOf = (entrant) => (Number(entrant.seedRank) > 0 ? Number(entrant.seedRank) : Number.POSITIVE_INFINITY);
+      const ranked = [...sibling].sort((a, b) => seedOf(a) - seedOf(b));
+      // Nunca repetir a MESMA dupla em duas rodadas do caminho do jogador
+      // (a projeção por bloco-espelho poderia devolver o vencedor anterior).
+      const chosen = ranked.find((entrant) => !usedOpponentPairIds.has(entrant.id)) || ranked[0];
+      if (pairsById.has(chosen.id)) {
+        mainOpponentIds[roundIndex] = chosen.id;
+        usedOpponentPairIds.add(chosen.id);
+      }
+    }
+  }
+  diagnostics.buildMs = nowMs() - startedAt;
+  return { entrants: selected, pairsById, mainOpponentIds, qualifyingOpponentIds, strengthByPairId, rankByPairId, pointsByPairId, diagnostics };
+}
+
 function appendFinalHeadToHead(headToHeadByAthlete, winner, loser, tournament) {
   if (!winner || !loser) return;
   const date = tournamentEndDate(tournament);
@@ -493,7 +1318,7 @@ function appendFinalHeadToHead(headToHeadByAthlete, winner, loser, tournament) {
 }
 
 export async function resolveCompletedWorldTourEvents(careerDate) {
-  const [allTournaments, rawAthletes, partnerships] = await Promise.all([
+  const [allTournaments, rawAthletes, partnerships, playerRegistrations] = await Promise.all([
     // Ordenação ASCENDENTE de propósito. Com '-start_date' a consulta trazia
     // os torneios mais FUTUROS primeiro e truncava no limite — exatamente ao
     // contrário do que esta função precisa, que é o passado já encerrado e
@@ -506,13 +1331,50 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     entities.Tournament.list('start_date', 2000),
     entities.AthleteProfile.list('-world_ranking_points', ATHLETE_POPULATION_CAP),
     entities.Partnership.list('-created_date', 1200).catch(() => []),
+    entities.TournamentRegistration.list('-created_date', 2000).catch(() => []),
   ]);
 
-  const pending = (allTournaments || []).filter((tournament) => isWorldTourResolutionPending(tournament, careerDate));
+  // Playthrough 5.19, Partes V/W/Z — EVENTO DO JOGADOR CONTAMINAVA OS PARALELOS.
+  //
+  // `isWorldTourResolutionPending` só exclui o torneio do jogador quando existe
+  // CHAVE CANÔNICA (`bracketReady && (player_participated || player_match)`).
+  // Sem sorteio executado — por exemplo quando o jogador se lesiona e o evento
+  // vai a W.O., ou durante "avançar até recuperação" — a exclusão não se
+  // aplica: o torneio do jogador cai nesta fila AI-only, entra em
+  // `tournamentsByWeek` e é passado a `assignPairsForWeek` JUNTO com os eventos
+  // paralelos. As duplas de IA que o escolhem são alocadas nele e desaparecem
+  // dos demais, que então cancelam por "duplas insuficientes".
+  //
+  // Medido (test-player-wo-does-not-cancel-ai-events-v519): com o evento do
+  // jogador na mesma semana, 12 duplas eram consumidas por ele e três eventos
+  // paralelos perdiam campo (48->38, 16->15, 17->16).
+  //
+  // É também por isso que nenhuma simulação 5.17/5.18 reproduziu o sintoma: o
+  // harness não tem jogador inscrito, então `playerTournamentIds` era vazio.
+  //
+  // A autoridade sobre "este evento é do jogador" é a INSCRIÇÃO, nunca o estado
+  // da chave — mesma fonte que `ensureWorldTourDraws` já usa. Nada de mexer em
+  // `minViableDraw` nem em tamanho de campo (Parte AB).
+  const playerTournamentIds = new Set((playerRegistrations || [])
+    .filter((row) => {
+      const status = String(row?.status || '').toLowerCase();
+      return row?.tournament_id && !['cancelled', 'cancelado', 'withdrawn'].includes(status);
+    })
+    .map((row) => row.tournament_id));
+
+  const pending = (allTournaments || []).filter((tournament) => (
+    !playerTournamentIds.has(tournament.id) && isWorldTourResolutionPending(tournament, careerDate)
+  ));
   if (!pending.length) return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0 };
 
   const athletes = (rawAthletes || []).map(normalizeAthlete).filter((athlete) => !athlete.retired && athlete.career_status !== 'aposentado');
   const pairs = buildCanonicalPairs(partnerships, athletes);
+  // Playthrough 5.4, Parte F/M — usados pra recreditar o campo REALMENTE
+  // sorteado (`tournament.draw_pair_ids`) em vez de reconfiar só no `pairs`
+  // recém-recomputado (ver resolveDrawnPair, acima).
+  const athleteById = new Map(athletes.map((athlete) => [athlete.id, athlete]));
+  const partnershipById = new Map((partnerships || []).map((partnership) => [partnership.id, partnership]));
+  const pairsById = new Map(pairs.map((pair) => [pair.id, pair]));
   if (!pairs.length) {
     // Aborto silencioso: se o mundo ficar sem duplas canônicas, NENHUM torneio
     // é resolvido — sem campeão, notícia, rivalidade ou ponto de ranking — e
@@ -524,7 +1386,22 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     console.warn('[WorldTour] nenhuma dupla canônica disponível — nenhum torneio será resolvido nesta chamada.', {
       pendentes: pending.length, atletas: athletes.length, parcerias: (partnerships || []).length,
     });
-    return { resolved: 0, tournaments: [], rankingUpdates: 0, news: 0, waitingForCanonicalPairs: true };
+    // Playthrough 4.5A, item 2 — Race watch mesmo no aborto: distingue
+    // "seeding nunca pareou este atleta" (ai_partner_id null) de "pareado
+    // mas buildCanonicalPairs ainda assim não formou nenhum par" (sinal de
+    // um bug estrutural mais grave, não coberto pela hipótese de seeding).
+    const athleteByBotIdAbort = new Map(athletes.map((athlete) => [athlete.bot_id, athlete]));
+    const raceWatchAbort = ['real_arturo_coello', 'real_agustin_tapia', 'real_alejandro_galan', 'real_federico_chingotto']
+      .map((botId) => {
+        const athlete = athleteByBotIdAbort.get(botId);
+        return athlete
+          ? { bot_id: botId, found_in_population: true, athlete_id: athlete.id, ai_partner_id: athlete.ai_partner_id || null, canonical_pair_formed: false }
+          : { bot_id: botId, found_in_population: false };
+      });
+    return {
+      resolved: 0, tournaments: [], rankingUpdates: 0, news: 0, waitingForCanonicalPairs: true,
+      canonicalPairsFound: 0, athletesConsidered: athletes.length, raceWatch: raceWatchAbort, tournamentDiagnostics: [],
+    };
   }
   // Fase 7.4 — janela de prioridade persistida em Partnership (ver
   // buildCanonicalPairs); grava só quem mudou nesta chamada, comparando
@@ -540,9 +1417,17 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
 
   const athletePoints = new Map();
   const athleteOutcomes = new Map();
+  // Playthrough 5.17, Parte J — acumulador do ledger REAL de dupla.
+  const pairLedger = new Map();
   const headToHeadByAthlete = new Map();
   const tournamentUpdates = [];
   const news = [];
+  // Playthrough 4.5A, item 1 — diagnóstico factual por torneio (não o save
+  // inteiro): id/nome/settlement iniciado/participantes/campeão/vice/
+  // WorldEvent criado — o suficiente para localizar exatamente onde um
+  // torneio específico perde pontos de Race, sem depender de inferência
+  // visual no app real. Consumido por src/dev/worldTourDiagnostics.js.
+  const tournamentDiagnostics = [];
 
   // Um torneio com dado corrompido não pode travar a resolução do dia
   // inteiro. Cada SEMANA é resolvida isoladamente: se uma falhar, o erro é
@@ -552,152 +1437,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   const resolutionErrors = [];
   for (const [weekKey, weekTournaments] of tournamentsByWeek.entries()) {
    try {
-    const assignments = new Map(weekTournaments.map((tournament) => [tournament.id, []]));
-    // Fase 6.5, item 3 — fallback de tier na mesma semana. `chooseTournament`
-    // já devolve `options`, a lista INTEIRA de torneios elegíveis da
-    // semana, ordenada por pontuação (`scoreOption`) — não só o
-    // escolhido. Guarda essa lista + em qual posição dela a dupla está
-    // atualmente, pra tentar a próxima se for cortada da atual. Como
-    // `options` já passou pelo filtro de elegibilidade de
-    // `evaluateTournamentEntry` (inclusive `OPEN_TIER_CEILING`), uma
-    // dupla barrada da base por ser boa demais nunca a vê nesta lista —
-    // o fallback respeita o teto de acesso livre por construção, sem
-    // checagem extra.
-    const pairOptionState = new Map();
-    for (const pair of pairs) {
-      // Fase 5.5, item 1 — a elegibilidade da dupla passava por
-      // `chooseTournament(..., pair.athletes[0])`: `resolveEntryRank` lia
-      // o rank do PRIMEIRO atleta (o `athlete_a` da Partnership, ordem
-      // arbitrária), não o da dupla. Uma dupla [#82, #189] com o #82 como
-      // `athlete_b` passava o teto de acesso livre pelo rank 189 do
-      // `athlete_a` e entrava em Bronze/Silver com um top-82 dentro
-      // (medido: Pineda/Piotto, 1 dos 7 títulos reais de base em regime).
-      // O `overall_rating` já era a média dos dois aqui; o rank passa a
-      // ser `pairEntryRank` (média, mesmo adaptador de
-      // `applyEntryPriority` e da redistribuição do item 1 da
-      // Fase 5.4) — a porta enxerga a dupla, não um membro sorteado.
-      const pairRank = pairEntryRank(pair);
-      const representative = {
-        ...pair.athletes[0],
-        overall_rating: pair.athletes.reduce((sum, athlete) => sum + Number(athlete.overall_rating || athlete.overall || 50), 0) / 2,
-        ...(pairRank > 0 ? { rank: pairRank, ranking_position: pairRank } : {}),
-      };
-      const choice = chooseTournament(weekTournaments, representative, {
-        strategy: representative.careerStrategy,
-        currentRegion: representative.currentRegion,
-      });
-      if (choice?.decision === 'play' && choice.tournament?.id && assignments.has(choice.tournament.id)) {
-        assignments.get(choice.tournament.id).push(pair);
-        pairOptionState.set(pair.id, { pair, options: choice.options || [], index: 0, currentTournamentId: choice.tournament.id });
-      }
-    }
-
-    // Fase 5.4, item 1 — redistribuição de excedente entre tiers de acesso
-    // livre (Bronze/Silver) concorrentes na mesma semana. `chooseTournament`
-    // + `scoreOption` pontuam Silver acima de Bronze pra quase toda
-    // estratégia de carreira (mais pontos, mais prêmio, mais prestígio),
-    // então numa semana com os dois TODO par elegível escolhe Silver e o
-    // Bronze fecha com ZERO inscritos (medido: 8 Bronze/temporada
-    // cancelados, todos em semanas Bronze+Silver — Fase 5.3/5.4). A IA não
-    // modela que o Silver vai estar lotado: um par que seria CORTADO do
-    // Silver superlotado está estritamente melhor jogando o Bronze.
-    //
-    // Redistribuição CONSERVADORA: só resgata um evento livre concorrente
-    // que ficaria abaixo do mínimo viável (senão cancelaria), e o traz
-    // exatamente até `minViableDraw` — não até `drawSize`. Um evento que
-    // ninguém escolheu roda no tamanho mínimo honesto, não cheio à força
-    // (mesmo princípio da chave de tamanho variável da Fase 5.3). Move só
-    // os pares de MENOR força (`pairScore`) entre os que o doador cortaria
-    // de qualquer forma: o tier de baixo fica com um campo genuinamente
-    // fraco, e uma dupla forte cortada do doador continua cortada.
-    //
-    // Fase 5.5, item 1 — invariante explícita: uma dupla barrada pelo teto
-    // de acesso livre (`pairEntryRank <= OPEN_TIER_CEILING`) NUNCA é movida
-    // pra um evento de base, nem pra salvar um cancelamento. Depois da
-    // correção da elegibilidade (representative usa `pairEntryRank`) o
-    // `donor.list` já não contém essas duplas; o filtro abaixo é a rede de
-    // segurança que torna a garantia local e legível.
-    const barredFromOpen = (p) => {
-      const r = pairEntryRank(p);
-      return r > 0 && r <= OPEN_TIER_CEILING;
-    };
-    const openEvents = weekTournaments.filter((t) => getTournamentTierConfig(t?.tier).minRanking === 0);
-    if (openEvents.length > 1) {
-      const drawOf = (t) => Math.max(2, Number(t.main_draw_size) || getTournamentTierConfig(t?.tier).mainDrawSize || 16);
-      const keepFirst = (a, b) => {
-        const ra = pairEntryRank(a) || (WORLD_RANKING_TARGET + 1);
-        const rb = pairEntryRank(b) || (WORLD_RANKING_TARGET + 1);
-        return (ra - rb) || (pairTournamentsPlayedSoFar(a) - pairTournamentsPlayedSoFar(b));
-      };
-      for (let guard = 0; guard < 200; guard += 1) {
-        const state = openEvents.map((t) => ({ t, draw: drawOf(t), min: minViableDraw(drawOf(t)), list: assignments.get(t.id) }));
-        const donor = state.filter((s) => s.list.length > s.draw).sort((x, y) => (y.list.length - y.draw) - (x.list.length - x.draw))[0];
-        const receiver = state.filter((s) => s.list.length < s.min).sort((x, y) => x.list.length - y.list.length)[0];
-        if (!donor || !receiver) break;
-        const present = new Set(receiver.list.map((p) => p.id));
-        const cutCandidates = [...donor.list].sort(keepFirst).slice(donor.draw)
-          .filter((p) => !present.has(p.id) && !barredFromOpen(p))
-          .sort((a, b) => pairScore(a, receiver.t) - pairScore(b, receiver.t));
-        const n = Math.min(donor.list.length - donor.draw, receiver.min - receiver.list.length, cutCandidates.length);
-        if (n <= 0) break;
-        const moveIds = new Set(cutCandidates.slice(0, n).map((p) => p.id));
-        assignments.set(donor.t.id, donor.list.filter((p) => !moveIds.has(p.id)));
-        receiver.list.push(...cutCandidates.slice(0, n));
-      }
-    }
-
-    // Fase 6.5, item 3 — fallback de tier na mesma semana. Hoje, se uma
-    // dupla é cortada da montagem de campo do tier escolhido, a semana
-    // acaba ali — a redistribuição acima só move ENTRE tiers de acesso
-    // livre concorrentes, nunca de um tier fechado pra outro. No circuito
-    // real, quem não entra num evento joga outro. Reavalia
-    // iterativamente: quem foi cortado do tier atual tenta o PRÓXIMO
-    // melhor da própria lista de opções elegíveis (`chooseTournament` já
-    // devolve essa lista ordenada — não é um recálculo novo, é a mesma
-    // pontuação que decidiu a escolha original). Convirja num número
-    // limitado de rodadas (a escada de tiers tem profundidade finita —
-    // não pode ciclar) em vez de reprocessar até estabilizar sozinho.
-    const drawSizeOf = (t) => {
-      const cfg = getTournamentTierConfig(t?.tier);
-      return Math.max(2, Number(t.main_draw_size) || cfg.mainDrawSize || 16);
-    };
-    // A redistribuição de Bronze/Silver acima já pode ter movido alguém
-    // pra fora da 1ª escolha registrada em `pairOptionState` — sincroniza
-    // `currentTournamentId` com onde `assignments` realmente tem cada
-    // dupla agora, antes da 1ª rodada de fallback usar essa referência.
-    for (const [tournamentId, list] of assignments) {
-      for (const p of list) {
-        const state = pairOptionState.get(p.id);
-        if (state) state.currentTournamentId = tournamentId;
-      }
-    }
-    const MAX_FALLBACK_ROUNDS = 6;
-    for (let round = 0; round < MAX_FALLBACK_ROUNDS; round += 1) {
-      const survivedByTournament = new Map();
-      for (const tournament of weekTournaments) {
-        const drawSize = drawSizeOf(tournament);
-        let candidates = [...(assignments.get(tournament.id) || [])];
-        if (candidates.length > drawSize) candidates = applyEntryPriority(candidates, tournament, drawSize);
-        const ordered = candidates.sort((a, b) => pairScore(b, tournament) - pairScore(a, tournament)).slice(0, drawSize);
-        survivedByTournament.set(tournament.id, new Set(ordered.map((p) => p.id)));
-      }
-      let anyMoved = false;
-      for (const state of pairOptionState.values()) {
-        if (survivedByTournament.get(state.currentTournamentId)?.has(state.pair.id)) continue;
-        // Cortada — tenta a próxima opção elegível da lista, se houver.
-        let nextIndex = state.index + 1;
-        while (nextIndex < state.options.length && !weekTournaments.some((t) => t.id === state.options[nextIndex].tournament?.id)) nextIndex += 1;
-        if (nextIndex >= state.options.length) continue; // esgotou as opções — perde a semana, como hoje.
-        const nextTournamentId = state.options[nextIndex].tournament.id;
-        const oldList = assignments.get(state.currentTournamentId);
-        if (oldList) assignments.set(state.currentTournamentId, oldList.filter((p) => p.id !== state.pair.id));
-        assignments.get(nextTournamentId)?.push(state.pair);
-        state.currentTournamentId = nextTournamentId;
-        state.index = nextIndex;
-        anyMoved = true;
-      }
-      if (!anyMoved) break;
-    }
+    const assignments = await applyFinalsEntryAuthority(weekTournaments, pairs, assignPairsForWeek(weekTournaments, pairs));
 
     for (const tournament of weekTournaments) {
       // Achado #16b da auditoria, corrigido na Fase 3: lia
@@ -710,7 +1450,23 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       // teto arbitrário).
       const config = getTournamentTierConfig(tournament?.tier);
       const drawSize = Math.max(2, Number(tournament.main_draw_size) || config.mainDrawSize || 16);
-      let entrants = [...(assignments.get(tournament.id) || [])];
+      // Playthrough 5.4, Parte F/M — um torneio que JÁ foi sorteado (D-3,
+      // bracket_history existe) tem sua resposta pra "quem joga" definida —
+      // não recalculada de novo aqui. Recalcular do zero via
+      // assignPairsForWeek/chooseTournament (o `assignments` desta semana)
+      // usa o estado ATUAL de rank/região, que já pode ter mudado desde o
+      // sorteio (outros torneios da mesma semana resolvendo em paralelo) —
+      // sem NENHUMA troca de parceiro, isso bastava pra `chooseTournament`
+      // preferir outro torneio na nova chamada e a dupla sorteada sumir do
+      // campo, perdendo o crédito de um torneio que o bracket_history
+      // salvo comprova que ela jogou (achado desta fase: 73% das
+      // aparições não-campeãs numa temporada real). `assignments` continua
+      // servindo os torneios que AINDA não têm chave (ver hadCanonicalDraw
+      // abaixo).
+      const hadCanonicalDraw = Number(tournament.bracket_schema_version) >= 2 && Array.isArray(tournament.bracket_history);
+      let entrants = hadCanonicalDraw
+        ? (tournament.draw_pair_ids || []).map((pairId) => resolveDrawnPair(pairId, partnershipById, athleteById, pairsById)).filter(Boolean)
+        : [...(assignments.get(tournament.id) || [])];
       // Fase 5.3, itens 1 e 2 — o preenchimento de reserva que completava
       // a chave até `drawSize` foi REMOVIDO. O campo agora é exatamente
       // quem ESCOLHEU o torneio (`chooseTournament`, que já filtra por
@@ -776,6 +1532,13 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
           tags: ['world-tour', 'torneio', 'cancelamento'],
           related_tournament_id: tournament.id,
         });
+        tournamentDiagnostics.push({
+          tournament_id: tournament.id, tournament_name: tournament.name, tier: tournament.tier,
+          bracket_schema_version: Number(tournament.bracket_schema_version) || null,
+          settlement_started: true, cancelled: true, entrants_found: ordered.length,
+          canonical_pairs_found: pairs.length, champion: null, runner_up: null,
+          world_event_created: true, athlete_ranking_results_created: 0,
+        });
         continue;
       }
       // Fase 7.4 — cada aparição EFETIVA num torneio que rodou (não
@@ -784,14 +1547,38 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       for (const pair of ordered) {
         if (pair.priorityWindowRemaining > 0) pair.priorityWindowRemaining -= 1;
       }
-      const bracket = Number(tournament.bracket_schema_version) >= 2 && Array.isArray(tournament.bracket_history)
+      // Item 2C — este ramo só deveria ser alcançado por saves antigos ou
+      // por uma falha genuinamente excepcional do D-3 (a cancelação
+      // explícita em ensureWorldTourDraws, acima, cobre o caso comum —
+      // Cidade do Cabo). Nunca finge que a chave existia desde o sorteio:
+      // `bracket_origin` preserva a origem/data real da recuperação, visível
+      // no próprio Tournament, em vez de uma chave indistinguível de uma
+      // sorteada a tempo.
+      if (!hadCanonicalDraw) {
+        console.warn('[WorldTour] recuperação de chave no settlement — torneio nunca recebeu sorteio no D-3.', {
+          tournamentId: tournament.id, tournamentName: tournament.name, careerDate,
+        });
+      }
+      const bracket = hadCanonicalDraw
         ? { ...deriveTournamentFactsFromFullBracket(tournament.bracket_history), bracket_history: tournament.bracket_history }
         : buildCanonicalTournamentBracket({
           tournamentId: tournament.id,
           date: tournamentEndDate(tournament),
-          participants: ordered.map((pair) => ({ name: pair.name, strength: pairScore(pair, tournament) })),
+          // Playthrough 5.16, Parte Z — o caminho de RECUPERAÇÃO (torneio que
+          // nunca recebeu sorteio no D-3) precisa da mesma autoridade de
+          // seed do caminho normal; senão a chave de recuperação voltaria a
+          // ordenar cabeças de chave só por força.
+          participants: ordered.map((pair) => ({
+            name: pair.name,
+            strength: pairScore(pair, tournament),
+            seedRank: pairEntryRank(pair),
+          })),
         });
       const settlement = finalizeTournamentFromBracket({ tournament, bracket, date: careerDate });
+      if (!hadCanonicalDraw && !settlement.idempotent) {
+        settlement.patch.bracket_origin = 'retroactive-recovery';
+        settlement.patch.bracket_recovery_date = careerDate;
+      }
       const champion = ordered.find((pair) => pair.name === settlement.result.champion) || ordered[0];
       const runnerUp = ordered.find((pair) => pair.name === settlement.result.runner_up) || ordered[1];
       const placementByTeam = new Map(settlement.result.placements.map((placement) => [placement.team, placement.position]));
@@ -799,6 +1586,30 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       ordered.forEach((pair, index) => {
         const position = Math.max(1, Number(placementByTeam.get(pair.name) || index + 1));
         const { finish, points, wins: finishWins } = resolveFinish(tournament, position - 1, ordered.length);
+        // Playthrough 5.17, Parte J — LEDGER REAL DA DUPLA.
+        //
+        // Até aqui, `matches_played/wins/losses` do TeamRanking eram uma
+        // ESTIMATIVA derivada dos contadores INDIVIDUAIS dos dois membros
+        // (min das vitórias de A e B) — o próprio circuitLifecycle
+        // documentava isso. Era por isso que a tela mostrava "0V · 0D" em
+        // duplas com milhares de pontos: os pontos vinham de um caminho
+        // real, as partidas de outro, derivado e frequentemente zero.
+        //
+        // Este ponto é o único lugar onde o resultado REAL da dupla existe:
+        // quantas partidas ela venceu (`finishWins`) e se caiu (`finish`).
+        // A partir daqui os contadores são fato, incrementado por evento.
+        const ledgerIds = pair.athletes.map((member) => member.id).filter(Boolean).sort();
+        if (ledgerIds.length === 2) {
+          const ledgerKey = ledgerIds.join('_');
+          const entry = pairLedger.get(ledgerKey) || { wins: 0, losses: 0, titles: 0, events: 0, ids: ledgerIds };
+          entry.wins += Number(finishWins) || 0;
+          // Uma dupla que não foi campeã perdeu exatamente uma partida no
+          // evento (eliminação simples). A campeã não perde nenhuma.
+          entry.losses += finish === 'champion' ? 0 : 1;
+          entry.titles += finish === 'champion' ? 1 : 0;
+          entry.events += 1;
+          pairLedger.set(ledgerKey, entry);
+        }
         pair.athletes.forEach((athlete) => {
           athletePoints.set(athlete.id, (athletePoints.get(athlete.id) || 0) + points);
           if (!athleteOutcomes.has(athlete.id)) athleteOutcomes.set(athlete.id, []);
@@ -859,6 +1670,16 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         likes: 150 + (hash(tournament.id) % 4850),
         tags: ['world-tour', 'resultado', String(tournament.tier || '').toLowerCase()],
         related_tournament_id: tournament.id,
+      });
+      tournamentDiagnostics.push({
+        tournament_id: tournament.id, tournament_name: tournament.name, tier: tournament.tier,
+        bracket_schema_version: Number(tournament.bracket_schema_version) || null,
+        settlement_started: true, cancelled: false, entrants_found: ordered.length,
+        canonical_pairs_found: pairs.length,
+        athlete_ids_involved: ordered.flatMap((pair) => pair.athletes.map((athlete) => athlete.id)).slice(0, 40),
+        champion: champion.name, champion_athlete_ids: champion.athletes.map((athlete) => athlete.id),
+        runner_up: runnerUp.name, world_event_created: true,
+        athlete_ranking_results_created: ordered.length * 2,
       });
 
       ordered.slice(0, 8).flatMap((pair) => pair.athletes).forEach((athlete) => { athlete.currentRegion = eventRegion(tournament); });
@@ -944,6 +1765,86 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   if (tournamentUpdates.length) await entities.Tournament.bulkUpdate(tournamentUpdates);
   if (athleteUpdates.length) await entities.AthleteProfile.bulkUpdate(athleteUpdates);
   if (news.length) await entities.WorldEvent.bulkCreate(news);
+
+  // Playthrough 5.17, Parte J — grava o ledger da dupla como INCREMENTO
+  // sobre a linha canônica de TeamRanking.
+  //
+  // Incremento, não substituição: cada evento resolvido soma o que a dupla
+  // realmente fez. `stats_source: 'ledger'` marca a linha como fato medido,
+  // distinguindo-a das linhas antigas cujo histórico não existe e que a UI
+  // deve mostrar como indisponível em vez de "0V · 0D".
+  if (pairLedger.size) {
+    try {
+      const rows = await entities.TeamRanking.list(null, 5000).catch(() => []);
+      const rowByKey = new Map();
+      for (const row of rows || []) {
+        const key = [row.player1_id, row.player2_id].filter(Boolean).sort().join('_');
+        if (key && !rowByKey.has(key)) rowByKey.set(key, row);
+      }
+      const ledgerUpdates = [];
+      for (const [key, entry] of pairLedger.entries()) {
+        const row = rowByKey.get(key);
+        if (!row?.id) continue;
+        const priorLedger = row.stats_source === 'ledger';
+        const wins = (priorLedger ? Number(row.wins) || 0 : 0) + entry.wins;
+        const losses = (priorLedger ? Number(row.losses) || 0 : 0) + entry.losses;
+        const titles = (priorLedger ? Number(row.ledger_titles) || 0 : 0) + entry.titles;
+        ledgerUpdates.push({
+          id: row.id,
+          wins,
+          losses,
+          matches_played: wins + losses,
+          ledger_titles: titles,
+          ledger_events: (priorLedger ? Number(row.ledger_events) || 0 : 0) + entry.events,
+          stats_source: 'ledger',
+        });
+      }
+      if (ledgerUpdates.length && entities.TeamRanking.bulkUpdate) {
+        await entities.TeamRanking.bulkUpdate(ledgerUpdates);
+      } else {
+        for (const update of ledgerUpdates) {
+          const { id, ...data } = update;
+          await entities.TeamRanking.update(id, data).catch(() => {});
+        }
+      }
+    } catch (error) {
+      console.warn('[WorldTour] ledger de dupla não gravado:', error?.message || error);
+    }
+  }
+
+  // Playthrough 4.5A, item 1/4/5 — Race watch dos 4 pares reais mais visíveis
+  // do circuito (exatamente os nomes citados no relato: Coello/Tapia/
+  // Galán/Chingotto). `athletes` é o snapshot LIDO no início desta chamada
+  // (antes de qualquer escrita) — `race_points_before` vem dali;
+  // `race_points_after` vem do PATCH que acabou de ser gravado acima
+  // (`athleteUpdates`), sem I/O extra. `canonical_pair_formed` prova ou
+  // refuta a hipótese de buildCanonicalPairs (item 2): se `ai_partner_id`
+  // existe mas `canonical_pair_formed` é false, o problema está em
+  // buildCanonicalPairs; se `ai_partner_id` é null, o problema é anterior —
+  // a semeadura (ensureWorldSeed2025/verifySaveFoundation) nunca pareou
+  // este atleta.
+  const RACE_WATCHLIST = [
+    { botId: 'real_arturo_coello', label: 'Coello' },
+    { botId: 'real_agustin_tapia', label: 'Tapia' },
+    { botId: 'real_alejandro_galan', label: 'Galán' },
+    { botId: 'real_federico_chingotto', label: 'Chingotto' },
+  ];
+  const athleteByBotId = new Map(athletes.map((athlete) => [athlete.bot_id, athlete]));
+  const updateById = new Map(athleteUpdates.map((update) => [update.id, update]));
+  const pairedAthleteIds = new Set(pairs.flatMap((pair) => pair.athletes.map((athlete) => athlete.id)));
+  const raceWatch = RACE_WATCHLIST.map(({ botId, label }) => {
+    const athlete = athleteByBotId.get(botId);
+    if (!athlete) return { bot_id: botId, label, found_in_population: false };
+    const update = updateById.get(athlete.id);
+    return {
+      bot_id: botId, label, athlete_id: athlete.id, found_in_population: true,
+      ai_partner_id: athlete.ai_partner_id || null,
+      canonical_pair_formed: pairedAthleteIds.has(athlete.id),
+      race_points_before: Number(athlete.race_points) || 0,
+      race_points_after: update ? Number(update.race_points) || 0 : Number(athlete.race_points) || 0,
+      touched_this_call: Boolean(update),
+    };
+  });
   // Fase 7.4 — só grava quem mudou (concedeu ou descontou janela) nesta
   // chamada; a maioria das duplas nunca toca priority_window_remaining.
   const priorityWindowUpdates = pairs
@@ -1029,11 +1930,30 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
     // resolução acontecendo?" sem precisar de novo diagnóstico.
     pending: pending.length,
     errors: resolutionErrors,
+    // Playthrough 4.5A — diagnóstico factual por torneio (item 1) e Race
+    // watch dos 4 pares reais mais visíveis do circuito (item 4/5), lidos
+    // por src/dev/worldTourDiagnostics.js e persistidos de forma rotativa.
+    tournamentDiagnostics,
+    raceWatch,
+    canonicalPairsFound: pairs.length,
+    athletesConsidered: athletes.length,
   };
 }
 
 export async function processWorldTourDay(careerDate) {
   try {
+    // Playthrough 4.5D, item 4 — rede de segurança contra a MESMA corrida
+    // já corrigida na origem (saveFoundation.js): `ensureWorldSeed2025()`
+    // roda hoje de um efeito fire-and-forget (SaveFoundationBootstrap.jsx),
+    // nunca aguardado pelo avanço de dia. Se o dispositivo for lento ou o
+    // jogador avançar o dia antes desse efeito terminar, o D-3 da primeira
+    // janela ainda veria o mundo incompleto mesmo com a correção da
+    // semeadura. `verifySaveFoundation`/`ensureWorldSeed2025` são
+    // idempotentes e baratos depois da 1ª vez completa (ver saveFoundation.js)
+    // — pagar o custo aqui, todo dia, é seguro; nunca pagar o preço de um
+    // Gold cancelado por o mundo ainda não estar pronto não é.
+    const foundationStatus = await verifySaveFoundation().catch(() => ({ ok: true }));
+    if (!foundationStatus.ok) await ensureWorldSeed2025().catch((error) => console.error('[WorldTour] reparo de fundação falhou:', error));
     const draw = await ensureWorldTourDraws(careerDate);
     const settlement = await resolveCompletedWorldTourEvents(careerDate);
     return {

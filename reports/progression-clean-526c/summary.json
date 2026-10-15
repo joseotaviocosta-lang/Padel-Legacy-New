@@ -1,0 +1,6867 @@
+{
+  "generatedAt": "2026-10-09T03:00:10.000Z",
+  "gates": {
+    "smoke": {
+      "careers": 15,
+      "planned": 730,
+      "completed": 15,
+      "shimFree": 15,
+      "softLockFires": 0,
+      "errors": 0,
+      "errorSamples": [],
+      "advanceFailures": 0,
+      "resumes": 60,
+      "reloads": 60,
+      "resignLoopEvents": 0,
+      "partnerOvrMismatchMatches": 0,
+      "rewardLossCoins": 0,
+      "raceNotResetAtYearTurn": 0,
+      "yearTurnsObserved": 30
+    },
+    "main": {
+      "careers": 35,
+      "planned": 1826,
+      "completed": 35,
+      "shimFree": 35,
+      "softLockFires": 0,
+      "errors": 0,
+      "errorSamples": [],
+      "advanceFailures": 0,
+      "resumes": 350,
+      "reloads": 350,
+      "resignLoopEvents": 0,
+      "partnerOvrMismatchMatches": 0,
+      "rewardLossCoins": 0,
+      "raceNotResetAtYearTurn": 0,
+      "yearTurnsObserved": 175
+    },
+    "long": {
+      "careers": 5,
+      "planned": 3653,
+      "completed": 5,
+      "shimFree": 5,
+      "softLockFires": 0,
+      "errors": 0,
+      "errorSamples": [],
+      "advanceFailures": 0,
+      "resumes": 100,
+      "reloads": 100,
+      "resignLoopEvents": 0,
+      "partnerOvrMismatchMatches": 0,
+      "rewardLossCoins": 0,
+      "raceNotResetAtYearTurn": 0,
+      "yearTurnsObserved": 50
+    }
+  },
+  "progression": {
+    "main": {
+      "casual": {
+        "careers": 12,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 259,
+              "median": 273,
+              "p90": 319.9,
+              "min": 245,
+              "max": 322
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 436.1,
+              "median": 504,
+              "p90": 577.5,
+              "min": 420,
+              "max": 602
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 546.7,
+              "median": 616,
+              "p90": 700,
+              "min": 546,
+              "max": 756
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 649.6,
+              "median": 1057,
+              "p90": 1311.1,
+              "min": 623,
+              "max": 1722
+            }
+          },
+          "top20": {
+            "reachedPct": 83.3,
+            "day": {
+              "n": 10,
+              "p10": 1162.7,
+              "median": 1333.5,
+              "p90": 1535.8,
+              "min": 728,
+              "max": 1687
+            }
+          },
+          "top10": {
+            "reachedPct": 75,
+            "day": {
+              "n": 9,
+              "p10": 1204,
+              "median": 1442,
+              "p90": 1743,
+              "min": 784,
+              "max": 1771
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 12,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 12,
+            "p10": 33.1,
+            "median": 34,
+            "p90": 34.9,
+            "min": 33,
+            "max": 36
+          },
+          "1y": {
+            "n": 12,
+            "p10": 51,
+            "median": 52,
+            "p90": 53.9,
+            "min": 50,
+            "max": 55
+          },
+          "2y": {
+            "n": 12,
+            "p10": 67.1,
+            "median": 69,
+            "p90": 71,
+            "min": 67,
+            "max": 72
+          },
+          "3y": {
+            "n": 12,
+            "p10": 76,
+            "median": 77,
+            "p90": 78.9,
+            "min": 75,
+            "max": 79
+          },
+          "5y": {
+            "n": 12,
+            "p10": 82.1,
+            "median": 83,
+            "p90": 84,
+            "min": 82,
+            "max": 84
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 12,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 12,
+            "p10": 676.3,
+            "median": 713.5,
+            "p90": 821.3,
+            "min": 607,
+            "max": 897
+          },
+          "1y": {
+            "n": 12,
+            "p10": 258.1,
+            "median": 327.5,
+            "p90": 395,
+            "min": 247,
+            "max": 461
+          },
+          "2y": {
+            "n": 12,
+            "p10": 35.5,
+            "median": 61.5,
+            "p90": 97.1,
+            "min": 19,
+            "max": 104
+          },
+          "3y": {
+            "n": 12,
+            "p10": 34.4,
+            "median": 55.5,
+            "p90": 82.2,
+            "min": 13,
+            "max": 121
+          },
+          "5y": {
+            "n": 12,
+            "p10": 5,
+            "median": 11.5,
+            "p90": 32.9,
+            "min": 5,
+            "max": 38
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 0.9,
+              "min": 0,
+              "max": 3
+            },
+            "finals": {
+              "n": 12,
+              "p10": 0,
+              "median": 2,
+              "p90": 4,
+              "min": 0,
+              "max": 7
+            },
+            "semis": {
+              "n": 12,
+              "p10": 2,
+              "median": 4,
+              "p90": 7.8,
+              "min": 1,
+              "max": 13
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 16.1,
+              "median": 21,
+              "p90": 24.8,
+              "min": 14,
+              "max": 28
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 3.8,
+              "min": 0,
+              "max": 5
+            },
+            "semis": {
+              "n": 12,
+              "p10": 0,
+              "median": 1.5,
+              "p90": 7.6,
+              "min": 0,
+              "max": 10
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 15,
+              "median": 21.5,
+              "p90": 26,
+              "min": 14,
+              "max": 27
+            }
+          },
+          {
+            "year": 3,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 0.9,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 4,
+              "min": 0,
+              "max": 11
+            },
+            "semis": {
+              "n": 12,
+              "p10": 1.1,
+              "median": 3.5,
+              "p90": 11.9,
+              "min": 0,
+              "max": 23
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 16.1,
+              "median": 21,
+              "p90": 27,
+              "min": 15,
+              "max": 27
+            }
+          },
+          {
+            "year": 4,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 3.8,
+              "min": 0,
+              "max": 9
+            },
+            "finals": {
+              "n": 12,
+              "p10": 1.1,
+              "median": 4.5,
+              "p90": 7.9,
+              "min": 0,
+              "max": 14
+            },
+            "semis": {
+              "n": 12,
+              "p10": 5.1,
+              "median": 11,
+              "p90": 16.7,
+              "min": 3,
+              "max": 18
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 18,
+              "median": 20,
+              "p90": 25.9,
+              "min": 13,
+              "max": 28
+            }
+          },
+          {
+            "year": 5,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 1,
+              "p90": 7.9,
+              "min": 0,
+              "max": 11
+            },
+            "finals": {
+              "n": 12,
+              "p10": 3.1,
+              "median": 7,
+              "p90": 12,
+              "min": 2,
+              "max": 18
+            },
+            "semis": {
+              "n": 12,
+              "p10": 9.1,
+              "median": 12.5,
+              "p90": 18.8,
+              "min": 7,
+              "max": 21
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 17.3,
+              "median": 22,
+              "p90": 24.9,
+              "min": 15,
+              "max": 26
+            }
+          }
+        ]
+      },
+      "normal": {
+        "careers": 12,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 245,
+              "median": 259,
+              "p90": 285.6,
+              "min": 245,
+              "max": 315
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 413,
+              "median": 448,
+              "p90": 476,
+              "min": 406,
+              "max": 497
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 469.7,
+              "median": 497,
+              "p90": 544.6,
+              "min": 455,
+              "max": 553
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 513.1,
+              "median": 556.5,
+              "p90": 607.6,
+              "min": 511,
+              "max": 616
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 562.1,
+              "median": 609,
+              "p90": 662.9,
+              "min": 539,
+              "max": 686
+            }
+          },
+          "top10": {
+            "reachedPct": 100,
+            "day": {
+              "n": 12,
+              "p10": 595,
+              "median": 693,
+              "p90": 802.9,
+              "min": 581,
+              "max": 819
+            }
+          },
+          "top1": {
+            "reachedPct": 91.7,
+            "day": {
+              "n": 11,
+              "p10": 791,
+              "median": 1204,
+              "p90": 1386,
+              "min": 770,
+              "max": 1631
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 12,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 12,
+            "p10": 44.1,
+            "median": 48.5,
+            "p90": 53.7,
+            "min": 43,
+            "max": 54
+          },
+          "1y": {
+            "n": 12,
+            "p10": 59,
+            "median": 64.5,
+            "p90": 73,
+            "min": 55,
+            "max": 75
+          },
+          "2y": {
+            "n": 12,
+            "p10": 72.1,
+            "median": 77,
+            "p90": 82.9,
+            "min": 70,
+            "max": 83
+          },
+          "3y": {
+            "n": 12,
+            "p10": 79,
+            "median": 81,
+            "p90": 84.9,
+            "min": 78,
+            "max": 85
+          },
+          "5y": {
+            "n": 12,
+            "p10": 83.1,
+            "median": 84,
+            "p90": 85.9,
+            "min": 83,
+            "max": 86
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 12,
+            "p10": 1001,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1001,
+            "max": 1002
+          },
+          "6m": {
+            "n": 12,
+            "p10": 605.5,
+            "median": 654,
+            "p90": 689.6,
+            "min": 594,
+            "max": 753
+          },
+          "1y": {
+            "n": 12,
+            "p10": 300.3,
+            "median": 336.5,
+            "p90": 398.9,
+            "min": 271,
+            "max": 427
+          },
+          "2y": {
+            "n": 12,
+            "p10": 5,
+            "median": 9,
+            "p90": 12.8,
+            "min": 3,
+            "max": 15
+          },
+          "3y": {
+            "n": 12,
+            "p10": 1,
+            "median": 4,
+            "p90": 5,
+            "min": 1,
+            "max": 5
+          },
+          "5y": {
+            "n": 12,
+            "p10": 1,
+            "median": 2,
+            "p90": 3,
+            "min": 1,
+            "max": 3
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 1,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 12,
+              "p10": 0,
+              "median": 1.5,
+              "p90": 3,
+              "min": 0,
+              "max": 6
+            },
+            "semis": {
+              "n": 12,
+              "p10": 4,
+              "median": 7.5,
+              "p90": 9.9,
+              "min": 0,
+              "max": 12
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 29,
+              "median": 31,
+              "p90": 31,
+              "min": 29,
+              "max": 32
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 12,
+              "p10": 0.1,
+              "median": 1,
+              "p90": 3,
+              "min": 0,
+              "max": 4
+            },
+            "finals": {
+              "n": 12,
+              "p10": 1,
+              "median": 2.5,
+              "p90": 6,
+              "min": 1,
+              "max": 7
+            },
+            "semis": {
+              "n": 12,
+              "p10": 6.1,
+              "median": 11,
+              "p90": 16.8,
+              "min": 3,
+              "max": 18
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 30.1,
+              "median": 34,
+              "p90": 37.9,
+              "min": 30,
+              "max": 38
+            }
+          },
+          {
+            "year": 3,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 0,
+              "p90": 7,
+              "min": 0,
+              "max": 9
+            },
+            "finals": {
+              "n": 12,
+              "p10": 1.1,
+              "median": 3.5,
+              "p90": 14,
+              "min": 0,
+              "max": 16
+            },
+            "semis": {
+              "n": 12,
+              "p10": 11.1,
+              "median": 13.5,
+              "p90": 23.6,
+              "min": 9,
+              "max": 26
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 30,
+              "median": 32.5,
+              "p90": 36.8,
+              "min": 27,
+              "max": 38
+            }
+          },
+          {
+            "year": 4,
+            "titles": {
+              "n": 12,
+              "p10": 0,
+              "median": 1.5,
+              "p90": 7,
+              "min": 0,
+              "max": 9
+            },
+            "finals": {
+              "n": 12,
+              "p10": 2,
+              "median": 5.5,
+              "p90": 15.4,
+              "min": 1,
+              "max": 16
+            },
+            "semis": {
+              "n": 12,
+              "p10": 15.1,
+              "median": 17.5,
+              "p90": 21.7,
+              "min": 11,
+              "max": 24
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 25.4,
+              "median": 33,
+              "p90": 36,
+              "min": 25,
+              "max": 37
+            }
+          },
+          {
+            "year": 5,
+            "titles": {
+              "n": 12,
+              "p10": 1,
+              "median": 4.5,
+              "p90": 9.6,
+              "min": 1,
+              "max": 12
+            },
+            "finals": {
+              "n": 12,
+              "p10": 6.1,
+              "median": 9,
+              "p90": 17.9,
+              "min": 4,
+              "max": 25
+            },
+            "semis": {
+              "n": 12,
+              "p10": 13.2,
+              "median": 20,
+              "p90": 31.3,
+              "min": 11,
+              "max": 32
+            },
+            "tournaments": {
+              "n": 12,
+              "p10": 20,
+              "median": 33.5,
+              "p90": 36,
+              "min": 17,
+              "max": 39
+            }
+          }
+        ]
+      },
+      "optimizer": {
+        "careers": 11,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 280,
+              "median": 308,
+              "p90": 329,
+              "min": 273,
+              "max": 336
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 413,
+              "median": 441,
+              "p90": 532,
+              "min": 413,
+              "max": 574
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 462,
+              "median": 518,
+              "p90": 560,
+              "min": 441,
+              "max": 630
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 511,
+              "median": 553,
+              "p90": 623,
+              "min": 483,
+              "max": 679
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 546,
+              "median": 588,
+              "p90": 728,
+              "min": 518,
+              "max": 798
+            }
+          },
+          "top10": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 595,
+              "median": 623,
+              "p90": 819,
+              "min": 546,
+              "max": 826
+            }
+          },
+          "top1": {
+            "reachedPct": 100,
+            "day": {
+              "n": 11,
+              "p10": 770,
+              "median": 875,
+              "p90": 994,
+              "min": 679,
+              "max": 1148
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 11,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 11,
+            "p10": 42,
+            "median": 44,
+            "p90": 47,
+            "min": 40,
+            "max": 51
+          },
+          "1y": {
+            "n": 11,
+            "p10": 54,
+            "median": 58,
+            "p90": 72,
+            "min": 54,
+            "max": 73
+          },
+          "2y": {
+            "n": 11,
+            "p10": 68,
+            "median": 72,
+            "p90": 81,
+            "min": 68,
+            "max": 81
+          },
+          "3y": {
+            "n": 11,
+            "p10": 77,
+            "median": 80,
+            "p90": 84,
+            "min": 76,
+            "max": 84
+          },
+          "5y": {
+            "n": 11,
+            "p10": 84,
+            "median": 84,
+            "p90": 85,
+            "min": 84,
+            "max": 85
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 11,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 11,
+            "p10": 683,
+            "median": 738,
+            "p90": 773,
+            "min": 666,
+            "max": 791
+          },
+          "1y": {
+            "n": 11,
+            "p10": 390,
+            "median": 416,
+            "p90": 455,
+            "min": 339,
+            "max": 459
+          },
+          "2y": {
+            "n": 11,
+            "p10": 4,
+            "median": 6,
+            "p90": 17,
+            "min": 2,
+            "max": 26
+          },
+          "3y": {
+            "n": 11,
+            "p10": 2,
+            "median": 2,
+            "p90": 4,
+            "min": 2,
+            "max": 4
+          },
+          "5y": {
+            "n": 11,
+            "p10": 1,
+            "median": 4,
+            "p90": 4,
+            "min": 1,
+            "max": 6
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 11,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 11,
+              "p10": 0,
+              "median": 0,
+              "p90": 1,
+              "min": 0,
+              "max": 4
+            },
+            "semis": {
+              "n": 11,
+              "p10": 0,
+              "median": 2,
+              "p90": 4,
+              "min": 0,
+              "max": 9
+            },
+            "tournaments": {
+              "n": 11,
+              "p10": 29,
+              "median": 29,
+              "p90": 30,
+              "min": 29,
+              "max": 32
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 11,
+              "p10": 0,
+              "median": 2,
+              "p90": 3,
+              "min": 0,
+              "max": 9
+            },
+            "finals": {
+              "n": 11,
+              "p10": 1,
+              "median": 7,
+              "p90": 10,
+              "min": 0,
+              "max": 17
+            },
+            "semis": {
+              "n": 11,
+              "p10": 7,
+              "median": 17,
+              "p90": 21,
+              "min": 0,
+              "max": 24
+            },
+            "tournaments": {
+              "n": 11,
+              "p10": 23,
+              "median": 32,
+              "p90": 34,
+              "min": 13,
+              "max": 35
+            }
+          },
+          {
+            "year": 3,
+            "titles": {
+              "n": 11,
+              "p10": 1,
+              "median": 3,
+              "p90": 5,
+              "min": 1,
+              "max": 8
+            },
+            "finals": {
+              "n": 11,
+              "p10": 5,
+              "median": 9,
+              "p90": 17,
+              "min": 5,
+              "max": 17
+            },
+            "semis": {
+              "n": 11,
+              "p10": 14,
+              "median": 22,
+              "p90": 26,
+              "min": 14,
+              "max": 28
+            },
+            "tournaments": {
+              "n": 11,
+              "p10": 29,
+              "median": 33,
+              "p90": 35,
+              "min": 27,
+              "max": 36
+            }
+          },
+          {
+            "year": 4,
+            "titles": {
+              "n": 11,
+              "p10": 2,
+              "median": 3,
+              "p90": 5,
+              "min": 1,
+              "max": 8
+            },
+            "finals": {
+              "n": 11,
+              "p10": 3,
+              "median": 9,
+              "p90": 14,
+              "min": 3,
+              "max": 17
+            },
+            "semis": {
+              "n": 11,
+              "p10": 16,
+              "median": 19,
+              "p90": 25,
+              "min": 14,
+              "max": 25
+            },
+            "tournaments": {
+              "n": 11,
+              "p10": 27,
+              "median": 30,
+              "p90": 36,
+              "min": 27,
+              "max": 37
+            }
+          },
+          {
+            "year": 5,
+            "titles": {
+              "n": 11,
+              "p10": 0,
+              "median": 1,
+              "p90": 5,
+              "min": 0,
+              "max": 5
+            },
+            "finals": {
+              "n": 11,
+              "p10": 2,
+              "median": 4,
+              "p90": 12,
+              "min": 1,
+              "max": 13
+            },
+            "semis": {
+              "n": 11,
+              "p10": 11,
+              "median": 16,
+              "p90": 22,
+              "min": 11,
+              "max": 22
+            },
+            "tournaments": {
+              "n": 11,
+              "p10": 29,
+              "median": 31,
+              "p90": 35,
+              "min": 25,
+              "max": 36
+            }
+          }
+        ]
+      }
+    },
+    "long": {
+      "casual": {
+        "careers": 2,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 256.2,
+              "median": 273,
+              "p90": 289.8,
+              "min": 252,
+              "max": 294
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 352.1,
+              "median": 444.5,
+              "p90": 536.9,
+              "min": 329,
+              "max": 560
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 541.8,
+              "median": 637,
+              "p90": 732.2,
+              "min": 518,
+              "max": 756
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 695.1,
+              "median": 843.5,
+              "p90": 991.9,
+              "min": 658,
+              "max": 1029
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 1158.5,
+              "median": 1228.5,
+              "p90": 1298.5,
+              "min": 1141,
+              "max": 1316
+            }
+          },
+          "top10": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 1470,
+              "median": 1498,
+              "p90": 1526,
+              "min": 1463,
+              "max": 1533
+            }
+          },
+          "top1": {
+            "reachedPct": 50,
+            "day": {
+              "n": 1,
+              "p10": 2373,
+              "median": 2373,
+              "p90": 2373,
+              "min": 2373,
+              "max": 2373
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 2,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 2,
+            "p10": 31.4,
+            "median": 33,
+            "p90": 34.6,
+            "min": 31,
+            "max": 35
+          },
+          "1y": {
+            "n": 2,
+            "p10": 49.3,
+            "median": 50.5,
+            "p90": 51.7,
+            "min": 49,
+            "max": 52
+          },
+          "2y": {
+            "n": 2,
+            "p10": 68.2,
+            "median": 69,
+            "p90": 69.8,
+            "min": 68,
+            "max": 70
+          },
+          "3y": {
+            "n": 2,
+            "p10": 75.3,
+            "median": 76.5,
+            "p90": 77.7,
+            "min": 75,
+            "max": 78
+          },
+          "5y": {
+            "n": 2,
+            "p10": 82.2,
+            "median": 83,
+            "p90": 83.8,
+            "min": 82,
+            "max": 84
+          },
+          "10y": {
+            "n": 2,
+            "p10": 86,
+            "median": 86,
+            "p90": 86,
+            "min": 86,
+            "max": 86
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 2,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 2,
+            "p10": 682.1,
+            "median": 734.5,
+            "p90": 786.9,
+            "min": 669,
+            "max": 800
+          },
+          "1y": {
+            "n": 2,
+            "p10": 162.2,
+            "median": 251,
+            "p90": 339.8,
+            "min": 140,
+            "max": 362
+          },
+          "2y": {
+            "n": 2,
+            "p10": 46.5,
+            "median": 72.5,
+            "p90": 98.5,
+            "min": 40,
+            "max": 105
+          },
+          "3y": {
+            "n": 2,
+            "p10": 26.1,
+            "median": 46.5,
+            "p90": 66.9,
+            "min": 21,
+            "max": 72
+          },
+          "5y": {
+            "n": 2,
+            "p10": 5.2,
+            "median": 6,
+            "p90": 6.8,
+            "min": 5,
+            "max": 7
+          },
+          "10y": {
+            "n": 2,
+            "p10": 10.8,
+            "median": 34,
+            "p90": 57.2,
+            "min": 5,
+            "max": 63
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 2,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 2,
+              "p10": 0.6,
+              "median": 3,
+              "p90": 5.4,
+              "min": 0,
+              "max": 6
+            },
+            "semis": {
+              "n": 2,
+              "p10": 2.7,
+              "median": 5.5,
+              "p90": 8.3,
+              "min": 2,
+              "max": 9
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 24,
+              "median": 24,
+              "p90": 24,
+              "min": 24,
+              "max": 24
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 2,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 2,
+              "p10": 2.1,
+              "median": 2.5,
+              "p90": 2.9,
+              "min": 2,
+              "max": 3
+            },
+            "semis": {
+              "n": 2,
+              "p10": 2.4,
+              "median": 4,
+              "p90": 5.6,
+              "min": 2,
+              "max": 6
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 18.6,
+              "median": 21,
+              "p90": 23.4,
+              "min": 18,
+              "max": 24
+            }
+          },
+          {
+            "year": 3,
+            "titles": {
+              "n": 2,
+              "p10": 0.1,
+              "median": 0.5,
+              "p90": 0.9,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 2,
+              "p10": 0.3,
+              "median": 1.5,
+              "p90": 2.7,
+              "min": 0,
+              "max": 3
+            },
+            "semis": {
+              "n": 2,
+              "p10": 0.5,
+              "median": 2.5,
+              "p90": 4.5,
+              "min": 0,
+              "max": 5
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 25.3,
+              "median": 26.5,
+              "p90": 27.7,
+              "min": 25,
+              "max": 28
+            }
+          },
+          {
+            "year": 4,
+            "titles": {
+              "n": 2,
+              "p10": 4.1,
+              "median": 4.5,
+              "p90": 4.9,
+              "min": 4,
+              "max": 5
+            },
+            "finals": {
+              "n": 2,
+              "p10": 8,
+              "median": 8,
+              "p90": 8,
+              "min": 8,
+              "max": 8
+            },
+            "semis": {
+              "n": 2,
+              "p10": 10.3,
+              "median": 11.5,
+              "p90": 12.7,
+              "min": 10,
+              "max": 13
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 20.4,
+              "median": 22,
+              "p90": 23.6,
+              "min": 20,
+              "max": 24
+            }
+          },
+          {
+            "year": 5,
+            "titles": {
+              "n": 2,
+              "p10": 9.5,
+              "median": 11.5,
+              "p90": 13.5,
+              "min": 9,
+              "max": 14
+            },
+            "finals": {
+              "n": 2,
+              "p10": 16.3,
+              "median": 17.5,
+              "p90": 18.7,
+              "min": 16,
+              "max": 19
+            },
+            "semis": {
+              "n": 2,
+              "p10": 18.7,
+              "median": 21.5,
+              "p90": 24.3,
+              "min": 18,
+              "max": 25
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 19.8,
+              "median": 23,
+              "p90": 26.2,
+              "min": 19,
+              "max": 27
+            }
+          },
+          {
+            "year": 6,
+            "titles": {
+              "n": 2,
+              "p10": 13.3,
+              "median": 14.5,
+              "p90": 15.7,
+              "min": 13,
+              "max": 16
+            },
+            "finals": {
+              "n": 2,
+              "p10": 15.6,
+              "median": 18,
+              "p90": 20.4,
+              "min": 15,
+              "max": 21
+            },
+            "semis": {
+              "n": 2,
+              "p10": 19.3,
+              "median": 20.5,
+              "p90": 21.7,
+              "min": 19,
+              "max": 22
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 20.4,
+              "median": 22,
+              "p90": 23.6,
+              "min": 20,
+              "max": 24
+            }
+          },
+          {
+            "year": 7,
+            "titles": {
+              "n": 2,
+              "p10": 3.1,
+              "median": 7.5,
+              "p90": 11.9,
+              "min": 2,
+              "max": 13
+            },
+            "finals": {
+              "n": 2,
+              "p10": 6.2,
+              "median": 11,
+              "p90": 15.8,
+              "min": 5,
+              "max": 17
+            },
+            "semis": {
+              "n": 2,
+              "p10": 9,
+              "median": 13,
+              "p90": 17,
+              "min": 8,
+              "max": 18
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 17.3,
+              "median": 18.5,
+              "p90": 19.7,
+              "min": 17,
+              "max": 20
+            }
+          },
+          {
+            "year": 8,
+            "titles": {
+              "n": 2,
+              "p10": 3.8,
+              "median": 7,
+              "p90": 10.2,
+              "min": 3,
+              "max": 11
+            },
+            "finals": {
+              "n": 2,
+              "p10": 8.6,
+              "median": 11,
+              "p90": 13.4,
+              "min": 8,
+              "max": 14
+            },
+            "semis": {
+              "n": 2,
+              "p10": 13.2,
+              "median": 14,
+              "p90": 14.8,
+              "min": 13,
+              "max": 15
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 18.2,
+              "median": 19,
+              "p90": 19.8,
+              "min": 18,
+              "max": 20
+            }
+          },
+          {
+            "year": 9,
+            "titles": {
+              "n": 2,
+              "p10": 1.1,
+              "median": 5.5,
+              "p90": 9.9,
+              "min": 0,
+              "max": 11
+            },
+            "finals": {
+              "n": 2,
+              "p10": 2.6,
+              "median": 9,
+              "p90": 15.4,
+              "min": 1,
+              "max": 17
+            },
+            "semis": {
+              "n": 2,
+              "p10": 8.2,
+              "median": 13,
+              "p90": 17.8,
+              "min": 7,
+              "max": 19
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 20.2,
+              "median": 21,
+              "p90": 21.8,
+              "min": 20,
+              "max": 22
+            }
+          },
+          {
+            "year": 10,
+            "titles": {
+              "n": 2,
+              "p10": 1.4,
+              "median": 7,
+              "p90": 12.6,
+              "min": 0,
+              "max": 14
+            },
+            "finals": {
+              "n": 2,
+              "p10": 2.2,
+              "median": 11,
+              "p90": 19.8,
+              "min": 0,
+              "max": 22
+            },
+            "semis": {
+              "n": 2,
+              "p10": 2.4,
+              "median": 12,
+              "p90": 21.6,
+              "min": 0,
+              "max": 24
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 21.5,
+              "median": 23.5,
+              "p90": 25.5,
+              "min": 21,
+              "max": 26
+            }
+          }
+        ]
+      },
+      "normal": {
+        "careers": 2,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 277.9,
+              "median": 297.5,
+              "p90": 317.1,
+              "min": 273,
+              "max": 322
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 455.7,
+              "median": 458.5,
+              "p90": 461.3,
+              "min": 455,
+              "max": 462
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 518,
+              "median": 518,
+              "p90": 518,
+              "min": 518,
+              "max": 518
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 574.7,
+              "median": 577.5,
+              "p90": 580.3,
+              "min": 574,
+              "max": 581
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 627.2,
+              "median": 644,
+              "p90": 660.8,
+              "min": 623,
+              "max": 665
+            }
+          },
+          "top10": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 672,
+              "median": 700,
+              "p90": 728,
+              "min": 665,
+              "max": 735
+            }
+          },
+          "top1": {
+            "reachedPct": 100,
+            "day": {
+              "n": 2,
+              "p10": 1043.7,
+              "median": 1326.5,
+              "p90": 1609.3,
+              "min": 973,
+              "max": 1680
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 2,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 2,
+            "p10": 42.3,
+            "median": 43.5,
+            "p90": 44.7,
+            "min": 42,
+            "max": 45
+          },
+          "1y": {
+            "n": 2,
+            "p10": 57.4,
+            "median": 59,
+            "p90": 60.6,
+            "min": 57,
+            "max": 61
+          },
+          "2y": {
+            "n": 2,
+            "p10": 72.4,
+            "median": 74,
+            "p90": 75.6,
+            "min": 72,
+            "max": 76
+          },
+          "3y": {
+            "n": 2,
+            "p10": 78.3,
+            "median": 79.5,
+            "p90": 80.7,
+            "min": 78,
+            "max": 81
+          },
+          "5y": {
+            "n": 2,
+            "p10": 83.1,
+            "median": 83.5,
+            "p90": 83.9,
+            "min": 83,
+            "max": 84
+          },
+          "10y": {
+            "n": 2,
+            "p10": 86,
+            "median": 86,
+            "p90": 86,
+            "min": 86,
+            "max": 86
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 2,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 2,
+            "p10": 656.7,
+            "median": 663.5,
+            "p90": 670.3,
+            "min": 655,
+            "max": 672
+          },
+          "1y": {
+            "n": 2,
+            "p10": 358.5,
+            "median": 384.5,
+            "p90": 410.5,
+            "min": 352,
+            "max": 417
+          },
+          "2y": {
+            "n": 2,
+            "p10": 7.4,
+            "median": 9,
+            "p90": 10.6,
+            "min": 7,
+            "max": 11
+          },
+          "3y": {
+            "n": 2,
+            "p10": 3.2,
+            "median": 4,
+            "p90": 4.8,
+            "min": 3,
+            "max": 5
+          },
+          "5y": {
+            "n": 2,
+            "p10": 1.2,
+            "median": 2,
+            "p90": 2.8,
+            "min": 1,
+            "max": 3
+          },
+          "10y": {
+            "n": 2,
+            "p10": 1.1,
+            "median": 1.5,
+            "p90": 1.9,
+            "min": 1,
+            "max": 2
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 2,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 2,
+              "p10": 2.1,
+              "median": 2.5,
+              "p90": 2.9,
+              "min": 2,
+              "max": 3
+            },
+            "semis": {
+              "n": 2,
+              "p10": 3.6,
+              "median": 6,
+              "p90": 8.4,
+              "min": 3,
+              "max": 9
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 29.1,
+              "median": 29.5,
+              "p90": 29.9,
+              "min": 29,
+              "max": 30
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 2,
+              "p10": 0.1,
+              "median": 0.5,
+              "p90": 0.9,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 2,
+              "p10": 2.2,
+              "median": 3,
+              "p90": 3.8,
+              "min": 2,
+              "max": 4
+            },
+            "semis": {
+              "n": 2,
+              "p10": 9,
+              "median": 9,
+              "p90": 9,
+              "min": 9,
+              "max": 9
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 35.3,
+              "median": 36.5,
+              "p90": 37.7,
+              "min": 35,
+              "max": 38
+            }
+          },
+          {
+            "year": 3,
+            "titles": {
+              "n": 2,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 2,
+              "p10": 1.2,
+              "median": 2,
+              "p90": 2.8,
+              "min": 1,
+              "max": 3
+            },
+            "semis": {
+              "n": 2,
+              "p10": 10.3,
+              "median": 11.5,
+              "p90": 12.7,
+              "min": 10,
+              "max": 13
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 30,
+              "median": 34,
+              "p90": 38,
+              "min": 29,
+              "max": 39
+            }
+          },
+          {
+            "year": 4,
+            "titles": {
+              "n": 2,
+              "p10": 0.2,
+              "median": 1,
+              "p90": 1.8,
+              "min": 0,
+              "max": 2
+            },
+            "finals": {
+              "n": 2,
+              "p10": 1.5,
+              "median": 3.5,
+              "p90": 5.5,
+              "min": 1,
+              "max": 6
+            },
+            "semis": {
+              "n": 2,
+              "p10": 8.2,
+              "median": 13,
+              "p90": 17.8,
+              "min": 7,
+              "max": 19
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 36,
+              "median": 36,
+              "p90": 36,
+              "min": 36,
+              "max": 36
+            }
+          },
+          {
+            "year": 5,
+            "titles": {
+              "n": 2,
+              "p10": 3,
+              "median": 3,
+              "p90": 3,
+              "min": 3,
+              "max": 3
+            },
+            "finals": {
+              "n": 2,
+              "p10": 6,
+              "median": 6,
+              "p90": 6,
+              "min": 6,
+              "max": 6
+            },
+            "semis": {
+              "n": 2,
+              "p10": 15.1,
+              "median": 15.5,
+              "p90": 15.9,
+              "min": 15,
+              "max": 16
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 30.3,
+              "median": 31.5,
+              "p90": 32.7,
+              "min": 30,
+              "max": 33
+            }
+          },
+          {
+            "year": 6,
+            "titles": {
+              "n": 2,
+              "p10": 1.6,
+              "median": 4,
+              "p90": 6.4,
+              "min": 1,
+              "max": 7
+            },
+            "finals": {
+              "n": 2,
+              "p10": 6.3,
+              "median": 11.5,
+              "p90": 16.7,
+              "min": 5,
+              "max": 18
+            },
+            "semis": {
+              "n": 2,
+              "p10": 17.2,
+              "median": 22,
+              "p90": 26.8,
+              "min": 16,
+              "max": 28
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 31.3,
+              "median": 32.5,
+              "p90": 33.7,
+              "min": 31,
+              "max": 34
+            }
+          },
+          {
+            "year": 7,
+            "titles": {
+              "n": 2,
+              "p10": 1.6,
+              "median": 4,
+              "p90": 6.4,
+              "min": 1,
+              "max": 7
+            },
+            "finals": {
+              "n": 2,
+              "p10": 8.1,
+              "median": 12.5,
+              "p90": 16.9,
+              "min": 7,
+              "max": 18
+            },
+            "semis": {
+              "n": 2,
+              "p10": 17.9,
+              "median": 21.5,
+              "p90": 25.1,
+              "min": 17,
+              "max": 26
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 33.2,
+              "median": 34,
+              "p90": 34.8,
+              "min": 33,
+              "max": 35
+            }
+          },
+          {
+            "year": 8,
+            "titles": {
+              "n": 2,
+              "p10": 4.1,
+              "median": 4.5,
+              "p90": 4.9,
+              "min": 4,
+              "max": 5
+            },
+            "finals": {
+              "n": 2,
+              "p10": 11.5,
+              "median": 13.5,
+              "p90": 15.5,
+              "min": 11,
+              "max": 16
+            },
+            "semis": {
+              "n": 2,
+              "p10": 19.1,
+              "median": 23.5,
+              "p90": 27.9,
+              "min": 18,
+              "max": 29
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 30.5,
+              "median": 32.5,
+              "p90": 34.5,
+              "min": 30,
+              "max": 35
+            }
+          },
+          {
+            "year": 9,
+            "titles": {
+              "n": 2,
+              "p10": 0.6,
+              "median": 3,
+              "p90": 5.4,
+              "min": 0,
+              "max": 6
+            },
+            "finals": {
+              "n": 2,
+              "p10": 8.2,
+              "median": 13,
+              "p90": 17.8,
+              "min": 7,
+              "max": 19
+            },
+            "semis": {
+              "n": 2,
+              "p10": 19,
+              "median": 23,
+              "p90": 27,
+              "min": 18,
+              "max": 28
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 34.1,
+              "median": 34.5,
+              "p90": 34.9,
+              "min": 34,
+              "max": 35
+            }
+          },
+          {
+            "year": 10,
+            "titles": {
+              "n": 2,
+              "p10": 4.1,
+              "median": 8.5,
+              "p90": 12.9,
+              "min": 3,
+              "max": 14
+            },
+            "finals": {
+              "n": 2,
+              "p10": 8.5,
+              "median": 14.5,
+              "p90": 20.5,
+              "min": 7,
+              "max": 22
+            },
+            "semis": {
+              "n": 2,
+              "p10": 20.9,
+              "median": 24.5,
+              "p90": 28.1,
+              "min": 20,
+              "max": 29
+            },
+            "tournaments": {
+              "n": 2,
+              "p10": 32.3,
+              "median": 33.5,
+              "p90": 34.7,
+              "min": 32,
+              "max": 35
+            }
+          }
+        ]
+      },
+      "optimizer": {
+        "careers": 1,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 329,
+              "median": 329,
+              "p90": 329,
+              "min": 329,
+              "max": 329
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 483,
+              "median": 483,
+              "p90": 483,
+              "min": 483,
+              "max": 483
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 511,
+              "median": 511,
+              "p90": 511,
+              "min": 511,
+              "max": 511
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 553,
+              "median": 553,
+              "p90": 553,
+              "min": 553,
+              "max": 553
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 574,
+              "median": 574,
+              "p90": 574,
+              "min": 574,
+              "max": 574
+            }
+          },
+          "top10": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 588,
+              "median": 588,
+              "p90": 588,
+              "min": 588,
+              "max": 588
+            }
+          },
+          "top1": {
+            "reachedPct": 100,
+            "day": {
+              "n": 1,
+              "p10": 777,
+              "median": 777,
+              "p90": 777,
+              "min": 777,
+              "max": 777
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 1,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 1,
+            "p10": 44,
+            "median": 44,
+            "p90": 44,
+            "min": 44,
+            "max": 44
+          },
+          "1y": {
+            "n": 1,
+            "p10": 65,
+            "median": 65,
+            "p90": 65,
+            "min": 65,
+            "max": 65
+          },
+          "2y": {
+            "n": 1,
+            "p10": 80,
+            "median": 80,
+            "p90": 80,
+            "min": 80,
+            "max": 80
+          },
+          "3y": {
+            "n": 1,
+            "p10": 82,
+            "median": 82,
+            "p90": 82,
+            "min": 82,
+            "max": 82
+          },
+          "5y": {
+            "n": 1,
+            "p10": 85,
+            "median": 85,
+            "p90": 85,
+            "min": 85,
+            "max": 85
+          },
+          "10y": {
+            "n": 1,
+            "p10": 86,
+            "median": 86,
+            "p90": 86,
+            "min": 86,
+            "max": 86
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 1,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 1,
+            "p10": 764,
+            "median": 764,
+            "p90": 764,
+            "min": 764,
+            "max": 764
+          },
+          "1y": {
+            "n": 1,
+            "p10": 426,
+            "median": 426,
+            "p90": 426,
+            "min": 426,
+            "max": 426
+          },
+          "2y": {
+            "n": 1,
+            "p10": 2,
+            "median": 2,
+            "p90": 2,
+            "min": 2,
+            "max": 2
+          },
+          "3y": {
+            "n": 1,
+            "p10": 2,
+            "median": 2,
+            "p90": 2,
+            "min": 2,
+            "max": 2
+          },
+          "5y": {
+            "n": 1,
+            "p10": 2,
+            "median": 2,
+            "p90": 2,
+            "min": 2,
+            "max": 2
+          },
+          "10y": {
+            "n": 1,
+            "p10": 2,
+            "median": 2,
+            "p90": 2,
+            "min": 2,
+            "max": 2
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 1,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 1,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "semis": {
+              "n": 1,
+              "p10": 4,
+              "median": 4,
+              "p90": 4,
+              "min": 4,
+              "max": 4
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 26,
+              "median": 26,
+              "p90": 26,
+              "min": 26,
+              "max": 26
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 1,
+              "p10": 7,
+              "median": 7,
+              "p90": 7,
+              "min": 7,
+              "max": 7
+            },
+            "finals": {
+              "n": 1,
+              "p10": 12,
+              "median": 12,
+              "p90": 12,
+              "min": 12,
+              "max": 12
+            },
+            "semis": {
+              "n": 1,
+              "p10": 23,
+              "median": 23,
+              "p90": 23,
+              "min": 23,
+              "max": 23
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 33,
+              "median": 33,
+              "p90": 33,
+              "min": 33,
+              "max": 33
+            }
+          },
+          {
+            "year": 3,
+            "titles": {
+              "n": 1,
+              "p10": 7,
+              "median": 7,
+              "p90": 7,
+              "min": 7,
+              "max": 7
+            },
+            "finals": {
+              "n": 1,
+              "p10": 13,
+              "median": 13,
+              "p90": 13,
+              "min": 13,
+              "max": 13
+            },
+            "semis": {
+              "n": 1,
+              "p10": 22,
+              "median": 22,
+              "p90": 22,
+              "min": 22,
+              "max": 22
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 27,
+              "median": 27,
+              "p90": 27,
+              "min": 27,
+              "max": 27
+            }
+          },
+          {
+            "year": 4,
+            "titles": {
+              "n": 1,
+              "p10": 3,
+              "median": 3,
+              "p90": 3,
+              "min": 3,
+              "max": 3
+            },
+            "finals": {
+              "n": 1,
+              "p10": 10,
+              "median": 10,
+              "p90": 10,
+              "min": 10,
+              "max": 10
+            },
+            "semis": {
+              "n": 1,
+              "p10": 22,
+              "median": 22,
+              "p90": 22,
+              "min": 22,
+              "max": 22
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 35,
+              "median": 35,
+              "p90": 35,
+              "min": 35,
+              "max": 35
+            }
+          },
+          {
+            "year": 5,
+            "titles": {
+              "n": 1,
+              "p10": 1,
+              "median": 1,
+              "p90": 1,
+              "min": 1,
+              "max": 1
+            },
+            "finals": {
+              "n": 1,
+              "p10": 4,
+              "median": 4,
+              "p90": 4,
+              "min": 4,
+              "max": 4
+            },
+            "semis": {
+              "n": 1,
+              "p10": 17,
+              "median": 17,
+              "p90": 17,
+              "min": 17,
+              "max": 17
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 35,
+              "median": 35,
+              "p90": 35,
+              "min": 35,
+              "max": 35
+            }
+          },
+          {
+            "year": 6,
+            "titles": {
+              "n": 1,
+              "p10": 2,
+              "median": 2,
+              "p90": 2,
+              "min": 2,
+              "max": 2
+            },
+            "finals": {
+              "n": 1,
+              "p10": 5,
+              "median": 5,
+              "p90": 5,
+              "min": 5,
+              "max": 5
+            },
+            "semis": {
+              "n": 1,
+              "p10": 10,
+              "median": 10,
+              "p90": 10,
+              "min": 10,
+              "max": 10
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 34,
+              "median": 34,
+              "p90": 34,
+              "min": 34,
+              "max": 34
+            }
+          },
+          {
+            "year": 7,
+            "titles": {
+              "n": 1,
+              "p10": 10,
+              "median": 10,
+              "p90": 10,
+              "min": 10,
+              "max": 10
+            },
+            "finals": {
+              "n": 1,
+              "p10": 20,
+              "median": 20,
+              "p90": 20,
+              "min": 20,
+              "max": 20
+            },
+            "semis": {
+              "n": 1,
+              "p10": 25,
+              "median": 25,
+              "p90": 25,
+              "min": 25,
+              "max": 25
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 34,
+              "median": 34,
+              "p90": 34,
+              "min": 34,
+              "max": 34
+            }
+          },
+          {
+            "year": 8,
+            "titles": {
+              "n": 1,
+              "p10": 3,
+              "median": 3,
+              "p90": 3,
+              "min": 3,
+              "max": 3
+            },
+            "finals": {
+              "n": 1,
+              "p10": 3,
+              "median": 3,
+              "p90": 3,
+              "min": 3,
+              "max": 3
+            },
+            "semis": {
+              "n": 1,
+              "p10": 11,
+              "median": 11,
+              "p90": 11,
+              "min": 11,
+              "max": 11
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 18,
+              "median": 18,
+              "p90": 18,
+              "min": 18,
+              "max": 18
+            }
+          },
+          {
+            "year": 9,
+            "titles": {
+              "n": 1,
+              "p10": 7,
+              "median": 7,
+              "p90": 7,
+              "min": 7,
+              "max": 7
+            },
+            "finals": {
+              "n": 1,
+              "p10": 11,
+              "median": 11,
+              "p90": 11,
+              "min": 11,
+              "max": 11
+            },
+            "semis": {
+              "n": 1,
+              "p10": 19,
+              "median": 19,
+              "p90": 19,
+              "min": 19,
+              "max": 19
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 27,
+              "median": 27,
+              "p90": 27,
+              "min": 27,
+              "max": 27
+            }
+          },
+          {
+            "year": 10,
+            "titles": {
+              "n": 1,
+              "p10": 10,
+              "median": 10,
+              "p90": 10,
+              "min": 10,
+              "max": 10
+            },
+            "finals": {
+              "n": 1,
+              "p10": 19,
+              "median": 19,
+              "p90": 19,
+              "min": 19,
+              "max": 19
+            },
+            "semis": {
+              "n": 1,
+              "p10": 25,
+              "median": 25,
+              "p90": 25,
+              "min": 25,
+              "max": 25
+            },
+            "tournaments": {
+              "n": 1,
+              "p10": 28,
+              "median": 28,
+              "p90": 28,
+              "min": 28,
+              "max": 28
+            }
+          }
+        ]
+      }
+    },
+    "smoke": {
+      "casual": {
+        "careers": 5,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 256.2,
+              "median": 287,
+              "p90": 313.6,
+              "min": 245,
+              "max": 322
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 463.4,
+              "median": 483,
+              "p90": 529.2,
+              "min": 455,
+              "max": 532
+            }
+          },
+          "top100": {
+            "reachedPct": 80,
+            "day": {
+              "n": 4,
+              "p10": 554.4,
+              "median": 591.5,
+              "p90": 618.8,
+              "min": 546,
+              "max": 623
+            }
+          },
+          "top50": {
+            "reachedPct": 40,
+            "day": {
+              "n": 2,
+              "p10": 630.7,
+              "median": 661.5,
+              "p90": 692.3,
+              "min": 623,
+              "max": 700
+            }
+          },
+          "top20": {
+            "reachedPct": 20,
+            "day": {
+              "n": 1,
+              "p10": 728,
+              "median": 728,
+              "p90": 728,
+              "min": 728,
+              "max": 728
+            }
+          },
+          "top10": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 5,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 5,
+            "p10": 33.4,
+            "median": 34,
+            "p90": 34,
+            "min": 33,
+            "max": 34
+          },
+          "1y": {
+            "n": 5,
+            "p10": 50.8,
+            "median": 52,
+            "p90": 54.2,
+            "min": 50,
+            "max": 55
+          },
+          "2y": {
+            "n": 5,
+            "p10": 69,
+            "median": 69,
+            "p90": 71.2,
+            "min": 69,
+            "max": 72
+          },
+          "3y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "5y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 5,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 5,
+            "p10": 691.8,
+            "median": 752,
+            "p90": 859.4,
+            "min": 689,
+            "max": 897
+          },
+          "1y": {
+            "n": 5,
+            "p10": 273.4,
+            "median": 342,
+            "p90": 423.8,
+            "min": 247,
+            "max": 461
+          },
+          "2y": {
+            "n": 5,
+            "p10": 22.6,
+            "median": 52,
+            "p90": 89,
+            "min": 11,
+            "max": 103
+          },
+          "3y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "5y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 5,
+              "p10": 0,
+              "median": 0,
+              "p90": 0.6,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 5,
+              "p10": 1,
+              "median": 2,
+              "p90": 3.6,
+              "min": 1,
+              "max": 4
+            },
+            "semis": {
+              "n": 5,
+              "p10": 2.4,
+              "median": 3,
+              "p90": 5.2,
+              "min": 2,
+              "max": 6
+            },
+            "tournaments": {
+              "n": 5,
+              "p10": 15.6,
+              "median": 21,
+              "p90": 26,
+              "min": 14,
+              "max": 28
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 5,
+              "p10": 0,
+              "median": 0,
+              "p90": 0.6,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 5,
+              "p10": 0,
+              "median": 1,
+              "p90": 3.8,
+              "min": 0,
+              "max": 5
+            },
+            "semis": {
+              "n": 5,
+              "p10": 0,
+              "median": 3,
+              "p90": 7.6,
+              "min": 0,
+              "max": 10
+            },
+            "tournaments": {
+              "n": 5,
+              "p10": 20.4,
+              "median": 22,
+              "p90": 26.6,
+              "min": 20,
+              "max": 27
+            }
+          }
+        ]
+      },
+      "normal": {
+        "careers": 5,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 252,
+              "median": 266,
+              "p90": 298.2,
+              "min": 252,
+              "max": 315
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 420,
+              "median": 455,
+              "p90": 467.6,
+              "min": 406,
+              "max": 476
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 463.4,
+              "median": 483,
+              "p90": 532,
+              "min": 455,
+              "max": 546
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 519.4,
+              "median": 546,
+              "p90": 592.2,
+              "min": 511,
+              "max": 609
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 547.4,
+              "median": 595,
+              "p90": 653.8,
+              "min": 539,
+              "max": 665
+            }
+          },
+          "top10": {
+            "reachedPct": 80,
+            "day": {
+              "n": 4,
+              "p10": 585.2,
+              "median": 647.5,
+              "p90": 719.6,
+              "min": 581,
+              "max": 728
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 5,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 5,
+            "p10": 43.8,
+            "median": 49,
+            "p90": 54,
+            "min": 43,
+            "max": 54
+          },
+          "1y": {
+            "n": 5,
+            "p10": 58.6,
+            "median": 70,
+            "p90": 74.2,
+            "min": 55,
+            "max": 75
+          },
+          "2y": {
+            "n": 5,
+            "p10": 73.2,
+            "median": 81,
+            "p90": 82.6,
+            "min": 70,
+            "max": 83
+          },
+          "3y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "5y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 5,
+            "p10": 1001.4,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1001,
+            "max": 1002
+          },
+          "6m": {
+            "n": 5,
+            "p10": 623.4,
+            "median": 647,
+            "p90": 716.2,
+            "min": 623,
+            "max": 753
+          },
+          "1y": {
+            "n": 5,
+            "p10": 322.8,
+            "median": 343,
+            "p90": 402.2,
+            "min": 318,
+            "max": 427
+          },
+          "2y": {
+            "n": 5,
+            "p10": 3.8,
+            "median": 9,
+            "p90": 10.2,
+            "min": 3,
+            "max": 11
+          },
+          "3y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "5y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 5,
+              "p10": 0,
+              "median": 0,
+              "p90": 1,
+              "min": 0,
+              "max": 1
+            },
+            "finals": {
+              "n": 5,
+              "p10": 0,
+              "median": 1,
+              "p90": 2.6,
+              "min": 0,
+              "max": 3
+            },
+            "semis": {
+              "n": 5,
+              "p10": 2.4,
+              "median": 7,
+              "p90": 9,
+              "min": 0,
+              "max": 9
+            },
+            "tournaments": {
+              "n": 5,
+              "p10": 29,
+              "median": 29,
+              "p90": 31,
+              "min": 29,
+              "max": 31
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 5,
+              "p10": 0.4,
+              "median": 1,
+              "p90": 3,
+              "min": 0,
+              "max": 3
+            },
+            "finals": {
+              "n": 5,
+              "p10": 1.4,
+              "median": 3,
+              "p90": 6.6,
+              "min": 1,
+              "max": 7
+            },
+            "semis": {
+              "n": 5,
+              "p10": 7.4,
+              "median": 13,
+              "p90": 16.2,
+              "min": 7,
+              "max": 17
+            },
+            "tournaments": {
+              "n": 5,
+              "p10": 31.4,
+              "median": 33,
+              "p90": 36.8,
+              "min": 31,
+              "max": 38
+            }
+          }
+        ]
+      },
+      "optimizer": {
+        "careers": 5,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 291.2,
+              "median": 322,
+              "p90": 333.2,
+              "min": 280,
+              "max": 336
+            }
+          },
+          "top200": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 436.8,
+              "median": 448,
+              "p90": 501.2,
+              "min": 434,
+              "max": 532
+            }
+          },
+          "top100": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 494.2,
+              "median": 518,
+              "p90": 548.8,
+              "min": 483,
+              "max": 560
+            }
+          },
+          "top50": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 541.8,
+              "median": 553,
+              "p90": 572.6,
+              "min": 539,
+              "max": 581
+            }
+          },
+          "top20": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 588,
+              "median": 588,
+              "p90": 611.8,
+              "min": 588,
+              "max": 623
+            }
+          },
+          "top10": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p10": 606.2,
+              "median": 623,
+              "p90": 669.2,
+              "min": 595,
+              "max": 672
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p10": null,
+              "median": null,
+              "p90": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 5,
+            "p10": 12,
+            "median": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "6m": {
+            "n": 5,
+            "p10": 41.6,
+            "median": 44,
+            "p90": 46.6,
+            "min": 40,
+            "max": 47
+          },
+          "1y": {
+            "n": 5,
+            "p10": 54.8,
+            "median": 58,
+            "p90": 68.2,
+            "min": 54,
+            "max": 73
+          },
+          "2y": {
+            "n": 5,
+            "p10": 69.4,
+            "median": 72,
+            "p90": 78.6,
+            "min": 69,
+            "max": 81
+          },
+          "3y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "5y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 5,
+            "p10": 1002,
+            "median": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "6m": {
+            "n": 5,
+            "p10": 716.8,
+            "median": 759,
+            "p90": 780.6,
+            "min": 712,
+            "max": 791
+          },
+          "1y": {
+            "n": 5,
+            "p10": 400.4,
+            "median": 420,
+            "p90": 454.2,
+            "min": 390,
+            "max": 455
+          },
+          "2y": {
+            "n": 5,
+            "p10": 2.8,
+            "median": 4,
+            "p90": 6,
+            "min": 2,
+            "max": 6
+          },
+          "3y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "5y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          },
+          "10y": {
+            "n": 0,
+            "p10": null,
+            "median": null,
+            "p90": null,
+            "min": null,
+            "max": null
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 5,
+              "p10": 0,
+              "median": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p10": 0,
+              "median": 0,
+              "p90": 0.6,
+              "min": 0,
+              "max": 1
+            },
+            "semis": {
+              "n": 5,
+              "p10": 0,
+              "median": 1,
+              "p90": 4,
+              "min": 0,
+              "max": 4
+            },
+            "tournaments": {
+              "n": 5,
+              "p10": 29,
+              "median": 29,
+              "p90": 31.2,
+              "min": 29,
+              "max": 32
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 5,
+              "p10": 1.4,
+              "median": 2,
+              "p90": 2.6,
+              "min": 1,
+              "max": 3
+            },
+            "finals": {
+              "n": 5,
+              "p10": 5.2,
+              "median": 8,
+              "p90": 9.2,
+              "min": 4,
+              "max": 10
+            },
+            "semis": {
+              "n": 5,
+              "p10": 14.8,
+              "median": 19,
+              "p90": 20.6,
+              "min": 14,
+              "max": 21
+            },
+            "tournaments": {
+              "n": 5,
+              "p10": 25.8,
+              "median": 32,
+              "p90": 34.2,
+              "min": 23,
+              "max": 35
+            }
+          }
+        ]
+      }
+    }
+  },
+  "saveAndPerf": {
+    "main": {
+      "saveMB": {
+        "Y1": {
+          "n": 35,
+          "p10": 11.9,
+          "median": 12.4,
+          "p90": 12.5,
+          "min": 11.81,
+          "max": 12.51
+        },
+        "Y2": {
+          "n": 35,
+          "p10": 17.9,
+          "median": 18.5,
+          "p90": 18.7,
+          "min": 17.75,
+          "max": 18.83
+        },
+        "Y3": {
+          "n": 35,
+          "p10": 23.3,
+          "median": 24.5,
+          "p90": 24.8,
+          "min": 23.18,
+          "max": 24.81
+        },
+        "Y5": {
+          "n": 35,
+          "p10": 33.8,
+          "median": 36,
+          "p90": 36.4,
+          "min": 33.66,
+          "max": 36.47
+        },
+        "Y10": {
+          "n": 0,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "saveMBPerYearAfterY1": {
+        "n": 35,
+        "p10": 5.6,
+        "median": 6.1,
+        "p90": 6.2,
+        "min": 5.581177275838467,
+        "max": 6.198254620123203
+      },
+      "secondsPerCareerYear": {
+        "n": 35,
+        "p10": 11.2,
+        "median": 17.1,
+        "p90": 39.3,
+        "min": 9.47329677245345,
+        "max": 52.90103778997808
+      }
+    },
+    "long": {
+      "saveMB": {
+        "Y1": {
+          "n": 5,
+          "p10": 12,
+          "median": 12.3,
+          "p90": 12.4,
+          "min": 11.94,
+          "max": 12.42
+        },
+        "Y2": {
+          "n": 5,
+          "p10": 17.9,
+          "median": 18.6,
+          "p90": 18.7,
+          "min": 17.87,
+          "max": 18.68
+        },
+        "Y3": {
+          "n": 5,
+          "p10": 23.2,
+          "median": 24.4,
+          "p90": 24.8,
+          "min": 23.11,
+          "max": 24.9
+        },
+        "Y5": {
+          "n": 5,
+          "p10": 34,
+          "median": 36.1,
+          "p90": 36.4,
+          "min": 33.86,
+          "max": 36.63
+        },
+        "Y10": {
+          "n": 5,
+          "p10": 59.2,
+          "median": 63.3,
+          "p90": 64.1,
+          "min": 59.18,
+          "max": 64.1
+        }
+      },
+      "saveMBPerYearAfterY1": {
+        "n": 5,
+        "p10": 5.3,
+        "median": 5.7,
+        "p90": 5.8,
+        "min": 5.316256082725062,
+        "max": 5.814689781021898
+      },
+      "secondsPerCareerYear": {
+        "n": 5,
+        "p10": 26,
+        "median": 32.8,
+        "p90": 56.7,
+        "min": 23.402944313304133,
+        "max": 60.54433827018889
+      }
+    },
+    "smoke": {
+      "saveMB": {
+        "Y1": {
+          "n": 15,
+          "p10": 12,
+          "median": 12.4,
+          "p90": 12.5,
+          "min": 11.89,
+          "max": 12.51
+        },
+        "Y2": {
+          "n": 15,
+          "p10": 18.6,
+          "median": 19.3,
+          "p90": 19.4,
+          "min": 18.59,
+          "max": 19.55
+        },
+        "Y3": {
+          "n": 0,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "min": null,
+          "max": null
+        },
+        "Y5": {
+          "n": 0,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "min": null,
+          "max": null
+        },
+        "Y10": {
+          "n": 0,
+          "p10": null,
+          "median": null,
+          "p90": null,
+          "min": null,
+          "max": null
+        }
+      },
+      "saveMBPerYearAfterY1": {
+        "n": 15,
+        "p10": 6.6,
+        "median": 6.9,
+        "p90": 7,
+        "min": 6.550000000000001,
+        "max": 7.09
+      },
+      "secondsPerCareerYear": {
+        "n": 15,
+        "p10": 7.6,
+        "median": 11.5,
+        "p90": 15.8,
+        "min": 6.2955587999999985,
+        "max": 19.4849323
+      }
+    },
+    "rssMB": {
+      "runs": {
+        "n": 40,
+        "p10": 1344.8,
+        "median": 1608,
+        "p90": 1998.5,
+        "min": 759,
+        "max": 2093
+      },
+      "smoke": {
+        "n": 15,
+        "p10": 1078,
+        "median": 1205,
+        "p90": 1462.2,
+        "min": 1071,
+        "max": 1534
+      }
+    }
+  },
+  "economyFrom526Analyzer": {
+    "casual": {
+      "economy": {
+        "perYear": [
+          {
+            "year": 1,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 82082.6,
+              "std": 9888.9,
+              "p10": 72328.5,
+              "p25": 77952.8,
+              "median": 83698.5,
+              "p75": 87347.3,
+              "p90": 94093.8,
+              "min": 60055,
+              "max": 95797
+            },
+            "expense": {
+              "n": 12,
+              "mean": 47078.2,
+              "std": 6733.5,
+              "p10": 39466.7,
+              "p25": 44973.5,
+              "median": 47975.5,
+              "p75": 51036.3,
+              "p90": 54145,
+              "min": 32297,
+              "max": 56264
+            },
+            "net": {
+              "n": 12,
+              "mean": 35004.4,
+              "std": 7322.3,
+              "p10": 27982.2,
+              "p25": 32094,
+              "median": 35479,
+              "p75": 38142.3,
+              "p90": 43819.9,
+              "min": 19399,
+              "max": 46702
+            },
+            "incomeByCategoryMedian": {
+              "prize": 1462,
+              "match_reward": 780,
+              "sponsor_monthly": 60434,
+              "sponsor_signing": 11844,
+              "missions": 0,
+              "achievements": 6950,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 3592,
+              "staff": 25329,
+              "club_fee": 0,
+              "partner_salary": 860,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 7603,
+              "equipment": 8337,
+              "entry_fee": 588,
+              "coach_signing": 205,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 71.8,
+              "std": 3,
+              "p10": 67.9,
+              "p25": 70,
+              "median": 72.8,
+              "p75": 74.3,
+              "p90": 74.5,
+              "min": 66.2,
+              "max": 75.4
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 87.3,
+              "std": 2.6,
+              "p10": 84,
+              "p25": 86.9,
+              "median": 87.9,
+              "p75": 89,
+              "p90": 89.2,
+              "min": 80.9,
+              "max": 89.6
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 2.8,
+              "std": 0.6,
+              "p10": 2.1,
+              "p25": 2.4,
+              "median": 2.7,
+              "p75": 3,
+              "p90": 3.4,
+              "min": 2,
+              "max": 4
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 32.8,
+              "std": 7.1,
+              "p10": 25.3,
+              "p25": 28.5,
+              "median": 32.7,
+              "p75": 37.8,
+              "p90": 42.3,
+              "min": 20.1,
+              "max": 43
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 2,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 136706.3,
+              "std": 29608.1,
+              "p10": 104546.5,
+              "p25": 114700.8,
+              "median": 131637,
+              "p75": 151693.8,
+              "p90": 177868.3,
+              "min": 101833,
+              "max": 191901
+            },
+            "expense": {
+              "n": 12,
+              "mean": 133700.1,
+              "std": 21515.9,
+              "p10": 112835.1,
+              "p25": 118361.3,
+              "median": 132892.5,
+              "p75": 138251.5,
+              "p90": 168757.3,
+              "min": 103529,
+              "max": 174235
+            },
+            "net": {
+              "n": 12,
+              "mean": 3006.2,
+              "std": 21246.5,
+              "p10": -23508.7,
+              "p25": -9038.5,
+              "median": -782.5,
+              "p75": 16896.5,
+              "p90": 33739.1,
+              "min": -28619,
+              "max": 37379
+            },
+            "incomeByCategoryMedian": {
+              "prize": 6941,
+              "match_reward": 985,
+              "sponsor_monthly": 77516,
+              "sponsor_signing": 17419,
+              "missions": 0,
+              "achievements": 16850,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 3918,
+              "staff": 48999,
+              "club_fee": 0,
+              "partner_salary": 980,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 12560,
+              "equipment": 64960,
+              "entry_fee": 1845,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 66.4,
+              "std": 6.3,
+              "p10": 60.2,
+              "p25": 63.6,
+              "median": 67.5,
+              "p75": 71.5,
+              "p90": 72.4,
+              "min": 52.1,
+              "max": 74.2
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 78.7,
+              "std": 7.5,
+              "p10": 75.7,
+              "p25": 77.8,
+              "median": 80,
+              "p75": 81.7,
+              "p90": 85.4,
+              "min": 57.3,
+              "max": 86.3
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 6.8,
+              "std": 3.2,
+              "p10": 3.7,
+              "p25": 5.5,
+              "median": 6.8,
+              "p75": 7.1,
+              "p90": 7.8,
+              "min": 3,
+              "max": 15.9
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 13.9,
+              "std": 6.7,
+              "p10": 9.8,
+              "p25": 11,
+              "median": 11.5,
+              "p75": 14.9,
+              "p90": 23.3,
+              "min": 3.6,
+              "max": 28.7
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 3,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 297580.8,
+              "std": 104222.1,
+              "p10": 205283.3,
+              "p25": 225109.3,
+              "median": 251707.5,
+              "p75": 380548.8,
+              "p90": 443329.9,
+              "min": 169379,
+              "max": 476014
+            },
+            "expense": {
+              "n": 12,
+              "mean": 240986,
+              "std": 64432.8,
+              "p10": 166371.7,
+              "p25": 208658.5,
+              "median": 253146.5,
+              "p75": 289931.3,
+              "p90": 303726,
+              "min": 102280,
+              "max": 310327
+            },
+            "net": {
+              "n": 12,
+              "mean": 56594.8,
+              "std": 82051.2,
+              "p10": -35807.3,
+              "p25": 4385.5,
+              "median": 36886,
+              "p75": 86843.3,
+              "p90": 183530.4,
+              "min": -39387,
+              "max": 209117
+            },
+            "incomeByCategoryMedian": {
+              "prize": 12616,
+              "match_reward": 1335,
+              "sponsor_monthly": 207902,
+              "sponsor_signing": 25819,
+              "missions": 0,
+              "achievements": 5500,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 3918,
+              "staff": 77166,
+              "club_fee": 0,
+              "partner_salary": 1093,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 15405,
+              "equipment": 152043,
+              "entry_fee": 2193,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 82.6,
+              "std": 4.8,
+              "p10": 79.8,
+              "p25": 81.7,
+              "median": 83.5,
+              "p75": 84.9,
+              "p90": 86.6,
+              "min": 69.1,
+              "max": 87.7
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 92,
+              "std": 3.2,
+              "p10": 90.3,
+              "p25": 91.6,
+              "median": 93.1,
+              "p75": 93.6,
+              "p90": 94.2,
+              "min": 82.7,
+              "max": 94.5
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 5.1,
+              "std": 1.3,
+              "p10": 3.6,
+              "p25": 4.2,
+              "median": 5.2,
+              "p75": 6.1,
+              "p90": 6.4,
+              "min": 3.4,
+              "max": 7.6
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 19.2,
+              "std": 5.2,
+              "p10": 14.2,
+              "p25": 15.1,
+              "median": 17.8,
+              "p75": 22.5,
+              "p90": 25.7,
+              "min": 10.8,
+              "max": 28.1
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 4,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 369175.1,
+              "std": 125859.2,
+              "p10": 237330.2,
+              "p25": 288450.5,
+              "median": 340181,
+              "p75": 422468.3,
+              "p90": 491022.3,
+              "min": 227797,
+              "max": 653592
+            },
+            "expense": {
+              "n": 12,
+              "mean": 306808.9,
+              "std": 110801.9,
+              "p10": 211960.1,
+              "p25": 230225.8,
+              "median": 282256.5,
+              "p75": 361049.3,
+              "p90": 452400.3,
+              "min": 158680,
+              "max": 547741
+            },
+            "net": {
+              "n": 12,
+              "mean": 62366.2,
+              "std": 83809.5,
+              "p10": -17300.7,
+              "p25": 27350.3,
+              "median": 43443,
+              "p75": 78300.5,
+              "p90": 153568.1,
+              "min": -57511,
+              "max": 262404
+            },
+            "incomeByCategoryMedian": {
+              "prize": 19360,
+              "match_reward": 1810,
+              "sponsor_monthly": 246588,
+              "sponsor_signing": 30456,
+              "missions": 0,
+              "achievements": 39500,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 3918,
+              "staff": 105565,
+              "club_fee": 0,
+              "partner_salary": 1135,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 17020,
+              "equipment": 169450,
+              "entry_fee": 2100,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 75.2,
+              "std": 10,
+              "p10": 63.9,
+              "p25": 69.5,
+              "median": 73.5,
+              "p75": 83.8,
+              "p90": 86.5,
+              "min": 58.4,
+              "max": 91.7
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 83.7,
+              "std": 8.5,
+              "p10": 73.3,
+              "p25": 78,
+              "median": 82.4,
+              "p75": 91,
+              "p90": 94.7,
+              "min": 72,
+              "max": 97
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 6.9,
+              "std": 2.7,
+              "p10": 3.3,
+              "p25": 5.3,
+              "median": 6.9,
+              "p75": 8.5,
+              "p90": 10.2,
+              "min": 2.2,
+              "max": 10.4
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 15.7,
+              "std": 10.9,
+              "p10": 7.1,
+              "p25": 9.3,
+              "median": 12.1,
+              "p75": 16.8,
+              "p90": 28.2,
+              "min": 7,
+              "max": 43.7
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 5,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 411525.8,
+              "std": 103261.6,
+              "p10": 259787.5,
+              "p25": 369211.8,
+              "median": 410584,
+              "p75": 484262,
+              "p90": 525287.9,
+              "min": 231870,
+              "max": 574471
+            },
+            "expense": {
+              "n": 12,
+              "mean": 346725.5,
+              "std": 92892.7,
+              "p10": 245637.4,
+              "p25": 269893,
+              "median": 318085.5,
+              "p75": 414329.8,
+              "p90": 473828.3,
+              "min": 233390,
+              "max": 501638
+            },
+            "net": {
+              "n": 12,
+              "mean": 64800.3,
+              "std": 107341.7,
+              "p10": -36799.2,
+              "p25": -7008,
+              "median": 16204.5,
+              "p75": 169650,
+              "p90": 213431.7,
+              "min": -88314,
+              "max": 219446
+            },
+            "incomeByCategoryMedian": {
+              "prize": 25402,
+              "match_reward": 1935,
+              "sponsor_monthly": 334793,
+              "sponsor_signing": 26874,
+              "missions": 0,
+              "achievements": 27200,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 3918,
+              "staff": 119277,
+              "club_fee": 0,
+              "partner_salary": 1050,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 19173,
+              "equipment": 166337,
+              "entry_fee": 2215,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 76.9,
+              "std": 8.2,
+              "p10": 64.9,
+              "p25": 72.5,
+              "median": 79.1,
+              "p75": 81.9,
+              "p90": 85.5,
+              "min": 63.1,
+              "max": 89.2
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 85.3,
+              "std": 6,
+              "p10": 76.9,
+              "p25": 82.1,
+              "median": 87,
+              "p75": 89.2,
+              "p90": 91.8,
+              "min": 74.7,
+              "max": 93.1
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 7.7,
+              "std": 2.6,
+              "p10": 4.6,
+              "p25": 5.2,
+              "median": 7.9,
+              "p75": 9.4,
+              "p90": 10.8,
+              "min": 4,
+              "max": 11.4
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 12.9,
+              "std": 5.6,
+              "p10": 7.1,
+              "p25": 8.8,
+              "median": 11.3,
+              "p75": 17.3,
+              "p90": 19.7,
+              "min": 6.6,
+              "max": 23.5
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          }
+        ],
+        "stress": {
+          "negMonthsPct": {
+            "n": 12,
+            "mean": 29.2,
+            "std": 4,
+            "p10": 24.8,
+            "p25": 26.2,
+            "median": 28.7,
+            "p75": 31.6,
+            "p90": 34.3,
+            "min": 23,
+            "max": 36.1
+          },
+          "minCoins": {
+            "n": 12,
+            "mean": 44.1,
+            "std": 49.5,
+            "p10": 0,
+            "p25": 0,
+            "median": 10,
+            "p75": 100,
+            "p90": 100,
+            "min": 0,
+            "max": 100
+          },
+          "insolventPct": 0,
+          "firstNegativeDay": {
+            "n": 12,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "lowCashWeeksPct": {
+            "n": 12,
+            "mean": 0.5,
+            "std": 0.6,
+            "p10": 0,
+            "p25": 0,
+            "median": 0.4,
+            "p75": 0.8,
+            "p90": 1.1,
+            "min": 0,
+            "max": 1.9
+          }
+        },
+        "economyDifficultyScore": {
+          "n": 12,
+          "mean": 25.3,
+          "std": 11.6,
+          "p10": 11.1,
+          "p25": 12.4,
+          "median": 29.3,
+          "p75": 34.8,
+          "p90": 36.7,
+          "min": 9.3,
+          "max": 39
+        },
+        "finalPatrimony": {
+          "n": 12,
+          "mean": 243162.8,
+          "std": 200952.2,
+          "p10": 82848.2,
+          "p25": 93194,
+          "median": 126129.5,
+          "p75": 351885,
+          "p90": 567462.6,
+          "min": 73209,
+          "max": 593378
+        },
+        "finalPatrimonyCI95": [
+          90937,
+          394520
+        ]
+      },
+      "solved": {
+        "moneySolved": {
+          "definition": "receita recorrente ≥ despesa (média 3 meses) e caixa ≥ 12 meses de despesa",
+          "reachedPct": 75,
+          "day": {
+            "n": 12,
+            "mean": 570.6,
+            "std": 564.8,
+            "p10": 0,
+            "p25": 68.3,
+            "median": 532.5,
+            "p75": 898,
+            "p90": 1454.5,
+            "min": 0,
+            "max": 1522
+          }
+        },
+        "sponsorDominance": {
+          "definition": "patrocínio > 50% da receita (3 meses) e > prêmios",
+          "reachedPct": 100,
+          "day": {
+            "n": 12,
+            "mean": 2.5,
+            "std": 8.7,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 30
+          }
+        }
+      },
+      "sponsors": {
+        "firstSponsor": {
+          "day": {
+            "n": 12,
+            "mean": 16.3,
+            "std": 17.5,
+            "p10": 0,
+            "p25": 5.3,
+            "median": 14,
+            "p75": 21,
+            "p90": 27.3,
+            "min": 0,
+            "max": 63
+          },
+          "rank": {
+            "n": 12,
+            "mean": 999.8,
+            "std": 7.5,
+            "p10": 1002,
+            "p25": 1002,
+            "median": 1002,
+            "p75": 1002,
+            "p90": 1002,
+            "min": 976,
+            "max": 1002
+          },
+          "ovr": {
+            "n": 12,
+            "mean": 13.2,
+            "std": 1.6,
+            "p10": 12,
+            "p25": 12.8,
+            "median": 13,
+            "p75": 13,
+            "p90": 13,
+            "min": 12,
+            "max": 18
+          },
+          "fans": {
+            "n": 12,
+            "mean": 5.3,
+            "std": 18.2,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 63
+          },
+          "monthly": {
+            "n": 12,
+            "mean": 1355.8,
+            "std": 246.5,
+            "p10": 1098.1,
+            "p25": 1159,
+            "median": 1364.5,
+            "p75": 1491.8,
+            "p90": 1631.7,
+            "min": 1035,
+            "max": 1854
+          },
+          "signBonus": {
+            "n": 12,
+            "mean": 1519.4,
+            "std": 440.4,
+            "p10": 1272.9,
+            "p25": 1390.5,
+            "median": 1577,
+            "p75": 1752,
+            "p90": 1954.2,
+            "min": 371,
+            "max": 2048
+          },
+          "withoutAnyMatchPct": 25,
+          "sponsorsSeen": [
+            "localfit",
+            "paddleague",
+            "babolat"
+          ]
+        },
+        "firstSponsorVsFirstPrize": {
+          "sponsorFirstPct": 91.7,
+          "firstTitleDay": {
+            "n": 10,
+            "mean": 1105.5,
+            "std": 566.4,
+            "p10": 294.2,
+            "p25": 718,
+            "median": 1334,
+            "p75": 1575.5,
+            "p90": 1692.3,
+            "min": 206,
+            "max": 1704
+          },
+          "careersWithTitlePct": 83.3
+        },
+        "signingsPerCareer": {
+          "n": 12,
+          "mean": 33.6,
+          "std": 1.6,
+          "p10": 32,
+          "p25": 32,
+          "median": 34,
+          "p75": 34.3,
+          "p90": 35.9,
+          "min": 31,
+          "max": 36
+        },
+        "accessByRankBand": {
+          ">1000": {
+            "signings": 16,
+            "monthly": {
+              "n": 16,
+              "mean": 1314.9,
+              "std": 203.3,
+              "p10": 1063.5,
+              "p25": 1144.8,
+              "median": 1364.5,
+              "p75": 1458.8,
+              "p90": 1576,
+              "min": 1032,
+              "max": 1638
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "501-1000": {
+            "signings": 56,
+            "monthly": {
+              "n": 56,
+              "mean": 1827.4,
+              "std": 378.7,
+              "p10": 1171,
+              "p25": 1633.3,
+              "median": 1907,
+              "p75": 2086.8,
+              "p90": 2282,
+              "min": 1068,
+              "max": 2394
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "251-500": {
+            "signings": 36,
+            "monthly": {
+              "n": 36,
+              "mean": 2218.8,
+              "std": 1492.2,
+              "p10": 1001,
+              "p25": 1510.3,
+              "median": 1980,
+              "p75": 2312.3,
+              "p90": 2550.5,
+              "min": 922,
+              "max": 7249
+            },
+            "tiers": [
+              "Bronze",
+              "Prata"
+            ]
+          },
+          "101-250": {
+            "signings": 51,
+            "monthly": {
+              "n": 51,
+              "mean": 2283.8,
+              "std": 1680.4,
+              "p10": 1076,
+              "p25": 1407.5,
+              "median": 1831,
+              "p75": 2245,
+              "p90": 4502,
+              "min": 908,
+              "max": 9243
+            },
+            "tiers": [
+              "Bronze",
+              "Prata"
+            ]
+          },
+          "51-100": {
+            "signings": 94,
+            "monthly": {
+              "n": 94,
+              "mean": 3445.2,
+              "std": 2603,
+              "p10": 1402.6,
+              "p25": 1777.8,
+              "median": 2064.5,
+              "p75": 4563,
+              "p90": 6320,
+              "min": 1035,
+              "max": 15854
+            },
+            "tiers": [
+              "Bronze",
+              "Prata",
+              "Ouro"
+            ]
+          },
+          "11-50": {
+            "signings": 106,
+            "monthly": {
+              "n": 106,
+              "mean": 3960.2,
+              "std": 3516.9,
+              "p10": 1395,
+              "p25": 1859,
+              "median": 2376,
+              "p75": 4744.3,
+              "p90": 7930,
+              "min": 938,
+              "max": 16554
+            },
+            "tiers": [
+              "Prata",
+              "Bronze",
+              "Ouro"
+            ]
+          },
+          "1-10": {
+            "signings": 44,
+            "monthly": {
+              "n": 44,
+              "mean": 4096.4,
+              "std": 3400.5,
+              "p10": 1737.3,
+              "p25": 1962,
+              "median": 2346,
+              "p75": 5099.8,
+              "p90": 7699.9,
+              "min": 1040,
+              "max": 15891
+            },
+            "tiers": [
+              "Prata",
+              "Bronze",
+              "Ouro"
+            ]
+          }
+        },
+        "tierMix": {
+          "Bronze": 289,
+          "Prata": 97,
+          "Ouro": 17
+        },
+        "year1SponsorToCoachStaffROI": {
+          "n": 12,
+          "mean": 2.5,
+          "std": 0.3,
+          "p10": 2.2,
+          "p25": 2.3,
+          "median": 2.5,
+          "p75": 2.7,
+          "p90": 2.8,
+          "min": 1.9,
+          "max": 3.2
+        }
+      }
+    },
+    "normal": {
+      "economy": {
+        "perYear": [
+          {
+            "year": 1,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 92472.5,
+              "std": 4513.1,
+              "p10": 85574.5,
+              "p25": 89667.3,
+              "median": 94137.5,
+              "p75": 96089.5,
+              "p90": 96595.6,
+              "min": 84826,
+              "max": 97525
+            },
+            "expense": {
+              "n": 12,
+              "mean": 72139.8,
+              "std": 3007.4,
+              "p10": 69117.3,
+              "p25": 69477.8,
+              "median": 72604,
+              "p75": 73645,
+              "p90": 73742.5,
+              "min": 67311,
+              "max": 78725
+            },
+            "net": {
+              "n": 12,
+              "mean": 20332.7,
+              "std": 2907.1,
+              "p10": 16398.9,
+              "p25": 17853,
+              "median": 20833,
+              "p75": 22534.8,
+              "p90": 23844.7,
+              "min": 15499,
+              "max": 23969
+            },
+            "incomeByCategoryMedian": {
+              "prize": 1764,
+              "match_reward": 1150,
+              "sponsor_monthly": 67895,
+              "sponsor_signing": 13864,
+              "missions": 0,
+              "achievements": 9100,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 17461,
+              "staff": 14307,
+              "club_fee": 0,
+              "partner_salary": 800,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 19563,
+              "equipment": 15031,
+              "entry_fee": 480,
+              "coach_signing": 5217,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 72.3,
+              "std": 1.6,
+              "p10": 70.1,
+              "p25": 71.2,
+              "median": 72.7,
+              "p75": 73.3,
+              "p90": 74.3,
+              "min": 70,
+              "max": 74.4
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 87,
+              "std": 1.6,
+              "p10": 85.2,
+              "p25": 85.6,
+              "median": 87.3,
+              "p75": 88.3,
+              "p90": 88.7,
+              "min": 84.1,
+              "max": 89.2
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 2.9,
+              "std": 0.6,
+              "p10": 2.3,
+              "p25": 2.4,
+              "median": 3.1,
+              "p75": 3.4,
+              "p90": 3.5,
+              "min": 1.6,
+              "max": 3.6
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 31.6,
+              "std": 9,
+              "p10": 23.8,
+              "p25": 25.6,
+              "median": 28.5,
+              "p75": 36.5,
+              "p90": 38.2,
+              "min": 23.6,
+              "max": 54.7
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 2,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 235176.9,
+              "std": 34759.7,
+              "p10": 210386.7,
+              "p25": 218316.8,
+              "median": 226834.5,
+              "p75": 246319,
+              "p90": 287892.4,
+              "min": 176181,
+              "max": 302137
+            },
+            "expense": {
+              "n": 12,
+              "mean": 209320.4,
+              "std": 20906.4,
+              "p10": 190723.3,
+              "p25": 198724.8,
+              "median": 207086.5,
+              "p75": 217972.8,
+              "p90": 233647.6,
+              "min": 171442,
+              "max": 248795
+            },
+            "net": {
+              "n": 12,
+              "mean": 25856.5,
+              "std": 16179.5,
+              "p10": 12472.2,
+              "p25": 16476,
+              "median": 23144.5,
+              "p75": 28617.8,
+              "p90": 50949.6,
+              "min": 4739,
+              "max": 60198
+            },
+            "incomeByCategoryMedian": {
+              "prize": 26467,
+              "match_reward": 2410,
+              "sponsor_monthly": 113674,
+              "sponsor_signing": 17117,
+              "missions": 0,
+              "achievements": 68700,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 31463,
+              "club_fee": 0,
+              "partner_salary": 650,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 35622,
+              "equipment": 101918,
+              "entry_fee": 4895,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 46.6,
+              "std": 6.9,
+              "p10": 39.6,
+              "p25": 41.1,
+              "median": 49,
+              "p75": 52,
+              "p90": 53.1,
+              "min": 34.1,
+              "max": 55
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 54,
+              "std": 7.1,
+              "p10": 46.9,
+              "p25": 47.7,
+              "median": 56.1,
+              "p75": 60,
+              "p90": 60.9,
+              "min": 41.6,
+              "max": 63.1
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 14,
+              "std": 3.3,
+              "p10": 10.4,
+              "p25": 11.5,
+              "median": 13.9,
+              "p75": 15.4,
+              "p90": 17.8,
+              "min": 10.2,
+              "max": 20.9
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 4.1,
+              "std": 1.4,
+              "p10": 2.7,
+              "p25": 3.1,
+              "median": 4.1,
+              "p75": 5.1,
+              "p90": 5.9,
+              "min": 2,
+              "max": 6.1
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 3,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 545782.8,
+              "std": 95406.3,
+              "p10": 454782.6,
+              "p25": 467414.3,
+              "median": 517454.5,
+              "p75": 618688.3,
+              "p90": 676038.5,
+              "min": 434307,
+              "max": 687944
+            },
+            "expense": {
+              "n": 12,
+              "mean": 454144.8,
+              "std": 79654.4,
+              "p10": 359841.3,
+              "p25": 389274,
+              "median": 450544,
+              "p75": 520369.3,
+              "p90": 555956.3,
+              "min": 356217,
+              "max": 562311
+            },
+            "net": {
+              "n": 12,
+              "mean": 91638,
+              "std": 29921.5,
+              "p10": 58307.2,
+              "p25": 66044.5,
+              "median": 98728.5,
+              "p75": 113099,
+              "p90": 125048,
+              "min": 36090,
+              "max": 129651
+            },
+            "incomeByCategoryMedian": {
+              "prize": 41236,
+              "match_reward": 2470,
+              "sponsor_monthly": 357134,
+              "sponsor_signing": 48516,
+              "missions": 0,
+              "achievements": 53000,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 81100,
+              "club_fee": 0,
+              "partner_salary": 1200,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 44654,
+              "equipment": 283261,
+              "entry_fee": 5745,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 68,
+              "std": 7.9,
+              "p10": 57.4,
+              "p25": 60,
+              "median": 70.4,
+              "p75": 74.7,
+              "p90": 74.9,
+              "min": 55.4,
+              "max": 76.2
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 77,
+              "std": 8.7,
+              "p10": 65.3,
+              "p25": 67.8,
+              "median": 80,
+              "p75": 84.3,
+              "p90": 85,
+              "min": 64.1,
+              "max": 86.5
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 9.8,
+              "std": 2.7,
+              "p10": 7.4,
+              "p25": 7.9,
+              "median": 8.8,
+              "p75": 10.9,
+              "p90": 12.5,
+              "min": 7.4,
+              "max": 16.6
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 8.5,
+              "std": 2.4,
+              "p10": 5.2,
+              "p25": 7.2,
+              "median": 9.1,
+              "p75": 10.1,
+              "p90": 11.1,
+              "min": 3.9,
+              "max": 11.4
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 4,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 612999.2,
+              "std": 72131.8,
+              "p10": 525974.9,
+              "p25": 557292.5,
+              "median": 616540.5,
+              "p75": 652988.5,
+              "p90": 712441.9,
+              "min": 518595,
+              "max": 728004
+            },
+            "expense": {
+              "n": 12,
+              "mean": 492028.5,
+              "std": 46647.2,
+              "p10": 441064.3,
+              "p25": 462256,
+              "median": 485052.5,
+              "p75": 513399.3,
+              "p90": 552653.5,
+              "min": 431395,
+              "max": 582565
+            },
+            "net": {
+              "n": 12,
+              "mean": 120970.7,
+              "std": 76921.5,
+              "p10": 45822.6,
+              "p25": 61251.8,
+              "median": 85677.5,
+              "p75": 182082.5,
+              "p90": 218754.2,
+              "min": 37063,
+              "max": 257043
+            },
+            "incomeByCategoryMedian": {
+              "prize": 52825,
+              "match_reward": 2900,
+              "sponsor_monthly": 422928,
+              "sponsor_signing": 55141,
+              "missions": 0,
+              "achievements": 28500,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 119986,
+              "club_fee": 0,
+              "partner_salary": 1200,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 43142,
+              "equipment": 287306,
+              "entry_fee": 5745,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 71.9,
+              "std": 7.2,
+              "p10": 64.3,
+              "p25": 67.3,
+              "median": 74.9,
+              "p75": 77.4,
+              "p90": 78.8,
+              "min": 56.9,
+              "max": 80.2
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 81,
+              "std": 8,
+              "p10": 72.8,
+              "p25": 75.5,
+              "median": 83.5,
+              "p75": 87,
+              "p90": 89.5,
+              "min": 64.5,
+              "max": 89.6
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 10,
+              "std": 2.8,
+              "p10": 7.7,
+              "p25": 8,
+              "median": 8.5,
+              "p75": 12.1,
+              "p90": 13.3,
+              "min": 7.5,
+              "max": 15.9
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 8.6,
+              "std": 2.2,
+              "p10": 6.2,
+              "p25": 7.1,
+              "median": 8.9,
+              "p75": 10.2,
+              "p90": 11,
+              "min": 4.1,
+              "max": 11.7
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 5,
+            "careers": 12,
+            "income": {
+              "n": 12,
+              "mean": 634577.4,
+              "std": 62734.3,
+              "p10": 578100.2,
+              "p25": 593816.8,
+              "median": 616988,
+              "p75": 656104.8,
+              "p90": 734708.5,
+              "min": 563718,
+              "max": 748079
+            },
+            "expense": {
+              "n": 12,
+              "mean": 242774.5,
+              "std": 41260.3,
+              "p10": 205021.1,
+              "p25": 214420.3,
+              "median": 228881,
+              "p75": 263702.3,
+              "p90": 312031.2,
+              "min": 201591,
+              "max": 321498
+            },
+            "net": {
+              "n": 12,
+              "mean": 391802.9,
+              "std": 65065.7,
+              "p10": 326270.6,
+              "p25": 364678.3,
+              "median": 396144,
+              "p75": 425095.8,
+              "p90": 442188.1,
+              "min": 260186,
+              "max": 515408
+            },
+            "incomeByCategoryMedian": {
+              "prize": 56892,
+              "match_reward": 3340,
+              "sponsor_monthly": 511358,
+              "sponsor_signing": 28904,
+              "missions": 0,
+              "achievements": 19500,
+              "investment_income": 0,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 136035,
+              "club_fee": 0,
+              "partner_salary": 2114,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 40212,
+              "equipment": 0,
+              "entry_fee": 5745,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 12,
+              "mean": 80.3,
+              "std": 5,
+              "p10": 73.6,
+              "p25": 76.9,
+              "median": 81,
+              "p75": 84.1,
+              "p90": 86.5,
+              "min": 72.6,
+              "max": 86.7
+            },
+            "sponsorAllSharePct": {
+              "n": 12,
+              "mean": 84.7,
+              "std": 5,
+              "p10": 78.4,
+              "p25": 81.2,
+              "median": 84.8,
+              "p75": 89.1,
+              "p90": 89.7,
+              "min": 76.9,
+              "max": 91.8
+            },
+            "prizeSharePct": {
+              "n": 12,
+              "mean": 11.3,
+              "std": 3.4,
+              "p10": 7.8,
+              "p25": 9.1,
+              "median": 9.9,
+              "p75": 14.8,
+              "p90": 15.6,
+              "min": 7.7,
+              "max": 17.4
+            },
+            "sponsorToPrizeRatio": {
+              "n": 12,
+              "mean": 8.2,
+              "std": 2.5,
+              "p10": 5,
+              "p25": 5.6,
+              "median": 8.7,
+              "p75": 9.5,
+              "p90": 11.3,
+              "min": 4.6,
+              "max": 11.9
+            },
+            "achievementsLostToOverwrite": {
+              "n": 12,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          }
+        ],
+        "stress": {
+          "negMonthsPct": {
+            "n": 12,
+            "mean": 29.5,
+            "std": 2.9,
+            "p10": 26.2,
+            "p25": 27.5,
+            "median": 30.3,
+            "p75": 31.6,
+            "p90": 32.8,
+            "min": 24.6,
+            "max": 32.8
+          },
+          "minCoins": {
+            "n": 12,
+            "mean": 100,
+            "std": 0,
+            "p10": 100,
+            "p25": 100,
+            "median": 100,
+            "p75": 100,
+            "p90": 100,
+            "min": 100,
+            "max": 100
+          },
+          "insolventPct": 0,
+          "firstNegativeDay": {
+            "n": 12,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "lowCashWeeksPct": {
+            "n": 12,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "economyDifficultyScore": {
+          "n": 12,
+          "mean": 11.8,
+          "std": 1.2,
+          "p10": 10.5,
+          "p25": 11,
+          "median": 12.1,
+          "p75": 12.6,
+          "p90": 13.1,
+          "min": 9.8,
+          "max": 13.1
+        },
+        "finalPatrimony": {
+          "n": 12,
+          "mean": 674858.8,
+          "std": 116122.8,
+          "p10": 531311.3,
+          "p25": 597832.3,
+          "median": 665662,
+          "p75": 747482.8,
+          "p90": 820139.3,
+          "min": 499355,
+          "max": 865558
+        },
+        "finalPatrimonyCI95": [
+          596848.5,
+          764685.5
+        ]
+      },
+      "solved": {
+        "moneySolved": {
+          "definition": "receita recorrente ≥ despesa (média 3 meses) e caixa ≥ 12 meses de despesa",
+          "reachedPct": 100,
+          "day": {
+            "n": 12,
+            "mean": 1450.9,
+            "std": 100.8,
+            "p10": 1370,
+            "p25": 1392.5,
+            "median": 1415.5,
+            "p75": 1483.8,
+            "p90": 1579.9,
+            "min": 1339,
+            "max": 1674
+          }
+        },
+        "sponsorDominance": {
+          "definition": "patrocínio > 50% da receita (3 meses) e > prêmios",
+          "reachedPct": 100,
+          "day": {
+            "n": 12,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "sponsors": {
+        "firstSponsor": {
+          "day": {
+            "n": 12,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "rank": {
+            "n": 12,
+            "mean": 1001.7,
+            "std": 0.5,
+            "p10": 1001,
+            "p25": 1001,
+            "median": 1002,
+            "p75": 1002,
+            "p90": 1002,
+            "min": 1001,
+            "max": 1002
+          },
+          "ovr": {
+            "n": 12,
+            "mean": 12,
+            "std": 0,
+            "p10": 12,
+            "p25": 12,
+            "median": 12,
+            "p75": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "fans": {
+            "n": 12,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "monthly": {
+            "n": 12,
+            "mean": 1445.4,
+            "std": 156.6,
+            "p10": 1184.6,
+            "p25": 1394.8,
+            "median": 1470,
+            "p75": 1553.5,
+            "p90": 1589.8,
+            "min": 1153,
+            "max": 1658
+          },
+          "signBonus": {
+            "n": 12,
+            "mean": 1801.6,
+            "std": 206.6,
+            "p10": 1451.4,
+            "p25": 1744.5,
+            "median": 1837.5,
+            "p75": 1941.8,
+            "p90": 1987.5,
+            "min": 1409,
+            "max": 2072
+          },
+          "withoutAnyMatchPct": 100,
+          "sponsorsSeen": [
+            "paddleague",
+            "localfit"
+          ]
+        },
+        "firstSponsorVsFirstPrize": {
+          "sponsorFirstPct": 100,
+          "firstTitleDay": {
+            "n": 12,
+            "mean": 420.8,
+            "std": 172.4,
+            "p10": 215.1,
+            "p25": 297,
+            "median": 423,
+            "p75": 500,
+            "p90": 500,
+            "min": 206,
+            "max": 851
+          },
+          "careersWithTitlePct": 100
+        },
+        "signingsPerCareer": {
+          "n": 12,
+          "mean": 32.2,
+          "std": 0.7,
+          "p10": 32,
+          "p25": 32,
+          "median": 32,
+          "p75": 32,
+          "p90": 32.9,
+          "min": 31,
+          "max": 34
+        },
+        "accessByRankBand": {
+          ">1000": {
+            "signings": 46,
+            "monthly": {
+              "n": 46,
+              "mean": 1722.7,
+              "std": 443.5,
+              "p10": 1097.5,
+              "p25": 1384.3,
+              "median": 1760,
+              "p75": 2063,
+              "p90": 2279.5,
+              "min": 1029,
+              "max": 2486
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "501-1000": {
+            "signings": 38,
+            "monthly": {
+              "n": 38,
+              "mean": 1580.5,
+              "std": 358.5,
+              "p10": 1099.5,
+              "p25": 1365,
+              "median": 1553.5,
+              "p75": 1796.8,
+              "p90": 2044.8,
+              "min": 911,
+              "max": 2447
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "251-500": {
+            "signings": 35,
+            "monthly": {
+              "n": 35,
+              "mean": 2634.9,
+              "std": 1874.6,
+              "p10": 1116,
+              "p25": 1496.5,
+              "median": 2045,
+              "p75": 2371.5,
+              "p90": 6381.4,
+              "min": 896,
+              "max": 6630
+            },
+            "tiers": [
+              "Prata",
+              "Bronze"
+            ]
+          },
+          "51-100": {
+            "signings": 8,
+            "monthly": {
+              "n": 8,
+              "mean": 1805.4,
+              "std": 350.9,
+              "p10": 1387.9,
+              "p25": 1554.3,
+              "median": 1882.5,
+              "p75": 2008.3,
+              "p90": 2192,
+              "min": 1257,
+              "max": 2269
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "11-50": {
+            "signings": 34,
+            "monthly": {
+              "n": 34,
+              "mean": 3294.1,
+              "std": 3079.3,
+              "p10": 1650.4,
+              "p25": 1808,
+              "median": 1969,
+              "p75": 3104.8,
+              "p90": 6982.4,
+              "min": 1105,
+              "max": 13993
+            },
+            "tiers": [
+              "Bronze",
+              "Prata",
+              "Ouro"
+            ]
+          },
+          "1-10": {
+            "signings": 211,
+            "monthly": {
+              "n": 211,
+              "mean": 5380.5,
+              "std": 3476,
+              "p10": 2141,
+              "p25": 2484,
+              "median": 4473,
+              "p75": 6775,
+              "p90": 8694,
+              "min": 1678,
+              "max": 18074
+            },
+            "tiers": [
+              "Prata",
+              "Ouro",
+              "Bronze"
+            ]
+          },
+          "101-250": {
+            "signings": 14,
+            "monthly": {
+              "n": 14,
+              "mean": 2403.5,
+              "std": 1704.1,
+              "p10": 1409.2,
+              "p25": 1456.3,
+              "median": 1555.5,
+              "p75": 1963.5,
+              "p90": 5491.6,
+              "min": 995,
+              "max": 5625
+            },
+            "tiers": [
+              "Bronze",
+              "Prata"
+            ]
+          }
+        },
+        "tierMix": {
+          "Bronze": 214,
+          "Prata": 139,
+          "Ouro": 33
+        },
+        "year1SponsorToCoachStaffROI": {
+          "n": 12,
+          "mean": 2.6,
+          "std": 0.2,
+          "p10": 2.4,
+          "p25": 2.5,
+          "median": 2.6,
+          "p75": 2.7,
+          "p90": 2.8,
+          "min": 2.3,
+          "max": 2.9
+        }
+      }
+    },
+    "optimizer": {
+      "economy": {
+        "perYear": [
+          {
+            "year": 1,
+            "careers": 11,
+            "income": {
+              "n": 11,
+              "mean": 99468.1,
+              "std": 8216.4,
+              "p10": 85649,
+              "p25": 96030.5,
+              "median": 101078,
+              "p75": 104303.5,
+              "p90": 108609,
+              "min": 85244,
+              "max": 110042
+            },
+            "expense": {
+              "n": 11,
+              "mean": 72603.4,
+              "std": 3594.7,
+              "p10": 67773,
+              "p25": 70263,
+              "median": 73390,
+              "p75": 74942,
+              "p90": 75549,
+              "min": 66523,
+              "max": 78611
+            },
+            "net": {
+              "n": 11,
+              "mean": 26864.7,
+              "std": 5043,
+              "p10": 18721,
+              "p25": 25767.5,
+              "median": 27285,
+              "p75": 29750,
+              "p90": 29998,
+              "min": 17876,
+              "max": 35294
+            },
+            "incomeByCategoryMedian": {
+              "prize": 1130,
+              "match_reward": 750,
+              "sponsor_monthly": 72483,
+              "sponsor_signing": 14606,
+              "missions": 0,
+              "achievements": 8300,
+              "investment_income": 3546,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 19643,
+              "staff": 19399,
+              "club_fee": 0,
+              "partner_salary": 800,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 19918,
+              "equipment": 7626,
+              "entry_fee": 440,
+              "coach_signing": 5217,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 11,
+              "mean": 71.8,
+              "std": 2.2,
+              "p10": 69.7,
+              "p25": 70.3,
+              "median": 71.7,
+              "p75": 73.3,
+              "p90": 74.1,
+              "min": 68,
+              "max": 75.5
+            },
+            "sponsorAllSharePct": {
+              "n": 11,
+              "mean": 86.1,
+              "std": 1.8,
+              "p10": 83.9,
+              "p25": 85,
+              "median": 86.2,
+              "p75": 87.3,
+              "p90": 87.8,
+              "min": 83,
+              "max": 89
+            },
+            "prizeSharePct": {
+              "n": 11,
+              "mean": 1.8,
+              "std": 0.6,
+              "p10": 1.3,
+              "p25": 1.4,
+              "median": 1.7,
+              "p75": 2.1,
+              "p90": 2.5,
+              "min": 1.2,
+              "max": 2.9
+            },
+            "sponsorToPrizeRatio": {
+              "n": 11,
+              "mean": 51.1,
+              "std": 15.1,
+              "p10": 34.1,
+              "p25": 40.8,
+              "median": 50.3,
+              "p75": 64,
+              "p90": 66,
+              "min": 28.3,
+              "max": 76.3
+            },
+            "achievementsLostToOverwrite": {
+              "n": 11,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 2,
+            "careers": 11,
+            "income": {
+              "n": 11,
+              "mean": 288334.5,
+              "std": 95522.6,
+              "p10": 214879,
+              "p25": 238730.5,
+              "median": 261490,
+              "p75": 303613,
+              "p90": 448322,
+              "min": 152714,
+              "max": 473849
+            },
+            "expense": {
+              "n": 11,
+              "mean": 226932.2,
+              "std": 56569,
+              "p10": 192836,
+              "p25": 199848.5,
+              "median": 213374,
+              "p75": 227374,
+              "p90": 298003,
+              "min": 142481,
+              "max": 356487
+            },
+            "net": {
+              "n": 11,
+              "mean": 61402.4,
+              "std": 46961.2,
+              "p10": 22043,
+              "p25": 35441,
+              "median": 48116,
+              "p75": 77696,
+              "p90": 103025,
+              "min": 10233,
+              "max": 175846
+            },
+            "incomeByCategoryMedian": {
+              "prize": 38910,
+              "match_reward": 3000,
+              "sponsor_monthly": 118423,
+              "sponsor_signing": 18030,
+              "missions": 0,
+              "achievements": 89200,
+              "investment_income": 5364,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 44416,
+              "club_fee": 0,
+              "partner_salary": 1100,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 32644,
+              "equipment": 101686,
+              "entry_fee": 4650,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 11,
+              "mean": 42.6,
+              "std": 9.6,
+              "p10": 33.1,
+              "p25": 37,
+              "median": 42.7,
+              "p75": 46,
+              "p90": 56.5,
+              "min": 26.6,
+              "max": 59.4
+            },
+            "sponsorAllSharePct": {
+              "n": 11,
+              "mean": 49.3,
+              "std": 10.3,
+              "p10": 40.2,
+              "p25": 43.8,
+              "median": 49.2,
+              "p75": 53.6,
+              "p90": 63.2,
+              "min": 30.6,
+              "max": 67.1
+            },
+            "prizeSharePct": {
+              "n": 11,
+              "mean": 14.2,
+              "std": 3.9,
+              "p10": 10.3,
+              "p25": 12.1,
+              "median": 14.2,
+              "p75": 17.2,
+              "p90": 18.4,
+              "min": 7,
+              "max": 20.3
+            },
+            "sponsorToPrizeRatio": {
+              "n": 11,
+              "mean": 4,
+              "std": 2.2,
+              "p10": 2,
+              "p25": 2.8,
+              "median": 3.4,
+              "p75": 4.3,
+              "p90": 6.1,
+              "min": 1.7,
+              "max": 9.5
+            },
+            "achievementsLostToOverwrite": {
+              "n": 11,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 3,
+            "careers": 11,
+            "income": {
+              "n": 11,
+              "mean": 672288.2,
+              "std": 54514.8,
+              "p10": 617386,
+              "p25": 636026.5,
+              "median": 675637,
+              "p75": 692328,
+              "p90": 734354,
+              "min": 597205,
+              "max": 785092
+            },
+            "expense": {
+              "n": 11,
+              "mean": 581091.2,
+              "std": 49406.5,
+              "p10": 526590,
+              "p25": 557682.5,
+              "median": 572621,
+              "p75": 615337,
+              "p90": 626895,
+              "min": 483517,
+              "max": 653218
+            },
+            "net": {
+              "n": 11,
+              "mean": 91197,
+              "std": 42878.7,
+              "p10": 45071,
+              "p25": 64635.5,
+              "median": 89333,
+              "p75": 114182.5,
+              "p90": 133869,
+              "min": 16903,
+              "max": 167019
+            },
+            "incomeByCategoryMedian": {
+              "prize": 65769,
+              "match_reward": 3280,
+              "sponsor_monthly": 430712,
+              "sponsor_signing": 52286,
+              "missions": 0,
+              "achievements": 126500,
+              "investment_income": 11272,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 126130,
+              "club_fee": 0,
+              "partner_salary": 1200,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 44586,
+              "equipment": 375746,
+              "entry_fee": 5745,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 11,
+              "mean": 64.3,
+              "std": 5.8,
+              "p10": 59,
+              "p25": 60.4,
+              "median": 63,
+              "p75": 67.6,
+              "p90": 69.8,
+              "min": 56.2,
+              "max": 76.4
+            },
+            "sponsorAllSharePct": {
+              "n": 11,
+              "mean": 72.2,
+              "std": 6.3,
+              "p10": 65.8,
+              "p25": 68,
+              "median": 70.7,
+              "p75": 75.7,
+              "p90": 78.2,
+              "min": 64.1,
+              "max": 85.8
+            },
+            "prizeSharePct": {
+              "n": 11,
+              "mean": 10.5,
+              "std": 2.4,
+              "p10": 8,
+              "p25": 8.8,
+              "median": 10.1,
+              "p75": 11.7,
+              "p90": 12.1,
+              "min": 7.7,
+              "max": 16
+            },
+            "sponsorToPrizeRatio": {
+              "n": 11,
+              "mean": 7.2,
+              "std": 1.6,
+              "p10": 5.4,
+              "p25": 5.9,
+              "median": 6.7,
+              "p75": 8.6,
+              "p90": 9.2,
+              "min": 4.9,
+              "max": 9.4
+            },
+            "achievementsLostToOverwrite": {
+              "n": 11,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 4,
+            "careers": 11,
+            "income": {
+              "n": 11,
+              "mean": 716598.2,
+              "std": 49511,
+              "p10": 669768,
+              "p25": 685168.5,
+              "median": 712268,
+              "p75": 744837,
+              "p90": 792488,
+              "min": 634255,
+              "max": 793223
+            },
+            "expense": {
+              "n": 11,
+              "mean": 445792.6,
+              "std": 56576.2,
+              "p10": 385359,
+              "p25": 404972.5,
+              "median": 449691,
+              "p75": 477564.5,
+              "p90": 513242,
+              "min": 360274,
+              "max": 548634
+            },
+            "net": {
+              "n": 11,
+              "mean": 270805.5,
+              "std": 75658.6,
+              "p10": 201005,
+              "p25": 223756,
+              "median": 267373,
+              "p75": 312661.5,
+              "p90": 382307,
+              "min": 147366,
+              "max": 393459
+            },
+            "incomeByCategoryMedian": {
+              "prize": 59922,
+              "match_reward": 3480,
+              "sponsor_monthly": 499531,
+              "sponsor_signing": 58594,
+              "missions": 0,
+              "achievements": 22000,
+              "investment_income": 60917,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 186192,
+              "club_fee": 0,
+              "partner_salary": 1200,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 42966,
+              "equipment": 185954,
+              "entry_fee": 5745,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 11,
+              "mean": 69,
+              "std": 4.6,
+              "p10": 62.2,
+              "p25": 64.9,
+              "median": 70.7,
+              "p75": 71.7,
+              "p90": 74.5,
+              "min": 62.1,
+              "max": 74.6
+            },
+            "sponsorAllSharePct": {
+              "n": 11,
+              "mean": 77.4,
+              "std": 5.1,
+              "p10": 70.1,
+              "p25": 72.9,
+              "median": 78.8,
+              "p75": 80.5,
+              "p90": 83.4,
+              "min": 69.9,
+              "max": 84.1
+            },
+            "prizeSharePct": {
+              "n": 11,
+              "mean": 9.6,
+              "std": 1.2,
+              "p10": 8.3,
+              "p25": 8.9,
+              "median": 9.3,
+              "p75": 10.5,
+              "p90": 11.2,
+              "min": 7.9,
+              "max": 11.5
+            },
+            "sponsorToPrizeRatio": {
+              "n": 11,
+              "mean": 8.2,
+              "std": 1.5,
+              "p10": 6.5,
+              "p25": 6.7,
+              "median": 8.7,
+              "p75": 9,
+              "p90": 9.6,
+              "min": 6.2,
+              "max": 10.7
+            },
+            "achievementsLostToOverwrite": {
+              "n": 11,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          },
+          {
+            "year": 5,
+            "careers": 11,
+            "income": {
+              "n": 11,
+              "mean": 869001.5,
+              "std": 60680.5,
+              "p10": 804385,
+              "p25": 828306,
+              "median": 855905,
+              "p75": 909617.5,
+              "p90": 947371,
+              "min": 792044,
+              "max": 977835
+            },
+            "expense": {
+              "n": 11,
+              "mean": 296534,
+              "std": 36174.9,
+              "p10": 251450,
+              "p25": 278329,
+              "median": 294779,
+              "p75": 311399.5,
+              "p90": 352928,
+              "min": 243805,
+              "max": 357154
+            },
+            "net": {
+              "n": 11,
+              "mean": 572467.5,
+              "std": 55038.6,
+              "p10": 513365,
+              "p25": 527873,
+              "median": 580852,
+              "p75": 609419,
+              "p90": 633475,
+              "min": 486365,
+              "max": 661123
+            },
+            "incomeByCategoryMedian": {
+              "prize": 43946,
+              "match_reward": 2750,
+              "sponsor_monthly": 520985,
+              "sponsor_signing": 28447,
+              "missions": 0,
+              "achievements": 10000,
+              "investment_income": 243585,
+              "passive_income": 0,
+              "other_income": 0
+            },
+            "expenseByCategoryMedian": {
+              "coach": 29100,
+              "staff": 211742,
+              "club_fee": 0,
+              "partner_salary": 2655,
+              "reward_overwrite": 0,
+              "maintenance": 0,
+              "training": 46836,
+              "equipment": 0,
+              "entry_fee": 5745,
+              "coach_signing": 0,
+              "staff_signing": 0,
+              "other_expense": 0
+            },
+            "sponsorSharePct": {
+              "n": 11,
+              "mean": 60.3,
+              "std": 4.3,
+              "p10": 56.3,
+              "p25": 56.6,
+              "median": 61.4,
+              "p75": 63.3,
+              "p90": 64.8,
+              "min": 52.4,
+              "max": 66.2
+            },
+            "sponsorAllSharePct": {
+              "n": 11,
+              "mean": 63.4,
+              "std": 4.3,
+              "p10": 59.3,
+              "p25": 59.6,
+              "median": 64.8,
+              "p75": 66.5,
+              "p90": 67.9,
+              "min": 55.6,
+              "max": 68.8
+            },
+            "prizeSharePct": {
+              "n": 11,
+              "mean": 5.9,
+              "std": 1.4,
+              "p10": 4.6,
+              "p25": 4.9,
+              "median": 5.7,
+              "p75": 6.3,
+              "p90": 7.5,
+              "min": 4.3,
+              "max": 9
+            },
+            "sponsorToPrizeRatio": {
+              "n": 11,
+              "mean": 11.3,
+              "std": 2.4,
+              "p10": 7.4,
+              "p25": 10,
+              "median": 11.9,
+              "p75": 12.9,
+              "p90": 14,
+              "min": 7.4,
+              "max": 14.4
+            },
+            "achievementsLostToOverwrite": {
+              "n": 11,
+              "mean": 0,
+              "std": 0,
+              "p10": 0,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "p90": 0,
+              "min": 0,
+              "max": 0
+            }
+          }
+        ],
+        "stress": {
+          "negMonthsPct": {
+            "n": 11,
+            "mean": 21.2,
+            "std": 3.6,
+            "p10": 16.4,
+            "p25": 18,
+            "median": 21.3,
+            "p75": 23,
+            "p90": 24.6,
+            "min": 16.4,
+            "max": 27.9
+          },
+          "minCoins": {
+            "n": 11,
+            "mean": 100,
+            "std": 0,
+            "p10": 100,
+            "p25": 100,
+            "median": 100,
+            "p75": 100,
+            "p90": 100,
+            "min": 100,
+            "max": 100
+          },
+          "insolventPct": 0,
+          "firstNegativeDay": {
+            "n": 11,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "lowCashWeeksPct": {
+            "n": 11,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "economyDifficultyScore": {
+          "n": 11,
+          "mean": 8.5,
+          "std": 1.5,
+          "p10": 6.6,
+          "p25": 7.2,
+          "median": 8.5,
+          "p75": 9.2,
+          "p90": 9.8,
+          "min": 6.6,
+          "max": 11.1
+        },
+        "finalPatrimony": {
+          "n": 11,
+          "mean": 1074518.1,
+          "std": 156629.3,
+          "p10": 911420,
+          "p25": 956487,
+          "median": 1089184,
+          "p75": 1180158.5,
+          "p90": 1261127,
+          "min": 844119,
+          "max": 1342151
+        },
+        "finalPatrimonyCI95": [
+          926625,
+          1182714
+        ]
+      },
+      "solved": {
+        "moneySolved": {
+          "definition": "receita recorrente ≥ despesa (média 3 meses) e caixa ≥ 12 meses de despesa",
+          "reachedPct": 0,
+          "day": {
+            "n": 11,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        },
+        "sponsorDominance": {
+          "definition": "patrocínio > 50% da receita (3 meses) e > prêmios",
+          "reachedPct": 100,
+          "day": {
+            "n": 11,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          }
+        }
+      },
+      "sponsors": {
+        "firstSponsor": {
+          "day": {
+            "n": 11,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "rank": {
+            "n": 11,
+            "mean": 1002,
+            "std": 0,
+            "p10": 1002,
+            "p25": 1002,
+            "median": 1002,
+            "p75": 1002,
+            "p90": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "ovr": {
+            "n": 11,
+            "mean": 12,
+            "std": 0,
+            "p10": 12,
+            "p25": 12,
+            "median": 12,
+            "p75": 12,
+            "p90": 12,
+            "min": 12,
+            "max": 12
+          },
+          "fans": {
+            "n": 11,
+            "mean": 0,
+            "std": 0,
+            "p10": 0,
+            "p25": 0,
+            "median": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0
+          },
+          "monthly": {
+            "n": 11,
+            "mean": 1413.4,
+            "std": 130.9,
+            "p10": 1229,
+            "p25": 1350,
+            "median": 1419,
+            "p75": 1459.5,
+            "p90": 1600,
+            "min": 1223,
+            "max": 1642
+          },
+          "signBonus": {
+            "n": 11,
+            "mean": 1760.5,
+            "std": 173.7,
+            "p10": 1502,
+            "p25": 1687.5,
+            "median": 1773,
+            "p75": 1824.5,
+            "p90": 2000,
+            "min": 1494,
+            "max": 2052
+          },
+          "withoutAnyMatchPct": 100,
+          "sponsorsSeen": [
+            "paddleague",
+            "localfit"
+          ]
+        },
+        "firstSponsorVsFirstPrize": {
+          "sponsorFirstPct": 100,
+          "firstTitleDay": {
+            "n": 11,
+            "mean": 497.5,
+            "std": 158,
+            "p10": 403,
+            "p25": 416.5,
+            "median": 500,
+            "p75": 588.5,
+            "p90": 634,
+            "min": 171,
+            "max": 774
+          },
+          "careersWithTitlePct": 100
+        },
+        "signingsPerCareer": {
+          "n": 11,
+          "mean": 32.4,
+          "std": 0.7,
+          "p10": 32,
+          "p25": 32,
+          "median": 32,
+          "p75": 33,
+          "p90": 33,
+          "min": 31,
+          "max": 33
+        },
+        "accessByRankBand": {
+          ">1000": {
+            "signings": 42,
+            "monthly": {
+              "n": 42,
+              "mean": 1740.7,
+              "std": 442.1,
+              "p10": 1174.3,
+              "p25": 1348.5,
+              "median": 1764.5,
+              "p75": 2088.8,
+              "p90": 2320.4,
+              "min": 1078,
+              "max": 2486
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "501-1000": {
+            "signings": 45,
+            "monthly": {
+              "n": 45,
+              "mean": 1807.2,
+              "std": 465.7,
+              "p10": 1154.2,
+              "p25": 1453,
+              "median": 1843,
+              "p75": 2188,
+              "p90": 2398.6,
+              "min": 920,
+              "max": 2614
+            },
+            "tiers": [
+              "Bronze"
+            ]
+          },
+          "251-500": {
+            "signings": 23,
+            "monthly": {
+              "n": 23,
+              "mean": 2558.7,
+              "std": 1903.1,
+              "p10": 1090.4,
+              "p25": 1428,
+              "median": 1935,
+              "p75": 2465.5,
+              "p90": 5505.2,
+              "min": 898,
+              "max": 7440
+            },
+            "tiers": [
+              "Prata",
+              "Bronze"
+            ]
+          },
+          "101-250": {
+            "signings": 15,
+            "monthly": {
+              "n": 15,
+              "mean": 2306.4,
+              "std": 1688.6,
+              "p10": 1190.8,
+              "p25": 1403.5,
+              "median": 1861,
+              "p75": 2151.5,
+              "p90": 4677.6,
+              "min": 949,
+              "max": 6381
+            },
+            "tiers": [
+              "Bronze",
+              "Prata"
+            ]
+          },
+          "11-50": {
+            "signings": 18,
+            "monthly": {
+              "n": 18,
+              "mean": 3835.7,
+              "std": 2847.2,
+              "p10": 1991.4,
+              "p25": 2082.8,
+              "median": 2320.5,
+              "p75": 5008,
+              "p90": 7212.7,
+              "min": 1846,
+              "max": 12258
+            },
+            "tiers": [
+              "Bronze",
+              "Ouro",
+              "Prata"
+            ]
+          },
+          "1-10": {
+            "signings": 205,
+            "monthly": {
+              "n": 205,
+              "mean": 5547.6,
+              "std": 3845.5,
+              "p10": 2146.8,
+              "p25": 2462,
+              "median": 4386,
+              "p75": 6647,
+              "p90": 10753.6,
+              "min": 1835,
+              "max": 19309
+            },
+            "tiers": [
+              "Bronze",
+              "Ouro",
+              "Prata"
+            ]
+          },
+          "51-100": {
+            "signings": 8,
+            "monthly": {
+              "n": 8,
+              "mean": 3099,
+              "std": 2290.1,
+              "p10": 1603.2,
+              "p25": 1675.5,
+              "median": 2078.5,
+              "p75": 3257.3,
+              "p90": 6499.2,
+              "min": 1515,
+              "max": 7363
+            },
+            "tiers": [
+              "Bronze",
+              "Prata"
+            ]
+          }
+        },
+        "tierMix": {
+          "Bronze": 196,
+          "Prata": 130,
+          "Ouro": 30
+        },
+        "year1SponsorToCoachStaffROI": {
+          "n": 11,
+          "mean": 2.2,
+          "std": 0.1,
+          "p10": 2.1,
+          "p25": 2.2,
+          "median": 2.3,
+          "p75": 2.4,
+          "p90": 2.4,
+          "min": 2,
+          "max": 2.5
+        }
+      }
+    }
+  }
+}

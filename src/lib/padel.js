@@ -2,9 +2,10 @@ import { localGame } from '@/api/localGameClient.js';
 import { normalizeCourtSide, sideMissionRepair } from '@/lib/tutorialSideState.js';
 import { deterministicMissionSelection, missionRuntime, missionStatus, requirementsMet, validateMissionReward } from '@/missions/missionSystem.js';
 import { TUTORIAL_MISSION_CATALOG } from '@/onboarding/tutorialSteps.js';
-import { ATTRIBUTES, ATTRIBUTE_KEYS } from '@/lib/attributes.js';
+import { ATTRIBUTES, ATTRIBUTE_KEYS, baseOverallRating } from '@/lib/attributes.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 import { activeCareerAdapter } from '@/gameplay/services/runtime.js';
+import { getBalance527 } from '@/lib/balance527.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
@@ -201,10 +202,38 @@ export function winRate(profile) {
   return Math.round((profile.wins / total) * 100);
 }
 
+// Playthrough 5.19, Partes H/I/J — DUAS FONTES DE OVR, UMA SÓ FUNÇÃO.
+//
+// O playtest mostrou quatro propostas de parceria com OVR 1. A causa não era
+// a UI nem o mercado: era esta função.
+//
+// Há dois tipos de entidade no jogo, com fontes de OVR diferentes:
+//   - PlayerProfile (e qualquer entidade TREINÁVEL) guarda os ATRIBUTOS
+//     (serve, forehand, ...) e NÃO guarda `overall_rating`. Aqui o overall é
+//     derivado, e tem de continuar sendo: é assim que o treino se reflete.
+//   - AthleteProfile (o mundo inteiro) guarda `overall_rating` e NENHUM
+//     atributo individual. Medido: Arturo Coello, #1 do mundo com
+//     `overall_rating: 96`, tem 0 de 11 atributos presentes.
+//
+// A versão anterior somava só os atributos. Para todo atleta do mundo a soma
+// dava 0, o arredondamento dava 0, e o piso `Math.max(1, ...)` convertia isso
+// em 1 — um número plausível o bastante para não parecer erro. Por isso o
+// sintoma aparecia como "OVR 1" e não como "OVR vazio".
+//
+// A correção não é um fallback numérico na UI (`overall || 50`, proibido pela
+// Parte I): é ler a fonte certa de cada entidade. Modificadores de contexto
+// (`_chemistryBonus`, `_energyPenalty`) continuam valendo nos dois caminhos.
 export function overallRating(profile) {
   if (!profile) return 0;
-  const sum = ATTRIBUTE_KEYS.reduce((a, k) => a + (Number(profile[k]) || 0), 0);
-  let rating = Math.round(sum / ATTRIBUTE_KEYS.length);
+  // Playthrough 5.26-B — a regra (atributos PRESENTES → média; sem atributos
+  // planos → overall declarado; nada → desconhecido) agora mora em
+  // attributes.js:baseOverallRating, a mesma que o motor de partida usa.
+  // Comportamento idêntico ao desta função antes da extração.
+  let rating = baseOverallRating(profile);
+  // Sem nenhuma fonte, devolve 0 — "desconhecido" é honesto e distinguível
+  // de "muito ruim", que era o que o piso 1 mascarava.
+  if (rating == null) return 0;
+
   if (profile._chemistryBonus) rating += profile._chemistryBonus;
   if (profile._energyPenalty) rating += profile._energyPenalty;
   return Math.max(1, Math.min(100, rating));
@@ -373,7 +402,7 @@ export async function ensureMyProfile(user) {
       career_level: 1,
       play_style: 'Equilibrado',
       xp: 0,
-      coins: 100,
+      coins: getBalance527().startingCoins,
       career_date: '2026-01-01',
       birth_date: '2010-01-01',
       serve: 10, forehand: 10, backhand: 10, volley: 10, bandeja: 10, smash: 10,
@@ -405,8 +434,17 @@ export async function ensureMyProfile(user) {
 
 const normalizeRankingName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
 
+// Item 10/11 (Race no app real) — `career_phase` guarda o ESTÁGIO narrativo
+// da carreira ('Ascensão'/'Auge'/...), nunca a aposentadoria; quem marca
+// aposentadoria de verdade (circuitLifeLifecycle.js, livingCircuitRules.js) é
+// `career_status: 'aposentado'` — o MESMO campo que WorldTourLifecycle.js já
+// usa para filtrar atletas ativos antes do settlement. Comparar contra
+// `career_phase !== 'Aposentado'` nunca era falso (nada grava esse valor
+// nesse campo), então este filtro nunca excluía ninguém pela aposentadoria —
+// inofensivo por si só, mas era a mesma classe de divergência de campo entre
+// pipelines que este item pede para eliminar.
 function isActiveRankedAthlete(athlete) {
-  return Boolean(athlete?.id) && !athlete.retired && athlete.career_phase !== 'Aposentado';
+  return Boolean(athlete?.id) && !athlete.retired && athlete.career_status !== 'aposentado';
 }
 
 function athletePointsValue(athlete) {
@@ -521,7 +559,7 @@ export async function getWorldRank(profile) {
     total,
     points,
     unranked,
-    displayRank: unranked && rank > 1000 ? '1000+' : String(rank),
+    displayRank: unranked ? '1000+' : String(rank),
   };
 }
 
@@ -646,6 +684,15 @@ export async function ensureTutorialMissionCatalog() {
   return promise;
 }
 
+// Igualdade de valor para o diff do catálogo (null/undefined equivalem;
+// objetos e listas por conteúdo).
+function sameCatalogValue(a, b) {
+  if (a == null && b == null) return true;
+  if (a === b) return true;
+  if (typeof a !== 'object' || typeof b !== 'object' || a === null || b === null) return false;
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
 async function ensureTutorialMissionCatalogUncached() {
   const existing = await localGame.entities.Mission.list('-created_date', 500);
   const fullCatalog = TUTORIAL_MISSIONS;
@@ -682,20 +729,24 @@ async function ensureTutorialMissionCatalogUncached() {
 
     if (canonical && !seenCanonical.has(key)) {
       seenCanonical.add(key);
-      updates.push({
+      const merged = {
         ...mission,
         ...canonical,
         catalog_key: canonical.catalog_key || key,
         id: mission.id,
         is_active: true,
-      });
+      };
+      // Playthrough 5.24-D, Parte N — o catálogo canônico era regravado
+      // INTEIRO a cada abertura do app (uma gravação completa da carreira
+      // sem nenhuma mudança). Só entra no bulkUpdate o que difere.
+      if (Object.keys(merged).some((field) => !sameCatalogValue(mission[field], merged[field]))) updates.push(merged);
       continue;
     }
 
     if (mission.mission_type === 'tutorial') {
       // Tutoriais antigos ou linhas duplicadas permanecem no histórico, mas
       // não aparecem nem recebem novos eventos/recompensas.
-      updates.push({ ...mission, is_active: false, superseded_by_catalog: true });
+      if (mission.is_active !== false || !mission.superseded_by_catalog) updates.push({ ...mission, is_active: false, superseded_by_catalog: true });
     } else if (RETIRED_PERIODIC_MISSION_TYPES.includes(mission.mission_type) && mission.is_active !== false) {
       // Tutorial 4.0 (Parte 12): saves antigos com Mission diaria/semanal/
       // mensal/sazonal já persistidas — arquivadas (nunca deletadas), o
@@ -715,16 +766,29 @@ function emitMissionEvent(detail) {
 
 const missionRewardLocks = new Map();
 
-async function rewardMissionAutomatically(profileId, mission, progressRow) {
+async function rewardMissionAutomatically(profileId, mission, progressRow, options = {}) {
   const lockKey = `${profileId}:${mission?.id}:${progressRow?.period_key || 'career'}`;
   if (missionRewardLocks.has(lockKey)) return missionRewardLocks.get(lockKey);
-  const operation = rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow)
+  const operation = rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow, options)
     .finally(() => missionRewardLocks.delete(lockKey));
   missionRewardLocks.set(lockKey, operation);
   return operation;
 }
 
-async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow) {
+// Playthrough 5.24-D — RECOMPENSA ATÔMICA E IDEMPOTENTE.
+//
+// Antes: moedas/XP (PlayerProfile.update) e o "claimed" da missão
+// (MissionProgress.update) eram DUAS gravações completas da carreira, em
+// sequência. Um encerramento do app entre elas (kill pelo sistema no
+// Android) persistia +50 com a missão ainda "não reclamada" — e a próxima
+// visita à rota concedia +50 DE NOVO. Agora conclusão + claimed + moedas +
+// XP + medalha vão numa ÚNICA mutação (localGame.batch → um mutateActiveCareer
+// → uma persistência): ou o save tem tudo, ou não tem nada. A chave de
+// idempotência é o próprio ledger canônico da missão (MissionProgress.claimed
+// / reward_delivered por mission_id + period_key) — nenhuma fonte nova.
+// `options.progressPatch` carrega o progresso que antes era gravado numa
+// escrita separada logo antes desta: 1ª aplicação = 1 escrita.
+async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRow, options = {}) {
   if (!progressRow || progressRow.claimed) return progressRow;
   const latestRows = await localGame.entities.MissionProgress.filter({ id: progressRow.id, profile_id: profileId });
   const latest = latestRows?.[0] || progressRow;
@@ -744,13 +808,37 @@ async function rewardMissionAutomaticallyUnlocked(profileId, mission, progressRo
   if (!rewardValidation.valid) throw new Error(rewardValidation.errors.join('; '));
   const medal = mission.medal_reward;
   const medals = medal && !(profile.medals || []).includes(medal) ? [...(profile.medals || []), medal] : (profile.medals || []);
-  await localGame.entities.PlayerProfile.update(profile.id, {
-    xp: Number(profile.xp || 0) + Number(mission.xp_reward || 0),
-    coins: Number(profile.coins || 0) + Number(mission.coins_reward || 0),
-    medals,
-  });
   const completedAt = new Date().toISOString();
-  const claimed = await localGame.entities.MissionProgress.update(progressRow.id, { status: 'rewarded', completed: true, claimed: true, reward_delivered: true, completed_at: completedAt, reward_claimed_at: completedAt, completion_notified_at: completedAt });
+  const { records, player } = await localGame.batch([
+    {
+      type: 'upsert',
+      entityName: 'MissionProgress',
+      id: progressRow.id,
+      data: {
+        ...(options.progressPatch || {}),
+        mission_id: mission.id,
+        profile_id: profileId,
+        status: 'rewarded', completed: true, claimed: true, reward_delivered: true,
+        completed_at: completedAt, reward_claimed_at: completedAt, completion_notified_at: completedAt,
+      },
+    },
+    {
+      type: 'playerUpdate',
+      id: profile.id,
+      data: {
+        xp: Number(profile.xp || 0) + Number(mission.xp_reward || 0),
+        coins: Number(profile.coins || 0) + Number(mission.coins_reward || 0),
+        medals,
+      },
+    },
+  ], { caller: 'missions.rewardMissionAutomatically' });
+  const claimed = records?.[0] || { ...latest, status: 'rewarded', claimed: true, reward_delivered: true };
+  // Mesmo aviso que PlayerAdapter.update dispara quando o saldo muda (header).
+  if (typeof window !== 'undefined' && player) {
+    window.dispatchEvent(new CustomEvent('padel:profile-updated', {
+      detail: { profile: player, profileId: player.id, careerDate: player.career_date, source: 'player-adapter-balance' },
+    }));
+  }
   const cycleId = progressRow.period_key || 'tutorial:career';
   emitMissionEvent({ mission, reward: { xp: Number(mission.xp_reward || 0), coins: Number(mission.coins_reward || 0), medal }, tutorial: mission.mission_type === 'tutorial', cycleId, completedAt, notificationKey: `mission-completed:${profileId}:${mission.id}:${cycleId}` });
   return claimed;
@@ -784,6 +872,24 @@ export async function syncMissionProgressPeriods(profile, missions = null, rows 
   return synced;
 }
 
+// Playthrough 5.26-B — o `playerPatch` da finalização de torneio carrega
+// `coins`/`xp`/`level` ABSOLUTOS, calculados sobre o perfil de ANTES das
+// conquistas da última partida. Aplicado depois de `syncPlayerAchievements`,
+// ele regravava o saldo antigo e apagava as moedas da conquista (medido na
+// 5.26: ~46k em 5 anos). Com `increments`, o valor final é o perfil LIDO NA
+// HORA DA ESCRITA + o ganho do torneio — nada é creditado duas vezes nem
+// perdido. `level` é rederivado do XP final.
+export function rebasePlayerPatchIncrements(patch, increments, freshProfile) {
+  if (!patch || !increments) return patch;
+  const next = { ...patch };
+  if (increments.coins != null) next.coins = (Number(freshProfile?.coins) || 0) + (Number(increments.coins) || 0);
+  if (increments.xp != null) {
+    next.xp = (Number(freshProfile?.xp) || 0) + (Number(increments.xp) || 0);
+    if ('level' in next) next.level = levelForXp(next.xp);
+  }
+  return next;
+}
+
 export async function incrementMissionProgress(profileId, objectiveTypes, count = 1, careerDateOverride = null, options = {}) {
   const completedNow = [];
   const additionalOperations = Array.isArray(options.additionalOperations) ? options.additionalOperations : [];
@@ -791,7 +897,10 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
   const persistFallbackBatch = async () => {
     if (!options.batchWrites) return;
     const operations = [...additionalOperations];
-    if (options.playerPatch) operations.push({ type: 'playerUpdate', id: profileId, data: options.playerPatch });
+    if (options.playerPatch) {
+      const fresh = options.playerIncrements ? (await localGame.entities.PlayerProfile.filter({ id: profileId }))?.[0] : null;
+      operations.push({ type: 'playerUpdate', id: profileId, data: rebasePlayerPatchIncrements(options.playerPatch, options.playerIncrements, fresh) });
+    }
     if (operations.length) await localGame.batch(operations);
   };
   try {
@@ -814,7 +923,10 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
     /** @type {any[]} */
     const batchedOperations = [];
     const batchedCompletionEvents = [];
-    let batchedProfile = options.playerPatch ? { ...selectionProfile, ...options.playerPatch } : selectionProfile;
+    // Playthrough 5.26-B — patch do torneio rebaseado sobre o perfil fresco
+    // (inclui moedas de conquista já gravadas), em vez de sobrescrevê-lo.
+    const effectivePlayerPatch = options.playerPatch ? rebasePlayerPatchIncrements(options.playerPatch, options.playerIncrements, selectionProfile) : null;
+    let batchedProfile = effectivePlayerPatch ? { ...selectionProfile, ...effectivePlayerPatch } : selectionProfile;
     let batchedPlayerChanged = Boolean(options.playerPatch);
     for (const type of types) {
       const excludedMissionTypes = new Set(options.excludeMissionTypes || []);
@@ -839,10 +951,15 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
         const completed = newProgress >= Number(m.target_count || 1); const status = completed ? 'completed' : 'in_progress';
         const progressId = prog?.id || `mission-progress-${profileId}-${m.id}-${periodKey}`.replace(/[^a-zA-Z0-9_-]/g, '-');
         const progressPatch = { mission_id: m.id, profile_id: profileId, status, progress: newProgress, completed, claimed: false, reward_delivered: Boolean(prog?.reward_delivered), period_key: periodKey, period_ends_at: m.mission_type === 'tutorial' ? null : missionPeriodEndsAt(m.mission_type, careerDate), last_trigger_event_id: options.triggerEventId || null };
+        // Playthrough 5.24-D — completou com recompensa: o progresso é gravado
+        // JUNTO da recompensa (rewardMissionAutomatically, mutação única), em
+        // vez de numa escrita própria antes dela.
+        const rewardsNow = completed && !options.silent && !options.noReward;
         if (options.batchWrites) {
           updated = { ...prog, ...progressPatch, id: progressId };
           batchedOperations.push({ type: 'upsert', entityName: 'MissionProgress', id: progressId, data: progressPatch });
-        } else if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, progressPatch);
+        } else if (rewardsNow) updated = { ...prog, ...progressPatch, id: prog?.id || progressId };
+        else if (prog) updated = await localGame.entities.MissionProgress.update(prog.id, progressPatch);
         else updated = await localGame.entities.MissionProgress.create(progressPatch);
         progressRows = [...progressRows.filter(p => p.id !== updated.id), updated];
         if (newProgress >= Number(m.target_count || 1)) {
@@ -866,7 +983,7 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
               batchedCompletionEvents.push({ mission: m, completedAt, cycleId: periodKey, medal });
             }
           } else {
-            claimed = options.silent || options.noReward ? await localGame.entities.MissionProgress.update(updated.id, { status: 'rewarded', claimed: true, reward_delivered: true, completed: true, completed_at: new Date().toISOString(), reward_claimed_at: new Date().toISOString(), completion_notified_at: new Date().toISOString(), migration_recognized: true }) : await rewardMissionAutomatically(profileId, m, updated);
+            claimed = options.silent || options.noReward ? await localGame.entities.MissionProgress.update(updated.id, { status: 'rewarded', claimed: true, reward_delivered: true, completed: true, completed_at: new Date().toISOString(), reward_claimed_at: new Date().toISOString(), completion_notified_at: new Date().toISOString(), migration_recognized: true }) : await rewardMissionAutomatically(profileId, m, updated, { progressPatch });
           }
           progressRows = [...progressRows.filter(p => p.mission_id !== m.id), claimed];
           completedNow.push(m);
@@ -875,7 +992,7 @@ export async function incrementMissionProgress(profileId, objectiveTypes, count 
     }
     if (options.batchWrites) {
       batchedOperations.push(...additionalOperations);
-      if (batchedPlayerChanged) batchedOperations.push({ type: 'playerUpdate', id: profileId, data: { ...(options.playerPatch || {}), xp: batchedProfile.xp, coins: batchedProfile.coins, medals: batchedProfile.medals } });
+      if (batchedPlayerChanged) batchedOperations.push({ type: 'playerUpdate', id: profileId, data: { ...(effectivePlayerPatch || {}), xp: batchedProfile.xp, coins: batchedProfile.coins, medals: batchedProfile.medals } });
       if (batchedOperations.length) {
         batchAttempted = true;
         await localGame.batch(batchedOperations);

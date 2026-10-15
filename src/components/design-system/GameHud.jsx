@@ -23,12 +23,9 @@ export function GameHud({ items = [], label = 'Status atual', className = '' }) 
     <div data-game-hud className={cn('pl-game-hud', className)} role="group" aria-label={label}>
       {list.map((item, index) => {
         const Icon = item.icon;
-        return (
-          <span
-            key={item.id || item.label || index}
-            className="pl-game-hud-item"
-            aria-label={item.label ? `${item.label}: ${item.value}` : String(item.value)}
-          >
+        const interactive = typeof item.onClick === 'function';
+        const content = (
+          <>
             {Icon && <Icon className={cn('pl-game-hud-icon shrink-0', TONE_TEXT[item.tone] || 'text-primary')} aria-hidden="true" />}
             {/* Correção UI (Fase 1): min-w-0 + truncate + title protegem contra
                 um valor/rótulo pontualmente muito longo (ex.: nome de parceiro)
@@ -37,6 +34,30 @@ export function GameHud({ items = [], label = 'Status atual', className = '' }) 
                 (tooltip nativo no desktop) e aria-label (leitor de tela). */}
             <strong title={String(item.value)} className={cn('pl-game-hud-value min-w-0 max-w-[9rem] truncate tabular-nums', TONE_TEXT[item.tone] || 'text-foreground')}>{item.value}</strong>
             {item.label && <span title={item.label} className="pl-game-hud-label min-w-0 max-w-[11rem] truncate text-muted-foreground">{item.label}</span>}
+          </>
+        );
+        const ariaLabel = item.label ? `${item.label}: ${item.value}` : String(item.value);
+        // Playthrough 5.22-E, Parte AE/AF — um chip de HUD pode virar um
+        // destino real (ex.: "17 países" -> /world/directory?tab=countries).
+        // Quando não há onClick continua sendo o `<span>` não interativo de
+        // sempre; nenhum consumidor existente muda de comportamento.
+        return interactive ? (
+          <button
+            key={item.id || item.label || index}
+            type="button"
+            onClick={item.onClick}
+            className="pl-game-hud-item pl-game-hud-item--interactive"
+            aria-label={`${ariaLabel} — abrir`}
+          >
+            {content}
+          </button>
+        ) : (
+          <span
+            key={item.id || item.label || index}
+            className="pl-game-hud-item"
+            aria-label={ariaLabel}
+          >
+            {content}
           </span>
         );
       })}

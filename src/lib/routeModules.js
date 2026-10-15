@@ -16,6 +16,19 @@ export const PAGE_LOADERS = {
   Encyclopedia: () => import('@/pages/Encyclopedia'), PartnerHub: () => import('@/pages/PartnerHub'), Community: () => import('@/pages/Community'),
   NavigationHub: () => import('@/pages/NavigationHub'), WorldHub: () => import('@/pages/WorldHub'), Staff: () => import('@/pages/Staff'), Communications: () => import('@/pages/Communications'), MonthlyReports: () => import('@/pages/MonthlyReports'), AnnualReports: () => import('@/pages/AnnualReports'),
   Settings: () => import('@/pages/Settings'),
+  // Playthrough 5.20 — hubs consolidados (Partes E/F/G/H/N/P/S). Cada um
+  // agrupa paginas existentes em abas; as paginas originais seguem nos
+  // loaders acima porque continuam sendo o conteudo de cada aba.
+  MyAthleteHub: () => import('@/pages/hubs/MyAthleteHub'),
+  TrainingEquipmentHub: () => import('@/pages/hubs/TrainingEquipmentHub'),
+  TeamHub: () => import('@/pages/hubs/TeamHub'),
+  RelationsHub: () => import('@/pages/hubs/RelationsHub'),
+  CircuitCentralHub: () => import('@/pages/hubs/CircuitCentralHub'),
+  AthletesClubsHub: () => import('@/pages/hubs/AthletesClubsHub'),
+  EncyclopediaHub: () => import('@/pages/hubs/EncyclopediaHub'),
+  LegacyHub: () => import('@/pages/hubs/LegacyHub'),
+  CompeteHub: () => import('@/pages/hubs/CompeteHub'),
+  RankingHub: () => import('@/pages/hubs/RankingHub'),
 };
 
 const ROUTE_MODULES = {

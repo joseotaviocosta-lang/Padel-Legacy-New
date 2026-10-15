@@ -1,0 +1,50 @@
+profile,day,item,category,rarity,price,bonusTotal
+casual,28,Joma Wristband Base,acessorio,comum,65,1
+casual,84,Nox Equation Sport,raquete,incomum,1348,2
+casual,182,Pulse Training Band,acessorio_tec,incomum,981,1
+casual,287,Asics Clay Motion,tenis,incomum,788,1
+casual,301,Tour Grip Dry Start,grip,comum,59,1
+casual,308,Head Club Match x3,bola,incomum,269,1
+casual,315,Joma Training Tee,roupa,comum,238,1
+casual,350,Head Team Backpack,mochila,incomum,663,1
+casual,371,Bullpadel Competition Set,roupa,raro,1284,2
+casual,455,Adidas Drive Pro,raquete,raro,3384,4
+casual,497,Nox Thermal Duo,mochila,raro,1520,2
+casual,574,Mizuno Indoor Flash,tenis,raro,1927,2
+casual,665,Wilson Pro Tour x3,bola,raro,1301,2
+casual,693,Nox Racket Protector,acessorio,raro,1328,2
+casual,700,Medalha Circuito Local,colecionavel,raro,1268,2
+casual,714,Wilson Tacky Pro,grip,raro,1302,4
+normal,0,Padel Start Training x3,bola,comum,49,1
+normal,7,Tour Grip Dry Start,grip,comum,59,1
+normal,35,Joma Wristband Base,acessorio,comum,65,1
+normal,42,Joma Training Tee,roupa,comum,238,1
+normal,49,Padel Start Compact,mochila,comum,281,1
+normal,56,Head Flash Motion Club,raquete,comum,628,2
+normal,63,Joma Court Basic,tenis,comum,518,1
+normal,70,Pulse Training Band,acessorio_tec,incomum,981,1
+normal,329,Nox Racket Protector,acessorio,raro,1285,2
+normal,336,Wilson Tacky Pro,grip,raro,1264,4
+normal,343,Medalha Circuito Local,colecionavel,raro,1264,2
+normal,406,Bullpadel Competition Set,roupa,raro,1316,2
+normal,413,Wilson Pro Tour x3,bola,raro,1326,2
+normal,427,Nox Thermal Duo,mochila,raro,1499,2
+normal,518,Mizuno Indoor Flash,tenis,raro,1935,2
+normal,546,Head Flash Motion Pro,raquete,raro,2511,4
+optimizer,0,Head Flash Motion Club,raquete,comum,628,2
+optimizer,35,Padel Start Training x3,bola,comum,49,1
+optimizer,42,Tour Grip Dry Start,grip,comum,59,1
+optimizer,49,Joma Wristband Base,acessorio,comum,65,1
+optimizer,56,Joma Training Tee,roupa,comum,238,1
+optimizer,63,Padel Start Compact,mochila,comum,281,1
+optimizer,70,Joma Court Basic,tenis,comum,518,1
+optimizer,77,Pulse Training Band,acessorio_tec,incomum,968,1
+optimizer,357,Wilson Tacky Pro,grip,raro,1322,4
+optimizer,364,Nox Racket Protector,acessorio,raro,1277,2
+optimizer,406,Head Flash Motion Pro,raquete,raro,2548,4
+optimizer,413,Medalha Circuito Local,colecionavel,raro,1319,2
+optimizer,420,Bullpadel Competition Set,roupa,raro,1326,2
+optimizer,462,Nox Thermal Duo,mochila,raro,1474,2
+optimizer,518,Wilson Pro Tour x3,bola,raro,1327,2
+optimizer,525,Mizuno Indoor Flash,tenis,raro,1896,2
+optimizer,651,PlaySight Shot Sensor,acessorio_tec,raro,2874,2

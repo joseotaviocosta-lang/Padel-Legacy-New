@@ -1,0 +1,47 @@
+{
+  "at": "2026-10-13T03:06:58.008Z",
+  "passed": 5,
+  "total": 5,
+  "results": [
+    {
+      "group": "Persistência",
+      "name": "test-achievement-reward-atomicity-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 6,
+      "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-achievement-reward-restart-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 12,
+      "summary": "test-achievement-reward-restart-v524e: PASS (4 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-mission-reward-regression-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 59,
+      "summary": "test-mission-reward-regression-v524e: PASS (10 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-idle-boot-zero-write-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 13,
+      "summary": "test-idle-boot-zero-write-v524e: PASS (4 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-mobile-storage-m3-6",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "15 gates executados, todos PASS — Mobile M3.6 Storage/I/O."
+    }
+  ]
+}

@@ -143,17 +143,36 @@ export class CareerManager {
       const career = await this.repository.readCareer(careerId);
       const migrated = migrateCareer(career);
       const careerData = migrated.data;
+      // Playthrough 5.24-E — BOOT OCIOSO NÃO GRAVA.
+      //
+      // Antes: todo load carimbava last_played_at/updated_at e regravava a
+      // carreira INTEIRA (2MB+, com backup e escrita atômica) e o índice —
+      // medido: 2 escritas por abertura do app, sem nenhuma mudança de jogo
+      // (os dois carimbos eram os únicos campos diferentes). Com migração
+      // eram DUAS gravações da carreira. Agora:
+      //  - carreira: só é gravada se a migração realmente mudou o save;
+      //  - last_played_at: atualizado em memória; vai para o disco na próxima
+      //    gravação real (saveCareer persiste o objeto inteiro);
+      //  - índice: só quando a carreira ativa muda (ordem de "jogada por
+      //    último") ou quando o resumo está defasado de verdade.
+      const now = new Date().toISOString();
+      careerData.last_played_at = now;
       if (migrated.migrated) {
+        careerData.updated_at = now;
         await this.repository.writeCareer(careerId, careerData);
       }
-      careerData.last_played_at = new Date().toISOString();
-      careerData.updated_at = careerData.last_played_at;
-      await this.repository.writeCareer(careerId, careerData);
 
-      Object.assign(entry, createSummaryFromCareer(careerData));
-      index.last_career_id = careerId;
-      await this.repository.writeIndex(index);
-      registerBetaDiagnostic({ type: 'CAREER_INDEX_UPDATE', careerId, operation: 'load' });
+      const switching = index.last_career_id !== careerId;
+      const nextSummary = createSummaryFromCareer(careerData);
+      const volatile = new Set(['updated_at', 'last_played_at']);
+      const summaryChanged = Object.keys(nextSummary)
+        .some((field) => !volatile.has(field) && JSON.stringify(entry[field] ?? null) !== JSON.stringify(nextSummary[field] ?? null));
+      if (switching || summaryChanged || migrated.migrated) {
+        Object.assign(entry, nextSummary);
+        index.last_career_id = careerId;
+        await this.repository.writeIndex(index);
+        registerBetaDiagnostic({ type: 'CAREER_INDEX_UPDATE', careerId, operation: 'load' });
+      }
       registerBetaDiagnostic({ type: 'CAREER_LOAD_SUCCESS', careerId, saveVersion: careerData.save_version });
 
       // Fase 2.9, item 1B (achado #20) — varredura silenciosa, best-effort:
@@ -195,10 +214,12 @@ export class CareerManager {
     // CareerRepository.writeCareer para o mecanismo em si.
     crashRecovery = true,
     caller = 'CareerManager.saveCareer',
+    // Playthrough 5.25 — draft privado do ActiveCareerAdapter: valida sem clonar.
+    owned = false,
   } = {}) {
     registerBetaDiagnostic({ type: 'CAREER_SAVE_START', careerId, caller });
     try {
-      const validated = validateCareerData(careerData);
+      const validated = validateCareerData(careerData, { owned });
       if (validated.career_id !== careerId) {
         throw new Error('career_id no conteúdo não pode ser alterado.');
       }
@@ -210,7 +231,7 @@ export class CareerManager {
       // periódica pelo ActiveCareerAdapter e continua obrigatório em saves
       // explícitos/gerenciamento de carreira.
       if (!updateIndex) {
-        await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
+        await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller, validated: true });
         registerBetaDiagnostic({ type: 'CAREER_SAVE_SUCCESS', careerId, saveVersion: validated.save_version, caller });
         return validated;
       }
@@ -220,7 +241,7 @@ export class CareerManager {
       if (!entry) throw new Error('Carreira não encontrada no índice.');
       const summary = createSummaryFromCareer(validated);
 
-      await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller });
+      await this.repository.writeCareer(careerId, validated, { backup, crashRecovery, caller, validated: true });
       Object.assign(entry, summary);
       await this.repository.writeIndex(index);
       registerBetaDiagnostic({ type: 'CAREER_INDEX_UPDATE', careerId, operation: 'save', caller });

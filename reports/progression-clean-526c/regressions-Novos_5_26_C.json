@@ -1,0 +1,98 @@
+[
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-world-ranking-year-rollover-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 11,
+    "summary": "test-world-ranking-year-rollover-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-race-year-reset-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 21,
+    "summary": "test-race-year-reset-v526c: 8/8 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-ranking-expiration-window-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 3,
+    "summary": "test-ranking-expiration-window-v526c: 10/10 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-sponsor-eligibility-authority-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 8,
+    "summary": "test-sponsor-eligibility-authority-v526c: 7/7 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-all-sponsors-reachable-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 8,
+    "summary": "test-all-sponsors-reachable-v526c: 23/23 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-opponent-team-rank-resolution-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 9,
+    "summary": "test-opponent-team-rank-resolution-v526c: 8/8 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-upset-detection-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 8,
+    "summary": "test-upset-detection-v526c: 9/9 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-historical-opponent-pair-rank-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 13,
+    "summary": "test-historical-opponent-pair-rank-v526c: 7/7 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-partner-resign-loop-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 24,
+    "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-partner-contract-365d-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 86,
+    "summary": "test-partner-contract-365d-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-progression-run-resume-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 275,
+    "summary": "test-progression-run-resume-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-clean-audit-no-shim-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 48,
+    "summary": "test-clean-audit-no-shim-v526c: 7/7 passaram"
+  }
+]

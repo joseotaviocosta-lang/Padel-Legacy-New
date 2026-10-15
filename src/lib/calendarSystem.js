@@ -7,6 +7,11 @@ import { normalizeTrainingId } from '@/lib/trainingCatalog.js';
 import { registerTournament, cancelTournamentRegistration, getTournamentRegistrationWindow, ACTIVE_REGISTRATION_STATUSES } from '@/lib/tournamentRegistration.js';
 import { getTournamentCommitmentDate, shouldBlockBeforeAdvance } from '@/game-core/calendarAdvancePolicy.js';
 import { ensureTournamentDraw, isTournamentDrawDue } from '@/lib/tournamentDraw.js';
+import { ensureTournamentDrawNotification, ensureTournamentRegistrationReminders } from '@/lib/careerCommunications.js';
+import { resolveUnavailablePlayerMatch } from '@/game-core/tournamentLifecycle.js';
+import { isInjured } from '@/lib/padel.js';
+import { evaluatePartnershipRegistrationAuthority } from '@/lib/committedRoster.js';
+import { getActivePartnership } from '@/lib/partnershipSystem.js';
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -236,6 +241,10 @@ export async function registerForTournament(profile, tournament, teamRank = 0, o
   if (!validation.canRegister) {
     return { success: false, reasons: validation.reasons };
   }
+  // 5.27-J: o caminho legado (sem chamadores hoje) também passa pela autoridade
+  // única de saída da parceria — nenhum caminho de inscrição fica de fora.
+  const exitAuthority = evaluatePartnershipRegistrationAuthority(await getActivePartnership(profile.id).catch(() => null), { careerDate: profile.career_date, tournament });
+  if (!exitAuthority.allowed) return { success: false, reasons: [{ code: exitAuthority.code, message: exitAuthority.reason }] };
 
   const entry = validation.entry;
 
@@ -428,9 +437,9 @@ export async function processCalendarEvents(profile, newDate) {
     // nunca ao abrir o modal do torneio (ver src/lib/tournamentDraw.js).
     // advanceCareerDays avança um dia real por vez mesmo em saltos de
     // vários dias, então este ponto nunca "pula" o dia exato do sorteio.
-    if (event.event_type === 'tournament' && !hasTournamentRun && event.status === 'scheduled' && event.related_id) {
-      const tournament = await (/** @type {any} */ (localGame.entities)).Tournament.get(event.related_id).catch(() => null);
-      if (tournament && isTournamentDrawDue(event, tournament, newDate)) {
+    if (event.event_type === 'tournament' && event.status === 'scheduled' && event.related_id) {
+      let tournament = await (/** @type {any} */ (localGame.entities)).Tournament.get(event.related_id).catch(() => null);
+      if (tournament && !hasTournamentRun && isTournamentDrawDue(event, tournament, newDate)) {
         const drawResult = await ensureTournamentDraw({
           profile: { ...profile, career_date: newDate },
           tournament,
@@ -439,8 +448,19 @@ export async function processCalendarEvents(profile, newDate) {
         if (drawResult?.created && drawResult.event) {
           event = drawResult.event;
           hasTournamentRun = true;
+          tournament = await (/** @type {any} */ (localGame.entities)).Tournament.get(event.related_id).catch(() => tournament);
         }
       }
+      // Playthrough 4.6D, itens 1/5/6 — a notificação "Sorteio definido"
+      // deixa de depender de alguma tela estar montada no dia exato D-3
+      // (CommunicationBell.jsx/CareerHub.jsx/Communications.jsx, que além
+      // disso só enxergavam o torneio via `status:'inscricoes'` — deixa de
+      // aparecer como candidato assim que é sorteado). Roda TODO dia
+      // enquanto o evento estiver 'scheduled'; idempotente (a função já
+      // verifica se a mensagem existe antes de escrever) e self-healing
+      // (se a chave já existia de uma sessão anterior sem notificação, cria
+      // a mensagem atrasada aqui, uma única vez).
+      if (tournament) await ensureTournamentDrawNotification({ ...profile, career_date: newDate }, tournament, event).catch(() => null);
     }
 
     // Mark past events as missed if they were tournaments requiring decisions
@@ -449,6 +469,37 @@ export async function processCalendarEvents(profile, newDate) {
       ? (tournamentCommitmentDate || (hasTournamentRun ? null : event.end_date || event.start_date))
       : (event.end_date || event.start_date);
     if (eventEnd && eventEnd < newDate && event.requires_decision && event.decision_type === 'play_tournament') {
+      // Playthrough 4.7, itens 1-6 — antes, uma rodada de torneio perdida
+      // (lesão no dia da partida, ou simplesmente não disputada) só marcava
+      // o CalendarEvent/TournamentRegistration como encerrados — o
+      // tournament_run/bracket_history ficavam com o match do jogador
+      // 'scheduled' pra sempre, sem vencedor, travando a chave inteira
+      // (Vencedor Jogo N nunca resolve) e o settlement do torneio (ver
+      // resolveUnavailablePlayerMatch, game-core/tournamentLifecycle.js).
+      // W.O. automático: mesmo motor que o abandono manual já usava,
+      // disparado aqui pelo lifecycle do dia, sem depender de o jogador
+      // abrir o modal. Quando há campanha real (hasTournamentRun) e o W.O.
+      // resolve com sucesso, a finalização (prepareTournamentFinalization)
+      // já grava CalendarEvent/TournamentRegistration como 'completed' —
+      // nunca sobrescrever de volta pra 'missed'/aplicar a penalidade de
+      // ausência simples, que são só pro caso legado sem campanha nenhuma.
+      let walkoverResolved = false;
+      if (hasTournamentRun && event.related_id) {
+        const tournamentForWalkover = await (/** @type {any} */ (localGame.entities)).Tournament.get(event.related_id).catch(() => null);
+        if (tournamentForWalkover) {
+          const walkoverReason = isInjured({ ...profile, career_date: newDate })
+            ? `W.O. por ${profile?.injury_type || 'lesão'}`
+            : 'W.O. por ausência';
+          const walkover = await resolveUnavailablePlayerMatch({
+            profile: { ...profile, career_date: newDate }, tournament: tournamentForWalkover, calendarEvent: event, reason: walkoverReason,
+          }).catch((error) => { console.error('[calendarSystem] Falha ao resolver W.O. automático', error); return null; });
+          walkoverResolved = Boolean(walkover);
+        }
+      }
+      if (walkoverResolved) {
+        completed.push({ ...event, newStatus: 'completed' });
+        continue;
+      }
       await localGame.entities.CalendarEvent.update(event.id, { status: 'missed', requires_decision: false });
       // Hotfix — antes, só o CalendarEvent virava 'missed'. A inscrição
       // continuava 'confirmed' PARA SEMPRE (limbo: nem ativa de verdade, nem
@@ -474,6 +525,28 @@ export async function processCalendarEvents(profile, newDate) {
 
   if (coinChange !== 0) updates.coins = (profile.coins || 0) + coinChange;
   if (xpChange !== 0) updates.xp = (profile.xp || 0) + xpChange;
+
+  // Playthrough 4.9, Parte E — avisos prévios de inscrição (D-7/D-5/D-4),
+  // independentes do jogador ter aberto a tela de Torneios. Diferente do
+  // sorteio (acima, que só olha o CalendarEvent do PRÓPRIO jogador —
+  // existe só depois de uma inscrição real), aqui ainda não existe
+  // inscrição nenhuma por definição, então a varredura precisa ser sobre o
+  // catálogo de torneios, não sobre o calendário do jogador. Janela de 7
+  // dias cobre o marco mais largo (D-7); ensureTournamentRegistrationReminders
+  // já se protege sozinha (só cria enquanto REGISTRATION_OPEN), então
+  // varrer um pouco além do necessário nunca cria ruído.
+  // Perf (Fase 15.6, gate 23/24) — `.list(sort, 500)` clona os 500 registros
+  // inteiros TODO dia, mesmo que quase nenhum esteja na janela de 7 dias.
+  // `.filter({start_date:{$gte,$lte}})` (CareerEntityRepository.js já
+  // suporta $gte/$lte) só clona quem realmente cai na janela — mesmo custo
+  // de varredura interna, custo de clonagem drasticamente menor.
+  const horizonEnd = new Date(`${newDate}T00:00:00Z`); horizonEnd.setUTCDate(horizonEnd.getUTCDate() + 7);
+  const upcomingForReminders = await localGame.entities.Tournament.filter({
+    start_date: { $gte: newDate, $lte: horizonEnd.toISOString().slice(0, 10) },
+  }).catch(() => []);
+  for (const item of (upcomingForReminders || [])) {
+    await ensureTournamentRegistrationReminders({ ...profile, career_date: newDate }, item).catch(() => null);
+  }
 
   return { updates, completed };
 }

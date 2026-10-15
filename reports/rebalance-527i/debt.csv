@@ -1,0 +1,6 @@
+job,preset,profile,seed,event,startDay,endDay,durationDays,peakDebt,open,reason
+balanced-e-optimizer-seed001-2y,balanced-e,optimizer,1,1,399,399,7,38,false,rescisão (coach)
+balanced-e-optimizer-seed003-2y,balanced-e,optimizer,3,1,371,392,28,712,false,rescisão (coach)
+balanced-e-optimizer-seed004-2y,balanced-e,optimizer,4,1,730,730,7,2015,true,despesa coach
+conservative-e-optimizer-seed004-2y,conservative-e,optimizer,4,1,399,399,7,589,false,rescisão (coach)
+hardcore-e-optimizer-seed004-2y,hardcore-e,optimizer,4,1,399,399,7,8,false,rescisão (coach)

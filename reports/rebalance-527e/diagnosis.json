@@ -1,0 +1,24 @@
+{
+  "phase": "5.27-E Bloco A/B/D/G — diagnóstico antes de qualquer tuning (sem alteração de balanceamento)",
+  "sources": ["reports/rebalance-527d/runs (45 carreiras)", "scripts/diag-engine-bias-v527e.mjs", "reports/rebalance-527e/micro-normal-365d.json"],
+  "silverVsGold": {
+    "aggregateGoldIncludesQualifying": "28% das partidas Gold são qualifying, 59% de vitórias (adversário força ~40)",
+    "mainDrawWR": { "Bronze": 35, "Silver": 15, "Gold": 19 },
+    "fieldStrengthMedian": { "Bronze": 35.5, "Silver": 47, "Gold": 76.5 },
+    "partnerOvrMedianNormal": { "Bronze": 22, "Silver": 21, "Gold": 64 },
+    "controlledForDeltaAndEnergy": "Silver e Gold rendem parecido no mesmo delta de força (energia >= 70)",
+    "conclusion": "campo ordenado corretamente (Bronze < Silver < Gold); a inversão de WR vem do momento da carreira: Silver é jogado no 1º ano com parceiro de OVR ~10–27, Gold depois com parceiro 64–91; mais o qualifying fácil no Gold agregado. Banda Silver não é a causa."
+  },
+  "energy": {
+    "engineEqualTeams": { "energy100": "~52–55%", "energy55": "~7%" },
+    "realData": { "energyGE85_delta0to3": "41%", "energy40to70_delta0to3": "10%" },
+    "policyV1EnergyAtMatchMedian": { "casual": 90, "normal": 61, "optimizer": 45 },
+    "cause": "política v1 do harness treina até a véspera; energia entra 2× (−2 no OVR e (100−e)×0,12 por golpe no RallyEngine); bots jogam sempre com 100"
+  },
+  "engineSideAsymmetry": { "identicalTeamsTeamAWin": { "ovr35": 42.4, "ovr50": 41.5, "ovr75": 84.3 }, "note": "lado A (jogador) saca primeiro; lado B tem aiCoach. Propriedade da fórmula de partida — reportado, não alterado" },
+  "firstPartner": { "initialOfferOvr": "9–14", "contractUntilDay": "~323", "note": "design 4.8 (candidatos perto do OVR do novato); o jogador evolui ~22→50 em meses e o parceiro não acompanha; ciclo/contrato de parceria é zona protegida" },
+  "tierChoicePolicy": "normal = best-eligible → entra no tier aberto mais alto (Silver) no 1º ano; optimizer = best-fit",
+  "rankingProgression": "0 vitórias em 32 torneios → rank #452 (54 pts); subida por pontos de participação/derrota sobre uma base de população com poucos pontos",
+  "casualDebt": { "episodes527d": 7, "severance": 0, "classification": { "BAD POLICY": "orçamento de staff sobre receita total incl. luvas/conquistas pontuais; trainReserve 0", "EXPECTED PRESSURE": "vencimento de patrocínios de 4–8 meses (~dia 245–273)", "BALANCE FAILURE": "Hardcore concentra 4/7 (multiplicador de patrocínio menor)" } },
+  "micro_normal_365d": { "baseline_v1": { "easy": 3.2, "r1": 3.3, "energy": 61, "rank1y": 443 }, "taper_v2": { "easy": 15.3, "r1": 14.9, "energy": 100, "rank1y": 443 } }
+}

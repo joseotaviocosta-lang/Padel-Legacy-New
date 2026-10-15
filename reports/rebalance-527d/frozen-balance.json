@@ -1,0 +1,233 @@
+{
+  "frozenAt": "2026-10-11T14:47:59.772Z",
+  "phase": "5.27-D",
+  "rule": "balance diff during 5.27-D = 0",
+  "version": "5.27-D",
+  "balanceHash": "ea960dd3ec91a498ae5c412315bd02416d44e86ae68d1c40c981a2e05e6b9292",
+  "values": {
+    "presets": {
+      "conservative": {
+        "startingCoins": 900,
+        "initialAttributeMultiplier": 1.8,
+        "sponsorMonthlyMultiplier": 0.45,
+        "sponsorSignMultiplier": 0.4,
+        "sponsorRequireProof": true,
+        "sponsorProofMinTournaments": 1,
+        "prizeMultiplier": 2.6,
+        "staffMultiplier": 1.12,
+        "shopPriceMultiplier": 1.15,
+        "shopBonusMultiplier": 1,
+        "investmentRateMultiplier": 0.3
+      },
+      "balanced": {
+        "startingCoins": 900,
+        "initialAttributeMultiplier": 1.8,
+        "sponsorMonthlyMultiplier": 0.22,
+        "sponsorSignMultiplier": 0.21,
+        "sponsorRequireProof": true,
+        "sponsorProofMinTournaments": 1,
+        "prizeMultiplier": 3,
+        "staffMultiplier": 1.25,
+        "shopPriceMultiplier": 1.2,
+        "shopBonusMultiplier": 1,
+        "investmentRateMultiplier": 0.23
+      },
+      "hardcore": {
+        "startingCoins": 700,
+        "initialAttributeMultiplier": 1.8,
+        "sponsorMonthlyMultiplier": 0.16,
+        "sponsorSignMultiplier": 0.15,
+        "sponsorRequireProof": true,
+        "sponsorProofMinTournaments": 2,
+        "prizeMultiplier": 2,
+        "staffMultiplier": 1.4,
+        "shopPriceMultiplier": 1.3,
+        "shopBonusMultiplier": 1,
+        "investmentRateMultiplier": 0.18
+      }
+    },
+    "defaultPreset": "balanced",
+    "cdbMonthlyRate": 0.035,
+    "bronzeAnchors": {
+      "overallRankAnchors": [
+        [
+          1,
+          96
+        ],
+        [
+          10,
+          93
+        ],
+        [
+          25,
+          90
+        ],
+        [
+          50,
+          87
+        ],
+        [
+          100,
+          83
+        ],
+        [
+          150,
+          80
+        ],
+        [
+          250,
+          77
+        ],
+        [
+          350,
+          77
+        ],
+        [
+          450,
+          76
+        ],
+        [
+          600,
+          70
+        ],
+        [
+          800,
+          48
+        ],
+        [
+          900,
+          32
+        ],
+        [
+          1000,
+          20
+        ]
+      ],
+      "rankingPointAnchors": [
+        [
+          1,
+          13000
+        ],
+        [
+          10,
+          9130
+        ],
+        [
+          24,
+          3110
+        ],
+        [
+          50,
+          2050
+        ],
+        [
+          100,
+          1200
+        ],
+        [
+          200,
+          650
+        ],
+        [
+          350,
+          340
+        ],
+        [
+          500,
+          200
+        ],
+        [
+          750,
+          65
+        ],
+        [
+          1000,
+          1
+        ]
+      ],
+      "jitterSpread": 7
+    },
+    "openTierBands": {
+      "ceilingMirror": "400",
+      "silver": "{ peakHigh: OPEN_TIER_CEILING_MIRROR, peakLow: OPEN_TIER_CEILING_MIRROR * 2, spreadHigh: 0, spreadLow: OPEN_TIER_CEILING_MIRROR * 2, floor: 55 }",
+      "bronze": "{ peakHigh: OPEN_TIER_CEILING_MIRROR * 2, peakLow: Number.MAX_SAFE_INTEGER, spreadHigh: OPEN_TIER_CEILING_MIRROR, spreadLow: 0, floor: 55 }"
+    },
+    "severance": {
+      "rule": "dismissal always succeeds; penalty = 50% of monthly cost when contract still running; becomes debt (termination_funded_by_debt) when penalty > coins",
+      "fireStaffSourceHash": "7aef0f4a656616ab4068fcb6d9e655714d66e3fc657ceb5d3f3ea74e24f0d9e1"
+    }
+  },
+  "presetsRaw": {
+    "conservative": {
+      "id": "conservative",
+      "label": "Conservative",
+      "version": "5.27-B",
+      "startingCoins": 900,
+      "initialAttributeMultiplier": 1.8,
+      "prizeMultiplier": 2.6,
+      "investmentRateMultiplier": 0.3,
+      "sponsor": {
+        "monthlyMultiplier": 0.45,
+        "signMultiplier": 0.4,
+        "requireProof": true,
+        "proofMinTournaments": 1
+      },
+      "staffMultiplier": 1.12,
+      "shopPriceMultiplier": 1.15,
+      "shopBonusMultiplier": 1
+    },
+    "balanced": {
+      "id": "balanced",
+      "label": "Balanced",
+      "version": "5.27-B",
+      "startingCoins": 900,
+      "initialAttributeMultiplier": 1.8,
+      "prizeMultiplier": 3,
+      "investmentRateMultiplier": 0.23,
+      "sponsor": {
+        "monthlyMultiplier": 0.22,
+        "signMultiplier": 0.21,
+        "requireProof": true,
+        "proofMinTournaments": 1
+      },
+      "staffMultiplier": 1.25,
+      "shopPriceMultiplier": 1.2,
+      "shopBonusMultiplier": 1
+    },
+    "hardcore": {
+      "id": "hardcore",
+      "label": "Hardcore",
+      "version": "5.27-B",
+      "startingCoins": 700,
+      "initialAttributeMultiplier": 1.8,
+      "prizeMultiplier": 2,
+      "investmentRateMultiplier": 0.18,
+      "sponsor": {
+        "monthlyMultiplier": 0.16,
+        "signMultiplier": 0.15,
+        "requireProof": true,
+        "proofMinTournaments": 2
+      },
+      "staffMultiplier": 1.4,
+      "shopPriceMultiplier": 1.3,
+      "shopBonusMultiplier": 1
+    }
+  },
+  "sourceHashes": {
+    "src/lib/balance527.js": "1609dac31b8f553035ccc39437d5f714bdf1b72d446baf4157d11f954ec78e72",
+    "src/lib/economy.js": "7e985476cd4f3d305f3e65f63baa8f0adf59ecb3471b0ed2fbcc6b504a4b4d7b",
+    "src/lib/rankingPopulation.js": "b37813f136ec49508f46a7122cc9dd0a427eb9a36423b1e2d2daba8e7bc52f61",
+    "src/lib/circuitCatalog.js": "6e4f85ef6b0e8c15356d9c088616453348ec476fbe910039f4522debe6aa8564",
+    "src/gameplay/difficulty/difficultyConfig.js": "f9f6e4787c0713643e603f0e0f5d04109a8f5aed27d859e719867828842ec9eb",
+    "src/lib/staffCatalog.js": "0f4cc2e396568ed11c688d07f103f1789c48486528d0bd431a36ed79d4b85e29",
+    "src/lib/storeCatalog.js": "1594136d425ea21f15b8a3f45e68de9ec8991debbf003a70cc552ef3901fba3a",
+    "src/lib/initialCareerProfiles.js": "ee8e0a785e896ad4853c698de2c172ce92519d5ece7f7d61b815348ae2adffaf",
+    "src/lib/sponsors.js": "00cf2aa37342813d7e10b1188153a46023d6709ea81280e366860a0d108d9cc9",
+    "src/lib/padel.js": "6ef2dec188b17f2f4c02c0f6847e27bc8910b7051450efc54a9a785081445ebf"
+  },
+  "vs527c": {
+    "presetsIdentical": true,
+    "populationAnchorsIdentical": true,
+    "baselineFrozenAt": "2026-10-10T22:27:30.475Z"
+  }
+}

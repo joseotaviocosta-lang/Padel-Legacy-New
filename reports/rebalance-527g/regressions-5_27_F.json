@@ -1,0 +1,63 @@
+{
+  "at": "2026-10-13T03:03:08.034Z",
+  "passed": 7,
+  "total": 7,
+  "results": [
+    {
+      "group": "5.27-F",
+      "name": "test-match-engine-identical-teams-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 159,
+      "summary": "test-match-engine-identical-teams-v527f: 21/21 passaram"
+    },
+    {
+      "group": "5.27-F",
+      "name": "test-match-engine-side-swap-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 223,
+      "summary": "test-match-engine-side-swap-v527f: 16/16 passaram"
+    },
+    {
+      "group": "5.27-F",
+      "name": "test-energy-sensitivity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 140,
+      "summary": "test-energy-sensitivity-v527f: 9/9 passaram"
+    },
+    {
+      "group": "5.27-F",
+      "name": "test-energy-single-application-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-energy-single-application-v527f: 5/5 passaram"
+    },
+    {
+      "group": "5.27-F",
+      "name": "test-player-opponent-strength-parity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-player-opponent-strength-parity-v527f: 7/7 passaram"
+    },
+    {
+      "group": "5.27-F",
+      "name": "test-ranking-success-monotonicity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-success-monotonicity-v527f: 4/4 passaram"
+    },
+    {
+      "group": "5.27-F",
+      "name": "test-old-presets-semantic-freeze-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-old-presets-semantic-freeze-v527f: 6/6 passaram"
+    }
+  ]
+}

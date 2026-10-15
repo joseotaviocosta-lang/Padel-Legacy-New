@@ -61,6 +61,10 @@
        shell (header/bottom nav/safe area/alvo de toque), reaproveitados por
        CSS novo em vez de reescritos. Não mudam nenhum valor existente. */
     --pl-header-h: 3.5rem; /* M4.1: shell mobile mais denso, preservando controles de 44px */
+    /* Playthrough 5.24, Parte D — header mobile em 2 faixas: contexto do dia
+       (torneio/data/moedas/sino) + atalhos (ranking/dupla/OVR) e Avançar.
+       Só o shell mobile usa este token; o desktop mantém --pl-header-h. */
+    --pl-header-h-mobile: 6.5rem;
     --pl-bottom-nav-h: 4rem; /* M4.1: ícone dominante + label curta, sem reduzir a área ativa */
     /* M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 2/13): fundo
        REALMENTE opaco da bottom nav — nunca um bg-background/NN com canal
@@ -975,6 +979,22 @@
   line-height: 1;
 }
 
+/* Playthrough 5.22-E, Parte AE — chip de HUD com destino real. Mantém a
+   mesma aparência do span, mas vira alvo de toque acessível (button). */
+.pl-game-hud-item--interactive {
+  cursor: pointer;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.pl-game-hud-item--interactive:hover,
+.pl-game-hud-item--interactive:focus-visible {
+  border-color: hsl(var(--primary) / 0.55);
+  background: hsl(var(--primary) / 0.08);
+}
+
 .pl-game-hud-icon {
   width: var(--game-hud-icon-size);
   height: var(--game-hud-icon-size);
@@ -1075,25 +1095,38 @@
     gap: 0.5rem;
   }
 
+  /* Playthrough 5.20-B — o HUD do cabecalho era UMA FILA que rolava para o
+     lado (grid-auto-flow: column + overflow-x: auto). Medido em 360px: ele
+     escondia 305px em Minha Dupla, 294px em Ranking, 193px em Equipe e 118px
+     na Home — sempre os ULTIMOS indicadores, que ficavam fora da tela sem
+     nenhuma pista de que existiam. Era o maior ofensor de descoberta do app,
+     acima das proprias barras de aba.
+
+     Duas colunas que quebram em linha mostram os 4 indicadores de uma vez. O
+     preco e ~44px de altura a mais; o ganho e o jogador ver "confianca" e
+     "ofertas" sem adivinhar que o trilho rola. Acima de 767px nada muda: a
+     regra de desktop (min-width: 768px) segue mandando. */
   .pl-game-hud {
     display: grid;
     min-width: 0;
-    min-height: 2.75rem;
-    grid-auto-flow: column;
-    grid-auto-columns: minmax(max-content, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     align-items: stretch;
     gap: 0;
-    overflow-x: auto;
     border-block: 1px solid hsl(var(--border) / 0.48);
     padding-block: 0.4rem;
-    scrollbar-width: none;
   }
 
   .pl-game-hud::-webkit-scrollbar { display: none; }
 
+  /* Com duas colunas, a celula tem 165px em 360px — e valor e rotulo lado a
+     lado pedem ~170px no caso de "50/100 entrosamento" e ~233px no de
+     "Sem dupla / escolha uma proposta". Medido: os dois truncavam, e truncar o
+     VALOR ("50/…") e pior do que a rolagem que isto veio substituir. O rotulo
+     desce para a linha de baixo, onde tem os 146px da celula inteira. */
   .pl-game-hud-item {
-    display: inline-flex;
-    flex: none;
+    display: flex;
+    flex-wrap: wrap;
+    min-width: 0;
     min-height: 2.75rem;
     align-items: center;
     gap: var(--game-hud-gap);
@@ -1104,8 +1137,15 @@
     line-height: 1;
   }
 
-  .pl-game-hud-item:first-child { padding-left: 0; }
-  .pl-game-hud-item + .pl-game-hud-item { border-left: 1px solid hsl(var(--border) / 0.55); }
+  .pl-game-hud-item { padding-left: 0.6rem; }
+  /* O rotulo ocupa a linha inteira da celula; sem isto ele volta a disputar
+     espaco com o valor e os dois truncam. */
+  .pl-game-hud-label { flex-basis: 100%; max-width: 100%; }
+  /* Em grade de 2 colunas, quem abre linha nao leva borda a esquerda. */
+  .pl-game-hud-item:nth-child(odd) { padding-left: 0; }
+  .pl-game-hud-item:nth-child(even) { border-left: 1px solid hsl(var(--border) / 0.55); }
+  /* Linhas seguintes ganham um fio horizontal no lugar do antigo divisor. */
+  .pl-game-hud-item:nth-child(n + 3) { border-top: 1px solid hsl(var(--border) / 0.35); padding-top: 0.4rem; margin-top: 0.3rem; }
 
   .pl-game-hud--standalone {
     margin: 0;
@@ -1124,6 +1164,17 @@
     padding-inline: 0.65rem;
     padding-block: 0.35rem;
     font-size: 0.7rem;
+  }
+
+  /* Playthrough 5.20-B — o icone de cada aba custa ~20px (14px de simbolo mais
+     6px de gap) e nao carrega informacao nenhuma: o rotulo esta sempre ao lado.
+     Em 360px, Minha Dupla pedia 410px de barra para 344px disponiveis — as 4
+     areas existiam no numero mas a ultima ficava fora da tela. Esconder o
+     simbolo no mobile devolve ~80px numa barra de 4 abas, o bastante para
+     caber. Nao resolve barras muito longas (Torneios tem 19 abas): aquilo e
+     excesso de aba, nao de simbolo, e se resolve reduzindo as abas. */
+  .pl-game-tabs [role='tab'] > svg {
+    display: none;
   }
 
   .pl-game-tabs [role='tab'][data-state='active'] {
@@ -1224,5 +1275,111 @@
   .glass,
   .glass-premium {
     backdrop-filter: none;
+  }
+}
+
+/* Playthrough 5.20-B, Parte AT — LANDSCAPE DE CELULAR (844x390): MEDIDO,
+   PROBLEMA REAL, CORRECAO NAO ENCONTRADA.
+
+   Medicao nas 15 paginas em 844x390: nenhum conteudo cortado, nenhum estouro
+   de layout. O problema e ALTURA — o cabecalho come a tela:
+
+     Minha Dupla  HUD 184px   Ranking  HUD 136px   maioria  HUD 88px
+
+   Numa tela de 390px, descontada a barra inferior, Minha Dupla deixa ~86px
+   para o conteudo. Em 844px de largura vale a regra de desktop, cujos chips
+   quebram linha desde a Fase 1 — correto num monitor, caro num celular
+   deitado. Nao e regressao da 5.20-B: as regras de HUD desta fase estao todas
+   dentro de @media (max-width: 767px) e nao se aplicam aqui.
+
+   Houve aqui uma regra @media (max-height: 480px) que devolvia o HUD a uma
+   faixa unica rolavel. Foi REMOVIDA por nao se pagar: medida, rendeu 8px
+   (184 -> 176px). A altura vem dos ITENS, nao do arranjo, entao a correcao
+   precisa mexer no item em altura curta — e isso ainda nao foi feito.
+   Deixar a regra no arquivo sugeriria que o problema foi tratado. */
+
+/* Playthrough 5.20-C, item 3 — HUD EM LANDSCAPE DE CELULAR (844x390).
+
+   Medido: o HUD chegava a 184px em Minha Dupla, de uma tela de 390px. A 5.20-B
+   culpou o arranjo em linhas e errou — os itens tem 40px cada. A causa real e
+   que o HUD mora na coluna estreita do grid do heroi
+   (minmax(12rem, auto) minmax(0, 1fr)): em 844px essa coluna fica com ~250px,
+   e quatro itens quebram em quatro linhas.
+
+   Em altura curta o heroi vira UMA coluna e o HUD recebe a largura toda, onde
+   os quatro itens cabem numa linha so. Nenhuma informacao sai: os mesmos
+   valores e rotulos continuam, apenas deixam de empilhar. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .pl-page-hero--dense .pl-page-hero-main {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.35rem;
+  }
+
+  .pl-page-hero--dense {
+    padding-block: 0.5rem;
+  }
+
+  /* Titulo e descricao cedem altura: em landscape o que importa e o estado. */
+  .pl-page-hero--dense .pl-title-display {
+    font-size: 1.1rem;
+    line-height: 1.15;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-content > p {
+    display: none;
+  }
+
+  .pl-game-hud {
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    padding-block: 0.25rem;
+  }
+
+  .pl-game-hud::-webkit-scrollbar { display: none; }
+
+  .pl-game-hud-item {
+    flex: none;
+    flex-wrap: nowrap;
+    min-height: 2.25rem;
+    border-top: 0;
+    margin-top: 0;
+    padding-top: 0;
+  }
+
+  .pl-game-hud-label {
+    flex-basis: auto;
+    max-width: 9rem;
+  }
+}
+
+/* Playthrough 5.20-C, item 3 (segunda rodada) — O HUD ENCOLHEU, O RESTO NAO.
+
+   Com o HUD em 88px, Minha Dupla ainda deixava 26px de area util: o cabecalho
+   inteiro ocupava 214px de 390px. O que sobrava era cromo de navegacao —
+   trilha, sobretitulo e icone grande — util em retrato e caro deitado.
+
+   Nada vira invisivel sem substituto: a trilha repete o grupo que a barra de
+   navegacao ja marca, e o sobretitulo repete a area que o titulo nomeia. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .pl-page-hero--dense nav[aria-label='Navegação estrutural'],
+  .pl-page-hero--dense [data-page-eyebrow] {
+    display: none;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-icon {
+    height: 2rem;
+    width: 2rem;
+    margin-top: 0;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-icon svg {
+    height: 1rem;
+    width: 1rem;
+  }
+
+  .pl-page-hero--dense .pl-page-hero-content {
+    gap: 0.25rem;
   }
 }

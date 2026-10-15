@@ -1,0 +1,5 @@
+kind,ovrA,ovrB,energyA,energyB,tacticA,n,winPctA,ci95
+identical,75,75,100,100,potencia,1200,28,2.5
+identical,75,75,80,80,potencia,1200,19.5,2.2
+identical,75,75,60,60,potencia,1200,10.8,1.8
+identical,75,75,40,40,potencia,1200,2.3,0.9

@@ -1,0 +1,56 @@
+{
+  "phase": "5.27-K",
+  "frozenAt": "2026-10-15T16:44:07.690Z",
+  "rule": "no tuning before baseline fast-run",
+  "preset": "balanced-e",
+  "silverFieldOffsetPct": 0.15,
+  "partnerPolicyNormal": "v3",
+  "optimizerHarness": "v4",
+  "aiAdaptation": {
+    "enabled": false,
+    "gate": "const proposedBotTactic = state.opponentAdaptive === true ? chooseBotTactic(state, 'B') : state.activeTactics.B;"
+  },
+  "engine": {
+    "energyConditionSlope": 0.2,
+    "botEnergyRule": "inalterada (v526Tournament.mjs, hash em sources.harness)"
+  },
+  "ranking": {
+    "gatedFirstRoundLossPointsRatio": 0.01,
+    "rankPointsTableSource": "function buildRankPointsTable(definition, roundCount) {\n const table = buildRoundTable(definition.rankPoints, roundCount);\n const ratio = Number(getBalance527().competition?.gatedFirstRoundLossPointsRatio);\n if (!(definition.minRanking > 0) || !Number.isFinite(ratio)) return table;\n const firstLoss = Math.max(1, Math.round(definition.rankPoints * ratio));\n return Object.freeze([Math.min(table[0], firstLoss), ...table.slice(1)]);\n}"
+  },
+  "economy": {
+    "startingCoins": 900,
+    "initialAttributeMultiplier": 1.8,
+    "sponsor": {
+      "monthlyMultiplier": 0.22,
+      "signMultiplier": 0.21,
+      "requireProof": true,
+      "proofMinTournaments": 1
+    },
+    "prizeMultiplier": 3,
+    "staffMultiplier": 1.25,
+    "shopPriceMultiplier": 1.2,
+    "shopBonusMultiplier": 1,
+    "investmentRateMultiplier": 0.23,
+    "version": "5.27-E"
+  },
+  "semanticHash": "da1138a7ebc9df818bd0cbc7ab5f920000ce2c5f215f533701d6a1f8381687c1",
+  "balanceBlocksEqual527J": true,
+  "lifecycle527J": {
+    "src/game-core/partnerLifecycle.js": "7ce159f6cb64132b7563da2d16d55ace1cc06a56c2881d652c269e5616a1eb44",
+    "src/lib/committedRoster.js": "98c29fa32597e9d0bf27423909e7fcb129f12f15af8b2da55b7941678fbae6cd",
+    "src/lib/tournamentRegistration.js": "15c7957c4bcd26400a5fe9dd7b415b20a967e9cf33b68d6255f02baeed03969e",
+    "src/lib/calendarSystem.js": "a72ab425ef86a1672e083e3fb0907fb4cc6d9a29d144b672761590f1f57131ce"
+  },
+  "blockHashes": {
+    "balance": "88a0d8a88761fd8bfaa1d13ddfafe9e2e38b9cfcbe836210efe369a357ae1b29",
+    "partnerPolicy": "b55cfca4f42b269af9034470465a8bf9cce427c984eb35eade2b7bd7beabd11b",
+    "tactics": "2992c928dee2f2ef8cb6e952f94f3d9123f55195fae4ba786556591c949da8f5",
+    "engine": "bf73efc7f52c5ee8e574af31e10f083a208078810221e31c902d0f1544491eda",
+    "ranking": "e7a8e0053444d2d0548bd7ae9c2a44907794936ff6ad7d626f1c9aa81c59adc7",
+    "population": "c74c995768c87b1ecf9711f56efb83c58df6a1b8e634cd3c127ea0332e93c73d",
+    "commitment": "7b9fd3690bf69b51438c55c81efa383689165fe685a3c341d1d51f749909fa93",
+    "silver": "b66348965ac138ed81e71b126fc977d54b928cf304f7752ff41f99ed4544a94a",
+    "optimizerPolicy": "dfda3c4481c2afd10068f9193a6e53a0a41673ff1c3955eaffc295b58c8440ca"
+  }
+}

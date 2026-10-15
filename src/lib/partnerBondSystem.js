@@ -66,6 +66,93 @@ export function derivePartnershipIdentity(partnership = {}) {
   return { id: 'equilibrio_competitivo', name: 'Equilíbrio Competitivo', description: 'Uma parceria versátil, capaz de alternar ataque e controle.' };
 }
 
+// Playthrough 5.17 (continuação), Partes C/D — COOLDOWN E RETORNO
+// DECRESCENTE DA CONVERSA.
+//
+// Auditoria da Parte C: a conversa NUNCA foi cosmética. `addConversation`
+// já aplicava efeito real e persistente em chemistry/trust/morale, no
+// Partnership e no PlayerProfile, com clamp 0–100 e histórico das últimas 40
+// falas. O que faltava era limite: nada impedia clicar "apoio" repetidamente
+// e somar +5 de moral por clique até saturar em 100.
+//
+// Duas guardas, ambas usando a escala que já existe (Parte R: não inventar
+// recurso novo):
+//   - COOLDOWN: uma conversa com efeito por DIA DE CARREIRA;
+//   - RETORNO DECRESCENTE: dentro da mesma janela de 7 dias, a 1ª conversa
+//     vale integral, a 2ª metade, a 3ª um quarto, e daí em diante nada.
+//
+// O tom negativo NÃO decai: piorar a relação de propósito continua tendo
+// consequência, senão bastaria brigar várias vezes para anular o custo.
+export const CONVERSATION_COOLDOWN_DAYS = 1;
+export const CONVERSATION_WINDOW_DAYS = 7;
+
+function toDay(value) {
+  const raw = String(value || '').slice(0, 10);
+  const parsed = new Date(`${raw}T00:00:00Z`);
+  return Number.isNaN(parsed.getTime()) ? null : parsed;
+}
+
+function daysApart(from, to) {
+  const a = toDay(from);
+  const b = toDay(to);
+  if (!a || !b) return null;
+  return Math.round((b - a) / 86400000);
+}
+
+/** Conversas registradas dentro da janela recente, mais nova primeiro. */
+export function recentConversations(partnership = {}, currentDate) {
+  const rows = Array.isArray(partnership.conversations) ? partnership.conversations : [];
+  return rows
+    .filter((row) => {
+      const gap = daysApart(row?.career_date || row?.date, currentDate);
+      return gap !== null && gap >= 0 && gap < CONVERSATION_WINDOW_DAYS;
+    })
+    .sort((a, b) => String(b.career_date || b.date).localeCompare(String(a.career_date || a.date)));
+}
+
+export function getConversationCooldownState(partnership = {}, currentDate) {
+  const recent = recentConversations(partnership, currentDate);
+  const last = recent[0] || null;
+  const sinceLast = last ? daysApart(last.career_date || last.date, currentDate) : null;
+  const blocked = sinceLast !== null && sinceLast < CONVERSATION_COOLDOWN_DAYS;
+  return {
+    allowed: !blocked,
+    blocked,
+    lastDate: last ? String(last.career_date || last.date).slice(0, 10) : null,
+    recentCount: recent.length,
+    windowDays: CONVERSATION_WINDOW_DAYS,
+  };
+}
+
+/**
+ * Multiplicador de retorno decrescente pela quantidade de conversas já feitas
+ * na janela. Não se aplica a efeito negativo.
+ */
+export function conversationDiminishingFactor(recentCount = 0) {
+  const n = Math.max(0, Number(recentCount) || 0);
+  if (n <= 0) return 1;
+  if (n === 1) return 0.5;
+  if (n === 2) return 0.25;
+  return 0;
+}
+
+export function scaleConversationEffect(effect = {}, factor = 1) {
+  const scale = (value) => {
+    const raw = Number(value) || 0;
+    if (raw < 0) return raw; // penalidade nunca é amortecida
+    const scaled = raw * factor;
+    // Preserva o sinal: um ganho positivo amortecido nunca vira 0 antes do
+    // fator ser realmente zero.
+    if (scaled <= 0) return 0;
+    return Math.max(1, Math.round(scaled));
+  };
+  return {
+    chemistry: scale(effect.chemistry),
+    trust: scale(effect.trust),
+    morale: scale(effect.morale),
+  };
+}
+
 export function getPartnerConversationEffect(tone = 'neutro') {
   const effects = {
     positivo: { chemistry: 1, trust: 3, morale: 4 },

@@ -24,10 +24,21 @@ export function Page({ children, className, size = 'wide', ...props }) {
   );
 }
 
+// Playthrough 5.20-B, Parte AE — FOLGA PARA O BALAO: MEDIDA E DESCARTADA.
+//
+// Houve aqui um `pb-32` para o conteudo nao terminar sob o balao de ajuda.
+// Ele nasceu de um falso positivo: o medidor rolava a pagina UMA vez, o
+// conteudo crescia depois do scroll e a leitura acontecia no meio da pagina —
+// onde um FAB sobre o conteudo e comportamento normal, nao defeito.
+//
+// Com o medidor corrigido (rola ate a posicao parar de mudar e so entao mede),
+// a comparacao direta com e sem a folga deu ZERO controle coberto nas duas
+// condicoes, em Home, Torneios, Minha Dupla, Financas e Notificacoes. A folga
+// custava 128px de espaco morto no fim de toda tela mobile e nao resolvia
+// nada, entao saiu. O gate vive em test-floating-guide-clearance-v520b.mjs.
 export function PageContent({ children, className, ...props }) {
   return <div className={cn('pl-content-enter min-w-0 space-y-4 lg:space-y-5', className)} {...props}>{children}</div>;
 }
-
 export function PageSection({ children, className, ...props }) {
   return <section className={cn('pl-section-enter min-w-0 space-y-3', className)} {...props}>{children}</section>;
 }

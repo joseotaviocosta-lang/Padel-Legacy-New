@@ -1,0 +1,655 @@
+[
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-world-ranking-year-rollover-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 12,
+    "summary": "test-world-ranking-year-rollover-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-race-year-reset-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 28,
+    "summary": "test-race-year-reset-v526c: 8/8 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-ranking-expiration-window-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 3,
+    "summary": "test-ranking-expiration-window-v526c: 10/10 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-sponsor-eligibility-authority-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-sponsor-eligibility-authority-v526c: 7/7 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-all-sponsors-reachable-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 12,
+    "summary": "test-all-sponsors-reachable-v526c: 23/23 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-opponent-team-rank-resolution-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-opponent-team-rank-resolution-v526c: 8/8 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-upset-detection-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-upset-detection-v526c: 9/9 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-historical-opponent-pair-rank-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 17,
+    "summary": "test-historical-opponent-pair-rank-v526c: 7/7 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-partner-resign-loop-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 28,
+    "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-partner-contract-365d-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 117,
+    "summary": "test-partner-contract-365d-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-progression-run-resume-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 360,
+    "summary": "test-progression-run-resume-v526c: 6/6 passaram"
+  },
+  {
+    "group": "Novos 5.26-C",
+    "name": "test-clean-audit-no-shim-v526c",
+    "ok": true,
+    "code": 0,
+    "seconds": 35,
+    "summary": "test-clean-audit-no-shim-v526c: 7/7 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-partner-engine-ovr-authority-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-partner-engine-ovr-authority-v526b: 9/9 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-partner-committed-roster-ovr-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 11,
+    "summary": "test-partner-committed-roster-ovr-v526b: 5/5 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-athlete-repair-idempotency-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 15,
+    "summary": "test-athlete-repair-idempotency-v526b: 8/8 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-achievement-final-match-reward-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 16,
+    "summary": "test-achievement-final-match-reward-v526b: 8/8 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-reputation-progress-persists-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 19,
+    "summary": "test-reputation-progress-persists-v526b: 10/10 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-ranking-gating-current-position-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 13,
+    "summary": "test-ranking-gating-current-position-v526b: 6/6 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-player-age-career-clock-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 4,
+    "summary": "test-player-age-career-clock-v526b: 8/8 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-sponsor-tier-age-progression-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 4,
+    "summary": "test-sponsor-tier-age-progression-v526b: 5/5 passaram"
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-shop-tier-unlock-v526b",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-shop-tier-unlock-v526b: 5/5 passaram"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-team-ranking-sum-formula-v522e",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "test-team-ranking-sum-formula-v522e: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-team-ranking-pair-change-sum-v522e",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-team-ranking-pair-change-sum-v522e: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-player-team-ranking-authority",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-player-team-ranking-authority: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-player-team-ranking-position-v522g",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-player-team-ranking-position-v522g: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-consistency",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "PASS — todas as 1000 novas entradas presentes, além da baseline"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-race-season",
+    "ok": true,
+    "code": 0,
+    "seconds": 6,
+    "summary": "27 gates executados, todos PASS — Ranking Race Season (pontos indevidos no início da carreira)."
+  },
+  {
+    "group": "Ranking",
+    "name": "test-race-circuit-ledger-parity-v5",
+    "ok": true,
+    "code": 0,
+    "seconds": 189,
+    "summary": null,
+    "note": "1ª execução falhou (20/20): a cópia inline da regra no teste usava âncora a valor cheio; corrigido para a regra canônica com tolerância de 7 dias de decaimento da âncora; reexecutado: 2/2"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-playthrough-4-5a-race-persistence",
+    "ok": true,
+    "code": 0,
+    "seconds": 13,
+    "summary": "test-playthrough-4-5a-race-persistence: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-four-view-architecture-v523",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "test-ranking-four-view-architecture-v523: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-circuit-ranking-reload-idempotency",
+    "ok": true,
+    "code": 0,
+    "seconds": 187,
+    "summary": "test-circuit-ranking-reload-idempotency: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-opponent-world-rank-authority",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-opponent-world-rank-authority: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-opponent-ranking-canonical-authority-v515",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-opponent-ranking-canonical-authority-v515: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-opponent-rank-real-source",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-opponent-rank-real-source: PASS"
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-ui-authority-v56",
+    "ok": false,
+    "code": 1,
+    "seconds": 1,
+    "summary": null,
+    "tail": "  expected: /formatIndividualRankLabel\\(ranking\\)/,\r",
+    "note": "preexistente: asserção sobre CareerHud (5.24), arquivo não tocado nesta fase"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-athlete-materialization-v512",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-partner-athlete-materialization-v512: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-athlete-idempotency-v512",
+    "ok": true,
+    "code": 0,
+    "seconds": 1108,
+    "summary": "test-partner-athlete-idempotency-v512: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-athlete-separation-v512",
+    "ok": true,
+    "code": 0,
+    "seconds": 11,
+    "summary": "test-partner-athlete-separation-v512: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-athlete-new-partnership-v512",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-partner-athlete-new-partnership-v512: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-athlete-teamranking-v512",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-partner-athlete-teamranking-v512: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-offers-v2",
+    "ok": true,
+    "code": 0,
+    "seconds": 6,
+    "summary": null
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-rejection-cooldown",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "partner-rejection-cooldown: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-former-partner-reintegration-v518",
+    "ok": true,
+    "code": 0,
+    "seconds": 197,
+    "summary": "test-former-partner-reintegration-v518: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-long-career-partner-ecology-v518",
+    "ok": true,
+    "code": 0,
+    "seconds": 529,
+    "summary": "test-long-career-partner-ecology-v518: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-living-partnership-market-phase15",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "LivingPartnershipMarketPhase15: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-living-partnerships-v29",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "LivingPartnershipsV29Test: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partnership-expiry-with-committed-tournament-v517",
+    "ok": true,
+    "code": 0,
+    "seconds": 10,
+    "summary": "test-partnership-expiry-with-committed-tournament-v517: PASS"
+  },
+  {
+    "group": "Parceria",
+    "name": "test-committed-partner-athlete-resolution-v519",
+    "ok": true,
+    "code": 0,
+    "seconds": 6,
+    "summary": null
+  },
+  {
+    "group": "Parceria",
+    "name": "test-partner-contract-decision-ui-v519",
+    "ok": true,
+    "code": 0,
+    "seconds": 3,
+    "summary": null
+  },
+  {
+    "group": "Torneio",
+    "name": "test-match-integrity",
+    "ok": true,
+    "code": 0,
+    "seconds": 4,
+    "summary": null
+  },
+  {
+    "group": "Torneio",
+    "name": "test-live-coach-tournament",
+    "ok": true,
+    "code": 0,
+    "seconds": 7,
+    "summary": "PASS — a UI real mostra o banner \"Nova sugestão do técnico\" em partida de torneio"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-tournament-result-authority",
+    "ok": true,
+    "code": 0,
+    "seconds": 6,
+    "summary": null
+  },
+  {
+    "group": "Torneio",
+    "name": "test-settlement-uses-persisted-draw-roster",
+    "ok": true,
+    "code": 0,
+    "seconds": 182,
+    "summary": "test-settlement-uses-persisted-draw-roster: PASS"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-walkover-player-tournament-settlement",
+    "ok": true,
+    "code": 0,
+    "seconds": 15,
+    "summary": "test-walkover-player-tournament-settlement: PASS"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-parallel-tournament-settlement-v59",
+    "ok": true,
+    "code": 0,
+    "seconds": 33,
+    "summary": "test-parallel-tournament-settlement-v59: PASS"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-bronze-silver-strength-order",
+    "ok": true,
+    "code": 0,
+    "seconds": 191,
+    "summary": "test-bronze-silver-strength-order: PASS"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-gold-masters-strength-order",
+    "ok": true,
+    "code": 0,
+    "seconds": 184,
+    "summary": "test-gold-masters-strength-order: PASS"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-circuit-rank-strength-correlation",
+    "ok": true,
+    "code": 0,
+    "seconds": 187,
+    "summary": "test-circuit-rank-strength-correlation: PASS"
+  },
+  {
+    "group": "Torneio",
+    "name": "test-opponent-strength-by-round",
+    "ok": true,
+    "code": 0,
+    "seconds": 33,
+    "summary": "test-opponent-strength-by-round: PASS"
+  },
+  {
+    "group": "World",
+    "name": "test-living-world-v23",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "LivingWorldV23Test: PASS"
+  },
+  {
+    "group": "World",
+    "name": "test-ai-market-headless-integration-v518",
+    "ok": true,
+    "code": 0,
+    "seconds": 282,
+    "summary": "test-ai-market-headless-integration-v518: PASS"
+  },
+  {
+    "group": "World",
+    "name": "test-athlete-profile-ovr-repair-v56",
+    "ok": false,
+    "code": 1,
+    "seconds": 1,
+    "summary": null,
+    "tail": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n  code: 'ERR_ASSERTION',\r\n  expected: true,\r",
+    "note": "preexistente: já falhava na 5.26-B"
+  },
+  {
+    "group": "World",
+    "name": "test-athlete-profile-ranking-integrity-v56",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-athlete-profile-ranking-integrity-v56: PASS"
+  },
+  {
+    "group": "World",
+    "name": "test-legacy-save-real-pair-duplication-repair-v516",
+    "ok": true,
+    "code": 0,
+    "seconds": 11,
+    "summary": "test-legacy-save-real-pair-duplication-repair-v516: PASS"
+  },
+  {
+    "group": "World",
+    "name": "test-legacy-ranking-repair-idempotency-v56",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "test-legacy-ranking-repair-idempotency-v56: PASS"
+  },
+  {
+    "group": "World",
+    "name": "test-legacy-boot-single-repair-write-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 13,
+    "summary": "test-legacy-boot-single-repair-write-v524e: PASS (3 gates)"
+  },
+  {
+    "group": "World",
+    "name": "test-idle-boot-zero-write-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 15,
+    "summary": "test-idle-boot-zero-write-v524e: PASS (4 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-tutorial-reward-persists-after-reload-v524d",
+    "ok": true,
+    "code": 0,
+    "seconds": 7,
+    "summary": "test-tutorial-reward-persists-after-reload-v524d: PASS (7 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-tutorial-reward-single-write-v524d",
+    "ok": true,
+    "code": 0,
+    "seconds": 7,
+    "summary": "test-tutorial-reward-single-write-v524d: PASS (4 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-tutorial-reward-app-restart-v524d",
+    "ok": true,
+    "code": 0,
+    "seconds": 13,
+    "summary": "test-tutorial-reward-app-restart-v524d: PASS (5 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-tutorial-reward-idempotency-v524d",
+    "ok": true,
+    "code": 0,
+    "seconds": 4,
+    "summary": "test-tutorial-reward-idempotency-v524d: PASS (4 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-mobile-storage-m3-6",
+    "ok": true,
+    "code": 0,
+    "seconds": 4,
+    "summary": "15 gates executados, todos PASS — Mobile M3.6 Storage/I/O."
+  },
+  {
+    "group": "Persistência",
+    "name": "test-achievement-reward-atomicity-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 8,
+    "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-achievement-multi-unlock-batch-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 6,
+    "summary": "test-achievement-multi-unlock-batch-v524e: PASS (3 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-achievement-reward-restart-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 15,
+    "summary": "test-achievement-reward-restart-v524e: PASS (4 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-achievement-reward-idempotency-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 8,
+    "summary": "test-achievement-reward-idempotency-v524e: PASS (5 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-achievement-write-failure-recovery-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 7,
+    "summary": "test-achievement-write-failure-recovery-v524e: PASS (3 gates)"
+  },
+  {
+    "group": "Persistência",
+    "name": "test-mission-reward-regression-v524e",
+    "ok": true,
+    "code": 0,
+    "seconds": 65,
+    "summary": "test-mission-reward-regression-v524e: PASS (10 gates)"
+  },
+  {
+    "group": "Patrocínio/Loja",
+    "name": "test-sports-economy-v26",
+    "ok": true,
+    "code": 0,
+    "seconds": 1,
+    "summary": "SportsEconomyV26Test: PASS"
+  },
+  {
+    "group": "Patrocínio/Loja",
+    "name": "test-shop-phase1",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "27 gates executados, todos PASS — Shop Phase 1."
+  },
+  {
+    "group": "Patrocínio/Loja",
+    "name": "test-career-opportunity-progression",
+    "ok": true,
+    "code": 0,
+    "seconds": 5,
+    "summary": "12 gates executados, todos PASS — Progressão de oportunidades (Fase 13, Parte 5): treinadores/patrocínios/duplas/torneios já respondem ao avanço de carreira, sem rebalanceamento."
+  }
+]

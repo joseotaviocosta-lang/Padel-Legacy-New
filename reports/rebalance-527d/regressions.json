@@ -1,0 +1,401 @@
+{
+  "at": "2026-10-11T17:16:24.405Z",
+  "passed": 47,
+  "total": 49,
+  "results": [
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-job-manifest-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-job-manifest-v527d: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-job-checkpoint-resume-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 155,
+      "summary": "test-job-checkpoint-resume-v527d: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-stale-running-recovery-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 39,
+      "summary": "test-stale-running-recovery-v527d: 11/11 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-result-hash-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-result-hash-v527d: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-cross-machine-result-import-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-cross-machine-result-import-v527d: 11/11 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-stage1-matrix-completeness-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-stage1-matrix-completeness-v527d: 8/8 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-stage2-matrix-completeness-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "test-stage2-matrix-completeness-v527d: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-longrun-completeness-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": "test-longrun-completeness-v527d: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-incremental-analysis-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-incremental-analysis-v527d: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-no-balance-mutation-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-no-balance-mutation-v527d: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-job-determinism-v527d",
+      "ok": false,
+      "code": null,
+      "seconds": 2700,
+      "summary": null,
+      "tail": ""
+    },
+    {
+      "group": "Novos 5.27-D",
+      "name": "test-validation-final-gates-v527d",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-validation-final-gates-v527d: 8/8 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-player-tournament-real-world-pairs-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 27,
+      "summary": "test-player-tournament-real-world-pairs-v526d: 8/8 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-tournament-pair-eligibility-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 28,
+      "summary": "test-tournament-pair-eligibility-v526d: 5/5 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-no-athlete-double-entry-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 31,
+      "summary": "test-no-athlete-double-entry-v526d: 9/9 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-tournament-teamrank-resolution-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 29,
+      "summary": "test-tournament-teamrank-resolution-v526d: 4/4 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-tournament-unranked-real-pair-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 30,
+      "summary": "test-tournament-unranked-real-pair-v526d: 4/4 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-historical-draw-pair-snapshot-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 24,
+      "summary": "test-historical-draw-pair-snapshot-v526d: 4/4 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-partnership-change-does-not-rewrite-draw-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 19,
+      "summary": "test-partnership-change-does-not-rewrite-draw-v526d: 3/3 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-tournament-world-assignment-conflict-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 19,
+      "summary": "test-tournament-world-assignment-conflict-v526d: 4/4 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-upset-real-ranked-opponent-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 18,
+      "summary": "test-upset-real-ranked-opponent-v526d: 5/5 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-real-pair-draw-determinism-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 23,
+      "summary": "test-real-pair-draw-determinism-v526d: 5/5 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-real-pair-draw-performance-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 18,
+      "summary": "test-real-pair-draw-performance-v526d: 4/4 passaram"
+    },
+    {
+      "group": "5.26-D",
+      "name": "test-progression-smoke-world-pairs-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-progression-smoke-world-pairs-v526d: 8/8 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-world-ranking-year-rollover-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 17,
+      "summary": "test-world-ranking-year-rollover-v526c: 6/6 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-race-year-reset-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 57,
+      "summary": "test-race-year-reset-v526c: 8/8 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-ranking-expiration-window-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": "test-ranking-expiration-window-v526c: 10/10 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-sponsor-eligibility-authority-v526c",
+      "ok": false,
+      "code": 1,
+      "seconds": 25,
+      "summary": "test-sponsor-eligibility-authority-v526c: 3/7 passaram",
+      "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.\n✗ os 9 patrocinadores originais não têm `is_available` e agora são elegíveis\n  + actual - expected\n✗ limiares inalterados: cada requisito barra 1 abaixo e libera no valor exato\n✗ idade pela data da CARREIRA (não pelo relógio real)\n  Expected values to be strictly equal:\n✗ signSponsorContract assina um original (antes: sempre recusado)"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-all-sponsors-reachable-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 22,
+      "summary": "test-all-sponsors-reachable-v526c: 23/23 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-partner-resign-loop-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 50,
+      "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-partner-contract-365d-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 207,
+      "summary": "test-partner-contract-365d-v526c: 6/6 passaram"
+    },
+    {
+      "group": "5.26-C",
+      "name": "test-progression-run-resume-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 725,
+      "summary": "test-progression-run-resume-v526c: 6/6 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-partner-engine-ovr-authority-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-partner-engine-ovr-authority-v526b: 9/9 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-partner-committed-roster-ovr-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "test-partner-committed-roster-ovr-v526b: 5/5 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-career-year2-no-freeze-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 986,
+      "summary": "test-career-year2-no-freeze-v526b: 6/6 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-achievement-final-match-reward-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-achievement-final-match-reward-v526b: 8/8 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-reputation-progress-persists-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 19,
+      "summary": "test-reputation-progress-persists-v526b: 10/10 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-player-age-career-clock-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-player-age-career-clock-v526b: 8/8 passaram"
+    },
+    {
+      "group": "5.26-B",
+      "name": "test-athlete-repair-idempotency-v526b",
+      "ok": true,
+      "code": 0,
+      "seconds": 14,
+      "summary": "test-athlete-repair-idempotency-v526b: 8/8 passaram"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-achievement-reward-atomicity-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-achievement-multi-unlock-batch-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-achievement-multi-unlock-batch-v524e: PASS (3 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-achievement-reward-restart-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-achievement-reward-restart-v524e: PASS (4 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-achievement-reward-idempotency-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-achievement-reward-idempotency-v524e: PASS (5 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-achievement-write-failure-recovery-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 6,
+      "summary": "test-achievement-write-failure-recovery-v524e: PASS (3 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-mission-reward-regression-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 60,
+      "summary": "test-mission-reward-regression-v524e: PASS (10 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-idle-boot-zero-write-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 14,
+      "summary": "test-idle-boot-zero-write-v524e: PASS (4 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-legacy-boot-single-repair-write-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 10,
+      "summary": "test-legacy-boot-single-repair-write-v524e: PASS (3 gates)"
+    },
+    {
+      "group": "5.24/5.25",
+      "name": "test-mobile-storage-m3-6",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "15 gates executados, todos PASS — Mobile M3.6 Storage/I/O."
+    },
+    {
+      "group": "5.27-B harness",
+      "name": "test-balance-resume-determinism-v527b",
+      "ok": true,
+      "code": 0,
+      "seconds": 52,
+      "summary": "test-balance-resume-determinism-v527b: 4/4 passaram"
+    }
+  ]
+}

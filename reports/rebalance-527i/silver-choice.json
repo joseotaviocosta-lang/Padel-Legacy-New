@@ -1,0 +1,185 @@
+{
+  "at": "2026-10-14T15:12:20.147Z",
+  "chosen": "SILVER_E",
+  "values": {
+    "silverPeakLow": 900,
+    "silverFieldOffsetPct": 0.15
+  },
+  "reason": "Menor ajuste que corrige a ordem: só a janela do campo Silver (25% → 15%), mesma dimensão de B/C/D e menor que eles; A (faixa de rank, outra dimensão) não muda o campo (+7 OVR) e reprova Silver × Gold no micro de 2 anos. E passa Easy/Medium/R1 e Silver × Gold, com Bronze > Silver.",
+  "smallerCandidatesRejected": [
+    "baseline",
+    "SILVER_A"
+  ],
+  "largerCandidates": [
+    "SILVER_B",
+    "SILVER_C",
+    "SILVER_D"
+  ],
+  "protocolNote": "Gate de Medium avaliado no micro de 2 anos: no de 1 ano o Normal quase não joga Gold/Platinum (0–5 partidas Medium em todos os candidatos, inclusive baseline). Baseline de 2 anos = runs da 5.27-H (v3 ≡ v4 no Normal, prefixo verificado).",
+  "micro1y": {
+    "baseline": {
+      "easy": 47.3,
+      "medium": 0,
+      "hard": null,
+      "r1": 39,
+      "bronzeMain": 59,
+      "silverMain": 21.3,
+      "goldMain": 0,
+      "silverR1": 20.6,
+      "silverFieldOvrP50": 46.8,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": false
+      }
+    },
+    "SILVER_A": {
+      "easy": 47.8,
+      "medium": 0,
+      "hard": null,
+      "r1": 46.5,
+      "bronzeMain": 58.9,
+      "silverMain": 32.5,
+      "goldMain": 0,
+      "silverR1": 39,
+      "silverFieldOvrP50": 46.5,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": false
+      }
+    },
+    "SILVER_B": {
+      "easy": 53,
+      "medium": 0,
+      "hard": null,
+      "r1": 46.2,
+      "bronzeMain": 51.2,
+      "silverMain": 55.6,
+      "goldMain": 0,
+      "silverR1": 55.4,
+      "silverFieldOvrP50": 37,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": false
+      }
+    },
+    "SILVER_C": {
+      "easy": 52.5,
+      "medium": 0,
+      "hard": null,
+      "r1": 46.5,
+      "bronzeMain": 49.3,
+      "silverMain": 56.1,
+      "goldMain": 0,
+      "silverR1": 57.6,
+      "silverFieldOvrP50": 36,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": false
+      }
+    },
+    "SILVER_D": {
+      "easy": 54.8,
+      "medium": 3.7,
+      "hard": null,
+      "r1": 48.8,
+      "bronzeMain": 54.7,
+      "silverMain": 54.9,
+      "goldMain": 0,
+      "silverR1": 57.6,
+      "silverFieldOvrP50": 36.5,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": false
+      }
+    },
+    "SILVER_E": {
+      "easy": 52.9,
+      "medium": 0,
+      "hard": null,
+      "r1": 51.7,
+      "bronzeMain": 57.5,
+      "silverMain": 45.3,
+      "goldMain": 0,
+      "silverR1": 41.7,
+      "silverFieldOvrP50": 39,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": false
+      }
+    }
+  },
+  "micro2y": {
+    "baseline": {
+      "easy": 47.3,
+      "medium": 40,
+      "hard": 48.1,
+      "r1": 39.4,
+      "bronzeMain": 59,
+      "silverMain": 21.3,
+      "goldMain": 31.9,
+      "silverR1": 20.6,
+      "silverFieldOvrP50": null,
+      "microGate": {
+        "easy": true,
+        "medium": true,
+        "r1": true,
+        "silverVsGold": false,
+        "pass": false
+      }
+    },
+    "SILVER_A": {
+      "easy": 47.8,
+      "medium": 44.6,
+      "hard": 36.4,
+      "r1": 43.4,
+      "bronzeMain": 58.9,
+      "silverMain": 32.5,
+      "goldMain": 54.8,
+      "silverR1": 39,
+      "silverFieldOvrP50": 46.5,
+      "microGate": {
+        "easy": true,
+        "medium": true,
+        "r1": true,
+        "silverVsGold": false,
+        "pass": false
+      }
+    },
+    "SILVER_E": {
+      "easy": 52.9,
+      "medium": 43.8,
+      "hard": 32.6,
+      "r1": 46.7,
+      "bronzeMain": 57.5,
+      "silverMain": 45.3,
+      "goldMain": 48.2,
+      "silverR1": 41.7,
+      "silverFieldOvrP50": 39,
+      "microGate": {
+        "easy": true,
+        "medium": true,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": true
+      }
+    }
+  }
+}

@@ -1,0 +1,3979 @@
+{
+  "status": {
+    "done": 45,
+    "required": 45,
+    "complete": true,
+    "label": "COMPLETE",
+    "optionalDone": 0
+  },
+  "presets": {
+    "conservative": {
+      "all": {
+        "careers": 15,
+        "competition": {
+          "matches": 1162,
+          "easyWR": 29.4,
+          "mediumWR": 27.6,
+          "hardWR": 11.5,
+          "easyN": 564,
+          "mediumN": 537,
+          "hardN": 61,
+          "r1WR": 19.1,
+          "r1N": 790,
+          "tiers": {
+            "Bronze": {
+              "n": 366,
+              "wr": 36.3
+            },
+            "Silver": {
+              "n": 198,
+              "wr": 16.7
+            },
+            "Gold": {
+              "n": 317,
+              "wr": 31.5
+            },
+            "Platinum": {
+              "n": 220,
+              "wr": 21.8
+            },
+            "Masters": {
+              "n": 45,
+              "wr": 8.9
+            },
+            "Elite": {
+              "n": 15,
+              "wr": 20
+            },
+            "Crown": {
+              "n": 1,
+              "wr": 0
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 152,
+              "wr": 44.1
+            },
+            "R1": {
+              "n": 790,
+              "wr": 19.1
+            },
+            "R2": {
+              "n": 67,
+              "wr": 20.9
+            },
+            "QF": {
+              "n": 97,
+              "wr": 47.4
+            },
+            "SF": {
+              "n": 38,
+              "wr": 71.1
+            },
+            "F": {
+              "n": 18,
+              "wr": 88.9
+            }
+          }
+        },
+        "rank1y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 425.7,
+          "median": 451,
+          "p10": 333.4,
+          "p25": 395,
+          "p75": 469,
+          "p90": 481.6,
+          "min": 295,
+          "max": 490,
+          "std": 59
+        },
+        "rank2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 115.8,
+          "median": 111,
+          "p10": 58.8,
+          "p25": 81.5,
+          "p75": 126,
+          "p90": 203,
+          "min": 45,
+          "max": 219,
+          "std": 52
+        },
+        "ovr2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 74.5,
+          "median": 73,
+          "p10": 69.4,
+          "p25": 70,
+          "p75": 80,
+          "p90": 82.6,
+          "min": 67,
+          "max": 83,
+          "std": 5.4
+        },
+        "titlesY1": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 0.2,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0.6,
+          "min": 0,
+          "max": 2,
+          "std": 0.5
+        },
+        "titles2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 1.1,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 2,
+          "p90": 2,
+          "min": 0,
+          "max": 3,
+          "std": 0.9
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 74.6,
+            "median": 76.9,
+            "p10": 67.3,
+            "p25": 74,
+            "p75": 77.6,
+            "p90": 78,
+            "min": 64,
+            "max": 78.9,
+            "std": 4.5
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 61.6,
+            "median": 62.9,
+            "p10": 53.6,
+            "p25": 55,
+            "p75": 69.1,
+            "p90": 70.7,
+            "min": 45.6,
+            "max": 74.9,
+            "std": 8.2
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 5.4,
+            "median": 5,
+            "p10": 3.6,
+            "p25": 3.7,
+            "p75": 5.9,
+            "p90": 8.4,
+            "min": 3.5,
+            "max": 10.1,
+            "std": 2
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 17.8,
+            "median": 17.8,
+            "p10": 9.5,
+            "p25": 14.7,
+            "p75": 20.3,
+            "p90": 26,
+            "min": 8,
+            "max": 30.6,
+            "std": 6.2
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0.1,
+            "std": 0
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0.1,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0.9,
+            "std": 0.2
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0.1,
+            "std": 0
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0.1,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0.9,
+            "std": 0.2
+          }
+        },
+        "insolvencyPct": 13.3,
+        "cashZeroOrLessPct": 13.3,
+        "forcedCostReductionPct": 13.3,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": -13,
+          "median": 11,
+          "p10": -34.6,
+          "p25": 5,
+          "p75": 25,
+          "p90": 109.4,
+          "min": -672,
+          "max": 205,
+          "std": 186.7
+        },
+        "endingCash": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 8978.4,
+          "median": 7148,
+          "p10": 1333.6,
+          "p25": 4694,
+          "p75": 11255,
+          "p90": 16586.6,
+          "min": 729,
+          "max": 29523,
+          "std": 7232.7
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 15,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 15/15)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 15,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "casual": {
+        "careers": 5,
+        "competition": {
+          "matches": 272,
+          "easyWR": 34.1,
+          "mediumWR": 5.8,
+          "hardWR": 0,
+          "easyN": 132,
+          "mediumN": 120,
+          "hardN": 20,
+          "r1WR": 18.1,
+          "r1N": 160,
+          "tiers": {
+            "Bronze": {
+              "n": 97,
+              "wr": 42.3
+            },
+            "Silver": {
+              "n": 35,
+              "wr": 11.4
+            },
+            "Gold": {
+              "n": 75,
+              "wr": 2.7
+            },
+            "Platinum": {
+              "n": 45,
+              "wr": 11.1
+            },
+            "Masters": {
+              "n": 12,
+              "wr": 0
+            },
+            "Elite": {
+              "n": 7,
+              "wr": 0
+            },
+            "Crown": {
+              "n": 1,
+              "wr": 0
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 69,
+              "wr": 7.2
+            },
+            "R1": {
+              "n": 160,
+              "wr": 18.1
+            },
+            "R2": {
+              "n": 2,
+              "wr": 0
+            },
+            "QF": {
+              "n": 27,
+              "wr": 37
+            },
+            "SF": {
+              "n": 10,
+              "wr": 40
+            },
+            "F": {
+              "n": 4,
+              "wr": 100
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 351.6,
+          "median": 352,
+          "p10": 305.4,
+          "p25": 321,
+          "p75": 393,
+          "p90": 395.4,
+          "min": 295,
+          "max": 397,
+          "std": 39.8
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 129.4,
+          "median": 82,
+          "p10": 81.4,
+          "p25": 82,
+          "p75": 191,
+          "p90": 203,
+          "min": 81,
+          "max": 211,
+          "std": 58.8
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 71.2,
+          "median": 71,
+          "p10": 70,
+          "p25": 70,
+          "p75": 72,
+          "p90": 72.6,
+          "min": 70,
+          "max": 73,
+          "std": 1.2
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0.6,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 1.6,
+          "min": 0,
+          "max": 2,
+          "std": 0.8
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0.8,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 1.6,
+          "min": 0,
+          "max": 2,
+          "std": 0.7
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 69.8,
+            "median": 69.6,
+            "p10": 64.7,
+            "p25": 65.7,
+            "p75": 74.7,
+            "p90": 74.8,
+            "min": 64,
+            "max": 74.9,
+            "std": 4.5
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 61.3,
+            "median": 56.7,
+            "p10": 54.2,
+            "p25": 54.9,
+            "p75": 70,
+            "p90": 70.7,
+            "min": 53.7,
+            "max": 71.1,
+            "std": 7.6
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 7.6,
+            "median": 6.5,
+            "p10": 5.8,
+            "p25": 6,
+            "p75": 9.7,
+            "p90": 9.9,
+            "min": 5.7,
+            "max": 10.1,
+            "std": 1.9
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 14.8,
+            "median": 17.5,
+            "p10": 8.5,
+            "p25": 9.2,
+            "p75": 18.4,
+            "p90": 19.8,
+            "min": 8,
+            "max": 20.7,
+            "std": 5.2
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 20,
+        "cashZeroOrLessPct": 20,
+        "forcedCostReductionPct": 20,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": -59.2,
+          "median": 11,
+          "p10": -400.4,
+          "p25": 7,
+          "p75": 153,
+          "p90": 184.2,
+          "min": -672,
+          "max": 205,
+          "std": 316.1
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 11112.8,
+          "median": 7537,
+          "p10": 4071.2,
+          "p25": 7148,
+          "p75": 9336,
+          "p90": 21448.2,
+          "min": 2020,
+          "max": 29523,
+          "std": 9521.3
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "normal": {
+        "careers": 5,
+        "competition": {
+          "matches": 464,
+          "easyWR": 19.2,
+          "mediumWR": 36.8,
+          "hardWR": 14.3,
+          "easyN": 193,
+          "mediumN": 250,
+          "hardN": 21,
+          "r1WR": 16.5,
+          "r1N": 316,
+          "tiers": {
+            "Bronze": {
+              "n": 105,
+              "wr": 26.7
+            },
+            "Silver": {
+              "n": 88,
+              "wr": 10.2
+            },
+            "Gold": {
+              "n": 149,
+              "wr": 44.3
+            },
+            "Platinum": {
+              "n": 101,
+              "wr": 25.7
+            },
+            "Masters": {
+              "n": 20,
+              "wr": 15
+            },
+            "Elite": {
+              "n": 1,
+              "wr": 0
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 80,
+              "wr": 73.8
+            },
+            "R1": {
+              "n": 316,
+              "wr": 16.5
+            },
+            "R2": {
+              "n": 31,
+              "wr": 16.1
+            },
+            "QF": {
+              "n": 26,
+              "wr": 23.1
+            },
+            "SF": {
+              "n": 6,
+              "wr": 83.3
+            },
+            "F": {
+              "n": 5,
+              "wr": 100
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 447.4,
+          "median": 451,
+          "p10": 436.8,
+          "p25": 447,
+          "p75": 454,
+          "p90": 454.6,
+          "min": 430,
+          "max": 455,
+          "std": 9.1
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 105.2,
+          "median": 111,
+          "p10": 86.6,
+          "p25": 104,
+          "p75": 118,
+          "p90": 118,
+          "min": 75,
+          "max": 118,
+          "std": 16
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 79.8,
+          "median": 82,
+          "p10": 75,
+          "p25": 78,
+          "p75": 83,
+          "p90": 83,
+          "min": 73,
+          "max": 83,
+          "std": 3.9
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 1,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 2,
+          "p90": 2,
+          "min": 0,
+          "max": 2,
+          "std": 0.9
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 76.2,
+            "median": 77,
+            "p10": 74.3,
+            "p25": 75.7,
+            "p75": 77.3,
+            "p90": 77.5,
+            "min": 73.3,
+            "max": 77.7,
+            "std": 1.6
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 61.6,
+            "median": 62.9,
+            "p10": 55.6,
+            "p25": 56.3,
+            "p75": 64.7,
+            "p90": 67.3,
+            "min": 55.1,
+            "max": 69.1,
+            "std": 5.3
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 5,
+            "median": 5,
+            "p10": 4.7,
+            "p25": 4.9,
+            "p75": 5.1,
+            "p90": 5.3,
+            "min": 4.6,
+            "max": 5.5,
+            "std": 0.3
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 18.9,
+            "median": 18.5,
+            "p10": 17.4,
+            "p25": 17.8,
+            "p75": 19.9,
+            "p90": 20.7,
+            "min": 17.1,
+            "max": 21.3,
+            "std": 1.5
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 0,
+        "cashZeroOrLessPct": 0,
+        "forcedCostReductionPct": 0,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 28.4,
+          "median": 24,
+          "p10": 24,
+          "p25": 24,
+          "p75": 26,
+          "p90": 36.8,
+          "min": 24,
+          "max": 44,
+          "std": 7.8
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 8363.4,
+          "median": 6944,
+          "p10": 6152.8,
+          "p25": 6325,
+          "p75": 10567,
+          "p90": 11392.6,
+          "min": 6038,
+          "max": 11943,
+          "std": 2418.5
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "optimizer": {
+        "careers": 5,
+        "competition": {
+          "matches": 426,
+          "easyWR": 35.1,
+          "mediumWR": 29.3,
+          "hardWR": 20,
+          "easyN": 239,
+          "mediumN": 167,
+          "hardN": 20,
+          "r1WR": 22.3,
+          "r1N": 314,
+          "tiers": {
+            "Bronze": {
+              "n": 164,
+              "wr": 39
+            },
+            "Silver": {
+              "n": 75,
+              "wr": 26.7
+            },
+            "Gold": {
+              "n": 93,
+              "wr": 34.4
+            },
+            "Platinum": {
+              "n": 74,
+              "wr": 23
+            },
+            "Masters": {
+              "n": 13,
+              "wr": 7.7
+            },
+            "Elite": {
+              "n": 7,
+              "wr": 42.9
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 3,
+              "wr": 100
+            },
+            "R1": {
+              "n": 314,
+              "wr": 22.3
+            },
+            "R2": {
+              "n": 34,
+              "wr": 26.5
+            },
+            "QF": {
+              "n": 44,
+              "wr": 68.2
+            },
+            "SF": {
+              "n": 22,
+              "wr": 81.8
+            },
+            "F": {
+              "n": 9,
+              "wr": 77.8
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 478.2,
+          "median": 481,
+          "p10": 468.4,
+          "p25": 472,
+          "p75": 482,
+          "p90": 486.8,
+          "min": 466,
+          "max": 490,
+          "std": 8.4
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 112.8,
+          "median": 125,
+          "p10": 46.2,
+          "p25": 48,
+          "p75": 127,
+          "p90": 182.2,
+          "min": 45,
+          "max": 219,
+          "std": 63.9
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 72.6,
+          "median": 70,
+          "p10": 67.8,
+          "p25": 69,
+          "p75": 75,
+          "p90": 79.2,
+          "min": 67,
+          "max": 82,
+          "std": 5.4
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 1.4,
+          "median": 1,
+          "p10": 0.4,
+          "p25": 1,
+          "p75": 2,
+          "p90": 2.6,
+          "min": 0,
+          "max": 3,
+          "std": 1
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 77.9,
+            "median": 77.9,
+            "p10": 77.1,
+            "p25": 77.5,
+            "p75": 78.1,
+            "p90": 78.6,
+            "min": 76.9,
+            "max": 78.9,
+            "std": 0.7
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 61.8,
+            "median": 66.1,
+            "p10": 48.8,
+            "p25": 53.5,
+            "p75": 69,
+            "p90": 72.5,
+            "min": 45.6,
+            "max": 74.9,
+            "std": 10.7
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 3.6,
+            "median": 3.6,
+            "p10": 3.5,
+            "p25": 3.6,
+            "p75": 3.7,
+            "p90": 3.7,
+            "min": 3.5,
+            "max": 3.7,
+            "std": 0.1
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 19.8,
+            "median": 14.8,
+            "p10": 11.8,
+            "p25": 14.6,
+            "p75": 29.2,
+            "p90": 30,
+            "min": 9.9,
+            "max": 30.6,
+            "std": 8.4
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0.1,
+            "min": 0,
+            "max": 0.1,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0.2,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0.5,
+            "min": 0,
+            "max": 0.9,
+            "std": 0.4
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0.1,
+            "min": 0,
+            "max": 0.1,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0.2,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0.5,
+            "min": 0,
+            "max": 0.9,
+            "std": 0.4
+          }
+        },
+        "insolvencyPct": 20,
+        "cashZeroOrLessPct": 20,
+        "forcedCostReductionPct": 20,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": -8.2,
+          "median": 5,
+          "p10": -34.6,
+          "p25": 5,
+          "p75": 5,
+          "p90": 5,
+          "min": -61,
+          "max": 5,
+          "std": 26.4
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 7459,
+          "median": 3350,
+          "p10": 787.8,
+          "p25": 876,
+          "p75": 14087,
+          "p90": 16586.6,
+          "min": 729,
+          "max": 18253,
+          "std": 7293.2
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      }
+    },
+    "balanced": {
+      "all": {
+        "careers": 15,
+        "competition": {
+          "matches": 1132,
+          "easyWR": 26.8,
+          "mediumWR": 24.2,
+          "hardWR": 26.3,
+          "easyN": 563,
+          "mediumN": 512,
+          "hardN": 57,
+          "r1WR": 16.2,
+          "r1N": 796,
+          "tiers": {
+            "Bronze": {
+              "n": 356,
+              "wr": 34
+            },
+            "Silver": {
+              "n": 207,
+              "wr": 14.5
+            },
+            "Gold": {
+              "n": 324,
+              "wr": 29.3
+            },
+            "Platinum": {
+              "n": 188,
+              "wr": 15.4
+            },
+            "Masters": {
+              "n": 50,
+              "wr": 30
+            },
+            "Elite": {
+              "n": 6,
+              "wr": 0
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 147,
+              "wr": 44.9
+            },
+            "R1": {
+              "n": 796,
+              "wr": 16.2
+            },
+            "R2": {
+              "n": 55,
+              "wr": 21.8
+            },
+            "QF": {
+              "n": 82,
+              "wr": 59.8
+            },
+            "SF": {
+              "n": 38,
+              "wr": 57.9
+            },
+            "F": {
+              "n": 14,
+              "wr": 85.7
+            }
+          }
+        },
+        "rank1y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 413.3,
+          "median": 452,
+          "p10": 302.2,
+          "p25": 381.5,
+          "p75": 473.5,
+          "p90": 477.4,
+          "min": 171,
+          "max": 479,
+          "std": 87.1
+        },
+        "rank2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 140.3,
+          "median": 143,
+          "p10": 98,
+          "p25": 112.5,
+          "p75": 149,
+          "p90": 183,
+          "min": 41,
+          "max": 297,
+          "std": 54
+        },
+        "ovr2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 73.2,
+          "median": 71,
+          "p10": 66.8,
+          "p25": 69,
+          "p75": 78.5,
+          "p90": 81.6,
+          "min": 66,
+          "max": 82,
+          "std": 5.6
+        },
+        "titlesY1": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 0.4,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 1.6,
+          "min": 0,
+          "max": 3,
+          "std": 0.9
+        },
+        "titles2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 0.8,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 2,
+          "min": 0,
+          "max": 3,
+          "std": 0.9
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 57.3,
+            "median": 61.1,
+            "p10": 44.4,
+            "p25": 57.6,
+            "p75": 62.2,
+            "p90": 62.8,
+            "min": 35.6,
+            "max": 63.8,
+            "std": 8.3
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 46.7,
+            "median": 47.3,
+            "p10": 37.4,
+            "p25": 42.8,
+            "p75": 50.8,
+            "p90": 51.6,
+            "min": 31.4,
+            "max": 68.9,
+            "std": 8.3
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 11,
+            "median": 9,
+            "p10": 7.7,
+            "p25": 7.9,
+            "p75": 11.8,
+            "p90": 14.9,
+            "min": 7.6,
+            "max": 28.1,
+            "std": 5.2
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 25.4,
+            "median": 25,
+            "p10": 20.6,
+            "p25": 22.7,
+            "p75": 26.2,
+            "p90": 29.9,
+            "min": 14.7,
+            "max": 41.8,
+            "std": 5.7
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 13.3,
+        "cashZeroOrLessPct": 13.3,
+        "forcedCostReductionPct": 6.7,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": -22.1,
+          "median": 12,
+          "p10": -120.6,
+          "p25": 6,
+          "p75": 37,
+          "p90": 37,
+          "min": -545,
+          "max": 193,
+          "std": 158.2
+        },
+        "endingCash": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 3249.7,
+          "median": 3619,
+          "p10": 358.4,
+          "p25": 1650,
+          "p75": 4290.5,
+          "p90": 5606.6,
+          "min": 72,
+          "max": 7833,
+          "std": 2109.8
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 15,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 15/15)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 15,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "casual": {
+        "careers": 5,
+        "competition": {
+          "matches": 265,
+          "easyWR": 35.9,
+          "mediumWR": 6.9,
+          "hardWR": 0,
+          "easyN": 131,
+          "mediumN": 116,
+          "hardN": 18,
+          "r1WR": 14.8,
+          "r1N": 169,
+          "tiers": {
+            "Bronze": {
+              "n": 102,
+              "wr": 44.1
+            },
+            "Silver": {
+              "n": 29,
+              "wr": 6.9
+            },
+            "Gold": {
+              "n": 73,
+              "wr": 5.5
+            },
+            "Platinum": {
+              "n": 43,
+              "wr": 9.3
+            },
+            "Masters": {
+              "n": 12,
+              "wr": 0
+            },
+            "Elite": {
+              "n": 5,
+              "wr": 0
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 53,
+              "wr": 11.3
+            },
+            "R1": {
+              "n": 169,
+              "wr": 14.8
+            },
+            "R2": {
+              "n": 2,
+              "wr": 0
+            },
+            "QF": {
+              "n": 23,
+              "wr": 52.2
+            },
+            "SF": {
+              "n": 12,
+              "wr": 50
+            },
+            "F": {
+              "n": 6,
+              "wr": 100
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 308.4,
+          "median": 313,
+          "p10": 220.6,
+          "p25": 295,
+          "p75": 370,
+          "p90": 383.8,
+          "min": 171,
+          "max": 393,
+          "std": 77.5
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 161.4,
+          "median": 116,
+          "p10": 98,
+          "p25": 107,
+          "p75": 195,
+          "p90": 256.2,
+          "min": 92,
+          "max": 297,
+          "std": 76.6
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 70.6,
+          "median": 71,
+          "p10": 69.4,
+          "p25": 70,
+          "p75": 71,
+          "p90": 71.6,
+          "min": 69,
+          "max": 72,
+          "std": 1
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 1.2,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 2,
+          "p90": 2.6,
+          "min": 0,
+          "max": 3,
+          "std": 1.2
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 1.2,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 2,
+          "p90": 2.6,
+          "min": 0,
+          "max": 3,
+          "std": 1.2
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 48.3,
+            "median": 48.9,
+            "p10": 37.9,
+            "p25": 41.4,
+            "p75": 55.6,
+            "p90": 58.2,
+            "min": 35.6,
+            "max": 60,
+            "std": 8.9
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 50.4,
+            "median": 47.3,
+            "p10": 43.2,
+            "p25": 43.7,
+            "p75": 49.3,
+            "p90": 61.1,
+            "min": 42.9,
+            "max": 68.9,
+            "std": 9.5
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 16.1,
+            "median": 12.9,
+            "p10": 11.7,
+            "p25": 12.1,
+            "p75": 16.2,
+            "p90": 23.3,
+            "min": 11.4,
+            "max": 28.1,
+            "std": 6.2
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 20.9,
+            "median": 21.6,
+            "p10": 16.8,
+            "p25": 19.9,
+            "p75": 21.9,
+            "p90": 24.5,
+            "min": 14.7,
+            "max": 26.3,
+            "std": 3.7
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 40,
+        "cashZeroOrLessPct": 40,
+        "forcedCostReductionPct": 20,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": -106.4,
+          "median": 12,
+          "p10": -409,
+          "p25": -205,
+          "p75": 13,
+          "p90": 121,
+          "min": -545,
+          "max": 193,
+          "std": 253
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 2054,
+          "median": 2102,
+          "p10": 854.8,
+          "p25": 1198,
+          "p75": 2672,
+          "p90": 3272,
+          "min": 626,
+          "max": 3672,
+          "std": 1074.6
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "normal": {
+        "careers": 5,
+        "competition": {
+          "matches": 444,
+          "easyWR": 15.9,
+          "mediumWR": 31.7,
+          "hardWR": 41.9,
+          "easyN": 189,
+          "mediumN": 224,
+          "hardN": 31,
+          "r1WR": 12.2,
+          "r1N": 303,
+          "tiers": {
+            "Bronze": {
+              "n": 102,
+              "wr": 24.5
+            },
+            "Silver": {
+              "n": 87,
+              "wr": 5.7
+            },
+            "Gold": {
+              "n": 144,
+              "wr": 39.6
+            },
+            "Platinum": {
+              "n": 80,
+              "wr": 17.5
+            },
+            "Masters": {
+              "n": 30,
+              "wr": 43.3
+            },
+            "Elite": {
+              "n": 1,
+              "wr": 0
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 87,
+              "wr": 63.2
+            },
+            "R1": {
+              "n": 303,
+              "wr": 12.2
+            },
+            "R2": {
+              "n": 21,
+              "wr": 23.8
+            },
+            "QF": {
+              "n": 20,
+              "wr": 40
+            },
+            "SF": {
+              "n": 8,
+              "wr": 62.5
+            },
+            "F": {
+              "n": 5,
+              "wr": 80
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 455.6,
+          "median": 452,
+          "p10": 451.4,
+          "p25": 452,
+          "p75": 459,
+          "p90": 462,
+          "min": 451,
+          "max": 464,
+          "std": 5.1
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 112.2,
+          "median": 119,
+          "p10": 68.2,
+          "p25": 109,
+          "p75": 145,
+          "p90": 146.2,
+          "min": 41,
+          "max": 147,
+          "std": 38.5
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 78,
+          "median": 81,
+          "p10": 71.6,
+          "p25": 77,
+          "p75": 82,
+          "p90": 82,
+          "min": 68,
+          "max": 82,
+          "std": 5.3
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0.8,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 1.6,
+          "min": 0,
+          "max": 2,
+          "std": 0.7
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 61.4,
+            "median": 62,
+            "p10": 59.8,
+            "p25": 60,
+            "p75": 62.1,
+            "p90": 62.7,
+            "min": 59.6,
+            "max": 63.1,
+            "std": 1.3
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 40.9,
+            "median": 42.8,
+            "p10": 32.9,
+            "p25": 35.2,
+            "p75": 44.2,
+            "p90": 48.3,
+            "min": 31.4,
+            "max": 51,
+            "std": 6.9
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 9,
+            "median": 9,
+            "p10": 8.3,
+            "p25": 9,
+            "p75": 9.4,
+            "p90": 9.5,
+            "min": 7.9,
+            "max": 9.5,
+            "std": 0.6
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 29.3,
+            "median": 26,
+            "p10": 24,
+            "p25": 24.8,
+            "p75": 30.4,
+            "p90": 37.2,
+            "min": 23.4,
+            "max": 41.8,
+            "std": 6.7
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 0,
+        "cashZeroOrLessPct": 0,
+        "forcedCostReductionPct": 0,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 34,
+          "median": 37,
+          "p10": 28,
+          "p25": 37,
+          "p75": 37,
+          "p90": 37,
+          "min": 22,
+          "max": 37,
+          "std": 6
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 5406,
+          "median": 5342,
+          "p10": 3957.4,
+          "p25": 4429,
+          "p75": 5783,
+          "p90": 7013,
+          "min": 3643,
+          "max": 7833,
+          "std": 1421.2
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "optimizer": {
+        "careers": 5,
+        "competition": {
+          "matches": 423,
+          "easyWR": 30.5,
+          "mediumWR": 26.2,
+          "hardWR": 25,
+          "easyN": 243,
+          "mediumN": 172,
+          "hardN": 8,
+          "r1WR": 20.7,
+          "r1N": 324,
+          "tiers": {
+            "Bronze": {
+              "n": 152,
+              "wr": 33.6
+            },
+            "Silver": {
+              "n": 91,
+              "wr": 25.3
+            },
+            "Gold": {
+              "n": 107,
+              "wr": 31.8
+            },
+            "Platinum": {
+              "n": 65,
+              "wr": 16.9
+            },
+            "Masters": {
+              "n": 8,
+              "wr": 25
+            },
+            "Elite": {
+              "n": 0,
+              "wr": null
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 7,
+              "wr": 71.4
+            },
+            "R1": {
+              "n": 324,
+              "wr": 20.7
+            },
+            "R2": {
+              "n": 32,
+              "wr": 21.9
+            },
+            "QF": {
+              "n": 39,
+              "wr": 74.4
+            },
+            "SF": {
+              "n": 18,
+              "wr": 61.1
+            },
+            "F": {
+              "n": 3,
+              "wr": 66.7
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 476,
+          "median": 475,
+          "p10": 473.4,
+          "p25": 474,
+          "p75": 479,
+          "p90": 479,
+          "min": 473,
+          "max": 479,
+          "std": 2.5
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 147.2,
+          "median": 148,
+          "p10": 135.2,
+          "p25": 143,
+          "p75": 150,
+          "p90": 159,
+          "min": 130,
+          "max": 165,
+          "std": 11.3
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 71,
+          "median": 69,
+          "p10": 66,
+          "p25": 66,
+          "p75": 74,
+          "p90": 77.6,
+          "min": 66,
+          "max": 80,
+          "std": 5.4
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0.4,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 1,
+          "min": 0,
+          "max": 1,
+          "std": 0.5
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 62.3,
+            "median": 62.2,
+            "p10": 61.5,
+            "p25": 62,
+            "p75": 62.3,
+            "p90": 63.2,
+            "min": 61.1,
+            "max": 63.8,
+            "std": 0.9
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 48.7,
+            "median": 50.6,
+            "p10": 44,
+            "p25": 49.2,
+            "p75": 51.1,
+            "p90": 51.6,
+            "min": 40.6,
+            "max": 51.9,
+            "std": 4.1
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 7.8,
+            "median": 7.9,
+            "p10": 7.6,
+            "p25": 7.6,
+            "p75": 7.9,
+            "p90": 8,
+            "min": 7.6,
+            "max": 8,
+            "std": 0.2
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 26.1,
+            "median": 25.7,
+            "p10": 24.8,
+            "p25": 25,
+            "p75": 25.8,
+            "p90": 27.8,
+            "min": 24.7,
+            "max": 29.1,
+            "std": 1.6
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 0,
+        "cashZeroOrLessPct": 0,
+        "forcedCostReductionPct": 0,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 6,
+          "median": 6,
+          "p10": 6,
+          "p25": 6,
+          "p75": 6,
+          "p90": 6,
+          "min": 6,
+          "max": 6,
+          "std": 0
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 2289.2,
+          "median": 3423,
+          "p10": 115.2,
+          "p25": 180,
+          "p75": 3619,
+          "p90": 3938.8,
+          "min": 72,
+          "max": 4152,
+          "std": 1782.6
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      }
+    },
+    "hardcore": {
+      "all": {
+        "careers": 15,
+        "competition": {
+          "matches": 1137,
+          "easyWR": 26.6,
+          "mediumWR": 27.1,
+          "hardWR": 20.9,
+          "easyN": 593,
+          "mediumN": 501,
+          "hardN": 43,
+          "r1WR": 18.7,
+          "r1N": 779,
+          "tiers": {
+            "Bronze": {
+              "n": 393,
+              "wr": 33.8
+            },
+            "Silver": {
+              "n": 200,
+              "wr": 12.5
+            },
+            "Gold": {
+              "n": 301,
+              "wr": 30.6
+            },
+            "Platinum": {
+              "n": 200,
+              "wr": 22
+            },
+            "Masters": {
+              "n": 39,
+              "wr": 20.5
+            },
+            "Elite": {
+              "n": 4,
+              "wr": 25
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 144,
+              "wr": 43.8
+            },
+            "R1": {
+              "n": 779,
+              "wr": 18.7
+            },
+            "R2": {
+              "n": 57,
+              "wr": 28.1
+            },
+            "QF": {
+              "n": 104,
+              "wr": 42.3
+            },
+            "SF": {
+              "n": 38,
+              "wr": 68.4
+            },
+            "F": {
+              "n": 15,
+              "wr": 53.3
+            }
+          }
+        },
+        "rank1y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 459.2,
+          "median": 467,
+          "p10": 403.2,
+          "p25": 453,
+          "p75": 480.5,
+          "p90": 504.2,
+          "min": 340,
+          "max": 524,
+          "std": 45.6
+        },
+        "rank2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 154.5,
+          "median": 130,
+          "p10": 87.2,
+          "p25": 113.5,
+          "p75": 202.5,
+          "p90": 237.2,
+          "min": 42,
+          "max": 306,
+          "std": 67.9
+        },
+        "ovr2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 72.4,
+          "median": 70,
+          "p10": 67,
+          "p25": 67.5,
+          "p75": 77.5,
+          "p90": 80,
+          "min": 66,
+          "max": 81,
+          "std": 5.4
+        },
+        "titlesY1": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 0.5,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 2,
+          "min": 0,
+          "max": 2,
+          "std": 0.8
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 55.1,
+            "median": 56.1,
+            "p10": 49.9,
+            "p25": 54.2,
+            "p75": 56.4,
+            "p90": 58.7,
+            "min": 48.1,
+            "max": 59.2,
+            "std": 3.2
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 44.6,
+            "median": 44.1,
+            "p10": 31.7,
+            "p25": 36.7,
+            "p75": 50.3,
+            "p90": 60.8,
+            "min": 20.9,
+            "max": 67.7,
+            "std": 12.1
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 7,
+            "median": 6.4,
+            "p10": 4.7,
+            "p25": 5.5,
+            "p75": 8,
+            "p90": 9.4,
+            "min": 4.5,
+            "max": 12.4,
+            "std": 2.1
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 21.5,
+            "median": 21,
+            "p10": 12.6,
+            "p25": 17.8,
+            "p75": 23.2,
+            "p90": 30.3,
+            "min": 9.4,
+            "max": 42.3,
+            "std": 7.9
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 15,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 33.3,
+        "cashZeroOrLessPct": 40,
+        "forcedCostReductionPct": 40,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": -270,
+          "median": 5,
+          "p10": -1066.2,
+          "p25": -406,
+          "p75": 9,
+          "p90": 10.8,
+          "min": -1199,
+          "max": 22,
+          "std": 445.7
+        },
+        "endingCash": {
+          "n": 15,
+          "nullCount": 0,
+          "mean": 1901.9,
+          "median": 1407,
+          "p10": 292.6,
+          "p25": 522.5,
+          "p75": 2550,
+          "p90": 4840.8,
+          "min": -244,
+          "max": 5080,
+          "std": 1692.1
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 15,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 15/15)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 15,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "casual": {
+        "careers": 5,
+        "competition": {
+          "matches": 255,
+          "easyWR": 25.3,
+          "mediumWR": 8,
+          "hardWR": 0,
+          "easyN": 146,
+          "mediumN": 100,
+          "hardN": 9,
+          "r1WR": 15.4,
+          "r1N": 156,
+          "tiers": {
+            "Bronze": {
+              "n": 109,
+              "wr": 32.1
+            },
+            "Silver": {
+              "n": 37,
+              "wr": 5.4
+            },
+            "Gold": {
+              "n": 54,
+              "wr": 7.4
+            },
+            "Platinum": {
+              "n": 46,
+              "wr": 8.7
+            },
+            "Masters": {
+              "n": 8,
+              "wr": 0
+            },
+            "Elite": {
+              "n": 1,
+              "wr": 0
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 62,
+              "wr": 12.9
+            },
+            "R1": {
+              "n": 156,
+              "wr": 15.4
+            },
+            "R2": {
+              "n": 0,
+              "wr": null
+            },
+            "QF": {
+              "n": 24,
+              "wr": 37.5
+            },
+            "SF": {
+              "n": 9,
+              "wr": 44.4
+            },
+            "F": {
+              "n": 4,
+              "wr": 0
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 445,
+          "median": 472,
+          "p10": 353.6,
+          "p25": 374,
+          "p75": 515,
+          "p90": 520.4,
+          "min": 340,
+          "max": 524,
+          "std": 74.7
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 202.4,
+          "median": 196,
+          "p10": 125.2,
+          "p25": 136,
+          "p75": 256,
+          "p90": 286,
+          "min": 118,
+          "max": 306,
+          "std": 71
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 69.4,
+          "median": 70,
+          "p10": 66.8,
+          "p25": 68,
+          "p75": 70,
+          "p90": 71.8,
+          "min": 66,
+          "max": 73,
+          "std": 2.3
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 53.8,
+            "median": 54.5,
+            "p10": 48.1,
+            "p25": 48.2,
+            "p75": 58.9,
+            "p90": 59.1,
+            "min": 48.1,
+            "max": 59.2,
+            "std": 4.9
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 53.5,
+            "median": 57.9,
+            "p10": 37.7,
+            "p25": 49.3,
+            "p75": 62.8,
+            "p90": 65.7,
+            "min": 29.9,
+            "max": 67.7,
+            "std": 13.3
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 7.3,
+            "median": 5.2,
+            "p10": 4.5,
+            "p25": 4.5,
+            "p75": 10.1,
+            "p90": 11.5,
+            "min": 4.5,
+            "max": 12.4,
+            "std": 3.3
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 16.8,
+            "median": 18.5,
+            "p10": 10.8,
+            "p25": 12.9,
+            "p75": 21,
+            "p90": 21.6,
+            "min": 9.4,
+            "max": 22,
+            "std": 4.8
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 80,
+        "cashZeroOrLessPct": 80,
+        "forcedCostReductionPct": 80,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": -776.8,
+          "median": -1035,
+          "p10": -1154.2,
+          "p25": -1087,
+          "p75": -568,
+          "p90": -224.2,
+          "min": -1199,
+          "max": 5,
+          "std": 446.3
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 1095.6,
+          "median": 1016,
+          "p10": 501,
+          "p25": 630,
+          "p75": 1407,
+          "p90": 1768.8,
+          "min": 415,
+          "max": 2010,
+          "std": 569.1
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "normal": {
+        "careers": 5,
+        "competition": {
+          "matches": 452,
+          "easyWR": 24,
+          "mediumWR": 31.3,
+          "hardWR": 17.6,
+          "easyN": 221,
+          "mediumN": 214,
+          "hardN": 17,
+          "r1WR": 15.5,
+          "r1N": 309,
+          "tiers": {
+            "Bronze": {
+              "n": 128,
+              "wr": 34.4
+            },
+            "Silver": {
+              "n": 93,
+              "wr": 9.7
+            },
+            "Gold": {
+              "n": 140,
+              "wr": 40
+            },
+            "Platinum": {
+              "n": 74,
+              "wr": 14.9
+            },
+            "Masters": {
+              "n": 17,
+              "wr": 17.6
+            },
+            "Elite": {
+              "n": 0,
+              "wr": null
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 75,
+              "wr": 66.7
+            },
+            "R1": {
+              "n": 309,
+              "wr": 15.5
+            },
+            "R2": {
+              "n": 18,
+              "wr": 11.1
+            },
+            "QF": {
+              "n": 32,
+              "wr": 37.5
+            },
+            "SF": {
+              "n": 12,
+              "wr": 58.3
+            },
+            "F": {
+              "n": 6,
+              "wr": 66.7
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 456.2,
+          "median": 455,
+          "p10": 448.6,
+          "p25": 451,
+          "p75": 458,
+          "p90": 465.2,
+          "min": 447,
+          "max": 470,
+          "std": 7.8
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 139,
+          "median": 129,
+          "p10": 113,
+          "p25": 116,
+          "p75": 130,
+          "p90": 177.4,
+          "min": 111,
+          "max": 209,
+          "std": 35.8
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 76.6,
+          "median": 80,
+          "p10": 70.8,
+          "p25": 75,
+          "p75": 80,
+          "p90": 80,
+          "min": 68,
+          "max": 80,
+          "std": 4.7
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0.8,
+          "median": 1,
+          "p10": 0,
+          "p25": 0,
+          "p75": 1,
+          "p90": 1.6,
+          "min": 0,
+          "max": 2,
+          "std": 0.7
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 55,
+            "median": 56,
+            "p10": 53,
+            "p25": 53.8,
+            "p75": 56.3,
+            "p90": 56.4,
+            "min": 52.5,
+            "max": 56.4,
+            "std": 1.6
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 41.9,
+            "median": 40,
+            "p10": 36.2,
+            "p25": 38.8,
+            "p75": 47.8,
+            "p90": 48.3,
+            "min": 34.4,
+            "max": 48.7,
+            "std": 5.5
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 7.8,
+            "median": 7.8,
+            "p10": 7.4,
+            "p25": 7.7,
+            "p75": 8.1,
+            "p90": 8.2,
+            "min": 7.2,
+            "max": 8.3,
+            "std": 0.4
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 21.9,
+            "median": 21,
+            "p10": 18.2,
+            "p25": 19.9,
+            "p75": 23.5,
+            "p90": 26.3,
+            "min": 17,
+            "max": 28.1,
+            "std": 3.7
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 0,
+        "cashZeroOrLessPct": 20,
+        "forcedCostReductionPct": 20,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 10,
+          "median": 9,
+          "p10": 2.8,
+          "p25": 7,
+          "p75": 12,
+          "p90": 18,
+          "min": 0,
+          "max": 22,
+          "std": 7.2
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 2316.2,
+          "median": 2433,
+          "p10": 611.4,
+          "p25": 1146,
+          "p75": 2667,
+          "p90": 4114.8,
+          "min": 255,
+          "max": 5080,
+          "std": 1636.7
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      },
+      "optimizer": {
+        "careers": 5,
+        "competition": {
+          "matches": 430,
+          "easyWR": 30.1,
+          "mediumWR": 32.6,
+          "hardWR": 35.3,
+          "easyN": 226,
+          "mediumN": 187,
+          "hardN": 17,
+          "r1WR": 23.6,
+          "r1N": 314,
+          "tiers": {
+            "Bronze": {
+              "n": 156,
+              "wr": 34.6
+            },
+            "Silver": {
+              "n": 70,
+              "wr": 20
+            },
+            "Gold": {
+              "n": 107,
+              "wr": 29.9
+            },
+            "Platinum": {
+              "n": 80,
+              "wr": 36.3
+            },
+            "Masters": {
+              "n": 14,
+              "wr": 35.7
+            },
+            "Elite": {
+              "n": 3,
+              "wr": 33.3
+            },
+            "Crown": {
+              "n": 0,
+              "wr": null
+            }
+          },
+          "rounds": {
+            "Q": {
+              "n": 7,
+              "wr": 71.4
+            },
+            "R1": {
+              "n": 314,
+              "wr": 23.6
+            },
+            "R2": {
+              "n": 39,
+              "wr": 35.9
+            },
+            "QF": {
+              "n": 48,
+              "wr": 47.9
+            },
+            "SF": {
+              "n": 17,
+              "wr": 88.2
+            },
+            "F": {
+              "n": 5,
+              "wr": 80
+            }
+          }
+        },
+        "rank1y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 476.4,
+          "median": 477,
+          "p10": 466.4,
+          "p25": 467,
+          "p75": 484,
+          "p90": 486.4,
+          "min": 466,
+          "max": 488,
+          "std": 8.8
+        },
+        "rank2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 122,
+          "median": 101,
+          "p10": 56.4,
+          "p25": 78,
+          "p75": 180,
+          "p90": 197.4,
+          "min": 42,
+          "max": 209,
+          "std": 62.8
+        },
+        "ovr2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 71.2,
+          "median": 67,
+          "p10": 67,
+          "p25": 67,
+          "p75": 74,
+          "p90": 78.2,
+          "min": 67,
+          "max": 81,
+          "std": 5.6
+        },
+        "titlesY1": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 0,
+          "p90": 0,
+          "min": 0,
+          "max": 0,
+          "std": 0
+        },
+        "titles2y": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 0.8,
+          "median": 0,
+          "p10": 0,
+          "p25": 0,
+          "p75": 2,
+          "p90": 2,
+          "min": 0,
+          "max": 2,
+          "std": 1
+        },
+        "sponsorShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 56.5,
+            "median": 56.2,
+            "p10": 55.8,
+            "p25": 56.1,
+            "p75": 56.3,
+            "p90": 57.5,
+            "min": 55.6,
+            "max": 58.3,
+            "std": 0.9
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 38.5,
+            "median": 41.5,
+            "p10": 26.4,
+            "p25": 34.6,
+            "p75": 44.1,
+            "p90": 48.4,
+            "min": 20.9,
+            "max": 51.2,
+            "std": 10.3
+          }
+        },
+        "prizeShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 5.8,
+            "median": 5.9,
+            "p10": 5.2,
+            "p25": 5.7,
+            "p75": 5.9,
+            "p90": 6.2,
+            "min": 4.9,
+            "max": 6.4,
+            "std": 0.5
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 25.9,
+            "median": 22.9,
+            "p10": 15.5,
+            "p25": 20.2,
+            "p75": 31.8,
+            "p90": 38.1,
+            "min": 12.4,
+            "max": 42.3,
+            "std": 10.3
+          }
+        },
+        "investmentShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "passiveShareByYear": {
+          "Y1": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          },
+          "Y2": {
+            "n": 5,
+            "nullCount": 0,
+            "mean": 0,
+            "median": 0,
+            "p10": 0,
+            "p25": 0,
+            "p75": 0,
+            "p90": 0,
+            "min": 0,
+            "max": 0,
+            "std": 0
+          }
+        },
+        "insolvencyPct": 20,
+        "cashZeroOrLessPct": 20,
+        "forcedCostReductionPct": 20,
+        "registrationBlockedByMoneyCareers": 0,
+        "minCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": -43.2,
+          "median": 9,
+          "p10": -146,
+          "p25": 1,
+          "p75": 9,
+          "p90": 9,
+          "min": -244,
+          "max": 9,
+          "std": 100.4
+        },
+        "endingCash": {
+          "n": 5,
+          "nullCount": 0,
+          "mean": 2293.8,
+          "median": 1789,
+          "p10": -6.8,
+          "p25": 349,
+          "p75": 4521,
+          "p90": 4840.8,
+          "min": -244,
+          "max": 5054,
+          "std": 2147.4
+        },
+        "moneySolvedObserved": 0,
+        "moneySolvedMonths": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        },
+        "moneySolvedCensoredMedian": {
+          "median": null,
+          "censored": true,
+          "label": "> 24 meses (não observado em 5/5)"
+        },
+        "moneySolvedWithPrizeSensitivity": {
+          "n": 0,
+          "nullCount": 5,
+          "mean": null,
+          "median": null,
+          "p10": null,
+          "p25": null,
+          "p75": null,
+          "p90": null,
+          "min": null,
+          "max": null,
+          "std": null
+        }
+      }
+    }
+  },
+  "paired": {
+    "conservative-vs-balanced": {
+      "pairs": 15,
+      "rank2yDelta": {
+        "n": 15,
+        "nullCount": 0,
+        "mean": 24.5,
+        "median": 26,
+        "p10": -75.6,
+        "p25": -21.5,
+        "p75": 70.5,
+        "p90": 109.8,
+        "min": -119,
+        "max": 215,
+        "std": 82.7
+      },
+      "finalCoinsDelta": {
+        "n": 15,
+        "nullCount": 0,
+        "mean": -5728.7,
+        "median": -4476,
+        "p10": -14343.2,
+        "p25": -7531,
+        "p75": -292,
+        "p90": 1346.8,
+        "min": -27421,
+        "max": 3276,
+        "std": 7771.2
+      },
+      "titlesDelta": {
+        "n": 15,
+        "nullCount": 0,
+        "mean": -0.3,
+        "median": 0,
+        "p10": -1.6,
+        "p25": -1,
+        "p75": 1,
+        "p90": 1,
+        "min": -3,
+        "max": 2,
+        "std": 1.3
+      },
+      "secondBetterRank": 5,
+      "secondMoreCoins": 4
+    },
+    "balanced-vs-hardcore": {
+      "pairs": 15,
+      "rank2yDelta": {
+        "n": 15,
+        "nullCount": 0,
+        "mean": 14.2,
+        "median": 20,
+        "p10": -92.8,
+        "p25": -41,
+        "p75": 67,
+        "p90": 121,
+        "min": -179,
+        "max": 214,
+        "std": 95
+      },
+      "finalCoinsDelta": {
+        "n": 15,
+        "nullCount": 0,
+        "mean": -1347.9,
+        "median": -1830,
+        "p10": -3971.2,
+        "p25": -2975.5,
+        "p75": 475,
+        "p90": 866,
+        "min": -4637,
+        "max": 4449,
+        "std": 2350.8
+      },
+      "titlesDelta": {
+        "n": 15,
+        "nullCount": 0,
+        "mean": -0.3,
+        "median": 0,
+        "p10": -1.6,
+        "p25": -1,
+        "p75": 0,
+        "p90": 1.2,
+        "min": -3,
+        "max": 2,
+        "std": 1.2
+      },
+      "secondBetterRank": 6,
+      "secondMoreCoins": 5
+    }
+  },
+  "classification": {
+    "conservative": {
+      "classification": "REJECT",
+      "rejectReasons": [
+        "sponsor Y1 Normal 77% > 60%",
+        "prize Y1 Normal 5% < 10%"
+      ],
+      "preference": {
+        "easy": false,
+        "medium": false,
+        "hard": false,
+        "r1": false,
+        "rank1y": false,
+        "rank2y": false,
+        "titlesY1": true,
+        "titlesY2": true
+      },
+      "preferenceScore": 2
+    },
+    "balanced": {
+      "classification": "REJECT",
+      "rejectReasons": [
+        "sponsor Y1 Normal 62% > 60%",
+        "prize Y1 Normal 9% < 10%",
+        "insolvência Casual 40% > 20%"
+      ],
+      "preference": {
+        "easy": false,
+        "medium": false,
+        "hard": true,
+        "r1": false,
+        "rank1y": false,
+        "rank2y": false,
+        "titlesY1": true,
+        "titlesY2": true
+      },
+      "preferenceScore": 3
+    },
+    "hardcore": {
+      "classification": "REJECT",
+      "rejectReasons": [
+        "prize Y1 Normal 7.8% < 10%",
+        "insolvência Casual 80% > 20%"
+      ],
+      "preference": {
+        "easy": false,
+        "medium": false,
+        "hard": true,
+        "r1": false,
+        "rank1y": false,
+        "rank2y": false,
+        "titlesY1": true,
+        "titlesY2": true
+      },
+      "preferenceScore": 3
+    }
+  },
+  "decision": {
+    "at": "2026-10-12T02:24:31.262Z",
+    "complete": true,
+    "criteria": {
+      "reject": {
+        "sponsorShareY1MaxPct": 60,
+        "prizeShareY1MinPct": 10,
+        "normalInsolvencyMaxPct": 10,
+        "casualInsolvencyMaxPct": 20,
+        "normalRank2yMustBeBelow": 10,
+        "normalRank2yMustBeAbove": 700
+      },
+      "preference": {
+        "easyPct": [
+          55,
+          75
+        ],
+        "mediumPct": [
+          40,
+          60
+        ],
+        "hardPct": [
+          20,
+          40
+        ],
+        "r1MinPct": 40,
+        "normalRank1y": [
+          500,
+          700
+        ],
+        "normalRank2y": [
+          150,
+          300
+        ],
+        "normalTitlesY1Median": [
+          0,
+          1
+        ],
+        "normalTitlesY2CumMedian": [
+          1,
+          3
+        ]
+      },
+      "tieBreak": "balanced (default atual: trocar o default exige evidência clara)"
+    },
+    "classification": {
+      "conservative": {
+        "classification": "REJECT",
+        "rejectReasons": [
+          "sponsor Y1 Normal 77% > 60%",
+          "prize Y1 Normal 5% < 10%"
+        ],
+        "preference": {
+          "easy": false,
+          "medium": false,
+          "hard": false,
+          "r1": false,
+          "rank1y": false,
+          "rank2y": false,
+          "titlesY1": true,
+          "titlesY2": true
+        },
+        "preferenceScore": 2
+      },
+      "balanced": {
+        "classification": "REJECT",
+        "rejectReasons": [
+          "sponsor Y1 Normal 62% > 60%",
+          "prize Y1 Normal 9% < 10%",
+          "insolvência Casual 40% > 20%"
+        ],
+        "preference": {
+          "easy": false,
+          "medium": false,
+          "hard": true,
+          "r1": false,
+          "rank1y": false,
+          "rank2y": false,
+          "titlesY1": true,
+          "titlesY2": true
+        },
+        "preferenceScore": 3
+      },
+      "hardcore": {
+        "classification": "REJECT",
+        "rejectReasons": [
+          "prize Y1 Normal 7.8% < 10%",
+          "insolvência Casual 80% > 20%"
+        ],
+        "preference": {
+          "easy": false,
+          "medium": false,
+          "hard": true,
+          "r1": false,
+          "rank1y": false,
+          "rank2y": false,
+          "titlesY1": true,
+          "titlesY2": true
+        },
+        "preferenceScore": 3
+      }
+    },
+    "winner": null,
+    "proceedToStage2": false,
+    "reason": "nenhum preset VIABLE — parar antes do Stage 2",
+    "note": "O analisador não altera configuração; apenas recomenda (item 31)."
+  }
+}

@@ -409,12 +409,39 @@ function daysSinceFree(athlete, currentDate) {
   return Math.max(0, careerDaysBetween(athlete.market_status_since, currentDate));
 }
 
-async function formNewPartnerships(athletes, currentDate, formationFraction = MARKET_FORMATION_FRACTION) {
+// Playthrough 4.5D, item 4 — exportada (era interna ao módulo) para que
+// saveFoundation.js possa formar as parcerias INICIAIS dos bots procedurais
+// na própria semeadura do mundo, reusando o MESMO algoritmo (compatibilidade
+// × proximidade de rank) que o mercado mensal já usa — nunca inventa pares
+// arbitrários, só roda a mecânica canônica uma vez, em lote, no bootstrap em
+// vez de esperar a 1ª virada de mês (`processAiPartnershipMarket`, abaixo,
+// só dispara em mudança de mês — bots procedurais nascem SEM ai_partner_id,
+// ver rankingPopulation.js, e ficariam até 30 dias sem nenhuma dupla
+// canônica formada, achado real da Playthrough 4.5D).
+export async function formNewPartnerships(athletes, currentDate, formationFraction = MARKET_FORMATION_FRACTION) {
   const month = monthKey(currentDate);
   const free = availableAthletes(athletes, currentDate);
   const events = [];
   let formed = 0;
-  const targetPairs = Math.max(0, Math.floor((free.length * formationFraction) / 2));
+  // Playthrough 5.18-E, Partes D/E — PROPRIEDADE DE CONVERGÊNCIA.
+  //
+  // Medido: `floor(free.length * 0.14 / 2)` devolve ZERO para qualquer pool
+  // livre com menos de 15 atletas, e `reservedTarget = round(0 * 0.2)` também
+  // zera — ou seja, o mercado inteiro (inclusive a reserva por tempo de
+  // espera) fica INERTE. Instrumentado mês a mês num mundo novo: o pool ficou
+  // em 7 livres de fevereiro a julho, com 0 pares formados em 6 meses
+  // consecutivos; o ex-parceiro do jogador só encontrou dupla em outubro,
+  // ~8,5 meses após a separação, quando a primeira onda de contratos de seed
+  // (240 dias) expirou e o pool saltou para 123+.
+  //
+  // Isto NÃO é o mesmo que forçar casamento (proibido na Parte H): se houver
+  // ao menos dois candidatos livres, o mercado tenta UM par — e `selectPair`
+  // continua livre para não encontrar combinação plausível e devolver null.
+  // A fração de formação segue intocada (sistema protegido); o que muda é o
+  // piso de arredondamento que tornava o mercado incapaz de agir.
+  const targetPairs = free.length >= 2
+    ? Math.max(1, Math.floor((free.length * formationFraction) / 2))
+    : 0;
   const reservedTarget = Math.round(targetPairs * MARKET_WAIT_RESERVED_SHARE);
 
   // Fase 2.6, item 1.5: com o alvo agora proporcional ao pool (em vez de

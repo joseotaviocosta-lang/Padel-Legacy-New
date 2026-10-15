@@ -6,6 +6,7 @@ import { computeCompatibility, compatibilityLabel } from '@/lib/partnershipSyste
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
 import { localGame } from '@/api/localGameClient.js';
+import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
 
 export default function PartnerSearch({ profile, relationships, onInvite, onCompare }) {
   const [search, setSearch] = useState('');
@@ -27,6 +28,8 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
   // pra `athleteAges`. Somam-se ao catálogo de bots (`BOTS_BY_DIFFICULTY`),
   // nunca o substituem.
   const [realCandidates, setRealCandidates] = useState([]);
+  // 5.26-C, Bloco D — templates do catálogo cujo atleta já se aposentou.
+  const [retiredIds, setRetiredIds] = useState(() => new Set());
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
 
@@ -34,6 +37,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
     let active = true;
     if (!profile) { setRealCandidates([]); return undefined; }
     getRealPartnerCandidates(profile).then((rows) => { if (active) setRealCandidates(rows || []); }).catch(() => { if (active) setRealCandidates([]); });
+    listRetiredPartnerOriginIds().then((ids) => { if (active) setRetiredIds(ids); }).catch(() => {});
     return () => { active = false; };
   }, [profile]);
 
@@ -49,8 +53,8 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
       const compat = computeCompatibility(profile, candidate, relationships);
       return { bot: candidate, compat, interest: calculatePartnershipInterest(profile, candidate, compat) };
     };
-    return [...getAvailablePartners(profile), ...realCandidates].map(scored);
-  }, [profile, relationships, realCandidates]);
+    return [...excludeRetiredPartnerTemplates(getAvailablePartners(profile), retiredIds), ...realCandidates].map(scored);
+  }, [profile, relationships, realCandidates, retiredIds]);
 
   const available = useMemo(() => allCandidates.filter(({ interest }) => interest.available), [allCandidates]);
   const realInterestGatedLocked = useMemo(

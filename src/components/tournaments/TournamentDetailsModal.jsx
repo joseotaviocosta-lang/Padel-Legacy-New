@@ -1,14 +1,20 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   CalendarDays, CheckCircle, Clock, Coins, ListTree, Lock, MapPin,
   Play, Star, Trophy, UserRoundCheck, Zap,
 } from 'lucide-react';
+import { resolveCommittedPartnerAthlete } from '@/lib/committedRoster.js';
 import { Button, ModalShell, StatusBadge } from '@/components/design-system';
 import { formatDate } from '@/lib/padel';
 import {
   PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen,
 } from '@/lib/calendarSystem';
 import { getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
+import {
+  isTournamentCancelled, getTournamentCancellationLabel,
+  hasViewableTournamentBracket, getTournamentDrawCountdownLabel,
+} from '@/lib/tournamentBracketView.js';
+import { TOURNAMENT_DRAW_LEAD_DAYS } from '@/lib/tournamentDraw.js';
 
 function Info({ icon: Icon, label, value, hint = null }) {
   return (
@@ -34,6 +40,30 @@ export default function TournamentDetailsModal({
   onViewBracket,
   onClose,
 }) {
+  // Playthrough 5.19, Partes L/M/O — ROSTER COMPROMETIDO NA APRESENTAÇÃO.
+  //
+  // Esta tela mostrava `profile.partner_name`, o parceiro ATUAL. No playtest o
+  // jogador inscreveu-se em Casablanca com Pedro, o contrato terminou, ele
+  // firmou com Andrea — e esta tela passou a exibir "ze & Andrea Ricci"
+  // enquanto a partida e o resultado, que usam o roster comprometido,
+  // mostravam Pedro. Duas verdades sobre a mesma inscrição.
+  //
+  // Para um torneio JÁ INSCRITO a única resposta válida é o roster capturado
+  // na inscrição. `resolveCommittedPartnerAthlete` é a MESMA autoridade que o
+  // motor usa (tournamentLifecycle.js) e resolve o AthleteProfile vivo pelo ID
+  // comprometido: identidade fixa, atributos atuais (Parte O). Sem inscrição,
+  // ela devolve o parceiro atual, que é o certo para um torneio ainda por
+  // disputar.
+  const [committedPartner, setCommittedPartner] = useState(null);
+  useEffect(() => {
+    let active = true;
+    if (!tournament?.id || !profile?.id) { setCommittedPartner(null); return undefined; }
+    resolveCommittedPartnerAthlete({ profile, tournamentId: tournament.id })
+      .then((athlete) => { if (active) setCommittedPartner(athlete || null); })
+      .catch(() => { if (active) setCommittedPartner(null); });
+    return () => { active = false; };
+  }, [tournament?.id, profile?.id, profile?.partner_id]);
+
   if (!tournament) return null;
   const careerDate = profile?.career_date || '2026-01-01';
   const deadline = getRegistrationDeadline(tournament);
@@ -48,17 +78,31 @@ export default function TournamentDetailsModal({
   // é um cálculo novo: reaproveita a mesma fórmula, aplicada ao 3º
   // consumidor que faltava (TournamentModal e Tournaments.jsx já usam).
   const canPlayNow = Boolean(activeMatch) && activeMatch.date === careerDate && activeMatch.preparationCompleted;
-  const ended = Boolean(tournament.end_date && tournament.end_date < careerDate)
-    || ['concluido', 'completed', 'finished', 'finalizado'].includes(String(tournament.status || tournament.current_phase || '').toLowerCase());
+  // Playthrough 4.5C, item 2 — 'cancelado' caía no OR de data (end_date já
+  // passado) e virava "Torneio encerrado" genérico, indistinguível de um
+  // torneio realmente concluído com campeão. Checado ANTES do `ended`
+  // baseado em data, nunca depois: cancelamento é um estado terminal
+  // próprio, não um tipo de "encerrado".
+  const cancelled = isTournamentCancelled(tournament);
+  const bracketReady = hasViewableTournamentBracket(tournament, careerDate);
+  const drawCountdownLabel = bracketReady
+    ? null
+    : getTournamentDrawCountdownLabel(tournament, careerDate, TOURNAMENT_DRAW_LEAD_DAYS);
+  const ended = !cancelled && (
+    Boolean(tournament.end_date && tournament.end_date < careerDate)
+    || ['concluido', 'completed', 'finished', 'finalizado'].includes(String(tournament.status || tournament.current_phase || '').toLowerCase())
+  );
   const status = activeRun
     ? 'Participação em andamento'
     : registration
       ? 'Inscrição confirmada'
-      : ended
-        ? 'Torneio encerrado'
-        : registrationOpen
-          ? 'Inscrições disponíveis'
-          : 'Inscrições fechadas';
+      : cancelled
+        ? 'Cancelado'
+        : ended
+          ? 'Torneio encerrado'
+          : registrationOpen
+            ? 'Inscrições disponíveis'
+            : 'Inscrições fechadas';
 
   return (
     <ModalShell
@@ -70,7 +114,19 @@ export default function TournamentDetailsModal({
       footer={(
         <div className="flex flex-wrap justify-end gap-2">
           <Button level="ghost" size="touch" onClick={onClose}>Fechar</Button>
-          <Button level="secondary" size="touch" onClick={onViewBracket}><ListTree className="h-4 w-4" />Ver chave</Button>
+          {/* Playthrough 5.16, Partes K/L — este botão era incondicional: a
+              ~8 dias do sorteio ele já convidava a "Ver chave" e entregava
+              "Chave ainda não sorteada". Agora a mesma autoridade que o
+              resto do app usa (getTournamentDrawState) decide, e enquanto
+              não há chave o jogador recebe a informação útil — quando o
+              sorteio acontece — em vez de um CTA vazio. */}
+          {bracketReady
+            ? <Button level="secondary" size="touch" onClick={onViewBracket}><ListTree className="h-4 w-4" />Ver chave</Button>
+            : drawCountdownLabel && (
+              <span className="inline-flex items-center gap-1.5 self-center px-2 text-[11px] font-bold text-muted-foreground">
+                <Clock className="h-3.5 w-3.5" />{drawCountdownLabel}
+              </span>
+            )}
           {activeRun && <Button level="primary" size="touch" onClick={onContinue}><Play className="h-4 w-4" />{canPlayNow ? 'Jogar partida' : 'Preparar partida'}</Button>}
           {!activeRun && !registration && canRegister && validation.canRegister && registrationOpen && (
             <Button level="primary" size="touch" onClick={onRegister}><CheckCircle className="h-4 w-4" />Inscrever-se</Button>
@@ -84,8 +140,14 @@ export default function TournamentDetailsModal({
             <p className="text-[10px] font-black uppercase tracking-widest text-primary">{tournament.tier || tournament.category || 'Torneio oficial'}</p>
             <p className="mt-1 text-sm font-bold text-muted-foreground">{tournament.description || 'Evento oficial do circuito Padel Legacy.'}</p>
           </div>
-          <StatusBadge tone={activeRun ? 'premium' : registration ? 'success' : ended ? 'neutral' : registrationOpen ? 'info' : 'warning'} className="shrink-0">{status}</StatusBadge>
+          <StatusBadge tone={activeRun ? 'premium' : registration ? 'success' : cancelled ? 'danger' : ended ? 'neutral' : registrationOpen ? 'info' : 'warning'} className="shrink-0">{status}</StatusBadge>
         </div>
+
+        {cancelled && (
+          <div className="rounded-xl border border-destructive/20 bg-destructive/5 p-3 text-xs text-destructive">
+            {getTournamentCancellationLabel(tournament)}
+          </div>
+        )}
 
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
           <Info icon={CalendarDays} label="Data" value={tournament.start_date ? formatDate(tournament.start_date) : 'A definir'} hint={tournament.end_date && tournament.end_date !== tournament.start_date ? `até ${formatDate(tournament.end_date)}` : null} />
@@ -99,7 +161,16 @@ export default function TournamentDetailsModal({
         <div className="grid gap-3 sm:grid-cols-2">
           <div className="rounded-xl border border-border/50 p-3">
             <div className="flex items-center gap-2"><UserRoundCheck className="h-4 w-4 text-primary" /><p className="text-xs font-black">Sua dupla</p></div>
-            <p className="mt-2 text-sm font-bold">{profile?.partner_name || (profile?.partner_id ? 'Parceiro definido' : 'Parceiro ainda não definido')}</p>
+            <p className="mt-2 text-sm font-bold">
+              {committedPartner?.name
+                || profile?.partner_name
+                || (profile?.partner_id ? 'Parceiro definido' : 'Parceiro ainda não definido')}
+            </p>
+            {registration && committedPartner?.name && committedPartner.name !== profile?.partner_name ? (
+              <p className="mt-1 text-[11px] text-amber-400">
+                Inscrição feita com {committedPartner.name} — este compromisso é honrado com a dupla original.
+              </p>
+            ) : null}
             <p className="mt-1 text-[11px] text-muted-foreground">Entrada: {getEntryPathLabel(validation.entry?.path)}</p>
           </div>
           <div className="rounded-xl border border-border/50 p-3">

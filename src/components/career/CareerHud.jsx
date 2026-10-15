@@ -1,22 +1,23 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Coins, Crown, HeartPulse, Volume2, VolumeX, Zap } from 'lucide-react';
+import { Coins, HeartPulse, Volume2, VolumeX, Zap } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/lib/uiSound.js';
 import { useRenderCounter } from '@/dev/performanceProbe.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
-function CareerHud({ profile, ranking, compact = false, className }) {
+// Playthrough 5.24, Parte B — o item "Ranking" saiu daqui: o ranking
+// individual, o da dupla e o OVR agora vivem em HeaderRankShortcuts, os três
+// clicáveis. O CareerHud fica com o STATUS (moedas/energia/fadiga).
+function CareerHud({ profile, compact = false, className }) {
   useRenderCounter('CareerHud');
   const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);
 
   const energy = Math.round(Number(profile?.energy) || 0);
   const fatigue = Math.round(Number(profile?.fatigue) || 0);
   const coins = Math.round(Number(profile?.coins) || 0);
-  const rank = ranking?.rank ? `#${ranking.displayRank || ranking.rank}` : '#1000+';
 
   const items = [
-    { label: 'Ranking', value: rank, icon: Crown, tone: 'text-premium' },
     { label: 'Moedas', value: coins.toLocaleString('pt-BR'), icon: Coins, tone: 'text-premium', to: APP_ROUTES.ECONOMY },
     { label: 'Energia', value: `${energy}%`, icon: Zap, tone: energy < 30 ? 'text-destructive' : energy < 60 ? 'text-warning' : 'text-success' },
     { label: 'Fadiga', value: `${fatigue}%`, icon: HeartPulse, tone: fatigue > 70 ? 'text-destructive' : fatigue > 45 ? 'text-warning' : 'text-success' },
@@ -55,19 +56,16 @@ function CareerHud({ profile, ranking, compact = false, className }) {
   );
 }
 
-// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): `profile`/`ranking` chegam
-// de AppLayout's useCareerHeaderData(), que emite um objeto novo a cada busca
-// mesmo quando nada visível aqui mudou (ex.: um outro campo do perfil foi
-// atualizado). Comparador dedicado só nos 4 campos que este componente
-// realmente mostra, em vez de comparação rasa do objeto inteiro inteiro.
+// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): `profile` chega de
+// AppLayout's useCareerHeaderData(), que emite um objeto novo a cada busca
+// mesmo quando nada visível aqui mudou. Comparador dedicado só nos campos que
+// este componente realmente mostra.
 function areEqual(prev, next) {
   return prev.compact === next.compact
     && prev.className === next.className
     && Number(prev.profile?.energy) === Number(next.profile?.energy)
     && Number(prev.profile?.fatigue) === Number(next.profile?.fatigue)
-    && Number(prev.profile?.coins) === Number(next.profile?.coins)
-    && (prev.ranking?.rank || null) === (next.ranking?.rank || null)
-    && (prev.ranking?.displayRank || null) === (next.ranking?.displayRank || null);
+    && Number(prev.profile?.coins) === Number(next.profile?.coins);
 }
 
 export default React.memo(CareerHud, areEqual);

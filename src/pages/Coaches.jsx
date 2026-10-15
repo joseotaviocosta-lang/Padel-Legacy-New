@@ -56,7 +56,12 @@ export default function Coaches() {
   // isto só limita quantos cards renderizam por vez, sem tocar em
   // buildCoachDiscovery/filterCoachDiscovery/sortCoachDiscovery nem inventar
   // nenhum critério de recomendação novo.
-  const [visibleCount, setVisibleCount] = useState(12);
+  // Playthrough 4.8, Parte I/M — mesma lógica visual compacta da tela de
+  // propostas de dupla: 4 cards por "página" em vez de 12, agora que o
+  // card é compacto (grid de 2 colunas) e não mais uma linha full-width.
+  const [visibleCount, setVisibleCount] = useState(4);
+  const [highlightedVisibleCount, setHighlightedVisibleCount] = useState(4);
+  const [restVisibleCount, setRestVisibleCount] = useState(4);
   // Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte C-F): a visão
   // padrão (sem filtro/busca tocados) mostra um mercado curado por estágio
   // de carreira em vez do total de opções "disponíveis" de uma vez; este
@@ -64,7 +69,7 @@ export default function Coaches() {
   const [marketExpanded, setMarketExpanded] = useState(false);
   const { toast } = useToast();
 
-  useEffect(() => { setVisibleCount(12); setMarketExpanded(false); }, [statusFilter, specialtyFilter, sortOrder, search]);
+  useEffect(() => { setVisibleCount(4); setHighlightedVisibleCount(4); setRestVisibleCount(4); setMarketExpanded(false); }, [statusFilter, specialtyFilter, sortOrder, search]);
 
   useEffect(() => { void load(activeCareer?.career_id); }, [activeCareer?.career_id]);
 
@@ -332,11 +337,16 @@ export default function Coaches() {
                   <h2 className="text-lg font-black">Recomendados para você</h2>
                   <p className="text-xs text-muted-foreground">Melhor combinação de afinidade, nível e custo-benefício para sua carreira agora.</p>
                 </div>
-                <div className="overflow-hidden rounded-xl border border-border/55">
-                  {market.highlighted.map((evaluation) => (
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  {market.highlighted.slice(0, highlightedVisibleCount).map((evaluation) => (
                     <CoachCard key={evaluation.coach.id} evaluation={evaluation} profile={profile} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
                   ))}
                 </div>
+                {market.highlighted.length > highlightedVisibleCount && (
+                  <button type="button" onClick={() => setHighlightedVisibleCount((count) => count + 4)} className="mx-auto block rounded-xl border border-border/60 bg-secondary/30 px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground">
+                    Mostrar mais ({market.highlighted.length - highlightedVisibleCount} restantes)
+                  </button>
+                )}
               </section>
             )}
             {marketRest.length > 0 && (
@@ -345,11 +355,16 @@ export default function Coaches() {
                   <h2 className="text-lg font-black">Outras opções disponíveis</h2>
                   <p className="text-xs text-muted-foreground">Também elegíveis agora, fora da recomendação principal.</p>
                 </div>
-                <div className="overflow-hidden rounded-xl border border-border/55">
-                  {marketRest.map((evaluation) => (
+                <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+                  {marketRest.slice(0, restVisibleCount).map((evaluation) => (
                     <CoachCard key={evaluation.coach.id} evaluation={evaluation} profile={profile} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
                   ))}
                 </div>
+                {marketRest.length > restVisibleCount && (
+                  <button type="button" onClick={() => setRestVisibleCount((count) => count + 4)} className="mx-auto block rounded-xl border border-border/60 bg-secondary/30 px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground">
+                    Mostrar mais ({marketRest.length - restVisibleCount} restantes)
+                  </button>
+                )}
               </section>
             )}
             {market.availableCount > market.cap && (
@@ -370,7 +385,7 @@ export default function Coaches() {
               <h2 className="text-lg font-black">{section.title}</h2>
               <p className="text-xs text-muted-foreground">{section.description} · {section.items.length} resultado{section.items.length === 1 ? '' : 's'}</p>
             </div>
-            <div className="overflow-hidden rounded-xl border border-border/55">
+            <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
               {section.items.slice(0, visibleCount).map((evaluation) => (
                 <CoachCard key={evaluation.coach.id} evaluation={evaluation} profile={profile} onDetails={() => setSelected(evaluation.coach)} onHire={() => setSelected(evaluation.coach)} />
               ))}
@@ -378,7 +393,7 @@ export default function Coaches() {
             {section.items.length > visibleCount && (
               <button
                 type="button"
-                onClick={() => setVisibleCount((count) => count + 12)}
+                onClick={() => setVisibleCount((count) => count + 4)}
                 className="mx-auto block rounded-xl border border-border/60 bg-secondary/30 px-4 py-2 text-xs font-bold text-muted-foreground hover:text-foreground"
               >
                 Mostrar mais ({section.items.length - visibleCount} restantes)

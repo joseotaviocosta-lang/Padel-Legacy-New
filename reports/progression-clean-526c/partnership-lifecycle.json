@@ -1,0 +1,175 @@
+{
+  "runs": {
+    "smoke": {
+      "careers": 15,
+      "resignLoopEventsTotal": 0,
+      "careersWithLoop": 0,
+      "careersSamePartner10x": 0,
+      "partnersPerCareer": {
+        "n": 15,
+        "p10": 2,
+        "median": 3,
+        "p90": 5,
+        "min": 2,
+        "max": 7
+      },
+      "maxSamePartner": {
+        "n": 15,
+        "p10": 1,
+        "median": 1,
+        "p90": 2,
+        "min": 1,
+        "max": 4
+      },
+      "renewalsPerCareer": {
+        "n": 15,
+        "p10": 3.4,
+        "median": 5,
+        "p90": 10,
+        "min": 2,
+        "max": 11
+      },
+      "viaSearchPct": 69.4
+    },
+    "main": {
+      "careers": 35,
+      "resignLoopEventsTotal": 0,
+      "careersWithLoop": 0,
+      "careersSamePartner10x": 0,
+      "partnersPerCareer": {
+        "n": 35,
+        "p10": 2,
+        "median": 4,
+        "p90": 8,
+        "min": 2,
+        "max": 10
+      },
+      "maxSamePartner": {
+        "n": 35,
+        "p10": 1,
+        "median": 1,
+        "p90": 2.6,
+        "min": 1,
+        "max": 4
+      },
+      "renewalsPerCareer": {
+        "n": 35,
+        "p10": 11,
+        "median": 14,
+        "p90": 25.6,
+        "min": 9,
+        "max": 29
+      },
+      "viaSearchPct": 78.8
+    },
+    "long": {
+      "careers": 5,
+      "resignLoopEventsTotal": 0,
+      "careersWithLoop": 0,
+      "careersSamePartner10x": 0,
+      "partnersPerCareer": {
+        "n": 5,
+        "p10": 3,
+        "median": 3,
+        "p90": 11.2,
+        "min": 3,
+        "max": 12
+      },
+      "maxSamePartner": {
+        "n": 5,
+        "p10": 1,
+        "median": 1,
+        "p90": 1.6,
+        "min": 1,
+        "max": 2
+      },
+      "renewalsPerCareer": {
+        "n": 5,
+        "p10": 25.2,
+        "median": 31,
+        "p90": 52.8,
+        "min": 22,
+        "max": 56
+      },
+      "viaSearchPct": 83.9
+    },
+    "renewalOutcomes": {
+      "conditional": 62,
+      "accepted": 661,
+      "refused": 68,
+      "wait": 89
+    },
+    "worst": [
+      {
+        "id": "optimizer-5",
+        "kind": "smoke",
+        "partners": 5,
+        "distinct": 2,
+        "maxSamePartner": 4,
+        "resignLoopEvents": 0,
+        "renewals": 10,
+        "viaSearch": 4
+      },
+      {
+        "id": "optimizer-5",
+        "kind": "main",
+        "partners": 5,
+        "distinct": 2,
+        "maxSamePartner": 4,
+        "resignLoopEvents": 0,
+        "renewals": 18,
+        "viaSearch": 4
+      },
+      {
+        "id": "optimizer-10",
+        "kind": "main",
+        "partners": 5,
+        "distinct": 2,
+        "maxSamePartner": 4,
+        "resignLoopEvents": 0,
+        "renewals": 12,
+        "viaSearch": 4
+      },
+      {
+        "id": "optimizer-3",
+        "kind": "main",
+        "partners": 4,
+        "distinct": 2,
+        "maxSamePartner": 3,
+        "resignLoopEvents": 0,
+        "renewals": 14,
+        "viaSearch": 3
+      },
+      {
+        "id": "optimizer-8",
+        "kind": "main",
+        "partners": 4,
+        "distinct": 2,
+        "maxSamePartner": 3,
+        "resignLoopEvents": 0,
+        "renewals": 16,
+        "viaSearch": 3
+      }
+    ]
+  },
+  "repro": [
+    {
+      "state": "before",
+      "days": 30,
+      "retiredPartner": "player-fictional-7i55ge",
+      "signs": 31,
+      "retiredResigns": 30,
+      "endedByRetirement": 30,
+      "finalPartner": "player-fictional-7i55ge"
+    },
+    {
+      "state": "after",
+      "days": 30,
+      "retiredPartner": "player-fictional-7i55ge",
+      "signs": 2,
+      "retiredResigns": 0,
+      "endedByRetirement": 1,
+      "finalPartner": "player-fictional-785jrf"
+    }
+  ]
+}

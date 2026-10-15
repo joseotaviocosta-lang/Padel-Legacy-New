@@ -42,14 +42,14 @@ export default function PartnerOffersPanel({ profile, offers, loading, error, bu
     {invalidOffers.map(offer => <section key={offer.id} className="glass rounded-2xl border border-amber-500/30 p-4" role="status"><div className="flex gap-3"><AlertTriangle className="h-5 w-5 shrink-0 text-amber-400"/><div><h3 className="font-bold">Proposta indisponível</h3><p className="mt-1 text-xs text-muted-foreground">O atleta vinculado a esta proposta não existe mais neste save. O registro foi preservado para diagnóstico e não pode ser aceito.</p><button disabled={busyOfferId} onClick={()=>onReject(offer)} className="mt-3 rounded-xl bg-secondary px-3 py-2 text-xs font-bold disabled:opacity-50">Arquivar proposta</button></div></div></section>)}
     {comparedRows.length >= 2 && <Comparison rows={comparedRows} onClose={() => setCompared([])} />}
     <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
-      {analyses.map(({ offer, candidate, compatibility, interest }, index) => (
+      {analyses.map(({ offer, candidate, compatibility, interest }) => (
         <OfferCard
           key={offer.id}
           offer={offer}
           candidate={candidate}
           compatibility={compatibility}
           interest={interest}
-          highlighted={offer.id === focusOfferId || index === 0}
+          highlighted={offer.id === focusOfferId || offer.recommended}
           selected={compared.includes(offer.id)}
           busy={busyOfferId === offer.id}
           disabled={Boolean(busyOfferId)}
@@ -98,6 +98,13 @@ function OfferCard({ offer, candidate, compatibility, interest, highlighted, sel
         </div>
       </div>
       <div className="mt-3 grid grid-cols-2 gap-2 text-xs"><Metric label="Lado" value={sideName(candidate.preferred_side || candidate.position)}/><Metric label="Estilo" value={candidate.play_style || candidate.tactical_role || 'equilibrado'}/><Metric label="Ranking" value={candidate.world_rank || candidate.ranking_position || '—'}/><Metric label="Interesse" value={`${interest.level} (${interest.score})`}/></div>
+
+      {offer.first_partnership_reason && (
+        <div className="mt-3 rounded-xl bg-primary/10 p-3 text-xs">
+          <p className="font-bold text-primary">{offer.first_partnership_reason.title}</p>
+          <p className="mt-1 text-muted-foreground">{offer.first_partnership_reason.body}</p>
+        </div>
+      )}
 
       <button type="button" onClick={() => setExpanded((value) => !value)} aria-expanded={expanded} className="mt-3 flex w-full items-center justify-between gap-2 text-[10px] font-bold text-muted-foreground hover:text-foreground">
         Formação sugerida, pontos fortes e termos

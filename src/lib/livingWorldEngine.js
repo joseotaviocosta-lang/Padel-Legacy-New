@@ -1,5 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { processWorldTourDay } from '@/gameplay/worldTour/WorldTourLifecycle.js';
+import { resolvePendingPlayerCanonicalTournaments } from '@/game-core/tournamentLifecycle.js';
+import { recordWorldTourDiagnosticDay } from '@/dev/worldTourDiagnostics.js';
 import { generateEventObject } from '@/lib/world.js';
 import { expireMacroEvents, maybeGenerateMacroEvent } from '@/lib/worldEvents.js';
 import { normalizeWorldEventIds, createWorldEventObjects } from '@/lib/worldEventIds.js';
@@ -271,6 +273,23 @@ export async function processLivingWorldDay(profile, date, options = {}) {
     ...(worldTourResult?.waitingForCanonicalPairs ? { waitingForCanonicalPairs: true } : {}),
     ...(worldTourResult?.errors?.length ? { errors: worldTourResult.errors.slice(0, 3) } : {}),
   };
+  // Itens 3/4/15 — torneios com participação do jogador nunca passam pela
+  // fila acima (isWorldTourResolutionPending os exclui); este é o único
+  // retomador para quando a campanha do jogador terminou ANTES da final real
+  // (Roma eliminado nas quartas: sem mais nenhuma partida dele para disparar
+  // a finalização quando SF/F chegarem na data).
+  const playerTournamentResult = await resolvePendingPlayerCanonicalTournaments(date, profile).catch((error) => {
+    console.error('[LivingWorld] torneios do jogador pendentes:', error);
+    return { resolved: 0, errors: [{ scope: 'resolvePendingPlayerCanonicalTournaments', message: error?.message || String(error) }] };
+  });
+  summary.playerTournaments = {
+    resolved: Number(playerTournamentResult?.resolved) || 0,
+    ...(playerTournamentResult?.errors?.length ? { errors: playerTournamentResult.errors.slice(0, 3) } : {}),
+  };
+  // Item 18 — instrumentação DEV persistida e rotativa (só grava quando
+  // habilitada via padel:worldtourdebug; ver src/dev/worldTourDiagnostics.js
+  // para o gate e o motivo de não depender de import.meta.env.DEV).
+  await recordWorldTourDiagnosticDay(date, { worldTourResult, playerTournamentResult }).catch(() => {});
   await expireMacroEvents(date).catch(error => console.error('[LivingWorld] expiração:', error));
   await maybeGenerateMacroEvent(date).catch(error => console.error('[LivingWorld] macroevento:', error));
 

@@ -1,0 +1,7 @@
+✓ [Persistência] test-achievement-reward-atomicity-v524e (6s) test-achievement-reward-atomicity-v524e: PASS (7 gates)
+✓ [Persistência] test-achievement-reward-restart-v524e (12s) test-achievement-reward-restart-v524e: PASS (4 gates)
+✓ [Persistência] test-mission-reward-regression-v524e (59s) test-mission-reward-regression-v524e: PASS (10 gates)
+✓ [Persistência] test-idle-boot-zero-write-v524e (13s) test-idle-boot-zero-write-v524e: PASS (4 gates)
+✓ [Persistência] test-mobile-storage-m3-6 (3s) 15 gates executados, todos PASS — Mobile M3.6 Storage/I/O.
+
+5/5 passaram

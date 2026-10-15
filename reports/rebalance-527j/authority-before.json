@@ -1,0 +1,192 @@
+{
+  "at": "2026-10-15T11:35:03.609Z",
+  "scenarios": [
+    {
+      "label": "ExitLifecycleJ",
+      "exit": "lifecycle",
+      "nominalEnd": "2026-02-05",
+      "partnerId": "player-fictional-dzriqv",
+      "preexisting": [
+        {
+          "tournamentId": "tournament-2026-dub-bro-w07-1",
+          "start": "2026-02-12",
+          "end": "2026-02-15",
+          "registeredAt": "2026-01-19",
+          "ok": true
+        }
+      ],
+      "attempts": [
+        {
+          "kind": "after-exit",
+          "date": "2026-02-13",
+          "tournamentId": "tournament-2026-cas-bro-w10-1",
+          "end": "2026-03-08",
+          "ok": true,
+          "reasons": []
+        },
+        {
+          "kind": "after-exit",
+          "date": "2026-02-14",
+          "tournamentId": "tournament-2026-ams-bro-w12-1",
+          "end": "2026-03-22",
+          "ok": false,
+          "reasons": [
+            "REGISTRATION_NOT_OPEN"
+          ]
+        }
+      ],
+      "exitDecisionDate": "2026-02-13",
+      "statusTimeline": [
+        {
+          "date": "2026-01-20",
+          "status": "ativo"
+        },
+        {
+          "date": "2026-01-21",
+          "status": "renovacao_proxima"
+        },
+        {
+          "date": "2026-02-05",
+          "status": "vencido"
+        },
+        {
+          "date": "2026-02-13",
+          "status": "encerra_apos_compromisso@2026-02-15"
+        },
+        {
+          "date": "2026-02-14",
+          "status": "encerra_apos_compromisso@2026-03-08"
+        },
+        {
+          "date": "2026-03-09",
+          "status": "ended"
+        }
+      ],
+      "effectiveSeparationDate": "2026-03-09",
+      "commitments": [
+        {
+          "tournamentId": "tournament-2026-dub-bro-w07-1",
+          "partnerId": "player-fictional-dzriqv",
+          "registeredAt": "2026-01-19",
+          "status": "confirmed",
+          "end": "2026-02-15"
+        },
+        {
+          "tournamentId": "tournament-2026-cas-bro-w10-1",
+          "partnerId": "player-fictional-dzriqv",
+          "registeredAt": "2026-02-13",
+          "status": "confirmed",
+          "end": "2026-03-08"
+        }
+      ],
+      "newRegistrationsAfterExit": 1,
+      "withinContractRegistrationsAfterExit": 0,
+      "lastLegitimateCommitmentEnd": "2026-02-15",
+      "preexistingKept": true
+    },
+    {
+      "label": "ExitPlayerJ",
+      "exit": "player-scheduled",
+      "nominalEnd": "2026-02-05",
+      "partnerId": "player-fictional-dzriqv",
+      "preexisting": [
+        {
+          "tournamentId": "tournament-2026-dub-bro-w07-1",
+          "start": "2026-02-12",
+          "end": "2026-02-15",
+          "registeredAt": "2026-01-19",
+          "ok": true
+        }
+      ],
+      "attempts": [
+        {
+          "kind": "within-contract",
+          "date": "2026-01-22",
+          "tournamentId": "tournament-2026-lon-bro-w05-1",
+          "end": "2026-02-01",
+          "ok": true,
+          "reasons": []
+        },
+        {
+          "kind": "extends-beyond-end",
+          "date": "2026-01-22",
+          "tournamentId": "tournament-2026-cor-bro-w08-1",
+          "end": "2026-02-22",
+          "ok": true,
+          "reasons": []
+        }
+      ],
+      "exitDecisionDate": "2026-01-21",
+      "statusTimeline": [
+        {
+          "date": "2026-01-20",
+          "status": "encerrar_ao_final"
+        },
+        {
+          "date": "2026-02-06",
+          "status": "encerra_apos_compromisso@2026-02-22"
+        },
+        {
+          "date": "2026-02-07",
+          "status": "vencido@2026-02-22"
+        },
+        {
+          "date": "2026-02-13",
+          "status": "encerra_apos_compromisso@2026-02-22"
+        },
+        {
+          "date": "2026-02-23",
+          "status": "ended"
+        }
+      ],
+      "effectiveSeparationDate": "2026-02-23",
+      "commitments": [
+        {
+          "tournamentId": "tournament-2026-dub-bro-w07-1",
+          "partnerId": "player-fictional-dzriqv",
+          "registeredAt": "2026-01-19",
+          "status": "confirmed",
+          "end": "2026-02-15"
+        },
+        {
+          "tournamentId": "tournament-2026-lon-bro-w05-1",
+          "partnerId": "player-fictional-dzriqv",
+          "registeredAt": "2026-01-22",
+          "status": "confirmed",
+          "end": "2026-02-01"
+        },
+        {
+          "tournamentId": "tournament-2026-cor-bro-w08-1",
+          "partnerId": "player-fictional-dzriqv",
+          "registeredAt": "2026-01-22",
+          "status": "confirmed",
+          "end": "2026-02-22"
+        }
+      ],
+      "newRegistrationsAfterExit": 1,
+      "withinContractRegistrationsAfterExit": 1,
+      "lastLegitimateCommitmentEnd": "2026-02-15",
+      "preexistingKept": true
+    },
+    {
+      "label": "ExitLowMoraleJ (debug, antes do 2º fix)",
+      "exit": "refused-low-morale",
+      "source": "scratchpad/dbg-vencido.mjs com partner_morale 10, código com o 1º fix (autoridade) e sem o fix da moral",
+      "nominalEnd": "2026-02-05",
+      "exitDecisionDate": "2026-01-25",
+      "statusTimeline": [
+        {
+          "date": "2026-01-26",
+          "status": "insatisfeito/ativa"
+        },
+        {
+          "date": "2026-02-13",
+          "status": "ended"
+        }
+      ],
+      "effectiveSeparationDate": "2026-02-13",
+      "expectedSeparationWithoutCommitments": "2026-02-06",
+      "finding": "insatisfeito sobrescrevia nao_renovara; no vencimento a dupla caía em vencido (carência de 7 dias com renovação disponível) e a autoridade deixava inscrever de novo"
+    }
+  ]
+}

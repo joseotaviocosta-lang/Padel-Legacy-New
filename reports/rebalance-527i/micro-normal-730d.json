@@ -1,0 +1,808 @@
+{
+  "at": "2026-10-14T15:12:35.853Z",
+  "profile": "normal",
+  "days": 730,
+  "gate": {
+    "easyMin": 40,
+    "mediumMin": 28,
+    "r1Min": 35
+  },
+  "silverVsGoldMaterialPp": 5,
+  "summary": {
+    "baseline": {
+      "careers": 5,
+      "matches": 589,
+      "easy": {
+        "wr": 47.3,
+        "n": 258,
+        "w": 122
+      },
+      "medium": {
+        "wr": 40,
+        "n": 250,
+        "w": 100
+      },
+      "hard": {
+        "wr": 48.1,
+        "n": 81,
+        "w": 39
+      },
+      "r1": {
+        "wr": 39.4,
+        "n": 343,
+        "w": 135
+      },
+      "tiers": {
+        "Bronze": {
+          "all": {
+            "wr": 59,
+            "n": 178,
+            "w": 105
+          },
+          "main": {
+            "wr": 59,
+            "n": 178,
+            "w": 105
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 54.7,
+            "n": 86,
+            "w": 47
+          },
+          "faced": {
+            "opp": 35.5,
+            "team": 38
+          },
+          "field": {
+            "fields": 0,
+            "ovr": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "rank": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "fit": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "strength": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "offset": null,
+            "orderedSize": null,
+            "preferredSize": null,
+            "preferredInField": null
+          }
+        },
+        "Silver": {
+          "all": {
+            "wr": 21.3,
+            "n": 80,
+            "w": 17
+          },
+          "main": {
+            "wr": 21.3,
+            "n": 80,
+            "w": 17
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 20.6,
+            "n": 63,
+            "w": 13
+          },
+          "faced": {
+            "opp": 46.5,
+            "team": 40.5
+          },
+          "field": {
+            "fields": 0,
+            "ovr": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "rank": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "fit": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "strength": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "offset": null,
+            "orderedSize": null,
+            "preferredSize": null,
+            "preferredInField": null
+          }
+        },
+        "Gold": {
+          "all": {
+            "wr": 31.9,
+            "n": 94,
+            "w": 30
+          },
+          "main": {
+            "wr": 31.9,
+            "n": 94,
+            "w": 30
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 28.1,
+            "n": 64,
+            "w": 18
+          },
+          "faced": {
+            "opp": 78,
+            "team": 75
+          },
+          "field": {
+            "fields": 0,
+            "ovr": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "rank": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "fit": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "strength": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "offset": null,
+            "orderedSize": null,
+            "preferredSize": null,
+            "preferredInField": null
+          }
+        },
+        "Platinum": {
+          "all": {
+            "wr": 44.9,
+            "n": 156,
+            "w": 70
+          },
+          "main": {
+            "wr": 45.2,
+            "n": 155,
+            "w": 70
+          },
+          "qualifying": {
+            "wr": 0,
+            "n": 1,
+            "w": 0
+          },
+          "r1": {
+            "wr": 44.7,
+            "n": 85,
+            "w": 38
+          },
+          "faced": {
+            "opp": 79.5,
+            "team": 78
+          },
+          "field": {
+            "fields": 0,
+            "ovr": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "rank": {
+              "p10": null,
+              "p25": null,
+              "p50": null,
+              "p75": null,
+              "p90": null
+            },
+            "fit": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "strength": {
+              "p10": null,
+              "p50": null,
+              "p90": null
+            },
+            "offset": null,
+            "orderedSize": null,
+            "preferredSize": null,
+            "preferredInField": null
+          }
+        }
+      },
+      "order": {
+        "bronzeGtSilver": true,
+        "silverNotMateriallyHarderThanGold": false
+      },
+      "microGate": {
+        "easy": true,
+        "medium": true,
+        "r1": true,
+        "silverVsGold": false,
+        "pass": false
+      }
+    },
+    "SILVER_A": {
+      "careers": 5,
+      "matches": 604,
+      "easy": {
+        "wr": 47.8,
+        "n": 272,
+        "w": 130
+      },
+      "medium": {
+        "wr": 44.6,
+        "n": 233,
+        "w": 104
+      },
+      "hard": {
+        "wr": 36.4,
+        "n": 99,
+        "w": 36
+      },
+      "r1": {
+        "wr": 43.4,
+        "n": 346,
+        "w": 150
+      },
+      "tiers": {
+        "Bronze": {
+          "all": {
+            "wr": 58.9,
+            "n": 158,
+            "w": 93
+          },
+          "main": {
+            "wr": 58.9,
+            "n": 158,
+            "w": 93
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 58.1,
+            "n": 74,
+            "w": 43
+          },
+          "faced": {
+            "opp": 35.5,
+            "team": 38.3
+          },
+          "field": {
+            "fields": 77,
+            "ovr": {
+              "p10": 34.5,
+              "p25": 35,
+              "p50": 35.5,
+              "p75": 36.5,
+              "p90": 38
+            },
+            "rank": {
+              "p10": 804,
+              "p25": 888,
+              "p50": 912,
+              "p75": 944,
+              "p90": 958
+            },
+            "fit": {
+              "p10": 100,
+              "p50": 100,
+              "p90": 100
+            },
+            "strength": {
+              "p10": 101.2,
+              "p50": 105.8,
+              "p90": 110
+            },
+            "offset": 0,
+            "orderedSize": 276,
+            "preferredSize": 149,
+            "preferredInField": 15
+          }
+        },
+        "Silver": {
+          "all": {
+            "wr": 32.5,
+            "n": 114,
+            "w": 37
+          },
+          "main": {
+            "wr": 32.5,
+            "n": 114,
+            "w": 37
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 39,
+            "n": 77,
+            "w": 30
+          },
+          "faced": {
+            "opp": 46,
+            "team": 39.3
+          },
+          "field": {
+            "fields": 78,
+            "ovr": {
+              "p10": 42,
+              "p25": 45,
+              "p50": 46.5,
+              "p75": 49,
+              "p90": 50.5
+            },
+            "rank": {
+              "p10": 738.5,
+              "p25": 786,
+              "p50": 810,
+              "p75": 838,
+              "p90": 866
+            },
+            "fit": {
+              "p10": 100,
+              "p50": 100,
+              "p90": 100
+            },
+            "strength": {
+              "p10": 128.3,
+              "p50": 131.4,
+              "p90": 133.9
+            },
+            "offset": 69,
+            "orderedSize": 274.5,
+            "preferredSize": 194,
+            "preferredInField": 15
+          }
+        },
+        "Gold": {
+          "all": {
+            "wr": 54.8,
+            "n": 93,
+            "w": 51
+          },
+          "main": {
+            "wr": 54.8,
+            "n": 93,
+            "w": 51
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 50,
+            "n": 44,
+            "w": 22
+          },
+          "faced": {
+            "opp": 77.5,
+            "team": 75.5
+          },
+          "field": {
+            "fields": 44,
+            "ovr": {
+              "p10": 74.5,
+              "p25": 76,
+              "p50": 78,
+              "p75": 80,
+              "p90": 81.5
+            },
+            "rank": {
+              "p10": 318,
+              "p25": 333.5,
+              "p50": 373,
+              "p75": 482,
+              "p90": 506
+            },
+            "fit": {
+              "p10": 80.5,
+              "p50": 90,
+              "p90": 98
+            },
+            "strength": {
+              "p10": 176,
+              "p50": 185.4,
+              "p90": 195.8
+            },
+            "offset": 0,
+            "orderedSize": 245.5,
+            "preferredSize": 187,
+            "preferredInField": 31
+          }
+        },
+        "Platinum": {
+          "all": {
+            "wr": 37.9,
+            "n": 140,
+            "w": 53
+          },
+          "main": {
+            "wr": 37.9,
+            "n": 140,
+            "w": 53
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 32.2,
+            "n": 90,
+            "w": 29
+          },
+          "faced": {
+            "opp": 79.5,
+            "team": 77.5
+          },
+          "field": {
+            "fields": 93,
+            "ovr": {
+              "p10": 77,
+              "p25": 78.5,
+              "p50": 79.5,
+              "p75": 81.5,
+              "p90": 83
+            },
+            "rank": {
+              "p10": 238,
+              "p25": 252,
+              "p50": 273,
+              "p75": 297,
+              "p90": 312
+            },
+            "fit": {
+              "p10": 100,
+              "p50": 100,
+              "p90": 100
+            },
+            "strength": {
+              "p10": 183.8,
+              "p50": 190.4,
+              "p90": 199
+            },
+            "offset": 0,
+            "orderedSize": 182,
+            "preferredSize": 148,
+            "preferredInField": 31
+          }
+        }
+      },
+      "order": {
+        "bronzeGtSilver": true,
+        "silverNotMateriallyHarderThanGold": false
+      },
+      "microGate": {
+        "easy": true,
+        "medium": true,
+        "r1": true,
+        "silverVsGold": false,
+        "pass": false
+      }
+    },
+    "SILVER_E": {
+      "careers": 5,
+      "matches": 608,
+      "easy": {
+        "wr": 52.9,
+        "n": 280,
+        "w": 148
+      },
+      "medium": {
+        "wr": 43.8,
+        "n": 242,
+        "w": 106
+      },
+      "hard": {
+        "wr": 32.6,
+        "n": 86,
+        "w": 28
+      },
+      "r1": {
+        "wr": 46.7,
+        "n": 336,
+        "w": 157
+      },
+      "tiers": {
+        "Bronze": {
+          "all": {
+            "wr": 57.5,
+            "n": 174,
+            "w": 100
+          },
+          "main": {
+            "wr": 57.5,
+            "n": 174,
+            "w": 100
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 64.2,
+            "n": 81,
+            "w": 52
+          },
+          "faced": {
+            "opp": 35,
+            "team": 37.5
+          },
+          "field": {
+            "fields": 85,
+            "ovr": {
+              "p10": 34.5,
+              "p25": 35,
+              "p50": 35.5,
+              "p75": 36.5,
+              "p90": 38
+            },
+            "rank": {
+              "p10": 773,
+              "p25": 875,
+              "p50": 910,
+              "p75": 942,
+              "p90": 959
+            },
+            "fit": {
+              "p10": 88,
+              "p50": 100,
+              "p90": 100
+            },
+            "strength": {
+              "p10": 101.5,
+              "p50": 106.2,
+              "p90": 112.1
+            },
+            "offset": 0,
+            "orderedSize": 279,
+            "preferredSize": 146,
+            "preferredInField": 15
+          }
+        },
+        "Silver": {
+          "all": {
+            "wr": 45.3,
+            "n": 106,
+            "w": 48
+          },
+          "main": {
+            "wr": 45.3,
+            "n": 106,
+            "w": 48
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 41.7,
+            "n": 60,
+            "w": 25
+          },
+          "faced": {
+            "opp": 39,
+            "team": 40
+          },
+          "field": {
+            "fields": 63,
+            "ovr": {
+              "p10": 35.5,
+              "p25": 37,
+              "p50": 39,
+              "p75": 42,
+              "p90": 44
+            },
+            "rank": {
+              "p10": 791,
+              "p25": 841,
+              "p50": 867,
+              "p75": 905,
+              "p90": 925
+            },
+            "fit": {
+              "p10": 99,
+              "p50": 100,
+              "p90": 100
+            },
+            "strength": {
+              "p10": 118.2,
+              "p50": 120.3,
+              "p90": 122.2
+            },
+            "offset": 41,
+            "orderedSize": 273,
+            "preferredSize": 191,
+            "preferredInField": 15
+          }
+        },
+        "Gold": {
+          "all": {
+            "wr": 48.2,
+            "n": 83,
+            "w": 40
+          },
+          "main": {
+            "wr": 48.2,
+            "n": 83,
+            "w": 40
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 46.7,
+            "n": 45,
+            "w": 21
+          },
+          "faced": {
+            "opp": 78,
+            "team": 76
+          },
+          "field": {
+            "fields": 45,
+            "ovr": {
+              "p10": 74.5,
+              "p25": 76,
+              "p50": 78,
+              "p75": 80,
+              "p90": 81.5
+            },
+            "rank": {
+              "p10": 317,
+              "p25": 336,
+              "p50": 365,
+              "p75": 485,
+              "p90": 513
+            },
+            "fit": {
+              "p10": 80,
+              "p50": 90,
+              "p90": 98
+            },
+            "strength": {
+              "p10": 175.7,
+              "p50": 185.3,
+              "p90": 195.2
+            },
+            "offset": 0,
+            "orderedSize": 248,
+            "preferredSize": 184,
+            "preferredInField": 31
+          }
+        },
+        "Platinum": {
+          "all": {
+            "wr": 41.5,
+            "n": 159,
+            "w": 66
+          },
+          "main": {
+            "wr": 41.5,
+            "n": 159,
+            "w": 66
+          },
+          "qualifying": {
+            "wr": null,
+            "n": 0,
+            "w": 0
+          },
+          "r1": {
+            "wr": 42.6,
+            "n": 94,
+            "w": 40
+          },
+          "faced": {
+            "opp": 79.5,
+            "team": 77
+          },
+          "field": {
+            "fields": 95,
+            "ovr": {
+              "p10": 77,
+              "p25": 78.5,
+              "p50": 79.5,
+              "p75": 81.5,
+              "p90": 82.5
+            },
+            "rank": {
+              "p10": 240,
+              "p25": 255,
+              "p50": 274,
+              "p75": 299,
+              "p90": 313
+            },
+            "fit": {
+              "p10": 100,
+              "p50": 100,
+              "p90": 100
+            },
+            "strength": {
+              "p10": 184.4,
+              "p50": 190.7,
+              "p90": 198.4
+            },
+            "offset": 0,
+            "orderedSize": 180,
+            "preferredSize": 148,
+            "preferredInField": 31
+          }
+        }
+      },
+      "order": {
+        "bronzeGtSilver": true,
+        "silverNotMateriallyHarderThanGold": true
+      },
+      "microGate": {
+        "easy": true,
+        "medium": true,
+        "r1": true,
+        "silverVsGold": true,
+        "pass": true
+      }
+    }
+  }
+}

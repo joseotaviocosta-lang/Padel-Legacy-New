@@ -1,0 +1,339 @@
+[
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-partner-engine-ovr-authority-v526b",
+    "ok": true,
+    "seconds": 7
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-partner-committed-roster-ovr-v526b",
+    "ok": true,
+    "seconds": 15
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-athlete-repair-idempotency-v526b",
+    "ok": true,
+    "seconds": 20
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-achievement-final-match-reward-v526b",
+    "ok": true,
+    "seconds": 25
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-reputation-progress-persists-v526b",
+    "ok": true,
+    "seconds": 25
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-ranking-gating-current-position-v526b",
+    "ok": true,
+    "seconds": 20
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-player-age-career-clock-v526b",
+    "ok": true,
+    "seconds": 7
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-sponsor-tier-age-progression-v526b",
+    "ok": true,
+    "seconds": 7
+  },
+  {
+    "group": "Integridade 5.26-B",
+    "name": "test-shop-tier-unlock-v526b",
+    "ok": true,
+    "seconds": 6
+  },
+  {
+    "group": "Match",
+    "name": "test-match-integrity",
+    "ok": true,
+    "seconds": 6
+  },
+  {
+    "group": "Match",
+    "name": "test-live-coach-tournament",
+    "ok": true,
+    "seconds": 11
+  },
+  {
+    "group": "Match",
+    "name": "test-committed-partner-athlete-resolution-v519",
+    "ok": true,
+    "seconds": 9
+  },
+  {
+    "group": "Match",
+    "name": "test-partnership-expiry-with-committed-tournament-v517",
+    "ok": true,
+    "seconds": 14
+  },
+  {
+    "group": "Match",
+    "name": "test-tournament-result-authority",
+    "ok": true,
+    "seconds": 8
+  },
+  {
+    "group": "Match",
+    "name": "test-settlement-uses-persisted-draw-roster",
+    "ok": true,
+    "seconds": 237
+  },
+  {
+    "group": "Match",
+    "name": "test-walkover-player-tournament-settlement",
+    "ok": true,
+    "seconds": 24
+  },
+  {
+    "group": "Match",
+    "name": "test-parallel-tournament-settlement-v59",
+    "ok": true,
+    "seconds": 41
+  },
+  {
+    "group": "Match",
+    "name": "test-bronze-silver-strength-order",
+    "ok": true,
+    "seconds": 227
+  },
+  {
+    "group": "Match",
+    "name": "test-gold-masters-strength-order",
+    "ok": true,
+    "seconds": 228
+  },
+  {
+    "group": "Match",
+    "name": "test-circuit-rank-strength-correlation",
+    "ok": true,
+    "seconds": 215
+  },
+  {
+    "group": "World",
+    "name": "test-living-world-v23",
+    "ok": true,
+    "seconds": 1
+  },
+  {
+    "group": "World",
+    "name": "test-living-partnerships-v29",
+    "ok": true,
+    "seconds": 1
+  },
+  {
+    "group": "World",
+    "name": "test-living-partnership-market-phase15",
+    "ok": true,
+    "seconds": 1
+  },
+  {
+    "group": "World",
+    "name": "test-ai-market-headless-integration-v518",
+    "ok": true,
+    "seconds": 309
+  },
+  {
+    "group": "World",
+    "name": "test-athlete-profile-ovr-repair-v56",
+    "ok": false,
+    "seconds": 1,
+    "tail": "AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:\r\n  code: 'ERR_ASSERTION',\r"
+  },
+  {
+    "group": "World",
+    "name": "test-athlete-profile-ranking-integrity-v56",
+    "ok": true,
+    "seconds": 5
+  },
+  {
+    "group": "World",
+    "name": "test-legacy-save-real-pair-duplication-repair-v516",
+    "ok": true,
+    "seconds": 12
+  },
+  {
+    "group": "World",
+    "name": "test-legacy-ranking-repair-idempotency-v56",
+    "ok": true,
+    "seconds": 5
+  },
+  {
+    "group": "World",
+    "name": "test-legacy-boot-single-repair-write-v524e",
+    "ok": true,
+    "seconds": 13
+  },
+  {
+    "group": "World",
+    "name": "test-idle-boot-zero-write-v524e",
+    "ok": true,
+    "seconds": 16
+  },
+  {
+    "group": "Persistence",
+    "name": "test-tutorial-reward-persists-after-reload-v524d",
+    "ok": true,
+    "seconds": 7
+  },
+  {
+    "group": "Persistence",
+    "name": "test-tutorial-reward-single-write-v524d",
+    "ok": true,
+    "seconds": 7
+  },
+  {
+    "group": "Persistence",
+    "name": "test-tutorial-reward-app-restart-v524d",
+    "ok": true,
+    "seconds": 14
+  },
+  {
+    "group": "Persistence",
+    "name": "test-tutorial-reward-idempotency-v524d",
+    "ok": true,
+    "seconds": 4
+  },
+  {
+    "group": "Persistence",
+    "name": "test-mobile-storage-m3-6",
+    "ok": true,
+    "seconds": 5
+  },
+  {
+    "group": "Achievements",
+    "name": "test-achievement-reward-atomicity-v524e",
+    "ok": true,
+    "seconds": 9
+  },
+  {
+    "group": "Achievements",
+    "name": "test-achievement-multi-unlock-batch-v524e",
+    "ok": true,
+    "seconds": 6
+  },
+  {
+    "group": "Achievements",
+    "name": "test-achievement-reward-restart-v524e",
+    "ok": true,
+    "seconds": 16
+  },
+  {
+    "group": "Achievements",
+    "name": "test-achievement-reward-idempotency-v524e",
+    "ok": true,
+    "seconds": 9
+  },
+  {
+    "group": "Achievements",
+    "name": "test-achievement-write-failure-recovery-v524e",
+    "ok": true,
+    "seconds": 9
+  },
+  {
+    "group": "Achievements",
+    "name": "test-achievement-engine-v2",
+    "ok": true,
+    "seconds": 6
+  },
+  {
+    "group": "Achievements",
+    "name": "test-mission-reward-regression-v524e",
+    "ok": true,
+    "seconds": 69
+  },
+  {
+    "group": "Ranking",
+    "name": "test-team-ranking-sum-formula-v522e",
+    "ok": true,
+    "seconds": 1
+  },
+  {
+    "group": "Ranking",
+    "name": "test-team-ranking-pair-change-sum-v522e",
+    "ok": true,
+    "seconds": 4
+  },
+  {
+    "group": "Ranking",
+    "name": "test-player-team-ranking-authority",
+    "ok": true,
+    "seconds": 4
+  },
+  {
+    "group": "Ranking",
+    "name": "test-player-team-ranking-position-v522g",
+    "ok": true,
+    "seconds": 4
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-consistency",
+    "ok": true,
+    "seconds": 4
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-race-season",
+    "ok": true,
+    "seconds": 6
+  },
+  {
+    "group": "Ranking",
+    "name": "test-race-circuit-ledger-parity-v5",
+    "ok": true,
+    "seconds": 184
+  },
+  {
+    "group": "Ranking",
+    "name": "test-playthrough-4-5a-race-persistence",
+    "ok": true,
+    "seconds": 12
+  },
+  {
+    "group": "Ranking",
+    "name": "test-ranking-four-view-architecture-v523",
+    "ok": true,
+    "seconds": 1
+  },
+  {
+    "group": "Ranking",
+    "name": "test-circuit-ranking-reload-idempotency",
+    "ok": true,
+    "seconds": 183
+  },
+  {
+    "group": "Sponsors/Shop",
+    "name": "test-sports-economy-v26",
+    "ok": true,
+    "seconds": 1
+  },
+  {
+    "group": "Sponsors/Shop",
+    "name": "test-shop-phase1",
+    "ok": true,
+    "seconds": 4
+  },
+  {
+    "group": "Sponsors/Shop",
+    "name": "test-career-opportunity-progression",
+    "ok": true,
+    "seconds": 5
+  },
+  {
+    "group": "Mobile",
+    "name": "test-mobile-foundation",
+    "ok": true,
+    "seconds": 1
+  }
+]

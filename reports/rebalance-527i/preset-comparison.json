@@ -1,0 +1,213 @@
+{
+  "complete": true,
+  "classification": {
+    "conservative-e": "REJECT",
+    "balanced-e": "VIABLE",
+    "hardcore-e": "PREFERRED"
+  },
+  "viable": [
+    "balanced-e",
+    "hardcore-e"
+  ],
+  "preferred": "hardcore-e",
+  "gates": {
+    "conservative-e": {
+      "checks": [
+        {
+          "gate": "Easy (Normal, 2a)",
+          "value": 54.4,
+          "pass": true,
+          "rule": ">= 45%"
+        },
+        {
+          "gate": "Medium (Normal, 2a)",
+          "value": 41,
+          "pass": true,
+          "rule": ">= 30%"
+        },
+        {
+          "gate": "Hard (Normal, 2a)",
+          "value": 35.2,
+          "pass": true,
+          "rule": "<= 50%"
+        },
+        {
+          "gate": "R1 (Normal, 2a)",
+          "value": 42.8,
+          "pass": true,
+          "rule": ">= 40%"
+        },
+        {
+          "gate": "Sponsor Y1 (mediana Normal)",
+          "value": 63.7,
+          "pass": false,
+          "rule": "<= 60%"
+        },
+        {
+          "gate": "Prize Y1 (mediana Normal)",
+          "value": 10.5,
+          "pass": true,
+          "rule": ">= 10%"
+        },
+        {
+          "gate": "Dívida Casual",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 20%"
+        },
+        {
+          "gate": "Dívida Normal",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 10%"
+        },
+        {
+          "gate": "Silver × Gold (main, Normal)",
+          "value": 51.7,
+          "pass": true,
+          "rule": "Silver + 5 ≥ Gold (39.8)"
+        }
+      ],
+      "allHardPass": false,
+      "preferred": {
+        "easy": false,
+        "medium": true,
+        "hard": true
+      },
+      "balanceScore": 9.7
+    },
+    "balanced-e": {
+      "checks": [
+        {
+          "gate": "Easy (Normal, 2a)",
+          "value": 52.9,
+          "pass": true,
+          "rule": ">= 45%"
+        },
+        {
+          "gate": "Medium (Normal, 2a)",
+          "value": 43.8,
+          "pass": true,
+          "rule": ">= 30%"
+        },
+        {
+          "gate": "Hard (Normal, 2a)",
+          "value": 32.6,
+          "pass": true,
+          "rule": "<= 50%"
+        },
+        {
+          "gate": "R1 (Normal, 2a)",
+          "value": 46.7,
+          "pass": true,
+          "rule": ">= 40%"
+        },
+        {
+          "gate": "Sponsor Y1 (mediana Normal)",
+          "value": 48.7,
+          "pass": true,
+          "rule": "<= 60%"
+        },
+        {
+          "gate": "Prize Y1 (mediana Normal)",
+          "value": 16.8,
+          "pass": true,
+          "rule": ">= 10%"
+        },
+        {
+          "gate": "Dívida Casual",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 20%"
+        },
+        {
+          "gate": "Dívida Normal",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 10%"
+        },
+        {
+          "gate": "Silver × Gold (main, Normal)",
+          "value": 45.3,
+          "pass": true,
+          "rule": "Silver + 5 ≥ Gold (48.2)"
+        }
+      ],
+      "allHardPass": true,
+      "preferred": {
+        "easy": false,
+        "medium": true,
+        "hard": true
+      },
+      "balanceScore": 2.1
+    },
+    "hardcore-e": {
+      "checks": [
+        {
+          "gate": "Easy (Normal, 2a)",
+          "value": 54.7,
+          "pass": true,
+          "rule": ">= 45%"
+        },
+        {
+          "gate": "Medium (Normal, 2a)",
+          "value": 40.8,
+          "pass": true,
+          "rule": ">= 30%"
+        },
+        {
+          "gate": "Hard (Normal, 2a)",
+          "value": 31,
+          "pass": true,
+          "rule": "<= 50%"
+        },
+        {
+          "gate": "R1 (Normal, 2a)",
+          "value": 44.1,
+          "pass": true,
+          "rule": ">= 40%"
+        },
+        {
+          "gate": "Sponsor Y1 (mediana Normal)",
+          "value": 38.4,
+          "pass": true,
+          "rule": "<= 60%"
+        },
+        {
+          "gate": "Prize Y1 (mediana Normal)",
+          "value": 13.7,
+          "pass": true,
+          "rule": ">= 10%"
+        },
+        {
+          "gate": "Dívida Casual",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 20%"
+        },
+        {
+          "gate": "Dívida Normal",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 10%"
+        },
+        {
+          "gate": "Silver × Gold (main, Normal)",
+          "value": 53,
+          "pass": true,
+          "rule": "Silver + 5 ≥ Gold (41.3)"
+        }
+      ],
+      "allHardPass": true,
+      "preferred": {
+        "easy": false,
+        "medium": true,
+        "hard": true
+      },
+      "balanceScore": 0.9
+    }
+  },
+  "balancedE": "VIABLE",
+  "proceedToStage2": true,
+  "defaultChangeRequired": "outro preset (hardcore-e) ficou PREFERRED — PARAR e reportar; default NÃO trocado"
+}

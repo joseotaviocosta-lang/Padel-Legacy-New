@@ -25,3 +25,30 @@ export const ATTRIBUTES = [
 ];
 
 export const ATTRIBUTE_KEYS = ATTRIBUTES.map((a) => a.key);
+
+// Playthrough 5.26-B — AUTORIDADE ÚNICA do OVR-base de qualquer atleta.
+// É a mesma regra que padel.js:overallRating já usava na UI (Playthrough
+// 5.22): entidade treinável → média dos atributos PRESENTES (ausente é
+// desconhecido, não zero); atleta do mundo sem atributos planos → o
+// `overall_rating`/`overall` declarado. Mora aqui (módulo-folha, sem
+// imports) para que o motor de partida use exatamente a mesma regra sem
+// puxar o grafo inteiro de padel.js. Antes, o motor (engine/match/
+// playerModel.js) tinha a sua própria média sobre as 10 chaves com piso 1:
+// todo AthleteProfile sem atributos planos (parceiro materializado, atletas
+// do mundo) entrava na partida com OVR 1.
+// Devolve `null` quando não há nenhuma fonte (desconhecido); sem
+// modificadores de contexto (química, energia…) e sem clamp — cada chamador
+// aplica os seus.
+export function baseOverallRating(profile) {
+  if (!profile) return null;
+  const attributeValues = ATTRIBUTE_KEYS
+    .map((key) => Number(profile[key]))
+    .filter((value) => Number.isFinite(value));
+  if (attributeValues.length) {
+    const sum = attributeValues.reduce((a, b) => a + b, 0);
+    return Math.round(sum / attributeValues.length);
+  }
+  const declared = Number(profile.overall_rating ?? profile.overall);
+  if (!Number.isFinite(declared) || declared <= 0) return null;
+  return Math.round(declared);
+}

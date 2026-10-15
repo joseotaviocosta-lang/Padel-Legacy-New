@@ -1,0 +1,35 @@
+{
+  "generatedAt": "2026-10-27",
+  "note": "Regressões de integridade obrigatórias (Bloco P). Todas verdes; o test-player-age-career-clock-v526b e o test-all-sponsors-reachable-v526c foram atualizados para o gate de prova de patrocínio (5.27-B) — a alcançabilidade e a idade seguem inalteradas.",
+  "suites": {
+    "5.26-D (real pairs, TeamRanking, immutable draw, no synthetic fallback, upset)": {
+      "files": 12,
+      "passed": 12,
+      "runner": "scripts/run-tests-tournament-world-parity-526d.mjs"
+    },
+    "5.26-C (rollover, race reset, sponsor availability, re-sign)": {
+      "tests": [
+        "test-ranking-expiration-window-v526c 10/10",
+        "test-race-year-reset-v526c 8/8",
+        "test-all-sponsors-reachable-v526c 23/23",
+        "test-partner-resign-loop-v526c 6/6"
+      ]
+    },
+    "5.26-B (partner OVR, no freeze, rewards, reputation, age)": {
+      "tests": [
+        "test-partner-committed-roster-ovr-v526b 5/5",
+        "test-career-year2-no-freeze-v526b 6/6",
+        "test-achievement-final-match-reward-v526b 8/8",
+        "test-reputation-progress-persists-v526b 10/10",
+        "test-player-age-career-clock-v526b 8/8 (atualizado para o gate de prova)"
+      ]
+    },
+    "5.24/5.25 (atomic rewards, boot zero-write, storage)": {
+      "tests": [
+        "test-idle-boot-zero-write-v524e PASS",
+        "test-second-boot-zero-write-v524e PASS"
+      ]
+    }
+  },
+  "integrityRegression": false
+}

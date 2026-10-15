@@ -1,0 +1,598 @@
+{
+  "summary": {
+    "days": 30,
+    "retiredPartner": "player-fictional-7i55ge",
+    "signs": 31,
+    "retiredResigns": 30,
+    "endedByRetirement": 30,
+    "finalPartner": "player-fictional-7i55ge"
+  },
+  "signs": [
+    {
+      "date": "2026-01-01",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791118723640-pzlj0g",
+      "via": "fixture"
+    },
+    {
+      "date": "2026-01-02",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119264640-mro58a",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-03",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119325640-9v2l4x",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-04",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119393640-hc71z7",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-05",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119464640-6h4oe1",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-06",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119524640-3xevbh",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-07",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119586640-8b0pyv",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-08",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119654640-n2z589",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-09",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119714640-b88dzc",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-10",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119776640-cw2nke",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-11",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119843640-4caon0",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-12",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119909640-9tx3tm",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-13",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791119970640-2u9xw1",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-14",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120030640-g133ko",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-15",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120097640-93rnrj",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-16",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120158640-fviswz",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-17",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120219640-u2xrbq",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-18",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120287640-tu0o8j",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-19",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120359640-q1ejt9",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-20",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120419640-738b64",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-21",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120480640-q54e2l",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-22",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120549640-nvlpnc",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-23",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120609640-tks32a",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-24",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120670640-mvk5wr",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-25",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120742640-wagcn8",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-26",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120812640-ivtt47",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-27",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120873640-ybw22h",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-28",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791120934640-shgwr7",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-29",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791121006640-l3jgsh",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-30",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791121067640-tiiw09",
+      "via": "search"
+    },
+    {
+      "date": "2026-01-31",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791121131640-m0hecv",
+      "via": "search"
+    }
+  ],
+  "ended": [
+    {
+      "partner": "player-fictional-9g5it6",
+      "status": "encerrada_jogador",
+      "reason": "Nova parceria formada",
+      "ended": "2026-01-01"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-02"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-03"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-04"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-05"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-06"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-07"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-08"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-09"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-10"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-11"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-12"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-13"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-14"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-15"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-16"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-17"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-18"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-19"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-20"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-21"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-22"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-23"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-24"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-25"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-26"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-27"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-28"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-29"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-30"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-31"
+    }
+  ],
+  "days": [
+    {
+      "date": "2026-01-02",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-03",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-04",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-05",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-06",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-07",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-08",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-09",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-10",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-11",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-12",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-13",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-14",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-15",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-16",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-17",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-18",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-19",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-20",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-21",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-22",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-23",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-24",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-25",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-26",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-27",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-28",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-29",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-30",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    },
+    {
+      "date": "2026-01-31",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-7i55ge",
+      "signed": "player-fictional-7i55ge",
+      "error": null
+    }
+  ]
+}

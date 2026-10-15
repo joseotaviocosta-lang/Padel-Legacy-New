@@ -1,0 +1,77 @@
+{
+  "tag": "before",
+  "cases": {
+    "partner": {
+      "uiOvr": 35,
+      "engineOvr": 1,
+      "engineAttributes": {
+        "serve": 1,
+        "forehand": 1,
+        "backhand": 1,
+        "volley": 1,
+        "bandeja": 1,
+        "smash": 1,
+        "defense": 1,
+        "agility": 1,
+        "strategy": 1,
+        "emotional": 1
+      },
+      "teamStrengthEngine": 20.5,
+      "playerEngineOvr": 40
+    },
+    "elite": {
+      "uiOvr": 88,
+      "engineOvr": 1,
+      "engineAttributes": {
+        "serve": 1,
+        "forehand": 1,
+        "backhand": 1,
+        "volley": 1,
+        "bandeja": 1,
+        "smash": 1,
+        "defense": 1,
+        "agility": 1,
+        "strategy": 1,
+        "emotional": 1
+      },
+      "teamStrengthEngine": 20.5,
+      "playerEngineOvr": 40
+    },
+    "weak": {
+      "uiOvr": 9,
+      "engineOvr": 1,
+      "engineAttributes": {
+        "serve": 1,
+        "forehand": 1,
+        "backhand": 1,
+        "volley": 1,
+        "bandeja": 1,
+        "smash": 1,
+        "defense": 1,
+        "agility": 1,
+        "strategy": 1,
+        "emotional": 1
+      },
+      "teamStrengthEngine": 20.5,
+      "playerEngineOvr": 40
+    },
+    "partial": {
+      "uiOvr": 31,
+      "engineOvr": 19,
+      "engineAttributes": {
+        "serve": 30,
+        "forehand": 32,
+        "backhand": 29,
+        "volley": 33,
+        "bandeja": 31,
+        "smash": 31,
+        "defense": 19,
+        "agility": 19,
+        "strategy": 19,
+        "emotional": 19
+      },
+      "teamStrengthEngine": 29.5,
+      "playerEngineOvr": 40
+    }
+  }
+}

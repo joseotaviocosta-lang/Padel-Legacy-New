@@ -9,6 +9,8 @@ import {
 import { overallRating } from '@/lib/padel';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 import { calculateRenewalInterest, decideRenewal, getPartnershipContractTransition, seededChance, seededHash } from './livingCircuitRules.js';
+import { findCommittedTournaments, resolveScheduledSeparationDate, PARTNERSHIP_EXIT_STATUSES } from '@/lib/committedRoster.js';
+import { ensurePostSeparationPartnerMarket } from './postSeparationMarket.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 
@@ -119,6 +121,8 @@ export async function renewPartnerContract(profile, terms = {}) {
     const partnership = await entities.Partnership.update(active.id, {
       contract_status: contractStatus,
       renewal_available: decision.outcome === 'wait',
+      // 5.27-J: corte temporal da decisão de saída (primeira vez; nunca reescrito).
+      ...(decision.outcome === 'refused' && !active.exit_decided_at ? { exit_decided_at: careerDate } : {}),
       last_renewal_decision_key: decisionKey,
       last_renewal_decision: decision,
       renewal_interest_snapshot: decision.interest,
@@ -145,6 +149,8 @@ export async function renewPartnerContract(profile, terms = {}) {
   const partnership = await entities.Partnership.update(active.id, {
     status: 'ativa',
     contract_status: 'renovado',
+    // 5.27-J: renovado, não há mais saída decidida — o corte temporal anterior não vale.
+    exit_decided_at: null,
     negotiated_duration_days: acceptedTerms.durationDays,
     scheduled_end_date: addDays(careerDate, acceptedTerms.durationDays),
     contract_end_date: addDays(careerDate, acceptedTerms.durationDays),
@@ -221,6 +227,7 @@ export async function schedulePartnerSeparation(profile, reason = 'Fim de ciclo 
   const endDate = active.contract_end_date || active.scheduled_end_date || careerDate;
   const partnership = await entities.Partnership.update(active.id, {
     contract_status: 'encerrar_ao_final', renewal_available: false,
+    exit_decided_at: active.exit_decided_at || careerDate,
     planned_end_reason: reason,
     history: [...(active.history || []), { date: careerDate, event: 'end_scheduled', reason }].slice(-30),
   });
@@ -298,19 +305,71 @@ export function calculatePartnerRenewalInterest(active, profile, { betterOpportu
 // mesmo em avanço de vários dias de uma vez (checa se o limiar foi
 // CRUZADO entre previousDate e currentDate, não só "é exatamente esse
 // dia" — um salto de 20 dias não pode pular o aviso D-15).
+// Playthrough 5.17 (continuação), Partes A/B — ESTADO DA DECISÃO CONTRATUAL.
+//
+// Auditoria: existem 4 avisos (D-15, D-7, D-3, D-1), cada um com chave de
+// contexto estável por marco — então nenhum deles duplica por dia nem por
+// reload. O problema é outro: TODOS eram emitidos com
+// `status: 'decisao_pendente'` mesmo DEPOIS de o jogador já ter decidido.
+// "Decida o futuro da dupla" reaparecia como se nada tivesse acontecido.
+//
+// A fonte de verdade continua sendo `Partnership.contract_status` (Parte B:
+// não duplicar source of truth). Esta função apenas o traduz para os estados
+// nomeados que o relatório pede.
+export const CONTRACT_DECISION_STATES = Object.freeze({
+  UNDECIDED: 'UNDECIDED',
+  RENEWED: 'RENEWED',
+  ENDING_AT_EXPIRY: 'ENDING_AT_EXPIRY',
+  ENDING_AFTER_COMMITMENTS: 'ENDING_AFTER_COMMITMENTS',
+  ENDED: 'ENDED',
+});
+
+export function getContractDecisionState(partnership) {
+  const status = String(partnership?.contract_status || '');
+  if (!partnership || partnership.status !== 'ativa') return CONTRACT_DECISION_STATES.ENDED;
+  if (status === 'encerra_apos_compromisso') return CONTRACT_DECISION_STATES.ENDING_AFTER_COMMITMENTS;
+  if (['encerrar_ao_final', 'nao_renovara'].includes(status)) return CONTRACT_DECISION_STATES.ENDING_AT_EXPIRY;
+  if (['renovado', 'renovada'].includes(status)) return CONTRACT_DECISION_STATES.RENEWED;
+  return CONTRACT_DECISION_STATES.UNDECIDED;
+}
+
+export function isContractDecided(partnership) {
+  return getContractDecisionState(partnership) !== CONTRACT_DECISION_STATES.UNDECIDED;
+}
+
 async function emitExpiryWarnings(profile, active, currentDate, warningDays) {
+  // Parte B — uma decisão tomada permanece tomada. Com a decisão registrada,
+  // o marco vira informativo (o jogador continua sabendo que a data se
+  // aproxima) e NUNCA volta como pendência.
+  const decided = isContractDecided(active);
   for (const daysBefore of warningDays) {
-    const label = daysBefore === 1 ? 'Decida o futuro da dupla.' : daysBefore <= 3 ? `Seu contrato termina em ${daysBefore} dias.` : daysBefore <= 7 ? 'Hora de pensar no futuro da dupla.' : `Seu contrato com ${active.partner_name} termina em ${daysBefore} dias.`;
+    const decisionState = getContractDecisionState(active);
+    const decidedLabel = decisionState === CONTRACT_DECISION_STATES.RENEWED
+      ? `Contrato renovado. Faltam ${daysBefore} dias para o marco anterior.`
+      : decisionState === CONTRACT_DECISION_STATES.ENDING_AFTER_COMMITMENTS
+        ? `Separação já agendada: a dupla segue até o último compromisso assumido.`
+        : `Separação já decidida: o contrato termina em ${daysBefore} dias.`;
+    const label = decided
+      ? decidedLabel
+      : daysBefore === 1 ? 'Decida o futuro da dupla.' : daysBefore <= 3 ? `Seu contrato termina em ${daysBefore} dias.` : daysBefore <= 7 ? 'Hora de pensar no futuro da dupla.' : `Seu contrato com ${active.partner_name} termina em ${daysBefore} dias.`;
     await upsertCareerMessage(profile.id, `partner-contract-expiry:${active.id}:${daysBefore}`, {
       sender_name: active.partner_name,
       sender_type: 'atleta',
-      title: daysBefore <= 3 ? 'Futuro da dupla' : 'Contrato se aproximando do fim',
+      title: decided ? 'Contrato — decisão registrada' : daysBefore <= 3 ? 'Futuro da dupla' : 'Contrato se aproximando do fim',
       content: label,
-      status: 'decisao_pendente',
-      priority: daysBefore <= 3 ? 'alta' : 'normal',
+      // Parte B: decidido => informativo, nunca pendente.
+      status: decided ? 'nao_lida' : 'decisao_pendente',
+      priority: decided ? 'normal' : daysBefore <= 3 ? 'alta' : 'normal',
       message_type: 'partner_contract_expiry',
       career_date: currentDate,
-      actions: [{ id: 'open_partner_hub', label: 'Conversar sobre o futuro', type: 'view_partnership', payload: { partnershipId: active.id } }],
+      actions: decided
+        ? []
+        // Playthrough 5.19, Parte E — o rótulo era "Conversar sobre o futuro",
+        // o que prometia conversa e casava com o defeito que abria o diálogo de
+        // pós-jogo. A ação sempre foi `view_partnership` (decisão contratual);
+        // só o texto induzia ao erro.
+        : [{ id: 'open_partner_contract', label: 'Decidir o contrato', type: 'view_partnership', payload: { partnershipId: active.id } }],
+      metadata: { contract_decision_state: decisionState },
       destination: { type: 'CONTRACT', route: '/partners', params: { view: 'contract', focus: 'contract-future', partnership: active.id } },
     });
   }
@@ -318,7 +377,17 @@ async function emitExpiryWarnings(profile, active, currentDate, warningDays) {
 
 export async function processPartnerDay(profile, previousDate, currentDate) {
   const active = await getActivePartnership(profile?.id);
-  if (!active) return profile;
+  if (!active) {
+    // Playthrough 5.17, Parte F — o ciclo de parceria saía DAQUI sem fazer
+    // nada, e era exatamente por isso que o mundo ficava mudo depois de uma
+    // separação: todo o lifecycle estava condicionado a JÁ ter dupla. Sem
+    // parceiro, nenhum sistema procurava ninguém, e a busca manual deixava
+    // de ser uma opção para virar o único caminho.
+    await ensurePostSeparationPartnerMarket(profile, currentDate).catch((error) => {
+      console.warn('[Parceria] mercado pós-separação:', error?.message || error);
+    });
+    return profile;
+  }
 
   const partnerRows = await entities.AthleteProfile.filter({ id: active.partner_bot_id }, null, 1).catch(() => []);
   const partnerStatus = String(partnerRows[0]?.career_status || partnerRows[0]?.status || '').toLowerCase();
@@ -376,6 +445,37 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
     }
   }
 
+  // Playthrough 5.17, Parte C — a outra metade da separação agendada: o
+  // encerramento REAL, quando o último compromisso protegido termina.
+  // Idempotente: só dispara quando a data já passou, e `endPartnership` é o
+  // mesmo caminho canônico de sempre.
+  if (active.contract_status === 'encerra_apos_compromisso' && active.separation_scheduled_date) {
+    if (String(currentDate).slice(0, 10) > String(active.separation_scheduled_date).slice(0, 10)) {
+      const partnerName = active.partner_name;
+      await endPartnership(active.id, 'encerrada_contrato', 'Contrato não renovado', currentDate);
+      await upsertCareerMessage(profile.id, `partner-contract-ended:${active.id}`, {
+        sender_name: partnerName,
+        sender_type: 'atleta',
+        title: 'Fim da parceria',
+        content: `Nossa parceria com ${partnerName} chegou ao fim após o último compromisso assumido. ${Number(active.shared_matches) || 0} partidas, ${Number(active.shared_wins) || 0} vitórias juntos.`,
+        status: 'nao_lida',
+        priority: 'alta',
+        message_type: 'partner_contract_ended',
+        career_date: currentDate,
+        actions: [{ id: 'find_partner', label: 'Buscar nova dupla', type: 'view_partnership', payload: {} }],
+        destination: { type: 'PARTNER_OFFER', route: '/partners', params: { view: 'offers' } },
+      });
+      await resolvePartnerDecisionMessages(profile.id, active.id, 'contract_ended');
+      return entities.PlayerProfile.update(profile.id, {
+        ...profileUpdates,
+        partner_id: null,
+        partner_name: null,
+        partner_locked_until: null,
+        partner_chemistry: 50,
+      });
+    }
+  }
+
   const endDate = active.contract_end_date || active.scheduled_end_date;
   const transition = getPartnershipContractTransition(active, previousDate, currentDate);
   // Fase 15 (Parte 2/4/5): bug real confirmado pela auditoria — este bloco
@@ -388,14 +488,18 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
   if (endDate) {
     await emitExpiryWarnings(profile, active, currentDate, transition.warningDays);
     const daysRemaining = transition.daysRemaining;
-    if (daysRemaining <= 15 && daysRemaining > 0 && !['encerrar_ao_final', 'nao_renovara'].includes(active.contract_status)) {
+    if (daysRemaining <= 15 && daysRemaining > 0 && !PARTNERSHIP_EXIT_STATUSES.includes(active.contract_status)) {
       updates.contract_status = 'renovacao_proxima';
       updates.renewal_available = true;
     }
   }
   if (endDate && currentDate >= endDate) {
     const wasAlreadyVencido = active.contract_status === 'vencido';
-    const plannedEnd = ['encerrar_ao_final', 'nao_renovara'].includes(active.contract_status);
+    // 5.27-J: `encerra_apos_compromisso` também é saída decidida. Antes ele caía
+    // aqui em `vencido` (carência com renovação disponível) no dia seguinte —
+    // a dupla voltava a "não decidida", se inscrevia de novo e, ao fim da
+    // carência, a separação era recalculada incluindo os torneios novos.
+    const plannedEnd = PARTNERSHIP_EXIT_STATUSES.includes(active.contract_status);
     updates.renewal_available = !plannedEnd;
     updates.contract_status = plannedEnd ? active.contract_status : 'vencido';
     if (!wasAlreadyVencido && !plannedEnd) {
@@ -413,6 +517,55 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
       });
     }
     if (transition.shouldEnd) {
+      // Playthrough 5.17, Parte C — SEPARAÇÃO AGENDADA.
+      //
+      // Antes desta guarda, o fim do contrato encerrava a parceria na data
+      // nominal mesmo que a dupla já estivesse inscrita num torneio futuro.
+      // O compromisso continuava salvo, mas sem dupla: era exatamente a
+      // origem do "<jogador> & Parceiro" na chave de Casablanca e da perda
+      // de crédito no settlement.
+      //
+      // Regra: um compromisso já assumido não pode ficar órfão. A parceria
+      // sobrevive até o ÚLTIMO evento já confirmado terminar — nem um dia
+      // além. Isso não é renovação: `canRegisterNewTournamentWithPartnership`
+      // impede inscrever qualquer coisa nova depois da data nominal.
+      const [committedTournaments, committedRegistrations] = await Promise.all([
+        entities.Tournament.list('start_date', 3000).catch(() => []),
+        entities.TournamentRegistration.filter({ profile_id: profile.id }).catch(() => []),
+      ]);
+      const pending = findCommittedTournaments({
+        registrations: committedRegistrations || [],
+        tournaments: committedTournaments || [],
+        careerDate: currentDate,
+        partnerId: active.partner_bot_id || active.partner_id || null,
+      });
+      if (pending.length) {
+        const schedule = resolveScheduledSeparationDate(endDate, pending);
+        const last = schedule.until || pending[pending.length - 1];
+        await entities.Partnership.update(active.id, {
+          contract_status: 'encerra_apos_compromisso',
+          exit_decided_at: active.exit_decided_at || currentDate,
+          separation_scheduled_after_tournament_id: last.tournamentId,
+          separation_scheduled_date: last.endDate,
+          renewal_available: false,
+        }).catch(() => {});
+        // Uma mensagem por compromisso-alvo (id estável): a decisão não
+        // renasce a cada dia enquanto o torneio não chega.
+        await upsertCareerMessage(profile.id, `partner-separation-scheduled:${active.id}:${last.tournamentId}`, {
+          sender_name: active.partner_name,
+          sender_type: 'atleta',
+          title: 'Separação agendada',
+          content: `Nosso contrato terminou, mas ainda temos um compromisso assumido. A parceria será encerrada após ${last.name}.`,
+          status: 'nao_lida',
+          priority: 'normal',
+          message_type: 'partner_separation_scheduled',
+          career_date: currentDate,
+          actions: [{ id: 'open_partner_hub', label: 'Ver parceria', type: 'view_partnership', payload: { partnershipId: active.id } }],
+          destination: { type: 'CONTRACT', route: '/partners', params: { view: 'contract', partnership: active.id } },
+        });
+        return entities.PlayerProfile.update(profile.id, profileUpdates);
+      }
+
       const partnerName = active.partner_name;
       await endPartnership(active.id, 'encerrada_contrato', 'Contrato não renovado', currentDate);
       await upsertCareerMessage(profile.id, `partner-contract-ended:${active.id}`, {
@@ -442,7 +595,11 @@ export async function processPartnerDay(profile, previousDate, currentDate) {
   updates.partner_morale = clamp((updates.partner_morale ?? oldMorale) + moraleDelta, 0, 100);
   if (updates.partner_morale < 15) {
     updates.renewal_available = false;
-    updates.contract_status = 'insatisfeito';
+    // 5.27-J: moral baixa não apaga uma saída já decidida. Antes, `insatisfeito`
+    // sobrescrevia `nao_renovara`/`encerrar_ao_final`/`encerra_apos_compromisso`;
+    // no vencimento a dupla caía em `vencido` (carência com renovação
+    // disponível) e voltava a se inscrever — a decisão de saída sumia.
+    if (!PARTNERSHIP_EXIT_STATUSES.includes(active.contract_status)) updates.contract_status = 'insatisfeito';
   }
 
   await entities.Partnership.update(active.id, updates);

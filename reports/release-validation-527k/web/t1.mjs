@@ -1,0 +1,11 @@
+import { attach } from './tauri.mjs';
+const { browser, page, errors, clickText, state, shot, sleep } = await attach();
+await page.goto('http://127.0.0.1:5174/careers', { waitUntil: 'networkidle2' });
+await sleep(2000);
+console.log(JSON.stringify(await state(), null, 1));
+await clickText('Nova carreira');
+await page.type('input[placeholder="Ex.: Rumo ao topo"]', 'Smoke 527K — pode apagar');
+await clickText('Criar carreira', { exact: true });
+await sleep(4000); await shot('t1-after-create');
+console.log(JSON.stringify(await state(), null, 1)); console.log('errors', JSON.stringify(errors));
+browser.disconnect();

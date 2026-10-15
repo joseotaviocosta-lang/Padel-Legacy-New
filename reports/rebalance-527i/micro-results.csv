@@ -1,0 +1,7 @@
+candidate,careers,easyWR,mediumWR,hardWR,r1WR,bronzeMainWR,silverMainWR,goldMainWR,goldQualWR,platinumMainWR,bronzeR1,silverR1,goldR1,platinumR1,silverFieldOvrP25,silverFieldOvrP50,silverFieldOvrP75,bronzeFieldOvrP50,goldFieldOvrP50,silverFacedOpp,silverTeam,silverMatches,microGatePass
+baseline,5,47.3,0,,39,59,21.3,0,,,54.7,20.6,0,,45,46.8,49,35.5,75,46.5,40.5,80,false
+SILVER_A,5,47.8,0,,46.5,58.9,32.5,0,,,58.1,39,0,,45,46.5,49,35.5,75,46,39.3,114,false
+SILVER_B,5,53,0,,46.2,51.2,55.6,0,,0,48.2,55.4,0,0,36,37,39.5,35.5,75.5,36.8,39.5,108,false
+SILVER_C,5,52.5,0,,46.5,49.3,56.1,0,,0,50.6,57.6,0,0,35.5,36,37,35.5,75,36,38,123,false
+SILVER_D,5,54.8,3.7,,48.8,54.7,54.9,0,,33.3,57.4,57.6,0,50,35.5,36.5,38.5,35.5,75,36.5,38.5,133,false
+SILVER_E,5,52.9,0,,51.7,57.5,45.3,0,,,64.2,41.7,0,,37,39,42,35.5,76,39,40,106,false

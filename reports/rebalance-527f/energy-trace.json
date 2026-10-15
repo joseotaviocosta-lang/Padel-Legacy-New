@@ -1,0 +1,54 @@
+{
+  "at": "2026-10-12T14:59:30.949Z",
+  "inputs": {
+    "player": "profile.energy (real) via TournamentModal → playerForMatch.energy",
+    "partner": "perfil do parceiro (energy do AthleteProfile, se existir no objeto)",
+    "opponents": "snapshot da chave sem energy → normalizePlayer default 100"
+  },
+  "applications": [
+    {
+      "where": "playerModel.overallRating: rating += _energyPenalty",
+      "kind": "força (OVR)",
+      "sides": "só jogador",
+      "status527F": "REMOVIDA — duplicava a aplicação por golpe"
+    },
+    {
+      "where": "RallyEngine: energyPenalty = (100−e)×0,12 × inclinação",
+      "kind": "força (execução por golpe)",
+      "sides": "todos",
+      "status527F": "mantida; inclinação 0,2 (antes 1)"
+    },
+    {
+      "where": "FatigueEngine.consume/recover",
+      "kind": "consumo durante a partida",
+      "sides": "todos",
+      "status527F": "inalterada"
+    },
+    {
+      "where": "RallyEngine: dupla falta (fatigueFactor)",
+      "kind": "chance mínima (≤0,1%)",
+      "sides": "todos",
+      "status527F": "inalterada"
+    },
+    {
+      "where": "RallyEngine.chooseTargetPlayer: peso 1+(100−e)/200",
+      "kind": "comportamento (alvo)",
+      "sides": "todos",
+      "status527F": "inalterada"
+    },
+    {
+      "where": "PositionEngine / TeamCoordination / DecisionEngine",
+      "kind": "comportamento (posição, cobertura, decisão)",
+      "sides": "todos",
+      "status527F": "inalterada"
+    },
+    {
+      "where": "MatchTactics.chooseBotTactic: energia < 38 → defensivo",
+      "kind": "tática da IA",
+      "sides": "só B (adaptativo)",
+      "status527F": "desligada por padrão com opponentAdaptive=false"
+    }
+  ],
+  "duplication": "confirmada: OVR (−2/−5/−10 por faixa) e execução por golpe medem o mesmo conceito; a do OVR era pré-processamento só do jogador",
+  "cliff": "a aplicação por golpe não usava a inclinação calibrada da habilidade: 10 pontos de energia = 6 de OVR (E90×E100 = 24%)"
+}

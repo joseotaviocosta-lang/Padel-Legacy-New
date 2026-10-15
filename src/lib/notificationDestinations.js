@@ -131,13 +131,18 @@ export function resolveNotificationDestination(notification = {}) {
 
   let route;
   switch (type) {
-    case NOTIFICATION_DESTINATION_TYPES.PRESS_INTERVIEW:
-      route = withParams(explicitRoute || metadataRoute || '/press', {
-        tab: 'interviews',
+    case NOTIFICATION_DESTINATION_TYPES.PRESS_INTERVIEW: {
+      const originalPressRoute = explicitRoute || metadataRoute || APP_ROUTES.WORLD_CIRCUIT;
+      const canonicalPressRoute = /^\/press(?:$|[?#])/.test(originalPressRoute)
+        ? APP_ROUTES.WORLD_CIRCUIT
+        : originalPressRoute || APP_ROUTES.WORLD_CIRCUIT;
+      route = withParams(canonicalPressRoute, {
+        tab: 'press',
         interview: metadata.interview_id || entityId,
         source: metadata.interview_source_id,
       });
       break;
+    }
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT:
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_DETAILS:
     case NOTIFICATION_DESTINATION_TYPES.TOURNAMENT_RUN:
@@ -155,7 +160,25 @@ export function resolveNotificationDestination(notification = {}) {
       route = withParams(explicitRoute || metadataRoute || '/coaches', { coach: metadata.coach_id || entityId });
       break;
     case NOTIFICATION_DESTINATION_TYPES.STAFF:
-      route = withParams(explicitRoute || metadataRoute || '/staff', { staff: metadata.staff_id || entityId });
+      // Playthrough 5.13 (continuação), Partes A/B/C — a notificação da
+      // comissão abria só a landing genérica `/staff`: o `destination`
+      // gravado em staffLifecycle.js é sempre `{ type:'STAFF',
+      // route:'/staff' }`, sem identificador nenhum. O conteúdo existe
+      // (metadata.recommendations/synergy/moral/proposed_plan), mas o link
+      // não apontava para ele.
+      //
+      // A identidade estável já existia e não precisou ser inventada:
+      // `upsertCareerMessage` grava `metadata.context_key` em TODA mensagem
+      // (`staff-weekly-report:<semana>`, `staff-event:<mês>`,
+      // `staff-monthly-report:<mês>`), e o id da própria mensagem deriva
+      // dela. Basta propagá-la para a rota.
+      //
+      // Parte F — save antigo sem `context_key` continua caindo em `/staff`
+      // puro, porque `withParams` omite parâmetros vazios.
+      route = withParams(explicitRoute || metadataRoute || '/staff', {
+        staff: metadata.staff_id || entityId,
+        report: metadata.context_key || null,
+      });
       break;
     case NOTIFICATION_DESTINATION_TYPES.CONTRACT: {
       const partnerContract = /partner/i.test(`${notification.message_type || ''} ${notification.related_entity_type || ''}`);

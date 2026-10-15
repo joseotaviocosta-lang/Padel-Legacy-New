@@ -1,0 +1,38 @@
+{
+  "config": "balanced-e · Normal · seed 3 · política v3 · silverFieldOffsetPct 0.25 (= 5.27-H)",
+  "before": {
+    "source": "reports/rebalance-527h/runs/balanced-e-normal-seed003-2y.json",
+    "partnershipId": "partnership-1791118513212-vkgt32",
+    "decisionDay": 49,
+    "newPartnerDay": 323,
+    "newCommitmentsAfterDecision": 26,
+    "lastLegitimateDay": 63,
+    "limboDays": 274,
+    "legitimateDays": 14,
+    "illegitimateDays": 260,
+    "harnessRefusalDay": 63,
+    "actualChangeDay": 323,
+    "decision": {
+      "day": 49,
+      "date": "2026-02-19",
+      "outcome": "refused",
+      "partnerOvr": 24,
+      "share": 0.83
+    }
+  },
+  "after": {
+    "decisionDay": 49,
+    "gameExitStatus": "encerra_apos_compromisso",
+    "newCommitmentsAfterDecision": 0,
+    "registrationsAfterHarnessRefusal": 2,
+    "lastLegitimateDay": 66,
+    "scheduledSeparationDay": 66,
+    "actualChangeDay": 67,
+    "limboDays": 18,
+    "legitimateDays": 17,
+    "extensionDays": 0,
+    "illegitimateDays": 0,
+    "harnessRefusalDay": 420
+  },
+  "note": "Antes: o \"dia da decisão\" é a recusa do parceiro (renewPartnerContract → nao_renovara). Depois: idem, lido do estado do jogo gravado por inscrição."
+}

@@ -83,10 +83,17 @@ const careerRepository = new CareerRepository();
 
 const FIELD_CLASS = 'w-full rounded-xl border border-border bg-background/70 px-3 py-2 text-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20';
 
-export default function BetaTools({ compact = false }) {
+// Playthrough 5.25 — `open`/`onOpenChange` opcionais: no mobile a Central
+// BETA saiu da superfície flutuante e passou a ser aberta pelo menu ☰
+// (AppLayout controla o estado); `triggerClassName` permite esconder o
+// gatilho flutuante só no mobile. Sem as props, nada muda.
+export default function BetaTools({ compact = false, open: openProp, onOpenChange, triggerClassName = '' }) {
   const location = useLocation();
   const { activeCareer } = useCareer();
-  const [open, setOpen] = useState(false);
+  const [openState, setOpenState] = useState(false);
+  const controlled = typeof openProp === 'boolean';
+  const open = controlled ? openProp : openState;
+  const setOpen = (value) => { if (controlled) onOpenChange?.(value); else setOpenState(value); };
   const [copied, setCopied] = useState(false);
   const [mode, setMode] = useState('feedback');
   const [feedback, setFeedback] = useState(INITIAL_FEEDBACK);
@@ -332,7 +339,7 @@ export default function BetaTools({ compact = false }) {
 
   return (
     <>
-      <button type="button" onClick={() => setOpen(true)} title="Relatar problema da versão beta" className={`inline-flex items-center justify-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 font-black text-amber-300 transition-colors hover:bg-amber-400/15 ${compact ? 'h-9 w-9 p-0' : 'px-3 py-2 text-xs'}`}>
+      <button type="button" onClick={() => setOpen(true)} title="Relatar problema da versão beta" className={`inline-flex items-center justify-center gap-2 rounded-xl border border-amber-400/25 bg-amber-400/10 font-black text-amber-300 transition-colors hover:bg-amber-400/15 ${compact ? 'h-9 w-9 p-0' : 'px-3 py-2 text-xs'} ${triggerClassName}`}>
         <Bug className="h-4 w-4" /> {!compact && 'BETA'}
       </button>
       <ModalShell

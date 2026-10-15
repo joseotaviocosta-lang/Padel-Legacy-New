@@ -2,8 +2,33 @@ import { getPendingInterviews } from '@/lib/pressData.js';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerMemory } from '@/lib/careerMemory.js';
 import { selectRelevantCareerNotifications } from '@/lib/notificationCenter.js';
-import { getTournamentReminderMilestone, tournamentReminderContextKey } from '@/lib/tournamentNotifications.js';
+import { tournamentReminderContextKey, TOURNAMENT_REMINDER_MILESTONES } from '@/lib/tournamentNotifications.js';
 import { resolveNotificationDestination } from '@/lib/notificationDestinations.js';
+import { getPlayerOpeningMatchFromCanonicalBracket } from '@/lib/tournamentBracketView.js';
+import { getCanonicalTeamWorldRank } from '@/lib/teamRanking.js';
+import { getActivePartnership } from '@/lib/partnershipSystem.js';
+import { isPlayerRegisteredForTournament, evaluateTournamentRegistration, listTournamentRegistrations, getTournamentRegistrationWindow, daysBetweenGameDates } from '@/lib/tournamentRegistration.js';
+import { getPlayerTournamentRegistrationState, TOURNAMENT_REGISTRATION_STATE } from '@/lib/tournamentRegistrationState.js';
+import { REGISTRATION_REMINDER_MILESTONES, registrationReminderContextKey } from '@/lib/tournamentNotifications.js';
+import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY } from '@/lib/bots.js';
+import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
+
+// Mesma busca pura de `getPartnerBot` (career.js) — reimplementada aqui (não
+// importada) porque career.js importa calendarSystem.js, que importa este
+// próprio arquivo: importar career.js aqui fecharia um ciclo de 3 módulos
+// (career.js -> calendarSystem.js -> careerCommunications.js -> career.js),
+// arriscando um `getPartnerBot` parcialmente inicializado dependendo da
+// ordem de carga do ESM. `BOTS_BY_DIFFICULTY`/`BOT_DIFFICULTIES` (bots.js)
+// não participam desse ciclo.
+function findPartnerBot(profile) {
+  if (!profile?.partner_id) return null;
+  for (const diff of BOT_DIFFICULTIES) {
+    const bot = BOTS_BY_DIFFICULTY[diff.id]?.find((item) => item.id === profile.partner_id);
+    if (bot) return bot;
+  }
+  return null;
+}
+import { formatDate } from '@/lib/padel.js';
 import {
   isPostMatchInterviewMessage,
   isValidPostMatchInterviewMessage,
@@ -127,6 +152,254 @@ export function buildStableMessageId(profileId, contextKey) {
 // disparam fora do fluxo de ensureContextualCareerCommunications (ex.:
 // resumo semanal, relatórios de lesão) para que ganhem a mesma proteção
 // contra duplicação sem reimplementar a lógica de dedupe.
+// Playthrough 4.6D, itens 1/5/6 — antes, esta notificação só nascia dentro
+// de ensureContextualCareerCommunications, gated por
+// `getTournamentReminderMilestone(daysUntil) !== null` (só o dia EXATO
+// D-3). Se nenhuma tela que chama ensureContextualCareerCommunications
+// (CommunicationBell.jsx/CareerHub.jsx/Communications.jsx) estivesse
+// montada/atualizando naquele dia exato — carreira avançada em lote, app
+// fechado, ou o torneio já sorteado (`Tournament.status` mudou de
+// 'inscricoes' pra 'chaveamento' no sorteio, Playthrough 4.6C — e essas
+// três telas filtram Tournament por `status:'inscricoes'`, então o torneio
+// já sorteado simplesmente PARA de aparecer como `nextTournament` depois
+// do próprio sorteio) — a janela se perdia para sempre, sem nenhum reparo.
+// Extraído como função própria, idempotente por id estável
+// (upsertCareerMessage) e condicionada só ao FATO persistido (chave
+// existe, ainda não notificado) — nunca à data ou a qual tela está aberta.
+// Chamada tanto pelo lifecycle do dia (processCalendarEvents,
+// calendarSystem.js — sem nenhuma UI) quanto de dentro de
+// ensureContextualCareerCommunications (mantém o comportamento das telas
+// que já chamavam isso, agora self-healing: se a mensagem não nasceu a
+// tempo, a próxima chamada — em QUALQUER dia — ainda cria a notificação
+// atrasada, uma única vez).
+// Playthrough 4.6E — três lacunas comprovadas no playtest real além da
+// própria persistência (que a 4.6D já resolvia corretamente):
+// (a) PARTE E/F — o texto era genérico ("Confira seu adversário da
+//     estreia...") em vez de conter o adversário/rodada/data REAIS, lidos
+//     só de bracket_history (nome canônico da dupla) + tournament_run
+//     (IDs reais dos membros do adversário, pra resolver o world rank
+//     factual — getPlayerOpeningMatchFromCanonicalBracket,
+//     tournamentBracketView.js — nunca recalculado via tournamentDraw.js);
+// (b) PARTE G — `destination.type:'TOURNAMENT_RUN'` só abre a chave quando
+//     `activeRunEvents` já inclui o torneio (Tournaments.jsx) — no D-3 o
+//     jogador não tem partida ativa ainda, então caía silenciosamente no
+//     modo DETAILS (só o modal de detalhes, nunca a chave). Corrigido com
+//     `openBracket:true` explícito, que Tournaments.jsx passa a respeitar
+//     independente do modo resolvido;
+// (c) PARTE D — nada disparava um alerta perceptível (toast) no instante em
+//     que a mensagem nascia; o jogador só via a mensagem se abrisse a
+//     Central manualmente depois. `padel:draw-notification` (evento novo,
+//     mesmo padrão dos outros dispatches deste arquivo) carrega o conteúdo
+//     pronto pra um toast — só no tick em que o sorteio REALMENTE aconteceu
+//     agora (nunca num reparo de self-healing atrasado, Parte I).
+export async function ensureTournamentDrawNotification(profile, tournament, calendarEvent = null) {
+  if (!profile?.id || !tournament?.id) return null;
+  if (tournament.world_tour_cancelled || tournament.status === 'cancelado' || tournament.current_phase === 'cancelado') return null;
+  const hasDraw = Number(tournament.bracket_schema_version) >= 2
+    && Array.isArray(tournament.bracket_history) && tournament.bracket_history.length > 0;
+  if (!hasDraw) return null;
+  // Playthrough 4.9, Parte A/F/B (invariante 2) — bug real de produção: um
+  // jogador NÃO inscrito recebia "Sorteio definido — [torneio]" com uma
+  // dupla de IA qualquer como "sua dupla". Causa raiz composta: (a) esta
+  // função nunca confirmava inscrição antes de personalizar a mensagem, e
+  // (b) getPlayerOpeningMatchFromCanonicalBracket tinha um fallback que
+  // fabricava um match quando o jogador não estava na chave (já corrigido,
+  // tournamentBracketView.js). Este guard é a segunda camada, por ID
+  // canônico (nunca por nome/texto): sem uma TournamentRegistration
+  // 'confirmed' real, a função encerra aqui — nunca chega a construir
+  // conteúdo nenhum, personalizado ou não.
+  const registered = calendarEvent?.metadata?.registration_id
+    ? true
+    : Boolean(await isPlayerRegisteredForTournament(profile.id, tournament.id).catch(() => null));
+  if (!registered) return null;
+  const contextKey = tournamentReminderContextKey(tournament.id, TOURNAMENT_REMINDER_MILESTONES[0]);
+  const stableId = buildStableMessageId(profile.id, contextKey);
+  const alreadyExists = await localGame.entities.CareerMessage.get(stableId).catch(() => null);
+  if (alreadyExists) return null;
+
+  // Parte F — o run pode já ter sido lido pelo chamador (calendarSystem.js/
+  // calendarLifecycle.js sempre têm o CalendarEvent em mãos); sem isso,
+  // busca aqui — nunca reconstrói nada, só lê o que já está persistido.
+  const event = calendarEvent || (await localGame.entities.CalendarEvent
+    .filter({ profile_id: profile.id, related_id: tournament.id })
+    .catch(() => []))
+    .find((item) => item.event_type === 'tournament' && item.metadata?.tournament_run) || null;
+  const run = event?.metadata?.tournament_run || null;
+  const opening = getPlayerOpeningMatchFromCanonicalBracket({ tournament, run });
+
+  let opponentRank = null;
+  if (opening?.opponentMemberIds?.length >= 2) {
+    const rank = await getCanonicalTeamWorldRank(opening.opponentMemberIds).catch(() => null);
+    if (rank && !rank.unranked && Number(rank.rank) > 0) opponentRank = rank.rank;
+  }
+
+  const finalRound = Array.isArray(tournament.bracket_history) ? tournament.bracket_history.at(-1) : null;
+  const drawSize = Number(tournament.main_draw_size) || null;
+  const title = `Sorteio definido — ${tournament.name || 'Próximo torneio'}`;
+  let content = 'A chave foi sorteada. Confira seu adversário da estreia e os compromissos no calendário.';
+  if (opening) {
+    const opponentLabel = opening.opponentTeam
+      ? `${opening.opponentTeam}${opponentRank ? ` (#${opponentRank})` : ' (Sem ranking)'}`
+      : 'um adversário a definir';
+    const roundText = opening.roundLabel ? ` na ${opening.roundLabel}` : '';
+    const dateText = opening.matchDate ? `, em ${formatDate(opening.matchDate)}` : '';
+    content = `A chave oficial foi sorteada. Sua dupla, ${opening.playerTeam || 'sua dupla'}, estreia contra ${opponentLabel}${roundText}${dateText}.`;
+    if (drawSize) {
+      const finalDateLabel = finalRound?.date ? formatDate(finalRound.date) : null;
+      content += ` ${drawSize} duplas disputam o título.${finalDateLabel ? ` A final está prevista para ${finalDateLabel}.` : ''}`;
+    }
+  }
+
+  // Parte I — origem inferida pelo próprio fato persistido (draw_date), nunca
+  // por um parâmetro que o chamador precisaria lembrar de passar certo: se o
+  // sorteio aconteceu HOJE, é alerta novo (same_tick); qualquer outro dia é
+  // reparo de uma mensagem que deveria ter nascido antes (self_healing) — o
+  // toast (abaixo) só dispara no primeiro caso.
+  const sameTick = Boolean(tournament.draw_date) && tournament.draw_date === profile.career_date;
+
+  const created = await upsertCareerMessage(profile.id, contextKey, {
+    message_type: 'tournament_upcoming',
+    notification_type: 'TOURNAMENT_UPCOMING',
+    sender_type: 'federacao', sender_name: 'Federação do Circuito',
+    title,
+    content,
+    related_entity_type: 'Tournament', related_entity_id: tournament.id, related_entity_name: tournament.name,
+    // Parte G — TOURNAMENT_DETAILS é sempre resolvível (TOURNAMENT_RUN
+    // exige uma sessão ativa que não existe ainda no D-3); openBracket:true
+    // é o sinal explícito que Tournaments.jsx usa pra abrir a chave direto,
+    // não só os detalhes.
+    destination: {
+      type: 'TOURNAMENT_DETAILS', route: '/tournaments',
+      params: { tournament: tournament.id, mode: 'details', openBracket: true },
+    },
+    metadata: {
+      tournament_id: tournament.id, notification_type: 'TOURNAMENT_UPCOMING',
+      notification_origin: sameTick ? 'same_tick' : 'self_healing',
+      opponent_team: opening?.opponentTeam || null, opponent_rank: opponentRank,
+      round_label: opening?.roundLabel || null, match_date: opening?.matchDate || null,
+    },
+  });
+
+  if (created && sameTick && typeof window !== 'undefined') {
+    window.dispatchEvent(new CustomEvent('padel:draw-notification', {
+      detail: {
+        messageId: stableId, title, content,
+        tournamentId: tournament.id, tournamentName: tournament.name,
+        route: `/tournaments?tournament=${encodeURIComponent(tournament.id)}&mode=details&openBracket=true`,
+      },
+    }));
+  }
+  return created;
+}
+
+// Playthrough 4.9, Parte E — o jogo não tinha NENHUM aviso prévio de
+// inscrição: o único lembrete (ensureTournamentDrawNotification, acima)
+// nasce depois do sorteio, ou seja, depois que a janela de inscrição já
+// fechou. O jogador só descobria o fechamento no próprio dia, sem nenhuma
+// chance real de agir — exatamente a queixa desta fase ("o sistema exige
+// que o jogador se lembre sozinho de abrir a tela"). Roda no lifecycle do
+// dia (calendarSystem.js), nunca depende de nenhuma tela React montada;
+// dedup por tournament_id + marco nomeado (registrationReminderContextKey),
+// nunca por contagem de dias solta — cada marco nasce no máximo uma vez por
+// carreira. Reaproveita evaluateTournamentRegistration (a MESMA validação
+// que registerTournament usa de verdade) pra decidir elegibilidade — nunca
+// reimplementa a checagem.
+function coachToneForTournamentChoice(choice) {
+  if (!choice?.entry?.eligible) return 'fora de alcance no momento';
+  if (choice.titleChance >= 30 || choice.expectedNet >= 400) return 'recomendado';
+  if (choice.expectedNet < 0 || choice.fatigueIncrease >= 28) return 'arriscado';
+  return 'adequado';
+}
+
+// Playthrough 4.9, Parte E — perf: rodando uma vez por torneio por DIA
+// (calendarSystem.js), o caminho comum (marco já criado ontem, nada novo
+// hoje) precisa ser barato. As checagens sem I/O (data, marcos devidos)
+// vêm primeiro; o `alreadyExists` de CADA marco é checado ANTES de buscar
+// registrations/tournaments (caro) — só paga esse custo quando existe
+// alguma chance real de criar mensagem nova. `registrations`/`tournaments`
+// também podem ser passados pelo chamador (já os tem, varrendo vários
+// torneios no mesmo dia) para nunca buscar a mesma lista duas vezes.
+export async function ensureTournamentRegistrationReminders(profile, tournament, { teamRank = 0, registrations: providedRegistrations = null, tournaments: providedTournaments = null } = {}) {
+  if (!profile?.id || !tournament?.id || !tournament.start_date) return [];
+  if (tournament.world_tour_cancelled || tournament.status === 'cancelado' || tournament.current_phase === 'cancelado') return [];
+  const careerDate = profile.career_date;
+  const daysUntilStart = daysBetweenGameDates(careerDate, tournament.start_date);
+  if (daysUntilStart == null || daysUntilStart < 0) return [];
+  const dueMilestones = Object.values(REGISTRATION_REMINDER_MILESTONES).filter((milestone) => daysUntilStart <= milestone.daysBeforeStart);
+  if (!dueMilestones.length) return [];
+  const pendingMilestones = [];
+  for (const milestone of dueMilestones) {
+    const stableId = buildStableMessageId(profile.id, registrationReminderContextKey(tournament.id, milestone.id));
+    const exists = await localGame.entities.CareerMessage.get(stableId).catch(() => null);
+    if (!exists) pendingMilestones.push(milestone);
+  }
+  if (!pendingMilestones.length) return [];
+
+  const [registrations, tournaments] = await Promise.all([
+    providedRegistrations || listTournamentRegistrations(profile.id),
+    providedTournaments || localGame.entities.Tournament.list('-start_date', 500).catch(() => []),
+  ]);
+  const registration = registrations.find((item) => item.tournament_id === tournament.id) || null;
+  const state = getPlayerTournamentRegistrationState({ tournament, registration, careerDate });
+  // Só faz sentido lembrar o jogador de se inscrever enquanto a janela
+  // realmente está aberta — nunca antes (ainda não abriu) nem depois
+  // (fechada/já resolvido de outra forma).
+  if (state !== TOURNAMENT_REGISTRATION_STATE.REGISTRATION_OPEN) return [];
+
+  const partner = findPartnerBot(profile);
+  // 5.27-J: mesma autoridade de saída da parceria que a inscrição aplica.
+  const partnership = await getActivePartnership(profile.id).catch(() => null);
+  const validation = evaluateTournamentRegistration({ player: profile, partner, tournament, currentDate: careerDate, registrations, tournaments, teamRank, partnership });
+  if (!validation.allowed && !validation.reasons.every((item) => item.code === 'INSUFFICIENT_FUNDS')) {
+    // Inelegibilidade esportiva/estrutural real (nível, entrada, conflito de
+    // agenda) — avisar de um torneio que o jogador nem pode disputar seria
+    // ruído, não ajuda. Falta de moedas é a única exceção: o jogador ainda
+    // pode juntar recursos até o prazo, então o aviso continua útil.
+    return [];
+  }
+
+  const window = getTournamentRegistrationWindow(tournament);
+  const choice = evaluateTournamentChoice(tournament, { ...profile, rank: teamRank, teamRank }, {});
+  const tone = coachToneForTournamentChoice(choice);
+  const deadlineLabel = window.closesAt ? formatDate(window.closesAt) : null;
+
+  const created = [];
+  for (const milestone of pendingMilestones) {
+    const contextKey = registrationReminderContextKey(tournament.id, milestone.id);
+    let title; let content;
+    if (milestone.id === 'registration_open') {
+      title = `Inscrições abertas — ${tournament.name}`;
+      content = `Você está elegível para disputar o ${tournament.name}.${deadlineLabel ? ` As inscrições encerram em ${deadlineLabel}.` : ''} Premiação: ${(tournament.prize_coins || 0).toLocaleString('pt-BR')} moedas. Pontos: ${tournament.rank_points || 0}. Seu treinador considera este torneio ${tone}.`;
+    } else if (milestone.id === 'registration_reminder') {
+      title = `Prazo de inscrição se aproxima — ${tournament.name}`;
+      content = `As inscrições para o ${tournament.name} encerram em ${deadlineLabel || 'breve'}. Garanta sua vaga antes do fechamento.`;
+    } else {
+      title = `Última chance — inscrições encerram hoje (${tournament.name})`;
+      content = `Hoje é o último dia para se inscrever no ${tournament.name}. Depois disso a chave é sorteada sem sua dupla.`;
+    }
+
+    // Playthrough 4.9, Parte J — "Ver torneio" (marco de abertura) abre só os
+    // detalhes; "Inscrever" (reminder/último dia) abre o MODAL DE INSCRIÇÃO
+    // direto (openRegistration:true, tratado em Tournaments.jsx), reaproveitando
+    // o mesmo TournamentRegistrationModal/registerTournament() do card — nunca
+    // uma lógica de registro paralela aqui.
+    const openRegistration = milestone.id !== 'registration_open';
+    const message = await upsertCareerMessage(profile.id, contextKey, {
+      message_type: 'tournament_registration_reminder',
+      notification_type: 'TOURNAMENT_REGISTRATION_REMINDER',
+      sender_type: 'federacao', sender_name: 'Federação do Circuito',
+      title, content,
+      priority: milestone.id === 'registration_last_day' ? 'alta' : 'normal',
+      related_entity_type: 'Tournament', related_entity_id: tournament.id, related_entity_name: tournament.name,
+      destination: { type: 'TOURNAMENT_DETAILS', route: '/tournaments', params: { tournament: tournament.id, mode: 'details', ...(openRegistration ? { openRegistration: true } : {}) } },
+      actions: [{ id: 'register', label: openRegistration ? 'Inscrever' : 'Ver torneio', type: 'register_tournament', payload: { tournamentId: tournament.id } }],
+      metadata: { tournament_id: tournament.id, milestone: milestone.id, days_until_start: daysUntilStart },
+    });
+    if (message) created.push(message);
+  }
+  return created;
+}
+
 export async function upsertCareerMessage(profileId, contextKey, payload = {}) {
   if (!profileId || !contextKey) return null;
   const id = buildStableMessageId(profileId, contextKey);
@@ -280,31 +553,12 @@ export async function ensureContextualCareerCommunications(profile, context = {}
 
   const nextTournament = context.nextTournament;
   if (nextTournament?.id && nextTournament.start_date && String(nextTournament.id) !== String(recoveryTournamentId)) {
-    const days = daysBetween(careerDate, nextTournament.start_date);
-    const milestone = getTournamentReminderMilestone(days);
-    // Hotfix 15.5.4 (complemento — sorteio em D-3): esta notificação passou
-    // a estar semanticamente ligada ao sorteio real, não só à contagem de
-    // dias. `nextTournament` já é a linha bruta de Tournament (todos os
-    // chamadores — CommunicationBell.jsx/Communications.jsx/CareerHub.jsx —
-    // buscam `Tournament.filter(...)` e passam o registro completo), então
-    // `bracket_history` já reflete se ensureTournamentDraw (chamado pela
-    // pipeline de avanço de dia, nunca por este código) já persistiu o
-    // sorteio. Se D-3 chegou mas a criação/persistência ainda não
-    // aconteceu ou falhou, NENHUMA notificação é criada agora — ela só
-    // aparece quando o sorteio realmente existe, nunca antes.
-    const drawn = Array.isArray(nextTournament.bracket_history) && nextTournament.bracket_history.length > 0;
-    if (milestone !== null && drawn) {
-      await createOnce(tournamentReminderContextKey(nextTournament.id, milestone), {
-        message_type: 'tournament_upcoming',
-        notification_type: 'TOURNAMENT_UPCOMING',
-        sender_type: 'federacao', sender_name: 'Federação do Circuito',
-        title: `Sorteio definido — ${nextTournament.name || 'Próximo torneio'}`,
-        content: `A chave foi sorteada. Confira seu adversário da estreia e os compromissos no calendário.`,
-        related_entity_type: 'Tournament', related_entity_id: nextTournament.id, related_entity_name: nextTournament.name,
-        destination: { type: 'TOURNAMENT_RUN', route: '/tournaments', params: { tournament: nextTournament.id, mode: 'run' } },
-        metadata: { tournament_id: nextTournament.id, reminder_milestone_days: milestone, notification_type: 'TOURNAMENT_UPCOMING' },
-      });
-    }
+    // Playthrough 4.6D, itens 1/5/6 — condição movida pra
+    // ensureTournamentDrawNotification (acima): nasce assim que a chave
+    // está persistida, não mais só no dia exato D-3 — self-healing, nunca
+    // perde a janela por causa de quando a tela foi aberta.
+    const notif = await ensureTournamentDrawNotification(profile, nextTournament);
+    if (notif) created.push(normalizeCareerMessage(notif));
   }
 
   if (profile.partner_id && memory.partnershipMonths >= 6) {
@@ -435,11 +689,11 @@ export async function ensureContextualCareerCommunications(profile, context = {}
       related_entity_name: interview.title,
       destination: {
         type: 'PRESS_INTERVIEW',
-        route: '/press',
-        params: { tab: 'interviews', interview: interview.id, source: interview.sourceId },
+        route: '/world/circuit',
+        params: { tab: 'press', interview: interview.id, source: interview.sourceId },
       },
       metadata: {
-        route: `/press?tab=interviews&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`,
+        route: `/world/circuit?tab=press&interview=${encodeURIComponent(interview.id)}&source=${encodeURIComponent(interview.sourceId)}`,
         interview_id: interview.id,
         interview_source_id: interview.sourceId,
         match_id: interviewMatchId || null,

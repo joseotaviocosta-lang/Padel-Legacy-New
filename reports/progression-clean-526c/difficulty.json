@@ -1,0 +1,1434 @@
+{
+  "main": {
+    "all": {
+      "matches": 16182,
+      "winPct": 71.7,
+      "byTier": {
+        "Bronze": {
+          "n": 1014,
+          "winPct": 50.4
+        },
+        "Silver": {
+          "n": 690,
+          "winPct": 47.4
+        },
+        "Gold": {
+          "n": 4014,
+          "winPct": 80.6
+        },
+        "Platinum": {
+          "n": 6240,
+          "winPct": 77.6
+        },
+        "Masters": {
+          "n": 2584,
+          "winPct": 67.4
+        },
+        "Elite": {
+          "n": 993,
+          "winPct": 62.3
+        },
+        "Crown": {
+          "n": 294,
+          "winPct": 45.9
+        },
+        "Circuit Finals": {
+          "n": 181,
+          "winPct": 61.3
+        },
+        "Legacy Finals": {
+          "n": 172,
+          "winPct": 45.9
+        }
+      },
+      "byRound": {
+        "Q": {
+          "n": 305,
+          "winPct": 52.8
+        },
+        "R1": {
+          "n": 5112,
+          "winPct": 87.5
+        },
+        "R2": {
+          "n": 3914,
+          "winPct": 75
+        },
+        "QF": {
+          "n": 3509,
+          "winPct": 71.2
+        },
+        "SF": {
+          "n": 2427,
+          "winPct": 50.2
+        },
+        "F": {
+          "n": 915,
+          "winPct": 34.3
+        }
+      },
+      "byClass": {
+        "Fácil": {
+          "n": 1704,
+          "winPct": 49.2
+        },
+        "Médio": {
+          "n": 10254,
+          "winPct": 78.8
+        },
+        "Difícil": {
+          "n": 4224,
+          "winPct": 63.6
+        }
+      },
+      "byEngineStrengthDelta": {
+        "≤-15": {
+          "n": 33,
+          "winPct": 3
+        },
+        "-15..-5": {
+          "n": 202,
+          "winPct": 4.5
+        },
+        "-5..+5": {
+          "n": 1126,
+          "winPct": 16.7
+        },
+        "+5..+15": {
+          "n": 2075,
+          "winPct": 31
+        },
+        "≥+15": {
+          "n": 12746,
+          "winPct": 84.4
+        }
+      },
+      "engineStrengthDelta": {
+        "n": 16182,
+        "p10": 6.4,
+        "median": 29.4,
+        "p90": 58.1,
+        "min": -37.949999999999996,
+        "max": 80.9
+      },
+      "byPairRankDelta": {
+        "jogador ≥200 melhor": {
+          "n": 2,
+          "winPct": 0
+        },
+        "±49": {
+          "n": 2,
+          "winPct": 50
+        },
+        "adversário sem rank": {
+          "n": 16178,
+          "winPct": 71.7
+        }
+      }
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 3712,
+        "winPct": 67.4,
+        "byTier": {
+          "Bronze": {
+            "n": 304,
+            "winPct": 59.2
+          },
+          "Silver": {
+            "n": 104,
+            "winPct": 53.8
+          },
+          "Gold": {
+            "n": 1780,
+            "winPct": 72.4
+          },
+          "Platinum": {
+            "n": 1051,
+            "winPct": 68.1
+          },
+          "Masters": {
+            "n": 306,
+            "winPct": 60.8
+          },
+          "Elite": {
+            "n": 107,
+            "winPct": 43
+          },
+          "Crown": {
+            "n": 20,
+            "winPct": 35
+          },
+          "Circuit Finals": {
+            "n": 15,
+            "winPct": 73.3
+          },
+          "Legacy Finals": {
+            "n": 25,
+            "winPct": 52
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 199,
+            "winPct": 42.7
+          },
+          "R1": {
+            "n": 1175,
+            "winPct": 88.3
+          },
+          "R2": {
+            "n": 910,
+            "winPct": 68.5
+          },
+          "QF": {
+            "n": 750,
+            "winPct": 62.3
+          },
+          "SF": {
+            "n": 464,
+            "winPct": 50
+          },
+          "F": {
+            "n": 214,
+            "winPct": 27.6
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 408,
+            "winPct": 57.8
+          },
+          "Médio": {
+            "n": 2831,
+            "winPct": 70.8
+          },
+          "Difícil": {
+            "n": 473,
+            "winPct": 55.6
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 28,
+            "winPct": 3.6
+          },
+          "-15..-5": {
+            "n": 112,
+            "winPct": 5.4
+          },
+          "-5..+5": {
+            "n": 421,
+            "winPct": 16.4
+          },
+          "+5..+15": {
+            "n": 637,
+            "winPct": 35.3
+          },
+          "≥+15": {
+            "n": 2514,
+            "winPct": 87.6
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 3712,
+          "p10": 1.5,
+          "median": 23.6,
+          "p90": 50.5,
+          "min": -37.949999999999996,
+          "max": 75.542
+        },
+        "byPairRankDelta": {
+          "adversário sem rank": {
+            "n": 3712,
+            "winPct": 67.4
+          }
+        }
+      },
+      "normal": {
+        "matches": 6477,
+        "winPct": 72.4,
+        "byTier": {
+          "Bronze": {
+            "n": 384,
+            "winPct": 54.4
+          },
+          "Silver": {
+            "n": 373,
+            "winPct": 48.5
+          },
+          "Gold": {
+            "n": 1087,
+            "winPct": 84.9
+          },
+          "Platinum": {
+            "n": 2678,
+            "winPct": 79.3
+          },
+          "Masters": {
+            "n": 1189,
+            "winPct": 67.3
+          },
+          "Elite": {
+            "n": 459,
+            "winPct": 64.7
+          },
+          "Crown": {
+            "n": 145,
+            "winPct": 46.9
+          },
+          "Circuit Finals": {
+            "n": 83,
+            "winPct": 61.4
+          },
+          "Legacy Finals": {
+            "n": 79,
+            "winPct": 45.6
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 101,
+            "winPct": 72.3
+          },
+          "R1": {
+            "n": 2054,
+            "winPct": 89
+          },
+          "R2": {
+            "n": 1567,
+            "winPct": 73.1
+          },
+          "QF": {
+            "n": 1415,
+            "winPct": 71.8
+          },
+          "SF": {
+            "n": 982,
+            "winPct": 49.4
+          },
+          "F": {
+            "n": 358,
+            "winPct": 39.4
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 757,
+            "winPct": 51.5
+          },
+          "Médio": {
+            "n": 3765,
+            "winPct": 80.9
+          },
+          "Difícil": {
+            "n": 1955,
+            "winPct": 64
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 5,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 71,
+            "winPct": 4.2
+          },
+          "-5..+5": {
+            "n": 421,
+            "winPct": 19.2
+          },
+          "+5..+15": {
+            "n": 906,
+            "winPct": 31.5
+          },
+          "≥+15": {
+            "n": 5074,
+            "winPct": 85.1
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 6477,
+          "p10": 6.9,
+          "median": 28.4,
+          "p90": 57.4,
+          "min": -22.099999999999994,
+          "max": 80.9
+        },
+        "byPairRankDelta": {
+          "±49": {
+            "n": 1,
+            "winPct": 0
+          },
+          "adversário sem rank": {
+            "n": 6476,
+            "winPct": 72.4
+          }
+        }
+      },
+      "optimizer": {
+        "matches": 5993,
+        "winPct": 73.6,
+        "byTier": {
+          "Bronze": {
+            "n": 326,
+            "winPct": 37.4
+          },
+          "Silver": {
+            "n": 213,
+            "winPct": 42.3
+          },
+          "Gold": {
+            "n": 1147,
+            "winPct": 89.2
+          },
+          "Platinum": {
+            "n": 2511,
+            "winPct": 79.8
+          },
+          "Masters": {
+            "n": 1089,
+            "winPct": 69.4
+          },
+          "Elite": {
+            "n": 427,
+            "winPct": 64.6
+          },
+          "Crown": {
+            "n": 129,
+            "winPct": 46.5
+          },
+          "Circuit Finals": {
+            "n": 83,
+            "winPct": 59
+          },
+          "Legacy Finals": {
+            "n": 68,
+            "winPct": 44.1
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 5,
+            "winPct": 60
+          },
+          "R1": {
+            "n": 1883,
+            "winPct": 85.5
+          },
+          "R2": {
+            "n": 1437,
+            "winPct": 81.2
+          },
+          "QF": {
+            "n": 1344,
+            "winPct": 75.5
+          },
+          "SF": {
+            "n": 981,
+            "winPct": 51.1
+          },
+          "F": {
+            "n": 343,
+            "winPct": 33.2
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 539,
+            "winPct": 39.3
+          },
+          "Médio": {
+            "n": 3658,
+            "winPct": 82.8
+          },
+          "Difícil": {
+            "n": 1796,
+            "winPct": 65.2
+          }
+        },
+        "byEngineStrengthDelta": {
+          "-15..-5": {
+            "n": 19,
+            "winPct": 0
+          },
+          "-5..+5": {
+            "n": 284,
+            "winPct": 13.4
+          },
+          "+5..+15": {
+            "n": 532,
+            "winPct": 25.2
+          },
+          "≥+15": {
+            "n": 5158,
+            "winPct": 82.2
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 5993,
+          "p10": 10.2,
+          "median": 35.4,
+          "p90": 63.9,
+          "min": -9.617999999999995,
+          "max": 80.892
+        },
+        "byPairRankDelta": {
+          "jogador ≥200 melhor": {
+            "n": 2,
+            "winPct": 0
+          },
+          "±49": {
+            "n": 1,
+            "winPct": 100
+          },
+          "adversário sem rank": {
+            "n": 5990,
+            "winPct": 73.6
+          }
+        }
+      }
+    }
+  },
+  "long": {
+    "all": {
+      "matches": 5150,
+      "winPct": 77,
+      "byTier": {
+        "Bronze": {
+          "n": 191,
+          "winPct": 61.3
+        },
+        "Silver": {
+          "n": 113,
+          "winPct": 60.2
+        },
+        "Gold": {
+          "n": 1343,
+          "winPct": 86.3
+        },
+        "Platinum": {
+          "n": 1993,
+          "winPct": 80
+        },
+        "Masters": {
+          "n": 888,
+          "winPct": 71.3
+        },
+        "Elite": {
+          "n": 358,
+          "winPct": 66.2
+        },
+        "Crown": {
+          "n": 117,
+          "winPct": 55.6
+        },
+        "Circuit Finals": {
+          "n": 76,
+          "winPct": 75
+        },
+        "Legacy Finals": {
+          "n": 71,
+          "winPct": 49.3
+        }
+      },
+      "byRound": {
+        "Q": {
+          "n": 58,
+          "winPct": 51.7
+        },
+        "R1": {
+          "n": 1466,
+          "winPct": 93
+        },
+        "R2": {
+          "n": 1247,
+          "winPct": 77.7
+        },
+        "QF": {
+          "n": 1098,
+          "winPct": 77.6
+        },
+        "SF": {
+          "n": 835,
+          "winPct": 63.4
+        },
+        "F": {
+          "n": 446,
+          "winPct": 50
+        }
+      },
+      "byClass": {
+        "Fácil": {
+          "n": 304,
+          "winPct": 60.9
+        },
+        "Médio": {
+          "n": 3336,
+          "winPct": 82.6
+        },
+        "Difícil": {
+          "n": 1510,
+          "winPct": 68
+        }
+      },
+      "byEngineStrengthDelta": {
+        "≤-15": {
+          "n": 5,
+          "winPct": 0
+        },
+        "-15..-5": {
+          "n": 54,
+          "winPct": 1.9
+        },
+        "-5..+5": {
+          "n": 292,
+          "winPct": 22.9
+        },
+        "+5..+15": {
+          "n": 660,
+          "winPct": 37.1
+        },
+        "≥+15": {
+          "n": 4139,
+          "winPct": 88.3
+        }
+      },
+      "engineStrengthDelta": {
+        "n": 5150,
+        "p10": 7.3,
+        "median": 32.4,
+        "p90": 61.4,
+        "min": -21.253999999999998,
+        "max": 81.55000000000001
+      },
+      "byPairRankDelta": {
+        "jogador ≥200 melhor": {
+          "n": 1,
+          "winPct": 0
+        },
+        "adversário sem rank": {
+          "n": 5149,
+          "winPct": 77
+        }
+      }
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 1559,
+        "winPct": 79.2,
+        "byTier": {
+          "Bronze": {
+            "n": 81,
+            "winPct": 71.6
+          },
+          "Silver": {
+            "n": 45,
+            "winPct": 80
+          },
+          "Gold": {
+            "n": 705,
+            "winPct": 85.1
+          },
+          "Platinum": {
+            "n": 465,
+            "winPct": 77.6
+          },
+          "Masters": {
+            "n": 140,
+            "winPct": 67.9
+          },
+          "Elite": {
+            "n": 72,
+            "winPct": 69.4
+          },
+          "Crown": {
+            "n": 15,
+            "winPct": 60
+          },
+          "Circuit Finals": {
+            "n": 17,
+            "winPct": 88.2
+          },
+          "Legacy Finals": {
+            "n": 19,
+            "winPct": 52.6
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 35,
+            "winPct": 37.1
+          },
+          "R1": {
+            "n": 425,
+            "winPct": 92.7
+          },
+          "R2": {
+            "n": 353,
+            "winPct": 76.8
+          },
+          "QF": {
+            "n": 318,
+            "winPct": 77.7
+          },
+          "SF": {
+            "n": 243,
+            "winPct": 79.4
+          },
+          "F": {
+            "n": 185,
+            "winPct": 62.7
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 126,
+            "winPct": 74.6
+          },
+          "Médio": {
+            "n": 1170,
+            "winPct": 82.1
+          },
+          "Difícil": {
+            "n": 263,
+            "winPct": 68.1
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 4,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 32,
+            "winPct": 3.1
+          },
+          "-5..+5": {
+            "n": 125,
+            "winPct": 26.4
+          },
+          "+5..+15": {
+            "n": 199,
+            "winPct": 41.7
+          },
+          "≥+15": {
+            "n": 1199,
+            "winPct": 93.2
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 1559,
+          "p10": 4.6,
+          "median": 32,
+          "p90": 62.9,
+          "min": -21.253999999999998,
+          "max": 81.55000000000001
+        },
+        "byPairRankDelta": {
+          "adversário sem rank": {
+            "n": 1559,
+            "winPct": 79.2
+          }
+        }
+      },
+      "normal": {
+        "matches": 2343,
+        "winPct": 73.9,
+        "byTier": {
+          "Bronze": {
+            "n": 73,
+            "winPct": 54.8
+          },
+          "Silver": {
+            "n": 54,
+            "winPct": 48.1
+          },
+          "Gold": {
+            "n": 408,
+            "winPct": 84.3
+          },
+          "Platinum": {
+            "n": 1014,
+            "winPct": 79.1
+          },
+          "Masters": {
+            "n": 463,
+            "winPct": 68.3
+          },
+          "Elite": {
+            "n": 181,
+            "winPct": 64.1
+          },
+          "Crown": {
+            "n": 76,
+            "winPct": 55.3
+          },
+          "Circuit Finals": {
+            "n": 38,
+            "winPct": 71.1
+          },
+          "Legacy Finals": {
+            "n": 36,
+            "winPct": 50
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 18,
+            "winPct": 72.2
+          },
+          "R1": {
+            "n": 695,
+            "winPct": 93.1
+          },
+          "R2": {
+            "n": 595,
+            "winPct": 74.8
+          },
+          "QF": {
+            "n": 503,
+            "winPct": 74.8
+          },
+          "SF": {
+            "n": 368,
+            "winPct": 52.4
+          },
+          "F": {
+            "n": 164,
+            "winPct": 34.8
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 127,
+            "winPct": 52
+          },
+          "Médio": {
+            "n": 1422,
+            "winPct": 80.6
+          },
+          "Difícil": {
+            "n": 794,
+            "winPct": 65.4
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 1,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 22,
+            "winPct": 0
+          },
+          "-5..+5": {
+            "n": 137,
+            "winPct": 20.4
+          },
+          "+5..+15": {
+            "n": 311,
+            "winPct": 31.5
+          },
+          "≥+15": {
+            "n": 1872,
+            "winPct": 85.7
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 2343,
+          "p10": 7.4,
+          "median": 30.9,
+          "p90": 59.4,
+          "min": -15.099999999999994,
+          "max": 81.392
+        },
+        "byPairRankDelta": {
+          "adversário sem rank": {
+            "n": 2343,
+            "winPct": 73.9
+          }
+        }
+      },
+      "optimizer": {
+        "matches": 1248,
+        "winPct": 80.2,
+        "byTier": {
+          "Bronze": {
+            "n": 37,
+            "winPct": 51.4
+          },
+          "Silver": {
+            "n": 14,
+            "winPct": 42.9
+          },
+          "Gold": {
+            "n": 230,
+            "winPct": 93.5
+          },
+          "Platinum": {
+            "n": 514,
+            "winPct": 84
+          },
+          "Masters": {
+            "n": 285,
+            "winPct": 77.9
+          },
+          "Elite": {
+            "n": 105,
+            "winPct": 67.6
+          },
+          "Crown": {
+            "n": 26,
+            "winPct": 53.8
+          },
+          "Circuit Finals": {
+            "n": 21,
+            "winPct": 71.4
+          },
+          "Legacy Finals": {
+            "n": 16,
+            "winPct": 43.8
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 5,
+            "winPct": 80
+          },
+          "R1": {
+            "n": 346,
+            "winPct": 93.1
+          },
+          "R2": {
+            "n": 299,
+            "winPct": 84.6
+          },
+          "QF": {
+            "n": 277,
+            "winPct": 82.7
+          },
+          "SF": {
+            "n": 224,
+            "winPct": 63.8
+          },
+          "F": {
+            "n": 97,
+            "winPct": 51.5
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 51,
+            "winPct": 49
+          },
+          "Médio": {
+            "n": 744,
+            "winPct": 87
+          },
+          "Difícil": {
+            "n": 453,
+            "winPct": 72.6
+          }
+        },
+        "byEngineStrengthDelta": {
+          "-5..+5": {
+            "n": 30,
+            "winPct": 20
+          },
+          "+5..+15": {
+            "n": 150,
+            "winPct": 42.7
+          },
+          "≥+15": {
+            "n": 1068,
+            "winPct": 87.2
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 1248,
+          "p10": 9.4,
+          "median": 38.4,
+          "p90": 64,
+          "min": -4.599999999999994,
+          "max": 77.9
+        },
+        "byPairRankDelta": {
+          "jogador ≥200 melhor": {
+            "n": 1,
+            "winPct": 0
+          },
+          "adversário sem rank": {
+            "n": 1247,
+            "winPct": 80.3
+          }
+        }
+      }
+    }
+  },
+  "smoke": {
+    "all": {
+      "matches": 2116,
+      "winPct": 61.3,
+      "byTier": {
+        "Bronze": {
+          "n": 411,
+          "winPct": 46.2
+        },
+        "Silver": {
+          "n": 266,
+          "winPct": 42.9
+        },
+        "Gold": {
+          "n": 556,
+          "winPct": 74.3
+        },
+        "Platinum": {
+          "n": 582,
+          "winPct": 72
+        },
+        "Masters": {
+          "n": 187,
+          "winPct": 56.7
+        },
+        "Elite": {
+          "n": 75,
+          "winPct": 56
+        },
+        "Crown": {
+          "n": 17,
+          "winPct": 29.4
+        },
+        "Circuit Finals": {
+          "n": 10,
+          "winPct": 50
+        },
+        "Legacy Finals": {
+          "n": 12,
+          "winPct": 33.3
+        }
+      },
+      "byRound": {
+        "Q": {
+          "n": 123,
+          "winPct": 51.2
+        },
+        "R1": {
+          "n": 820,
+          "winPct": 70.7
+        },
+        "R2": {
+          "n": 394,
+          "winPct": 67
+        },
+        "QF": {
+          "n": 448,
+          "winPct": 58.7
+        },
+        "SF": {
+          "n": 249,
+          "winPct": 42.6
+        },
+        "F": {
+          "n": 82,
+          "winPct": 26.8
+        }
+      },
+      "byClass": {
+        "Fácil": {
+          "n": 677,
+          "winPct": 44.9
+        },
+        "Médio": {
+          "n": 1138,
+          "winPct": 73.1
+        },
+        "Difícil": {
+          "n": 301,
+          "winPct": 53.8
+        }
+      },
+      "byEngineStrengthDelta": {
+        "≤-15": {
+          "n": 8,
+          "winPct": 0
+        },
+        "-15..-5": {
+          "n": 43,
+          "winPct": 4.7
+        },
+        "-5..+5": {
+          "n": 180,
+          "winPct": 11.1
+        },
+        "+5..+15": {
+          "n": 408,
+          "winPct": 29.9
+        },
+        "≥+15": {
+          "n": 1477,
+          "winPct": 78.1
+        }
+      },
+      "engineStrengthDelta": {
+        "n": 2116,
+        "p10": 4.3,
+        "median": 23.1,
+        "p90": 53.4,
+        "min": -33.038,
+        "max": 76.4
+      },
+      "byPairRankDelta": {
+        "adversário sem rank": {
+          "n": 2116,
+          "winPct": 61.3
+        }
+      }
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 473,
+        "winPct": 53.9,
+        "byTier": {
+          "Bronze": {
+            "n": 119,
+            "winPct": 54.6
+          },
+          "Silver": {
+            "n": 35,
+            "winPct": 45.7
+          },
+          "Gold": {
+            "n": 187,
+            "winPct": 58.8
+          },
+          "Platinum": {
+            "n": 94,
+            "winPct": 54.3
+          },
+          "Masters": {
+            "n": 29,
+            "winPct": 41.4
+          },
+          "Elite": {
+            "n": 5,
+            "winPct": 0
+          },
+          "Crown": {
+            "n": 2,
+            "winPct": 0
+          },
+          "Legacy Finals": {
+            "n": 2,
+            "winPct": 50
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 94,
+            "winPct": 44.7
+          },
+          "R1": {
+            "n": 169,
+            "winPct": 71.6
+          },
+          "R2": {
+            "n": 78,
+            "winPct": 43.6
+          },
+          "QF": {
+            "n": 77,
+            "winPct": 46.8
+          },
+          "SF": {
+            "n": 36,
+            "winPct": 55.6
+          },
+          "F": {
+            "n": 19,
+            "winPct": 10.5
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 154,
+            "winPct": 52.6
+          },
+          "Médio": {
+            "n": 281,
+            "winPct": 57.3
+          },
+          "Difícil": {
+            "n": 38,
+            "winPct": 34.2
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 7,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 30,
+            "winPct": 6.7
+          },
+          "-5..+5": {
+            "n": 86,
+            "winPct": 15.1
+          },
+          "+5..+15": {
+            "n": 134,
+            "winPct": 39.6
+          },
+          "≥+15": {
+            "n": 216,
+            "winPct": 86.6
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 473,
+          "p10": -2.6,
+          "median": 13.2,
+          "p90": 33.7,
+          "min": -33.038,
+          "max": 63.342
+        },
+        "byPairRankDelta": {
+          "adversário sem rank": {
+            "n": 473,
+            "winPct": 53.9
+          }
+        }
+      },
+      "normal": {
+        "matches": 816,
+        "winPct": 62.3,
+        "byTier": {
+          "Bronze": {
+            "n": 154,
+            "winPct": 53.9
+          },
+          "Silver": {
+            "n": 143,
+            "winPct": 44.8
+          },
+          "Gold": {
+            "n": 147,
+            "winPct": 79.6
+          },
+          "Platinum": {
+            "n": 243,
+            "winPct": 72.4
+          },
+          "Masters": {
+            "n": 84,
+            "winPct": 56
+          },
+          "Elite": {
+            "n": 31,
+            "winPct": 54.8
+          },
+          "Crown": {
+            "n": 6,
+            "winPct": 16.7
+          },
+          "Circuit Finals": {
+            "n": 4,
+            "winPct": 50
+          },
+          "Legacy Finals": {
+            "n": 4,
+            "winPct": 25
+          }
+        },
+        "byRound": {
+          "Q": {
+            "n": 29,
+            "winPct": 72.4
+          },
+          "R1": {
+            "n": 323,
+            "winPct": 75.5
+          },
+          "R2": {
+            "n": 155,
+            "winPct": 63.2
+          },
+          "QF": {
+            "n": 185,
+            "winPct": 55.1
+          },
+          "SF": {
+            "n": 99,
+            "winPct": 33.3
+          },
+          "F": {
+            "n": 25,
+            "winPct": 40
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 297,
+            "winPct": 49.5
+          },
+          "Médio": {
+            "n": 390,
+            "winPct": 75.1
+          },
+          "Difícil": {
+            "n": 129,
+            "winPct": 52.7
+          }
+        },
+        "byEngineStrengthDelta": {
+          "≤-15": {
+            "n": 1,
+            "winPct": 0
+          },
+          "-15..-5": {
+            "n": 11,
+            "winPct": 0
+          },
+          "-5..+5": {
+            "n": 50,
+            "winPct": 6
+          },
+          "+5..+15": {
+            "n": 162,
+            "winPct": 32.1
+          },
+          "≥+15": {
+            "n": 592,
+            "winPct": 76.5
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 816,
+          "p10": 6.5,
+          "median": 23.9,
+          "p90": 52.3,
+          "min": -17.099999999999994,
+          "max": 66.892
+        },
+        "byPairRankDelta": {
+          "adversário sem rank": {
+            "n": 816,
+            "winPct": 62.3
+          }
+        }
+      },
+      "optimizer": {
+        "matches": 827,
+        "winPct": 64.7,
+        "byTier": {
+          "Bronze": {
+            "n": 138,
+            "winPct": 30.4
+          },
+          "Silver": {
+            "n": 88,
+            "winPct": 38.6
+          },
+          "Gold": {
+            "n": 222,
+            "winPct": 83.8
+          },
+          "Platinum": {
+            "n": 245,
+            "winPct": 78.4
+          },
+          "Masters": {
+            "n": 74,
+            "winPct": 63.5
+          },
+          "Elite": {
+            "n": 39,
+            "winPct": 64.1
+          },
+          "Crown": {
+            "n": 9,
+            "winPct": 44.4
+          },
+          "Circuit Finals": {
+            "n": 6,
+            "winPct": 50
+          },
+          "Legacy Finals": {
+            "n": 6,
+            "winPct": 33.3
+          }
+        },
+        "byRound": {
+          "R1": {
+            "n": 328,
+            "winPct": 65.5
+          },
+          "R2": {
+            "n": 161,
+            "winPct": 82
+          },
+          "QF": {
+            "n": 186,
+            "winPct": 67.2
+          },
+          "SF": {
+            "n": 114,
+            "winPct": 46.5
+          },
+          "F": {
+            "n": 38,
+            "winPct": 26.3
+          }
+        },
+        "byClass": {
+          "Fácil": {
+            "n": 226,
+            "winPct": 33.6
+          },
+          "Médio": {
+            "n": 467,
+            "winPct": 80.9
+          },
+          "Difícil": {
+            "n": 134,
+            "winPct": 60.4
+          }
+        },
+        "byEngineStrengthDelta": {
+          "-15..-5": {
+            "n": 2,
+            "winPct": 0
+          },
+          "-5..+5": {
+            "n": 44,
+            "winPct": 9.1
+          },
+          "+5..+15": {
+            "n": 112,
+            "winPct": 15.2
+          },
+          "≥+15": {
+            "n": 669,
+            "winPct": 76.8
+          }
+        },
+        "engineStrengthDelta": {
+          "n": 827,
+          "p10": 9.3,
+          "median": 29.4,
+          "p90": 61.4,
+          "min": -8.099999999999994,
+          "max": 76.4
+        },
+        "byPairRankDelta": {
+          "adversário sem rank": {
+            "n": 827,
+            "winPct": 64.7
+          }
+        }
+      }
+    }
+  }
+}

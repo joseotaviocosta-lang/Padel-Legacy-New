@@ -1,0 +1,9 @@
+✓ [5.27-F] test-match-engine-identical-teams-v527f (159s) test-match-engine-identical-teams-v527f: 21/21 passaram
+✓ [5.27-F] test-match-engine-side-swap-v527f (223s) test-match-engine-side-swap-v527f: 16/16 passaram
+✓ [5.27-F] test-energy-sensitivity-v527f (140s) test-energy-sensitivity-v527f: 9/9 passaram
+✓ [5.27-F] test-energy-single-application-v527f (2s) test-energy-single-application-v527f: 5/5 passaram
+✓ [5.27-F] test-player-opponent-strength-parity-v527f (3s) test-player-opponent-strength-parity-v527f: 7/7 passaram
+✓ [5.27-F] test-ranking-success-monotonicity-v527f (1s) test-ranking-success-monotonicity-v527f: 4/4 passaram
+✓ [5.27-F] test-old-presets-semantic-freeze-v527f (1s) test-old-presets-semantic-freeze-v527f: 6/6 passaram
+
+7/7 passaram

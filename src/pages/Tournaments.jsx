@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
-import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, ChevronDown, ChevronUp } from 'lucide-react';
+import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, ChevronDown, ChevronUp, Clock3 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
 import { ensureMyProfile, formatDate } from '@/lib/padel';
 import { careerMonth, daysBetween, ensureFutureTournaments } from '@/lib/career';
@@ -14,8 +14,8 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, StatusBadge, EmptyState, Surface, Tabs, Button, ConfirmDialog, TooltipHint } from '@/components/design-system';
-import { enrichTournament } from '@/lib/tournaments';
+import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, StatusBadge, EmptyState, Surface, Tabs, Button, ConfirmDialog, TooltipHint, Select } from '@/components/design-system';
+import { enrichTournament, orderTournamentsForView } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { isRegistrationOpen } from '@/lib/calendarSystem';
@@ -26,6 +26,10 @@ import { cancelTournamentRegistration, isPlayerRegisteredForTournament, isTourna
 import { useCareer } from '@/careers/useCareer.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { resolveTournamentOpenMode, TOURNAMENT_DEEP_LINK_MODES } from '@/lib/tournamentDeepLink.js';
+import { isTournamentCancelled, getTournamentCancellationLabel, getTournamentDrawState, TOURNAMENT_DRAW_STATES, hasViewableTournamentBracket } from '@/lib/tournamentBracketView.js';
+import { getPlayerTournamentRegistrationState, canPlayerRegisterNow, buildRegistrationCardNotice } from '@/lib/tournamentRegistrationState.js';
+import { resolveTournamentCardState, getTournamentCardPresentation, TOURNAMENT_CARD_STATE } from '@/lib/tournamentCardState.js';
+import { getTournamentRegistrationWindow, daysBetweenGameDates } from '@/lib/tournamentRegistration.js';
 
 // Fase 3 — escada de 9 tiers (era 6). Bronze/Circuit Finals/Legacy Finals
 // adicionados com estilo próprio; sem eles, TIER_CONFIG[tier] caía no
@@ -49,6 +53,10 @@ const TIER_CONFIG = {
 };
 
 const MONTHS = ['Janeiro', 'Fevereiro', 'Março', 'Abril', 'Maio', 'Junho', 'Julho', 'Agosto', 'Setembro', 'Outubro', 'Novembro', 'Dezembro'];
+
+// Dois meses abertos: o mes corrente e o seguinte, que e o horizonte em que o
+// jogador de fato decide inscricao (prazo fecha em D-4).
+const MONTHS_OPEN_BY_DEFAULT = 2;
 
 const FILTERS = [
   {id:'all',label:'Todos'}, {id:'Legacy Finals',label:'Legacy Finals'}, {id:'Crown',label:'Crown'}, {id:'Elite',label:'Elite'},
@@ -85,6 +93,16 @@ export default function Tournaments() {
   const [profile, setProfile] = useState(null);
   const [playedTournaments, setPlayedTournaments] = useState(new Set());
   const [filter, setFilter] = useState('all');
+  // Playthrough 5.20-B, Partes P/S — A TEMPORADA INTEIRA DE UMA VEZ.
+  //
+  // Medido em 360px: 151 torneios renderizados juntos, 333 cartoes no DOM e uma
+  // pagina de 54.779px — 68 telas. Nos tres primeiros ecrãs apareciam 19
+  // cartoes; todo o resto era peso que o jogador rolava sem querer.
+  //
+  // A pagina passa a se comportar como agenda: os dois primeiros meses abrem,
+  // os seguintes ficam como cabecalho com a contagem e abrem ao toque. Nada e
+  // removido — so deixa de ser renderizado antes de ser pedido.
+  const [expandedMonths, setExpandedMonths] = useState(() => new Set());
   const [view, setView] = useState('upcoming');
   const [loading, setLoading] = useState(true);
   const [showPartner, setShowPartner] = useState(false);
@@ -99,6 +117,19 @@ export default function Tournaments() {
   const [registrationTournament, setRegistrationTournament] = useState(null);
   const [teamRank, setTeamRank] = useState(0);
   const [activeRunEvents, setActiveRunEvents] = useState(new Map());
+
+  // Inscrições e campanhas sorteadas do jogador. Playthrough 5.27-K: o mapa
+  // de registros guarda a inscrição de QUALQUER status (a de um torneio já
+  // disputado vira `completed` na liquidação e o card caía em "Não
+  // participante"); `registeredTournaments` continua só com as confirmadas.
+  async function refreshCampaignState(profileId) {
+    const registrations = await listTournamentRegistrations(profileId);
+    const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
+    setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
+    setRegistrationRecords(new Map((registrations || []).filter(item => item.status !== 'cancelled').map(item => [item.tournament_id, item])));
+    const runEvents = await localGame.entities.CalendarEvent.filter({ profile_id: profileId, status: 'scheduled', event_type: 'tournament' }).catch(() => []);
+    setActiveRunEvents(new Map((runEvents || []).filter((event) => event.metadata?.tournament_run).map((event) => [event.related_id, event])));
+  }
 
   useEffect(() => {
     (async () => {
@@ -143,12 +174,7 @@ export default function Tournaments() {
 
         // Track confirmed registrations from the canonical registration entity.
         if (p?.id) {
-          const registrations = await listTournamentRegistrations(p.id);
-          const confirmed = (registrations || []).filter(item => item.status === 'confirmed');
-          setRegisteredTournaments(new Set(confirmed.map(item => item.tournament_id)));
-          setRegistrationRecords(new Map(confirmed.map(item => [item.tournament_id, item])));
-          const runEvents = await localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }).catch(() => []);
-          setActiveRunEvents(new Map((runEvents || []).filter((event) => event.metadata?.tournament_run).map((event) => [event.related_id, event])));
+          await refreshCampaignState(p.id);
 
           // Compute team rank if player has a partner
           if (p.partner_id) {
@@ -182,17 +208,98 @@ export default function Tournaments() {
     };
   }, []);
 
+  // Playthrough 5.27-K (achado no smoke Android): o hotfix acima atualiza só o
+  // perfil. Avançando dias SEM sair de /tournaments, a lista de torneios e as
+  // campanhas sorteadas (activeRunEvents) ficavam da data em que a página
+  // abriu: no dia do torneio, "Ir para o torneio" abria os detalhes antigos
+  // ("Aguardando sorteio") em vez da campanha, como se o jogo travasse.
+  // Recarrega esse estado sempre que a data da carreira muda.
+  const lastLoadedDateRef = useRef(null);
+  useEffect(() => {
+    const date = profile?.career_date;
+    if (!profile?.id || !date || loading) return undefined;
+    if (lastLoadedDateRef.current === null) { lastLoadedDateRef.current = date; return undefined; }
+    if (lastLoadedDateRef.current === date) return undefined;
+    lastLoadedDateRef.current = date;
+    let cancelled = false;
+    (async () => {
+      try {
+        const list = await localGame.entities.Tournament.list('-start_date', 2000);
+        if (cancelled) return;
+        setTournaments(prepareTournamentList(list));
+        await refreshCampaignState(profile.id);
+      } catch (e) { console.error(e); }
+    })();
+    return () => { cancelled = true; };
+  }, [profile?.id, profile?.career_date, loading]);
+
   useEffect(() => {
     const requestedId = searchParams.get('tournament');
     const requestedMode = searchParams.get('mode') || TOURNAMENT_DEEP_LINK_MODES.DETAILS;
-    const requestKey = requestedId ? `${requestedId}:${requestedMode}` : null;
+    // Playthrough 4.6E, Parte G — a notificação de sorteio não tem sessão
+    // ativa pra oferecer no D-3 (mode:'run' cairia sempre em DETAILS via
+    // resolveTournamentOpenMode), então precisa de um sinal explícito e
+    // independente do modo pra abrir a CHAVE direto, não só os detalhes.
+    const requestedOpenBracket = searchParams.get('openBracket') === 'true';
+    // Playthrough 4.9, Parte J — CTA "Inscrever" do planejamento semanal
+    // (CareerHub.jsx) e das comunicações de lembrete abre o MODAL DE
+    // INSCRIÇÃO direto, sem nenhuma lógica de registro paralela: reaproveita
+    // o mesmo TournamentRegistrationModal/registerTournament() que o botão
+    // "Inscrever" do próprio card já usa.
+    const requestedOpenRegistration = searchParams.get('openRegistration') === 'true';
+    const requestKey = requestedId ? `${requestedId}:${requestedMode}:${requestedOpenBracket ? 'bracket' : ''}:${requestedOpenRegistration ? 'register' : ''}` : null;
     if (!requestedId || loading || openedTournamentRef.current === requestKey) return;
-    openedTournamentRef.current = requestKey;
     const requested = tournaments.find((tournament) => String(tournament.id) === requestedId);
+    // Playthrough 5.9, BUG 3 — o deep link era marcado como "já tratado"
+    // ANTES de confirmar que o torneio foi encontrado. Numa passada em que
+    // `tournaments` ainda não continha o evento (lista recém-populada,
+    // chegada direta pela notificação), o efeito retornava sem abrir nada e
+    // a chave de controle já estava gravada: quando a lista finalmente
+    // populava, o `openedTournamentRef.current === requestKey` barrava a
+    // reexecução e a chave NUNCA abria — exatamente o sintoma do playtest
+    // ("clicou na notificação de sorteio e a chave não apareceu; entrando
+    // por Torneios manualmente, ela estava lá"). O consumo do deep link só
+    // pode ser registrado depois de haver de fato o que abrir.
     if (!requested) return;
-    const mode = resolveTournamentOpenMode(requestedMode, activeRunEvents.has(requested.id));
-    if (mode === TOURNAMENT_DEEP_LINK_MODES.RUN) setActiveTournament(requested);
-    else setDetailsTournament(requested);
+    openedTournamentRef.current = requestKey;
+
+    // Playthrough 5.13, Partes H/J/L — bug real do playtest: a mensagem
+    // "Sorteio definido" chegava e o modal abria em "Chave ainda não
+    // sorteada". A autoridade NÃO estava errada: um teste
+    // (test-draw-notification-bracket-atomicity-v513) mostrou que, no mesmo
+    // instante em que a notificação existe, uma leitura NOVA do torneio já
+    // reconstrói a chave. O que falhava era a UI: `tournaments` é uma lista
+    // carregada antes do tick do D-3, e este efeito entregava ao modal esse
+    // SNAPSHOT PRÉ-SORTEIO — sem `bracket_history`, o componente cai no
+    // estado vazio. Por isso "mais tarde funcionava" (a lista recarregava)
+    // e a semana seguinte parecia correta.
+    //
+    // A correção é reler o torneio na abertura por deep link, que é
+    // justamente quando a lista pode estar atrás do estado real. O item da
+    // lista continua como fallback se a releitura falhar.
+    let cancelled = false;
+    const openWithFreshTournament = async () => {
+      let fresh = requested;
+      try {
+        const reread = await localGame.entities.Tournament.get(requestedId);
+        if (reread?.id) fresh = reread;
+      } catch { /* mantém o item da lista */ }
+      if (cancelled) return;
+      if (requestedOpenBracket) { setBracketTournament(fresh); return; }
+      if (requestedOpenRegistration) {
+        if (canRegisterForTournament(fresh)) setRegistrationTournament(fresh);
+        else setDetailsTournament(fresh);
+        return;
+      }
+      const mode = resolveTournamentOpenMode(requestedMode, activeRunEvents.has(fresh.id));
+      if (mode === TOURNAMENT_DEEP_LINK_MODES.RUN) {
+        setActiveTournament(requested);
+      } else {
+        setDetailsTournament(requested);
+      }
+    };
+    openWithFreshTournament();
+    return () => { cancelled = true; };
   }, [activeRunEvents, loading, searchParams, tournaments]);
 
   // M3 (docs/MOBILE_M3_LIVE_MATCH_LIFECYCLE.md, Parte 8): rodada de torneio
@@ -254,9 +361,21 @@ export default function Tournaments() {
     return (t.month || 0) < currentMonth;
   }
 
+  // Playthrough 4.9, Parte A/D — bug real de produção: no dia de início de
+  // um torneio em que o jogador NUNCA se inscreveu, esta função retornava
+  // `true` só porque `t.start_date === careerDate` — nenhuma checagem de
+  // inscrição. Isso liberava o card como "jogável" (e, combinado com
+  // `isRegistered` false, o botão mostrava "Inscrever" no próprio dia do
+  // evento, depois do prazo, para um torneio que já não podia ser jogado).
+  // `activeRunEvents` já é a fonte por ID de "este jogador tem uma campanha
+  // sorteada aqui" (CalendarEvent 'scheduled' com tournament_run — só existe
+  // atrás de uma inscrição real, ensureTournamentDraw). O sorteio sempre
+  // acontece em D-3, bem antes do início, então nunca há uma janela legítima
+  // em que um torneio REGISTRADO chegue ao dia de início sem já estar em
+  // activeRunEvents — a segunda condição nunca foi necessária pra um
+  // jogador inscrito, só abria a porta pro bug.
   function isTournamentPlayable(t) {
-    if (activeRunEvents.has(t.id)) return true;
-    return Boolean(t.start_date && careerDate && t.start_date === careerDate);
+    return activeRunEvents.has(t.id);
   }
 
   function canRegisterForTournament(t) {
@@ -288,18 +407,22 @@ export default function Tournaments() {
   const focusTournament = focusRunTournament || focusRegisteredTournament;
 
   const { filtered, byMonth } = (() => {
-    const ordered = [...tournaments].sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''));
+    const ordered = orderTournamentsForView(tournaments, view);
     const inSelectedView = ordered.filter(tournament => {
-      // Redundância de navegação: o torneio EM DISPUTA já aparece por inteiro
-      // no TournamentFocusMode, com as mesmas ações — repeti-lo na listagem é
-      // o mesmo evento duas vezes na tela.
+      // Playthrough 5.13, Partes F/G — o torneio em disputa era REMOVIDO da
+      // listagem por já aparecer no TournamentFocusMode. No playtest isso
+      // virou o sintoma "me inscrevi e o torneio sumiu da lista": assim que
+      // o sorteio do D-3 cria o `tournament_run`, o evento saía do calendário
+      // do mês e passava a existir só no card de destaque.
       //
-      // Mas isso vale só para o que está sendo DISPUTADO. Um torneio apenas
-      // INSCRITO (ainda futuro) precisa continuar na listagem do mês, marcado
-      // como inscrito: some-lo fazia o jogador perder a referência de quando
-      // o evento acontece — o card de destaque não substitui a posição dele
-      // no calendário do mês.
-      if (focusRunTournament && tournament.id === focusRunTournament.id) return false;
+      // O destaque é ÊNFASE, não substituição: o evento precisa continuar na
+      // posição dele no calendário, marcado como inscrito/em disputa (o card
+      // já recebe esse tratamento via `activeRunEvents`, logo abaixo). Sem
+      // isso o jogador perde a referência de QUANDO o torneio acontece e de
+      // como ele se encaixa na semana.
+      //
+      // `focusRunTournament` segue existindo — só não remove mais a entidade
+      // da lista.
       const isPast = activeRunEvents.has(tournament.id) ? false : tournament.start_date && careerDate
         ? tournament.start_date < careerDate
         : (tournament.month || 0) < currentMonth;
@@ -311,6 +434,9 @@ export default function Tournaments() {
       (groups[key] ||= []).push(tournament);
       return groups;
     }, {});
+    Object.keys(grouped).forEach((monthKey) => {
+      grouped[monthKey] = orderTournamentsForView(grouped[monthKey], view);
+    });
     return { filtered: selected, byMonth: grouped };
   })();
 
@@ -415,7 +541,7 @@ export default function Tournaments() {
       {/* Top tabs */}
       <Tabs
         tabs={[
-          { key: 'calendar', label: 'Calendário', icon: Calendar },
+          { key: 'calendar', label: 'Agenda', icon: Calendar },
           { key: 'stats', label: 'Estatísticas', icon: BarChart3 },
           { key: 'circuit', label: 'Circuito', icon: TrendingUp },
           { key: 'news', label: 'Notícias', icon: Newspaper },
@@ -435,20 +561,36 @@ export default function Tournaments() {
         variant="buttons"
       />
 
-      {/* Filter tabs */}
-      <Tabs tabs={FILTERS.map(t => ({ key: t.id, label: t.label }))} activeTab={filter} onTabChange={setFilter} variant="buttons" />
+      {/* Playthrough 5.20-B, Partes Q/R — FILTRO DE CATEGORIA NO MOBILE.
+          Em faixa rolavel, 466px das 11 categorias ficavam fora da tela em
+          360px. Deixa-las quebrar linha mostrou todas, mas ai os controles
+          (4 abas + 2 estados + 11 categorias = 17) empurravam a LISTA DE
+          TORNEIOS inteira para baixo da dobra — captura conferida. Onze opcoes
+          mutuamente exclusivas sao um seletor, nao uma parede de pilulas: uma
+          linha que mostra a categoria ativa e abre as 11 ao toque. No desktop,
+          onde a largura sobra, a faixa de pilulas continua. */}
+      <Select
+        className="w-full md:hidden"
+        value={filter}
+        onValueChange={setFilter}
+        options={FILTERS.map((f) => ({ value: f.id, label: f.label }))}
+        aria-label="Filtrar torneios por categoria"
+      />
+      <Tabs className="hidden md:flex" tabs={FILTERS.map(t => ({ key: t.id, label: t.label }))} activeTab={filter} onTabChange={setFilter} variant="buttons" />
 
       {/* Tournament list */}
       {filtered.length === 0 ? (
         <EmptyState icon={Trophy} title="Nenhum torneio encontrado" description={view === 'upcoming' ? 'Não há torneios futuros disponíveis para os filtros atuais.' : 'Não há torneios passados nos filtros atuais.'} />
       ) : (
         <div className="space-y-4">
-          {Object.keys(byMonth).sort((a, b) => view === 'past' ? b.localeCompare(a) : a.localeCompare(b)).map(m => {
+          {Object.keys(byMonth).sort((a, b) => view === 'past' ? b.localeCompare(a) : a.localeCompare(b)).map((m, monthIndex) => {
             const [yearText, monthText] = m.split('-');
             const monthNumber = Number(monthText);
             const groupYear = Number(yearText);
             const careerYear = careerDate ? Number(careerDate.slice(0, 4)) : 0;
             const isCurrentGroup = groupYear === careerYear && monthNumber === currentMonth;
+            const isOpen = monthIndex < MONTHS_OPEN_BY_DEFAULT || expandedMonths.has(m);
+            const count = byMonth[m].length;
             return (
             <div key={m}>
               <h2 className="text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
@@ -457,8 +599,18 @@ export default function Tournaments() {
                   <span className="ml-1 inline-flex items-center rounded-full bg-primary/15 text-primary px-1.5 py-0.5 text-[9px] font-bold uppercase">Atual</span>
                 )}
               </h2>
-              <div className="grid sm:grid-cols-2 gap-3">
-                {byMonth[m].map(t => (
+              {!isOpen && (
+                <button
+                  type="button"
+                  onClick={() => setExpandedMonths((prev) => new Set(prev).add(m))}
+                  className="flex min-h-11 w-full items-center justify-between rounded-xl border border-border/60 bg-card/45 px-3 text-xs font-bold text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <span>{count} torneio{count > 1 ? 's' : ''}</span>
+                  <span className="text-primary">ver</span>
+                </button>
+              )}
+              <div className={isOpen ? 'grid sm:grid-cols-2 gap-3' : 'hidden'}>
+                {isOpen && byMonth[m].map(t => (
                   <TournamentCard
                     key={t.id}
                     tournament={t}
@@ -477,6 +629,7 @@ export default function Tournaments() {
                     profile={profile}
                     teamRank={teamRank}
                     activeRun={activeRunEvents.get(t.id) || null}
+                    registration={registrationRecords.get(t.id) || null}
                   />
                 ))}
               </div>
@@ -580,7 +733,7 @@ export default function Tournaments() {
 // de `activeMatch`/`match.opponent` já existiam (mesmos campos que
 // TournamentCard já lia para o banner "Em torneio" e que CareerHub.jsx já
 // usa via getCurrentTournamentMatch/match.opponent) — nenhum dado novo.
-function TournamentFocusMode({ tournament, activeRun, careerDate, onPlay, onViewBracket, onViewDetails }) {
+function TournamentFocusMode({ tournament, activeRun, careerDate, onPlay, onViewBracket }) {
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
   const run = activeRun?.metadata?.tournament_run;
@@ -598,6 +751,9 @@ function TournamentFocusMode({ tournament, activeRun, careerDate, onPlay, onView
   }
 
   const primaryLabel = canPlayNow ? 'Jogar partida' : activeMatch ? 'Preparar' : 'Ver evento';
+  // Playthrough 5.16, Parte M — o modo foco também oferecia "Chave" no estado
+  // "Inscrito · aguardando início", que acontece ANTES do sorteio (D-3).
+  const bracketReady = hasViewableTournamentBracket(tournament, careerDate);
 
   return (
     <Surface variant="premium" className="border-primary/30">
@@ -611,14 +767,13 @@ function TournamentFocusMode({ tournament, activeRun, careerDate, onPlay, onView
       </div>
       <div className="mt-3 flex flex-wrap gap-2">
         <Button level="primary" size="touch" onClick={onPlay}><Play className="h-4 w-4" /> {primaryLabel}</Button>
-        <Button level="ghost" size="sm" onClick={onViewBracket}>Chave</Button>
-        <Button level="ghost" size="sm" onClick={onViewDetails}>Detalhes</Button>
+        {bracketReady && <Button level="ghost" size="sm" onClick={onViewBracket}>Chave</Button>}
       </div>
     </Surface>
   );
 }
 
-function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, canRegister, hasPartner, hasEnergy, onPlay, onCancel, onViewDetails, onViewBracket, careerDate, profile, teamRank, activeRun }) {
+function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered, hasPartner, hasEnergy, onPlay, onCancel, onViewDetails, onViewBracket, careerDate, profile, teamRank, activeRun, registration }) {
   // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.7): a análise do treinador
   // (5 linhas de estatísticas) era sempre renderizada por card — maior
   // ganho de altura isolado encontrado na auditoria. Fica atrás de um
@@ -636,6 +791,65 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
   const entry = !isPast ? evaluateTournamentEntry(tournament, buildAthleteEntryContext(profile, teamRank, tournament)) : null;
   const activeMatch = activeRun?.metadata?.tournament_run?.matches?.[activeRun?.metadata?.tournament_run?.currentRound || 0] || null;
   const displayDate = activeMatch?.date || tournament.start_date;
+  // Playthrough 4.5C, item 2 — cancelado (Cidade do Cabo: chegou ao início
+  // sem campo mínimo) é um estado TERMINAL próprio, checado antes de
+  // isPast/isPlayed: sem isso, o card mostrava "Encerrado" genérico —
+  // indistinguível de um torneio realmente concluído.
+  const cancelled = isTournamentCancelled(tournament);
+  // Playthrough 4.6C, item 7/8 — `isPast` (só compara start_date com a data
+  // da carreira) não sabe se o settlement realmente concluiu. Isso fazia um
+  // torneio AI-only cuja resolução ainda não rodou (chave existe, campeão
+  // ainda não) aparecer como "Encerrado" — rótulo que implica lifecycle
+  // concluído — sem nenhum bloco de campeão, indistinguível visualmente de
+  // um torneio genuinamente cancelado ou nunca sorteado.
+  // getTournamentDrawState (tournamentBracketView.js) é a fonte única: só
+  // COMPLETED tem campeão garantido; IN_PROGRESS cobre tanto "ainda
+  // rolando" quanto "data passou, aguardando resolução" — nunca mostrado
+  // como "Encerrado" nos dois casos.
+  const drawState = getTournamentDrawState(tournament, careerDate);
+  const pendingResolution = isPast && !cancelled && drawState !== TOURNAMENT_DRAW_STATES.COMPLETED;
+
+  // Playthrough 4.9, Parte D — fonte canônica única (getPlayerTournamentRegistrationState)
+  // pra decidir exatamente o que o card mostra sobre a janela de inscrição,
+  // nunca reinferido por data/status aqui.
+  const registrationState = getPlayerTournamentRegistrationState({
+    tournament, registration, careerDate,
+    tournamentRun: activeRun?.metadata?.tournament_run || null,
+    drawn: drawState === TOURNAMENT_DRAW_STATES.DRAWN || drawState === TOURNAMENT_DRAW_STATES.IN_PROGRESS || drawState === TOURNAMENT_DRAW_STATES.COMPLETED,
+  });
+  const registrationWindow = getTournamentRegistrationWindow(tournament);
+  const daysToDeadline = registrationWindow.closesAt ? daysBetweenGameDates(careerDate, registrationWindow.closesAt) : null;
+  // Playthrough 4.9, Parte D — texto/tom do aviso vêm de uma função pura e
+  // testável (buildRegistrationCardNotice, tournamentRegistrationState.js);
+  // aqui só resta mapear `code` -> ícone.
+  const drawHappened = drawState === TOURNAMENT_DRAW_STATES.DRAWN || drawState === TOURNAMENT_DRAW_STATES.IN_PROGRESS || drawState === TOURNAMENT_DRAW_STATES.COMPLETED;
+  const rawNotice = buildRegistrationCardNotice(registrationState, { daysToDeadline, isPast, drawHappened });
+  const NOTICE_ICONS = { CONFIRMED: CheckCircle, LAST_DAY: AlertCircle, CLOSING_SOON: AlertCircle, NOT_PARTICIPANT: Lock, REGISTRATION_CLOSED: Lock };
+  const registrationNotice = rawNotice ? { ...rawNotice, icon: NOTICE_ICONS[rawNotice.code] || AlertCircle } : null;
+
+  // Playthrough 5.20-C, item 1 — UM estado principal, derivado das autoridades
+  // acima (nunca recalculado). O card deixa de empilhar selos concorrentes.
+  const cardState = resolveTournamentCardState({
+    registrationState,
+    cancelled,
+    playableToday: Boolean(isRegistered && isPlayable) || Boolean(activeMatch && activeMatch.date === careerDate),
+    pendingResolution,
+    isPast,
+  });
+  const statePresentation = getTournamentCardPresentation(cardState);
+  const STATE_ICONS = {
+    [TOURNAMENT_CARD_STATE.OPEN]: CheckCircle,
+    [TOURNAMENT_CARD_STATE.REGISTERED]: CheckCircle,
+    [TOURNAMENT_CARD_STATE.AWAITING_DRAW]: Clock3,
+    [TOURNAMENT_CARD_STATE.DRAWN]: Shield,
+    [TOURNAMENT_CARD_STATE.PLAY_TODAY]: Play,
+    [TOURNAMENT_CARD_STATE.ELIMINATED]: Lock,
+    [TOURNAMENT_CARD_STATE.COMPLETED]: CheckCircle,
+    [TOURNAMENT_CARD_STATE.CANCELLED]: AlertCircle,
+    [TOURNAMENT_CARD_STATE.CLOSED]: Lock,
+    [TOURNAMENT_CARD_STATE.UNAVAILABLE]: Lock,
+  };
+  const StateIcon = STATE_ICONS[cardState] || Lock;
 
   return (
     <div className={`glass rounded-2xl p-4 border ${config.card} ${config.glow} transition-all ${isPlayed || isPast ? 'opacity-60' : 'hover:scale-[1.02]'}`}>
@@ -649,28 +863,23 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
             <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide mt-0.5 ${config.badge}`}>
               {config.label}
             </span>
-            {tournament.concurrent_events > 1 && (
-              <StatusBadge tone="danger" className="mt-1">Escolha estratégica · {tournament.concurrent_events} eventos</StatusBadge>
-            )}
+
           </div>
         </div>
-        {isPlayed ? (
-          <StatusBadge tone="success" icon={CheckCircle} className="shrink-0">Concluído</StatusBadge>
-        ) : isPast ? (
-          <StatusBadge tone="neutral" icon={Lock} className="shrink-0">Encerrado</StatusBadge>
-        ) : null}
-      </div>
-      <div className="mb-3 flex gap-2">
-        <Button type="button" level="ghost" size="sm" onClick={onViewDetails} className="h-7 rounded-lg bg-primary/10 px-2 text-[10px] text-primary hover:bg-primary/15">Ver detalhes</Button>
-        <Button type="button" level="ghost" size="sm" onClick={onViewBracket} className="h-7 rounded-lg bg-secondary px-2 text-[10px] text-cyan-300 hover:bg-secondary/80">Ver chave</Button>
+        {/* Playthrough 5.20-C — ESTADO PRINCIPAL UNICO. Antes eram quatro selos
+            encadeados aqui mais o aviso de inscricao mais a "escolha
+            estrategica": cinco coisas disputando a mesma leitura. */}
+        <StatusBadge tone={statePresentation.tone} icon={StateIcon} className="shrink-0">
+          {statePresentation.label}
+        </StatusBadge>
       </div>
 
-      {tournament.description && (
-        <p className="text-[11px] text-muted-foreground leading-relaxed mb-3 line-clamp-2">{tournament.description}</p>
-      )}
+      {/* Playthrough 5.20-C, item 1 — a descricao desce para "Ver detalhes".
+          Sao 36px por card de texto de ambientacao que nao decide inscricao, e
+          o modal de detalhes ja a mostra por inteiro. Nada foi removido. */}
 
       {displayDate && (
-        <div className="flex items-center gap-1.5 mb-2">
+        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-3">
           <Calendar className="h-3 w-3 text-muted-foreground" />
           <span className="text-[10px] font-semibold text-foreground">{formatDate(displayDate)}</span>
           {careerDate && (() => {
@@ -681,11 +890,45 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
               </span>
             );
           })()}
+          <span className="text-[10px] text-muted-foreground">·</span>
+          <span className={`text-[10px] font-semibold ${config.diffColor}`}>● {config.diffLabel}</span>
+          <span className="text-[10px] text-muted-foreground">·</span>
+          <span className="text-[10px] text-muted-foreground">{tournament.max_participants || 16} vagas</span>
+          {tournament.concurrent_events > 1 && (
+            <>
+              <span className="text-[10px] text-muted-foreground">·</span>
+              <span className="text-[10px] font-semibold text-amber-300">{tournament.concurrent_events} eventos na semana</span>
+            </>
+          )}
+          <Button type="button" level="ghost" size="sm" onClick={onViewDetails} className="h-7 rounded-lg bg-primary/10 px-2 text-[10px] text-primary hover:bg-primary/15">Ver detalhes</Button>
+          {/* Playthrough 5.16, Partes K/M — o card oferecia "Ver chave" em
+              qualquer estado, inclusive semanas antes do sorteio. `drawHappened`
+              já era calculado logo acima pela autoridade única; só não estava
+              sendo consultado aqui. */}
+          {drawHappened && (
+            <Button type="button" level="ghost" size="sm" onClick={onViewBracket} className="h-7 rounded-lg bg-secondary px-2 text-[10px] text-cyan-300 hover:bg-secondary/80">Ver chave</Button>
+          )}
         </div>
       )}
       {activeMatch && <div className="mb-3 rounded-xl border border-primary/25 bg-primary/5 p-2.5"><p className="text-[9px] font-black uppercase tracking-wider text-primary">Em torneio</p><p className="mt-1 text-xs font-bold">{activeMatch.round} · {activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}</p></div>}
 
-      {isPast && tournament.champion && (
+      {cancelled ? (
+        <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-destructive/5 border border-destructive/20">
+          <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] text-destructive/70 uppercase font-bold tracking-wide">Sem chave oficial</p>
+            <p className="text-xs font-bold text-destructive truncate">{getTournamentCancellationLabel(tournament)}</p>
+          </div>
+        </div>
+      ) : pendingResolution ? (
+        <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-secondary/40 border border-border/40">
+          <Clock3 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
+          <div className="min-w-0 flex-1">
+            <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wide">Ainda sem campeão</p>
+            <p className="text-xs font-bold truncate">A data do torneio passou, mas o resultado oficial ainda não foi resolvido.</p>
+          </div>
+        </div>
+      ) : isPast && tournament.champion && (
         <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
           <Crown className="h-3.5 w-3.5 text-amber-400 shrink-0" />
           <div className="min-w-0 flex-1">
@@ -698,11 +941,26 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
         </div>
       )}
 
-      <div className="flex items-center gap-1.5 mb-3">
-        <span className={`text-[10px] font-semibold ${config.diffColor}`}>● {config.diffLabel}</span>
-        <span className="text-[10px] text-muted-foreground">·</span>
-        <span className="text-[10px] text-muted-foreground">{tournament.max_participants || 16} vagas</span>
-      </div>
+      {/* Playthrough 4.9, Parte D — aviso de inscrição, só quando não há
+          nada mais prioritário já mostrado acima (cancelado/pendente de
+          resultado/campeão). */}
+      {!cancelled && !pendingResolution && !(isPast && tournament.champion) && registrationNotice && (
+        <div className={`flex items-center gap-2 mb-3 p-2 rounded-lg border ${
+          registrationNotice.tone === 'confirmed' ? 'bg-emerald-500/10 border-emerald-500/25'
+            : registrationNotice.tone === 'warning' ? 'bg-amber-500/10 border-amber-500/25'
+              : 'bg-secondary/40 border-border/40'
+        }`}>
+          <registrationNotice.icon className={`h-3.5 w-3.5 shrink-0 ${
+            registrationNotice.tone === 'confirmed' ? 'text-emerald-400' : registrationNotice.tone === 'warning' ? 'text-amber-400' : 'text-muted-foreground'
+          }`} />
+          <div className="min-w-0 flex-1">
+            <p className={`text-xs font-bold truncate ${
+              registrationNotice.tone === 'confirmed' ? 'text-emerald-300' : registrationNotice.tone === 'warning' ? 'text-amber-300' : 'text-foreground'
+            }`}>{registrationNotice.label}</p>
+            {registrationNotice.message && <p className="mt-0.5 text-[10px] text-muted-foreground">{registrationNotice.message}</p>}
+          </div>
+        </div>
+      )}
 
       {coach && (
         <div className="mb-3 rounded-xl bg-secondary/35 border border-border/40 overflow-hidden">
@@ -736,7 +994,11 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
         <Reward icon={Coins} value={tournament.prize_coins} color="text-yellow-400" />
         <Reward icon={Zap} value={tournament.xp_reward} color="text-primary" />
         <Reward icon={Star} value={tournament.rank_points} color="text-cyan-400" />
-        {(isPlayable || canRegister) && !isPlayed && (
+        {/* Playthrough 4.9, Parte B (invariante 5) — o botão "Inscrever" só
+            pode existir com registrationState===REGISTRATION_OPEN; nunca
+            mais reinferido pela checagem paralela antiga (`canRegister`,
+            ainda usada em TournamentDetailsModal). */}
+        {(isPlayable || canPlayerRegisterNow(registrationState)) && !isPlayed && (
           <button
             onClick={onPlay}
             className={`ml-auto inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold text-[11px] transition-colors ${

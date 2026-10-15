@@ -1,0 +1,547 @@
+{
+  "note": "Normal, seeds 1–3, política v2. preEngineRef = 5.27-E (balanced-e). postEngine = motor corrigido. postPointsFix = + derrota R1 em Gold+ a 1% do título.",
+  "preEngineRef": {
+    "easy": 30.1,
+    "r1": 32.6
+  },
+  "postEngine": {
+    "y1": {
+      "balanced-e": {
+        "careers": 3,
+        "matches": 155,
+        "easyWR": 40.6,
+        "mediumWR": null,
+        "hardWR": null,
+        "r1WR": 38.5,
+        "tierWR": {
+          "Bronze": {
+            "all": 47.5,
+            "main": 47.5,
+            "r1": 48.2,
+            "n": 101
+          },
+          "Silver": {
+            "all": 27.8,
+            "main": 27.8,
+            "r1": 25,
+            "n": 54
+          },
+          "Gold": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Platinum": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Masters": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 327,
+        "rankEndMedian": 327,
+        "sponsorShareY1Median": 51.5,
+        "prizeShareY1Median": 13.6,
+        "titles": [
+          0,
+          3,
+          1
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 172,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": true,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      },
+      "conservative-e": {
+        "careers": 3,
+        "matches": 181,
+        "easyWR": 52.2,
+        "mediumWR": 0,
+        "hardWR": null,
+        "r1WR": 50.5,
+        "tierWR": {
+          "Bronze": {
+            "all": 61.3,
+            "main": 61.3,
+            "r1": 66.1,
+            "n": 124
+          },
+          "Silver": {
+            "all": 32.1,
+            "main": 32.1,
+            "r1": 28.9,
+            "n": 56
+          },
+          "Gold": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 1
+          },
+          "Platinum": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Masters": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 304,
+        "rankEndMedian": 304,
+        "sponsorShareY1Median": 65.1,
+        "prizeShareY1Median": 9.5,
+        "titles": [
+          2,
+          4,
+          2
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 186,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": true,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      },
+      "hardcore-e": {
+        "careers": 3,
+        "matches": 166,
+        "easyWR": 44.8,
+        "mediumWR": 0,
+        "hardWR": null,
+        "r1WR": 42.7,
+        "tierWR": {
+          "Bronze": {
+            "all": 50.5,
+            "main": 50.5,
+            "r1": 53.6,
+            "n": 107
+          },
+          "Silver": {
+            "all": 34.5,
+            "main": 34.5,
+            "r1": 28.2,
+            "n": 58
+          },
+          "Gold": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 1
+          },
+          "Platinum": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Masters": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 321,
+        "rankEndMedian": 321,
+        "sponsorShareY1Median": 44.7,
+        "prizeShareY1Median": 12.8,
+        "titles": [
+          1,
+          2,
+          1
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 184,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": true,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      }
+    },
+    "y2": {
+      "balanced-e": {
+        "careers": 3,
+        "matches": 270,
+        "easyWR": 40.6,
+        "mediumWR": 2.2,
+        "hardWR": 0,
+        "r1WR": 18.8,
+        "tierWR": {
+          "Bronze": {
+            "all": 47.5,
+            "main": 47.5,
+            "r1": 48.2,
+            "n": 101
+          },
+          "Silver": {
+            "all": 27.8,
+            "main": 27.8,
+            "r1": 25,
+            "n": 54
+          },
+          "Gold": {
+            "all": 2.9,
+            "main": 2.9,
+            "r1": 3,
+            "n": 34
+          },
+          "Platinum": {
+            "all": 1.7,
+            "main": 0,
+            "r1": 0,
+            "n": 58
+          },
+          "Masters": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 18
+          },
+          "Elite": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 5
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 341,
+        "rankEndMedian": 69,
+        "sponsorShareY1Median": 51.5,
+        "prizeShareY1Median": 13.6,
+        "titles": [
+          0,
+          3,
+          1
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 327,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": false,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      }
+    }
+  },
+  "postPointsFix": {
+    "y1": {
+      "balanced-e": {
+        "careers": 3,
+        "matches": 157,
+        "easyWR": 42.9,
+        "mediumWR": 0,
+        "hardWR": null,
+        "r1WR": 37.5,
+        "tierWR": {
+          "Bronze": {
+            "all": 52.4,
+            "main": 52.4,
+            "r1": 48.2,
+            "n": 105
+          },
+          "Silver": {
+            "all": 23.5,
+            "main": 23.5,
+            "r1": 23.1,
+            "n": 51
+          },
+          "Gold": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 1
+          },
+          "Platinum": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Masters": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 311,
+        "rankEndMedian": 311,
+        "sponsorShareY1Median": 50.4,
+        "prizeShareY1Median": 12.8,
+        "titles": [
+          1,
+          3,
+          2
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 164,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": true,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      },
+      "conservative-e": {
+        "careers": 3,
+        "matches": 164,
+        "easyWR": 43.6,
+        "mediumWR": 0,
+        "hardWR": null,
+        "r1WR": 43.8,
+        "tierWR": {
+          "Bronze": {
+            "all": 50.9,
+            "main": 50.9,
+            "r1": 53.6,
+            "n": 108
+          },
+          "Silver": {
+            "all": 29.1,
+            "main": 29.1,
+            "r1": 30.8,
+            "n": 55
+          },
+          "Gold": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 1
+          },
+          "Platinum": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Masters": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 320,
+        "rankEndMedian": 320,
+        "sponsorShareY1Median": 70.6,
+        "prizeShareY1Median": 7.3,
+        "titles": [
+          1,
+          2,
+          0
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 168,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": true,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      },
+      "hardcore-e": {
+        "careers": 3,
+        "matches": 163,
+        "easyWR": 44.7,
+        "mediumWR": 0,
+        "hardWR": null,
+        "r1WR": 44.2,
+        "tierWR": {
+          "Bronze": {
+            "all": 54.1,
+            "main": 54.1,
+            "r1": 58.2,
+            "n": 111
+          },
+          "Silver": {
+            "all": 24,
+            "main": 24,
+            "r1": 26.3,
+            "n": 50
+          },
+          "Gold": {
+            "all": 0,
+            "main": 0,
+            "r1": 0,
+            "n": 2
+          },
+          "Platinum": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Masters": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 285,
+        "rankEndMedian": 285,
+        "sponsorShareY1Median": 45,
+        "prizeShareY1Median": 11.4,
+        "titles": [
+          1,
+          3,
+          0
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 182,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": true,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      }
+    },
+    "y2": {
+      "balanced-e": {
+        "careers": 3,
+        "matches": 309,
+        "easyWR": 47,
+        "mediumWR": 18.2,
+        "hardWR": 75,
+        "r1WR": 22,
+        "tierWR": {
+          "Bronze": {
+            "all": 55.8,
+            "main": 55.8,
+            "r1": 50,
+            "n": 113
+          },
+          "Silver": {
+            "all": 29.1,
+            "main": 29.1,
+            "r1": 25,
+            "n": 55
+          },
+          "Gold": {
+            "all": 4.7,
+            "main": 4.7,
+            "r1": 4.9,
+            "n": 43
+          },
+          "Platinum": {
+            "all": 24.5,
+            "main": 1.9,
+            "r1": 2,
+            "n": 94
+          },
+          "Masters": {
+            "all": 75,
+            "main": 0,
+            "r1": 0,
+            "n": 4
+          },
+          "Elite": {
+            "all": null,
+            "main": null,
+            "r1": null,
+            "n": 0
+          }
+        },
+        "energyAtMatchMedian": 100,
+        "r1EnergyMedian": 100,
+        "rank1yMedian": 317,
+        "rankEndMedian": 254,
+        "sponsorShareY1Median": 50.4,
+        "prizeShareY1Median": 12.8,
+        "titles": [
+          1,
+          4,
+          4
+        ],
+        "debtCareers": 0,
+        "taperDaysMedian": 344,
+        "microGate": {
+          "easy": true,
+          "medium": false,
+          "r1": false,
+          "silverNotMateriallyHarderThanGold": true,
+          "pass": false
+        }
+      }
+    }
+  }
+}

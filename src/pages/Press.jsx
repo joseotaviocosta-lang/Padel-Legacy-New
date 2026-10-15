@@ -41,7 +41,12 @@ export default function Press() {
   const [registrations, setRegistrations] = useState([]);
   const [rivalry, setRivalry] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(() => searchParams.get('tab') === 'interviews' ? 'interviews' : searchParams.get('tab') === 'journalists' ? 'journalists' : 'feed');
+  const [activeTab, setActiveTab] = useState(() => {
+    const requestedTab = searchParams.get('tab');
+    if (requestedTab === 'press' || requestedTab === 'interviews') return 'interviews';
+    if (requestedTab === 'journalists') return 'journalists';
+    return 'feed';
+  });
   const [activeInterview, setActiveInterview] = useState(null);
   const [activeJournalist, setActiveJournalist] = useState(null);
   const [selectedArticle, setSelectedArticle] = useState(null);
@@ -51,7 +56,11 @@ export default function Press() {
 
   useEffect(() => {
     const requestedTab = searchParams.get('tab');
-    if (requestedTab === 'interviews' || requestedTab === 'journalists' || requestedTab === 'feed') {
+    if (requestedTab === 'press' || requestedTab === 'interviews') {
+      setActiveTab('interviews');
+      return;
+    }
+    if (requestedTab === 'journalists' || requestedTab === 'feed') {
       setActiveTab(requestedTab);
     }
   }, [searchParams]);
@@ -204,7 +213,24 @@ export default function Press() {
       }
 
       // Create article
-      const articleId = `press-response-${interview.id}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
+      // Item 13 — imprensa do jogador não pode publicar duas matérias
+      // "equivalentes" para o mesmo resultado. TournamentModal.jsx já cria um
+      // recap automático (`round-news-${matchId}`, "avança no X"/"se despede
+      // do X") assim que a rodada termina; se o jogador depois abre e
+      // responde a entrevista da MESMA rodada, reusa o MESMO id em vez de
+      // outro (`press-response-${interview.id}`) — o `upsert` substitui o
+      // recap genérico pelo conteúdo real da entrevista (manchete + citações
+      // do jogador), então existe no máximo 1 matéria principal por
+      // partida/rodada, nunca duas cobrindo o mesmo fato. Entrevistas que não
+      // são pós-partida (sourceId fora do formato `match:<id>` — imprensa
+      // sobre rumor/especulação/pré-torneio) não têm recap concorrente
+      // nenhum e mantêm o id próprio de sempre.
+      const postMatchId = postMatch && String(interview.sourceId || '').startsWith('match:')
+        ? interview.sourceId.slice('match:'.length)
+        : null;
+      const articleId = postMatchId
+        ? `round-news-${postMatchId}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180)
+        : `press-response-${interview.id}`.replace(/[^a-zA-Z0-9_-]/g, '-').slice(0, 180);
       const article = await localGame.entities.PressArticle.upsert(articleId, {
         profile_id: profile.id,
         journalist_id: journalist.id,

@@ -1,4 +1,4 @@
-import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
+import { getTournamentTierConfig, getAiQualifyingLimit } from '@/lib/circuitCatalog.js';
 
 // Fase 5.1, item 1 (agenda de tier) — achado #32 mediu que ampliar o
 // calendário de Bronze/Silver não reduz a fração de duplas nunca
@@ -37,7 +37,25 @@ import { getTournamentTierConfig } from '@/lib/circuitCatalog.js';
 // nunca aparecem lá), não zerar a presença real.
 // Ver reports/real-athletes-audit/FASE-5.5-RELATORIO.md §1/§2 e
 // FASE-5.6-RELATORIO.md §2.
-export const OPEN_TIER_CEILING = 150;
+//
+// Playthrough 5.5, Parte D/E — 150→190. O objetivo original (barrar a
+// ELITE real da base) continua intacto — a elite real fica em rank
+// 1-10ish, bem abaixo dos dois valores. O ajuste mira um problema
+// DIFERENTE, medido nesta fase: mesmo depois de achatar a curva de
+// geração de OVR e inclinar o platô de preferência do Gold (Parte E),
+// Silver (151-300, aberto) continuava com avgOVR ~4 pontos acima de
+// Gold (301-450) — o próprio bloco 151-190 (avgOVR real ~80, medido na
+// Parte A) era exatamente a fatia mais forte que Silver ainda podia
+// reter. Ampliar o teto empurra essa fatia pra cima (Gold/Platinum),
+// testado empiricamente (não assumido) antes de fixar o valor — mesmo
+// método usado em toda a série 5.1-5.5.
+// Playthrough 5.5, fechamento da mediana — 350 já corrigia a média em 6
+// seeds, mas ainda deixava Silver e Gold empatados (ou Silver 0,75 acima)
+// na mediana de uma temporada; 375 melhorou para empate 76–76, ainda fora
+// do aceite. 400 remove de Silver só mais 50 ranks da borda original —
+// pares plenamente elegíveis ao Gold — sem olhar OVR e sem alterar a
+// elegibilidade dos tiers protegidos.
+export const OPEN_TIER_CEILING = 400;
 
 // Fase 8.1, item 2 — mesma constante que `WorldTourLifecycle.js` usa pra IA
 // (janela de prioridade, validada na Fase 7.3/7.4: zera a reincidência de
@@ -128,7 +146,19 @@ export function buildAthleteEntryContext(profile = {}, teamRank = null, tourname
   };
 }
 
-export function evaluateTournamentEntry(tournament, athlete = {}) {
+// Playthrough 5.3, Parte D — `options.aiFieldContext` separa DUAS
+// políticas que sempre foram a MESMA chamada até esta fase: a IA (campo
+// de fundo, WorldTourLifecycle.js/TournamentSelectionAI.js) precisa de
+// elegibilidade coerente com quem realmente compõe um campo natural
+// daquele tier; o JOGADOR (tournamentRegistration.js, Tournaments.jsx,
+// coach/weeklyCareerReview.js) precisa continuar com a rede larga de
+// sempre — progressão, escolha narrativa, jogar acima do próprio nível
+// fazem parte do jogo (Parte D/Z: nunca reduzir opção de inscrição).
+// Default (sem a flag) = comportamento EXATAMENTE igual ao de antes desta
+// fase — nenhum chamador existente muda sem passar a flag explicitamente.
+// A elegibilidade DIRETA (rank <= minRanking) nunca muda pra ninguém —
+// só a largura do QUALIFYING é diferente entre as duas políticas.
+export function evaluateTournamentEntry(tournament, athlete = {}, options = {}) {
   const config = getTournamentTierConfig(tournament?.tier);
   const rank = resolveEntryRank(athlete);
   const age = Number(athlete.age || 25);
@@ -136,7 +166,9 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
   const tournamentCountry = tournament?.country;
   const hasRanking = rank > 0;
   const directLimit = Number(tournament?.min_ranking || config.minRanking || 0);
-  const qualifyingLimit = directLimit > 0 ? Math.max(directLimit * 2, directLimit + 80) : 800;
+  const qualifyingLimit = options.aiFieldContext
+    ? getAiQualifyingLimit(tournament?.tier, directLimit)
+    : (directLimit > 0 ? Math.max(directLimit * 2, directLimit + 80) : 800);
 
   // Fase 8.1, item 2 — checado ANTES de qualquer outro critério, mesma
   // prioridade que a IA dá a `priorityWindowRemaining > 0` em
@@ -157,7 +189,7 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
   // Fase 5.1, item 1 — teto dos tiers de acesso livre (Bronze/Silver,
   // `directLimit===0`): antes, `directLimit===0` sozinho já bastava pra
   // aprovar QUALQUER rank, inclusive #1 — não havia teto, só piso. Uma
-  // dupla no top `OPEN_TIER_CEILING` (150) não entra mais aqui; ela tem
+  // dupla no top `OPEN_TIER_CEILING` não entra mais aqui; ela tem
   // lugar melhor pra estar (o corte mais baixo do topo é o Elite, 140 —
   // Fase 5.6). Só exclui quem JÁ tem ranking bom o bastante — nunca um
   // par recém-formado sem ranking, que continua caindo no
@@ -180,6 +212,19 @@ export function evaluateTournamentEntry(tournament, athlete = {}) {
     return result(ENTRY_PATHS.QUALIFYING, true, 'Elegível para disputar o qualifying.');
   }
   return result(ENTRY_PATHS.INELIGIBLE, false, `Ranking necessário: Top ${qualifyingLimit} ou convite.`);
+}
+
+// Playthrough 5.2, Parte I — nome formal pedido pelo prompt pra uma ideia
+// que já existia (evaluateTournamentEntry SEMPRE foi a fonte única de
+// elegibilidade, permissiva de propósito — permite qualifying, wildcard,
+// ranking protegido, ascensão). Este wrapper só simplifica a assinatura
+// pra (rank, tier) em vez de exigir um objeto Tournament inteiro, pra
+// ficar testável isoladamente sem duplicar a lógica de cima. NUNCA decide
+// "faz sentido" — só "pode tentar". Quem decide "faz sentido" é
+// tierPreferenceFit (circuitCatalog.js:getTierRankingFit) — as duas
+// nunca se misturam num require só (Parte I).
+export function eligibleForTier(rank, tierName, extra = {}, options = {}) {
+  return evaluateTournamentEntry({ tier: tierName }, { rank, teamRank: rank, ...extra }, options).eligible;
 }
 
 export function buildSeedings(entries = [], drawSize = 32) {

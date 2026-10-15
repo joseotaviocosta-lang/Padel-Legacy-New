@@ -1,0 +1,591 @@
+{
+  "generatedAt": "2026-10-10T12:03:48.714Z",
+  "gates": {
+    "smoke": {
+      "careers": 15,
+      "planned": 730,
+      "completed": 15,
+      "shimFree": 15,
+      "softLockFires": 0,
+      "errors": 0,
+      "errorSamples": [],
+      "advanceFailures": 0,
+      "partnerOvrMismatchMatches": 0,
+      "opponentOvrMismatchMatches": 0
+    }
+  },
+  "progression": {
+    "smoke": {
+      "casual": {
+        "careers": 5,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p25": 315,
+              "median": 329,
+              "p75": 329,
+              "min": 308,
+              "max": 336
+            }
+          },
+          "top200": {
+            "reachedPct": 60,
+            "day": {
+              "n": 3,
+              "p25": 521.5,
+              "median": 532,
+              "p75": 581,
+              "min": 511,
+              "max": 630
+            }
+          },
+          "top100": {
+            "reachedPct": 20,
+            "day": {
+              "n": 1,
+              "p25": 686,
+              "median": 686,
+              "p75": 686,
+              "min": 686,
+              "max": 686
+            }
+          },
+          "top50": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top20": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top10": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 5,
+            "p25": 1002,
+            "median": 1002,
+            "p75": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "1y": {
+            "n": 5,
+            "p25": 394,
+            "median": 425,
+            "p75": 447,
+            "min": 385,
+            "max": 468
+          },
+          "2y": {
+            "n": 5,
+            "p25": 136,
+            "median": 145,
+            "p75": 236,
+            "min": 83,
+            "max": 282
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 5,
+            "p25": 12,
+            "median": 12,
+            "p75": 12,
+            "min": 12,
+            "max": 12
+          },
+          "1y": {
+            "n": 5,
+            "p25": 49,
+            "median": 50,
+            "p75": 51,
+            "min": 49,
+            "max": 51
+          },
+          "2y": {
+            "n": 5,
+            "p25": 66,
+            "median": 67,
+            "p75": 67,
+            "min": 66,
+            "max": 68
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "tournaments": {
+              "n": 5,
+              "p25": 19,
+              "median": 24,
+              "p75": 25,
+              "min": 19,
+              "max": 25
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "tournaments": {
+              "n": 5,
+              "p25": 21,
+              "median": 22,
+              "p75": 23,
+              "min": 21,
+              "max": 27
+            }
+          }
+        ]
+      },
+      "normal": {
+        "careers": 5,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p25": 336,
+              "median": 336,
+              "p75": 350,
+              "min": 322,
+              "max": 357
+            }
+          },
+          "top200": {
+            "reachedPct": 80,
+            "day": {
+              "n": 4,
+              "p25": 626.5,
+              "median": 640.5,
+              "p75": 661.5,
+              "min": 616,
+              "max": 693
+            }
+          },
+          "top100": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top50": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top20": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top10": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 5,
+            "p25": 1002,
+            "median": 1002,
+            "p75": 1002,
+            "min": 1001,
+            "max": 1002
+          },
+          "1y": {
+            "n": 5,
+            "p25": 462,
+            "median": 465,
+            "p75": 468,
+            "min": 458,
+            "max": 478
+          },
+          "2y": {
+            "n": 5,
+            "p25": 127,
+            "median": 154,
+            "p75": 189,
+            "min": 122,
+            "max": 309
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 5,
+            "p25": 12,
+            "median": 12,
+            "p75": 12,
+            "min": 12,
+            "max": 12
+          },
+          "1y": {
+            "n": 5,
+            "p25": 62,
+            "median": 70,
+            "p75": 71,
+            "min": 56,
+            "max": 76
+          },
+          "2y": {
+            "n": 5,
+            "p25": 79,
+            "median": 81,
+            "p75": 82,
+            "min": 70,
+            "max": 84
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "tournaments": {
+              "n": 5,
+              "p25": 30,
+              "median": 31,
+              "p75": 31,
+              "min": 30,
+              "max": 31
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 1
+            },
+            "tournaments": {
+              "n": 5,
+              "p25": 36,
+              "median": 37,
+              "p75": 38,
+              "min": 36,
+              "max": 39
+            }
+          }
+        ]
+      },
+      "optimizer": {
+        "careers": 5,
+        "milestones": {
+          "top500": {
+            "reachedPct": 100,
+            "day": {
+              "n": 5,
+              "p25": 350,
+              "median": 350,
+              "p75": 350,
+              "min": 336,
+              "max": 350
+            }
+          },
+          "top200": {
+            "reachedPct": 40,
+            "day": {
+              "n": 2,
+              "p25": 588,
+              "median": 616,
+              "p75": 644,
+              "min": 560,
+              "max": 672
+            }
+          },
+          "top100": {
+            "reachedPct": 20,
+            "day": {
+              "n": 1,
+              "p25": 630,
+              "median": 630,
+              "p75": 630,
+              "min": 630,
+              "max": 630
+            }
+          },
+          "top50": {
+            "reachedPct": 20,
+            "day": {
+              "n": 1,
+              "p25": 679,
+              "median": 679,
+              "p75": 679,
+              "min": 679,
+              "max": 679
+            }
+          },
+          "top20": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top10": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          },
+          "top1": {
+            "reachedPct": 0,
+            "day": {
+              "n": 0,
+              "p25": null,
+              "median": null,
+              "p75": null,
+              "min": null,
+              "max": null
+            }
+          }
+        },
+        "rank": {
+          "start": {
+            "n": 5,
+            "p25": 1002,
+            "median": 1002,
+            "p75": 1002,
+            "min": 1002,
+            "max": 1002
+          },
+          "1y": {
+            "n": 5,
+            "p25": 474,
+            "median": 475,
+            "p75": 479,
+            "min": 467,
+            "max": 479
+          },
+          "2y": {
+            "n": 5,
+            "p25": 181,
+            "median": 270,
+            "p75": 277,
+            "min": 36,
+            "max": 278
+          }
+        },
+        "ovr": {
+          "start": {
+            "n": 5,
+            "p25": 12,
+            "median": 12,
+            "p75": 12,
+            "min": 12,
+            "max": 12
+          },
+          "1y": {
+            "n": 5,
+            "p25": 57,
+            "median": 58,
+            "p75": 59,
+            "min": 54,
+            "max": 74
+          },
+          "2y": {
+            "n": 5,
+            "p25": 71,
+            "median": 71,
+            "p75": 75,
+            "min": 66,
+            "max": 82
+          }
+        },
+        "perYear": [
+          {
+            "year": 1,
+            "titles": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "tournaments": {
+              "n": 5,
+              "p25": 29,
+              "median": 29,
+              "p75": 32,
+              "min": 28,
+              "max": 32
+            }
+          },
+          {
+            "year": 2,
+            "titles": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 0
+            },
+            "finals": {
+              "n": 5,
+              "p25": 0,
+              "median": 0,
+              "p75": 0,
+              "min": 0,
+              "max": 1
+            },
+            "tournaments": {
+              "n": 5,
+              "p25": 31,
+              "median": 34,
+              "p75": 34,
+              "min": 30,
+              "max": 35
+            }
+          }
+        ]
+      }
+    }
+  }
+}

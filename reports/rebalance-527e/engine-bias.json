@@ -1,0 +1,42 @@
+{
+  "at": "2026-10-04T12:01:05.021Z",
+  "n": 600,
+  "results": [
+    {
+      "name": "control: bots uniformes 50×50",
+      "n": 600,
+      "winPct": 43.3,
+      "meanBaseOvrA": 50
+    },
+    {
+      "name": "player uniforme (OVR do perfil real), energia 100",
+      "n": 600,
+      "winPct": 53.5,
+      "meanBaseOvrA": 61.4
+    },
+    {
+      "name": "player perfil real desigual, energia 100",
+      "n": 600,
+      "winPct": 51.3,
+      "meanBaseOvrA": 61.4
+    },
+    {
+      "name": "player uniforme, energia 55 (só rally)",
+      "n": 600,
+      "winPct": 7.3,
+      "meanBaseOvrA": 61.4
+    },
+    {
+      "name": "player uniforme, energia 55 + _energyPenalty −2 (como no jogo)",
+      "n": 600,
+      "winPct": 6.8,
+      "meanBaseOvrA": 61.4
+    },
+    {
+      "name": "player perfil real + energia 55 + −2 (realidade)",
+      "n": 600,
+      "winPct": 7.7,
+      "meanBaseOvrA": 61.4
+    }
+  ]
+}

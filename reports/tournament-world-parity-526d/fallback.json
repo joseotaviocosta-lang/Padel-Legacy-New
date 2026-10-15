@@ -1,0 +1,45 @@
+{
+  "tournaments": 161,
+  "totalFallbackPairs": 0,
+  "totalRealPairs": 3984,
+  "fallbackPct": 0,
+  "syntheticActivePairs": 0,
+  "perTier": {
+    "Bronze": {
+      "tournaments": 42,
+      "fallbackPairs": 0,
+      "realPairs": 630,
+      "fallbackPct": 0
+    },
+    "Silver": {
+      "tournaments": 29,
+      "fallbackPairs": 0,
+      "realPairs": 435,
+      "fallbackPct": 0
+    },
+    "Gold": {
+      "tournaments": 49,
+      "fallbackPairs": 0,
+      "realPairs": 1579,
+      "fallbackPct": 0
+    },
+    "Platinum": {
+      "tournaments": 27,
+      "fallbackPairs": 0,
+      "realPairs": 873,
+      "fallbackPct": 0
+    },
+    "Masters": {
+      "tournaments": 11,
+      "fallbackPairs": 0,
+      "realPairs": 368,
+      "fallbackPct": 0
+    },
+    "Elite": {
+      "tournaments": 3,
+      "fallbackPairs": 0,
+      "realPairs": 99,
+      "fallbackPct": 0
+    }
+  }
+}

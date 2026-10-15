@@ -11,12 +11,20 @@ try {
   const first = { id: 'first', name: 'Primeiro Silver', tier: 'Silver', start_date: '2026-01-08', end_date: '2026-01-10', entry_fee: 100, max_participants: 16 };
   const allowed = model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-01' });
   assert.equal(allowed.allowed, true, JSON.stringify(allowed.reasons));
-  // Proposta A (ritmo do calendário): inscrição fecha em D-3, alinhada ao
-  // sorteio da chave (TOURNAMENT_DRAW_LEAD_DAYS), não mais em D-1 — uma
-  // inscrição aceita em D-1 nascia com a janela de preparação já vencida.
-  assert.deepEqual(allowed.registrationWindow, { opensAt: '2025-12-09', closesAt: '2026-01-05' });
+  // Playthrough 5.18-H, Parte R/S — estas três linhas codificavam a regra
+  // ANTIGA (fechamento em D-3, o MESMO dia do sorteio). A Playthrough 4.9,
+  // Parte C, tornou obrigatório `registration_deadline < draw_date`, NUNCA
+  // igual: com os dois no mesmo dia, "fechado" dependia da ordem de
+  // processamento do tick — uma corrida sem vencedor definido. O fechamento
+  // passou para D-4 (`defaultCloseDaysBeforeStart: 4`), deixando 1 dia de
+  // folga real antes do sorteio em D-3 (TOURNAMENT_DRAW_LEAD_DAYS).
+  //
+  // O off-by-one estava AQUI, não na regra: o teste seguia exigindo D-3.
+  // Torneio começa em 2026-01-08, então D-4 = 2026-01-04.
+  assert.deepEqual(allowed.registrationWindow, { opensAt: '2025-12-09', closesAt: '2026-01-04' });
   assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-06' }).reasons.some(item => item.code === 'REGISTRATION_CLOSED'), true, 'D-2 deve estar fechado');
-  assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-05' }).allowed, true, 'D-3 ainda aceita inscrição');
+  assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-04' }).allowed, true, 'D-4 (último dia) ainda aceita inscrição');
+  assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-05' }).reasons.some(item => item.code === 'REGISTRATION_CLOSED'), true, 'D-3 é o dia do sorteio: já fechado');
   assert.equal(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2025-12-08' }).reasons[0].code, 'REGISTRATION_NOT_OPEN');
   assert(model.evaluateTournamentRegistration({ player, partner, tournament: first, currentDate: '2026-01-08' }).reasons.some(item => item.code === 'TOURNAMENT_STARTED'));
   const custom = { ...first, registration_open_date: '2026-01-03', registration_deadline: '2026-01-06' };
@@ -35,24 +43,36 @@ try {
   assert.equal(model.isConfirmedRegistration(registration, player.id, first.id), true);
   assert.equal(model.isConfirmedRegistration({ ...registration, status: 'cancelled' }, player.id, first.id), false);
 
-  // Proposta B — piso de descanso (restFloorDays: 7) entre o FIM de um
-  // torneio DISPUTADO e o INÍCIO do próximo. Só conta inscrição 'completed':
-  // um torneio 'missed' (ultrapassado sem entrar em quadra) não gera desgaste
-  // e não pode travar o próximo.
+  // Playthrough 4.6, itens 9/10/11 — a Proposta B (piso de descanso de 7
+  // dias) deixou de BLOQUEAR inscrição — vira aviso informativo
+  // (REST_ADVISORY em `warnings`, não mais REST_FLOOR em `reasons`). Um
+  // circuito profissional tem torneios em semanas consecutivas; a
+  // consequência agora é física (fadiga/energia residual, sistema já
+  // existente), nunca impedimento de agenda. Só conta inscrição
+  // 'completed': um torneio 'missed' não gera desgaste nenhum.
+  // Playthrough 5.18-H — as datas destes cenarios foram movidas de 02-08 para
+  // 02-07 pelo MESMO motivo da janela acima: com fechamento em D-4, um torneio
+  // que comeca em 02-11 fecha inscricao em 02-07, e 02-08 ja estava fechado.
+  // O cenario testa AVISO DE DESCANSO, nao prazo — a data precisa estar dentro
+  // da janela para que o aviso seja o que decide.
   const restRules = model.TOURNAMENT_REGISTRATION_RULES;
   assert.equal(restRules.restFloorDays, 7);
   const finished = { id: 'played', profile_id: player.id, partner_id: partner.id, tournament_id: 'earlier', tournament_name: 'Miami Cup', status: 'completed', effective_start_date: '2026-02-04', effective_end_date: '2026-02-07' };
   const tooSoon = { id: 'soon', name: 'Logo Depois', tier: 'Silver', start_date: '2026-02-11', end_date: '2026-02-14' };
   const farEnough = { id: 'far', name: 'Com Descanso', tier: 'Silver', start_date: '2026-02-15', end_date: '2026-02-18' };
-  const restBlocked = model.evaluateTournamentRegistration({ player, partner, tournament: tooSoon, currentDate: '2026-02-08', registrations: [finished], tournaments: [tooSoon, farEnough] });
-  assert.equal(restBlocked.allowed, false, 'torneio 4 dias após o anterior deve ser barrado pelo piso de descanso');
-  assert.ok(restBlocked.reasons.some(item => item.code === 'REST_FLOOR'), JSON.stringify(restBlocked.reasons));
-  const restOk = model.evaluateTournamentRegistration({ player, partner, tournament: farEnough, currentDate: '2026-02-08', registrations: [finished], tournaments: [tooSoon, farEnough] });
+  const restSoon = model.evaluateTournamentRegistration({ player, partner, tournament: tooSoon, currentDate: '2026-02-07', registrations: [finished], tournaments: [tooSoon, farEnough] });
+  assert.equal(restSoon.allowed, true, `torneio 4 dias após o anterior deve ser PERMITIDO (item 10): ${JSON.stringify(restSoon.reasons)}`);
+  assert.ok(!restSoon.reasons.some(item => item.code === 'REST_FLOOR'), 'REST_FLOOR não existe mais como reason bloqueante');
+  assert.ok(restSoon.warnings.some(item => item.code === 'REST_ADVISORY'), JSON.stringify(restSoon.warnings));
+  const restOk = model.evaluateTournamentRegistration({ player, partner, tournament: farEnough, currentDate: '2026-02-07', registrations: [finished], tournaments: [tooSoon, farEnough] });
   assert.equal(restOk.allowed, true, `8 dias de folga deve passar: ${JSON.stringify(restOk.reasons)}`);
-  // Um torneio não disputado (missed) não impõe descanso nenhum.
-  const missedInstead = model.evaluateTournamentRegistration({ player, partner, tournament: tooSoon, currentDate: '2026-02-08', registrations: [{ ...finished, status: 'missed' }], tournaments: [tooSoon, farEnough] });
+  assert.ok(!restOk.warnings.some(item => item.code === 'REST_ADVISORY'), 'com folga suficiente, nenhum aviso de descanso');
+  // Um torneio não disputado (missed) não impõe aviso de descanso nenhum.
+  const missedInstead = model.evaluateTournamentRegistration({ player, partner, tournament: tooSoon, currentDate: '2026-02-07', registrations: [{ ...finished, status: 'missed' }], tournaments: [tooSoon, farEnough] });
   assert.equal(missedInstead.allowed, true, `torneio 'missed' não deve impor descanso: ${JSON.stringify(missedInstead.reasons)}`);
-  // Sobreposição continua sendo DATE_CONFLICT, não vira REST_FLOOR duplicado.
+  assert.ok(!missedInstead.warnings.some(item => item.code === 'REST_ADVISORY'), 'torneio missed não gera aviso de descanso');
+  // Sobreposição REAL continua bloqueando normalmente (item 14) — a
+  // remoção do cooldown não afeta DATE_CONFLICT.
   const overlapNotRest = model.evaluateTournamentRegistration({ player, partner, tournament: { id: 'ov', name: 'Sobreposto', tier: 'Silver', start_date: '2026-02-05', end_date: '2026-02-08' }, currentDate: '2026-02-01', registrations: [finished], tournaments: [] });
   assert.ok(!overlapNotRest.reasons.some(item => item.code === 'REST_FLOOR'), 'sobreposição não deve ser reportada como falta de descanso');
 

@@ -1,0 +1,14 @@
+import { attach } from './attach.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const tapText = async (re, { within = null } = {}) => { const box = await page.evaluate((src, within) => { const rx = new RegExp(src); const root = within ? [...document.querySelectorAll(within)].at(-1) || document : document; const el = [...root.querySelectorAll('button, a, [role=button]')].filter((b) => b.offsetParent && !b.disabled).find((b) => rx.test((b.innerText || b.getAttribute('aria-label') || '').trim().replace(/\s+/g, ' '))); if (!el) return null; el.scrollIntoView({ block: 'center' }); const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, re.source, within); if (!box) return false; await sleep(400); await page.touchscreen.tap(box.x, box.y); return true; };
+const waitFor = async (re, max = 90000) => { const t0 = Date.now(); while (Date.now() - t0 < max) { const s = await state(4000); if (re.test(s.text)) return Date.now() - t0; await sleep(2000); } return null; };
+const log = [];
+const step = async (name, fn) => { const t0 = Date.now(); let r; try { r = await fn(); } catch (e) { r = `erro: ${e.message.slice(0, 120)}`; } log.push({ name, r, ms: Date.now() - t0, errors: errors.splice(0) }); console.log(JSON.stringify(log.at(-1))); };
+await step('Carreira (barra inferior)', async () => { await tapText(/^Carreira$/); return waitFor(/Minha dupla|Meu atleta/, 60000); });
+await step('Minha dupla', async () => { await tapText(/Minha dupla/); return waitFor(/Mercado|Recebidas|Escolha sua dupla/); });
+await step('Mercado', async () => { await tapText(/^Mercado \(\d+\)$/); return waitFor(/Analisar proposta/); });
+await step('Analisar proposta', async () => { await tapText(/^Analisar proposta$/); return waitFor(/Aceitar proposta/, 30000); });
+await step('Aceitar proposta', async () => { await tapText(/^Aceitar proposta$/); return waitFor(/Dupla ativa/, 60000); });
+await shot('android-dupla');
+console.log('FIM', JSON.stringify(log.map((l) => [l.name, l.r, l.ms])));
+browser.disconnect();

@@ -1,0 +1,12 @@
+import puppeteer from 'puppeteer-core';
+const browser = await puppeteer.launch({ executablePath: 'C:/Program Files/Google/Chrome/Application/chrome.exe', headless: true, args: ['--no-sandbox'] });
+const page = await browser.newPage();
+await page.setViewport({ width: 1280, height: 900 });
+const errors = [];
+page.on('pageerror', (e) => errors.push(String(e.message).slice(0, 200)));
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle2', timeout: 60000 });
+await new Promise((r) => setTimeout(r, 3000));
+await page.screenshot({ path: 'reports/release-validation-527k/web/00-start.png' });
+const info = await page.evaluate(() => ({ url: location.href, title: document.title, buttons: [...document.querySelectorAll('button, a')].map((b) => (b.innerText || b.getAttribute('aria-label') || '').trim()).filter(Boolean).slice(0, 60), text: document.body.innerText.slice(0, 800) }));
+console.log(JSON.stringify(info, null, 1)); console.log('errors', JSON.stringify(errors));
+await browser.close();

@@ -1,0 +1,8 @@
+tier,minRanking,mainDrawSize,roundCount,championPoints,r1LossPoints,firstWinPoints,firstWinDelta,titlePoints,qualifyingLossPoints,roundPoints
+Bronze,0,16,4,10,1,2,1,10,0,"1 2 4 6 10"
+Silver,0,16,4,25,2,5,3,25,0,"2 5 9 15 25"
+Gold,450,24,5,100,5,9,4,100,0,"5 9 18 36 60 100"
+Platinum,320,32,5,200,9,18,9,200,0,"9 18 36 72 120 200"
+Masters,230,24,5,500,23,45,22,500,0,"23 45 90 180 300 500"
+Elite,140,20,5,1000,45,90,45,1000,0,"45 90 180 360 600 1000"
+Crown,75,20,5,2000,90,180,90,2000,0,"90 180 360 720 1200 2000"

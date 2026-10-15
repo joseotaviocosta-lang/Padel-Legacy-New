@@ -1,0 +1,13 @@
+kind,ovrA,ovrB,energyA,energyB,tacticA,n,winPctA,ci95
+identical,35,35,100,100,equilibrado,1200,42.6,2.8
+identical,35,35,80,80,equilibrado,1200,42.5,2.8
+identical,35,35,60,60,equilibrado,1200,39.8,2.8
+identical,35,35,40,40,equilibrado,1200,24.2,2.4
+identical,50,50,100,100,equilibrado,1200,40.3,2.8
+identical,50,50,80,80,equilibrado,1200,41.8,2.8
+identical,50,50,60,60,equilibrado,1200,30.9,2.6
+identical,50,50,40,40,equilibrado,1200,20.1,2.3
+identical,75,75,100,100,equilibrado,1200,87.8,1.9
+identical,75,75,80,80,equilibrado,1200,70.8,2.6
+identical,75,75,60,60,equilibrado,1200,49,2.8
+identical,75,75,40,40,equilibrado,1200,23.4,2.4

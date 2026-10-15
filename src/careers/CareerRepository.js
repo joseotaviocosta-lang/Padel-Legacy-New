@@ -108,7 +108,11 @@ export class CareerRepository {
 
   async writeCareer(careerId, data, options = {}) {
     const path = await this.getCareerPath(careerId);
-    const validated = validateCareerData(data);
+    // Playthrough 5.25 — CareerManager.saveCareer já entrega o objeto
+    // validado (cloneDeep do validador); validar de novo aqui era um 2º clone
+    // completo do save por gravação (~50ms cada no aparelho). Os demais
+    // chamadores continuam validando.
+    const validated = options.validated === true ? data : validateCareerData(data);
     if (validated.career_id !== careerId) {
       throw new Error('career_id no conteúdo difere do careerId solicitado.');
     }

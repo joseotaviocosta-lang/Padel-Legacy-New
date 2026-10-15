@@ -1078,5 +1078,12 @@ export function applyReputationEffects(profile, effects) {
   if (effects.fan_appeal) updates.fan_appeal = Math.max(0, Math.min(100, (profile.fan_appeal || 50) + effects.fan_appeal));
   if (effects.sponsor_appeal) updates.sponsor_appeal = Math.max(0, Math.min(100, (profile.sponsor_appeal || 50) + effects.sponsor_appeal));
   if (effects.morale) updates.morale = Math.max(0, Math.min(100, (profile.morale || 70) + effects.morale));
+  // Playthrough 5.26-B — as respostas de entrevista sempre declararam
+  // `reputation` (QUESTION_BANKS), mas o efeito nunca chegava ao perfil: a
+  // reputação do jogador ficava 0 para sempre e travava a loja (raro+ exige
+  // reputação) e o estágio de patrocínio. Aplica exatamente o valor declarado,
+  // com o mesmo clamp 0–100 dos demais campos. Base 0 (o perfil nasce sem
+  // reputação) — valores novos de ganho NÃO foram decididos aqui.
+  if (effects.reputation) updates.reputation = Math.max(0, Math.min(100, (Number(profile.reputation) || 0) + effects.reputation));
   return updates;
 }

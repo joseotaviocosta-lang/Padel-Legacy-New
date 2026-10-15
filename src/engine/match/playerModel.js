@@ -1,13 +1,25 @@
 import { createBehaviorProfile } from './PersonalityModel.js';
+import { baseOverallRating } from '../../lib/attributes.js';
 
-const ATTRIBUTE_KEYS = ['serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash', 'defense', 'agility', 'strategy', 'emotional_control'];
-
+// Playthrough 5.26-B — o OVR-base vem da MESMA autoridade da UI
+// (attributes.js:baseOverallRating). Antes, a média aqui dividia por 10
+// chaves planas e tinha piso 1: o parceiro materializado e todo atleta do
+// mundo (só `overall_rating`, sem atributos planos) entravam na partida com
+// OVR 1, e templates parciais (6/10 atributos) com ~60% do OVR real.
+// Só o INPUT mudou: os modificadores de contexto e o clamp abaixo são os
+// mesmos de antes, e nenhuma fórmula de rally/probabilidade foi tocada.
 function overallRating(profile) {
   if (!profile) return 0;
-  const sum = ATTRIBUTE_KEYS.reduce((total, key) => total + (Number(profile[key]) || 0), 0);
-  let rating = Math.round(sum / ATTRIBUTE_KEYS.length);
+  const base = baseOverallRating(profile);
+  // Sem nenhuma fonte de OVR: 0 → normalizePlayer aplica o fallback já
+  // existente (`|| 50`), em vez de mascarar como OVR 1.
+  if (base == null) return 0;
+  let rating = base;
   if (profile._chemistryBonus) rating += Number(profile._chemistryBonus) || 0;
-  if (profile._energyPenalty) rating += Number(profile._energyPenalty) || 0;
+  // Playthrough 5.27-F — `_energyPenalty` NÃO entra mais aqui: a energia já é
+  // aplicada por golpe no RallyEngine (`player.energy`). Somar também ao OVR
+  // contava o mesmo conceito duas vezes, e só para o lado do jogador (o modal
+  // monta `_energyPenalty`; parceiro e adversários não o recebem).
   if (profile._coachMatchBonus) rating += Math.max(0, Math.min(3, Number(profile._coachMatchBonus) || 0));
   if (profile._partnerBondBonus) rating += Math.max(0, Math.min(2.5, Number(profile._partnerBondBonus) || 0));
   return Math.max(1, Math.min(100, rating));

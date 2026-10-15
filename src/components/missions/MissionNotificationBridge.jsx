@@ -179,6 +179,30 @@ export default function MissionNotificationBridge() {
     return () => window.removeEventListener('padel:achievement-unlocked', handler);
   }, [navigate]);
 
+  // Playthrough 4.6E, Parte D — a CareerMessage de sorteio (careerCommunications.js:
+  // ensureTournamentDrawNotification) já nascia persistida e não-lida, mas o
+  // playtest real mostrou que isso não é "entrega": o jogador só descobria
+  // abrindo a Central manualmente. Reaproveita o MESMO bridge/padrão de toast
+  // já usado por missão/conquista acima — nenhum sistema paralelo. O evento
+  // só é disparado pelo lifecycle do dia quando o sorteio aconteceu NAQUELE
+  // tick (`notification_origin:'same_tick'`); um reparo de self-healing
+  // (mensagem de dias atrás) nunca dispara este toast (Parte I — não é
+  // "acabou de sair" três dias depois).
+  useEffect(() => {
+    const handler = (event) => {
+      const { messageId, title, content, route } = event.detail || {};
+      if (!messageId || shownNotifications.has(messageId)) return;
+      shownNotifications.add(messageId);
+      toast({
+        title: title || 'Sorteio definido',
+        description: content,
+        action: route ? <ToastAction onClick={() => navigate(route)}>Ver chave</ToastAction> : undefined,
+      });
+    };
+    window.addEventListener('padel:draw-notification', handler);
+    return () => window.removeEventListener('padel:draw-notification', handler);
+  }, [navigate]);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {

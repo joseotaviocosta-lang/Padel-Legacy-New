@@ -12,7 +12,30 @@ const ALL_FILTERS = [
 ];
 
 const PAGE_SIZE = 10;
-const TIER_RANK = { breaking: 0, destaque: 1, normal: 2 };
+// Item 12 (Jornal do Circuito) — `WorldEvent.tier` carrega DOIS vocabulários
+// incompatíveis dependendo de quem escreveu o evento: notícia ambiente/
+// editorial usa urgência (`breaking`/`destaque`/`normal`, ver lib/world.js e
+// worldEvents.js), enquanto resultado de torneio (WorldTourLifecycle.js e
+// tournamentLifecycle.js, `event_type: 'tournament_result'`/
+// `'tournament_cancelled'`) grava o TIER COMPETITIVO do próprio torneio
+// (`crown`/`elite`/`masters`/.../`bronze`, minúsculo). O bug relatado (Bronze
+// do jogador virando manchete do Mundo em vez do Masters) era este segundo
+// vocabulário caindo inteiro no `?? 2` de fallback do antigo TIER_RANK —
+// toda notícia de torneio, de qualquer tier, empatava com "normal", e o
+// desempate (estável) virava só recência de created_date, que favorece o
+// evento mais recente — normalmente o do jogador, gerado interativamente,
+// não o do circuito, gerado em lote horas/dias "antes" na simulação.
+const TOURNAMENT_RESULT_EVENT_TYPES = new Set(['tournament_result', 'tournament_cancelled']);
+const TOURNAMENT_TIER_RANK = { crown: 0, elite: 1, masters: 2, platinum: 3, gold: 4, silver: 5, bronze: 6 };
+// Exportada para regressão headless (item 12/16) sem precisar renderizar o
+// componente — a mesma função que decide o destaque do Mundo.
+export function heroRank(event) {
+  if (event?.tier === 'breaking') return -1;
+  if (TOURNAMENT_RESULT_EVENT_TYPES.has(event?.event_type)) {
+    return TOURNAMENT_TIER_RANK[String(event?.tier || '').toLowerCase()] ?? 6;
+  }
+  return event?.tier === 'destaque' ? 7 : 8;
+}
 
 export default function WorldFeed({ profile }) {
   const [events, setEvents] = useState([]);
@@ -60,7 +83,7 @@ export default function WorldFeed({ profile }) {
   // compacta paginada em vez de uma grade de cards idênticos (seção 4/9/30).
   const nonMacroFiltered = filtered.filter(e => !e.is_macro);
   const hero = nonMacroFiltered.length > 0
-    ? [...nonMacroFiltered].sort((a, b) => (TIER_RANK[a.tier] ?? 2) - (TIER_RANK[b.tier] ?? 2))[0]
+    ? [...nonMacroFiltered].sort((a, b) => heroRank(a) - heroRank(b))[0]
     : null;
   const rest = filtered.filter(e => e.id !== hero?.id);
   const visibleRest = rest.slice(0, visibleCount);

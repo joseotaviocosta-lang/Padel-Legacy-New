@@ -1,0 +1,250 @@
+{
+  "summary": {
+    "days": 30,
+    "retiredPartner": "player-fictional-7i55ge",
+    "signs": 2,
+    "retiredResigns": 0,
+    "endedByRetirement": 1,
+    "finalPartner": "player-fictional-785jrf"
+  },
+  "signs": [
+    {
+      "date": "2026-01-01",
+      "partner": "player-fictional-7i55ge",
+      "partnershipId": "partnership-1791118726640-000al7",
+      "via": "fixture"
+    },
+    {
+      "date": "2026-01-02",
+      "partner": "player-fictional-785jrf",
+      "partnershipId": "partnership-1791119278640-iyefvy",
+      "via": "search"
+    }
+  ],
+  "ended": [
+    {
+      "partner": "player-fictional-9g5it6",
+      "status": "encerrada_jogador",
+      "reason": "Nova parceria formada",
+      "ended": "2026-01-01"
+    },
+    {
+      "partner": "player-fictional-7i55ge",
+      "status": "encerrada_parceiro",
+      "reason": "Aposentadoria do parceiro",
+      "ended": "2026-01-02"
+    }
+  ],
+  "days": [
+    {
+      "date": "2026-01-02",
+      "activeBefore": null,
+      "activeAfter": "player-fictional-785jrf",
+      "signed": "player-fictional-785jrf",
+      "error": null
+    },
+    {
+      "date": "2026-01-03",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-04",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-05",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-06",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-07",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-08",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-09",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-10",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-11",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-12",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-13",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-14",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-15",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-16",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-17",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-18",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-19",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-20",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-21",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-22",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-23",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-24",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-25",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-26",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-27",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-28",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-29",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-30",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    },
+    {
+      "date": "2026-01-31",
+      "activeBefore": "player-fictional-785jrf",
+      "activeAfter": "player-fictional-785jrf",
+      "signed": null,
+      "error": null
+    }
+  ]
+}

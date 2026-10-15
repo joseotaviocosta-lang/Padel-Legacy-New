@@ -65,7 +65,11 @@ function validateSummaryItem(summary) {
   if (typeof summary.archived !== 'boolean') fail('Resumo de carreira inválido: archived deve ser booleano.');
 }
 
-export function validateCareerData(career) {
+// Playthrough 5.25 — `owned: true`: o chamador garante que `career` é um
+// draft privado (ninguém mais o referencia). Valida e normaliza no próprio
+// objeto, sem o cloneDeep do save inteiro (~50-80ms por gravação no
+// aparelho com save de 3,2MB). Sem a opção, o comportamento não muda.
+export function validateCareerData(career, { owned = false } = {}) {
   if (!isObject(career)) fail('Carreira deve ser um objeto.');
   if (!isSafeId(career.career_id)) fail('career_id inválido.');
   if (!isNonEmptyString(career.career_name)) fail('career_name obrigatório.');
@@ -96,7 +100,7 @@ export function validateCareerData(career) {
     if (!isObject(career[key])) fail(`${key} deve ser um objeto.`);
   }
 
-  const validated = cloneDeep(career);
+  const validated = owned ? career : cloneDeep(career);
   validated.player = normalizePlayerPhysicalStats(validated.player);
   return validated;
 }

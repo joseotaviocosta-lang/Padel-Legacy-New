@@ -1,0 +1,194 @@
+{
+  "complete": true,
+  "classification": {
+    "conservative-e": "REJECT",
+    "balanced-e": "REJECT",
+    "hardcore-e": "PREFERRED"
+  },
+  "viable": [
+    "hardcore-e"
+  ],
+  "preferred": "hardcore-e",
+  "gates": {
+    "conservative-e": {
+      "checks": [
+        {
+          "gate": "Easy (Normal, 2a)",
+          "value": 46.2,
+          "pass": true,
+          "rule": ">= 45%"
+        },
+        {
+          "gate": "Medium (Normal, 2a)",
+          "value": 47.2,
+          "pass": true,
+          "rule": ">= 30%"
+        },
+        {
+          "gate": "Hard (Normal, 2a)",
+          "value": 47.5,
+          "pass": true,
+          "rule": "<= 50%"
+        },
+        {
+          "gate": "R1 (Normal, 2a)",
+          "value": 43.8,
+          "pass": true,
+          "rule": ">= 40%"
+        },
+        {
+          "gate": "Sponsor Y1 (mediana Normal)",
+          "value": 70.5,
+          "pass": false,
+          "rule": "<= 60%"
+        },
+        {
+          "gate": "Prize Y1 (mediana Normal)",
+          "value": 7.9,
+          "pass": false,
+          "rule": ">= 10%"
+        },
+        {
+          "gate": "Dívida Casual",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 20%"
+        },
+        {
+          "gate": "Dívida Normal",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 10%"
+        }
+      ],
+      "allHardPass": false,
+      "preferred": {
+        "easy": false,
+        "medium": true,
+        "hard": false
+      },
+      "balanceScore": 30.1
+    },
+    "balanced-e": {
+      "checks": [
+        {
+          "gate": "Easy (Normal, 2a)",
+          "value": 47.3,
+          "pass": true,
+          "rule": ">= 45%"
+        },
+        {
+          "gate": "Medium (Normal, 2a)",
+          "value": 40,
+          "pass": true,
+          "rule": ">= 30%"
+        },
+        {
+          "gate": "Hard (Normal, 2a)",
+          "value": 48.1,
+          "pass": true,
+          "rule": "<= 50%"
+        },
+        {
+          "gate": "R1 (Normal, 2a)",
+          "value": 39.4,
+          "pass": false,
+          "rule": ">= 40%"
+        },
+        {
+          "gate": "Sponsor Y1 (mediana Normal)",
+          "value": 46.5,
+          "pass": true,
+          "rule": "<= 60%"
+        },
+        {
+          "gate": "Prize Y1 (mediana Normal)",
+          "value": 14.3,
+          "pass": true,
+          "rule": ">= 10%"
+        },
+        {
+          "gate": "Dívida Casual",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 20%"
+        },
+        {
+          "gate": "Dívida Normal",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 10%"
+        }
+      ],
+      "allHardPass": false,
+      "preferred": {
+        "easy": false,
+        "medium": true,
+        "hard": false
+      },
+      "balanceScore": 16.2
+    },
+    "hardcore-e": {
+      "checks": [
+        {
+          "gate": "Easy (Normal, 2a)",
+          "value": 51.6,
+          "pass": true,
+          "rule": ">= 45%"
+        },
+        {
+          "gate": "Medium (Normal, 2a)",
+          "value": 37.1,
+          "pass": true,
+          "rule": ">= 30%"
+        },
+        {
+          "gate": "Hard (Normal, 2a)",
+          "value": 33.9,
+          "pass": true,
+          "rule": "<= 50%"
+        },
+        {
+          "gate": "R1 (Normal, 2a)",
+          "value": 41.5,
+          "pass": true,
+          "rule": ">= 40%"
+        },
+        {
+          "gate": "Sponsor Y1 (mediana Normal)",
+          "value": 39.8,
+          "pass": true,
+          "rule": "<= 60%"
+        },
+        {
+          "gate": "Prize Y1 (mediana Normal)",
+          "value": 11.4,
+          "pass": true,
+          "rule": ">= 10%"
+        },
+        {
+          "gate": "Dívida Casual",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 20%"
+        },
+        {
+          "gate": "Dívida Normal",
+          "value": 0,
+          "pass": true,
+          "rule": "<= 10%"
+        }
+      ],
+      "allHardPass": true,
+      "preferred": {
+        "easy": false,
+        "medium": false,
+        "hard": true
+      },
+      "balanceScore": 8.1
+    }
+  },
+  "balancedE": "REJECT",
+  "proceedToStage2": false,
+  "defaultChangeRequired": "outro preset (hardcore-e) ficou PREFERRED — PARAR e reportar; default NÃO trocado"
+}

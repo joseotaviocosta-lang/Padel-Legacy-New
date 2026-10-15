@@ -1,0 +1,11 @@
+import { attach } from './attach.mjs';
+import { mobile } from './mob.mjs';
+const { browser, page, state, shot, sleep } = await attach();
+const { tap } = mobile(page, sleep, state, shot);
+const full = async () => page.evaluate(() => document.body.innerText.replace(/\s+/g, ' '));
+await tap(/^Mais$/, 4000);
+const okP = (await tap(/^Partidas$|Histórico de partidas|^Partidas /, 8000));
+const t = await full();
+await shot('a23-partidas');
+console.log(JSON.stringify({ okP, url: (await state()).url, roma: (t.match(/[^.]{0,80}Roma Pré-Temporada[^]{0,40}(DERROTA|VITÓRIA)/i) || [])[0] || null, buttons: okP ? null : (await state()).buttons.slice(0, 30) }, null, 1));
+browser.disconnect();

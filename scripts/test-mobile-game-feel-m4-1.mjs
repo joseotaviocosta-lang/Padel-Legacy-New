@@ -14,10 +14,18 @@ function gate(label, condition) {
 }
 
 const read = (path) => readFileSync(path, 'utf8');
+// Playthrough 5.20-B — Training.jsx e Matches.jsx saem desta lista porque
+// DEIXARAM DE SER PAGINAS: a consolidacao os transformou em adaptadores de rota
+// que so devolvem <Navigate> para o hub correspondente, sem UI propria. Exigir
+// "PageHeader denso" de quem nao renderiza nada era o motivo de o gate falhar —
+// falha pre-existente, que so apareceu quando a bateria parou de capturar o
+// codigo de saida depois de um pipeline (e por isso lia sempre 0).
+//
+// Eles nao sao apagados: ADAPTER_PATHS, abaixo, passa a AFIRMAR que continuam
+// adaptadores. Se algum voltar a ser pagina de verdade, o gate cobra o
+// cabecalho denso outra vez.
 const pagePaths = [
   'src/pages/CareerHub.jsx',
-  'src/pages/Training.jsx',
-  'src/pages/Matches.jsx',
   'src/pages/Tournaments.jsx',
   'src/pages/Ranking.jsx',
   'src/pages/Athletes.jsx',
@@ -30,6 +38,9 @@ const pagePaths = [
   'src/pages/Press.jsx',
 ];
 const pages = Object.fromEntries(pagePaths.map((path) => [path, read(path)]));
+
+// Rotas legadas que hoje apenas redirecionam para o hub que absorveu a tela.
+const ADAPTER_PATHS = ['src/pages/Training.jsx', 'src/pages/Matches.jsx'];
 const css = read('src/index.css');
 
 console.log('\n--- M4.1: HUD e cabeçalhos de contexto ---');
@@ -38,7 +49,10 @@ const pageHeader = read('src/components/design-system/PageHeader.jsx');
 const dsIndex = read('src/components/design-system/index.js');
 gate('GameHud é um primitive compartilhado e exportado', gameHud.includes('data-game-hud') && dsIndex.includes("from './GameHud'"));
 gate('GameHud usa faixa com separadores, sem Surface/card próprio', gameHud.includes('pl-game-hud-item') && !gameHud.includes('<Surface'));
-gate('cada item do HUD expõe valor e rótulo separados com nome acessível', gameHud.includes('pl-game-hud-value') && gameHud.includes('pl-game-hud-label') && gameHud.includes('aria-label={item.label'));
+// Playthrough 5.22-E tornou o chip do HUD opcionalmente interativo; o nome
+// acessível passou a ser o `ariaLabel` computado (label + valor), aplicado no
+// span e no botão.
+gate('cada item do HUD expõe valor e rótulo separados com nome acessível', gameHud.includes('pl-game-hud-value') && gameHud.includes('pl-game-hud-label') && gameHud.includes('aria-label={ariaLabel}'));
 gate('PageHeader aceita hudItems/hudLabel e compõe GameHud', pageHeader.includes('hudItems') && pageHeader.includes('<GameHud'));
 gate('PageHeader denso remove o hero visual no mobile', css.includes('.pl-page-hero--dense') && css.includes('background: transparent') && css.includes('box-shadow: none'));
 gate('título operacional mobile permanece abaixo de 40px', css.includes('font-size: 1.35rem'));
@@ -53,6 +67,11 @@ gate('estrutura base do HUD é aplicada antes dos breakpoints desktop/mobile', c
 gate('HUD desktop compacta o hero em duas colunas e os chips quebram linha em vez de vazar', css.includes('@media (min-width: 768px)') && css.includes('grid-template-columns: minmax(12rem, auto) minmax(0, 1fr)') && css.includes('flex-wrap: wrap'));
 gate('HUD mobile preserva 44px e usa colunas horizontais sem colar valor/rótulo', css.includes('min-height: 2.75rem') && css.includes('grid-auto-flow: column') && css.includes('gap: var(--game-hud-gap)'));
 gate('Calendário usa data compacta 08 JAN · Quinta', (() => { const value = getCareerHudDatePresentation('2026-01-08'); return value.date === '08 JAN' && value.weekday === 'Quinta'; })());
+for (const adapterPath of ADAPTER_PATHS) {
+  const adapterSource = read(adapterPath);
+  gate(adapterPath + ' segue adaptador de rota (sem UI propria)',
+    adapterSource.includes('<Navigate') && !adapterSource.includes('PageHeader'));
+}
 for (const [path, source] of Object.entries(pages)) {
   gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));
   gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));
@@ -60,21 +79,42 @@ for (const [path, source] of Object.entries(pages)) {
 }
 
 console.log('\n--- M4.1: hierarquia de ação nas páginas-alvo ---');
-const training = pages['src/pages/Training.jsx'];
-const matches = pages['src/pages/Matches.jsx'];
+// Playthrough 5.20-B — a consolidacao moveu Treinos e Partidas para dentro do
+// hub unificado: o cabecalho com HUD e abas ficou em TrainingCenter.jsx e o
+// conteudo em TrainingView/PracticeMatchView. Os gates abaixo continuam
+// cobrando a MESMA hierarquia de acao, agora no lugar onde a tela vive.
+const trainingHub = read('src/pages/TrainingCenter.jsx');
+const trainingView = read('src/components/training-center/TrainingView.jsx');
+const practiceView = read('src/components/training-center/PracticeMatchView.jsx');
 const tournaments = pages['src/pages/Tournaments.jsx'];
 const home = pages['src/pages/CareerHub.jsx'];
-gate('Treinos: tabs e atividade principal vêm depois do HUD e antes das seções secundárias', training.indexOf('hudItems=') < training.indexOf('<Tabs') && training.indexOf('Atividades de treino') < training.indexOf('Estado do atleta'));
+gate('Treinos: HUD vem antes das abas no hub', trainingHub.indexOf('hudItems=') < trainingHub.indexOf('<Tabs'));
+gate('Treinos: atividade principal vem antes das seções secundárias', trainingView.indexOf('Atividades de treino') < trainingView.indexOf('Estado do atleta'));
 gate('Treinos: custo/ganho e botão continuam no TrainingActivityCard', (() => { const source = read('src/components/training/TrainingActivityCard.jsx'); return source.includes('energyCost') && source.includes('prediction.gains') && source.includes('Treinar'); })());
-gate('Partidas: Jogar agora vem antes de Recentes', matches.indexOf('Jogar agora') < matches.indexOf('Recentes'));
+gate('Partidas: a ação de jogar vem antes do histórico', practiceView.indexOf('Jogar partida treino') < practiceView.indexOf('Histórico recente'));
 gate('Torneios: evento/status/ação estão no mesmo cabeçalho', tournaments.includes('hudLabel="Próximo evento"') && tournaments.includes('Abrir evento'));
-gate('Home: Treinar é a ação primária e precede Competir/Agenda', home.indexOf('primary to="/game/training"') < home.indexOf('>Competir<') && home.indexOf('>Competir<') < home.indexOf('>Agenda<'));
-gate('Home: objetivo e próximo evento foram mesclados em uma Surface com separador', /<Surface padding="none" className="grid overflow-hidden/.test(home) && home.includes('xl:border-r'));
+// Playthrough 5.20-B, Partes C/D — OS DOIS GATES ANTERIORES DESCREVIAM A HOME
+// DE ANTES DA 5.20-A: uma fileira fixa de botoes (Treinar/Competir/Agenda) e
+// um Surface que mesclava objetivo e proximo evento. A 5.20-A substituiu isso
+// por um modelo de proxima-acao contextual, e os gates passaram a falhar —
+// mascarados por uma bateria que lia o codigo de saida depois de um pipeline.
+//
+// Nao foram reescritos para caber no que a tela ja fazia: a 5.20-B primeiro
+// DECIDIU a hierarquia (o compromisso acionavel antes da meta de temporada, no
+// maximo 3 pendencias visiveis) e so entao estes gates passaram a cobra-la.
+gate('Home: o que fazer agora vem antes do proximo objetivo',
+  home.indexOf('<PriorityActionsPanel') < home.indexOf('<NextObjectiveCard'));
+gate('Home: no maximo 3 pendencias visiveis, com o excedente alcancavel',
+  home.includes('VISIBLE_PRIORITY_ACTIONS = 3') && home.includes('ver mais {hiddenCount}'));
 
 console.log('\n--- M4.1: menos cards, listas de jogo e detalhes progressivos ---');
 gate('Ranking usa linhas compartilhadas de leaderboard', pages['src/pages/Ranking.jsx'].includes('CompactListItem'));
 gate('Atletas usa scouting rows clicáveis', read('src/components/athletes/AthleteCard.jsx').includes('pl-scout-row'));
-gate('Técnicos usa roster rows, não glass cards individuais', (() => { const source = read('src/components/coaches/CoachCard.jsx'); return source.includes('pl-roster-row') && !source.includes('glass'); })());
+// Playthrough 4.8, Parte H/I — decisão revertida de propósito: as roster
+// rows full-width faziam cada técnico ocupar quase uma tela inteira; agora
+// o card segue o mesmo padrão compacto (glass, grid de 2 colunas) já usado
+// pela tela de propostas de dupla, exatamente como pedido nesta fase.
+gate('Técnicos usa cards compactos (glass), padronizado com a vitrine de duplas', (() => { const source = read('src/components/coaches/CoachCard.jsx'); return source.includes('glass') && source.includes('rounded-2xl'); })());
 gate('Comunicações agrupa mensagens numa lista com separadores', pages['src/pages/Communications.jsx'].includes('last:border-b-0'));
 gate('Imprensa agrupa artigos numa lista com separadores', read('src/components/press/ArticleCard.jsx').includes('last:border-b-0'));
 gate('Missões agrupa quests em lista e mantém concluídas em detalhe', pages['src/pages/Missions.jsx'].includes('last:border-b-0') && pages['src/pages/Missions.jsx'].includes('CollapsibleSection'));
@@ -111,8 +151,12 @@ gate('landscape curto recebe compactação específica e leve', css.includes('@m
 console.log('\n--- M4.1: proxy estrutural de DOM antes/depois ---');
 const baselines = {
   'src/pages/CareerHub.jsx': { dom: 94, containers: 44, cards: 36 },
-  'src/pages/Training.jsx': { dom: 23, containers: 16, cards: 9 },
-  'src/pages/Matches.jsx': { dom: 18, containers: 9, cards: 4 },
+  // Playthrough 5.20-B — os numeros continuam os MESMOS; muda so onde a tela
+  // e medida. Treinos e Partidas viraram adaptadores de rota, e medir um
+  // adaptador vazio daria uma reducao estrutural falsa de quase 100%. A
+  // comparacao passa a ser feita contra a view que absorveu cada tela.
+  'src/components/training-center/TrainingView.jsx': { dom: 23, containers: 16, cards: 9 },
+  'src/components/training-center/PracticeMatchView.jsx': { dom: 18, containers: 9, cards: 4 },
   'src/pages/Tournaments.jsx': { dom: 51, containers: 21, cards: 9 },
   'src/pages/CalendarPage.jsx': { dom: 34, containers: 14, cards: 5 },
 };
@@ -123,17 +167,37 @@ function structuralMetrics(source) {
     cards: (source.match(/(?:<Surface|<CompactStats|<StatCard|\bglass\b|rounded-(?:xl|2xl|3xl))/g) || []).length,
   };
 }
-const after = Object.fromEntries(Object.keys(baselines).map((path) => [path, structuralMetrics(pages[path])]));
+// read(), e nao pages[], porque parte das telas agora vive em componentes.
+const after = Object.fromEntries(Object.keys(baselines).map((path) => [path, structuralMetrics(read(path))]));
 for (const path of Object.keys(baselines)) {
   const before = baselines[path];
   const current = after[path];
   console.log(`${path}: JSX tags ${before.dom} -> ${current.dom}; containers ${before.containers} -> ${current.containers}; card signals ${before.cards} -> ${current.cards}`);
 }
-const operational = ['src/pages/Training.jsx', 'src/pages/Matches.jsx', 'src/pages/Tournaments.jsx', 'src/pages/CalendarPage.jsx'];
-const sum = (map, key) => operational.reduce((total, path) => total + map[path][key], 0);
-gate('páginas operacionais reduzem tags JSX agregadas', sum(after, 'dom') < sum(baselines, 'dom'));
-gate('páginas operacionais reduzem containers agregados', sum(after, 'containers') < sum(baselines, 'containers'));
-gate('páginas operacionais reduzem sinais de cards agregados', sum(after, 'cards') < sum(baselines, 'cards'));
+// =========================================================================
+// DEPRECATED_BY_DIRECT_DOM_MEASUREMENT  (Playthrough 5.20-C, item 2)
+//
+// Os tres gates agregados que ficavam aqui contavam TAGS JSX NO FONTE como
+// proxy da complexidade da tela. Foram descontinuados, e nao apagados sem
+// explicacao, porque o motivo importa para quem ler o historico:
+//
+//   A 5.20-B transformou Torneios numa agenda por mes. Isso SOMOU 3 tags ao
+//   fonte (o cabecalho de mes fechado e marcacao nova) enquanto o DOM caiu
+//   de 333 para 76 cards e a pagina de 54.779px para 7.249px em 360px. O
+//   proxy reprovava a mudanca que melhorou a tela em sete vezes.
+//
+//   O proxy tambem premiava o movimento errado: mover marcacao para um
+//   componente noutro arquivo "melhorava" a metrica sem alterar nada do que
+//   chega ao navegador.
+//
+// A medida direta vive em test-mobile-rendered-complexity-v520c.mjs, que
+// mede overflow, conteudo escondido, CTA duplicado e densidade no DOM
+// renderizado, em 360x800 e 390x844.
+//
+// A comparacao com os baselines da M4.1 continua sendo IMPRESSA acima como
+// registro historico da evolucao do arquivo, mas nao reprova mais ninguem.
+// =========================================================================
 
-console.log(`\n${gates} gates estruturais executados, todos PASS — Mobile M4.1.`);
+console.log(`\n${gates} gates estruturais executados — Mobile M4.1.`);
+console.log('Complexidade renderizada: ver test-mobile-rendered-complexity-v520c.mjs (medida direta de DOM).');
 console.log('Gates físicos NÃO automatizados: viewport 390x800, landscape real, toque, scroll e colisão visual do GuideButton.');

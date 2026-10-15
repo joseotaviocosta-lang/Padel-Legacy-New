@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-15T15:41:06.728Z",
+  "passed": 8,
+  "total": 12,
+  "results": [
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-partnership-registration-after-exit-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 17,
+      "summary": "test-partnership-registration-after-exit-v527j: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-preexisting-commitment-preserved-v527j",
+      "ok": false,
+      "code": 1,
+      "seconds": 16,
+      "summary": "test-preexisting-commitment-preserved-v527j: 4/5 passaram",
+      "tail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.\n[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.\n✗ carreiras reais (smoke 5 seeds): toda inscrição feita antes da saída foi jogada (nenhuma cancelada pela saída)\n  + actual - expected"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-no-new-commitment-after-exit-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "test-no-new-commitment-after-exit-v527j: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-final-commitment-triggers-separation-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-final-commitment-triggers-separation-v527j: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-draw-after-exit-preserves-roster-v527j",
+      "ok": false,
+      "code": 1,
+      "seconds": 8,
+      "summary": "test-draw-after-exit-preserves-roster-v527j: 2/3 passaram",
+      "tail": "✗ partidas no limbo (decisão → separação) jogadas com o parceiro ANTIGO"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-settlement-after-exit-preserves-roster-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-settlement-after-exit-preserves-roster-v527j: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-save-reload-pending-separation-v527j",
+      "ok": false,
+      "code": 1,
+      "seconds": 0,
+      "summary": "test-save-reload-pending-separation-v527j: 4/5 passaram",
+      "tail": "✗ reload antes do sorteio, depois do sorteio e entre partidas de um compromisso do limbo\n  + actual - expected"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-headless-registration-authority-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 9,
+      "summary": "test-headless-registration-authority-v527j: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-ai-partnership-exit-registration-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 3,
+      "summary": "test-ai-partnership-exit-registration-v527j: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-seed3-commitment-limbo-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-seed3-commitment-limbo-v527j: 4/4 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-no-overlapping-partnership-v527j",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "test-no-overlapping-partnership-v527j: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-J",
+      "name": "test-balanced-e-smoke-after-lifecycle-v527j",
+      "ok": false,
+      "code": 1,
+      "seconds": 0,
+      "summary": "test-balanced-e-smoke-after-lifecycle-v527j: 5/7 passaram",
+      "tail": "✗ easy: |Δ| ≤ 10 pp contra a 5.27-I (52.9 → 65.4)\n    assert.ok(Math.abs(c.after[k] - c.before[k]) <= 10)\n✗ hard gates do Balanced-E continuam verdes no smoke (Easy ≥ 45, Medium ≥ 30, Hard ≤ 50, R1 ≥ 40, Silver+5 ≥ Gold)"
+    }
+  ]
+}

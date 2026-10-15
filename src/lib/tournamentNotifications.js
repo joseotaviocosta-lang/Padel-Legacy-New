@@ -21,3 +21,24 @@ export function tournamentReminderContextKey(tournamentId, milestone) {
   return `federation-tournament:${tournamentId}:upcoming:${milestone}-days`;
 }
 
+// Playthrough 4.9, Parte E — avisos de INSCRIÇÃO (distintos do aviso de
+// sorteio acima, que só existe pra quem já está inscrito). Nascem no
+// lifecycle do dia (calendarSystem.js), nunca dependem de o jogador abrir a
+// tela de Torneios. Cada marco é nomeado (nunca por contagem de dias
+// sozinha) — dedup por tournament_id + milestone, exatamente como pedido:
+// registration_open / registration_reminder / registration_last_day.
+export const REGISTRATION_REMINDER_MILESTONES = Object.freeze({
+  OPEN: { id: 'registration_open', daysBeforeStart: 7 },
+  REMINDER: { id: 'registration_reminder', daysBeforeStart: 5 },
+  LAST_DAY: { id: 'registration_last_day', daysBeforeStart: 4 },
+});
+
+export function getRegistrationReminderMilestone(daysUntilStart) {
+  const days = Number(daysUntilStart);
+  return Object.values(REGISTRATION_REMINDER_MILESTONES).find((item) => item.daysBeforeStart === days) || null;
+}
+
+export function registrationReminderContextKey(tournamentId, milestoneId) {
+  return `federation-tournament:${tournamentId}:registration:${milestoneId}`;
+}
+

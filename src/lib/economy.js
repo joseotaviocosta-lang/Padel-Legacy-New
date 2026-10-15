@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { STAFF_MARKET, STAFF_ROLE_DEFINITIONS, createStaffContract, getStaffSlots, normalizeStaffMember } from '@/lib/staffCatalog';
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
+import { getBalance527 } from '@/lib/balance527.js';
 
 // ── Catalogs ──────────────────────────────────────────────────────────────
 // Patrocínio (catálogo, negociação, contratos) vive só em @/lib/sponsors —
@@ -86,7 +87,10 @@ export function calculateMonthlyIncome(contracts, investments, properties, manag
   const investmentIncome = (investments || []).filter(Boolean).reduce((sum, rawInvestment) => {
     const inv = normalizePlayerInvestment(rawInvestment);
     const factor = getRiskFactor(inv.risk_level);
-    return sum + Math.round(inv.amount * inv.return_rate * factor);
+    // Playthrough 5.27 — taxa mensal de investimento reescalada (CDB 3,5%/mês
+    // ≈ 51% a.a. era exagerada). Config central; nenhuma outra fórmula muda.
+    const balance = getBalance527();
+    return sum + Math.round(inv.amount * inv.return_rate * factor * balance.investmentRateMultiplier);
   }, 0);
 
   const passiveIncome = (properties || [])
@@ -240,10 +244,17 @@ export async function fireStaff(staffRecord, profile) {
   const member = normalizeStaffMember(staffRecord);
   const penalty = member.contract_end_date && member.contract_end_date > String(profile?.career_date || '').slice(0, 10)
     ? Math.round(member.monthly_cost * 0.5) : 0;
-  if (penalty > 0 && Number(profile?.coins || 0) < penalty) throw new Error(`A rescisão custa ${penalty.toLocaleString('pt-BR')} moedas.`);
+  // Playthrough 5.27-B — FIM DO DEAD-END ECONÔMICO (Bloco K).
+  //
+  // Antes, um jogador sem caixa não conseguia rescindir e ficava preso ao
+  // custo recorrente (não dava para reduzir despesas). Agora a rescisão SEMPRE
+  // acontece; quando não há caixa, a multa vira DÍVIDA de curto prazo (saldo
+  // negativo), recuperada pela economia recorrente. A consequência permanece
+  // (o custo não é perdoado), mas o jogador nunca fica sem saída.
   await localGame.entities.PlayerStaffHire.update(staffRecord.id, {
     contract_status: 'terminated', terminated_date: profile?.career_date || new Date().toISOString().slice(0, 10),
     termination_penalty: penalty,
+    termination_funded_by_debt: penalty > Number(profile?.coins || 0),
   });
   if (penalty > 0) return await localGame.entities.PlayerProfile.update(profile.id, { coins: Number(profile.coins || 0) - penalty });
   return profile;

@@ -3,6 +3,7 @@ import {
   HeartPulse, Search, ShieldCheck, Sparkles, Target, Users,
 } from 'lucide-react';
 import { fnv1aHash } from './hashUtils.js';
+import { getBalance527 } from './balance527.js';
 
 export const STAFF_ROLE_DEFINITIONS = {
   physical_trainer: {
@@ -158,7 +159,7 @@ export function getStaffMarketForMonth(careerDate, profile = {}) {
       available,
       demand,
       marketMonth: month,
-      monthlyCost: Math.max(300, Math.round(candidate.monthlyCost * salarySwing / 50) * 50),
+      monthlyCost: Math.max(300, Math.round(candidate.monthlyCost * salarySwing * getBalance527().staffMultiplier / 50) * 50),
       unavailableReason: available ? null : (demand > 68 ? 'Em negociação com outra equipe' : 'Indisponível neste mês'),
       recommended: available && candidate.minCareerLevel <= careerLevel && candidate.quality >= Math.min(88, 52 + careerLevel),
     };

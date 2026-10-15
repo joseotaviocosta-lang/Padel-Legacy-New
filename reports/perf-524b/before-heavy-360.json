@@ -1,0 +1,716 @@
+{
+  "label": "before",
+  "heavy": true,
+  "width": 360,
+  "height": 800,
+  "cpuThrottle": 4,
+  "rounds": 3,
+  "generatedAt": "2026-10-04T12:43:52.399Z",
+  "career": {
+    "ok": true,
+    "partnerId": "player-fictional-dzriqv",
+    "counts": {
+      "athletes": 1500,
+      "teams": 1000,
+      "clubs": 60,
+      "tournaments": 124,
+      "notifications": 0
+    }
+  },
+  "pages": {
+    "home": {
+      "label": "Home",
+      "tUsefulMedian": 573,
+      "tSettledMedian": 782,
+      "longTaskMsMedian": 546,
+      "longestTaskMsMedian": 199,
+      "queriesMedian": 52,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 2,
+      "athleteListReadsMedian": 2,
+      "dom": 777,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 6,
+        "read:CareerEntityRepository.list:Match": 4,
+        "read:CareerEntityRepository.filter:TrainingSession": 4,
+        "read:CareerEntityRepository.filter:MissionProgress": 4,
+        "read:CareerEntityRepository.list:TeamRanking": 2,
+        "read:CareerEntityRepository.list:AthleteProfile": 2,
+        "read:CareerEntityRepository.list:Tournament": 2,
+        "read:CareerEntityRepository.get:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:TournamentRegistration": 2,
+        "read:CareerEntityRepository.filter:CareerMessage": 4,
+        "read:MatchCheckpointRepository.read": 2,
+        "read:CareerEntityRepository.filter:PartnerOffer": 2,
+        "read:CareerEntityRepository.filter:Mission": 2,
+        "read:CareerEntityRepository.filter:AthleteProfile": 2,
+        "read:CareerEntityRepository.list:Post": 2,
+        "read:CareerEntityRepository.list:WorldEvent": 2,
+        "read:CareerEntityRepository.filter:MonthlyCareerReport": 2,
+        "read:CareerEntityRepository.filter:AnnualCareerReport": 2,
+        "read:CareerEntityRepository.filter:PressInterview": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 581,
+          "tSettled": 845,
+          "longTaskMs": 590,
+          "calls": 52,
+          "writes": 0,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 561,
+          "tSettled": 766,
+          "longTaskMs": 489,
+          "calls": 52,
+          "writes": 0,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 573,
+          "tSettled": 782,
+          "longTaskMs": 546,
+          "calls": 52,
+          "writes": 0,
+          "teamRankingReads": 2
+        }
+      ]
+    },
+    "ranking": {
+      "label": "Ranking",
+      "tUsefulMedian": 4718,
+      "tSettledMedian": 4737,
+      "longTaskMsMedian": 4452,
+      "longestTaskMsMedian": 4059,
+      "queriesMedian": 69,
+      "writesMedian": 2,
+      "teamRankingReadsMedian": 12,
+      "athleteListReadsMedian": 8,
+      "dom": 1341,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:CareerEntityRepository.update:TeamRanking:temp-verify": 1,
+        "write:CareerEntityRepository.update:TeamRanking:temp-write": 1,
+        "copy:CareerEntityRepository.update:TeamRanking:recovery-copy": 1,
+        "rename:CareerEntityRepository.update:TeamRanking:atomic-rename": 1,
+        "remove:CareerEntityRepository.update:TeamRanking:replace-remove": 1,
+        "remove:CareerRepository.writeIndex:replace-remove": 1,
+        "copy:CareerRepository.writeIndex:recovery-copy": 1,
+        "rename:CareerRepository.writeIndex:atomic-rename": 1,
+        "remove:CareerRepository.writeIndex:backup:rotate:prune": 1,
+        "remove:CareerRepository.writeIndex:recovery-cleanup": 1,
+        "copy:CareerRepository.writeIndex:backup:copy": 1,
+        "write:CareerRepository.writeIndex:temp-write": 1,
+        "remove:CareerEntityRepository.update:TeamRanking:recovery-cleanup": 1,
+        "stringify:CareerEntityRepository.update:TeamRanking": 1,
+        "read:CareerRepository.writeIndex:temp-verify": 1,
+        "read:CareerRepository.readIndex:read": 1,
+        "stat:CareerRepository.writeIndex:backup:rotate:stat": 1,
+        "stringify:CareerRepository.writeIndex": 1,
+        "list:CareerRepository.writeIndex:backup:rotate:list": 1,
+        "parse:CareerRepository.readIndex": 1,
+        "exists:CareerRepository.readIndex:exists": 1,
+        "exists:CareerRepository.writeIndex:backup:rotate:list:preflight": 1,
+        "exists:CareerEntityRepository.update:TeamRanking:destination-exists": 1,
+        "exists:CareerRepository.writeIndex:destination-exists": 1,
+        "exists:CareerRepository.writeIndex:recovery-clean-stale:preflight": 1,
+        "exists:CareerEntityRepository.update:TeamRanking:recovery-clean-stale:preflight": 1,
+        "read:ActiveCareerAdapter.getActiveCareer": 4,
+        "read:CareerEntityRepository.filter:Partnership": 4,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.list:TeamRanking": 8,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.list:AthleteProfile": 8,
+        "read:CareerEntityRepository.get:AthleteProfile": 4,
+        "read:CareerEntityRepository.list:Club": 2,
+        "read:CareerEntityRepository.filter:TeamRanking": 2,
+        "read:CareerEntityRepository.update:TeamRanking": 1,
+        "read:CareerEntityRepository.filter:AthleteRankingResult": 2
+      },
+      "scroll": {
+        "frames": 48,
+        "over50": 0,
+        "worstFrameMs": 33
+      },
+      "raw": [
+        {
+          "tUseful": 4268,
+          "tSettled": 4510,
+          "longTaskMs": 4274,
+          "calls": 69,
+          "writes": 2,
+          "teamRankingReads": 12
+        },
+        {
+          "tUseful": 4730,
+          "tSettled": 4790,
+          "longTaskMs": 4597,
+          "calls": 69,
+          "writes": 2,
+          "teamRankingReads": 12
+        },
+        {
+          "tUseful": 4718,
+          "tSettled": 4737,
+          "longTaskMs": 4452,
+          "calls": 69,
+          "writes": 2,
+          "teamRankingReads": 12
+        }
+      ]
+    },
+    "tournaments": {
+      "label": "Torneios",
+      "tUsefulMedian": 3381,
+      "tSettledMedian": 3716,
+      "longTaskMsMedian": 3425,
+      "longestTaskMsMedian": 2718,
+      "queriesMedian": 45,
+      "writesMedian": 1,
+      "teamRankingReadsMedian": 2,
+      "athleteListReadsMedian": 0,
+      "dom": 1531,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:CareerEntityRepository.bulkUpdate:Tournament:temp-verify": 1,
+        "write:CareerEntityRepository.bulkUpdate:Tournament:temp-write": 1,
+        "copy:CareerEntityRepository.bulkUpdate:Tournament:recovery-copy": 1,
+        "remove:CareerEntityRepository.bulkUpdate:Tournament:replace-remove": 1,
+        "rename:CareerEntityRepository.bulkUpdate:Tournament:atomic-rename": 1,
+        "remove:CareerEntityRepository.bulkUpdate:Tournament:recovery-cleanup": 1,
+        "stringify:CareerEntityRepository.bulkUpdate:Tournament": 1,
+        "exists:CareerEntityRepository.bulkUpdate:Tournament:destination-exists": 1,
+        "exists:CareerEntityRepository.bulkUpdate:Tournament:recovery-clean-stale:preflight": 1,
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 6,
+        "read:CareerEntityRepository.list:Match": 4,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.list:TeamRanking": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.list:Tournament": 6,
+        "read:CareerEntityRepository.get:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:TournamentRegistration": 2,
+        "read:MatchCheckpointRepository.read": 1,
+        "read:CareerEntityRepository.list:Season": 4,
+        "read:CareerEntityRepository.list:TournamentRegistration": 2,
+        "read:CareerEntityRepository.bulkUpdate:Tournament": 1
+      },
+      "scroll": {
+        "frames": 51,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 3381,
+          "tSettled": 3716,
+          "longTaskMs": 3425,
+          "calls": 45,
+          "writes": 1,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 3555,
+          "tSettled": 3887,
+          "longTaskMs": 3679,
+          "calls": 45,
+          "writes": 1,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 3105,
+          "tSettled": 3329,
+          "longTaskMs": 3056,
+          "calls": 45,
+          "writes": 1,
+          "teamRankingReads": 2
+        }
+      ]
+    },
+    "partners": {
+      "label": "Minha dupla",
+      "tUsefulMedian": 306,
+      "tSettledMedian": 1249,
+      "longTaskMsMedian": 455,
+      "longestTaskMsMedian": 128,
+      "queriesMedian": 88,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 4,
+      "athleteListReadsMedian": 2,
+      "dom": 709,
+      "appLayoutRendersMedian": 3,
+      "rendersLast": {
+        "AppLayout": 3,
+        "CommunicationBell": 4,
+        "BottomNav": 2
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:PartnershipLegacy": 24,
+        "read:CareerEntityRepository.filter:Partnership": 18,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.list:TeamRanking": 4,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.list:Tournament": 6,
+        "read:CareerEntityRepository.list:AthleteProfile": 2,
+        "read:CareerEntityRepository.get:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:TournamentRegistration": 6,
+        "read:CareerEntityRepository.filter:CareerMessage": 6,
+        "read:CareerEntityRepository.filter:Relationship": 6,
+        "read:CareerEntityRepository.filter:PartnerOffer": 4
+      },
+      "scroll": {
+        "frames": 49,
+        "over50": 0,
+        "worstFrameMs": 33
+      },
+      "raw": [
+        {
+          "tUseful": 306,
+          "tSettled": 1249,
+          "longTaskMs": 455,
+          "calls": 88,
+          "writes": 0,
+          "teamRankingReads": 4
+        },
+        {
+          "tUseful": 414,
+          "tSettled": 1310,
+          "longTaskMs": 537,
+          "calls": 88,
+          "writes": 0,
+          "teamRankingReads": 4
+        },
+        {
+          "tUseful": 191,
+          "tSettled": 720,
+          "longTaskMs": 128,
+          "calls": 88,
+          "writes": 0,
+          "teamRankingReads": 4
+        }
+      ]
+    },
+    "training": {
+      "label": "Treinos",
+      "tUsefulMedian": 419,
+      "tSettledMedian": 573,
+      "longTaskMsMedian": 413,
+      "longestTaskMsMedian": 180,
+      "queriesMedian": 12,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 0,
+      "athleteListReadsMedian": 0,
+      "dom": 770,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 4,
+        "read:CareerEntityRepository.filter:MissionProgress": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 483,
+          "tSettled": 632,
+          "longTaskMs": 413,
+          "calls": 12,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 419,
+          "tSettled": 573,
+          "longTaskMs": 486,
+          "calls": 12,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 316,
+          "tSettled": 389,
+          "longTaskMs": 182,
+          "calls": 12,
+          "writes": 0,
+          "teamRankingReads": 0
+        }
+      ]
+    },
+    "economy": {
+      "label": "Economia",
+      "tUsefulMedian": 375,
+      "tSettledMedian": 372,
+      "longTaskMsMedian": 234,
+      "longestTaskMsMedian": 129,
+      "queriesMedian": 20,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 0,
+      "athleteListReadsMedian": 0,
+      "dom": 561,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.filter:PlayerContract": 2,
+        "read:CareerEntityRepository.filter:PlayerStaffHire": 2,
+        "read:CareerEntityRepository.filter:PlayerProperty": 2,
+        "read:CareerEntityRepository.filter:PlayerInvestment": 2,
+        "read:CareerEntityRepository.filter:FinancialTransaction": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 375,
+          "tSettled": 372,
+          "longTaskMs": 276,
+          "calls": 20,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 392,
+          "tSettled": 390,
+          "longTaskMs": 234,
+          "calls": 20,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 160,
+          "tSettled": 158,
+          "longTaskMs": 73,
+          "calls": 20,
+          "writes": 0,
+          "teamRankingReads": 0
+        }
+      ]
+    },
+    "world": {
+      "label": "Mundo / Países",
+      "tUsefulMedian": 613,
+      "tSettledMedian": 617,
+      "longTaskMsMedian": 501,
+      "longestTaskMsMedian": 238,
+      "queriesMedian": 13,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 0,
+      "athleteListReadsMedian": 2,
+      "dom": 1240,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 1,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.list:AthleteProfile": 2,
+        "read:CareerEntityRepository.list:Club": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 613,
+          "tSettled": 617,
+          "longTaskMs": 501,
+          "calls": 13,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 740,
+          "tSettled": 744,
+          "longTaskMs": 710,
+          "calls": 13,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 301,
+          "tSettled": 302,
+          "longTaskMs": 227,
+          "calls": 13,
+          "writes": 0,
+          "teamRankingReads": 0
+        }
+      ]
+    }
+  },
+  "headerRefresh": {
+    "longTaskMsMedian": 0,
+    "queriesMedian": 53,
+    "teamRankingReadsMedian": 2,
+    "athleteListReadsMedian": 2,
+    "appLayoutRenders": [
+      1,
+      1,
+      1
+    ],
+    "callersLast": {
+      "read:ActiveCareerAdapter.getActiveCareer": 3,
+      "read:CareerEntityRepository.filter:Partnership": 6,
+      "read:CareerEntityRepository.filter:CalendarEvent": 4,
+      "read:CareerEntityRepository.list:TeamRanking": 2,
+      "read:CareerEntityRepository.list:AthleteProfile": 2,
+      "read:CareerEntityRepository.filter:CareerMessage": 8,
+      "read:CareerEntityRepository.filter:TournamentRegistration": 4,
+      "read:CareerEntityRepository.get:AthleteProfile": 2,
+      "read:MatchCheckpointRepository.read": 2,
+      "read:CareerEntityRepository.filter:PlayerContract": 4,
+      "read:CareerEntityRepository.filter:PressInterview": 4,
+      "read:CareerEntityRepository.filter:Tournament": 4,
+      "read:CareerEntityRepository.filter:Match": 4,
+      "read:CareerEntityRepository.filter:PressArticle": 4
+    }
+  },
+  "micro": {
+    "getTeamRankings5000Ms": 8.8,
+    "getWorldRankMs": 39.3,
+    "buildCountryDirectoryMs": 1.6
+  },
+  "cpuProfile": {
+    "home": {
+      "topFunctions": [
+        "3651ms (program) @ (native):0",
+        "430ms (idle) @ (native):0",
+        "59ms (garbage collector) @ (native):0",
+        "32ms getBoundingClientRect @ (native):0",
+        "22ms buildWorldRankingSnapshot @ src/lib/padel.js:497",
+        "19ms createElement @ node_modules/.vite/deps/chunk-QCHXOAYK.js:490",
+        "18ms jsxDEV @ node_modules/.vite/deps/react_jsx-dev-runtime.js:605",
+        "17ms validateProperty$1 @ node_modules/.vite/deps/chunk-SXRIVT2P.js:3367",
+        "14ms UpcomingTournamentPlanningCard @ src/pages/CareerHub.jsx:1291",
+        "13ms setAttribute @ (native):0",
+        "13ms copyRows @ src/gameplay/repositories/CareerEntityRepository.js:134",
+        "11ms pushHostContext @ node_modules/.vite/deps/chunk-SXRIVT2P.js:11349",
+        "11ms now @ (native):0",
+        "10ms validatePropertiesInDevelopment @ node_modules/.vite/deps/chunk-SXRIVT2P.js:7375",
+        "9ms warnInvalidARIAProps @ node_modules/.vite/deps/chunk-SXRIVT2P.js:3318",
+        "9ms requestAnimationFrame @ (native):0",
+        "8ms (anon) @ node_modules/.vite/deps/lucide-react.js:1596",
+        "8ms measureScroll @ node_modules/.vite/deps/framer-motion.js:7383",
+        "8ms diffProperties @ node_modules/.vite/deps/chunk-SXRIVT2P.js:7650",
+        "8ms renderWithHooks @ node_modules/.vite/deps/chunk-SXRIVT2P.js:11576",
+        "8ms formatPlanningDate @ src/lib/weeklyCareerReview.js:125",
+        "8ms careerDateLabel @ src/lib/career.js:65",
+        "8ms postMessage @ (native):0",
+        "7ms jsxWithValidation @ node_modules/.vite/deps/react_jsx-dev-runtime.js:809",
+        "7ms updateHostComponent @ node_modules/.vite/deps/chunk-SXRIVT2P.js:14839"
+      ],
+      "topFiles": [
+        "4249ms (native)",
+        "199ms node_modules/.vite/deps/chunk-SXRIVT2P.js",
+        "26ms node_modules/.vite/deps/react_jsx-dev-runtime.js",
+        "25ms node_modules/.vite/deps/react-router-dom.js",
+        "24ms src/lib/padel.js",
+        "23ms node_modules/.vite/deps/chunk-QCHXOAYK.js",
+        "21ms node_modules/.vite/deps/framer-motion.js",
+        "20ms src/pages/CareerHub.jsx",
+        "15ms src/gameplay/repositories/CareerEntityRepository.js",
+        "12ms node_modules/.vite/deps/lucide-react.js",
+        "11ms src/lib/weeklyCareerReview.js",
+        "9ms src/lib/teamRanking.js",
+        "9ms src/lib/career.js",
+        "5ms src/lib/betaAnalytics.js",
+        "5ms src/dev/storageIOProbe.js"
+      ]
+    },
+    "world": {
+      "topFunctions": [
+        "1021ms (program) @ (native):0",
+        "557ms (idle) @ (native):0",
+        "61ms measureScroll @ node_modules/.vite/deps/framer-motion.js:7383",
+        "43ms buildCountryDirectory @ src/lib/countryDirectory.js:23",
+        "32ms (anon) @ src/gameplay/repositories/CareerEntityRepository.js:138",
+        "24ms setAttribute @ (native):0",
+        "9ms removeChild @ (native):0",
+        "8ms updateElement @ node_modules/.vite/deps/chunk-SXRIVT2P.js:10078",
+        "7ms appendChild @ (native):0",
+        "6ms warnInvalidARIAProps @ node_modules/.vite/deps/chunk-SXRIVT2P.js:3318",
+        "6ms renderHTML @ node_modules/.vite/deps/framer-motion.js:1485",
+        "5ms jsxDEV @ node_modules/.vite/deps/react_jsx-dev-runtime.js:605",
+        "5ms pushHostContext @ node_modules/.vite/deps/chunk-SXRIVT2P.js:11349",
+        "4ms requestAnimationFrame @ (native):0",
+        "3ms willUpdate @ node_modules/.vite/deps/framer-motion.js:6546",
+        "3ms (garbage collector) @ (native):0",
+        "3ms tick @ pptr:evaluate;navigateAndMeasure%20(file%3A%2F%2F%2FC%3A%2FProjetos%2FPadel-Legacy-New%2Fscripts%2Fperf-mobile-pages-v524b.mjs%3A159%3A29):21",
+        "3ms createElement @ node_modules/.vite/deps/chunk-QCHXOAYK.js:490",
+        "3ms getActiveElement @ node_modules/.vite/deps/chunk-SXRIVT2P.js:1908",
+        "3ms (anon) @ src/pages/Countries.jsx:63",
+        "2ms validatePropertiesInDevelopment @ node_modules/.vite/deps/chunk-SXRIVT2P.js:7375",
+        "2ms Countries @ src/pages/Countries.jsx:33",
+        "2ms createFiberFromTypeAndProps @ node_modules/.vite/deps/chunk-SXRIVT2P.js:20421",
+        "2ms createTextNode @ (native):0",
+        "2ms renderWithHooks @ node_modules/.vite/deps/chunk-SXRIVT2P.js:11576"
+      ],
+      "topFiles": [
+        "1638ms (native)",
+        "82ms node_modules/.vite/deps/framer-motion.js",
+        "63ms node_modules/.vite/deps/chunk-SXRIVT2P.js",
+        "44ms src/lib/countryDirectory.js",
+        "32ms src/gameplay/repositories/CareerEntityRepository.js",
+        "6ms src/pages/Countries.jsx",
+        "6ms node_modules/.vite/deps/react_jsx-dev-runtime.js",
+        "3ms pptr:evaluate;navigateAndMeasure%20(file%3A%2F%2F%2FC%3A%2FProjetos%2FPadel-Legacy-New%2Fscripts%2Fperf-mobile-pages-v524b.mjs%3A159%3A29)",
+        "3ms node_modules/.vite/deps/chunk-QCHXOAYK.js",
+        "2ms src/components/AppLayout.jsx",
+        "2ms pptr:evaluate;navigateAndMeasure%20(file%3A%2F%2F%2FC%3A%2FProjetos%2FPadel-Legacy-New%2Fscripts%2Fperf-mobile-pages-v524b.mjs%3A158%3A29)",
+        "1ms src/components/design-system/PlayerAvatar.jsx",
+        "1ms node_modules/.vite/deps/chunk-KBTYAULA.js",
+        "1ms src/lib/betaAnalytics.js",
+        "1ms src/dev/storageIOProbe.js"
+      ]
+    },
+    "ranking": {
+      "topFunctions": [
+        "2303ms persist @ (native):10",
+        "1114ms (program) @ (native):0",
+        "539ms (idle) @ (native):0",
+        "250ms cloneDeep @ src/careers/CareerValidator.js:35",
+        "247ms plugin:fs|read_text_file @ (native):25",
+        "212ms clone @ src/gameplay/adapters/ActiveCareerAdapter.js:14",
+        "211ms encode @ (native):0",
+        "123ms (garbage collector) @ (native):0",
+        "61ms performUnitOfWork @ node_modules/.vite/deps/chunk-SXRIVT2P.js:19245",
+        "39ms decode @ (native):0",
+        "37ms setItem @ (native):0",
+        "37ms cn @ src/lib/utils.js:4",
+        "34ms setInitialProperties @ node_modules/.vite/deps/chunk-SXRIVT2P.js:7564",
+        "30ms getTeamRaceRankings @ src/lib/teamRaceRanking.js:55",
+        "28ms (anon) @ src/gameplay/repositories/CareerEntityRepository.js:138",
+        "27ms measureScroll @ node_modules/.vite/deps/framer-motion.js:7383",
+        "23ms jsxDEV @ node_modules/.vite/deps/react_jsx-dev-runtime.js:605",
+        "22ms toCircuitDisplay @ src/pages/Ranking.jsx:50",
+        "22ms structuredClone @ (native):0",
+        "22ms reconcileChildrenArray @ node_modules/.vite/deps/chunk-SXRIVT2P.js:10277",
+        "21ms setAttribute @ (native):0",
+        "21ms (anon) @ src/storage/GameStorage.js:251",
+        "17ms formatPoints @ src/pages/Ranking.jsx:66",
+        "17ms renderWithHooks @ node_modules/.vite/deps/chunk-SXRIVT2P.js:11576",
+        "14ms writeJsonUnlocked @ src/storage/GameStorage.js:243"
+      ],
+      "topFiles": [
+        "4717ms (native)",
+        "251ms src/careers/CareerValidator.js",
+        "242ms node_modules/.vite/deps/chunk-SXRIVT2P.js",
+        "212ms src/gameplay/adapters/ActiveCareerAdapter.js",
+        "58ms src/pages/Ranking.jsx",
+        "48ms src/gameplay/repositories/CareerEntityRepository.js",
+        "38ms src/lib/teamRaceRanking.js",
+        "37ms src/lib/utils.js",
+        "35ms src/storage/GameStorage.js",
+        "27ms node_modules/.vite/deps/framer-motion.js",
+        "26ms node_modules/.vite/deps/react_jsx-dev-runtime.js",
+        "18ms src/lib/teamRanking.js",
+        "15ms node_modules/.vite/deps/@tauri-apps_plugin-fs.js",
+        "15ms node_modules/.vite/deps/lucide-react.js",
+        "14ms src/components/ui/avatar.jsx"
+      ]
+    },
+    "header": {
+      "topFunctions": [
+        "1381ms (idle) @ (native):0",
+        "809ms (program) @ (native):0",
+        "25ms buildWorldRankingSnapshot @ src/lib/padel.js:497",
+        "11ms (anon) @ src/gameplay/repositories/CareerEntityRepository.js:138",
+        "9ms (garbage collector) @ (native):0",
+        "4ms record @ src/dev/storageIOProbe.js:84",
+        "4ms (anon) @ (native):0",
+        "4ms dedupeTeamRankingsByCanonicalPair @ src/lib/teamRanking.js:160",
+        "3ms validateProperty$1 @ node_modules/.vite/deps/chunk-SXRIVT2P.js:3367",
+        "3ms diffProperties @ node_modules/.vite/deps/chunk-SXRIVT2P.js:7650",
+        "2ms createWorkInProgress @ node_modules/.vite/deps/chunk-SXRIVT2P.js:20302",
+        "2ms createElement @ node_modules/.vite/deps/chunk-QCHXOAYK.js:490",
+        "2ms warnInvalidARIAProps @ node_modules/.vite/deps/chunk-SXRIVT2P.js:3318",
+        "2ms jsxDEV @ node_modules/.vite/deps/react_jsx-dev-runtime.js:605",
+        "2ms GuidePanel @ src/components/onboarding/OnboardingGuide.jsx:283",
+        "2ms (anon) @ src/lib/padel.js:548",
+        "2ms getStoragePerformanceSnapshot @ src/dev/storageIOProbe.js:168",
+        "2ms (anon) @ src/lib/teamRanking.js:524",
+        "2ms (anon) @ node_modules/.vite/deps/lucide-react.js:1629",
+        "2ms completeUnitOfWork @ node_modules/.vite/deps/chunk-SXRIVT2P.js:19265",
+        "2ms pushHostContext @ node_modules/.vite/deps/chunk-SXRIVT2P.js:11349",
+        "2ms useMemo @ node_modules/.vite/deps/chunk-SXRIVT2P.js:12768",
+        "1ms (anon) @ src/lib/betaAnalytics.js:48",
+        "1ms createURL @ node_modules/.vite/deps/react-router-dom.js:349",
+        "1ms (anon) @ src/gameplay/repositories/CareerEntityRepository.js:42"
+      ],
+      "topFiles": [
+        "2206ms (native)",
+        "27ms node_modules/.vite/deps/chunk-SXRIVT2P.js",
+        "27ms src/lib/padel.js",
+        "15ms src/gameplay/repositories/CareerEntityRepository.js",
+        "7ms src/lib/teamRanking.js",
+        "6ms src/dev/storageIOProbe.js",
+        "3ms node_modules/.vite/deps/react-router-dom.js",
+        "3ms node_modules/.vite/deps/react_jsx-dev-runtime.js",
+        "2ms node_modules/.vite/deps/chunk-QCHXOAYK.js",
+        "2ms src/lib/betaAnalytics.js",
+        "2ms node_modules/.vite/deps/lucide-react.js",
+        "2ms src/components/onboarding/OnboardingGuide.jsx",
+        "2ms src/components/communications/CommunicationBell.jsx",
+        "1ms src/gameplay/adapters/PlayerAdapter.js",
+        "1ms src/components/AppLayout.jsx"
+      ]
+    }
+  },
+  "pageErrors": []
+}

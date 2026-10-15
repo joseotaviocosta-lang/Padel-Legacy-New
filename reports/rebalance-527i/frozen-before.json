@@ -1,0 +1,279 @@
+{
+  "phase": "5.27-I",
+  "frozenAt": "2026-10-13T23:40:39.922Z",
+  "rule": "só a política do Otimizador (harness) e a banda/janela Silver podem mudar",
+  "semanticHashEqualsTo527H": true,
+  "semanticHash": "c35b0cbfdb1877908f2a988422b50cb863cf7aed57310467f298b83b76d0d19a",
+  "blockHashes": {
+    "balance": "88a0d8a88761fd8bfaa1d13ddfafe9e2e38b9cfcbe836210efe369a357ae1b29",
+    "partnerPolicy": "b55cfca4f42b269af9034470465a8bf9cce427c984eb35eade2b7bd7beabd11b",
+    "tactics": "2992c928dee2f2ef8cb6e952f94f3d9123f55195fae4ba786556591c949da8f5",
+    "engine": "bf73efc7f52c5ee8e574af31e10f083a208078810221e31c902d0f1544491eda",
+    "ranking": "e7a8e0053444d2d0548bd7ae9c2a44907794936ff6ad7d626f1c9aa81c59adc7",
+    "population": "c6f7136904de93a48f527f5aff7d3337ce6573052803357435bbf73e1cfd2a6f",
+    "commitment": "6c6a90f11ac28cb4b509a4932f43f1629b3086501be5d59793def1bae82bd861"
+  },
+  "silverBandCurrent": {
+    "peakHigh": 400,
+    "silverPeakLow": 900,
+    "spreadLow": "max(800, silverPeakLow)",
+    "floor": 55,
+    "fieldWindow": "Silver: pula max(need, 25% do pool ordenado fraco-primeiro) — WorldTourLifecycle.buildPlayerTournamentField",
+    "openTierCeiling": 400
+  },
+  "firstPartnerRules": {
+    "firstPartnerTargetOvr": 36,
+    "firstPartnerRatingWeight": 0.45
+  },
+  "aiAdaptation": {
+    "enabled": false,
+    "gate": "const proposedBotTactic = state.opponentAdaptive === true ? chooseBotTactic(state, 'B') : state.activeTactics.B;"
+  },
+  "goldPlusRules": {
+    "gatedFirstRoundLossPointsRatio": 0.01,
+    "tierFitSourceHash": "cf783cbfbda4dc32f442e2ae56f1dc7bb0bcda31b4d93b383564d8db707ee0cc"
+  },
+  "blocks": {
+    "balance": {
+      "presets": {
+        "conservative-e": {
+          "startingCoins": 900,
+          "initialAttributeMultiplier": 1.8,
+          "sponsor": {
+            "monthlyMultiplier": 0.45,
+            "signMultiplier": 0.4,
+            "requireProof": true,
+            "proofMinTournaments": 1
+          },
+          "prizeMultiplier": 2.6,
+          "staffMultiplier": 1.12,
+          "shopPriceMultiplier": 1.15,
+          "shopBonusMultiplier": 1,
+          "investmentRateMultiplier": 0.3,
+          "version": "5.27-E"
+        },
+        "balanced-e": {
+          "startingCoins": 900,
+          "initialAttributeMultiplier": 1.8,
+          "sponsor": {
+            "monthlyMultiplier": 0.22,
+            "signMultiplier": 0.21,
+            "requireProof": true,
+            "proofMinTournaments": 1
+          },
+          "prizeMultiplier": 3,
+          "staffMultiplier": 1.25,
+          "shopPriceMultiplier": 1.2,
+          "shopBonusMultiplier": 1,
+          "investmentRateMultiplier": 0.23,
+          "version": "5.27-E"
+        },
+        "hardcore-e": {
+          "startingCoins": 700,
+          "initialAttributeMultiplier": 1.8,
+          "sponsor": {
+            "monthlyMultiplier": 0.16,
+            "signMultiplier": 0.15,
+            "requireProof": true,
+            "proofMinTournaments": 2
+          },
+          "prizeMultiplier": 2,
+          "staffMultiplier": 1.4,
+          "shopPriceMultiplier": 1.3,
+          "shopBonusMultiplier": 1,
+          "investmentRateMultiplier": 0.18,
+          "version": "5.27-E"
+        }
+      },
+      "cdbMonthlyRate": 0.035,
+      "severance": {
+        "rule": "dismissal always succeeds; penalty = 50% of monthly cost when contract still running; becomes debt (termination_funded_by_debt) when penalty > coins",
+        "fireStaffSourceHash": "7aef0f4a656616ab4068fcb6d9e655714d66e3fc657ceb5d3f3ea74e24f0d9e1"
+      }
+    },
+    "partnerPolicy": {
+      "policyVersion": "v3",
+      "normalWeights": {
+        "compatibility": 0.5,
+        "levelFit": 0.4,
+        "affordability": 0.1
+      },
+      "levelFitRule": "100 − 4 × max(0, playerOVR − candidateOVR); sem bônus acima do nível",
+      "affordabilityRule": "100 × (moedas/salário)/6 − 2 × max(0, divisão − 50)",
+      "renewalRule": "Normal v3 renova só se score(atual) ≥ renewVsMarket × melhor score da Busca (e razão OVR ≥ renewMinPartnerShare)",
+      "policies": "export const POLICIES = {\n casual: {\n trainChance: 0.65, maxSessions: 1, intensity: () => 'moderado', minEnergyTrain: 35,\n registerChance: 0.5, tierPick: 'random',\n sponsorChance: 0.4, sponsorPick: 'first',\n coachChance: 0.3, coachIncomeShare: 0.6, coachReserveMonths: 2,\n staffChance: 0.25, staffIncomeShare: 0.5, staffReserveMonths: 2, staffPriority: null,\n shopChance: 0.3, shopMaxCashShare: 0.5, shopPick: 'random',\n invest: false, partnerPick: 'random', strategy: 'balanced', trainReserve: 0, respectMinRanking: false, pressChance: 0.3, pressStyle: 'random', coachUpgrade: false, renewChance: 0.5, renewDays: 60, renewMinPartnerShare: 0, taperDays: 0, trainReserveV2: 50,\n },\n normal: {\n trainChance: 0.95, maxSessions: 2, intensity: (p) => ((p.energy || 0) > 70 ? 'moderado' : 'leve'), minEnergyTrain: 45,\n registerChance: 1, tierPick: 'best-eligible',\n sponsorChance: 1, sponsorPick: 'best',\n coachChance: 1, coachIncomeShare: 0.4, coachReserveMonths: 3,\n staffChance: 1, staffIncomeShare: 0.3, staffReserveMonths: 3, staffPriority: ['physio', 'physical_trainer', 'manager', 'analyst', 'nutritionist', 'psychologist', 'accountant'],\n shopChance: 1, shopMaxCashShare: 0.3, shopPick: 'value',\n invest: false, partnerPick: 'compat', strategy: 'balanced', trainReserve: 50, respectMinRanking: true, pressChance: 0.8, pressStyle: 'positive', coachUpgrade: true, renewChance: 1, renewDays: 120, renewMinPartnerShare: 0.6, taperDays: 3, partnerPickV2: 'recommended', tierPickV2: 'best-fit', renewVsMarket: 0.9,\n },\n optimizer: {\n trainChance: 1, maxSessions: 3, intensity: (p) => ((p.energy || 0) > 75 && (p.fatigue || 0) < 50 ? 'intenso' : 'moderado'), minEnergyTrain: 55,\n registerChance: 1, tierPick: 'best-fit',\n sponsorChance: 1, sponsorPick: 'best',\n coachChance: 1, coachIncomeShare: 0.6, coachReserveMonths: 2,\n staffChance: 1, staffIncomeShare: 0.4, staffReserveMonths: 2, staffPriority: ['manager', 'physio', 'physical_trainer', 'accountant', 'analyst', 'nutritionist', 'psychologist'],\n shopChance: 1, shopMaxCashShare: 0.8, shopPick: 'best',\n invest: true, partnerPick: 'strongest', strategy: 'balanced', trainReserve: 40, respectMinRanking: true, pressChance: 1, pressStyle: 'appeal', coachUpgrade: true, renewChance: 1, renewDays: 180, renewMinPartnerShare: 0.6, taperDays: 4,\n },\n};",
+      "ovrAuthority": "teamCompatibility ratingOf → baseOverallRating (média de atributos)",
+      "ovrAuthoritySource": "const ratingOf = athlete => {\n const base = baseOverallRating(athlete);\n return base == null ? 50 : clamp(base, 1, 100);\n};"
+    },
+    "tactics": {
+      "matchTactics": "export const MATCH_TACTICS = Object.freeze([\n Object.freeze({ id: 'equilibrado', label: 'Equilibrado', icon: 'Scale', desc: 'Risco moderado, consumo normal e decisões variadas.', attackWeight: 1, safeWeight: 1, powerWeight: 1, tacticalWeight: 1, riskModifier: 1, energyModifier: 1 }),\n Object.freeze({ id: 'agressivo', label: 'Agressivo', icon: 'Flame', desc: 'Busca rede e winners, com mais erros e desgaste.', attackWeight: 1.28, safeWeight: .88, powerWeight: 1.08, tacticalWeight: .94, riskModifier: 1.14, energyModifier: 1.08 }),\n Object.freeze({ id: 'defensivo', label: 'Defensivo', icon: 'Shield', desc: 'Prioriza lobs e segurança, preservando energia e cedendo iniciativa.', attackWeight: .8, safeWeight: 1.32, powerWeight: .78, tacticalWeight: 1.08, riskModifier: .82, energyModifier: .9 }),\n Object.freeze({ id: 'potencia', label: 'Potência', icon: 'Hammer', desc: 'Aumenta smashes e golpes fortes; exige potência e mais energia.', attackWeight: 1.12, safeWeight: .82, powerWeight: 1.42, tacticalWeight: .86, riskModifier: 1.2, energyModifier: 1.18 }),\n Object.freeze({ id: 'tatico', label: 'Tático', icon: 'Brain', desc: 'Explora espaços e fraquezas com seleção variada e disciplinada.', attackWeight: .94, safeWeight: 1.08, powerWeight: .9, tacticalWeight: 1.38, riskModifier: .92, energyModifier: .97 }),\n]);",
+      "tacticRiskScale": 0,
+      "tacticIdBonus": "const idBonus = 12 * tacticScale('__PL527G_TACTIC_ID_BONUS', 0);",
+      "aiAdaptation": {
+        "enabled": false,
+        "gate": "const proposedBotTactic = state.opponentAdaptive === true ? chooseBotTactic(state, 'B') : state.activeTactics.B;"
+      }
+    },
+    "engine": {
+      "energyConditionSlope": 0.2,
+      "botEnergyRule": "inalterada (v526Tournament.mjs, hash em sources.harness)"
+    },
+    "ranking": {
+      "gatedFirstRoundLossPointsRatio": 0.01,
+      "rankPointsTableSource": "function buildRankPointsTable(definition, roundCount) {\n const table = buildRoundTable(definition.rankPoints, roundCount);\n const ratio = Number(getBalance527().competition?.gatedFirstRoundLossPointsRatio);\n if (!(definition.minRanking > 0) || !Number.isFinite(ratio)) return table;\n const firstLoss = Math.max(1, Math.round(definition.rankPoints * ratio));\n return Object.freeze([Math.min(table[0], firstLoss), ...table.slice(1)]);\n}"
+    },
+    "population": {
+      "overallRankAnchors": [
+        [
+          1,
+          96
+        ],
+        [
+          10,
+          93
+        ],
+        [
+          25,
+          90
+        ],
+        [
+          50,
+          87
+        ],
+        [
+          100,
+          83
+        ],
+        [
+          150,
+          80
+        ],
+        [
+          250,
+          77
+        ],
+        [
+          350,
+          77
+        ],
+        [
+          450,
+          76
+        ],
+        [
+          600,
+          70
+        ],
+        [
+          800,
+          48
+        ],
+        [
+          900,
+          32
+        ],
+        [
+          1000,
+          20
+        ]
+      ],
+      "rankingPointAnchors": [
+        [
+          1,
+          13000
+        ],
+        [
+          10,
+          9130
+        ],
+        [
+          24,
+          3110
+        ],
+        [
+          50,
+          2050
+        ],
+        [
+          100,
+          1200
+        ],
+        [
+          200,
+          650
+        ],
+        [
+          350,
+          340
+        ],
+        [
+          500,
+          200
+        ],
+        [
+          750,
+          65
+        ],
+        [
+          1000,
+          1
+        ]
+      ],
+      "jitterSpread": 7,
+      "openTierBands": {
+        "ceilingMirror": "400",
+        "silver": "{ peakHigh: OPEN_TIER_CEILING_MIRROR, peakLow: OPEN_TIER_CEILING_MIRROR * 2, spreadHigh: 0, spreadLow: OPEN_TIER_CEILING_MIRROR * 2, floor: 55 }",
+        "bronze": "{ peakHigh: OPEN_TIER_CEILING_MIRROR * 2, peakLow: Number.MAX_SAFE_INTEGER, spreadHigh: OPEN_TIER_CEILING_MIRROR, spreadLow: 0, floor: 55 }"
+      },
+      "entryCompetition": {
+        "version": "5.27-E",
+        "firstPartnerTargetOvr": 36,
+        "firstPartnerRatingWeight": 0.45,
+        "silverPeakLow": 900,
+        "gatedFirstRoundLossPointsRatio": 0.01
+      }
+    },
+    "commitment": {
+      "rule": "dupla comprometida em torneio inscrito permanece até o fim dos compromissos; par histórico imutável (não alterado na 5.27-H)",
+      "partnerLifecycleHash": "e84d6f7c37992b2f3e33c24049a6ededcd068d389dc280ad0090249285e8787b"
+    }
+  },
+  "sourceHashes": {
+    "balance": {
+      "src/lib/balance527.js": "2367329939818afd07b2f9d0ae4c7e404b90d459f2a9b744e73598d7fdee37c4",
+      "src/lib/economy.js": "7e985476cd4f3d305f3e65f63baa8f0adf59ecb3471b0ed2fbcc6b504a4b4d7b",
+      "src/lib/sponsors.js": "00cf2aa37342813d7e10b1188153a46023d6709ea81280e366860a0d108d9cc9",
+      "src/lib/staffCatalog.js": "0f4cc2e396568ed11c688d07f103f1789c48486528d0bd431a36ed79d4b85e29",
+      "src/lib/storeCatalog.js": "1594136d425ea21f15b8a3f45e68de9ec8991debbf003a70cc552ef3901fba3a",
+      "src/lib/initialCareerProfiles.js": "ee8e0a785e896ad4853c698de2c172ce92519d5ece7f7d61b815348ae2adffaf"
+    },
+    "partnerPolicy": {
+      "scripts/lib/v527gPartnerScore.mjs": "3ed7ea3d096e57e62a10387e03e40091a7316868845f8a0976933d8b73aad5b0",
+      "src/players/teamCompatibility.js": "0ff1fbda028c1393195ba62c8916d1804e9d2175c79ee33308f26876c62d8afd",
+      "src/lib/partnershipSystem.js": "bee0312d1f571792de24728e63112fd2bde601c476aaf223189c1ff5fbb73348"
+    },
+    "tactics": {
+      "src/engine/match/MatchTactics.js": "fe3f62e9269914601ad79d152e1566186887b825193ff04718316396f298905b",
+      "src/engine/match/DecisionEngine.js": "479c9b4a77a2c87bcc0cb89d58e02c59b2a84d20c2f8bfa4b1c6945ef0e33d32",
+      "src/engine/match/RallyEngine.js": "e7213ea1d231c616f3f9ffae625746463403d2833b5fe4853ef4fa51a6e6ea8c",
+      "src/engine/match/MatchEngine.js": "4d99ab2630eb8094776f785bd9e4197b2f72459b3a8746d714738f69948cff44"
+    },
+    "ranking": {
+      "src/lib/circuitCatalog.js": "cf783cbfbda4dc32f442e2ae56f1dc7bb0bcda31b4d93b383564d8db707ee0cc",
+      "src/lib/teamRanking.js": "f843de6adc9644d770fbb2690c8a7cdabe5034b4c3fdb6301fac086d9ed64d2b"
+    },
+    "population": {
+      "src/lib/rankingPopulation.js": "b37813f136ec49508f46a7122cc9dd0a427eb9a36423b1e2d2daba8e7bc52f61"
+    },
+    "commitment": {
+      "src/game-core/partnerLifecycle.js": "e84d6f7c37992b2f3e33c24049a6ededcd068d389dc280ad0090249285e8787b",
+      "src/careers/CareerManager.js": "30f5c09bb2905bb528b3f9c1e002cdb8fd6fd06a2d9046e41ddc846a7007d685"
+    },
+    "harness": {
+      "scripts/sim-progression-economy-v526.mjs": "d9abb4c270bf3edf35190ff1eaa92e41262a1ee3f519cc9acf67afd20c6e459e",
+      "scripts/lib/v526Tournament.mjs": "0ff1cfd522282e88251f755c0c25907939c53ef45eec4adf79c1ddcbcf9d91ce",
+      "scripts/lib/v526Actions.mjs": "014ae979b3b2724f5fe5692e41e479ac42ecb834825ff7c3f0de81c3eb9cb0a4",
+      "scripts/lib/v526CareerSim.mjs": "b3f64f8ff31ef781971bf71735be2066f6a3c1a46f71bf85902997dff34e7154"
+    }
+  }
+}

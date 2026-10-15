@@ -1,7 +1,8 @@
 import React, { useMemo, useState } from 'react';
 import { Crown, Trophy, MapPin, Users, Star, Coins, Clock3, BarChart3 } from 'lucide-react';
 import { ModalShell, Surface, Tabs } from '@/components/design-system';
-import { getVisibleTournamentBracketState } from '@/lib/tournamentBracketView.js';
+import { describeBracketEntry, getVisibleTournamentBracketState, getTournamentCancellationLabel } from '@/lib/tournamentBracketView.js';
+import { formatDate } from '@/lib/padel';
 
 const TIER_STYLES = {
   Crown:{badge:'bg-amber-500/15 text-amber-300 border-amber-500/40',label:'Legacy Crown'},
@@ -51,6 +52,7 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
   const runnerUp = champion ? normalizeTeamName(tournament.runner_up || history.at(-1)?.matches?.[0]?.team_b) : null;
   const matches = history.reduce((sum, round) => sum + round.matches.length, 0);
   const completed = bracketState.completed;
+  const cancelled = bracketState.cancelled;
 
   return (
     <ModalShell
@@ -74,7 +76,25 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
         <p className="text-[10px] text-muted-foreground mt-1">Vice: {runnerUp}</p>
       </div>}
 
-      {history.length > 0 ? <><div className="mb-3">
+      {cancelled ? (
+        // Playthrough 4.5C, item 3 — estado factual dedicado: um evento
+        // cancelado (Cidade do Cabo: chegou ao início sem campo mínimo)
+        // nunca teve chave oficial nenhuma — mostrar "Chave ainda não
+        // sorteada" pra sempre, ou deixar cair no genérico "encerrado",
+        // escondia exatamente essa diferença do jogador.
+        <Surface padding="compact" className="text-center border-destructive/30">
+          <p className="text-sm font-bold text-destructive">Evento cancelado</p>
+          <p className="mt-1 text-xs text-muted-foreground">Não houve chave oficial.</p>
+          <p className="mt-1 text-xs text-muted-foreground">Motivo: {getTournamentCancellationLabel(tournament)}</p>
+          <div className="mt-3 grid grid-cols-2 gap-2 text-left">
+            <Info icon={MapPin} value={tournament.location?.split(',')[0] || '—'} color="text-cyan-400" />
+            <Info icon={Star} value={tournament.tier || tournament.category || '—'} color="text-primary" />
+          </div>
+          {tournament.start_date && (
+            <p className="mt-2 text-[10px] text-muted-foreground">Data prevista: {formatDate(tournament.start_date)}</p>
+          )}
+        </Surface>
+      ) : history.length > 0 ? <><div className="mb-3">
         <Tabs
           tabs={history.map((round, index) => ({ key: String(index), label: round.round }))}
           activeTab={String(activeRound)}
@@ -86,7 +106,7 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
 
       <div className="space-y-2">
         {(history[activeRound]?.matches || []).map((match, index) => (
-          <MatchCard key={`${activeRound}-${index}`} match={match} number={index + 1} />
+          <MatchCard key={`${activeRound}-${index}`} match={match} number={index + 1} byeNames={new Set(history[activeRound]?.byes || [])} />
         ))}
       </div>
       </> : (
@@ -109,23 +129,37 @@ function Info({ icon: Icon, value, color }) {
   return <div className="text-center rounded-xl bg-secondary/30 p-2"><Icon className={`h-3.5 w-3.5 mx-auto mb-0.5 ${color}`} /><p className="text-[9px] font-bold truncate">{value}</p></div>;
 }
 
-function MatchCard({ match, number }) {
+function MatchCard({ match, number, byeNames = [] }) {
+  const aState = describeBracketEntry(match.team_a, byeNames);
+  const bState = describeBracketEntry(match.team_b, byeNames);
   const aWon = match.winner === match.team_a;
   const bWon = match.winner === match.team_b;
+  const hasBye = aState.kind === 'bye' || bState.kind === 'bye';
   const unresolved = /^Vencedor Jogo/.test(match.team_a) || /^Vencedor Jogo/.test(match.team_b);
+  const matchLabel = match.score || (hasBye ? 'BYE' : unresolved ? 'A definir' : match.status === 'scheduled' ? 'Agendada' : '—');
+
   return (
     <Surface padding="compact">
-      <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{match.score || (unresolved ? 'A definir' : match.status === 'scheduled' ? 'Agendada' : '—')}</span></div>
-      <TeamLine name={match.team_a} winner={aWon} />
-      <TeamLine name={match.team_b} winner={bWon} />
+      <div className="flex items-center justify-between mb-2"><span className="text-[9px] uppercase tracking-wider text-muted-foreground font-bold">Partida {number}{match.date ? ` · ${new Date(`${match.date}T12:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : ''}</span><span className="text-[10px] font-mono text-muted-foreground">{matchLabel}</span></div>
+      <TeamLine name={match.team_a} winner={aWon} state={aState} />
+      <TeamLine name={match.team_b} winner={bWon} state={bState} />
     </Surface>
   );
 }
 
-function TeamLine({ name, winner }) {
+function TeamLine({ name, winner, state }) {
+  const tone = state?.kind === 'bye'
+    ? 'bg-amber-500/10 border border-amber-500/20'
+    : state?.kind === 'absent'
+      ? 'bg-destructive/5 border border-destructive/20'
+      : winner
+        ? 'bg-primary/10 border border-primary/20'
+        : 'bg-secondary/20';
+
   return (
-    <div className={`flex items-center gap-2 rounded-lg px-2 py-2 mt-1 ${winner ? 'bg-primary/10 border border-primary/20' : 'bg-secondary/20'}`}>
-      <span className={`text-xs font-semibold flex-1 ${winner ? 'text-primary' : 'text-muted-foreground'}`}>{name}</span>
+    <div className={`flex items-center gap-2 rounded-lg px-2 py-2 mt-1 ${tone}`}>
+      <span className={`text-xs font-semibold flex-1 ${winner ? 'text-primary' : state?.kind === 'bye' ? 'text-amber-300' : 'text-muted-foreground'}`}>{name}</span>
+      {state?.badge && <span className="rounded-full border border-current/30 px-1.5 py-0.5 text-[8px] font-black uppercase tracking-[0.12em] text-muted-foreground">{state.badge}</span>}
       {winner && <Crown className="h-3 w-3 text-amber-400" />}
     </div>
   );

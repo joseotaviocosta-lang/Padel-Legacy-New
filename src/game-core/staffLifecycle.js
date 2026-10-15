@@ -3,6 +3,7 @@ import { STAFF_ROLE_DEFINITIONS, normalizeStaffMember, scaleStaffEffects } from 
 import { getFacilityEffects, getActiveStaffSynergies, getSynergyEffects } from '@/lib/staffFacilities.js';
 import { normalizeFatigue } from './physicalStats.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
+import { ensureWeeklyCompetitiveStaffReview } from './competitiveStaffReview.js';
 import { buildStaffMeeting } from '@/lib/livingStaff.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 import { fnv1aHash } from '@/lib/hashUtils.js';
@@ -147,6 +148,12 @@ async function processStaffMonthlyEvent(profile, snapshot, month) {
     sender_name: 'Diretor de Performance', sender_type: 'sistema', subject, body, title: subject, content: body,
     message_type: 'staff_event', notification_type: 'STAFF', destination: { type: 'STAFF', route: '/staff' },
     career_date: profile.career_date,
+    // Playthrough 5.13 (continuação), Parte E — a notificação é sobre UM
+    // profissional ("Bruno Salvatierra tem uma novidade"), então carrega o
+    // id dele para a página conseguir destacar a pessoa certa, e não só
+    // abrir o topo da lista. O `context_key` da mensagem já é gravado por
+    // upsertCareerMessage e vira o `?report=` da rota.
+    metadata: { staff_id: member.id, staff_member_name: member.name || null },
   });
   return { subject, memberId: member.id };
 }
@@ -291,11 +298,40 @@ export async function processStaffDay(profile, previousDate, currentDate) {
       destination: { type: 'STAFF', route: '/staff' },
       career_date: currentDate,
       actions: [{ id: 'open_training_plan', label: 'Revisar planejamento', route: APP_ROUTES.TRAINING_AGENDA }],
-      metadata: { recommendations, synergy: meeting.synergy, moral: meeting.moral, proposed_plan: meeting.plan.plan },
+      // Playthrough 5.19, Parte A — `proposed_plan` recebia `meeting.plan.plan`,
+      // que é o MAPA DE DIAS (`{ ter: { activity_id, intensity }, ... }`), não
+      // o nome do plano. A tela mostrava "[object Object]" porque o valor
+      // gravado nunca foi texto. O rótulo legível é `meeting.plan.label`
+      // ("Controle e consistência"); o mapa continua disponível à parte, para
+      // quem quiser detalhar as sessões.
+      metadata: {
+        recommendations,
+        synergy: meeting.synergy,
+        moral: meeting.moral,
+        proposed_plan: meeting.plan?.label || null,
+        proposed_plan_reason: meeting.plan?.reason || null,
+        proposed_plan_sessions: meeting.plan?.plan || null,
+      },
     });
     try { updatedProfile = await localGame.entities.PlayerProfile.update(profile.id, { staff_last_summary_week: currentWeek }); }
     catch (error) { console.warn('[Comissão Técnica] Semana do relatório não foi salva:', error); }
   }
+
+  // Playthrough 5.14, Partes B/C/Q/U — a REUNIÃO COMPETITIVA é outro
+  // assunto: o relatório acima fala de folha, moral e sinergia (saúde
+  // INTERNA da comissão); esta trata da decisão de TORNEIO da semana.
+  // Manter as duas separadas é o que distingue "staff development" de
+  // "competitive planning" — juntá-las devolveria a mensagem genérica que o
+  // playtest reclamou.
+  //
+  // Roda todo dia, mas é idempotente por semana (`staff-competitive-review:
+  // <semana>`), então chega na PRIMEIRA passagem da semana — antes de os
+  // lembretes de prazo da Federação (D-7/D-5/D-4) virarem a única pista de
+  // que havia algo a decidir. Não depende do relatório interno existir: um
+  // jogador sem nenhum profissional contratado continua recebendo o
+  // planejamento competitivo.
+  await ensureWeeklyCompetitiveStaffReview(updatedProfile || profile, currentDate)
+    .catch((error) => console.warn('[Comissão competitiva] falhou:', error));
 
   return { profile: updatedProfile, processed: true, staffCount: snapshot.staff.length, monthlyCost: snapshot.monthlyCost, bonuses: snapshot.bonuses };
 }

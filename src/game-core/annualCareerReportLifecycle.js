@@ -150,7 +150,12 @@ export async function resetRaceSeasonPoints(previousProfile, currentProfile) {
     return { profile: currentProfile, athletesReset: 0, reset: false };
   }
 
-  const athletes = (await localGame.entities['AthleteProfile'].list('ranking_position', 1500).catch(() => [])) || [];
+  // Playthrough 5.26-C — a leitura era limitada a 1500 linhas por
+  // `ranking_position`. Prospects entram no mundo todo ano e aposentados
+  // continuam na coleção: passado o corte, os atletas fora dele (posição alta
+  // ou nula) carregavam a Race do ano anterior para sempre. A Race é anual
+  // para a população INTEIRA.
+  const athletes = (await localGame.entities['AthleteProfile'].list(null, 100000).catch(() => [])) || [];
   const athleteUpdates = athletes
     .filter((athlete) => Number(athlete.race_points) > 0)
     .map((athlete) => ({ id: athlete.id, race_points: 0 }));

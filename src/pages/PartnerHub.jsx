@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Users, Search, Inbox, Lightbulb, History, Handshake, FileText, RefreshCw, AlertTriangle, Coins, CalendarDays } from 'lucide-react';
+import { Users, Search, Inbox, Lightbulb, History, Handshake, FileText, RefreshCw, AlertTriangle, CalendarDays } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { getPlayerRelationships } from '@/lib/relationships';
@@ -13,6 +13,7 @@ import {
 import { listCareerCommunications } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { getAvailablePartners } from '@/lib/career';
+import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
 import { getSuggestedPartnerTerms } from '@/game-core/partnerLifecycle.js';
 import { EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
@@ -21,20 +22,58 @@ import PartnerSearch from '@/components/partner/PartnerSearch';
 import InboxPanel from '@/components/partner/InboxPanel';
 import AdvisorPanel from '@/components/partner/AdvisorPanel';
 import PartnerNegotiationModal from '@/components/partner/PartnerNegotiationModal';
-import { renewPartnerContract, releasePartner, schedulePartnerSeparation, calculatePartnerRenewalInterest } from '@/game-core/partnerLifecycle';
+import { renewPartnerContract, releasePartner, schedulePartnerSeparation, calculatePartnerRenewalInterest, getContractDecisionState, CONTRACT_DECISION_STATES } from '@/game-core/partnerLifecycle';
 import PartnerOffersPanel from '@/components/partner/PartnerOffersPanel';
 import { acceptPartnerOffer, ensureInitialPartnerOffers, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
+import { findCommittedTournaments, resolveScheduledSeparationDate } from '@/lib/committedRoster.js';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
-const TAB_DEFS = [
-  { key: 'offers', label: 'Propostas', icon: Handshake },
-  { key: 'search', label: 'Buscar parceiro', icon: Search },
-  { key: 'overview', label: 'Minha dupla', icon: Users },
-  { key: 'inbox', label: 'Caixa de Entrada', icon: Inbox },
-  { key: 'advisors', label: 'Assessores', icon: Lightbulb },
+// Playthrough 5.20-B, Partes L/M/N — MINHA DUPLA: 7 ABAS -> 4.
+//
+// Medido em 360px: as 7 abas não cabiam no viewport. "Propostas", "Buscar
+// parceiro" e "Caixa de Entrada" são três faces do MESMO assunto — o mercado de
+// duplas — e viram filtros internos de uma aba só. "Assessores" foi auditado
+// (Parte N): não são profissionais contratados, é `generateAdvisorTips`,
+// conselho sobre a decisão de dupla; por isso não vai para Equipe nem Gestão,
+// vira seção da Visão geral, ao lado da dupla que ele comenta.
+export const TAB_DEFS = [
+  { key: 'overview', label: 'Visão geral', icon: Users },
+  { key: 'market', label: 'Mercado', icon: Handshake },
   { key: 'contract', label: 'Contrato', icon: FileText },
   { key: 'history', label: 'Histórico', icon: History },
 ];
+
+export const MARKET_FILTERS = [
+  { key: 'received', label: 'Recebidas', icon: Handshake },
+  { key: 'search', label: 'Buscar', icon: Search },
+  { key: 'inbox', label: 'Caixa de entrada', icon: Inbox },
+];
+
+// Parte O — COMPATIBILIDADE DE DEEP LINK. As notificações da 5.19 já gravadas
+// em saves apontam para os nomes de aba ANTIGOS. Este mapa traduz cada um deles
+// para a aba nova e, quando o assunto virou filtro, para o filtro certo.
+export const LEGACY_VIEW_MAP = {
+  offers: { tab: 'market', filter: 'received' },
+  search: { tab: 'market', filter: 'search' },
+  inbox: { tab: 'market', filter: 'inbox' },
+  advisors: { tab: 'overview', filter: null },
+  overview: { tab: 'overview', filter: null },
+  contract: { tab: 'contract', filter: null },
+  history: { tab: 'history', filter: null },
+};
+
+// Um `?filter=` explícito tem prioridade, para que um link novo aponte direto.
+export const resolveView = (params) => {
+  const view = params.get('view');
+  const mapped = view ? LEGACY_VIEW_MAP[view] : null;
+  const requested = params.get('filter');
+  return {
+    tab: mapped ? mapped.tab : 'market',
+    filter: (MARKET_FILTERS.some((f) => f.key === requested) && requested)
+      || (mapped && mapped.filter) || 'received',
+    known: Boolean(mapped),
+  };
+};
 
 export default function PartnerHub() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -49,20 +88,35 @@ export default function PartnerHub() {
   const [offersError, setOffersError] = useState(null);
   const [busyOfferId, setBusyOfferId] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState(() => searchParams.get('view') || 'offers');
+  const [activeTab, setActiveTab] = useState(() => resolveView(searchParams).tab);
+  const [marketFilter, setMarketFilter] = useState(() => resolveView(searchParams).filter);
+  const offersTabActive = activeTab === 'offers' || (activeTab === 'market' && marketFilter === 'received');
   const [showNegotiation, setShowNegotiation] = useState(false);
   const [showConverse, setShowConverse] = useState(false);
+  // Playthrough 5.19, Parte F — compromissos assumidos pela parceria ATIVA,
+  // resolvidos pela mesma autoridade do motor (`findCommittedTournaments`),
+  // nunca por uma segunda leitura de inscrições.
+  const [commitments, setCommitments] = useState([]);
+  const [separationDate, setSeparationDate] = useState(null);
   const proposalsRef = useRef([]);
   const handledContractFocusRef = useRef(null);
   const { toast } = useToast();
   useCareerProfileSync(setProfile);
 
   const selectTab = useCallback((tab, extra = {}) => {
-    setActiveTab(tab);
-    const next = new URLSearchParams(); next.set('view', tab);
+    const normalizedTab = tab === 'offers' ? 'market' : tab;
+    const normalizedFilter = tab === 'offers' ? 'received' : (extra.filter || marketFilter);
+
+    setActiveTab(normalizedTab);
+    if (normalizedTab === 'market') setMarketFilter(normalizedFilter);
+
+    const next = new URLSearchParams();
+    const routeView = tab === 'offers' ? 'offers' : normalizedTab;
+    next.set('view', routeView);
+    if (normalizedTab === 'market') next.set('filter', normalizedFilter);
     Object.entries(extra).forEach(([key, value]) => value && next.set(key, value));
     setSearchParams(next, { replace: true });
-  }, [setSearchParams]);
+  }, [setSearchParams, marketFilter]);
 
   const load = useCallback(async () => {
     if (!profile) return;
@@ -76,6 +130,29 @@ export default function PartnerHub() {
     setHistory(hist || []);
     setRelationships(rels || []);
     setInboxCount(countUnreadCareerMessages(msgs || []));
+
+    // Playthrough 5.19, Parte F — compromissos da parceria ativa, para que a
+    // consequência real do encerramento apareça ANTES da decisão.
+    if (active?.id) {
+      const [registrations, tournaments] = await Promise.all([
+        localGame.entities.TournamentRegistration.filter({ profile_id: profile.id }, '-registered_at', 200).catch(() => []),
+        localGame.entities.Tournament.list('start_date', 500).catch(() => []),
+      ]);
+      const committed = findCommittedTournaments({
+        registrations, tournaments,
+        careerDate: profile.career_date,
+        partnerId: active.partner_bot_id || active.partner_id || null,
+      });
+      setCommitments(committed);
+      const scheduled = resolveScheduledSeparationDate(
+        active.contract_end_date || active.scheduled_end_date || null,
+        committed,
+      );
+      setSeparationDate(scheduled?.extended ? scheduled.date : null);
+    } else {
+      setCommitments([]);
+      setSeparationDate(null);
+    }
 
     const switchCount = await getPartnerSwitchCount(profile.id);
     const advisorTips = await generateAdvisorTips(profile, active, proposalsRef.current, switchCount);
@@ -98,17 +175,28 @@ export default function PartnerHub() {
   }, [profile, load]);
 
   useEffect(() => {
-    const requestedView = searchParams.get('view');
-    if (requestedView && TAB_DEFS.some((tab) => tab.key === requestedView)) setActiveTab(requestedView);
+    const resolved = resolveView(searchParams);
+    if (resolved.known) { setActiveTab(resolved.tab); setMarketFilter(resolved.filter); }
 
     const focus = searchParams.get('focus');
     const focusKey = focus === 'contract-future'
       ? `${focus}:${searchParams.get('partnership') || activePartnership?.id || ''}`
       : null;
+    // Playthrough 5.19, Partes D/E/G — o aviso de contrato abria a CONVERSA.
+    //
+    // O deep link já trazia `view=contract&focus=contract-future` e a aba de
+    // contrato já existia com renovação/encerramento (ContractPanel). O defeito
+    // era a linha seguinte, `setShowConverse(true)`: ela abria o diálogo de
+    // conversa por cima da decisão contratual, e esse diálogo é o de pós-jogo
+    // ("Ótimo jogo hoje!", "Precisamos treinar mais o voleio") — nada a ver com
+    // a intenção da notificação.
+    //
+    // Agora o aviso leva à decisão contratual e nada mais. "Conversar com o
+    // parceiro" continua existindo, acionado pelo jogador na própria aba
+    // (Parte G) — só deixou de ser interceptado por um alerta de contrato.
     if (focusKey && activePartnership && handledContractFocusRef.current !== focusKey) {
       handledContractFocusRef.current = focusKey;
       setActiveTab('contract');
-      setShowConverse(true);
     }
   }, [activePartnership, searchParams]);
 
@@ -118,7 +206,7 @@ export default function PartnerHub() {
     (async () => {
       setOffersLoading(true); setOffersError(null);
       try {
-        const available = getAvailablePartnersForSearch(profile);
+        const available = await getAvailablePartnersForSearch(profile);
         const rows = activePartnership ? await listPartnerOffers(profile.id) : await ensureInitialPartnerOffers(profile, available);
         proposalsRef.current = rows; setProposals(rows);
         await load();
@@ -157,7 +245,7 @@ export default function PartnerHub() {
       setProfile(updated);
       toast({ title: 'Parceria formada!', description: `${bot.name} é sua nova dupla por ${terms.durationDays} dias.` });
       await load();
-    } catch (e) {
+    } catch {
       toast({ title: 'Erro', description: 'Não foi possível formar a parceria.', variant: 'destructive' });
     }
   }
@@ -195,7 +283,7 @@ export default function PartnerHub() {
       setActivePartnership(null);
       toast({ title: 'Parceria encerrada', description: result.penalty > 0 ? `Multa de ${result.penalty} moedas aplicada.` : 'Você está sem dupla agora.' });
       await load();
-    } catch (e) {
+    } catch {
       toast({ title: 'Erro', description: 'Não foi possível encerrar.', variant: 'destructive' });
     }
   }
@@ -207,7 +295,7 @@ export default function PartnerHub() {
       setActivePartnership(updated);
       setShowNegotiation(false);
       toast({ title: 'Negociação concluída', description: `Divisão ajustada para ${newTerms.split}%/${100 - newTerms.split}%.` });
-    } catch (e) {
+    } catch {
       toast({ title: 'Erro', description: 'Falha na negociação.', variant: 'destructive' });
     }
   }
@@ -261,11 +349,27 @@ export default function PartnerHub() {
 
   async function handleConverse(text, tone) {
     if (!activePartnership) return;
-    const updated = await addConversation(activePartnership.id, profile.sport_name || 'Você', text, tone);
+    // Playthrough 5.17 (continuação), Parte D — a data da CARREIRA é o que
+    // governa cooldown e retorno decrescente. Antes, a conversa gravava a
+    // data real do sistema, inútil como regra de jogo.
+    const updated = await addConversation(
+      activePartnership.id, profile.sport_name || 'Você', text, tone, profile.career_date,
+    );
     if (updated) setActivePartnership(updated);
     setShowConverse(false);
+    if (updated?.conversation_blocked) {
+      // Feedback visível do limite (Parte D): o jogador precisa saber por que
+      // a conversa não teve efeito, em vez de achar que o sistema é mudo.
+      toast({
+        title: 'Vocês já conversaram hoje',
+        description: 'Outra conversa agora não teria efeito. Tente novamente amanhã.',
+      });
+      await load();
+      return;
+    }
+    const damped = Number(updated?.conversations?.slice(-1)[0]?.diminishing_factor ?? 1) < 1;
     const description = tone === 'positivo' || tone === 'apoio'
-      ? 'A confiança e a moral da dupla melhoraram.'
+      ? `A confiança e a moral da dupla melhoraram.${damped ? ' O efeito foi menor por conversas recentes.' : ''}`
       : tone === 'negativo'
         ? 'A conversa gerou tensão na parceria.'
         : 'A conversa foi registrada no histórico da dupla.';
@@ -307,7 +411,6 @@ export default function PartnerHub() {
 
   const chemistry = activePartnership?.chemistry ?? profile?.partner_chemistry ?? 0;
   const confidence = activePartnership?.partner_trust ?? activePartnership?.confidence ?? 0;
-  const sharedMatches = activePartnership?.shared_matches ?? 0;
   const offerCount = proposals.filter((offer) => offer.status === 'pending' && offer.offer_type !== 'partner_poaching').length;
 
   return (
@@ -346,41 +449,55 @@ export default function PartnerHub() {
 
       {/* Tabs */}
       <Tabs
-        tabs={TAB_DEFS.map(t => ({ ...t, count: t.key === 'inbox' ? inboxCount : undefined }))}
+        tabs={TAB_DEFS.map((t) => ({ ...t, count: t.key === 'market' ? (inboxCount + offerCount) || undefined : undefined }))}
         activeTab={activeTab}
         onTabChange={selectTab}
         variant="buttons"
       />
 
       {/* Tab content */}
-      {activeTab === 'offers' && (
-        <PartnerOffersPanel profile={profile} offers={proposals} loading={offersLoading} error={offersError} busyOfferId={busyOfferId} focusOfferId={searchParams.get('offer')} onRetry={reloadOffers} onAccept={handleAcceptOffer} onReject={handleRejectOffer} onSearch={() => selectTab('search')} />
-      )}
-
       {activeTab === 'overview' && (
-        <PartnerOverview
-          partnership={activePartnership}
-          profile={profile}
-          onEnd={handleEndPartnership}
-          onNegotiate={() => setShowNegotiation(true)}
-          onConverse={() => setShowConverse(true)}
-        />
+        <div className="space-y-4">
+          <PartnerOverview
+            partnership={activePartnership}
+            profile={profile}
+            onEnd={handleEndPartnership}
+            onNegotiate={() => setShowNegotiation(true)}
+            onConverse={() => setShowConverse(true)}
+          />
+          {/* Parte N — o conselho fica ao lado da dupla que ele comenta, em vez
+              de exigir uma aba própria. */}
+          <AdvisorPanel tips={tips} />
+        </div>
       )}
 
-      {activeTab === 'search' && (
-        <PartnerSearch
-          profile={profile}
-          relationships={relationships}
-          onInvite={handleInvite}
-        />
-      )}
-
-      {activeTab === 'inbox' && (
-        <InboxPanel profile={profile} onAction={handleInboxAction} />
-      )}
-
-      {activeTab === 'advisors' && (
-        <AdvisorPanel tips={tips} />
+      {activeTab === 'market' && (
+        <div className="space-y-3">
+          <Tabs
+            tabs={MARKET_FILTERS.map((f) => ({
+              ...f,
+              count: f.key === 'inbox' ? inboxCount || undefined
+                : f.key === 'received' ? offerCount || undefined
+                : undefined,
+            }))}
+            activeTab={marketFilter}
+            onTabChange={(key) => selectTab('market', { filter: key })}
+            variant="segmented"
+          />
+          {offersTabActive && (
+            <PartnerOffersPanel profile={profile} offers={proposals} loading={offersLoading} error={offersError} busyOfferId={busyOfferId} focusOfferId={searchParams.get('offer')} onRetry={reloadOffers} onAccept={handleAcceptOffer} onReject={handleRejectOffer} onSearch={() => selectTab('market', { filter: 'search' })} />
+          )}
+          {marketFilter === 'search' && (
+            <PartnerSearch
+              profile={profile}
+              relationships={relationships}
+              onInvite={handleInvite}
+            />
+          )}
+          {marketFilter === 'inbox' && (
+            <InboxPanel profile={profile} onAction={handleInboxAction} />
+          )}
+        </div>
       )}
 
       {activeTab === 'contract' && (
@@ -390,6 +507,8 @@ export default function PartnerHub() {
           onRenew={handleRenewContract}
           onRelease={handleReleaseContract}
           onScheduleSeparation={handleScheduleSeparation}
+          commitments={commitments}
+          separationDate={separationDate}
         />
       )}
 
@@ -419,19 +538,18 @@ export default function PartnerHub() {
   );
 }
 
-function getAvailablePartnersForSearch(profile) {
-  return getAvailablePartners(profile);
+// 5.26-C, Bloco D — o catálogo não sabe quem já se aposentou.
+async function getAvailablePartnersForSearch(profile) {
+  return excludeRetiredPartnerTemplates(getAvailablePartners(profile), await listRetiredPartnerOriginIds());
 }
 
-function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSeparation }) {
+function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSeparation, commitments = [], separationDate = null }) {
   const [durationDays, setDurationDays] = useState(60);
   const [prizeSplit, setPrizeSplit] = useState(partnership?.prize_split_pct ?? 50);
-  const [monthlySalary, setMonthlySalary] = useState(partnership?.monthly_salary ?? 100);
   const [confirmRelease, setConfirmRelease] = useState(false);
 
   useEffect(() => {
     setPrizeSplit(partnership?.prize_split_pct ?? 50);
-    setMonthlySalary(partnership?.monthly_salary ?? 100);
   }, [partnership]);
 
   if (!partnership) {
@@ -443,7 +561,21 @@ function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSep
   const morale = partnership.partner_morale ?? 70;
   const chemistry = partnership.chemistry ?? profile?.partner_chemistry ?? 50;
   const status = partnership.contract_status || 'ativo';
+  const decisionState = getContractDecisionState(partnership);
+  const statusLabel = {
+    ativo: 'ativo',
+    renovado: 'renovado',
+    renovada: 'renovada',
+    vencido: 'vencido',
+    renovacao_proxima: 'renovação próxima',
+    encerrar_ao_final: 'encerra ao final do contrato',
+    nao_renovara: 'não renovará o contrato',
+    encerra_apos_compromisso: 'encerra após o último compromisso',
+    insatisfeito: 'insatisfeito',
+    negociacao: 'em negociação',
+  }[status] || status.replace(/_/g, ' ');
   const isRenewal = partnership.renewal_available || status === 'vencido';
+  const renewalBlocked = decisionState === CONTRACT_DECISION_STATES.ENDING_AT_EXPIRY || decisionState === CONTRACT_DECISION_STATES.ENDING_AFTER_COMMITMENTS || decisionState === CONTRACT_DECISION_STATES.ENDED;
   const estimatedPenalty = endDate !== '—' && careerDate < endDate
     ? Math.min(Number(profile?.coins) || 0, Math.max(50, Math.round((Number(partnership.monthly_salary) || 100) * 0.5)))
     : 0;
@@ -455,14 +587,27 @@ function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSep
           <div>
             <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Contrato atual</p>
             <h3 className="font-black text-xl mt-1">{partnership.partner_name}</h3>
-            <p className="text-xs text-muted-foreground mt-1">Status: <span className="font-bold text-primary capitalize">{status}</span></p>
+            <p className="text-xs text-muted-foreground mt-1">Status: <span className="font-bold text-primary capitalize">{statusLabel}</span></p>
           </div>
           <div className="h-12 w-12 rounded-2xl bg-primary/15 flex items-center justify-center"><Handshake className="h-6 w-6 text-primary" /></div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+        {decisionState === CONTRACT_DECISION_STATES.ENDING_AFTER_COMMITMENTS && (
+          <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+            <p className="font-black uppercase tracking-[0.12em]">Separação após compromisso</p>
+            <p className="mt-1 text-muted-foreground">A parceria continua até o último compromisso assumido e só encerra depois disso.</p>
+          </div>
+        )}
+
+        {decisionState === CONTRACT_DECISION_STATES.ENDING_AT_EXPIRY && (
+          <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
+            <p className="font-black uppercase tracking-[0.12em]">Encerramento programado</p>
+            <p className="mt-1 text-muted-foreground">A dupla segue ativa até o fim do contrato atual, sem renovação automática.</p>
+          </div>
+        )}
+
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           <ContractMetric icon={CalendarDays} label="Vencimento" value={endDate} />
-          <ContractMetric icon={Coins} label="Salário mensal" value={`${partnership.monthly_salary || 0} moedas`} />
           <ContractMetric icon={FileText} label="Sua premiação" value={`${partnership.prize_split_pct ?? 50}%`} />
           <ContractMetric icon={Users} label="Entrosamento" value={`${chemistry}/100`} />
         </div>
@@ -479,6 +624,36 @@ function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSep
           <div><p className="font-bold text-sm text-amber-400">Renovação necessária</p><p className="text-xs text-muted-foreground">O contrato venceu. Renove dentro da janela disponível para não perder a dupla.</p></div>
         </Surface>
       )}
+
+      {/* Playthrough 5.19, Parte F — COMPROMISSOS JÁ ASSUMIDOS.
+          A regra da 5.17 é que encerrar o contrato não cancela torneio já
+          inscrito: a parceria esportiva segue até o último compromisso. O
+          jogador decidia sem ver isso, então a consequência real do
+          encerramento era invisível na hora de decidir. A lista vem de
+          `findCommittedTournaments`, a MESMA autoridade que o motor usa. */}
+      {commitments.length ? (
+        <Surface padding="compact" className="border border-primary/30 bg-primary/5">
+          <div className="flex gap-3">
+            <CalendarDays className="h-5 w-5 text-primary shrink-0" />
+            <div className="space-y-2">
+              <p className="font-bold text-sm text-primary">Compromissos já assumidos</p>
+              <ul className="space-y-1">
+                {commitments.map((item) => (
+                  <li key={item.tournamentId} className="text-xs text-muted-foreground">
+                    <span className="font-bold text-foreground">{item.name}</span>
+                    {item.startDate ? ` · ${item.startDate}` : ''}
+                  </li>
+                ))}
+              </ul>
+              <p className="text-xs text-muted-foreground">
+                Se optar pelo encerramento, a parceria esportiva com {partnership.partner_name} será
+                mantida até a conclusão {commitments.length === 1 ? 'desse compromisso' : 'desses compromissos'}
+                {separationDate ? ` (até ${separationDate})` : ''}.
+              </p>
+            </div>
+          </div>
+        </Surface>
+      ) : null}
 
       {/* Fase 15 (Parte 6/7/8): interesse do parceiro em renovar — derivado
           de dados reais já existentes (química/resultados/moral/
@@ -501,17 +676,18 @@ function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSep
 
       <Surface>
         <div className="flex items-center gap-2 mb-4"><RefreshCw className="h-5 w-5 text-primary" /><h3 className="font-black">Renovar e renegociar</h3></div>
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 gap-4">
           <label className="space-y-1"><span className="text-xs text-muted-foreground">Duração</span><select value={durationDays} onChange={e=>setDurationDays(Number(e.target.value))} className="w-full glass rounded-xl p-3 text-sm"><option value={30}>30 dias</option><option value={60}>60 dias</option><option value={90}>90 dias</option><option value={120}>120 dias</option><option value={180}>180 dias</option></select></label>
           <label className="space-y-1"><span className="text-xs text-muted-foreground">Sua parte da premiação</span><input type="number" min="35" max="70" value={prizeSplit} onChange={e=>setPrizeSplit(Number(e.target.value))} className="w-full glass rounded-xl p-3 text-sm" /></label>
-          <label className="space-y-1"><span className="text-xs text-muted-foreground">Salário mensal</span><input type="number" min="0" value={monthlySalary} onChange={e=>setMonthlySalary(Number(e.target.value))} className="w-full glass rounded-xl p-3 text-sm" /></label>
         </div>
-        <Button level="primary" onClick={()=>onRenew({durationDays, prizeSplit, monthlySalary})} className="w-full mt-4">Confirmar novo contrato</Button>
+        <Button level="primary" onClick={()=>onRenew({durationDays, prizeSplit})} disabled={renewalBlocked} className="w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed">
+          {renewalBlocked ? 'Contrato em encerramento' : 'Confirmar novo contrato'}
+        </Button>
       </Surface>
 
       <Surface className="border border-red-500/20">
         <h3 className="font-black text-sm text-red-400">Rescisão</h3>
-        <p className="text-xs text-muted-foreground mt-1">Encerrar antes do vencimento pode gerar multa de até 50% do salário mensal.</p>
+        <p className="text-xs text-muted-foreground mt-1">Encerrar antes do vencimento pode gerar multa de até 50% do valor do vínculo.</p>
         <Button level="secondary" onClick={onScheduleSeparation} className="mt-3 w-full">Encerrar ao final do contrato</Button>
         {estimatedPenalty > 0 && <p className="text-xs font-bold text-amber-400 mt-2">Multa estimada: {estimatedPenalty} moedas</p>}
         {!confirmRelease ? <Button level="ghost" onClick={()=>setConfirmRelease(true)} className="mt-3 border border-red-500/30 text-red-400">Solicitar rescisão</Button> : <div className="flex gap-2 mt-3"><Button level="secondary" onClick={()=>setConfirmRelease(false)} className="flex-1">Cancelar</Button><Button level="danger" onClick={onRelease} className="flex-1">Confirmar rescisão</Button></div>}

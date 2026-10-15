@@ -1,0 +1,4 @@
+candidate,days,fields,offsetMedian,orderedSize,preferredSize,ovr_p10,ovr_p25,ovr_p50,ovr_p75,ovr_p90,rank_p10,rank_p25,rank_p50,rank_p75,rank_p90,fit_p10,fit_p50,fit_p90,strength_p10,strength_p50,strength_p90,silverMainWR,silverR1WR,bronzeMainWR,goldMainWR,easyWR,mediumWR,r1WR
+baseline,730,0,,,,,,,,,,,,,,,,,,,,21.3,20.6,59,31.9,47.3,40,39.4
+SILVER_A,730,78,69,274.5,194,42,45,46.5,49,50.5,738.5,786,810,838,866,100,100,100,128.3,131.4,133.9,32.5,39,58.9,54.8,47.8,44.6,43.4
+SILVER_E,730,63,41,273,191,35.5,37,39,42,44,791,841,867,905,925,99,100,100,118.2,120.3,122.2,45.3,41.7,57.5,48.2,52.9,43.8,46.7

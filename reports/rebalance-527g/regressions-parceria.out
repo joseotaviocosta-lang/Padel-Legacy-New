@@ -1,0 +1,11 @@
+✓ [Parceria] test-first-partnership-100-careers (4s) test-first-partnership-100-careers: PASS
+✓ [Parceria] test-first-partnership-ranking (4s) test-first-partnership-ranking: PASS
+✓ [Parceria] test-partner-offer-overall-integrity-v519 (7s) [registro] candidatos com OVR divergente do declarado (>2): 0/22
+✓ [Parceria] test-partnership-expiry-with-committed-tournament-v517 (8s) test-partnership-expiry-with-committed-tournament-v517: PASS
+✓ [Parceria] test-partner-resign-loop-v526c (20s) test-partner-resign-loop-v526c: 6/6 passaram
+✓ [Parceria] test-former-partner-reintegration-v518 (168s) test-former-partner-reintegration-v518: PASS
+✓ [Parceria] test-partner-athlete-save-reload-v512 (7s) test-partner-athlete-save-reload-v512: PASS
+✓ [Parceria] test-living-partnerships-v29 (0s) LivingPartnershipsV29Test: PASS
+✓ [Parceria] test-ai-market-headless-integration-v518 (239s) test-ai-market-headless-integration-v518: PASS
+
+9/9 passaram

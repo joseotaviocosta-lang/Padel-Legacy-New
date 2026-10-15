@@ -1,0 +1,436 @@
+{
+  "label": "ab524d-after-1",
+  "heavy": true,
+  "width": 360,
+  "height": 800,
+  "cpuThrottle": 4,
+  "rounds": 2,
+  "generatedAt": "2026-10-04T18:10:28.047Z",
+  "career": {
+    "ok": true,
+    "partnerId": "player-fictional-dzriqv",
+    "counts": {
+      "athletes": 1500,
+      "teams": 1000,
+      "clubs": 60,
+      "tournaments": 124,
+      "notifications": 0
+    }
+  },
+  "pages": {
+    "home": {
+      "label": "Home",
+      "tUsefulMedian": 436,
+      "tSettledMedian": 486,
+      "longTaskMsMedian": 273,
+      "longestTaskMsMedian": 130,
+      "queriesMedian": 52,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 2,
+      "athleteListReadsMedian": 2,
+      "dom": 777,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 6,
+        "read:CareerEntityRepository.list:Match": 4,
+        "read:CareerEntityRepository.filter:TrainingSession": 4,
+        "read:CareerEntityRepository.filter:MissionProgress": 4,
+        "read:CareerEntityRepository.list:Tournament": 2,
+        "read:CareerEntityRepository.get:AthleteProfile": 2,
+        "read:CareerEntityRepository.list:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:TournamentRegistration": 2,
+        "read:CareerEntityRepository.filter:CareerMessage": 4,
+        "read:CareerEntityRepository.list:TeamRanking": 2,
+        "read:MatchCheckpointRepository.read": 2,
+        "read:CareerEntityRepository.filter:PartnerOffer": 2,
+        "read:CareerEntityRepository.filter:Mission": 2,
+        "read:CareerEntityRepository.filter:AthleteProfile": 2,
+        "read:CareerEntityRepository.list:Post": 2,
+        "read:CareerEntityRepository.list:WorldEvent": 2,
+        "read:CareerEntityRepository.filter:MonthlyCareerReport": 2,
+        "read:CareerEntityRepository.filter:AnnualCareerReport": 2,
+        "read:CareerEntityRepository.filter:PressInterview": 2
+      },
+      "scroll": {
+        "frames": 51,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 436,
+          "tSettled": 486,
+          "longTaskMs": 273,
+          "calls": 52,
+          "writes": 0,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 244,
+          "tSettled": 285,
+          "longTaskMs": 134,
+          "calls": 52,
+          "writes": 0,
+          "teamRankingReads": 2
+        }
+      ]
+    },
+    "ranking": {
+      "label": "Ranking",
+      "tUsefulMedian": 471,
+      "tSettledMedian": 561,
+      "longTaskMsMedian": 435,
+      "longestTaskMsMedian": 242,
+      "queriesMedian": 28,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 2,
+      "athleteListReadsMedian": 4,
+      "dom": 1341,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:Partnership": 4,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.get:AthleteProfile": 4,
+        "read:CareerEntityRepository.list:AthleteProfile": 4,
+        "read:CareerEntityRepository.list:Club": 2,
+        "read:CareerEntityRepository.filter:TeamRanking": 2,
+        "read:CareerEntityRepository.filter:AthleteRankingResult": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 407,
+          "tSettled": 561,
+          "longTaskMs": 435,
+          "calls": 28,
+          "writes": 0,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 471,
+          "tSettled": 496,
+          "longTaskMs": 309,
+          "calls": 28,
+          "writes": 0,
+          "teamRankingReads": 2
+        }
+      ]
+    },
+    "tournaments": {
+      "label": "Torneios",
+      "tUsefulMedian": 610,
+      "tSettledMedian": 825,
+      "longTaskMsMedian": 654,
+      "longestTaskMsMedian": 384,
+      "queriesMedian": 35,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 2,
+      "athleteListReadsMedian": 0,
+      "dom": 1531,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 6,
+        "read:CareerEntityRepository.list:Match": 4,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.list:Tournament": 6,
+        "read:CareerEntityRepository.get:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:TournamentRegistration": 2,
+        "read:CareerEntityRepository.list:TeamRanking": 2,
+        "read:MatchCheckpointRepository.read": 1,
+        "read:CareerEntityRepository.list:Season": 4,
+        "read:CareerEntityRepository.list:TournamentRegistration": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 610,
+          "tSettled": 825,
+          "longTaskMs": 654,
+          "calls": 35,
+          "writes": 0,
+          "teamRankingReads": 2
+        },
+        {
+          "tUseful": 290,
+          "tSettled": 457,
+          "longTaskMs": 377,
+          "calls": 35,
+          "writes": 0,
+          "teamRankingReads": 2
+        }
+      ]
+    },
+    "partners": {
+      "label": "Minha dupla",
+      "tUsefulMedian": 286,
+      "tSettledMedian": 769,
+      "longTaskMsMedian": 312,
+      "longestTaskMsMedian": 99,
+      "queriesMedian": 88,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 4,
+      "athleteListReadsMedian": 2,
+      "dom": 709,
+      "appLayoutRendersMedian": 3,
+      "rendersLast": {
+        "AppLayout": 3,
+        "CommunicationBell": 4,
+        "BottomNav": 2
+      },
+      "callersLast": {
+        "read:CareerEntityRepository.filter:PartnershipLegacy": 24,
+        "read:CareerEntityRepository.filter:Partnership": 18,
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.list:Tournament": 6,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.get:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:TournamentRegistration": 6,
+        "read:CareerEntityRepository.list:AthleteProfile": 2,
+        "read:CareerEntityRepository.filter:CareerMessage": 6,
+        "read:CareerEntityRepository.list:TeamRanking": 4,
+        "read:CareerEntityRepository.filter:Relationship": 6,
+        "read:CareerEntityRepository.filter:PartnerOffer": 4
+      },
+      "scroll": {
+        "frames": 51,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 286,
+          "tSettled": 655,
+          "longTaskMs": 203,
+          "calls": 88,
+          "writes": 0,
+          "teamRankingReads": 4
+        },
+        {
+          "tUseful": 237,
+          "tSettled": 769,
+          "longTaskMs": 312,
+          "calls": 88,
+          "writes": 0,
+          "teamRankingReads": 4
+        }
+      ]
+    },
+    "training": {
+      "label": "Treinos",
+      "tUsefulMedian": 225,
+      "tSettledMedian": 324,
+      "longTaskMsMedian": 176,
+      "longestTaskMsMedian": 110,
+      "queriesMedian": 12,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 0,
+      "athleteListReadsMedian": 0,
+      "dom": 770,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 4,
+        "read:CareerEntityRepository.filter:MissionProgress": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 1,
+        "worstFrameMs": 83
+      },
+      "raw": [
+        {
+          "tUseful": 192,
+          "tSettled": 260,
+          "longTaskMs": 176,
+          "calls": 12,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 225,
+          "tSettled": 324,
+          "longTaskMs": 167,
+          "calls": 12,
+          "writes": 0,
+          "teamRankingReads": 0
+        }
+      ]
+    },
+    "economy": {
+      "label": "Economia",
+      "tUsefulMedian": 246,
+      "tSettledMedian": 245,
+      "longTaskMsMedian": 130,
+      "longestTaskMsMedian": 76,
+      "queriesMedian": 20,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 0,
+      "athleteListReadsMedian": 0,
+      "dom": 561,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 2,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.filter:PlayerContract": 2,
+        "read:CareerEntityRepository.filter:PlayerStaffHire": 2,
+        "read:CareerEntityRepository.filter:PlayerProperty": 2,
+        "read:CareerEntityRepository.filter:PlayerInvestment": 2,
+        "read:CareerEntityRepository.filter:FinancialTransaction": 2
+      },
+      "scroll": {
+        "frames": 50,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 246,
+          "tSettled": 245,
+          "longTaskMs": 57,
+          "calls": 20,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 242,
+          "tSettled": 241,
+          "longTaskMs": 130,
+          "calls": 20,
+          "writes": 0,
+          "teamRankingReads": 0
+        }
+      ]
+    },
+    "world": {
+      "label": "Mundo / Países",
+      "tUsefulMedian": 360,
+      "tSettledMedian": 362,
+      "longTaskMsMedian": 332,
+      "longestTaskMsMedian": 182,
+      "queriesMedian": 13,
+      "writesMedian": 0,
+      "teamRankingReadsMedian": 0,
+      "athleteListReadsMedian": 2,
+      "dom": 1240,
+      "appLayoutRendersMedian": 2,
+      "rendersLast": {
+        "AppLayout": 2,
+        "CommunicationBell": 2,
+        "BottomNav": 1
+      },
+      "callersLast": {
+        "read:ActiveCareerAdapter.getActiveCareer": 1,
+        "read:CareerEntityRepository.filter:CalendarEvent": 2,
+        "read:CareerEntityRepository.list:Match": 2,
+        "read:CareerEntityRepository.filter:TrainingSession": 2,
+        "read:CareerEntityRepository.filter:MissionProgress": 2,
+        "read:CareerEntityRepository.list:AthleteProfile": 2,
+        "read:CareerEntityRepository.list:Club": 2
+      },
+      "scroll": {
+        "frames": 49,
+        "over50": 0,
+        "worstFrameMs": 17
+      },
+      "raw": [
+        {
+          "tUseful": 360,
+          "tSettled": 362,
+          "longTaskMs": 264,
+          "calls": 13,
+          "writes": 0,
+          "teamRankingReads": 0
+        },
+        {
+          "tUseful": 328,
+          "tSettled": 331,
+          "longTaskMs": 332,
+          "calls": 13,
+          "writes": 0,
+          "teamRankingReads": 0
+        }
+      ]
+    }
+  },
+  "headerRefresh": {
+    "longTaskMsMedian": 0,
+    "queriesMedian": 53,
+    "teamRankingReadsMedian": 2,
+    "athleteListReadsMedian": 2,
+    "appLayoutRenders": [
+      1,
+      1,
+      1
+    ],
+    "callersLast": {
+      "read:ActiveCareerAdapter.getActiveCareer": 3,
+      "read:CareerEntityRepository.filter:Partnership": 6,
+      "read:CareerEntityRepository.filter:CalendarEvent": 4,
+      "read:CareerEntityRepository.filter:CareerMessage": 8,
+      "read:CareerEntityRepository.filter:TournamentRegistration": 4,
+      "read:CareerEntityRepository.get:AthleteProfile": 2,
+      "read:CareerEntityRepository.list:AthleteProfile": 2,
+      "read:CareerEntityRepository.list:TeamRanking": 2,
+      "read:MatchCheckpointRepository.read": 2,
+      "read:CareerEntityRepository.filter:PlayerContract": 4,
+      "read:CareerEntityRepository.filter:PressInterview": 4,
+      "read:CareerEntityRepository.filter:Tournament": 4,
+      "read:CareerEntityRepository.filter:Match": 4,
+      "read:CareerEntityRepository.filter:PressArticle": 4
+    }
+  },
+  "micro": {
+    "getTeamRankings5000Ms": 8.7,
+    "getWorldRankMs": 30.5,
+    "buildCountryDirectoryMs": 0.8
+  },
+  "pageErrors": []
+}

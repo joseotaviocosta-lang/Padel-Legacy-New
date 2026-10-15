@@ -41,7 +41,14 @@ export function createMatch(teamA, teamB, options = {}) {
     setsA: 0, setsB: 0, currentSet: 1, gamesA: 0, gamesB: 0, pointsA: 0, pointsB: 0,
     servingTeam: 'A', inTiebreak: false, superTiebreak: false, finished: false, winner: null,
     setScores: [], narration: [], stats: createStatistics(teams), analysis: null, pointNumber: 0,
-    activeTactics: { A: getMatchTactic(options.initialTacticId), B: getMatchTactic('equilibrado') }, tacticsTimeline: [],
+    activeTactics: { A: getMatchTactic(options.initialTacticId), B: getMatchTactic(options.initialOpponentTacticId || 'equilibrado') }, tacticsTimeline: [],
+    // Playthrough 5.27-F: a troca automática de tática do adversário fica
+    // DESLIGADA por padrão. As táticas não são neutras (estáticas, times iguais:
+    // defensivo 88% · tático 67% · agressivo 18% · potência 8% contra
+    // equilibrado), então a adaptação só do lado B funcionava como modificador
+    // escondido de força (B +8 pp em OVR 35–50, −38 pp em OVR 75). Reativar só
+    // quando as táticas forem neutras (dívida de design registrada na 5.27-F).
+    opponentAdaptive: options.opponentAdaptive === true,
     pointEvents: [], serverPlayerIndices: { A: 0, B: 0 }, tiebreakFirstServingTeam: null, tiebreakFirstServerPlayerIndices: null, tiebreakPointsPlayed: 0,
     liveCoach:createLiveCoachState({coach:options.coach||null,settings:options.liveCoachSettings,initialPlan:getMatchTactic(options.initialTacticId)}), aiCoach:{lastAdjustmentPoint:-99,adjustments:0},
     momentum: createMatchMomentum(),
@@ -113,8 +120,9 @@ export function playPoint(prev, tactic) {
   if (prev.finished) return prev;
   let state = cloneState(prev);
   if (tactic) state.activeTactics.A = getMatchTactic(tactic);
-  const proposedBotTactic = chooseBotTactic(state, 'B');
-  const botTactic = OpponentAdaptationTracker.shouldAdjust(state,2) ? proposedBotTactic : state.activeTactics.B;
+  // Só `true` explícito liga a adaptação (partidas salvas antes da 5.27-F não têm o campo).
+  const proposedBotTactic = state.opponentAdaptive === true ? chooseBotTactic(state, 'B') : state.activeTactics.B;
+  const botTactic = state.opponentAdaptive === true && OpponentAdaptationTracker.shouldAdjust(state,2) ? proposedBotTactic : state.activeTactics.B;
   if (state.activeTactics.B?.id !== botTactic.id) { const previousBotTactic=state.activeTactics.B;state = applyMatchTactic(state, botTactic, 'B');state.aiCoach=OpponentAdaptationTracker.record(state,botTactic.id);const detected=OpponentAdaptationTracker.detect(previousBotTactic,botTactic,state.pointNumber);if(detected){state.liveCoach.observations.push(detected);} }
   const random = createRandom(state.seed, state.randomState);
   const rally = new RallyEngine();

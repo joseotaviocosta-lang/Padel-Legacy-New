@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2 } from 'lucide-react';
+import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2, Hash } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
 import { daysBetween } from '@/lib/career';
-import { formatDate, overallRating } from '@/lib/padel';
+import { formatDate, overallRating, getWorldRank } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
 import { Surface, Button } from '@/components/design-system';
 import { localGame } from '@/api/localGameClient.js';
 import { getPartnerBot } from '@/lib/career';
+import { getTeamRank } from '@/lib/teamRanking.js';
 
 const athleteProfiles = /** @type {any} */ (localGame.entities).AthleteProfile;
 
@@ -38,6 +39,40 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
     }).catch(() => {});
     return () => { active = false; };
   }, [partnership?.partner_bot_id, profile?.career_date]);
+
+  // Playthrough 5.0, Parte L/N — achado confirmado: esta tela mostrava OVR,
+  // entrosamento, confiança, moral, partidas, vitórias, títulos e divisão,
+  // mas NUNCA a posição da dupla no ranking (o jogador só via seu ranking
+  // INDIVIDUAL no header). getTeamRank (teamRanking.js) já é a mesma fonte
+  // canônica usada por Tournaments.jsx/CalendarPage.jsx/TournamentModal.jsx
+  // — nenhuma fórmula nova. getWorldRank (padel.js) é a MESMA fonte do
+  // header/Ranking→Jogadores (buildWorldRankingSnapshot) — os dois nunca
+  // podem divergir por construção.
+  const [teamRank, setTeamRank] = useState(null);
+  const [individualRank, setIndividualRank] = useState(null);
+  useEffect(() => {
+    let active = true;
+    setTeamRank(null);
+    if (!profile?.id || !partnership?.partner_bot_id) return undefined;
+    // Playthrough 5.12, Parte S — a AUTORIDADE é o AthleteProfile
+    // persistido (o parceiro agora é um atleta de verdade). `getPartnerBot`
+    // é o catálogo estático e só entra como fallback para um save antigo
+    // ainda não reparado: se o parceiro tiver sido reconciliado com um
+    // atleta que já existia no mundo, o id do catálogo NÃO é o id canônico
+    // e a chave da dupla sairia errada.
+    const partnerMember = partnerProfile?.id
+      ? partnerProfile
+      : (getPartnerBot(profile) || { id: partnership.partner_bot_id, name: partnership.partner_name });
+    if (!partnerMember?.id) { setTeamRank({ rank: 0, unranked: true, displayRank: '—' }); return undefined; }
+    getTeamRank(profile, partnerMember).then((result) => { if (active) setTeamRank(result); }).catch(() => { if (active) setTeamRank({ rank: 0, unranked: true, displayRank: '—' }); });
+    return () => { active = false; };
+  }, [profile?.id, profile?.career_date, partnership?.partner_bot_id, partnership?.partner_name, partnerProfile]);
+  useEffect(() => {
+    let active = true;
+    if (!profile?.id) return undefined;
+    getWorldRank(profile).then((result) => { if (active) setIndividualRank(result); }).catch(() => {});
+    return () => { active = false; };
+  }, [profile?.id, profile?.career_date]);
 
   if (!partnership) {
     return (
@@ -131,6 +166,22 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
           <Stat icon={TrendingUp} label="Vitórias" value={partnership.shared_wins || 0} color="text-green-400" />
           <Stat icon={Trophy} label="Títulos" value={partnership.shared_titles || 0} color="text-amber-400" />
           <Stat icon={Coins} label="Divisão" value={`${partnership.prize_split_pct}%`} color="text-cyan-400" />
+        </div>
+
+        {/* Ranking — Parte L/N: nunca mistura ranking da dupla com ranking
+            individual do jogador; cada um só aparece com fonte canônica real. */}
+        <div className="mt-4">
+          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2 flex items-center gap-1"><Hash className="h-3 w-3" /> Ranking</p>
+          <div className="grid grid-cols-2 gap-2">
+            <Stat icon={Trophy} label="Ranking da dupla" value={teamRank ? (teamRank.unranked ? 'Sem ranking' : `#${teamRank.displayRank || teamRank.rank}`) : '…'} color="text-primary" />
+            {/* Mesma convenção do header (getWorldRank/CareerHud.jsx) — nunca
+                uma string de "sem ranking" própria e divergente aqui: o
+                jogador precisa ver o MESMO valor em qualquer tela (Parte M). */}
+            <Stat icon={Hash} label="Seu ranking individual" value={individualRank ? `#${individualRank.displayRank}` : '…'} color="text-cyan-400" />
+          </div>
+          {teamRank && !teamRank.unranked && Number(teamRank.points) > 0 && (
+            <p className="mt-1.5 text-[10px] text-muted-foreground">Pontos da dupla: <span className="font-bold text-foreground">{Number(teamRank.points).toLocaleString('pt-BR')}</span></p>
+          )}
         </div>
       </Surface>
 

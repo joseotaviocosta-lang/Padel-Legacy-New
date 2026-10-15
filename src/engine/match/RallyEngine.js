@@ -7,6 +7,12 @@ import { recordShot, recordPoint, recordCoordination } from './StatisticsEngine.
 import { TeamCoordinationEngine } from './TeamCoordinationEngine.js';
 import { POINT_OUTCOMES } from './PointContext.js';
 
+// Playthrough 5.27-F — inclinação calibrada única para modificadores de execução
+// por ponto (habilidade, confiança, energia).
+const CONDITION_SLOPE = 0.2;
+// 5.27-G: amplitude do riskModifier da tática na execução (ver risk()).
+const TACTIC_RISK_SCALE = 0;
+
 const ATTACKING_SHOTS = ['smash', 'volley', 'bandeja', 'chiquita', 'drive'];
 
 export class RallyEngine {
@@ -76,8 +82,14 @@ export class RallyEngine {
       // use a calibrated rating slope so a small OVR gap is meaningful without
       // becoming near-certain over a full best-of-three match.
       const skill = 50 + (rawSkill - 50) * 0.2;
-      const confidence = (player.confidence - 50) * 0.14;
-      const energyPenalty = (100 - player.energy) * 0.12;
+      // Playthrough 5.27-F — confiança e energia na MESMA inclinação calibrada da
+      // habilidade (0.2, acima). Antes entravam sem compressão: 10 pontos de
+      // energia valiam 6 de OVR (E90×E100 com times iguais = 24%; E60 = 0,2%).
+      // Medido (harness puro, times iguais): E90 44% · E70 34% · E50 26% · E40 23%.
+      // O global existe só para o harness de paridade comparar a fórmula antiga (escala 1).
+      const conditionScale = Number.isFinite(globalThis.__PL527F_CONDITION_SCALE) ? globalThis.__PL527F_CONDITION_SCALE : CONDITION_SLOPE;
+      const confidence = (player.confidence - 50) * 0.14 * conditionScale;
+      const energyPenalty = (100 - player.energy) * 0.12 * conditionScale;
       const risk = this.risk(shot, activeTactic, true, player, match);
       const serviceInitiative = rallyLength <= 4 ? (activeTeam === servingTeam ? 2 : -2) : 0;
       const execution = skill + confidence - energyPenalty - risk + serviceInitiative + (random.next() - 0.5) * 28;
@@ -335,7 +347,15 @@ export class RallyEngine {
 
   risk(shot, tactic, isTeamA, player, match = {}) {
     let risk = { serve: 4, drive: 8, backhand: 7, lob: 6, volley: 8, bandeja: 7, smash: 10, chiquita: 9 }[shot] || 8;
-    if (isTeamA) risk *= Number(tactic?.riskModifier || 1);
+    if (isTeamA) {
+      // Playthrough 5.27-G — o risco da tática NÃO multiplica mais a execução
+      // (escala 0). A tática já muda o risco ao escolher golpes mais seguros ou
+      // mais arriscados (risco-base por golpe); multiplicar de novo contava o
+      // mesmo traço duas vezes (estáticas, times iguais: defensivo 79% · potência
+      // 23% de média). O global só existe para o harness reproduzir a antiga (1).
+      const scale = Number.isFinite(globalThis.__PL527F_TACTIC_RISK_SCALE) ? globalThis.__PL527F_TACTIC_RISK_SCALE : TACTIC_RISK_SCALE;
+      risk *= 1 + (Number(tactic?.riskModifier || 1) - 1) * scale;
+    }
     if (match.importantPoint && ['smash', 'chiquita'].includes(shot)) {
       const composure = Number(player.behavior?.tendencies?.pressure_resistance ?? 50);
       risk += (50 - composure) / 12;

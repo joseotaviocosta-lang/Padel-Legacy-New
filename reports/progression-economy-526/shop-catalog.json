@@ -1,0 +1,1694 @@
+{
+  "items": 115,
+  "categories": [
+    "raquete",
+    "grip",
+    "bola",
+    "roupa",
+    "tenis",
+    "mochila",
+    "acessorio_tec",
+    "acessorio",
+    "colecionavel"
+  ],
+  "rarities": [
+    "comum",
+    "incomum",
+    "raro",
+    "epico",
+    "lendario",
+    "mitico",
+    "exclusivo"
+  ],
+  "byRarity": {
+    "comum": {
+      "items": 20,
+      "totalPrice": 8958,
+      "minPrice": 41,
+      "maxPrice": 1150,
+      "bonusMax": 2,
+      "bonusPerKCoins": 2.57
+    },
+    "incomum": {
+      "items": 17,
+      "totalPrice": 15657,
+      "minPrice": 225,
+      "maxPrice": 2084,
+      "bonusMax": 2,
+      "bonusPerKCoins": 1.47
+    },
+    "raro": {
+      "items": 18,
+      "totalPrice": 38245,
+      "minPrice": 1053,
+      "maxPrice": 4488,
+      "bonusMax": 4,
+      "bonusPerKCoins": 1.31
+    },
+    "epico": {
+      "items": 24,
+      "totalPrice": 150364,
+      "minPrice": 4320,
+      "maxPrice": 10208,
+      "bonusMax": 6,
+      "bonusPerKCoins": 0.7
+    },
+    "lendario": {
+      "items": 19,
+      "totalPrice": 339360,
+      "minPrice": 13665,
+      "maxPrice": 30003,
+      "bonusMax": 8,
+      "bonusPerKCoins": 0.32
+    },
+    "mitico": {
+      "items": 13,
+      "totalPrice": 515259,
+      "minPrice": 29024,
+      "maxPrice": 57289,
+      "bonusMax": 10,
+      "bonusPerKCoins": 0.23
+    },
+    "exclusivo": {
+      "items": 4,
+      "totalPrice": 229580,
+      "minPrice": 52211,
+      "maxPrice": 65370,
+      "bonusMax": 12,
+      "bonusPerKCoins": 0.18
+    }
+  },
+  "buyEverythingCost": 1297423,
+  "bestLoadout": {
+    "cost": 420578,
+    "bonusTotal": 88,
+    "items": [
+      {
+        "category": "raquete",
+        "name": "Bullpadel Legacy Crown",
+        "rarity": "exclusivo",
+        "price": 59788,
+        "bonusTotal": 12
+      },
+      {
+        "category": "grip",
+        "name": "Bullpadel Master Grip Pro",
+        "rarity": "mitico",
+        "price": 55094,
+        "bonusTotal": 10
+      },
+      {
+        "category": "bola",
+        "name": "Premier Championship Case",
+        "rarity": "lendario",
+        "price": 14093,
+        "bonusTotal": 4
+      },
+      {
+        "category": "roupa",
+        "name": "Bullpadel Champion Series",
+        "rarity": "mitico",
+        "price": 57289,
+        "bonusTotal": 10
+      },
+      {
+        "category": "tenis",
+        "name": "Adidas Master Series",
+        "rarity": "mitico",
+        "price": 45861,
+        "bonusTotal": 10
+      },
+      {
+        "category": "mochila",
+        "name": "Bullpadel Master Pro 20",
+        "rarity": "mitico",
+        "price": 44963,
+        "bonusTotal": 10
+      },
+      {
+        "category": "acessorio_tec",
+        "name": "Movistar Smart Analytics Pro",
+        "rarity": "mitico",
+        "price": 51294,
+        "bonusTotal": 10
+      },
+      {
+        "category": "acessorio",
+        "name": "Therabody Recovery Master",
+        "rarity": "mitico",
+        "price": 39985,
+        "bonusTotal": 10
+      },
+      {
+        "category": "colecionavel",
+        "name": "Coroa do Grand Slam",
+        "rarity": "exclusivo",
+        "price": 52211,
+        "bonusTotal": 12
+      }
+    ]
+  },
+  "catalog": [
+    {
+      "id": "shopitem-1791118559137-r1bkd0",
+      "name": "Padel Start Control One Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 288,
+      "basePrice": 320,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "volley": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118560137-9pg99t",
+      "name": "Padel Start Control One Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 514,
+      "basePrice": 576,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "volley": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118561137-81yn6r",
+      "name": "Padel Start Control One Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 1139,
+      "basePrice": 1280,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "volley": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118562137-wjhwyl",
+      "name": "Padel Start Control One Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 4320,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "volley": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118563137-cuy227",
+      "name": "Padel Start Control One Legend",
+      "category": "raquete",
+      "rarity": "lendario",
+      "price": 14476,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "volley": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118564137-cxm3hr",
+      "name": "Padel Start Power Entry Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 356,
+      "basePrice": 395,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "smash": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118565137-y6zrg4",
+      "name": "Padel Start Power Entry Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 644,
+      "basePrice": 711,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "smash": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118566137-x1pu6i",
+      "name": "Padel Start Power Entry Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 1393,
+      "basePrice": 1581,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "smash": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118567137-s5noak",
+      "name": "Padel Start Power Entry Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 4622,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "smash": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118568137-kwcg78",
+      "name": "Padel Start Power Entry Mythic",
+      "category": "raquete",
+      "rarity": "mitico",
+      "price": 29199,
+      "basePrice": 35000,
+      "bonusTotal": 5,
+      "attributeBonus": {
+        "smash": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118569137-fulfev",
+      "name": "Joma Soft Touch Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 418,
+      "basePrice": 464,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "defense": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118570137-pbymk5",
+      "name": "Joma Soft Touch Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 745,
+      "basePrice": 836,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "defense": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118571137-0z3rp6",
+      "name": "Joma Soft Touch Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 1701,
+      "basePrice": 1858,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "defense": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118572137-lf49y6",
+      "name": "Joma Soft Touch Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 4625,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "defense": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118573137-8ta913",
+      "name": "Joma Soft Touch Legend",
+      "category": "raquete",
+      "rarity": "lendario",
+      "price": 14575,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "defense": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118574137-36nxvp",
+      "name": "Head Flash Motion Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 524,
+      "basePrice": 582,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "forehand": 1,
+        "backhand": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118575137-mmsbmr",
+      "name": "Head Flash Motion Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 939,
+      "basePrice": 1048,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "forehand": 1,
+        "backhand": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118576137-5x6pgo",
+      "name": "Head Flash Motion Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 2052,
+      "basePrice": 2330,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "forehand": 2,
+        "backhand": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118577137-8j5atu",
+      "name": "Head Flash Motion Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 4736,
+      "basePrice": 5242,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "forehand": 3,
+        "backhand": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118578137-6o2c2f",
+      "name": "Head Flash Motion Mythic",
+      "category": "raquete",
+      "rarity": "mitico",
+      "price": 30378,
+      "basePrice": 35000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "forehand": 5,
+        "backhand": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118579137-5u7mgr",
+      "name": "Nox Equation Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 626,
+      "basePrice": 696,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "volley": 1,
+        "defense": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118580137-3jcn48",
+      "name": "Nox Equation Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 1119,
+      "basePrice": 1253,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "volley": 1,
+        "defense": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118581137-mq7ga6",
+      "name": "Nox Equation Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 2549,
+      "basePrice": 2784,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "volley": 2,
+        "defense": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118582137-umj547",
+      "name": "Nox Equation Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 5658,
+      "basePrice": 6264,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "volley": 3,
+        "defense": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118583137-vu38dh",
+      "name": "Nox Equation Legend",
+      "category": "raquete",
+      "rarity": "lendario",
+      "price": 15235,
+      "basePrice": 16000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "volley": 4,
+        "defense": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118584137-vmj7v5",
+      "name": "Adidas Drive Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 713,
+      "basePrice": 792,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "forehand": 1,
+        "agility": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118585137-7yblkn",
+      "name": "Adidas Drive Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 1286,
+      "basePrice": 1426,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "forehand": 1,
+        "agility": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118586137-m4h1hn",
+      "name": "Adidas Drive Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 2864,
+      "basePrice": 3168,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "forehand": 2,
+        "agility": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118587137-lzm4yg",
+      "name": "Adidas Drive Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 6303,
+      "basePrice": 7128,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "forehand": 3,
+        "agility": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118588137-1f3ook",
+      "name": "Adidas Drive Mythic",
+      "category": "raquete",
+      "rarity": "mitico",
+      "price": 33419,
+      "basePrice": 35000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "forehand": 5,
+        "agility": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118589137-b68zwu",
+      "name": "Bullpadel Vertex Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 848,
+      "basePrice": 942,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "smash": 1,
+        "bandeja": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118590137-litml6",
+      "name": "Bullpadel Vertex Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 1537,
+      "basePrice": 1696,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "smash": 1,
+        "bandeja": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118591137-rqocah",
+      "name": "Bullpadel Vertex Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 3475,
+      "basePrice": 3770,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "smash": 2,
+        "bandeja": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118592137-k84vsm",
+      "name": "Bullpadel Vertex Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 7826,
+      "basePrice": 8482,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "smash": 3,
+        "bandeja": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118593137-xxn2c9",
+      "name": "Bullpadel Vertex Legend",
+      "category": "raquete",
+      "rarity": "lendario",
+      "price": 16158,
+      "basePrice": 16963,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "smash": 4,
+        "bandeja": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118594137-wgx6rr",
+      "name": "Babolat Counter Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 945,
+      "basePrice": 1050,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "defense": 1,
+        "smash": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118595137-svwxxc",
+      "name": "Babolat Counter Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 1703,
+      "basePrice": 1889,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "defense": 1,
+        "smash": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118596137-0eb3ke",
+      "name": "Babolat Counter Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 3868,
+      "basePrice": 4198,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "defense": 2,
+        "smash": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118597137-f0q6so",
+      "name": "Babolat Counter Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 8209,
+      "basePrice": 9446,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "defense": 3,
+        "smash": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118598137-qkaid6",
+      "name": "Babolat Counter Mythic",
+      "category": "raquete",
+      "rarity": "mitico",
+      "price": 33473,
+      "basePrice": 35000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "defense": 5,
+        "smash": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118599137-kc1xa6",
+      "name": "Wilson Pro Staff Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 1046,
+      "basePrice": 1162,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "volley": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118600137-te3uc6",
+      "name": "Wilson Pro Staff Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 1895,
+      "basePrice": 2091,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "volley": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118601137-4twpo5",
+      "name": "Wilson Pro Staff Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 4077,
+      "basePrice": 4646,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "volley": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118602137-gb8lm6",
+      "name": "Wilson Pro Staff Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 9671,
+      "basePrice": 10454,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "volley": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118603137-g9i4x0",
+      "name": "Wilson Pro Staff Legend",
+      "category": "raquete",
+      "rarity": "lendario",
+      "price": 18417,
+      "basePrice": 20909,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "volley": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118604137-gbir8z",
+      "name": "Siux Electra Club",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 1150,
+      "basePrice": 1278,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "smash": 1,
+        "forehand": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118605137-8867jb",
+      "name": "Siux Electra Sport",
+      "category": "raquete",
+      "rarity": "incomum",
+      "price": 2084,
+      "basePrice": 2301,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "smash": 1,
+        "forehand": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118606137-g40bmw",
+      "name": "Siux Electra Pro",
+      "category": "raquete",
+      "rarity": "raro",
+      "price": 4488,
+      "basePrice": 5114,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "smash": 2,
+        "forehand": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118607137-xs67c0",
+      "name": "Siux Electra Elite",
+      "category": "raquete",
+      "rarity": "epico",
+      "price": 10208,
+      "basePrice": 11506,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "smash": 3,
+        "forehand": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118608137-rf6aoa",
+      "name": "Siux Electra Mythic",
+      "category": "raquete",
+      "rarity": "mitico",
+      "price": 33505,
+      "basePrice": 40909,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "smash": 5,
+        "forehand": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118609137-du0w45",
+      "name": "Tour Grip Dry Start",
+      "category": "grip",
+      "rarity": "comum",
+      "price": 50,
+      "basePrice": 55,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "forehand": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118610137-dugnk6",
+      "name": "Head Comfort Sport",
+      "category": "grip",
+      "rarity": "incomum",
+      "price": 227,
+      "basePrice": 250,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "backhand": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118611137-3t69jx",
+      "name": "Wilson Tacky Pro",
+      "category": "grip",
+      "rarity": "raro",
+      "price": 1097,
+      "basePrice": 1200,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "forehand": 2,
+        "backhand": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118612137-y0xrvh",
+      "name": "Bullpadel Hesacore Elite",
+      "category": "grip",
+      "rarity": "epico",
+      "price": 4674,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "volley": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118613137-z0ksss",
+      "name": "Nox Custom Legend",
+      "category": "grip",
+      "rarity": "lendario",
+      "price": 15239,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "backhand": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118614137-66pkq2",
+      "name": "Babolat Pro Touch Elite",
+      "category": "grip",
+      "rarity": "epico",
+      "price": 7383,
+      "basePrice": 8500,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "forehand": 3,
+        "volley": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118615137-1mltyu",
+      "name": "Wilson Championship Grip",
+      "category": "grip",
+      "rarity": "lendario",
+      "price": 23536,
+      "basePrice": 26000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "backhand": 4,
+        "strategy": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118616137-v6y4bx",
+      "name": "Bullpadel Master Grip Pro",
+      "category": "grip",
+      "rarity": "mitico",
+      "price": 55094,
+      "basePrice": 58000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "volley": 5,
+        "strategy": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118617137-a3ukq2",
+      "name": "Padel Start Training x3",
+      "category": "bola",
+      "rarity": "comum",
+      "price": 41,
+      "basePrice": 45,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "serve": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118618137-976gas",
+      "name": "Head Club Match x3",
+      "category": "bola",
+      "rarity": "incomum",
+      "price": 227,
+      "basePrice": 250,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "strategy": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118619137-w6bqbz",
+      "name": "Wilson Pro Tour x3",
+      "category": "bola",
+      "rarity": "raro",
+      "price": 1057,
+      "basePrice": 1200,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "serve": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118620137-6fucql",
+      "name": "Bullpadel Premium Final x3",
+      "category": "bola",
+      "rarity": "epico",
+      "price": 4320,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "strategy": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118621137-ze7ce0",
+      "name": "Premier Championship Case",
+      "category": "bola",
+      "rarity": "lendario",
+      "price": 14093,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "agility": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118622137-3t6me2",
+      "name": "Joma Training Tee",
+      "category": "roupa",
+      "rarity": "comum",
+      "price": 198,
+      "basePrice": 220,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "agility": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118623137-ahpcve",
+      "name": "Adidas Match Shorts",
+      "category": "roupa",
+      "rarity": "incomum",
+      "price": 382,
+      "basePrice": 420,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "agility": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118624137-zdgzuw",
+      "name": "Bullpadel Competition Set",
+      "category": "roupa",
+      "rarity": "raro",
+      "price": 1053,
+      "basePrice": 1200,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "agility": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118625137-8mqnwa",
+      "name": "Nox Travel Team",
+      "category": "roupa",
+      "rarity": "epico",
+      "price": 4320,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "emotional_control": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118626137-319gc4",
+      "name": "Wilson Signature Tour",
+      "category": "roupa",
+      "rarity": "lendario",
+      "price": 14926,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "emotional_control": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118627137-qndh4m",
+      "name": "Nox Pro Competition Kit",
+      "category": "roupa",
+      "rarity": "epico",
+      "price": 8765,
+      "basePrice": 9500,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "emotional_control": 3,
+        "agility": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118628137-uzevoa",
+      "name": "Adidas Elite Tour Jacket",
+      "category": "roupa",
+      "rarity": "lendario",
+      "price": 23688,
+      "basePrice": 28000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "emotional_control": 4,
+        "strategy": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118629137-b6xq0k",
+      "name": "Bullpadel Champion Series",
+      "category": "roupa",
+      "rarity": "mitico",
+      "price": 57289,
+      "basePrice": 60000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "emotional_control": 5,
+        "agility": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118630137-kn2fpw",
+      "name": "Joma Court Basic",
+      "category": "tenis",
+      "rarity": "comum",
+      "price": 432,
+      "basePrice": 480,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "agility": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118631137-t2nhe3",
+      "name": "Asics Clay Motion",
+      "category": "tenis",
+      "rarity": "incomum",
+      "price": 767,
+      "basePrice": 850,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "agility": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118632137-hgukt7",
+      "name": "Mizuno Indoor Flash",
+      "category": "tenis",
+      "rarity": "raro",
+      "price": 1624,
+      "basePrice": 1800,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "agility": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118633137-dql6t2",
+      "name": "Adidas Pro Stability",
+      "category": "tenis",
+      "rarity": "epico",
+      "price": 4343,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "agility": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118634137-ednhyd",
+      "name": "Babolat Jet Legend",
+      "category": "tenis",
+      "rarity": "lendario",
+      "price": 13665,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "agility": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118635137-a3ocww",
+      "name": "Joma Elite Court",
+      "category": "tenis",
+      "rarity": "epico",
+      "price": 7776,
+      "basePrice": 9000,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "agility": 3,
+        "defense": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118636137-fs0zfg",
+      "name": "Asics Pro Tour Legend",
+      "category": "tenis",
+      "rarity": "lendario",
+      "price": 26293,
+      "basePrice": 30000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "agility": 4,
+        "smash": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118637137-e5hf1t",
+      "name": "Adidas Master Series",
+      "category": "tenis",
+      "rarity": "mitico",
+      "price": 45861,
+      "basePrice": 55000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "agility": 5,
+        "smash": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118638137-eav78t",
+      "name": "Padel Start Compact",
+      "category": "mochila",
+      "rarity": "comum",
+      "price": 234,
+      "basePrice": 260,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "strategy": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118639137-k7p5kx",
+      "name": "Head Team Backpack",
+      "category": "mochila",
+      "rarity": "incomum",
+      "price": 561,
+      "basePrice": 620,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "strategy": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118640137-tu11rk",
+      "name": "Nox Thermal Duo",
+      "category": "mochila",
+      "rarity": "raro",
+      "price": 1281,
+      "basePrice": 1400,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "strategy": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118641137-umk1dx",
+      "name": "Bullpadel Pro 12",
+      "category": "mochila",
+      "rarity": "epico",
+      "price": 4611,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "emotional_control": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118642137-zml3u6",
+      "name": "Wilson Tour Vault",
+      "category": "mochila",
+      "rarity": "lendario",
+      "price": 15001,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "emotional_control": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118643137-77co1y",
+      "name": "Head Tour Elite Bag",
+      "category": "mochila",
+      "rarity": "epico",
+      "price": 7981,
+      "basePrice": 8800,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "emotional_control": 3,
+        "strategy": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118644137-92vwk2",
+      "name": "Wilson Champion Vault",
+      "category": "mochila",
+      "rarity": "lendario",
+      "price": 21321,
+      "basePrice": 25000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "emotional_control": 4,
+        "strategy": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118645137-76jb6g",
+      "name": "Bullpadel Master Pro 20",
+      "category": "mochila",
+      "rarity": "mitico",
+      "price": 44963,
+      "basePrice": 52000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "strategy": 5,
+        "emotional_control": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118646137-j18gu5",
+      "name": "Pulse Training Band",
+      "category": "acessorio_tec",
+      "rarity": "incomum",
+      "price": 802,
+      "basePrice": 900,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "emotional_control": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118647137-942j4m",
+      "name": "PlaySight Shot Sensor",
+      "category": "acessorio_tec",
+      "rarity": "raro",
+      "price": 2377,
+      "basePrice": 2600,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "strategy": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118648137-gl9gog",
+      "name": "Garmin Athlete Pro",
+      "category": "acessorio_tec",
+      "rarity": "epico",
+      "price": 4598,
+      "basePrice": 5200,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "emotional_control": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118649137-7ztj9i",
+      "name": "PlaySight Match Vision",
+      "category": "acessorio_tec",
+      "rarity": "lendario",
+      "price": 13686,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "strategy": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118650137-ugo4t2",
+      "name": "NeuroCourt Tactical Lab",
+      "category": "acessorio_tec",
+      "rarity": "mitico",
+      "price": 29024,
+      "basePrice": 35000,
+      "bonusTotal": 5,
+      "attributeBonus": {
+        "strategy": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118651137-rx3fcx",
+      "name": "Garmin Padel Elite",
+      "category": "acessorio_tec",
+      "rarity": "epico",
+      "price": 10144,
+      "basePrice": 11000,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "strategy": 3,
+        "agility": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118652137-3078b6",
+      "name": "Playtomic Court Vision",
+      "category": "acessorio_tec",
+      "rarity": "lendario",
+      "price": 30003,
+      "basePrice": 32000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "strategy": 4,
+        "defense": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118653137-c6n82x",
+      "name": "Movistar Smart Analytics Pro",
+      "category": "acessorio_tec",
+      "rarity": "mitico",
+      "price": 51294,
+      "basePrice": 54000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "strategy": 5,
+        "agility": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118654137-nh3has",
+      "name": "Joma Wristband Base",
+      "category": "acessorio",
+      "rarity": "comum",
+      "price": 54,
+      "basePrice": 60,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "emotional_control": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118655137-0wu4dy",
+      "name": "Adidas Focus Headband",
+      "category": "acessorio",
+      "rarity": "incomum",
+      "price": 225,
+      "basePrice": 250,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "emotional_control": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118656137-vz5scm",
+      "name": "Nox Racket Protector",
+      "category": "acessorio",
+      "rarity": "raro",
+      "price": 1097,
+      "basePrice": 1200,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "defense": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118657137-aaplxe",
+      "name": "HydroSport Thermal Pro",
+      "category": "acessorio",
+      "rarity": "epico",
+      "price": 4672,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "emotional_control": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118658137-yb0egg",
+      "name": "Therabody Recovery Kit",
+      "category": "acessorio",
+      "rarity": "lendario",
+      "price": 14023,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "agility": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118659137-64yekz",
+      "name": "Nox Elite Wristband",
+      "category": "acessorio",
+      "rarity": "epico",
+      "price": 6255,
+      "basePrice": 7200,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "agility": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118660137-djulfs",
+      "name": "Adidas Focus Master",
+      "category": "acessorio",
+      "rarity": "lendario",
+      "price": 20953,
+      "basePrice": 22000,
+      "bonusTotal": 8,
+      "attributeBonus": {
+        "emotional_control": 4,
+        "strategy": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118661137-mbi1ri",
+      "name": "Therabody Recovery Master",
+      "category": "acessorio",
+      "rarity": "mitico",
+      "price": 39985,
+      "basePrice": 48000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "emotional_control": 5,
+        "defense": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118662137-v2qkc5",
+      "name": "Medalha Circuito Local",
+      "category": "colecionavel",
+      "rarity": "raro",
+      "price": 1053,
+      "basePrice": 1200,
+      "bonusTotal": 2,
+      "attributeBonus": {
+        "emotional_control": 2
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118663137-tuxnwz",
+      "name": "Réplica Troféu Major",
+      "category": "colecionavel",
+      "rarity": "epico",
+      "price": 4344,
+      "basePrice": 5000,
+      "bonusTotal": 3,
+      "attributeBonus": {
+        "emotional_control": 3
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118664137-de1qcq",
+      "name": "Raquete Vintage 1995",
+      "category": "colecionavel",
+      "rarity": "lendario",
+      "price": 14072,
+      "basePrice": 16000,
+      "bonusTotal": 4,
+      "attributeBonus": {
+        "emotional_control": 4
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118665137-66zwsu",
+      "name": "Troféu Fundadores",
+      "category": "colecionavel",
+      "rarity": "mitico",
+      "price": 31775,
+      "basePrice": 35000,
+      "bonusTotal": 10,
+      "attributeBonus": {
+        "emotional_control": 5,
+        "strategy": 5
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118666137-56p7do",
+      "name": "Coroa do Grand Slam",
+      "category": "colecionavel",
+      "rarity": "exclusivo",
+      "price": 52211,
+      "basePrice": 65000,
+      "bonusTotal": 12,
+      "attributeBonus": {
+        "emotional_control": 6,
+        "strategy": 6
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118667137-iqi8ln",
+      "name": "Bullpadel Legacy Crown",
+      "category": "raquete",
+      "rarity": "exclusivo",
+      "price": 59788,
+      "basePrice": 65000,
+      "bonusTotal": 12,
+      "attributeBonus": {
+        "smash": 6,
+        "bandeja": 6
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118668137-3qlhl1",
+      "name": "Nox Maestro One of One",
+      "category": "raquete",
+      "rarity": "exclusivo",
+      "price": 65370,
+      "basePrice": 65000,
+      "bonusTotal": 12,
+      "attributeBonus": {
+        "volley": 6,
+        "strategy": 6
+      },
+      "brand": null
+    },
+    {
+      "id": "shopitem-1791118669137-oug9wo",
+      "name": "Wilson Heritage Control",
+      "category": "raquete",
+      "rarity": "exclusivo",
+      "price": 52211,
+      "basePrice": 65000,
+      "bonusTotal": 6,
+      "attributeBonus": {
+        "defense": 6
+      },
+      "brand": null
+    },
+    {
+      "id": "shop-001",
+      "name": "Raquete Starter Control",
+      "category": "raquete",
+      "rarity": "comum",
+      "price": 450,
+      "basePrice": 500,
+      "bonusTotal": 1,
+      "attributeBonus": {
+        "strategy": 1
+      },
+      "brand": null
+    },
+    {
+      "id": "shop-002",
+      "name": "Tênis Court Pro",
+      "category": "tenis",
+      "rarity": "comum",
+      "price": 315,
+      "basePrice": 350,
+      "bonusTotal": 0,
+      "attributeBonus": {},
+      "brand": null
+    },
+    {
+      "id": "shop-003",
+      "name": "Grip Performance",
+      "category": "grip",
+      "rarity": "comum",
+      "price": 72,
+      "basePrice": 80,
+      "bonusTotal": 0,
+      "attributeBonus": {},
+      "brand": null
+    },
+    {
+      "id": "shop-004",
+      "name": "Mochila Tour",
+      "category": "mochila",
+      "rarity": "comum",
+      "price": 198,
+      "basePrice": 220,
+      "bonusTotal": 0,
+      "attributeBonus": {},
+      "brand": null
+    }
+  ]
+}

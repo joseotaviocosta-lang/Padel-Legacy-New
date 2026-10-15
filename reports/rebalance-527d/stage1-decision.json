@@ -1,0 +1,107 @@
+{
+  "at": "2026-10-12T14:19:19.104Z",
+  "complete": true,
+  "criteria": {
+    "reject": {
+      "sponsorShareY1MaxPct": 60,
+      "prizeShareY1MinPct": 10,
+      "normalInsolvencyMaxPct": 10,
+      "casualInsolvencyMaxPct": 20,
+      "normalRank2yMustBeBelow": 10,
+      "normalRank2yMustBeAbove": 700
+    },
+    "preference": {
+      "easyPct": [
+        55,
+        75
+      ],
+      "mediumPct": [
+        40,
+        60
+      ],
+      "hardPct": [
+        20,
+        40
+      ],
+      "r1MinPct": 40,
+      "normalRank1y": [
+        500,
+        700
+      ],
+      "normalRank2y": [
+        150,
+        300
+      ],
+      "normalTitlesY1Median": [
+        0,
+        1
+      ],
+      "normalTitlesY2CumMedian": [
+        1,
+        3
+      ]
+    },
+    "tieBreak": "balanced (default atual: trocar o default exige evidência clara)"
+  },
+  "classification": {
+    "conservative": {
+      "classification": "REJECT",
+      "rejectReasons": [
+        "sponsor Y1 Normal 77% > 60%",
+        "prize Y1 Normal 5% < 10%"
+      ],
+      "preference": {
+        "easy": false,
+        "medium": false,
+        "hard": false,
+        "r1": false,
+        "rank1y": false,
+        "rank2y": false,
+        "titlesY1": true,
+        "titlesY2": true
+      },
+      "preferenceScore": 2
+    },
+    "balanced": {
+      "classification": "REJECT",
+      "rejectReasons": [
+        "sponsor Y1 Normal 62% > 60%",
+        "prize Y1 Normal 9% < 10%",
+        "insolvência Casual 40% > 20%"
+      ],
+      "preference": {
+        "easy": false,
+        "medium": false,
+        "hard": true,
+        "r1": false,
+        "rank1y": false,
+        "rank2y": false,
+        "titlesY1": true,
+        "titlesY2": true
+      },
+      "preferenceScore": 3
+    },
+    "hardcore": {
+      "classification": "REJECT",
+      "rejectReasons": [
+        "prize Y1 Normal 7.8% < 10%",
+        "insolvência Casual 80% > 20%"
+      ],
+      "preference": {
+        "easy": false,
+        "medium": false,
+        "hard": true,
+        "r1": false,
+        "rank1y": false,
+        "rank2y": false,
+        "titlesY1": true,
+        "titlesY2": true
+      },
+      "preferenceScore": 3
+    }
+  },
+  "winner": null,
+  "proceedToStage2": false,
+  "reason": "nenhum preset VIABLE — parar antes do Stage 2",
+  "note": "O analisador não altera configuração; apenas recomenda (item 31)."
+}

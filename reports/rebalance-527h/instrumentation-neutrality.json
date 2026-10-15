@@ -1,0 +1,9 @@
+{
+  "phase": "5.27-H",
+  "at": "2026-10-13",
+  "purpose": "Provar que a instrumentação 5.27-H (renewalDecisions, partnerQuality, táticas por partida) só lê estado e não muda nenhuma decisão/RNG antes de congelar.",
+  "run": "balanced-e · policy v3 · normal · seed 1 · 300 dias contínuos",
+  "probeOnVsOff": { "outcomeHashEqualExcludingPartnerQuality": true, "matches": [44, 44], "weeklyEqual": true },
+  "vs527gBalancedEV3Seed1": { "samePrefixMatches": 44, "identical": true, "fields": "date,tournamentId,round,won,score,playerOvr,partnerOvr" },
+  "tacticTelemetry40d": "equilibrado/equilibrado (A/B), tacticBFinal=equilibrado, opponentAdaptive=false"
+}

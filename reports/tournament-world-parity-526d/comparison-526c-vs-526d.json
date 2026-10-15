@@ -1,0 +1,92 @@
+{
+  "note": "5.26-C = lote principal 35×5 temporadas; 5.26-D = smoke 15×2 temporadas (mesma seed base). Comparação de direção, não de igualdade de n.",
+  "metrics": {
+    "rankedOpponentCoveragePct": {
+      "c": 0,
+      "d": 90.2
+    },
+    "easyWR": {
+      "c": 49.2,
+      "d": 7.9
+    },
+    "mediumWR": {
+      "c": 78.8,
+      "d": 22.2
+    },
+    "hardWR": {
+      "c": 63.6,
+      "d": 15.6
+    },
+    "byTier": {
+      "Bronze": {
+        "c": 50.4,
+        "d": 10.2,
+        "dn": 342
+      },
+      "Silver": {
+        "c": 47.4,
+        "d": 4.3,
+        "dn": 230
+      },
+      "Gold": {
+        "c": 80.6,
+        "d": 21.5,
+        "dn": 265
+      },
+      "Platinum": {
+        "c": 77.6,
+        "d": 23.5,
+        "dn": 153
+      },
+      "Masters": {
+        "c": 67.4,
+        "d": 11.5,
+        "dn": 26
+      },
+      "Elite": {
+        "c": 62.3,
+        "d": 33.3,
+        "dn": 6
+      },
+      "Crown": {
+        "c": 45.9,
+        "d": null,
+        "dn": 0
+      },
+      "Circuit Finals": {
+        "c": 61.3,
+        "d": null,
+        "dn": 0
+      },
+      "Legacy Finals": {
+        "c": 45.9,
+        "d": null,
+        "dn": 0
+      }
+    },
+    "r1WR": {
+      "c": 87.5,
+      "d": 10.8
+    },
+    "upsetAttempts": {
+      "c": 1,
+      "d": 373
+    },
+    "upsetWon": {
+      "c": null,
+      "d": 4
+    },
+    "upsetRate": {
+      "c": 0,
+      "d": 1.1
+    },
+    "rankAt2y": {
+      "c": 10,
+      "d": 154
+    },
+    "titlesAt2y": {
+      "c": 1,
+      "d": 0
+    }
+  }
+}

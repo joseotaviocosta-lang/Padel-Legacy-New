@@ -18,3 +18,10 @@ tauri-plugin-store = "2"
 tauri-plugin-fs = "2"
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[features]
+# Playthrough 5.25 — build de DIAGNÓSTICO: habilita o inspetor do WebView num
+# APK release (Rust otimizado, mesma assinatura) para perfilar a main thread
+# do JS no aparelho via ADB + DevTools. Desligado por padrão: o APK normal de
+# playtest não muda. Uso: npm run android:build -- --apk --target aarch64 --features diag
+diag = ["tauri/devtools"]

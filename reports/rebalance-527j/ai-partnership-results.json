@@ -1,0 +1,10 @@
+{
+  "finding": "IA não tinha o bug",
+  "why": [
+    "dissolução imediata (status encerrada_parceiro no mesmo passo mensal; sem estado de saída pendente)",
+    "admissão do mundo usa só parcerias ativas (buildCanonicalPairs: status === \"ativa\")",
+    "IA não escreve TournamentRegistration; identidade já sorteada fica em draw_pair_ids/snapshot (5.26-D)"
+  ],
+  "test": "scripts/test-ai-partnership-exit-registration-v527j.mjs",
+  "changed": false
+}

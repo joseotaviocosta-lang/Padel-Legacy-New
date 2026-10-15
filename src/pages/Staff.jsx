@@ -1,7 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Page, PageContent, PageHeader, PageSkeleton } from '@/components/design-system';
 import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
+import { buildStableMessageId } from '@/lib/careerCommunications.js';
+import StaffReportHighlight from '@/components/staff/StaffReportHighlight';
+import TournamentRegistrationModal from '@/components/calendar/TournamentRegistrationModal';
+import { APP_ROUTES } from '@/navigation/routes.js';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { hireStaff, fireStaff, renewStaffContract, getStaffSlots } from '@/lib/economy';
@@ -19,7 +24,73 @@ export default function Staff() {
   const [meeting, setMeeting] = useState(null);
   const { toast } = useToast();
 
+  // Playthrough 5.13 (continuação), Partes D/E/F — a notificação da comissão
+  // agora traz `?report=<context_key>` (e `?staff=<id>` quando é sobre um
+  // profissional específico). A página resolve esse identificador e abre o
+  // relatório correspondente já destacado, em vez de só mostrar o topo.
+  const [searchParams] = useSearchParams();
+  const requestedReport = searchParams.get('report');
+  const requestedStaffId = searchParams.get('staff');
+  const [highlightedReport, setHighlightedReport] = useState(null);
+  const reportAnchorRef = useRef(null);
+
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+    setHighlightedReport(null);
+    // Parte F — sem identificador (save antigo, ou entrada manual pelo menu)
+    // a página segue exatamente como antes.
+    if (!requestedReport || !profile?.id) return undefined;
+    (async () => {
+      // A chave de contexto é estável e deriva o id da mensagem, então a
+      // busca é direta; o filtro por `context_key` cobre mensagens gravadas
+      // por outro caminho.
+      let found = await localGame.entities.CareerMessage
+        .get(buildStableMessageId(profile.id, requestedReport)).catch(() => null);
+      if (!found) {
+        const all = await localGame.entities.CareerMessage
+          .filter({ profile_id: profile.id }).catch(() => []);
+        found = (all || []).find((message) => message?.metadata?.context_key === requestedReport) || null;
+      }
+      if (!cancelled) setHighlightedReport(found);
+    })();
+    return () => { cancelled = true; };
+  }, [requestedReport, profile?.id]);
+
+  useEffect(() => {
+    if (!highlightedReport || !reportAnchorRef.current) return;
+    reportAnchorRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [highlightedReport]);
+
+  // Playthrough 5.14 (continuação), Partes H/I/J/K — o CTA do relatório.
+  // O botão da reunião competitiva age SEMPRE por caminhos já existentes:
+  // o modal canônico de inscrição, ou o deep link de torneio/chave que a
+  // página de Torneios já sabe interpretar (incluindo a releitura fresca do
+  // bracket corrigida na 5.13).
+  const [registrationTournament, setRegistrationTournament] = useState(null);
+  const navigate = useNavigate();
+
+  async function refreshHighlightedReport() {
+    if (!requestedReport || !profile?.id) return;
+    const fresh = await localGame.entities.CareerMessage
+      .get(buildStableMessageId(profile.id, requestedReport)).catch(() => null);
+    if (fresh) setHighlightedReport(fresh);
+  }
+
+  async function handleReportAction(action) {
+    if (!action?.tournamentId) return;
+    if (action.id === 'register') {
+      const tournament = await localGame.entities.Tournament.get(action.tournamentId).catch(() => null);
+      if (tournament) setRegistrationTournament(tournament);
+      return;
+    }
+    if (action.id === 'view_bracket') {
+      navigate(`${APP_ROUTES.TOURNAMENTS}?tournament=${action.tournamentId}&openBracket=true`);
+      return;
+    }
+    navigate(`${APP_ROUTES.TOURNAMENTS}?tournament=${action.tournamentId}`);
+  }
 
   async function load() {
     try {
@@ -91,6 +162,36 @@ export default function Staff() {
           { label: 'liderança', value: profile.coach_name || 'Treinador', icon: UserRoundCog, tone: 'info' },
         ]}
       />
+      <div ref={reportAnchorRef}>
+        <StaffReportHighlight
+          report={highlightedReport}
+          highlightedMemberName={
+            highlightedReport?.metadata?.staff_member_name
+            || activeStaff.find((member) => member.id === requestedStaffId || member.staff_id === requestedStaffId)?.staff_name
+            || null
+          }
+          onAction={handleReportAction}
+        />
+      </div>
+
+      {/* Playthrough 5.14 (continuação), Parte I — a inscrição a partir do
+          relatório usa o MESMO modal canônico do CareerHub/Torneios. A
+          página não cria TournamentRegistration por conta própria. */}
+      {registrationTournament && (
+        <TournamentRegistrationModal
+          tournament={registrationTournament}
+          profile={profile}
+          teamRank={0}
+          onClose={() => setRegistrationTournament(null)}
+          onRegistered={async (updated) => {
+            if (updated) setProfile(updated);
+            setRegistrationTournament(null);
+            // Parte J — o relatório reflete o novo estado sem criar mensagem
+            // nova: a própria reunião semanal é atualizada pelo tick.
+            await refreshHighlightedReport();
+          }}
+        />
+      )}
       <StaffLivePanel meeting={meeting} />
       <StaffPanel
         profile={profile}

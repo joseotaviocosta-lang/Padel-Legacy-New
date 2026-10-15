@@ -1,0 +1,255 @@
+{
+  "rule": "vitória sobre dupla com posição canônica menor (melhor) que a do jogador; adversário sem rank nunca conta (teamRanking.isUpsetResult)",
+  "main": {
+    "all": {
+      "matches": 16182,
+      "opponentRankCoverage": {
+        "teamRanking": 4,
+        "unranked": 16178,
+        "missingRoster": 0,
+        "pct": 0
+      },
+      "opponentOrigin": {
+        "catalogFictional": 15097,
+        "catalogRealAny": 1085
+      },
+      "attempted": 1,
+      "won": 0,
+      "lost": 1,
+      "ratePct": 0,
+      "flaggedUpsets": 0,
+      "missingWhenCanonicalExists": 0,
+      "canonicalRowExists": 4
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 3712,
+        "opponentRankCoverage": {
+          "teamRanking": 0,
+          "unranked": 3712,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 3608,
+          "catalogRealAny": 104
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 0
+      },
+      "normal": {
+        "matches": 6477,
+        "opponentRankCoverage": {
+          "teamRanking": 1,
+          "unranked": 6476,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 5994,
+          "catalogRealAny": 483
+        },
+        "attempted": 1,
+        "won": 0,
+        "lost": 1,
+        "ratePct": 0,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 1
+      },
+      "optimizer": {
+        "matches": 5993,
+        "opponentRankCoverage": {
+          "teamRanking": 3,
+          "unranked": 5990,
+          "missingRoster": 0,
+          "pct": 0.1
+        },
+        "opponentOrigin": {
+          "catalogFictional": 5495,
+          "catalogRealAny": 498
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 3
+      }
+    }
+  },
+  "long": {
+    "all": {
+      "matches": 5150,
+      "opponentRankCoverage": {
+        "teamRanking": 1,
+        "unranked": 5149,
+        "missingRoster": 0,
+        "pct": 0
+      },
+      "opponentOrigin": {
+        "catalogFictional": 4644,
+        "catalogRealAny": 506
+      },
+      "attempted": 0,
+      "won": 0,
+      "lost": 0,
+      "ratePct": null,
+      "flaggedUpsets": 0,
+      "missingWhenCanonicalExists": 0,
+      "canonicalRowExists": 1
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 1559,
+        "opponentRankCoverage": {
+          "teamRanking": 0,
+          "unranked": 1559,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 1441,
+          "catalogRealAny": 118
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 0
+      },
+      "normal": {
+        "matches": 2343,
+        "opponentRankCoverage": {
+          "teamRanking": 0,
+          "unranked": 2343,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 2098,
+          "catalogRealAny": 245
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 0
+      },
+      "optimizer": {
+        "matches": 1248,
+        "opponentRankCoverage": {
+          "teamRanking": 1,
+          "unranked": 1247,
+          "missingRoster": 0,
+          "pct": 0.1
+        },
+        "opponentOrigin": {
+          "catalogFictional": 1105,
+          "catalogRealAny": 143
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 1
+      }
+    }
+  },
+  "smoke": {
+    "all": {
+      "matches": 2116,
+      "opponentRankCoverage": {
+        "teamRanking": 0,
+        "unranked": 2116,
+        "missingRoster": 0,
+        "pct": 0
+      },
+      "opponentOrigin": {
+        "catalogFictional": 2061,
+        "catalogRealAny": 55
+      },
+      "attempted": 0,
+      "won": 0,
+      "lost": 0,
+      "ratePct": null,
+      "flaggedUpsets": 0,
+      "missingWhenCanonicalExists": 0,
+      "canonicalRowExists": 0
+    },
+    "byProfile": {
+      "casual": {
+        "matches": 473,
+        "opponentRankCoverage": {
+          "teamRanking": 0,
+          "unranked": 473,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 469,
+          "catalogRealAny": 4
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 0
+      },
+      "normal": {
+        "matches": 816,
+        "opponentRankCoverage": {
+          "teamRanking": 0,
+          "unranked": 816,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 801,
+          "catalogRealAny": 15
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 0
+      },
+      "optimizer": {
+        "matches": 827,
+        "opponentRankCoverage": {
+          "teamRanking": 0,
+          "unranked": 827,
+          "missingRoster": 0,
+          "pct": 0
+        },
+        "opponentOrigin": {
+          "catalogFictional": 791,
+          "catalogRealAny": 36
+        },
+        "attempted": 0,
+        "won": 0,
+        "lost": 0,
+        "ratePct": null,
+        "flaggedUpsets": 0,
+        "missingWhenCanonicalExists": 0,
+        "canonicalRowExists": 0
+      }
+    }
+  }
+}

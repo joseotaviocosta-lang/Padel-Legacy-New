@@ -1,0 +1,368 @@
+{
+  "at": "2026-10-12T18:37:37.800Z",
+  "passed": 44,
+  "total": 45,
+  "results": [
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-match-engine-identical-teams-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 124,
+      "summary": "test-match-engine-identical-teams-v527f: 21/21 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-match-engine-side-swap-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 253,
+      "summary": "test-match-engine-side-swap-v527f: 16/16 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-energy-sensitivity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 229,
+      "summary": "test-energy-sensitivity-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-energy-single-application-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 6,
+      "summary": "test-energy-single-application-v527f: 5/5 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-player-opponent-strength-parity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-player-opponent-strength-parity-v527f: 7/7 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-bot-energy-assumption-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-bot-energy-assumption-v527f: 3/3 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-zero-win-ranking-progression-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-zero-win-ranking-progression-v527f: 4/4 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-ranking-points-by-source-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-points-by-source-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-ranking-world-vs-player-decomposition-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-world-vs-player-decomposition-v527f: 9/9 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-ranking-success-monotonicity-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-ranking-success-monotonicity-v527f: 4/4 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-old-presets-semantic-freeze-v527f",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-old-presets-semantic-freeze-v527f: 6/6 passaram"
+    },
+    {
+      "group": "Novos 5.27-F",
+      "name": "test-micro-gate-post-engine-v527f",
+      "ok": false,
+      "code": 1,
+      "seconds": 1,
+      "summary": "test-micro-gate-post-engine-v527f: 7/8 passaram",
+      "tail": "✗ Medium >= 28% com amostra real (2 anos: 2.2% em 92 partidas)\n    assert.ok(y2.mediumWR >= 28)"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-player-tournament-real-world-pairs-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 14,
+      "summary": "test-player-tournament-real-world-pairs-v526d: 8/8 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-tournament-pair-eligibility-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 13,
+      "summary": "test-tournament-pair-eligibility-v526d: 5/5 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-no-athlete-double-entry-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 14,
+      "summary": "test-no-athlete-double-entry-v526d: 9/9 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-tournament-teamrank-resolution-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 12,
+      "summary": "test-tournament-teamrank-resolution-v526d: 4/4 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-tournament-unranked-real-pair-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 13,
+      "summary": "test-tournament-unranked-real-pair-v526d: 4/4 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-historical-draw-pair-snapshot-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-historical-draw-pair-snapshot-v526d: 4/4 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-partnership-change-does-not-rewrite-draw-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 10,
+      "summary": "test-partnership-change-does-not-rewrite-draw-v526d: 3/3 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-tournament-world-assignment-conflict-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 10,
+      "summary": "test-tournament-world-assignment-conflict-v526d: 4/4 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-upset-real-ranked-opponent-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 11,
+      "summary": "test-upset-real-ranked-opponent-v526d: 5/5 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-real-pair-draw-determinism-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 10,
+      "summary": "test-real-pair-draw-determinism-v526d: 5/5 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-real-pair-draw-performance-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 10,
+      "summary": "test-real-pair-draw-performance-v526d: 4/4 passaram"
+    },
+    {
+      "group": "Torneio 5.26-D",
+      "name": "test-progression-smoke-world-pairs-v526d",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-progression-smoke-world-pairs-v526d: 8/8 passaram"
+    },
+    {
+      "group": "Motor de partida",
+      "name": "test-match-integrity",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": null
+    },
+    {
+      "group": "Motor de partida",
+      "name": "test-live-coach-tournament",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "PASS — a UI real mostra o banner \"Nova sugestão do técnico\" em partida de torneio"
+    },
+    {
+      "group": "Motor de partida",
+      "name": "test-tournament-result-authority",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": null
+    },
+    {
+      "group": "Ranking",
+      "name": "test-world-ranking-year-rollover-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 9,
+      "summary": "test-world-ranking-year-rollover-v526c: 6/6 passaram"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-race-year-reset-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 27,
+      "summary": "test-race-year-reset-v526c: 8/8 passaram"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-team-ranking-sum-formula-v522e",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-team-ranking-sum-formula-v522e: PASS"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-team-ranking-pair-change-sum-v522e",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "test-team-ranking-pair-change-sum-v522e: PASS"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-historical-opponent-pair-rank-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-historical-opponent-pair-rank-v526c: 7/7 passaram"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-ranking-expiration-window-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-ranking-expiration-window-v526c: 10/10 passaram"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-first-partnership-100-careers",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": "test-first-partnership-100-careers: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-first-partnership-ranking",
+      "ok": true,
+      "code": 0,
+      "seconds": 5,
+      "summary": "test-first-partnership-ranking: PASS"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partner-resign-loop-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 25,
+      "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+    },
+    {
+      "group": "Parceria",
+      "name": "test-partner-offer-overall-integrity-v519",
+      "ok": true,
+      "code": 0,
+      "seconds": 8,
+      "summary": "[registro] candidatos com OVR divergente do declarado (>2): 0/22"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-achievement-reward-atomicity-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 9,
+      "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-achievement-reward-restart-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 17,
+      "summary": "test-achievement-reward-restart-v524e: PASS (4 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-mission-reward-regression-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 77,
+      "summary": "test-mission-reward-regression-v524e: PASS (10 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-idle-boot-zero-write-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 16,
+      "summary": "test-idle-boot-zero-write-v524e: PASS (4 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-legacy-boot-single-repair-write-v524e",
+      "ok": true,
+      "code": 0,
+      "seconds": 15,
+      "summary": "test-legacy-boot-single-repair-write-v524e: PASS (3 gates)"
+    },
+    {
+      "group": "Persistência",
+      "name": "test-mobile-storage-m3-6",
+      "ok": true,
+      "code": 0,
+      "seconds": 4,
+      "summary": "15 gates executados, todos PASS — Mobile M3.6 Storage/I/O."
+    },
+    {
+      "group": "Balanço",
+      "name": "test-preset-comparison-v527b",
+      "ok": true,
+      "code": 0,
+      "seconds": 1,
+      "summary": "test-preset-comparison-v527b: 5/5 passaram"
+    },
+    {
+      "group": "Balanço",
+      "name": "test-bronze-silver-band-v527b",
+      "ok": true,
+      "code": 0,
+      "seconds": 11,
+      "summary": "test-bronze-silver-band-v527b: 3/3 passaram"
+    }
+  ]
+}

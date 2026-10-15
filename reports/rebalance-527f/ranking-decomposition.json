@@ -1,0 +1,151 @@
+{
+  "note": "rank contrafactual = 1 + nº de ativos com mais pontos (±12% do rank real)",
+  "before": {
+    "wr0": {
+      "startRank": 1001,
+      "endRank": 464,
+      "endRankRecomputed": 493,
+      "rankPlayerPointsOnlyWorldFrozen": 823,
+      "rankWorldMovementOnlyZeroPoints": 658,
+      "gainFromPlayerPointsAlone": 178,
+      "gainFromWorldMovementAlone": 343,
+      "gainTotal": 508,
+      "worldAthletesWithPoints": [
+        1000,
+        657
+      ],
+      "worldPointsMedian": [
+        199,
+        51
+      ]
+    },
+    "wr25": {
+      "startRank": 1001,
+      "endRank": 407,
+      "endRankRecomputed": 435,
+      "rankPlayerPointsOnlyWorldFrozen": 722,
+      "rankWorldMovementOnlyZeroPoints": 659,
+      "gainFromPlayerPointsAlone": 279,
+      "gainFromWorldMovementAlone": 342,
+      "gainTotal": 566,
+      "worldAthletesWithPoints": [
+        1000,
+        658
+      ],
+      "worldPointsMedian": [
+        199,
+        50
+      ]
+    },
+    "wr50": {
+      "startRank": 1001,
+      "endRank": 313,
+      "endRankRecomputed": 335,
+      "rankPlayerPointsOnlyWorldFrozen": 618,
+      "rankWorldMovementOnlyZeroPoints": 672,
+      "gainFromPlayerPointsAlone": 383,
+      "gainFromWorldMovementAlone": 329,
+      "gainTotal": 666,
+      "worldAthletesWithPoints": [
+        1000,
+        671
+      ],
+      "worldPointsMedian": [
+        199,
+        53
+      ]
+    },
+    "wr75": {
+      "startRank": 1001,
+      "endRank": 163,
+      "endRankRecomputed": 177,
+      "rankPlayerPointsOnlyWorldFrozen": 360,
+      "rankWorldMovementOnlyZeroPoints": 680,
+      "gainFromPlayerPointsAlone": 641,
+      "gainFromWorldMovementAlone": 321,
+      "gainTotal": 824,
+      "worldAthletesWithPoints": [
+        1000,
+        679
+      ],
+      "worldPointsMedian": [
+        199,
+        50
+      ]
+    }
+  },
+  "after": {
+    "wr0": {
+      "startRank": 1001,
+      "endRank": 411,
+      "endRankRecomputed": 439,
+      "rankPlayerPointsOnlyWorldFrozen": 815,
+      "rankWorldMovementOnlyZeroPoints": 668,
+      "gainFromPlayerPointsAlone": 186,
+      "gainFromWorldMovementAlone": 333,
+      "gainTotal": 562,
+      "worldAthletesWithPoints": [
+        1000,
+        667
+      ],
+      "worldPointsMedian": [
+        199,
+        29
+      ]
+    },
+    "wr25": {
+      "startRank": 1001,
+      "endRank": 359,
+      "endRankRecomputed": 381,
+      "rankPlayerPointsOnlyWorldFrozen": 722,
+      "rankWorldMovementOnlyZeroPoints": 672,
+      "gainFromPlayerPointsAlone": 279,
+      "gainFromWorldMovementAlone": 329,
+      "gainTotal": 620,
+      "worldAthletesWithPoints": [
+        1000,
+        671
+      ],
+      "worldPointsMedian": [
+        199,
+        30
+      ]
+    },
+    "wr50": {
+      "startRank": 1001,
+      "endRank": 267,
+      "endRankRecomputed": 288,
+      "rankPlayerPointsOnlyWorldFrozen": 622,
+      "rankWorldMovementOnlyZeroPoints": 681,
+      "gainFromPlayerPointsAlone": 379,
+      "gainFromWorldMovementAlone": 320,
+      "gainTotal": 713,
+      "worldAthletesWithPoints": [
+        1000,
+        680
+      ],
+      "worldPointsMedian": [
+        199,
+        28
+      ]
+    },
+    "wr75": {
+      "startRank": 1001,
+      "endRank": 55,
+      "endRankRecomputed": 55,
+      "rankPlayerPointsOnlyWorldFrozen": 122,
+      "rankWorldMovementOnlyZeroPoints": 690,
+      "gainFromPlayerPointsAlone": 879,
+      "gainFromWorldMovementAlone": 311,
+      "gainTotal": 946,
+      "worldAthletesWithPoints": [
+        1000,
+        689
+      ],
+      "worldPointsMedian": [
+        199,
+        27
+      ]
+    }
+  }
+}

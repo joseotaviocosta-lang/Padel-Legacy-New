@@ -2,6 +2,7 @@
 // diretamente por scripts Node puros (ex.: scripts/test-massive-careers-v32.mjs,
 // scripts/test-career-difficulty-pace.mjs), que não resolvem o alias Vite.
 import { getDifficultyModifier } from '../gameplay/difficulty/difficultyConfig.js';
+import { getBalance527 } from './balance527.js';
 
 export const INITIAL_ATTRIBUTE_KEYS = [
   'serve', 'forehand', 'backhand', 'volley', 'bandeja', 'smash',
@@ -53,7 +54,12 @@ function adjust(attributes, from, to, amount = 1) {
 // que a validação nunca rejeite um build gerado por esta mesma função.
 function scaleScoreCurve(careerDifficultyId) {
   const bonusPct = getDifficultyModifier(careerDifficultyId, 'initialAttributeBonusPct');
-  return SCORE_CURVE.map(value => Math.round(value * (1 + bonusPct)));
+  // Playthrough 5.27 — multiplicador de partida da config central (o jogador
+  // de 16 anos precisa estar na mesma ordem de grandeza da base do circuito
+  // real; o OVR 12 inicial ficava ~30 pontos abaixo da dupla mais fraca do
+  // mundo). Não é buff oculto de partida: é o build inicial, documentado.
+  const balanceMultiplier = getBalance527().initialAttributeMultiplier || 1;
+  return SCORE_CURVE.map(value => Math.round(value * (1 + bonusPct) * balanceMultiplier));
 }
 
 export function getExpectedInitialProfileBudget(careerDifficultyId = 'hard') {

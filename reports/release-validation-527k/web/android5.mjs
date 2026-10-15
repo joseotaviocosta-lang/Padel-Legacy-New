@@ -1,0 +1,14 @@
+import { attach } from './attach.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const tap = async (label) => { const box = await page.evaluate((label) => { const el = [...document.querySelectorAll('nav a, nav button, a, button')].filter((b) => b.offsetParent).find((b) => (b.innerText || b.getAttribute('aria-label') || '').trim() === label); if (!el) return null; const r = el.getBoundingClientRect(); return { x: r.x + r.width / 2, y: r.y + r.height / 2 }; }, label); if (!box) return false; await page.touchscreen.tap(box.x, box.y); return true; };
+const waitFor = async (re, max = 60000) => { const t0 = Date.now(); while (Date.now() - t0 < max) { const s = await state(800); if (re.test(s.text)) return Date.now() - t0; await sleep(2000); } return null; };
+const res = {};
+res.tapInicio = await tap('Início'); res.inicioMs = await waitFor(/Objetivos|Próximo|Centro|tutorial|Comissão|Tomás|Treinar/i);
+await shot('android-tap-inicio');
+res.tapCompetir = await tap('Competir'); await sleep(2500);
+res.afterCompetir = (await state(300)).url;
+res.torneiosMs = await waitFor(/INSCRIÇÕES|Ver detalhes|Inscrever/, 90000);
+await shot('android-tap-torneios');
+res.url = (await state()).url; res.errors = errors;
+console.log(JSON.stringify(res, null, 1));
+browser.disconnect();

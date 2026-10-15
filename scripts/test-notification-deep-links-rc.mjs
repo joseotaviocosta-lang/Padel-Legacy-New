@@ -19,7 +19,7 @@ const training = read('src/pages/TrainingCenter.jsx');
 const pkg = JSON.parse(read('package.json'));
 
 const cases = [
-  [{ id: 'n1', related_entity_type: 'PressInterview', related_entity_id: 'interview-9', metadata: { interview_source_id: 'match-4' } }, '/press?tab=interviews&interview=interview-9&source=match-4'],
+  [{ id: 'n1', related_entity_type: 'PressInterview', related_entity_id: 'interview-9', metadata: { interview_source_id: 'match-4' } }, '/world/circuit?tab=press&interview=interview-9&source=match-4'],
   [{ id: 'n2', related_entity_type: 'Tournament', related_entity_id: 'tour-2' }, '/tournaments?tournament=tour-2&mode=details'],
   [{ id: 'n3', message_type: 'proposta_parceria', related_entity_id: 'offer-3' }, '/partners?view=offers&offer=offer-3'],
   [{ id: 'n4', message_type: 'mission_completed', related_entity_id: 'mission-7' }, '/game/missions?mission=mission-7'],
@@ -42,6 +42,7 @@ const checks = [
   ['leitura individual preserva decisão pendente', careerCommunications.includes("message.status === 'nao_lida'") && careerCommunications.includes('is_read: true')],
   ['central usa a mesma leitura e o mesmo destino', communications.includes('markCareerCommunicationRead') && communications.includes('resolveNotificationDestination(selected)')],
   ['entrevista consome IDs da URL', press.includes("searchParams.get('interview')") && press.includes("searchParams.get('source')")],
+  ['press aceita a aba canônica do deep link', press.includes("requestedTab === 'press'")],
   ['torneio abre pelo ID da URL', tournaments.includes("searchParams.get('tournament')") && tournaments.includes('setActiveTournament(requested)')],
   ['treinador abre pelo ID da URL', coaches.includes("searchParams.get('coach')") && coaches.includes('setSelected(requested)')],
   ['missão seleciona categoria e destaca item', missions.includes("searchParams.get('mission')") && missions.includes('aria-current=')],

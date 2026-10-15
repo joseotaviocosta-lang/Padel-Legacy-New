@@ -1,0 +1,145 @@
+{
+  "generatedAt": "2026-10-10T14:14:35.750Z",
+  "preset": "balanced",
+  "careers": {
+    "casual": {
+      "matches": 46,
+      "finalRank": 118,
+      "finalOvr": 69,
+      "finalCoins": 678,
+      "titles": 0,
+      "sponsorShare": 52,
+      "prizeShare": 18,
+      "income": 73441,
+      "staffSpend": 28335,
+      "coachSpend": 5124,
+      "equipSpend": 17725,
+      "trainingSpend": 18250,
+      "investmentIncome": 0,
+      "insolvent": true
+    },
+    "normal": {
+      "matches": 74,
+      "finalRank": 158,
+      "finalOvr": 76,
+      "finalCoins": 2006,
+      "titles": 0,
+      "sponsorShare": 61,
+      "prizeShare": 17,
+      "income": 88000,
+      "staffSpend": 6453,
+      "coachSpend": 11904,
+      "equipSpend": 15219,
+      "trainingSpend": 44911,
+      "investmentIncome": 0,
+      "insolvent": false
+    },
+    "optimizer": {
+      "matches": 93,
+      "finalRank": 33,
+      "finalOvr": 81,
+      "finalCoins": 3024,
+      "titles": 2,
+      "sponsorShare": 39,
+      "prizeShare": 35,
+      "income": 115111,
+      "staffSpend": 14566,
+      "coachSpend": 17093,
+      "equipSpend": 18169,
+      "trainingSpend": 46045,
+      "investmentIncome": 0,
+      "insolvent": false
+    }
+  },
+  "days": 730,
+  "gates": {
+    "completed": 3,
+    "shimFree": 3,
+    "errors": 0,
+    "softLock": 0
+  },
+  "difficulty": {
+    "overall": 21,
+    "byClass": [
+      {
+        "key": "Fácil",
+        "n": 102,
+        "winPct": 19
+      },
+      {
+        "key": "Médio",
+        "n": 95,
+        "winPct": 21
+      },
+      {
+        "key": "Difícil",
+        "n": 16,
+        "winPct": 38
+      }
+    ],
+    "byTier": [
+      {
+        "key": "Bronze",
+        "n": 62,
+        "winPct": 21
+      },
+      {
+        "key": "Silver",
+        "n": 40,
+        "winPct": 15
+      },
+      {
+        "key": "Gold",
+        "n": 46,
+        "winPct": 22
+      },
+      {
+        "key": "Platinum",
+        "n": 49,
+        "winPct": 20
+      },
+      {
+        "key": "Masters",
+        "n": 14,
+        "winPct": 43
+      },
+      {
+        "key": "Elite",
+        "n": 2,
+        "winPct": 0
+      }
+    ],
+    "byRound": [
+      {
+        "key": "R1",
+        "n": 151,
+        "winPct": 15
+      },
+      {
+        "key": "QF",
+        "n": 13,
+        "winPct": 62
+      },
+      {
+        "key": "Q",
+        "n": 26,
+        "winPct": 12
+      },
+      {
+        "key": "R2",
+        "n": 14,
+        "winPct": 36
+      },
+      {
+        "key": "SF",
+        "n": 5,
+        "winPct": 80
+      },
+      {
+        "key": "F",
+        "n": 4,
+        "winPct": 50
+      }
+    ]
+  }
+}

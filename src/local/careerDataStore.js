@@ -90,7 +90,8 @@ export const careerDataStore = {
   },
 
   async status() {
-    const career = await gameRepository.getActiveCareer({ fresh: false });
+    // Playthrough 5.25 — só lê id/versão/data: sem clonar o save inteiro.
+    const career = await gameRepository.getActiveCareer({ fresh: false, cloneResult: false });
     return {
       ready: Boolean(career),
       active_career_id: career?.career_id || null,

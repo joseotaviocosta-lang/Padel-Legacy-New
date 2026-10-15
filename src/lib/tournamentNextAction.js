@@ -28,11 +28,11 @@ export function buildTournamentPlayRoute(tournamentId) {
 
 /** Deep link canônico para uma entrevista específica, com retorno contextual. */
 export function buildInterviewRoute({ interviewId, sourceId, returnTo }) {
-  const query = new URLSearchParams({ tab: 'interviews' });
+  const query = new URLSearchParams({ tab: 'press' });
   if (interviewId) query.set('interview', interviewId);
   if (sourceId) query.set('source', sourceId);
   if (returnTo) query.set('returnTo', returnTo);
-  return `/press?${query.toString()}`;
+  return `/world/circuit?${query.toString()}`;
 }
 
 /**

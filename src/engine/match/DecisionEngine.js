@@ -1,5 +1,7 @@
 import { AdaptiveTactics } from './AdaptiveTactics.js';
 
+const tacticScale = (name, fallback = 1) => (Number.isFinite(globalThis[name]) ? globalThis[name] : fallback);
+
 export const SHOTS = ['drive', 'backhand', 'lob', 'volley', 'bandeja', 'smash', 'chiquita'];
 
 function shotSkill(player, shot) {
@@ -44,12 +46,17 @@ export class DecisionEngine {
       if (!atNet && ['volley', 'smash'].includes(shot)) weight = 0;
       if (pressure > 65 && shot === 'lob') { weight += 18; reasons.push('alívio sob pressão'); }
       if (pressure > 65 && shot === 'smash') weight -= 8;
-      if (aggressive && ['smash', 'volley', 'drive'].includes(shot)) weight += 12;
-      if (defensive && ['lob', 'bandeja', 'backhand'].includes(shot)) weight += 12;
-      if (['smash', 'volley', 'drive'].includes(shot)) weight *= Number(tactic?.attackWeight || 1);
-      if (['lob', 'bandeja', 'backhand'].includes(shot)) weight *= Number(tactic?.safeWeight || 1);
-      if (shot === 'smash') weight *= Number(tactic?.powerWeight || 1);
-      if (['chiquita', 'bandeja', 'lob'].includes(shot)) weight *= Number(tactic?.tacticalWeight || 1);
+      // Playthrough 5.27-G — o +12 por id de tática (agressivo/potência/defensivo)
+      // duplicava os multiplicadores attack/safeWeight logo abaixo: removido
+      // (padrão 0). Os globais só existem para o harness reproduzir a fórmula antiga.
+      const idBonus = 12 * tacticScale('__PL527G_TACTIC_ID_BONUS', 0);
+      const amp = (w) => 1 + (Number(w || 1) - 1) * tacticScale('__PL527G_TACTIC_WEIGHT_SCALE');
+      if (aggressive && ['smash', 'volley', 'drive'].includes(shot)) weight += idBonus;
+      if (defensive && ['lob', 'bandeja', 'backhand'].includes(shot)) weight += idBonus;
+      if (['smash', 'volley', 'drive'].includes(shot)) weight *= amp(tactic?.attackWeight);
+      if (['lob', 'bandeja', 'backhand'].includes(shot)) weight *= amp(tactic?.safeWeight);
+      if (shot === 'smash') weight *= amp(tactic?.powerWeight);
+      if (['chiquita', 'bandeja', 'lob'].includes(shot)) weight *= amp(tactic?.tacticalWeight);
       if (player.style.includes('pot') && shot === 'smash') weight += 18;
       if (player.style.includes('defens') && shot === 'lob') weight += 18;
       if ((player.style.includes('ofens') || player.style.includes('finaliz')) && ['smash', 'volley', 'drive'].includes(shot)) weight += 12;

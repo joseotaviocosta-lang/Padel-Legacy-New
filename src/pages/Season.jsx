@@ -5,6 +5,7 @@ import { ensureMyProfile, getWorldRank } from '@/lib/padel';
 import { CardGrid, EmptyState, Page, PageContent, PageHeader, PageSkeleton, StatCard } from '@/components/design-system';
 import SeasonPanel from '@/components/home/SeasonPanel';
 import { getSeasonWindow } from '@/lib/seasonProgress';
+import { formatIndividualRankLabel } from '@/lib/rankingDisplay.js';
 
 export default function Season() {
   const [profile, setProfile] = useState(null);
@@ -59,7 +60,7 @@ export default function Season() {
 
         <CardGrid columns={3}>
           <StatCard label="Data da carreira" value={formatDate(profile.career_date)} tone="neutral" />
-          <StatCard label="Ranking mundial" value={worldRank.rank ? `#${worldRank.rank}` : '—'} tone="brand" />
+          <StatCard label="Ranking mundial" value={formatIndividualRankLabel(worldRank)} tone="brand" />
           <StatCard label="Dias restantes" value={window.remaining.toLocaleString('pt-BR')} tone="info" />
         </CardGrid>
 

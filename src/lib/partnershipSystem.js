@@ -3,8 +3,9 @@ import { overallRating, levelForXp, LEVELS, ATTRIBUTE_KEYS, incrementMissionProg
 import { getAvailablePartners, getPartnerBot, canChangePartner, daysUntilPartnerUnlock, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { getRelationshipEffects, getOrCreateRelationship, getPartnerChemistryBonus } from '@/lib/relationships';
 import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
-import { applyPartnerBondEvent, derivePartnershipIdentity, getPartnerConversationEffect } from '@/lib/partnerBondSystem.js';
-import { teamKey } from '@/lib/teamRanking.js';
+import { applyPartnerBondEvent, derivePartnershipIdentity, getPartnerConversationEffect, getConversationCooldownState, conversationDiminishingFactor, scaleConversationEffect } from '@/lib/partnerBondSystem.js';
+import { teamKey, materializeTeamRankingForPair } from '@/lib/teamRanking.js';
+import { materializePartnerAthlete, findMaterializedPartnerAthlete, isRetiredAthlete } from '@/lib/partnerAthlete.js';
 
 // ─── Compatibility Calculation ──────────────────────────────────────────────
 // Computes a 0-100 compatibility score with per-factor breakdown.
@@ -271,11 +272,30 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
   const careerDate = profile.career_date || CAREER_START_DATE;
   const endDate = addDays(careerDate, durationDays);
 
+  // Playthrough 5.26-C, Bloco D — um template cujo atleta materializado já
+  // se aposentou não forma dupla: `processPartnerDay` a encerraria no dia
+  // seguinte e a busca o ofereceria de novo (laço diário). Checado ANTES de
+  // encerrar a parceria atual, para a recusa não deixar o jogador sem dupla.
+  const priorAthlete = await findMaterializedPartnerAthlete(bot).catch(() => null);
+  if (isRetiredAthlete(priorAthlete)) {
+    throw new Error(`${bot.name || 'Este atleta'} encerrou a carreira competitiva.`);
+  }
+
   // End any existing active partnership
   const existing = await getActivePartnership(profile.id);
   if (existing) {
     await endPartnership(existing.id, 'encerrada_jogador', 'Nova parceria formada', careerDate);
   }
+
+  // Playthrough 5.12, Partes C/D — ponto único em que um parceiro deixa de
+  // ser um template de módulo e passa a existir no mundo. A partir daqui a
+  // Partnership referencia um AthleteProfile REAL, e o parceiro entra no
+  // mesmo pipeline vivo dos demais atletas (evolveAthleteCareerMonth,
+  // ranking individual, Circuito, Race). Idempotente: se o atleta já existe
+  // (reload, reconciliação por nome com um atleta real do mundo), reusa a
+  // linha em vez de criar outra.
+  const materialized = await materializePartnerAthlete(bot, { careerDate }).catch(() => null);
+  const partnerAthleteId = materialized?.id || bot.id;
 
   const relationships = await localGame.entities.Relationship.filter({ profile_id: profile.id }, null, 200).catch(() => []);
   const compat = computeCompatibility(profile, bot, relationships || []);
@@ -285,11 +305,16 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
     partnership_type: 'player',
     scope: 'career',
     athlete_a_id: profile.id,
-    athlete_b_id: bot.id,
-    athlete_ids: [profile.id, bot.id],
+    athlete_b_id: partnerAthleteId,
+    athlete_ids: [profile.id, partnerAthleteId],
     athlete_a_name: profile.sport_name || profile.name || 'Jogador',
     athlete_b_name: bot.name,
-    partner_bot_id: bot.id,
+    // Mantém o mesmo campo que todo o resto do jogo já consulta; agora ele
+    // aponta para um AthleteProfile de verdade (renewPartnerContract, por
+    // exemplo, já fazia AthleteProfile.filter({ id: partner_bot_id }) e caía
+    // sempre no fallback sintético).
+    partner_bot_id: partnerAthleteId,
+    partner_origin_id: bot.id,
     partner_name: bot.name,
     partner_country: bot.country,
     partner_level: bot.level,
@@ -312,6 +337,15 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
   });
 
   // Update PlayerProfile partner fields
+  //
+  // Playthrough 5.22-G, Parte H — `partner_id` continua sendo o id de
+  // catálogo (`bot.id`) para não quebrar os ~21 consumidores de
+  // `getPartnerBot(profile)` (registro, comunicações, prática). A
+  // IDENTIDADE CANÔNICA da dupla é o `partner_bot_id` da Partnership
+  // (AthleteProfile materializado), usado de forma única por
+  // `ensurePlayerTeamRanking`, `getTeamRank`, Ranking.jsx e o reparo —
+  // nunca derivado do id de template. O update do atleta agora mira o id
+  // materializado (o atleta real), não o template.
   const updated = await localGame.entities.PlayerProfile.update(profile.id, {
     partner_id: bot.id,
     partner_name: bot.name,
@@ -320,7 +354,7 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
     partner_trust: partnership.partner_trust,
     partner_morale: partnership.partner_morale,
   });
-  await localGame.entities.AthleteProfile.update(bot.id, {
+  await localGame.entities.AthleteProfile.update(partnerAthleteId, {
     current_partner_profile_id: profile.id,
     contracted_to_profile_id: profile.id,
     market_status: 'contratado',
@@ -335,6 +369,20 @@ export async function startPartnership(profile, bot, durationDays = 60, prizeSpl
       chemistry: partnership.chemistry,
     });
   }
+
+  // Playthrough 5.22-E, Partes O/X/Z — a dupla é materializada IMEDIATAMENTE
+  // na formação da parceria. Antes, a linha de TeamRanking só nascia na
+  // primeira finalização de torneio, então a aba Duplas mostrava "Ativa sem
+  // ranking · 0 pts" mesmo quando os dois atletas já tinham pontos — o
+  // cenário exato que a Parte X proíbe. A identidade da dupla é nova (V/D e
+  // títulos começam zerados), mas o valor competitivo vem da soma atual dos
+  // membros (Parte O/P). Idempotente.
+  const partnerAthlete = await localGame.entities.AthleteProfile.get(partnerAthleteId).catch(() => null);
+  await materializeTeamRankingForPair(
+    { ...profile, ...(updated || {}) },
+    { ...bot, ...(partnerAthlete || {}), id: partnerAthleteId },
+    { profilePoints: Number(updated?.rank_points ?? profile.rank_points ?? profile.ranking_points ?? profile.world_ranking_points) || 0 },
+  ).catch(() => null);
 
   await incrementMissionProgress(profile.id, 'select_partner', 1, careerDate);
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
@@ -485,19 +533,48 @@ export async function addConflict(partnershipId, title, description, severity = 
   } catch (e) { return null; }
 }
 
-export async function addConversation(partnershipId, speaker, text, tone = 'neutro') {
+export async function addConversation(partnershipId, speaker, text, tone = 'neutro', careerDate = null) {
   if (!partnershipId) return null;
   try {
     const p = await localGame.entities.Partnership.get(partnershipId);
     if (!p) return null;
-    const effect = getPartnerConversationEffect(tone);
+
+    // Playthrough 5.17 (continuação), Parte D — a conversa deixa de ser
+    // farmável.
+    //
+    // A data gravada era `new Date()` (data REAL do sistema), inútil para
+    // qualquer regra de jogo: o cooldown precisa correr no tempo da carreira.
+    // Sem `careerDate` o comportamento antigo é preservado, para não quebrar
+    // chamadas existentes que ainda não passam a data.
+    const day = careerDate ? String(careerDate).slice(0, 10) : null;
+    const cooldown = day ? getConversationCooldownState(p, day) : { allowed: true, recentCount: 0 };
+    if (day && cooldown.blocked) {
+      return {
+        ...p,
+        conversation_blocked: true,
+        conversation_cooldown: cooldown,
+      };
+    }
+
+    const baseEffect = getPartnerConversationEffect(tone);
+    const factor = day ? conversationDiminishingFactor(cooldown.recentCount) : 1;
+    const effect = day ? scaleConversationEffect(baseEffect, factor) : baseEffect;
     const bond = applyPartnerBondEvent(p, effect);
     const updatedPartnership = await localGame.entities.Partnership.update(partnershipId, {
       chemistry: bond.chemistry,
       partner_trust: bond.trust,
       partner_morale: bond.morale,
       partnership_identity: derivePartnershipIdentity({ ...p, ...bond }),
-      conversations: [...(p.conversations || []), { date: new Date().toISOString().slice(0, 10), speaker, text, tone, effect }].slice(-40),
+      conversations: [...(p.conversations || []), {
+        date: day || new Date().toISOString().slice(0, 10),
+        career_date: day,
+        speaker,
+        text,
+        tone,
+        effect,
+        base_effect: baseEffect,
+        diminishing_factor: factor,
+      }].slice(-40),
     });
     if (p.profile_id) {
       await localGame.entities.PlayerProfile.update(p.profile_id, {

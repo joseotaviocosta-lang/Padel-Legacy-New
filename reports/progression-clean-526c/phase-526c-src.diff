@@ -1,0 +1,350 @@
+--- a/src/components/partner/PartnerSearch.jsx
++++ b/src/components/partner/PartnerSearch.jsx
+@@ -6,6 +6,7 @@
+ import PlayStyleSummary from '@/components/career/PlayStyleSummary';
+ import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
+ import { localGame } from '@/api/localGameClient.js';
++import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
+ 
+ export default function PartnerSearch({ profile, relationships, onInvite, onCompare }) {
+   const [search, setSearch] = useState('');
+@@ -27,6 +28,8 @@
+   // pra `athleteAges`. Somam-se ao catálogo de bots (`BOTS_BY_DIFFICULTY`),
+   // nunca o substituem.
+   const [realCandidates, setRealCandidates] = useState([]);
++  // 5.26-C, Bloco D — templates do catálogo cujo atleta já se aposentou.
++  const [retiredIds, setRetiredIds] = useState(() => new Set());
+   const canChange = canChangePartner(profile);
+   const daysLocked = daysUntilPartnerUnlock(profile);
+ 
+@@ -34,6 +37,7 @@
+     let active = true;
+     if (!profile) { setRealCandidates([]); return undefined; }
+     getRealPartnerCandidates(profile).then((rows) => { if (active) setRealCandidates(rows || []); }).catch(() => { if (active) setRealCandidates([]); });
++    listRetiredPartnerOriginIds().then((ids) => { if (active) setRetiredIds(ids); }).catch(() => {});
+     return () => { active = false; };
+   }, [profile]);
+ 
+@@ -49,8 +53,8 @@
+       const compat = computeCompatibility(profile, candidate, relationships);
+       return { bot: candidate, compat, interest: calculatePartnershipInterest(profile, candidate, compat) };
+     };
+-    return [...getAvailablePartners(profile), ...realCandidates].map(scored);
+-  }, [profile, relationships, realCandidates]);
++    return [...excludeRetiredPartnerTemplates(getAvailablePartners(profile), retiredIds), ...realCandidates].map(scored);
++  }, [profile, relationships, realCandidates, retiredIds]);
+ 
+   const available = useMemo(() => allCandidates.filter(({ interest }) => interest.available), [allCandidates]);
+   const realInterestGatedLocked = useMemo(
+--- a/src/components/tournaments/TournamentModal.jsx
++++ b/src/components/tournaments/TournamentModal.jsx
+@@ -15,7 +15,7 @@
+ import { resolveCommittedPartnerAthlete } from '@/lib/committedRoster.js';
+ import { buildPartnershipMatchPatch, getActivePartnership } from '@/lib/partnershipSystem';
+ import { processMatchRelationships } from '@/lib/relationships';
+-import { getTeamRank, getCanonicalTeamWorldRank, teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
++import { getTeamRank, getCanonicalTeamWorldRank, isUpsetResult, teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
+ import { getSetScoreString } from '@/lib/matchEngine';
+ import { getCoachEffects } from '@/lib/coaches';
+ import { resolveActiveCoach } from '@/game-core/coachLifecycle';
+@@ -177,10 +177,12 @@
+   // (nunca o seed/slot sintético) sempre que a rodada/adversário muda. Chave
+   // de dependência pelos IDs reais (não pelo array `opponent`, recriado a
+   // cada render) para não refazer a consulta sem necessidade.
+-  const opponentIdsKey = opponent.map((member) => member?.id).filter(Boolean).join(',');
++  // 5.26-C, Bloco C — a chave leva id + nome (a resolução de atleta real usa
++  // o nome), para a tela e o registro da partida lerem a MESMA resposta.
++  const opponentIdsKey = JSON.stringify(opponent.filter((member) => member?.id).map((member) => [member.id, member.name || '']));
+   useEffect(() => {
+     let active = true;
+-    const ids = opponentIdsKey ? opponentIdsKey.split(',') : [];
++    const ids = JSON.parse(opponentIdsKey).map(([id, name]) => ({ id, name }));
+     if (ids.length < 2) { setOpponentWorldRank({ rank: 0, unranked: true }); return undefined; }
+     getCanonicalTeamWorldRank(ids).then((result) => { if (active) setOpponentWorldRank(result || { rank: 0, unranked: true }); });
+     return () => { active = false; };
+@@ -618,15 +620,18 @@
+       // `freshMatch.opponentRank`, o número de seed/slot do sorteio
+       // sintético). Sem rank canônico real, `upset`/`opponent_rank` ficam
+       // nulos — nunca fabricados a partir da posição no bracket.
+-      const finishedOpponentIds = (freshMatch.opponent || []).map((item) => item?.id).filter(Boolean);
+-      const finishedOpponentRank = await getCanonicalTeamWorldRank(finishedOpponentIds);
++      // 5.26-C, Bloco C — roster gravado na partida (id + nome, para a
++      // resolução de identidade de atletas reais) e regra única de zebra.
++      const finishedOpponentMembers = (freshMatch.opponent || []).filter((item) => item?.id).map((item) => ({ id: item.id, name: item.name }));
++      const finishedOpponentRank = await getCanonicalTeamWorldRank(finishedOpponentMembers);
++      const matchUpset = isUpsetResult({ won, teamRank, opponentRank: finishedOpponentRank });
+       const transition = recordTournamentMatchResult(freshRun, {
+         matchId: freshMatch.id,
+         won,
+         score,
+         stats,
+         tournament,
+-        upset: won && !finishedOpponentRank.unranked && Number(finishedOpponentRank.rank) < Number(teamRank.rank || 9999),
++        upset: matchUpset,
+       });
+       const nextRun = transition.run;
+       const completedMatch = nextRun.matches.find((item) => item.id === freshMatch.id);
+@@ -659,6 +664,13 @@
+         // rank canônico, grava `null` — beatTop10/beatRank1 simplesmente não
+         // disparam, em vez de disparar com um valor fabricado.
+         opponent_rank: !finishedOpponentRank.unranked && Number(finishedOpponentRank.rank) > 0 ? Number(finishedOpponentRank.rank) : null,
++        // 5.26-C, Bloco C — retrato HISTÓRICO do confronto, congelado na data
++        // da partida: de onde veio o rank do adversário, os ids canônicos do
++        // roster adversário e o rank da dupla do jogador (roster comprometido).
++        opponent_rank_source: finishedOpponentRank.source || null,
++        opponent_member_ids: finishedOpponentRank.memberIds || [],
++        team_rank_at_match: Number(teamRank.rank) > 0 ? Number(teamRank.rank) : null,
++        is_upset: matchUpset,
+         status: 'completed',
+         match_type: freshMatch.stage === 'qualifying' ? 'qualifying' : 'tournament',
+         competition_type: 'tournament',
+--- a/src/game-core/annualCareerReportLifecycle.js
++++ b/src/game-core/annualCareerReportLifecycle.js
+@@ -150,7 +150,12 @@
+     return { profile: currentProfile, athletesReset: 0, reset: false };
+   }
+ 
+-  const athletes = (await localGame.entities['AthleteProfile'].list('ranking_position', 1500).catch(() => [])) || [];
++  // Playthrough 5.26-C — a leitura era limitada a 1500 linhas por
++  // `ranking_position`. Prospects entram no mundo todo ano e aposentados
++  // continuam na coleção: passado o corte, os atletas fora dele (posição alta
++  // ou nula) carregavam a Race do ano anterior para sempre. A Race é anual
++  // para a população INTEIRA.
++  const athletes = (await localGame.entities['AthleteProfile'].list(null, 100000).catch(() => [])) || [];
+   const athleteUpdates = athletes
+     .filter((athlete) => Number(athlete.race_points) > 0)
+     .map((athlete) => ({ id: athlete.id, race_points: 0 }));
+--- a/src/game-core/rankingWindow.js
++++ b/src/game-core/rankingWindow.js
+@@ -85,11 +85,31 @@
+ // antes do corte, pra que um torneio que acabou de terminar já entre na
+ // conta na mesma chamada que o gerou — feedback imediato, mesmo padrão de
+ // antes desta fase.
++// Playthrough 5.26-C — o PENHASCO da âncora. A âncora (`legacy_seed`) também
++// é usada para os pontos INICIAIS do mundo numa carreira nova: um registro
++// por atleta valendo o total inteiro, datado na primeira semana de circuito.
++// Como todas têm a MESMA data, todas saíam da janela no mesmo dia (início de
++// 2027): medido na 5.26-B, 884 âncoras expirando juntas, −64% dos pontos do
++// mundo e o jogador subindo ~300 posições sem resultado novo. A âncora
++// representa resultados espalhados pelas 52 semanas anteriores, cujas datas
++// reais não existem; o equivalente fiel é ela perder valor de forma linear
++// ao longo da própria janela (100% ao ser criada → 0% aos 364 dias), em vez
++// de valer 100% até o último dia. Resultados reais, best-22, a janela de 364
++// dias e a Race (que este módulo não toca) não mudam.
++export function effectiveResultPoints(row, currentDate) {
++  const points = resultPoints(row);
++  if (!row?.is_legacy_seed && row?.finish !== 'legacy_seed') return points;
++  const age = Math.max(0, careerDaysBetween(row?.date, currentDate) || 0);
++  const remaining = Math.max(0, Math.min(1, (RANKING_WINDOW_DAYS - age) / RANKING_WINDOW_DAYS));
++  return Math.round(points * remaining);
++}
++
+ export function computeRollingPoints(existingRows, extraRows, currentDate) {
+   const all = [...(existingRows || []), ...(extraRows || [])];
+   const unexpired = all.filter((row) => !isResultExpired(row, currentDate));
+-  const best = [...unexpired].sort((a, b) => resultPoints(b) - resultPoints(a)).slice(0, RANKING_BEST_N);
+-  return best.reduce((sum, row) => sum + resultPoints(row), 0);
++  const scored = unexpired.map((row) => effectiveResultPoints(row, currentDate));
++  const best = scored.sort((a, b) => b - a).slice(0, RANKING_BEST_N);
++  return best.reduce((sum, value) => sum + value, 0);
+ }
+ 
+ export function groupResultsByAthlete(rows) {
+--- a/src/lib/career.js
++++ b/src/lib/career.js
+@@ -1,6 +1,7 @@
+ import { localGame } from '@/api/localGameClient.js';
+ import { BOT_DIFFICULTIES, BOTS_BY_DIFFICULTY, getDifficultyForPlayer, levelLabelForOverall } from '@/lib/bots';
+ import { normalizeCourtSide } from '@/players/athleteSchema.js';
++import { isRetiredAthlete } from '@/lib/partnerAthlete.js';
+ import { overallRating, levelForXp, LEVELS, MAX_ENERGY, ENERGY_RECOVERY_PER_DAY, ENERGY_RECOVERY_FATIGUED, ATTRIBUTE_KEYS, ageAtDate, RETIREMENT_AGE, incrementMissionProgress } from '@/lib/padel';
+ import { processMonthlyFinances } from '@/lib/economy';
+ import { processAllClubsMonthly } from '@/lib/clubs';
+@@ -373,7 +374,8 @@
+ export async function getRealPartnerCandidates(profile) {
+   if (!profile?.court_side) return [];
+   const rows = await localGame.entities.AthleteProfile.filter({ market_status: 'livre', is_real: true }).catch(() => []);
+-  return (rows || []).map(adaptRealAthleteForPartnerSearch);
++  // 5.26-C, Bloco D — aposentado não volta como candidato (mesma regra de processPartnerDay).
++  return (rows || []).filter((row) => !isRetiredAthlete(row)).map(adaptRealAthleteForPartnerSearch);
+ }
+ 
+ // Tournament helpers
+--- a/src/lib/partnerAthlete.js
++++ b/src/lib/partnerAthlete.js
+@@ -231,3 +231,36 @@
+   } catch (error) { console.warn('[repairLegacyPlayerPartnerAthlete]', error); }
+   return summary;
+ }
++
++// Playthrough 5.26-C, Bloco D — PARCEIRO APOSENTADO NO CATÁLOGO.
++//
++// A busca de parceiros (`getAvailablePartners`) lê o catálogo ESTÁTICO de
++// bots, que não sabe que o atleta materializado daquele template se
++// aposentou. Medido na 5.26 (3 carreiras, mesmo parceiro, mesma data): o
++// parceiro se aposenta → `processPartnerDay` encerra a dupla → a busca
++// oferece o MESMO template → `materializePartnerAthlete` reaproveita a linha
++// aposentada → a dupla é encerrada no dia seguinte → ... até 123 vezes.
++// Regra única de "aposentado" (a mesma que `processPartnerDay` já aplicava)
++// e o conjunto de origens aposentadas, para quem monta a lista de busca.
++export function isRetiredAthlete(athlete) {
++  if (!athlete) return false;
++  const status = String(athlete.career_status || athlete.status || '').toLowerCase();
++  return Boolean(athlete.retired) || ['aposentado', 'retired'].includes(status);
++}
++
++export async function listRetiredPartnerOriginIds() {
++  const [flagged, byStatus] = await Promise.all([
++    localGame.entities.AthleteProfile.filter({ retired: true }).catch(() => []),
++    localGame.entities.AthleteProfile.filter({ career_status: 'aposentado' }).catch(() => []),
++  ]);
++  const ids = new Set();
++  for (const row of [...(flagged || []), ...(byStatus || [])]) {
++    for (const key of [row?.id, row?.bot_id, row?.materialized_from]) if (key) ids.add(String(key));
++  }
++  return ids;
++}
++
++export function excludeRetiredPartnerTemplates(templates, retiredOriginIds) {
++  if (!retiredOriginIds?.size) return templates || [];
++  return (templates || []).filter((template) => !retiredOriginIds.has(String(partnerAthleteOriginId(template))));
++}
+--- a/src/lib/partnershipSystem.js
++++ b/src/lib/partnershipSystem.js
+@@ -5,7 +5,7 @@
+ import { evaluatePartnerCompatibility } from '@/players/teamCompatibility.js';
+ import { applyPartnerBondEvent, derivePartnershipIdentity, getPartnerConversationEffect, getConversationCooldownState, conversationDiminishingFactor, scaleConversationEffect } from '@/lib/partnerBondSystem.js';
+ import { teamKey, materializeTeamRankingForPair } from '@/lib/teamRanking.js';
+-import { materializePartnerAthlete } from '@/lib/partnerAthlete.js';
++import { materializePartnerAthlete, findMaterializedPartnerAthlete, isRetiredAthlete } from '@/lib/partnerAthlete.js';
+ 
+ // ─── Compatibility Calculation ──────────────────────────────────────────────
+ // Computes a 0-100 compatibility score with per-factor breakdown.
+@@ -272,6 +272,15 @@
+   const careerDate = profile.career_date || CAREER_START_DATE;
+   const endDate = addDays(careerDate, durationDays);
+ 
++  // Playthrough 5.26-C, Bloco D — um template cujo atleta materializado já
++  // se aposentou não forma dupla: `processPartnerDay` a encerraria no dia
++  // seguinte e a busca o ofereceria de novo (laço diário). Checado ANTES de
++  // encerrar a parceria atual, para a recusa não deixar o jogador sem dupla.
++  const priorAthlete = await findMaterializedPartnerAthlete(bot).catch(() => null);
++  if (isRetiredAthlete(priorAthlete)) {
++    throw new Error(`${bot.name || 'Este atleta'} encerrou a carreira competitiva.`);
++  }
++
+   // End any existing active partnership
+   const existing = await getActivePartnership(profile.id);
+   if (existing) {
+--- a/src/lib/sponsors.js
++++ b/src/lib/sponsors.js
+@@ -544,7 +544,16 @@
+ }
+ 
+ export function canSign(sponsor, profile) {
+-  if (!sponsor.is_available) return { ok: false, reason: 'Patrocinador não aceita novos contratos' };
++  // Playthrough 5.26-C — só um `is_available: false` EXPLÍCITO bloqueia. Os
++  // 9 patrocinadores originais do catálogo (Babolat, Siux, Varlion, Nox,
++  // Wilson, Adidas, Joma, Bullpadel, Head) nunca tiveram o campo: a
++  // disponibilidade vinha da semeadura das entidades `Sponsor`
++  // (demoData.js: `is_available: true` para as primeiras entradas do
++  // catálogo). Desde que o mercado passou a ler SPONSOR_CATALOG direto
++  // (sportsEconomyV26.getMonthlySponsorMarket), "campo ausente" virava
++  // "não aceita novos contratos" e eles ficavam inalcançáveis para sempre.
++  // Nenhum requisito (idade, XP, títulos, fãs) foi alterado.
++  if (sponsor.is_available === false) return { ok: false, reason: 'Patrocinador não aceita novos contratos' };
+   if ((profile?.xp || 0) < (sponsor.min_xp || 0)) return { ok: false, reason: `Requer ${sponsor.min_xp} XP` };
+   if ((profile?.tournaments_won || 0) < (sponsor.min_titles || 0)) return { ok: false, reason: `Requer ${sponsor.min_titles} título(s)` };
+   if ((profile?.fan_appeal || 0) < (sponsor.min_fan_appeal || 0)) return { ok: false, reason: `Requer ${sponsor.min_fan_appeal} apego dos fãs` };
+--- a/src/lib/teamRanking.js
++++ b/src/lib/teamRanking.js
+@@ -9,6 +9,8 @@
+ // atleta REAL para identificar dupla fantasma. Mesmo registro que
+ // saveFoundation.js já consome; é um módulo de dados puro, sem ciclo.
+ import { getRealAthleteRegistry } from '@/players/realAthleteRegistry.js';
++// 5.26-C, Bloco C — mesma resolução de identidade da materialização de parceiros.
++import { findMaterializedPartnerAthlete } from '@/lib/partnerAthlete.js';
+ 
+ export { computeCanonicalTeamRankingPoints, resolveTeamRankingMemberPoints };
+ 
+@@ -610,10 +612,45 @@
+ // posição. Se o adversário sorteado coincidir com uma dupla que realmente
+ // disputou o circuito (ex.: um atleta real do catálogo, ranking_position
+ // real), a mesma fonte (TeamRanking por team_key) já resolve certo.
+-export async function getCanonicalTeamWorldRank(memberIds = []) {
+-  const ids = (memberIds || []).filter(Boolean);
+-  if (ids.length < 2) return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '—' };
+-  return rankForTeamKey(teamKey(ids[0], ids[1]));
++//
++// Playthrough 5.26-C, Bloco C — IDENTIDADE antes da chave. Os membros chegam
++// como ids de TEMPLATE do catálogo (`player-real-*`/`player-fictional-*`),
++// mas a TeamRanking é chaveada pelo id do AthleteProfile do mundo. Para um
++// fictício materializado os dois coincidem; para um atleta REAL o mundo usa
++// outro id (`athlete-NNN`), e a chave por template nunca encontrava a dupla
++// mesmo quando ela existia. Cada membro passa pela MESMA resolução da
++// materialização de parceiros (`findMaterializedPartnerAthlete`: id, bot_id
++// e, só para reais, nome). Aceita ids ou objetos `{ id, name }` (o roster
++// gravado na partida). `source` diz de onde veio a resposta, sem inventar
++// posição: 'team-ranking' (dupla canônica com pontos), 'unranked' (dupla sem
++// pontos ou inexistente no circuito) ou 'missing-roster' (menos de 2 membros).
++async function resolveCanonicalMemberId(member) {
++  const template = typeof member === 'string' ? { id: member } : (member || {});
++  if (!template.id) return null;
++  const athlete = await findMaterializedPartnerAthlete(template).catch(() => null);
++  return athlete?.id || template.id;
++}
++
++export async function getCanonicalTeamWorldRank(members = []) {
++  const list = (members || []).filter((member) => (typeof member === 'string' ? member : member?.id));
++  if (list.length < 2) return { rank: 0, total: 0, points: 0, unranked: true, displayRank: '—', source: 'missing-roster', memberIds: [] };
++  const ids = await Promise.all(list.slice(0, 2).map(resolveCanonicalMemberId));
++  const result = await rankForTeamKey(teamKey(ids[0], ids[1]));
++  return { ...result, source: result.unranked ? 'unranked' : 'team-ranking', memberIds: ids };
++}
++
++// Playthrough 5.26-C, Bloco C — a regra de zebra num lugar só (antes inline
++// em TournamentModal.jsx e copiada no harness). Regra INALTERADA: vitória
++// sobre uma dupla com posição canônica MELHOR (número menor) que a da dupla
++// do jogador; dupla do jogador sem ranking conta como a pior posição (9999).
++// Adversário sem ranking canônico nunca é zebra (4.6B: sem posição real não
++// existe comparação) e empate de posição também não.
++export function isUpsetResult({ won, teamRank, opponentRank } = {}) {
++  if (!won || !opponentRank || opponentRank.unranked) return false;
++  const opponent = Number(opponentRank.rank) || 0;
++  if (opponent <= 0) return false;
++  const own = Number(teamRank?.rank) || 9999;
++  return opponent < own;
+ }
+ 
+ export async function simulateProRankingWeek() {
+--- a/src/pages/PartnerHub.jsx
++++ b/src/pages/PartnerHub.jsx
+@@ -13,6 +13,7 @@
+ import { listCareerCommunications } from '@/lib/careerCommunications.js';
+ import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
+ import { getAvailablePartners } from '@/lib/career';
++import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
+ import { getSuggestedPartnerTerms } from '@/game-core/partnerLifecycle.js';
+ import { EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
+ import { useToast } from '@/components/ui/use-toast';
+@@ -205,7 +206,7 @@
+     (async () => {
+       setOffersLoading(true); setOffersError(null);
+       try {
+-        const available = getAvailablePartnersForSearch(profile);
++        const available = await getAvailablePartnersForSearch(profile);
+         const rows = activePartnership ? await listPartnerOffers(profile.id) : await ensureInitialPartnerOffers(profile, available);
+         proposalsRef.current = rows; setProposals(rows);
+         await load();
+@@ -537,8 +538,9 @@
+   );
+ }
+ 
+-function getAvailablePartnersForSearch(profile) {
+-  return getAvailablePartners(profile);
++// 5.26-C, Bloco D — o catálogo não sabe quem já se aposentou.
++async function getAvailablePartnersForSearch(profile) {
++  return excludeRetiredPartnerTemplates(getAvailablePartners(profile), await listRetiredPartnerOriginIds());
+ }
+ 
+ function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSeparation, commitments = [], separationDate = null }) {

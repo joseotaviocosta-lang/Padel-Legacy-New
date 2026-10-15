@@ -1,0 +1,102 @@
+{
+  "label": "repro-after",
+  "mode": "app",
+  "cycles": 15,
+  "anrBefore": 2,
+  "anrAfter": 2,
+  "newAnrs": 0,
+  "startPid": "23582",
+  "endPid": "23582",
+  "log": [
+    {
+      "cycle": 1,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 2,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 3,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 4,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 5,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 6,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 7,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 8,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 9,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 10,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 11,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 12,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 13,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    },
+    {
+      "cycle": 14,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{3159a1d u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 15,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{8f3c34d u0 NotificationShade}"
+    }
+  ]
+}

@@ -6,6 +6,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { resolveActiveCoach } from '@/game-core/coachLifecycle.js';
 import { calculateAffinity } from '@/lib/coaches.js';
+import { isOfficialRankedTournament } from '@/lib/circuitCatalog.js';
 
 // Partida OFICIAL de torneio (Parte C/6/7): a raiz do bug corrigido no
 // Tutorial 4.0 — profile.matches_played/wins só contam treino
@@ -13,17 +14,32 @@ import { calculateAffinity } from '@/lib/coaches.js';
 // linha de Match criada na finalização oficial (TournamentModal.jsx):
 // competition_type:'tournament', is_official:true, result:'vitória'|
 // 'derrota'. Computado sob demanda — nenhum contador novo persistido.
+//
+// Playthrough 4.6B, itens 4/5 — `is_official:true` sozinho NUNCA distinguiu
+// circuito ranqueado de Pré-Temporada/Exibição (decisão do Tutorial 4.0,
+// acima: a Exibição também precisa desse flag pra o tutorial reconhecer
+// "jogou uma partida"). Isso fazia Roma Pré-Temporada contar como "primeira
+// vitória oficial"/"estreia oficial", e até disparar "venceu o #1 do
+// mundo"/Top 10. `isOfficialRankedTournament()` (circuitCatalog.js) lê os
+// MESMOS sinais que o próprio Tournament grava desde sua criação
+// (world_tour_event/is_exhibition/tier), já persistidos no Match
+// (`world_tour_event`, linha de escrita em TournamentModal.jsx) — filtra
+// aqui, uma vez, em vez de cada trigger_type reimplementar o check.
 async function fetchOfficialMatchStats(profileId) {
   const matches = await localGame.entities.Match.filter({ profile_id: profileId, competition_type: 'tournament', is_official: true }).catch(() => []);
-  const played = matches.length;
-  const won = matches.filter((m) => m.result === 'vitória').length;
-  const lost = matches.filter((m) => m.result === 'derrota').length;
+  const ranked = matches.filter((m) => isOfficialRankedTournament(m));
+  const played = ranked.length;
+  const won = ranked.filter((m) => m.result === 'vitória').length;
+  const lost = ranked.filter((m) => m.result === 'derrota').length;
   // opponent_rank só existe em partidas registradas depois da Fase 12
   // (Parte C — novo campo ao lado da própria escrita de Match em
   // TournamentModal.jsx); partidas antigas simplesmente não contam aqui,
-  // sem quebrar nada.
-  const beatTop10 = matches.some((m) => m.result === 'vitória' && Number(m.opponent_rank) > 0 && Number(m.opponent_rank) <= 10);
-  const beatRank1 = matches.some((m) => m.result === 'vitória' && Number(m.opponent_rank) === 1);
+  // sem quebrar nada. Playthrough 4.6B, item 1/2 — desde esta fase,
+  // opponent_rank só é gravado quando existe rank canônico FACTUAL da
+  // dupla adversária (getCanonicalTeamWorldRank); nunca mais o número de
+  // seed/slot do sorteio sintético.
+  const beatTop10 = ranked.some((m) => m.result === 'vitória' && Number(m.opponent_rank) > 0 && Number(m.opponent_rank) <= 10);
+  const beatRank1 = ranked.some((m) => m.result === 'vitória' && Number(m.opponent_rank) === 1);
   return { played, won, lost, beatTop10, beatRank1 };
 }
 

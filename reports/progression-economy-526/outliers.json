@@ -1,0 +1,804 @@
+{
+  "representative": {
+    "casual": [
+      {
+        "seed": 8,
+        "finalRank": 73,
+        "finalPatrimony": 125068,
+        "ovr": 83,
+        "titles": 0,
+        "d": 0.17587939698492464
+      },
+      {
+        "seed": 10,
+        "finalRank": 77,
+        "finalPatrimony": 130420,
+        "ovr": 82,
+        "titles": 0,
+        "d": 0.2004668688092351
+      },
+      {
+        "seed": 5,
+        "finalRank": 77,
+        "finalPatrimony": 114238,
+        "ovr": 81,
+        "titles": 0,
+        "d": 0.32850179677498026
+      }
+    ],
+    "normal": [
+      {
+        "seed": 1,
+        "finalRank": 49,
+        "finalPatrimony": 91831,
+        "ovr": 83,
+        "titles": 0,
+        "d": 0.09803921568627452
+      },
+      {
+        "seed": 14,
+        "finalRank": 44,
+        "finalPatrimony": 94354,
+        "ovr": 85,
+        "titles": 0,
+        "d": 0.1718096475758723
+      },
+      {
+        "seed": 11,
+        "finalRank": 44,
+        "finalPatrimony": 87312,
+        "ovr": 82,
+        "titles": 0,
+        "d": 0.19139056109023425
+      }
+    ],
+    "optimizer": [
+      {
+        "seed": 14,
+        "finalRank": 53,
+        "finalPatrimony": 4294,
+        "ovr": 82,
+        "titles": 0,
+        "d": 0.09792565102389394
+      },
+      {
+        "seed": 5,
+        "finalRank": 54,
+        "finalPatrimony": 14330,
+        "ovr": 83,
+        "titles": 0,
+        "d": 0.2387056869059872
+      },
+      {
+        "seed": 3,
+        "finalRank": 55,
+        "finalPatrimony": 9388,
+        "ovr": 82,
+        "titles": 0,
+        "d": 0.30699602444114066
+      }
+    ]
+  },
+  "extremes": {
+    "casual": {
+      "bestRank": [
+        {
+          "seed": 2,
+          "finalRank": 59,
+          "finalPatrimony": 131354,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.6745581539326261
+        },
+        {
+          "seed": 6,
+          "finalRank": 65,
+          "finalPatrimony": 138599,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.693138640859092
+        },
+        {
+          "seed": 8,
+          "finalRank": 73,
+          "finalPatrimony": 125068,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.17587939698492464
+        }
+      ],
+      "worstRank": [
+        {
+          "seed": 15,
+          "finalRank": 114,
+          "finalPatrimony": 127236,
+          "ovr": 81,
+          "titles": 0,
+          "d": 0.9049430843906622
+        },
+        {
+          "seed": 13,
+          "finalRank": 108,
+          "finalPatrimony": 117674,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.8763343563549449
+        },
+        {
+          "seed": 7,
+          "finalRank": 108,
+          "finalPatrimony": 91023,
+          "ovr": 82,
+          "titles": 0,
+          "d": 1.4992366683693799
+        }
+      ],
+      "richest": [
+        {
+          "seed": 9,
+          "finalRank": 80,
+          "finalPatrimony": 145787,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.4842562381384217
+        },
+        {
+          "seed": 6,
+          "finalRank": 65,
+          "finalPatrimony": 138599,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.693138640859092
+        },
+        {
+          "seed": 3,
+          "finalRank": 76,
+          "finalPatrimony": 137594,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.39326730038664104
+        }
+      ],
+      "poorest": [
+        {
+          "seed": 11,
+          "finalRank": 105,
+          "finalPatrimony": 52041,
+          "ovr": 82,
+          "titles": 0,
+          "d": 2.3349692330090943
+        },
+        {
+          "seed": 7,
+          "finalRank": 108,
+          "finalPatrimony": 91023,
+          "ovr": 82,
+          "titles": 0,
+          "d": 1.4992366683693799
+        },
+        {
+          "seed": 14,
+          "finalRank": 107,
+          "finalPatrimony": 101995,
+          "ovr": 82,
+          "titles": 0,
+          "d": 1.2176672232078374
+        }
+      ]
+    },
+    "normal": {
+      "bestRank": [
+        {
+          "seed": 9,
+          "finalRank": 6,
+          "finalPatrimony": 165219,
+          "ovr": 82,
+          "titles": 0,
+          "d": 2.7297458459133144
+        },
+        {
+          "seed": 4,
+          "finalRank": 29,
+          "finalPatrimony": 124756,
+          "ovr": 85,
+          "titles": 0,
+          "d": 1.2053497234712438
+        },
+        {
+          "seed": 10,
+          "finalRank": 42,
+          "finalPatrimony": 87010,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.2923924200036317
+        }
+      ],
+      "worstRank": [
+        {
+          "seed": 15,
+          "finalRank": 58,
+          "finalPatrimony": 70047,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.7529184017037989
+        },
+        {
+          "seed": 3,
+          "finalRank": 55,
+          "finalPatrimony": 171304,
+          "ovr": 83,
+          "titles": 0,
+          "d": 1.1717931050932382
+        },
+        {
+          "seed": 8,
+          "finalRank": 54,
+          "finalPatrimony": 77981,
+          "ovr": 85,
+          "titles": 0,
+          "d": 0.4790068201193521
+        }
+      ],
+      "richest": [
+        {
+          "seed": 6,
+          "finalRank": 50,
+          "finalPatrimony": 195995,
+          "ovr": 83,
+          "titles": 0,
+          "d": 1.1689156748871263
+        },
+        {
+          "seed": 7,
+          "finalRank": 47,
+          "finalPatrimony": 177655,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.8419400408099199
+        },
+        {
+          "seed": 12,
+          "finalRank": 45,
+          "finalPatrimony": 171409,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.8787055161100699
+        }
+      ],
+      "poorest": [
+        {
+          "seed": 2,
+          "finalRank": 53,
+          "finalPatrimony": 67557,
+          "ovr": 85,
+          "titles": 0,
+          "d": 0.53224745399651
+        },
+        {
+          "seed": 15,
+          "finalRank": 58,
+          "finalPatrimony": 70047,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.7529184017037989
+        },
+        {
+          "seed": 8,
+          "finalRank": 54,
+          "finalPatrimony": 77981,
+          "ovr": 85,
+          "titles": 0,
+          "d": 0.4790068201193521
+        }
+      ]
+    },
+    "optimizer": {
+      "bestRank": [
+        {
+          "seed": 1,
+          "finalRank": 49,
+          "finalPatrimony": 71222,
+          "ovr": 85,
+          "titles": 0,
+          "d": 1.7426363624066827
+        },
+        {
+          "seed": 12,
+          "finalRank": 50,
+          "finalPatrimony": 9603,
+          "ovr": 85,
+          "titles": 0,
+          "d": 0.4545454545454545
+        },
+        {
+          "seed": 11,
+          "finalRank": 50,
+          "finalPatrimony": 6989,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.5027612488148948
+        }
+      ],
+      "worstRank": [
+        {
+          "seed": 10,
+          "finalRank": 57,
+          "finalPatrimony": 9505,
+          "ovr": 85,
+          "titles": 0,
+          "d": 0.6078682372153134
+        },
+        {
+          "seed": 7,
+          "finalRank": 57,
+          "finalPatrimony": 5061,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.6898387765165348
+        },
+        {
+          "seed": 6,
+          "finalRank": 56,
+          "finalPatrimony": 27719,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.7886989851442232
+        }
+      ],
+      "richest": [
+        {
+          "seed": 2,
+          "finalRank": 54,
+          "finalPatrimony": 87970,
+          "ovr": 82,
+          "titles": 0,
+          "d": 1.5970113831575508
+        },
+        {
+          "seed": 1,
+          "finalRank": 49,
+          "finalPatrimony": 71222,
+          "ovr": 85,
+          "titles": 0,
+          "d": 1.7426363624066827
+        },
+        {
+          "seed": 9,
+          "finalRank": 52,
+          "finalPatrimony": 43284,
+          "ovr": 83,
+          "titles": 0,
+          "d": 0.7727684670427032
+        }
+      ],
+      "poorest": [
+        {
+          "seed": 14,
+          "finalRank": 53,
+          "finalPatrimony": 4294,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.09792565102389394
+        },
+        {
+          "seed": 7,
+          "finalRank": 57,
+          "finalPatrimony": 5061,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.6898387765165348
+        },
+        {
+          "seed": 11,
+          "finalRank": 50,
+          "finalPatrimony": 6989,
+          "ovr": 82,
+          "titles": 0,
+          "d": 0.5027612488148948
+        }
+      ]
+    }
+  },
+  "errors": [],
+  "named": {
+    "fastestTop100": [
+      {
+        "profile": "normal",
+        "seed": 5,
+        "top100Day": 574,
+        "finalRank": 44,
+        "finalPatrimony": 81637,
+        "maxSponsorMonthly": 5469,
+        "staffAtDay180": 1,
+        "staffMonthlyAtDay180": 950,
+        "titles": 1
+      },
+      {
+        "profile": "normal",
+        "seed": 4,
+        "top100Day": 588,
+        "finalRank": 29,
+        "finalPatrimony": 124756,
+        "maxSponsorMonthly": 5752,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1350,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 11,
+        "top100Day": 588,
+        "finalRank": 44,
+        "finalPatrimony": 87312,
+        "maxSponsorMonthly": 5547,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1500,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 14,
+        "top100Day": 588,
+        "finalRank": 44,
+        "finalPatrimony": 94354,
+        "maxSponsorMonthly": 5658,
+        "staffAtDay180": 1,
+        "staffMonthlyAtDay180": 950,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 8,
+        "top100Day": 595,
+        "finalRank": 54,
+        "finalPatrimony": 77981,
+        "maxSponsorMonthly": 6083,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1550,
+        "titles": 0
+      }
+    ],
+    "slowestTop100": [
+      {
+        "profile": "casual",
+        "seed": 1,
+        "top100Day": 1505,
+        "finalRank": 73,
+        "finalPatrimony": 104151,
+        "maxSponsorMonthly": 5670,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2650,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 3,
+        "top100Day": 1288,
+        "finalRank": 76,
+        "finalPatrimony": 137594,
+        "maxSponsorMonthly": 6041,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1600,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 6,
+        "top100Day": 1281,
+        "finalRank": 65,
+        "finalPatrimony": 138599,
+        "maxSponsorMonthly": 6062,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 2050,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 15,
+        "top100Day": 1232,
+        "finalRank": 114,
+        "finalPatrimony": 127236,
+        "maxSponsorMonthly": 5713,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1900,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 2,
+        "top100Day": 1218,
+        "finalRank": 59,
+        "finalPatrimony": 131354,
+        "maxSponsorMonthly": 5816,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2500,
+        "titles": 0
+      }
+    ],
+    "richest": [
+      {
+        "profile": "normal",
+        "seed": 6,
+        "top100Day": 672,
+        "finalRank": 50,
+        "finalPatrimony": 195995,
+        "maxSponsorMonthly": 5970,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1600,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 7,
+        "top100Day": 651,
+        "finalRank": 47,
+        "finalPatrimony": 177655,
+        "maxSponsorMonthly": 5559,
+        "staffAtDay180": 1,
+        "staffMonthlyAtDay180": 950,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 12,
+        "top100Day": 714,
+        "finalRank": 45,
+        "finalPatrimony": 171409,
+        "maxSponsorMonthly": 5642,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1400,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 3,
+        "top100Day": 714,
+        "finalRank": 55,
+        "finalPatrimony": 171304,
+        "maxSponsorMonthly": 5411,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1350,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 9,
+        "top100Day": 679,
+        "finalRank": 6,
+        "finalPatrimony": 165219,
+        "maxSponsorMonthly": 5655,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1350,
+        "titles": 0
+      }
+    ],
+    "poorest": [
+      {
+        "profile": "optimizer",
+        "seed": 14,
+        "top100Day": 679,
+        "finalRank": 53,
+        "finalPatrimony": 4294,
+        "maxSponsorMonthly": 5985,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1900,
+        "titles": 0
+      },
+      {
+        "profile": "optimizer",
+        "seed": 7,
+        "top100Day": 714,
+        "finalRank": 57,
+        "finalPatrimony": 5061,
+        "maxSponsorMonthly": 5655,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1600,
+        "titles": 0
+      },
+      {
+        "profile": "optimizer",
+        "seed": 11,
+        "top100Day": 728,
+        "finalRank": 50,
+        "finalPatrimony": 6989,
+        "maxSponsorMonthly": 5368,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1900,
+        "titles": 0
+      },
+      {
+        "profile": "optimizer",
+        "seed": 13,
+        "top100Day": 679,
+        "finalRank": 51,
+        "finalPatrimony": 7215,
+        "maxSponsorMonthly": 5856,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1900,
+        "titles": 0
+      },
+      {
+        "profile": "optimizer",
+        "seed": 4,
+        "top100Day": 686,
+        "finalRank": 51,
+        "finalPatrimony": 8007,
+        "maxSponsorMonthly": 5501,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1700,
+        "titles": 0
+      }
+    ],
+    "biggestSponsorship": [
+      {
+        "profile": "normal",
+        "seed": 1,
+        "top100Day": 672,
+        "finalRank": 49,
+        "finalPatrimony": 91831,
+        "maxSponsorMonthly": 6158,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1350,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 13,
+        "top100Day": 847,
+        "finalRank": 108,
+        "finalPatrimony": 117674,
+        "maxSponsorMonthly": 6104,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2900,
+        "titles": 0
+      },
+      {
+        "profile": "normal",
+        "seed": 8,
+        "top100Day": 595,
+        "finalRank": 54,
+        "finalPatrimony": 77981,
+        "maxSponsorMonthly": 6083,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 1550,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 9,
+        "top100Day": 868,
+        "finalRank": 80,
+        "finalPatrimony": 145787,
+        "maxSponsorMonthly": 6075,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 2400,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 6,
+        "top100Day": 1281,
+        "finalRank": 65,
+        "finalPatrimony": 138599,
+        "maxSponsorMonthly": 6062,
+        "staffAtDay180": 2,
+        "staffMonthlyAtDay180": 2050,
+        "titles": 0
+      }
+    ],
+    "earliestStaff": [
+      {
+        "profile": "casual",
+        "seed": 12,
+        "top100Day": 644,
+        "finalRank": 92,
+        "finalPatrimony": 106347,
+        "maxSponsorMonthly": 5928,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2900,
+        "titles": 1
+      },
+      {
+        "profile": "casual",
+        "seed": 13,
+        "top100Day": 847,
+        "finalRank": 108,
+        "finalPatrimony": 117674,
+        "maxSponsorMonthly": 6104,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2900,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 7,
+        "top100Day": 735,
+        "finalRank": 108,
+        "finalPatrimony": 91023,
+        "maxSponsorMonthly": 5372,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2800,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 1,
+        "top100Day": 1505,
+        "finalRank": 73,
+        "finalPatrimony": 104151,
+        "maxSponsorMonthly": 5670,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2650,
+        "titles": 0
+      },
+      {
+        "profile": "casual",
+        "seed": 11,
+        "top100Day": 679,
+        "finalRank": 105,
+        "finalPatrimony": 52041,
+        "maxSponsorMonthly": 5818,
+        "staffAtDay180": 3,
+        "staffMonthlyAtDay180": 2550,
+        "titles": 0
+      }
+    ]
+  },
+  "representativeRuns": {
+    "easy": {
+      "profile": "normal",
+      "seed": 9,
+      "top100Day": 679,
+      "finalRank": 6,
+      "finalPatrimony": 165219,
+      "maxSponsorMonthly": 5655,
+      "staffAtDay180": 2,
+      "staffMonthlyAtDay180": 1350,
+      "titles": 0
+    },
+    "median": {
+      "profile": "normal",
+      "seed": 7,
+      "top100Day": 651,
+      "finalRank": 47,
+      "finalPatrimony": 177655,
+      "maxSponsorMonthly": 5559,
+      "staffAtDay180": 1,
+      "staffMonthlyAtDay180": 950,
+      "titles": 0
+    },
+    "hard": {
+      "profile": "normal",
+      "seed": 15,
+      "top100Day": 798,
+      "finalRank": 58,
+      "finalPatrimony": 70047,
+      "maxSponsorMonthly": 5861,
+      "staffAtDay180": 2,
+      "staffMonthlyAtDay180": 1400,
+      "titles": 0
+    },
+    "rich": {
+      "profile": "normal",
+      "seed": 6,
+      "top100Day": 672,
+      "finalRank": 50,
+      "finalPatrimony": 195995,
+      "maxSponsorMonthly": 5970,
+      "staffAtDay180": 2,
+      "staffMonthlyAtDay180": 1600,
+      "titles": 0
+    },
+    "poor": {
+      "profile": "optimizer",
+      "seed": 14,
+      "top100Day": 679,
+      "finalRank": 53,
+      "finalPatrimony": 4294,
+      "maxSponsorMonthly": 5985,
+      "staffAtDay180": 2,
+      "staffMonthlyAtDay180": 1900,
+      "titles": 0
+    }
+  }
+}

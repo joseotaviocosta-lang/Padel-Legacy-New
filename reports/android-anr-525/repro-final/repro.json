@@ -1,0 +1,102 @@
+{
+  "label": "repro-final",
+  "mode": "app",
+  "cycles": 15,
+  "anrBefore": 2,
+  "anrAfter": 2,
+  "newAnrs": 0,
+  "startPid": "8149",
+  "endPid": "8149",
+  "log": [
+    {
+      "cycle": 1,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 2,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 3,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 4,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 5,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 6,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 7,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 8,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 9,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 10,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 11,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 12,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 13,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 14,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    },
+    {
+      "cycle": 15,
+      "responsive": true,
+      "anrDialog": false,
+      "focus": "mCurrentFocus=Window{4b83dec u0 com.padellegacy.game/com.padellegacy.game.MainActivity}"
+    }
+  ]
+}

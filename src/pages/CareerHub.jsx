@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { APP_ROUTES } from '@/navigation/routes.js';
+import { isPlayerParticipating } from '@/lib/tournamentRegistrationState.js';
 import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
@@ -24,12 +25,14 @@ import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
 import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
 import StrategicCareerPanel from '@/components/career/StrategicCareerPanel';
 import ActiveMatchRecoveryBanner from '@/components/career/ActiveMatchRecoveryBanner';
+import TournamentRegistrationModal from '@/components/calendar/TournamentRegistrationModal';
 import { advanceCareerUntilRecovered } from '@/game-core';
 import { completeTutorialState, getCurrentTutorialStep } from '@/onboarding/tutorialState.js';
 import { getCareerRecommendations } from '@/onboarding/careerRecommendations.js';
 import { getOnboardingNextAction } from '@/onboarding/onboardingNextAction.js';
 import { isRegistrationOpen } from '@/lib/calendarSystem.js';
 import { evaluateTournamentRegistration, listTournamentRegistrations } from '@/lib/tournamentRegistration.js';
+import { getActivePartnership } from '@/lib/partnershipSystem.js';
 import { resolveFirstMatchAction } from '@/onboarding/firstMatchDestination.js';
 import { useToast } from '@/components/ui/use-toast';
 import { getTeamRank } from '@/lib/teamRanking.js';
@@ -47,7 +50,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
 import { getPartnerBot } from '@/lib/career.js';
 import { buildTournamentRecoverySession } from '@/game-core/tournamentMatchLifecycle.js';
-import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { getCurrentTournamentMatch, selectActiveTournamentRun } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
 import { getCareerNextAction } from '@/lib/careerNextAction.js';
 
@@ -107,7 +110,10 @@ export default function CareerHub() {
   // Necessários para a sugestão consultar evaluateTournamentRegistration com
   // os mesmos dados que a tela de inscrição usa.
   const [partnerBot, setPartnerBot] = useState(null);
+  // 5.27-J: a parceria ativa entra na mesma autoridade de saída que a inscrição aplica.
+  const [activePartnership, setActivePartnership] = useState(null);
   const [tournamentRegistrations, setTournamentRegistrations] = useState([]);
+  const [tournamentEvents, setTournamentEvents] = useState([]);
   const [upcomingTournaments, setUpcomingTournaments] = useState([]);
   const [posts, setPosts] = useState([]);
   const [messages, setMessages] = useState([]);
@@ -124,6 +130,7 @@ export default function CareerHub() {
   const [injurySkipSummary, setInjurySkipSummary] = useState(null);
   const [finishingTutorial, setFinishingTutorial] = useState(false);
   const [toolsOpen, setToolsOpen] = useState(false);
+  const [registrationTournament, setRegistrationTournament] = useState(null);
   const { toast } = useToast();
 
   async function finishTutorial() {
@@ -188,12 +195,14 @@ export default function CareerHub() {
           p ? safe(localGame.entities.TrainingSession.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(localGame.entities.MissionProgress.filter({ profile_id: p.id })) : [],
           p?.partner_id ? safe(localGame.entities.AthleteProfile.filter({ id: p.partner_id }), []) : [],
-          safe(localGame.entities.Tournament.filter({ status: 'inscricoes' })),
+          // O status do Tournament não é autoridade suficiente depois do D-3:
+          // a mesma vitrine precisa poder mostrar chave, campanha e resultado.
+          safe(localGame.entities.Tournament.list('-start_date', 2000)),
           safe(localGame.entities.Post.list('-created_date', 5)),
           p ? safe(localGame.entities.CareerMessage.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(localGame.entities.PartnerOffer.filter({ profile_id: p.id }, '-created_date', 8)) : [],
           p ? safe(getLivingWorldSnapshot(p, 8), null) : null,
-          p ? safe(localGame.entities.CalendarEvent.filter({ profile_id: p.id, status: 'scheduled', event_type: 'tournament' }), []) : [],
+          p ? safe(localGame.entities.CalendarEvent.filter({ profile_id: p.id, event_type: 'tournament' }), []) : [],
           p ? safe(localGame.entities['MonthlyCareerReport'].filter({ profileId: p.id, status: 'finalized' }, '-periodKey', 1), []) : [],
           p ? safe(localGame.entities['AnnualCareerReport'].filter({ profileId: p.id, status: 'finalized' }, '-year', 1), []) : [],
         ]);
@@ -210,7 +219,13 @@ export default function CareerHub() {
         setMessages(normalizedMessages);
         setPartnerOffers(offerRows || []);
         setWorldSnapshot(livingSnapshot || null);
-        setActiveTournamentEvent((tournamentEvents || []).find((event) => event.metadata?.tournament_run) || null);
+        setTournamentEvents(tournamentEvents || []);
+        // Playthrough 5.9, BUG 1 — antes: `.find(e => e.metadata?.tournament_run)`
+        // sobre TODOS os eventos de torneio da carreira (a consulta acima não
+        // filtra status), o que elegia para sempre o torneio MAIS ANTIGO com
+        // run — Roma Pré-Temporada seguia "ativa" depois de Londres e Dubai.
+        // Autoridade única agora: `selectActiveTournamentRun`.
+        setActiveTournamentEvent(selectActiveTournamentRun(tournamentEvents || [], p?.career_date)?.event || null);
         setLatestMonthlyReport((monthlyReports || [])[0] || null);
         setLatestAnnualReport((annualReports || [])[0] || null);
 
@@ -241,13 +256,14 @@ export default function CareerHub() {
         }
         if (p?.id && mounted) {
           setTournamentRegistrations(await safe(listTournamentRegistrations(p.id), []));
+          setActivePartnership(await safe(getActivePartnership(p.id), null));
         }
 
         const careerDate = p?.career_date || '2026-01-01';
         setUpcomingTournaments((upcoming || [])
-          .filter((tournament) => tournament.start_date && tournament.start_date >= careerDate)
+          .filter((tournament) => tournament.start_date && (tournament.start_date >= careerDate || (tournament.end_date || tournament.start_date) >= careerDate))
           .sort((a, b) => a.start_date.localeCompare(b.start_date))
-          .slice(0, 6));
+          .slice(0, 2000));
       } catch (error) {
         console.error('CareerHub', error);
       } finally {
@@ -256,6 +272,18 @@ export default function CareerHub() {
     })();
     return () => { mounted = false; };
   }, []);
+
+  async function handleTournamentRegistered(updatedProfile) {
+    const nextProfile = updatedProfile || profile;
+    if (!nextProfile?.id) return;
+    if (updatedProfile) setProfile(updatedProfile);
+    const [registrations, events] = await Promise.all([
+      listTournamentRegistrations(nextProfile.id),
+      localGame.entities.CalendarEvent.filter({ profile_id: nextProfile.id, event_type: 'tournament' }).catch(() => []),
+    ]);
+    setTournamentRegistrations(registrations || []);
+    setTournamentEvents(events || []);
+  }
 
   // Hotfix crítico (docs/TOURNAMENT_ROUND_STATE_HOTFIX.md, item 19): o
   // avanço de dia pelo cabeçalho global (CareerDayControl, sempre montado em
@@ -304,22 +332,33 @@ export default function CareerHub() {
       registrations: tournamentRegistrations,
       tournaments: upcomingTournaments,
       teamRank: teamRank?.rank || 0,
+      partnership: activePartnership,
     }).allowed) || null;
-  }, [profile, partnerBot, tournamentRegistrations, upcomingTournaments, teamRank]);
+  }, [profile, partnerBot, tournamentRegistrations, upcomingTournaments, teamRank, activePartnership]);
   const activeTournamentRecovery = useMemo(() => {
-    if (activeMatchCheckpoint?.type !== 'tournament' || !activeTournamentEvent || !profile) return null;
-    const run = activeTournamentEvent.metadata?.tournament_run;
+    if (activeMatchCheckpoint?.type !== 'tournament' || !profile) return null;
+    // Playthrough 5.9, BUG 1 — a recuperação de partida interrompida tem
+    // pergunta PRÓPRIA ("qual torneio o checkpoint estava jogando?") e não
+    // pode depender de `activeTournamentEvent`, que agora responde só
+    // "qual torneio é acionável hoje". Resolve pelo id do próprio
+    // checkpoint, com o evento acionável como respaldo.
+    const checkpointTournamentId = activeMatchCheckpoint.tournamentId || activeMatchCheckpoint.context?.tournamentId || null;
+    const recoveryEvent = (checkpointTournamentId
+      ? (tournamentEvents || []).find((event) => event.related_id === checkpointTournamentId && event.metadata?.tournament_run)
+      : null) || activeTournamentEvent;
+    if (!recoveryEvent) return null;
+    const run = recoveryEvent.metadata?.tournament_run;
     const match = getCurrentTournamentMatch(run);
     return buildTournamentRecoverySession(activeMatchCheckpoint, {
       careerId: activeCareer?.career_id,
       careerDate: profile.career_date,
-      tournament: { id: activeTournamentEvent.related_id, name: run?.tournamentName || activeTournamentEvent.related_name },
+      tournament: { id: recoveryEvent.related_id, name: run?.tournamentName || recoveryEvent.related_name },
       run,
       match,
       teamA: [profile, getPartnerBot(profile)].filter(Boolean),
       teamB: match?.opponent || [],
     });
-  }, [activeCareer?.career_id, activeMatchCheckpoint, activeTournamentEvent, profile]);
+  }, [activeCareer?.career_id, activeMatchCheckpoint, activeTournamentEvent, tournamentEvents, profile]);
 
   // Todas as chamadas abaixo já existiam antes da Fase 4 (mesmas funções,
   // mesmos parâmetros) — só passaram a alimentar a nova composição visual
@@ -337,9 +376,41 @@ export default function CareerHub() {
     [profile, messages, partnerOffers, nextTournament],
   );
   const weeklyReview = useMemo(
-    () => buildWeeklyCareerReview(profile, { matches: recentMatches, trainings: recentTrainings, messages }),
-    [profile, recentMatches, recentTrainings, messages],
+    () => buildWeeklyCareerReview(profile, {
+      matches: recentMatches, trainings: recentTrainings, messages,
+      tournaments: upcomingTournaments, registrations: tournamentRegistrations, calendarEvents: tournamentEvents,
+      teamRank: teamRank?.rank || 0, partner: partnerBot, partnership: activePartnership,
+    }),
+    [profile, recentMatches, recentTrainings, messages, upcomingTournaments, tournamentRegistrations, tournamentEvents, teamRank, partnerBot, activePartnership],
   );
+  // Playthrough 5.9, BUG 2 / Parte 3 — o planejamento existia e era gerado
+  // corretamente, mas ficava na 6ª posição da página (abaixo do bloco "O que
+  // fazer agora", do calendário, do banner de tutorial e do painel médico):
+  // no playtest o jogador não percebeu nenhuma "reunião da comissão" e acabou
+  // dependendo só dos avisos D-7/D-5/D-4. Além disso a seção renderiza SEMPRE
+  // (com EmptyState quando não há nada), o que dilui o caso em que existe
+  // decisão real. Sem popup e sem notificação nova: quando há uma decisão
+  // ACIONÁVEL de verdade (recomendação da comissão + inscrição ainda
+  // possível), a mesma seção sobe para junto do objetivo principal.
+  const hasActionableTournamentDecision = useMemo(() => {
+    const items = weeklyReview?.upcomingTournaments || [];
+    return items.some((item) => item.isRecommended && item.canRegisterNow && item.registrationAllowed);
+  }, [weeklyReview]);
+
+  // Playthrough 5.13 (continuação), Partes C/J/K/L — depois de se inscrever,
+  // `canRegisterNow` vira false e a seção perdia a promoção, caindo para
+  // depois da jornada/tutorial/painel médico. Era esse o "planner sumiu"
+  // relatado DEPOIS da inscrição: a decisão acabou, mas o COMPROMISSO
+  // continua sendo a informação mais relevante da semana (data do sorteio,
+  // estreia, próximo passo).
+  //
+  // O compromisso usa o mesmo detector canônico que o resto do planner já
+  // aplica (`isPlayerParticipating`), sem estado novo.
+  const weeklyCommitment = useMemo(() => {
+    const items = weeklyReview?.upcomingTournaments || [];
+    return items.find((item) => isPlayerParticipating(item.registrationState)) || null;
+  }, [weeklyReview]);
+  const showPlanningAtTop = hasActionableTournamentDecision || Boolean(weeklyCommitment);
   const seasonPlan = useMemo(
     () => buildSeasonCareerPlan(profile, { worldRank, matches: recentMatches, trainings: recentTrainings }),
     [profile, worldRank, recentMatches, recentTrainings],
@@ -368,14 +439,24 @@ export default function CareerHub() {
     [profile, hasOpenTournamentRegistration],
   );
   const fallbackHeroStep = useMemo(() => {
-    const run = activeTournamentEvent?.metadata?.tournament_run;
-    const activeMatch = run ? getCurrentTournamentMatch(run) : null;
+    // Playthrough 5.9, BUG 1 — autoridade única: `selectActiveTournamentRun`
+    // (TournamentRunManager.js). Antes, o CTA vinha de
+    // `getCurrentTournamentMatch(run)` CRU + `match.date <= career_date`,
+    // o que mantinha "Jogar Semifinal — Roma Pré-Temporada" para sempre
+    // depois de o jogador ser eliminado (numa derrota o `currentRound` não
+    // avança, e a comparação de data é aberta). Ver o teste da fase.
+    const activeRun = selectActiveTournamentRun(
+      activeTournamentEvent ? [activeTournamentEvent] : [],
+      profile?.career_date,
+    );
+    const run = activeRun?.run || null;
+    const activeMatch = activeRun?.match || null;
     const mandatoryDecision = (decisionCenter.decisions || []).find((decision) => ['critical', 'high'].includes(decision.priority));
     const interviewMessage = messages.find((message) => message.related_entity_type === 'PressInterview' && !message.is_read);
     const interviewDestination = interviewMessage ? resolveNotificationDestination(interviewMessage) : null;
     const action = getCareerNextAction(profile, {
-      tournamentMatchToday: activeMatch && activeMatch.date <= profile?.career_date
-        ? { route: buildTournamentPlayRoute(activeTournamentEvent.related_id), label: activeMatch.preparationCompleted ? `Jogar ${activeMatch.round}` : `Preparar ${activeMatch.round}`, description: run?.tournamentName || activeTournamentEvent.related_name }
+      tournamentMatchToday: activeMatch
+        ? { route: buildTournamentPlayRoute(activeRun.event.related_id), label: activeMatch.preparationCompleted ? `Jogar ${activeMatch.round}` : `Preparar ${activeMatch.round}`, description: run?.tournamentName || activeRun.event.related_name }
         : null,
       mandatoryDecision: mandatoryDecision
         ? { route: mandatoryDecision.route, label: mandatoryDecision.title, description: mandatoryDecision.description }
@@ -488,7 +569,17 @@ export default function CareerHub() {
         {/* 2. Próximo objetivo. O contexto do próximo evento já vive no
             header global; manter outro card aqui criava o segundo/terceiro
             CTA para o mesmo torneio. */}
-        <Surface variant="premium" padding="none"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} embedded /></Surface>
+
+        {/* 2b. Playthrough 5.9 (Parte 3) — a recomendação da comissão técnica
+            só ocupa o topo quando existe decisão REAL e ainda acionável.
+            Sem decisão, a seção continua na posição original, mais abaixo. */}
+        {showPlanningAtTop && (
+          <WeeklyTournamentPlanningSection
+            weeklyReview={weeklyReview}
+            commitment={weeklyCommitment}
+            onRegister={(tournamentId) => setRegistrationTournament(upcomingTournaments.find((tournament) => tournament.id === tournamentId) || null)}
+          />
+        )}
 
         {/* 3. O que fazer agora */}
         <div className="grid gap-3 xl:grid-cols-12">
@@ -500,8 +591,18 @@ export default function CareerHub() {
           </div>
         </div>
 
+        <Surface variant="premium" padding="none"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} embedded /></Surface>
+
         {finalTutorialStep && <TutorialFinishBanner recommendations={recommendations} finishing={finishingTutorial} onFinish={finishTutorial} />}
         {injured && <MedicalStatusPanel profile={profile} onSkipRecovery={handleSkipInjury} skipping={skippingInjury} skipError={injurySkipError} skipSummary={injurySkipSummary} />}
+
+        {!showPlanningAtTop && (
+          <WeeklyTournamentPlanningSection
+            weeklyReview={weeklyReview}
+            commitment={weeklyCommitment}
+            onRegister={(tournamentId) => setRegistrationTournament(upcomingTournaments.find((tournament) => tournament.id === tournamentId) || null)}
+          />
+        )}
 
         {/* 4. Sua jornada */}
         <JourneyTimeline groups={journeyGroups} />
@@ -531,6 +632,16 @@ export default function CareerHub() {
         <CareerStatusBar profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />
 
         {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
+
+        {registrationTournament && (
+          <TournamentRegistrationModal
+            tournament={registrationTournament}
+            profile={profile}
+            teamRank={teamRank?.rank || 0}
+            onClose={() => setRegistrationTournament(null)}
+            onRegistered={handleTournamentRegistered}
+          />
+        )}
 
         <ConfirmDialog
           open={confirmSkipInjury}
@@ -687,7 +798,18 @@ function NextObjectiveCard({ goal, worldRank, embedded = false }) {
   return embedded ? content : <Surface variant="premium" padding="none" className="h-full">{content}</Surface>;
 }
 
+// Playthrough 5.20-B, Parte D — NO MAXIMO 3 PENDENCIAS. A lista chegava a 5
+// itens, e em 360px isso empurrava o resto da Home para fora da primeira tela.
+// Cortar em 3 e parar ali, porem, ESCONDERIA decisao real: nao existe nenhuma
+// pagina que concentre todas as pendencias (cada uma aponta para um destino
+// diferente — propostas, calendario, treinos, tecnicos). Por isso o excedente
+// nao some: fica atras de "ver mais N", no proprio lugar.
+const VISIBLE_PRIORITY_ACTIONS = 3;
+
 function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleActions = showAll ? actions : actions.slice(0, VISIBLE_PRIORITY_ACTIONS);
+  const hiddenCount = actions.length - visibleActions.length;
   if (!step) return null;
   const HeroIcon = step.icon;
   // Hotfix "Single Source of Truth": nunca renderizar um CTA que aponta
@@ -705,7 +827,7 @@ function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner })
       <SurfaceHeader icon={HeroIcon} title="O que fazer agora" description={step.description} action={heroLink} stackActionOnMobile />
       {actions.length ? (
         <ul className="space-y-1.5">
-          {actions.map((action) => (
+          {visibleActions.map((action) => (
             <li key={action.id}>
               <Link to={action.route} className="group flex items-center gap-3 rounded-xl px-2.5 py-2 transition-colors hover:bg-secondary/45">
                 <StatusBadge tone={action.tone} className="shrink-0">{action.title}</StatusBadge>
@@ -717,6 +839,15 @@ function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner })
         </ul>
       ) : (
         <p className="rounded-xl border border-dashed border-border/70 px-3 py-4 text-center text-xs text-muted-foreground">Nenhuma outra pendência agora — siga o plano acima.</p>
+      )}
+      {hiddenCount > 0 && (
+        <button
+          type="button"
+          onClick={() => setShowAll(true)}
+          className="mt-1.5 inline-flex min-h-11 items-center gap-1.5 px-2.5 text-xs font-bold text-primary"
+        >
+          ver mais {hiddenCount} pendência{hiddenCount > 1 ? 's' : ''} <ChevronRight className="h-3.5 w-3.5" />
+        </button>
       )}
     </Surface>
   );
@@ -762,6 +893,45 @@ function JourneyTimeline({ groups }) {
   );
 }
 
+function WeeklyTournamentPlanningSection({ weeklyReview, commitment = null, onRegister }) {
+  const tournaments = weeklyReview?.upcomingTournaments || [];
+  const recommendation = tournaments.find((item) => item.isRecommended) || null;
+
+  // Playthrough 5.13 (continuação), Partes C/K/L — com inscrição confirmada,
+  // o bloco deixa de pedir uma decisão que já foi tomada e passa a mostrar o
+  // COMPROMISSO: qual torneio, quando é o sorteio e qual é a estreia. Sem
+  // duplicar o hero do torneio em disputa: aqui é a leitura da SEMANA.
+  const committedTitle = 'Compromisso da Semana';
+  const committedDescription = commitment
+    ? [
+      `${commitment.name} confirmado`,
+      commitment.startDate ? `estreia em ${commitment.startDate}` : null,
+      commitment.drawDate ? `sorteio em ${commitment.drawDate}` : null,
+    ].filter(Boolean).join(' · ')
+    : null;
+
+  return (
+    <Surface className="mt-4" aria-labelledby="weekly-tournament-planning-title">
+      <SurfaceHeader
+        icon={CalendarDays}
+        title={commitment ? committedTitle : 'Planejamento da Semana'}
+        description={commitment
+          ? committedDescription
+          : (recommendation ? `Recomendação da comissão: ${recommendation.name}.` : 'Decisões de torneio na próxima janela de quatro semanas.')}
+        action={<Link to={APP_ROUTES.TOURNAMENTS} className="text-xs font-bold text-primary">Ver calendário</Link>}
+        stackActionOnMobile
+      />
+      {tournaments.length ? (
+        <div className="grid gap-2 lg:grid-cols-2">
+          {tournaments.map((item) => <UpcomingTournamentPlanningCard key={item.id} item={item} onRegister={onRegister} />)}
+        </div>
+      ) : (
+        <EmptyState compact icon={CheckCircle2} title="Nenhuma decisão de torneio necessária nesta semana" description="Não há evento adequado na próxima janela. Continue treinando e acompanhe o calendário." />
+      )}
+    </Surface>
+  );
+}
+
 function EvolutionSummary({ weeklyReview, seasonPlan }) {
   if (!weeklyReview) return null;
   return (
@@ -790,6 +960,58 @@ function EvolutionSummary({ weeklyReview, seasonPlan }) {
         </div>
       )}
     </Surface>
+  );
+}
+
+// Playthrough 4.9, Parte G — "PRÓXIMOS TORNEIOS" na reunião semanal: o
+// jogador não precisa mais lembrar sozinho de abrir Torneios pra descobrir
+// que uma inscrição está prestes a fechar. Nunca inscreve sozinho (Parte I)
+// — o CTA só leva ao mesmo modal/fluxo canônico que o card de Torneios já
+// usa (Parte J), nunca uma lógica de registro paralela aqui.
+function UpcomingTournamentPlanningCard({ item, onRegister }) {
+  const dateLabel = item.startDate
+    ? new Date(`${item.startDate}T00:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
+      + (item.endDate && item.endDate !== item.startDate ? ` – ${new Date(`${item.endDate}T00:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : '')
+    : null;
+  const ctaRoutes = {
+    details: `/tournaments?tournament=${encodeURIComponent(item.id)}&mode=details`,
+    bracket: `/tournaments?tournament=${encodeURIComponent(item.id)}&openBracket=true`,
+    follow: `/tournaments?tournament=${encodeURIComponent(item.id)}&mode=run`,
+    results: `/tournaments?tournament=${encodeURIComponent(item.id)}&mode=details`,
+  };
+  const deadline = item.deadlineInfo;
+  const fitLabel = item.fit >= 70 ? 'Alto' : item.fit >= 40 ? 'Médio' : 'Baixo';
+  const statusText = item.conflictWith ? 'Conflito de agenda' : deadline?.label;
+  return (
+    <article className="min-w-0 rounded-xl border border-border/55 bg-card/40 p-3" aria-label={`Planejamento: ${item.name}`}>
+      <div className="flex flex-wrap items-start justify-between gap-2">
+        <div className="min-w-0">
+          <p className="truncate text-sm font-black">{item.name}</p>
+          <p className="text-[10px] text-muted-foreground">{item.tier}{dateLabel ? ` · ${dateLabel}` : ''}</p>
+        </div>
+        {statusText && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${item.conflictWith ? 'bg-red-500/15 text-red-400' : deadline?.tone === 'urgent' ? 'bg-red-500/15 text-red-400' : deadline?.tone === 'attention' ? 'bg-amber-500/15 text-amber-400' : deadline?.tone === 'resolved' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-secondary/50 text-muted-foreground'}`}>{statusText}</span>}
+      </div>
+      {deadline?.detail && <p className="mt-1 text-[10px] font-medium text-muted-foreground">{deadline.detail}</p>}
+      {item.isRecommended && <p className="mt-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-primary">Melhor opção</p>}
+      <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">Comissão: “{item.conflictWith ? item.conflictWith : item.coachComment}”</p>
+      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-muted-foreground sm:grid-cols-3">
+        <span>Encaixe: {fitLabel}</span>
+        <span>Campo: {item.fieldStrength}</span>
+        <span>{item.riskReward}</span>
+        <span>{item.points} pts</span>
+        <span>{item.prize.toLocaleString('pt-BR')} moedas</span>
+        {item.cost > 0 && <span>Custo: {item.cost.toLocaleString('pt-BR')}</span>}
+      </div>
+      {item.action.id === 'register' ? (
+        <Button type="button" level="primary" size="sm" onClick={() => onRegister?.(item.id)} className="mt-3 w-full sm:w-auto" aria-label={`Inscrever-se em ${item.name}`}>{item.action.label}</Button>
+      ) : item.action.id === 'closed' ? (
+        <span className="mt-3 inline-flex rounded-lg border border-border/60 px-3 py-1.5 text-[11px] font-bold text-muted-foreground" aria-label={`Prazo encerrado para ${item.name}`}>{item.action.label}</span>
+      ) : (
+        <Link to={ctaRoutes[item.action.id] || ctaRoutes.details} className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-primary/10 px-3 py-2 text-[11px] font-bold text-primary hover:bg-primary/15 sm:w-auto" aria-label={`${item.action.label}: ${item.name}`}>
+          {item.action.label}
+        </Link>
+      )}
+    </article>
   );
 }
 

@@ -1,0 +1,397 @@
+{
+  "note": "Instrumentação apenas (Bloco I). Pontos do jogador congelados em 117.",
+  "snapshots": [
+    {
+      "label": "diario",
+      "date": "2026-12-24",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 842180,
+      "rankingResults": 6637,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6637
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-25",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 842180,
+      "rankingResults": 6637,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6637
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-26",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 842180,
+      "rankingResults": 6637,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6637
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-27",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 853106,
+      "rankingResults": 6669,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6669
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-28",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 853106,
+      "rankingResults": 6669,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6669
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-29",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 853106,
+      "rankingResults": 6669,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6669
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-30",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 853106,
+      "rankingResults": 6669,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6669
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2026-12-31",
+      "playerPoints": 117,
+      "playerRank": 633,
+      "playerRankingPositionField": 633,
+      "athletesTotal": 1066,
+      "active": 960,
+      "retired": 106,
+      "rankedWithPoints": 960,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 721,
+        "500": 275,
+        "700": 95
+      },
+      "totalPoints": 853106,
+      "rankingResults": 6669,
+      "legacySeedRows": 1067,
+      "resultsByYear": {
+        "2026": 6669
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-01",
+      "playerPoints": 117,
+      "playerRank": 630,
+      "playerRankingPositionField": 630,
+      "athletesTotal": 1072,
+      "active": 954,
+      "retired": 118,
+      "rankedWithPoints": 954,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 736,
+        "500": 275,
+        "700": 94
+      },
+      "totalPoints": 857580,
+      "rankingResults": 6675,
+      "legacySeedRows": 1073,
+      "resultsByYear": {
+        "2026": 6669,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-02",
+      "playerPoints": 117,
+      "playerRank": 630,
+      "playerRankingPositionField": 630,
+      "athletesTotal": 1072,
+      "active": 954,
+      "retired": 118,
+      "rankedWithPoints": 954,
+      "aboveOrEqualPlayer": 665,
+      "pointsAtRank": {
+        "100": 1634,
+        "300": 736,
+        "500": 275,
+        "700": 94
+      },
+      "totalPoints": 857580,
+      "rankingResults": 6675,
+      "legacySeedRows": 1073,
+      "resultsByYear": {
+        "2026": 6669,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-03",
+      "playerPoints": 117,
+      "playerRank": 330,
+      "playerRankingPositionField": null,
+      "athletesTotal": 1072,
+      "active": 954,
+      "retired": 118,
+      "rankedWithPoints": 749,
+      "aboveOrEqualPlayer": 348,
+      "pointsAtRank": {
+        "100": 1225,
+        "300": 154,
+        "500": 27,
+        "700": 2
+      },
+      "totalPoints": 308724,
+      "rankingResults": 5791,
+      "legacySeedRows": 189,
+      "resultsByYear": {
+        "2026": 5785,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-04",
+      "playerPoints": 117,
+      "playerRank": 327,
+      "playerRankingPositionField": null,
+      "athletesTotal": 1072,
+      "active": 951,
+      "retired": 121,
+      "rankedWithPoints": 746,
+      "aboveOrEqualPlayer": 345,
+      "pointsAtRank": {
+        "100": 1225,
+        "300": 148,
+        "500": 27,
+        "700": 2
+      },
+      "totalPoints": 306839,
+      "rankingResults": 5791,
+      "legacySeedRows": 189,
+      "resultsByYear": {
+        "2026": 5785,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-05",
+      "playerPoints": 117,
+      "playerRank": 327,
+      "playerRankingPositionField": null,
+      "athletesTotal": 1072,
+      "active": 951,
+      "retired": 121,
+      "rankedWithPoints": 746,
+      "aboveOrEqualPlayer": 345,
+      "pointsAtRank": {
+        "100": 1225,
+        "300": 148,
+        "500": 27,
+        "700": 2
+      },
+      "totalPoints": 306839,
+      "rankingResults": 5791,
+      "legacySeedRows": 189,
+      "resultsByYear": {
+        "2026": 5785,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-06",
+      "playerPoints": 117,
+      "playerRank": 327,
+      "playerRankingPositionField": null,
+      "athletesTotal": 1072,
+      "active": 951,
+      "retired": 121,
+      "rankedWithPoints": 746,
+      "aboveOrEqualPlayer": 345,
+      "pointsAtRank": {
+        "100": 1225,
+        "300": 148,
+        "500": 27,
+        "700": 2
+      },
+      "totalPoints": 306839,
+      "rankingResults": 5791,
+      "legacySeedRows": 189,
+      "resultsByYear": {
+        "2026": 5785,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-07",
+      "playerPoints": 117,
+      "playerRank": 327,
+      "playerRankingPositionField": null,
+      "athletesTotal": 1072,
+      "active": 951,
+      "retired": 121,
+      "rankedWithPoints": 746,
+      "aboveOrEqualPlayer": 345,
+      "pointsAtRank": {
+        "100": 1225,
+        "300": 148,
+        "500": 27,
+        "700": 2
+      },
+      "totalPoints": 306839,
+      "rankingResults": 5791,
+      "legacySeedRows": 189,
+      "resultsByYear": {
+        "2026": 5785,
+        "2027": 6
+      }
+    },
+    {
+      "label": "diario",
+      "date": "2027-01-08",
+      "playerPoints": 117,
+      "playerRank": 327,
+      "playerRankingPositionField": null,
+      "athletesTotal": 1072,
+      "active": 951,
+      "retired": 121,
+      "rankedWithPoints": 746,
+      "aboveOrEqualPlayer": 345,
+      "pointsAtRank": {
+        "100": 1225,
+        "300": 148,
+        "500": 27,
+        "700": 2
+      },
+      "totalPoints": 306839,
+      "rankingResults": 5791,
+      "legacySeedRows": 189,
+      "resultsByYear": {
+        "2026": 5785,
+        "2027": 6
+      }
+    }
+  ]
+}

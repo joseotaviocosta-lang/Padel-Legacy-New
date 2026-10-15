@@ -1,0 +1,88 @@
+{
+  "at": "2026-10-13T00:12:35.323Z",
+  "seeds": [
+    1,
+    8
+  ],
+  "profile": "normal",
+  "days": 420,
+  "candidates": {
+    "balanced-e": {
+      "PL527_PRESET": "balanced-e",
+      "PL527E_POLICY": "v2"
+    }
+  },
+  "summary": {
+    "balanced-e": {
+      "careers": 8,
+      "matches": 452,
+      "easyWR": 46.7,
+      "mediumWR": 5.9,
+      "hardWR": null,
+      "r1WR": 39,
+      "tierWR": {
+        "Bronze": {
+          "all": 56.7,
+          "main": 56.7,
+          "r1": 55.3,
+          "n": 284
+        },
+        "Silver": {
+          "all": 25.4,
+          "main": 25.4,
+          "r1": 26,
+          "n": 134
+        },
+        "Gold": {
+          "all": 7.4,
+          "main": 7.4,
+          "r1": 8,
+          "n": 27
+        },
+        "Platinum": {
+          "all": 0,
+          "main": 0,
+          "r1": 0,
+          "n": 7
+        },
+        "Masters": {
+          "all": null,
+          "main": null,
+          "r1": null,
+          "n": 0
+        },
+        "Elite": {
+          "all": null,
+          "main": null,
+          "r1": null,
+          "n": 0
+        }
+      },
+      "energyAtMatchMedian": 100,
+      "r1EnergyMedian": 100,
+      "rank1yMedian": 308,
+      "rankEndMedian": 294,
+      "sponsorShareY1Median": 47.1,
+      "prizeShareY1Median": 14.1,
+      "titles": [
+        1,
+        3,
+        2,
+        3,
+        5,
+        0,
+        2,
+        2
+      ],
+      "debtCareers": 0,
+      "taperDaysMedian": 195,
+      "microGate": {
+        "easy": true,
+        "medium": false,
+        "r1": true,
+        "silverNotMateriallyHarderThanGold": true,
+        "pass": false
+      }
+    }
+  }
+}

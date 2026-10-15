@@ -1,0 +1,392 @@
+kind,profile,seed,day,date,item,name,category,rarity,price,bonusTotal,coins,incomeEst,rank,ovr,recurringIncome,affordabilityIndex
+main,casual,1,21,2026-01-22,shopitem-1791119817892-iaycfn,Bullpadel Vertex Club,raquete,comum,848,2,1761,0,1002,13,0,
+main,casual,1,28,2026-01-29,shopitem-1791119866892-fywhix,Padel Start Compact,mochila,comum,234,1,2306,0,1002,14,0,
+main,casual,1,35,2026-02-05,shopitem-1791119850892-oxher4,Joma Training Tee,roupa,comum,198,1,4456,3501,998,16,0,
+main,casual,1,77,2026-03-19,shopitem-1791119858892-rkug47,Joma Court Basic,tenis,comum,432,1,8858,5889,977,22,1439,0.3
+main,casual,1,91,2026-04-02,shopitem-1791119846892-hcbdvt,Head Club Match x3,bola,incomum,223,1,11615,5785,964,23,1439,0.16
+main,casual,1,98,2026-04-09,shopitem-1791119874892-l23lae,Pulse Training Band,acessorio_tec,incomum,818,1,11309,5785,956,24,1933,0.42
+main,casual,1,154,2026-06-04,shopitem-1791119883892-gplcx7,Adidas Focus Headband,acessorio,incomum,225,1,12253,5063,932,31,4178,0.05
+main,casual,1,189,2026-07-09,shopitem-1791119837892-8qmq7h,Tour Grip Dry Start,grip,comum,50,1,16870,5507,897,35,4430,0.01
+main,casual,2,0,2026-01-01,shopitem-1791118811749-irzx2d,Padel Start Power Entry Club,raquete,comum,356,1,1773,0,1002,13,0,
+main,casual,2,14,2026-01-15,shopitem-1791118821749-r00ggs,Head Flash Motion Club,raquete,comum,524,2,2602,0,1002,14,0,
+main,casual,2,28,2026-01-29,shopitem-1791118893749-0g1frd,Pulse Training Band,acessorio_tec,incomum,803,1,1898,0,1002,16,0,
+main,casual,2,70,2026-03-12,shopitem-1791118902749-zjut0z,Adidas Focus Headband,acessorio,incomum,223,1,8780,6999,969,21,1330,0.17
+main,casual,2,84,2026-03-26,shopitem-1791118886749-usjlm7,Head Team Backpack,mochila,incomum,558,1,8257,6999,968,23,1330,0.42
+main,casual,2,98,2026-04-09,shopitem-1791118857749-1o4r0j,Head Comfort Sport,grip,incomum,225,1,9972,6211,959,24,2432,0.09
+main,casual,2,105,2026-04-16,shopitem-1791118864749-frzcm4,Padel Start Training x3,bola,comum,41,1,9557,6211,959,26,2432,0.02
+main,casual,2,161,2026-06-11,shopitem-1791118870749-lh17sf,Adidas Match Shorts,roupa,incomum,377,1,12990,4740,912,32,4707,0.08
+main,casual,2,168,2026-06-18,shopitem-1791118878749-bo2uev,Asics Clay Motion,tenis,incomum,655,1,12463,4740,912,34,4707,0.14
+main,casual,3,42,2026-02-12,shopitem-1791120762130-sgrsid,Padel Start Training x3,bola,comum,41,1,5031,12220,979,17,25,1.64
+main,casual,3,56,2026-02-26,shopitem-1791120744130-8udjkq,Wilson Pro Staff Club,raquete,comum,1046,1,4850,12220,979,18,25,41.84
+main,casual,3,63,2026-03-05,shopitem-1791120791130-psfva5,Pulse Training Band,acessorio_tec,incomum,802,1,7587,7712,974,19,1365,0.59
+main,casual,3,70,2026-03-12,shopitem-1791120784130-ks0pxs,Head Team Backpack,mochila,incomum,563,1,6720,7712,970,20,1365,0.41
+main,casual,3,91,2026-04-02,shopitem-1791120750130-ogcgp0,Siux Electra Sport,raquete,incomum,2064,2,8904,7069,962,23,1365,1.51
+main,casual,3,133,2026-05-14,shopitem-1791120799130-33jlkq,Joma Wristband Base,acessorio,comum,54,1,9188,4673,939,29,3473,0.02
+main,casual,3,147,2026-05-28,shopitem-1791120768130-fjvc08,Adidas Match Shorts,roupa,incomum,375,1,8929,4673,936,30,3473,0.11
+main,casual,3,154,2026-06-04,shopitem-1791120754130-2mb0wf,Tour Grip Dry Start,grip,comum,50,1,12167,5330,926,30,4263,0.01
+main,casual,3,168,2026-06-18,shopitem-1791120775130-4wbess,Joma Court Basic,tenis,comum,432,1,11832,5330,926,32,4263,0.1
+main,casual,4,42,2026-02-12,shopitem-1791119398035-zvok3r,Padel Start Training x3,bola,comum,41,1,2411,1525,999,13,25,1.64
+main,casual,4,63,2026-03-05,shopitem-1791119366035-kdhb2i,Adidas Drive Sport,raquete,incomum,1273,2,6838,2228,987,16,25,50.92
+main,casual,4,77,2026-03-19,shopitem-1791119403035-a2br8c,Joma Training Tee,roupa,comum,198,1,5383,2228,983,18,25,7.92
+main,casual,4,84,2026-03-26,shopitem-1791119411035-0u3apw,Joma Court Basic,tenis,comum,432,1,7005,2228,979,19,25,17.28
+main,casual,4,98,2026-04-09,shopitem-1791119427035-o6wqcw,Pulse Training Band,acessorio_tec,incomum,802,1,11085,4868,962,20,666,1.2
+main,casual,4,126,2026-05-07,shopitem-1791119435035-2iuw8m,Joma Wristband Base,acessorio,comum,54,1,13393,6256,947,24,2554,0.02
+main,casual,4,140,2026-05-21,shopitem-1791119420035-n62lnr,Head Team Backpack,mochila,incomum,555,1,13079,6256,949,26,2554,0.22
+main,casual,4,147,2026-05-28,shopitem-1791119390035-dlkd9d,Tour Grip Dry Start,grip,comum,50,1,12459,6256,944,26,2554,0.02
+main,casual,5,0,2026-01-01,shopitem-1791118869416-23938h,Head Flash Motion Club,raquete,comum,524,2,1859,0,1002,13,0,
+main,casual,5,42,2026-02-12,shopitem-1791118918416-yg72x0,Adidas Match Shorts,roupa,incomum,377,1,4382,8229,992,17,25,15.08
+main,casual,5,105,2026-04-16,shopitem-1791118904416-1pab2d,Tour Grip Dry Start,grip,comum,50,1,7499,4711,961,25,1810,0.03
+main,casual,5,112,2026-04-23,shopitem-1791118950416-0j6uz3,Adidas Focus Headband,acessorio,incomum,225,1,7354,4711,957,26,1810,0.12
+main,casual,5,126,2026-05-07,shopitem-1791118925416-pfqe1y,Joma Court Basic,tenis,comum,432,1,8736,2936,930,27,2736,0.16
+main,casual,5,161,2026-06-11,shopitem-1791118941416-nm44oi,Pulse Training Band,acessorio_tec,incomum,803,1,9149,2754,921,31,2720,0.3
+main,casual,5,189,2026-07-09,shopitem-1791118933416-ps0te2,Padel Start Compact,mochila,comum,234,1,8957,2907,910,34,2371,0.1
+main,casual,5,210,2026-07-30,shopitem-1791118913416-zqfjau,Head Club Match x3,bola,incomum,225,1,8303,2907,910,37,2371,0.09
+main,casual,6,28,2026-01-29,shopitem-1791119993273-du88bw,Joma Court Basic,tenis,comum,432,1,1751,0,1002,13,0,
+main,casual,6,63,2026-03-05,shopitem-1791119985273-o0vfnr,Joma Training Tee,roupa,comum,198,1,8432,2190,986,18,700,0.28
+main,casual,6,77,2026-03-19,shopitem-1791119927273-nhfnvw,Padel Start Power Entry Club,raquete,comum,356,1,8089,2190,986,20,700,0.51
+main,casual,6,98,2026-04-09,shopitem-1791119972273-ud3hc0,Tour Grip Dry Start,grip,comum,50,1,11804,5163,975,24,1285,0.04
+main,casual,6,133,2026-05-14,shopitem-1791120017273-71uzm5,Joma Wristband Base,acessorio,comum,54,1,15358,6308,922,28,2981,0.02
+main,casual,6,182,2026-07-02,shopitem-1791119952273-tgkqmf,Bullpadel Vertex Club,raquete,comum,848,2,19491,5219,890,34,4161,0.2
+main,casual,6,217,2026-08-06,shopitem-1791120001273-pe33ng,Padel Start Compact,mochila,comum,234,1,23263,5949,831,37,4914,0.05
+main,casual,6,266,2026-09-24,shopitem-1791119980273-1o7bn4,Padel Start Training x3,bola,comum,41,1,28541,6579,786,42,4913,0.01
+main,casual,6,273,2026-10-01,shopitem-1791120009273-toxfsp,Pulse Training Band,acessorio_tec,incomum,818,1,32742,6875,782,43,4913,0.17
+main,casual,7,21,2026-01-22,shopitem-1791119432654-oboj8t,Head Flash Motion Club,raquete,comum,524,2,1578,0,1002,14,0,
+main,casual,7,35,2026-02-05,shopitem-1791119476654-hjtyzz,Head Club Match x3,bola,incomum,223,1,3163,3807,991,16,25,8.92
+main,casual,7,56,2026-02-26,shopitem-1791119488654-qp85jo,Joma Court Basic,tenis,comum,432,1,5563,3807,977,18,25,17.28
+main,casual,7,70,2026-03-12,shopitem-1791119513654-8dwgr8,Adidas Focus Headband,acessorio,incomum,223,1,7609,6488,953,20,825,0.27
+main,casual,7,84,2026-03-26,shopitem-1791119496654-ox3rjy,Padel Start Compact,mochila,comum,234,1,7221,6488,949,22,825,0.28
+main,casual,7,140,2026-05-21,shopitem-1791119467654-xunlfw,Tour Grip Dry Start,grip,comum,50,1,9615,6220,924,28,3672,0.01
+main,casual,7,175,2026-06-25,shopitem-1791119480654-om9qgd,Joma Training Tee,roupa,comum,198,1,10593,4977,903,33,4711,0.04
+main,casual,7,224,2026-08-13,shopitem-1791119504654-9kcbfn,Pulse Training Band,acessorio_tec,incomum,811,1,11981,5158,767,38,4475,0.18
+main,casual,8,0,2026-01-01,shopitem-1791118848463-drkvv9,Padel Start Training x3,bola,comum,41,1,100,0,1002,13,0,
+main,casual,8,7,2026-01-08,shopitem-1791118810463-tfivlu,Nox Equation Club,raquete,comum,626,2,1687,0,1002,13,0,
+main,casual,8,70,2026-03-12,shopitem-1791118861463-4svqy4,Joma Court Basic,tenis,comum,432,1,10842,7099,976,20,1318,0.33
+main,casual,8,91,2026-04-02,shopitem-1791118885463-m5xcq6,Joma Wristband Base,acessorio,comum,54,1,13625,6351,949,23,1318,0.04
+main,casual,8,98,2026-04-09,shopitem-1791118869463-ubz14n,Padel Start Compact,mochila,comum,234,1,13476,6351,947,24,2497,0.09
+main,casual,8,105,2026-04-16,shopitem-1791118841463-of4wgh,Head Comfort Sport,grip,incomum,227,1,13052,6351,947,25,2497,0.09
+main,casual,8,119,2026-04-30,shopitem-1791118854463-0l0kcp,Adidas Match Shorts,roupa,incomum,382,1,12673,6351,919,27,2497,0.15
+main,casual,8,133,2026-05-14,shopitem-1791118877463-raaosx,Pulse Training Band,acessorio_tec,incomum,815,1,14112,5477,912,28,4146,0.2
+main,casual,9,7,2026-01-08,shopitem-1791119515844-ytc2be,Joma Court Basic,tenis,comum,432,1,1257,0,1002,13,0,
+main,casual,9,91,2026-04-02,shopitem-1791119495844-xddmbe,Head Comfort Sport,grip,incomum,227,1,9690,4845,954,22,1435,0.16
+main,casual,9,105,2026-04-16,shopitem-1791119503844-cwz1k8,Head Club Match x3,bola,incomum,223,1,9183,4845,957,24,1875,0.12
+main,casual,9,119,2026-04-30,shopitem-1791119450844-yvodsu,Padel Start Power Entry Sport,raquete,incomum,641,1,8789,4845,946,25,1875,0.34
+main,casual,9,126,2026-05-07,shopitem-1791119508844-b6ciiu,Adidas Match Shorts,roupa,incomum,378,1,11174,2959,941,26,2793,0.14
+main,casual,9,161,2026-06-11,shopitem-1791119490844-cct510,Siux Electra Sport,raquete,incomum,2064,2,12768,3860,917,30,2801,0.74
+main,casual,9,168,2026-06-18,shopitem-1791119524844-oppev0,Head Team Backpack,mochila,incomum,556,1,10584,3860,917,31,2801,0.2
+main,casual,9,189,2026-07-09,shopitem-1791119531844-a1xtbk,Pulse Training Band,acessorio_tec,incomum,815,1,12235,4830,882,33,3291,0.25
+main,casual,9,210,2026-07-30,shopitem-1791119539844-ii680h,Joma Wristband Base,acessorio,comum,54,1,11146,4830,841,36,3291,0.02
+main,casual,10,21,2026-01-22,shopitem-1791119440852-hkxfs5,Joma Court Basic,tenis,comum,432,1,1843,0,1002,13,0,
+main,casual,10,28,2026-01-29,shopitem-1791119384852-mghqoz,Head Flash Motion Club,raquete,comum,524,2,2769,0,1002,14,0,
+main,casual,10,42,2026-02-12,shopitem-1791119465852-08cmgm,Adidas Focus Headband,acessorio,incomum,226,1,4568,8407,989,16,25,9.04
+main,casual,10,70,2026-03-12,shopitem-1791119428852-ibfw90,Head Club Match x3,bola,incomum,224,1,5596,5885,974,19,1444,0.16
+main,casual,10,77,2026-03-19,shopitem-1791119448852-48bjlc,Padel Start Compact,mochila,comum,234,1,8295,5885,973,20,1444,0.16
+main,casual,10,119,2026-04-30,shopitem-1791119456852-4qys5b,Pulse Training Band,acessorio_tec,incomum,815,1,11200,5901,952,24,1916,0.43
+main,casual,10,147,2026-05-28,shopitem-1791119419852-d9e03n,Tour Grip Dry Start,grip,comum,50,1,13719,4821,940,28,3630,0.01
+main,casual,10,154,2026-06-04,shopitem-1791119433852-vflnq1,Adidas Match Shorts,roupa,incomum,382,1,15103,5423,933,28,4399,0.09
+main,casual,11,0,2026-01-01,shopitem-1791118848471-220rl1,Padel Start Training x3,bola,comum,41,1,100,0,1002,13,0,
+main,casual,11,21,2026-01-22,shopitem-1791118853471-xtycm2,Joma Training Tee,roupa,comum,198,1,1280,0,1002,13,0,
+main,casual,11,70,2026-03-12,shopitem-1791118800471-vgwgje,Joma Soft Touch Club,raquete,comum,418,1,4690,3483,963,17,569,0.74
+main,casual,11,84,2026-03-26,shopitem-1791118869471-xjzxc4,Padel Start Compact,mochila,comum,234,1,4052,3483,963,19,569,0.41
+main,casual,11,98,2026-04-09,shopitem-1791118861471-odmpem,Joma Court Basic,tenis,comum,432,1,6490,4483,944,22,1407,0.31
+main,casual,11,105,2026-04-16,shopitem-1791118816471-ns8af4,Adidas Drive Sport,raquete,incomum,1291,2,5868,4483,944,23,1407,0.92
+main,casual,11,126,2026-05-07,shopitem-1791118877471-mtrdxu,Pulse Training Band,acessorio_tec,incomum,811,1,6399,6168,926,25,2466,0.33
+main,casual,11,147,2026-05-28,shopitem-1791118885471-bypyez,Joma Wristband Base,acessorio,comum,54,1,5285,6168,910,28,2466,0.02
+main,casual,11,154,2026-06-04,shopitem-1791118841471-64wo7z,Head Comfort Sport,grip,incomum,223,1,6790,6355,873,29,3939,0.06
+main,casual,12,7,2026-01-08,shopitem-1791119471090-7hsuv0,Nox Equation Club,raquete,comum,626,2,1679,0,1002,13,0,
+main,casual,12,28,2026-01-29,shopitem-1791119546090-qiwec5,Joma Wristband Base,acessorio,comum,54,1,853,0,1002,14,0,
+main,casual,12,56,2026-02-26,shopitem-1791119531090-ngkffp,Head Team Backpack,mochila,incomum,563,1,4439,1844,975,19,0,
+main,casual,12,126,2026-05-07,shopitem-1791119502090-7badq4,Head Comfort Sport,grip,incomum,226,1,15606,7092,916,26,3583,0.06
+main,casual,12,147,2026-05-28,shopitem-1791119514090-udbcx3,Joma Training Tee,roupa,comum,198,1,14992,7092,905,28,3583,0.06
+main,casual,12,175,2026-06-25,shopitem-1791119509090-1eieck,Padel Start Training x3,bola,comum,41,1,16535,6636,894,32,4894,0.01
+main,casual,12,224,2026-08-13,shopitem-1791119522090-xkol4z,Joma Court Basic,tenis,comum,432,1,20222,5787,837,39,5520,0.08
+main,casual,12,252,2026-09-10,shopitem-1791119538090-q09m9m,Pulse Training Band,acessorio_tec,incomum,815,1,21775,5923,762,41,5033,0.16
+main,casual,13,28,2026-01-29,shopitem-1791120294709-x8vh3h,Joma Wristband Base,acessorio,comum,54,1,3132,0,1001,15,0,
+main,casual,13,70,2026-03-12,shop-001,Raquete Starter Control,raquete,comum,450,1,10214,7147,958,20,1443,0.31
+main,casual,13,77,2026-03-19,shopitem-1791120279709-ta1utd,Head Team Backpack,mochila,incomum,553,1,9644,7147,958,21,1443,0.38
+main,casual,13,140,2026-05-21,shopitem-1791120220709-knw5z1,Nox Equation Sport,raquete,incomum,1138,2,10968,5165,882,29,4116,0.28
+main,casual,13,147,2026-05-28,shopitem-1791120263709-ezpc1o,Adidas Match Shorts,roupa,incomum,375,1,9765,5165,879,30,4116,0.09
+main,casual,13,168,2026-06-18,shopitem-1791120258709-78n8bw,Head Club Match x3,bola,incomum,223,1,11570,4802,870,32,4736,0.05
+main,casual,13,175,2026-06-25,shopitem-1791120250709-1nkvyy,Head Comfort Sport,grip,incomum,225,1,11157,4802,870,33,4736,0.05
+main,casual,13,210,2026-07-30,shopitem-1791120286709-6bm3sg,Pulse Training Band,acessorio_tec,incomum,806,1,12489,5382,837,38,4386,0.18
+main,casual,13,224,2026-08-13,shopitem-1791120271709-6mg7sv,Asics Clay Motion,tenis,incomum,655,1,12075,5583,834,39,4587,0.14
+main,casual,14,7,2026-01-08,shopitem-1791119564376-mmpccb,Joma Court Basic,tenis,comum,432,1,1307,0,1002,13,0,
+main,casual,14,14,2026-01-15,shopitem-1791119572376-mm3c31,Padel Start Compact,mochila,comum,234,1,775,0,1002,14,0,
+main,casual,14,35,2026-02-05,shopitem-1791119580376-9ul823,Pulse Training Band,acessorio_tec,incomum,812,1,3662,2822,995,16,25,32.48
+main,casual,14,49,2026-02-19,shopitem-1791119494376-8vu6mb,Padel Start Control One Sport,raquete,incomum,522,1,5357,2822,986,18,25,20.88
+main,casual,14,56,2026-02-26,shopitem-1791119514376-8w92lh,Nox Equation Sport,raquete,incomum,1139,2,4780,2822,982,19,25,45.56
+main,casual,14,63,2026-03-05,shopitem-1791119544376-r33hj1,Head Comfort Sport,grip,incomum,227,1,7435,6506,961,20,603,0.38
+main,casual,14,84,2026-03-26,shopitem-1791119551376-yvkqw4,Padel Start Training x3,bola,comum,41,1,7187,6506,949,21,603,0.07
+main,casual,14,91,2026-04-02,shopitem-1791119556376-nnh1w6,Joma Training Tee,roupa,comum,198,1,10114,6057,936,22,603,0.33
+main,casual,14,147,2026-05-28,shopitem-1791119588376-4j7ao9,Joma Wristband Base,acessorio,comum,54,1,11315,6797,929,28,3760,0.01
+main,casual,15,14,2026-01-15,shopitem-1791119618995-ull6ge,Bullpadel Vertex Club,raquete,comum,848,2,3201,0,1001,14,0,
+main,casual,15,21,2026-01-22,shopitem-1791119659995-93muqm,Joma Court Basic,tenis,comum,432,1,2273,0,1001,14,0,
+main,casual,15,35,2026-02-05,shopitem-1791119651995-q5l6nm,Joma Training Tee,roupa,comum,198,1,8817,10453,986,17,25,7.92
+main,casual,15,77,2026-03-19,shopitem-1791119646995-n03eav,Padel Start Training x3,bola,comum,41,1,12572,8041,959,20,2377,0.02
+main,casual,15,84,2026-03-26,shopitem-1791119684995-ca9idm,Adidas Focus Headband,acessorio,incomum,226,1,12614,8041,933,21,2377,0.1
+main,casual,15,98,2026-04-09,shopitem-1791119667995-5crnqs,Padel Start Compact,mochila,comum,234,1,15373,6976,894,23,3167,0.07
+main,casual,15,126,2026-05-07,shopitem-1791119675995-kkiru4,Pulse Training Band,acessorio_tec,incomum,815,1,17138,5204,836,27,4804,0.17
+main,casual,15,154,2026-06-04,shopitem-1791119639995-als2dm,Head Comfort Sport,grip,incomum,226,1,17371,5087,806,30,4820,0.05
+main,normal,1,0,2026-01-01,shopitem-1791118930450-go0jg7,Padel Start Training x3,bola,comum,41,1,3482,0,1002,13,0,
+main,normal,1,7,2026-01-08,shopitem-1791118922450-q6se0q,Tour Grip Dry Start,grip,comum,50,1,3151,0,1001,15,0,
+main,normal,1,14,2026-01-15,shopitem-1791118967450-u1vchy,Joma Wristband Base,acessorio,comum,54,1,2801,0,1001,17,0,
+main,normal,1,21,2026-01-22,shopitem-1791118935450-5wdkgw,Joma Training Tee,roupa,comum,198,1,5496,0,1001,18,0,
+main,normal,1,28,2026-01-29,shopitem-1791118951450-h3thhe,Padel Start Compact,mochila,comum,234,1,5048,0,1001,19,0,
+main,normal,1,35,2026-02-05,shopitem-1791118887450-ecn3qn,Head Flash Motion Club,raquete,comum,524,2,9687,0,998,20,0,
+main,normal,1,42,2026-02-12,shopitem-1791118943450-76r0cz,Joma Court Basic,tenis,comum,432,1,8867,0,992,22,0,
+main,normal,1,49,2026-02-19,shopitem-1791118959450-rq1uq0,Pulse Training Band,acessorio_tec,incomum,807,1,8136,0,988,24,0,
+main,normal,2,0,2026-01-01,shopitem-1791118861831-6d7bo9,Padel Start Training x3,bola,comum,41,1,3365,0,1002,13,0,
+main,normal,2,7,2026-01-08,shopitem-1791118853831-pb2xbf,Tour Grip Dry Start,grip,comum,50,1,3074,0,1002,14,0,
+main,normal,2,14,2026-01-15,shopitem-1791118898831-bej2ij,Joma Wristband Base,acessorio,comum,54,1,2724,0,1001,17,0,
+main,normal,2,21,2026-01-22,shopitem-1791118866831-qw7txz,Joma Training Tee,roupa,comum,198,1,2380,0,1001,19,0,
+main,normal,2,28,2026-01-29,shopitem-1791118882831-femh2n,Padel Start Compact,mochila,comum,234,1,1898,0,1001,21,0,
+main,normal,2,35,2026-02-05,shopitem-1791118818831-3zrl5s,Head Flash Motion Club,raquete,comum,524,2,6765,25,992,23,25,20.96
+main,normal,2,42,2026-02-12,shopitem-1791118874831-r1tfcj,Joma Court Basic,tenis,comum,432,1,5972,25,982,24,25,17.28
+main,normal,2,49,2026-02-19,shopitem-1791118890831-m2orv7,Pulse Training Band,acessorio_tec,incomum,811,1,5223,25,978,26,25,32.44
+main,normal,3,0,2026-01-01,shopitem-1791118875212-l4mbyo,Padel Start Training x3,bola,comum,41,1,3409,0,1002,13,0,
+main,normal,3,7,2026-01-08,shopitem-1791118867212-tnof8g,Tour Grip Dry Start,grip,comum,50,1,3078,0,1001,15,0,
+main,normal,3,14,2026-01-15,shopitem-1791118912212-jlc4gi,Joma Wristband Base,acessorio,comum,54,1,2768,0,1001,16,0,
+main,normal,3,21,2026-01-22,shopitem-1791118880212-dhzvat,Joma Training Tee,roupa,comum,198,1,2424,0,1001,19,0,
+main,normal,3,28,2026-01-29,shopitem-1791118896212-yqpu81,Padel Start Compact,mochila,comum,234,1,4674,0,1001,21,0,
+main,normal,3,35,2026-02-05,shopitem-1791118832212-3m0fn2,Head Flash Motion Club,raquete,comum,524,2,8735,25,994,23,25,20.96
+main,normal,3,42,2026-02-12,shopitem-1791118888212-hu7qf5,Joma Court Basic,tenis,comum,432,1,8068,25,984,24,25,17.28
+main,normal,3,49,2026-02-19,shopitem-1791118904212-7xy5j8,Pulse Training Band,acessorio_tec,incomum,803,1,7636,25,984,24,25,32.12
+main,normal,4,0,2026-01-01,shopitem-1791118897593-alb4qi,Padel Start Training x3,bola,comum,41,1,3440,0,1001,13,0,
+main,normal,4,7,2026-01-08,shopitem-1791118889593-jcb5eo,Tour Grip Dry Start,grip,comum,50,1,3109,0,1001,15,0,
+main,normal,4,14,2026-01-15,shopitem-1791118934593-n73vdy,Joma Wristband Base,acessorio,comum,54,1,2759,0,1001,17,0,
+main,normal,4,21,2026-01-22,shopitem-1791118902593-nzuhg2,Joma Training Tee,roupa,comum,198,1,5269,0,1001,20,0,
+main,normal,4,28,2026-01-29,shopitem-1791118918593-0f5c1h,Padel Start Compact,mochila,comum,234,1,4787,0,1001,21,0,
+main,normal,4,35,2026-02-05,shopitem-1791118854593-uuswmm,Head Flash Motion Club,raquete,comum,524,2,9017,25,991,23,25,20.96
+main,normal,4,42,2026-02-12,shopitem-1791118910593-di77nc,Joma Court Basic,tenis,comum,432,1,8863,25,965,25,25,17.28
+main,normal,4,49,2026-02-19,shopitem-1791118926593-5j4r83,Pulse Training Band,acessorio_tec,incomum,812,1,8096,25,961,26,25,32.48
+main,normal,5,0,2026-01-01,shopitem-1791118919974-33r3nq,Padel Start Training x3,bola,comum,41,1,3104,0,1002,13,0,
+main,normal,5,7,2026-01-08,shopitem-1791118911974-5l7qca,Tour Grip Dry Start,grip,comum,50,1,2813,0,1002,14,0,
+main,normal,5,14,2026-01-15,shopitem-1791118956974-51jwcg,Joma Wristband Base,acessorio,comum,54,1,2463,0,1001,17,0,
+main,normal,5,21,2026-01-22,shopitem-1791118924974-82vzoi,Joma Training Tee,roupa,comum,198,1,2119,0,1001,19,0,
+main,normal,5,28,2026-01-29,shopitem-1791118940974-sq3tym,Padel Start Compact,mochila,comum,234,1,1671,0,1001,21,0,
+main,normal,5,35,2026-02-05,shopitem-1791118876974-sqa7w2,Head Flash Motion Club,raquete,comum,524,2,3429,25,988,23,25,20.96
+main,normal,5,42,2026-02-12,shopitem-1791118932974-wbx6ok,Joma Court Basic,tenis,comum,432,1,2582,25,978,25,25,17.28
+main,normal,5,63,2026-03-05,shopitem-1791118948974-syggu5,Pulse Training Band,acessorio_tec,incomum,802,1,6580,1298,951,29,1298,0.62
+main,normal,6,0,2026-01-01,shopitem-1791118942355-rjk90q,Padel Start Training x3,bola,comum,41,1,3657,0,1002,13,0,
+main,normal,6,7,2026-01-08,shopitem-1791118934355-3ggi1u,Tour Grip Dry Start,grip,comum,50,1,3326,0,1001,15,0,
+main,normal,6,14,2026-01-15,shopitem-1791118979355-spqmkj,Joma Wristband Base,acessorio,comum,54,1,3016,0,1001,17,0,
+main,normal,6,21,2026-01-22,shopitem-1791118947355-b9ay75,Joma Training Tee,roupa,comum,198,1,5798,0,1001,19,0,
+main,normal,6,28,2026-01-29,shopitem-1791118963355-y4txiz,Padel Start Compact,mochila,comum,234,1,5390,0,1001,21,0,
+main,normal,6,35,2026-02-05,shopitem-1791118899355-2y08qf,Head Flash Motion Club,raquete,comum,524,2,9884,25,992,23,25,20.96
+main,normal,6,42,2026-02-12,shopitem-1791118955355-g2s4k3,Joma Court Basic,tenis,comum,432,1,9037,25,983,25,25,17.28
+main,normal,6,49,2026-02-19,shopitem-1791118971355-4y16f5,Pulse Training Band,acessorio_tec,incomum,802,1,8270,25,979,26,25,32.08
+main,normal,7,0,2026-01-01,shopitem-1791118964736-q4g10n,Padel Start Training x3,bola,comum,41,1,3595,0,1002,13,0,
+main,normal,7,7,2026-01-08,shopitem-1791118956736-76h9r9,Tour Grip Dry Start,grip,comum,50,1,3264,0,1002,15,0,
+main,normal,7,14,2026-01-15,shopitem-1791119001736-g69z68,Joma Wristband Base,acessorio,comum,54,1,2914,0,1002,17,0,
+main,normal,7,21,2026-01-22,shopitem-1791118969736-532vf9,Joma Training Tee,roupa,comum,198,1,2610,0,1001,19,0,
+main,normal,7,28,2026-01-29,shopitem-1791118985736-joz3x3,Padel Start Compact,mochila,comum,234,1,2162,0,1001,21,0,
+main,normal,7,35,2026-02-05,shopitem-1791118921736-141vvt,Head Flash Motion Club,raquete,comum,524,2,4300,25,995,23,25,20.96
+main,normal,7,42,2026-02-12,shopitem-1791118977736-y6mxdw,Joma Court Basic,tenis,comum,432,1,3513,25,985,25,25,17.28
+main,normal,7,49,2026-02-19,shopitem-1791118993736-99j49l,Pulse Training Band,acessorio_tec,incomum,802,1,2740,25,981,26,25,32.08
+main,normal,8,0,2026-01-01,shopitem-1791118887117-fapawl,Padel Start Training x3,bola,comum,41,1,3524,0,1001,13,0,
+main,normal,8,7,2026-01-08,shopitem-1791118879117-1hq730,Tour Grip Dry Start,grip,comum,50,1,3193,0,1001,15,0,
+main,normal,8,14,2026-01-15,shopitem-1791118924117-nvl5lq,Joma Wristband Base,acessorio,comum,54,1,2843,0,1001,17,0,
+main,normal,8,21,2026-01-22,shopitem-1791118892117-407z2l,Joma Training Tee,roupa,comum,198,1,5802,0,1001,19,0,
+main,normal,8,28,2026-01-29,shopitem-1791118908117-hp6fte,Padel Start Compact,mochila,comum,234,1,5354,0,1001,21,0,
+main,normal,8,35,2026-02-05,shopitem-1791118844117-lbyu8p,Head Flash Motion Club,raquete,comum,524,2,9898,25,985,24,25,20.96
+main,normal,8,42,2026-02-12,shopitem-1791118900117-a285p1,Joma Court Basic,tenis,comum,432,1,9126,25,975,25,25,17.28
+main,normal,8,49,2026-02-19,shopitem-1791118916117-ows6tf,Pulse Training Band,acessorio_tec,incomum,807,1,8353,25,971,27,25,32.28
+main,normal,9,0,2026-01-01,shopitem-1791118909498-3jfhwy,Padel Start Training x3,bola,comum,41,1,3234,0,1001,13,0,
+main,normal,9,7,2026-01-08,shopitem-1791118901498-ude7ld,Tour Grip Dry Start,grip,comum,50,1,2903,0,1001,15,0,
+main,normal,9,14,2026-01-15,shopitem-1791118946498-5jw6qm,Joma Wristband Base,acessorio,comum,54,1,2593,0,1001,17,0,
+main,normal,9,21,2026-01-22,shopitem-1791118914498-ya1ciq,Joma Training Tee,roupa,comum,198,1,5539,0,1001,19,0,
+main,normal,9,28,2026-01-29,shopitem-1791118930498-1s5ki4,Padel Start Compact,mochila,comum,234,1,5091,0,1001,21,0,
+main,normal,9,35,2026-02-05,shopitem-1791118866498-lqqfe4,Head Flash Motion Club,raquete,comum,524,2,9367,25,986,23,25,20.96
+main,normal,9,42,2026-02-12,shopitem-1791118922498-aczgtc,Joma Court Basic,tenis,comum,432,1,8544,25,976,25,25,17.28
+main,normal,9,49,2026-02-19,shopitem-1791118938498-47lwhf,Pulse Training Band,acessorio_tec,incomum,807,1,7801,25,972,26,25,32.28
+main,normal,10,0,2026-01-01,shopitem-1791118890198-yl0s83,Padel Start Training x3,bola,comum,41,1,3270,0,1002,13,0,
+main,normal,10,7,2026-01-08,shopitem-1791118882198-c6dvda,Tour Grip Dry Start,grip,comum,50,1,2939,0,1002,15,0,
+main,normal,10,14,2026-01-15,shopitem-1791118927198-clfa0q,Joma Wristband Base,acessorio,comum,54,1,2589,0,1002,17,0,
+main,normal,10,21,2026-01-22,shopitem-1791118895198-955sqb,Joma Training Tee,roupa,comum,198,1,5151,0,1001,19,0,
+main,normal,10,28,2026-01-29,shopitem-1791118911198-tozzdy,Padel Start Compact,mochila,comum,234,1,4669,0,1001,21,0,
+main,normal,10,35,2026-02-05,shopitem-1791118847198-bgeyou,Head Flash Motion Club,raquete,comum,524,2,8798,25,987,23,25,20.96
+main,normal,10,42,2026-02-12,shopitem-1791118903198-g4gzql,Joma Court Basic,tenis,comum,432,1,7945,25,978,25,25,17.28
+main,normal,10,49,2026-02-19,shopitem-1791118919198-vzph9c,Pulse Training Band,acessorio_tec,incomum,811,1,7358,25,974,25,25,32.44
+main,normal,11,0,2026-01-01,shopitem-1791118941817-qlz29b,Padel Start Training x3,bola,comum,41,1,2001,0,1001,13,0,
+main,normal,11,7,2026-01-08,shopitem-1791118933817-nrbukv,Tour Grip Dry Start,grip,comum,50,1,1710,0,1001,15,0,
+main,normal,11,14,2026-01-15,shopitem-1791118978817-oeqvit,Joma Wristband Base,acessorio,comum,54,1,1400,0,1001,16,0,
+main,normal,11,21,2026-01-22,shopitem-1791118946817-ay2eke,Joma Training Tee,roupa,comum,198,1,6331,0,1001,19,0,
+main,normal,11,28,2026-01-29,shopitem-1791118962817-f2v3sg,Padel Start Compact,mochila,comum,234,1,5883,0,1001,21,0,
+main,normal,11,35,2026-02-05,shopitem-1791118898817-yji1bs,Head Flash Motion Club,raquete,comum,524,2,10746,25,991,23,25,20.96
+main,normal,11,42,2026-02-12,shopitem-1791118954817-mdhft3,Joma Court Basic,tenis,comum,432,1,9899,25,982,25,25,17.28
+main,normal,11,49,2026-02-19,shopitem-1791118970817-628aak,Pulse Training Band,acessorio_tec,incomum,815,1,9147,25,978,26,25,32.6
+main,normal,12,0,2026-01-01,shopitem-1791118934960-o5xrbc,Padel Start Training x3,bola,comum,41,1,3319,0,1002,13,0,
+main,normal,12,7,2026-01-08,shopitem-1791118926960-4s9uhu,Tour Grip Dry Start,grip,comum,50,1,3028,0,1002,14,0,
+main,normal,12,14,2026-01-15,shopitem-1791118971960-ir4ki6,Joma Wristband Base,acessorio,comum,54,1,2678,0,1001,17,0,
+main,normal,12,21,2026-01-22,shopitem-1791118939960-o3onbf,Joma Training Tee,roupa,comum,198,1,5631,0,1001,19,0,
+main,normal,12,28,2026-01-29,shopitem-1791118955960-8sw5ha,Padel Start Compact,mochila,comum,234,1,5149,0,1001,21,0,
+main,normal,12,35,2026-02-05,shopitem-1791118891960-u8u2ws,Head Flash Motion Club,raquete,comum,524,2,9558,25,991,23,25,20.96
+main,normal,12,42,2026-02-12,shopitem-1791118947960-mzqt1o,Joma Court Basic,tenis,comum,432,1,8771,25,981,24,25,17.28
+main,normal,12,49,2026-02-19,shopitem-1791118963960-b5gvfa,Pulse Training Band,acessorio_tec,incomum,802,1,8058,25,977,26,25,32.08
+main,normal,13,0,2026-01-01,shopitem-1791118912579-b21iih,Padel Start Training x3,bola,comum,41,1,3297,0,1002,13,0,
+main,normal,13,7,2026-01-08,shopitem-1791118904579-gpx7x0,Tour Grip Dry Start,grip,comum,50,1,2966,0,1001,15,0,
+main,normal,13,14,2026-01-15,shopitem-1791118949579-ma2d4j,Joma Wristband Base,acessorio,comum,54,1,2656,0,1001,17,0,
+main,normal,13,21,2026-01-22,shopitem-1791118917579-mp3yf8,Joma Training Tee,roupa,comum,198,1,5249,0,1001,19,0,
+main,normal,13,28,2026-01-29,shopitem-1791118933579-tfvt94,Padel Start Compact,mochila,comum,234,1,4801,0,1001,21,0,
+main,normal,13,35,2026-02-05,shopitem-1791118869579-khuvj3,Head Flash Motion Club,raquete,comum,524,2,9038,25,992,23,25,20.96
+main,normal,13,42,2026-02-12,shopitem-1791118925579-wbwmqx,Joma Court Basic,tenis,comum,432,1,8185,25,983,25,25,17.28
+main,normal,13,49,2026-02-19,shopitem-1791118941579-pd9knh,Pulse Training Band,acessorio_tec,incomum,818,1,7418,25,979,26,25,32.72
+main,normal,14,0,2026-01-01,shopitem-1791118809674-b1s01u,Padel Start Training x3,bola,comum,41,1,3410,0,1002,13,0,
+main,normal,14,7,2026-01-08,shopitem-1791118801674-n4eh9q,Tour Grip Dry Start,grip,comum,50,1,3079,0,1002,15,0,
+main,normal,14,14,2026-01-15,shopitem-1791118846674-ctwr4t,Joma Wristband Base,acessorio,comum,54,1,2769,0,1001,17,0,
+main,normal,14,21,2026-01-22,shopitem-1791118814674-fgca1j,Joma Training Tee,roupa,comum,198,1,2425,0,1001,19,0,
+main,normal,14,28,2026-01-29,shopitem-1791118830674-8warlu,Padel Start Compact,mochila,comum,234,1,1977,0,1001,21,0,
+main,normal,14,35,2026-02-05,shopitem-1791118766674-cdvscv,Head Flash Motion Club,raquete,comum,524,2,3964,25,993,23,25,20.96
+main,normal,14,42,2026-02-12,shopitem-1791118822674-mfrhq4,Joma Court Basic,tenis,comum,432,1,3117,25,983,25,25,17.28
+main,normal,14,63,2026-03-05,shopitem-1791118838674-wh37c0,Pulse Training Band,acessorio_tec,incomum,807,1,6785,1420,958,29,1420,0.57
+main,normal,15,0,2026-01-01,shopitem-1791118878293-m15oew,Padel Start Training x3,bola,comum,41,1,3359,0,1002,13,0,
+main,normal,15,7,2026-01-08,shopitem-1791118870293-od00af,Tour Grip Dry Start,grip,comum,50,1,3028,0,1001,15,0,
+main,normal,15,14,2026-01-15,shopitem-1791118915293-yyb9rh,Joma Wristband Base,acessorio,comum,54,1,2718,0,1001,17,0,
+main,normal,15,21,2026-01-22,shopitem-1791118883293-7yhdk3,Joma Training Tee,roupa,comum,198,1,2374,0,1001,19,0,
+main,normal,15,28,2026-01-29,shopitem-1791118899293-io6uf2,Padel Start Compact,mochila,comum,234,1,1926,0,1001,21,0,
+main,normal,15,35,2026-02-05,shopitem-1791118835293-uis68e,Head Flash Motion Club,raquete,comum,524,2,6764,25,996,23,25,20.96
+main,normal,15,42,2026-02-12,shopitem-1791118891293-3hzu4k,Joma Court Basic,tenis,comum,432,1,5917,25,986,25,25,17.28
+main,normal,15,49,2026-02-19,shopitem-1791118907293-ejy6lp,Pulse Training Band,acessorio_tec,incomum,818,1,5150,25,982,26,25,32.72
+main,optimizer,1,0,2026-01-01,shopitem-1791118903788-3999sd,Head Flash Motion Club,raquete,comum,524,2,1904,0,1002,13,0,
+main,optimizer,1,7,2026-01-08,shopitem-1791118946788-gtnfa4,Padel Start Training x3,bola,comum,41,1,1074,0,1002,15,0,
+main,optimizer,1,14,2026-01-15,shopitem-1791118938788-qoo9yw,Tour Grip Dry Start,grip,comum,50,1,725,0,1002,17,0,
+main,optimizer,1,21,2026-01-22,shopitem-1791118983788-okulsw,Joma Wristband Base,acessorio,comum,54,1,5716,0,1002,19,0,
+main,optimizer,1,28,2026-01-29,shopitem-1791118951788-hjvgq7,Joma Training Tee,roupa,comum,198,1,5384,0,1002,21,0,
+main,optimizer,1,63,2026-03-05,shopitem-1791118967788-xytjrm,Padel Start Compact,mochila,comum,234,1,14883,2870,950,27,2870,0.08
+main,optimizer,1,70,2026-03-12,shopitem-1791118959788-585hci,Joma Court Basic,tenis,comum,432,1,14304,2870,946,28,2870,0.15
+main,optimizer,1,77,2026-03-19,shopitem-1791118975788-zqjfqp,Pulse Training Band,acessorio_tec,incomum,818,1,13452,2870,946,29,2870,0.29
+main,optimizer,2,0,2026-01-01,shopitem-1791118862645-52mebe,Head Flash Motion Club,raquete,comum,524,2,3433,0,1002,13,0,
+main,optimizer,2,7,2026-01-08,shopitem-1791118905645-4rscoa,Padel Start Training x3,bola,comum,41,1,2603,0,1002,15,0,
+main,optimizer,2,14,2026-01-15,shopitem-1791118897645-z4xbhp,Tour Grip Dry Start,grip,comum,50,1,2254,0,1002,17,0,
+main,optimizer,2,21,2026-01-22,shopitem-1791118942645-d0ab4n,Joma Wristband Base,acessorio,comum,54,1,1926,0,1002,19,0,
+main,optimizer,2,28,2026-01-29,shopitem-1791118910645-centy9,Joma Training Tee,roupa,comum,198,1,1594,0,1002,20,0,
+main,optimizer,2,91,2026-04-02,shopitem-1791118926645-7g8c6c,Padel Start Compact,mochila,comum,234,1,11444,1881,928,31,1463,0.16
+main,optimizer,2,98,2026-04-09,shopitem-1791118918645-ki1nzw,Joma Court Basic,tenis,comum,432,1,10935,1881,927,32,1881,0.23
+main,optimizer,2,105,2026-04-16,shopitem-1791118934645-jimecx,Pulse Training Band,acessorio_tec,incomum,815,1,10199,1881,927,33,1881,0.43
+main,optimizer,3,0,2026-01-01,shopitem-1791118859026-wjnql7,Head Flash Motion Club,raquete,comum,524,2,1940,0,1002,13,0,
+main,optimizer,3,7,2026-01-08,shopitem-1791118902026-5jelg3,Padel Start Training x3,bola,comum,41,1,1110,0,1002,15,0,
+main,optimizer,3,14,2026-01-15,shopitem-1791118894026-o47ub6,Tour Grip Dry Start,grip,comum,50,1,761,0,1002,17,0,
+main,optimizer,3,21,2026-01-22,shopitem-1791118939026-3zo43h,Joma Wristband Base,acessorio,comum,54,1,5534,0,1002,19,0,
+main,optimizer,3,28,2026-01-29,shopitem-1791118907026-eex8h3,Joma Training Tee,roupa,comum,198,1,5202,0,1002,21,0,
+main,optimizer,3,63,2026-03-05,shopitem-1791118923026-m7gdl3,Padel Start Compact,mochila,comum,234,1,11429,2780,960,27,2780,0.08
+main,optimizer,3,70,2026-03-12,shopitem-1791118915026-3do0su,Joma Court Basic,tenis,comum,432,1,10850,2780,956,28,2780,0.16
+main,optimizer,3,77,2026-03-19,shopitem-1791118931026-k2zb3e,Pulse Training Band,acessorio_tec,incomum,818,1,9998,2780,956,29,2780,0.29
+main,optimizer,4,0,2026-01-01,shopitem-1791118896931-rzn7a3,Head Flash Motion Club,raquete,comum,524,2,3598,0,1002,13,0,
+main,optimizer,4,7,2026-01-08,shopitem-1791118939931-b96lns,Padel Start Training x3,bola,comum,41,1,2768,0,1002,15,0,
+main,optimizer,4,14,2026-01-15,shopitem-1791118931931-r2ou2a,Tour Grip Dry Start,grip,comum,50,1,2419,0,1002,17,0,
+main,optimizer,4,21,2026-01-22,shopitem-1791118976931-xwlngm,Joma Wristband Base,acessorio,comum,54,1,5034,0,1001,19,0,
+main,optimizer,4,28,2026-01-29,shopitem-1791118944931-8m89z1,Joma Training Tee,roupa,comum,198,1,4702,0,1001,20,0,
+main,optimizer,4,63,2026-03-05,shopitem-1791118960931-8iqy3n,Padel Start Compact,mochila,comum,234,1,10211,2600,956,27,2600,0.09
+main,optimizer,4,70,2026-03-12,shopitem-1791118952931-u89bof,Joma Court Basic,tenis,comum,432,1,9632,2600,952,28,2600,0.17
+main,optimizer,4,91,2026-04-02,shopitem-1791118968931-irbltt,Pulse Training Band,acessorio_tec,incomum,803,1,10579,3427,940,31,2600,0.31
+main,optimizer,5,0,2026-01-01,shopitem-1791118893312-w5ooll,Head Flash Motion Club,raquete,comum,524,2,1997,0,1002,13,0,
+main,optimizer,5,7,2026-01-08,shopitem-1791118936312-8noalj,Padel Start Training x3,bola,comum,41,1,1167,0,1002,15,0,
+main,optimizer,5,14,2026-01-15,shopitem-1791118928312-51ablz,Tour Grip Dry Start,grip,comum,50,1,818,0,1002,17,0,
+main,optimizer,5,21,2026-01-22,shopitem-1791118973312-we9g79,Joma Wristband Base,acessorio,comum,54,1,5594,0,1002,18,0,
+main,optimizer,5,28,2026-01-29,shopitem-1791118941312-l4aa31,Joma Training Tee,roupa,comum,198,1,5270,0,1001,20,0,
+main,optimizer,5,63,2026-03-05,shopitem-1791118957312-en4mn1,Padel Start Compact,mochila,comum,234,1,11575,2801,951,25,2801,0.08
+main,optimizer,5,70,2026-03-12,shopitem-1791118949312-7ui5t5,Joma Court Basic,tenis,comum,432,1,10966,2801,947,27,2801,0.15
+main,optimizer,5,77,2026-03-19,shopitem-1791118965312-167t61,Pulse Training Band,acessorio_tec,incomum,818,1,10144,2801,947,28,2801,0.29
+main,optimizer,6,0,2026-01-01,shopitem-1791118852169-yfkw5r,Head Flash Motion Club,raquete,comum,524,2,3645,0,1002,13,0,
+main,optimizer,6,7,2026-01-08,shopitem-1791118895169-go3lvn,Padel Start Training x3,bola,comum,41,1,2815,0,1002,15,0,
+main,optimizer,6,14,2026-01-15,shopitem-1791118887169-o8xvhq,Tour Grip Dry Start,grip,comum,50,1,2466,0,1002,16,0,
+main,optimizer,6,21,2026-01-22,shopitem-1791118932169-efib57,Joma Wristband Base,acessorio,comum,54,1,5141,0,1002,18,0,
+main,optimizer,6,28,2026-01-29,shopitem-1791118900169-2zma6k,Joma Training Tee,roupa,comum,198,1,4937,0,1002,19,0,
+main,optimizer,6,35,2026-02-05,shopitem-1791118916169-kuxg1t,Padel Start Compact,mochila,comum,234,1,9635,0,989,19,0,
+main,optimizer,6,42,2026-02-12,shopitem-1791118908169-37hyfs,Joma Court Basic,tenis,comum,432,1,9054,0,983,21,0,
+main,optimizer,6,49,2026-02-19,shopitem-1791118924169-u61841,Pulse Training Band,acessorio_tec,incomum,818,1,8287,0,979,23,0,
+main,optimizer,7,0,2026-01-01,shopitem-1791118874550-d2ia52,Head Flash Motion Club,raquete,comum,524,2,3242,0,1002,13,0,
+main,optimizer,7,7,2026-01-08,shopitem-1791118917550-81pim5,Padel Start Training x3,bola,comum,41,1,2412,0,1002,15,0,
+main,optimizer,7,14,2026-01-15,shopitem-1791118909550-p9tmwg,Tour Grip Dry Start,grip,comum,50,1,2063,0,1002,17,0,
+main,optimizer,7,21,2026-01-22,shopitem-1791118954550-w07g48,Joma Wristband Base,acessorio,comum,54,1,4479,0,1002,19,0,
+main,optimizer,7,28,2026-01-29,shopitem-1791118922550-resbc2,Joma Training Tee,roupa,comum,198,1,4147,0,1002,20,0,
+main,optimizer,7,63,2026-03-05,shopitem-1791118938550-vgl92g,Padel Start Compact,mochila,comum,234,1,11126,2382,959,26,2382,0.1
+main,optimizer,7,70,2026-03-12,shopitem-1791118930550-r0ypmk,Joma Court Basic,tenis,comum,432,1,10547,2382,955,27,2382,0.18
+main,optimizer,7,77,2026-03-19,shopitem-1791118946550-bfmsnd,Pulse Training Band,acessorio_tec,incomum,803,1,9695,2382,955,28,2382,0.34
+main,optimizer,8,0,2026-01-01,shopitem-1791118928359-5ngso0,Head Flash Motion Club,raquete,comum,524,2,3217,0,1002,13,0,
+main,optimizer,8,7,2026-01-08,shopitem-1791118971359-sqawai,Padel Start Training x3,bola,comum,41,1,2387,0,1002,15,0,
+main,optimizer,8,14,2026-01-15,shopitem-1791118963359-kc4wov,Tour Grip Dry Start,grip,comum,50,1,2038,0,1002,17,0,
+main,optimizer,8,21,2026-01-22,shopitem-1791119008359-pq92fq,Joma Wristband Base,acessorio,comum,54,1,4783,0,1002,19,0,
+main,optimizer,8,28,2026-01-29,shopitem-1791118976359-1abjqa,Joma Training Tee,roupa,comum,198,1,4451,0,1001,20,0,
+main,optimizer,8,63,2026-03-05,shopitem-1791118992359-y2kok0,Padel Start Compact,mochila,comum,234,1,11888,2496,959,26,2496,0.09
+main,optimizer,8,70,2026-03-12,shopitem-1791118984359-9t0x6v,Joma Court Basic,tenis,comum,432,1,11309,2496,955,27,2496,0.17
+main,optimizer,8,77,2026-03-19,shopitem-1791119000359-20ptcu,Pulse Training Band,acessorio_tec,incomum,811,1,10457,2496,955,29,2496,0.32
+main,optimizer,9,0,2026-01-01,shopitem-1791118850740-la677s,Head Flash Motion Club,raquete,comum,524,2,3337,0,1002,13,0,
+main,optimizer,9,7,2026-01-08,shopitem-1791118893740-02e0hq,Padel Start Training x3,bola,comum,41,1,2507,0,1002,15,0,
+main,optimizer,9,14,2026-01-15,shopitem-1791118885740-5jhvxq,Tour Grip Dry Start,grip,comum,50,1,2158,0,1002,17,0,
+main,optimizer,9,21,2026-01-22,shopitem-1791118930740-r13s7k,Joma Wristband Base,acessorio,comum,54,1,4773,0,1002,19,0,
+main,optimizer,9,28,2026-01-29,shopitem-1791118898740-suyujh,Joma Training Tee,roupa,comum,198,1,4441,0,1002,21,0,
+main,optimizer,9,63,2026-03-05,shopitem-1791118914740-4mmza0,Padel Start Compact,mochila,comum,234,1,12035,2473,965,27,2473,0.09
+main,optimizer,9,70,2026-03-12,shopitem-1791118906740-ah8x70,Joma Court Basic,tenis,comum,432,1,11456,2473,961,28,2473,0.17
+main,optimizer,9,77,2026-03-19,shopitem-1791118922740-ifil1u,Pulse Training Band,acessorio_tec,incomum,811,1,10634,2473,961,29,2473,0.33
+main,optimizer,10,0,2026-01-01,shopitem-1791118825940-yvur4x,Head Flash Motion Club,raquete,comum,524,2,1907,0,1002,13,0,
+main,optimizer,10,7,2026-01-08,shopitem-1791118868940-abz5f5,Padel Start Training x3,bola,comum,41,1,1077,0,1002,15,0,
+main,optimizer,10,14,2026-01-15,shopitem-1791118860940-yyi739,Tour Grip Dry Start,grip,comum,50,1,728,0,1002,17,0,
+main,optimizer,10,21,2026-01-22,shopitem-1791118905940-srlc7i,Joma Wristband Base,acessorio,comum,54,1,6308,0,1002,19,0,
+main,optimizer,10,28,2026-01-29,shopitem-1791118873940-xsvkbk,Joma Training Tee,roupa,comum,198,1,5976,0,1002,21,0,
+main,optimizer,10,63,2026-03-05,shopitem-1791118889940-rbfs89,Padel Start Compact,mochila,comum,234,1,12881,3074,960,27,3074,0.08
+main,optimizer,10,70,2026-03-12,shopitem-1791118881940-rqd6wa,Joma Court Basic,tenis,comum,432,1,12302,3074,956,28,3074,0.14
+main,optimizer,10,77,2026-03-19,shopitem-1791118897940-o4f1gl,Pulse Training Band,acessorio_tec,incomum,802,1,11450,3074,956,29,3074,0.26
+main,optimizer,11,0,2026-01-01,shopitem-1791118903559-wid2vj,Head Flash Motion Club,raquete,comum,524,2,1562,0,1002,13,0,
+main,optimizer,11,7,2026-01-08,shopitem-1791118946559-gocdzk,Padel Start Training x3,bola,comum,41,1,732,0,1002,15,0,
+main,optimizer,11,14,2026-01-15,shopitem-1791118938559-trh0ud,Tour Grip Dry Start,grip,comum,50,1,383,0,1002,17,0,
+main,optimizer,11,21,2026-01-22,shopitem-1791118983559-r1nj3m,Joma Wristband Base,acessorio,comum,54,1,5490,0,1002,19,0,
+main,optimizer,11,28,2026-01-29,shopitem-1791118951559-ijnt4q,Joma Training Tee,roupa,comum,198,1,5158,0,1002,21,0,
+main,optimizer,11,63,2026-03-05,shopitem-1791118967559-sv1hcm,Padel Start Compact,mochila,comum,234,1,11419,2769,960,27,2769,0.08
+main,optimizer,11,70,2026-03-12,shopitem-1791118959559-kf5yqi,Joma Court Basic,tenis,comum,432,1,10810,2769,956,28,2769,0.16
+main,optimizer,11,77,2026-03-19,shopitem-1791118975559-avg93i,Pulse Training Band,acessorio_tec,incomum,803,1,9988,2769,956,30,2769,0.29
+main,optimizer,12,0,2026-01-01,shopitem-1791118881178-yce6k3,Head Flash Motion Club,raquete,comum,524,2,1852,0,1002,13,0,
+main,optimizer,12,7,2026-01-08,shopitem-1791118924178-ucdg25,Padel Start Training x3,bola,comum,41,1,1022,0,1002,15,0,
+main,optimizer,12,14,2026-01-15,shopitem-1791118916178-tkkxi0,Tour Grip Dry Start,grip,comum,50,1,673,0,1002,17,0,
+main,optimizer,12,21,2026-01-22,shopitem-1791118961178-7sfb67,Joma Wristband Base,acessorio,comum,54,1,5979,0,1001,19,0,
+main,optimizer,12,28,2026-01-29,shopitem-1791118929178-k02nga,Joma Training Tee,roupa,comum,198,1,5647,0,1001,21,0,
+main,optimizer,12,63,2026-03-05,shopitem-1791118945178-us88o8,Padel Start Compact,mochila,comum,234,1,12542,2947,957,27,2947,0.08
+main,optimizer,12,70,2026-03-12,shopitem-1791118937178-askmqy,Joma Court Basic,tenis,comum,432,1,11963,2947,953,29,2947,0.15
+main,optimizer,12,77,2026-03-19,shopitem-1791118953178-veno77,Pulse Training Band,acessorio_tec,incomum,811,1,11291,2947,953,29,2947,0.28
+main,optimizer,13,0,2026-01-01,shopitem-1791118858797-5j9bhu,Head Flash Motion Club,raquete,comum,524,2,1550,0,1002,13,0,
+main,optimizer,13,7,2026-01-08,shopitem-1791118901797-shu6en,Padel Start Training x3,bola,comum,41,1,720,0,1002,15,0,
+main,optimizer,13,14,2026-01-15,shopitem-1791118893797-zzij8z,Tour Grip Dry Start,grip,comum,50,1,371,0,1002,17,0,
+main,optimizer,13,21,2026-01-22,shopitem-1791118938797-wb1iig,Joma Wristband Base,acessorio,comum,54,1,5295,0,1002,18,0,
+main,optimizer,13,28,2026-01-29,shopitem-1791118906797-cr4f4i,Joma Training Tee,roupa,comum,198,1,4971,0,1002,19,0,
+main,optimizer,13,63,2026-03-05,shopitem-1791118922797-k3ckzx,Padel Start Compact,mochila,comum,234,1,10858,2696,962,25,2696,0.09
+main,optimizer,13,70,2026-03-12,shopitem-1791118914797-gca5v8,Joma Court Basic,tenis,comum,432,1,10249,2696,958,26,2696,0.16
+main,optimizer,13,91,2026-04-02,shopitem-1791118930797-oolqj4,Pulse Training Band,acessorio_tec,incomum,815,1,11321,3555,936,30,2696,0.3
+main,optimizer,14,0,2026-01-01,shopitem-1791118841464-0c4hv6,Head Flash Motion Club,raquete,comum,524,2,3261,0,1002,13,0,
+main,optimizer,14,7,2026-01-08,shopitem-1791118884464-z9xu6i,Padel Start Training x3,bola,comum,41,1,2431,0,1002,15,0,
+main,optimizer,14,14,2026-01-15,shopitem-1791118876464-2y3yaf,Tour Grip Dry Start,grip,comum,50,1,2082,0,1002,17,0,
+main,optimizer,14,21,2026-01-22,shopitem-1791118921464-e6yk41,Joma Wristband Base,acessorio,comum,54,1,4870,0,1002,18,0,
+main,optimizer,14,28,2026-01-29,shopitem-1791118889464-ipmcvq,Joma Training Tee,roupa,comum,198,1,4546,0,1002,20,0,
+main,optimizer,14,63,2026-03-05,shopitem-1791118905464-8i1sci,Padel Start Compact,mochila,comum,234,1,9921,2531,954,25,2531,0.09
+main,optimizer,14,70,2026-03-12,shopitem-1791118897464-f2lo4p,Joma Court Basic,tenis,comum,432,1,9263,2531,954,28,2531,0.17
+main,optimizer,14,126,2026-05-07,shopitem-1791118913464-wlapoz,Pulse Training Band,acessorio_tec,incomum,803,1,10996,4965,929,38,4965,0.16
+main,optimizer,15,0,2026-01-01,shopitem-1791118919083-lmuzun,Head Flash Motion Club,raquete,comum,524,2,3293,0,1002,13,0,
+main,optimizer,15,7,2026-01-08,shopitem-1791118962083-07p96i,Padel Start Training x3,bola,comum,41,1,2463,0,1002,15,0,
+main,optimizer,15,14,2026-01-15,shopitem-1791118954083-py5im4,Tour Grip Dry Start,grip,comum,50,1,2114,0,1002,17,0,
+main,optimizer,15,21,2026-01-22,shopitem-1791118999083-33weag,Joma Wristband Base,acessorio,comum,54,1,5012,0,1002,19,0,
+main,optimizer,15,28,2026-01-29,shopitem-1791118967083-4q8z0a,Joma Training Tee,roupa,comum,198,1,4680,0,1002,21,0,
+main,optimizer,15,63,2026-03-05,shopitem-1791118983083-2497eb,Padel Start Compact,mochila,comum,234,1,10305,2586,962,26,2586,0.09
+main,optimizer,15,70,2026-03-12,shopitem-1791118975083-ue4brc,Joma Court Basic,tenis,comum,432,1,10061,2586,962,26,2586,0.17
+main,optimizer,15,91,2026-04-02,shopitem-1791118991083-z89rwb,Pulse Training Band,acessorio_tec,incomum,815,1,11565,3414,945,31,2586,0.32
+long,casual,501,35,2026-02-05,shopitem-1791119386427-fg71dx,Padel Start Compact,mochila,comum,234,1,5390,8277,992,15,25,9.36
+long,casual,501,49,2026-02-19,shopitem-1791119379427-fiy1a9,Asics Clay Motion,tenis,incomum,657,1,7535,8277,978,16,25,26.28
+long,casual,501,77,2026-03-19,shopitem-1791119371427-ypf185,Adidas Match Shorts,roupa,incomum,374,1,10725,7030,967,20,1415,0.26
+long,casual,501,84,2026-03-26,shopitem-1791119322427-v34eab,Head Flash Motion Club,raquete,comum,524,2,10424,7030,942,21,1415,0.37
+long,casual,501,112,2026-04-23,shopitem-1791119358427-othxwz,Head Comfort Sport,grip,incomum,223,1,10964,6279,920,25,2503,0.09
+long,casual,501,126,2026-05-07,shopitem-1791119365427-pb7a3h,Padel Start Training x3,bola,comum,41,1,12292,5217,903,27,4192,0.01
+long,casual,501,133,2026-05-14,shopitem-1791119402427-kvq5el,Joma Wristband Base,acessorio,comum,54,1,12116,5217,898,27,4192,0.01
+long,casual,501,140,2026-05-21,shopitem-1791119394427-7hlvfr,Pulse Training Band,acessorio_tec,incomum,806,1,12002,5217,898,28,4192,0.19
+long,normal,501,0,2026-01-01,shopitem-1791118903945-glt46p,Padel Start Training x3,bola,comum,41,1,3507,0,1002,13,0,
+long,normal,501,7,2026-01-08,shopitem-1791118895945-u7xoet,Tour Grip Dry Start,grip,comum,50,1,3176,0,1001,15,0,
+long,normal,501,14,2026-01-15,shopitem-1791118940945-n6vx6b,Joma Wristband Base,acessorio,comum,54,1,2866,0,1001,17,0,
+long,normal,501,21,2026-01-22,shopitem-1791118908945-ms2wa0,Joma Training Tee,roupa,comum,198,1,2562,0,1001,19,0,
+long,normal,501,28,2026-01-29,shopitem-1791118924945-hxsp06,Padel Start Compact,mochila,comum,234,1,2114,0,1001,21,0,
+long,normal,501,35,2026-02-05,shopitem-1791118860945-4p14w7,Head Flash Motion Club,raquete,comum,524,2,6867,25,987,23,25,20.96
+long,normal,501,42,2026-02-12,shopitem-1791118916945-00uhuf,Joma Court Basic,tenis,comum,432,1,6020,25,978,25,25,17.28
+long,normal,501,49,2026-02-19,shopitem-1791118932945-kgduw9,Pulse Training Band,acessorio_tec,incomum,818,1,5268,25,974,26,25,32.72
+long,optimizer,501,0,2026-01-01,shopitem-1791118924995-1mw7ze,Head Flash Motion Club,raquete,comum,524,2,3529,0,1002,13,0,
+long,optimizer,501,7,2026-01-08,shopitem-1791118967995-dyjkzc,Padel Start Training x3,bola,comum,41,1,2699,0,1002,15,0,
+long,optimizer,501,14,2026-01-15,shopitem-1791118959995-ohtpqo,Tour Grip Dry Start,grip,comum,50,1,2350,0,1002,17,0,
+long,optimizer,501,21,2026-01-22,shopitem-1791119004995-ltb4cl,Joma Wristband Base,acessorio,comum,54,1,4771,0,1002,19,0,
+long,optimizer,501,28,2026-01-29,shopitem-1791118972995-6u4bep,Joma Training Tee,roupa,comum,198,1,4439,0,1002,20,0,
+long,optimizer,501,63,2026-03-05,shopitem-1791118988995-vzfntk,Padel Start Compact,mochila,comum,234,1,11888,2499,959,27,2499,0.09
+long,optimizer,501,70,2026-03-12,shopitem-1791118980995-4d1g2q,Joma Court Basic,tenis,comum,432,1,11309,2499,955,28,2499,0.17
+long,optimizer,501,77,2026-03-19,shopitem-1791118996995-bondzf,Pulse Training Band,acessorio_tec,incomum,807,1,10487,2499,955,29,2499,0.32

@@ -1,5 +1,6 @@
 import { createTournamentEditionId } from './tournamentIntegrity.js';
 import { fnv1aHash } from './hashUtils.js';
+import { getBalance527 } from './balance527.js';
 
 export const WORLD_TOUR_VERSION = '0.5.0-alpha.1';
 export const WORLD_PLAYER_CAPACITY = 5000;
@@ -80,13 +81,27 @@ function buildRoundTable(championValue, roundCount) {
   return Object.freeze(ratios.map((ratio) => Math.round(championValue * ratio)).reverse());
 }
 
+// Playthrough 5.27-F (só presets -E, IA e jogador iguais) — PONTOS DE RANKING
+// da derrota na 1ª rodada nos tiers com corte (Gold+). Medido: sem vencer, um
+// jogador subia por derrotas cada vez mais caras (Masters R1 = 23 pts ≈ título
+// de Silver), abrindo Platinum/Masters e chegando ao top-150 com ~0% de
+// vitórias. Só o 1º degrau muda; vitórias, rodadas finais e título intactos;
+// Bronze/Silver (entrada) e moedas/XP inalterados.
+function buildRankPointsTable(definition, roundCount) {
+  const table = buildRoundTable(definition.rankPoints, roundCount);
+  const ratio = Number(getBalance527().competition?.gatedFirstRoundLossPointsRatio);
+  if (!(definition.minRanking > 0) || !Number.isFinite(ratio)) return table;
+  const firstLoss = Math.max(1, Math.round(definition.rankPoints * ratio));
+  return Object.freeze([Math.min(table[0], firstLoss), ...table.slice(1)]);
+}
+
 function buildTier(definition) {
   const roundCount = roundCountForDrawSize(definition.mainDrawSize);
   // `championPrize`/`championXp` explícitos (usado só pela Exibição,
   // abaixo — precisa de moeda real com ZERO ponto de ranking, e prize/xp
   // não podem ser derivados de rankPoints=0 nesse caso) vencem o cálculo
   // padrão de qualquer tier real da escada de 9.
-  const prize = Math.round(Number.isFinite(definition.championPrize) ? definition.championPrize : definition.rankPoints * PRIZE_COINS_PER_RANK_POINT);
+  const prize = Math.round(Number.isFinite(definition.championPrize) ? definition.championPrize : definition.rankPoints * PRIZE_COINS_PER_RANK_POINT * getBalance527().prizeMultiplier);
   const xp = Math.round(Number.isFinite(definition.championXp) ? definition.championXp : definition.rankPoints * XP_PER_RANK_POINT);
   // Salvaguarda: se um tamanho de chave futuro não tiver rótulos de
   // exibição dedicados em DISPLAY_ROUNDS_BY_DRAW_SIZE, avisa alto (em vez
@@ -106,7 +121,7 @@ function buildTier(definition) {
     roundCount,
     // Do "entrada" (1ª rodada perdida) ao campeão — mesmo comprimento de
     // roundLabels, índice a índice.
-    roundPoints: buildRoundTable(definition.rankPoints, roundCount),
+    roundPoints: buildRankPointsTable(definition, roundCount),
     roundCoins: buildRoundTable(prize, roundCount),
     roundXp: buildRoundTable(xp, roundCount),
     roundLabels: ROUND_LABELS_BY_COUNT[roundCount],
@@ -157,6 +172,21 @@ export const TOURNAMENT_TIER_CONFIG = Object.freeze({
     // Fase 8.1, item 2 — `qualifyingSize` habilita o caminho de qualifying
     // do JOGADOR (EntryManager.js) neste tier; antes só Crown tinha. Mesmo
     // valor de Crown (16 → 3 rodadas, getTournamentQualifyingRoundCount).
+    // Playthrough 5.3, Parte F/G — 24→16 (-33%) testado EM CONJUNTO com a
+    // elegibilidade AI já estreitada (getAiQualifyingLimit, Parte J/K/L,
+    // 900→645) e MEDIDO COM RESULTADO NEGATIVO: Gold avgOVR caiu (70.1→
+    // 68.5) e o gap contra Silver AUMENTOU, não diminuiu — confirma, com a
+    // elegibilidade já corrigida, o mesmo achado da 5.2 (draw size menor
+    // não ajuda) — revertido. diag-tier-qualifying-buckets.mjs (scripts/)
+    // mostrou a causa real: mesmo dentro da faixa de rank correta
+    // (451-600, já elegível tanto antes quanto depois do novo limite),
+    // essa banda tem avgOVR real de só 58,5 — rank e OVR são fracamente
+    // acoplados neste mundo (rank reflete resultado ACUMULADO, não
+    // talento puro), e Gold precisa de tanto VOLUME (818
+    // participações/ano) que não existe profundidade de talento
+    // suficiente dentro da própria faixa de rank correta pra preencher
+    // sem diluir — reduzir vagas ainda mais só piora a seleção disponível
+    // por semana, não melhora.
     mainDrawSize: 24, qualifyingSize: 16, minLevel: 'Iniciante', minRanking: 450, // Fase 5.6: 800 → 450
     prestige: 38, exposure: 32, tradition: 40, durationDays: 5,
   }),
@@ -199,7 +229,10 @@ export const TOURNAMENT_TIER_CONFIG = Object.freeze({
     label: 'Legacy Finals', shortLabel: 'Legacy Finals', order: 8,
     description: 'O evento máximo de duplas do ano — só as 16 melhores parcerias do ranking de duplas disputam, por convite direto.',
     entryFee: 0, rankPoints: 1500, difficultyModifier: 3,
-    mainDrawSize: 8, minLevel: 'Avançado', minRanking: 16,
+    // A chave tem as mesmas 16 duplas que o convite declara. A autoridade
+    // desse convite é TeamRanking (WorldTourLifecycle), não uma aproximação
+    // pela média de ranking individual nem um corte posterior por OVR.
+    mainDrawSize: 16, minLevel: 'Avançado', minRanking: 16,
     prestige: 98, exposure: 95, tradition: 40, durationDays: 3,
   }),
   // Fase 3, item 3C.2 — Pré-Temporada/Exibição: NÃO faz parte da escada
@@ -291,7 +324,35 @@ export const WORLD_TOUR_CITIES = Object.freeze([
 // em todos os tiers) contra os invariantes das Fases 7-8. Cada tier
 // top-tier tem no máximo 1 evento simultâneo — Masters/Elite/Crown nunca
 // competem entre si na mesma semana, evitando fragmentar a elite.
-const TIER_EVENTS_PER_YEAR = Object.freeze({
+// Playthrough 5.2, Parte F/G — Gold PERMANECE em 35 eventos/ano, 24
+// vagas/evento (valores originais). diag-tier-capacity-economy.mjs
+// (scripts/) provou o desequilíbrio de capacidade com números reais:
+// apenas 18.8% do campo real de Gold, numa temporada inteira, tinha rank
+// DENTRO do próprio platô ideal de Gold (rankingFit=100) — contra 53.9%
+// em Silver e 86.5% em Bronze; "capacityPressure" (vagas anuais ÷
+// população natural × repetição de referência) saiu 5-11x acima do
+// equilíbrio pra Gold. MAS duas correções incrementais e isoladas foram
+// testadas com essa evidência em mãos e MEDIDAS COM RESULTADO NEGATIVO
+// (Parte F/G, diag-tier-choice-rebalance.mjs):
+//   - só frequência (35→26, -25.7%): Gold vs Silver não mudou de forma
+//     relevante (avgOVR Gold=70.3 vs Silver=77.0, gap igual ou pior que
+//     o baseline 70.0/76.1).
+//   - só tamanho de chave (24→20, -16.7%, frequência revertida a 35):
+//     mesmo resultado nulo (Gold=69.5 vs Silver=76.5).
+// Conclusão: o gargalo não é capacidade/vagas — é a LARGURA do pool
+// ELEGÍVEL que compete por essas vagas (qualifyingLimit em
+// EntryManager.js, que escala multiplicativamente com minRanking e por
+// isso fica proporcionalmente mais larga pra Gold, o tier pago com o
+// maior minRanking). Reduzir vagas não muda QUEM disputa cada vaga
+// restante — o mesmo pool amplo de candidatos "elegíveis mas não
+// ideais" continua vencendo a disputa. Estreitar qualifyingLimit
+// resolveria, mas essa fórmula é COMPARTILHADA com a elegibilidade de
+// INSCRIÇÃO do jogador (tournamentRegistration.js) — fora do escopo
+// autorizado desta fase (Parte Z: "não reescrever... inscrições").
+// Documentado como pendência explícita pra uma fase futura com escopo
+// pra tocar elegibilidade/inscrição — não uma correção às cegas, uma
+// negativa comprovada com evidência preservada pra quem continuar.
+export const TIER_EVENTS_PER_YEAR = Object.freeze({
   Bronze: 24, Silver: 16, Gold: 35, Platinum: 27, Masters: 12, Elite: 6, Crown: 2,
 });
 const REGULAR_SEASON_LAST_WEEK = 47;
@@ -340,6 +401,11 @@ function buildWeekProgram() {
 }
 
 const WEEK_PROGRAM = buildWeekProgram();
+// Playthrough 5.1, Parte H — exportado só pra leitura/auditoria (o próprio
+// diagnóstico/teste de sobreposição de calendário desta fase); nenhum
+// comportamento muda, `WEEK_PROGRAM` continua a mesma constante congelada
+// já usada internamente.
+export function getWeekProgram() { return WEEK_PROGRAM; }
 
 const EVENT_BRANDS = Object.freeze({
   Bronze: ['Rising Cup','Open','Challenge','Tour Stop'],
@@ -379,6 +445,25 @@ export function getTournamentTierConfig(tier) {
   return TOURNAMENT_TIER_CONFIG[tier] || TOURNAMENT_TIER_CONFIG.Silver;
 }
 
+// Playthrough 4.6B, itens 4/5 — fonte única para "este torneio conta pra
+// conquistas/estatísticas oficiais". A Pré-Temporada/Exibição sempre foi
+// `is_official:true` no Match (TournamentModal.jsx — decisão antiga,
+// necessária pro tutorial reconhecer "jogou uma partida"), mas isso nunca
+// deveria significar "ranqueado o suficiente pra render 'venceu o #1 do
+// mundo'/'primeira vitória oficial'". `world_tour_event`/`is_exhibition`/
+// `tier` já existem desde a criação do torneio (circuitCatalog.js, acima)
+// especificamente para distinguir os dois — nenhum campo novo, só um lugar
+// único pra ler os três em vez de cada consumidor reinventar o check.
+// `world_tour_event` ausente (save antigo) conta como oficial por padrão —
+// só os sinais explícitos de exibição desqualificam.
+export function isOfficialRankedTournament(tournament) {
+  if (!tournament) return false;
+  if (tournament.is_exhibition) return false;
+  if (tournament.tier === 'Exibição') return false;
+  if (tournament.world_tour_event === false) return false;
+  return true;
+}
+
 // Fase 5.3, item 2 — tabela de resultado por rodada para um campo REAL
 // menor que o `mainDrawSize` do tier. A simulação de fundo
 // (WorldTourLifecycle.js) deixou de forçar o preenchimento da chave até
@@ -403,7 +488,7 @@ export function getRoundOutcomeTable(tier, entrantCount) {
   return {
     roundCount,
     roundLabels: ROUND_LABELS_BY_COUNT[roundCount] || config.roundLabels,
-    roundPoints: buildRoundTable(config.rankPoints, roundCount),
+    roundPoints: buildRankPointsTable(config, roundCount),
   };
 }
 
@@ -604,17 +689,244 @@ export function groupTournamentConflicts(tournaments = []) {
     .filter((group) => group.events.length > 1);
 }
 
+// Playthrough 5.1, Parte C/D — o `rankingFit` da Fase 3 (comentário
+// original preservado no histórico do arquivo, ver diff) tinha um PLATÔ
+// sem decaimento: qualquer dupla com rank melhor que `minRanking-40`
+// recebia fit=100 pra sempre, não importa o quão mais forte fosse.
+// Resultado medido na Playthrough 5.0 (test-tier-strength-distribution.mjs,
+// simulação real de 1 ano): Gold (minRanking mais alto entre os tiers
+// pagos, ou seja, a rede mais LARGA) fica em fit=100 pra qualquer dupla
+// de rank 1 a ~410 — inclusive duplas claramente de nível Platinum/
+// Masters/Elite/Crown — e ganha empate técnico contra o tier "certo"
+// dessas duplas toda vez que os dois coincidem na mesma semana
+// (TIER_WEEK_OFFSET), porque o bônus de prestígio baixo de Gold
+// ((100-prestígio)*0.18) ainda desempata a favor dele. Achado: Silver
+// mais fraco que Bronze, Masters mais fraco que Gold, ambos por este
+// mesmo mecanismo.
+//
+// Correção: cada tier GATED (minRanking>0) passa a ter uma ZONA ideal
+// própria — não um platô que só sobe — derivada da própria escada de
+// minRanking já calibrada empiricamente na Fase 5.6 (450/320/230/140/75,
+// ver comentário em TOURNAMENT_TIER_CONFIG), nunca um número novo
+// inventado aqui: o teto da zona ideal de um tier é o PISO do tier
+// imediatamente mais forte (ex.: Gold vai de 320 — onde Platinum começa —
+// até 450, seu próprio corte); fora dessa zona, o fit decai linearmente
+// até 0 numa distância igual à largura da própria zona (lado forte) ou
+// até o corte de qualifying do tier vizinho mais fraco (lado fraco — pro
+// tier mais barato da rede paga, Gold, reaproveita a MESMA fórmula de
+// `qualifyingLimit` que EntryManager.js já usa pra elegibilidade,
+// max(corte×2, corte+80), então o fit chega a 0 exatamente onde a
+// elegibilidade também acaba). O tier mais alto (Crown) não decai no
+// lado forte — não existe "forte demais" pro topo da escada.
+//
+// Bronze/Silver (minRanking=0, sem corte de entrada) não têm essa escada
+// — usam a mesma ideia com uma fronteira já existente e empiricamente
+// calibrada (OPEN_TIER_CEILING, EntryManager.js, Fase 5.4/5.5): a faixa
+// entre o teto e seu dobro — o mesmo padrão de derivação que
+// `qualifyingLimit` usa — é onde Silver passa a ter fit melhor que
+// Bronze; abaixo do teto nenhum dos dois é sequer elegível (EntryManager
+// já barra antes de chegar aqui), então o valor ali é irrelevante.
+function trapezoidFit(rank, { peakHigh, peakLow, spreadHigh, spreadLow, floor = 0, plateauTilt = 0 }) {
+  if (rank >= peakHigh && rank <= peakLow) {
+    // Playthrough 5.5, Parte D/E — achado: Gold=71.0 vs Silver=77.7 (medido
+    // em 3 seeds, test-tier-capacity-hierarchy-v3) sobrevive mesmo depois
+    // de corrigir crediting/medição (5.4) porque é uma consequência
+    // MATEMÁTICA, não um bug de implementação — o platô ideal do Gold
+    // (peakHigh=320, peakLow=450, derivado do minRanking do Platinum)
+    // sempre vai cair numa faixa de rank NUMERICAMENTE MAIS FUNDA que o
+    // platô do Silver (150-300), e overall_rating é monotonicamente
+    // decrescente em rank (rankingPopulation.js) — nenhum achatamento de
+    // curva de geração consegue INVERTER essa ordem, só reduzir o gap
+    // (matematicamente: um trecho mais fundo de uma função monotônica
+    // nunca supera a média de um trecho mais raso). `plateauTilt` ataca o
+    // outro lado do problema: dentro do próprio platô "ideal" (que antes
+    // era um piso plano, fit=100 em TODA a faixa 320-450, sem diferenciar
+    // rank 325 de rank 448), agora prefere GRADUALMENTE a ponta mais forte
+    // do próprio platô — sem mudar peakHigh/peakLow (getAiQualifyingLimit
+    // continua usando a MESMA largura de sempre, Parte J/K/L da 5.3), sem
+    // mudar minRanking/elegibilidade de inscrição (EntryManager.js:
+    // eligibleForTier nunca lê este valor — comentário da Parte I da 5.2,
+    // "as duas nunca se misturam"), só reordena QUEM VENCE a disputa por
+    // vaga quando o campo está superinscrito (Gold sempre está, medido
+    // desde a 5.2: ~818 participações/ano pra um campo de 24). 0 por
+    // padrão pra todo tier — só Gold recebe um valor não-zero (ver
+    // TIER_FIT_BANDS abaixo), pra não reabrir a calibração já validada de
+    // Platinum/Masters/Elite/Crown/Silver/Bronze.
+    if (plateauTilt <= 0) return 100;
+    const span = Math.max(1, peakLow - peakHigh);
+    const ratio = (rank - peakHigh) / span;
+    return Math.round(100 - ratio * plateauTilt);
+  }
+  if (rank < peakHigh) {
+    const ratio = spreadHigh > 0 ? Math.min(1, (peakHigh - rank) / spreadHigh) : 1;
+    // Lado forte: côncavo (raiz quadrada), não linear. Medido empiricamente
+    // nesta fase (diag-tier-choice-rebalance.mjs) — um decaimento LINEAR
+    // com alcance até rank 1 (pra nunca clampar dois ranks bem diferentes
+    // no mesmo piso, ver comentário de TIER_FIT_BANDS) ficava fraco demais
+    // logo depois da própria fronteira: a rank 280 (dentro do platô de
+    // Platinum), Gold ainda saía com fit=88 — quase empatado com o
+    // platô=100 de Platinum, disputando a população NATURAL de Platinum
+    // em pé de igualdade e arrastando o avgOVR de Platinum pra baixo do de
+    // Gold (medido, não hipotético). `sqrt(ratio)` cai rápido logo na
+    // fronteira (a rank 280, fit=65 — diferença real contra o platô) e
+    // achata gradualmente depois, então uma dupla MUITO mais forte que o
+    // tier (rank 10) ainda se diferencia de uma moderadamente mais forte
+    // (rank 100) em vez de as duas caírem no mesmo piso.
+    const shaped = Math.sqrt(ratio);
+    return Math.round(100 - shaped * (100 - floor));
+  }
+  const ratio = spreadLow > 0 ? Math.min(1, (rank - peakLow) / spreadLow) : 1;
+  return Math.round(100 - ratio * (100 - floor));
+}
+
+function qualifyingStyleLimit(minRanking) {
+  return Math.max(minRanking * 2, minRanking + 80);
+}
+
+// Duplicado de EntryManager.js:OPEN_TIER_CEILING (não importado de lá de
+// propósito — EntryManager.js já importa `getTournamentTierConfig` DESTE
+// arquivo; importar de volta criaria um ciclo ES module cuja ordem de
+// avaliação não é garantida, arriscando um `const` em TDZ dependendo de
+// qual dos dois arquivos carrega primeiro). Mesmo valor, mesma origem
+// (Fase 5.4/5.5) — mudar um exige mudar o outro, e ambos citam a razão.
+// Playthrough 5.5 — espelha o valor final 400 de
+// EntryManager.js:OPEN_TIER_CEILING (comentário completo lá).
+const OPEN_TIER_CEILING_MIRROR = 400;
+
+// Escada dos tiers PAGOS (minRanking>0), do corte mais alto (rede mais
+// larga) pro mais baixo (rede mais estreita) — a mesma ordem que
+// EntryManager.js já trata como "elegibilidade cai por baixo de um corte
+// numérico", só ordenada aqui pra derivar vizinhança. Circuit/Legacy
+// Finals ficam de fora de propósito: `minRanking` ali é um corte de
+// MÉRITO de acesso por convite (top 8/top 16), não uma rede de
+// preferência de escolha — não fazem parte desta escada de "onde uma
+// dupla prefere jogar".
+const GATED_FIT_LADDER = Object.entries(TOURNAMENT_TIER_CONFIG)
+  .filter(([name, cfg]) => cfg.minRanking > 0 && name !== 'Circuit Finals' && name !== 'Legacy Finals')
+  .sort((a, b) => b[1].minRanking - a[1].minRanking);
+
+const TIER_FIT_BANDS = Object.freeze(Object.fromEntries(GATED_FIT_LADDER.map(([name, cfg], index) => {
+  const stronger = GATED_FIT_LADDER[index + 1]; // próximo tier mais forte (corte menor), se existir.
+  const weaker = GATED_FIT_LADDER[index - 1]; // próximo tier mais fraco (corte maior), se existir.
+  const peakLow = cfg.minRanking;
+  const peakHigh = stronger ? stronger[1].minRanking : 1; // Crown: platô vai até o topo absoluto, sem decair.
+  // Lado forte: o decaimento precisa cobrir TODO o caminho até rank 1, não
+  // só a largura do próprio platô — a primeira versão usava
+  // `peakLow-peakHigh` (a largura do platô) como distância de queda, o
+  // que fazia o fit "grudar" no piso pra QUALQUER rank bem melhor que
+  // `peakHigh` (ex.: rank 10 e rank 100 ficavam ambos no piso pra Gold E
+  // pra Masters, indistinguíveis) — o termo de prestígio de
+  // getTournamentChoiceProfile então decidia sozinho, reabrindo o viés
+  // pró-Gold (prestígio baixo = bônus) por outra porta. `peakHigh-1`
+  // garante que o fit sempre diferencia por distância real até rank 1,
+  // nunca empata dois tiers diferentes no mesmo piso.
+  const spreadHigh = stronger ? Math.max(1, peakHigh - 1) : 0; // Crown: sem decaimento no lado forte.
+  const spreadLow = weaker ? weaker[1].minRanking - peakLow : qualifyingStyleLimit(peakLow) - peakLow;
+  // Playthrough 5.5, Parte D/E — só Gold recebe um plateauTilt não-zero
+  // (ver comentário completo em trapezoidFit). Os outros tiers gated
+  // (Platinum/Masters/Elite/Crown) mantêm o platô plano de sempre — a
+  // distorção medida foi especificamente Gold vs Silver, nenhum outro par
+  // de tiers vizinhos mostrou o mesmo problema (Platinum>Gold, Masters>
+  // Platinum, Crown mais forte seguem corretos nos regressões da 5.4),
+  // então não há motivo pra tocar a calibração já validada dos demais.
+  const plateauTilt = name === 'Gold' ? 50 : 0;
+  return [name, { peakHigh, peakLow, spreadHigh, spreadLow, floor: 0, plateauTilt }];
+})));
+
+const OPEN_TIER_SILVER_BAND = Object.freeze({ peakHigh: OPEN_TIER_CEILING_MIRROR, peakLow: OPEN_TIER_CEILING_MIRROR * 2, spreadHigh: 0, spreadLow: OPEN_TIER_CEILING_MIRROR * 2, floor: 55 });
+// Playthrough 5.27-E — nos presets -E o pico de preferência do Silver desce até
+// `competition.silverPeakLow` (duplas da faixa 800+ também encaixam no Silver),
+// aproximando o campo de um time real do 1º ano. Teto de elegibilidade (400),
+// Bronze e tiers com corte (Gold+) inalterados. Sem `competition`: banda de sempre.
+function openTierSilverBand() {
+  const peakLow = Number(getBalance527().competition?.silverPeakLow);
+  if (!(peakLow > OPEN_TIER_SILVER_BAND.peakLow)) return OPEN_TIER_SILVER_BAND;
+  return { ...OPEN_TIER_SILVER_BAND, peakLow, spreadLow: Math.max(OPEN_TIER_SILVER_BAND.spreadLow, peakLow) };
+}
+const OPEN_TIER_BRONZE_BAND = Object.freeze({ peakHigh: OPEN_TIER_CEILING_MIRROR * 2, peakLow: Number.MAX_SAFE_INTEGER, spreadHigh: OPEN_TIER_CEILING_MIRROR, spreadLow: 0, floor: 55 });
+
+// Playthrough 5.6 — faixa factual usada SOMENTE por diagnósticos de
+// composição de campo. CORE significa "o rank pertence à faixa natural do
+// tier", não "a curva de preferência devolveu exatamente 100". Essa
+// distinção importa para Gold: seu plateauTilt ordena candidatos dentro da
+// própria faixa 320–450 e, por isso, quase todos têm fit < 100 mesmo
+// continuando factualmente no CORE. Esta função não participa de
+// elegibilidade, escolha, qualifying, rescue, seeding ou montagem de chave.
+export function getTierDiagnosticCoreBand(tierName) {
+  const band = TIER_FIT_BANDS[tierName]
+    || (tierName === 'Silver' ? openTierSilverBand() : null)
+    || (tierName === 'Bronze' ? OPEN_TIER_BRONZE_BAND : null);
+  return band ? { minRank: band.peakHigh, maxRank: band.peakLow } : null;
+}
+
+export function isRankInTierDiagnosticCore(rank, tierName) {
+  const numericRank = Number(rank);
+  const band = getTierDiagnosticCoreBand(tierName);
+  return Boolean(band && numericRank > 0 && numericRank >= band.minRank && numericRank <= band.maxRank);
+}
+
+// Playthrough 5.3, Parte J/K/L — largura de qualifying derivada da
+// população, não um multiplicador universal (a causa raiz que a 5.2
+// isolou e deixou em aberto porque mexer nela também mudava a
+// elegibilidade de INSCRIÇÃO do jogador). A largura do próprio platô
+// ideal de cada tier (peakLow-peakHigh, TIER_FIT_BANDS — a MESMA medida
+// de densidade populacional que já deriva a curva de preferência,
+// nenhuma fonte nova) substitui `directLimit×2`: cada tier ganha uma
+// rede de qualifying proporcional à sua PRÓPRIA banda, não ao seu
+// próprio corte direto (que é o que fazia Gold, o tier pago com o maior
+// minRanking, ganhar a rede absoluta mais larga de todas, mesmo tendo
+// população natural comparável a Masters/Platinum — medido na 5.2:
+// Gold só 18-20% do campo real vinha da própria banda ideal).
+// Multiplicador 1.5× (não 1×) de propósito: overlap saudável entre
+// vizinhos precisa continuar existindo (Parte F, "não quero tiers
+// rígidos como castas") — 1× deixaria zero margem de zebra/ascensão.
+const AI_QUALIFYING_WIDTH_MULTIPLIER = 1.5;
+export function getAiQualifyingLimit(tierName, directLimit) {
+  if (!(directLimit > 0)) return 800; // tiers abertos não usam qualifying — mantém o comportamento antigo.
+  const band = TIER_FIT_BANDS[tierName];
+  if (!band) return Math.max(directLimit * 2, directLimit + 80); // sem banda própria (Circuit/Legacy Finals, mérito) — mantém a fórmula antiga.
+  const width = Math.max(1, band.peakLow - band.peakHigh);
+  return Math.round(directLimit + width * AI_QUALIFYING_WIDTH_MULTIPLIER);
+}
+
+function computeRankingFit(tierName, config, teamRank) {
+  if (config.minRanking > 0) {
+    if (teamRank <= 0) return 45; // sem ranking — mantém o valor conservador de sempre (EntryManager já barra a maioria dos casos práticos).
+    const band = TIER_FIT_BANDS[tierName];
+    if (!band) return 45;
+    return trapezoidFit(teamRank, band);
+  }
+  // Aberto (Bronze/Silver). Sem ranking -> Bronze é a porta natural de
+  // toda dupla nova (fit máximo); Silver continua um segundo caminho
+  // real (EntryManager.js já permite entrada direta sem ranking em
+  // Silver de propósito), não descartado, só não o preferido por padrão.
+  if (teamRank <= 0) return tierName === 'Bronze' ? 100 : 70;
+  const band = tierName === 'Silver' ? openTierSilverBand() : OPEN_TIER_BRONZE_BAND;
+  return trapezoidFit(teamRank, band);
+}
+
+// Exportada separadamente (Playthrough 5.1, Parte I) — o resgate de campo
+// (WorldTourLifecycle.js) precisa saber "o quão adequada é esta dupla
+// ociosa pra ESTE tier" sem reconstruir a fórmula inteira de escolha de
+// torneio (que também mistura prestígio/prêmio, irrelevantes pra
+// prioridade de resgate). Mesma fonte que getTournamentChoiceProfile usa
+// por baixo — nunca uma segunda fórmula de "adequação" divergente.
+export function getTierRankingFit(tierName, teamRank = 0) {
+  return computeRankingFit(tierName, getTournamentTierConfig(tierName), teamRank);
+}
+
+// Playthrough 5.2, Parte I — nome formal pedido pelo prompt pro lado
+// "preferência" da separação (o outro lado é EntryManager.js:
+// eligibleForTier). Alias direto de getTierRankingFit — mesma fonte,
+// nunca uma segunda curva de adequação. Decide "o quão ideal", nunca
+// "pode tentar" (isso é eligibleForTier).
+export function tierPreferenceFit(rank, tierName) {
+  return getTierRankingFit(tierName, rank);
+}
+
 export function getTournamentChoiceProfile(tournament, teamRank = 0) {
   const config = getTournamentTierConfig(tournament?.tier);
-  // Fase 3: era hardcoded por nome ("Silver"/"Gold" tinham acesso livre,
-  // então usavam um "encaixe" fixo de 75/45 quando não há rank de dupla
-  // ainda) — Gold agora tem corte real (top 800), e Bronze é o novo tier
-  // livre. Generalizado por `config.minRanking === 0` (a mesma declaração
-  // que EntryManager.js usa pra decidir elegibilidade), nenhuma lista de
-  // nomes paralela a manter.
-  const rankingFit = teamRank > 0 && config.minRanking > 0
-    ? Math.max(0, Math.min(100, ((config.minRanking - teamRank + 40) / 80) * 100))
-    : config.minRanking === 0 ? 75 : 45;
+  const rankingFit = computeRankingFit(tournament?.tier, config, teamRank);
   const titleChance = Math.round(Math.max(2, Math.min(78, rankingFit * 0.55 + (100 - config.prestige) * 0.18)));
   const expectedPoints = Math.round(config.rankPoints * (0.12 + titleChance / 170));
   const expectedNet = Math.round(config.prize * (0.08 + titleChance / 140) - config.entryFee);

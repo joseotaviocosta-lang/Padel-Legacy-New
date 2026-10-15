@@ -1,0 +1,90 @@
+{
+  "config": "balanced-e · Casual · 1 ano",
+  "careers": [
+    {
+      "seed": 6,
+      "profile": "casual",
+      "days": 365,
+      "easy": {
+        "wr": 34.8,
+        "n": 23
+      },
+      "medium": {
+        "wr": 0,
+        "n": 4
+      },
+      "hard": {
+        "wr": null,
+        "n": 0
+      },
+      "r1": {
+        "wr": 26.7,
+        "n": 15
+      },
+      "bronze": {
+        "wr": 41.7,
+        "n": 12
+      },
+      "silver": {
+        "wr": 27.3,
+        "n": 11
+      },
+      "gold": {
+        "wr": null,
+        "n": 0
+      },
+      "platinum": {
+        "wr": null,
+        "n": 0
+      },
+      "rank": {
+        "6m": 781,
+        "1y": 366,
+        "2y": null
+      },
+      "firstTop100Day": null,
+      "firstTop10Day": null,
+      "firstNo1Day": null,
+      "titlesY1": 0,
+      "titlesY2Cum": null,
+      "finals": 1,
+      "partnerOvr": {
+        "6m": 27,
+        "1y": 27,
+        "2y": null
+      },
+      "bestAttainable1y": 82,
+      "teamOvrMedian": 37.5,
+      "energyAtMatchMedian": 90,
+      "sponsorShareY1": 50.2,
+      "prizeShareY1": 10.1,
+      "cash": {
+        "6m": 10908,
+        "1y": 5596,
+        "2y": null
+      },
+      "debtEvents": 0,
+      "staffCostShare": 23,
+      "lifecycle": {
+        "exitDecisions": 2,
+        "limboDays": [
+          11,
+          18
+        ],
+        "registrationsBlockedAfterExit": 17,
+        "illegitimateRegistrations": 0,
+        "maxExtensionDays": 0
+      },
+      "health": {
+        "errors": 0,
+        "advanceFailures": 0,
+        "softLock": 0,
+        "forfeits": 0,
+        "registrations": 19,
+        "matches": 27,
+        "resignLoop": 0
+      }
+    }
+  ],
+  "blockers": []
+}

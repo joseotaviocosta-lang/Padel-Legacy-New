@@ -1,6 +1,6 @@
 import { advanceDay, CAREER_START_DATE, addDays, daysBetween } from '@/lib/career';
 import { processGameStateDay } from './gameStateLifecycle';
-import { getInjuryStatus } from './injuryRecoveryLifecycle';
+import { getInjuryStatus, processInjuryRecoveryDay } from './injuryRecoveryLifecycle';
 import { isInjured } from '@/lib/padel';
 import { localGame } from '@/api/localGameClient.js';
 import { shouldBlockBeforeAdvance, getInjuryAutoResolution } from './calendarAdvancePolicy';
@@ -13,6 +13,7 @@ import { buildTournamentRecoverySession, shouldBlockCareerAdvanceForMatchRecover
 import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { pickCanonicalTournamentEvent } from '@/lib/tournamentRegistration.js';
 import { getPersistenceTransactionSnapshot, recordMultiDayAdvanceResult } from '@/dev/persistenceTransactionProbe.js';
+import { resolveUnavailablePlayerMatch } from './tournamentLifecycle.js';
 
 export const MAX_INJURY_SKIP_DAYS = 60;
 
@@ -115,6 +116,26 @@ async function resolveInjuryCalendarConflicts(profile) {
   for (const event of events || []) {
     const resolution = getInjuryAutoResolution(event, nextDate);
     if (!resolution) continue;
+    // Playthrough 4.7, itens 1-6/11-13 — este é o caminho que "Avançar até
+    // recuperação" usa (advanceCareerUntilRecovered, abaixo), e ele roda
+    // ANTES do processCalendarEvents do próprio dia (calendarSystem.js) —
+    // sem resolver o W.O. aqui primeiro, o evento já vira 'missed' e some
+    // do filtro `status:'scheduled'` que o W.O. automático de
+    // processCalendarEvents também usa, deixando o tournament_run/
+    // bracket_history travados exatamente como o abandono manual sempre
+    // resolveu (mesmo motor, resolveUnavailablePlayerMatch).
+    let walkoverResolved = false;
+    if (resolution.injury_resolution === 'tournament_missed' && event.related_id && event.metadata?.tournament_run) {
+      const tournamentForWalkover = await localGame.entities.Tournament.get(event.related_id).catch(() => null);
+      if (tournamentForWalkover) {
+        const walkover = await resolveUnavailablePlayerMatch({
+          profile, tournament: tournamentForWalkover, calendarEvent: event,
+          reason: `W.O. por ${profile?.injury_type || 'lesão'}`,
+        }).catch((error) => { console.error('[calendarLifecycle] Falha ao resolver W.O. automático (recovery skip)', error); return null; });
+        walkoverResolved = Boolean(walkover);
+      }
+    }
+    if (walkoverResolved) { resolved.push({ event, resolution: { ...resolution, status: 'completed', injury_resolution: 'tournament_walkover' } }); continue; }
     const metadata = {
       ...(event.metadata || {}),
       auto_resolved_due_to_injury: true,
@@ -154,7 +175,10 @@ async function resolveInjuryCalendarConflicts(profile) {
  * A partir da versão 2.2, os demais sistemas são coordenados pelo GameState.
  */
 async function advanceCareerDayWork(profile, { deferGameState = false, deferGlobalProcessing = false, profiler = null } = {}) {
-  const snapshot = profile?.id ? await gameRepository.getActiveCareer({ fresh: false }).catch(() => null) : null;
+  // Playthrough 5.25 — o snapshot só é LIDO (guarda de partida ativa e
+  // contexto de falha): sem clonar o save inteiro a cada avanço de dia
+  // (~50ms por clone no aparelho, com save de 3,2MB).
+  const snapshot = profile?.id ? await gameRepository.getActiveCareer({ fresh: false, cloneResult: false }).catch(() => null) : null;
   try {
     await guardActiveMatchBeforeAdvance(profile, snapshot);
     let currentProfile = profile;
@@ -374,7 +398,23 @@ export async function advanceCareerUntilRecovered(profile, { maxDays = MAX_INJUR
       if (!next?.career_date || next.career_date === fresh?.career_date) {
         return { profile: fresh, resolutions, advanced: false, calendarFailed: true };
       }
-      const dayProfile = await localGame.entities.PlayerProfile.get(next.id).catch(() => next);
+      let dayProfile = await localGame.entities.PlayerProfile.get(next.id).catch(() => next);
+      // Playthrough 4.7, itens 11-13 — `deferGameState:true` (acima) existe
+      // pra não rodar o mundo inteiro (settlement/living world) a cada dia
+      // deste loop, só uma vez no fim (finalizeCareerAdvanceRangeWork,
+      // abaixo). Mas isso também adiava processInjuryRecoveryDay — a ÚNICA
+      // função que decrementa injury_days_remaining — fazendo a própria
+      // condição de parada do loop (hasActiveInjury) nunca mudar até o
+      // último dia (o cap de 60), mesmo pra uma lesão leve de 2-4 dias: o
+      // loop sempre esgotava os 60 dias inteiros sem nunca recuperar de
+      // verdade ("avança sem parar" relatado). Chamado aqui, isoladamente e
+      // a cada dia (barato, sem settlement/mundo) — o resto continua
+      // deferido pro finalizeCareerAdvanceRangeWork de sempre;
+      // processInjuryRecoveryDay é idempotente sobre uma lesão já resolvida
+      // (só decrementa `if (current.injured)`), então não há dupla-contagem
+      // quando o finalize roda de novo no dia em que a recuperação termina.
+      const injuryRecovery = await processInjuryRecoveryDay(dayProfile, fresh.career_date, next.career_date);
+      dayProfile = injuryRecovery.profile;
       const shouldFinalize = !hasActiveInjury(dayProfile) || dayNumber >= maxDays;
       const finalProfile = shouldFinalize
         ? await finalizeCareerAdvanceRangeWork(dayProfile, rangeStartDate, dayProfile.career_date)

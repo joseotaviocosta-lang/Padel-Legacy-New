@@ -1,0 +1,10 @@
+import { attach } from './attach.mjs';
+import { mobile } from './mob.mjs';
+const { browser, page, state, shot, sleep, errors } = await attach();
+const { tap, waitFor } = mobile(page, sleep, state, shot);
+const log = [];
+const step = async (name, fn) => { const t0 = Date.now(); let r; try { r = await fn(); } catch (e) { r = `erro ${e.message.slice(0, 100)}`; } log.push({ name, r, ms: Date.now() - t0, errors: errors.splice(0) }); console.log(JSON.stringify(log.at(-1))); };
+await step('Analisar proposta', async () => (await tap(/^Analisar proposta$/)) && waitFor(/Aceitar proposta/, 30000));
+await step('Aceitar proposta', async () => (await tap(/^Aceitar proposta$/, 8000)) && waitFor(/Dupla ativa/, 60000));
+await shot('a11-dupla');
+browser.disconnect();

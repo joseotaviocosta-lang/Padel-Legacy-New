@@ -70,10 +70,13 @@ const athletes = [
   ['athlete-005', 'Nicolás Silva', 'Uruguai', 'esquerda', 'Agressivo', 75],
   ['athlete-006', 'Rafael Martins', 'Brasil', 'direita', 'Equilibrado', 66],
 ].map(([id, name, country, position, play_style, overall], index) => ({
-  id, name, country, position, play_style, overall,
+  id, name, country, position, play_style, overall, overall_rating: overall,
   age: 21 + index,
   ranking_position: 40 + index * 37,
   rank_points: 1100 - index * 110,
+  world_ranking_points: 1100 - index * 110,
+  race_points: 0,
+  career_status: 'ativo',
   personality: index % 2 ? 'Disciplinado' : 'Competitivo',
   morale: 70 + index,
   form: 65 + index,
@@ -174,8 +177,19 @@ export const LOCAL_SEED = {
   TrainingCenter: [{ id: 'center-001', profile_id: LOCAL_PROFILE.id, name: 'Centro Inicial', level: 1, court_level: 1, gym_level: 1, physio_level: 1, psychology_level: 0, nutrition_level: 0, monthly_cost: 250 }],
   Partnership: [],
   TeamRanking: [
-    { id: 'ranking-001', team_key: 'mateo-tomas', player1_name: 'Mateo Ruiz', player2_name: 'Tomás Vidal', ranking_points: 2240, ranking_position: 1, wins: 18, losses: 3 },
-    { id: 'ranking-002', team_key: 'lucas-rafael', player1_name: 'Lucas Ferraz', player2_name: 'Rafael Martins', ranking_points: 1810, ranking_position: 2, wins: 14, losses: 5 },
+    // Playthrough 5.22-E, Partes M/N — os literais derivam da fórmula
+    // canônica ATUAL (SOMA dos pontos atuais dos membros), não mais da média
+    // geométrica da 5.11. Os membros valem 1100+880 e 990+550 de circuito,
+    // então as duplas valem 1980 e 1540. A fórmula anterior (geométrica) dava
+    // 984 e 738; os literais foram recalculados junto com a regra para a
+    // demonstração não nascer fora da autoridade.
+    //
+    // As estatísticas (partidas/vitórias/derrotas) seguem semeadas zeradas:
+    // a aba Duplas exibe esses campos como resultado real, então um número
+    // sem partida por trás é invenção. Nasce sem histórico (`unavailable`) e
+    // só ganha contadores jogando.
+    { id: 'ranking-001', team_key: 'athlete-001_athlete-003', player1_id: 'athlete-001', player1_name: 'Mateo Ruiz', player2_id: 'athlete-003', player2_name: 'Tomás Vidal', ranking_points: 1980, ranking_position: 1, matches_played: 0, wins: 0, losses: 0, stats_source: 'unavailable' },
+    { id: 'ranking-002', team_key: 'athlete-002_athlete-006', player1_id: 'athlete-002', player1_name: 'Lucas Ferraz', player2_id: 'athlete-006', player2_name: 'Rafael Martins', ranking_points: 1540, ranking_position: 2, matches_played: 0, wins: 0, losses: 0, stats_source: 'unavailable' },
   ],
   // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
   // Parte H): removido um seed legado de 2 treinadores ("Carlos Mendes"/

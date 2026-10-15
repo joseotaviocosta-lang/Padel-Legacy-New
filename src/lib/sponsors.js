@@ -1,5 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { publishContractEvent } from '@/lib/contractNews.js';
+import { ageAtDate } from '@/lib/padel.js';
+import { getBalance527, hasSponsorProof } from '@/lib/balance527.js';
 
 // ─── Expanded Sponsor Catalog ────────────────────────────────────────────────
 // Each sponsor has own objectives, budget, preferences, marketing demands,
@@ -508,14 +510,15 @@ export function calculateProfileMatch(sponsor, profile) {
   return { score: Math.max(0, Math.min(100, score)), reasons };
 }
 
+// Playthrough 5.26-B — idade pela DATA DA CARREIRA (mesma autoridade de
+// padel.js:calculateAge/ageAtDate, com o limite do aniversário), não pelo
+// relógio do computador. Antes, `new Date()` mantinha o atleta nascido em
+// 2010 com "16 anos" durante toda a carreira (2026→2036): os patrocinadores
+// Prata com idade mínima 17/18 recusavam para sempre e 100% das assinaturas
+// medidas na 5.26 ficaram no Bronze. Faixas etárias NÃO foram alteradas.
 function calculateAge(profile) {
   if (!profile?.birth_date) return 20;
-  const birth = new Date(profile.birth_date + 'T00:00:00');
-  const now = new Date();
-  let age = now.getFullYear() - birth.getFullYear();
-  const m = now.getMonth() - birth.getMonth();
-  if (m < 0 || (m === 0 && now.getDate() < birth.getDate())) age--;
-  return age;
+  return ageAtDate(profile.birth_date, profile.career_date || '2026-01-01');
 }
 
 // ─── Negotiation ────────────────────────────────────────────────────────────
@@ -526,8 +529,13 @@ export function negotiateOffer(sponsor, profile) {
   const negotiationPower = Math.max(0, Math.min(0.45, Number(profile?.staff_negotiation_power || profile?.staff_bonus_manager || 0)));
   const negotiatedMultiplier = matchMultiplier * (1 + negotiationPower);
 
-  const monthlySalary = Math.round(sponsor.base_monthly_value * negotiatedMultiplier);
-  const signBonus = Math.round(sponsor.base_sign_bonus * negotiatedMultiplier);
+  // Playthrough 5.27 — patrocínio inicial reduzido (config central). Antes o
+  // Bronze pagava ~1.500/mês + ~1.875 de luvas desde o dia 0 e financiava toda
+  // a estrutura (86–88% da renda no Ano 1). Agora começa pequeno e cresce com
+  // resultados/negociação.
+  const balance = getBalance527();
+  const monthlySalary = Math.round(sponsor.base_monthly_value * negotiatedMultiplier * balance.sponsor.monthlyMultiplier);
+  const signBonus = Math.round(sponsor.base_sign_bonus * negotiatedMultiplier * balance.sponsor.signMultiplier);
 
   return {
     monthly_salary: monthlySalary,
@@ -542,7 +550,21 @@ export function negotiateOffer(sponsor, profile) {
 }
 
 export function canSign(sponsor, profile) {
-  if (!sponsor.is_available) return { ok: false, reason: 'Patrocinador não aceita novos contratos' };
+  // Playthrough 5.26-C — só um `is_available: false` EXPLÍCITO bloqueia. Os
+  // 9 patrocinadores originais do catálogo (Babolat, Siux, Varlion, Nox,
+  // Wilson, Adidas, Joma, Bullpadel, Head) nunca tiveram o campo: a
+  // disponibilidade vinha da semeadura das entidades `Sponsor`
+  // (demoData.js: `is_available: true` para as primeiras entradas do
+  // catálogo). Desde que o mercado passou a ler SPONSOR_CATALOG direto
+  // (sportsEconomyV26.getMonthlySponsorMarket), "campo ausente" virava
+  // "não aceita novos contratos" e eles ficavam inalcançáveis para sempre.
+  // Nenhum requisito (idade, XP, títulos, fãs) foi alterado.
+  if (sponsor.is_available === false) return { ok: false, reason: 'Patrocinador não aceita novos contratos' };
+  // Playthrough 5.27 — o primeiro patrocínio exige prova mínima de carreira
+  // (torneios disputados), em vez de nascer no dia 0. Reusa contador existente.
+  if (!hasSponsorProof(profile)) {
+    return { ok: false, reason: `Requer prova de carreira (${getBalance527().sponsor.proofMinTournaments} torneios disputados)` };
+  }
   if ((profile?.xp || 0) < (sponsor.min_xp || 0)) return { ok: false, reason: `Requer ${sponsor.min_xp} XP` };
   if ((profile?.tournaments_won || 0) < (sponsor.min_titles || 0)) return { ok: false, reason: `Requer ${sponsor.min_titles} título(s)` };
   if ((profile?.fan_appeal || 0) < (sponsor.min_fan_appeal || 0)) return { ok: false, reason: `Requer ${sponsor.min_fan_appeal} apego dos fãs` };

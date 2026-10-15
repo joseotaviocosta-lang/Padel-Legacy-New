@@ -112,6 +112,14 @@ export function computeCircuitStats(tournaments) {
   return { totalFinished: finished.length, totalAudience, byTier, topChampions, mostWatched };
 }
 
+export function orderTournamentsForView(items, view = 'upcoming') {
+  const ordered = [...(Array.isArray(items) ? items : [])];
+  const getDate = (item) => String(item?.start_date || item?.end_date || item?.created_date || '');
+  const compareAsc = (a, b) => getDate(a).localeCompare(getDate(b));
+  const compareDesc = (a, b) => getDate(b).localeCompare(getDate(a));
+  return view === 'past' ? ordered.sort(compareDesc) : ordered.sort(compareAsc);
+}
+
 export function getCircuitEvolution(tournaments) {
   const byYear = {};
   (tournaments || []).forEach(t => {

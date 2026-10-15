@@ -21,9 +21,15 @@ const app = readFileSync('src/App.jsx', 'utf8');
 const rail = readFileSync('src/components/system/FloatingUtilityRail.jsx', 'utf8');
 
 // ── Sidebar/drawer não renderizam mais os dois itens ──────────────────────
-gate('AppLayout.jsx não renderiza mais "Gerenciar carreiras"', !appLayout.includes('Gerenciar carreiras'));
+// Playthrough 5.24-B/C — o drawer mobile ganhou, NO TOPO, o bloco "Acesso
+// rápido" (Centro de treinamento + Gerenciar carreiras), mantido como
+// fallback por decisão de produto. O que este hotfix protege continua: a
+// sidebar desktop e o RODAPÉ do drawer não voltam a ter o item. Fora do
+// MobileQuickAccess, o AppLayout não pode renderizar "Gerenciar carreiras".
+const appLayoutOutsideQuickAccess = appLayout.replace(/function MobileQuickAccess[\s\S]*?\n\}/, '');
+gate('AppLayout.jsx não renderiza mais "Gerenciar carreiras" (fora do Acesso rápido do drawer)', !appLayoutOutsideQuickAccess.includes('Gerenciar carreiras'));
 gate('AppLayout.jsx não renderiza mais "Sair da conta" (não importa mais LogoutButton)', !appLayout.includes('Sair da conta') && !/import LogoutButton/.test(appLayout));
-gate('Import do ícone BriefcaseBusiness foi removido (ficava só nos 2 botões removidos)', !/BriefcaseBusiness/.test(appLayout));
+gate('BriefcaseBusiness só aparece no Acesso rápido do drawer (não nos 2 botões removidos do rodapé)', !/<BriefcaseBusiness/.test(appLayoutOutsideQuickAccess));
 
 // ── Nenhum footer/wrapper órfão ────────────────────────────────────────────
 gate('Footer do drawer mobile (div com border-t + os 2 botões) foi removido por completo, não deixado vazio', !/space-y-2 border-t border-border\/50 p-3/.test(appLayout));

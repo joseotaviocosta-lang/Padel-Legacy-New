@@ -12,9 +12,10 @@ import {
 } from '@/lib/padel';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
 import { getPartnerBot, getTournamentRounds } from '@/lib/career';
+import { resolveCommittedPartnerAthlete } from '@/lib/committedRoster.js';
 import { buildPartnershipMatchPatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { processMatchRelationships } from '@/lib/relationships';
-import { getTeamRank, teamKey } from '@/lib/teamRanking';
+import { getTeamRank, getCanonicalTeamWorldRank, isUpsetResult, teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
 import { getSetScoreString } from '@/lib/matchEngine';
 import { getCoachEffects } from '@/lib/coaches';
 import { resolveActiveCoach } from '@/game-core/coachLifecycle';
@@ -109,6 +110,14 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   const [tournamentRewards, setTournamentRewards] = useState(null);
   const [physicalReport, setPhysicalReport] = useState(null);
   const [teamRank, setTeamRank] = useState({ rank: 0, total: 0 });
+  // Playthrough 4.6B, itens 1-3 — rank FACTUAL do adversário atual, nunca o
+  // número de seed/slot do sorteio sintético (computeSeededOpponentRanksForMainDraw
+  // decide QUEM o jogador enfrenta, não "qual a posição real dessa dupla no
+  // mundo" — são conceitos diferentes). Recalculado sempre que o adversário
+  // da rodada atual muda (effect abaixo); ausência de rank real (o caso
+  // comum: bots do catálogo procedural nunca disputaram o circuito de
+  // duplas) mantém `unranked:true`, nunca inventa um valor.
+  const [opponentWorldRank, setOpponentWorldRank] = useState({ rank: 0, unranked: true });
   const [coach, setCoach] = useState(null);
   const [staff, setStaff] = useState([]);
   const [selectedStrategy, setSelectedStrategy] = useState('balanced');
@@ -144,20 +153,40 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   // Hotfix 15.5.4 (complemento — sorteio em D-3): usado só pela fase
   // 'not_drawn', para informar quando a chave sai (ver render abaixo).
   const [drawDate, setDrawDate] = useState(null);
+  const [committedPartner, setCommittedPartner] = useState(null);
   const savedRef = useRef(false);
   const { toast } = useToast();
 
-  const partner = getPartnerBot(profile);
+  // Playthrough 5.17, Parte B — o parceiro REGISTRADO (resolvido de forma
+  // assíncrona no efeito de carga) tem precedência sobre o parceiro vivo.
+  // O fallback síncrono só vale enquanto a resolução não chegou, e para
+  // torneios ainda não assumidos.
+  const partner = committedPartner || getPartnerBot(profile);
   const mainRounds = useMemo(() => getTournamentRounds(tournament), [tournament]);
   const currentMatch = getCurrentTournamentMatch(run);
   const opponent = currentMatch?.opponent || [];
   const tierStyle = TIER_STYLES[tournament?.tier] || TIER_STYLES.Silver;
   const TierIcon = tierStyle.icon;
   const analysis = buildOpponentAnalysis(opponent, {
-    teamRank: currentMatch?.opponentRank,
+    worldRank: opponentWorldRank?.unranked ? null : opponentWorldRank?.rank,
     analysisLevel: Number(profile?.staff_analysis_level || 0),
   });
   const coachSuggestion = buildTournamentCoachSuggestion(run, profile, analysis);
+
+  // Playthrough 4.6B, itens 1-3 — busca o rank FACTUAL do adversário atual
+  // (nunca o seed/slot sintético) sempre que a rodada/adversário muda. Chave
+  // de dependência pelos IDs reais (não pelo array `opponent`, recriado a
+  // cada render) para não refazer a consulta sem necessidade.
+  // 5.26-C, Bloco C — a chave leva id + nome (a resolução de atleta real usa
+  // o nome), para a tela e o registro da partida lerem a MESMA resposta.
+  const opponentIdsKey = JSON.stringify(opponent.filter((member) => member?.id).map((member) => [member.id, member.name || '']));
+  useEffect(() => {
+    let active = true;
+    const ids = JSON.parse(opponentIdsKey).map(([id, name]) => ({ id, name }));
+    if (ids.length < 2) { setOpponentWorldRank({ rank: 0, unranked: true }); return undefined; }
+    getCanonicalTeamWorldRank(ids).then((result) => { if (active) setOpponentWorldRank(result || { rank: 0, unranked: true }); });
+    return () => { active = false; };
+  }, [opponentIdsKey]);
 
   // Hotfix 15.6.1 (D-3/D-0 — modal preso em "chave ainda não sorteada"):
   // este efeito só reagia a `initialProfile.id`/`tournament.id`, que nunca
@@ -210,7 +239,16 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
       if (!active) return;
       const starter = await resolveActiveCoach(freshProfile);
       const loadedProfile = starter.profile || freshProfile;
-      const loadedPartner = getPartnerBot(loadedProfile);
+      // Playthrough 5.17, Parte B — para um torneio JÁ ASSUMIDO, a dupla é a
+      // registrada. `getPartnerBot(profile)` devolvia null depois do fim do
+      // contrato e a chave passava a exibir "Parceiro", com o parceiro
+      // sumindo da partida.
+      const loadedPartner = await resolveCommittedPartnerAthlete({
+        profile: loadedProfile,
+        tournamentId: tournament?.id,
+        calendarEvents: calendarEvent ? [calendarEvent] : [],
+      }).catch(() => getPartnerBot(loadedProfile));
+      if (active) setCommittedPartner(loadedPartner || null);
       const [rank, staffSnapshot] = await Promise.all([
         loadedPartner ? getTeamRank(loadedProfile, loadedPartner) : Promise.resolve({ rank: 0, total: 0 }),
         getStaffSnapshot(loadedProfile).catch(() => ({ staff: [] })),
@@ -543,7 +581,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         status: 'nao_lida', priority: ['global', 'high'].includes(importance) ? 'alta' : 'normal',
         related_entity_type: 'PressInterview', related_entity_id: interview.id,
         is_read: false, is_new: true,
-        destination: { type: 'PRESS_INTERVIEW', route: '/press', params: { tab: 'interviews', interview: interview.id, source: interview.sourceId, returnTo } },
+        destination: { type: 'PRESS_INTERVIEW', route: '/world/circuit', params: { tab: 'press', interview: interview.id, source: interview.sourceId, returnTo } },
         metadata: { route: buildInterviewRoute({ interviewId: interview.id, sourceId: interview.sourceId, returnTo }), context_key: interview.contextKey, interview_id: interview.id, interview_source_id: interview.sourceId, match_id: match.id, tournament_id: tournament.id, round: match.round },
       } },
       { type: 'upsert', entityName: 'Post', id: `round-post-${safeMatchId}`, data: {
@@ -577,13 +615,23 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
 
       const score = await profiler.measure('finalizeScore', async () => getSetScoreString(matchState));
       const stats = await profiler.measure('aggregateStats', async () => summarizeTournamentMatch(matchState));
+      // Playthrough 4.6B, itens 1-3 — rank FACTUAL do adversário desta
+      // partida específica, buscado no momento da finalização (nunca
+      // `freshMatch.opponentRank`, o número de seed/slot do sorteio
+      // sintético). Sem rank canônico real, `upset`/`opponent_rank` ficam
+      // nulos — nunca fabricados a partir da posição no bracket.
+      // 5.26-C, Bloco C — roster gravado na partida (id + nome, para a
+      // resolução de identidade de atletas reais) e regra única de zebra.
+      const finishedOpponentMembers = (freshMatch.opponent || []).filter((item) => item?.id).map((item) => ({ id: item.id, name: item.name }));
+      const finishedOpponentRank = await getCanonicalTeamWorldRank(finishedOpponentMembers);
+      const matchUpset = isUpsetResult({ won, teamRank, opponentRank: finishedOpponentRank });
       const transition = recordTournamentMatchResult(freshRun, {
         matchId: freshMatch.id,
         won,
         score,
         stats,
         tournament,
-        upset: won && Number(freshMatch.opponentRank || 9999) < Number(teamRank.rank || 9999),
+        upset: matchUpset,
       });
       const nextRun = transition.run;
       const completedMatch = nextRun.matches.find((item) => item.id === freshMatch.id);
@@ -607,11 +655,22 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         result: won ? 'vitória' : 'derrota',
         // Fase 12 (docs/ACHIEVEMENTS_2_0.md, Parte C): campo novo ao lado da
         // própria escrita da partida — nenhuma consulta/coluna nova além
-        // desta. opponentRank já existia em memória (usado só para o
-        // cálculo local de `upset` acima); agora também persiste na
-        // partida, permitindo achievementContext.js calcular "venceu um
-        // Top 10"/"venceu o #1" sob demanda, sem reprocessar histórico.
-        opponent_rank: Number(freshMatch.opponentRank) > 0 ? Number(freshMatch.opponentRank) : null,
+        // desta, permitindo achievementContext.js calcular "venceu um Top
+        // 10"/"venceu o #1" sob demanda, sem reprocessar histórico.
+        // Playthrough 4.6B, itens 1-3: `finishedOpponentRank` é o rank
+        // CANÔNICO factual (getCanonicalTeamWorldRank) — nunca mais
+        // `freshMatch.opponentRank` (o número de seed/slot do sorteio
+        // sintético, que nunca representou uma posição real no mundo). Sem
+        // rank canônico, grava `null` — beatTop10/beatRank1 simplesmente não
+        // disparam, em vez de disparar com um valor fabricado.
+        opponent_rank: !finishedOpponentRank.unranked && Number(finishedOpponentRank.rank) > 0 ? Number(finishedOpponentRank.rank) : null,
+        // 5.26-C, Bloco C — retrato HISTÓRICO do confronto, congelado na data
+        // da partida: de onde veio o rank do adversário, os ids canônicos do
+        // roster adversário e o rank da dupla do jogador (roster comprometido).
+        opponent_rank_source: finishedOpponentRank.source || null,
+        opponent_member_ids: finishedOpponentRank.memberIds || [],
+        team_rank_at_match: Number(teamRank.rank) > 0 ? Number(teamRank.rank) : null,
+        is_upset: matchUpset,
         status: 'completed',
         match_type: freshMatch.stage === 'qualifying' ? 'qualifying' : 'tournament',
         competition_type: 'tournament',
@@ -681,13 +740,25 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         const ranking = rankingRows?.[0];
         if (rankingKey && partner) {
           const sortedPlayers = [freshProfile, partner].sort((a, b) => a.id.localeCompare(b.id));
+          // Playthrough 5.22-E, Partes M/N/T — este caminho era o último
+          // writer NÃO canônico: incrementava +50/+20 por partida, contra a
+          // regra de que a dupla vale a SOMA dos pontos individuais atuais.
+          // Além de divergir da autoridade, o incremento não era idempotente.
+          // Agora grava a mesma fórmula dos demais writers; V/D/títulos
+          // continuam sendo o histórico real da parceria (incrementado aqui).
+          const playerPoints = Math.max(0, Number(
+            freshProfile.rank_points ?? freshProfile.ranking_points ?? freshProfile.world_ranking_points,
+          ) || 0);
+          const partnerPoints = Math.max(0, Number(
+            partner.world_ranking_points ?? partner.ranking_points,
+          ) || 0);
           operations.push({ type: 'upsert', entityName: 'TeamRanking', id: ranking?.id || `team-ranking-${rankingKey}`, data: {
             team_key: rankingKey,
             player1_id: sortedPlayers[0].id,
             player1_name: sortedPlayers[0].sport_name || sortedPlayers[0].name,
             player2_id: sortedPlayers[1].id,
             player2_name: sortedPlayers[1].sport_name || sortedPlayers[1].name,
-            ranking_points: (Number(ranking?.ranking_points) || 0) + (won ? 50 : 20),
+            ranking_points: computeCanonicalTeamRankingPoints(playerPoints, partnerPoints),
             matches_played: (Number(ranking?.matches_played) || 0) + 1,
             wins: (Number(ranking?.wins) || 0) + (won ? 1 : 0),
             losses: (Number(ranking?.losses) || 0) + (won ? 0 : 1),
@@ -809,6 +880,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           runId: `${tournament.id}:${nextRun.createdAt}`,
           bracketHistory: bracket,
           runnerUp: won ? opponent.map((item) => item.name).join(' & ') : teamName(updated, partner),
+          run: nextRun,
         }));
         updated = completion.updatedProfile;
         setTournamentRewards(completion.rewards);
@@ -878,6 +950,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
             batchWrites: true,
             additionalOperations: secondaryOperations,
             playerPatch: transition.terminal && !completion.idempotent ? completion.playerPatch : null,
+            // Playthrough 5.26-B — ganho do torneio aplicado sobre o perfil
+            // fresco: não apaga as moedas de conquista desta última partida.
+            playerIncrements: transition.terminal && !completion.idempotent ? completion.playerIncrements : null,
           },
         );
       if (transition.terminal) await profiler.measure('missions', secondaryTask);
@@ -949,7 +1024,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         : (hasCanonicalBracket ? baseTournament.bracket_history : buildTournamentBracketHistory(withdrawn, teamName(profile, partner)));
       const completion = await finalizeTournamentRun({
         profile, tournament, partner, roundsWon: countMainDrawWins(withdrawn), totalRounds: mainRounds.length,
-        runId: `${tournament.id}:${withdrawn.createdAt}`, bracketHistory: bracket,
+        runId: `${tournament.id}:${withdrawn.createdAt}`, bracketHistory: bracket, run: withdrawn,
       });
       await persistRun(withdrawn, { status: 'completed', requires_decision: false, metadata: { withdrawal_reason: reason } });
       setProfile(completion.updatedProfile);
@@ -1226,7 +1301,7 @@ function Voice({ icon: Icon, name, text }) { return <div className="flex gap-3 r
 
 function StrategyPicker({ value, onChange, compact = false }) { return <div><p className="mb-2 text-[10px] font-black uppercase tracking-wider text-muted-foreground">Plano tático</p><div className={`grid gap-2 ${compact ? 'grid-cols-2' : 'sm:grid-cols-2'}`}>{TOURNAMENT_STRATEGY_OPTIONS.map((option) => <button key={option.id} onClick={() => onChange(option.id)} className={`rounded-xl border px-3 py-2 text-left text-xs font-bold ${value === option.id ? 'border-primary bg-primary/10 text-primary' : 'border-border/50 bg-secondary/20 text-muted-foreground'}`}>{option.label}</button>)}</div></div>; }
 
-function OpponentAnalysis({ analysis, compact = false }) { return <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4"><div className="flex items-center justify-between gap-3"><div><p className="text-[9px] font-black uppercase tracking-wider text-cyan-300">Próximo adversário</p><p className="mt-1 text-sm font-black">{analysis.name}</p></div>{analysis.ranking && <span className="text-lg font-black text-cyan-300">#{analysis.ranking}</span>}</div><div className={`mt-3 grid gap-2 text-[10px] ${compact ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}><Info label="Estilo" value={analysis.style} /><Info label="Lado" value={analysis.dominantSide} /><Info label="Forças" value={analysis.strengths.map((item) => ATTRIBUTE_LABELS[item.key] || item.key).join(' / ') || 'Sem dados'} /><Info label="Fraqueza conhecida" value={analysis.weakness ? ATTRIBUTE_LABELS[analysis.weakness.key] || analysis.weakness.key : 'Não identificada'} /></div>{analysis.recentForm !== null && <p className="mt-2 text-[10px] text-muted-foreground">Forma recente conhecida: {analysis.recentForm}/100</p>}</div>; }
+function OpponentAnalysis({ analysis, compact = false }) { return <div className="rounded-2xl border border-cyan-500/20 bg-cyan-500/5 p-4"><div className="flex items-center justify-between gap-3"><div><p className="text-[9px] font-black uppercase tracking-wider text-cyan-300">Próximo adversário</p><p className="mt-1 text-sm font-black">{analysis.name}</p></div>{analysis.ranking ? <span className="text-lg font-black text-cyan-300">#{analysis.ranking}</span> : <span className="text-[10px] font-bold uppercase text-muted-foreground">Sem ranking</span>}</div><div className={`mt-3 grid gap-2 text-[10px] ${compact ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}><Info label="Estilo" value={analysis.style} /><Info label="Lado" value={analysis.dominantSide} /><Info label="Forças" value={analysis.strengths.map((item) => ATTRIBUTE_LABELS[item.key] || item.key).join(' / ') || 'Sem dados'} /><Info label="Fraqueza conhecida" value={analysis.weakness ? ATTRIBUTE_LABELS[analysis.weakness.key] || analysis.weakness.key : 'Não identificada'} /></div>{analysis.recentForm !== null && <p className="mt-2 text-[10px] text-muted-foreground">Forma recente conhecida: {analysis.recentForm}/100</p>}</div>; }
 
 function Info({ label, value }) { return <div className="rounded-lg bg-background/35 p-2"><p className="text-[8px] font-bold uppercase text-muted-foreground">{label}</p><p className="mt-0.5 truncate font-bold">{value}</p></div>; }
 

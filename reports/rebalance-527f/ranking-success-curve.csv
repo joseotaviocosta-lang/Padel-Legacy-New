@@ -1,0 +1,9 @@
+phase,scenario,targetWR,actualWR,matches,tournaments,titles,pointsHeldEnd,endRank
+before,wr0,0,0,31,31,0,46,464
+before,wr25,0.25,25.6,43,32,0,80,407
+before,wr50,0.5,42.9,49,30,2,136,313
+before,wr75,0.75,69,84,33,7,331,163
+after,wr0,0,0,32,32,0,48,411
+after,wr25,0.25,25.6,43,32,0,80,359
+after,wr50,0.5,42,50,31,2,134,267
+after,wr75,0.75,70.8,89,34,8,1056,55

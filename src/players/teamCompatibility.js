@@ -1,13 +1,17 @@
+import { baseOverallRating } from '../lib/attributes.js';
 import { normalizeAthlete, normalizeCourtSide, toLegacyCourtSide } from './athleteSchema.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
 const nameOf = athlete => athlete?.sport_name || athlete?.name || 'Atleta';
+// Playthrough 5.27-G — MESMA autoridade de OVR da UI e do motor
+// (attributes.js:baseOverallRating: atributos presentes → média; senão o
+// declarado). Antes o `overall_rating` declarado vinha primeiro: parceiros de
+// catálogo exibidos e jogando como ~38 eram avaliados como 65 no componente
+// "nível" (compatibilidade 84–87 com um jogador de ~63), e a escolha por
+// compatibilidade caía neles.
 const ratingOf = athlete => {
-  const direct = Number(athlete?.overall_rating ?? athlete?.overall);
-  if (Number.isFinite(direct) && direct > 0) return clamp(direct, 1, 100);
-  const values = ['serve', 'forehand', 'backhand', 'volley', 'lob', 'smash', 'bandeja', 'speed', 'stamina', 'tactics', 'positioning']
-    .map(key => Number(athlete?.[key] ?? athlete?.attributes?.[key])).filter(Number.isFinite);
-  return values.length ? clamp(values.reduce((sum, value) => sum + value, 0) / values.length, 1, 100) : 50;
+  const base = baseOverallRating(athlete);
+  return base == null ? 50 : clamp(base, 1, 100);
 };
 
 function assignmentPenalty(raw, assignedSide) {

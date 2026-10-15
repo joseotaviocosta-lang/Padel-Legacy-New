@@ -27,6 +27,9 @@
   },
   "bundle": {
     "active": true,
+    "android": {
+      "versionCode": 9001
+    },
     "targets": [
       "msi",
       "nsis"

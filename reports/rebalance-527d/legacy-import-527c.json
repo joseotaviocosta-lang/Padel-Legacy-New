@@ -1,0 +1,13 @@
+{
+  "file": "reports/rebalance-527c/conservative/raw/casual-001.json",
+  "jobId": "conservative-casual-seed001-2y",
+  "exists": true,
+  "tuningIdentical": true,
+  "harness527c": "sim-progression-economy-v526 sem checkpoint (0 segmentos), sem fastclone",
+  "harnessCompatible": false,
+  "schemaCompatible": false,
+  "days": 730,
+  "outcomeHash": "e249dcd5c9c1399789aee1c9c50a1cfee90248531ba8f85dc0c4a1063b8c0033",
+  "decision": "RERUN",
+  "reason": "harness 5.27-C (sem segmentos/fastclone) e resultado sem envelope/hashes ≠ 5.27-D: o job é rerodado; o outcomeHash da 5.27-C fica registrado para comparação de equivalência"
+}

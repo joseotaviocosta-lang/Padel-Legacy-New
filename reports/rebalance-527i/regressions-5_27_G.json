@@ -1,0 +1,55 @@
+{
+  "at": "2026-10-15T01:32:54.802Z",
+  "passed": 6,
+  "total": 6,
+  "results": [
+    {
+      "group": "5.27-G",
+      "name": "test-normal-partner-score-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 2,
+      "summary": "test-normal-partner-score-v527g: 6/6 passaram"
+    },
+    {
+      "group": "5.27-G",
+      "name": "test-normal-partner-strength-floor-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-normal-partner-strength-floor-v527g: 4/4 passaram"
+    },
+    {
+      "group": "5.27-G",
+      "name": "test-normal-vs-optimizer-partner-choice-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-normal-vs-optimizer-partner-choice-v527g: 3/3 passaram"
+    },
+    {
+      "group": "5.27-G",
+      "name": "test-partner-choice-compatibility-preserved-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-partner-choice-compatibility-preserved-v527g: 4/4 passaram"
+    },
+    {
+      "group": "5.27-G",
+      "name": "test-tactic-neutrality-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-tactic-neutrality-v527g: 13/13 passaram"
+    },
+    {
+      "group": "5.27-G",
+      "name": "test-tactic-side-swap-v527g",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-tactic-side-swap-v527g: 4/4 passaram"
+    }
+  ]
+}

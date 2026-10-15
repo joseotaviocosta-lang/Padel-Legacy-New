@@ -1,0 +1,1283 @@
+{
+  "horizonDays": 1460,
+  "runsPerProfile": 3,
+  "difficulties": [
+    "easy",
+    "normal",
+    "hard"
+  ],
+  "rankRungs": [
+    500,
+    250,
+    100,
+    50,
+    30,
+    20,
+    10,
+    5,
+    3,
+    1
+  ],
+  "results": [
+    {
+      "careerId": "41413836-d6b5-46a2-b975-e56e0fd9e28a",
+      "profileDef": "equilibrado",
+      "difficultyId": "easy",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 28,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 33,
+        "19": 35,
+        "20": 36
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4606,
+        "xp": 1174
+      },
+      "ms": 252354
+    },
+    {
+      "careerId": "d7888de8-cadf-47ff-ae7f-2843f94d4adc",
+      "profileDef": "equilibrado",
+      "difficultyId": "easy",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 32,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4635,
+        "xp": 948
+      },
+      "ms": 198344
+    },
+    {
+      "careerId": "2fd09ac0-d621-4eca-99aa-905ece8fef6e",
+      "profileDef": "equilibrado",
+      "difficultyId": "easy",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 30,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 34,
+        "19": 35,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4628,
+        "xp": 1130
+      },
+      "ms": 255916
+    },
+    {
+      "careerId": "ca83e6ee-62b6-49c6-a106-aabc3bd00fd1",
+      "profileDef": "competitivo",
+      "difficultyId": "easy",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 34,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 33,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4293,
+        "xp": 688
+      },
+      "ms": 274161
+    },
+    {
+      "careerId": "fa7801a3-daab-4204-b50c-2775a6043356",
+      "profileDef": "competitivo",
+      "difficultyId": "easy",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 45,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 33,
+        "18": 34,
+        "19": 35,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4391,
+        "xp": 919
+      },
+      "ms": 275210
+    },
+    {
+      "careerId": "4c39d6c6-2eff-4fda-be39-686288d45357",
+      "profileDef": "competitivo",
+      "difficultyId": "easy",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 36,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4324,
+        "xp": 752
+      },
+      "ms": 181730
+    },
+    {
+      "careerId": "b28e29e5-1b4c-464f-960c-c6e5bc08ab5a",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "easy",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 34,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 7,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 32,
+        "20": 32
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4990,
+        "xp": 962
+      },
+      "ms": 169416
+    },
+    {
+      "careerId": "c2d87b26-af04-48b5-9189-1040df8f88b1",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "easy",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 36,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 32,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4778,
+        "xp": 1164
+      },
+      "ms": 160384
+    },
+    {
+      "careerId": "2f13eadc-8f8a-4a69-b8e7-e9684c6cf982",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "easy",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 41,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 34,
+        "19": 35,
+        "20": 36
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4689,
+        "xp": 1652
+      },
+      "ms": 183836
+    },
+    {
+      "careerId": "2a7e49ab-1246-4f0c-8df1-a56807b604f7",
+      "profileDef": "conservador",
+      "difficultyId": "easy",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 13,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 7,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4652,
+        "xp": 865
+      },
+      "ms": 167731
+    },
+    {
+      "careerId": "040ec1b3-1880-45de-a71b-1cfdf729da14",
+      "profileDef": "conservador",
+      "difficultyId": "easy",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 12,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 7,
+        "19": 7,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4616,
+        "xp": 791
+      },
+      "ms": 168588
+    },
+    {
+      "careerId": "6f524a3b-b872-40ad-bc95-e5e8aa15fe54",
+      "profileDef": "conservador",
+      "difficultyId": "easy",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 9,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 34
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4656,
+        "xp": 705
+      },
+      "ms": 115702
+    },
+    {
+      "careerId": "cc9a2790-e905-4180-8082-6137d6d589e9",
+      "profileDef": "agressivo",
+      "difficultyId": "easy",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 39,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 34,
+        "19": 35,
+        "20": 36
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4389,
+        "xp": 907
+      },
+      "ms": 117919
+    },
+    {
+      "careerId": "ea2da38a-5910-4eaa-b132-71cdc445a2f1",
+      "profileDef": "agressivo",
+      "difficultyId": "easy",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 34,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 33,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4248,
+        "xp": 624
+      },
+      "ms": 114253
+    },
+    {
+      "careerId": "5c636408-a1e6-44fd-a908-a3f16419f1dc",
+      "profileDef": "agressivo",
+      "difficultyId": "easy",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 34,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 33,
+        "19": 35,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4239,
+        "xp": 723
+      },
+      "ms": 120175
+    },
+    {
+      "careerId": "be343766-a6ff-4ef2-a2f1-5fec05a79b3c",
+      "profileDef": "equilibrado",
+      "difficultyId": "normal",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 40,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4672,
+        "xp": 846
+      },
+      "ms": 210872
+    },
+    {
+      "careerId": "ab96030f-dc37-4779-aaf4-3fa8b03bf565",
+      "profileDef": "equilibrado",
+      "difficultyId": "normal",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 36,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4368,
+        "xp": 939
+      },
+      "ms": 200237
+    },
+    {
+      "careerId": "2de5b5b2-d5cf-409e-99db-b428bd5f1247",
+      "profileDef": "equilibrado",
+      "difficultyId": "normal",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 28,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 33,
+        "19": 34,
+        "20": 34
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4422,
+        "xp": 755
+      },
+      "ms": 133400
+    },
+    {
+      "careerId": "473ca898-2f71-4b0a-991b-77ec373f1d4a",
+      "profileDef": "competitivo",
+      "difficultyId": "normal",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 41,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4402,
+        "xp": 710
+      },
+      "ms": 123792
+    },
+    {
+      "careerId": "05cfefae-8e92-4b2a-ad0a-ad3335b7fcf3",
+      "profileDef": "competitivo",
+      "difficultyId": "normal",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 35,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4328,
+        "xp": 584
+      },
+      "ms": 110064
+    },
+    {
+      "careerId": "981d6549-5e61-41c1-b094-d9836a5e242c",
+      "profileDef": "competitivo",
+      "difficultyId": "normal",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 38,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4432,
+        "xp": 628
+      },
+      "ms": 134781
+    },
+    {
+      "careerId": "6c581d2e-38db-4df7-8124-b15ce8a45f28",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "normal",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 32,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 34
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4679,
+        "xp": 998
+      },
+      "ms": 133316
+    },
+    {
+      "careerId": "093d1751-4603-4bcf-a239-9f4e959e8d8a",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "normal",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 31,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 35
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4630,
+        "xp": 1106
+      },
+      "ms": 105875
+    },
+    {
+      "careerId": "362a4a74-605a-466a-9c61-4c56e8977ca7",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "normal",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 38,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4803,
+        "xp": 974
+      },
+      "ms": 103869
+    },
+    {
+      "careerId": "41defd28-a9e1-40cf-bf61-1b41509f7d6d",
+      "profileDef": "conservador",
+      "difficultyId": "normal",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 15,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 32,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4678,
+        "xp": 517
+      },
+      "ms": 93810
+    },
+    {
+      "careerId": "5f11322f-1db1-48f4-ae6b-6a26d34fe573",
+      "profileDef": "conservador",
+      "difficultyId": "normal",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 9,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 7,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 33,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4552,
+        "xp": 612
+      },
+      "ms": 86947
+    },
+    {
+      "careerId": "c39272c9-4624-4cb1-a045-6481b97493df",
+      "profileDef": "conservador",
+      "difficultyId": "normal",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 16,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 7,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 33,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4576,
+        "xp": 692
+      },
+      "ms": 91099
+    },
+    {
+      "careerId": "7b73c678-bf34-484c-bced-ff50b530db7f",
+      "profileDef": "agressivo",
+      "difficultyId": "normal",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 35,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4360,
+        "xp": 469
+      },
+      "ms": 107175
+    },
+    {
+      "careerId": "2732d30a-1aab-406d-a820-6ff060652133",
+      "profileDef": "agressivo",
+      "difficultyId": "normal",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 38,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 31,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4550,
+        "xp": 464
+      },
+      "ms": 111013
+    },
+    {
+      "careerId": "6a639b56-6c23-4e4b-b945-74357d606c71",
+      "profileDef": "agressivo",
+      "difficultyId": "normal",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 36,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 1,
+        "19": 1,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 34
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4229,
+        "xp": 604
+      },
+      "ms": 107708
+    },
+    {
+      "careerId": "5690c791-ef97-48b3-8c68-a4f83f3e7045",
+      "profileDef": "equilibrado",
+      "difficultyId": "hard",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 22,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 31,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4529,
+        "xp": 542
+      },
+      "ms": 104372
+    },
+    {
+      "careerId": "67c83cd6-b989-40a9-aef2-74b6bc9ee3c6",
+      "profileDef": "equilibrado",
+      "difficultyId": "hard",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 39,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 31,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4658,
+        "xp": 613
+      },
+      "ms": 110748
+    },
+    {
+      "careerId": "dbbd9a23-30e6-41e5-a883-000a72596949",
+      "profileDef": "equilibrado",
+      "difficultyId": "hard",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 28,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4493,
+        "xp": 583
+      },
+      "ms": 111861
+    },
+    {
+      "careerId": "1365d92d-3324-4f4d-92ca-0ff3a6d90363",
+      "profileDef": "competitivo",
+      "difficultyId": "hard",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 37,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4268,
+        "xp": 512
+      },
+      "ms": 113096
+    },
+    {
+      "careerId": "80d05a38-57f8-41b7-a738-f0c537db7405",
+      "profileDef": "competitivo",
+      "difficultyId": "hard",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 37,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4340,
+        "xp": 482
+      },
+      "ms": 113922
+    },
+    {
+      "careerId": "8ab5096c-98f1-4042-837f-5e5c08c8b367",
+      "profileDef": "competitivo",
+      "difficultyId": "hard",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 39,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4302,
+        "xp": 576
+      },
+      "ms": 119664
+    },
+    {
+      "careerId": "0f4ff2ed-bfca-4ac9-a2d3-2698f434828b",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "hard",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 30,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 31,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4722,
+        "xp": 790
+      },
+      "ms": 105432
+    },
+    {
+      "careerId": "547f97ad-a068-417e-be90-f8c80c83808f",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "hard",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 29,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 32,
+        "18": 33,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4702,
+        "xp": 909
+      },
+      "ms": 113263
+    },
+    {
+      "careerId": "63a271df-f146-477b-9c89-7701c4b4b9ce",
+      "profileDef": "desenvolvimento",
+      "difficultyId": "hard",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 32,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 32,
+        "18": 33,
+        "19": 34,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4633,
+        "xp": 1010
+      },
+      "ms": 96325
+    },
+    {
+      "careerId": "57c8ebd6-f4da-4bb2-9cd8-1e0aaf9d134c",
+      "profileDef": "conservador",
+      "difficultyId": "hard",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 9,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 7,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4480,
+        "xp": 533
+      },
+      "ms": 79565
+    },
+    {
+      "careerId": "a3449e77-4340-485c-b950-e67cdc8ba5bb",
+      "profileDef": "conservador",
+      "difficultyId": "hard",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 12,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 7,
+        "20": 7
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 7,
+      "finalProfile": {
+        "coins": 4686,
+        "xp": 513
+      },
+      "ms": 77757
+    },
+    {
+      "careerId": "21fc1042-e7b3-40cf-a94a-cd542e48c713",
+      "profileDef": "conservador",
+      "difficultyId": "hard",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 13,
+      "rankAtAge": {
+        "16": 7,
+        "17": 7,
+        "18": 7,
+        "19": 7,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4651,
+        "xp": 557
+      },
+      "ms": 75945
+    },
+    {
+      "careerId": "507a70db-6612-45a6-9bdb-1c99e5ca332b",
+      "profileDef": "agressivo",
+      "difficultyId": "hard",
+      "seed": 0,
+      "daysCompleted": 1460,
+      "matchesPlayed": 38,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 32,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4399,
+        "xp": 456
+      },
+      "ms": 198689
+    },
+    {
+      "careerId": "d43871ce-4363-438e-be1f-4bc73c62ae8c",
+      "profileDef": "agressivo",
+      "difficultyId": "hard",
+      "seed": 1,
+      "daysCompleted": 1460,
+      "matchesPlayed": 36,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 31,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 34
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4149,
+        "xp": 565
+      },
+      "ms": 230181
+    },
+    {
+      "careerId": "08100ec9-807c-4912-8021-9c3fd8a625f9",
+      "profileDef": "agressivo",
+      "difficultyId": "hard",
+      "seed": 2,
+      "daysCompleted": 1460,
+      "matchesPlayed": 35,
+      "rankAtAge": {
+        "16": 7,
+        "17": 1,
+        "18": 1,
+        "19": 1,
+        "20": 1
+      },
+      "overallAtAge": {
+        "16": 30,
+        "17": 31,
+        "18": 32,
+        "19": 33,
+        "20": 33
+      },
+      "finalRank": 1,
+      "finalProfile": {
+        "coins": 4226,
+        "xp": 522
+      },
+      "ms": 204868
+    }
+  ]
+}

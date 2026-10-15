@@ -1,0 +1,18 @@
+{
+  "before": {
+    "careers": 5,
+    "sponsorY1Median": 48.7,
+    "prizeY1Median": 16.8,
+    "debtPct": 0,
+    "severanceCost": 0,
+    "finalCoinsMedian": 6080
+  },
+  "after": {
+    "careers": 5,
+    "sponsorY1Median": 39.5,
+    "prizeY1Median": 17,
+    "debtPct": 0,
+    "severanceCost": 0,
+    "finalCoinsMedian": 7615
+  }
+}

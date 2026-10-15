@@ -1,0 +1,5 @@
+tier,events,fieldSizeMedian,pairOvrP10,pairOvrP25,pairOvrP50,pairOvrP75,pairOvrP90,teamRankP25,teamRankP50,teamRankP75,rankedShare
+Bronze,144,16,34.5,35,36.5,39,41.5,518,638,838,408
+Silver,96,16,42,45,47.5,51,53,470,692,813,560
+Gold,210,24,70,73.5,76.5,80,81.5,276,345,429,384
+Platinum,162,32,75.5,78,80,82,84,44,192,270,719

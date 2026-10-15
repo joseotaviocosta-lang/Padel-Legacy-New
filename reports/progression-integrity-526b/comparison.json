@@ -1,0 +1,112 @@
+{
+  "horizonDays": 730,
+  "before": {
+    "label": "5.26 bugada (seeds 1–5, 730 dias)",
+    "careers": 15,
+    "partnerEngineOvrMedian": 1,
+    "partnerCardOvrMedian": 31,
+    "partnerEngineEqualsCardPct": 0,
+    "easy": {
+      "n": 577,
+      "winPct": 29.6
+    },
+    "medium": {
+      "n": 635,
+      "winPct": 40.8
+    },
+    "hard": {
+      "n": 87,
+      "winPct": 24.1
+    },
+    "overallWinPct": 34.7,
+    "matches": 1299,
+    "freezeCareersPct": 100,
+    "achievementCoinLossPerCareer2y": 14400,
+    "reputationMedianAt2y": 0,
+    "ageAt2y": null,
+    "rankingPositionWrittenPct": 0,
+    "sponsorTiers": [
+      "Bronze"
+    ],
+    "sponsorMaxTier": "Bronze",
+    "shopBestByCareer": "incomum (compra): 15",
+    "rankMedianAt2y": 96,
+    "rankMedianAt1y": 702,
+    "titles2y": 1,
+    "titlesPerCareerYear": 0.03,
+    "finalsWonPct": 10
+  },
+  "beforeAll": {
+    "label": "5.26 bugada (todas as 45, 730 dias)",
+    "careers": 45,
+    "partnerEngineOvrMedian": 1,
+    "partnerCardOvrMedian": 31,
+    "partnerEngineEqualsCardPct": 0,
+    "easy": {
+      "n": 1755,
+      "winPct": 29.7
+    },
+    "medium": {
+      "n": 2016,
+      "winPct": 41.7
+    },
+    "hard": {
+      "n": 255,
+      "winPct": 22
+    },
+    "overallWinPct": 35.2,
+    "matches": 4028,
+    "freezeCareersPct": 100,
+    "achievementCoinLossPerCareer2y": 15600,
+    "reputationMedianAt2y": 0,
+    "ageAt2y": null,
+    "rankingPositionWrittenPct": 0,
+    "sponsorTiers": [
+      "Bronze"
+    ],
+    "sponsorMaxTier": "Bronze",
+    "shopBestByCareer": "incomum (compra): 45",
+    "rankMedianAt2y": 89,
+    "rankMedianAt1y": 694,
+    "titles2y": 1,
+    "titlesPerCareerYear": 0.01,
+    "finalsWonPct": 3.1
+  },
+  "after": {
+    "label": "5.26-B pós-correção (seeds 1–5, 730 dias)",
+    "careers": 14,
+    "partnerEngineOvrMedian": 59,
+    "partnerCardOvrMedian": 59,
+    "partnerEngineEqualsCardPct": 100,
+    "easy": {
+      "n": 641,
+      "winPct": 44.1
+    },
+    "medium": {
+      "n": 1034,
+      "winPct": 72.3
+    },
+    "hard": {
+      "n": 240,
+      "winPct": 55
+    },
+    "overallWinPct": 60.7,
+    "matches": 1932,
+    "freezeCareersPct": 0,
+    "achievementCoinLossPerCareer2y": 0,
+    "reputationMedianAt2y": 100,
+    "ageAt2y": 18,
+    "rankingPositionWrittenPct": 100,
+    "sponsorTiers": [
+      "Bronze",
+      "Prata"
+    ],
+    "sponsorMaxTier": "Prata",
+    "shopBestByCareer": "lendario: 4, epico: 3, mitico: 4, exclusivo: 3",
+    "rankMedianAt2y": 20,
+    "rankMedianAt1y": 663,
+    "titles2y": 14,
+    "titlesPerCareerYear": 0.5,
+    "finalsWonPct": 28
+  }
+}

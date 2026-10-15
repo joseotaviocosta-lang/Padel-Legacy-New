@@ -1,13 +1,14 @@
 import { careerManager } from '@/local/careerDataStore.js';
 import React, { useCallback, useEffect, useState } from 'react';
 import { NavLink, Outlet, useLocation } from 'react-router-dom';
-import { ChevronDown, Coins, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
+import { BriefcaseBusiness, Bug, Building2, ChevronDown, Coins, Menu, PanelLeftClose, PanelLeftOpen, X } from 'lucide-react';
 import BottomNav from './BottomNav';
 import { motion, AnimatePresence } from 'framer-motion';
 import { preloadRoute, preloadRoutes } from '@/lib/routeModules';
 import OnboardingGuide from '@/components/onboarding/OnboardingGuide';
 import BetaAnalyticsTracker from '@/components/system/BetaAnalyticsTracker.jsx';
 import CareerHud from '@/components/career/CareerHud';
+import HeaderRankShortcuts from '@/components/career/HeaderRankShortcuts';
 import CommunicationBell from '@/components/communications/CommunicationBell';
 import CareerHeaderContext from '@/components/career/CareerHeaderContext';
 import CareerDayControl from '@/components/career/CareerDayControl';
@@ -19,7 +20,8 @@ import { BrandMark } from '@/components/design-system/BrandMark';
 import FeedbackSoundController from '@/components/system/FeedbackSoundController';
 import BetaWelcome from '@/components/system/BetaWelcome.jsx';
 import { localGame } from '@/api/localGameClient.js';
-import { ensureMyProfile, getWorldRank } from '@/lib/padel';
+import { ensureMyProfile, getWorldRank, overallRating } from '@/lib/padel';
+import { getTeamRank } from '@/lib/teamRanking.js';
 import FloatingUtilityRail from '@/components/system/FloatingUtilityRail.jsx';
 import { useOverlayBehavior } from '@/components/design-system/useOverlayBehavior';
 import MobilePerformanceMonitor from '@/dev/MobilePerformanceMonitor.jsx';
@@ -127,22 +129,85 @@ async function openCareerManager() {
   window.location.href = '/careers';
 }
 
+// Playthrough 5.24-B, Partes C/D — ACESSO RÁPIDO NO MOBILE.
+//
+// A 5.20-B escondeu no mobile (`hidden md:flex`) os atalhos "Gerenciar
+// carreiras" e "Centro de treinamento" da FloatingUtilityRail, porque a
+// barra flutuante cobria título e CTA. Os botões continuaram no DOM, mas
+// invisíveis — e o caminho que sobrou era fundo demais (Carreiras: ☰ → Mais
+// → Configurações → rolar → Carreiras; Centro: ☰ → Carreira → Treinos → aba).
+//
+// Em vez de devolver botões flutuantes (que voltariam a cobrir conteúdo),
+// os dois acessos vivem no topo do drawer ☰ que o header mobile já tem:
+// 2 toques, nenhum chrome novo na tela, header continua em 2 faixas.
+// Playthrough 5.24-C — a rail voltou a mostrar os dois atalhos no mobile
+// (1 toque); este bloco fica como fallback intencional no menu lateral.
+// Playthrough 5.25 — a Central BETA saiu da superfície flutuante no mobile;
+// "Beta testers" fica aqui, discreto, abaixo dos atalhos (fecha o drawer e
+// abre a Central, cuja instância vive na FloatingUtilityRail).
+function MobileQuickAccess({ onNavigate, onOpenBeta }) {
+  const itemClass = 'pl-icon-tap flex min-h-11 min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/60 bg-secondary/40 px-2.5 py-2 text-left text-xs font-bold text-foreground transition-colors hover:border-primary/30 hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary';
+  return (
+    <div data-mobile-quick-access className="shrink-0 border-b border-border/50 px-3 py-2.5">
+      <p className="mb-1.5 text-[10px] font-black uppercase tracking-[0.18em] text-muted-foreground">Acesso rápido</p>
+      <div className="flex gap-2">
+        <NavLink to={APP_ROUTES.TRAINING_CENTER} onClick={onNavigate} aria-label="Centro de treinamento" className={itemClass}>
+          <Building2 className="h-4 w-4 shrink-0 text-primary" />
+          <span className="min-w-0 leading-tight">Centro de treinamento</span>
+        </NavLink>
+        <button type="button" onClick={openCareerManager} aria-label="Gerenciar carreiras" className={itemClass}>
+          <BriefcaseBusiness className="h-4 w-4 shrink-0 text-primary" />
+          <span className="min-w-0 leading-tight">Gerenciar carreiras</span>
+        </button>
+      </div>
+      <button type="button" onClick={onOpenBeta} aria-label="Beta testers" data-menu-beta className="pl-icon-tap mt-2 flex min-h-11 w-full items-center gap-2 rounded-xl px-2.5 py-2 text-left text-xs font-bold text-muted-foreground transition-colors hover:bg-secondary/40 hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">
+        <Bug className="h-4 w-4 shrink-0" />
+        <span>Beta testers</span>
+      </button>
+    </div>
+  );
+}
+
+// Playthrough 5.24, Parte B — resolve o ranking da dupla ATIVA do jogador
+// pela parceria canônica (partner_bot_id), do mesmo jeito que Ranking.jsx e
+// PartnerOverview fazem. Sem parceiro/atleta resolvível, devolve null (a UI
+// mostra "Sem dupla").
+async function resolveHeaderTeamRank(profile) {
+  try {
+    const partnership = (await localGame.entities.Partnership
+      .filter({ profile_id: profile.id, status: 'ativa' }, null, 1).catch(() => []))?.[0] || null;
+    const partnerId = partnership?.partner_bot_id || partnership?.athlete_b_id || profile.partner_id || null;
+    if (!partnerId) return null;
+    const partner = await localGame.entities.AthleteProfile.get(partnerId).catch(() => null);
+    if (!partner?.id) return null;
+    return await getTeamRank(profile, partner);
+  } catch {
+    return null;
+  }
+}
+
 function useCareerHeaderData() {
   const [profile, setProfile] = useState(null);
   const [ranking, setRanking] = useState(null);
+  const [teamRank, setTeamRank] = useState(null);
+  const [overall, setOverall] = useState(null);
 
   // Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): antes disparava setProfile
   // (síncrono) e setRanking (dentro de um .then() assíncrono) em dois commits
   // separados — dois re-renders de AppLayout (e de tudo que não está
   // memoizado abaixo dele) por evento de perfil, em vez de um só. Aguardar
-  // getWorldRank antes de gravar os dois estados deixa as duas atualizações
-  // no mesmo "tick" de continuação da Promise, que o React já agrupa num
-  // único commit.
+  // as leituras antes de gravar os estados deixa as atualizações no mesmo
+  // "tick" de continuação da Promise, que o React já agrupa num único commit.
   const applyProfile = useCallback(async (nextProfile) => {
     if (!nextProfile) return;
-    const nextRanking = await getWorldRank(nextProfile).catch(() => null);
+    const [nextRanking, nextTeamRank] = await Promise.all([
+      getWorldRank(nextProfile).catch(() => null),
+      resolveHeaderTeamRank(nextProfile),
+    ]);
     setProfile(nextProfile);
     setRanking(nextRanking);
+    setTeamRank(nextTeamRank);
+    setOverall(overallRating(nextProfile));
   }, []);
 
   const load = useCallback(async () => {
@@ -191,7 +256,7 @@ function useCareerHeaderData() {
     };
   }, [applyProfile, load]);
 
-  return { profile, ranking, applyProfile };
+  return { profile, ranking, teamRank, overall, applyProfile };
 }
 
 export default function AppLayout() {
@@ -203,7 +268,9 @@ export default function AppLayout() {
   const [expandedGroup, setExpandedGroup] = useState(() => localStorage.getItem(EXPANDED_GROUP_KEY) || activeGroup?.id || 'career');
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => localStorage.getItem(COLLAPSED_SIDEBAR_KEY) === 'true');
   const [mobileOpen, setMobileOpen] = useState(false);
-  const { profile: headerProfile, ranking: headerRanking } = useCareerHeaderData();
+  const [betaOpen, setBetaOpen] = useState(false);
+  const openBetaFromMenu = useCallback(() => { setMobileOpen(false); setBetaOpen(true); }, []);
+  const { profile: headerProfile, ranking: headerRanking, teamRank: headerTeamRank, overall: headerOverall } = useCareerHeaderData();
   // M2.1 (docs/MOBILE_M2_1_DEVICE_HOTFIX.md): este drawer sempre foi uma
   // implementação própria (motion.aside), nunca o DrawerShell do design
   // system — por isso o safe-area/Android-Back que o DrawerShell ganhou no
@@ -283,28 +350,44 @@ export default function AppLayout() {
   return (
     <MotionPolicyProvider value={performanceProfile}>
     <div className="app-shell min-h-screen bg-background">
-      <header className="pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex h-[calc(var(--pl-header-h)+env(safe-area-inset-top))] items-center overflow-hidden border-b border-border/45 bg-background/95 pl-[calc(0.375rem+var(--pl-safe-l))] pr-[calc(0.375rem+var(--pl-safe-r))] md:hidden">
-        <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
-          <Menu className="h-5 w-5" />
-        </button>
-        <div className="min-w-0 flex-1 px-0.5 min-[390px]:px-1.5">
-          {/* Hotfix hierarquia de páginas (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md):
-              este cabeçalho global não deve mais reimprimir o título da rota —
-              cada página já tem seu próprio PageHeader (fonte única de
-              identidade). Aqui só cabe contexto operacional. */}
-          <CareerHeaderContext profile={headerProfile} compact />
+      {/* Playthrough 5.24, Parte D — header mobile em DUAS faixas:
+          faixa 1: navegação + contexto do dia/torneio + moedas + sino;
+          faixa 2: atalhos (ranking individual/dupla/OVR) + Avançar.
+          Cada faixa cabe em 360px sem scroll horizontal; o desktop mantém a
+          barra única de sempre (esta é md:hidden). */}
+      <header className="pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex h-[calc(var(--pl-header-h-mobile)+env(safe-area-inset-top))] flex-col justify-center overflow-hidden border-b border-border/45 bg-background/95 pl-[calc(0.375rem+var(--pl-safe-l))] pr-[calc(0.375rem+var(--pl-safe-r))] md:hidden">
+        <div className="flex w-full min-w-0 items-center gap-1">
+          <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap shrink-0 rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
+            <Menu className="h-5 w-5" />
+          </button>
+          <div className="min-w-0 flex-1 px-0.5 min-[390px]:px-1.5">
+            {/* Hotfix hierarquia de páginas (docs/PAGE_HIERARCHY_ATHLETES_HOTFIX.md):
+                este cabeçalho global não deve mais reimprimir o título da rota —
+                cada página já tem seu próprio PageHeader (fonte única de
+                identidade). Aqui só cabe contexto operacional. */}
+            <CareerHeaderContext profile={headerProfile} compact />
+          </div>
+          <NavLink
+            to={APP_ROUTES.ECONOMY}
+            title="Abrir Economia"
+            aria-label={`Abrir Economia. Saldo: ${formatCoinBalance(headerProfile?.coins)} moedas`}
+            className="pl-icon-tap mr-0.5 inline-flex max-w-[4.8rem] shrink-0 items-center justify-center gap-1 overflow-hidden rounded-lg border border-premium/25 bg-premium/10 px-1 text-[9px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-[390px]:px-1.5 min-[390px]:text-[10px]"
+          >
+            <Coins className="h-3.5 w-3.5 shrink-0" />
+            <span className="min-w-0 truncate">{formatCoinBalance(headerProfile?.coins)}</span>
+          </NavLink>
+          <CommunicationBell compact />
         </div>
-        <NavLink
-          to={APP_ROUTES.ECONOMY}
-          title="Abrir Economia"
-          aria-label={`Abrir Economia. Saldo: ${formatCoinBalance(headerProfile?.coins)} moedas`}
-          className="pl-icon-tap mr-0.5 inline-flex max-w-[4.8rem] shrink-0 items-center justify-center gap-1 overflow-hidden rounded-lg border border-premium/25 bg-premium/10 px-1 text-[9px] font-black tabular-nums text-premium transition-colors hover:bg-premium/15 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary min-[390px]:px-1.5 min-[390px]:text-[10px]"
-        >
-          <Coins className="h-3.5 w-3.5 shrink-0" />
-          <span className="min-w-0 truncate">{formatCoinBalance(headerProfile?.coins)}</span>
-        </NavLink>
-        <CareerDayControl profile={headerProfile} compact />
-        <CommunicationBell compact />
+        <div className="mt-1 flex w-full min-w-0 items-center gap-1.5">
+          <HeaderRankShortcuts
+            ranking={headerRanking}
+            teamRank={headerTeamRank}
+            overall={headerOverall}
+            compact
+            className="min-w-0 flex-1"
+          />
+          <div className="shrink-0"><CareerDayControl profile={headerProfile} compact /></div>
+        </div>
       </header>
 
       <AnimatePresence>
@@ -319,6 +402,7 @@ export default function AppLayout() {
                 </NavLink>
                 <button ref={mobileDrawerCloseRef} type="button" aria-label="Fechar navegação" onClick={() => setMobileOpen(false)} className="pl-icon-tap rounded-xl p-2 hover:bg-secondary"><X className="h-5 w-5" /></button>
               </div>
+              <MobileQuickAccess onNavigate={() => setMobileOpen(false)} onOpenBeta={openBetaFromMenu} />
               <nav className="scrollbar-premium flex-1 overflow-y-auto p-3"><NavigationGroups expandedGroup={expandedGroup} onExpandedGroupChange={setExpandedGroup} onNavigate={() => setMobileOpen(false)} /></nav>
             </motion.aside>
           </>
@@ -341,7 +425,7 @@ export default function AppLayout() {
       <BetaAnalyticsTracker />
       <FeedbackSoundController />
       <BetaWelcome />
-      <FloatingUtilityRail onOpenCareers={openCareerManager} />
+      <FloatingUtilityRail onOpenCareers={openCareerManager} betaOpen={betaOpen} onBetaOpenChange={setBetaOpen} />
       <MobilePerformanceMonitor />
 
       {/* M3.2 (docs/MOBILE_M3_2_ANDROID_UX_STABILITY.md, Problema D): a reserva
@@ -350,7 +434,7 @@ export default function AppLayout() {
           solto — qualquer mudança futura na altura da nav não pode mais
           descasar dos dois lugares. A folga sobre a altura real da nav subiu
           de 1.25rem para 1.75rem como margem de segurança extra. */}
-      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+3.5rem)] pt-[calc(var(--pl-header-h)+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+      <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+3.5rem)] pt-[calc(var(--pl-header-h-mobile)+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
         <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 pl-[calc(1rem+var(--pl-safe-l))] pr-[calc(1rem+var(--pl-safe-r))] backdrop-blur-xl md:flex lg:pl-[calc(1.25rem+var(--pl-safe-l))] lg:pr-[calc(1.25rem+var(--pl-safe-r))]">
           {/* Hotfix hierarquia de páginas: idem ao cabeçalho mobile — sem
               reimprimir breadcrumb/título da rota aqui, só contexto
@@ -358,10 +442,28 @@ export default function AppLayout() {
           <div className="flex min-w-0 flex-1 items-center">
             <CareerHeaderContext profile={headerProfile} />
           </div>
+          {/* Playthrough 5.20-C, item 8 — SOBREPOSICAO NA BARRA ESTREITA.
+              Em 844x390 (celular deitado) o app usa este shell de desktop, e a
+              sidebar leva 256px dos 844. No que sobra, os itens com
+              `whitespace-nowrap` dentro de um container `min-w-0` encolhem
+              abaixo do proprio conteudo e o texto transborda POR CIMA do
+              vizinho: "QUINTA-FEIRA / 03/01/2026" ficava impresso sobre os
+              chips de status, ilegivel. Conferido em captura; nenhum gate de
+              overflow pegava, porque nada passava da borda da pagina.
+
+              O CareerHud sai abaixo de lg: ele repete o status que o PageHeader
+              da propria pagina ja mostra — some uma duplicacao e a colisao
+              junto. Data e sino nao encolhem mais. */}
           <div className="flex min-w-0 flex-1 items-center justify-end gap-2 xl:flex-none">
-            <CareerHud profile={headerProfile} ranking={headerRanking} compact className="min-w-0" />
-            <CareerDayControl profile={headerProfile} />
-            <CommunicationBell />
+            <HeaderRankShortcuts
+              ranking={headerRanking}
+              teamRank={headerTeamRank}
+              overall={headerOverall}
+              className="min-w-0"
+            />
+            <CareerHud profile={headerProfile} compact className="hidden min-w-0 lg:flex" />
+            <div className="shrink-0"><CareerDayControl profile={headerProfile} /></div>
+            <div className="shrink-0"><CommunicationBell /></div>
           </div>
         </div>
 

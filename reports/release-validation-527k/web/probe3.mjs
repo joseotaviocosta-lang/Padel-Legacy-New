@@ -1,0 +1,10 @@
+import { open } from './lib.mjs';
+const { browser, page, errors, clickText, state, shot, sleep } = await open();
+await page.goto('http://127.0.0.1:5174/', { waitUntil: 'networkidle2', timeout: 60000 });
+await clickText('Nova carreira');
+await page.type('input[placeholder="Ex.: Rumo ao topo"]', 'Smoke 527K');
+await clickText('Criar carreira', { exact: true });
+await sleep(3000);
+await shot('02-after-create');
+console.log(JSON.stringify(await state(), null, 1)); console.log('errors', JSON.stringify(errors));
+await browser.close();

@@ -1,0 +1,31 @@
+{
+  "at": "2026-10-13T03:05:23.403Z",
+  "passed": 3,
+  "total": 3,
+  "results": [
+    {
+      "group": "Ranking",
+      "name": "test-team-ranking-sum-formula-v522e",
+      "ok": true,
+      "code": 0,
+      "seconds": 0,
+      "summary": "test-team-ranking-sum-formula-v522e: PASS"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-world-ranking-year-rollover-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 7,
+      "summary": "test-world-ranking-year-rollover-v526c: 6/6 passaram"
+    },
+    {
+      "group": "Ranking",
+      "name": "test-race-year-reset-v526c",
+      "ok": true,
+      "code": 0,
+      "seconds": 22,
+      "summary": "test-race-year-reset-v526c: 8/8 passaram"
+    }
+  ]
+}

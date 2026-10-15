@@ -68,11 +68,67 @@ function athleteStatus(athlete) {
   return ACTIVE_STATUSES.has(status) ? status : 'active';
 }
 
+// Playthrough 5.18-H, Partes K/N/O — PISO DE RECUPERAÇÃO.
+//
+// O defeito que isto corrige: `activityFor` era CEGO à energia do atleta.
+// A escada de sorteio abaixo dá ~72% dos dias a treino (-5 a -11 de energia),
+// 12% a marketing (-3), 6% a exibição (-8 a -14) e só ~10% a descanso
+// (+8 a +16) — valor esperado de aproximadamente -5,6 de energia por dia
+// processado, sem NENHUM mecanismo que puxe o descanso quando a energia cai.
+// Como `simulateWorldDay` processa um subconjunto por dia, o atleta que entra
+// nesse subconjunto com regularidade desce monotonicamente até o piso e fica
+// lá para sempre.
+//
+// A consequência não era física, era COMPETITIVA: `chooseTournament` calcula
+// `restScore = (80 - energia) * 1,4` e compara com a melhor opção da semana.
+// Com energia 10 isso dá 98, contra scores de opção medidos entre 19 e 33 —
+// descanso ganha todas as semanas, para sempre. Medido na 5.18-G/H: 22 de 466
+// duplas novas passavam >=40 semanas sem NENHUM evento, e 14 delas nunca
+// chegavam sequer a disputar uma vaga; o caso extremo tinha OVR 76 e 82
+// semanas de existência com energia mínima de 27.
+//
+// Os dois limites saem da MESMA fórmula que cria o problema
+// (`restScore = (80 - energia) * 1,4`, TournamentSelectionAI.js) contra a
+// faixa de score de opção medida em produção (19 a 33) — nunca do resultado
+// que se quer obter:
+//   FLOOR=60   -> restScore 28, o meio da faixa: daqui para baixo o atleta
+//                 recusaria competir de qualquer forma, então recuperar vira
+//                 prioridade;
+//   TARGET=80  -> restScore 0: o incentivo a descansar DESAPARECE.
+//
+// Por que o alvo é 80 e não um valor "suficientemente alto": qualquer alvo
+// abaixo de 80 deixa incentivo residual (em 75, restScore vale 7), e sempre
+// existe dupla fraca o bastante para esse resíduo vencer o score da melhor
+// opção dela. Medido: com alvo 75, sobravam 2 duplas de OVR 60 e 66 que nunca
+// escolheram jogar em 48 e 52 semanas. 80 é o ponto em que a fórmula zera —
+// não um valor ajustado até o teste passar, mas o único que torna a correção
+// independente do nível de score da dupla.
+//
+// A primeira versão desta correção usava só o piso, e ficou pela metade:
+// disparava UM dia de descanso, a escada voltava a drenar, e a energia
+// passava a oscilar logo ABAIXO de 60 — ou seja, dentro da zona em que a
+// dupla continua recusando competir. Medido em 3 temporadas: o limbo caiu de
+// 22 para 3 duplas, mas as 3 sobreviventes tinham energia mínima 52-57 e
+// nunca escolheram jogar em 43 a 92 semanas.
+//
+// A banda corrige isso: uma vez em recuperação, o atleta descansa até voltar
+// a ser competitivo, em vez de sair da recuperação ainda exausto. Acima de
+// TARGET a escada de sorteio original continua intacta.
+const REST_ENERGY_FLOOR = 60;
+const REST_RECOVERY_TARGET = 80;
+
 function activityFor(athlete, date) {
   const age = ageFor(athlete, date);
   const seed = `${athlete.id}:${date}:activity`;
   const value = integer(seed, 0, 99);
   if (athlete.injured_until && athlete.injured_until >= date) return 'recovery';
+  const currentEnergy = clamp(safeNumber(athlete.energy, 80), 0, 100);
+  if (currentEnergy < REST_ENERGY_FLOOR) return 'rest';
+  // Histerese: já estava se recuperando e ainda não voltou a ser competitivo.
+  // `last_ai_activity` é persistido pelo próprio simulateWorldDay, então isto
+  // não exige estado novo nem mudança de schema.
+  const wasRecovering = athlete.last_ai_activity === 'rest' || athlete.last_ai_activity === 'recovery';
+  if (wasRecovering && currentEnergy < REST_RECOVERY_TARGET) return 'rest';
   if (age >= 34 && value < 32) return 'rest';
   if (age <= 21 && value < 48) return 'technical_training';
   if (value < 28) return 'physical_training';
@@ -317,8 +373,34 @@ export async function simulateWorldDay(profile, previousDate, currentDate) {
   let earnings = 0;
 
   // Divide o circuito em grupos diários para manter o avanço de dia rápido.
+  //
+  // Playthrough 5.18-H — o corte era `.slice(0, 80)` sobre o bucket do dia, e
+  // `activeAthletes` vem ordenado por `ranking_position`: a janela pegava
+  // SEMPRE os 80 primeiros do bucket, isto é, sempre a mesma cabeça de lista.
+  // Medido numa população de 1000: apenas 418 atletas eram processados alguma
+  // vez, 582 nunca (58%), e só os processados chegavam a ter campo `energy`.
+  //
+  // A consequência era um congelamento: um atleta processado enquanto bem
+  // ranqueado gastava energia, caía no ranking, saía da janela e ficava com a
+  // energia PARADA no último valor — abaixo do piso de recuperação, sem nunca
+  // mais passar por `activityFor`. Resultado observado em 3 temporadas: duplas
+  // com score de escolha normal (32 e 36) que nunca competiam em 48 a 65
+  // semanas, com energia travada em 51-56. O piso de recuperação (acima) não
+  // as alcançava, porque a correção estava numa função que nunca era chamada
+  // para elas.
+  //
+  // A rotação resolve sem custo adicional: a MESMA quantidade por dia
+  // (DAILY_SAMPLE), mas a janela desliza pelo bucket em vez de repetir a
+  // cabeça, de modo que toda a população é coberta ao longo dos dias.
+  const DAILY_SAMPLE = 80;
   const dayBucket = integer(`${currentDate}:bucket`, 0, 4);
-  const selected = activeAthletes.filter((athlete, index) => (hash(athlete.id || index) % 5) === dayBucket).slice(0, 80);
+  const bucketMembers = activeAthletes.filter((athlete, index) => (hash(athlete.id || index) % 5) === dayBucket);
+  const selected = bucketMembers.length <= DAILY_SAMPLE
+    ? bucketMembers
+    : Array.from(
+      { length: DAILY_SAMPLE },
+      (_, offset) => bucketMembers[(integer(`${currentDate}:rotation`, 0, bucketMembers.length - 1) + offset) % bucketMembers.length],
+    );
 
   // Uma gravação por atleta selecionado gerava até 80 escritas completas do
   // save por dia. Acumula os patches e grava tudo em uma única bulkUpdate.

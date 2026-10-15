@@ -1,0 +1,5 @@
+✓ [Motor de partida] test-match-integrity (3s) 
+✓ [Motor de partida] test-live-coach-tournament (5s) PASS — a UI real mostra o banner "Nova sugestão do técnico" em partida de torneio
+✓ [Motor de partida] test-tournament-result-authority (4s) 
+
+3/3 passaram
