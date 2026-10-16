@@ -32,15 +32,22 @@ export default function CoachCard({ evaluation, profile, onDetails, onHire }) {
         <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${tier.bg} ${tier.border}`}>
           <span className={`text-base font-black ${tier.color}`}>{(coach.name || '?')[0]}</span>
         </div>
+        {/* Hotfix 5.31-B — NOME > OVR > SELOS. Antes nome, "Recomendado" e
+            "Melhor custo-benefício" dividiam a mesma linha e o nome era o
+            único que encolhia ("Joaquim "Joca" Pe…"). Agora o nome ocupa a
+            linha 1 inteira (só trunca em nomes realmente enormes), os selos
+            descem para a linha 2 e quebram entre si, e o OVR tem largura fixa. */}
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <h3 className="truncate text-sm font-black">{coach.name}</h3>
-            {evaluation.recommended && <Badge>Recomendado</Badge>}
-            {evaluation.bestValue && <Badge tone="value">Melhor custo-benefício</Badge>}
-          </div>
-          <p className="truncate text-[11px] text-muted-foreground">{impact.title || coach.specialty} · {tier.label} · {coach.city || coach.nationality || 'Circuito mundial'}</p>
+          <h3 className="line-clamp-2 break-words text-sm font-black leading-tight" data-coach-name>{coach.name}</h3>
+          {(evaluation.recommended || evaluation.bestValue) && (
+            <div className="mt-1 flex flex-wrap gap-1" data-coach-badges>
+              {evaluation.recommended && <Badge>Recomendado</Badge>}
+              {evaluation.bestValue && <Badge tone="value">Melhor custo-benefício</Badge>}
+            </div>
+          )}
+          <p className="mt-0.5 truncate text-[11px] text-muted-foreground">{impact.title || coach.specialty} · {tier.label} · {coach.city || coach.nationality || 'Circuito mundial'}</p>
         </div>
-        <div className="shrink-0 text-center">
+        <div className="w-10 shrink-0 text-center" data-coach-ovr>
           <p className="text-lg font-black leading-none tabular-nums">{evaluation.overall}</p>
           <p className="text-[8px] font-bold uppercase text-muted-foreground">OVR</p>
         </div>

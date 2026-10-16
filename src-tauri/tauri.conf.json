@@ -28,7 +28,7 @@
   "bundle": {
     "active": true,
     "android": {
-      "versionCode": 9006
+      "versionCode": 9007
     },
     "targets": [
       "msi",

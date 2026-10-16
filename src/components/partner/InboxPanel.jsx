@@ -119,16 +119,25 @@ export default function InboxPanel({ profile, onAction }) {
   return (
     <div className="space-y-4">
       {/* Filters */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+      {/* Hotfix 5.31-B: no Redmi 12 os chips ficavam espremidos e um sobre o
+          outro ("Toda", "Não lida", "Treinad…"). Eles eram itens flex
+          encolhíveis (sem shrink-0): o navegador os comprimia abaixo da
+          largura do texto em vez de rolar. Agora cada chip mantém a largura
+          do rótulo, a faixa rola de verdade, há folga no fim (o último chip
+          entra inteiro) e o chip escolhido é trazido para a vista. */}
+      <div data-inbox-filters role="group" aria-label="Filtrar mensagens" className="flex gap-2 overflow-x-auto overscroll-x-contain scroll-px-2 pb-1 scrollbar-none" style={{ WebkitOverflowScrolling: 'touch' }}>
         {filters.map(f => (
           <button
             key={f.id}
-            onClick={() => setFilter(f.id)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors ${filter === f.id ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}
+            type="button"
+            aria-pressed={filter === f.id}
+            onClick={(event) => { setFilter(f.id); event.currentTarget.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }}
+            className={`min-h-9 shrink-0 whitespace-nowrap rounded-lg px-3 py-1.5 text-xs font-semibold transition-colors ${filter === f.id ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}
           >
             {f.label}
           </button>
         ))}
+        <span aria-hidden="true" className="w-2 shrink-0" />
       </div>
 
       {filtered.length === 0 ? (

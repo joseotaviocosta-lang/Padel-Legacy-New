@@ -1,0 +1,186 @@
+{
+  "360": {
+    "caio-2-badges": {
+      "before": {
+        "name": "Caio Silva",
+        "nameTruncated": true,
+        "nameWidth": 0,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 23,
+        "cardHeight": 185,
+        "cardOverflow": false
+      },
+      "after": {
+        "name": "Caio Silva",
+        "nameTruncated": false,
+        "nameWidth": 198,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 40,
+        "cardHeight": 225,
+        "cardOverflow": false
+      }
+    },
+    "sem-badge": {
+      "before": {
+        "name": "Caio Silva",
+        "nameTruncated": false,
+        "nameWidth": 68,
+        "badges": [],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 23,
+        "cardHeight": 185,
+        "cardOverflow": false
+      },
+      "after": {
+        "name": "Caio Silva",
+        "nameTruncated": false,
+        "nameWidth": 198,
+        "badges": [],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 40,
+        "cardHeight": 185,
+        "cardOverflow": false
+      }
+    },
+    "nome-longo": {
+      "before": {
+        "name": "Maximiliano \"Maxi\" Fernández de la Cruz",
+        "nameTruncated": true,
+        "nameWidth": 0,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "72",
+        "ovrWidth": 23,
+        "cardHeight": 185,
+        "cardOverflow": false
+      },
+      "after": {
+        "name": "Maximiliano \"Maxi\" Fernández de la Cruz",
+        "nameTruncated": false,
+        "nameWidth": 198,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "72",
+        "ovrWidth": 40,
+        "cardHeight": 243,
+        "cardOverflow": false
+      }
+    }
+  },
+  "390": {
+    "caio-2-badges": {
+      "before": {
+        "name": "Caio Silva",
+        "nameTruncated": true,
+        "nameWidth": 24,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 23,
+        "cardHeight": 166,
+        "cardOverflow": false
+      },
+      "after": {
+        "name": "Caio Silva",
+        "nameTruncated": false,
+        "nameWidth": 229,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 40,
+        "cardHeight": 184,
+        "cardOverflow": false
+      }
+    },
+    "sem-badge": {
+      "before": {
+        "name": "Caio Silva",
+        "nameTruncated": false,
+        "nameWidth": 68,
+        "badges": [],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 23,
+        "cardHeight": 166,
+        "cardOverflow": false
+      },
+      "after": {
+        "name": "Caio Silva",
+        "nameTruncated": false,
+        "nameWidth": 229,
+        "badges": [],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "44",
+        "ovrWidth": 40,
+        "cardHeight": 166,
+        "cardOverflow": false
+      }
+    },
+    "nome-longo": {
+      "before": {
+        "name": "Maximiliano \"Maxi\" Fernández de la Cruz",
+        "nameTruncated": true,
+        "nameWidth": 24,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "72",
+        "ovrWidth": 23,
+        "cardHeight": 166,
+        "cardOverflow": false
+      },
+      "after": {
+        "name": "Maximiliano \"Maxi\" Fernández de la Cruz",
+        "nameTruncated": false,
+        "nameWidth": 229,
+        "badges": [
+          "RECOMENDADO",
+          "MELHOR CUSTO-BENEFÍCIO"
+        ],
+        "badgeClipped": false,
+        "badgeOverlapsOvr": false,
+        "ovr": "72",
+        "ovrWidth": 40,
+        "cardHeight": 202,
+        "cardOverflow": false
+      }
+    }
+  }
+}

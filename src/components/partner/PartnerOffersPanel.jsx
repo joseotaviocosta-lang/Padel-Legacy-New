@@ -106,8 +106,9 @@ function OfferCard({ offer, candidate, compatibility, interest, highlighted, sel
       <div className="flex items-center gap-3">
         <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 font-black text-primary">{(candidate.name || '?')[0]}</span>
         <div className="min-w-0 flex-1">
-          <div className="flex min-w-0 items-center gap-1.5">
-            <h3 className="truncate text-sm font-black">{candidate.name}</h3>
+          {/* Hotfix 5.31-B: o selo quebra para a linha de baixo antes de o nome truncar. */}
+          <div className="flex min-w-0 flex-wrap items-center gap-x-1.5 gap-y-0.5">
+            <h3 className="min-w-0 break-words text-sm font-black leading-tight" data-candidate-name>{candidate.name}</h3>
             {offer.recommended
               ? <span className="inline-flex shrink-0 items-center gap-0.5 rounded-full bg-amber-500/15 px-1.5 py-0.5 text-[9px] font-bold text-amber-300"><Star className="h-2.5 w-2.5"/>Recomendado</span>
               : <span className="shrink-0 rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold text-primary">Proposta</span>}

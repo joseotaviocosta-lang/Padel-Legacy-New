@@ -123,13 +123,23 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
         />
       </div>
 
-      <div className="grid grid-cols-2 gap-2">
-        <select value={sideFilter} onChange={(e) => setSideFilter(e.target.value)} aria-label="Filtrar por lado preferido" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-2.5 text-xs font-bold outline-none">
-          {[['all', 'Todos os lados'], ['right', 'Direita'], ['left', 'Esquerda'], ['flex', 'Versátil']].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
-        </select>
-        <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Ordenar candidatos" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-2.5 text-xs font-bold outline-none">
-          {[['compat', 'Compatibilidade'], ['rating', 'Overall'], ['name', 'Nome']].map(([id, label]) => <option key={id} value={id}>Ordenar: {label}</option>)}
-        </select>
+      {/* Hotfix 5.31-B: "Ordenar: Compatibilidade" não cabia no select de
+          168px do Redmi 12 e encostava na margem. O rótulo essencial (Lado /
+          Ordenar) virou legenda fixa acima; o select mostra só o valor, que
+          é o único texto que pode truncar. Lado a lado a partir de 360px. */}
+      <div className="grid min-w-0 grid-cols-2 gap-2" data-partner-search-selects>
+        <label className="min-w-0 space-y-1">
+          <span className="block text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Lado</span>
+          <select value={sideFilter} onChange={(e) => setSideFilter(e.target.value)} aria-label="Filtrar por lado preferido" className="min-h-10 w-full min-w-0 truncate rounded-xl border border-border/60 bg-background/70 px-2.5 text-xs font-bold outline-none">
+            {[['all', 'Todos os lados'], ['right', 'Direita'], ['left', 'Esquerda'], ['flex', 'Versátil']].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+          </select>
+        </label>
+        <label className="min-w-0 space-y-1">
+          <span className="block text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Ordenar</span>
+          <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Ordenar candidatos" className="min-h-10 w-full min-w-0 truncate rounded-xl border border-border/60 bg-background/70 px-2.5 text-xs font-bold outline-none">
+            {[['compat', 'Compatibilidade'], ['rating', 'Overall'], ['name', 'Nome']].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+          </select>
+        </label>
       </div>
 
       {!canChange && (

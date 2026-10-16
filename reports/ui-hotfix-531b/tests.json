@@ -1,0 +1,438 @@
+{
+  "createdAt": "2026-10-16T17:39:13.748Z",
+  "total": 51,
+  "pass": 39,
+  "regressions": [],
+  "preExisting": [
+    "test-global-overlays-audit",
+    "test-mobile-compact-ux-m4",
+    "test-mobile-filters-postmatch-m4-2-2",
+    "test-mobile-game-app-experience-m4-2",
+    "test-notification-system-audit-rc",
+    "test-phase15-5-1-critical-training-center",
+    "test-phase15-5-4-critical-mobile-qa",
+    "test-premium-interfaces-v33",
+    "test-premium-relations-v33-8",
+    "test-staff-architecture-v29-1",
+    "test-training-center-unification-phase15-5",
+    "test-ui-redesign"
+  ],
+  "results": [
+    {
+      "test": "test-career-null-safety",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-partnership-history",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-ui-v2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-card-effects",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-detail-layout-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-discovery-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-market-compact-layout",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-market-curation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-selection-clarity",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-system-v28",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-contract-cta-overflow-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-global-header-overlay-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-global-overlays-audit",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\Padel-Legacy-New\\src\\components\\career\\CareerAssistant.jsx'\r",
+      "headTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\pl-head-531b\\src\\components\\career\\CareerAssistant.jsx'\r"
+    },
+    {
+      "test": "test-living-partnership-market-phase15",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: PageHeader ganhou a prop `dense` (default false — não quebra uso existente)\r",
+      "headTail": "FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente) | Error: \u001b[31m  Failed to scan for dependencies from entries: |   \u001b[39m\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m"
+    },
+    {
+      "test": "test-mobile-filters-postmatch-m4-2-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)\r",
+      "headTail": "FAIL — 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)\r"
+    },
+    {
+      "test": "test-mobile-foundation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r",
+      "headTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-visual-hotfix-m4-1-3",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-notification-deep-links-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-notification-system-audit-rc",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | TypeError: Cannot read properties of undefined (reading 'is_read')\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | TypeError: Cannot read properties of undefined (reading 'is_read')\r"
+    },
+    {
+      "test": "test-partner-contract-decision-ui-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-no-monthly-salary",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-notification-deeplink-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-state-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-decision-state-ui",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-exit-pending-ui-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-hub-legacy-deeplink-v520c",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-hub-tab-consolidation-v520b",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-market-cards-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-market-ui-contract-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-no-overflow-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-offers-v2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-screen-hierarchy-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-5-1-critical-training-center",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "[Game Core] Circuito mundial não processado: Error: WorldEvent já existe com o id: worldevent-1792172238890-zn1fu8 | [Game Core 3.5] Falha ao atualizar AthleteProfile em lote: WorldEvent já existe com o id: worldevent-1792172238890-zn1fu8 | [Game Core 3.5] Falha ao atualizar PlayerProfile: WorldEvent já existe com o id: worldevent-1792172238890-zn1fu8",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | [Save Foundation] create TeamRanking Error: TeamRanking já existe com o id: teamranking-1792172336802-zn1fu8"
+    },
+    {
+      "test": "test-phase15-5-1-header-notifications-partnership-ui",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-5-4-critical-mobile-qa",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r",
+      "headTail": "  if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r"
+    },
+    {
+      "test": "test-player-partner-offer-flow-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-post-separation-partner-market-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PremiumInterfacesV33Test: FAIL",
+      "headTail": "PremiumInterfacesV33Test: FAIL"
+    },
+    {
+      "test": "test-premium-relations-v33-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL: PartnerHub exibe indicadores da parceria | FAIL: PartnerHub exibe propostas | FAIL: Versão beta.12",
+      "headTail": "FAIL: PartnerHub exibe indicadores da parceria | FAIL: PartnerHub exibe propostas | FAIL: Versão beta.12"
+    },
+    {
+      "test": "test-staff-architecture-v29-1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: Comissão técnica não foi movida para Dupla e relações.\r",
+      "headTail": "AssertionError [ERR_ASSERTION]: Comissão técnica não foi movida para Dupla e relações.\r"
+    },
+    {
+      "test": "test-staff-market-cards-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-no-overflow-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-screen-hierarchy-v531",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-starter-coach-flow",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 43. HUD local mostra treinos | FAIL — 44. HUD local mostra partida",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 43. HUD local mostra treinos | FAIL — 44. HUD local mostra partida"
+    },
+    {
+      "test": "test-tutorial-complete-flow",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r"
+    },
+    {
+      "test": "test-ux-interfaces-v36-3-2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    }
+  ],
+  "newTests": {
+    "test-partner-tabs-mobile-containment-v531b": "12/12",
+    "test-partner-inbox-filters-scroll-v531b": "13/13",
+    "test-partner-market-selects-v531b": "11/11",
+    "test-coach-card-name-priority-v531b": "15/15",
+    "test-coach-card-badges-wrap-v531b": "12/12"
+  },
+  "newTestsGates": 63
+}

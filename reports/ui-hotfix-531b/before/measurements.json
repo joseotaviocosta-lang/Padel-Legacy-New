@@ -1,0 +1,1767 @@
+{
+  "results": [
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "partner-overview",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-overview-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "partner-received",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-received-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "partner-search",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "select",
+          "label": "Todos os lados Direita Esquerda Versátil",
+          "left": 8,
+          "right": 176,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        },
+        {
+          "kind": "select",
+          "label": "Ordenar: Compatibilidade Ordenar: Overal",
+          "left": 184,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-search-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "partner-inbox",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": true,
+          "endReachable": true,
+          "endGap": 15,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "partner-inbox-last",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": true,
+          "endReachable": true,
+          "endGap": 16,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-last-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "coach",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 0,
+          "right": 360,
+          "insideGutter": false,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        }
+      ],
+      "coachCards": [
+        {
+          "name": "Joaquim \"Joca\" Pereira",
+          "nameTruncated": true,
+          "nameWidth": 145,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "66",
+          "ovrWidth": 23,
+          "cardHeight": 185
+        },
+        {
+          "name": "Bruno Carvalho",
+          "nameTruncated": false,
+          "nameWidth": 108,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 185
+        },
+        {
+          "name": "Lucia Ferreira",
+          "nameTruncated": false,
+          "nameWidth": 94,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "64",
+          "ovrWidth": 23,
+          "cardHeight": 185
+        },
+        {
+          "name": "Felipe \"Lipe\" Costa",
+          "nameTruncated": false,
+          "nameWidth": 134,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 185
+        },
+        {
+          "name": "Ricardo \"Rico\" Alves",
+          "nameTruncated": false,
+          "nameWidth": 146,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "70",
+          "ovrWidth": 23,
+          "cardHeight": 185
+        },
+        {
+          "name": "Enzo Navarro",
+          "nameTruncated": false,
+          "nameWidth": 92,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "45",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        }
+      ],
+      "file": "reports/ui-hotfix-531b/before/coach-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "360",
+      "screen": "staff",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 0,
+          "right": 360,
+          "insideGutter": false,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        },
+        {
+          "kind": "tabs",
+          "label": "Minha comissão Mercado mensal Instalaçõe",
+          "left": 8,
+          "right": 352,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 5
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/staff-com-parceiro-360.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "partner-overview",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-overview-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "partner-received",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-received-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "partner-search",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "select",
+          "label": "Todos os lados Direita Esquerda Versátil",
+          "left": 8,
+          "right": 191,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        },
+        {
+          "kind": "select",
+          "label": "Ordenar: Compatibilidade Ordenar: Overal",
+          "left": 199,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [
+            "Ordenar: Compatibilidade Ordenar: Overal"
+          ],
+          "activeVisible": null,
+          "items": 0
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-search-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "partner-inbox",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": true,
+          "endReachable": true,
+          "endGap": 10,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "partner-inbox-last",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": true,
+          "endReachable": true,
+          "endGap": 10,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-last-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "coach",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 0,
+          "right": 390,
+          "insideGutter": false,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        }
+      ],
+      "coachCards": [
+        {
+          "name": "Joaquim \"Joca\" Pereira",
+          "nameTruncated": false,
+          "nameWidth": 163,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "66",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        },
+        {
+          "name": "Bruno Carvalho",
+          "nameTruncated": false,
+          "nameWidth": 108,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        },
+        {
+          "name": "Lucia Ferreira",
+          "nameTruncated": false,
+          "nameWidth": 94,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "64",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        },
+        {
+          "name": "Felipe \"Lipe\" Costa",
+          "nameTruncated": false,
+          "nameWidth": 134,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        },
+        {
+          "name": "Ricardo \"Rico\" Alves",
+          "nameTruncated": false,
+          "nameWidth": 146,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "70",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        },
+        {
+          "name": "Enzo Navarro",
+          "nameTruncated": false,
+          "nameWidth": 92,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "45",
+          "ovrWidth": 23,
+          "cardHeight": 166
+        }
+      ],
+      "file": "reports/ui-hotfix-531b/before/coach-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "390",
+      "screen": "staff",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 0,
+          "right": 390,
+          "insideGutter": false,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        },
+        {
+          "kind": "tabs",
+          "label": "Minha comissão Mercado mensal Instalaçõe",
+          "left": 8,
+          "right": 382,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 5
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/staff-com-parceiro-390.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "partner-overview",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-overview-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "partner-received",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-received-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "partner-search",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "select",
+          "label": "Todos os lados Direita Esquerda Versátil",
+          "left": 276,
+          "right": 760,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        },
+        {
+          "kind": "select",
+          "label": "Ordenar: Compatibilidade Ordenar: Overal",
+          "left": 768,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-search-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "partner-inbox",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "partner-inbox-last",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-last-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "coach",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 256,
+          "right": 1272,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        }
+      ],
+      "coachCards": [
+        {
+          "name": "Joaquim \"Joca\" Pereira",
+          "nameTruncated": false,
+          "nameWidth": 163,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "66",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Bruno Carvalho",
+          "nameTruncated": false,
+          "nameWidth": 108,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Lucia Ferreira",
+          "nameTruncated": false,
+          "nameWidth": 94,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "64",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Felipe \"Lipe\" Costa",
+          "nameTruncated": false,
+          "nameWidth": 134,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Ricardo \"Rico\" Alves",
+          "nameTruncated": false,
+          "nameWidth": 146,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "70",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Enzo Navarro",
+          "nameTruncated": false,
+          "nameWidth": 92,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "45",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        }
+      ],
+      "file": "reports/ui-hotfix-531b/before/coach-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "desktop",
+      "screen": "staff",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 256,
+          "right": 1272,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        },
+        {
+          "kind": "tabs",
+          "label": "Minha comissão Mercado mensal Instalaçõe",
+          "left": 276,
+          "right": 1252,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 5
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/staff-com-parceiro-desktop.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "partner-overview",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-overview-com-parceiro-landscape.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "partner-received",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-received-com-parceiro-landscape.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "partner-search",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "select",
+          "label": "Todos os lados Direita Esquerda Versátil",
+          "left": 272,
+          "right": 514,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        },
+        {
+          "kind": "select",
+          "label": "Ordenar: Compatibilidade Ordenar: Overal",
+          "left": 522,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": null,
+          "items": 0
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-search-com-parceiro-landscape.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "partner-inbox",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-com-parceiro-landscape.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "partner-inbox-last",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Visão geral Mercado (17) Contrato Histór",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 4
+        },
+        {
+          "kind": "tabs",
+          "label": "Recebidas Buscar Caixa de entrada (17)",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 3
+        },
+        {
+          "kind": "inbox-filters",
+          "label": "Todas Não lidas Pendentes Atletas Empres",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 6
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/partner-inbox-last-com-parceiro-landscape.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "coach",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 256,
+          "right": 780,
+          "insideGutter": false,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        }
+      ],
+      "coachCards": [
+        {
+          "name": "Joaquim \"Joca\" Pereira",
+          "nameTruncated": false,
+          "nameWidth": 163,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "66",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Bruno Carvalho",
+          "nameTruncated": false,
+          "nameWidth": 108,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Lucia Ferreira",
+          "nameTruncated": false,
+          "nameWidth": 94,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "64",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Felipe \"Lipe\" Costa",
+          "nameTruncated": false,
+          "nameWidth": 134,
+          "badges": [
+            "RECOMENDADO"
+          ],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "63",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Ricardo \"Rico\" Alves",
+          "nameTruncated": false,
+          "nameWidth": 146,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "70",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        },
+        {
+          "name": "Enzo Navarro",
+          "nameTruncated": false,
+          "nameWidth": 92,
+          "badges": [],
+          "badgeOverlapsOvr": false,
+          "badgeOverlapsName": false,
+          "badgeClipped": false,
+          "ovr": "45",
+          "ovrWidth": 23,
+          "cardHeight": 154
+        }
+      ],
+      "file": "reports/ui-hotfix-531b/before/coach-com-parceiro-landscape.png"
+    },
+    {
+      "state": "com-parceiro",
+      "viewport": "landscape",
+      "screen": "staff",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 1,
+      "clipped": [
+        "17"
+      ],
+      "groups": [
+        {
+          "kind": "tabs",
+          "label": "Treinador Comissão",
+          "left": 256,
+          "right": 780,
+          "insideGutter": false,
+          "scrolls": false,
+          "endReachable": true,
+          "endGap": null,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 2
+        },
+        {
+          "kind": "tabs",
+          "label": "Minha comissão Mercado mensal Instalaçõe",
+          "left": 272,
+          "right": 764,
+          "insideGutter": true,
+          "scrolls": true,
+          "endReachable": true,
+          "endGap": 12,
+          "wrappedChips": [],
+          "clippedNoScroll": [],
+          "selectsOut": [],
+          "activeVisible": true,
+          "items": 5
+        }
+      ],
+      "coachCards": [],
+      "file": "reports/ui-hotfix-531b/before/staff-com-parceiro-landscape.png"
+    }
+  ],
+  "errors": [],
+  "phase": "before",
+  "updatedAt": "2026-10-16T17:19:19.345Z"
+}

@@ -49,7 +49,11 @@ export default function ConsolidatedHub({ tabs, defaultTab = null, paramName = '
   return (
     <>
       {available.length > 1 ? (
-        <div className="mb-3">
+        // Hotfix 5.31-B: a barra de abas do hub ficava FORA do <Page> (o
+        // respiro lateral só existe dentro do painel), então no celular ia de
+        // borda a borda e "Treinador" encostava na tela. Mesmo respiro e
+        // largura máxima do Page (--space-page-x / max-w-[92rem]).
+        <div className="mx-auto w-full min-w-0 max-w-[92rem]" style={{ paddingLeft: 'var(--space-page-x)', paddingRight: 'var(--space-page-x)', paddingTop: 'var(--space-page-y)' }} data-hub-tabs>
           <Tabs
             tabs={available.map(({ key, label, icon, count }) => ({ key, label, icon, count }))}
             activeTab={activeKey}
