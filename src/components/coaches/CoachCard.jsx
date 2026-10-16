@@ -89,9 +89,11 @@ export default function CoachCard({ evaluation, profile, onDetails, onHire }) {
       </div>
 
       <div className="mt-2 flex gap-2">
-        <Button level="secondary" size="sm" onClick={onDetails} className="flex-1">Ver detalhes</Button>
+        {/* 5.28: em lista, a ação do card é secundária (o primário fica no modal
+            de contratação) — antes eram 6 botões primários na mesma tela. */}
+        <Button level="ghost" size="sm" onClick={onDetails} className="flex-1">Ver detalhes</Button>
         {available ? (
-          <Button level="primary" size="sm" onClick={onHire} className="flex-1">Contratar <ArrowRight className="h-3.5 w-3.5" /></Button>
+          <Button level="secondary" size="sm" onClick={onHire} className="flex-1 text-primary">Contratar <ArrowRight className="h-3.5 w-3.5" /></Button>
         ) : (
           <Button level="ghost" size="sm" onClick={onDetails} className="flex-1 border border-amber-500/25 bg-amber-500/10 text-amber-300">Ver requisitos</Button>
         )}

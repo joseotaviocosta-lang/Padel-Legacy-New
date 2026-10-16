@@ -1127,7 +1127,7 @@
     display: flex;
     flex-wrap: wrap;
     min-width: 0;
-    min-height: 2.75rem;
+    min-height: 2.25rem;
     align-items: center;
     gap: var(--game-hud-gap);
     border: 0;
@@ -1143,9 +1143,17 @@
   .pl-game-hud-label { flex-basis: 100%; max-width: 100%; }
   /* Em grade de 2 colunas, quem abre linha nao leva borda a esquerda. */
   .pl-game-hud-item:nth-child(odd) { padding-left: 0; }
-  .pl-game-hud-item:nth-child(even) { border-left: 1px solid hsl(var(--border) / 0.55); }
-  /* Linhas seguintes ganham um fio horizontal no lugar do antigo divisor. */
-  .pl-game-hud-item:nth-child(n + 3) { border-top: 1px solid hsl(var(--border) / 0.35); padding-top: 0.4rem; margin-top: 0.3rem; }
+  /* 5.28: sem fios internos (vertical entre colunas e horizontal entre
+     linhas) — a grade 2×2 já separa os indicadores; os fios somavam 3
+     contornos a um bloco de 4 números e eram o trecho mais "pesado" do topo
+     de Torneios/Treinos/Objetivos. Fica só o fio externo do contêiner. */
+  .pl-game-hud-item:nth-child(n + 3) { padding-top: 0.25rem; }
+
+  /* 5.28: o atalho flutuante do Centro de Treinamento (FloatingUtilityRail,
+     topo direito, 44px) fica sobre a linha do título do herói. Títulos
+     longos ("Você e Tomás Acosta") passavam por baixo dele; agora o título
+     trunca antes do botão. */
+  .pl-page-hero .pl-title-display { padding-right: 2.75rem; }
 
   .pl-game-hud--standalone {
     margin: 0;

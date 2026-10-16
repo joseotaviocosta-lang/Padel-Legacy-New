@@ -1,0 +1,802 @@
+{
+  "createdAt": "2026-10-16T00:17:36.758Z",
+  "baseline": "c5bf7c8 (ui-tests.json da 5.28)",
+  "total": 132,
+  "pass": 92,
+  "regressions": [],
+  "preExisting": 40,
+  "results": [
+    {
+      "test": "test-bracket-cta-availability-v516",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-bracket-graph-integrity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-bracket-winner-propagation-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-bye-visible-from-draw",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-career-systems",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-career-ui-v2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-coach-card-effects",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-coach-discovery-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-coach-market-compact-layout",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-coach-market-curation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-coach-selection-clarity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-coach-system-v28",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-completed-tournament-card-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-core-gameplay-ui",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-design-system-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-desktop-no-duplicate-quick-actions-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-draw-modal-fresh-state-v513",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-draw-notification-deep-link",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-draw-notification-no-ui-side-effect",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-draw-notification-player-identity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-draw-notification-self-healing",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-finals-ui-semantics-v57",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-global-header-overlay-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-global-overlays-audit",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-historical-bracket-integrity-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-hotfix-rc1-ssr-missions",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-hotfix-rc1-ssr-utils",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-landscape-hud-compactness-v520c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-live-match-route-fixture-v520d",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-missions-achievements-unification",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-beta-floating-removed-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-beta-menu-entry-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-career-bottom-left-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-career-management-shortcut-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-filters-postmatch-m4-2-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-floating-actions-no-overlap-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-foundation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-header-height-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-header-two-rows-v524",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-m1-hotfix",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-m2-1-device-hotfix",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-m2-shell",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-m3-1-device-hotfix",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-m3-2-android-ux",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-m3-live-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-match-day-refresh-m3-7-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-navigation-v520",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-performance-m3-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-performance-m3-4",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-performance-m3-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-quick-actions-no-overlap-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-quick-actions-performance-neutral-v524c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-quick-actions-touch-target-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-training-game-experience-m4-2-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-training-shortcut-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-training-top-right-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-utility-access-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-visible-career-manager-shortcut-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-visible-training-shortcut-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-visual-hotfix-m4-1-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-visual-polish-m4-1-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-modal-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-motion-system-v36-4-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-no-current-partnership-bracket-rebuild-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-no-orphan-route-v520",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-non-power-of-two-draw",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-notification-center-consolidation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-notification-deep-links-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-onboarding-home-cta",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-onboarding-v3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-page-hierarchy",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-performance-responsive-v36-4-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-performance-v31",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-4-mobile-flow-polish",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-5-1-header-notifications-partnership-ui",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-phase15-5-1-tournament-interview-consistency",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-5-2-tournament-continuity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-phase15-5-4-critical-mobile-qa",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-6-1-tournament-draw-consistency",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-6-2-tournament-canonical-state",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-6-app-performance-calendar-hardening",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-7-first-tournament-parity",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-player-opponent-distribution",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-playthrough-4-3-production-reconciliation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-playthrough-4-4-player-points",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-playthrough-4-5-temporal-circuit",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-playthrough-4-5b-first-wave",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-polish-ui-v36-4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-premium-development-v33-7",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-gameplay-v33-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-home-v33-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-market-v33-4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-relations-v33-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-world-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-ranking-country-club-links-v522e",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-ranking-race-doubles-contrast-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-redesign-polish2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-redesign-polish21",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-runtime-performance-rc1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-seeded-tournament-draw",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-sidebar-footer-cleanup",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-staff-architecture-v29-1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-tier-qualifying-authority",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-cancellation-state",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-canonical-results",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-card-primary-state-v520c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-confirm-no-skip",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-flow-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-match-lifecycle",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-notification-deeplink-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-result-authority",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-roster-survives-partner-change-v519",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-round-availability",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-training-center-shortcut-ux",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-tutorial-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tutorial-chronology",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tutorial-first-official-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tutorial-floating-guide",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-tutorial-visit-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-ui-shell",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-ux-interfaces-v36-3-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-viewport-overlays-rc1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-walkover-bracket-propagation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-world-ui-v2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    }
+  ]
+}

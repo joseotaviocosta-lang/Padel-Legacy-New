@@ -493,7 +493,8 @@ function Missions() {
 
       {actionFeedback && <p role="status" aria-live="polite" className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-300">{actionFeedback}</p>}
       {actionError && <p role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-300">{actionError}</p>}
-      {anticipatedCompleted.length > 0 && <p role="status" className="rounded-xl border border-cyan-500/30 bg-cyan-500/10 px-4 py-3 text-sm text-cyan-200">Ação antecipada reconhecida: {anticipatedCompleted.map(step => step.title).join(', ')}. Você não precisará repeti-la; conclua apenas o passo atual.</p>}
+      {/* 5.28: aviso de apoio, não destaque — tom neutro, texto curto e ícone; a lista de etapas já concluídas vem numa linha secundária. */}
+      {anticipatedCompleted.length > 0 && <div role="status" className="flex gap-2 rounded-xl border border-border/50 bg-secondary/25 px-3 py-2.5 text-xs text-muted-foreground"><Check className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-400" /><p><span className="font-bold text-foreground">Já feito antes da hora — não precisa repetir:</span> {anticipatedCompleted.map(step => step.title).join(' · ')}</p></div>}
 
       {chapterSummary.length > 1 && (
         <div className="rounded-2xl border border-border/60 divide-y divide-border/40 overflow-hidden">

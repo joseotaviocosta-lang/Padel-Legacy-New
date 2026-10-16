@@ -1,0 +1,1535 @@
+{
+  "phase": "before",
+  "createdAt": "2026-10-15T23:25:33.148Z",
+  "errors": [],
+  "results": [
+    {
+      "screen": "home-header",
+      "viewport": "360",
+      "reached": true,
+      "url": "/game",
+      "file": "reports/ui-polish-528/before/home-header-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 7,
+        "64": 1,
+        "84": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 14
+    },
+    {
+      "screen": "tournaments",
+      "viewport": "360",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournaments-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "34": 15,
+        "44": 56,
+        "48": 2,
+        "64": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 80
+    },
+    {
+      "screen": "tournament-details",
+      "viewport": "360",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-details-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "34": 15,
+        "44": 56,
+        "48": 5,
+        "64": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 85
+    },
+    {
+      "screen": "tournament-bracket",
+      "viewport": "360",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-bracket-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "34": 15,
+        "44": 60,
+        "48": 5,
+        "64": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 91
+    },
+    {
+      "screen": "missions",
+      "viewport": "360",
+      "reached": true,
+      "url": "/game/missions",
+      "file": "reports/ui-polish-528/before/missions-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 3,
+        "49": 1,
+        "64": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 11
+    },
+    {
+      "screen": "economy-dashboard",
+      "viewport": "360",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-dashboard-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 7,
+        "64": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 13
+    },
+    {
+      "screen": "economy-flow",
+      "viewport": "360",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-flow-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 7,
+        "64": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 13
+    },
+    {
+      "screen": "coaches",
+      "viewport": "360",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coaches-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 22,
+        "64": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 28
+    },
+    {
+      "screen": "staff",
+      "viewport": "360",
+      "reached": true,
+      "url": "/career/team?tab=staff",
+      "file": "reports/ui-polish-528/before/staff-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 8,
+        "64": 1
+      },
+      "primaryButtons": 3,
+      "buttons": 14
+    },
+    {
+      "screen": "partners",
+      "viewport": "360",
+      "reached": true,
+      "url": "/partners?view=overview",
+      "file": "reports/ui-polish-528/before/partners-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 5,
+        "60": 3,
+        "64": 1
+      },
+      "primaryButtons": 1,
+      "buttons": 14
+    },
+    {
+      "screen": "ranking",
+      "viewport": "360",
+      "reached": true,
+      "url": "/ranking",
+      "file": "reports/ui-polish-528/before/ranking-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 7,
+        "49": 2,
+        "64": 1,
+        "70": 14
+      },
+      "primaryButtons": 5,
+      "buttons": 66
+    },
+    {
+      "screen": "home-header",
+      "viewport": "390",
+      "reached": true,
+      "url": "/game",
+      "file": "reports/ui-polish-528/before/home-header-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 8,
+        "64": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 14
+    },
+    {
+      "screen": "tournaments",
+      "viewport": "390",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournaments-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "34": 15,
+        "44": 57,
+        "48": 2,
+        "64": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 80
+    },
+    {
+      "screen": "tournament-details",
+      "viewport": "390",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-details-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "34": 15,
+        "44": 57,
+        "48": 5,
+        "64": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 85
+    },
+    {
+      "screen": "tournament-bracket",
+      "viewport": "390",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-bracket-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "34": 15,
+        "44": 61,
+        "48": 5,
+        "64": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 91
+    },
+    {
+      "screen": "missions",
+      "viewport": "390",
+      "reached": true,
+      "url": "/game/missions",
+      "file": "reports/ui-polish-528/before/missions-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 4,
+        "49": 1,
+        "64": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 11
+    },
+    {
+      "screen": "economy-dashboard",
+      "viewport": "390",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-dashboard-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 8,
+        "64": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 13
+    },
+    {
+      "screen": "economy-flow",
+      "viewport": "390",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-flow-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 8,
+        "64": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 13
+    },
+    {
+      "screen": "coaches",
+      "viewport": "390",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coaches-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 23,
+        "64": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 28
+    },
+    {
+      "screen": "staff",
+      "viewport": "390",
+      "reached": true,
+      "url": "/career/team?tab=staff",
+      "file": "reports/ui-polish-528/before/staff-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 9,
+        "64": 1
+      },
+      "primaryButtons": 3,
+      "buttons": 14
+    },
+    {
+      "screen": "partners",
+      "viewport": "390",
+      "reached": true,
+      "url": "/partners?view=overview",
+      "file": "reports/ui-polish-528/before/partners-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 6,
+        "60": 3,
+        "64": 1
+      },
+      "primaryButtons": 1,
+      "buttons": 14
+    },
+    {
+      "screen": "ranking",
+      "viewport": "390",
+      "reached": true,
+      "url": "/ranking",
+      "file": "reports/ui-polish-528/before/ranking-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 8,
+        "49": 2,
+        "64": 1,
+        "70": 16
+      },
+      "primaryButtons": 5,
+      "buttons": 66
+    },
+    {
+      "screen": "home-header",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/game",
+      "file": "reports/ui-polish-528/before/home-header-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "29": 1,
+        "31": 2,
+        "32": 4,
+        "44": 1,
+        "52": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 19
+    },
+    {
+      "screen": "tournaments",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournaments-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "28": 19,
+        "29": 12,
+        "31": 2,
+        "32": 1,
+        "34": 15,
+        "44": 33,
+        "48": 2,
+        "52": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 95
+    },
+    {
+      "screen": "tournament-details",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-details-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "28": 19,
+        "29": 12,
+        "31": 2,
+        "32": 1,
+        "34": 15,
+        "44": 33,
+        "48": 5,
+        "52": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 100
+    },
+    {
+      "screen": "tournament-bracket",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-bracket-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "28": 19,
+        "29": 12,
+        "31": 2,
+        "32": 1,
+        "34": 15,
+        "44": 37,
+        "48": 5,
+        "52": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 106
+    },
+    {
+      "screen": "missions",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/game/missions",
+      "file": "reports/ui-polish-528/before/missions-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "44": 2,
+        "49": 1,
+        "52": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 16
+    },
+    {
+      "screen": "economy-dashboard",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-dashboard-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "32": 6,
+        "52": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 18
+    },
+    {
+      "screen": "economy-flow",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-flow-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "32": 6,
+        "52": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 18
+    },
+    {
+      "screen": "coaches",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coaches-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "29": 5,
+        "31": 2,
+        "32": 12,
+        "34": 2,
+        "44": 2,
+        "52": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 33
+    },
+    {
+      "screen": "staff",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/career/team?tab=staff",
+      "file": "reports/ui-polish-528/before/staff-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "44": 7,
+        "52": 1
+      },
+      "primaryButtons": 3,
+      "buttons": 19
+    },
+    {
+      "screen": "partners",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/partners?view=overview",
+      "file": "reports/ui-polish-528/before/partners-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "44": 4,
+        "52": 1,
+        "60": 3
+      },
+      "primaryButtons": 1,
+      "buttons": 19
+    },
+    {
+      "screen": "ranking",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/ranking",
+      "file": "reports/ui-polish-528/before/ranking-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "40": 2,
+        "44": 6,
+        "52": 1,
+        "70": 16
+      },
+      "primaryButtons": 5,
+      "buttons": 71
+    },
+    {
+      "screen": "home-header",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/game",
+      "file": "reports/ui-polish-528/before/home-header-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "29": 1,
+        "31": 2,
+        "32": 4,
+        "44": 1,
+        "52": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 19
+    },
+    {
+      "screen": "tournaments",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournaments-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Platinum.inline-flex.items-center.justify-center:\"Platinum\"",
+          "scrollW": 75,
+          "clientW": 75
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Gold.inline-flex.items-center.justify-center:\"Gold\"",
+          "scrollW": 51,
+          "clientW": 51
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Silver.inline-flex.items-center.justify-center:\"Silver\"",
+          "scrollW": 57,
+          "clientW": 57
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Bronze.inline-flex.items-center.justify-center:\"Bronze\"",
+          "scrollW": 64,
+          "clientW": 64
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Exibição.inline-flex.items-center.justify-center:\"Pré-Temporada\"",
+          "scrollW": 113,
+          "clientW": 113
+        }
+      ],
+      "clippedCount": 6,
+      "buttonHeights": {
+        "28": 19,
+        "29": 12,
+        "31": 2,
+        "32": 1,
+        "44": 33,
+        "48": 17,
+        "52": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 95
+    },
+    {
+      "screen": "tournament-details",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-details-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Platinum.inline-flex.items-center.justify-center:\"Platinum\"",
+          "scrollW": 75,
+          "clientW": 75
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Gold.inline-flex.items-center.justify-center:\"Gold\"",
+          "scrollW": 51,
+          "clientW": 51
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Silver.inline-flex.items-center.justify-center:\"Silver\"",
+          "scrollW": 57,
+          "clientW": 57
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Bronze.inline-flex.items-center.justify-center:\"Bronze\"",
+          "scrollW": 64,
+          "clientW": 64
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Exibição.inline-flex.items-center.justify-center:\"Pré-Temporada\"",
+          "scrollW": 113,
+          "clientW": 113
+        }
+      ],
+      "clippedCount": 6,
+      "buttonHeights": {
+        "28": 19,
+        "29": 12,
+        "31": 2,
+        "32": 1,
+        "44": 33,
+        "48": 20,
+        "52": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 100
+    },
+    {
+      "screen": "tournament-bracket",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/tournaments",
+      "file": "reports/ui-polish-528/before/tournament-bracket-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Platinum.inline-flex.items-center.justify-center:\"Platinum\"",
+          "scrollW": 75,
+          "clientW": 75
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Gold.inline-flex.items-center.justify-center:\"Gold\"",
+          "scrollW": 51,
+          "clientW": 51
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Silver.inline-flex.items-center.justify-center:\"Silver\"",
+          "scrollW": 57,
+          "clientW": 57
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Bronze.inline-flex.items-center.justify-center:\"Bronze\"",
+          "scrollW": 64,
+          "clientW": 64
+        },
+        {
+          "el": "button#radix-:rcu:-trigger-Exibição.inline-flex.items-center.justify-center:\"Pré-Temporada\"",
+          "scrollW": 113,
+          "clientW": 113
+        }
+      ],
+      "clippedCount": 6,
+      "buttonHeights": {
+        "28": 19,
+        "29": 12,
+        "31": 2,
+        "32": 1,
+        "44": 37,
+        "48": 20,
+        "52": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 106
+    },
+    {
+      "screen": "missions",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/game/missions",
+      "file": "reports/ui-polish-528/before/missions-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "44": 2,
+        "49": 1,
+        "52": 1,
+        "68": 1
+      },
+      "primaryButtons": 4,
+      "buttons": 16
+    },
+    {
+      "screen": "economy-dashboard",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-dashboard-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        },
+        {
+          "el": "button.inline-flex.shrink-0.items-center:\"Investimentos\"",
+          "scrollW": 134,
+          "clientW": 134
+        },
+        {
+          "el": "button.inline-flex.shrink-0.items-center:\"Fluxo\"",
+          "scrollW": 83,
+          "clientW": 83
+        },
+        {
+          "el": "button.inline-flex.shrink-0.items-center:\"Oportunidades\"",
+          "scrollW": 138,
+          "clientW": 138
+        }
+      ],
+      "clippedCount": 4,
+      "buttonHeights": {
+        "31": 2,
+        "32": 6,
+        "52": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 18
+    },
+    {
+      "screen": "economy-flow",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/game/economy?view=dashboard",
+      "file": "reports/ui-polish-528/before/economy-flow-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        },
+        {
+          "el": "button.inline-flex.shrink-0.items-center:\"Oportunidades\"",
+          "scrollW": 138,
+          "clientW": 138
+        }
+      ],
+      "clippedCount": 2,
+      "buttonHeights": {
+        "31": 2,
+        "32": 6,
+        "52": 1
+      },
+      "primaryButtons": 2,
+      "buttons": 18
+    },
+    {
+      "screen": "coaches",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coaches-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "29": 5,
+        "31": 2,
+        "32": 12,
+        "34": 2,
+        "44": 2,
+        "52": 1
+      },
+      "primaryButtons": 9,
+      "buttons": 33
+    },
+    {
+      "screen": "staff",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/career/team?tab=staff",
+      "file": "reports/ui-polish-528/before/staff-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        },
+        {
+          "el": "button#radix-:rf5:-trigger-synergies.inline-flex.items-center.justify-center:\"Sinergias\"",
+          "scrollW": 98,
+          "clientW": 98
+        },
+        {
+          "el": "button#radix-:rf5:-trigger-reports.inline-flex.items-center.justify-center:\"Relatórios\"",
+          "scrollW": 102,
+          "clientW": 102
+        }
+      ],
+      "clippedCount": 3,
+      "buttonHeights": {
+        "31": 2,
+        "44": 7,
+        "52": 1
+      },
+      "primaryButtons": 3,
+      "buttons": 19
+    },
+    {
+      "screen": "partners",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/partners?view=overview",
+      "file": "reports/ui-polish-528/before/partners-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "44": 4,
+        "52": 1,
+        "60": 3
+      },
+      "primaryButtons": 1,
+      "buttons": 19
+    },
+    {
+      "screen": "ranking",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/ranking",
+      "file": "reports/ui-polish-528/before/ranking-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "36": 2,
+        "44": 6,
+        "52": 1,
+        "70": 1
+      },
+      "primaryButtons": 5,
+      "buttons": 71
+    },
+    {
+      "screen": "training",
+      "viewport": "360",
+      "reached": true,
+      "url": "/game/training-center?view=training",
+      "file": "reports/ui-polish-528/before/training-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 17,
+        "64": 1,
+        "84": 2
+      },
+      "primaryButtons": 12,
+      "buttons": 31
+    },
+    {
+      "screen": "training",
+      "viewport": "390",
+      "reached": true,
+      "url": "/game/training-center?view=training",
+      "file": "reports/ui-polish-528/before/training-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "44": 18,
+        "64": 1,
+        "84": 2
+      },
+      "primaryButtons": 12,
+      "buttons": 31
+    },
+    {
+      "screen": "training",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/game/training-center?view=training",
+      "file": "reports/ui-polish-528/before/training-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "40": 6,
+        "44": 10,
+        "52": 1,
+        "68": 2
+      },
+      "primaryButtons": 12,
+      "buttons": 36
+    },
+    {
+      "screen": "training",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/game/training-center?view=training",
+      "file": "reports/ui-polish-528/before/training-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "31": 2,
+        "40": 6,
+        "44": 10,
+        "52": 1,
+        "68": 2
+      },
+      "primaryButtons": 12,
+      "buttons": 36
+    },
+    {
+      "screen": "coach-hire",
+      "viewport": "360",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coach-hire-360.png",
+      "vw": 360,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        },
+        {
+          "el": "button.inline-flex.items-center.justify-center:\"CONTRATAR · 1800 / MÊS + 3000 DE ASSINATURA\"",
+          "scrollW": 354,
+          "clientW": 314
+        }
+      ],
+      "clippedCount": 2,
+      "buttonHeights": {
+        "44": 23,
+        "64": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 31
+    },
+    {
+      "screen": "coach-hire",
+      "viewport": "390",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coach-hire-390.png",
+      "vw": 390,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 46,
+          "clientW": 42
+        },
+        {
+          "el": "button.inline-flex.items-center.justify-center:\"CONTRATAR · 1800 / MÊS + 3000 DE ASSINATURA\"",
+          "scrollW": 369,
+          "clientW": 345
+        }
+      ],
+      "clippedCount": 2,
+      "buttonHeights": {
+        "44": 24,
+        "64": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 31
+    },
+    {
+      "screen": "coach-hire",
+      "viewport": "desktop",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coach-hire-desktop.png",
+      "vw": 1280,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "29": 5,
+        "31": 2,
+        "32": 12,
+        "34": 2,
+        "40": 1,
+        "44": 2,
+        "52": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 36
+    },
+    {
+      "screen": "coach-hire",
+      "viewport": "landscape",
+      "reached": true,
+      "url": "/career/team?tab=coach",
+      "file": "reports/ui-polish-528/before/coach-hire-landscape.png",
+      "vw": 780,
+      "docOverflowPx": 0,
+      "offscreen": [],
+      "offscreenCount": 0,
+      "clippedControls": [
+        {
+          "el": "button.pl-icon-tap.relative.inline-flex:\"17\"",
+          "scrollW": 42,
+          "clientW": 38
+        }
+      ],
+      "clippedCount": 1,
+      "buttonHeights": {
+        "29": 5,
+        "31": 2,
+        "32": 12,
+        "34": 2,
+        "40": 1,
+        "44": 2,
+        "52": 1
+      },
+      "primaryButtons": 10,
+      "buttons": 36
+    }
+  ]
+}

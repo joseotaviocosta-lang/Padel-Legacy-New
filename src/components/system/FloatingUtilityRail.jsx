@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { BriefcaseBusiness, Building2 } from 'lucide-react';
 import BetaTools from '@/components/system/BetaTools';
 import { APP_ROUTES } from '@/navigation/routes.js';
@@ -88,6 +88,8 @@ import { APP_ROUTES } from '@/navigation/routes.js';
 const SHORTCUT_CLASS = 'pointer-events-auto flex h-11 w-11 items-center justify-center rounded-2xl border border-border/70 bg-background/88 text-primary shadow-xl backdrop-blur-xl transition-colors hover:border-primary/30 hover:text-primary md:static md:text-muted-foreground';
 
 function FloatingUtilityRail({ onOpenCareers, betaOpen, onBetaOpenChange }) {
+  const { pathname } = useLocation();
+  const onTrainingCenter = pathname.startsWith(APP_ROUTES.TRAINING_CENTER);
   return (
     <aside
       data-floating-utility-rail
@@ -107,7 +109,9 @@ function FloatingUtilityRail({ onOpenCareers, betaOpen, onBetaOpenChange }) {
       >
         <BriefcaseBusiness className="h-4.5 w-4.5" />
       </button>
-      <Link
+      {/* 5.28: dentro do próprio Centro de Treinamento o atalho é redundante
+          e cobria o título da página; some só ali. */}
+      {!onTrainingCenter && <Link
         to={APP_ROUTES.TRAINING_CENTER}
         aria-label="Centro de treinamento"
         title="Centro de treinamento"
@@ -115,7 +119,7 @@ function FloatingUtilityRail({ onOpenCareers, betaOpen, onBetaOpenChange }) {
         className={`pl-floating-utilities fixed right-[calc(0.375rem+var(--pl-safe-r))] top-[calc(var(--pl-header-h-mobile)+env(safe-area-inset-top)+0.5rem)] ${SHORTCUT_CLASS}`}
       >
         <Building2 className="h-4.5 w-4.5" />
-      </Link>
+      </Link>}
     </aside>
   );
 }

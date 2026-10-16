@@ -11,7 +11,11 @@ const TIER_STYLES = {
   Platinum:{badge:'bg-cyan-500/15 text-cyan-300 border-cyan-500/30',label:'Legacy Platinum'},
   Gold:{badge:'bg-yellow-500/15 text-yellow-300 border-yellow-500/30',label:'Legacy Gold'},
   Silver:{badge:'bg-slate-500/15 text-slate-300 border-slate-500/30',label:'Legacy Silver'},
+  // 5.28: Bronze e Pré-Temporada caíam no fallback e apareciam como "Legacy Silver".
+  Bronze:{badge:'bg-orange-500/15 text-orange-300 border-orange-500/30',label:'Legacy Bronze'},
+  'Exibição':{badge:'bg-secondary/60 text-muted-foreground border-border/60',label:'Pré-Temporada'},
 };
+const NEUTRAL_TIER = { badge: 'bg-secondary/60 text-muted-foreground border-border/60' };
 
 function normalizeTeamName(value) {
   if (!value) return 'Dupla não registrada';
@@ -44,7 +48,7 @@ function normalizeHistory(tournament, careerDate) {
 }
 
 export default function TournamentBracket({ tournament, careerDate, onClose }) {
-  const tier = TIER_STYLES[tournament.tier] || TIER_STYLES.Silver;
+  const tier = TIER_STYLES[tournament.tier] || { ...NEUTRAL_TIER, label: tournament.tier || 'Torneio' };
   const bracketState = useMemo(() => normalizeHistory(tournament, careerDate), [careerDate, tournament]);
   const history = bracketState.rounds;
   const [activeRound, setActiveRound] = useState(bracketState.focusRoundIndex);
@@ -62,11 +66,12 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
       description={<span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase ${tier.badge}`}>{tier.label}</span>}
       size="md"
     >
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-4">
-        <Info icon={MapPin} value={tournament.location?.split(',')[0] || '—'} color="text-cyan-400" />
-        <Info icon={Star} value={tournament.sponsor || '—'} color="text-primary" />
-        <Info icon={Users} value={(tournament.audience || 0).toLocaleString('pt-BR')} color="text-purple-400" />
-        <Info icon={BarChart3} value={`${matches} partidas`} color="text-emerald-400" />
+      {/* 5.28: uma linha de contexto em vez de 4 blocos com borda (que empurravam a chave para baixo da dobra no celular). */}
+      <div className="mb-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] font-semibold text-muted-foreground">
+        <MetaItem icon={MapPin} value={tournament.location?.split(',')[0]} />
+        <MetaItem icon={Star} value={tournament.sponsor} />
+        <MetaItem icon={Users} value={tournament.audience ? `${Number(tournament.audience).toLocaleString('pt-BR')} de público` : null} />
+        <MetaItem icon={BarChart3} value={`${matches} partidas`} />
       </div>
 
       {champion && <div className="rounded-2xl border border-amber-500/40 bg-gradient-to-br from-amber-500/15 to-transparent p-4 mb-4 text-center">
@@ -104,7 +109,9 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
           tabs={history.map((round, index) => ({ key: String(index), label: round.round }))}
           activeTab={String(activeRound)}
           onTabChange={(key) => setActiveRound(Number(key))}
-          variant="buttons"
+          // 5.28: rodadas são navegação — faixa única rolável (a variante
+          // 'buttons' quebra em duas linhas no celular e deixava "Final" sozinha).
+          variant="segmented"
           className=""
         />
       </div>
@@ -128,6 +135,11 @@ export default function TournamentBracket({ tournament, careerDate, onClose }) {
       </div>
     </ModalShell>
   );
+}
+
+function MetaItem({ icon: Icon, value }) {
+  if (!value) return null;
+  return <span className="inline-flex min-w-0 items-center gap-1"><Icon className="h-3.5 w-3.5 shrink-0" /><span className="truncate">{value}</span></span>;
 }
 
 function Info({ icon: Icon, value, color }) {

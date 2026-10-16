@@ -30,12 +30,13 @@ export function FilterPills({ filters, activeFilter, onFilterChange, className =
             type="button"
             onClick={() => onFilterChange(f.id)}
             className={cn(
-              'inline-flex shrink-0 items-center gap-1.5 rounded-xl px-4 py-2 text-xs font-bold whitespace-nowrap transition-all',
+              // 5.28: mais compacta no celular (padding menor, ícone decorativo oculto) — Economia caía de 3 para 2 linhas de pílulas.
+              'inline-flex shrink-0 items-center gap-1.5 rounded-xl px-3 py-1.5 text-xs font-bold whitespace-nowrap transition-all sm:px-4 sm:py-2',
               activeFilter === f.id ? 'bg-primary text-primary-foreground' : 'bg-secondary/50 text-muted-foreground hover:text-foreground',
             )}
           >
             {f.emoji && <span>{f.emoji}</span>}
-            {Icon && <Icon className="h-3.5 w-3.5 shrink-0" />}
+            {Icon && <Icon className="hidden h-3.5 w-3.5 shrink-0 sm:inline" />}
             {f.label}
           </button>
         );

@@ -13,7 +13,11 @@ export function PageHeader({
   breadcrumb = undefined,
   tone = 'brand',
   className = undefined,
-  dense = false,
+  // 5.28: denso por padrão. Só muda abaixo de md (mobile); no desktop o hero
+  // continua igual. Antes cada página escolhia, e as que não escolhiam
+  // (Economia, Treinadores, Inventário...) gastavam a primeira dobra do
+  // celular com breadcrumb + sobretítulo + descrição antes do conteúdo.
+  dense = true,
   hudItems = undefined,
   hudLabel = undefined,
 }) {

@@ -1,0 +1,974 @@
+{
+  "createdAt": "2026-10-16T00:00:06.423Z",
+  "total": 132,
+  "pass": 92,
+  "regressions": [],
+  "preExisting": [
+    "test-core-gameplay-ui",
+    "test-design-system-v33",
+    "test-global-overlays-audit",
+    "test-hotfix-rc1-ssr-utils",
+    "test-live-match-route-fixture-v520d",
+    "test-mobile-compact-ux-m4",
+    "test-mobile-filters-postmatch-m4-2-2",
+    "test-mobile-game-app-experience-m4-2",
+    "test-mobile-m1-hotfix",
+    "test-mobile-m3-1-device-hotfix",
+    "test-mobile-m3-2-android-ux",
+    "test-mobile-performance-m3-5",
+    "test-notification-center-consolidation",
+    "test-onboarding-home-cta",
+    "test-page-hierarchy",
+    "test-phase15-3-economy-progression-navigation",
+    "test-phase15-4-mobile-flow-polish",
+    "test-phase15-5-1-tournament-interview-consistency",
+    "test-phase15-5-4-critical-mobile-qa",
+    "test-phase15-6-1-tournament-draw-consistency",
+    "test-phase15-6-2-tournament-canonical-state",
+    "test-phase15-6-app-performance-calendar-hardening",
+    "test-phase15-7-first-tournament-parity",
+    "test-premium-development-v33-7",
+    "test-premium-gameplay-v33-5",
+    "test-premium-home-v33-2",
+    "test-premium-interfaces-v33",
+    "test-premium-market-v33-4",
+    "test-premium-relations-v33-8",
+    "test-premium-world-v33",
+    "test-redesign-polish2",
+    "test-redesign-polish21",
+    "test-runtime-performance-rc1",
+    "test-staff-architecture-v29-1",
+    "test-training-center-shortcut-ux",
+    "test-training-center-unification-phase15-5",
+    "test-tutorial-floating-guide",
+    "test-ui-redesign",
+    "test-ui-shell",
+    "test-world-ui-v2"
+  ],
+  "results": [
+    {
+      "test": "test-bracket-cta-availability-v516",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-bracket-graph-integrity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-bracket-winner-propagation-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-bye-visible-from-draw",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-career-systems",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-career-ui-v2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-coach-card-effects",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-coach-discovery-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-coach-market-compact-layout",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-coach-market-curation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-coach-selection-clarity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-coach-system-v28",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-completed-tournament-card-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-core-gameplay-ui",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "CoreGameplayUiTest: FALHA (6/73)"
+    },
+    {
+      "test": "test-design-system-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "if (missing.length) throw new Error(`Arquivos ausentes: ${missing.join(', ')}`);\r | Error: Arquivos ausentes: DESIGN-SYSTEM-v33.md\r"
+    },
+    {
+      "test": "test-desktop-no-duplicate-quick-actions-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-draw-modal-fresh-state-v513",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-draw-notification-deep-link",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-draw-notification-no-ui-side-effect",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-draw-notification-player-identity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-draw-notification-self-healing",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-finals-ui-semantics-v57",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-global-header-overlay-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-global-overlays-audit",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\Padel-Legacy-New\\src\\components\\career\\CareerAssistant.jsx'\r"
+    },
+    {
+      "test": "test-historical-bracket-integrity-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-hotfix-rc1-ssr-missions",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-hotfix-rc1-ssr-utils",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PASS: Missions onboarding event stays browser guarded | const assert = (condition, message) => { if (!condition) throw new Error(message); };\r | Error: FAIL: release version bumped\r"
+    },
+    {
+      "test": "test-landscape-hud-compactness-v520c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-live-match-route-fixture-v520d",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "=== Resultado: 2 passed, 3 failed ==="
+    },
+    {
+      "test": "test-missions-achievements-unification",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-beta-floating-removed-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-beta-menu-entry-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-career-bottom-left-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-career-management-shortcut-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: PageHeader ganhou a prop `dense` (default false — não quebra uso existente)\r"
+    },
+    {
+      "test": "test-mobile-filters-postmatch-m4-2-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)\r"
+    },
+    {
+      "test": "test-mobile-floating-actions-no-overlap-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-foundation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-header-height-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-header-two-rows-v524",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-m1-hotfix",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: botão do FloatingUtilityRail perdeu pointer-events-auto (ficaria sem clique com o container pointer-events-none)\r"
+    },
+    {
+      "test": "test-mobile-m2-1-device-hotfix",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-m2-shell",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-m3-1-device-hotfix",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: /game/matches passou a existir como rota real (não deveria)\r"
+    },
+    {
+      "test": "test-mobile-m3-2-android-ux",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: input de nome do atleta perdeu o scrollIntoView no foco (Parte 8, ficaria coberto pelo teclado)\r"
+    },
+    {
+      "test": "test-mobile-m3-live-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-match-day-refresh-m3-7-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-navigation-v520",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-performance-m3-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-performance-m3-4",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-performance-m3-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Comparador de CareerHud continua restrito aos campos que ele exibe (energy/fatigue/coins/rank) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Comparador de CareerHud continua restrito aos campos que ele exibe (energy/fatigue/coins/rank)\r"
+    },
+    {
+      "test": "test-mobile-quick-actions-no-overlap-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-quick-actions-performance-neutral-v524c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-quick-actions-touch-target-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-training-game-experience-m4-2-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-training-shortcut-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-training-top-right-v525",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-utility-access-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visible-career-manager-shortcut-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visible-training-shortcut-v524c",
+      "now": 0,
+      "head": 1,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visual-hotfix-m4-1-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visual-polish-m4-1-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-modal-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-motion-system-v36-4-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-no-current-partnership-bracket-rebuild-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-no-orphan-route-v520",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-non-power-of-two-draw",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-notification-center-consolidation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^\\/press\\?/. Input:\r"
+    },
+    {
+      "test": "test-notification-deep-links-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-onboarding-home-cta",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Rota de destino \"/game/training-center\" (etapa first-training) está registrada em App.jsx |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Rota de destino \"/game/training-center\" (etapa first-training) está registrada em App.jsx\r"
+    },
+    {
+      "test": "test-onboarding-v3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-page-hierarchy",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Training.jsx tem exatamente 1 PageHeader (identidade única da página)\r"
+    },
+    {
+      "test": "test-performance-responsive-v36-4-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-performance-v31",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-4-mobile-flow-polish",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) | AssertionError [ERR_ASSERTION]: Fase 15.4 falhou: 3/132 gate(s)\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-5-1-header-notifications-partnership-ui",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-phase15-5-1-tournament-interview-consistency",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |     throw new Error(`Phase15.5.1 Tournament/Interview: FAIL (${failures.length}/${gates})\\n${failures.join('\\n')}`);\r | Error: Phase15.5.1 Tournament/Interview: FAIL (1/79)\r"
+    },
+    {
+      "test": "test-phase15-5-2-tournament-continuity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-phase15-5-4-critical-mobile-qa",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r"
+    },
+    {
+      "test": "test-phase15-6-1-tournament-draw-consistency",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: D-7: nenhuma chave existe ainda (modal mostraria not_drawn)\r"
+    },
+    {
+      "test": "test-phase15-6-2-tournament-canonical-state",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  This error came from the \"onResolve\" callback registered here: |     at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) | AssertionError [ERR_ASSERTION]: inscrição real deve suceder mesmo com a linha seed já presente\r"
+    },
+    {
+      "test": "test-phase15-6-app-performance-calendar-hardening",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PASS — 1b. Evento de demonstração (cal-002) nunca ganha tournament_run sem inscrição real |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 2. Torneio já registrado: registerTournament sucesso\r"
+    },
+    {
+      "test": "test-phase15-7-first-tournament-parity",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Rebalance: 1º torneio da temporada ocorre dentro da janela de 30-45 dias (obtido: 28 dias)\r"
+    },
+    {
+      "test": "test-player-opponent-distribution",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-playthrough-4-3-production-reconciliation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-playthrough-4-4-player-points",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-playthrough-4-5-temporal-circuit",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-playthrough-4-5b-first-wave",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-polish-ui-v36-4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-premium-development-v33-7",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    if (!source.includes(marker)) throw new Error(`${file}: marcador ausente: ${marker}`);\r | Error: src/pages/Training.jsx: marcador ausente: PageHeader\r"
+    },
+    {
+      "test": "test-premium-gameplay-v33-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    if (!content.includes(needle)) throw new Error(`${file}: conteúdo ausente: ${needle}`);\r | Error: src/pages/CalendarPage.jsx: conteúdo ausente: Avanço inteligente\r"
+    },
+    {
+      "test": "test-premium-home-v33-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    if (!content.includes(needle)) throw new Error(`${file}: conteúdo ausente: ${needle}`);\r | Error: src/pages/CareerHub.jsx: conteúdo ausente: PremiumQuickStats\r"
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PremiumInterfacesV33Test: FAIL"
+    },
+    {
+      "test": "test-premium-market-v33-4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "if (pkg.version !== '0.9.0-beta.8') throw new Error(`Versão inesperada: ${pkg.version}`);\r | Error: Versão inesperada: 0.9.0-rc.1.9\r"
+    },
+    {
+      "test": "test-premium-relations-v33-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PASS: Economia exibe saldo | PASS: Economia separa patrocínios e equipe | FAIL: Versão beta.12"
+    },
+    {
+      "test": "test-premium-world-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`Falha: ${label}`);\r | Error: Falha: Imprensa usa cards semânticos\r"
+    },
+    {
+      "test": "test-ranking-country-club-links-v522e",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-ranking-race-doubles-contrast-v524b",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-redesign-polish2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: getNextStep (motor de próximo passo) removida/renomeada\r"
+    },
+    {
+      "test": "test-redesign-polish21",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextEventCard (fonte única do \"próximo torneio\" informativo) foi removido da Home\r"
+    },
+    {
+      "test": "test-runtime-performance-rc1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PASS: heavy eager preload removed | const checks=[]; const check=(name,ok)=>{if(!ok) throw new Error(`FAIL: ${name}`); checks.push(name); console.log(`PASS: ${name}`)};\r | Error: FAIL: release version bumped\r"
+    },
+    {
+      "test": "test-seeded-tournament-draw",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-sidebar-footer-cleanup",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-staff-architecture-v29-1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: Comissão técnica não foi movida para Dupla e relações.\r"
+    },
+    {
+      "test": "test-tier-qualifying-authority",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-cancellation-state",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-canonical-results",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-card-primary-state-v520c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-confirm-no-skip",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-flow-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-match-lifecycle",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-notification-deeplink-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-result-authority",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-roster-survives-partner-change-v519",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-round-availability",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-training-center-shortcut-ux",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PASS — 2b. Botão do Centro de Treinamento tem aria-label e title (tooltip desktop + acessibilidade) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 2c. Ícone reutilizado é exatamente o mesmo já usado para \"Centro de treinamento\" na navegação principal\r"
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — 102. Navegação possui uma única entrada Centro de Treinamento | AssertionError [ERR_ASSERTION]: Fase 15.5 falhou: 1/144 gate(s)\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-tutorial-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tutorial-chronology",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tutorial-first-official-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tutorial-floating-guide",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Botão do Guia usa a cor de destaque verde (ação principal de ajuda) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Botão do Guia usa a cor de destaque verde (ação principal de ajuda)\r"
+    },
+    {
+      "test": "test-tutorial-visit-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r"
+    },
+    {
+      "test": "test-ui-shell",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: rota perdida na reorganização do shell: /game/training\r"
+    },
+    {
+      "test": "test-ux-interfaces-v36-3-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-viewport-overlays-rc1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-walkover-bracket-propagation",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-world-ui-v2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\Padel-Legacy-New\\src\\lib\\careerAssistant.js'\r"
+    }
+  ]
+}

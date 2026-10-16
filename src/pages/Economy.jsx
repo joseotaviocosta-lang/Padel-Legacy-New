@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Wallet, Star, Building2, TrendingUp, Receipt, ClipboardCheck, Coins, Users } from 'lucide-react';
 import { LoadingScreen } from '@/components/padel/ui';
-import { PageHeader, StatCard, StatusBadge, FilterPills } from '@/components/design-system';
+import { PageHeader, StatCard, FilterPills } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
 import { ensureMyProfile } from '@/lib/padel';
 import { buyProperty, sellProperty, makeInvestment, withdrawInvestment } from '@/lib/economy';
@@ -159,8 +159,8 @@ export default function Economy() {
         description="Acompanhe caixa, contratos, equipe, investimentos e oportunidades sem perder o controle da carreira esportiva."
         tone="premium"
         breadcrumb={['Gestão', 'Economia']}
-        action={<StatusBadge tone={(Number(profile.coins) || 0) >= monthlyStaffCost ? 'success' : 'warning'} icon={Coins}>{(Number(profile.coins) || 0).toLocaleString('pt-BR')} moedas</StatusBadge>}
       />
+      {/* 5.28: o selo "X moedas" do hero repetia o card "Saldo" logo abaixo (e o saldo do header). */}
 
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <StatCard label="Saldo" value={(Number(profile.coins) || 0).toLocaleString('pt-BR')} detail="Disponível para decisões" icon={Coins} tone="premium" />

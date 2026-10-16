@@ -19,10 +19,19 @@ export default function CoachDetail({ coach, profile, evaluation: providedEvalua
 
   return (
     <ModalShell open={Boolean(coach)} onClose={onClose} title={coach.name} description={`${tier.label} · ${specialtyInfo?.label || coach.specialty}`} size="sm" footer={isHired ? (
-      <Button level="ghost" onClick={onFire} className="w-full bg-red-500/15 text-red-400 hover:bg-red-500/25">Demitir treinador</Button>
+      <Button level="danger" size="touch" onClick={onFire} className="w-full">Demitir treinador</Button>
     ) : (
-      <Button level="primary" disabled={!hireCheck.allowed} onClick={onHire} className="w-full">
-        {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar · {evaluation.salary} / mês{evaluation.signingCost > 0 ? ` + ${evaluation.signingCost} de assinatura` : ''}</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
+      // 5.28: rótulo curto + custo na linha auxiliar (antes um rótulo único
+      // "CONTRATAR · 1800 / MÊS + 3000 DE ASSINATURA" estourava o modal no celular).
+      <Button
+        level="primary"
+        size="touch"
+        disabled={!hireCheck.allowed}
+        onClick={onHire}
+        className="w-full"
+        sublabel={hireCheck.allowed ? `${Number(evaluation.salary || 0).toLocaleString('pt-BR')}/mês${evaluation.signingCost > 0 ? ` · luvas ${Number(evaluation.signingCost).toLocaleString('pt-BR')}` : ''}` : null}
+      >
+        {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar treinador</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
       </Button>
     )}>
       <div className="space-y-3">
@@ -35,14 +44,13 @@ export default function CoachDetail({ coach, profile, evaluation: providedEvalua
             {!isHired && hireCheck.allowed && evaluation.recommendationReason && <p className="mt-1 text-[10px] text-muted-foreground">{evaluation.recommendationReason}</p>}
             {isHired && <p className="mt-1 text-[10px] text-muted-foreground">Contrato atual da dupla; sua disponibilidade no mercado não interfere no vínculo vigente.</p>}
           </div>
-          {/* Header */}
-          <div className="flex items-start justify-between mb-4">
-            <div className="flex items-center gap-3">
-              <div className={`h-14 w-14 rounded-2xl ${tier.bg} flex items-center justify-center border ${tier.border}`}>
-                <span className={`font-black text-xl ${tier.color}`}>{(coach.name || '?')[0]}</span>
+          {/* 5.28: o nome já é o título do modal — aqui só a identificação. */}
+          <div className="flex items-start justify-between">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className={`h-12 w-12 shrink-0 rounded-2xl ${tier.bg} flex items-center justify-center border ${tier.border}`}>
+                <span className={`font-black text-lg ${tier.color}`}>{(coach.name || '?')[0]}</span>
               </div>
-              <div>
-                <h2 className="text-lg font-black">{coach.name}</h2>
+              <div className="min-w-0">
                 <p className="text-[11px] text-muted-foreground flex items-center gap-1">
                   <MapPin className="h-3 w-3" /> {coach.city}, {coach.nationality} · {coach.age} anos
                 </p>

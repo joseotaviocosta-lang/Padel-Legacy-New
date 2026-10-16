@@ -116,9 +116,12 @@ function GuideButton({ active, onClick }) {
       // então mesmo numa transição/teclado o Guia nunca some atrás dela —
       // sua posição vertical já termina bem acima da área interativa da nav,
       // o z-index maior é só uma garantia extra, não o que evita a colisão.
-      className="pointer-events-auto fixed z-[var(--z-dropdown)] bottom-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.875rem)] right-[max(0.5rem,env(safe-area-inset-right))] flex h-12 w-12 items-center justify-center rounded-xl bg-emerald-500 text-white shadow-lg transition-transform hover:scale-105 hover:brightness-110 md:bottom-5 md:right-5 md:h-14 md:w-14"
+      // 5.28: mesmo peso visual dos outros atalhos flutuantes (44px, fundo
+      // translúcido, ícone na cor da marca). O bloco verde sólido 48px era o
+      // elemento mais forte da tela inteira, acima até do CTA da página.
+      className="pointer-events-auto fixed z-[var(--z-dropdown)] bottom-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+0.875rem)] right-[max(0.5rem,env(safe-area-inset-right))] flex h-11 w-11 items-center justify-center rounded-2xl border border-emerald-500/40 bg-background/90 text-emerald-400 shadow-xl backdrop-blur-xl transition-colors hover:border-emerald-400/70 hover:bg-emerald-500/10 md:bottom-5 md:right-5 md:h-12 md:w-12"
     >
-      <GraduationCap className="h-6 w-6" />
+      <GraduationCap className="h-5 w-5" />
       {active && <span className="absolute -right-0.5 -top-0.5 h-3.5 w-3.5 rounded-full border-2 border-background bg-primary" aria-hidden="true" />}
     </button>
   );

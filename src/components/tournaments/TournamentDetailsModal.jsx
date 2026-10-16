@@ -4,7 +4,7 @@ import {
   Play, Star, Trophy, UserRoundCheck, Zap,
 } from 'lucide-react';
 import { resolveCommittedPartnerAthlete } from '@/lib/committedRoster.js';
-import { Button, ModalShell, StatusBadge } from '@/components/design-system';
+import { Button, ModalActions, ModalShell, StatusBadge } from '@/components/design-system';
 import { formatDate } from '@/lib/padel';
 import {
   PHASE_LABELS, checkTournamentRequirements, getRegistrationDeadline, isRegistrationOpen,
@@ -111,36 +111,35 @@ export default function TournamentDetailsModal({
       title={tournament.name || 'Detalhes do torneio'}
       description="Informações oficiais do evento"
       size="md"
-      footer={(
-        <div className="flex flex-wrap justify-end gap-2">
-          <Button level="ghost" size="touch" onClick={onClose}>Fechar</Button>
-          {/* Playthrough 5.16, Partes K/L — este botão era incondicional: a
-              ~8 dias do sorteio ele já convidava a "Ver chave" e entregava
-              "Chave ainda não sorteada". Agora a mesma autoridade que o
-              resto do app usa (getTournamentDrawState) decide, e enquanto
-              não há chave o jogador recebe a informação útil — quando o
-              sorteio acontece — em vez de um CTA vazio. */}
-          {bracketReady
-            ? <Button level="secondary" size="touch" onClick={onViewBracket}><ListTree className="h-4 w-4" />Ver chave</Button>
-            : drawCountdownLabel && (
-              <span className="inline-flex items-center gap-1.5 self-center px-2 text-[11px] font-bold text-muted-foreground">
-                <Clock className="h-3.5 w-3.5" />{drawCountdownLabel}
-              </span>
-            )}
-          {activeRun && <Button level="primary" size="touch" onClick={onContinue}><Play className="h-4 w-4" />{canPlayNow ? 'Jogar partida' : 'Preparar partida'}</Button>}
-          {!activeRun && !registration && canRegister && validation.canRegister && registrationOpen && (
-            <Button level="primary" size="touch" onClick={onRegister}><CheckCircle className="h-4 w-4" />Inscrever-se</Button>
-          )}
-        </div>
-      )}
+      // 5.28: área de ações padrão (ModalActions). "Fechar" só aparece quando
+      // não há nenhuma outra ação — o X do cabeçalho já fecha; no celular os
+      // três botões empilhados disputavam a mesma faixa.
+      footer={(() => {
+        const primary = activeRun
+          ? <Button level="primary" size="touch" onClick={onContinue}><Play className="h-4 w-4" />{canPlayNow ? 'Jogar partida' : 'Preparar partida'}</Button>
+          : (!registration && canRegister && validation.canRegister && registrationOpen
+            ? <Button level="primary" size="touch" onClick={onRegister}><CheckCircle className="h-4 w-4" />Inscrever-se</Button>
+            : null);
+        // Playthrough 5.16, Partes K/L — "Ver chave" só existe quando a
+        // chave existe (getTournamentDrawState); antes do sorteio o jogador
+        // recebe a informação útil (quando ele acontece) em vez de um CTA vazio.
+        const viewBracket = bracketReady ? <Button key="bracket" level="secondary" size="touch" onClick={onViewBracket}><ListTree className="h-4 w-4" />Ver chave</Button> : null;
+        const info = !bracketReady && drawCountdownLabel ? <span className="inline-flex items-center gap-1.5"><Clock className="h-3.5 w-3.5" />{drawCountdownLabel}</span> : null;
+        const secondary = viewBracket || (!primary ? <Button key="close" level="secondary" size="touch" onClick={onClose}>Fechar</Button> : null);
+        return <ModalActions primary={primary} secondary={secondary} info={info} />;
+      })()}
     >
       <div className="space-y-4">
-        <div className="flex items-start justify-between gap-3 rounded-2xl border border-primary/20 bg-primary/5 p-4">
-          <div>
+        {/* 5.28: o selo de estado ficava ao lado do texto e o espremia numa
+            coluna de uma palavra por linha no celular (e saía da borda do
+            card). Agora categoria + selo dividem a primeira linha e o texto
+            ocupa a largura toda. */}
+        <div className="rounded-2xl border border-primary/20 bg-primary/5 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
             <p className="text-[10px] font-black uppercase tracking-widest text-primary">{tournament.tier || tournament.category || 'Torneio oficial'}</p>
-            <p className="mt-1 text-sm font-bold text-muted-foreground">{tournament.description || 'Evento oficial do circuito Padel Legacy.'}</p>
+            <StatusBadge tone={activeRun ? 'premium' : registration ? 'success' : cancelled ? 'danger' : ended ? 'neutral' : registrationOpen ? 'info' : 'warning'} className="max-w-full">{status}</StatusBadge>
           </div>
-          <StatusBadge tone={activeRun ? 'premium' : registration ? 'success' : cancelled ? 'danger' : ended ? 'neutral' : registrationOpen ? 'info' : 'warning'} className="shrink-0">{status}</StatusBadge>
+          <p className="mt-2 text-sm text-muted-foreground">{tournament.description || 'Evento oficial do circuito Padel Legacy.'}</p>
         </div>
 
         {cancelled && (

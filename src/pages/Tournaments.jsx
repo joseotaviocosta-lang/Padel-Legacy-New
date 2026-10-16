@@ -522,7 +522,7 @@ export default function Tournaments() {
             { value: registeredTournaments.has(nextTournament.id) ? 'Inscrito' : 'Disponível', icon: CheckCircle, tone: registeredTournaments.has(nextTournament.id) ? 'success' : 'warning' },
             { value: nextTournament.tier, icon: Award },
           ] : [{ label: 'agenda', value: 'Livre', icon: Calendar, tone: 'info' }]}
-          action={<div className="flex items-center gap-2">{nextTournament && <Button level="primary" size="touch" onClick={() => setDetailsTournament(nextTournament)}>Abrir evento</Button>}<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." /></div>}
+          action={<div className="flex items-center gap-2">{/* 5.28: secundário — o primário da tela é a ação do card (Preparar/Inscrever-se); dois primários disputavam a primeira dobra. */}{nextTournament && <Button level="secondary" onClick={() => setDetailsTournament(nextTournament)}>Abrir evento</Button>}<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." /></div>}
         />
 
       <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
