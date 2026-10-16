@@ -122,6 +122,8 @@ try {
   const { publishMatchNews } = await vite.ssrLoadModule('/src/game-core/news.js');
   const { buildBetaDiagnosticReport } = await vite.ssrLoadModule('/src/lib/betaDiagnostics.js');
   const { BOTS_BY_DIFFICULTY } = await vite.ssrLoadModule('/src/lib/bots.js');
+  const { getCurrentTournamentMatch, recordTournamentMatchResult } = await vite.ssrLoadModule('/src/gameplay/worldTour/TournamentRunManager.js');
+  const { buildTournamentRoundCoreOperations } = await vite.ssrLoadModule('/src/game-core/tournamentMatchLifecycle.js');
 
   function harness(id) {
     const rawStorage = new FaultyMemoryStorage();
@@ -298,21 +300,79 @@ try {
   }
 
   // ═══════════════ 8. Ciclo completo: torneio → save → "reload" (nova instância do manager) → intacto ═══════════════
+  // CLOUD-2 (A): a fixture antiga inscrevia `teamRank: 200` num Silver. O teto
+  // de base (EntryManager.OPEN_TIER_CEILING = 400, Fases 5.3/5.6) recusa essa
+  // dupla — "já classifica para tiers acima" — e, como o retorno não era
+  // conferido, a falha aparecia oito passos depois como "tournament_run sumiu
+  // após o reload". A regra de elegibilidade NÃO muda: a fixture usa uma
+  // dupla abaixo do teto (rank 600) e a inscrição é verificada na hora.
   {
     const { manager, profile: initialProfile, partner, career: initialCareer } = await freshCareer('tournament-reload');
     const realId = initialCareer.career_id;
     const tournament = await localGame.entities.Tournament.create({ id: 'tournament-reload-t1', name: 'Reload Cup', tier: 'Silver', start_date: '2026-01-08', status: 'inscricoes' });
-    await registerTournament({ player: initialProfile, partner, tournament, teamRank: 200 });
+    const registration = await registerTournament({ player: initialProfile, partner, tournament, teamRank: 600 });
+    gate('Inscrição elegível no Silver (rank 600, abaixo do teto de base) é aceita', registration?.success === true);
     let current = await localGame.entities.PlayerProfile.get(initialProfile.id);
     while (current.career_date < '2026-01-08') current = await advanceCareerDay(current, {});
+
+    const liveEvent = (await localGame.entities.CalendarEvent.filter({ profile_id: initialProfile.id })).find((e) => e.related_id === tournament.id && e.event_type === 'tournament');
+    const liveRun = liveEvent?.metadata?.tournament_run;
+    gate('Sorteio em D-3 criou o tournament_run antes do dia do torneio', Boolean(liveRun));
+
+    // Resultado da 1ª rodada gravado pelo MESMO caminho do jogo
+    // (TournamentModal → recordTournamentMatchResult + lote atômico de
+    // buildTournamentRoundCoreOperations).
+    const firstMatch = getCurrentTournamentMatch(liveRun);
+    const transition = recordTournamentMatchResult(liveRun, { matchId: firstMatch.id, won: true, score: '6-3 6-4', tournament });
+    const matchRecord = {
+      id: firstMatch.id, profile_id: initialProfile.id, career_date: current.career_date, date: current.career_date,
+      tournament_id: tournament.id, tournament_name: tournament.name, tournament_round: firstMatch.round,
+      score: '6-3 6-4', result: 'vitória', status: 'completed', competition_type: 'tournament', is_official: true, is_tournament: true,
+    };
+    await localGame.batch(buildTournamentRoundCoreOperations({
+      matchRecord,
+      profileId: initialProfile.id,
+      playerPatch: { processed_match_keys: [...(current.processed_match_keys || []), firstMatch.id] },
+      event: liveEvent,
+      eventPatch: { metadata: { ...liveEvent.metadata, tournament_run: transition.run } },
+      tournament,
+      tournamentPatch: { current_phase: transition.run.status },
+      rewardCoins: 25,
+    }));
 
     // "Recarregar o app": nova leitura independente da MESMA carreira, sem
     // reaproveitar nenhum estado quente em memória.
     const reloaded = await manager.loadCareer(realId);
-    gate('Após torneio completo (D-3..D-0) + reload: career_id preservado', reloaded.career_id === realId);
-    gate('Após torneio completo + reload: perfil do jogador preservado', reloaded.player?.id === initialProfile.id);
+    gate('Após torneio (D-3..D-0) + reload: career_id preservado', reloaded.career_id === realId);
+    gate('Após torneio + reload: perfil do jogador preservado', reloaded.player?.id === initialProfile.id);
     const reloadedEvent = (reloaded.entities.CalendarEvent || []).find((e) => e.related_id === tournament.id);
-    gate('Após torneio completo + reload: tournament_run do torneio disputado continua presente', Boolean(reloadedEvent?.metadata?.tournament_run));
+    const reloadedRun = reloadedEvent?.metadata?.tournament_run;
+    gate('Após torneio + reload: tournament_run do torneio disputado continua presente', Boolean(reloadedRun));
+    gate('Após torneio + reload: o run mantém a mesma chave (mesmos ids de partida)', JSON.stringify((reloadedRun?.matches || []).map((m) => m.id)) === JSON.stringify(liveRun.matches.map((m) => m.id)));
+    const reloadedMatch = (reloadedRun?.matches || []).find((m) => m.id === firstMatch.id);
+    gate('Após torneio + reload: resultado da rodada persiste no run (concluída, vitória, placar)', reloadedMatch?.status === 'completed' && reloadedMatch?.result?.won === true && reloadedMatch?.result?.score === '6-3 6-4');
+    gate('Após torneio + reload: histórico (Match) da rodada persiste', (reloaded.entities.Match || []).some((m) => m.id === firstMatch.id && m.tournament_id === tournament.id && m.result === 'vitória'));
+    gate('Após torneio + reload: extrato da recompensa persiste no mesmo lote', (reloaded.entities.FinancialTransaction || []).some((t) => t.id === `match-reward-${firstMatch.id}` && t.amount === 25));
+    gate('Após torneio + reload: idempotência da rodada persiste no perfil', (reloaded.player?.processed_match_keys || []).includes(firstMatch.id));
+  }
+
+  // ═══════════════ 8b. Inscrição INELEGÍVEL não cria nada que possa "sumir" depois ═══════════════
+  // Negativo do §8: a dupla acima do teto de base é recusada com motivo
+  // explícito, nenhum CalendarEvent nasce, o avanço até o dia do torneio não
+  // sorteia nada e o save recarregado não tem run fantasma.
+  {
+    const { manager, profile: initialProfile, partner, career: initialCareer } = await freshCareer('tournament-ineligible');
+    const realId = initialCareer.career_id;
+    const tournament = await localGame.entities.Tournament.create({ id: 'tournament-ineligible-t1', name: 'Base Cup', tier: 'Silver', start_date: '2026-01-08', status: 'inscricoes' });
+    const registration = await registerTournament({ player: initialProfile, partner, tournament, teamRank: 200 });
+    gate('Inscrição inelegível (rank 200 num Silver) é recusada', registration?.success === false);
+    gate('Recusa traz o motivo SPORTING_INELIGIBLE (teto de base)', (registration?.reasons || []).some((r) => r.code === 'SPORTING_INELIGIBLE'));
+    let current = await localGame.entities.PlayerProfile.get(initialProfile.id);
+    while (current.career_date < '2026-01-08') current = await advanceCareerDay(current, {});
+    const events = (await localGame.entities.CalendarEvent.filter({ profile_id: initialProfile.id })).filter((e) => e.related_id === tournament.id);
+    gate('Inscrição recusada não cria CalendarEvent do torneio', events.length === 0);
+    const reloaded = await manager.loadCareer(realId);
+    gate('Save recarregado não tem evento nem tournament_run fantasma do torneio recusado', !(reloaded.entities.CalendarEvent || []).some((e) => e.related_id === tournament.id));
   }
 
   // ═══════════════ 9. Teste de estresse — 100 ciclos de save/reload ═══════════════
