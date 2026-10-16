@@ -182,8 +182,14 @@ try {
   const interviewIdentity = postMatchInterviewIdentity(matchId);
   const returnTo = buildTournamentPlayRoute(tournament.id);
   const interviewRoute = buildInterviewRoute({ interviewId: interviewIdentity.id, sourceId: interviewIdentity.sourceId, returnTo });
-  gate('a rota da entrevista usa o formato canônico (/press?tab=interviews&interview=...&source=...&returnTo=...)',
-    interviewRoute.startsWith('/press?') && interviewRoute.includes('tab=interviews') && interviewRoute.includes(encodeURIComponent(interviewIdentity.id)) && interviewRoute.includes('returnTo='));
+  // CLOUD-2: a Imprensa passou a viver no hub Circuito (CircuitCentralHub,
+  // aba 'press'); /press virou LegacyRedirect para /world/circuit?tab=press.
+  // O deep link canônico da entrevista acompanha esse destino.
+  {
+    const parsed = new URL(interviewRoute, 'http://local');
+    gate('a rota da entrevista usa o formato canônico (/world/circuit?tab=press&interview=...&source=...&returnTo=...)',
+      parsed.pathname === '/world/circuit' && parsed.searchParams.get('tab') === 'press' && parsed.searchParams.get('interview') === interviewIdentity.id && parsed.searchParams.get('source') === interviewIdentity.sourceId && parsed.searchParams.get('returnTo') === returnTo);
+  }
   gate('returnTo aponta pro torneio certo (nunca /tournaments genérico)', decodeURIComponent(returnTo).includes(`tournament=${tournament.id}`) && returnTo.includes('mode=run'));
 
   const matchRecord = {

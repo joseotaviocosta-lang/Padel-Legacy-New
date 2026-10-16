@@ -9,7 +9,10 @@ const coordinator = read('src/game-core/dayAdvanceCoordinator.js');
 const controller = read('src/game-core/dayAdvanceController.js');
 const lifecycle = read('src/game-core/calendarLifecycle.js');
 const calendarPage = read('src/pages/CalendarPage.jsx');
-const trainingPage = read('src/pages/Training.jsx');
+// CLOUD-2: src/pages/Training.jsx virou só o redirecionamento da rota legada
+// /game/training; o atalho de avanço de dia do treino vive em TrainingView
+// (Centro de Treinamento).
+const trainingPage = read('src/components/training-center/TrainingView.jsx');
 const careerCalendar = read('src/components/career/CareerCalendar.jsx');
 
 assert.deepEqual(getCareerDatePresentation('2026-01-01'), {
@@ -30,7 +33,9 @@ const checks = [
   ['bloqueios oficiais permanecem no fluxo', lifecycle.includes('advanceDay(currentProfile') && lifecycle.includes('processGameStateDay')],
   ['todos os atalhos de um dia usam o coordenador', [calendarPage, trainingPage, careerCalendar].every((source) => source.includes('advanceCareerDayOnce'))],
   ['nenhum atalho de UI chama advanceDay diretamente', [calendarPage, trainingPage, careerCalendar].every((source) => !/\badvanceDay\s*\(/.test(source))],
-  ['largura mínima compacta e data sem quebra', control.includes('min-w-[3.45rem]') && control.includes('sm:min-w-[7.35rem]') && control.includes('whitespace-nowrap')],
+  // CLOUD-2: no mobile o controle passou de min-w-[3.45rem] para largura fixa
+  // compacta (w-11, cabeçalho de 2 linhas); a intenção é a mesma.
+  ['largura mínima compacta e data sem quebra', /\b(w-11|min-w-\[3\.45rem\])\b/.test(control) && control.includes('sm:min-w-[7.35rem]') && control.includes('whitespace-nowrap')],
   ['layout protege contra overflow horizontal', layout.includes('overflow-x-hidden')],
   ['acessibilidade do botão', control.includes('aria-label="Avançar carreira em um dia"') && control.includes('aria-busy={processing}') && control.includes('title="Avançar carreira em um dia"')],
   ['sem polling ou processamento durante render', !control.includes('setInterval') && !control.includes('localGame')],

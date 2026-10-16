@@ -35,12 +35,19 @@ const migratedOverlayFiles = [
   'src/components/encyclopedia/EncyclopediaDetail.jsx',
   'src/components/system/BetaWelcome.jsx',
   'src/components/system/BetaTools.jsx',
-  'src/components/career/CareerAssistant.jsx',
+  // CLOUD-2: CareerAssistant.jsx foi removido do app (não existe em nenhum
+  // commit do histórico atual); sai da lista de overlays auditados.
   'src/components/onboarding/OnboardingGuide.jsx',
 ];
 
 const bespokeBackdropPattern = /fixed inset-0 z-(\[?(50|60|100)\]?)\s+flex[^"]*"\s+onClick=\{onClose\}/;
-const scrollHackPattern = /scrollIntoView\(|window\.scrollTo\(/;
+// CLOUD-2: o que a auditoria proíbe é posicionar overlay "na mão" rolando a
+// página (window.scrollTo / scrollIntoView genérico). Fica permitido só o
+// `scrollIntoView({ block: 'nearest', inline: 'nearest' })` de um item
+// tocado numa faixa horizontal (hotfix 5.31-B, chips da Caixa de entrada):
+// com 'nearest' nos dois eixos só rola se o item estiver fora da vista, sem
+// salto vertical da página.
+const scrollHackPattern = /scrollIntoView\((?!\{\s*block:\s*'nearest',\s*inline:\s*'nearest'\s*\})|window\.scrollTo\(/;
 
 const checks = [];
 
@@ -88,7 +95,11 @@ for (const file of [...migratedOverlayFiles, 'src/pages/CalendarPage.jsx', 'src/
 // audit found hardcoded numbers that numerically duplicated the scale.
 checks.push(['Escala de z-index define camada de dropdown', css.includes('--z-dropdown: 60') && css.includes('.pl-layer-dropdown { z-index: var(--z-dropdown); }')]);
 checks.push(['Escala de z-index define camada de toast', css.includes('--z-toast: 120') && css.includes('.pl-layer-toast { z-index: var(--z-toast); }')]);
-checks.push(['CommunicationBell usa a camada de dropdown padronizada', read('src/components/communications/CommunicationBell.jsx').includes('pl-layer-dropdown') && !read('src/components/communications/CommunicationBell.jsx').includes('z-[60]')]);
+// CLOUD-2: o sino deixou de abrir um dropdown e passou a abrir a Central de
+// notificações em tela cheia (portal, camada pl-layer-notification). A
+// intenção — usar a escala de camadas padronizada, sem z-index fixo — vale
+// para as duas formas.
+checks.push(['CommunicationBell usa uma camada padronizada da escala (dropdown ou central de notificações)', /pl-layer-(dropdown|notification)/.test(read('src/components/communications/CommunicationBell.jsx')) && !read('src/components/communications/CommunicationBell.jsx').includes('z-[60]')]);
 checks.push(['Toast usa a camada padronizada', read('src/components/ui/toast.jsx').includes('pl-layer-toast') && !read('src/components/ui/toast.jsx').includes('z-[120]')]);
 
 // 8. Deep links still open the right resource (regression guard — these already worked,

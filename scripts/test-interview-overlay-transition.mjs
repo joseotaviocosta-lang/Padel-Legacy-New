@@ -38,7 +38,13 @@ gate('InterviewModal usa ModalShell (registra seu próprio overlay, independente
 
 // ── Cadeia completa: cancelar e não dar entrevista não deixam rastro ─────
 gate('Cancelar entrevista chama onClose (mesmo caminho de fechamento limpo, nunca um estado intermediário)', /Cancelar entrevista/.test(interviewModal) && /onClick=\{onClose\}/.test(interviewModal));
-gate('"Não dar entrevista" (fechar o resultado sem abrir a entrevista) não depende de nenhum estado extra — onClose do FinalState/StateMessage já é o goBackToCareer normal, mesmo caminho de sempre', /onClose=\{goBackToCareer\}/.test(tournamentModal));
+// CLOUD-2: o FinalState/StateMessage com `onClose={goBackToCareer}` deixou de
+// existir (já antes do build 9001). A tela de resultado (campeão/eliminado)
+// agora tem "Dar entrevista" como botão OPCIONAL separado e "Voltar à
+// carreira" ligado direto a goBackToCareer — a mesma garantia: não dar
+// entrevista é só sair pelo caminho normal, sem estado extra.
+const finalResultBlock = (tournamentModal.match(/\(phase === 'champion' \|\| phase === 'eliminated'\) && lastResult \? \([\s\S]*?\) : phase ===/) || [''])[0];
+gate('"Não dar entrevista" (fechar o resultado sem abrir a entrevista) não depende de nenhum estado extra — a tela final sai por goBackToCareer, e a entrevista é um botão opcional à parte', /onClick=\{goBackToCareer\}/.test(finalResultBlock) && /postMatchInterviewActionable && <button onClick=\{openPostMatchInterview\}/.test(finalResultBlock));
 
 // ── Press.jsx: abrir/responder/próxima pergunta/finalizar é o mesmo fluxo de sempre, sem overlay extra ──
 gate('Press.jsx monta só 1 InterviewModal por vez (activeInterview && activeJournalist)', /\{activeInterview && activeJournalist && \(/.test(pressPage));

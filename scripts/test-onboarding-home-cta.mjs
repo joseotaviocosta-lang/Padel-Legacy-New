@@ -71,7 +71,15 @@ try {
 
   // ── 1) Toda rota de destino das 15 etapas é uma rota real registrada ────
   const appSource = readFileSync('src/App.jsx', 'utf8');
-  const registeredRoutes = new Set([...appSource.matchAll(/<Route path="([^"]+)"/g)].map((match) => match[1]));
+  // CLOUD-2: App.jsx também registra rotas via constante
+  // (`<Route path={APP_ROUTES.TRAINING_CENTER} …/>`); o regex antigo só via
+  // string literal e acusava como ausente uma rota que existe. As constantes
+  // são resolvidas pelo próprio módulo de rotas do app.
+  const { APP_ROUTES } = await server.ssrLoadModule('/src/navigation/routes.js');
+  const registeredRoutes = new Set([
+    ...[...appSource.matchAll(/<Route path="([^"]+)"/g)].map((match) => match[1]),
+    ...[...appSource.matchAll(/<Route path=\{APP_ROUTES\.([A-Z_]+)\}/g)].map((match) => APP_ROUTES[match[1]]).filter(Boolean),
+  ]);
   for (const step of TUTORIAL_STEPS) {
     const base = step.route.split('?')[0];
     gate(`Rota de destino "${base}" (etapa ${step.id}) está registrada em App.jsx`, registeredRoutes.has(base));
@@ -152,38 +160,30 @@ try {
   gate('Primeiro treino (evento real) avança para calendar-known', getCurrentTutorialStep(state)?.id === 'calendar-known');
   state = await confirmStep('calendar-known');
 
-  // Correção UI/cronologia (v13): "Competições" (tournament-registered,
-  // first-match) foi movida para o FIM da trilha — depois de todos os
-  // grupos cumpríveis no dia 1 (comissão técnica, economia, circuito) — em
-  // vez de logo após o calendário. As etapas VISIT intermediárias usam o
-  // mesmo mecanismo já coberto em detalhe por test-tutorial-expanded-flow.mjs;
-  // aqui só confirma que o pipeline chega ao torneio sem travar, agora na
-  // nova posição.
-  const visitStepsBeforeCompetitions = ['staff-known', 'economy-known', 'sponsors-known', 'opportunities-known', 'shop-known', 'equipment-known', 'athletes-known', 'ranking-known', 'world-known', 'news-known', 'press-known', 'notifications-known'];
-  for (const stepId of visitStepsBeforeCompetitions) {
-    gate(`Etapa "${stepId}" é a atual antes de confirmar (nova ordem v13)`, getCurrentTutorialStep(state)?.id === stepId);
-    state = await confirmStep(stepId);
-  }
-  gate('Fim dos grupos cumpríveis no dia 1 avança para tournament-registered (Competições, agora no final)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
+  // CLOUD-2: ordem VIGENTE (tutorialSteps.js, Fase 3 item 3C.3) —
+  // "Competições" voltou para logo após o calendário, porque a
+  // Exibição/Pré-Temporada tem inscrição livre desde o dia 1. A v13 (que a
+  // tinha levado para o fim da trilha) foi revertida; as etapas de visita
+  // (comissão, economia, circuito) vêm depois da primeira partida oficial.
+  gate('Após o calendário, a etapa atual é tournament-registered (Competições logo após o calendário)', getCurrentTutorialStep(state)?.id === 'tournament-registered');
 
   const registrations = [{ id: 'reg-1', profile_id: profile.id, tournament_id: 't1', status: 'confirmed' }];
   state = (await reconcile({ registrations, matches: [], trainings })).state;
   gate('Inscrição em torneio (evento real) avança para first-match', getCurrentTutorialStep(state)?.id === 'first-match');
   // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 2):
-  // "first-match" agora exige explicitamente uma partida OFICIAL de
-  // torneio (competition_type/is_official, os mesmos campos já gravados
-  // desde a finalização real — matchFinalization.js para treino,
-  // TournamentModal.jsx para torneio) — matches_played sozinho (contador
-  // incrementado também por treino) não basta mais, de propósito. Ver
-  // test-tutorial-first-official-match.mjs para a cobertura dedicada
-  // dessa regra (inclusive o caso negativo: partida de treino não conclui).
+  // "first-match" exige uma partida OFICIAL de torneio (competition_type/
+  // is_official) — matches_played sozinho não basta. Cobertura dedicada em
+  // test-tutorial-first-official-match.mjs (inclusive o caso negativo).
   const matches = [{ id: 'match-1', profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true }];
   profile = await localGame.entities.PlayerProfile.update(profile.id, { tournaments_played: 1 });
   state = (await reconcile({ registrations, matches, trainings })).state;
-  // Correção UI/cronologia (v13): Competições agora é o ÚLTIMO grupo real
-  // antes de autonomy (FINISH) — a primeira partida oficial fecha o
-  // tutorial principal inteiro, não só uma fase intermediária.
-  gate('Primeira partida OFICIAL (evento real) avança para autonomy (fim da trilha, Competições agora é o último grupo)', getCurrentTutorialStep(state)?.id === 'autonomy');
+
+  const visitStepsAfterCompetitions = ['staff-known', 'economy-known', 'sponsors-known', 'opportunities-known', 'shop-known', 'equipment-known', 'athletes-known', 'ranking-known', 'world-known', 'news-known', 'press-known', 'notifications-known'];
+  for (const stepId of visitStepsAfterCompetitions) {
+    gate(`Etapa "${stepId}" é a atual antes de confirmar (ordem vigente)`, getCurrentTutorialStep(state)?.id === stepId);
+    state = await confirmStep(stepId);
+  }
+  gate('Depois da última etapa de visita, a trilha chega a autonomy (fim)', getCurrentTutorialStep(state)?.id === 'autonomy');
   gate('Sequência via pipeline real chega ao fim sem travar (ainda in_progress — autonomy exige o botão dedicado, nunca auto-completa por visita)', state.status === 'in_progress');
 
   console.log(`\n${gates} gates executados, todos PASS — Home CTA (destinos reais + pipeline real + notificação de eventos).`);

@@ -367,7 +367,14 @@ try {
   const after = await runAdvance({ transactional: true });
   const beforeCounts = mainSaveCounts(before.storage, careerId);
   const afterCounts = mainSaveCounts(after.storage, careerId);
-  gate('advance-day real preserva estado final/determinismo', assert.deepEqual(after.career, before.career) === undefined);
+  // CLOUD-2: `save_version` é um contador de gravações físicas (entrou depois
+  // deste teste, ver test-career-persistence-integrity §6) e diverge POR
+  // DEFINIÇÃO quando o caminho transacional grava 1 vez em vez de N. O estado
+  // de jogo tem de ser idêntico; o contador de I/O fica de fora da comparação
+  // e é checado à parte (transacional grava menos).
+  const withoutWriteCounter = ({ save_version: _ignored, ...rest }) => rest;
+  gate('advance-day real preserva estado final/determinismo', assert.deepEqual(withoutWriteCounter(after.career), withoutWriteCounter(before.career)) === undefined);
+  gate('save_version: caminho transacional grava menos vezes que o não transacional', Number(after.career.save_version) < Number(before.career.save_version));
   gate('logical mutations permanecem iguais antes/depois', after.transaction.last.logicalMutations === before.callers.length);
   gate('advance-day real cai para um commit principal', before.callers.length > 1 && after.callers.length === 1 && after.transaction.last.physicalCommits === 1);
   gate('advance-day real cai para um stringify/temp/rename', afterCounts.stringify === 1 && afterCounts.tempWrites === 1 && afterCounts.renames === 1);

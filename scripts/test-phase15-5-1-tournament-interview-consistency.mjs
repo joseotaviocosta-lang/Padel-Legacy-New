@@ -234,7 +234,12 @@ try {
   gate('Notification Center continua drawer lateral', bellSource.includes('absolute inset-y-0 right-0'));
   gate('Notification Center preserva Android Back/overlay behavior', bellSource.includes('useOverlayBehavior'));
   gate('nenhum polling novo foi adicionado', !read('src/lib/interviewLifecycle.js').includes('setInterval') && !read('src/lib/tournamentBracketView.js').includes('setInterval'));
-  gate('helpers não leem storage', !read('src/lib/interviewLifecycle.js').match(/localStorage|sessionStorage|localGame/) && !read('src/lib/tournamentBracketView.js').match(/localStorage|sessionStorage|localGame/));
+  // CLOUD-2: o regex antigo casava a palavra `localGame` dentro de um
+  // COMENTÁRIO de tournamentBracketView.js (que explica justamente por que o
+  // módulo NÃO importa tournamentDraw/localGame). Comentários são removidos
+  // antes de procurar import/uso real de storage.
+  const codeOnly = (path) => read(path).replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+  gate('helpers não leem storage', !codeOnly('src/lib/interviewLifecycle.js').match(/localStorage|sessionStorage|localGame/) && !codeOnly('src/lib/tournamentBracketView.js').match(/localStorage|sessionStorage|localGame/));
 
   if (failures.length) {
     throw new Error(`Phase15.5.1 Tournament/Interview: FAIL (${failures.length}/${gates})\n${failures.join('\n')}`);

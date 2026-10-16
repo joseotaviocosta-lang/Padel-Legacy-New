@@ -1,6 +1,11 @@
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { buildCareerDecisionCenter } from '../src/lib/careerDecisionCenter.js';
+// CLOUD-2: os módulos de src/ usam o alias '@/', que o node puro não resolve
+// (ERR_MODULE_NOT_FOUND). Carregados via Vite SSR, como os kits v52x.
+import { createServer } from 'vite';
+const vite = await createServer({ server: { middlewareMode: true, hmr: false, ws: false }, appType: 'custom', logLevel: 'error' });
+const { buildCareerDecisionCenter } = await vite.ssrLoadModule('/src/lib/careerDecisionCenter.js');
+await vite.close();
 
 const profile = { id: 'p1', career_date: '2026-03-10', energy: 20, fatigue: 80, partner_id: null, injury_days_remaining: 0 };
 const center = buildCareerDecisionCenter(profile, {
