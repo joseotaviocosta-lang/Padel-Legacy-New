@@ -26,6 +26,11 @@ import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 //    desfeito no commit (calendarLifecycle registra CareerDayAdvance), sem
 //    evento incompleto; se veio antes de escrever, nada foi gravado;
 //  - contexto só com ids técnicos e data de carreira (sem nome do atleta).
+/**
+ * @param {'draw' | 'draw-notification'} stage
+ * @param {any} error
+ * @param {{ event?: any, tournament?: any, careerDate?: string | null }} [context]
+ */
 export function reportTournamentDrawFailure(stage, error, { event, tournament, careerDate } = {}) {
   const context = {
     stage,
