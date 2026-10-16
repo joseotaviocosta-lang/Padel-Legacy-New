@@ -84,7 +84,9 @@ try {
 
   // ── 12. Home tem uma única ação dominante (heroStep) ────────────────
   const careerHubSource = read('src/pages/CareerHub.jsx');
-  gate('12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos)', /const heroStep = useMemo/.test(careerHubSource) && (careerHubSource.match(/PriorityActionsPanel step=\{heroStep\}/g) || []).length === 1);
+  // CLOUD-2: na Home da 5.30 o hero é renderizado por HomeNextCommitment (o
+  // PriorityActionsPanel saiu da Home); a garantia é a mesma — um único hero.
+  gate('12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > fallback, nunca dois heróis simultâneos)', /const heroStep = useMemo/.test(careerHubSource) && (careerHubSource.match(/step=\{heroStep\}/g) || []).length === 1);
 
   // ── 13. ContextActionBar nunca mostra >2 ações ──────────────────────
   const barSource = read('src/components/design-system/ContextActionBar.jsx');
@@ -99,11 +101,15 @@ try {
   gate('16. Botões "Voltar à carreira" agora navegam para Home (goBackToCareer = onClose + navigate), corrigindo o bug real de ficarem presos na página do modal', /const goBackToCareer = useCallback\(\(\) => \{ onClose\?\.\(\); navigate\('\/'\); \}/.test(tournamentModalSource));
 
   // ── 17/18. rodada futura não permite jogar cedo, oferece calendário/carreira ──
-  gate('17. round_result nunca oferece jogar uma rodada futura (playableToday guarda o botão "Jogar")', /playableToday \? \(/.test(tournamentModalSource) && /Jogar \{currentMatch\?\.round/.test(tournamentModalSource));
+  // CLOUD-2: a guarda foi renomeada para nextRoundPlayableToday (5.29).
+  gate('17. round_result nunca oferece jogar uma rodada futura (nextRoundPlayableToday guarda o botão "Jogar")', /[pP]layableToday \? \(/.test(tournamentModalSource) && /Jogar \{currentMatch\?\.round/.test(tournamentModalSource));
   gate('18. Rodada futura oferece ContextActionBar com Voltar para a carreira + Ver calendário', /Voltar para a carreira', icon: 'crown', onClick: goBackToCareer/.test(tournamentModalSource) && /Ver calendário', icon: 'calendar'/.test(tournamentModalSource));
 
   // ── 19. eliminação oferece retorno coerente (FinalState -> goBackToCareer) ──
-  gate('19. Eliminação (FinalState) usa goBackToCareer, não mais um onClose que só fecha sem navegar', /FinalState tournament=\{tournament\} result=\{lastResult\} rewards=\{tournamentRewards\} onClose=\{goBackToCareer\}/.test(tournamentModalSource));
+  // CLOUD-2: o FinalState com onClose saiu; a tela de campeão/eliminado sai
+  // por um botão ligado direto a goBackToCareer (fecha E navega).
+  const finalResultBlock = (tournamentModalSource.match(/\(phase === 'champion' \|\| phase === 'eliminated'\) && lastResult \? \([\s\S]*?\) : phase ===/) || [''])[0];
+  gate('19. Eliminação/título usa goBackToCareer (fecha e navega), não um onClose que só fecha', /onClick=\{goBackToCareer\}/.test(finalResultBlock) && /const goBackToCareer = useCallback\(\(\) => \{ onClose\?\.\(\); navigate\('\/'\); \}/.test(tournamentModalSource));
 
   // ── 20. limite diário de practice match preservado ──────────────────
   const { canPlayMatchToday, DAILY_MATCH_LIMIT } = await server.ssrLoadModule('/src/lib/padel.js');

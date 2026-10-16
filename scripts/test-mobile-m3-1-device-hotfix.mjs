@@ -12,6 +12,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import process from 'node:process';
 import { createMatch, playPoint } from '../src/engine/match/index.js';
+import { APP_ROUTES } from '../src/navigation/routes.js';
 import { MatchCheckpointRepository, isValidCheckpointShape, createCheckpointMatchId } from '../src/careers/MatchCheckpointRepository.js';
 
 const root = process.cwd();
@@ -130,11 +131,16 @@ check(
 
 // Extrai a tabela REAL de rotas do App.jsx — a checagem que faltava em M3.
 const routeMatches = [...appSource.matchAll(/<Route path="([^"]+)"/g)].map((m) => m[1]);
-const validRoutes = new Set(routeMatches);
+// CLOUD-2: App.jsx também registra rotas via constante (<Route path={APP_ROUTES.X}>).
+const constantRoutes = [...appSource.matchAll(/<Route path=\{APP_ROUTES\.([A-Z_]+)\}/g)].map((m) => APP_ROUTES[m[1]]).filter(Boolean);
+const validRoutes = new Set([...routeMatches, ...constantRoutes]);
 check('não foi possível extrair nenhuma rota de App.jsx (regex desatualizado?)', validRoutes.size > 10);
 check('/matches deixou de ser uma rota real', validRoutes.has('/matches'));
 check('/tournaments deixou de ser uma rota real', validRoutes.has('/tournaments'));
-check('/game/matches passou a existir como rota real (não deveria)', !validRoutes.has('/game/matches'));
+// CLOUD-2: /game/matches voltou a existir, mas como REDIRECIONAMENTO legado
+// (Matches.jsx → aba Partida do Centro de Treinamento) — a causa do 404
+// físico da M3.1 não volta: a rota sempre resolve para uma tela real.
+check('/game/matches existe, mas não como redirecionamento legado para o Centro de Treinamento (risco de 404/tela errada)', !validRoutes.has('/game/matches') || (/<Route path="\/game\/matches" element=\{<Matches \/>\} \/>/.test(appSource) && /<Navigate replace to=\{buildTrainingCenterRoute\(TRAINING_CENTER_VIEWS\.MATCH/.test(matchesPage)));
 check('/game/tournaments passou a existir como rota real (não deveria)', !validRoutes.has('/game/tournaments'));
 
 // A string literal "game/matches" (a causa raiz do 404 físico) não pode
@@ -150,12 +156,16 @@ for (const [label, source] of [
 }
 
 // 18. recovery de treino resolve para uma rota real do router.
-const bannerDestinations = [...recoveryBanner.matchAll(/destination = isTournament \? '([^']+)' : '([^']+)'/g)][0];
+// CLOUD-2: os destinos passaram a vir de APP_ROUTES (constantes), não de
+// strings literais; são resolvidos pelo próprio módulo de rotas.
+const bannerDestinations = recoveryBanner.match(/destination = isTournament \? APP_ROUTES\.([A-Z_]+) : APP_ROUTES\.([A-Z_]+)/);
 check('não foi possível extrair os destinos do ActiveMatchRecoveryBanner (formato mudou?)', Boolean(bannerDestinations));
 if (bannerDestinations) {
-  const [, tournamentDestination, practiceDestination] = bannerDestinations;
-  check(`destino de recovery de treino ("${practiceDestination}") não é uma rota real do router`, validRoutes.has(practiceDestination));
-  check(`destino de recovery de torneio ("${tournamentDestination}") não é uma rota real do router`, validRoutes.has(tournamentDestination));
+  const tournamentDestination = APP_ROUTES[bannerDestinations[1]];
+  const practiceDestination = APP_ROUTES[bannerDestinations[2]];
+  const base = (route) => String(route || '').split('?')[0];
+  check(`destino de recovery de treino ("${practiceDestination}") não é uma rota real do router`, validRoutes.has(base(practiceDestination)));
+  check(`destino de recovery de torneio ("${tournamentDestination}") não é uma rota real do router`, validRoutes.has(base(tournamentDestination)));
 }
 
 // 19. recovery de torneio resolve para o torneio/rodada corretos — a rota de

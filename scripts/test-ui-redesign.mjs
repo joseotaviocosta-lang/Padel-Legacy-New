@@ -192,10 +192,12 @@ check('CareerHub.jsx (Home) voltou a importar de padel/Shared.jsx', !careerHubSo
 //     principais seguem no design-system oficial.
 check('scripts/test-core-gameplay-ui.mjs ausente (gate dedicado do core gameplay da Fase 5)', exists('scripts/test-core-gameplay-ui.mjs'));
 for (const [label, file] of [
-  ['Training.jsx', 'src/pages/Training.jsx'],
+  // CLOUD-2: Training.jsx e Matches.jsx viraram redirecionamentos para o
+  // Centro de Treinamento; o conteúdo vive em TrainingView/PracticeMatchView.
+  ['TrainingView.jsx (Treinos)', 'src/components/training-center/TrainingView.jsx'],
   ['CalendarPage.jsx', 'src/pages/CalendarPage.jsx'],
   ['Ranking.jsx', 'src/pages/Ranking.jsx'],
-  ['Matches.jsx', 'src/pages/Matches.jsx'],
+  ['PracticeMatchView.jsx (Partidas)', 'src/components/training-center/PracticeMatchView.jsx'],
 ]) {
   const source = read(file);
   check(`${label} voltou a importar de padel/ui.jsx`, !source.includes("from '@/components/padel/ui'"));

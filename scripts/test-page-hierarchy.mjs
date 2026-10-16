@@ -119,22 +119,29 @@ gate(`Nenhuma página tem mais PageHeaders do que o permitido (${offenders.map(o
 
 // Confere pontualmente as 5 páginas citadas no hotfix (Imprensa, Atletas,
 // Calendário, Treinos, Torneios) para deixar explícito no relatório.
+// CLOUD-2: Training.jsx virou só o redirecionamento de /game/training (sem
+// identidade própria). Na 5.29, TrainingCenter (painel "Hoje") e Torneios
+// (cartão de competição) trocaram o PageHeader por um <h1> próprio; a
+// garantia é a mesma — exatamente UMA identidade (PageHeader ou h1) por página.
 const namedPages = {
   'Press.jsx': 1,
   'Athletes.jsx': 2,
   'CalendarPage.jsx': 1,
-  'Training.jsx': 1,
   'TrainingCenter.jsx': 1,
   'Tournaments.jsx': 1,
 };
+const OWN_H1_IDENTITY = new Set(['TrainingCenter.jsx', 'Tournaments.jsx']);
 for (const [file, expected] of Object.entries(namedPages)) {
   const content = readFileSync(path.join(pagesDir, file), 'utf8');
   const importMatch = content.match(/import\s*\{[^}]*\bPageHeader(?:\s+as\s+(\w+))?[^}]*\}\s*from\s*['"]@\/components\/(?:design-system|padel\/ui)['"]/);
   const localName = importMatch?.[1] || 'PageHeader';
   const usageRegex = new RegExp(`<${localName}[\\s/>]`, 'g');
-  const count = (content.match(usageRegex) || []).length;
-  gate(`${file} tem exatamente ${expected} PageHeader (identidade única da página)`, count === expected);
+  const headerCount = importMatch ? (content.match(usageRegex) || []).length : 0;
+  const ownH1Count = OWN_H1_IDENTITY.has(file) ? (content.match(/<h1[\s>]/g) || []).length : 0;
+  const label = OWN_H1_IDENTITY.has(file) ? 'identidade (PageHeader ou <h1> próprio)' : 'PageHeader';
+  gate(`${file} tem exatamente ${expected} ${label} (identidade única da página)`, headerCount + ownH1Count === expected);
 }
+gate('Training.jsx é só o redirecionamento da rota legada (sem identidade própria a auditar)', /<Navigate replace to=/.test(readFileSync(path.join(pagesDir, 'Training.jsx'), 'utf8')));
 
 // ---------------------------------------------------------------------------
 // 4) Páginas de detalhe preservam breadcrumb legítimo (pai > filho).

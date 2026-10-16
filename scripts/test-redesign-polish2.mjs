@@ -36,7 +36,11 @@ check('CareerHub não usa componentes oficiais do design-system', careerHub.incl
 check('CareerHub introduziu setInterval novo (polling)', !careerHub.includes('setInterval('));
 
 // ── 3. getNextStep preservada ───────────────────────────────────────────────
-check('getNextStep (motor de próximo passo) removida/renomeada', careerHub.includes('function getNextStep(profile, upcomingTournaments)'));
+// CLOUD-2: getNextStep saiu do CareerHub (antes do build 9001); o "motor de
+// próximo passo" da Home são as funções puras de src/lib/homeDashboard.js
+// (5.30), cobertas em detalhe por test-home-next-commitment-v530 e
+// test-home-priorities-v530. Aqui só garante que a Home continua usando-as.
+check('motor de próximo passo da Home (homeDashboard: buildHomeCommitment/buildHomePriorities) removido ou desligado', /buildHomeCommitment\(\{/.test(careerHub) && /buildHomePriorities\(\{/.test(careerHub) && read('src/lib/homeDashboard.js').includes('export function buildHomeCommitment'));
 
 // ── 4. Deep links relevantes preservados ────────────────────────────────────
 check('CalendarPage perdeu o deep link ?event', calendarPage.includes("searchParams.get('event')"));

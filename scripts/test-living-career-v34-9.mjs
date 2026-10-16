@@ -14,7 +14,10 @@ const component = fs.readFileSync('src/components/career/SeasonCareerPlan.jsx', 
 const checks = [
   hub.includes('SeasonCareerPlan'),
   hub.includes('buildSeasonCareerPlan'),
-  logic.includes('Entrar no Top 500'),
+  // CLOUD-2: Tutorial 4.0 (Parte 14) — a meta de ranking deixou de ser uma
+  // escada própria ('Entrar no Top 500'…) e lê a próxima conquista reach_rank
+  // do catálogo (mesma fonte da aba Conquistas).
+  logic.includes("findNextLockedAchievement(profile, context, { category: 'carreira', triggerType: 'reach_rank' })"),
   logic.includes('Construir uma temporada de evolução'),
   logic.includes('Fortalecer a identidade da dupla'),
   logic.includes('Montar uma equipe de alto desempenho'),

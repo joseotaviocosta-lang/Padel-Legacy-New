@@ -68,7 +68,11 @@ try {
   // MESMA regra de prioridade (onboardingNextAction antes de
   // fallbackHeroStep) continua, só não é mais um one-liner.
   gate('heroStep prioriza onboardingNextAction, com fallbackHeroStep preservado', hubSource.includes('return onboardingNextAction || fallbackHeroStep;'));
-  gate('getNextStep (motor de fallback) continua definido, não foi removido', /function getNextStep\(profile, upcomingTournaments\)/.test(hubSource));
+  // CLOUD-2: getNextStep saiu do CareerHub antes do build 9001; o motor de
+  // fallback do hero é o `fallbackHeroStep` (useMemo, autoridade única
+  // selectActiveTournamentRun — Playthrough 5.9). A prioridade é a mesma:
+  // onboarding > fallback.
+  gate('motor de fallback do hero (fallbackHeroStep) continua definido, não foi removido', /const fallbackHeroStep = useMemo\(/.test(hubSource));
   gate('basePath() existe para comparar rotas ignorando query string', /function basePath\(route\)/.test(hubSource));
   gate('buildPriorityActions usa basePath() no dedup contra o hero (decisões)', hubSource.includes('basePath(decision.route) === basePath(heroRoute)'));
   gate('buildPriorityActions usa basePath() no dedup contra o hero (prioridades diárias)', hubSource.includes('basePath(priority.route) === basePath(heroRoute)'));

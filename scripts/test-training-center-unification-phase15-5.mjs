@@ -104,10 +104,11 @@ try {
   gate('Suspense envolve conteúdo ativo', source.hub.includes('<Suspense') && source.hub.includes('{activeContent}'));
   gate('Perfil é carregado uma vez no host', (source.hub.match(/ensureMyProfile/g) || []).length === 2);
   gate('Views recebem perfil compartilhado', /const shared = \{ profile,[^}]*onProfileUpdate/.test(source.hub));
-  gate('HUD local mostra treinos', source.hub.includes("label: 'treinos'"));
-  gate('HUD local mostra partida', source.hub.includes("label: 'partida'"));
-  gate('HUD local mostra energia', source.hub.includes("label: 'energia'"));
-  gate('HUD local mostra fadiga', source.hub.includes("label: 'fadiga'"));
+  // CLOUD-2: na 5.29 o HUD virou o painel "Hoje" (TodayMeter com barra).
+  gate('HUD local mostra treinos', source.hub.includes('TodayMeter icon={Dumbbell} label="Treinos"'));
+  gate('HUD local mostra partida', source.hub.includes('TodayMeter icon={Swords} label="Partida"'));
+  gate('HUD local mostra energia', source.hub.includes('TodayMeter icon={Zap} label="Energia"'));
+  gate('HUD local mostra fadiga', source.hub.includes('TodayMeter icon={Activity} label="Fadiga"'));
   gate('HUD local não duplica moedas', !/label: ['"](moedas|saldo)/i.test(source.hub));
   gate('Atalho de partida existe na view Treino', source.hub.includes('data-practice-match-shortcut'));
   gate('Atalho troca a view internamente', source.hub.includes('selectView(TRAINING_CENTER_VIEWS.MATCH)'));
@@ -168,7 +169,10 @@ try {
   gate('Home aponta treino para o hub', trainingNext.route === APP_ROUTES.TRAINING);
   gate('NextEventCard não voltou', !/NextEventCard/.test(source.home));
   gate('ActiveTournamentBanner não voltou', !/ActiveTournamentBanner/.test(source.home));
-  gate('Navegação possui uma única entrada Centro de Treinamento', (source.nav.match(/label: 'Centro de treinamento'/g) || []).length === 1);
+  // CLOUD-2: com a navegação em hubs, o Centro de Treinamento é a aba
+  // "Treinos" do hub "Treinos e equipamentos" (APP_ROUTES.CAREER_TRAINING) —
+  // continua havendo UMA única entrada, sem duplicata legada.
+  gate('Navegação possui uma única entrada para o Centro de Treinamento', (source.nav.match(/to: APP_ROUTES\.CAREER_TRAINING/g) || []).length === 1 && !/label: 'Centro de treinamento'/.test(source.nav) && /key: 'training', label: 'Treinos', icon: Building2, component: TrainingCenter/.test(read('src/pages/hubs/TrainingEquipmentHub.jsx')));
   gate('Navegação não mantém entrada Treinos', !/label: 'Treinos'/.test(source.nav));
   gate('Navegação não mantém entrada Partidas', !/label: 'Partidas'/.test(source.nav));
   gate('Sidebar deriva da configuração consolidada', source.layout.includes('NAV_GROUPS'));

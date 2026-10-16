@@ -130,12 +130,17 @@ try {
   gate('19. D-3 é um marco válido (sorteio)', notifLib.getTournamentReminderMilestone(3) === 3);
   gate('20. D-3 cria exatamente uma notificação (um único marco na lista)', notifLib.TOURNAMENT_REMINDER_MILESTONES.length === 1 && notifLib.TOURNAMENT_REMINDER_MILESTONES[0] === 3);
   const commsSrc = read('src/lib/careerCommunications.js');
-  gate('21. Notificação contém o nome do torneio (título usa nextTournament.name)', commsSrc.includes('${nextTournament.name'));
+  // CLOUD-2: a notificação "Sorteio definido" passou a ser montada em
+  // ensureTournamentDrawNotification (variável `tournament`), e o CTA virou
+  // TOURNAMENT_DETAILS com openBracket:true (Parte G: TOURNAMENT_RUN exige
+  // uma sessão ativa que ainda não existe em D-3). Mesmas garantias.
+  const drawNotifSrc = commsSrc.slice(commsSrc.indexOf('export async function ensureTournamentDrawNotification'));
+  gate('21. Notificação contém o nome do torneio (título usa o nome do torneio real)', drawNotifSrc.includes('Sorteio definido — ${tournament.name'));
   // Complemento (sorteio em D-3): a notificação agora abre a campanha real
   // (TOURNAMENT_RUN/mode=run), não mais "detalhes" genéricos — o sorteio já
   // existe de verdade quando ela é criada (gate do 'drawn' logo acima).
-  gate('22. CTA aponta para a campanha real (chave já sorteada, não um texto genérico fixo)', commsSrc.includes("type: 'TOURNAMENT_RUN'") && commsSrc.includes('params: { tournament: nextTournament.id'));
-  gate('23. CTA abre a chave/detalhes do torneio certo (destination usa o id real, nunca uma rota genérica)', commsSrc.includes('related_entity_id: nextTournament.id'));
+  gate('22. CTA aponta para a chave real (já sorteada), não um texto genérico fixo', drawNotifSrc.includes("type: 'TOURNAMENT_DETAILS'") && drawNotifSrc.includes('params: { tournament: tournament.id, mode: \'details\', openBracket: true }'));
+  gate('23. CTA abre a chave/detalhes do torneio certo (destination usa o id real, nunca uma rota genérica)', drawNotifSrc.includes('related_entity_id: tournament.id'));
   gate('24. Reload não duplica: createOnce checa existingKeys antes de gravar', commsSrc.includes('if (!contextKey || existingKeys.has(contextKey)) return null;'));
   gate('25. AdvanceDay não duplica: mesma função createOnce/contextKey é a única via de criação da notificação de torneio', (commsSrc.match(/tournamentReminderContextKey\(/g) || []).length >= 1);
   gate('26. D-1 não cria "torneio se aproxima" (não é mais um marco válido)', notifLib.getTournamentReminderMilestone(1) === null);
@@ -341,7 +346,12 @@ try {
   // 13/15. Exatamente uma notificação "Sorteio definido"; reload não duplica.
   const tournamentForNotif = await localGame.entities.Tournament.get(drawTournament.id);
   const notifCreated = await ensureContextualCareerCommunications({ ...drawProfile, career_date: '2026-02-08' }, { nextTournament: tournamentForNotif });
-  gate('D3-13. Exatamente uma notificação "Sorteio definido" é criada quando o sorteio existe', notifCreated.length === 1 && notifCreated[0].title.includes('Sorteio definido'));
+  // CLOUD-2: desde o Playthrough 4.6D a notificação nasce na própria pipeline
+  // do avanço de dia (processCalendarEvents → ensureTournamentDrawNotification)
+  // — já existe quando a comunicação contextual roda, que portanto não cria
+  // uma segunda. A garantia é a mesma: exatamente UMA no save.
+  const drawNotifs = (await localGame.entities.CareerMessage.filter({ profile_id: drawProfile.id })).filter((m) => String(m.title || '').includes('Sorteio definido') && m.related_entity_id === drawTournament.id);
+  gate('D3-13. Exatamente uma notificação "Sorteio definido" existe quando o sorteio existe (criada pela pipeline do dia)', drawNotifs.length === 1 && !notifCreated.some((m) => String(m.title || '').includes('Sorteio definido')));
   const notifReplay = await ensureContextualCareerCommunications({ ...drawProfile, career_date: '2026-02-08' }, { nextTournament: tournamentForNotif });
   gate('D3-15. Reload (nova chamada) não duplica a notificação', notifReplay.length === 0);
 
@@ -430,7 +440,10 @@ try {
   gate('D3-mod-4. Mount effect só LÊ calendarEvent.metadata?.tournament_run (nunca cria) antes de decidir a fase', modalSrcForDraw.includes('const tournamentRun = calendarEvent.metadata?.tournament_run || null;'));
   const calendarSrcForDraw = read('src/lib/calendarSystem.js');
   gate('D3-mod-5. processCalendarEvents (pipeline de avanço de dia) é quem chama ensureTournamentDraw', calendarSrcForDraw.includes('ensureTournamentDraw({'));
-  gate('D3-mod-6. Criação do sorteio não está vinculada a nenhum efeito de render (import só em calendarSystem.js/tournamentDraw.js, não em componentes React)', !read('src/pages/Tournaments.jsx').includes('ensureTournamentDraw') && !read('src/components/tournaments/TournamentDetailsModal.jsx').includes('ensureTournamentDraw'));
+  // CLOUD-2: comentários removidos antes da busca — Tournaments.jsx só CITA
+  // ensureTournamentDraw num comentário explicativo (falso positivo).
+  const codeOnly = (p) => read(p).replace(/\/\*[\s\S]*?\*\//g, '').replace(/(^|[^:])\/\/.*$/gm, '$1');
+  gate('D3-mod-6. Criação do sorteio não está vinculada a nenhum efeito de render (import só em calendarSystem.js/tournamentDraw.js, não em componentes React)', !codeOnly('src/pages/Tournaments.jsx').includes('ensureTournamentDraw') && !codeOnly('src/components/tournaments/TournamentDetailsModal.jsx').includes('ensureTournamentDraw'));
 
   console.log(`\n${gates} gates executados, todos PASS — Fase 15.5.4 Critical Mobile QA.`);
 } finally {

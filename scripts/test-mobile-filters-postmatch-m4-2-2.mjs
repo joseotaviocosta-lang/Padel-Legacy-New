@@ -38,13 +38,18 @@ const tabsSource = read('src/components/design-system/Tabs.jsx');
 gate('1. Loja usa o FilterPills do design-system para a faixa de categorias (nunca padel/ui.jsx — Shop.jsx é proibido de importar de lá)', /FilterPills/.test(shopSource) && /<FilterPills filters=\{CATEGORIES\}/.test(shopSource) && !shopSource.includes("from '@/components/padel/ui'"));
 
 // 2) Itens têm shrink-0
-gate('2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)', /shrink-0 items-center gap-1\.5 rounded-xl px-4 py-2/.test(filterPillsSource));
+// CLOUD-2: as classes do item mudaram na 5.28 (px-3 py-1.5 no celular, sm:px-4 sm:py-2);
+// a raiz do bug continua coberta: cada pílula é shrink-0 + whitespace-nowrap.
+gate('2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)', /inline-flex shrink-0 items-center/.test(filterPillsSource) && /whitespace-nowrap/.test(filterPillsSource));
 
 // 3) Labels usam whitespace-nowrap
 gate('3. FilterPills usa whitespace-nowrap (nunca corta/quebra o texto do label)', /whitespace-nowrap/.test(filterPillsSource));
 
 // 4) Existe overflow-x
-gate('4. FilterPills usa overflow-x-auto com flex-nowrap (rolagem horizontal real, não wrap)', /flex flex-nowrap gap-2 overflow-x-auto/.test(filterPillsSource));
+// CLOUD-2: decisão da 5.20-B — no celular o trilho rolável escondia até 496px de
+// filtros (360px) sem anunciar que rolava; as pílulas passaram a QUEBRAR LINHA no
+// mobile (todas visíveis) e só a partir de md voltam a ser uma faixa rolável.
+gate('4. FilterPills: mobile quebra linha (todas as opções visíveis); md+ faixa única com overflow-x-auto', /flex flex-wrap gap-2/.test(filterPillsSource) && /md:flex-nowrap md:overflow-x-auto/.test(filterPillsSource));
 
 // 5) Último item é alcançável (scroll touch nativo habilitado, sem overflow-hidden capando o container)
 gate('5. FilterPills habilita scroll touch nativo (WebkitOverflowScrolling), nada de overflow-hidden escondendo os últimos itens', /WebkitOverflowScrolling: 'touch'/.test(filterPillsSource) && !/overflow-hidden/.test(filterPillsSource));
@@ -53,7 +58,8 @@ gate('5. FilterPills habilita scroll touch nativo (WebkitOverflowScrolling), nad
 gate('6. Economia usa o mesmo FilterPills do design-system que a Loja (não uma faixa própria reimplementada)', /FilterPills/.test(economySource) && /<FilterPills filters=\{TABS\}/.test(economySource) && economySource.includes("from '@/components/design-system'"));
 
 // 7) Touch target mínimo preservado (Parte E: 40-44px normal — py-2 = 8px×2 + ~16px de linha de texto ≈ 40-42px total)
-gate('7. FilterPills usa py-2 (padding vertical compatível com o alvo de toque de 40-44px da Parte E, não um botão gigante)', /rounded-xl px-4 py-2 text-xs font-bold/.test(filterPillsSource));
+// CLOUD-2: a 5.28 compactou o celular (py-1.5) e manteve py-2 a partir de sm.
+gate('7. FilterPills usa padding vertical compacto (py-1.5 no celular, sm:py-2), não um botão gigante', /rounded-xl px-3 py-1\.5 text-xs font-bold/.test(filterPillsSource) && /sm:py-2/.test(filterPillsSource));
 
 // 8) Desktop não força scroll horizontal desnecessário — Tabs.jsx segmented volta a preencher a largura a partir de sm:
 gate('8. Tabs.jsx (variant=segmented) preenche a largura igualmente a partir de sm: (desktop/tablet com espaço), mas nunca força isso no mobile', /variant === 'segmented' && 'sm:flex-1'/.test(tabsSource) && !/variant === 'segmented' && 'flex-1'/.test(tabsSource));

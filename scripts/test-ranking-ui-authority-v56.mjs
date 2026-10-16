@@ -16,9 +16,14 @@ const appLayout = await readFile(new URL('../src/components/AppLayout.jsx', impo
 assert.match(ranking, /buildWorldRankingSnapshot/);
 assert.match(ranking, /getTeamRankings\(600\)/);
 assert.match(season, /formatIndividualRankLabel\(worldRank\)/);
-assert.match(hud, /formatIndividualRankLabel\(ranking\)/);
+// CLOUD-2: desde a Playthrough 5.24 (Parte B) o ranking individual saiu do
+// CareerHud e vive em HeaderRankShortcuts — a autoridade do rótulo é a mesma.
+const headerRank = await readFile(new URL('../src/components/career/HeaderRankShortcuts.jsx', import.meta.url), 'utf8');
+assert.match(headerRank, /formatIndividualRankLabel\(ranking\)/);
+assert.doesNotMatch(hud, /displayRank|#\$\{/, 'CareerHud não deve voltar a montar um rótulo de ranking próprio');
 assert.match(appLayout, /getWorldRank\(nextProfile\)/);
-assert.match(partner, /getTeamRank\(profile, partnerBot\)/);
+// CLOUD-2: no redesign 5.31 a variável virou partnerMember; a autoridade é a mesma.
+assert.match(partner, /getTeamRank\(profile, partner(Bot|Member)\)/);
 assert.match(partner, /getWorldRank\(profile\)/);
 assert.match(tournament, /getTeamRank\(loadedProfile, loadedPartner\)/);
 assert.match(tournament, /getCanonicalTeamWorldRank\(ids\)/);

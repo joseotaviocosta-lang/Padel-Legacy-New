@@ -44,7 +44,9 @@ try {
   gate('PageHeader continua exportado (não duplicado)', typeof ds.PageHeader === 'function');
 
   const pageHeaderSource = read('src/components/design-system/PageHeader.jsx');
-  gate('PageHeader ganhou a prop `dense` (default false — não quebra uso existente)', /dense\s*=\s*false/.test(pageHeaderSource));
+  // CLOUD-2: o padrão de `dense` passou a ser true (5.28: mobile compacto
+  // por padrão em toda página); a garantia de "só CSS no mobile" continua.
+  gate('PageHeader tem a prop `dense` (padrão atual: true, mobile compacto por padrão)', /dense\s*=\s*(true|false)/.test(pageHeaderSource));
   gate('PageHeader `dense` só afeta classes CSS sob max-width:767px (sem duplicar DOM)', /dense &&/.test(pageHeaderSource) || /dense \?/.test(pageHeaderSource));
 
   const indexCss = read('src/index.css');
@@ -57,18 +59,21 @@ try {
   // M4.3 — Treinos: gate obrigatório. Atividades antes de moral/recuperação.
   // ═══════════════════════════════════════════════════════════════════════
   console.log('\n--- M4.3: Treinos (gate obrigatório) ---');
-  const trainingSource = read('src/pages/Training.jsx');
+  // CLOUD-2: Training.jsx virou só o redirecionamento de /game/training; o
+  // conteúdo de Treinos vive em TrainingView (Centro de Treinamento, Fase
+  // 15.5) e o estado curto no painel "Hoje" do hub (5.29), antes das abas.
+  const trainingSource = read('src/components/training-center/TrainingView.jsx');
+  const trainingHub = read('src/pages/TrainingCenter.jsx');
   const activitiesIdx = trainingSource.indexOf('Atividades de treino');
   const conditionIdx = trainingSource.indexOf('Estado do atleta');
   const recoveryIdx = trainingSource.indexOf('Recuperação e suporte');
-  gate('"Atividades de treino" existe em Training.jsx', activitiesIdx !== -1);
-  gate('"Estado do atleta" (moral/confiança/forma/entrosamento) existe em Training.jsx', conditionIdx !== -1);
-  gate('"Recuperação e suporte" existe em Training.jsx', recoveryIdx !== -1);
+  gate('"Atividades de treino" existe em TrainingView.jsx', activitiesIdx !== -1);
+  gate('"Estado do atleta" (moral/confiança/forma/entrosamento) existe em TrainingView.jsx', conditionIdx !== -1);
+  gate('"Recuperação e suporte" existe em TrainingView.jsx', recoveryIdx !== -1);
   gate('Atividades de treino aparecem ANTES de "Estado do atleta" na ordem do código (proxy para primeiro viewport)', activitiesIdx < conditionIdx);
   gate('Atividades de treino aparecem ANTES de "Recuperação e suporte" na ordem do código', activitiesIdx < recoveryIdx);
   gate('Estado do atleta e Recuperação usam CollapsibleSection (recolhidos por padrão, não cards grandes sempre expandidos)', /CollapsibleSection icon=\{Heart\} title="Estado do atleta"/.test(trainingSource) && /CollapsibleSection icon=\{FastForward\} title="Recuperação e suporte"/.test(trainingSource));
-  gate('4 StatCards continuam compactos (agora integrados ao HUD do PageHeader)', /hudItems=\{\[/.test(trainingSource) && !/PremiumStatCard|StatCard as PremiumStatCard/.test(trainingSource));
-  gate('PageHeader de Treinos usa dense', /<PageHeader\s+dense/.test(trainingSource));
+  gate('Estado curto de Treinos compacto: painel "Hoje" do hub antes das abas (5.29), sem StatCards grandes', trainingHub.indexOf('data-training-today') > -1 && trainingHub.indexOf('data-training-today') < trainingHub.indexOf('<Tabs') && !/PremiumStatCard|StatCard as PremiumStatCard/.test(trainingSource));
 
   const activityCardSource = read('src/components/training/TrainingActivityCard.jsx');
   gate('TrainingActivityCard usa CompactActionCard (casca compartilhada, não uma implementação própria de expandir/recolher)', activityCardSource.includes('CompactActionCard'));
@@ -86,13 +91,15 @@ try {
   // M4.4 — Partidas: gate obrigatório. "Jogar agora" + stats compactos.
   // ═══════════════════════════════════════════════════════════════════════
   console.log('\n--- M4.4: Partidas (gate obrigatório) ---');
-  const matchesSource = read('src/pages/Matches.jsx');
-  gate('"Jogar agora" continua no header (ação principal já no primeiro viewport)', matchesSource.includes('Jogar agora'));
-  gate('4 StatCards continuam compactos (agora integrados ao HUD do PageHeader)', /hudItems=\{\[/.test(matchesSource) && !matchesSource.includes('StatCard,'));
-  gate('PageHeader de Partidas usa dense', /<PageHeader\s+dense/.test(matchesSource));
-  const headerIdx = matchesSource.indexOf('Jogar agora');
+  // CLOUD-2: Matches.jsx virou o redirecionamento de /game/matches para a
+  // aba Partida do Centro de Treinamento (PracticeMatchView). A ação
+  // principal agora se chama "Jogar partida treino".
+  const matchesSource = read('src/components/training-center/PracticeMatchView.jsx');
+  gate('Ação principal "Jogar partida treino" presente (primeiro bloco da aba)', matchesSource.includes('Jogar partida treino'));
+  gate('Resumo de Partidas compacto (sem StatCards grandes)', !matchesSource.includes('StatCard,'));
+  const headerIdx = matchesSource.indexOf('Jogar partida treino');
   const historyIdx = Math.max(matchesSource.indexOf('Histórico recente'), matchesSource.indexOf('Recentes'));
-  gate('"Jogar agora" (header) aparece antes do histórico recente na ordem do código', headerIdx !== -1 && historyIdx !== -1 && headerIdx < historyIdx);
+  gate('"Jogar partida treino" aparece antes do histórico recente na ordem do código', headerIdx !== -1 && historyIdx !== -1 && headerIdx < historyIdx);
 
   // ═══════════════════════════════════════════════════════════════════════
   // Regressão M3.7.2 — nenhuma página perdeu o listener de atualização
@@ -101,8 +108,8 @@ try {
   // ═══════════════════════════════════════════════════════════════════════
   console.log('\n--- Regressão M3.7.2: listeners de atualização reativa preservados ---');
   const reactiveFiles = {
-    'src/pages/Matches.jsx': matchesSource,
-    'src/pages/Training.jsx': trainingSource,
+    // CLOUD-2: Partidas e Treinos reagem pelo hub (TrainingCenter.jsx).
+    'src/pages/TrainingCenter.jsx': trainingHub,
     'src/pages/Missions.jsx': read('src/pages/Missions.jsx'),
     'src/pages/CalendarPage.jsx': read('src/pages/CalendarPage.jsx'),
     'src/pages/CareerHub.jsx': read('src/pages/CareerHub.jsx'),
@@ -130,7 +137,10 @@ try {
   // logo abaixo (entrosamento/confiança; técnico/confiança/afinidade). O
   // resumo compacto do topo passou a ser o próprio cartão (hero) — a
   // intenção do gate (estado resumido no primeiro bloco) continua cobrada.
+  // CLOUD-2: Torneios trocou PageHeader+HUD pelo CompetitionHeroCard na 5.29
+  // (mesma adaptação de test-mobile-game-feel-m4-1).
   const HERO_SUMMARY = {
+    'src/pages/Tournaments.jsx': () => read('src/pages/Tournaments.jsx').includes('<CompetitionHeroCard') && read('src/pages/Tournaments.jsx').includes('data-competition-hero'),
     'src/pages/PartnerHub.jsx': () => read('src/components/partner/PartnerOverview.jsx').includes('data-partner-hero="active"'),
     'src/pages/Coaches.jsx': () => read('src/pages/Coaches.jsx').includes('data-coach-hero="active"'),
   };
