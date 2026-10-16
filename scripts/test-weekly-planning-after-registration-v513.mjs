@@ -126,24 +126,26 @@ try {
     console.log(`   [registro] ${c.name} · estreia ${c.startDate} · estado ${c.registrationState}`);
   });
 
-  await check('Parte K: a seção troca o rótulo para "Compromisso da Semana"', () => {
+  // Fase 5.30 — a Home não promove/rebaixa mais a seção: o compromisso tem
+  // lugar FIXO ("O que vem agora", 2º bloco). As intenções das Partes K/M
+  // continuam cobradas na nova forma.
+  await check('Parte K: depois da inscrição o bloco vira o COMPROMISSO (rótulo próprio)', () => {
+    const lib = readFileSync(new URL('../src/lib/homeDashboard.js', import.meta.url), 'utf8');
     const source = readFileSync(new URL('../src/pages/CareerHub.jsx', import.meta.url), 'utf8');
-    assert.match(source, /Compromisso da Semana/, 'CareerHub não tem o rótulo de compromisso');
-    assert.match(source, /commitment \? committedTitle : 'Planejamento da Semana'/,
-      'o título não alterna entre compromisso e decisão');
+    assert.match(lib, /if \(weeklyCommitment\) \{[\s\S]{0,900}eyebrow: 'Seu próximo torneio'/, 'buildHomeCommitment não prioriza o compromisso');
+    assert.match(source, /buildHomeCommitment\(\{ weeklyCommitment,/, 'a Home não passa o compromisso para o bloco');
   });
 
-  await check('Parte M: contrato de layout — promoção considera decisão OU compromisso', () => {
+  await check('Parte M: contrato de layout — compromisso fica no topo, logo após o status', () => {
     const source = readFileSync(new URL('../src/pages/CareerHub.jsx', import.meta.url), 'utf8');
-    assert.match(source, /showPlanningAtTop\s*=\s*hasActionableTournamentDecision \|\| Boolean\(weeklyCommitment\)/,
-      'a condição de promoção não cobre o compromisso');
-    assert.match(source, /\{showPlanningAtTop && \(/, 'o bloco promovido não usa a nova condição');
-    assert.match(source, /\{!showPlanningAtTop && \(/, 'o bloco de fallback não usa a nova condição');
+    const status = source.indexOf('<HomeStatusCard');
+    const commitment = source.indexOf('<HomeNextCommitment');
+    assert.ok(status > 0 && commitment > status && source.indexOf('<HomePriorities') > commitment, 'o compromisso não é o 2º bloco');
   });
 
   await check('Parte M: a seção tem heading e CTA identificáveis', () => {
     const source = readFileSync(new URL('../src/pages/CareerHub.jsx', import.meta.url), 'utf8');
-    assert.match(source, /aria-labelledby="weekly-tournament-planning-title"/, 'sem heading acessível');
+    assert.match(source, /data-home-next-commitment aria-label="O que vem agora"/, 'sem rótulo acessível');
     assert.match(source, /Ver calendário/, 'sem CTA para o calendário');
   });
 

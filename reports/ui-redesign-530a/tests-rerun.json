@@ -1,0 +1,286 @@
+{
+  "createdAt": "2026-10-16T12:22:21.828Z",
+  "baseline": "62f549e (tests.json da 5.30)",
+  "total": 46,
+  "pass": 27,
+  "regressions": [],
+  "preExisting": 19,
+  "results": [
+    {
+      "test": "test-annual-career-report-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-career-long-term-goals",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-career-null-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-careerhub-stale-tournament-action-v59",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-careerhub-tournament-planning-ui-v58",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-headless-registration-authority-v527j",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-home-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-living-career-v34-4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-living-career-v34-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-living-career-v34-6",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-living-career-v34-7",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-living-career-v34-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-living-career-v34-9",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-living-world-v23",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-game-flow-m4-3",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-mobile-m3-live-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-match-day-refresh-m3-7-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-mobile-visual-polish-m4-1-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-modal-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-monthly-career-report-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-notification-system-audit-rc",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-onboarding-priority",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-onboarding-single-source-of-truth",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-phase15-4-mobile-flow-polish",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-premium-home-v33-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-ranking-consistency",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-redesign-polish2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-redesign-polish21",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-tournament-resume-recovery",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tournament-round-availability",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-tutorial-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tutorial-chronology",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tutorial-first-official-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-tutorial-visit-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing"
+    },
+    {
+      "test": "test-ux-home-v36-3-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-weekly-planning-after-registration-v513",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-weekly-planning-mobile-contract-v58",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    },
+    {
+      "test": "test-weekly-planning-visible-decision-v59",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass"
+    }
+  ]
+}

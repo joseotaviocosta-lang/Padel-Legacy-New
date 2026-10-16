@@ -8,12 +8,19 @@ const source = await readFile(new URL('../src/pages/CareerHub.jsx', import.meta.
 // sumia do topo justamente depois da inscrição). As duas variantes são
 // verificadas, então o guard continua pegando a remoção do heading e ainda
 // cobre o estado novo.
-assert.ok(source.includes("'Planejamento da Semana'") || source.includes('title="Planejamento da Semana"'),
-  'a seção precisa manter o heading de planejamento');
-assert.ok(source.includes('Compromisso da Semana'),
-  'a seção precisa ter o heading de compromisso pós-inscrição');
+// Fase 5.30 — a "Planejamento/Compromisso da Semana" virou dois blocos de
+// lugar fixo: "O que vem agora" (compromisso → próxima oportunidade) e a
+// Agenda imediata (os mesmos itens do planejamento). A chave e a campanha
+// abrem a partir do cartão de competição de Torneios (5.29); na Home o
+// atalho é o detalhe do torneio.
+const lib = await readFile(new URL('../src/lib/homeDashboard.js', import.meta.url), 'utf8');
+assert.ok(source.includes('<HomeNextCommitment') && lib.includes("eyebrow: 'Próxima oportunidade'"),
+  'a Home precisa manter o bloco de decisão de torneio');
+assert.ok(lib.includes("eyebrow: 'Seu próximo torneio'"),
+  'o bloco precisa ter o rótulo de compromisso pós-inscrição');
+assert.ok(source.includes('<HomeAgenda') && lib.includes('weeklyReview?.upcomingTournaments'),
+  'a agenda da Home precisa listar o planejamento semanal');
 assert.ok(source.includes('TournamentRegistrationModal'), 'CTA de inscrição deve usar o modal canônico no Hub');
 assert.ok(source.includes('onRegistered={handleTournamentRegistered}'), 'confirmação precisa atualizar o snapshot local');
-assert.ok(source.includes('openBracket=true'));
-assert.ok(source.includes("mode=run"));
+assert.ok(source.includes('mode=details') && lib.includes('mode=details'), 'atalhos levam ao detalhe do torneio');
 console.log('test-careerhub-tournament-planning-ui-v58: PASS');

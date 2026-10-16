@@ -1,0 +1,179 @@
+{
+  "results": [
+    {
+      "state": "torneio",
+      "viewport": "360",
+      "vw": 360,
+      "vh": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 104,
+      "firstPrimaryY": 488,
+      "commitmentY": 306,
+      "blocks": 6,
+      "primaryCount": 1,
+      "primaryLabels": [
+        "DEFINIR NOME"
+      ],
+      "pageHeight": 1458,
+      "file": "reports/ui-redesign-530/after/home-torneio-360.png"
+    },
+    {
+      "state": "torneio",
+      "viewport": "390",
+      "vw": 390,
+      "vh": 844,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 104,
+      "firstPrimaryY": 488,
+      "commitmentY": 306,
+      "blocks": 6,
+      "primaryCount": 1,
+      "primaryLabels": [
+        "DEFINIR NOME"
+      ],
+      "pageHeight": 1442,
+      "file": "reports/ui-redesign-530/after/home-torneio-390.png"
+    },
+    {
+      "state": "torneio",
+      "viewport": "desktop",
+      "vw": 1280,
+      "vh": 800,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 0,
+      "firstPrimaryY": 16,
+      "commitmentY": 297,
+      "blocks": 6,
+      "primaryCount": 2,
+      "primaryLabels": [
+        "Avançar",
+        "Definir nome"
+      ],
+      "pageHeight": 1130,
+      "file": "reports/ui-redesign-530/after/home-torneio-desktop.png"
+    },
+    {
+      "state": "torneio",
+      "viewport": "landscape",
+      "vw": 780,
+      "vh": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 0,
+      "firstPrimaryY": 16,
+      "commitmentY": 289,
+      "blocks": 6,
+      "primaryCount": 2,
+      "primaryLabels": [
+        "Avançar",
+        "Definir nome"
+      ],
+      "pageHeight": 1316,
+      "file": "reports/ui-redesign-530/after/home-torneio-landscape.png"
+    },
+    {
+      "state": "nova",
+      "viewport": "360",
+      "vw": 360,
+      "vh": 780,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 104,
+      "firstPrimaryY": 484,
+      "commitmentY": 306,
+      "blocks": 6,
+      "primaryCount": 1,
+      "primaryLabels": [
+        "DEFINIR NOME"
+      ],
+      "pageHeight": 1366,
+      "file": "reports/ui-redesign-530/after/home-nova-360.png"
+    },
+    {
+      "state": "nova",
+      "viewport": "390",
+      "vw": 390,
+      "vh": 844,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 104,
+      "firstPrimaryY": 484,
+      "commitmentY": 306,
+      "blocks": 6,
+      "primaryCount": 1,
+      "primaryLabels": [
+        "DEFINIR NOME"
+      ],
+      "pageHeight": 1350,
+      "file": "reports/ui-redesign-530/after/home-nova-390.png"
+    },
+    {
+      "state": "nova",
+      "viewport": "desktop",
+      "vw": 1280,
+      "vh": 800,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 0,
+      "firstPrimaryY": 16,
+      "commitmentY": 297,
+      "blocks": 6,
+      "primaryCount": 2,
+      "primaryLabels": [
+        "Avançar",
+        "Definir nome"
+      ],
+      "pageHeight": 1110,
+      "file": "reports/ui-redesign-530/after/home-nova-desktop.png"
+    },
+    {
+      "state": "nova",
+      "viewport": "landscape",
+      "vw": 780,
+      "vh": 360,
+      "docOverflowPx": 0,
+      "offscreenCount": 0,
+      "offscreen": [],
+      "clippedCount": 0,
+      "clipped": [],
+      "headerBottom": 0,
+      "firstPrimaryY": 16,
+      "commitmentY": 289,
+      "blocks": 6,
+      "primaryCount": 2,
+      "primaryLabels": [
+        "Avançar",
+        "Definir nome"
+      ],
+      "pageHeight": 1242,
+      "file": "reports/ui-redesign-530/after/home-nova-landscape.png"
+    }
+  ],
+  "errors": [],
+  "phase": "after",
+  "updatedAt": "2026-10-16T11:55:24.620Z"
+}

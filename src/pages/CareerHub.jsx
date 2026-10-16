@@ -5,21 +5,20 @@ import { Link, useLocation } from 'react-router-dom';
 import {
   AlertCircle, ArrowRight, CalendarDays, CheckCircle2,
   ChevronRight, Crown, Dumbbell, GraduationCap,
-  FastForward, HeartPulse, Mail, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target, Zap,
-  Trophy, TrendingUp, UserRound, Users, Globe2, Wrench,
+  FastForward, HeartPulse, Mail, Mic, MessageCircle, Newspaper, Sparkles, Swords, Target,
+  Trophy, TrendingUp, Users, Globe2, Wrench,
 } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import {
-  ensureMyProfile, incrementMissionProgress, careerExperienceSummary, overallRating, calculateAge,
+  ensureMyProfile, incrementMissionProgress, careerExperienceSummary, calculateAge,
   getWorldRank, isRetired,
 } from '@/lib/padel';
 import {
   CollapsibleSection,
-  Page, PageContent, PageHeader, StatusBadge, Surface, SurfaceHeader,
+  Page, PageContent,
   ProgressBar, EmptyState, PageSkeleton, Button, ConfirmDialog,
 } from '@/components/design-system';
 import CareerStatusBar from '@/components/career/CareerStatusBar';
-import CareerCalendar from '@/components/career/CareerCalendar';
 import PartnerSelection from '@/components/career/PartnerSelection';
 import MedicalStatusPanel from '@/components/career/MedicalStatusPanel';
 import MedicalCenterPanel from '@/components/career/MedicalCenterPanel';
@@ -53,6 +52,7 @@ import { buildTournamentRecoverySession } from '@/game-core/tournamentMatchLifec
 import { getCurrentTournamentMatch, selectActiveTournamentRun } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
 import { getCareerNextAction } from '@/lib/careerNextAction.js';
+import { buildHomeAgenda, buildHomeCommitment, buildHomePriorities, buildHomeProgress, selectWorldHeadline } from '@/lib/homeDashboard.js';
 
 /**
  * Centro da Carreira (Fase 4 — docs/HOME_REDESIGN.md).
@@ -392,10 +392,10 @@ export default function CareerHub() {
   // decisão real. Sem popup e sem notificação nova: quando há uma decisão
   // ACIONÁVEL de verdade (recomendação da comissão + inscrição ainda
   // possível), a mesma seção sobe para junto do objetivo principal.
-  const hasActionableTournamentDecision = useMemo(() => {
-    const items = weeklyReview?.upcomingTournaments || [];
-    return items.some((item) => item.isRecommended && item.canRegisterNow && item.registrationAllowed);
-  }, [weeklyReview]);
+  // Fase 5.30: a promoção condicional deixou de existir porque a decisão e o
+  // compromisso têm lugar FIXO no topo — o bloco "O que vem agora"
+  // (buildHomeCommitment: compromisso → próxima inscrição possível → agenda
+  // livre), logo abaixo do status; a agenda imediata traz o restante.
 
   // Playthrough 5.13 (continuação), Partes C/J/K/L — depois de se inscrever,
   // `canRegisterNow` vira false e a seção perdia a promoção, caindo para
@@ -410,7 +410,6 @@ export default function CareerHub() {
     const items = weeklyReview?.upcomingTournaments || [];
     return items.find((item) => isPlayerParticipating(item.registrationState)) || null;
   }, [weeklyReview]);
-  const showPlanningAtTop = hasActionableTournamentDecision || Boolean(weeklyCommitment);
   const seasonPlan = useMemo(
     () => buildSeasonCareerPlan(profile, { worldRank, matches: recentMatches, trainings: recentTrainings }),
     [profile, worldRank, recentMatches, recentTrainings],
@@ -540,13 +539,32 @@ export default function CareerHub() {
     [profile, recentTrainings, upcomingTournaments, recentMatches],
   );
 
+  // Fase 5.30 — a nova Home é só COMPOSIÇÃO sobre os mesmos cálculos acima
+  // (heroStep, priorityActions, attentionItems, weeklyReview, seasonPlan):
+  // funções puras em src/lib/homeDashboard.js decidem o que cada bloco mostra.
+  const homeCommitment = useMemo(
+    () => buildHomeCommitment({ weeklyCommitment, suggestableTournament, nextTournament, careerDate: profile?.career_date, heroStep }),
+    [weeklyCommitment, suggestableTournament, nextTournament, profile?.career_date, heroStep],
+  );
+  const homePriorities = useMemo(
+    () => buildHomePriorities({ priorityActions, attentionItems, pendingOffersCount: pendingOffers.length, hasPartner: Boolean(profile?.partner_id), heroRoute: heroStep?.to }),
+    [priorityActions, attentionItems, pendingOffers.length, profile?.partner_id, heroStep?.to],
+  );
+  const homeAgenda = useMemo(
+    () => buildHomeAgenda({ weeklyReview, careerDate: profile?.career_date, excludeId: homeCommitment.tournamentId }),
+    [weeklyReview, profile?.career_date, homeCommitment.tournamentId],
+  );
+  const homeProgress = useMemo(
+    () => buildHomeProgress({ weeklyReview, seasonPlan, worldRank }),
+    [weeklyReview, seasonPlan, worldRank],
+  );
+
   if (loading) return <PageSkeleton variant="dashboard" rows={4} />;
   if (!profile) {
     return <Page size="default"><EmptyState icon={AlertCircle} title="Não foi possível carregar sua carreira" description="Volte ao gerenciador de carreiras ou tente novamente." /></Page>;
   }
 
   const careerExperience = careerExperienceSummary(profile.xp || 0);
-  const ovr = overallRating(profile);
   const injurySkipDays = Math.max(Number(profile?.injury_days_remaining) || 0, profile?.injured_until ? daysUntil(profile.career_date, profile.injured_until) : 0);
 
   return (
@@ -563,63 +581,49 @@ export default function CareerHub() {
             nenhum outro painel desta viewport — continuam aparecendo. */}
         {careerMoment && !['tournament', 'injury'].includes(careerMoment.type) && <CareerMomentStrip moment={careerMoment} />}
 
-        {/* 1. Identidade + contexto */}
-        <IdentityHeader profile={profile} ovr={ovr} careerExperience={careerExperience} worldRank={worldRank} unreadCount={unreadCount} />
+        {/* Fase 5.30 — HOME EM CAMADAS: STATUS → O QUE VEM AGORA → PRIORIDADES
+            → AGENDA + PROGRESSO → ATALHOS. Antes eram ~10 blocos do mesmo
+            peso (identidade+HUD, compromisso da semana com 4 cartões e seus
+            botões, "O que fazer agora", calendário, objetivo, jornada,
+            evolução, atenção, mundo, atalhos, ferramentas, status da dupla
+            no rodapé), e o primeiro CTA primário ficava abaixo da primeira
+            dobra em 360px. Ranking/OVR não se repetem aqui: o header global
+            já os mostra; o bloco de status traz o que o header não tem
+            (idade, nível, rumo do ranking, dupla). */}
 
-        {/* 2. Próximo objetivo. O contexto do próximo evento já vive no
-            header global; manter outro card aqui criava o segundo/terceiro
-            CTA para o mesmo torneio. */}
+        {/* 1. Status da carreira */}
+        <HomeStatusCard
+          profile={profile}
+          careerExperience={careerExperience}
+          rankingGoal={homeProgress.rankingGoal}
+          rankingRoute={rankingGoal?.route}
+          partnerRow={<CareerStatusBar compact profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />}
+        />
 
-        {/* 2b. Playthrough 5.9 (Parte 3) — a recomendação da comissão técnica
-            só ocupa o topo quando existe decisão REAL e ainda acionável.
-            Sem decisão, a seção continua na posição original, mais abaixo. */}
-        {showPlanningAtTop && (
-          <WeeklyTournamentPlanningSection
-            weeklyReview={weeklyReview}
-            commitment={weeklyCommitment}
-            onRegister={(tournamentId) => setRegistrationTournament(upcomingTournaments.find((tournament) => tournament.id === tournamentId) || null)}
-          />
-        )}
+        {/* 2. O que vem agora — o único CTA primário da Home */}
+        <HomeNextCommitment commitment={homeCommitment} step={heroStep} isCurrentPage={heroIsCurrentPage} onChoosePartner={() => setShowPartner(true)} />
 
-        {/* 3. O que fazer agora */}
-        <div className="grid gap-3 xl:grid-cols-12">
-          <div className="space-y-3 xl:col-span-7">
-            <PriorityActionsPanel step={heroStep} actions={priorityActions} isCurrentPage={heroIsCurrentPage} onChoosePartner={() => setShowPartner(true)} />
-          </div>
-          <div className="xl:col-span-5">
-            {!isRetired(profile) && <CareerCalendar profile={profile} onAdvanceDay={setProfile} />}
-          </div>
-        </div>
-
-        <Surface variant="premium" padding="none"><NextObjectiveCard goal={rankingGoal} worldRank={worldRank} embedded /></Surface>
+        {/* 3. Prioridades (máx. 3 visíveis) */}
+        <HomePriorities priorities={homePriorities} onChoosePartner={() => setShowPartner(true)} />
 
         {finalTutorialStep && <TutorialFinishBanner recommendations={recommendations} finishing={finishingTutorial} onFinish={finishTutorial} />}
         {injured && <MedicalStatusPanel profile={profile} onSkipRecovery={handleSkipInjury} skipping={skippingInjury} skipError={injurySkipError} skipSummary={injurySkipSummary} />}
 
-        {!showPlanningAtTop && (
-          <WeeklyTournamentPlanningSection
-            weeklyReview={weeklyReview}
-            commitment={weeklyCommitment}
-            onRegister={(tournamentId) => setRegistrationTournament(upcomingTournaments.find((tournament) => tournament.id === tournamentId) || null)}
-          />
-        )}
-
-        {/* 4. Sua jornada */}
-        <JourneyTimeline groups={journeyGroups} />
-
-        {/* 5. Evolução + Atenção */}
-        <div className="grid gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-7"><EvolutionSummary weeklyReview={weeklyReview} seasonPlan={seasonPlan} /></div>
-          <div className="xl:col-span-5"><AttentionList items={attentionItems} pendingOffers={pendingOffers} profile={profile} onChoosePartner={() => setShowPartner(true)} /></div>
+        {/* 4. Agenda imediata + progresso */}
+        <div className="grid gap-3 xl:grid-cols-12">
+          <div className="xl:col-span-7">
+            <HomeAgenda
+              items={homeAgenda}
+              onRegister={(tournamentId) => setRegistrationTournament(upcomingTournaments.find((tournament) => tournament.id === tournamentId) || null)}
+            />
+          </div>
+          <div className="xl:col-span-5"><HomeProgress progress={homeProgress} recent={journeyGroups} worldHeadline={selectWorldHeadline(worldSnapshot, posts)} /></div>
         </div>
 
-        {/* 6. Mundo + Ações rápidas */}
-        <div className="grid gap-4 xl:grid-cols-12">
-          <div className="xl:col-span-8"><WorldHighlights snapshot={worldSnapshot} posts={posts} /></div>
-          <div className="xl:col-span-4"><QuickActionsBar missionsCount={missions.length} /></div>
-        </div>
+        {/* 5. Atalhos (4) */}
+        <HomeQuickActions missionsCount={missions.length} />
 
-        {/* 7. Ferramentas de gestão (recolhido por padrão — progressive disclosure) */}
+        {/* 6. Ferramentas de gestão (recolhido por padrão — progressive disclosure) */}
         <CareerToolsSection
           open={toolsOpen}
           onToggle={() => setToolsOpen((value) => !value)}
@@ -629,7 +633,6 @@ export default function CareerHub() {
         />
 
         {isRetired(profile) && <div className="rounded-2xl border border-amber-500/40 bg-amber-500/5 p-4 text-sm text-amber-200">Você encerrou sua carreira como atleta. Continue acompanhando seu legado, conquistas e história.</div>}
-        <CareerStatusBar profile={profile} onPartnerClick={() => profile.court_side && setShowPartner(true)} />
 
         {showPartner && <PartnerSelection profile={profile} onClose={() => setShowPartner(false)} onPartnerSelected={setProfile} />}
 
@@ -751,105 +754,235 @@ function buildJourneyTimeline({ recentMatches, recentTrainings, messages, posts,
 // Regiões visuais
 // ────────────────────────────────────────────────────────────────
 
-function IdentityHeader({ profile, ovr, careerExperience, worldRank, unreadCount }) {
+// Fase 5.30 — blocos da nova Home. Mesmo vocabulário visual de Torneios e
+// do Centro de Treinamento (5.29): cartões com faixa de acento à esquerda,
+// metadados em uma linha, no máximo UM primário por área, ações
+// secundárias discretas.
+
+const TONE_DOT = { danger: 'bg-red-400', warning: 'bg-amber-400', premium: 'bg-premium', info: 'bg-cyan-400', success: 'bg-emerald-400', neutral: 'bg-muted-foreground' };
+const TONE_TEXT = { danger: 'text-red-300', warning: 'text-amber-300', premium: 'text-premium', info: 'text-cyan-300', success: 'text-emerald-300', neutral: 'text-muted-foreground' };
+
+function HomeStatusCard({ profile, careerExperience, rankingGoal, rankingRoute, partnerRow }) {
   const age = calculateAge(profile);
   const country = profile.country || profile.nationality || profile.country_name || 'Brasil';
   const side = profile.court_side ? (profile.court_side === 'direita' ? 'Direita' : profile.court_side === 'esquerda' ? 'Esquerda' : profile.court_side) : null;
-  const style = profile.archetype_label || profile.play_style || null;
-  const metaParts = [country, age ? `${age} anos` : null, side, style].filter(Boolean);
-  const primaryContext = (profile.injury_status === 'injured' || profile.is_injured)
-    ? { eyebrow: 'Recuperação prioritária', tone: 'danger' }
-    : { eyebrow: 'Centro da carreira', tone: 'brand' };
-
+  const style = profile.archetype_label || null;
+  const injured = profile.injury_status === 'injured' || profile.is_injured;
+  const name = profile.sport_name || profile.full_name || 'Seu atleta';
+  const levelPct = careerExperience.maxLevel ? Math.round((careerExperience.level / careerExperience.maxLevel) * 100) : 0;
   return (
-    <PageHeader
-      dense
-      eyebrow={primaryContext.eyebrow}
-      title={profile.sport_name || profile.full_name || 'Seu atleta'}
-      description={metaParts.join(' · ')}
-      icon={UserRound}
-      tone={primaryContext.tone}
-      hudLabel="Resumo do atleta"
-      hudItems={[
-        { label: 'ranking', value: worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+', icon: Crown, tone: 'premium' },
-        { label: 'OVR', value: ovr, icon: TrendingUp, tone: 'info' },
-        { label: 'nível', value: `${careerExperience.level}/${careerExperience.maxLevel}`, icon: Zap, tone: 'success' },
-        unreadCount > 0 ? { label: 'pendências', value: unreadCount, icon: AlertCircle, tone: 'danger' } : null,
-      ]}
-    />
-  );
-}
-
-function NextObjectiveCard({ goal, worldRank, embedded = false }) {
-  if (!goal) return embedded ? <div className="p-3"><EmptyState compact icon={Target} title="Objetivo em definição" description="Continue jogando para desbloquear sua próxima meta." /></div> : <Surface className="h-full"><EmptyState compact icon={Target} title="Objetivo em definição" description="Continue jogando para desbloquear sua próxima meta." /></Surface>;
-  const currentLabel = worldRank.rank ? `#${worldRank.displayRank || worldRank.rank}` : '#1000+';
-  const content = (
-    <div className="p-3 sm:p-4">
-      <SurfaceHeader compact icon={Target} title="Próximo objetivo" description={goal.description} />
-      <p className="text-lg font-black leading-tight">{goal.title}</p>
-      <div className="mt-3 flex items-center gap-2 text-xs font-bold text-muted-foreground">
-        <span className="text-foreground">{currentLabel}</span><ArrowRight className="h-3.5 w-3.5" /><span className="text-primary">#{goal.target}</span>
-        <span className="ml-auto tabular-nums text-primary">{Math.round(goal.progress)}%</span>
+    <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-4 shadow-sm" data-home-status aria-label="Status da carreira">
+      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 ${injured ? 'bg-red-400' : 'bg-primary'}`} />
+      <div className="flex min-w-0 items-center gap-3">
+        <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-primary/12 text-lg font-black text-primary">{name[0]}</span>
+        <div className="min-w-0 flex-1">
+          <p className="text-[10px] font-black uppercase tracking-wider text-primary">{injured ? 'Recuperação prioritária' : 'Centro da carreira'}</p>
+          <h1 className="pl-title-display truncate text-xl font-black leading-tight tracking-[-0.03em] sm:text-2xl">{name}</h1>
+          <p className="truncate text-xs text-muted-foreground">{[age ? `${age} anos` : null, country, side, style].filter(Boolean).join(' · ')}</p>
+        </div>
       </div>
-      <ProgressBar value={goal.progress} max={100} tone="premium" className="mt-2" />
-      <Link to={goal.route} className="mt-3 inline-flex items-center gap-1.5 text-xs font-bold text-primary">Ver ranking <ChevronRight className="h-3.5 w-3.5" /></Link>
-    </div>
+      <div className="mt-3 grid grid-cols-2 gap-3">
+        <div className="min-w-0">
+          <p className="flex items-baseline justify-between gap-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground"><span>Nível</span><span className="tabular-nums text-foreground">{careerExperience.level}/{careerExperience.maxLevel}</span></p>
+          <ProgressBar value={levelPct} max={100} size="sm" className="mt-1.5" />
+        </div>
+        {rankingGoal ? (
+          <Link to={rankingRoute || rankingGoal.route || '/ranking'} className="min-w-0" aria-label={`Objetivo de ranking: ${rankingGoal.title}`}>
+            <p className="flex items-baseline justify-between gap-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground"><span className="truncate">Rumo a {rankingGoal.to}</span><span className="tabular-nums text-primary">{rankingGoal.progress}%</span></p>
+            <ProgressBar value={rankingGoal.progress} max={100} size="sm" tone="premium" className="mt-1.5" />
+          </Link>
+        ) : (
+          <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Objetivo em definição</p>
+        )}
+      </div>
+      <div className="mt-3 border-t border-border/40 pt-2">{partnerRow}</div>
+    </section>
   );
-  return embedded ? content : <Surface variant="premium" padding="none" className="h-full">{content}</Surface>;
 }
 
-// Playthrough 5.20-B, Parte D — NO MAXIMO 3 PENDENCIAS. A lista chegava a 5
-// itens, e em 360px isso empurrava o resto da Home para fora da primeira tela.
-// Cortar em 3 e parar ali, porem, ESCONDERIA decisao real: nao existe nenhuma
-// pagina que concentre todas as pendencias (cada uma aponta para um destino
-// diferente — propostas, calendario, treinos, tecnicos). Por isso o excedente
-// nao some: fica atras de "ver mais N", no proprio lugar.
-const VISIBLE_PRIORITY_ACTIONS = 3;
-
-function PriorityActionsPanel({ step, actions, isCurrentPage, onChoosePartner }) {
-  const [showAll, setShowAll] = useState(false);
-  const visibleActions = showAll ? actions : actions.slice(0, VISIBLE_PRIORITY_ACTIONS);
-  const hiddenCount = actions.length - visibleActions.length;
-  if (!step) return null;
-  const HeroIcon = step.icon;
+function HomeNextCommitment({ commitment, step, isCurrentPage, onChoosePartner }) {
+  const StepIcon = step?.icon || Target;
   // Hotfix "Single Source of Truth": nunca renderizar um CTA que aponta
   // para a própria página atual (React Router não navega — o botão parecia
   // "não abrir", ver heroIsCurrentPage em CareerHub.jsx). Mesmo padrão de
   // texto já usado por OnboardingGuide.jsx para "você está no lugar certo".
   const heroLink = isCurrentPage
-    ? <span className="inline-flex items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-4 py-2.5 text-sm font-black text-primary">Você já está aqui — concluindo automaticamente</span>
-    : step.partnerAction
-    ? <button type="button" onClick={onChoosePartner} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground">{step.cta} <ArrowRight className="h-4 w-4" /></button>
-    : <Link to={step.to} className="inline-flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-black text-primary-foreground">{step.cta} <ArrowRight className="h-4 w-4" /></Link>;
-
+    ? <span className="inline-flex min-h-11 items-center gap-2 rounded-xl border border-primary/30 bg-primary/10 px-3 py-2 text-xs font-bold text-primary">Você já está aqui — concluindo automaticamente</span>
+    : step?.partnerAction
+      ? <Button level="primary" size="touch" onClick={onChoosePartner}>{step.cta} <ArrowRight className="h-4 w-4" /></Button>
+      : step
+        ? <Button asChild level="primary" size="touch"><Link to={step.to}>{step.cta} <ArrowRight className="h-4 w-4" /></Link></Button>
+        : null;
+  const showSecondary = commitment.secondaryRoute && !(commitment.heroPointsToTournament && commitment.kind !== 'free');
   return (
-    <Surface variant="elevated" padding="compact">
-      <SurfaceHeader icon={HeroIcon} title="O que fazer agora" description={step.description} action={heroLink} stackActionOnMobile />
-      {actions.length ? (
-        <ul className="space-y-1.5">
-          {visibleActions.map((action) => (
-            <li key={action.id}>
-              <Link to={action.route} className="group flex items-center gap-3 rounded-xl px-2.5 py-2 transition-colors hover:bg-secondary/45">
-                <StatusBadge tone={action.tone} className="shrink-0">{action.title}</StatusBadge>
-                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{action.description}</span>
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
-              </Link>
+    <section className="relative overflow-hidden rounded-2xl border border-primary/25 bg-card/70 p-4 shadow-sm" data-home-next-commitment aria-label="O que vem agora">
+      <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-premium" />
+      <p className="text-[10px] font-black uppercase tracking-wider text-premium">{commitment.eyebrow}</p>
+      <h2 className="mt-0.5 truncate text-lg font-black leading-tight">{commitment.title}</h2>
+      {commitment.meta && <p className="mt-0.5 text-xs text-muted-foreground">{commitment.meta}</p>}
+      {commitment.status && <p className={`mt-1 flex items-center gap-1.5 text-xs font-bold ${TONE_TEXT[commitment.statusTone] || TONE_TEXT.neutral}`}><span className={`h-1.5 w-1.5 rounded-full ${TONE_DOT[commitment.statusTone] || TONE_DOT.neutral}`} />{commitment.status}</p>}
+      {step && (
+        <div className="mt-3 flex min-w-0 items-start gap-2 border-t border-border/40 pt-3">
+          <StepIcon className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+          <div className="min-w-0">
+            <p className="text-xs font-black">{step.title}</p>
+            {step.description && <p className="line-clamp-2 text-[11px] text-muted-foreground">{step.description}</p>}
+          </div>
+        </div>
+      )}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {heroLink}
+        {showSecondary && <Button asChild level="ghost" size="sm"><Link to={commitment.secondaryRoute}>{commitment.secondaryLabel}</Link></Button>}
+      </div>
+    </section>
+  );
+}
+
+// Playthrough 5.20-B, Parte D — NO MAXIMO 3 PENDENCIAS. A lista chegava a 5
+// itens, e em 360px isso empurrava o resto da Home para fora da primeira tela.
+// O excedente nao some: fica atras de "ver mais N", no proprio lugar.
+// 5.30: uma lista só (antes "O que fazer agora" + "Atenção e oportunidades").
+const VISIBLE_PRIORITY_ACTIONS = 3;
+
+function HomePriorities({ priorities, onChoosePartner }) {
+  const [showAll, setShowAll] = useState(false);
+  const visibleActions = showAll ? priorities.items : priorities.items.slice(0, VISIBLE_PRIORITY_ACTIONS);
+  const hiddenCount = priorities.items.length - visibleActions.length;
+  return (
+    <section className="space-y-1.5" data-home-priorities aria-label="Prioridades">
+      <p className="px-1 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Prioridades</p>
+      {priorities.items.length ? (
+        <ul className="divide-y divide-border/40 rounded-2xl border border-border/50 bg-card/55">
+          {visibleActions.map((item) => {
+            const content = (
+              <>
+                <span className={`h-2 w-2 shrink-0 rounded-full ${TONE_DOT[item.tone] || TONE_DOT.neutral}`} />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-xs font-bold">{item.title}</span>
+                  {item.description && <span className="block truncate text-[11px] text-muted-foreground">{item.description}</span>}
+                </span>
+                <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+              </>
+            );
+            return (
+              <li key={item.id}>
+                {item.partnerAction
+                  ? <button type="button" onClick={onChoosePartner} className="flex min-h-12 w-full items-center gap-3 px-3 py-2 text-left transition-colors hover:bg-secondary/40">{content}</button>
+                  : <Link to={item.route} className="flex min-h-12 items-center gap-3 px-3 py-2 transition-colors hover:bg-secondary/40">{content}</Link>}
+              </li>
+            );
+          })}
+        </ul>
+      ) : (
+        <p className="flex items-center gap-2 rounded-2xl border border-border/50 bg-card/55 px-3 py-3 text-xs text-muted-foreground"><CheckCircle2 className="h-4 w-4 text-emerald-400" />Tudo em dia — nenhuma pendência agora.</p>
+      )}
+      {hiddenCount > 0 && (
+        <button type="button" onClick={() => setShowAll(true)} className="inline-flex min-h-11 items-center gap-1.5 px-1 text-xs font-bold text-primary">
+          ver mais {hiddenCount} pendência{hiddenCount > 1 ? 's' : ''} <ChevronRight className="h-3.5 w-3.5" />
+        </button>
+      )}
+    </section>
+  );
+}
+
+// Playthrough 4.9, Parte G + 5.30 — agenda imediata: os mesmos itens do
+// planejamento semanal (buildUpcomingTournamentPlanning), em linhas. A ação
+// de cada linha é SECUNDÁRIA (o primário da Home é o do compromisso);
+// inscrever abre o mesmo modal canônico de antes, nunca registra sozinho.
+function HomeAgenda({ items, onRegister }) {
+  return (
+    <section className="h-full space-y-1.5" data-home-agenda aria-label="Agenda imediata">
+      <div className="flex items-center justify-between px-1">
+        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Agenda</p>
+        <Link to={APP_ROUTES.TOURNAMENTS} className="text-xs font-bold text-primary">Ver calendário</Link>
+      </div>
+      {items.length ? (
+        <ul className="divide-y divide-border/40 rounded-2xl border border-border/50 bg-card/55">
+          {items.map((item) => (
+            <li key={item.id} className="flex min-w-0 items-center gap-3 px-3 py-2.5" aria-label={`Agenda: ${item.name}`}>
+              <CalendarDays className="h-4 w-4 shrink-0 text-muted-foreground" />
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-xs font-bold">{item.name}{item.recommended && <span className="ml-1.5 text-[9px] font-black uppercase tracking-wide text-primary">Melhor opção</span>}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{[item.tier, item.when].filter(Boolean).join(' · ')}{item.status && <span className={TONE_TEXT[item.statusTone] || TONE_TEXT.neutral}> · {item.status}</span>}</p>
+              </div>
+              {item.action?.id === 'register'
+                ? <Button type="button" level="secondary" size="sm" onClick={() => onRegister?.(item.id)} className="shrink-0 text-primary" aria-label={`Inscrever-se em ${item.name}`}>{item.action.label}</Button>
+                : <Link to={`/tournaments?tournament=${encodeURIComponent(item.id)}&mode=details`} className="shrink-0 text-muted-foreground" aria-label={`Ver ${item.name}`}><ChevronRight className="h-4 w-4" /></Link>}
             </li>
           ))}
         </ul>
       ) : (
-        <p className="rounded-xl border border-dashed border-border/70 px-3 py-4 text-center text-xs text-muted-foreground">Nenhuma outra pendência agora — siga o plano acima.</p>
+        <p className="rounded-2xl border border-border/50 bg-card/55 px-3 py-3 text-xs text-muted-foreground">Nenhum outro torneio na janela de quatro semanas.</p>
       )}
-      {hiddenCount > 0 && (
-        <button
-          type="button"
-          onClick={() => setShowAll(true)}
-          className="mt-1.5 inline-flex min-h-11 items-center gap-1.5 px-2.5 text-xs font-bold text-primary"
-        >
-          ver mais {hiddenCount} pendência{hiddenCount > 1 ? 's' : ''} <ChevronRight className="h-3.5 w-3.5" />
-        </button>
-      )}
-    </Surface>
+    </section>
+  );
+}
+
+function HomeProgress({ progress, recent, worldHeadline = null }) {
+  const recentItems = (recent || []).flatMap((group) => group.items).slice(0, 3);
+  return (
+    <section className="h-full space-y-1.5" data-home-progress aria-label="Progresso da carreira">
+      <div className="flex items-center justify-between px-1">
+        <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Progresso{progress.periodLabel ? ` · ${progress.periodLabel}` : ''}</p>
+        <Link to="/game/stats" className="text-xs font-bold text-primary">Estatísticas</Link>
+      </div>
+      <div className="rounded-2xl border border-border/50 bg-card/55 p-3">
+        <div className="grid grid-cols-3 gap-2">
+          {progress.metrics.map((metric) => (
+            <div key={metric.id} className="min-w-0">
+              <p className="text-lg font-black tabular-nums leading-none">{metric.value}</p>
+              <p className="mt-1 truncate text-[10px] font-bold uppercase tracking-wide text-muted-foreground">{metric.label}</p>
+              <p className="truncate text-[10px] text-muted-foreground">{metric.detail}</p>
+            </div>
+          ))}
+        </div>
+        {progress.seasonGoals.length > 0 && (
+          <div className="mt-3 space-y-1.5 border-t border-border/40 pt-2.5">
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Metas da temporada · {progress.seasonProgress}%</p>
+            {progress.seasonGoals.map((goal) => (
+              <Link key={goal.id} to={goal.route} className="flex min-w-0 items-center gap-2 text-[11px]">
+                <span className="min-w-0 flex-1 truncate">{goal.title}</span>
+                <ProgressBar value={goal.progress} max={100} size="sm" className="w-16 shrink-0" />
+              </Link>
+            ))}
+          </div>
+        )}
+        {/* Universo vivo (antes o painel WorldHighlights): uma linha, mesma prioridade de seleção. */}
+        {worldHeadline && (
+          <Link to="/world" className="mt-3 flex min-w-0 items-center gap-2 border-t border-border/40 pt-2.5 text-[11px]"><Globe2 className="h-3.5 w-3.5 shrink-0 text-violet-400" /><span className="shrink-0 font-bold text-muted-foreground">Circuito:</span><span className="truncate">{worldHeadline.title}</span></Link>
+        )}
+        {recentItems.length > 0 && (
+          <div className="mt-3 space-y-1 border-t border-border/40 pt-2.5">
+            <p className="flex items-center justify-between text-[10px] font-bold uppercase tracking-wide text-muted-foreground"><span>Recentes</span><Link to="/game/legacy" className="normal-case tracking-normal text-primary">Ver legado</Link></p>
+            {recentItems.map((item) => {
+              const ItemIcon = item.icon;
+              return <p key={item.id} className="flex min-w-0 items-center gap-2 text-[11px]"><ItemIcon className={`h-3.5 w-3.5 shrink-0 ${item.tone}`} /><span className="truncate">{item.text}</span></p>;
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+// 5.30: 4 atalhos frequentes (antes Legado/Equipe/Imprensa/Missões num cartão
+// próprio). Navegação completa continua na barra inferior/menu.
+function HomeQuickActions({ missionsCount }) {
+  const actions = [
+    { to: APP_ROUTES.TRAINING, icon: Dumbbell, label: 'Treinar' },
+    { to: '/partners', icon: Users, label: 'Dupla' },
+    { to: APP_ROUTES.MISSIONS, icon: Target, label: missionsCount > 0 ? `Objetivos (${missionsCount})` : 'Objetivos' },
+    { to: '/world', icon: Globe2, label: 'Mundo' },
+  ];
+  return (
+    <nav className="grid grid-cols-4 gap-2" data-home-quick-actions aria-label="Ações rápidas">
+      {actions.map(({ to, icon: Icon, label }) => (
+        <Link key={label} to={to} className="flex min-h-14 min-w-0 flex-col items-center justify-center gap-1 rounded-2xl border border-border/50 bg-card/55 px-1 py-2 text-center transition-colors hover:border-primary/30">
+          <Icon className="h-4.5 w-4.5 text-primary" />
+          <span className="max-w-full truncate text-[10px] font-bold">{label}</span>
+        </Link>
+      ))}
+    </nav>
   );
 }
 
@@ -860,252 +993,6 @@ function TutorialFinishBanner({ recommendations, finishing, onFinish }) {
       <div className="mt-4 grid gap-2 md:grid-cols-2">{recommendations.map((item) => <Link key={item.id} to={item.route} className="rounded-xl bg-secondary/40 p-3 hover:bg-secondary"><strong className="text-sm">{item.title}</strong><p className="mt-1 text-xs text-muted-foreground">{item.explanation}</p></Link>)}</div>
       <button type="button" disabled={finishing} onClick={onFinish} className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-bold text-primary-foreground disabled:opacity-50"><CheckCircle2 className="h-4 w-4" />{finishing ? 'Concluindo...' : 'Começar carreira livre'}</button>
     </section>
-  );
-}
-
-function JourneyTimeline({ groups }) {
-  return (
-    <Surface>
-      <SurfaceHeader icon={CalendarDays} title="Sua jornada" description="Linha do tempo compacta do que aconteceu recentemente." action={<Link to="/game/legacy" className="text-xs font-bold text-primary">Ver legado completo</Link>} />
-      {groups.length ? (
-        <div className="space-y-4">
-          {groups.map((group) => (
-            <div key={group.bucket}>
-              <p className="mb-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">{group.bucket}</p>
-              <ul className="space-y-1">
-                {group.items.map((item) => {
-                  const ItemIcon = item.icon;
-                  return (
-                    <li key={item.id} className="flex items-center gap-2.5 rounded-lg px-1.5 py-1 text-sm">
-                      <ItemIcon className={`h-3.5 w-3.5 shrink-0 ${item.tone}`} />
-                      <span className="min-w-0 flex-1 truncate">{item.text}</span>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <EmptyState compact icon={CalendarDays} title="Sua história está começando" description="O primeiro marco aparecerá aqui assim que você jogar, treinar ou receber uma mensagem." />
-      )}
-    </Surface>
-  );
-}
-
-function WeeklyTournamentPlanningSection({ weeklyReview, commitment = null, onRegister }) {
-  const tournaments = weeklyReview?.upcomingTournaments || [];
-  const recommendation = tournaments.find((item) => item.isRecommended) || null;
-
-  // Playthrough 5.13 (continuação), Partes C/K/L — com inscrição confirmada,
-  // o bloco deixa de pedir uma decisão que já foi tomada e passa a mostrar o
-  // COMPROMISSO: qual torneio, quando é o sorteio e qual é a estreia. Sem
-  // duplicar o hero do torneio em disputa: aqui é a leitura da SEMANA.
-  const committedTitle = 'Compromisso da Semana';
-  const committedDescription = commitment
-    ? [
-      `${commitment.name} confirmado`,
-      commitment.startDate ? `estreia em ${commitment.startDate}` : null,
-      commitment.drawDate ? `sorteio em ${commitment.drawDate}` : null,
-    ].filter(Boolean).join(' · ')
-    : null;
-
-  return (
-    <Surface className="mt-4" aria-labelledby="weekly-tournament-planning-title">
-      <SurfaceHeader
-        icon={CalendarDays}
-        title={commitment ? committedTitle : 'Planejamento da Semana'}
-        description={commitment
-          ? committedDescription
-          : (recommendation ? `Recomendação da comissão: ${recommendation.name}.` : 'Decisões de torneio na próxima janela de quatro semanas.')}
-        action={<Link to={APP_ROUTES.TOURNAMENTS} className="text-xs font-bold text-primary">Ver calendário</Link>}
-        stackActionOnMobile
-      />
-      {tournaments.length ? (
-        <div className="grid gap-2 lg:grid-cols-2">
-          {tournaments.map((item) => <UpcomingTournamentPlanningCard key={item.id} item={item} onRegister={onRegister} />)}
-        </div>
-      ) : (
-        <EmptyState compact icon={CheckCircle2} title="Nenhuma decisão de torneio necessária nesta semana" description="Não há evento adequado na próxima janela. Continue treinando e acompanhe o calendário." />
-      )}
-    </Surface>
-  );
-}
-
-function EvolutionSummary({ weeklyReview, seasonPlan }) {
-  if (!weeklyReview) return null;
-  return (
-    <Surface className="h-full">
-      <SurfaceHeader icon={TrendingUp} title="Evolução" description={`Últimos 7 dias · ${weeklyReview.periodLabel}`} action={<Link to="/game/stats" className="text-xs font-bold text-primary">Estatísticas completas</Link>} />
-      <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-        {weeklyReview.metrics.map((metric) => (
-          <div key={metric.id} className="rounded-xl bg-secondary/30 p-3">
-            <p className="text-lg font-black tabular-nums">{metric.value}</p>
-            <p className="text-[9px] font-bold uppercase tracking-wide text-muted-foreground">{metric.label}</p>
-            <p className="mt-0.5 truncate text-[10px] text-muted-foreground">{metric.detail}</p>
-          </div>
-        ))}
-      </div>
-      {seasonPlan?.goals?.length > 0 && (
-        <div className="mt-3">
-          <p className="mb-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Metas da temporada · {seasonPlan.overallProgress}%</p>
-          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
-            {seasonPlan.goals.map((goal) => (
-              <Link key={goal.category} to={goal.route} className="rounded-xl border border-border/55 bg-card/50 p-2.5 transition hover:border-primary/30">
-                <p className="truncate text-[10px] font-bold">{goal.title}</p>
-                <ProgressBar value={goal.progress} max={100} size="sm" className="mt-1.5" />
-              </Link>
-            ))}
-          </div>
-        </div>
-      )}
-    </Surface>
-  );
-}
-
-// Playthrough 4.9, Parte G — "PRÓXIMOS TORNEIOS" na reunião semanal: o
-// jogador não precisa mais lembrar sozinho de abrir Torneios pra descobrir
-// que uma inscrição está prestes a fechar. Nunca inscreve sozinho (Parte I)
-// — o CTA só leva ao mesmo modal/fluxo canônico que o card de Torneios já
-// usa (Parte J), nunca uma lógica de registro paralela aqui.
-function UpcomingTournamentPlanningCard({ item, onRegister }) {
-  const dateLabel = item.startDate
-    ? new Date(`${item.startDate}T00:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })
-      + (item.endDate && item.endDate !== item.startDate ? ` – ${new Date(`${item.endDate}T00:00:00`).toLocaleDateString('pt-BR', { day: '2-digit', month: 'short' })}` : '')
-    : null;
-  const ctaRoutes = {
-    details: `/tournaments?tournament=${encodeURIComponent(item.id)}&mode=details`,
-    bracket: `/tournaments?tournament=${encodeURIComponent(item.id)}&openBracket=true`,
-    follow: `/tournaments?tournament=${encodeURIComponent(item.id)}&mode=run`,
-    results: `/tournaments?tournament=${encodeURIComponent(item.id)}&mode=details`,
-  };
-  const deadline = item.deadlineInfo;
-  const fitLabel = item.fit >= 70 ? 'Alto' : item.fit >= 40 ? 'Médio' : 'Baixo';
-  const statusText = item.conflictWith ? 'Conflito de agenda' : deadline?.label;
-  return (
-    <article className="min-w-0 rounded-xl border border-border/55 bg-card/40 p-3" aria-label={`Planejamento: ${item.name}`}>
-      <div className="flex flex-wrap items-start justify-between gap-2">
-        <div className="min-w-0">
-          <p className="truncate text-sm font-black">{item.name}</p>
-          <p className="text-[10px] text-muted-foreground">{item.tier}{dateLabel ? ` · ${dateLabel}` : ''}</p>
-        </div>
-        {statusText && <span className={`shrink-0 rounded-full px-2 py-0.5 text-[9px] font-bold uppercase ${item.conflictWith ? 'bg-red-500/15 text-red-400' : deadline?.tone === 'urgent' ? 'bg-red-500/15 text-red-400' : deadline?.tone === 'attention' ? 'bg-amber-500/15 text-amber-400' : deadline?.tone === 'resolved' ? 'bg-emerald-500/15 text-emerald-400' : 'bg-secondary/50 text-muted-foreground'}`}>{statusText}</span>}
-      </div>
-      {deadline?.detail && <p className="mt-1 text-[10px] font-medium text-muted-foreground">{deadline.detail}</p>}
-      {item.isRecommended && <p className="mt-1.5 text-[10px] font-black uppercase tracking-[0.12em] text-primary">Melhor opção</p>}
-      <p className="mt-1.5 text-[11px] leading-relaxed text-muted-foreground">Comissão: “{item.conflictWith ? item.conflictWith : item.coachComment}”</p>
-      <div className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px] text-muted-foreground sm:grid-cols-3">
-        <span>Encaixe: {fitLabel}</span>
-        <span>Campo: {item.fieldStrength}</span>
-        <span>{item.riskReward}</span>
-        <span>{item.points} pts</span>
-        <span>{item.prize.toLocaleString('pt-BR')} moedas</span>
-        {item.cost > 0 && <span>Custo: {item.cost.toLocaleString('pt-BR')}</span>}
-      </div>
-      {item.action.id === 'register' ? (
-        <Button type="button" level="primary" size="sm" onClick={() => onRegister?.(item.id)} className="mt-3 w-full sm:w-auto" aria-label={`Inscrever-se em ${item.name}`}>{item.action.label}</Button>
-      ) : item.action.id === 'closed' ? (
-        <span className="mt-3 inline-flex rounded-lg border border-border/60 px-3 py-1.5 text-[11px] font-bold text-muted-foreground" aria-label={`Prazo encerrado para ${item.name}`}>{item.action.label}</span>
-      ) : (
-        <Link to={ctaRoutes[item.action.id] || ctaRoutes.details} className="mt-3 inline-flex w-full items-center justify-center gap-1 rounded-lg bg-primary/10 px-3 py-2 text-[11px] font-bold text-primary hover:bg-primary/15 sm:w-auto" aria-label={`${item.action.label}: ${item.name}`}>
-          {item.action.label}
-        </Link>
-      )}
-    </article>
-  );
-}
-
-function AttentionList({ items, pendingOffers, profile, onChoosePartner }) {
-  const showPartnerRow = pendingOffers.length > 0;
-  const hasContent = items.length > 0 || showPartnerRow;
-  return (
-    <Surface className="h-full">
-      <SurfaceHeader icon={AlertCircle} title="Atenção e oportunidades" description="O que pode ficar para trás se você não olhar agora." />
-      {hasContent ? (
-        <ul className="space-y-1.5">
-          {showPartnerRow && (
-            <li>
-              <button type="button" onClick={onChoosePartner} className="flex w-full items-center gap-3 rounded-xl px-2.5 py-2 text-left transition-colors hover:bg-secondary/45">
-                <StatusBadge tone={profile.partner_id ? 'info' : 'danger'} className="shrink-0">Dupla</StatusBadge>
-                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{pendingOffers.length} proposta{pendingOffers.length === 1 ? '' : 's'} de parceria aguardando</span>
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground" />
-              </button>
-            </li>
-          )}
-          {items.map((item) => (
-            <li key={item.id}>
-              <Link to={item.route} className="group flex items-center gap-3 rounded-xl px-2.5 py-2 transition-colors hover:bg-secondary/45">
-                <StatusBadge tone={item.priority === 'critical' ? 'danger' : item.priority === 'high' ? 'warning' : 'neutral'} className="shrink-0">{item.category}</StatusBadge>
-                <span className="min-w-0 flex-1 truncate text-xs text-muted-foreground">{item.title}</span>
-                <ChevronRight className="h-3.5 w-3.5 shrink-0 text-muted-foreground transition group-hover:text-primary" />
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <EmptyState compact icon={CheckCircle2} title="Tudo em dia" description="Nenhuma pendência aguardando resposta." />
-      )}
-    </Surface>
-  );
-}
-
-function WorldHighlights({ snapshot, posts }) {
-  const featured = snapshot?.bulletin || snapshot?.breaking;
-  // Fase 9.3, item 1 — eventos envolvendo atleta real (`categories.reais`,
-  // já calculado em getLivingWorldSnapshot) entram ANTES dos `Post`
-  // genéricos no corte de 3 itens, sem remover nem re-priorizar a geração
-  // em si — só a ordem de exibição aqui, onde o corte acontece.
-  const realHighlights = snapshot?.categories?.reais || [];
-  const seenIds = new Set(featured ? [featured.id] : []);
-  const merged = [
-    ...(featured ? [featured] : []),
-    ...realHighlights.filter((event) => !seenIds.has(event.id) && (seenIds.add(event.id) || true)),
-    ...posts.filter((post) => !seenIds.has(post.id)),
-  ];
-  const items = merged.slice(0, 3);
-  const hasUnseenRealHighlight = realHighlights.some((event) => event.id !== featured?.id);
-  return (
-    <Surface className="h-full">
-      <SurfaceHeader
-        icon={Globe2}
-        title="Mundo"
-        description="Só o essencial — o resto está no hub do Mundo."
-        action={(
-          <Link to="/world" className="flex items-center gap-1.5 text-xs font-bold text-primary">
-            {hasUnseenRealHighlight && <span className="h-1.5 w-1.5 rounded-full bg-amber-400" aria-hidden="true" />}
-            Ver mundo
-          </Link>
-        )}
-      />
-      {items.length ? (
-        <ul className="space-y-2">
-          {items.map((item) => (
-            <li key={item.id}>
-              <Link to="/journal" className="block rounded-xl bg-secondary/30 p-3 hover:bg-secondary/55">
-                <p className="truncate text-xs font-bold">{item.title || 'Notícia do circuito'}</p>
-                <p className="mt-1 line-clamp-1 text-[10px] text-muted-foreground">{item.content || item.description || 'Acompanhe os acontecimentos mais recentes.'}</p>
-              </Link>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <EmptyState compact icon={Newspaper} title="Circuito tranquilo" description="Nenhuma notícia relevante no momento." />
-      )}
-    </Surface>
-  );
-}
-
-function QuickActionsBar({ missionsCount }) {
-  return (
-    <Surface className="flex h-full flex-col justify-center gap-2">
-      <p className="text-[10px] font-black uppercase tracking-[0.14em] text-muted-foreground">Ações rápidas</p>
-      <div className="grid grid-cols-2 gap-2">
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/game/legacy"><Crown className="h-4 w-4" />Legado</Link></Button>
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to="/team-hub"><Users className="h-4 w-4" />Equipe</Link></Button>
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to={APP_ROUTES.PRESS}><Mic className="h-4 w-4" />Imprensa</Link></Button>
-        <Button asChild level="secondary" size="sm" className="justify-start"><Link to={APP_ROUTES.MISSIONS}><Target className="h-4 w-4" />Missões{missionsCount > 0 ? ` (${missionsCount})` : ''}</Link></Button>
-      </div>
-    </Surface>
   );
 }
 

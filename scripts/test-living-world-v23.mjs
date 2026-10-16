@@ -40,8 +40,11 @@ assert(worldHub.includes("label: 'História'"), 'Aba História ausente.');
 // de getLivingWorldSnapshot), mesma cobertura funcional ("home mostra o
 // pulso do mundo"), só o nome do componente e o layout mudaram
 // deliberadamente. Ver Fase 8, docs/SECONDARY_UI.md.
-assert(home.includes('<WorldHighlights snapshot={worldSnapshot}'), 'Painel inicial não mostra o resumo do mundo (WorldHighlights).');
-assert(home.includes('function WorldHighlights({ snapshot, posts })'), 'WorldHighlights não lê o snapshot do Universo Vivo.');
+// Fase 5.30: o painel virou UMA linha "Circuito: <manchete>" dentro do
+// bloco de progresso — mesmo dado (worldSnapshot → selectWorldHeadline, com a
+// mesma prioridade de seleção do antigo WorldHighlights).
+assert(home.includes('worldHeadline={selectWorldHeadline(worldSnapshot, posts)}'), 'Painel inicial não mostra o resumo do mundo (manchete do Universo Vivo).');
+assert(home.includes('getLivingWorldSnapshot(p, 8)'), 'A Home não lê o snapshot do Universo Vivo.');
 
 console.log('LivingWorldV23Test: PASS');
 console.log('✓ Motor diário centralizado');

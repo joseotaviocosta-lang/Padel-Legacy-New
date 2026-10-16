@@ -77,6 +77,10 @@ for (const [path, source] of Object.entries(pages)) {
   // (estado curto + ação no mesmo bloco). O princípio do gate é o mesmo.
   if (path === 'src/pages/Tournaments.jsx') {
     gate(`${path} integra estado curto + ação no cartão de competição (5.29)`, source.includes('<CompetitionHeroCard') && source.includes('data-competition-hero'));
+  } else if (path === 'src/pages/CareerHub.jsx') {
+    // Fase 5.30 — a Home trocou PageHeader+HUD pelo bloco de status da
+    // carreira (estado curto no topo, sem repetir ranking/OVR do header).
+    gate(`${path} integra estado curto no bloco de status da carreira (5.30)`, source.includes('<HomeStatusCard') && source.includes('data-home-status'));
   } else {
     gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));
     gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));
@@ -110,8 +114,10 @@ gate('Torneios: evento/status/ação estão no mesmo bloco (cartão de competiç
 // Nao foram reescritos para caber no que a tela ja fazia: a 5.20-B primeiro
 // DECIDIU a hierarquia (o compromisso acionavel antes da meta de temporada, no
 // maximo 3 pendencias visiveis) e so entao estes gates passaram a cobra-la.
+// 5.30: a hierarquia decidida na 5.20-B continua — o compromisso acionável
+// ("O que vem agora") vem antes das metas de temporada (agora no progresso).
 gate('Home: o que fazer agora vem antes do proximo objetivo',
-  home.indexOf('<PriorityActionsPanel') < home.indexOf('<NextObjectiveCard'));
+  home.indexOf('<HomeNextCommitment') > -1 && home.indexOf('<HomeNextCommitment') < home.indexOf('<HomeProgress'));
 gate('Home: no maximo 3 pendencias visiveis, com o excedente alcancavel',
   home.includes('VISIBLE_PRIORITY_ACTIONS = 3') && home.includes('ver mais {hiddenCount}'));
 

@@ -1,0 +1,351 @@
+{
+  "createdAt": "2026-10-16T12:07:10.539Z",
+  "total": 46,
+  "pass": 27,
+  "regressions": [],
+  "preExisting": [
+    "test-home-redesign",
+    "test-living-career-v34-4",
+    "test-living-career-v34-5",
+    "test-living-career-v34-7",
+    "test-living-career-v34-8",
+    "test-living-career-v34-9",
+    "test-mobile-compact-ux-m4",
+    "test-mobile-game-app-experience-m4-2",
+    "test-mobile-game-flow-m4-3",
+    "test-notification-system-audit-rc",
+    "test-onboarding-priority",
+    "test-phase15-3-economy-progression-navigation",
+    "test-phase15-4-mobile-flow-polish",
+    "test-premium-home-v33-2",
+    "test-premium-interfaces-v33",
+    "test-redesign-polish2",
+    "test-redesign-polish21",
+    "test-training-center-unification-phase15-5",
+    "test-ui-redesign"
+  ],
+  "results": [
+    {
+      "test": "test-annual-career-report-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-career-long-term-goals",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-career-null-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-careerhub-stale-tournament-action-v59",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-careerhub-tournament-planning-ui-v58",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-headless-registration-authority-v527j",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-home-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextObjectiveCard ausente (objetivo principal)\r"
+    },
+    {
+      "test": "test-living-career-v34-4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "LivingCareerV34_4Test: FAIL"
+    },
+    {
+      "test": "test-living-career-v34-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/lib' imported from C:\\Projetos\\Padel-Legacy-New\\src\\lib\\careerMoments.js\r"
+    },
+    {
+      "test": "test-living-career-v34-6",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-living-career-v34-7",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from C:\\Projetos\\Padel-Legacy-New\\src\\lib\\careerDecisionCenter.js\r"
+    },
+    {
+      "test": "test-living-career-v34-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from C:\\Projetos\\Padel-Legacy-New\\src\\lib\\weeklyCareerReview.js\r"
+    },
+    {
+      "test": "test-living-career-v34-9",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "if (checks.some((value) => !value)) throw new Error(`Falha estrutural: ${checks.map(Number).join(',')}`);\r | Error: Falha estrutural: 1,1,0,1,1,1,1,1\r"
+    },
+    {
+      "test": "test-living-world-v23",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: PageHeader ganhou a prop `dense` (default false — não quebra uso existente)\r"
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-game-flow-m4-3",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultân"
+    },
+    {
+      "test": "test-mobile-m3-live-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-match-day-refresh-m3-7-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visual-polish-m4-1-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-modal-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-monthly-career-report-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-notification-system-audit-rc",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  This error came from the \"onResolve\" callback registered here: |     at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) | TypeError: Cannot read properties of undefined (reading 'is_read')\r"
+    },
+    {
+      "test": "test-onboarding-priority",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — getNextStep (motor de fallback) continua definido, não foi removido |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: getNextStep (motor de fallback) continua definido, não foi removido\r"
+    },
+    {
+      "test": "test-onboarding-single-source-of-truth",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-4-mobile-flow-polish",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) | AssertionError [ERR_ASSERTION]: Fase 15.4 falhou: 7/132 gate(s)\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-premium-home-v33-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    if (!content.includes(needle)) throw new Error(`${file}: conteúdo ausente: ${needle}`);\r | Error: src/pages/CareerHub.jsx: conteúdo ausente: PremiumQuickStats\r"
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PremiumInterfacesV33Test: FAIL"
+    },
+    {
+      "test": "test-ranking-consistency",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-redesign-polish2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: getNextStep (motor de próximo passo) removida/renomeada\r"
+    },
+    {
+      "test": "test-redesign-polish21",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextEventCard (fonte única do \"próximo torneio\" informativo) foi removido da Home\r"
+    },
+    {
+      "test": "test-tournament-resume-recovery",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-round-availability",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — 102. Navegação possui uma única entrada Centro de Treinamento | AssertionError [ERR_ASSERTION]: Fase 15.5 falhou: 5/144 gate(s)\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-tutorial-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tutorial-chronology",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tutorial-first-official-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tutorial-visit-auto-completion",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r"
+    },
+    {
+      "test": "test-ux-home-v36-3-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-weekly-planning-after-registration-v513",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-weekly-planning-mobile-contract-v58",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-weekly-planning-visible-decision-v59",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    }
+  ]
+}

@@ -1,0 +1,144 @@
+{
+  "runs": [
+    {
+      "state": "torneio",
+      "createdAt": "2026-10-16T11:52:41.538Z",
+      "viewport": "390x844",
+      "passed": 12,
+      "total": 12,
+      "checks": [
+        {
+          "name": "Home: os 6 blocos da nova hierarquia renderizam",
+          "ok": true,
+          "detail": "[true,true,true,true,true,true]"
+        },
+        {
+          "name": "Home: ordem status → próximo compromisso → prioridades → agenda",
+          "ok": true,
+          "detail": "105 < 299 < 550 < 621"
+        },
+        {
+          "name": "Home: exatamente 1 CTA primário",
+          "ok": true,
+          "detail": "DEFINIR NOME"
+        },
+        {
+          "name": "Com torneio: bloco mostra o torneio comprometido",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "CTA do próximo compromisso navega para o destino",
+          "ok": true,
+          "detail": "/game/missions → /game/missions"
+        },
+        {
+          "name": "Retorno à Home",
+          "ok": true,
+          "detail": "0s · /game status=true skeleton=false"
+        },
+        {
+          "name": "Ação secundária do compromisso navega",
+          "ok": true,
+          "detail": "/tournaments?tournament=tournament-2026-lon-bro-w05-1&mode=details → /tournaments?tournament=tournament-2026-lon-bro-w05-1&mode=details"
+        },
+        {
+          "name": "Ação rápida (Treinar) abre o Centro de Treinamento",
+          "ok": true,
+          "detail": "/game/training-center?view=training"
+        },
+        {
+          "name": "Inscrever-se (agenda) abre o modal canônico de inscrição",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "Modal fechado sem inscrever",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "Prioridades: estado vazio \"Tudo em dia\" (tutorial em andamento suprime a lista — regra existente)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "Sem erro de JavaScript",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": []
+    },
+    {
+      "state": "nova",
+      "createdAt": "2026-10-16T11:53:30.452Z",
+      "viewport": "390x844",
+      "passed": 12,
+      "total": 12,
+      "checks": [
+        {
+          "name": "Home: os 6 blocos da nova hierarquia renderizam",
+          "ok": true,
+          "detail": "[true,true,true,true,true,true]"
+        },
+        {
+          "name": "Home: ordem status → próximo compromisso → prioridades → agenda",
+          "ok": true,
+          "detail": "112 < 306 < 553 < 624"
+        },
+        {
+          "name": "Home: exatamente 1 CTA primário",
+          "ok": true,
+          "detail": "DEFINIR NOME"
+        },
+        {
+          "name": "Sem parceiro: status mostra \"Sem parceiro\"",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "Sem compromisso: bloco mostra estado útil (agenda livre ou oportunidade)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "CTA do próximo compromisso navega para o destino",
+          "ok": true,
+          "detail": "/game/missions → /game/missions"
+        },
+        {
+          "name": "Retorno à Home",
+          "ok": true,
+          "detail": "0s · /game status=true skeleton=false"
+        },
+        {
+          "name": "Ação secundária do compromisso navega",
+          "ok": true,
+          "detail": "/tournaments → /tournaments"
+        },
+        {
+          "name": "Ação rápida (Treinar) abre o Centro de Treinamento",
+          "ok": true,
+          "detail": "/game/training-center?view=training"
+        },
+        {
+          "name": "Item da agenda abre o torneio",
+          "ok": true,
+          "detail": "/tournaments?tournament=tournament-2026-rom-exh-2026&mode=details"
+        },
+        {
+          "name": "Prioridades: estado vazio \"Tudo em dia\" (tutorial em andamento suprime a lista — regra existente)",
+          "ok": true,
+          "detail": ""
+        },
+        {
+          "name": "Sem erro de JavaScript",
+          "ok": true,
+          "detail": ""
+        }
+      ],
+      "errors": []
+    }
+  ]
+}

@@ -25,9 +25,13 @@ const pkg = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 // testável/reusável). A funcionalidade nunca deixou de existir em nenhum
 // desses casos — só o arquivo/nome mudou num refactor já em produção.
 const checks = [
-  ['Painel "Sua jornada" (linha do tempo compacta da carreira)', careerHub.includes('function JourneyTimeline') && careerHub.includes('Sua jornada')],
-  ['Objetivo dinâmico usa o catálogo real de conquistas (não uma escada duplicada)', careerHub.includes('function NextObjectiveCard') && seasonPlan.includes('findNextLockedAchievement') && seasonPlan.includes('Defender a liderança mundial')],
-  ['Atalhos diretos a partir da Home (painel de ações rápidas com destinos reais)', careerHub.includes('function QuickActionsBar') && (careerHub.match(/<Link to=/g) || []).length >= 4],
+  // Fase 5.30: a linha do tempo virou "Recentes" no bloco de progresso, o
+  // objetivo dinâmico virou a barra "Rumo a #N" do status e os atalhos viraram
+  // HomeQuickActions (4 destinos) — mesmas fontes (buildJourneyTimeline,
+  // seasonPlan.goals[0] / findNextLockedAchievement), nova composição.
+  ['Linha do tempo compacta da carreira ("Recentes" via buildJourneyTimeline)', careerHub.includes('function buildJourneyTimeline') && careerHub.includes('recent={journeyGroups}') && careerHub.includes('Recentes')],
+  ['Objetivo dinâmico usa o catálogo real de conquistas (não uma escada duplicada)', careerHub.includes('rankingGoal={homeProgress.rankingGoal}') && careerHub.includes('Rumo a') && seasonPlan.includes('findNextLockedAchievement') && seasonPlan.includes('Defender a liderança mundial')],
+  ['Atalhos diretos a partir da Home (ações rápidas com destinos reais)', careerHub.includes('function HomeQuickActions') && /\{ to: APP_ROUTES\.TRAINING[\s\S]*\{ to: '\/world'/.test(careerHub)],
   ['Header inteligente reage a avanço de dia (padel:career-advanced)', layout.includes('CareerHeaderContext') && layout.includes('useCareerHeaderData') && (layout.includes('padel:career-advanced') || profileSync.includes('padel:career-advanced'))],
   ['Contextos do header (Recuperação / Fadiga alta / Semana de desenvolvimento)', headerContextLib.includes('Recuperação') && headerContextLib.includes('Fadiga alta') && headerContextLib.includes('Semana de desenvolvimento')],
   ['Versão da entrega', isAtLeastBetaOrRC(pkg.version, 33)],

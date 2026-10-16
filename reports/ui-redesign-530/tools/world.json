@@ -1,0 +1,10 @@
+[
+ ["import { buildHomeAgenda, buildHomeCommitment, buildHomePriorities, buildHomeProgress } from '@/lib/homeDashboard.js';",
+  "import { buildHomeAgenda, buildHomeCommitment, buildHomePriorities, buildHomeProgress, selectWorldHeadline } from '@/lib/homeDashboard.js';"],
+ ["          <div className=\"xl:col-span-5\"><HomeProgress progress={homeProgress} recent={journeyGroups} /></div>",
+  "          <div className=\"xl:col-span-5\"><HomeProgress progress={homeProgress} recent={journeyGroups} worldHeadline={selectWorldHeadline(worldSnapshot, posts)} /></div>"],
+ ["function HomeProgress({ progress, recent }) {",
+  "function HomeProgress({ progress, recent, worldHeadline = null }) {"],
+ ["        {recentItems.length > 0 && (",
+  "        {/* Universo vivo (antes o painel WorldHighlights): uma linha, mesma prioridade de seleção. */}\n        {worldHeadline && (\n          <Link to=\"/world\" className=\"mt-3 flex min-w-0 items-center gap-2 border-t border-border/40 pt-2.5 text-[11px]\"><Globe2 className=\"h-3.5 w-3.5 shrink-0 text-violet-400\" /><span className=\"shrink-0 font-bold text-muted-foreground\">Circuito:</span><span className=\"truncate\">{worldHeadline.title}</span></Link>\n        )}\n        {recentItems.length > 0 && ("]
+]
