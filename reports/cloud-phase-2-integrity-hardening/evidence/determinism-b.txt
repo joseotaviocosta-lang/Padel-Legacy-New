@@ -1,0 +1,12 @@
+# CLOUD-2 (B) — determinismo do harness audit-real-athletes-simulation
+# comando: node scripts/audit-real-athletes-simulation.mjs --seasons=1 --proceduralAthletes=60 --proceduralTeams=30 --seed=cloud2-determinism --out=<dir>
+# antes = ad68e81 (sem a correção B); controle = ad68e81 de novo; depois = correção B
+det-before/summary.json 134a2274577f6716cfc396f6fa6e5e9fa6a5a21d5715f6b3ad6680bd3ca2bb54
+det-before/tournament-results.csv 16e1444964cd5fa2202678b78b094aed58bd644d17783c3a806ba020cf6e685b
+det-before/season-tier-table.md 498f1ac4d60e55797f1ed040a49c812f0dfb162bdd35862fe3c465737887cac2
+det-before2/summary.json 134a2274577f6716cfc396f6fa6e5e9fa6a5a21d5715f6b3ad6680bd3ca2bb54
+det-before2/tournament-results.csv 16e1444964cd5fa2202678b78b094aed58bd644d17783c3a806ba020cf6e685b
+det-before2/season-tier-table.md 498f1ac4d60e55797f1ed040a49c812f0dfb162bdd35862fe3c465737887cac2
+det-after/summary.json 134a2274577f6716cfc396f6fa6e5e9fa6a5a21d5715f6b3ad6680bd3ca2bb54
+det-after/tournament-results.csv 16e1444964cd5fa2202678b78b094aed58bd644d17783c3a806ba020cf6e685b
+det-after/season-tier-table.md 498f1ac4d60e55797f1ed040a49c812f0dfb162bdd35862fe3c465737887cac2

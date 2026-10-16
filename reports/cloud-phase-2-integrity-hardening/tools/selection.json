@@ -1,0 +1,1284 @@
+{
+ "scripts/test-achievement-relevance-ranking.mjs": [
+  "pkg:test:achievement-relevance-ranking"
+ ],
+ "scripts/test-achievement-save-migration.mjs": [
+  "pkg:test:achievement-save-migration"
+ ],
+ "scripts/test-backup-cleanup-existing-installs-fase29.mjs": [
+  "pkg:test:backup-cleanup-existing-installs-fase29"
+ ],
+ "scripts/test-backup-rotation-fase29.mjs": [
+  "pkg:test:backup-rotation-fase29"
+ ],
+ "scripts/test-calendar-advance-v24.mjs": [
+  "pkg:test:calendar-advance"
+ ],
+ "scripts/test-career-atomicity.mjs": [
+  "pkg:test:career-atomicity"
+ ],
+ "scripts/test-career-persistence-integrity.mjs": [
+  "pkg:test:career-persistence-integrity"
+ ],
+ "scripts/test-countries-authority-v524.mjs": [
+  "pkg:test:header-ranking-v524"
+ ],
+ "scripts/test-global-header-calendar-rc.mjs": [
+  "pkg:test:global-header-calendar"
+ ],
+ "scripts/test-header-calendar-shortcut.mjs": [
+  "pkg:test:header-calendar-shortcut"
+ ],
+ "scripts/test-header-next-tournament.mjs": [
+  "pkg:test:header-next-tournament"
+ ],
+ "scripts/test-header-rank-shortcuts-v524.mjs": [
+  "pkg:test:header-ranking-v524"
+ ],
+ "scripts/test-live-coach-custom-plan.mjs": [
+  "pkg:test:live-coach-custom-plan"
+ ],
+ "scripts/test-live-coach-practice.mjs": [
+  "pkg:test:live-coach-practice"
+ ],
+ "scripts/test-live-coach-realism.mjs": [
+  "pkg:test:live-coach-realism"
+ ],
+ "scripts/test-live-coach-tournament.mjs": [
+  "pkg:test:live-coach-tournament"
+ ],
+ "scripts/test-live-coach.mjs": [
+  "pkg:test:live-coach"
+ ],
+ "scripts/test-mobile-header-two-rows-v524.mjs": [
+  "pkg:test:header-ranking-v524"
+ ],
+ "scripts/test-mobile-persistence-m3-7.mjs": [
+  "pkg:test:mobile-persistence-m3-7"
+ ],
+ "scripts/test-onboarding-tournament-gate.mjs": [
+  "pkg:test:onboarding-tournament-gate"
+ ],
+ "scripts/test-phase15-5-1-tournament-interview-consistency.mjs": [
+  "pkg:test:phase15-5-1-tournament-interview-consistency"
+ ],
+ "scripts/test-phase15-5-2-tournament-continuity.mjs": [
+  "pkg:test:phase15-5-2-tournament-continuity"
+ ],
+ "scripts/test-phase15-6-1-tournament-draw-consistency.mjs": [
+  "pkg:test:phase15-6-1-tournament-draw-consistency"
+ ],
+ "scripts/test-phase15-6-2-tournament-canonical-state.mjs": [
+  "pkg:test:phase15-6-2-tournament-canonical-state"
+ ],
+ "scripts/test-phase15-6-app-performance-calendar-hardening.mjs": [
+  "pkg:test:phase15-6-app-performance-calendar-hardening"
+ ],
+ "scripts/test-phase15-7-first-tournament-parity.mjs": [
+  "pkg:test:phase15-7-first-tournament-parity"
+ ],
+ "scripts/test-player-team-ranking-active-pair-key-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-player-team-ranking-existing-save-repair-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-player-team-ranking-materialization-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-player-team-ranking-pair-change-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-player-team-ranking-points-reprojection-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-player-team-ranking-position-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-player-team-ranking-zero-zero-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-ranking-consistency.mjs": [
+  "pkg:test:ranking-consistency"
+ ],
+ "scripts/test-ranking-country-club-links-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-ranking-finals-cut-semantic-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-four-view-architecture-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-history-navigation-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-legacy-tab-redirects-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-milestone-ladder.mjs": [
+  "pkg:test:ranking-milestone-ladder"
+ ],
+ "scripts/test-ranking-mobile-two-level-tabs-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-no-active-partner-states-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-player-pair-card-authority-v522g.mjs": [
+  "pkg:test:player-team-ranking-v522g"
+ ],
+ "scripts/test-ranking-player-pair-points-breakdown-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-ranking-race-distinct-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-ranking-race-doubles-card-v524.mjs": [
+  "pkg:test:header-ranking-v524"
+ ],
+ "scripts/test-ranking-race-doubles-player-context-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-race-doubles-view-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-race-individual-view-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-race-no-duplicate-summary-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-ranking-race-season.mjs": [
+  "pkg:test:ranking-race-season"
+ ],
+ "scripts/test-ranking-rolling-window-fase4.mjs": [
+  "pkg:test:ranking-rolling-window-fase4"
+ ],
+ "scripts/test-ranking-season-carryover-v32.mjs": [
+  "pkg:test:ranking-carryover-v32"
+ ],
+ "scripts/test-ranking-world-compact-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-ranking-world-doubles-view-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-world-individual-view-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-ranking-world-race-divergent-fixture-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-ranking-world-race-team-authority-v523.mjs": [
+  "pkg:test:ranking-architecture-v523"
+ ],
+ "scripts/test-team-ranking-existing-save-recalc-v522e.mjs": [
+  "pkg:test:team-ranking-sum-v522e"
+ ],
+ "scripts/test-team-ranking-new-pair-inherits-points-v522e.mjs": [
+  "pkg:test:team-ranking-sum-v522e"
+ ],
+ "scripts/test-team-ranking-no-geometric-authority-v522f.mjs": [
+  "pkg:test:team-ranking-no-geometric-v522f"
+ ],
+ "scripts/test-team-ranking-old-pair-history-v522f.mjs": [
+  "pkg:test:team-ranking-old-pair-v522f"
+ ],
+ "scripts/test-team-ranking-pair-change-sum-v522e.mjs": [
+  "pkg:test:team-ranking-sum-v522e"
+ ],
+ "scripts/test-team-ranking-pair-entry-fallback-v522f.mjs": [
+  "pkg:test:team-ranking-fallback-v522f"
+ ],
+ "scripts/test-team-ranking-seeding-after-sum-v522e.mjs": [
+  "pkg:test:team-ranking-sum-v522e"
+ ],
+ "scripts/test-team-ranking-sum-formula-v522e.mjs": [
+  "pkg:test:team-ranking-sum-v522e"
+ ],
+ "scripts/test-team-ranking-zero-zero-unranked-v522e.mjs": [
+  "pkg:test:team-ranking-sum-v522e"
+ ],
+ "scripts/test-tier-ladder-migration-fase3.mjs": [
+  "pkg:test:tier-ladder-migration-fase3"
+ ],
+ "scripts/test-tournament-canonical-results.mjs": [
+  "pkg:test:tournament-canonical-results"
+ ],
+ "scripts/test-tournament-confirm-no-skip.mjs": [
+  "pkg:test:tournament-confirm-no-skip"
+ ],
+ "scripts/test-tournament-date-continuity-hotfix.mjs": [
+  "pkg:test:tournament-date-continuity-hotfix"
+ ],
+ "scripts/test-tournament-draw-name-collision.mjs": [
+  "pkg:test:tournament-draw-name-collision"
+ ],
+ "scripts/test-tournament-flow-rc.mjs": [
+  "pkg:test:tournament-flow-rc"
+ ],
+ "scripts/test-tournament-guided-flow.mjs": [
+  "pkg:test:tournament-guided-flow"
+ ],
+ "scripts/test-tournament-match-lifecycle.mjs": [
+  "pkg:test:tournament-match-lifecycle"
+ ],
+ "scripts/test-tournament-notification-deeplink-rc.mjs": [
+  "pkg:test:tournament-notification-deeplink"
+ ],
+ "scripts/test-tournament-registration-v2.mjs": [
+  "pkg:test:tournament-registration"
+ ],
+ "scripts/test-tournament-result-authority.mjs": [
+  "pkg:test:tournament-result-authority"
+ ],
+ "scripts/test-tournament-resume-recovery.mjs": [
+  "pkg:test:tournament-resume-recovery"
+ ],
+ "scripts/test-tournament-round-availability.mjs": [
+  "pkg:test:tournament-round-availability"
+ ],
+ "scripts/test-world-career-phase15.mjs": [
+  "pkg:test:world-ranking-milestones",
+  "pkg:test:world-save-load"
+ ],
+ "scripts/test-world-directory-clubs-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "scripts/test-world-directory-countries-v522e.mjs": [
+  "pkg:test:ranking-ui-v522e"
+ ],
+ "test-achievement-reward-atomicity-v524e": [
+  "527k"
+ ],
+ "test-ai-partnership-exit-registration-v527j": [
+  "531"
+ ],
+ "test-ai-player-tier-policy-separation": [
+  "531"
+ ],
+ "test-annual-career-report-rc": [
+  "530b"
+ ],
+ "test-app-shell-route-contract-v520e": [
+  "531"
+ ],
+ "test-bracket-cta-availability-v516": [
+  "527k",
+  "530b"
+ ],
+ "test-bye-visible-from-draw": [
+  "527k"
+ ],
+ "test-calendar-tier-cadence-v513": [
+  "530b"
+ ],
+ "test-career-beta-readiness": [
+  "530b"
+ ],
+ "test-career-coach-history": [
+  "531"
+ ],
+ "test-career-long-term-goals": [
+  "530b"
+ ],
+ "test-career-null-safety": [
+  "530b",
+  "531b"
+ ],
+ "test-career-pace-production": [
+  "530b"
+ ],
+ "test-career-partnership-history": [
+  "531",
+  "531b"
+ ],
+ "test-career-persistence-integrity": [
+  "530b"
+ ],
+ "test-career-ui-v2": [
+  "531",
+  "531b"
+ ],
+ "test-careerhub-stale-tournament-action-v59": [
+  "530b"
+ ],
+ "test-careerhub-tournament-planning-ui-v58": [
+  "530b"
+ ],
+ "test-coach-card-badges-wrap-v531b": [
+  "new:v531b"
+ ],
+ "test-coach-card-effects": [
+  "531",
+  "531b"
+ ],
+ "test-coach-card-name-priority-v531b": [
+  "new:v531b"
+ ],
+ "test-coach-detail-layout-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-coach-discovery-rc": [
+  "531",
+  "531b"
+ ],
+ "test-coach-market-compact-layout": [
+  "531",
+  "531b"
+ ],
+ "test-coach-market-curation": [
+  "531",
+  "531b"
+ ],
+ "test-coach-salary-consistency": [
+  "531"
+ ],
+ "test-coach-selection-clarity": [
+  "531",
+  "531b"
+ ],
+ "test-coach-system-v28": [
+  "531",
+  "531b"
+ ],
+ "test-coello-tapia-two-tournament-race": [
+  "530b"
+ ],
+ "test-committed-partner-athlete-resolution-v519": [
+  "531"
+ ],
+ "test-completed-tournament-card-v527m": [
+  "530b"
+ ],
+ "test-consecutive-tournament-eligibility": [
+  "530b"
+ ],
+ "test-contract-cta-overflow-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-draw-after-exit-preserves-roster-v527j": [
+  "531"
+ ],
+ "test-draw-modal-fresh-state-v513": [
+  "530b"
+ ],
+ "test-draw-notification-authority": [
+  "530b"
+ ],
+ "test-draw-notification-bell-refresh": [
+  "530b"
+ ],
+ "test-draw-notification-bracket-atomicity-v513": [
+  "530b"
+ ],
+ "test-draw-notification-deep-link": [
+  "530b"
+ ],
+ "test-draw-notification-deeplink-v59": [
+  "530b"
+ ],
+ "test-draw-notification-fresh-tournament-read": [
+  "530b"
+ ],
+ "test-draw-notification-no-ui-side-effect": [
+  "530b"
+ ],
+ "test-draw-notification-preseason-real-flow": [
+  "530b"
+ ],
+ "test-draw-notification-real-delivery": [
+  "530b"
+ ],
+ "test-draw-notification-same-tick": [
+  "530b"
+ ],
+ "test-draw-ui-independent-persistence": [
+  "527k",
+  "530b"
+ ],
+ "test-elite-event-choice-v59": [
+  "530b"
+ ],
+ "test-energy-sensitivity-v527f": [
+  "527k"
+ ],
+ "test-energy-single-application-v527f": [
+  "527k"
+ ],
+ "test-entity-id-collision-cloud2": [
+  "new:cloud2"
+ ],
+ "test-extreme-elite-inactivity-v518": [
+  "530b"
+ ],
+ "test-final-commitment-triggers-separation-v527j": [
+  "531"
+ ],
+ "test-finals-ui-semantics-v57": [
+  "530b"
+ ],
+ "test-first-partnership-100-careers": [
+  "531"
+ ],
+ "test-first-partnership-diversity": [
+  "531"
+ ],
+ "test-first-partnership-poor-candidate-filter": [
+  "531"
+ ],
+ "test-first-partnership-ranking": [
+  "531"
+ ],
+ "test-first-partnership-veteran-mentor": [
+  "531"
+ ],
+ "test-first-partnership-young-projects": [
+  "531"
+ ],
+ "test-former-partner-reintegration-v518": [
+  "530b",
+  "531"
+ ],
+ "test-former-partner-world-continuity-v518": [
+  "530b",
+  "531"
+ ],
+ "test-global-header-overlay-rc": [
+  "531",
+  "531b"
+ ],
+ "test-global-overlays-audit": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-header-next-event-active-preseason-v530b": [
+  "new:v530b"
+ ],
+ "test-header-next-event-after-preseason-v530b": [
+  "new:v530b"
+ ],
+ "test-header-next-event-includes-preseason-v530b": [
+  "new:v530b"
+ ],
+ "test-header-next-event-registered-preseason-v530b": [
+  "new:v530b"
+ ],
+ "test-header-next-tournament": [
+  "530b"
+ ],
+ "test-header-tournament-shortcut-v527m": [
+  "530b"
+ ],
+ "test-headless-registration-authority-v527j": [
+  "530b"
+ ],
+ "test-historical-partnership-resolution-v518": [
+  "531"
+ ],
+ "test-home-actions-v530": [
+  "new:v530"
+ ],
+ "test-home-empty-state-v530": [
+  "new:v530"
+ ],
+ "test-home-mobile-overflow-v530": [
+  "new:v530"
+ ],
+ "test-home-next-commitment-v530": [
+  "new:v530"
+ ],
+ "test-home-no-duplicate-summary-v530": [
+  "new:v530"
+ ],
+ "test-home-no-partner-state-v530": [
+  "531",
+  "new:v530"
+ ],
+ "test-home-primary-hierarchy-v530": [
+  "new:v530"
+ ],
+ "test-home-priorities-v530": [
+  "new:v530"
+ ],
+ "test-home-redesign": [
+  "530b"
+ ],
+ "test-initial-opponent-origin-distribution-v515": [
+  "530b"
+ ],
+ "test-injury-pre-match-walkover": [
+  "530b"
+ ],
+ "test-interview-overlay-transition": [
+  "cloud1-extra"
+ ],
+ "test-legacy-partner-repair-v512": [
+  "531"
+ ],
+ "test-legacy-save-tournament-continuity-v517": [
+  "530b"
+ ],
+ "test-live-coach": [
+  "531"
+ ],
+ "test-live-coach-custom-plan": [
+  "531"
+ ],
+ "test-live-coach-practice": [
+  "531"
+ ],
+ "test-live-coach-realism": [
+  "531"
+ ],
+ "test-live-coach-tournament": [
+  "531"
+ ],
+ "test-live-match-landscape-contract-v520d": [
+  "531"
+ ],
+ "test-live-match-mobile-contract-v520d": [
+  "531"
+ ],
+ "test-living-career-v34-4": [
+  "530b"
+ ],
+ "test-living-career-v34-5": [
+  "530b"
+ ],
+ "test-living-career-v34-6": [
+  "530b"
+ ],
+ "test-living-career-v34-7": [
+  "530b"
+ ],
+ "test-living-career-v34-8": [
+  "530b"
+ ],
+ "test-living-career-v34-9": [
+  "530b"
+ ],
+ "test-living-partnership-market-phase15": [
+  "531",
+  "531b"
+ ],
+ "test-living-partnerships-v29": [
+  "531"
+ ],
+ "test-living-world-v23": [
+  "530b"
+ ],
+ "test-long-career-partner-ecology-v518": [
+  "530b",
+  "531"
+ ],
+ "test-masters-24-8byes-r16-v522f": [
+  "527k"
+ ],
+ "test-masters-draw-size-comparison-v517": [
+  "530b"
+ ],
+ "test-match-engine-identical-teams-v527f": [
+  "527k"
+ ],
+ "test-micro-gate-post-partner-tactics-v527g": [
+  "531"
+ ],
+ "test-mobile-compact-ux-m4": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-mobile-filters-postmatch-m4-2-2": [
+  "531b"
+ ],
+ "test-mobile-foundation": [
+  "531b"
+ ],
+ "test-mobile-game-app-experience-m4-2": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-mobile-game-feel-m4-1": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-mobile-game-flow-m4-3": [
+  "530b"
+ ],
+ "test-mobile-header-height-v524b": [
+  "530b"
+ ],
+ "test-mobile-header-two-rows-v524": [
+  "530b"
+ ],
+ "test-mobile-m3-1-device-hotfix": [
+  "530b"
+ ],
+ "test-mobile-m3-2-android-ux": [
+  "530b"
+ ],
+ "test-mobile-m3-live-match": [
+  "530b"
+ ],
+ "test-mobile-match-day-refresh-m3-7-2": [
+  "530b"
+ ],
+ "test-mobile-page-performance-budget-v524b": [
+  "530b"
+ ],
+ "test-mobile-rendered-complexity-v520c": [
+  "531"
+ ],
+ "test-mobile-visual-hotfix-m4-1-3": [
+  "530b",
+  "531b"
+ ],
+ "test-mobile-visual-polish-m4-1-2": [
+  "530b"
+ ],
+ "test-modal-safety": [
+  "530b"
+ ],
+ "test-monthly-career-report-rc": [
+  "530b"
+ ],
+ "test-new-player-opponent-tier-quality": [
+  "530b"
+ ],
+ "test-next-event-authority-consistency-v530b": [
+  "new:v530b"
+ ],
+ "test-no-current-partnership-bracket-rebuild-v527m": [
+  "531"
+ ],
+ "test-no-new-commitment-after-exit-v527j": [
+  "527k",
+  "531"
+ ],
+ "test-no-overlapping-partnership-v527j": [
+  "531"
+ ],
+ "test-normal-partner-score-v527g": [
+  "527k",
+  "531"
+ ],
+ "test-normal-partner-strength-floor-v527g": [
+  "531"
+ ],
+ "test-normal-vs-optimizer-partner-choice-v527g": [
+  "531"
+ ],
+ "test-notification-deep-links-rc": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-notification-system-audit-rc": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-onboarding-home-cta": [
+  "cloud1-extra"
+ ],
+ "test-onboarding-priority": [
+  "530b"
+ ],
+ "test-onboarding-single-source-of-truth": [
+  "530b"
+ ],
+ "test-opponent-strength-by-round": [
+  "530b"
+ ],
+ "test-optimizer-no-stale-partner-v527i": [
+  "531"
+ ],
+ "test-optimizer-partner-refresh-v527i": [
+  "527k",
+  "531"
+ ],
+ "test-page-hierarchy": [
+  "530b"
+ ],
+ "test-parallel-draw-atomicity-v513": [
+  "530b"
+ ],
+ "test-parallel-tournament-settlement-v59": [
+  "530b"
+ ],
+ "test-partner-athlete-chemistry-continuity-v512": [
+  "531"
+ ],
+ "test-partner-athlete-contract-continuity-v512": [
+  "531"
+ ],
+ "test-partner-athlete-development-veteran-v512": [
+  "531"
+ ],
+ "test-partner-athlete-development-young-v512": [
+  "531"
+ ],
+ "test-partner-athlete-idempotency-v512": [
+  "531"
+ ],
+ "test-partner-athlete-materialization-v512": [
+  "531"
+ ],
+ "test-partner-athlete-new-partnership-v512": [
+  "531"
+ ],
+ "test-partner-athlete-ovr-scale-v512": [
+  "531"
+ ],
+ "test-partner-athlete-ranking-credit-v512": [
+  "531"
+ ],
+ "test-partner-athlete-save-reload-v512": [
+  "531"
+ ],
+ "test-partner-athlete-separation-v512": [
+  "531"
+ ],
+ "test-partner-athlete-teamranking-v512": [
+  "531"
+ ],
+ "test-partner-choice-compatibility-preserved-v527g": [
+  "531"
+ ],
+ "test-partner-committed-roster-ovr-v526b": [
+  "531"
+ ],
+ "test-partner-contract-365d-v526c": [
+  "531"
+ ],
+ "test-partner-contract-decision-ui-v519": [
+  "531",
+  "531b"
+ ],
+ "test-partner-contract-no-monthly-salary": [
+  "531",
+  "531b"
+ ],
+ "test-partner-contract-notification-deeplink-v519": [
+  "531",
+  "531b"
+ ],
+ "test-partner-contract-state-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-partner-conversation-cooldown-v517": [
+  "531"
+ ],
+ "test-partner-conversation-effects-v517": [
+  "531"
+ ],
+ "test-partner-day1-gate": [
+  "531"
+ ],
+ "test-partner-decision-state-ui": [
+  "531",
+  "531b"
+ ],
+ "test-partner-development-cadence-v513": [
+  "531"
+ ],
+ "test-partner-development-v59": [
+  "531"
+ ],
+ "test-partner-ecology-inventory-v518": [
+  "530b",
+  "531"
+ ],
+ "test-partner-engine-ovr-authority-v526b": [
+  "531"
+ ],
+ "test-partner-exit-pending-ui-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-partner-hub-legacy-deeplink-v520c": [
+  "531",
+  "531b"
+ ],
+ "test-partner-hub-tab-consolidation-v520b": [
+  "531",
+  "531b"
+ ],
+ "test-partner-inbox-filters-scroll-v531b": [
+  "new:v531b"
+ ],
+ "test-partner-market-cards-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-partner-market-selects-v531b": [
+  "new:v531b"
+ ],
+ "test-partner-market-ui-contract-v518": [
+  "531",
+  "531b"
+ ],
+ "test-partner-no-overflow-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-partner-offer-materializes-selected-only-v512": [
+  "531"
+ ],
+ "test-partner-offer-notifications": [
+  "531"
+ ],
+ "test-partner-offer-overall-integrity-v519": [
+  "531"
+ ],
+ "test-partner-offer-persistence-v512": [
+  "531"
+ ],
+ "test-partner-offers-v2": [
+  "531",
+  "531b"
+ ],
+ "test-partner-overview-development-refresh-v512": [
+  "531"
+ ],
+ "test-partner-overview-persistent-athlete-v512": [
+  "531"
+ ],
+ "test-partner-quality-over-time-v527h": [
+  "531"
+ ],
+ "test-partner-rejection-cooldown": [
+  "531"
+ ],
+ "test-partner-resign-loop-v526c": [
+  "527k",
+  "531"
+ ],
+ "test-partner-screen-hierarchy-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-partner-tabs-mobile-containment-v531b": [
+  "new:v531b"
+ ],
+ "test-partnership-change-does-not-rewrite-draw-v526d": [
+  "531"
+ ],
+ "test-partnership-contract-notification-lifecycle-v517": [
+  "531"
+ ],
+ "test-partnership-expiry-with-committed-tournament-v517": [
+  "527k",
+  "530b",
+  "531"
+ ],
+ "test-partnership-history-v518": [
+  "531"
+ ],
+ "test-partnership-legacy-scope-fase29": [
+  "531"
+ ],
+ "test-partnership-registration-after-exit-v527j": [
+  "527k",
+  "530b",
+  "531"
+ ],
+ "test-partnership-repair-preserves-completed-tournaments-v517": [
+  "531"
+ ],
+ "test-partnership-scheduled-separation-v517": [
+  "531"
+ ],
+ "test-partnership-state-segmentation-v527h": [
+  "531"
+ ],
+ "test-phase15-2-integrated-qa": [
+  "530b"
+ ],
+ "test-phase15-3-economy-progression-navigation": [
+  "530b",
+  "531"
+ ],
+ "test-phase15-4-mobile-flow-polish": [
+  "530b"
+ ],
+ "test-phase15-5-1-critical-training-center": [
+  "531",
+  "531b"
+ ],
+ "test-phase15-5-1-header-notifications-partnership-ui": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-phase15-5-2-tournament-continuity": [
+  "530b"
+ ],
+ "test-phase15-5-4-critical-mobile-qa": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-phase15-6-1-tournament-draw-consistency": [
+  "530b"
+ ],
+ "test-phase15-6-2-tournament-canonical-state": [
+  "530b"
+ ],
+ "test-phase15-6-app-performance-calendar-hardening": [
+  "530b"
+ ],
+ "test-phase15-7-first-tournament-parity": [
+  "530b"
+ ],
+ "test-player-low-rank-first-round-quality-v5": [
+  "530b"
+ ],
+ "test-player-missed-registration-real-flow": [
+  "530b"
+ ],
+ "test-player-opponent-progression-v5": [
+  "530b"
+ ],
+ "test-player-partner-offer-flow-v518": [
+  "531",
+  "531b"
+ ],
+ "test-player-partner-ranking-display-v5": [
+  "530b",
+  "531"
+ ],
+ "test-player-post-separation-market-v518": [
+  "530b",
+  "531"
+ ],
+ "test-player-registration-real-flow": [
+  "530b"
+ ],
+ "test-player-tier-eligibility-matrix": [
+  "530b"
+ ],
+ "test-playthrough-4-3-production-reconciliation": [
+  "530b",
+  "531"
+ ],
+ "test-post-separation-partner-market-v517": [
+  "531",
+  "531b"
+ ],
+ "test-preexisting-commitment-preserved-v527j": [
+  "527k"
+ ],
+ "test-premium-home-v33-2": [
+  "530b"
+ ],
+ "test-premium-interfaces-v33": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-premium-relations-v33-8": [
+  "531",
+  "531b"
+ ],
+ "test-race-year-reset-v526c": [
+  "527k"
+ ],
+ "test-ranking-consistency": [
+  "530b"
+ ],
+ "test-ranking-full-season-simulation": [
+  "530b"
+ ],
+ "test-ranking-no-active-partner-states-v523": [
+  "531"
+ ],
+ "test-ranking-ui-authority-v56": [
+  "531"
+ ],
+ "test-recovery-skip-tournament-walkover": [
+  "530b"
+ ],
+ "test-redesign-polish2": [
+  "530b"
+ ],
+ "test-redesign-polish21": [
+  "530b"
+ ],
+ "test-registration-deadline-authority": [
+  "527k",
+  "530b"
+ ],
+ "test-registration-deadline-boundary-v518": [
+  "530b"
+ ],
+ "test-registration-last-day-warning": [
+  "530b"
+ ],
+ "test-registration-overlap-conflict": [
+  "530b"
+ ],
+ "test-registration-reload-idempotency": [
+  "530b"
+ ],
+ "test-registration-reminder-tournament-authority-v59": [
+  "530b"
+ ],
+ "test-save-reload-pending-separation-v527j": [
+  "527k",
+  "531"
+ ],
+ "test-settlement-after-exit-preserves-roster-v527j": [
+  "531"
+ ],
+ "test-settlement-uses-persisted-draw-roster": [
+  "527k"
+ ],
+ "test-severance-exit-path-v527b": [
+  "531"
+ ],
+ "test-staff-architecture-v29-1": [
+  "531",
+  "531b"
+ ],
+ "test-staff-commitment-no-weekly-renotify-v516": [
+  "530b",
+  "531"
+ ],
+ "test-staff-market-cards-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-staff-next-decision-chronology-v516": [
+  "531"
+ ],
+ "test-staff-no-overflow-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-staff-notification-deeplink-v513": [
+  "531"
+ ],
+ "test-staff-report-cta-state-transition-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-report-presentation-contract-v519": [
+  "531"
+ ],
+ "test-staff-report-registration-cta-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-review-after-registration-v514": [
+  "531"
+ ],
+ "test-staff-review-career-progression-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-review-deeplink-v514": [
+  "531"
+ ],
+ "test-staff-review-federation-reminder-separation-v514": [
+  "531"
+ ],
+ "test-staff-review-idempotency-v514": [
+  "531"
+ ],
+ "test-staff-review-multi-tournament-choice-v514": [
+  "531"
+ ],
+ "test-staff-review-no-event-v514": [
+  "531"
+ ],
+ "test-staff-review-player-chooses-alternative-v514": [
+  "531"
+ ],
+ "test-staff-review-registration-cta-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-review-single-message-per-week-v514": [
+  "531"
+ ],
+ "test-staff-screen-hierarchy-v531": [
+  "531b",
+  "new:v531"
+ ],
+ "test-staff-state-transition-notification-policy-v516": [
+  "531"
+ ],
+ "test-staff-tournament-recommendation-authority-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-weekly-competitive-review-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-weekly-review-next-week-v514": [
+  "531"
+ ],
+ "test-staff-weekly-review-real-dedupe-v514": [
+  "530b",
+  "531"
+ ],
+ "test-staff-weekly-review-state-update-v514": [
+  "530b",
+  "531"
+ ],
+ "test-stale-commitment-does-not-block-choice-v518": [
+  "530b"
+ ],
+ "test-starter-coach-flow": [
+  "531",
+  "531b"
+ ],
+ "test-team-ranking-partnership-change-v510": [
+  "531"
+ ],
+ "test-team-ranking-sum-formula-v522e": [
+  "527k"
+ ],
+ "test-team-ranking-ui-consistency-v510": [
+  "531"
+ ],
+ "test-tier-ladder-migration-fase3": [
+  "530b"
+ ],
+ "test-tier-qualifying-authority": [
+  "530b"
+ ],
+ "test-tier-strength-distribution": [
+  "530b"
+ ],
+ "test-tournament-cancellation-cause-v517": [
+  "530b"
+ ],
+ "test-tournament-canonical-results": [
+  "530b"
+ ],
+ "test-tournament-card-primary-state-v520c": [
+  "530b"
+ ],
+ "test-tournament-card-registration-state": [
+  "530b"
+ ],
+ "test-tournament-confirm-no-skip": [
+  "530b"
+ ],
+ "test-tournament-draw-observability-cloud2": [
+  "new:cloud2"
+ ],
+ "test-tournament-flow-rc": [
+  "527k"
+ ],
+ "test-tournament-notification-deeplink-rc": [
+  "530b"
+ ],
+ "test-tournament-registration-v2": [
+  "527k",
+  "530b"
+ ],
+ "test-tournament-result-authority": [
+  "527k"
+ ],
+ "test-tournament-resume-recovery": [
+  "530b"
+ ],
+ "test-tournament-roster-survives-partner-change-v519": [
+  "531"
+ ],
+ "test-tournament-round-availability": [
+  "530b"
+ ],
+ "test-training-center-unification-phase15-5": [
+  "530b",
+  "531b"
+ ],
+ "test-tutorial-auto-completion": [
+  "530b"
+ ],
+ "test-tutorial-chronology": [
+  "530b"
+ ],
+ "test-tutorial-complete-flow": [
+  "531b"
+ ],
+ "test-tutorial-first-official-match": [
+  "530b"
+ ],
+ "test-tutorial-registration-condition-v527m": [
+  "530b"
+ ],
+ "test-tutorial-visit-auto-completion": [
+  "530b"
+ ],
+ "test-two-wave-draw-lifecycle": [
+  "530b"
+ ],
+ "test-ui-redesign": [
+  "530b",
+  "531",
+  "531b"
+ ],
+ "test-unregistered-player-not-in-draw": [
+  "530b"
+ ],
+ "test-ux-home-v36-3-1": [
+  "530b"
+ ],
+ "test-ux-interfaces-v36-3-2": [
+  "531b"
+ ],
+ "test-walkover-achievement-isolation": [
+  "530b"
+ ],
+ "test-walkover-does-not-block-parallel-events": [
+  "530b"
+ ],
+ "test-walkover-player-tournament-settlement": [
+  "530b"
+ ],
+ "test-walkover-reload-idempotency": [
+  "530b"
+ ],
+ "test-weekly-assignment-authority-v5": [
+  "530b"
+ ],
+ "test-weekly-planning-after-registration-v513": [
+  "530b"
+ ],
+ "test-weekly-planning-career-progression-v59": [
+  "530b"
+ ],
+ "test-weekly-planning-mobile-contract-v58": [
+  "530b",
+  "531"
+ ],
+ "test-weekly-planning-player-visible-v513": [
+  "530b"
+ ],
+ "test-weekly-planning-same-week-tier-choice-v59": [
+  "530b"
+ ],
+ "test-weekly-planning-visible-decision-v59": [
+  "530b"
+ ],
+ "test-world-tour-independent-from-player-partnership-v517": [
+  "530b",
+  "531"
+ ],
+ "test-zero-win-ranking-progression-v527f": [
+  "527k"
+ ]
+}
