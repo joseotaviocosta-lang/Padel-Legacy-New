@@ -1,0 +1,8 @@
+[
+ ["for (const [path, source] of Object.entries(pages)) {\n  gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));\n  gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));",
+  "for (const [path, source] of Object.entries(pages)) {\n  // Fase 5.29 — Torneios trocou PageHeader+HUD pelo cartão de competição\n  // (estado curto + ação no mesmo bloco). O princípio do gate é o mesmo.\n  if (path === 'src/pages/Tournaments.jsx') {\n    gate(`${path} integra estado curto + ação no cartão de competição (5.29)`, source.includes('<CompetitionHeroCard') && source.includes('data-competition-hero'));\n  } else {\n    gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));\n    gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));\n  }"],
+ ["gate('Treinos: HUD vem antes das abas no hub', trainingHub.indexOf('hudItems=') < trainingHub.indexOf('<Tabs'));",
+  "// 5.29: o HUD virou o painel \"Hoje\" (medidores) — continua antes das abas.\ngate('Treinos: painel de estado (Hoje) vem antes das abas no hub', trainingHub.indexOf('data-training-today') > -1 && trainingHub.indexOf('data-training-today') < trainingHub.indexOf('<Tabs'));"],
+ ["gate('Torneios: evento/status/ação estão no mesmo cabeçalho', tournaments.includes('hudLabel=\"Próximo evento\"') && tournaments.includes('Abrir evento'));",
+  "// 5.29: evento/status/ação no mesmo bloco — agora o cartão de competição.\ngate('Torneios: evento/status/ação estão no mesmo bloco (cartão de competição)', tournaments.includes('<CompetitionHeroCard') && tournaments.includes('Próximo evento') && tournaments.includes('Abrir evento'));"]
+]

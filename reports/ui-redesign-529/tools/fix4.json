@@ -1,0 +1,4 @@
+[
+ ["              <span className=\"min-w-0 flex-1 truncate text-xs\"><span className=\"font-bold\">Partida treino</span>",
+  "              {/* CTA logo após o texto (não na borda direita, onde a coluna flutuante do desktop o cobria). */}\n              <span className=\"min-w-0 truncate text-xs\"><span className=\"font-bold\">Partida treino</span>"]
+]

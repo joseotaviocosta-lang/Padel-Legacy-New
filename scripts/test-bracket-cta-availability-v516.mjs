@@ -81,13 +81,20 @@ await check('Parte M: TODO CTA de chave da página de Torneios está sob guarda'
   const GUARDS = ['drawHappened', 'bracketReady', 'tournament.champion'];
   const anchors = [];
   let from = 0;
-  for (;;) {
-    const idx = src.indexOf('onClick={onViewBracket}', from);
-    if (idx < 0) break;
-    anchors.push(idx);
-    from = idx + 1;
+  // Fase 5.29: o cartão de competição chama `onViewBracket(tournament)` e o
+  // cartão de agenda fundiu "Ver chave" + o atalho do bloco de campeão num
+  // único CTA — as superfícies passaram a ser 2 (competição + agenda), cada
+  // uma ainda sob guarda. Os dois formatos de chamada contam.
+  for (const needle of ['onClick={onViewBracket}', 'onClick={() => onViewBracket(']) {
+    from = 0;
+    for (;;) {
+      const idx = src.indexOf(needle, from);
+      if (idx < 0) break;
+      anchors.push(idx);
+      from = idx + 1;
+    }
   }
-  assert.ok(anchors.length >= 3, `esperava >=3 superfícies de chave, achei ${anchors.length}`);
+  assert.ok(anchors.length >= 2, `esperava >=2 superfícies de chave, achei ${anchors.length}`);
   const unguarded = anchors.filter((idx) => {
     const before = src.slice(Math.max(0, idx - 260), idx);
     return !GUARDS.some((guard) => before.includes(guard));

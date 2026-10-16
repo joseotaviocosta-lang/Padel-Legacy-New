@@ -1,0 +1,300 @@
+{
+  "createdAt": "2026-10-16T01:18:59.231Z",
+  "total": 39,
+  "pass": 22,
+  "regressions": [],
+  "preExisting": [
+    "test-core-gameplay-ui",
+    "test-global-overlays-audit",
+    "test-mobile-compact-ux-m4",
+    "test-mobile-game-app-experience-m4-2",
+    "test-mobile-game-flow-m4-3",
+    "test-mobile-m3-1-device-hotfix",
+    "test-mobile-m3-2-android-ux",
+    "test-page-hierarchy",
+    "test-phase15-3-economy-progression-navigation",
+    "test-phase15-4-mobile-flow-polish",
+    "test-phase15-5-1-critical-training-center",
+    "test-phase15-5-4-critical-mobile-qa",
+    "test-phase15-7-first-tournament-parity",
+    "test-redesign-polish2",
+    "test-redesign-polish21",
+    "test-training-center-unification-phase15-5",
+    "test-visual-checkpoint-hotfix1"
+  ],
+  "results": [
+    {
+      "test": "test-bracket-cta-availability-v516",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-completed-tournament-card-v527m",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-core-gameplay-ui",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "CoreGameplayUiTest: FALHA (6/73)"
+    },
+    {
+      "test": "test-draw-modal-fresh-state-v513",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-draw-notification-deep-link",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-finals-ui-semantics-v57",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-global-overlays-audit",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\Padel-Legacy-New\\src\\components\\career\\CareerAssistant.jsx'\r"
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: PageHeader ganhou a prop `dense` (default false — não quebra uso existente)\r"
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-game-flow-m4-3",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 17. round_result nunca oferece jogar uma rodada futura (playableToday guarda o botão \"Jogar\")\r"
+    },
+    {
+      "test": "test-mobile-m3-1-device-hotfix",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: /game/matches passou a existir como rota real (não deveria)\r"
+    },
+    {
+      "test": "test-mobile-m3-2-android-ux",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: input de nome do atleta perdeu o scrollIntoView no foco (Parte 8, ficaria coberto pelo teclado)\r"
+    },
+    {
+      "test": "test-mobile-m3-live-match",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-match-day-refresh-m3-7-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-training-game-experience-m4-2-1",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visual-hotfix-m4-1-3",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-mobile-visual-polish-m4-1-2",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-modal-safety",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-notification-deep-links-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-page-hierarchy",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Training.jsx tem exatamente 1 PageHeader (identidade única da página)\r"
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-4-mobile-flow-polish",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    at failureErrorWithLog (C:\\Projetos\\Padel-Legacy-New\\node_modules\\esbuild\\lib\\main.js:1467:15) | AssertionError [ERR_ASSERTION]: Fase 15.4 falhou: 3/132 gate(s)\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-5-1-critical-training-center",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined | [Game Core] Metadados do GameState não foram salvos: Error: WorldEvent já existe com o id: worldevent-1792113461832-zn1fu8 | Error: WorldEvent já existe com o id: worldevent-1792113461832-zn1fu8\r"
+    },
+    {
+      "test": "test-phase15-5-2-tournament-continuity",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-phase15-5-3-training-center-effects",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-phase15-5-4-critical-mobile-qa",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PASS — 20. D-3 cria exatamente uma notificação (um único marco na lista) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r"
+    },
+    {
+      "test": "test-phase15-7-first-tournament-parity",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Rebalance: 1º torneio da temporada ocorre dentro da janela de 30-45 dias (obtido: 28 dias)\r"
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-redesign-polish2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: getNextStep (motor de próximo passo) removida/renomeada\r"
+    },
+    {
+      "test": "test-redesign-polish21",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextEventCard (fonte única do \"próximo torneio\" informativo) foi removido da Home\r"
+    },
+    {
+      "test": "test-tier-qualifying-authority",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-canonical-results",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-card-primary-state-v520c",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-confirm-no-skip",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-notification-deeplink-rc",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-tournament-round-availability",
+      "now": 0,
+      "head": 0,
+      "verdict": "pass",
+      "nowTail": ""
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — 102. Navegação possui uma única entrada Centro de Treinamento | AssertionError [ERR_ASSERTION]: Fase 15.5 falhou: 5/144 gate(s)\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-visual-checkpoint-hotfix1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: TrainingActivityCard não mostra mais o ganho previsto (+X.XX)\r"
+    }
+  ]
+}

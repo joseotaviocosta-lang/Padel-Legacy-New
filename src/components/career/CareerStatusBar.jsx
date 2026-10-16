@@ -6,7 +6,9 @@ import { localGame } from '@/api/localGameClient.js';
 
 const athleteProfiles = /** @type {any} */ (localGame.entities).AthleteProfile;
 
-export default function CareerStatusBar({ profile, onPartnerClick }) {
+// 5.29: `compact` = só a linha da dupla (sem data — o header já mostra a
+// data da carreira), para viver dentro do cartão de competição de Torneios.
+export default function CareerStatusBar({ profile, onPartnerClick, compact = false }) {
   const fallbackPartner = getPartnerBot(profile);
   const [canonicalPartner, setCanonicalPartner] = useState(null);
   useEffect(() => {
@@ -22,6 +24,16 @@ export default function CareerStatusBar({ profile, onPartnerClick }) {
   const partner = canonicalPartner || fallbackPartner;
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
+
+  if (compact) {
+    return (
+      <button type="button" onClick={onPartnerClick} className="flex w-full min-w-0 items-center gap-2 rounded-xl px-1 py-1 text-left transition-colors hover:bg-secondary/30" data-career-partner-row>
+        <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/12 text-xs font-black text-primary">{partner ? partner.name[0] : <Users className="h-3.5 w-3.5 text-muted-foreground" />}</span>
+        <span className="min-w-0 flex-1 truncate text-xs"><span className="text-muted-foreground">Dupla · </span><span className="font-semibold">{partner ? partner.name : 'Sem parceiro — toque para escolher'}</span>{partner && <span className="text-muted-foreground"> · OVR {overallRating(partner)} · Química {profile?.partner_chemistry || 50}</span>}</span>
+        {canChange ? <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" /> : <span className="flex shrink-0 items-center gap-1 text-[10px] font-bold text-amber-400"><Lock className="h-3 w-3" />{daysLocked}d</span>}
+      </button>
+    );
+  }
 
   // M4.1.3 (docs/MOBILE_M4_1_3_VISUAL_HOTFIX.md, Parte 7): QA físico provou
   // que o problema era ESTRUTURAL, não de truncamento — em 360px, data +

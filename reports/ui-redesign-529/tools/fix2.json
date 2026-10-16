@@ -1,0 +1,4 @@
+[
+ ["        {/* 5.29: a faixa de abas gruda ABAIXO do header fixo do celular (antes\n            `top-2` a fazia passar por baixo dele ao rolar). */}\n        <div className=\"sticky top-[calc(var(--pl-header-h-mobile)+env(safe-area-inset-top)+0.25rem)] z-20 md:top-2\" data-training-center-tabs>",
+  "        <div className=\"sticky top-2 z-20\" data-training-center-tabs>"]
+]

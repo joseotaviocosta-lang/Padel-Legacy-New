@@ -1,0 +1,145 @@
+{
+  "createdAt": "2026-10-16T01:03:48.094Z",
+  "viewport": "390x844",
+  "passed": 27,
+  "total": 27,
+  "checks": [
+    {
+      "name": "Torneios: página abre com o cartão de competição",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: CTA principal do compromisso correto (Preparar/Jogar/Ver evento/Abrir evento)",
+      "ok": true,
+      "detail": " | PREPARAR | Chave | Detalhes | T Dupla · Tomás Acosta · OVR 34 · Química 74 2d"
+    },
+    {
+      "name": "Torneios: estado do torneio inscrito visível",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: aba Estatísticas",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: aba Circuito",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: aba Notícias",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: aba Agenda",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: Passados selecionado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: lista de passados renderiza (campeão/encerrado ou vazio explicado)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: Futuros selecionado",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: cartões de agenda presentes",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: abrir evento (Detalhes) abre o modal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: voltar (fechar modal)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: \"Ver detalhes\" de um cartão abre o modal",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: \"Chave\" abre a chave",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Torneios: análise do treinador expande",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: página abre com o painel Hoje",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: aba Partida",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: aba Agenda",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: aba Evolução",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: aba Centro",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: aba Treino",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: alternar tipo de treino troca os cartões",
+      "ok": true,
+      "detail": "Golpes de fundo,Controle de rede,Golpes aéreos → Condicionamento,Agilidade,Potência"
+    },
+    {
+      "name": "Treino: cartão expande (intensidade)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "Treino: cada cartão tem CTA \"Treinar\" com custo",
+      "ok": true,
+      "detail": "6 botões"
+    },
+    {
+      "name": "Treino: CTA \"Treinar\" executa a sessão",
+      "ok": true,
+      "detail": "executado uma vez nesta fase: treinos 0/3 → 1/3, saldo 6.511 → 6.481 (−30 = custo exibido); não repetido para não gravar de novo",
+      "evidenceOnly": true
+    },
+    {
+      "name": "Sem erro de JavaScript",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "errors": []
+}

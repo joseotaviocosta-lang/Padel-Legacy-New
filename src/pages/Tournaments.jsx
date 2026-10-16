@@ -14,7 +14,7 @@ import TournamentStats from '@/components/tournaments/TournamentStats';
 import CircuitEvolution from '@/components/tournaments/CircuitEvolution';
 import TournamentNews from '@/components/tournaments/TournamentNews';
 import TournamentBracket from '@/components/tournaments/TournamentBracket';
-import { Page, PageContent, PageHeader as PremiumPageHeader, PageSkeleton, StatusBadge, EmptyState, Surface, Tabs, Button, ConfirmDialog, TooltipHint, Select } from '@/components/design-system';
+import { Page, PageContent, PageSkeleton, StatusBadge, EmptyState, Surface, Tabs, Button, ConfirmDialog, TooltipHint, Select } from '@/components/design-system';
 import { enrichTournament, orderTournamentsForView } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
@@ -508,35 +508,36 @@ export default function Tournaments() {
             ícone ("Inscrito status", "Silver nível"). GameHud já renderiza
             icon → value → label corretamente (ambos whitespace-nowrap) —
             o bug era de conteúdo, não do componente. */}
-        <PremiumPageHeader
-          dense
-          eyebrow="Padel Legacy World Tour"
-          title="Torneios"
-          description={season?.description || 'Escolha os torneios certos, administre inscrições e acompanhe a evolução do circuito.'}
-          icon={Trophy}
-          tone="premium"
-          breadcrumb={['Competições', 'Torneios']}
-          hudLabel="Próximo evento"
-          hudItems={nextTournament ? [
-            { value: `${nextTournament.name} · ${daysBetween(careerDate, nextTournament.start_date) === 0 ? 'Hoje' : `${daysBetween(careerDate, nextTournament.start_date)}d`}`, icon: Trophy, tone: 'premium' },
-            { value: registeredTournaments.has(nextTournament.id) ? 'Inscrito' : 'Disponível', icon: CheckCircle, tone: registeredTournaments.has(nextTournament.id) ? 'success' : 'warning' },
-            { value: nextTournament.tier, icon: Award },
-          ] : [{ label: 'agenda', value: 'Livre', icon: Calendar, tone: 'info' }]}
-          action={<div className="flex items-center gap-2">{/* 5.28: secundário — o primário da tela é a ação do card (Preparar/Inscrever-se); dois primários disputavam a primeira dobra. */}{nextTournament && <Button level="secondary" onClick={() => setDetailsTournament(nextTournament)}>Abrir evento</Button>}<TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." /></div>}
-        />
+        {/* Fase 5.29 — HUB DE COMPETIÇÃO. Antes eram quatro camadas antes da
+            lista: herói com HUD (próximo evento) + "Abrir evento", barra de
+            data/dupla, cartão "Você está disputando" e só então as abas — o
+            mesmo torneio podia aparecer três vezes na primeira dobra. Agora
+            é UM cartão de competição: o compromisso atual (campanha ou
+            inscrição) ou, sem compromisso, o próximo evento aberto — com a
+            única ação primária da área — e a linha da dupla no rodapé. A data
+            sai daqui (o header já mostra). Nenhum dado novo: focusTournament,
+            nextTournament, activeRunEvents e registeredTournaments são os
+            mesmos de antes. */}
+        {/* No celular a aba "Torneios" do grupo Competir já nomeia a página; o título só volta no desktop. */}
+        <header className="hidden items-center justify-between gap-2 px-1 md:flex" data-tournaments-hub-title>
+          <div className="flex min-w-0 items-center gap-2">
+            <Trophy className="h-5 w-5 shrink-0 text-premium" />
+            <h1 className="pl-title-display truncate text-xl font-black tracking-[-0.03em] sm:text-2xl">Torneios</h1>
+          </div>
+          <TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." />
+        </header>
 
-      <CareerStatusBar profile={profile} onPartnerClick={() => setShowPartner(true)} />
-
-      {focusTournament && (
-        <TournamentFocusMode
-          tournament={focusTournament}
-          activeRun={activeRunEvents.get(focusTournament.id) || null}
+        <CompetitionHeroCard
+          focusTournament={focusTournament}
+          nextTournament={nextTournament}
+          activeRun={focusTournament ? activeRunEvents.get(focusTournament.id) || null : null}
+          registered={nextTournament ? registeredTournaments.has(nextTournament.id) : false}
           careerDate={careerDate}
           onPlay={() => handlePlay(focusTournament)}
-          onViewBracket={() => setBracketTournament(focusTournament)}
-          onViewDetails={() => setDetailsTournament(focusTournament)}
+          onViewBracket={(t) => setBracketTournament(t)}
+          onViewDetails={(t) => setDetailsTournament(t)}
+          partnerRow={<CareerStatusBar compact profile={profile} onPartnerClick={() => setShowPartner(true)} />}
         />
-      )}
 
       {/* Top tabs */}
       <Tabs
@@ -553,12 +554,15 @@ export default function Tournaments() {
 
       {activeTab === 'calendar' && (
       <>
-      {/* View toggle */}
+      {/* 5.29: Futuros/Passados e a categoria dividem UMA linha no celular
+          (antes: duas faixas inteiras de controle antes da lista). */}
+      <div className="flex min-w-0 items-center gap-2" data-tournament-list-controls>
       <Tabs
         tabs={[{ key: 'upcoming', label: 'Futuros' }, { key: 'past', label: 'Passados' }]}
         activeTab={view}
         onTabChange={setView}
-        variant="buttons"
+        variant="segmented"
+        className="min-w-0 flex-1 md:max-w-sm md:flex-none"
       />
 
       {/* Playthrough 5.20-B, Partes Q/R — FILTRO DE CATEGORIA NO MOBILE.
@@ -570,12 +574,13 @@ export default function Tournaments() {
           linha que mostra a categoria ativa e abre as 11 ao toque. No desktop,
           onde a largura sobra, a faixa de pilulas continua. */}
       <Select
-        className="w-full md:hidden"
+        className="w-[42%] max-w-[11rem] shrink-0 md:hidden"
         value={filter}
         onValueChange={setFilter}
         options={FILTERS.map((f) => ({ value: f.id, label: f.label }))}
         aria-label="Filtrar torneios por categoria"
       />
+      </div>
       <Tabs className="hidden md:flex" tabs={FILTERS.map(t => ({ key: t.id, label: t.label }))} activeTab={filter} onTabChange={setFilter} variant="buttons" />
 
       {/* Tournament list */}
@@ -727,49 +732,74 @@ export default function Tournaments() {
   );
 }
 
-// M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 11): "Tournament
-// Focus" — transmite "estou disputando um torneio", não "estou olhando uma
-// lista". Só apresentação: `activeRun.metadata.tournament_run` e o formato
-// de `activeMatch`/`match.opponent` já existiam (mesmos campos que
-// TournamentCard já lia para o banner "Em torneio" e que CareerHub.jsx já
-// usa via getCurrentTournamentMatch/match.opponent) — nenhum dado novo.
-function TournamentFocusMode({ tournament, activeRun, careerDate, onPlay, onViewBracket }) {
+// Fase 5.29 — faixa de cor do tier (acento à esquerda do cartão), no lugar
+// de borda + brilho em volta do cartão inteiro.
+const TIER_ACCENT = {
+  'Legacy Finals': 'bg-rose-500', Crown: 'bg-amber-400', Elite: 'bg-fuchsia-500', Masters: 'bg-purple-500',
+  'Circuit Finals': 'bg-indigo-500', Platinum: 'bg-cyan-400', Gold: 'bg-yellow-400', Silver: 'bg-slate-400',
+  Bronze: 'bg-orange-700', Exibição: 'bg-teal-400',
+};
+
+// M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 11) + 5.29: o antigo
+// "Tournament Focus" vira o cartão de competição do hub. Mesmas regras de
+// estado (activeMatch/canPlayNow/bracketReady); quando não há compromisso,
+// mostra o próximo evento aberto (o antigo HUD do herói) no mesmo lugar, em
+// vez de dois blocos diferentes para a mesma pergunta "o que vem agora?".
+function CompetitionHeroCard({ focusTournament, nextTournament, activeRun, registered, careerDate, onPlay, onViewBracket, onViewDetails, partnerRow }) {
+  const tournament = focusTournament || nextTournament;
+  if (!tournament) {
+    return (
+      <Surface padding="compact" className="space-y-2">
+        <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Agenda livre</p>
+        <p className="text-sm text-muted-foreground">Nenhum torneio com inscrição aberta agora. Novas etapas abrem 30 dias antes.</p>
+        <div className="border-t border-border/40 pt-2">{partnerRow}</div>
+      </Surface>
+    );
+  }
   const config = TIER_CONFIG[tournament.tier] || TIER_CONFIG.Silver;
   const Icon = config.icon;
-  const run = activeRun?.metadata?.tournament_run;
+  const run = focusTournament ? activeRun?.metadata?.tournament_run : null;
   const activeMatch = run?.matches?.[run?.currentRound ?? -1] || null;
   const opponentNames = Array.isArray(activeMatch?.opponent) ? activeMatch.opponent.map((item) => item.name).filter(Boolean).join(' & ') : '';
   const canPlayNow = Boolean(activeMatch) && activeMatch.date === careerDate && activeMatch.preparationCompleted;
+  const days = careerDate && tournament.start_date ? daysBetween(careerDate, tournament.start_date) : null;
+  const when = days == null ? formatDate(tournament.start_date) : days === 0 ? 'Hoje' : days > 0 ? `em ${days}d · ${formatDate(tournament.start_date)}` : formatDate(tournament.start_date);
 
-  let statusLine;
+  let eyebrow; let statusLine;
   if (activeMatch) {
+    eyebrow = 'Você está disputando';
     statusLine = [activeMatch.round, formatDate(activeMatch.date), opponentNames ? `vs ${opponentNames}` : null].filter(Boolean).join(' · ');
-  } else if (activeRun) {
-    statusLine = `Inscrito · aguardando início · ${formatDate(tournament.start_date)}`;
+  } else if (focusTournament) {
+    eyebrow = 'Inscrito para este torneio';
+    statusLine = `${activeRun ? 'Aguardando início' : 'Inscrição confirmada'} · ${when}`;
   } else {
-    statusLine = `Inscrito · ${formatDate(tournament.start_date)}`;
+    eyebrow = 'Próximo evento';
+    statusLine = `${registered ? 'Inscrito' : 'Inscrições abertas'} · ${when}`;
   }
-
-  const primaryLabel = canPlayNow ? 'Jogar partida' : activeMatch ? 'Preparar' : 'Ver evento';
-  // Playthrough 5.16, Parte M — o modo foco também oferecia "Chave" no estado
-  // "Inscrito · aguardando início", que acontece ANTES do sorteio (D-3).
+  // Playthrough 5.16, Parte M — "Chave" só quando a chave existe.
   const bracketReady = hasViewableTournamentBracket(tournament, careerDate);
+  const primary = focusTournament
+    ? <Button level="primary" size="touch" onClick={onPlay}><Play className="h-4 w-4" /> {canPlayNow ? 'Jogar partida' : activeMatch ? 'Preparar' : 'Ver evento'}</Button>
+    : <Button level="primary" size="touch" onClick={() => onViewDetails(tournament)}>Abrir evento</Button>;
 
   return (
-    <Surface variant="premium" className="border-primary/30">
+    <section className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-4 shadow-sm" data-competition-hero>
+      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 ${TIER_ACCENT[tournament.tier] || 'bg-primary'}`} />
       <div className="flex items-start gap-3">
-        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15"><Icon className="h-5 w-5 text-primary" /></span>
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/12"><Icon className="h-5 w-5 text-primary" /></span>
         <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-black uppercase tracking-wider text-primary">{activeMatch ? 'Você está disputando' : 'Inscrito para este torneio'}</p>
-          <p className="mt-0.5 truncate text-lg font-black">{tournament.name}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{statusLine}</p>
+          <div className="flex items-center justify-between gap-2"><p className="text-[10px] font-black uppercase tracking-wider text-primary">{eyebrow}</p><span className="md:hidden"><TooltipHint label="Sobre inscrições" content="Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla." /></span></div>
+          <h2 className="mt-0.5 truncate text-lg font-black leading-tight">{tournament.name}</h2>
+          <p className="mt-1 text-xs text-muted-foreground"><span className="font-bold text-foreground/80">{config.label}</span> · {statusLine}</p>
         </div>
       </div>
-      <div className="mt-3 flex flex-wrap gap-2">
-        <Button level="primary" size="touch" onClick={onPlay}><Play className="h-4 w-4" /> {primaryLabel}</Button>
-        {bracketReady && <Button level="ghost" size="sm" onClick={onViewBracket}>Chave</Button>}
+      <div className="mt-3 flex flex-wrap items-center gap-2">
+        {primary}
+        {bracketReady && <Button level="ghost" size="sm" onClick={() => onViewBracket(tournament)}>Chave</Button>}
+        {focusTournament && <Button level="ghost" size="sm" onClick={() => onViewDetails(tournament)}>Detalhes</Button>}
       </div>
-    </Surface>
+      <div className="mt-3 border-t border-border/40 pt-2">{partnerRow}</div>
+    </section>
   );
 }
 
@@ -851,135 +881,80 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
   };
   const StateIcon = STATE_ICONS[cardState] || Lock;
 
-  return (
-    <div className={`glass rounded-2xl p-4 border ${config.card} ${config.glow} transition-all ${isPlayed || isPast ? 'opacity-60' : 'hover:scale-[1.02]'}`}>
-      <div className="flex items-start justify-between gap-2 mb-3">
-        <div className="flex items-center gap-2.5">
-          <div className="h-9 w-9 rounded-xl bg-secondary/60 flex items-center justify-center shrink-0">
-            <Icon className="h-4 w-4 text-muted-foreground" />
-          </div>
-          <div className="min-w-0">
-            <h3 className="font-bold text-sm leading-tight">{tournament.name}</h3>
-            <span className={`inline-flex items-center rounded-full border px-2 py-0.5 text-[9px] font-bold uppercase tracking-wide mt-0.5 ${config.badge}`}>
-              {config.label}
-            </span>
+  // Fase 5.29 — CARTÃO DE AGENDA. Antes: borda+brilho do tier no cartão
+  // inteiro, "Ver detalhes"/"Ver chave" como botões no meio da linha de data
+  // (quebravam a linha no celular), avisos em caixas com borda e a ação em
+  // pílula colorida própria. Agora: faixa de cor do tier à esquerda, uma
+  // linha de metadados, um aviso em texto com ícone (sem caixa), e um rodapé
+  // único com recompensas à esquerda e as ações à direita no padrão da 5.28
+  // (ação do card = secundária; o primário da tela vive no cartão de
+  // competição). Mesmos estados, mesmas condições, mesmos handlers.
+  const days = careerDate && displayDate ? daysBetween(careerDate, displayDate) : null;
+  const noticeTone = registrationNotice?.tone === 'confirmed' ? 'text-emerald-300' : registrationNotice?.tone === 'warning' ? 'text-amber-300' : 'text-muted-foreground';
+  const showAction = (isPlayable || canPlayerRegisterNow(registrationState)) && !isPlayed;
+  const actionLabel = !hasPartner ? <><Lock className="h-3.5 w-3.5" /> Parceiro</>
+    : !hasEnergy && activeMatch?.date === careerDate ? <><AlertCircle className="h-3.5 w-3.5" /> Sem energia</>
+      : activeMatch ? <><Play className="h-3.5 w-3.5" /> {activeMatch.date === careerDate && activeMatch.preparationCompleted ? 'Jogar' : 'Preparar'}</>
+        : isRegistered && isPlayable ? <><Play className="h-3.5 w-3.5" /> Jogar</>
+          : isRegistered ? <><CheckCircle className="h-3.5 w-3.5" /> Inscrito</>
+            : <><CheckCircle className="h-3.5 w-3.5" /> Inscrever</>;
+  const actionTone = !hasPartner ? 'text-amber-300' : isPlayable && !hasEnergy ? 'text-red-300' : 'text-primary';
 
-          </div>
+  return (
+    <article className={`relative overflow-hidden rounded-2xl border border-border/50 bg-card/55 p-3.5 pl-4 transition-colors hover:border-border sm:p-4 sm:pl-5 ${isPlayed || isPast ? 'opacity-70' : ''}`} data-tournament-card>
+      <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 ${TIER_ACCENT[tournament.tier] || 'bg-primary/60'}`} />
+      <div className="flex items-start justify-between gap-2">
+        <div className="min-w-0">
+          <h3 className="truncate text-sm font-black leading-tight">{tournament.name}</h3>
+          <p className="mt-0.5 flex items-center gap-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground"><Icon className="h-3 w-3 shrink-0" />{config.label}</p>
         </div>
-        {/* Playthrough 5.20-C — ESTADO PRINCIPAL UNICO. Antes eram quatro selos
-            encadeados aqui mais o aviso de inscricao mais a "escolha
-            estrategica": cinco coisas disputando a mesma leitura. */}
+        {/* Playthrough 5.20-C — ESTADO PRINCIPAL UNICO. */}
         <StatusBadge tone={statePresentation.tone} icon={StateIcon} className="shrink-0">
           {statePresentation.label}
         </StatusBadge>
       </div>
 
-      {/* Playthrough 5.20-C, item 1 — a descricao desce para "Ver detalhes".
-          Sao 36px por card de texto de ambientacao que nao decide inscricao, e
-          o modal de detalhes ja a mostra por inteiro. Nada foi removido. */}
-
       {displayDate && (
-        <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 mb-3">
-          <Calendar className="h-3 w-3 text-muted-foreground" />
-          <span className="text-[10px] font-semibold text-foreground">{formatDate(displayDate)}</span>
-          {careerDate && (() => {
-            const days = daysBetween(careerDate, displayDate);
-            return (
-              <span className={`text-[10px] ${days === 0 ? 'text-primary font-bold' : days > 0 ? 'text-cyan-400' : 'text-muted-foreground'}`}>
-                {days === 0 ? '• Hoje!' : days > 0 ? `• em ${days}d` : `• há ${Math.abs(days)}d`}
-              </span>
-            );
-          })()}
-          <span className="text-[10px] text-muted-foreground">·</span>
-          <span className={`text-[10px] font-semibold ${config.diffColor}`}>● {config.diffLabel}</span>
-          <span className="text-[10px] text-muted-foreground">·</span>
-          <span className="text-[10px] text-muted-foreground">{tournament.max_participants || 16} vagas</span>
-          {tournament.concurrent_events > 1 && (
-            <>
-              <span className="text-[10px] text-muted-foreground">·</span>
-              <span className="text-[10px] font-semibold text-amber-300">{tournament.concurrent_events} eventos na semana</span>
-            </>
-          )}
-          <Button type="button" level="ghost" size="sm" onClick={onViewDetails} className="h-7 rounded-lg bg-primary/10 px-2 text-[10px] text-primary hover:bg-primary/15">Ver detalhes</Button>
-          {/* Playthrough 5.16, Partes K/M — o card oferecia "Ver chave" em
-              qualquer estado, inclusive semanas antes do sorteio. `drawHappened`
-              já era calculado logo acima pela autoridade única; só não estava
-              sendo consultado aqui. */}
-          {drawHappened && (
-            <Button type="button" level="ghost" size="sm" onClick={onViewBracket} className="h-7 rounded-lg bg-secondary px-2 text-[10px] text-cyan-300 hover:bg-secondary/80">Ver chave</Button>
-          )}
-        </div>
+        <p className="mt-2 flex flex-wrap items-center gap-x-1.5 gap-y-0.5 text-[11px] text-muted-foreground">
+          <Calendar className="h-3 w-3" />
+          <span className="font-semibold text-foreground">{formatDate(displayDate)}</span>
+          {days != null && <span className={days === 0 ? 'font-bold text-primary' : days > 0 ? 'text-cyan-400' : ''}>{days === 0 ? '· Hoje!' : days > 0 ? `· em ${days}d` : `· há ${Math.abs(days)}d`}</span>}
+          <span>·</span><span className={`font-semibold ${config.diffColor}`}>{config.diffLabel}</span>
+          <span>·</span><span>{tournament.max_participants || 16} vagas</span>
+          {tournament.concurrent_events > 1 && <><span>·</span><span className="font-semibold text-amber-300">{tournament.concurrent_events} eventos na semana</span></>}
+        </p>
       )}
-      {activeMatch && <div className="mb-3 rounded-xl border border-primary/25 bg-primary/5 p-2.5"><p className="text-[9px] font-black uppercase tracking-wider text-primary">Em torneio</p><p className="mt-1 text-xs font-bold">{activeMatch.round} · {activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}</p></div>}
+      {activeMatch && <p className="mt-2 text-xs"><span className="text-[10px] font-black uppercase tracking-wider text-primary">Em torneio · </span><span className="font-bold">{activeMatch.round} · {activeMatch.preparationCompleted ? 'plano definido' : 'preparação pendente'}</span></p>}
 
+      {/* Uma única linha de situação, em ordem de prioridade (cancelado →
+          sem resultado → campeão → aviso de inscrição). */}
       {cancelled ? (
-        <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-destructive/5 border border-destructive/20">
-          <AlertCircle className="h-3.5 w-3.5 text-destructive shrink-0" />
-          <div className="min-w-0 flex-1">
-            <p className="text-[9px] text-destructive/70 uppercase font-bold tracking-wide">Sem chave oficial</p>
-            <p className="text-xs font-bold text-destructive truncate">{getTournamentCancellationLabel(tournament)}</p>
-          </div>
-        </div>
+        <p className="mt-2 flex items-start gap-1.5 text-xs text-destructive"><AlertCircle className="mt-0.5 h-3.5 w-3.5 shrink-0" /><span><strong>Sem chave oficial.</strong> {getTournamentCancellationLabel(tournament)}</span></p>
       ) : pendingResolution ? (
-        <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-secondary/40 border border-border/40">
-          <Clock3 className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
-          <div className="min-w-0 flex-1">
-            <p className="text-[9px] text-muted-foreground uppercase font-bold tracking-wide">Ainda sem campeão</p>
-            <p className="text-xs font-bold truncate">A data do torneio passou, mas o resultado oficial ainda não foi resolvido.</p>
-          </div>
-        </div>
-      ) : isPast && tournament.champion && (
-        <div className="flex items-center gap-2 mb-3 p-2 rounded-lg bg-amber-500/10 border border-amber-500/20">
-          <Crown className="h-3.5 w-3.5 text-amber-400 shrink-0" />
-          <div className="min-w-0 flex-1">
-            <p className="text-[9px] text-amber-400/70 uppercase font-bold tracking-wide">Campeão</p>
-            <p className="text-xs font-bold text-amber-300 truncate">{tournament.champion}</p>
-          </div>
-          <button onClick={onViewBracket} className="text-[9px] text-primary font-bold px-2 py-1 rounded-lg hover:bg-primary/10 transition-colors shrink-0">
-            Ver Chave
-          </button>
-        </div>
-      )}
-
-      {/* Playthrough 4.9, Parte D — aviso de inscrição, só quando não há
-          nada mais prioritário já mostrado acima (cancelado/pendente de
-          resultado/campeão). */}
-      {!cancelled && !pendingResolution && !(isPast && tournament.champion) && registrationNotice && (
-        <div className={`flex items-center gap-2 mb-3 p-2 rounded-lg border ${
-          registrationNotice.tone === 'confirmed' ? 'bg-emerald-500/10 border-emerald-500/25'
-            : registrationNotice.tone === 'warning' ? 'bg-amber-500/10 border-amber-500/25'
-              : 'bg-secondary/40 border-border/40'
-        }`}>
-          <registrationNotice.icon className={`h-3.5 w-3.5 shrink-0 ${
-            registrationNotice.tone === 'confirmed' ? 'text-emerald-400' : registrationNotice.tone === 'warning' ? 'text-amber-400' : 'text-muted-foreground'
-          }`} />
-          <div className="min-w-0 flex-1">
-            <p className={`text-xs font-bold truncate ${
-              registrationNotice.tone === 'confirmed' ? 'text-emerald-300' : registrationNotice.tone === 'warning' ? 'text-amber-300' : 'text-foreground'
-            }`}>{registrationNotice.label}</p>
-            {registrationNotice.message && <p className="mt-0.5 text-[10px] text-muted-foreground">{registrationNotice.message}</p>}
-          </div>
-        </div>
+        <p className="mt-2 flex items-start gap-1.5 text-xs text-muted-foreground"><Clock3 className="mt-0.5 h-3.5 w-3.5 shrink-0" /><span><strong className="text-foreground">Ainda sem campeão.</strong> A data do torneio passou, mas o resultado oficial ainda não foi resolvido.</span></p>
+      ) : isPast && tournament.champion ? (
+        <p className="mt-2 flex min-w-0 items-center gap-1.5 text-xs"><Crown className="h-3.5 w-3.5 shrink-0 text-amber-400" /><span className="text-amber-400/80">Campeão</span><strong className="truncate text-amber-300">{tournament.champion}</strong></p>
+      ) : registrationNotice && (
+        <p className={`mt-2 flex items-start gap-1.5 text-xs ${noticeTone}`}>
+          <registrationNotice.icon className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+          <span><strong>{registrationNotice.label}</strong>{registrationNotice.message && <span className="text-muted-foreground"> · {registrationNotice.message}</span>}</span>
+        </p>
       )}
 
       {coach && (
-        <div className="mb-3 rounded-xl bg-secondary/35 border border-border/40 overflow-hidden">
+        <div className="mt-2">
           <button
             type="button"
             onClick={() => setShowAnalysis((value) => !value)}
             aria-expanded={showAnalysis}
-            className="flex w-full items-center justify-between gap-2 p-2.5 text-left"
+            className="inline-flex items-center gap-1.5 text-[11px] font-bold text-muted-foreground transition-colors hover:text-foreground"
           >
-            <span className="text-[9px] uppercase tracking-wider font-black text-primary">Análise do treinador</span>
-            <span className="flex items-center gap-1.5">
-              <span className={`text-[9px] font-bold ${entry?.eligible ? 'text-emerald-400' : 'text-red-400'}`}>
-                {getEntryPathLabel(entry?.path)}
-              </span>
-              {showAnalysis ? <ChevronUp className="h-3.5 w-3.5 text-muted-foreground" /> : <ChevronDown className="h-3.5 w-3.5 text-muted-foreground" />}
-            </span>
+            Análise do treinador
+            <span className={entry?.eligible ? 'text-emerald-400' : 'text-red-400'}>· {getEntryPathLabel(entry?.path)}</span>
+            {showAnalysis ? <ChevronUp className="h-3.5 w-3.5" /> : <ChevronDown className="h-3.5 w-3.5" />}
           </button>
           {showAnalysis && (
-            <div className="grid grid-cols-2 gap-x-3 gap-y-1 px-2.5 pb-2.5 text-[10px]">
+            <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 rounded-xl bg-secondary/30 p-2.5 text-[10px]">
               <span className="text-muted-foreground">Chance de título</span><strong className="text-right">{coach.titleChance}%</strong>
               <span className="text-muted-foreground">Chance de semifinal</span><strong className="text-right">{coach.semifinalChance}%</strong>
               <span className="text-muted-foreground">Lucro esperado</span><strong className="text-right">{coach.expectedNet >= 0 ? '+' : ''}{coach.expectedNet}</strong>
@@ -990,33 +965,23 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
         </div>
       )}
 
-      <div className="flex items-center gap-3 pt-2 border-t border-border/40">
-        <Reward icon={Coins} value={tournament.prize_coins} color="text-yellow-400" />
-        <Reward icon={Zap} value={tournament.xp_reward} color="text-primary" />
-        <Reward icon={Star} value={tournament.rank_points} color="text-cyan-400" />
-        {/* Playthrough 4.9, Parte B (invariante 5) — o botão "Inscrever" só
-            pode existir com registrationState===REGISTRATION_OPEN; nunca
-            mais reinferido pela checagem paralela antiga (`canRegister`,
-            ainda usada em TournamentDetailsModal). */}
-        {(isPlayable || canPlayerRegisterNow(registrationState)) && !isPlayed && (
-          <button
-            onClick={onPlay}
-            className={`ml-auto inline-flex items-center gap-1 px-3 py-1.5 rounded-lg font-bold text-[11px] transition-colors ${
-              !hasPartner
-                ? 'bg-amber-500/15 text-amber-400 hover:bg-amber-500/25'
-                : isPlayable && !hasEnergy
-                  ? 'bg-red-500/15 text-red-400 hover:bg-red-500/25'
-                  : isRegistered
-                    ? 'bg-green-500/15 text-green-400 hover:bg-green-500/25'
-                    : 'bg-primary/15 text-primary hover:bg-primary/25'
-            }`}
-          >
-            {!hasPartner ? <><Lock className="h-3 w-3" /> Parceiro</> : !hasEnergy && activeMatch?.date === careerDate ? <><AlertCircle className="h-3 w-3" /> Sem energia</> : activeMatch ? <><Play className="h-3 w-3" /> {activeMatch.date === careerDate && activeMatch.preparationCompleted ? 'Jogar' : 'Preparar'}</> : isRegistered && isPlayable ? <><Play className="h-3 w-3" /> Jogar</> : isRegistered ? <><CheckCircle className="h-3 w-3" /> Inscrito</> : <><CheckCircle className="h-3 w-3" /> Inscrever</>}
-          </button>
-        )}
-        {isRegistered && !isPlayable && !isPast && <button onClick={onCancel} className="ml-auto text-[10px] font-bold text-red-300 hover:text-red-200">Cancelar inscrição</button>}
+      <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-2 border-t border-border/40 pt-2.5">
+        <div className="flex items-center gap-3">
+          <Reward icon={Coins} value={tournament.prize_coins} color="text-yellow-400" />
+          <Reward icon={Zap} value={tournament.xp_reward} color="text-primary" />
+          <Reward icon={Star} value={tournament.rank_points} color="text-cyan-400" />
+        </div>
+        <div className="ml-auto flex flex-wrap items-center justify-end gap-1.5">
+          <Button type="button" level="ghost" size="sm" onClick={onViewDetails}>Ver detalhes</Button>
+          {/* Playthrough 5.16, Partes K/M — "Ver chave" só depois do sorteio. */}
+          {(drawHappened || (isPast && tournament.champion)) && <Button type="button" level="ghost" size="sm" onClick={onViewBracket}>Ver chave</Button>}
+          {/* Playthrough 4.9, Parte B (invariante 5) — a ação só existe com
+              registrationState===REGISTRATION_OPEN (ou partida jogável). */}
+          {showAction && <Button type="button" level="secondary" size="sm" onClick={onPlay} className={actionTone}>{actionLabel}</Button>}
+          {isRegistered && !isPlayable && !isPast && <Button type="button" level="ghost" size="sm" onClick={onCancel} className="text-red-300 hover:text-red-200">Cancelar inscrição</Button>}
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 

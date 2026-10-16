@@ -1,0 +1,10 @@
+[
+ ["      <p>\n        {activity.duration}min · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span> · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span> · <span className={lowCoins ? 'text-red-400 font-bold' : 'text-amber-300 font-bold'}>💰 {cost}</span>\n      </p>",
+  "      {/* 5.29: o custo em moedas sai daqui e vai para a linha auxiliar do botão (\"Treinar\" / \"30 moedas\") — uma informação, um lugar. */}\n      <p>\n        {activity.duration}min · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span> · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span>\n      </p>"],
+ ["      badge={recommended && <StatusBadge tone=\"premium\" icon={Sparkles}>Recomendado</StatusBadge>}",
+  "      badge={recommended && <span className=\"inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wide text-premium\"><Sparkles className=\"h-3 w-3\" />Recomendado</span>}"],
+ ["        <Button level=\"primary\" size=\"default\" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className=\"ml-auto normal-case tracking-normal\">",
+  "        // 5.29: ação de item de lista = secundária (antes 3+ primários verdes \"TREINAR · 💰30\" na mesma dobra). Custo na linha auxiliar.\n        <Button level=\"secondary\" size=\"default\" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className={`w-full sm:ml-auto sm:w-auto ${lowCoins ? 'text-red-300' : 'text-primary'}`} sublabel={!busy && !disabledReason && !lowEnergy && !lowCoins ? `${cost} moedas` : (lowCoins ? `custa ${cost} moedas` : null)}>"],
+ ["            <><Dumbbell className=\"h-4 w-4\" /> Treinar · 💰{cost}</>",
+  "            <><Dumbbell className=\"h-4 w-4\" /> Treinar</>"]
+]

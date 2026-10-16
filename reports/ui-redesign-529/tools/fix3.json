@@ -1,0 +1,4 @@
+[
+ ["className={`w-full sm:ml-auto sm:w-auto ${lowCoins ? 'text-red-300' : 'text-primary'}`}",
+  "className={`ml-auto flex w-auto min-w-[7.5rem] ${lowCoins ? 'text-red-300' : 'text-primary'}`}"]
+]

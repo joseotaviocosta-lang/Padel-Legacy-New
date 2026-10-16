@@ -1,0 +1,4 @@
+[
+ ["        variant=\"segmented\"\n        className=\"min-w-0 flex-1\"\n      />",
+  "        variant=\"segmented\"\n        className=\"min-w-0 flex-1 md:max-w-sm md:flex-none\"\n      />"]
+]

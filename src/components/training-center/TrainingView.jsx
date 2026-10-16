@@ -6,8 +6,6 @@ import {
   ActionFeedback,
   CollapsibleSection,
   ContextActionBar,
-  Surface,
-  SurfaceHeader,
   SummaryRow,
   Tabs,
 } from '@/components/design-system';
@@ -171,16 +169,20 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
       )}
       {postTrainingAction && <ContextActionBar description={postTrainingAction.description} primary={{ label: postTrainingAction.label, icon: postTrainingAction.icon, onClick: () => runContextAction(postTrainingAction), disabled: postTrainingAction.actionType === 'advance-day' && advancing }} />}
 
-      <Surface padding="compact">
-        <SurfaceHeader compact title="Atividades de treino" description={`Forma ${conditionScore} · escolha categoria, intensidade e sessão.`} icon={Dumbbell} action={null} className="" />
+      {/* Fase 5.29 — a lista de treinos deixa de morar dentro de mais uma
+          caixa com cabeçalho próprio ("Atividades de treino" + descrição)
+          logo abaixo das abas da página. Categorias numa faixa única
+          rolável (antes quebravam em duas linhas) e uma linha curta de
+          contexto no lugar do subtítulo. */}
+      <section className="space-y-2.5" aria-label="Atividades de treino">
         <Tabs
           tabs={CATEGORY_ORDER.map((categoryId) => ({ key: categoryId, label: TRAINING_CATEGORIES[categoryId].label }))}
           activeTab={activeCategory}
           onTabChange={setActiveCategory}
-          variant="buttons"
-          className="mb-3"
+          variant="segmented"
         />
-        <div className="grid grid-cols-1 gap-0 md:grid-cols-2 md:gap-3 lg:grid-cols-3 animate-stagger">
+        <p className="flex items-center gap-1.5 px-1 text-[11px] text-muted-foreground"><Dumbbell className="h-3.5 w-3.5 text-primary" />Forma {conditionScore} · toque em ▾ para ajustar a intensidade antes de treinar.</p>
+        <div className="grid grid-cols-1 gap-2 md:grid-cols-2 md:gap-3 lg:grid-cols-3 animate-stagger">
           {TRAINING_ACTIVITIES.filter((activity) => activity.category === activeCategory).map((activity) => (
             <TrainingActivityCard
               key={activity.id}
@@ -196,7 +198,7 @@ export default function TrainingView({ profile, onProfileUpdate, onSelectView })
             />
           ))}
         </div>
-      </Surface>
+      </section>
 
       <CollapsibleSection icon={Heart} title="Estado do atleta" description={<SummaryRow items={getConditionSummaryItems(profile)} className="" />}>
         <ConditionPanel profile={profile} />

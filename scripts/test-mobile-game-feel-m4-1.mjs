@@ -73,8 +73,14 @@ for (const adapterPath of ADAPTER_PATHS) {
     adapterSource.includes('<Navigate') && !adapterSource.includes('PageHeader'));
 }
 for (const [path, source] of Object.entries(pages)) {
-  gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));
-  gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));
+  // Fase 5.29 — Torneios trocou PageHeader+HUD pelo cartão de competição
+  // (estado curto + ação no mesmo bloco). O princípio do gate é o mesmo.
+  if (path === 'src/pages/Tournaments.jsx') {
+    gate(`${path} integra estado curto + ação no cartão de competição (5.29)`, source.includes('<CompetitionHeroCard') && source.includes('data-competition-hero'));
+  } else {
+    gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));
+    gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));
+  }
   gate(`${path} não mantém CompactStats separado`, !source.includes('<CompactStats'));
 }
 
@@ -88,11 +94,13 @@ const trainingView = read('src/components/training-center/TrainingView.jsx');
 const practiceView = read('src/components/training-center/PracticeMatchView.jsx');
 const tournaments = pages['src/pages/Tournaments.jsx'];
 const home = pages['src/pages/CareerHub.jsx'];
-gate('Treinos: HUD vem antes das abas no hub', trainingHub.indexOf('hudItems=') < trainingHub.indexOf('<Tabs'));
+// 5.29: o HUD virou o painel "Hoje" (medidores) — continua antes das abas.
+gate('Treinos: painel de estado (Hoje) vem antes das abas no hub', trainingHub.indexOf('data-training-today') > -1 && trainingHub.indexOf('data-training-today') < trainingHub.indexOf('<Tabs'));
 gate('Treinos: atividade principal vem antes das seções secundárias', trainingView.indexOf('Atividades de treino') < trainingView.indexOf('Estado do atleta'));
 gate('Treinos: custo/ganho e botão continuam no TrainingActivityCard', (() => { const source = read('src/components/training/TrainingActivityCard.jsx'); return source.includes('energyCost') && source.includes('prediction.gains') && source.includes('Treinar'); })());
 gate('Partidas: a ação de jogar vem antes do histórico', practiceView.indexOf('Jogar partida treino') < practiceView.indexOf('Histórico recente'));
-gate('Torneios: evento/status/ação estão no mesmo cabeçalho', tournaments.includes('hudLabel="Próximo evento"') && tournaments.includes('Abrir evento'));
+// 5.29: evento/status/ação no mesmo bloco — agora o cartão de competição.
+gate('Torneios: evento/status/ação estão no mesmo bloco (cartão de competição)', tournaments.includes('<CompetitionHeroCard') && tournaments.includes('Próximo evento') && tournaments.includes('Abrir evento'));
 // Playthrough 5.20-B, Partes C/D — OS DOIS GATES ANTERIORES DESCREVIAM A HOME
 // DE ANTES DA 5.20-A: uma fileira fixa de botoes (Treinar/Competir/Agenda) e
 // um Surface que mesclava objetivo e proximo evento. A 5.20-A substituiu isso

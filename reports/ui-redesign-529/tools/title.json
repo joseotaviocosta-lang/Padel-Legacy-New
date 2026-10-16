@@ -1,0 +1,6 @@
+[
+ ["        <header className=\"flex items-center justify-between gap-2 px-1\" data-tournaments-hub-title>",
+  "        {/* No celular a aba \"Torneios\" do grupo Competir já nomeia a página; o título só volta no desktop. */}\n        <header className=\"hidden items-center justify-between gap-2 px-1 md:flex\" data-tournaments-hub-title>"],
+ ["          <p className=\"text-[10px] font-black uppercase tracking-wider text-primary\">{eyebrow}</p>",
+  "          <div className=\"flex items-center justify-between gap-2\"><p className=\"text-[10px] font-black uppercase tracking-wider text-primary\">{eyebrow}</p><span className=\"md:hidden\"><TooltipHint label=\"Sobre inscrições\" content=\"Inscrições normalmente abrem 30 dias antes e encerram 1 dia antes. Datas sobrepostas geram conflito e exigem uma escolha estratégica da dupla.\" /></span></div>"]
+]

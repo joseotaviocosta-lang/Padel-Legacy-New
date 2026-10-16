@@ -55,7 +55,9 @@ gate('GuideButton fica posicionado ACIMA de toda a altura da bottom nav (bottom 
 // ── 7/8/9) Training action: compacta, sem w-full, altura correta ─────────
 gate('Botão Treinar NÃO usa w-full (não é mais um CTA de largura total)', !/onExecute\(activity, intensity\)[\s\S]{0,40}w-full/.test(trainingCard));
 gate('Botão Treinar usa size="default" (44px mobile via pl-btn-tap), não "touch" (48px + estilo de CTA único de página)', /size="default"[^>]*onClick=\{\(\) => onExecute/.test(trainingCard));
-gate('Botão Treinar neutraliza uppercase/letter-spacing herdados de pl-game-primary (normal-case/tracking-normal)', /normal-case tracking-normal/.test(trainingCard));
+// Fase 5.29: o botão virou `level="secondary"` (ação de item de lista), que
+// não herda pl-game-primary — o objetivo (sem caixa alta/tracking) segue.
+gate('Botão Treinar não herda uppercase/letter-spacing de pl-game-primary (secundário, ou normal-case/tracking-normal)', /level="secondary"[^>]*onClick=\{\(\) => onExecute/.test(trainingCard) || /normal-case tracking-normal/.test(trainingCard));
 gate('Botão Treinar não tem largura mínima artificial (min-w-[7.5rem] removido)', !/min-w-\[7\.5rem\]/.test(trainingCard));
 
 // ── 10) Cards de treino preservam todos os dados essenciais ───────────────
@@ -80,7 +82,8 @@ gate('Botão do parceiro ganha a largura própria de uma linha inteira no mobile
 
 // ── 15) Tournament HUD: value/label não invertidos (regressão do M4.1.2, não pode voltar) ──
 gate('hudItems de Torneios não usa "label" pro nome do evento (seria o bug antigo de value/label trocados)', !/label:\s*`\$\{nextTournament\.name\}/.test(tournamentsPage));
-gate('hudItems de Torneios usa "value" pro nome do evento (formato correto, icon → value → label)', /value:\s*`\$\{nextTournament\.name\}/.test(tournamentsPage));
+// Fase 5.29: o HUD saiu; o nome do evento é o título do cartão de competição.
+gate('Torneios mostra o nome do evento como título do cartão de competição (5.29, no lugar do value do HUD)', tournamentsPage.includes('<CompetitionHeroCard') && /<h2[^>]*>\{tournament\.name\}<\/h2>/.test(tournamentsPage));
 
 // ── 16/17) Calendar advance group cabe em 360px + rail não cobre ─────────
 gate('Grupo +1 dia/+3 dias/+1 semana usa grid com coluna extra pra "+1 semana" (1.15fr), não 3 divisões iguais', /grid-cols-\[1\.15fr_1fr_1fr\]/.test(calendarPage));

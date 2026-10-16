@@ -3,7 +3,7 @@ import { Dumbbell, AlertTriangle, Sparkles } from 'lucide-react';
 import { TRAINING_CATEGORIES, INTENSITY_LEVELS, getPredictedGain } from '@/lib/trainingSystemV2';
 import { ATTRIBUTE_LABELS } from '@/lib/initialCareerProfiles';
 import { getAttributeIcon } from '@/components/padel/Shared';
-import { Button, CompactActionCard, ProgressBar, StatusBadge } from '@/components/design-system';
+import { Button, CompactActionCard, ProgressBar } from '@/components/design-system';
 import { formatAttributeGain } from '@/lib/numberFormat.js';
 
 // Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.3 — gate obrigatório): fechado,
@@ -43,8 +43,9 @@ export default function TrainingActivityCard({
 
   const summary = (
     <div className="space-y-0.5">
+      {/* 5.29: o custo em moedas sai daqui e vai para a linha auxiliar do botão ("Treinar" / "30 moedas") — uma informação, um lugar. */}
       <p>
-        {activity.duration}min · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span> · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span> · <span className={lowCoins ? 'text-red-400 font-bold' : 'text-amber-300 font-bold'}>💰 {cost}</span>
+        {activity.duration}min · <span className={lowEnergy ? 'text-red-400 font-bold' : 'text-primary font-bold'}>-{energyCost} energia</span> · <span className={fatigueCost >= 12 ? 'text-red-400 font-bold' : 'text-amber-400 font-bold'}>+{fatigueCost} fadiga</span>
       </p>
       <p className="text-foreground/90">
         {/* Redesign Checkpoint Hotfix 1 (scripts/test-visual-checkpoint-hotfix1.mjs):
@@ -114,7 +115,7 @@ export default function TrainingActivityCard({
       icon={Icon}
       iconClassName={category?.color || 'text-primary'}
       title={activity.label}
-      badge={recommended && <StatusBadge tone="premium" icon={Sparkles}>Recomendado</StatusBadge>}
+      badge={recommended && <span className="inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wide text-premium"><Sparkles className="h-3 w-3" />Recomendado</span>}
       summary={summary}
       details={details}
       tone={recommended ? 'premium' : 'default'}
@@ -130,7 +131,8 @@ export default function TrainingActivityCard({
         // anulam só o uppercase/letter-spacing (utilities sempre vencem
         // components no Tailwind), mantendo a cor/sombra "primary" do resto
         // do design system intactas.
-        <Button level="primary" size="default" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className="ml-auto normal-case tracking-normal">
+        // 5.29: ação de item de lista = secundária (antes 3+ primários verdes "TREINAR · 💰30" na mesma dobra). Custo na linha auxiliar.
+        <Button level="secondary" size="default" onClick={() => onExecute(activity, intensity)} disabled={isDisabled} className={`ml-auto flex w-auto ${lowCoins ? 'text-red-300' : 'text-primary'}`} sublabel={!busy && !disabledReason && !lowEnergy && !lowCoins ? `${cost} moedas` : (lowCoins ? `custa ${cost} moedas` : null)}>
           {busy ? (
             <><div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin" /> Treinando...</>
           ) : disabledReason ? (
@@ -142,7 +144,7 @@ export default function TrainingActivityCard({
           ) : (
             // M4.2.1 (Parte 10): botão informativo sem ficar pesado — custo
             // ao lado do rótulo, mesmo padrão compacto de M4.1.3.
-            <><Dumbbell className="h-4 w-4" /> Treinar · 💰{cost}</>
+            <><Dumbbell className="h-4 w-4" /> Treinar</>
           )}
         </Button>
       }

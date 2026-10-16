@@ -51,12 +51,15 @@ gate('Existem 5 abas primárias compactas e Metas/Histórico ficam dentro de Evo
 gate('Tabs primárias usam variant="segmented" compacto', /variant="segmented"/.test(hub));
 
 // ── Parte 9/31: custo visível no card, fechado E expandido, antes de confirmar ──
-gate('Card fechado (summary) mostra custo em moedas (💰) junto de fadiga/energia — nunca escondido atrás de um clique', /💰 \{cost\}/.test(card));
+// Fase 5.29: o custo saiu da linha de resumo e vive na linha auxiliar do
+// botão ("Treinar" / "30 moedas"), que é visível com o card FECHADO — o
+// princípio (nunca escondido atrás de um clique) é o mesmo.
+gate('Card fechado mostra custo em moedas no botão (sublabel) — nunca escondido atrás de um clique', /sublabel=\{[^}]*\$\{cost\} moedas/.test(card));
 gate('Card expandido (details) mostra a linha "Custo" com o valor real (getPredictedGain/getTrainingCost via prediction.cost)', /DetailRow label="Custo" value=\{`💰 \$\{cost\}`\}/.test(card));
 gate('Custo é derivado de prediction.cost (getPredictedGain → previewTraining → getTrainingCost — fonte única, Parte 41), nunca um valor separado calculado no componente', /const cost = prediction\.cost/.test(card));
 
 // ── Parte 10/11: botão compacto, informativo, com saldo insuficiente tratado ──
-gate('Botão "Treinar" mostra o custo ao lado do rótulo (Parte 10), sem virar botão gigante (mesmo size="default" de M4.1.3)', /Treinar · 💰\{cost\}/.test(card) && /size="default"/.test(card));
+gate('Botão "Treinar" mostra o custo junto do rótulo (Parte 10; 5.29: linha auxiliar), sem virar botão gigante (mesmo size="default" de M4.1.3)', /> Treinar<\/>/.test(card) && /\$\{cost\} moedas/.test(card) && /size="default"/.test(card));
 gate('Saldo insuficiente desabilita o botão E mostra mensagem clara ("Moedas insuficientes"), nunca cobra pra só depois avisar', /lowCoins \? \(\s*'Moedas insuficientes'/.test(card) && /isDisabled = disabled \|\| busy \|\| lowEnergy \|\| lowCoins/.test(card));
 
 // ── Parte 32: intensidade atualiza custo/ganho/energia/fadiga ao vivo, ANTES de confirmar ──

@@ -67,7 +67,9 @@ const tournamentsSource = readFileSync('src/pages/Tournaments.jsx', 'utf8');
 gate('Tournaments.jsx: hudItems não usa mais o nome do torneio como label (Parte 7/19 — "9d Los Angeles Cup" corrigido)', !/label:\s*nextTournament\.name/.test(tournamentsSource));
 gate('Tournaments.jsx: hudItems não usa mais o label genérico "status" (redundante com o ícone)', !/label:\s*'status'/.test(tournamentsSource));
 gate('Tournaments.jsx: hudItems não usa mais o label genérico "nível" (redundante com o ícone)', !/label:\s*'nível'/.test(tournamentsSource));
-gate('Tournaments.jsx: o nome do torneio + contagem de dias viram um único value coerente', /value:\s*`\$\{nextTournament\.name\}/.test(tournamentsSource));
+// Fase 5.29: o HUD do herói virou o cartão de competição — nome em destaque e
+// contagem de dias na linha de status logo abaixo (sem rótulo trocado).
+gate('Tournaments.jsx: o cartão de competição mostra o nome do torneio + contagem de dias coerentes', tournamentsSource.includes('<CompetitionHeroCard') && /em \$\{days\}d/.test(tournamentsSource) && tournamentsSource.includes('{tournament.name}'));
 
 // ═══════════════════════════════════════════════════════════════════════
 // Parte C — Botões grandes demais
