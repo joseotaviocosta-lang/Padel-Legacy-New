@@ -1,7 +1,7 @@
 import React from 'react';
-import { Coins, Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain, AlertTriangle, ArrowRightLeft } from 'lucide-react';
+import { Award, MapPin, Quote, Sparkles, CheckCircle, XCircle, TrendingUp, Zap, Heart, Shield, Brain, AlertTriangle, ArrowRightLeft } from 'lucide-react';
 import { COACH_TIERS, COACHING_STYLES, TRAINING_METHODS, COACH_SPECIALTY_INFO, getCoachImpactSummary, getCoachEffects, evaluateCoachForCareer, calculateAffinity, getCoachCompetencies, getCoachCompatibilityReasons, resolveCoachCanonicalSalary } from '@/lib/coaches';
-import { ModalShell, Button } from '@/components/design-system';
+import { ModalShell, Button, CollapsibleSection } from '@/components/design-system';
 
 export default function CoachDetail({ coach, profile, evaluation: providedEvaluation, currentCoach, onHire, onFire, onClose, isHired }) {
   if (!coach) return null;
@@ -34,126 +34,129 @@ export default function CoachDetail({ coach, profile, evaluation: providedEvalua
         {hireCheck.allowed ? <><CheckCircle className="h-4 w-4" /> Contratar treinador</> : <><XCircle className="h-4 w-4" /> {hireCheck.reason}</>}
       </Button>
     )}>
-      <div className="space-y-3">
-          <div className={`rounded-xl border p-3 ${isHired || hireCheck.allowed ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-amber-500/25 bg-amber-500/5'}`}>
-            <p className={`flex items-center gap-1.5 text-xs font-black ${isHired || hireCheck.allowed ? 'text-emerald-400' : 'text-amber-400'}`}>
-              {isHired || hireCheck.allowed ? <CheckCircle className="h-4 w-4" /> : <XCircle className="h-4 w-4" />}
-              {isHired ? 'Técnico principal ativo' : hireCheck.allowed ? 'Pode ser contratado agora' : 'Contratação bloqueada'}
+      {/* Fase 5.31 — DETALHE NA ORDEM DA DECISÃO: (1) pode contratar? (2) quem
+          é (3) benefício principal (4) competências (5) por que combina (6)
+          custo — e o CTA no rodapé. Filosofia, estilo, métodos,
+          especializações, histórico, conquistas e biografia ficam em "Perfil
+          completo". Antes: ~1.700px com 13 blocos abertos. Mesmas fontes
+          (getCoachImpactSummary/getCoachEffects/getCoachCompetencies). */}
+      <div className="space-y-3" data-coach-detail>
+        <div className={`rounded-xl border p-2.5 ${isHired || hireCheck.allowed ? 'border-emerald-500/25 bg-emerald-500/5' : 'border-amber-500/25 bg-amber-500/5'}`} data-coach-hire-state>
+          <p className={`flex items-center gap-1.5 text-xs font-black ${isHired || hireCheck.allowed ? 'text-emerald-400' : 'text-amber-400'}`}>
+            {isHired || hireCheck.allowed ? <CheckCircle className="h-4 w-4 shrink-0" /> : <XCircle className="h-4 w-4 shrink-0" />}
+            {isHired ? 'Técnico principal ativo' : hireCheck.allowed ? 'Pode ser contratado agora' : 'Contratação bloqueada'}
+          </p>
+          {!isHired && !hireCheck.allowed && <div className="mt-1 space-y-0.5">{hireCheck.reasons.map((reason) => <p key={reason} className="text-[11px] text-muted-foreground">• {reason}</p>)}</div>}
+          {!isHired && hireCheck.allowed && evaluation.recommendationReason && <p className="mt-0.5 line-clamp-2 text-[11px] text-muted-foreground">{evaluation.recommendationReason}</p>}
+          {isHired && <p className="mt-0.5 text-[11px] text-muted-foreground">Contrato atual da dupla; o mercado não interfere no vínculo vigente.</p>}
+        </div>
+
+        {/* 5.28: o nome já é o título do modal — aqui só a identificação. */}
+        <div className="flex items-center gap-3">
+          <div className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl border ${tier.bg} ${tier.border}`}>
+            <span className={`text-lg font-black ${tier.color}`}>{(coach.name || '?')[0]}</span>
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="flex items-center gap-1 truncate text-[11px] text-muted-foreground"><MapPin className="h-3 w-3 shrink-0" /> {coach.city}, {coach.nationality} · {coach.age} anos</p>
+            <p className={`truncate text-[10px] font-bold uppercase tracking-wide ${tier.color}`}>{tier.label} · {specialtyInfo?.label || coach.specialty}</p>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className={`text-sm font-black ${effects.affinityLabel.color}`}>{affinity}/100</p>
+            <p className="text-[9px] uppercase text-muted-foreground">afinidade · {effects.affinityLabel.label}</p>
+          </div>
+        </div>
+
+        {/* Benefício principal em destaque; o resto dos efeitos em grade curta. */}
+        <div className="rounded-xl border border-primary/25 bg-primary/5 p-3" data-coach-main-benefit>
+          <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Benefício principal</p>
+          <div className="mt-1.5 flex flex-wrap gap-1.5">
+            {impact.highlights.slice(0, 2).map((item) => <span key={item} className="rounded-lg bg-primary/15 px-2 py-1 text-xs font-black text-primary">{item}</span>)}
+          </div>
+          {impact.highlights.length > 2 && <p className="mt-1.5 text-[11px] text-muted-foreground">{impact.highlights.slice(2).join(' · ')}</p>}
+          <p className="mt-1.5 text-[11px] text-muted-foreground">{impact.summary} Rende mais com boa afinidade e treinos das especializações.</p>
+        </div>
+
+        <div className="grid grid-cols-3 gap-1.5">
+          <EffectRow icon={Zap} label="Treino" value={effects.trainingBoost > 0 ? `+${effects.trainingBoost}` : effects.trainingBoost} color="text-primary" />
+          <EffectRow icon={Heart} label="Confiança" value={effects.moraleBonus > 0 ? `+${effects.moraleBonus}` : '—'} color="text-pink-400" />
+          <EffectRow icon={TrendingUp} label="Recuperação" value={effects.energyBonus > 0 ? `+${effects.energyBonus}` : '—'} color="text-green-400" />
+          <EffectRow icon={Shield} label="Prevenção" value={effects.injuryReduction > 0 ? `-${effects.injuryReduction}%` : '—'} color="text-cyan-400" />
+          <EffectRow icon={Brain} label="Tática" value={effects.strategyBonus > 0 ? `+${effects.strategyBonus}` : '—'} color="text-purple-400" />
+          <EffectRow icon={Sparkles} label="Focos" value={`${effects.specMatch}/${(coach.specializations || []).length}`} color="text-amber-400" />
+        </div>
+
+        <div data-coach-competencies>
+          <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Competências</p>
+          <div className="space-y-1">
+            {Object.entries({ Técnica: competencies.technical, Tática: competencies.tactical, Mental: competencies.mental, Físico: competencies.physical, Dupla: competencies.partnership }).map(([label, value]) => (
+              <div key={label} className="grid grid-cols-[4.5rem_1fr_2rem] items-center gap-2 text-[11px]">
+                <span className="text-muted-foreground">{label}</span>
+                <div className="h-1.5 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary" style={{ width: `${value}%` }} /></div>
+                <strong className="text-right tabular-nums">{value}</strong>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {compatibilityReasons.length > 0 && (
+          <div className="rounded-lg bg-secondary/30 p-2.5">
+            <p className="text-[10px] font-bold uppercase text-primary">Por que combina com sua dupla</p>
+            {compatibilityReasons.slice(0, 2).map((item) => <p key={item} className="mt-0.5 text-[11px] text-muted-foreground">• {item}</p>)}
+          </div>
+        )}
+
+        {currentCoach && currentCoach.id !== coach.id && (
+          <CoachComparison candidate={coach} current={currentCoach} candidateSalary={evaluation.salary} currentSalary={profile?.coach_paid_by_club ? 0 : profile?.coach_monthly_salary} />
+        )}
+
+        {/* Custo numa linha; o alerta de orçamento só quando pesa. */}
+        <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-2.5" data-coach-cost>
+          <p className="text-[10px] font-bold uppercase tracking-wide text-amber-400">Custo</p>
+          <p className="mt-1 flex flex-wrap gap-x-3 gap-y-0.5 text-xs">
+            <span><strong className="text-yellow-400 tabular-nums">{resolveCoachCanonicalSalary(coach) ?? '—'}</strong> <span className="text-muted-foreground">/mês</span></span>
+            <span><strong className="text-yellow-400 tabular-nums">{coach.market_signing_bonus ?? coach.sign_on_bonus ?? 0}</strong> <span className="text-muted-foreground">assinatura</span></span>
+            <span><strong className="text-green-400 tabular-nums">{Math.max(0, Number(coach.performance_bonus_pct) || 0)}%</strong> <span className="text-muted-foreground">por vitória</span></span>
+          </p>
+          {coach.demands && (
+            <p className="mt-1 flex flex-wrap gap-x-2 text-[10px]">
+              {coach.demands.min_level && <span className="text-amber-300">Nível: {coach.demands.min_level}</span>}
+              {coach.demands.min_reputation && <span className="text-amber-300">Reputação: {coach.demands.min_reputation}+</span>}
+              {coach.demands.min_club_level && <span className="text-amber-300">Clube: Nível {coach.demands.min_club_level}</span>}
+              {coach.demands.exclusivity && <span className="text-red-400">Exclusividade total</span>}
             </p>
-            {!isHired && !hireCheck.allowed && <div className="mt-2 space-y-1">{hireCheck.reasons.map((reason) => <p key={reason} className="text-[10px] text-muted-foreground">• {reason}</p>)}</div>}
-            {!isHired && hireCheck.allowed && evaluation.recommendationReason && <p className="mt-1 text-[10px] text-muted-foreground">{evaluation.recommendationReason}</p>}
-            {isHired && <p className="mt-1 text-[10px] text-muted-foreground">Contrato atual da dupla; sua disponibilidade no mercado não interfere no vínculo vigente.</p>}
-          </div>
-          {/* 5.28: o nome já é o título do modal — aqui só a identificação. */}
-          <div className="flex items-start justify-between">
-            <div className="flex min-w-0 items-center gap-3">
-              <div className={`h-12 w-12 shrink-0 rounded-2xl ${tier.bg} flex items-center justify-center border ${tier.border}`}>
-                <span className={`font-black text-lg ${tier.color}`}>{(coach.name || '?')[0]}</span>
-              </div>
-              <div className="min-w-0">
-                <p className="text-[11px] text-muted-foreground flex items-center gap-1">
-                  <MapPin className="h-3 w-3" /> {coach.city}, {coach.nationality} · {coach.age} anos
-                </p>
-                <span className={`text-[10px] font-bold uppercase tracking-wide ${tier.color}`}>{tier.label} · {coach.specialty}</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="mb-3 rounded-xl border border-primary/25 bg-primary/5 p-3">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-primary">Impacto no atleta · {specialtyInfo?.label || coach.specialty}</p>
-            <p className="mt-1 text-xs leading-relaxed">{impact.summary}</p>
-            <div className="mt-2 space-y-1">
-              {impact.highlights.map(item => <p key={item} className="text-[10px] text-muted-foreground">• {item}</p>)}
-            </div>
-            <p className="mt-2 text-[10px] text-muted-foreground"><strong>Importante:</strong> os efeitos são maiores quando a afinidade é boa e quando você escolhe treinos ligados às especializações do treinador.</p>
-          </div>
-
-          <div className="glass rounded-xl p-3 mb-3">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Competências do treinador</p>
-            <div className="grid grid-cols-2 gap-2">
-              {Object.entries({Técnica:competencies.technical,Tática:competencies.tactical,Mental:competencies.mental,Físico:competencies.physical,Dupla:competencies.partnership}).map(([label,value]) => (
-                <div key={label} className="rounded-lg bg-secondary/30 p-2"><div className="flex justify-between text-[10px]"><span>{label}</span><strong>{value}</strong></div><div className="mt-1 h-1.5 rounded-full bg-secondary overflow-hidden"><div className="h-full rounded-full bg-primary" style={{width:`${value}%`}} /></div></div>
-              ))}
-            </div>
-            {compatibilityReasons.length > 0 && <div className="mt-3 rounded-lg bg-primary/5 p-2"><p className="text-[9px] font-bold uppercase text-primary">Por que combina com sua dupla</p>{compatibilityReasons.map(item => <p key={item} className="text-[10px] text-muted-foreground mt-1">• {item}</p>)}</div>}
-          </div>
-
-          {currentCoach && currentCoach.id !== coach.id && (
-            <CoachComparison candidate={coach} current={currentCoach} candidateSalary={evaluation.salary} currentSalary={profile?.coach_paid_by_club ? 0 : profile?.coach_monthly_salary} />
           )}
+          {hireCheck.affordability?.salaryShare !== null && (
+            <p className={`mt-1 flex items-start gap-1.5 text-[10px] ${hireCheck.affordability.salaryShare >= 30 ? 'text-amber-300' : 'text-emerald-300'}`}>
+              {hireCheck.affordability.salaryShare >= 30 && <AlertTriangle className="mt-0.5 h-3 w-3 shrink-0" />}
+              {hireCheck.affordability.salaryShare}% da sua última receita mensal{hireCheck.affordability.salaryShare >= 30 ? ' — alerta de planejamento, não bloqueio' : ''}.
+            </p>
+          )}
+        </div>
 
-          {/* Philosophy */}
-          <div className="glass rounded-xl p-3 mb-3 border border-primary/20">
-            <div className="flex items-center gap-1.5 mb-1.5">
-              <Quote className="h-3.5 w-3.5 text-primary" />
-              <span className="text-[10px] uppercase tracking-wide text-primary font-bold">Filosofia</span>
-            </div>
-            <p className="text-xs italic text-foreground/90">"{coach.philosophy}"</p>
-            {coach.signature_quote && (
-              <p className="text-[10px] text-muted-foreground mt-1.5 italic">— {coach.signature_quote}</p>
-            )}
+        <CollapsibleSection icon={Quote} title="Perfil completo" description="Filosofia, estilo, métodos, histórico e biografia">
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-primary">Filosofia</p>
+            <p className="mt-1 text-xs italic text-foreground/90">"{coach.philosophy}"</p>
+            {coach.signature_quote && <p className="mt-1 text-[10px] italic text-muted-foreground">— {coach.signature_quote}</p>}
           </div>
-
-          {/* Coaching Style */}
-          <div className="glass rounded-xl p-3 mb-3">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Estilo de Comando</p>
+          <div>
+            <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Estilo de comando</p>
             <p className="text-xs font-bold">{style.label}</p>
             <p className="text-[10px] text-muted-foreground">{style.desc}</p>
           </div>
-
-          {/* Affinity */}
-          <div className={`glass rounded-xl p-3 mb-3 border ${effects.affinityLabel.color.replace('text-', 'border-').replace('-400', '-500/30')}`}>
-            <div className="flex items-center justify-between mb-1">
-              <span className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold">Afinidade</span>
-              <span className={`text-sm font-black ${effects.affinityLabel.color}`}>{effects.affinityLabel.label}</span>
-            </div>
-            <div className="h-2 rounded-full bg-secondary overflow-hidden">
-              <div className={`h-full rounded-full ${effects.affinityLabel.color.replace('text-', 'bg-').replace('-400', '-500')}`} style={{ width: `${affinity}%` }} />
-            </div>
-            <p className="text-[9px] text-muted-foreground mt-1">{affinity}/100</p>
-          </div>
-
-          {/* Effects */}
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <EffectRow icon={Zap} label="Eficiência treino" value={effects.trainingBoost > 0 ? `+${effects.trainingBoost}` : effects.trainingBoost} color="text-primary" />
-            <EffectRow icon={Heart} label="Confiança" value={effects.moraleBonus > 0 ? `+${effects.moraleBonus}` : '—'} color="text-pink-400" />
-            <EffectRow icon={TrendingUp} label="Recuperação" value={effects.energyBonus > 0 ? `+${effects.energyBonus}` : '—'} color="text-green-400" />
-            <EffectRow icon={Shield} label="Prevenção" value={effects.injuryReduction > 0 ? `-${effects.injuryReduction}%` : '—'} color="text-cyan-400" />
-            <EffectRow icon={Brain} label="Leitura tática" value={effects.strategyBonus > 0 ? `+${effects.strategyBonus}` : '—'} color="text-purple-400" />
-            <EffectRow icon={Sparkles} label="Focos compatíveis" value={`${effects.specMatch}/${(coach.specializations || []).length}`} color="text-amber-400" />
-          </div>
-
-          {/* Training Methods */}
           {(coach.training_methods || []).length > 0 && (
-            <div className="glass rounded-xl p-3 mb-3">
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Métodos de Treino</p>
-              <div className="flex gap-1.5 flex-wrap">
-                {coach.training_methods.map(m => {
-                  const method = TRAINING_METHODS[m];
-                  return (
-                    <span key={m} className="text-[10px] bg-secondary/60 text-foreground/80 px-2 py-1 rounded-lg">
-                      {method?.label || m}
-                    </span>
-                  );
-                })}
-              </div>
+            <div>
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Métodos de treino</p>
+              <div className="flex flex-wrap gap-1.5">{coach.training_methods.map((m) => <span key={m} className="rounded-lg bg-secondary/60 px-2 py-1 text-[10px] text-foreground/80">{TRAINING_METHODS[m]?.label || m}</span>)}</div>
             </div>
           )}
-
-          {/* Specializations */}
-          <div className="glass rounded-xl p-3 mb-3">
-            <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Especializações</p>
-            <div className="flex gap-1.5 flex-wrap">
-              {(coach.specializations || []).map(s => (
-                <span key={s} className="text-[10px] bg-primary/15 text-primary px-2 py-1 rounded-lg font-semibold uppercase">{s}</span>
-              ))}
-            </div>
+          <div>
+            <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Especializações</p>
+            <div className="flex flex-wrap gap-1.5">{(coach.specializations || []).map((sp) => <span key={sp} className="rounded-lg bg-primary/15 px-2 py-1 text-[10px] font-semibold uppercase text-primary">{sp}</span>)}</div>
           </div>
-
-          {/* Track Record */}
           {coach.track_record && (
-            <div className="glass rounded-xl p-3 mb-3">
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Histórico</p>
+            <div>
+              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Histórico</p>
               <div className="grid grid-cols-2 gap-2">
                 <Stat label="Atletas" value={coach.track_record.athletes_coached} />
                 <Stat label="Títulos" value={coach.track_record.titles_won} />
@@ -162,60 +165,24 @@ export default function CoachDetail({ coach, profile, evaluation: providedEvalua
               </div>
             </div>
           )}
-
-          {/* Achievements */}
           {(coach.achievements || []).length > 0 && (
-            <div className="glass rounded-xl p-3 mb-3">
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2">Conquistas</p>
-              <div className="space-y-1.5">
-                {coach.achievements.map((a, i) => (
-                  <div key={i} className="flex items-start gap-2">
-                    <Award className="h-3.5 w-3.5 text-amber-400 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="text-[11px] font-bold">{a.title} <span className="text-muted-foreground font-normal">({a.year})</span></p>
-                      <p className="text-[10px] text-muted-foreground">{a.description}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* Bio */}
-          {coach.bio && (
-            <div className="glass rounded-xl p-3 mb-3">
-              <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Biografia</p>
-              <p className="text-[11px] text-foreground/80 leading-relaxed">{coach.bio}</p>
-            </div>
-          )}
-
-          {/* Financial */}
-          <div className="glass rounded-xl p-3 mb-3 border border-amber-500/20 bg-amber-500/5">
-            <p className="text-[10px] uppercase tracking-wide text-amber-400 font-bold mb-2">Exigências Financeiras</p>
-            <div className="grid grid-cols-3 gap-2">
-              <Stat label="Mensal" value={resolveCoachCanonicalSalary(coach) ?? '—'} icon={Coins} color="text-yellow-400" />
-              <Stat label="Assinatura" value={coach.market_signing_bonus ?? coach.sign_on_bonus ?? 0} icon={Coins} color="text-yellow-400" />
-              <Stat label="% Vitória" value={`${Math.max(0, Number(coach.performance_bonus_pct) || 0)}%`} color="text-green-400" />
-            </div>
-            {coach.demands && (
-              <div className="mt-2 pt-2 border-t border-border/40">
-                <p className="text-[9px] uppercase tracking-wide text-muted-foreground font-bold mb-1">Exigências</p>
-                <div className="flex gap-2 flex-wrap">
-                  {coach.demands.min_level && <span className="text-[9px] text-amber-300">Nível: {coach.demands.min_level}</span>}
-                  {coach.demands.min_reputation && <span className="text-[9px] text-amber-300">Reputação: {coach.demands.min_reputation}+</span>}
-                  {coach.demands.min_club_level && <span className="text-[9px] text-amber-300">Clube: Nível {coach.demands.min_club_level}</span>}
-                  {coach.demands.exclusivity && <span className="text-[9px] text-red-400">Exclusividade total</span>}
+            <div className="space-y-1.5">
+              <p className="text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Conquistas</p>
+              {coach.achievements.map((a, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <Award className="mt-0.5 h-3.5 w-3.5 shrink-0 text-amber-400" />
+                  <div><p className="text-[11px] font-bold">{a.title} <span className="font-normal text-muted-foreground">({a.year})</span></p><p className="text-[10px] text-muted-foreground">{a.description}</p></div>
                 </div>
-              </div>
-            )}
-            {hireCheck.affordability?.salaryShare !== null && (
-              <div className={`mt-2 flex items-start gap-2 rounded-lg p-2 ${hireCheck.affordability.salaryShare >= 30 ? 'bg-amber-500/10 text-amber-300' : 'bg-emerald-500/10 text-emerald-300'}`}>
-                {hireCheck.affordability.salaryShare >= 30 && <AlertTriangle className="mt-0.5 h-3.5 w-3.5 shrink-0" />}
-                <p className="text-[10px]">Este salário representa {hireCheck.affordability.salaryShare}% da sua última receita mensal. Isso é um alerta de planejamento, não um bloqueio.</p>
-              </div>
-            )}
-          </div>
-
+              ))}
+            </div>
+          )}
+          {coach.bio && (
+            <div>
+              <p className="mb-1 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Biografia</p>
+              <p className="text-[11px] leading-relaxed text-foreground/80">{coach.bio}</p>
+            </div>
+          )}
+        </CollapsibleSection>
       </div>
     </ModalShell>
   );

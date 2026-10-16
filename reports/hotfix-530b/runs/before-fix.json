@@ -1,0 +1,23 @@
+{
+  "label": "before-fix",
+  "reload": false,
+  "steps": [
+    {
+      "at": "home",
+      "header": "Próximo torneio: Londres Challenge em 28 dias — abrir Torneios",
+      "home": "AGENDA LIVRE Nenhum torneio imediato Próximo no calendário: Londres Challenge · em 28 dias · 29 de jan Conheça o painel da carreira O painel reúne a data, sua condição atual, compromissos e as ações mais importantes do m"
+    },
+    {
+      "at": "torneios",
+      "header": "Próximo torneio: Londres Challenge em 28 dias — abrir Torneios",
+      "tournaments": "PRÓXIMO EVENTO Roma Pré-Temporada Pré-Temporada · Inscrições abertas · em 11d · 12/01/2026 Abrir evento Dupla · Sem parceiro — toque para escolher"
+    },
+    {
+      "at": "home-de-volta",
+      "header": "Próximo torneio: Londres Challenge em 28 dias — abrir Torneios",
+      "home": "AGENDA LIVRE Nenhum torneio imediato Próximo no calendário: Roma Pré-Temporada · em 11 dias · 12 de jan Dê um nome ao atleta Escolha o nome que aparecerá nas partidas, notícias, rankings e registros da carreira. Definir "
+    }
+  ],
+  "headerHref": "/tournaments",
+  "errors": []
+}

@@ -19,6 +19,7 @@ import { ensureAnnualReportCycle, finalizeClosedCareerYear, resetRaceSeasonPoint
 import { getDifficultyModifier } from '@/gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '@/game-core/physicalStats.js';
 import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
+import { notifyTournamentsChanged } from '@/lib/tournamentsChangedEvent.js';
 export const CAREER_START_DATE = '2026-01-01';
 export const PARTNER_LOCK_DAYS = 60;
 export const MATCH_ADVANCE_DAYS = 7;
@@ -614,6 +615,9 @@ async function ensureFutureTournamentsInternal(careerDate) {
       try { await localGame.entities.Tournament.delete(tournament.id); removedObsolete += 1; }
       catch (error) { console.warn('Torneio obsoleto não removido', tournament.id, error); }
     }
+    // 5.30-B: quem já leu o calendário (o header) precisa saber que ele mudou
+    // (ex.: a Pré-Temporada acabou de ser criada).
+    if (pendingTournamentUpserts.length || removedObsolete) notifyTournamentsChanged();
     return { created, repaired, removedObsolete };
   } catch (error) {
     console.error('ensureFutureTournaments', error);

@@ -19,6 +19,7 @@ import { enrichTournament, orderTournamentsForView } from '@/lib/tournaments';
 import { getTeamRank } from '@/lib/teamRanking';
 import { getPartnerBot } from '@/lib/career';
 import { isRegistrationOpen } from '@/lib/calendarSystem';
+import { selectNextOpenTournament } from '@/lib/nextEventAuthority.js';
 import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
@@ -389,9 +390,11 @@ export default function Tournaments() {
   // `byMonth`) — reaproveita o mesmo critério já usado em
   // CalendarPage.jsx (`upcomingTournaments`/`daysBetween`), não um cálculo
   // novo.
-  const nextTournament = [...tournaments]
-    .filter((t) => t.start_date && careerDate && t.start_date >= careerDate && isRegistrationOpen(t, careerDate))
-    .sort((a, b) => (a.start_date || '').localeCompare(b.start_date || ''))[0] || null;
+  // Hotfix 5.30-B: mesma autoridade do header e da Home
+  // (nextEventAuthority.js); aqui só a etapa "inscrição aberta", porque
+  // campanha e inscrição já têm fonte própria logo abaixo
+  // (activeRunEvents/registeredTournaments).
+  const nextTournament = selectNextOpenTournament(tournaments, careerDate);
 
   // M4.2 (docs/MOBILE_M4_2_GAME_APP_EXPERIENCE.md, Parte 10/11): "Tournament
   // Focus" — quando o jogador está de fato disputando um torneio

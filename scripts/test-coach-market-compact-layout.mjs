@@ -29,7 +29,12 @@ gate('cabeçalho: nome + badges (Recomendado / Melhor custo-benefício)', coachC
 gate('OVR visível no cabeçalho', coachCard.includes('evaluation.overall'));
 gate('corpo: no máximo 3 impactos principais', coachCard.includes('impact.highlights.slice(0, 3)'));
 gate('rodapé: salário mensal, assinatura e afinidade', coachCard.includes('moedas/mês') && coachCard.includes('assinatura') && coachCard.includes('afinidade'));
-gate('botões: Ver detalhes / Contratar preservados', coachCard.includes('Ver detalhes') && coachCard.includes('Contratar'));
+// Fase 5.31: os dois botões antigos ("Ver detalhes" e "Contratar") abriam o
+// MESMO modal. O card passou a ter UMA ação clara; a contratação de verdade
+// continua só no modal (CoachDetail, "Contratar treinador").
+const coachDetail = readFileSync('src/components/coaches/CoachDetail.jsx', 'utf8');
+gate('card expõe uma ação clara (Ver detalhes / Ver requisitos)', coachCard.includes('Ver detalhes') && coachCard.includes('Ver requisitos') && /\{available\s*\?\s*<Button[\s\S]*?:\s*<Button/.test(coachCard));
+gate('o modal contém o CTA real de contratação', coachDetail.includes('Contratar treinador') && coachDetail.includes('onClick={onHire}'));
 
 console.log('\n--- Parte L: filtros, busca e ordenação preservados ---');
 gate('filtros de status preservados (Todos/Disponíveis/Recomendados/Dentro do orçamento/Bloqueados)', ['Todos', 'Disponíveis', 'Recomendados', 'Dentro do orçamento', 'Bloqueados'].every((label) => coachesPage.includes(label)));

@@ -126,8 +126,17 @@ try {
     'src/pages/PartnerHub.jsx', 'src/pages/Coaches.jsx', 'src/pages/Staff.jsx',
     'src/pages/Communications.jsx', 'src/pages/Press.jsx',
   ];
+  // Fase 5.31: em Minha dupla e Treinador o HUD repetia os números do cartão
+  // logo abaixo (entrosamento/confiança; técnico/confiança/afinidade). O
+  // resumo compacto do topo passou a ser o próprio cartão (hero) — a
+  // intenção do gate (estado resumido no primeiro bloco) continua cobrada.
+  const HERO_SUMMARY = {
+    'src/pages/PartnerHub.jsx': () => read('src/components/partner/PartnerOverview.jsx').includes('data-partner-hero="active"'),
+    'src/pages/Coaches.jsx': () => read('src/pages/Coaches.jsx').includes('data-coach-hero="active"'),
+  };
   for (const path of pagesUsingCompactStats) {
-    gate(`${path} usa HUD compacto compartilhado no PageHeader`, read(path).includes('hudItems='));
+    if (HERO_SUMMARY[path]) gate(`${path} resume o estado no primeiro bloco (cartão hero, sem HUD duplicado)`, HERO_SUMMARY[path]() && !read(path).includes('hudItems='));
+    else gate(`${path} usa HUD compacto compartilhado no PageHeader`, read(path).includes('hudItems='));
   }
   gate('Ranking.jsx usa CompactListItem para as linhas (não 4 blocos JSX quase-idênticos)', read('src/pages/Ranking.jsx').includes('CompactListItem'));
   gate('Missions.jsx agrupa "Concluídas" em CollapsibleSection', read('src/pages/Missions.jsx').includes("title={`Concluídas"));

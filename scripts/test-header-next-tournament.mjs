@@ -81,16 +81,29 @@ try {
   gate('Torneio urgente (≤5 dias) tem prioridade sobre fadiga alta', urgentOverridesFatigue.kind === 'tournament_soon');
 
   // ── Múltiplos torneios: escolhe o mais próximo, ignora os que já passaram ──
+  // Hotfix 5.30-B: a escolha passou pela autoridade única
+  // (nextEventAuthority.js): inscrito → inscrição aberta → próximo no
+  // calendário. Para medir "o mais próximo, não o primeiro da lista", os dois
+  // candidatos precisam estar no MESMO degrau (inscrição aberta), daí os
+  // prazos explícitos.
+  const openSoon = { ...soonTournament, registration_deadline: '2026-04-03' };
   const multi = buildCareerHeaderContext({
     profile: baseProfile,
     tournaments: [
       { id: 'past-one', name: 'Já passou', start_date: '2026-03-20' },
-      { id: 'later-one', name: 'Mais tarde', start_date: '2026-04-10' },
-      soonTournament,
+      { id: 'later-one', name: 'Mais tarde', start_date: '2026-04-10', registration_deadline: '2026-04-07' },
+      openSoon,
     ],
   });
   gate('Múltiplos torneios: escolhe o mais próximo (não o primeiro da lista)', multi.tournamentId === soonTournament.id);
   gate('Múltiplos torneios: torneio já passado nunca é escolhido como "próximo"', multi.tournamentId !== 'past-one');
+  // 5.30-B: evento com inscrição já fechada, sem o jogador, perde para um
+  // evento com inscrição aberta (mesma regra de Torneios e da Home).
+  const closedVsOpen = buildCareerHeaderContext({
+    profile: baseProfile,
+    tournaments: [{ ...soonTournament, registration_deadline: '2026-03-30' }, { id: 'later-one', name: 'Mais tarde', start_date: '2026-04-10', registration_deadline: '2026-04-07' }],
+  });
+  gate('5.30-B: inscrição fechada sem o jogador perde para inscrição aberta', closedVsOpen.tournamentId === 'later-one');
 
   // ── Componente clicável (5.27-M: leva à página geral de Torneios) ───────
   // O playtest físico pediu: o atalho continua mostrando o próximo torneio,

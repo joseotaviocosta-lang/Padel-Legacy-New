@@ -28,24 +28,23 @@ export function buildCareerHeaderContext({ profile, tournaments = [], calendarEv
   const fatigue = Number(profile.fatigue) || 0;
   const energy = Number(profile.energy) || 0;
 
-  const next = (tournaments || [])
-    .filter((item) => item?.start_date && item.start_date >= careerDate)
-    .sort((a, b) => String(a.start_date).localeCompare(String(b.start_date)))[0] || null;
-  const until = next ? daysUntil(careerDate, next.start_date) : null;
+  // Hotfix 5.30-B: a escolha do evento vem da autoridade única
+  // (nextEventAuthority.js), a mesma de Home e Torneios: em andamento →
+  // inscrito → inscrição aberta → próximo no calendário. A regra antiga
+  // ("o primeiro por data") ficava diferente das outras superfícies.
+  const nextEvent = selectNextRelevantEvent({ tournaments, calendarEvents, careerDate });
 
   // Fase 15.4: tournament_run é a fonte canônica para uma campanha já
   // iniciada. A data do round atual vem do próprio match, nunca do
   // CalendarEvent legado (que pode ainda apontar para a rodada anterior).
-  const activeEvent = (calendarEvents || []).find((event) => {
-    const run = event?.metadata?.tournament_run;
-    return run && !['champion', 'eliminated', 'finished', 'withdrawn'].includes(run.status)
-      && getCurrentTournamentMatch(run);
-  }) || null;
-  const activeRun = activeEvent?.metadata?.tournament_run || null;
-  const activeMatch = activeRun ? getCurrentTournamentMatch(activeRun) : null;
+  const activeMatch = nextEvent?.kind === NEXT_EVENT_KINDS.ACTIVE ? nextEvent.match : null;
+  const next = nextEvent && !activeMatch && nextEvent.startDate
+    ? { id: nextEvent.tournamentId, name: nextEvent.name, start_date: nextEvent.startDate }
+    : null;
+  const until = next ? daysUntil(careerDate, next.start_date) : null;
   if (activeMatch) {
     const roundDays = daysUntil(careerDate, activeMatch.date);
-    const tournamentName = activeRun.tournamentName || activeEvent.related_name || 'Torneio';
+    const tournamentName = nextEvent.name;
     const timing = roundDays === 0 ? 'Hoje' : roundDays === 1 ? 'Amanhã' : `${roundDays}d`;
     return {
       kind: roundDays === 0 ? 'tournament_today' : 'tournament_round',
@@ -54,7 +53,7 @@ export function buildCareerHeaderContext({ profile, tournaments = [], calendarEv
         full: `${tournamentName} · ${activeMatch.round} · ${timing}`,
       },
       ariaLabel: `${tournamentName}: ${activeMatch.round} ${roundDays === 0 ? 'hoje' : `em ${pluralDays(roundDays)}`}`,
-      tournamentId: activeEvent.related_id || activeRun.tournamentId || null,
+      tournamentId: nextEvent.tournamentId,
       daysUntil: roundDays,
     };
   }
@@ -123,4 +122,4 @@ export function buildCareerHeaderContext({ profile, tournaments = [], calendarEv
     daysUntil: until,
   };
 }
-import { getCurrentTournamentMatch } from '@/gameplay/worldTour/TournamentRunManager.js';
+import { NEXT_EVENT_KINDS, selectNextRelevantEvent } from '@/lib/nextEventAuthority.js';

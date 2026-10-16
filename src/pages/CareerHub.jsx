@@ -53,6 +53,7 @@ import { getCurrentTournamentMatch, selectActiveTournamentRun } from '@/gameplay
 import { buildTournamentPlayRoute } from '@/lib/tournamentNextAction.js';
 import { getCareerNextAction } from '@/lib/careerNextAction.js';
 import { buildHomeAgenda, buildHomeCommitment, buildHomePriorities, buildHomeProgress, selectWorldHeadline } from '@/lib/homeDashboard.js';
+import { selectNextRelevantEvent } from '@/lib/nextEventAuthority.js';
 
 /**
  * Centro da Carreira (Fase 4 — docs/HOME_REDESIGN.md).
@@ -315,7 +316,14 @@ export default function CareerHub() {
   const pendingOffers = useMemo(() => partnerOffers.filter((offer) => offer.status === 'pending'), [partnerOffers]);
   const unreadCount = unreadMessages.length + pendingOffers.length;
 
-  const nextTournament = upcomingTournaments[0];
+  // Hotfix 5.30-B: "próximo torneio" da Home vem da autoridade única
+  // (nextEventAuthority.js), a mesma do header e de Torneios. Antes era
+  // `upcomingTournaments[0]`: o primeiro por data, inclusive evento já em
+  // curso sem o jogador ou inalcançável desde o início da carreira.
+  const nextTournament = useMemo(() => {
+    const next = selectNextRelevantEvent({ tournaments: upcomingTournaments, calendarEvents: tournamentEvents, careerDate: profile?.career_date });
+    return next?.tournament || (next ? { id: next.tournamentId, name: next.name, start_date: next.startDate } : undefined);
+  }, [upcomingTournaments, tournamentEvents, profile?.career_date]);
   // A sugestão de "inscreva-se" precisa passar pela MESMA regra que a
   // inscrição vai aplicar — antes ela era só o próximo torneio por data, e
   // sugeria eventos que `evaluateTournamentRegistration` recusa (o relato:

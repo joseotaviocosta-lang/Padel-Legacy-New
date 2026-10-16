@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useEffect } from 'react';
-import { Search, Users, X, Crown } from 'lucide-react';
+import { Search, Users, X, Crown, ChevronDown } from 'lucide-react';
+import { Button } from '@/components/design-system';
 import { getAvailablePartners, getLockedPartners, getRealPartnerCandidates, canChangePartner, daysUntilPartnerUnlock } from '@/lib/career';
 import { overallRating } from '@/lib/padel';
 import { computeCompatibility, compatibilityLabel } from '@/lib/partnershipSystem';
@@ -104,126 +105,105 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
     return [...lockedBots, ...lockedReals];
   }, [profile, realInterestGatedLocked]);
 
+  // Fase 5.31 — BUSCA ENXUTA. Antes: 3 linhas de filtros (busca + 4 pílulas
+  // de lado + 3 de ordenação) e cards com estilo de jogo completo sempre
+  // aberto, e o card inteiro era um <button> com outro <button> dentro.
+  // Agora: busca + 2 seletores numa linha; o card mostra nome, OVR, lado,
+  // interesse e compatibilidade; estilo, detalhamento e "Convidar" (único
+  // primário) só ao abrir. Mesmos filtros, mesma ordenação, mesmos dados.
   return (
-    <div className="space-y-4">
-      {/* Search bar */}
-      <div className="glass rounded-2xl p-3 flex items-center gap-2">
-        <Search className="h-4 w-4 text-muted-foreground shrink-0" />
+    <div className="space-y-3">
+      <div className="glass flex items-center gap-2 rounded-2xl p-2.5">
+        <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
         <input
           value={search}
           onChange={e => setSearch(e.target.value)}
           placeholder="Buscar atleta por nome ou país..."
-          className="flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
+          className="min-w-0 flex-1 bg-transparent text-sm outline-none placeholder:text-muted-foreground"
         />
       </div>
 
-      <div className="flex flex-wrap gap-2" aria-label="Filtrar por lado preferido">
-        {[['all', 'Todos os lados'], ['right', 'Direita'], ['left', 'Esquerda'], ['flex', 'Versátil']].map(([id, label]) => (
-          <button key={id} onClick={() => setSideFilter(id)} className={`px-3 py-1.5 rounded-lg text-xs ${sideFilter === id ? 'bg-cyan-500/20 text-cyan-300' : 'glass text-muted-foreground'}`}>{label}</button>
-        ))}
-      </div>
-
-      {/* Sort */}
-      <div className="flex gap-2">
-        {[
-          { id: 'compat', label: 'Compatibilidade' },
-          { id: 'rating', label: 'Overall' },
-          { id: 'name', label: 'Nome' },
-        ].map(s => (
-          <button
-            key={s.id}
-            onClick={() => setSort(s.id)}
-            className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${sort === s.id ? 'bg-primary text-primary-foreground' : 'glass text-muted-foreground hover:text-foreground'}`}
-          >
-            {s.label}
-          </button>
-        ))}
+      <div className="grid grid-cols-2 gap-2">
+        <select value={sideFilter} onChange={(e) => setSideFilter(e.target.value)} aria-label="Filtrar por lado preferido" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-2.5 text-xs font-bold outline-none">
+          {[['all', 'Todos os lados'], ['right', 'Direita'], ['left', 'Esquerda'], ['flex', 'Versátil']].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+        </select>
+        <select value={sort} onChange={(e) => setSort(e.target.value)} aria-label="Ordenar candidatos" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-2.5 text-xs font-bold outline-none">
+          {[['compat', 'Compatibilidade'], ['rating', 'Overall'], ['name', 'Nome']].map(([id, label]) => <option key={id} value={id}>Ordenar: {label}</option>)}
+        </select>
       </div>
 
       {!canChange && (
-        <div className="glass rounded-xl p-3 border border-amber-500/30 bg-amber-500/5 flex items-center gap-2">
-          <X className="h-4 w-4 text-amber-400 shrink-0" />
+        <div className="glass flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-2.5">
+          <X className="h-4 w-4 shrink-0 text-amber-400" />
           <p className="text-xs text-muted-foreground">
-            Parceria atual travada por mais <span className="text-amber-400 font-bold">{daysLocked} dias</span>. Você pode buscar, mas não convidar ainda.
+            Parceria atual travada por mais <span className="font-bold text-amber-400">{daysLocked} dias</span>. Você pode buscar, mas não convidar ainda.
           </p>
         </div>
       )}
 
-      {/* Results */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 animate-stagger">
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">
         {filtered.map(({ bot, compat, interest }) => {
           const cl = compatibilityLabel(compat.total);
+          const open = selected === bot.id;
+          const age = athleteAges[bot.id] ?? bot.age;
           return (
-            <button
-              key={bot.id}
-              onClick={() => setSelected(selected === bot.id ? null : bot.id)}
-              className={`glass rounded-2xl p-4 text-left transition-all border ${selected === bot.id ? 'border-primary ring-2 ring-primary/30' : 'border-transparent hover:border-primary/40'}`}
-            >
-              <div className="flex items-center gap-3 mb-2">
-                <div className="h-11 w-11 rounded-xl bg-primary/15 flex items-center justify-center shrink-0">
-                  <span className="font-black text-primary">{bot.name[0]}</span>
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="flex items-center gap-1 font-semibold text-sm truncate">
+            <article key={bot.id} data-partner-candidate="search" className={`glass rounded-2xl border transition-all ${open ? 'border-primary ring-2 ring-primary/30' : 'border-transparent'}`}>
+              <button type="button" onClick={() => setSelected(open ? null : bot.id)} aria-expanded={open} className="flex w-full items-center gap-3 p-3 text-left">
+                <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/15 font-black text-primary">{bot.name[0]}</span>
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-1 truncate text-sm font-semibold">
                     {bot.is_real && <Crown className="h-3 w-3 shrink-0 text-amber-400" aria-label="Atleta real" />}
-                    {bot.name}
-                  </p>
-                  <p className="text-[10px] text-muted-foreground">{bot.country}{(athleteAges[bot.id] ?? bot.age) ? ` · ${athleteAges[bot.id] ?? bot.age} anos` : ''} · OVR {overallRating(bot)} · {bot.level}</p>
-                </div>
-                <div className="text-right">
-                  <p className={`text-lg font-black tabular-nums ${cl.color}`}>{compat.total}</p>
-                  <p className={`text-[8px] uppercase font-bold ${cl.color}`}>{cl.label}</p>
-                </div>
-              </div>
-              <p className="mb-2 text-[10px] text-muted-foreground">
-                Lado: {sideLabel(bot.preferred_side)} · Interesse {interest.level}
-                {interest.friction && <span className="text-amber-400"> (condições mais exigentes)</span>}
-              </p>
-              <PlayStyleSummary profile={bot} compact />
-              {selected === bot.id && (
-                <div className="mt-3 pt-3 border-t border-border/40 space-y-2 animate-fade-in">
-                  <p className="text-[10px] uppercase text-muted-foreground font-bold">Detalhamento</p>
+                    <span className="truncate">{bot.name}</span>
+                  </span>
+                  <span className="block truncate text-[11px] text-muted-foreground"><strong className="text-foreground">OVR {overallRating(bot)}</strong> · {sideLabel(bot.preferred_side)} · {bot.level}</span>
+                  <span className="block truncate text-[11px] text-muted-foreground">Interesse {interest.level}{interest.friction ? <span className="text-amber-400"> · condições exigentes</span> : ''}{age ? ` · ${age} anos` : ''}</span>
+                </span>
+                <span className="shrink-0 text-right">
+                  <span className={`block text-lg font-black leading-none tabular-nums ${cl.color}`}>{compat.total}</span>
+                  <span className={`block text-[8px] font-bold uppercase ${cl.color}`}>{cl.label}</span>
+                </span>
+                <ChevronDown className={`h-4 w-4 shrink-0 text-muted-foreground transition-transform ${open ? 'rotate-180' : ''}`} />
+              </button>
+              {open && (
+                <div className="space-y-2 border-t border-border/40 p-3 pt-2.5 animate-fade-in">
+                  <p className="text-[11px] text-muted-foreground">{bot.country}</p>
+                  <PlayStyleSummary profile={bot} compact />
                   {compat.sideResolution && <p className="text-[11px] text-muted-foreground">{compat.sideResolution.explanation}</p>}
                   {compat.warnings?.map(warning => <p key={warning} className="text-[11px] text-amber-400">⚠ {warning}</p>)}
                   {Object.entries(compat.breakdown).map(([key, val]) => (
                     <div key={key} className="flex items-center gap-2">
-                      <span className="text-[10px] text-muted-foreground w-24 capitalize">{factorLabel(key)}</span>
-                      <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
-                        <div className="h-full rounded-full bg-primary/70" style={{ width: `${val}%` }} />
-                      </div>
-                      <span className="text-[10px] font-bold tabular-nums w-8 text-right">{val}</span>
+                      <span className="w-24 text-[10px] capitalize text-muted-foreground">{factorLabel(key)}</span>
+                      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary/70" style={{ width: `${val}%` }} /></div>
+                      <span className="w-8 text-right text-[10px] font-bold tabular-nums">{val}</span>
                     </div>
                   ))}
                   {canChange && (
-                    <button
-                      onClick={(e) => { e.stopPropagation(); onInvite(bot); }}
-                      className="w-full mt-2 py-2 rounded-xl bg-primary text-primary-foreground font-bold text-xs hover:opacity-90 transition-opacity flex items-center justify-center gap-1.5"
-                    >
+                    <Button level="primary" size="touch" onClick={() => onInvite(bot)} className="mt-1 w-full">
                       <Users className="h-3.5 w-3.5" /> Convidar {bot.name.split(' ')[0]}
-                    </button>
+                    </Button>
                   )}
                 </div>
               )}
-            </button>
+            </article>
           );
         })}
       </div>
 
-      {/* Locked (aspirational) */}
+      {/* Locked (aspirational) — sinalizado, nunca oculto (Fase 9.4). */}
       {locked.length > 0 && (
         <div>
-          <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-semibold mb-2 flex items-center gap-1">
+          <p className="mb-2 flex items-center gap-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
             <X className="h-3 w-3" /> Ainda fora de alcance
           </p>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
+          <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
             {locked.map(({ bot, interestGated, interest }) => (
-              <div key={bot.id} className="glass rounded-xl p-3 opacity-40 text-center">
-                <p className="flex items-center justify-center gap-1 text-xs font-semibold truncate">
+              <div key={bot.id} data-partner-candidate="locked" className="glass rounded-xl p-2.5 opacity-50">
+                <p className="flex items-center gap-1 truncate text-xs font-semibold">
                   {bot.is_real && <Crown className="h-2.5 w-2.5 shrink-0 text-amber-400" aria-label="Atleta real" />}
-                  {bot.name}
+                  <span className="truncate">{bot.name}</span>
                 </p>
                 <p className="text-[10px] text-muted-foreground">OVR {overallRating(bot)}</p>
-                <p className="text-[9px] text-muted-foreground mt-1">
+                <p className="mt-0.5 line-clamp-2 text-[9px] text-muted-foreground">
                   {interestGated ? `Interesse ${interest?.level || 'muito baixo'} (${interest?.score ?? 0}/100) — reputação/ranking ainda baixos` : 'Suba de nível para desbloquear'}
                 </p>
               </div>

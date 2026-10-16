@@ -1,0 +1,1243 @@
+{
+  "createdAt": "2026-10-16T13:56:40.620Z",
+  "total": 149,
+  "pass": 109,
+  "regressions": [
+    "test-header-next-tournament",
+    "test-tier-strength-distribution"
+  ],
+  "preExisting": [
+    "test-career-pace-production",
+    "test-career-persistence-integrity",
+    "test-extreme-elite-inactivity-v518",
+    "test-former-partner-reintegration-v518",
+    "test-former-partner-world-continuity-v518",
+    "test-global-overlays-audit",
+    "test-home-redesign",
+    "test-living-career-v34-4",
+    "test-living-career-v34-5",
+    "test-living-career-v34-7",
+    "test-living-career-v34-8",
+    "test-living-career-v34-9",
+    "test-long-career-partner-ecology-v518",
+    "test-masters-draw-size-comparison-v517",
+    "test-mobile-compact-ux-m4",
+    "test-mobile-game-app-experience-m4-2",
+    "test-mobile-game-flow-m4-3",
+    "test-mobile-m3-1-device-hotfix",
+    "test-mobile-m3-2-android-ux",
+    "test-notification-system-audit-rc",
+    "test-onboarding-priority",
+    "test-page-hierarchy",
+    "test-partner-ecology-inventory-v518",
+    "test-phase15-3-economy-progression-navigation",
+    "test-phase15-4-mobile-flow-polish",
+    "test-phase15-5-4-critical-mobile-qa",
+    "test-phase15-6-1-tournament-draw-consistency",
+    "test-phase15-6-2-tournament-canonical-state",
+    "test-phase15-6-app-performance-calendar-hardening",
+    "test-phase15-7-first-tournament-parity",
+    "test-player-post-separation-market-v518",
+    "test-premium-home-v33-2",
+    "test-premium-interfaces-v33",
+    "test-redesign-polish2",
+    "test-redesign-polish21",
+    "test-tournament-cancellation-cause-v517",
+    "test-training-center-unification-phase15-5",
+    "test-ui-redesign"
+  ],
+  "results": [
+    {
+      "test": "test-annual-career-report-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-bracket-cta-availability-v516",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-calendar-tier-cadence-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-beta-readiness",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-long-term-goals",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-null-safety",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-pace-production",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-persistence-integrity",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | PASS — ActiveCareerAdapter.getActiveCareer não apaga a carreira em memória quando a leitura falha por arquivo ausente — usa o cache quente como fallback | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | PASS — ActiveCareerAdapter.getActiveCareer não apaga a carreira em memória quando a leitura falha por arquivo ausente — usa o cache quente como fallback | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "test": "test-careerhub-stale-tournament-action-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-careerhub-tournament-planning-ui-v58",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coello-tapia-two-tournament-race",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-completed-tournament-card-v527m",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-consecutive-tournament-eligibility",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-modal-fresh-state-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-authority",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-bell-refresh",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-bracket-atomicity-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-deep-link",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-deeplink-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-fresh-tournament-read",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-no-ui-side-effect",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-preseason-real-flow",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-real-delivery",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-notification-same-tick",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-ui-independent-persistence",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-elite-event-choice-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-extreme-elite-inactivity-v518",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-finals-ui-semantics-v57",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-former-partner-reintegration-v518",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-former-partner-world-continuity-v518",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. |    AssertionError [ERR_ASSERTION]: pareado mas nunca competiu em 6 meses | === Resultado: 8 passed, 1 failed ===",
+      "headTail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. |    AssertionError [ERR_ASSERTION]: pareado mas nunca competiu em 6 meses | === Resultado: 8 passed, 1 failed ==="
+    },
+    {
+      "test": "test-global-overlays-audit",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\Padel-Legacy-New\\src\\components\\career\\CareerAssistant.jsx'\r",
+      "headTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\pl-head-530b\\src\\components\\career\\CareerAssistant.jsx'\r"
+    },
+    {
+      "test": "test-header-next-tournament",
+      "now": 1,
+      "head": 0,
+      "verdict": "REGRESSION",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — Múltiplos torneios: escolhe o mais próximo (não o primeiro da lista) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r",
+      "headTail": ""
+    },
+    {
+      "test": "test-header-tournament-shortcut-v527m",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-headless-registration-authority-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-home-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextObjectiveCard ausente (objetivo principal)\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextObjectiveCard ausente (objetivo principal)\r"
+    },
+    {
+      "test": "test-initial-opponent-origin-distribution-v515",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-injury-pre-match-walkover",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-legacy-save-tournament-continuity-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-living-career-v34-4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "LivingCareerV34_4Test: FAIL",
+      "headTail": "LivingCareerV34_4Test: FAIL"
+    },
+    {
+      "test": "test-living-career-v34-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/lib' imported from C:\\Projetos\\Padel-Legacy-New\\src\\lib\\careerMoments.js\r",
+      "headTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/lib' imported from C:\\Projetos\\pl-head-530b\\src\\lib\\careerMoments.js\r"
+    },
+    {
+      "test": "test-living-career-v34-6",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-living-career-v34-7",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from C:\\Projetos\\Padel-Legacy-New\\src\\lib\\careerDecisionCenter.js\r",
+      "headTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from C:\\Projetos\\pl-head-530b\\src\\lib\\careerDecisionCenter.js\r"
+    },
+    {
+      "test": "test-living-career-v34-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from C:\\Projetos\\Padel-Legacy-New\\src\\lib\\weeklyCareerReview.js\r",
+      "headTail": "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from C:\\Projetos\\pl-head-530b\\src\\lib\\weeklyCareerReview.js\r"
+    },
+    {
+      "test": "test-living-career-v34-9",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "if (checks.some((value) => !value)) throw new Error(`Falha estrutural: ${checks.map(Number).join(',')}`);\r | Error: Falha estrutural: 1,1,0,1,1,1,1,1\r",
+      "headTail": "if (checks.some((value) => !value)) throw new Error(`Falha estrutural: ${checks.map(Number).join(',')}`);\r | Error: Falha estrutural: 1,1,0,1,1,1,1,1\r"
+    },
+    {
+      "test": "test-living-world-v23",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-long-career-partner-ecology-v518",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-masters-draw-size-comparison-v517",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r",
+      "headTail": "FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente) | Error: \u001b[31m  Failed to scan for dependencies from entries: |   \u001b[39m\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m"
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r",
+      "headTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-game-flow-m4-3",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos) | Error: \u001b[31m  Failed to scan for dependencies from entries:"
+    },
+    {
+      "test": "test-mobile-header-height-v524b",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-header-two-rows-v524",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-m3-1-device-hotfix",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: /game/matches passou a existir como rota real (não deveria)\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: /game/matches passou a existir como rota real (não deveria)\r"
+    },
+    {
+      "test": "test-mobile-m3-2-android-ux",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: input de nome do atleta perdeu o scrollIntoView no foco (Parte 8, ficaria coberto pelo teclado)\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: input de nome do atleta perdeu o scrollIntoView no foco (Parte 8, ficaria coberto pelo teclado)\r"
+    },
+    {
+      "test": "test-mobile-m3-live-match",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-match-day-refresh-m3-7-2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-page-performance-budget-v524b",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-visual-hotfix-m4-1-3",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-visual-polish-m4-1-2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-modal-safety",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-monthly-career-report-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-new-player-opponent-tier-quality",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-notification-deep-links-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-notification-system-audit-rc",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "TypeError: Cannot read properties of undefined (reading 'is_read')\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | Error: \u001b[31m  Failed to scan for dependencies from entries: |   \u001b[39m\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m"
+    },
+    {
+      "test": "test-onboarding-priority",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — getNextStep (motor de fallback) continua definido, não foi removido |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: getNextStep (motor de fallback) continua definido, não foi removido\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — getNextStep (motor de fallback) continua definido, não foi removido | Error: \u001b[31m  Failed to scan for dependencies from entries:"
+    },
+    {
+      "test": "test-onboarding-single-source-of-truth",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-opponent-strength-by-round",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-page-hierarchy",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Training.jsx tem exatamente 1 PageHeader (identidade única da página)\r",
+      "headTail": "FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Training.jsx tem exatamente 1 PageHeader (identidade única da página)\r"
+    },
+    {
+      "test": "test-parallel-draw-atomicity-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-parallel-tournament-settlement-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-ecology-inventory-v518",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-expiry-with-committed-tournament-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-registration-after-exit-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-2-integrated-qa",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r",
+      "headTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-4-mobile-flow-polish",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 5. Home preserva Próximo objetivo | FAIL — 6. Home preserva ranking no HUD do atleta",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 5. Home preserva Próximo objetivo | FAIL — 6. Home preserva ranking no HUD do atleta"
+    },
+    {
+      "test": "test-phase15-5-1-header-notifications-partnership-ui",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-5-2-tournament-continuity",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-5-4-critical-mobile-qa",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | Error: \u001b[31m  Failed to scan for dependencies from entries: |   \u001b[39m\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m"
+    },
+    {
+      "test": "test-phase15-6-1-tournament-draw-consistency",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: D-7: nenhuma chave existe ainda (modal mostraria not_drawn)\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: D-7: nenhuma chave existe ainda (modal mostraria not_drawn)\r"
+    },
+    {
+      "test": "test-phase15-6-2-tournament-canonical-state",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | AssertionError [ERR_ASSERTION]: inscrição real deve suceder mesmo com a linha seed já presente\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | AssertionError [ERR_ASSERTION]: inscrição real deve suceder mesmo com a linha seed já presente\r"
+    },
+    {
+      "test": "test-phase15-6-app-performance-calendar-hardening",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | [WorldTour] reparo de fundação falhou: ReferenceError: window is not defined",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | [WorldTour] reparo de fundação falhou: ReferenceError: window is not defined"
+    },
+    {
+      "test": "test-phase15-7-first-tournament-parity",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Rebalance: 1º torneio da temporada ocorre dentro da janela de 30-45 dias (obtido: 28 dias)\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Rebalance: 1º torneio da temporada ocorre dentro da janela de 30-45 dias (obtido: 28 dias)\r"
+    },
+    {
+      "test": "test-player-low-rank-first-round-quality-v5",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-missed-registration-real-flow",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-opponent-progression-v5",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-post-separation-market-v518",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-registration-real-flow",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-tier-eligibility-matrix",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-playthrough-4-3-production-reconciliation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-premium-home-v33-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "    if (!content.includes(needle)) throw new Error(`${file}: conteúdo ausente: ${needle}`);\r | Error: src/pages/CareerHub.jsx: conteúdo ausente: PremiumQuickStats\r",
+      "headTail": "    if (!content.includes(needle)) throw new Error(`${file}: conteúdo ausente: ${needle}`);\r | Error: src/pages/CareerHub.jsx: conteúdo ausente: PremiumQuickStats\r"
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PremiumInterfacesV33Test: FAIL",
+      "headTail": "PremiumInterfacesV33Test: FAIL"
+    },
+    {
+      "test": "test-ranking-consistency",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ranking-full-season-simulation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-recovery-skip-tournament-walkover",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-redesign-polish2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: getNextStep (motor de próximo passo) removida/renomeada\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: getNextStep (motor de próximo passo) removida/renomeada\r"
+    },
+    {
+      "test": "test-redesign-polish21",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextEventCard (fonte única do \"próximo torneio\" informativo) foi removido da Home\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: NextEventCard (fonte única do \"próximo torneio\" informativo) foi removido da Home\r"
+    },
+    {
+      "test": "test-registration-deadline-authority",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-registration-deadline-boundary-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-registration-last-day-warning",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-registration-overlap-conflict",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-registration-reload-idempotency",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-registration-reminder-tournament-authority-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-commitment-no-weekly-renotify-v516",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-report-cta-state-transition-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-report-registration-cta-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-career-progression-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-registration-cta-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-tournament-recommendation-authority-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-competitive-review-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-review-real-dedupe-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-review-state-update-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-stale-commitment-does-not-block-choice-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tier-ladder-migration-fase3",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tier-qualifying-authority",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tier-strength-distribution",
+      "now": 1,
+      "head": 0,
+      "verdict": "REGRESSION",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | === Resultado: 4 passed, 1 failed ===",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-cancellation-cause-v517",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-canonical-results",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-card-primary-state-v520c",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-card-registration-state",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-confirm-no-skip",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-notification-deeplink-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-registration-v2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-resume-recovery",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-round-availability",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-training-center-unification-phase15-5",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 43. HUD local mostra treinos | FAIL — 44. HUD local mostra partida",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — 43. HUD local mostra treinos | FAIL — 44. HUD local mostra partida"
+    },
+    {
+      "test": "test-tutorial-auto-completion",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tutorial-chronology",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tutorial-first-official-match",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tutorial-registration-condition-v527m",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tutorial-visit-auto-completion",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-two-wave-draw-lifecycle",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r"
+    },
+    {
+      "test": "test-unregistered-player-not-in-draw",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ux-home-v36-3-1",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-walkover-achievement-isolation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-walkover-does-not-block-parallel-events",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-walkover-player-tournament-settlement",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-walkover-reload-idempotency",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-assignment-authority-v5",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-planning-after-registration-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-planning-career-progression-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-planning-mobile-contract-v58",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-planning-player-visible-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-planning-same-week-tier-choice-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-weekly-planning-visible-decision-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-world-tour-independent-from-player-partnership-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    }
+  ]
+}

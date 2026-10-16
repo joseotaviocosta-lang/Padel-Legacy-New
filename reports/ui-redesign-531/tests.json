@@ -1,0 +1,1227 @@
+{
+  "createdAt": "2026-10-16T15:11:43.584Z",
+  "total": 148,
+  "pass": 123,
+  "regressions": [],
+  "preExisting": [
+    "test-former-partner-world-continuity-v518",
+    "test-global-overlays-audit",
+    "test-live-match-landscape-contract-v520d",
+    "test-live-match-mobile-contract-v520d",
+    "test-long-career-partner-ecology-v518",
+    "test-micro-gate-post-partner-tactics-v527g",
+    "test-mobile-compact-ux-m4",
+    "test-mobile-game-app-experience-m4-2",
+    "test-notification-system-audit-rc",
+    "test-partner-athlete-idempotency-v512",
+    "test-partner-athlete-ovr-scale-v512",
+    "test-partner-engine-ovr-authority-v526b",
+    "test-phase15-3-economy-progression-navigation",
+    "test-phase15-5-1-critical-training-center",
+    "test-phase15-5-4-critical-mobile-qa",
+    "test-player-post-separation-market-v518",
+    "test-premium-interfaces-v33",
+    "test-premium-relations-v33-8",
+    "test-ranking-ui-authority-v56",
+    "test-staff-architecture-v29-1",
+    "test-ui-redesign"
+  ],
+  "results": [
+    {
+      "test": "test-ai-partnership-exit-registration-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ai-player-tier-policy-separation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-app-shell-route-contract-v520e",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-coach-history",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-partnership-history",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-career-ui-v2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-card-effects",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-discovery-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-market-compact-layout",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-market-curation",
+      "now": 1,
+      "head": 0,
+      "verdict": "expected-test-update (PASS após atualização)",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — Estado sem treinador não finge confiança/afinidade existentes |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-salary-consistency",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-selection-clarity",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-coach-system-v28",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-committed-partner-athlete-resolution-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-draw-after-exit-preserves-roster-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-final-commitment-triggers-separation-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-first-partnership-100-careers",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-first-partnership-diversity",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-first-partnership-poor-candidate-filter",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-first-partnership-ranking",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-first-partnership-veteran-mentor",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-first-partnership-young-projects",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-former-partner-reintegration-v518",
+      "now": null,
+      "head": 0,
+      "verdict": "load-flaky (PASS isolado, 7/7)",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-former-partner-world-continuity-v518",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. |    AssertionError [ERR_ASSERTION]: pareado mas nunca competiu em 6 meses",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. |    AssertionError [ERR_ASSERTION]: pareado mas nunca competiu em 6 meses"
+    },
+    {
+      "test": "test-global-header-overlay-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-global-overlays-audit",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\Padel-Legacy-New\\src\\components\\career\\CareerAssistant.jsx'\r",
+      "headTail": "Error: ENOENT: no such file or directory, open 'C:\\Projetos\\pl-head-530b\\src\\components\\career\\CareerAssistant.jsx'\r"
+    },
+    {
+      "test": "test-historical-partnership-resolution-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-home-no-partner-state-v530",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-legacy-partner-repair-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-live-coach",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-live-coach-custom-plan",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-live-coach-practice",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-live-coach-realism",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-live-coach-tournament",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-live-match-landscape-contract-v520d",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: LiveMatch deve abrir em landscape 844x390\r",
+      "headTail": "AssertionError [ERR_ASSERTION]: LiveMatch deve abrir em landscape 844x390\r"
+    },
+    {
+      "test": "test-live-match-mobile-contract-v520d",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: LiveMatch deve abrir em 360x800\r",
+      "headTail": "AssertionError [ERR_ASSERTION]: LiveMatch deve abrir em 360x800\r"
+    },
+    {
+      "test": "test-living-partnership-market-phase15",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-living-partnerships-v29",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-long-career-partner-ecology-v518",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-micro-gate-post-partner-tactics-v527g",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-compact-ux-m4",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente) |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente) | Error: \u001b[31m  Failed to scan for dependencies from entries:"
+    },
+    {
+      "test": "test-mobile-game-app-experience-m4-2",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r",
+      "headTail": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu\r"
+    },
+    {
+      "test": "test-mobile-game-feel-m4-1",
+      "now": 1,
+      "head": 0,
+      "verdict": "expected-test-update (PASS após atualização)",
+      "nowTail": "FAIL — src/pages/PartnerHub.jsx integra estado curto no HUD |   if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: src/pages/PartnerHub.jsx integra estado curto no HUD\r",
+      "headTail": ""
+    },
+    {
+      "test": "test-mobile-rendered-complexity-v520c",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-no-current-partnership-bracket-rebuild-v527m",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-no-new-commitment-after-exit-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-no-overlapping-partnership-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-normal-partner-score-v527g",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-normal-partner-strength-floor-v527g",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-normal-vs-optimizer-partner-choice-v527g",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-notification-deep-links-rc",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-notification-system-audit-rc",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "TypeError: Cannot read properties of undefined (reading 'is_read')\r",
+      "headTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | Error: \u001b[31m  Failed to scan for dependencies from entries: |   \u001b[39m\u001b[31mX \u001b[41;31m[\u001b[41;97mERROR\u001b[41;31m]\u001b[0m \u001b[1mThe server is being restarted or closed. Request is outdated\u001b[0m \u001b[1m\u001b[35m[plugin vite:dep-scan]\u001b[0m"
+    },
+    {
+      "test": "test-optimizer-no-stale-partner-v527i",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-optimizer-partner-refresh-v527i",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-chemistry-continuity-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-contract-continuity-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-development-veteran-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-development-young-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-idempotency-v512",
+      "now": null,
+      "head": null,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-materialization-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-new-partnership-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-ovr-scale-v512",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m |    AssertionError [ERR_ASSERTION]: overallRating() passou a reproduzir overall_rating — a autoridade mudou, rever partnerAthlete.js | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+      "headTail": "   AssertionError [ERR_ASSERTION]: overallRating() passou a reproduzir overall_rating — a autoridade mudou, rever partnerAthlete.js | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | === Resultado: 8 passed, 1 failed ==="
+    },
+    {
+      "test": "test-partner-athlete-ranking-credit-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-save-reload-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-separation-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-athlete-teamranking-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-choice-compatibility-preserved-v527g",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-committed-roster-ovr-v526b",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-365d-v526c",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-decision-ui-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-no-monthly-salary",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-contract-notification-deeplink-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-conversation-cooldown-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-conversation-effects-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-day1-gate",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-decision-state-ui",
+      "now": 1,
+      "head": 0,
+      "verdict": "expected-test-update (PASS após atualização)",
+      "nowTail": "partner-decision-state-ui: FAIL missing encerra_apos_compromisso",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-development-cadence-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-development-v59",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-ecology-inventory-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-engine-ovr-authority-v526b",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-hub-legacy-deeplink-v520c",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-hub-tab-consolidation-v520b",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-market-ui-contract-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-offer-materializes-selected-only-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-offer-notifications",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-offer-overall-integrity-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-offer-persistence-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-offers-v2",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-overview-development-refresh-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-overview-persistent-athlete-v512",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-quality-over-time-v527h",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-rejection-cooldown",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partner-resign-loop-v526c",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-change-does-not-rewrite-draw-v526d",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-contract-notification-lifecycle-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-expiry-with-committed-tournament-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-history-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-legacy-scope-fase29",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-registration-after-exit-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-repair-preserves-completed-tournaments-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-scheduled-separation-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-partnership-state-segmentation-v527h",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-3-economy-progression-navigation",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r",
+      "headTail": "Phase 15.3: 4/66 gate(s) falharam: | AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou\r |   operator: 'fail',\r"
+    },
+    {
+      "test": "test-phase15-5-1-critical-training-center",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "[Game Core] Circuito mundial não processado: Error: WorldEvent já existe com o id: worldevent-1792162648279-zn1fu8 | [Game Core 3.5] Falha ao atualizar AthleteProfile em lote: WorldEvent já existe com o id: worldevent-1792162648279-zn1fu8 | [Game Core 3.5] Falha ao atualizar PlayerProfile: WorldEvent já existe com o id: worldevent-1792162648279-zn1fu8",
+      "headTail": "[Game Core] Circuito mundial não processado: Error: WorldEvent já existe com o id: worldevent-1792163264172-zn1fu8 | [Game Core 3.5] Falha ao atualizar AthleteProfile em lote: WorldEvent já existe com o id: worldevent-1792163264172-zn1fu8 | [Game Core 3.5] Falha ao atualizar PlayerProfile: WorldEvent já existe com o id: worldevent-1792163264172-zn1fu8"
+    },
+    {
+      "test": "test-phase15-5-1-header-notifications-partnership-ui",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-phase15-5-4-critical-mobile-qa",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r",
+      "headTail": "  if (!condition) throw new Error(`GATE FALHOU: ${label}`);\r | Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)\r"
+    },
+    {
+      "test": "test-player-partner-offer-flow-v518",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-partner-ranking-display-v5",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-player-post-separation-market-v518",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+      "headTail": "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível. | [Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+    },
+    {
+      "test": "test-playthrough-4-3-production-reconciliation",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-post-separation-partner-market-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-premium-interfaces-v33",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "PremiumInterfacesV33Test: FAIL",
+      "headTail": "PremiumInterfacesV33Test: FAIL"
+    },
+    {
+      "test": "test-premium-relations-v33-8",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "FAIL: PartnerHub exibe indicadores da parceria | FAIL: PartnerHub exibe propostas | FAIL: Versão beta.12",
+      "headTail": "FAIL: PartnerHub exibe propostas | FAIL: Versão beta.12"
+    },
+    {
+      "test": "test-ranking-no-active-partner-states-v523",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ranking-ui-authority-v56",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /formatIndividualRankLabel\\(ranking\\)/. Input:\r",
+      "headTail": "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /formatIndividualRankLabel\\(ranking\\)/. Input:\r"
+    },
+    {
+      "test": "test-save-reload-pending-separation-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-settlement-after-exit-preserves-roster-v527j",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-severance-exit-path-v527b",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-architecture-v29-1",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "AssertionError [ERR_ASSERTION]: Comissão técnica não foi movida para Dupla e relações.\r",
+      "headTail": "AssertionError [ERR_ASSERTION]: Comissão técnica não foi movida para Dupla e relações.\r"
+    },
+    {
+      "test": "test-staff-commitment-no-weekly-renotify-v516",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-next-decision-chronology-v516",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-notification-deeplink-v513",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-report-cta-state-transition-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-report-presentation-contract-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-report-registration-cta-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-after-registration-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-career-progression-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-deeplink-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-federation-reminder-separation-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-idempotency-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-multi-tournament-choice-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-no-event-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-player-chooses-alternative-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-registration-cta-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-review-single-message-per-week-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-state-transition-notification-policy-v516",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-tournament-recommendation-authority-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-competitive-review-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-review-next-week-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-review-real-dedupe-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-staff-weekly-review-state-update-v514",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-starter-coach-flow",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-team-ranking-partnership-change-v510",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-team-ranking-ui-consistency-v510",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-tournament-roster-survives-partner-change-v519",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-ui-redesign",
+      "now": 1,
+      "head": 1,
+      "verdict": "pre-existing",
+      "nowTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r",
+      "headTail": "  if (!condition) throw new Error(`FALHA: ${label}`);\r | Error: FALHA: Training.jsx não importa do design-system oficial\r"
+    },
+    {
+      "test": "test-weekly-planning-mobile-contract-v58",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    },
+    {
+      "test": "test-world-tour-independent-from-player-partnership-v517",
+      "now": 0,
+      "head": null,
+      "verdict": "pass",
+      "nowTail": "",
+      "headTail": ""
+    }
+  ],
+  "finalClassification": {
+    "expectedTestUpdate": [
+      "test-partner-decision-state-ui",
+      "test-coach-market-curation",
+      "test-mobile-game-feel-m4-1"
+    ],
+    "loadFlaky": [
+      "test-former-partner-reintegration-v518"
+    ],
+    "realRegression": [],
+    "note": "Reexecutados isolados após a atualização de intenção: todos PASS (2026-10-16)."
+  }
+}

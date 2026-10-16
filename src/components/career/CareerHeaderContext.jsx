@@ -1,9 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { CalendarDays, HeartPulse, Trophy, Zap } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { buildCareerHeaderContext } from '@/lib/careerHeaderContext.js';
 import { wasTournamentUnreachableAtCareerStart } from '@/lib/tournamentRegistration.js';
+import { TOURNAMENTS_CHANGED_EVENT } from '@/lib/tournamentsChangedEvent.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
 const ICON_BY_KIND = {
@@ -43,8 +44,13 @@ export default function CareerHeaderContext({ profile, compact = false }) {
         // e "corrigir" sozinho depois que a página era aberta. Mesma consulta
         // dos dois lados: a pergunta "qual é o próximo torneio?" não pode ter
         // duas respostas.
-        localGame.entities.Tournament.list('start_date', 2000).catch(() => []),
-        localGame.entities['CalendarEvent'].filter({ profile_id: profileId, event_type: 'tournament' }, 'start_date', 30).catch(() => []),
+        // 5.30-B: '-start_date', igual a Torneios e Home. Ascendente com
+        // limite 2000, uma carreira longa perdia justamente os eventos futuros.
+        localGame.entities.Tournament.list('-start_date', 2000).catch(() => []),
+        // 5.30-B: ordem DESCENDENTE. Com 'start_date' (ascendente) e limite
+        // 30, vinham as 30 inscrições MAIS ANTIGAS, e numa carreira longa a
+        // campanha atual e a próxima inscrição ficavam de fora.
+        localGame.entities['CalendarEvent'].filter({ profile_id: profileId, event_type: 'tournament' }, '-start_date', 30).catch(() => []),
       ]);
       // Mesmo filtro da listagem de torneios: eventos cuja inscrição já tinha
       // fechado antes de a carreira começar nunca estiveram ao alcance do
@@ -57,14 +63,24 @@ export default function CareerHeaderContext({ profile, compact = false }) {
     }
   }, [profileId, careerDate]);
 
+  // Hotfix 5.30-B: o calendário também muda SEM o dia mudar. A Pré-Temporada
+  // só passa a existir quando Torneios reconcilia o calendário, e inscrever
+  // ou cancelar muda qual evento é o próximo. Sem estes gatilhos, o header
+  // seguia com a lista antiga (no Android o `focus` quase nunca dispara) e
+  // anunciava Londres Challenge enquanto Torneios e Home mostravam Roma
+  // Pré-Temporada. Recarrega ao trocar de tela e no aviso de calendário
+  // alterado; nunca por campos voláteis do perfil.
+  const { pathname } = useLocation();
   useEffect(() => {
     load();
     const refresh = () => load();
     window.addEventListener('focus', refresh);
+    window.addEventListener(TOURNAMENTS_CHANGED_EVENT, refresh);
     return () => {
       window.removeEventListener('focus', refresh);
+      window.removeEventListener(TOURNAMENTS_CHANGED_EVENT, refresh);
     };
-  }, [load]);
+  }, [load, pathname]);
 
   const context = useMemo(() => {
     if (!profile || !fetchedData) return null;

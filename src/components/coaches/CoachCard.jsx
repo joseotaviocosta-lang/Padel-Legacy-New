@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowRight, Check, Coins, LockKeyhole, MapPin, Sparkles, Star, WalletCards } from 'lucide-react';
+import { Check, Coins, LockKeyhole, Sparkles, Star, WalletCards } from 'lucide-react';
 import { COACH_TIERS, getCoachImpactSummary } from '@/lib/coaches';
 import { Button } from '@/components/design-system';
 
@@ -9,94 +9,73 @@ function Badge({ children, tone = 'brand' }) {
     value: 'border-emerald-500/30 bg-emerald-500/10 text-emerald-400',
     muted: 'border-border/60 bg-secondary/45 text-muted-foreground',
   };
-  return <span className={`rounded-full border px-2 py-0.5 text-[9px] font-black uppercase tracking-wide ${tones[tone]}`}>{children}</span>;
+  return <span className={`shrink-0 rounded-full border px-1.5 py-0.5 text-[8px] font-black uppercase tracking-wide ${tones[tone]}`}>{children}</span>;
 }
 
+// Fase 5.31 — card compacto: nome, função/nível, efeito principal, custo
+// mensal (+ assinatura), afinidade e disponibilidade, com UMA ação. Antes
+// eram dois botões ("Ver detalhes" + "Contratar") que abriam o MESMO modal;
+// a contratação de fato continua só no modal (CoachDetail).
 export default function CoachCard({ evaluation, profile, onDetails, onHire }) {
   const coach = evaluation?.coach;
   if (!coach) return null;
   const tier = COACH_TIERS[coach.tier] || COACH_TIERS.regional;
   const available = evaluation.availability.available;
-  // Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
-  // Parte F/G): antes o card mostrava COACH_SPECIALTY_INFO.benefits — uma
-  // lista editorial estática ("mais estratégia") independente da engine,
-  // enquanto o impacto numérico real só aparecia em "Ver detalhes"
-  // (CoachDetail.jsx, mesma função). Fonte única agora: getCoachImpactSummary.
+  // Tutorial 4.1 (Parte F/G): impacto REAL, mesma função do modal
+  // (getCoachImpactSummary) — card e modal nunca divergem.
   const impact = getCoachImpactSummary(coach, profile);
+  const highlights = impact.highlights?.length ? impact.highlights.slice(0, 3) : [];
 
   return (
-    <article className={`glass rounded-2xl border p-4 transition ${evaluation.recommended ? 'border-primary/50' : 'border-transparent'} ${available ? 'hover:bg-secondary/20' : 'opacity-70'}`}>
+    <article data-coach-card className={`glass rounded-2xl border p-3 transition ${evaluation.recommended ? 'border-primary/50' : 'border-transparent'} ${available ? 'hover:bg-secondary/20' : 'opacity-75'}`}>
       <div className="flex items-start gap-3">
-        <div className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-xl border ${tier.bg} ${tier.border}`}>
-          <span className={`text-lg font-black ${tier.color}`}>{(coach.name || '?')[0]}</span>
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border ${tier.bg} ${tier.border}`}>
+          <span className={`text-base font-black ${tier.color}`}>{(coach.name || '?')[0]}</span>
         </div>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-1.5">
+          <div className="flex min-w-0 items-center gap-1.5">
             <h3 className="truncate text-sm font-black">{coach.name}</h3>
             {evaluation.recommended && <Badge>Recomendado</Badge>}
             {evaluation.bestValue && <Badge tone="value">Melhor custo-benefício</Badge>}
           </div>
-          <p className="mt-0.5 flex items-center gap-1 text-[10px] text-muted-foreground">
-            <MapPin className="h-3 w-3" /> {coach.city || coach.nationality || 'Circuito mundial'}
-          </p>
-          <p className="mt-1 text-[10px] font-bold text-foreground/80">{impact.title || coach.specialty} · {tier.label}</p>
+          <p className="truncate text-[11px] text-muted-foreground">{impact.title || coach.specialty} · {tier.label} · {coach.city || coach.nationality || 'Circuito mundial'}</p>
         </div>
-        <div className="px-1.5 py-1 text-center">
+        <div className="shrink-0 text-center">
+          <p className="text-lg font-black leading-none tabular-nums">{evaluation.overall}</p>
           <p className="text-[8px] font-bold uppercase text-muted-foreground">OVR</p>
-          <p className="text-lg font-black tabular-nums">{evaluation.overall}</p>
         </div>
       </div>
 
-      <p className="mt-2 line-clamp-1 text-[11px] leading-relaxed text-muted-foreground">{evaluation.recommendationReason}</p>
-
-      {/* Tutorial 4.1 (docs/TUTORIAL_4_1_EXPANDED_ONBOARDING_AND_COACH_CLARITY.md,
-          Parte F/G): impacto REAL (não mais o texto editorial genérico) —
-          tudo que muda a decisão de contratação precisa estar aqui, "Ver
-          detalhes" é só informação secundária. Mesma função que
-          CoachDetail.jsx usa, então card e modal nunca mais divergem. */}
-      {impact.highlights?.length > 0 && (
-        <div className="mt-2">
-          <p className="text-[8px] font-black uppercase tracking-wide text-primary">Impacto</p>
-          <ul className="mt-0.5 space-y-0.5">
-            {impact.highlights.slice(0, 3).map((highlight) => (
-              <li key={highlight} className="flex items-center gap-1.5 text-[10px] text-muted-foreground">
-                <Check className="h-3 w-3 shrink-0 text-emerald-400" /> {highlight}
-              </li>
-            ))}
-          </ul>
-        </div>
+      {/* Efeito principal em destaque; os demais na mesma linha, sob demanda no modal. */}
+      {highlights.length > 0 && (
+        <p className="mt-2 flex min-w-0 items-center gap-1.5 text-[11px]">
+          <Check className="h-3.5 w-3.5 shrink-0 text-emerald-400" />
+          <strong className="shrink-0 text-foreground">{highlights[0]}</strong>
+          {highlights.length > 1 && <span className="truncate text-muted-foreground">· {highlights.slice(1).join(' · ')}</span>}
+        </p>
       )}
 
-      {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): os 2 blocos com
-          padding próprio viraram uma linha compacta — mesmos valores. */}
-      <div className="mt-3 flex items-center gap-x-4 gap-y-1 flex-wrap text-xs">
-        <span className="flex items-center gap-1.5 font-bold"><Coins className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.salary.toLocaleString('pt-BR')} <span className="text-muted-foreground font-semibold">moedas/mês</span></span>
-        {evaluation.signingCost > 0 && (
-          <span className="flex items-center gap-1.5 font-bold text-muted-foreground">{evaluation.signingCost.toLocaleString('pt-BR')} <span className="font-semibold">assinatura</span></span>
-        )}
-        <span className="flex items-center gap-1.5 font-bold"><Star className="h-3.5 w-3.5 text-primary shrink-0" /> {evaluation.affinity}/100 <span className="text-muted-foreground font-semibold">afinidade</span></span>
-      </div>
+      <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-[11px]">
+        <span className="flex items-center gap-1 font-bold"><Coins className="h-3.5 w-3.5 shrink-0 text-primary" /> {evaluation.salary.toLocaleString('pt-BR')} <span className="font-semibold text-muted-foreground">moedas/mês</span></span>
+        {evaluation.signingCost > 0 && <span className="font-bold text-muted-foreground">{evaluation.signingCost.toLocaleString('pt-BR')} <span className="font-semibold">assinatura</span></span>}
+        <span className="flex items-center gap-1 font-bold"><Star className="h-3 w-3 shrink-0 text-primary" /> {evaluation.affinity}/100 <span className="font-semibold text-muted-foreground">afinidade</span></span>
+      </p>
 
-      <div className="mt-2">
-        <p className={`flex items-center gap-1 text-[10px] font-black ${available ? 'text-emerald-400' : 'text-amber-400'}`}>
-          {available ? <Sparkles className="h-3.5 w-3.5" /> : <LockKeyhole className="h-3.5 w-3.5" />}
-          {available ? 'Disponível para contratar agora' : 'Ainda não disponível'}
-        </p>
-        {!available && <p className="mt-1 text-[10px] text-muted-foreground">{evaluation.availability.reason}</p>}
-        {available && evaluation.availability.affordability?.risk !== 'low' && (
-          <p className="mt-1 flex items-center gap-1 text-[10px] text-amber-300"><WalletCards className="h-3 w-3" /> Contratação possível, mas com risco financeiro.</p>
-        )}
-      </div>
-
-      <div className="mt-2 flex gap-2">
-        {/* 5.28: em lista, a ação do card é secundária (o primário fica no modal
-            de contratação) — antes eram 6 botões primários na mesma tela. */}
-        <Button level="ghost" size="sm" onClick={onDetails} className="flex-1">Ver detalhes</Button>
-        {available ? (
-          <Button level="secondary" size="sm" onClick={onHire} className="flex-1 text-primary">Contratar <ArrowRight className="h-3.5 w-3.5" /></Button>
-        ) : (
-          <Button level="ghost" size="sm" onClick={onDetails} className="flex-1 border border-amber-500/25 bg-amber-500/10 text-amber-300">Ver requisitos</Button>
-        )}
+      <div className="mt-2 flex items-center justify-between gap-2">
+        <div className="min-w-0">
+          <p className={`flex items-center gap-1 text-[10px] font-black ${available ? 'text-emerald-400' : 'text-amber-400'}`}>
+            {available ? <Sparkles className="h-3.5 w-3.5 shrink-0" /> : <LockKeyhole className="h-3.5 w-3.5 shrink-0" />}
+            <span className="truncate">{available ? 'Disponível para contratar agora' : 'Ainda não disponível'}</span>
+          </p>
+          {!available && <p className="line-clamp-1 text-[10px] text-muted-foreground">{evaluation.availability.reason}</p>}
+          {available && evaluation.availability.affordability?.risk !== 'low' && (
+            <p className="flex items-center gap-1 text-[10px] text-amber-300"><WalletCards className="h-3 w-3 shrink-0" /> Possível, com risco financeiro.</p>
+          )}
+        </div>
+        {/* 5.28/5.31: em lista, uma ação secundária; o primário fica no modal. */}
+        {available
+          ? <Button level="secondary" size="sm" onClick={onDetails || onHire} className="shrink-0">Ver detalhes</Button>
+          : <Button level="ghost" size="sm" onClick={onDetails} className="shrink-0 border border-amber-500/25 bg-amber-500/10 text-amber-300">Ver requisitos</Button>}
       </div>
     </article>
   );

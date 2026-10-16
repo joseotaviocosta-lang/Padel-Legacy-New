@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
   BadgeCheck, BriefcaseBusiness, Building2, ChartNoAxesCombined, GraduationCap,
@@ -35,9 +35,6 @@ const EFFECT_LABELS = {
 };
 const FACILITY_ICONS = { courts: PanelsTopLeft, gym: Dumbbell, recovery: HeartPulse, analysis: ChartNoAxesCombined, office: Building2 };
 
-function QualityBar({ value, potential }) {
-  return <div className="space-y-1"><div className="flex justify-between text-[10px]"><span>Qualidade</span><span className="font-black">{value}{potential ? ` / ${potential}` : ''}</span></div><div className="h-1.5 rounded-full bg-secondary/60 overflow-hidden"><div className="h-full bg-primary rounded-full" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} /></div></div>;
-}
 function EffectPills({ effects = {} }) {
   return <div className="flex flex-wrap gap-1.5">{Object.entries(effects).map(([key, value]) => {
     const direct = ['dailyEnergy', 'dailyFatigue', 'dailyConfidence', 'dailyMorale', 'analysisLevel', 'scoutLevel'].includes(key);
@@ -45,10 +42,12 @@ function EffectPills({ effects = {} }) {
   })}</div>;
 }
 
-export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, onUpgradeFacility, busy }) {
-  const [view, setView] = useState('team');
+export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, onUpgradeFacility, busy, initialView = 'team' }) {
+  const [view, setView] = useState(initialView);
   const [roleFilter, setRoleFilter] = useState('all');
   const [confirmFireId, setConfirmFireId] = useState(null);
+  const [marketVisible, setMarketVisible] = useState(6);
+  useEffect(() => { setMarketVisible(6); }, [roleFilter]);
   const activeStaff = useMemo(() => (staff || []).filter(Boolean).map(normalizeStaffMember).filter(member => !['terminated', 'expired'].includes(member.contract_status)), [staff]);
   const principalCoachActive = Boolean(profile?.coach_id && profile?.coach_contract_status !== 'terminated');
   const totalSlots = getStaffSlots(profile?.career_level || 1);
@@ -78,41 +77,99 @@ export default function StaffPanel({ profile, staff, onHire, onFire, onRenew, on
   return <div className="space-y-3">
     <Tabs tabs={tabs} activeTab={view} onTabChange={setView} variant="buttons" />
 
-    {view === 'team' && <Surface>
-      <div className="mb-4"><h3 className="font-black flex items-center gap-2"><WandSparkles className="h-4 w-4 text-primary" /> Sua comissão</h3><p className="text-[10px] text-muted-foreground mt-1">Acompanhe evolução, satisfação e vencimento dos contratos.</p></div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-        {principalCoachActive && <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4 space-y-3"><div className="flex items-start gap-3"><div className="h-10 w-10 rounded-xl bg-primary/15 flex items-center justify-center"><GraduationCap className="h-5 w-5 text-primary" /></div><div className="flex-1"><p className="font-bold">{profile.coach_name || 'Treinador principal'}</p><p className="text-[10px] text-muted-foreground">Líder da comissão · orientação técnica da dupla</p><p className="text-[9px] text-muted-foreground mt-1">{profile?.coach_paid_by_club ? 'Custeado pelo clube' : `${coins(profile?.coach_monthly_salary)} moedas/mês`} · contrato até {profile?.coach_contract_end_date || 'fim da temporada'}</p></div><span className="rounded-full bg-primary/15 px-2 py-1 text-[9px] font-bold text-primary">Obrigatório</span></div><div className="grid grid-cols-3 gap-2 text-[9px]"><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Confiança</p><p className="font-bold">{profile?.coach_trust ?? 55}/100</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Afinidade</p><p className="font-bold">{profile?.coach_affinity ?? 50}/100</p></div><div className="rounded-lg bg-secondary/30 p-2"><p className="text-muted-foreground">Entendimento</p><p className="font-bold">{profile?.coach_tactical_understanding ?? 25}/100</p></div></div><Link to="/coaches" className="block w-full rounded-xl bg-primary/15 py-2 text-center text-xs font-bold text-primary">Gerenciar treinador principal</Link></div>}
+    {/* Fase 5.31 — MINHA COMISSÃO como posições: quem trabalha comigo, em que
+        função, com qual efeito, quanto custa e se há vaga. Antes: cartões
+        altos com barra, 3 métricas, pílulas e 2 botões cada; vagas livres
+        não apareciam. Ações de contrato continuam as mesmas. */}
+    {view === 'team' && <Surface padding="compact" className="space-y-2" data-staff-team>
+      {/* Vagas e folha já estão no HUD da página — não repetir aqui. */}
+      <h3 className="flex items-center gap-2 text-sm font-black"><WandSparkles className="h-4 w-4 text-primary" /> Sua comissão</h3>
+      <div className="grid grid-cols-1 gap-2 md:grid-cols-2">
+        {principalCoachActive ? (
+          <div className="rounded-xl border border-primary/30 bg-primary/5 p-3" data-staff-position="coach">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/15"><GraduationCap className="h-4 w-4 text-primary" /></div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold">{profile.coach_name || 'Treinador principal'}</p>
+                <p className="truncate text-[11px] text-muted-foreground">Líder da comissão · {profile?.coach_paid_by_club ? 'custeado pelo clube' : `${coins(profile?.coach_monthly_salary)}/mês`}</p>
+                <p className="truncate text-[10px] text-muted-foreground">Contrato até {profile?.coach_contract_end_date || 'fim da temporada'} · confiança {profile?.coach_trust ?? 55}</p>
+              </div>
+              <span className="shrink-0 rounded-full bg-primary/15 px-2 py-0.5 text-[9px] font-bold text-primary">Obrigatório</span>
+            </div>
+            <Link to="/coaches" className="mt-2 block text-center text-[11px] font-bold text-primary">Gerenciar treinador principal</Link>
+          </div>
+        ) : (
+          <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-3" data-staff-position="coach-empty">
+            <p className="text-sm font-bold">Treinador principal · vaga aberta</p>
+            <p className="text-[11px] text-muted-foreground">Obrigatório para liderar a comissão. Contratado na aba Treinador, sem ocupar vaga daqui.</p>
+            <Link to="/coaches" className="mt-1.5 block text-[11px] font-bold text-primary">Escolher treinador principal</Link>
+          </div>
+        )}
         {activeStaff.map(member => {
           const role = STAFF_ROLE_DEFINITIONS[member.staff_type]; const Icon = getStaffIcon(role?.icon); const remaining = daysUntil(member.contract_end_date, profile?.career_date);
-          return <div key={member.id || member.staff_id} className="rounded-2xl border border-border/50 bg-secondary/20 p-4 space-y-3">
-            <div className="flex items-start gap-3"><div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center"><Icon className="h-5 w-5 text-primary" /></div><div className="flex-1 min-w-0"><p className="font-bold text-sm truncate">{member.staff_name}</p><p className="text-[10px] text-muted-foreground">{member.role_name} · {member.specialty_name}</p><p className="text-[9px] text-muted-foreground">{member.personality} · {member.age} anos</p></div><span className="text-[9px] px-2 py-1 rounded-full bg-secondary/50">Nv. {member.staff_level}</span></div>
-            <QualityBar value={member.quality} potential={member.potential} />
-            {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.12): a grade de 3
-                blocos com padding próprio vira uma linha compacta. */}
-            <SummaryRow items={[
-              { label: 'Satisfação', value: `${member.satisfaction}/100` },
-              { label: 'Salário', value: coins(member.monthly_cost) },
-              { label: 'Contrato', value: remaining == null ? 'Sem data' : remaining < 0 ? 'Vencido' : `${remaining}d` },
-            ]} />
-            <EffectPills effects={member.effects} />
-            <div className="flex gap-2">
-              <Button level="ghost" size="sm" disabled={busy || !onRenew} onClick={() => onRenew?.(member, 12)} className="flex-1 bg-primary/15 text-primary">Renovar 12 meses</Button>
+          const [mainEffect] = Object.entries(member.effects || {});
+          return <div key={member.id || member.staff_id} className="rounded-xl border border-border/50 bg-secondary/20 p-3" data-staff-position="member">
+            <div className="flex items-start gap-3">
+              <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10"><Icon className="h-4 w-4 text-primary" /></div>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-bold">{member.staff_name}</p>
+                <p className="truncate text-[11px] text-muted-foreground">{member.role_name} · {member.specialty_name} · Nv. {member.staff_level}</p>
+                <p className="truncate text-[11px]"><strong>{coins(member.monthly_cost)}</strong><span className="text-muted-foreground">/mês · </span><span className={remaining != null && remaining <= 30 ? 'font-bold text-amber-300' : 'text-muted-foreground'}>{remaining == null ? 'sem data' : remaining < 0 ? 'contrato vencido' : `${remaining} dias restantes`}</span></p>
+              </div>
+              <span className="shrink-0 text-right text-[10px] text-muted-foreground"><strong className="block text-sm text-foreground tabular-nums">{member.quality}</strong>qualid.</span>
+            </div>
+            {mainEffect && <div className="mt-2"><EffectPills effects={Object.fromEntries([mainEffect])} /></div>}
+            <SummaryRow className="mt-1.5 text-[10px]" items={[{ label: 'Satisfação', value: `${member.satisfaction}/100` }, { label: 'Potencial', value: member.potential }]} />
+            <div className="mt-2 flex gap-2">
+              <Button level="ghost" size="sm" disabled={busy || !onRenew} onClick={() => onRenew?.(member, 12)} className="flex-1 text-primary">Renovar 12 meses</Button>
               {confirmFireId === member.id
                 ? <Button level="danger" size="sm" disabled={busy} onClick={() => handleFireClick(member)}>Confirmar demissão</Button>
-                : <Button level="ghost" size="sm" disabled={busy} onClick={() => handleFireClick(member)} className="border border-red-500/20 text-red-400">Demitir</Button>}
+                : <Button level="ghost" size="sm" disabled={busy} onClick={() => handleFireClick(member)} className="text-red-400">Demitir</Button>}
             </div>
           </div>;
         })}
+        {Array.from({ length: Math.max(0, totalSlots - occupiedSlots) }).slice(0, 3).map((_, index) => (
+          <button key={`free-${index}`} type="button" onClick={() => setView('market')} data-staff-position="free" className="flex items-center gap-3 rounded-xl border border-dashed border-border/60 p-3 text-left hover:bg-secondary/20">
+            <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary/40"><Users className="h-4 w-4 text-muted-foreground" /></span>
+            <span className="min-w-0 flex-1"><span className="block text-sm font-bold">Vaga livre</span><span className="block truncate text-[11px] text-muted-foreground">Fisioterapia, preparação, análise e mais no mercado</span></span>
+            <span className="shrink-0 text-[11px] font-bold text-primary">Ver mercado</span>
+          </button>
+        ))}
       </div>
-      {!principalCoachActive && activeStaff.length === 0 && <EmptyState icon={Users} title="Comissão vazia" description="Contrate profissionais no mercado mensal." />}
+      {!principalCoachActive && activeStaff.length === 0 && totalSlots === 0 && <EmptyState icon={Users} title="Comissão vazia" description="Contrate profissionais no mercado mensal." />}
     </Surface>}
 
-    {view === 'market' && <div className="space-y-4">
-      <Surface><div className="flex flex-col md:flex-row md:items-center gap-3"><div className="flex-1"><h3 className="font-black">Mercado de profissionais</h3><p className="text-xs text-muted-foreground mt-1">A disponibilidade e os salários mudam a cada mês da carreira.</p></div><select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} className="glass rounded-xl px-3 py-2 text-xs"><option value="all">Todas as funções</option>{Object.values(STAFF_ROLE_DEFINITIONS).map(role => <option key={role.id} value={role.id}>{role.name}</option>)}</select></div></Surface>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">{available.map(candidate => {
+    {/* Fase 5.31 — mercado em cartões compactos: função, nível, efeito
+        principal e custo, com UMA ação. Mesmos candidatos e regras. */}
+    {view === 'market' && <div className="space-y-3" data-staff-market>
+      <div className="flex items-center gap-2">
+        <p className="min-w-0 flex-1 text-[11px] text-muted-foreground">Disponibilidade e salários mudam a cada mês · {available.length} profissiona{available.length === 1 ? 'l' : 'is'}.</p>
+        <select value={roleFilter} onChange={e => setRoleFilter(e.target.value)} aria-label="Filtrar função" className="min-h-9 max-w-[45%] shrink-0 rounded-xl border border-border/60 bg-background/70 px-2 text-xs font-bold"><option value="all">Todas as funções</option>{Object.values(STAFF_ROLE_DEFINITIONS).map(role => <option key={role.id} value={role.id}>{role.name}</option>)}</select>
+      </div>
+      <div className="grid grid-cols-1 gap-2.5 md:grid-cols-2">{available.slice(0, marketVisible).map(candidate => {
         const role = STAFF_ROLE_DEFINITIONS[candidate.roleId]; const Icon = getStaffIcon(role?.icon); const locked = n(profile?.career_level, 1) < candidate.minCareerLevel; const noSlot = occupiedSlots >= totalSlots;
-        return <Surface key={candidate.id} className={!candidate.available ? 'opacity-60' : ''}><div className="space-y-3"><div className="flex items-start gap-3"><div className="h-11 w-11 rounded-xl bg-primary/10 flex items-center justify-center"><Icon className="h-5 w-5 text-primary" /></div><div className="flex-1"><div className="flex items-center gap-2"><p className="font-black text-sm">{candidate.name}</p>{candidate.recommended && <Sparkles className="h-3.5 w-3.5 text-amber-400" />}</div><p className="text-[10px] text-muted-foreground">{candidate.roleName} · {candidate.specialtyName}</p><p className="text-[9px] text-muted-foreground">{candidate.personality} · {candidate.age} anos</p></div><span className={`text-[9px] border rounded-full px-2 py-1 ${TIER_CLASS[candidate.tier]}`}>{candidate.tier}</span></div><QualityBar value={candidate.quality} potential={candidate.potential} /><p className="text-xs text-muted-foreground">{candidate.summary}</p><EffectPills effects={candidate.effects} /><div className="flex items-center justify-between text-xs"><span className="font-bold">{coins(candidate.monthlyCost)} / mês</span><span className="text-muted-foreground">Demanda {candidate.demand}%</span></div>{!candidate.available && <p className="text-[10px] text-amber-400">{candidate.unavailableReason}</p>}<Button level="secondary" disabled={busy || locked || noSlot || !candidate.available} onClick={() => onHire(candidate)} className="w-full text-primary">{locked ? <><LockKeyhole className="h-3 w-3" /> Experiência {candidate.minCareerLevel}</> : noSlot ? 'Sem vagas disponíveis' : candidate.available ? 'Contratar por 12 meses' : 'Indisponível'}</Button></div></Surface>;
+        const mainEffects = Object.fromEntries(Object.entries(candidate.effects || {}).slice(0, 2));
+        return <article key={candidate.id} data-staff-candidate className={`glass rounded-2xl p-3 ${!candidate.available ? 'opacity-60' : ''}`}>
+          <div className="flex items-start gap-3">
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-primary/10"><Icon className="h-4 w-4 text-primary" /></div>
+            <div className="min-w-0 flex-1">
+              <div className="flex min-w-0 items-center gap-1.5"><p className="truncate text-sm font-black">{candidate.name}</p>{candidate.recommended && <Sparkles className="h-3.5 w-3.5 shrink-0 text-amber-400" aria-label="Recomendado" />}</div>
+              <p className="truncate text-[11px] text-muted-foreground">{candidate.roleName} · {candidate.specialtyName}</p>
+            </div>
+            <span className={`shrink-0 rounded-full border px-2 py-0.5 text-[9px] ${TIER_CLASS[candidate.tier]}`}>{candidate.tier}</span>
+          </div>
+          <div className="mt-2"><EffectPills effects={mainEffects} /></div>
+          <p className="mt-1.5 line-clamp-1 text-[11px] text-muted-foreground">{candidate.summary}</p>
+          <div className="mt-2 flex items-center justify-between gap-2">
+            <p className="min-w-0 text-xs"><strong>{coins(candidate.monthlyCost)}</strong><span className="text-muted-foreground"> /mês · qualidade {candidate.quality}{candidate.potential ? `/${candidate.potential}` : ''}</span></p>
+            <span className="shrink-0 text-[10px] text-muted-foreground">Demanda {candidate.demand}%</span>
+          </div>
+          {!candidate.available && <p className="mt-1 text-[10px] text-amber-400">{candidate.unavailableReason}</p>}
+          <Button level="secondary" size="sm" disabled={busy || locked || noSlot || !candidate.available} onClick={() => onHire(candidate)} className="mt-2 w-full text-primary">{locked ? <><LockKeyhole className="h-3 w-3" /> Experiência {candidate.minCareerLevel}</> : noSlot ? 'Sem vagas disponíveis' : candidate.available ? 'Contratar por 12 meses' : 'Indisponível'}</Button>
+        </article>;
       })}</div>
+      {/* 5.31: mesma paginação do mercado de técnicos (antes: todos de uma vez, ~8.700px no celular). */}
+      {available.length > marketVisible && <Button level="ghost" size="sm" onClick={() => setMarketVisible((count) => count + 6)} className="mx-auto flex border border-border/60">Mostrar mais ({available.length - marketVisible} restantes)</Button>}
     </div>}
 
     {view === 'facilities' && <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

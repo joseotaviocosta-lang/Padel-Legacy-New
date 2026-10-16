@@ -1,10 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Heart, TrendingUp, Trophy, Coins, Swords, Calendar, AlertTriangle, ShieldCheck, Smile, Sparkles, CheckCircle2, Hash } from 'lucide-react';
+import { AlertTriangle, CheckCircle2, Coins, Heart, Search, Sparkles, Users } from 'lucide-react';
 import { compatibilityLabel } from '@/lib/partnershipSystem';
-import { daysBetween } from '@/lib/career';
-import { formatDate, overallRating, getWorldRank } from '@/lib/padel';
+import { overallRating, getWorldRank } from '@/lib/padel';
 import { derivePartnershipIdentity, getPartnerBondLabel } from '@/lib/partnerBondSystem.js';
-import { Surface, Button } from '@/components/design-system';
+import { Surface, Button, CollapsibleSection, ProgressBar, StatusBadge } from '@/components/design-system';
 import { localGame } from '@/api/localGameClient.js';
 import { getPartnerBot } from '@/lib/career';
 import { getTeamRank } from '@/lib/teamRanking.js';
@@ -23,13 +22,42 @@ export function resolvePartnerOverall(partnerProfile, legacyOverall) {
   return Number.isFinite(value) ? Math.max(1, Math.min(100, Math.round(value))) : '—';
 }
 
-export default function PartnerOverview({ partnership, profile, onEnd, onNegotiate, onConverse }) {
+const ALERT_TONE = {
+  danger: 'border-red-500/30 bg-red-500/5 text-red-400',
+  warning: 'border-amber-500/30 bg-amber-500/5 text-amber-300',
+};
+const TONE_BAR = { success: 'bg-emerald-400', warning: 'bg-amber-400', danger: 'bg-red-400', neutral: 'bg-muted-foreground' };
+
+// Fase 5.31 — o único alerta contextual da tela (selectPartnerAlert).
+export function PartnerAlert({ alert, children }) {
+  if (!alert) return null;
+  return (
+    <div role="status" data-partner-alert={alert.id} className={`flex gap-2.5 rounded-xl border p-3 text-xs ${ALERT_TONE[alert.tone] || ALERT_TONE.warning}`}>
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+      <div className="min-w-0">
+        <p className="font-black">{alert.title}</p>
+        <p className="mt-0.5 text-muted-foreground">{alert.text}</p>
+        {children}
+      </div>
+    </div>
+  );
+}
+
+// Fase 5.31 — RELATIONSHIP FIRST, DECISION SECOND, DETAILS ON DEMAND.
+// Antes: card de 2.000px com 3 barras em caixas, identidade, 4 stats, 2
+// rankings, contrato, 3 botões, compatibilidade, objetivos e conversas
+// abertos de uma vez (e o HUD do topo repetindo entrosamento/confiança).
+// Agora: um cartão da dupla (quem, força, química, contrato, situação) + no
+// máximo 1 alerta + no máximo 1 CTA primário; o resto fica em "Mais sobre a
+// dupla". Os dados e as fontes são os mesmos de antes.
+export default function PartnerOverview({ partnership, profile, contract = null, alert = null, primaryAction = null, onPrimary, onEnd, onNegotiate, onConverse, onSearch }) {
   // Fase 15.2 (Bug 3/G1/G2): Partnership não guarda a idade do parceiro —
   // busca pelo mesmo AthleteProfile já referenciado por partner_bot_id em
   // qualquer outro ponto do sistema (ex.: partnershipSystem.js atualiza esse
   // mesmo id), reaproveitando a idade que a Fase 15 já mantém em dia, sem
   // duplicar cálculo nem persistir um campo novo no save.
   const [partnerProfile, setPartnerProfile] = useState(null);
+  const [confirmEnd, setConfirmEnd] = useState(false);
   useEffect(() => {
     let active = true;
     setPartnerProfile(null);
@@ -40,14 +68,9 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
     return () => { active = false; };
   }, [partnership?.partner_bot_id, profile?.career_date]);
 
-  // Playthrough 5.0, Parte L/N — achado confirmado: esta tela mostrava OVR,
-  // entrosamento, confiança, moral, partidas, vitórias, títulos e divisão,
-  // mas NUNCA a posição da dupla no ranking (o jogador só via seu ranking
-  // INDIVIDUAL no header). getTeamRank (teamRanking.js) já é a mesma fonte
-  // canônica usada por Tournaments.jsx/CalendarPage.jsx/TournamentModal.jsx
-  // — nenhuma fórmula nova. getWorldRank (padel.js) é a MESMA fonte do
-  // header/Ranking→Jogadores (buildWorldRankingSnapshot) — os dois nunca
-  // podem divergir por construção.
+  // Playthrough 5.0, Parte L/N — ranking da DUPLA pela fonte canônica
+  // (getTeamRank, teamRanking.js) e ranking individual por getWorldRank
+  // (padel.js, mesma fonte do header). Nunca uma fórmula paralela.
   const [teamRank, setTeamRank] = useState(null);
   const [individualRank, setIndividualRank] = useState(null);
   useEffect(() => {
@@ -55,11 +78,8 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
     setTeamRank(null);
     if (!profile?.id || !partnership?.partner_bot_id) return undefined;
     // Playthrough 5.12, Parte S — a AUTORIDADE é o AthleteProfile
-    // persistido (o parceiro agora é um atleta de verdade). `getPartnerBot`
-    // é o catálogo estático e só entra como fallback para um save antigo
-    // ainda não reparado: se o parceiro tiver sido reconciliado com um
-    // atleta que já existia no mundo, o id do catálogo NÃO é o id canônico
-    // e a chave da dupla sairia errada.
+    // persistido; `getPartnerBot` (catálogo) só entra como fallback de save
+    // antigo ainda não reparado.
     const partnerMember = partnerProfile?.id
       ? partnerProfile
       : (getPartnerBot(profile) || { id: partnership.partner_bot_id, name: partnership.partner_name });
@@ -76,11 +96,24 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
 
   if (!partnership) {
     return (
-      <Surface className="p-8 text-center">
-        <Heart className="h-10 w-10 text-muted-foreground/40 mx-auto mb-3" />
-        <p className="font-bold text-sm mb-1">Sem parceiro ativo</p>
-        <p className="text-xs text-muted-foreground">Busque atletas na aba "Buscar" ou aceite uma proposta na "Caixa de Entrada".</p>
-      </Surface>
+      <section data-partner-hero="none" className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-4 shadow-sm">
+        <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-amber-400" />
+        <div className="flex items-start gap-3">
+          <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-secondary/60"><Heart className="h-5 w-5 text-muted-foreground" /></span>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-primary">Sua dupla</p>
+              <StatusBadge tone="warning">Sem parceiro</StatusBadge>
+            </div>
+            <h2 className="mt-0.5 text-lg font-black leading-tight">Sem parceiro ativo</h2>
+            <p className="mt-1 text-xs text-muted-foreground">Sem dupla você não se inscreve em torneios. Compare propostas por lado, estilo e compatibilidade.</p>
+          </div>
+        </div>
+        <div className="mt-3 flex flex-wrap gap-2">
+          {primaryAction && <Button level="primary" size="touch" onClick={() => onPrimary?.(primaryAction.target)} className="flex-1"><Users className="h-4 w-4" /> {primaryAction.label}</Button>}
+          {primaryAction?.target?.filter !== 'search' && <Button level="ghost" size="sm" onClick={onSearch}><Search className="h-3.5 w-3.5" /> Buscar atletas</Button>}
+        </div>
+      </section>
     );
   }
 
@@ -91,219 +124,167 @@ export default function PartnerOverview({ partnership, profile, onEnd, onNegotia
   const trustLabel = getPartnerBondLabel(trust);
   const moraleLabel = getPartnerBondLabel(morale);
   const identity = partnership.partnership_identity || derivePartnershipIdentity(partnership);
-  const daysLeft = partnership.scheduled_end_date
-    ? daysBetween(profile?.career_date, partnership.scheduled_end_date)
-    : 0;
   const positionScore = partnership.compatibility_breakdown?.position;
   const sideOk = positionScore == null ? null : positionScore >= 70;
-  // Hotfix 15.5.2: parceiros vêm do catálogo estático de bots (bots.js), que
-  // nunca é persistido em AthleteProfile (partnershipSystem.js já tolera essa
-  // ausência com .catch(() => null) no update de mercado) — a busca acima
-  // praticamente sempre retorna null para esses ids. Sem fallback, a idade
-  // nunca aparecia. bot.age vem do mesmo gerador determinístico (não é um
-  // snapshot da parceria nem recalculado a partir do ranking).
+  // Hotfix 15.5.2: sem AthleteProfile persistido, a idade vem do bot do
+  // catálogo (mesmo gerador determinístico), nunca recalculada.
   const partnerAge = partnerProfile?.age ?? getPartnerBot(profile)?.age ?? null;
-  // Hotfix 15.5.4 (P1 — OVR "—" na dupla): mesma causa da idade — sem
-  // AthleteProfile persistido, `resolvePartnerOverall` caía no legado
-  // `partnership.partner_overall`, campo que nenhum outro código deste
-  // projeto jamais escreve (busca confirmada: só é lido aqui). Mesmo
-  // resolver canônico usado por busca de parceiros/ranking/cards de
-  // atletas (`overallRating`, padel.js) aplicado ao bot do catálogo,
-  // nunca um cálculo paralelo.
+  // Hotfix 15.5.4 (P1 — OVR "—" na dupla): mesmo resolver canônico
+  // (`overallRating`, padel.js) aplicado ao bot do catálogo como fallback.
   const partnerOverall = resolvePartnerOverall(partnerProfile, partnership.partner_overall ?? overallRating(getPartnerBot(profile)));
+  const playerOverall = overallRating(profile);
+  const playerInitial = (profile?.sport_name || profile?.name || 'V')[0]?.toUpperCase();
+  const teamRankLabel = teamRank ? (teamRank.unranked ? 'Sem ranking' : `#${teamRank.displayRank || teamRank.rank}`) : '…';
+  const status = contract || { label: 'Contrato ativo', tone: 'success', line: '' };
 
   return (
-    <div className="space-y-4">
-      {/* Partner card */}
-      <Surface variant="elevated">
-        <div className="flex items-center gap-4">
-          <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-primary/30 to-secondary flex items-center justify-center shrink-0">
-            <span className="font-black text-primary text-2xl">{(partnership.partner_name || '?')[0]?.toUpperCase()}</span>
+    <div className="space-y-3" data-partner-overview>
+      {/* Cartão da dupla: quem é, força, química, contrato e situação. */}
+      <section data-partner-hero="active" className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-4 shadow-sm">
+        <span aria-hidden="true" className={`absolute inset-y-0 left-0 w-1 ${TONE_BAR[status.tone] || TONE_BAR.success}`} />
+        <div className="flex items-start gap-3">
+          <div className="flex shrink-0 -space-x-3" aria-hidden="true">
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl border-2 border-card bg-secondary font-black text-muted-foreground">{playerInitial}</span>
+            <span className="flex h-11 w-11 items-center justify-center rounded-xl border-2 border-card bg-gradient-to-br from-primary/40 to-secondary font-black text-primary">{(partnership.partner_name || '?')[0]?.toUpperCase()}</span>
           </div>
-          <div className="flex-1 min-w-0">
-            <h3 className="font-black text-lg">{partnership.partner_name}</h3>
+          <div className="min-w-0 flex-1">
+            <div className="flex items-center justify-between gap-2">
+              <p className="text-[10px] font-black uppercase tracking-wider text-primary">Sua dupla</p>
+              <StatusBadge tone={status.tone} className="shrink-0">{status.label}</StatusBadge>
+            </div>
+            <h2 className="mt-0.5 truncate text-lg font-black leading-tight">{partnership.partner_name}</h2>
             <div className="mt-0.5 space-y-0.5 text-xs text-muted-foreground">
               <p className="break-words">{partnership.partner_country}{partnerAge ? ` · ${partnerAge} anos` : ''} · {partnership.partner_level}</p>
               <p className="flex flex-wrap items-center gap-x-1.5 gap-y-0.5">
                 <span className="shrink-0 whitespace-nowrap font-black tabular-nums text-foreground">OVR {partnerOverall}</span>
                 <span aria-hidden="true">·</span>
                 <span>Lado {sideName(partnership.partner_position)}</span>
+                <span aria-hidden="true">·</span>
+                <span className="whitespace-nowrap">você OVR {playerOverall}</span>
               </p>
-            </div>
-            <div className="flex items-center gap-2 mt-1">
-              <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${chemLabel.bg} ${chemLabel.color}`}>
-                Entrosamento {chem}
-              </span>
             </div>
           </div>
         </div>
 
+        <div className="mt-3 grid grid-cols-3 gap-2 text-center">
+          <HeroMetric label="Entrosamento" value={chem} hint={chemLabel.label} tone={chemLabel.color} />
+          <HeroMetric label="Ranking dupla" value={teamRank?.unranked ? '—' : teamRankLabel} hint={teamRank?.unranked ? 'sem ranking' : teamRank && Number(teamRank.points) > 0 ? `${Number(teamRank.points).toLocaleString('pt-BR')} pts` : 'da dupla'} />
+          <HeroMetric label="Contrato" value={status.daysLeft != null && status.daysLeft >= 0 ? `${status.daysLeft}d` : '—'} hint={status.until ? `até ${status.until}` : 'sem data'} />
+        </div>
+        <ProgressBar value={chem} size="sm" className="mt-2" />
+
         {sideOk !== null && (
-          <div className={`mt-3 flex items-center gap-2 rounded-xl p-2.5 text-[11px] font-bold ${sideOk ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}`}>
-            {sideOk ? <CheckCircle2 className="h-4 w-4 shrink-0" /> : <AlertTriangle className="h-4 w-4 shrink-0" />}
-            {sideOk ? 'Lados complementares na quadra' : 'Parceiro atua fora do lado ideal — pode reduzir o rendimento da dupla'}
+          <p className={`mt-2 flex items-center gap-1.5 text-[11px] font-bold ${sideOk ? 'text-emerald-400' : 'text-amber-400'}`}>
+            {sideOk ? <CheckCircle2 className="h-3.5 w-3.5 shrink-0" /> : <AlertTriangle className="h-3.5 w-3.5 shrink-0" />}
+            {sideOk ? 'Lados complementares na quadra' : 'Parceiro fora do lado ideal — pode reduzir o rendimento'}
+          </p>
+        )}
+      </section>
+
+      <PartnerAlert alert={alert} />
+
+      {primaryAction && (
+        <Button level="primary" size="touch" onClick={() => onPrimary?.(primaryAction.target)} className="w-full sm:w-auto sm:min-w-[16rem] sm:px-8">{primaryAction.label}</Button>
+      )}
+
+      {/* Ações de rotina: secundárias, nunca competindo com o primário. */}
+      <div className="grid grid-cols-3 gap-2">
+        <Button level="ghost" size="sm" onClick={onConverse}><Heart className="h-3.5 w-3.5 text-pink-400" /> Conversar</Button>
+        <Button level="ghost" size="sm" onClick={onNegotiate}><Coins className="h-3.5 w-3.5 text-cyan-400" /> Negociar</Button>
+        {confirmEnd
+          ? <Button level="danger" size="sm" onClick={() => { setConfirmEnd(false); onEnd?.(); }}>Confirmar</Button>
+          : <Button level="ghost" size="sm" onClick={() => setConfirmEnd(true)} className="text-red-400"><AlertTriangle className="h-3.5 w-3.5" /> Encerrar</Button>}
+      </div>
+      {confirmEnd && (
+        <p className="text-[11px] text-amber-300" role="status">Encerrar agora desfaz a dupla e pode gerar multa. Toque em "Confirmar" para seguir ou <button type="button" onClick={() => setConfirmEnd(false)} className="font-bold underline">cancelar</button>.</p>
+      )}
+
+      <Surface padding="compact">
+        <p className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-muted-foreground">
+          <span><strong className="text-foreground tabular-nums">{partnership.shared_matches || 0}</strong> partidas</span>
+          <span><strong className="text-green-400 tabular-nums">{partnership.shared_wins || 0}</strong> vitórias</span>
+          <span><strong className="text-amber-400 tabular-nums">{partnership.shared_titles || 0}</strong> títulos</span>
+          <span><strong className="text-cyan-400 tabular-nums">{partnership.prize_split_pct}%</strong> do prêmio</span>
+        </p>
+      </Surface>
+
+      <CollapsibleSection icon={Sparkles} title="Mais sobre a dupla" description="Confiança, moral, identidade, compatibilidade e objetivos">
+        <div className="grid gap-3 sm:grid-cols-2">
+          <ProgressBar label={`Confiança · ${trustLabel.label}`} value={trust} valueLabel={`${trust}/100`} size="sm" />
+          <ProgressBar label={`Moral · ${moraleLabel.label}`} value={morale} valueLabel={`${morale}/100`} size="sm" />
+        </div>
+        <div className="rounded-xl bg-primary/5 p-3">
+          <p className="text-xs font-black">Identidade: {identity.name}</p>
+          <p className="mt-0.5 text-[11px] text-muted-foreground">{identity.description}</p>
+        </div>
+        {/* Parte L/N/M — ranking individual pela mesma convenção do header. */}
+        <p className="text-xs text-muted-foreground">Seu ranking individual: <strong className="text-foreground">{individualRank ? `#${individualRank.displayRank}` : '…'}</strong> · contrato de {partnership.negotiated_duration_days || 0} dias</p>
+
+        {partnership.compatibility_breakdown && (
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Compatibilidade inicial</p>
+            <div className="space-y-1.5">
+              {Object.entries(partnership.compatibility_breakdown).map(([key, val]) => (
+                <div key={key} className="flex items-center gap-2">
+                  <span className="w-24 text-[10px] capitalize text-muted-foreground">{factorLabel(key)}</span>
+                  <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-secondary"><div className="h-full rounded-full bg-primary/70" style={{ width: `${val}%` }} /></div>
+                  <span className="w-8 text-right text-[10px] font-bold tabular-nums">{val}</span>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        {/* Partnership bond */}
-        <div className="mt-4 grid gap-3 md:grid-cols-3">
-          <BondBar label="Entrosamento" value={chem} meta={chemLabel} icon={Sparkles} />
-          <BondBar label="Confiança" value={trust} meta={trustLabel} icon={ShieldCheck} />
-          <BondBar label="Moral" value={morale} meta={moraleLabel} icon={Smile} />
-        </div>
-
-        <div className="mt-4 rounded-xl border border-primary/20 bg-primary/5 p-3 flex items-start gap-3">
-          <Sparkles className="h-4 w-4 text-primary mt-0.5 shrink-0" />
+        {(partnership.shared_goals || []).length > 0 && (
           <div>
-            <p className="text-xs font-black">Identidade: {identity.name}</p>
-            <p className="text-[10px] text-muted-foreground mt-0.5">{identity.description}</p>
-          </div>
-        </div>
-
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-2 mt-4">
-          <Stat icon={Swords} label="Partidas" value={partnership.shared_matches || 0} />
-          <Stat icon={TrendingUp} label="Vitórias" value={partnership.shared_wins || 0} color="text-green-400" />
-          <Stat icon={Trophy} label="Títulos" value={partnership.shared_titles || 0} color="text-amber-400" />
-          <Stat icon={Coins} label="Divisão" value={`${partnership.prize_split_pct}%`} color="text-cyan-400" />
-        </div>
-
-        {/* Ranking — Parte L/N: nunca mistura ranking da dupla com ranking
-            individual do jogador; cada um só aparece com fonte canônica real. */}
-        <div className="mt-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-2 flex items-center gap-1"><Hash className="h-3 w-3" /> Ranking</p>
-          <div className="grid grid-cols-2 gap-2">
-            <Stat icon={Trophy} label="Ranking da dupla" value={teamRank ? (teamRank.unranked ? 'Sem ranking' : `#${teamRank.displayRank || teamRank.rank}`) : '…'} color="text-primary" />
-            {/* Mesma convenção do header (getWorldRank/CareerHud.jsx) — nunca
-                uma string de "sem ranking" própria e divergente aqui: o
-                jogador precisa ver o MESMO valor em qualquer tela (Parte M). */}
-            <Stat icon={Hash} label="Seu ranking individual" value={individualRank ? `#${individualRank.displayRank}` : '…'} color="text-cyan-400" />
-          </div>
-          {teamRank && !teamRank.unranked && Number(teamRank.points) > 0 && (
-            <p className="mt-1.5 text-[10px] text-muted-foreground">Pontos da dupla: <span className="font-bold text-foreground">{Number(teamRank.points).toLocaleString('pt-BR')}</span></p>
-          )}
-        </div>
-      </Surface>
-
-      {/* Contract info */}
-      <Surface padding="compact" className="flex items-center gap-3">
-        <Calendar className="h-5 w-5 text-primary shrink-0" />
-        <div className="flex-1">
-          <p className="text-xs font-semibold">Contrato de parceria</p>
-          <p className="text-[10px] text-muted-foreground">
-            Início: {formatDate(partnership.started_career_date)} · Duração: {partnership.negotiated_duration_days || 0} dias
-            {daysLeft > 0 ? ` · Expira em ${daysLeft} dias` : ' · Expirado'}
-          </p>
-        </div>
-      </Surface>
-
-      {/* Actions — "Gerenciar parceria" sem dominar a tela (seção 13) */}
-      <div className="grid grid-cols-3 gap-2">
-        <Button level="ghost" onClick={onConverse} className="flex-col gap-1 py-2.5 h-auto">
-          <Heart className="h-4 w-4 text-pink-400" /> Conversar
-        </Button>
-        <Button level="ghost" onClick={onNegotiate} className="flex-col gap-1 py-2.5 h-auto">
-          <Coins className="h-4 w-4 text-cyan-400" /> Negociar
-        </Button>
-        <Button level="ghost" onClick={onEnd} className="flex-col gap-1 py-2.5 h-auto bg-red-500/10 text-red-400 hover:bg-red-500/20 hover:text-red-300">
-          <AlertTriangle className="h-4 w-4" /> Encerrar
-        </Button>
-      </div>
-
-      {/* Compatibility breakdown */}
-      {partnership.compatibility_breakdown && (
-        <div className="glass rounded-2xl p-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-3">Compatibilidade Inicial</p>
-          <div className="space-y-2">
-            {Object.entries(partnership.compatibility_breakdown).map(([key, val]) => (
-              <div key={key} className="flex items-center gap-2">
-                <span className="text-[10px] text-muted-foreground w-24 capitalize">{factorLabel(key)}</span>
-                <div className="flex-1 h-1.5 rounded-full bg-secondary overflow-hidden">
-                  <div className="h-full rounded-full bg-primary/70" style={{ width: `${val}%` }} />
-                </div>
-                <span className="text-[10px] font-bold tabular-nums w-8 text-right">{val}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* Shared goals */}
-      {(partnership.shared_goals || []).length > 0 && (
-        <div className="glass rounded-2xl p-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-3">Objetivos Compartilhados</p>
-          <div className="space-y-2">
-            {partnership.shared_goals.map(g => (
-              <div key={g.id} className="flex items-center gap-2">
-                <div className="flex-1">
-                  <p className={`text-xs ${g.completed ? 'text-primary font-bold' : 'text-foreground/90'}`}>{g.title}</p>
-                  <div className="h-1 rounded-full bg-secondary overflow-hidden mt-1">
-                    <div className={`h-full rounded-full ${g.completed ? 'bg-primary' : 'bg-primary/50'}`} style={{ width: `${Math.min(100, (g.progress / g.target) * 100)}%` }} />
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Objetivos compartilhados</p>
+            <div className="space-y-2">
+              {partnership.shared_goals.map((g) => (
+                <div key={g.id} className="flex items-center gap-2">
+                  <div className="min-w-0 flex-1">
+                    <p className={`truncate text-xs ${g.completed ? 'font-bold text-primary' : 'text-foreground/90'}`}>{g.title}</p>
+                    <div className="mt-1 h-1 overflow-hidden rounded-full bg-secondary"><div className={`h-full rounded-full ${g.completed ? 'bg-primary' : 'bg-primary/50'}`} style={{ width: `${Math.min(100, (g.progress / g.target) * 100)}%` }} /></div>
                   </div>
+                  <span className="text-[10px] tabular-nums text-muted-foreground">{g.progress}/{g.target}</span>
                 </div>
-                <span className="text-[10px] tabular-nums text-muted-foreground">{g.progress}/{g.target}</span>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {(partnership.conversations || []).length > 0 && (
-        <div className="glass rounded-2xl p-4">
-          <p className="text-[10px] uppercase tracking-wide text-muted-foreground font-bold mb-3">Conversas recentes</p>
-          <div className="space-y-2">
-            {partnership.conversations.slice(-3).reverse().map((conversation, index) => (
-              <div key={`${conversation.date}-${index}`} className="rounded-xl bg-secondary/40 px-3 py-2">
-                <div className="flex justify-between gap-2">
-                  <p className="text-[10px] font-bold">{conversation.speaker}</p>
-                  <span className="text-[9px] text-muted-foreground">{conversation.date}</span>
+        {(partnership.conversations || []).length > 0 && (
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Conversas recentes</p>
+            <div className="space-y-2">
+              {partnership.conversations.slice(-3).reverse().map((conversation, index) => (
+                <div key={`${conversation.date}-${index}`} className="rounded-xl bg-secondary/40 px-3 py-2">
+                  <div className="flex justify-between gap-2"><p className="text-[10px] font-bold">{conversation.speaker}</p><span className="text-[9px] text-muted-foreground">{conversation.date}</span></div>
+                  <p className="mt-1 text-xs text-foreground/90">{conversation.text}</p>
                 </div>
-                <p className="text-xs mt-1 text-foreground/90">{conversation.text}</p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
-      {/* Recent conflicts */}
-      {(partnership.conflicts || []).filter(c => !c.resolved).length > 0 && (
-        <div className="glass rounded-2xl p-4 border border-amber-500/30 bg-amber-500/5">
-          <p className="text-[10px] uppercase tracking-wide text-amber-400 font-bold mb-2">Conflitos Pendentes</p>
-          <div className="space-y-1.5">
-            {partnership.conflicts.filter(c => !c.resolved).slice(0, 3).map((c, i) => (
-              <div key={i} className="text-xs">
-                <p className="font-semibold">{c.title}</p>
-                <p className="text-[10px] text-muted-foreground">{c.description}</p>
-              </div>
+        {(partnership.conflicts || []).filter((c) => !c.resolved).length > 0 && (
+          <div>
+            <p className="mb-2 text-[10px] font-bold uppercase tracking-wide text-amber-400">Conflitos pendentes</p>
+            {partnership.conflicts.filter((c) => !c.resolved).slice(0, 3).map((c, i) => (
+              <div key={i} className="text-xs"><p className="font-semibold">{c.title}</p><p className="text-[10px] text-muted-foreground">{c.description}</p></div>
             ))}
           </div>
-        </div>
-      )}
+        )}
+      </CollapsibleSection>
     </div>
   );
 }
 
-function BondBar({ label, value, meta, icon: Icon }) {
+function HeroMetric({ label, value, hint, tone = 'text-foreground' }) {
   return (
-    <div className="rounded-xl bg-secondary/40 p-3">
-      <div className="flex items-center justify-between gap-2 mb-1.5">
-        <span className="inline-flex items-center gap-1 text-[10px] text-muted-foreground"><Icon className="h-3 w-3" /> {label}</span>
-        <span className={`text-[10px] font-black ${meta.color}`}>{value}/100</span>
-      </div>
-      <div className="h-1.5 rounded-full bg-secondary overflow-hidden">
-        <div className="h-full rounded-full bg-gradient-to-r from-primary/50 to-primary transition-all duration-500" style={{ width: `${value}%` }} />
-      </div>
-      <p className={`text-[9px] font-bold mt-1 ${meta.color}`}>{meta.label}</p>
-    </div>
-  );
-}
-
-function Stat({ icon: Icon, label, value, color }) {
-  return (
-    <div className="glass rounded-xl p-2.5 text-center">
-      <Icon className={`h-4 w-4 mx-auto mb-1 ${color || 'text-primary'}`} />
-      <p className="text-sm font-black tabular-nums">{value}</p>
-      <p className="text-[8px] text-muted-foreground uppercase">{label}</p>
+    <div className="min-w-0 rounded-xl bg-secondary/35 px-1.5 py-2">
+      <p className={`truncate text-base font-black tabular-nums ${tone}`}>{value}</p>
+      <p className="truncate text-[9px] font-bold uppercase text-muted-foreground">{label}</p>
+      {hint && <p className="truncate text-[9px] text-muted-foreground">{hint}</p>}
     </div>
   );
 }

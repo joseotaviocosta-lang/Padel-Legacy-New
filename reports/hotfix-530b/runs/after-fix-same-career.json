@@ -1,0 +1,23 @@
+{
+  "label": "after-fix-same-career",
+  "reload": true,
+  "steps": [
+    {
+      "at": "home",
+      "header": "Próximo torneio: Roma Pré-Temporada em 11 dias — abrir Torneios",
+      "home": "AGENDA LIVRE Nenhum torneio imediato Próximo no calendário: Roma Pré-Temporada · em 11 dias · 12 de jan Dê um nome ao atleta Escolha o nome que aparecerá nas partidas, notícias, rankings e registros da carreira. Definir "
+    },
+    {
+      "at": "torneios",
+      "header": "Próximo torneio: Roma Pré-Temporada em 11 dias — abrir Torneios",
+      "tournaments": "PRÓXIMO EVENTO Roma Pré-Temporada Pré-Temporada · Inscrições abertas · em 11d · 12/01/2026 Abrir evento Dupla · Sem parceiro — toque para escolher"
+    },
+    {
+      "at": "home-de-volta",
+      "header": "Próximo torneio: Roma Pré-Temporada em 11 dias — abrir Torneios",
+      "home": "AGENDA LIVRE Nenhum torneio imediato Próximo no calendário: Roma Pré-Temporada · em 11 dias · 12 de jan Dê um nome ao atleta Escolha o nome que aparecerá nas partidas, notícias, rankings e registros da carreira. Definir "
+    }
+  ],
+  "headerHref": "/tournaments",
+  "errors": []
+}

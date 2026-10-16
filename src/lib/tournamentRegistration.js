@@ -4,6 +4,7 @@ import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel, E
 import { getTournamentCampaignDates } from '@/lib/tournamentSchedule.js';
 import { getActivePartnership } from '@/lib/partnershipSystem.js';
 import { evaluatePartnershipRegistrationAuthority } from '@/lib/committedRoster.js';
+import { notifyTournamentsChanged } from '@/lib/tournamentsChangedEvent.js';
 
 export const TOURNAMENT_REGISTRATION_RULES = Object.freeze({
   defaultOpenDaysBeforeStart: 30,
@@ -351,6 +352,7 @@ export async function registerTournament({ player, partner, tournament, teamRank
   });
   await incrementMissionProgress(player.id, 'join_tournament');
   if (typeof window !== 'undefined') window.dispatchEvent(new CustomEvent('padel:onboarding-refresh'));
+  notifyTournamentsChanged();
   return { success: true, registration, profile: updatedProfile, entry: validation.entry, warnings: validation.warnings };
 }
 
@@ -365,6 +367,7 @@ export async function cancelTournamentRegistration({ player, registration, tourn
   await Promise.all(events.map(event => localGame.entities.CalendarEvent.update(event.id, { status: 'cancelled', metadata: { ...(event.metadata || {}), cancellation_reason: 'registration_cancelled' } })));
   const profile = refund ? await localGame.entities.PlayerProfile.update(player.id, { coins: Number(player.coins || 0) + refund }) : player;
   if (refund) await localGame.entities.FinancialTransaction.upsert(`entry-refund-${registration.id}`, { profile_id: player.id, date, type: 'income', category: 'inscricao', description: `Reembolso de inscrição — ${tournament?.name || registration.tournament_name || ''}`.trim(), amount: refund });
+  notifyTournamentsChanged();
   return { success: true, registration: updated, profile, refund };
 }
 

@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Users, Search, Inbox, Lightbulb, History, Handshake, FileText, RefreshCw, AlertTriangle, CalendarDays } from 'lucide-react';
+import { Users, Search, Inbox, Lightbulb, History, Handshake, FileText, RefreshCw, AlertTriangle } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { getPlayerRelationships } from '@/lib/relationships';
@@ -15,9 +15,10 @@ import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
 import { getAvailablePartners } from '@/lib/career';
 import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
 import { getSuggestedPartnerTerms } from '@/game-core/partnerLifecycle.js';
-import { EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, ProgressBar as DSProgressBar, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
+import { CollapsibleSection, EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
-import PartnerOverview from '@/components/partner/PartnerOverview';
+import PartnerOverview, { PartnerAlert } from '@/components/partner/PartnerOverview';
+import { buildPartnerContractStatus, selectPartnerAlert, selectPartnerPrimaryAction } from '@/lib/partnerScreen.js';
 import PartnerSearch from '@/components/partner/PartnerSearch';
 import InboxPanel from '@/components/partner/InboxPanel';
 import AdvisorPanel from '@/components/partner/AdvisorPanel';
@@ -409,9 +410,26 @@ export default function PartnerHub() {
     }
   }
 
-  const chemistry = activePartnership?.chemistry ?? profile?.partner_chemistry ?? 0;
-  const confidence = activePartnership?.partner_trust ?? activePartnership?.confidence ?? 0;
   const offerCount = proposals.filter((offer) => offer.status === 'pending' && offer.offer_type !== 'partner_poaching').length;
+  // Fase 5.31 — estado do contrato, alerta único e ação principal: só
+  // apresentação, a partir de getContractDecisionState e dos campos que o
+  // lifecycle grava (src/lib/partnerScreen.js).
+  const contractStatus = buildPartnerContractStatus({
+    partnership: activePartnership,
+    careerDate: profile.career_date,
+    decisionState: activePartnership ? getContractDecisionState(activePartnership) : null,
+    commitments,
+    separationDate,
+  });
+  const partnerAlert = selectPartnerAlert({
+    contract: contractStatus,
+    partnerName: activePartnership?.partner_name,
+    commitments,
+    switchCount,
+    instability,
+    conflicts: activePartnership?.conflicts || [],
+  });
+  const primaryAction = selectPartnerPrimaryAction({ contract: contractStatus, pendingOffers: offerCount });
 
   return (
     <Page size="wide" className="animate-fade-in">
@@ -421,31 +439,11 @@ export default function PartnerHub() {
         icon={Handshake}
         eyebrow="Dupla e relações"
         title={activePartnership ? `Você e ${activePartnership.partner_name}` : 'Construa sua próxima dupla'}
-        description={activePartnership
-          ? 'Acompanhe vínculo, contrato, conversas e decisões esportivas da parceria.'
-          : 'Analise propostas e encontre um parceiro compatível com seu lado e estilo de jogo.'}
+        description={activePartnership ? null : 'Compare propostas por lado, estilo e compatibilidade.'}
         tone="brand"
         breadcrumb={['Carreira', 'Dupla e relações']}
-        hudLabel="Estado da dupla"
-        hudItems={[
-          { label: activePartnership ? activePartnership.partner_name : 'escolha uma proposta', value: activePartnership ? 'Dupla ativa' : 'Sem dupla', icon: Users, tone: activePartnership ? 'success' : 'warning' },
-          { label: 'entrosamento', value: `${Math.round(chemistry)}/100`, icon: Handshake },
-          { label: 'confiança', value: `${Math.round(confidence)}/100`, icon: Lightbulb, tone: 'info' },
-          { label: 'ofertas', value: offerCount, icon: Inbox, tone: 'premium' },
-        ]}
         action={inboxCount > 0 ? <StatusBadge tone="info" icon={Inbox}>{inboxCount} não lida(s)</StatusBadge> : null}
       />
-
-      {/* Instability banner */}
-      {switchCount >= 2 && (
-        <Surface padding="compact" className="flex items-center gap-3 border border-amber-500/30 bg-amber-500/5">
-          <span className={`text-2xl font-black ${instability.color}`}>{switchCount}</span>
-          <div>
-            <p className={`font-bold text-sm ${instability.color}`}>{instability.label}</p>
-            <p className="text-[10px] text-muted-foreground">{instability.desc}</p>
-          </div>
-        </Surface>
-      )}
 
       {/* Tabs */}
       <Tabs
@@ -461,13 +459,20 @@ export default function PartnerHub() {
           <PartnerOverview
             partnership={activePartnership}
             profile={profile}
+            contract={contractStatus}
+            alert={partnerAlert}
+            primaryAction={primaryAction}
+            onPrimary={(target) => selectTab(target.tab, target.filter ? { filter: target.filter } : {})}
+            onSearch={() => selectTab('market', { filter: 'search' })}
             onEnd={handleEndPartnership}
             onNegotiate={() => setShowNegotiation(true)}
             onConverse={() => setShowConverse(true)}
           />
           {/* Parte N — o conselho fica ao lado da dupla que ele comenta, em vez
-              de exigir uma aba própria. */}
-          <AdvisorPanel tips={tips} />
+              de exigir uma aba própria. 5.31: sob demanda (recolhido). */}
+          <CollapsibleSection icon={Lightbulb} title="Conselhos dos assessores" description="Orientativos — a decisão final é sua" badge={tips.length ? <StatusBadge tone="info">{tips.length}</StatusBadge> : null}>
+            <AdvisorPanel tips={tips} />
+          </CollapsibleSection>
         </div>
       )}
 
@@ -485,7 +490,7 @@ export default function PartnerHub() {
             variant="segmented"
           />
           {offersTabActive && (
-            <PartnerOffersPanel profile={profile} offers={proposals} loading={offersLoading} error={offersError} busyOfferId={busyOfferId} focusOfferId={searchParams.get('offer')} onRetry={reloadOffers} onAccept={handleAcceptOffer} onReject={handleRejectOffer} onSearch={() => selectTab('market', { filter: 'search' })} />
+            <PartnerOffersPanel profile={profile} offers={proposals} loading={offersLoading} error={offersError} busyOfferId={busyOfferId} focusOfferId={searchParams.get('offer')} onRetry={reloadOffers} onAccept={handleAcceptOffer} onReject={handleRejectOffer} onSearch={() => selectTab('market', { filter: 'search' })} currentPartnership={activePartnership} />
           )}
           {marketFilter === 'search' && (
             <PartnerSearch
@@ -509,6 +514,8 @@ export default function PartnerHub() {
           onScheduleSeparation={handleScheduleSeparation}
           commitments={commitments}
           separationDate={separationDate}
+          contractStatus={contractStatus}
+          alert={partnerAlert}
         />
       )}
 
@@ -543,7 +550,13 @@ async function getAvailablePartnersForSearch(profile) {
   return excludeRetiredPartnerTemplates(getAvailablePartners(profile), await listRetiredPartnerOriginIds());
 }
 
-function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSeparation, commitments = [], separationDate = null }) {
+// Fase 5.31 — CONTRATO. Antes: cabeçalho + 2 avisos + 3 métricas em caixa +
+// 2 barras + aviso de renovação + compromissos + interesse + formulário +
+// rescisão, tudo aberto (1.700px no celular). Agora: um resumo (situação +
+// "N dias restantes · até DD/MM/AAAA" numa linha só), no máximo 1 alerta
+// (com os compromissos dentro quando existem), a renovação como única ação
+// primária e o encerramento recolhido. Regras e chamadas inalteradas.
+function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSeparation, commitments = [], separationDate = null, contractStatus = null, alert = null }) {
   const [durationDays, setDurationDays] = useState(60);
   const [prizeSplit, setPrizeSplit] = useState(partnership?.prize_split_pct ?? 50);
   const [confirmRelease, setConfirmRelease] = useState(false);
@@ -562,142 +575,86 @@ function ContractPanel({ partnership, profile, onRenew, onRelease, onScheduleSep
   const chemistry = partnership.chemistry ?? profile?.partner_chemistry ?? 50;
   const status = partnership.contract_status || 'ativo';
   const decisionState = getContractDecisionState(partnership);
-  const statusLabel = {
-    ativo: 'ativo',
-    renovado: 'renovado',
-    renovada: 'renovada',
-    vencido: 'vencido',
-    renovacao_proxima: 'renovação próxima',
-    encerrar_ao_final: 'encerra ao final do contrato',
-    nao_renovara: 'não renovará o contrato',
-    encerra_apos_compromisso: 'encerra após o último compromisso',
-    insatisfeito: 'insatisfeito',
-    negociacao: 'em negociação',
-  }[status] || status.replace(/_/g, ' ');
   const isRenewal = partnership.renewal_available || status === 'vencido';
   const renewalBlocked = decisionState === CONTRACT_DECISION_STATES.ENDING_AT_EXPIRY || decisionState === CONTRACT_DECISION_STATES.ENDING_AFTER_COMMITMENTS || decisionState === CONTRACT_DECISION_STATES.ENDED;
   const estimatedPenalty = endDate !== '—' && careerDate < endDate
     ? Math.min(Number(profile?.coins) || 0, Math.max(50, Math.round((Number(partnership.monthly_salary) || 100) * 0.5)))
     : 0;
+  const summary = contractStatus || { label: status.replace(/_/g, ' '), tone: 'neutral', line: endDate };
+  // O alerta único. Sem alerta de contrato, os compromissos viram o aviso: a
+  // consequência real do encerramento precisa aparecer antes da decisão.
+  const contractAlert = alert && ['separation-pending', 'renewal-needed', 'renewal-refused', 'ending', 'expiring'].includes(alert.id)
+    ? alert
+    : isRenewal
+      ? { id: 'renewal-needed', tone: 'danger', title: 'Renovação necessária', text: 'O contrato venceu. Renove dentro da janela disponível para não perder a dupla.' }
+      : commitments.length
+        ? { id: 'commitments', tone: 'warning', title: 'Compromissos já assumidos', text: 'Encerrar o contrato não cancela torneio já inscrito.' }
+        : null;
+  // Fase 15 (Parte 6/7/8): interesse em renovar — só o nível e os fatores
+  // textuais, nunca a fórmula.
+  const interest = calculatePartnerRenewalInterest(partnership, profile, { betterOpportunity: partnership.partner_market_offer || null });
+  const interestTone = interest.level === 'alto' ? 'success' : interest.level === 'baixo' ? 'danger' : 'warning';
 
   return (
-    <div className="space-y-4 animate-fade-in">
-      <Surface variant="elevated">
-        <div className="flex items-start justify-between gap-3 mb-5">
-          <div>
-            <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-bold">Contrato atual</p>
-            <h3 className="font-black text-xl mt-1">{partnership.partner_name}</h3>
-            <p className="text-xs text-muted-foreground mt-1">Status: <span className="font-bold text-primary capitalize">{statusLabel}</span></p>
+    <div className="space-y-3 animate-fade-in" data-partner-contract>
+      <Surface padding="compact">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-[10px] font-black uppercase tracking-wider text-muted-foreground">Contrato com</p>
+            <h3 className="truncate text-lg font-black">{partnership.partner_name}</h3>
           </div>
-          <div className="h-12 w-12 rounded-2xl bg-primary/15 flex items-center justify-center"><Handshake className="h-6 w-6 text-primary" /></div>
+          <StatusBadge tone={summary.tone} className="shrink-0">{summary.label}</StatusBadge>
         </div>
-
-        {decisionState === CONTRACT_DECISION_STATES.ENDING_AFTER_COMMITMENTS && (
-          <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
-            <p className="font-black uppercase tracking-[0.12em]">Separação após compromisso</p>
-            <p className="mt-1 text-muted-foreground">A parceria continua até o último compromisso assumido e só encerra depois disso.</p>
-          </div>
-        )}
-
-        {decisionState === CONTRACT_DECISION_STATES.ENDING_AT_EXPIRY && (
-          <div className="mb-4 rounded-xl border border-amber-500/30 bg-amber-500/5 p-3 text-xs text-amber-300">
-            <p className="font-black uppercase tracking-[0.12em]">Encerramento programado</p>
-            <p className="mt-1 text-muted-foreground">A dupla segue ativa até o fim do contrato atual, sem renovação automática.</p>
-          </div>
-        )}
-
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
-          <ContractMetric icon={CalendarDays} label="Vencimento" value={endDate} />
-          <ContractMetric icon={FileText} label="Sua premiação" value={`${partnership.prize_split_pct ?? 50}%`} />
-          <ContractMetric icon={Users} label="Entrosamento" value={`${chemistry}/100`} />
-        </div>
-
-        <div className="mt-4 space-y-3">
-          <DSProgressBar label="Moral do parceiro" value={morale} max={100} valueLabel={`${morale}`} />
-          <DSProgressBar label="Entrosamento da dupla" value={chemistry} max={100} valueLabel={`${chemistry}`} />
-        </div>
+        <p className="mt-1 text-sm font-bold" data-contract-line>{summary.line}</p>
+        <p className="mt-1 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+          <span>Sua premiação <strong className="text-foreground">{partnership.prize_split_pct ?? 50}%</strong></span>
+          <span>Entrosamento <strong className="text-foreground">{chemistry}</strong></span>
+          <span>Moral do parceiro <strong className="text-foreground">{morale}</strong></span>
+        </p>
       </Surface>
 
-      {isRenewal && (
-        <Surface padding="compact" className="flex gap-3 border border-amber-500/30 bg-amber-500/5">
-          <AlertTriangle className="h-5 w-5 text-amber-400 shrink-0" />
-          <div><p className="font-bold text-sm text-amber-400">Renovação necessária</p><p className="text-xs text-muted-foreground">O contrato venceu. Renove dentro da janela disponível para não perder a dupla.</p></div>
-        </Surface>
-      )}
-
-      {/* Playthrough 5.19, Parte F — COMPROMISSOS JÁ ASSUMIDOS.
-          A regra da 5.17 é que encerrar o contrato não cancela torneio já
-          inscrito: a parceria esportiva segue até o último compromisso. O
-          jogador decidia sem ver isso, então a consequência real do
-          encerramento era invisível na hora de decidir. A lista vem de
-          `findCommittedTournaments`, a MESMA autoridade que o motor usa. */}
-      {commitments.length ? (
-        <Surface padding="compact" className="border border-primary/30 bg-primary/5">
-          <div className="flex gap-3">
-            <CalendarDays className="h-5 w-5 text-primary shrink-0" />
-            <div className="space-y-2">
-              <p className="font-bold text-sm text-primary">Compromissos já assumidos</p>
-              <ul className="space-y-1">
-                {commitments.map((item) => (
-                  <li key={item.tournamentId} className="text-xs text-muted-foreground">
-                    <span className="font-bold text-foreground">{item.name}</span>
-                    {item.startDate ? ` · ${item.startDate}` : ''}
-                  </li>
-                ))}
-              </ul>
-              <p className="text-xs text-muted-foreground">
-                Se optar pelo encerramento, a parceria esportiva com {partnership.partner_name} será
-                mantida até a conclusão {commitments.length === 1 ? 'desse compromisso' : 'desses compromissos'}
-                {separationDate ? ` (até ${separationDate})` : ''}.
-              </p>
-            </div>
+      {/* Playthrough 5.19, Parte F — COMPROMISSOS JÁ ASSUMIDOS, pela MESMA
+          autoridade do motor (`findCommittedTournaments`), dentro do alerta. */}
+      <PartnerAlert alert={contractAlert}>
+        {commitments.length ? (
+          <div className="mt-2 space-y-1">
+            <ul className="space-y-0.5">
+              {commitments.map((item) => (
+                <li key={item.tournamentId} className="text-muted-foreground"><span className="font-bold text-foreground">{item.name}</span>{item.startDate ? ` · ${item.startDate}` : ''}</li>
+              ))}
+            </ul>
+            <p className="text-muted-foreground">
+              Se optar pelo encerramento, a parceria esportiva com {partnership.partner_name} será
+              mantida até a conclusão {commitments.length === 1 ? 'desse compromisso' : 'desses compromissos'}
+              {separationDate ? ` (até ${separationDate})` : ''}.
+            </p>
           </div>
-        </Surface>
-      ) : null}
+        ) : null}
+      </PartnerAlert>
 
-      {/* Fase 15 (Parte 6/7/8): interesse do parceiro em renovar — derivado
-          de dados reais já existentes (química/resultados/moral/
-          estabilidade/oportunidade de mercado), nunca a fórmula numérica
-          exposta, só o nível (ALTO/MÉDIO/BAIXO) + fatores textuais. */}
-      {(() => {
-        const interest = calculatePartnerRenewalInterest(partnership, profile, { betterOpportunity: partnership.partner_market_offer || null });
-        const toneClass = interest.level === 'alto' ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-400' : interest.level === 'baixo' ? 'border-red-500/30 bg-red-500/5 text-red-400' : 'border-amber-500/30 bg-amber-500/5 text-amber-400';
-        return (
-          <Surface padding="compact" className={`border ${toneClass.split(' ').slice(0, 2).join(' ')}`}>
-            <p className={`text-xs font-black uppercase tracking-wide ${toneClass.split(' ')[2]}`}>Interesse em renovar: {interest.level.toUpperCase()}</p>
-            {interest.factors.length > 0 && (
-              <ul className="mt-1.5 space-y-0.5">
-                {interest.factors.map((factor) => <li key={factor} className="text-xs text-muted-foreground">• {factor}</li>)}
-              </ul>
-            )}
-          </Surface>
-        );
-      })()}
-
-      <Surface>
-        <div className="flex items-center gap-2 mb-4"><RefreshCw className="h-5 w-5 text-primary" /><h3 className="font-black">Renovar e renegociar</h3></div>
-        <div className="grid md:grid-cols-2 gap-4">
-          <label className="space-y-1"><span className="text-xs text-muted-foreground">Duração</span><select value={durationDays} onChange={e=>setDurationDays(Number(e.target.value))} className="w-full glass rounded-xl p-3 text-sm"><option value={30}>30 dias</option><option value={60}>60 dias</option><option value={90}>90 dias</option><option value={120}>120 dias</option><option value={180}>180 dias</option></select></label>
-          <label className="space-y-1"><span className="text-xs text-muted-foreground">Sua parte da premiação</span><input type="number" min="35" max="70" value={prizeSplit} onChange={e=>setPrizeSplit(Number(e.target.value))} className="w-full glass rounded-xl p-3 text-sm" /></label>
+      <Surface padding="compact" className="space-y-3">
+        <div className="flex items-center justify-between gap-2">
+          <h3 className="flex min-w-0 items-center gap-2 text-sm font-black"><RefreshCw className="h-4 w-4 shrink-0 text-primary" /> Renovar e renegociar</h3>
+          <StatusBadge tone={interestTone} className="shrink-0">Interesse {interest.level}</StatusBadge>
         </div>
-        <Button level="primary" onClick={()=>onRenew({durationDays, prizeSplit})} disabled={renewalBlocked} className="w-full mt-4 disabled:opacity-50 disabled:cursor-not-allowed">
+        {interest.factors.length > 0 && <p className="text-[11px] text-muted-foreground">{interest.factors.slice(0, 2).join(' · ')}</p>}
+        <div className="grid grid-cols-2 gap-2">
+          <label className="min-w-0 space-y-1"><span className="text-[11px] text-muted-foreground">Duração</span><select value={durationDays} onChange={e=>setDurationDays(Number(e.target.value))} className="w-full glass rounded-xl p-2.5 text-sm"><option value={30}>30 dias</option><option value={60}>60 dias</option><option value={90}>90 dias</option><option value={120}>120 dias</option><option value={180}>180 dias</option></select></label>
+          <label className="min-w-0 space-y-1"><span className="text-[11px] text-muted-foreground">Sua parte (%)</span><input type="number" min="35" max="70" value={prizeSplit} onChange={e=>setPrizeSplit(Number(e.target.value))} className="w-full glass rounded-xl p-2.5 text-sm" /></label>
+        </div>
+        <Button level="primary" size="touch" onClick={()=>onRenew({durationDays, prizeSplit})} disabled={renewalBlocked} className="w-full disabled:opacity-50 disabled:cursor-not-allowed">
           {renewalBlocked ? 'Contrato em encerramento' : 'Confirmar novo contrato'}
         </Button>
       </Surface>
 
-      <Surface className="border border-red-500/20">
-        <h3 className="font-black text-sm text-red-400">Rescisão</h3>
-        <p className="text-xs text-muted-foreground mt-1">Encerrar antes do vencimento pode gerar multa de até 50% do valor do vínculo.</p>
-        <Button level="secondary" onClick={onScheduleSeparation} className="mt-3 w-full">Encerrar ao final do contrato</Button>
-        {estimatedPenalty > 0 && <p className="text-xs font-bold text-amber-400 mt-2">Multa estimada: {estimatedPenalty} moedas</p>}
-        {!confirmRelease ? <Button level="ghost" onClick={()=>setConfirmRelease(true)} className="mt-3 border border-red-500/30 text-red-400">Solicitar rescisão</Button> : <div className="flex gap-2 mt-3"><Button level="secondary" onClick={()=>setConfirmRelease(false)} className="flex-1">Cancelar</Button><Button level="danger" onClick={onRelease} className="flex-1">Confirmar rescisão</Button></div>}
-      </Surface>
+      <CollapsibleSection icon={AlertTriangle} title="Encerrar parceria" description="Fim de ciclo combinado ou rescisão antecipada">
+        <p className="text-xs text-muted-foreground">Encerrar antes do vencimento pode gerar multa de até 50% do valor do vínculo.</p>
+        <Button level="secondary" onClick={onScheduleSeparation} className="w-full">Encerrar ao final do contrato</Button>
+        {estimatedPenalty > 0 && <p className="text-xs font-bold text-amber-400">Multa estimada: {estimatedPenalty} moedas</p>}
+        {!confirmRelease ? <Button level="ghost" onClick={()=>setConfirmRelease(true)} className="w-full border border-red-500/30 text-red-400">Solicitar rescisão</Button> : <div className="flex gap-2"><Button level="secondary" onClick={()=>setConfirmRelease(false)} className="flex-1">Cancelar</Button><Button level="danger" onClick={onRelease} className="flex-1">Confirmar rescisão</Button></div>}
+      </CollapsibleSection>
     </div>
   );
-}
-
-function ContractMetric({ icon: Icon, label, value }) {
-  return <div className="rounded-xl bg-secondary/40 p-3"><Icon className="h-4 w-4 text-primary mb-2"/><p className="text-[9px] uppercase text-muted-foreground font-bold">{label}</p><p className="text-xs font-bold mt-1 break-words">{value}</p></div>;
 }
 
 function PartnerHistory({ history }) {

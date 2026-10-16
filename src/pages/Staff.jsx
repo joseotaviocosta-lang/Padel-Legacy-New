@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
-import { Page, PageContent, PageHeader, PageSkeleton } from '@/components/design-system';
+import { CollapsibleSection, Page, PageContent, PageHeader, PageSkeleton, StatusBadge } from '@/components/design-system';
 import { Users, BriefcaseBusiness, Wallet, Sparkles, UserRoundCog } from 'lucide-react';
 import { buildStableMessageId } from '@/lib/careerCommunications.js';
 import StaffReportHighlight from '@/components/staff/StaffReportHighlight';
@@ -152,7 +152,7 @@ export default function Staff() {
         eyebrow="Equipe técnica"
         icon={Users}
         title="Comissão técnica"
-        description="Especialistas de apoio que trabalham sob liderança do treinador principal. O treinador não consome vaga da comissão."
+        description="Especialistas de apoio sob liderança do treinador principal (que não ocupa vaga)."
         tone="brand"
         hudLabel="Comissão atual"
         hudItems={[
@@ -192,7 +192,6 @@ export default function Staff() {
           }}
         />
       )}
-      <StaffLivePanel meeting={meeting} />
       <StaffPanel
         profile={profile}
         staff={staff}
@@ -214,6 +213,14 @@ export default function Staff() {
         }, `${facility.name} melhorada!`)}
         busy={busy}
       />
+      {/* Fase 5.31 — a reunião semanal (moral, sinergia, plano, clima) dominava
+          a primeira dobra e empurrava a equipe para ~1.500px. Continua
+          inteira, sob demanda, depois da comissão. */}
+      {meeting && (
+        <CollapsibleSection icon={Users} title="Reunião da comissão" description={`Plano da semana: ${meeting.plan?.label || '—'}`} badge={<StatusBadge tone={meeting.moral >= 70 ? 'success' : meeting.moral >= 45 ? 'warning' : 'danger'}>Moral {meeting.moral}%</StatusBadge>}>
+          <StaffLivePanel meeting={meeting} />
+        </CollapsibleSection>
+      )}
       </PageContent>
     </Page>
   );

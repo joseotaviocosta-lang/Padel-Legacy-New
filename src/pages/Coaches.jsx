@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { useCareer } from '@/careers/useCareer.js';
-import { Brain, Handshake, Search, SlidersHorizontal, UserCheck, Users, Wallet } from 'lucide-react';
+import { Search, SlidersHorizontal, UserCheck, Users } from 'lucide-react';
 import { localGame } from '@/api/localGameClient.js';
-import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, Surface } from '@/components/design-system';
+import { Button, EmptyState, Page, PageContent, PageHeader, PageSkeleton, ProgressBar, StatusBadge, Surface } from '@/components/design-system';
+import { daysUntilIso, remainingLabel, shortDateBr } from '@/lib/partnerScreen.js';
 import CoachCard from '@/components/coaches/CoachCard';
 import CoachDetail from '@/components/coaches/CoachDetail';
 import {
@@ -49,6 +50,7 @@ export default function Coaches() {
   const [specialtyFilter, setSpecialtyFilter] = useState('all');
   const [sortOrder, setSortOrder] = useState('recommendation');
   const [search, setSearch] = useState('');
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [selected, setSelected] = useState(null);
   // Onboarding Flow 3.1 (docs/ONBOARDING_FLOW_3_1.md, Parte 4): o filtro
   // padrão para uma carreira nova é "available" (getDefaultCoachDiscoveryFilter),
@@ -229,6 +231,10 @@ export default function Coaches() {
   const affinityCurrent = hiredCoach && profile ? calculateAffinity(hiredCoach, profile) : 0;
   const trust = Number(profile?.coach_trust ?? 55);
   const tactical = Number(profile?.coach_tactical_understanding ?? 20);
+  // 5.31: contrato numa linha só ("N dias restantes · até DD/MM/AAAA").
+  const coachEnd = profile?.coach_contract_end_date || null;
+  const coachContractLine = coachEnd ? [remainingLabel(daysUntilIso(profile?.career_date, coachEnd)), `até ${shortDateBr(coachEnd)}`].filter(Boolean).join(' · ') : null;
+  const filtersChanged = statusFilter !== getDefaultCoachDiscoveryFilter(profile) || specialtyFilter !== 'all' || sortOrder !== 'recommendation';
 
   return (
     <Page size="wide" className="animate-fade-in">
@@ -237,16 +243,9 @@ export default function Coaches() {
           dense
           eyebrow="Equipe técnica"
           icon={Users}
-          title="Técnicos principais"
-          description="Compare profissionais, entenda os requisitos e descubra quem pode assumir sua dupla agora."
+          title="Treinador principal"
           tone="brand"
-          hudLabel="Mercado de técnicos"
-          hudItems={[
-            { label: 'saldo', value: currency(profile?.coins), icon: Wallet },
-            { label: 'técnico', value: hiredCoach ? hiredCoach.name : 'Nenhum', icon: UserCheck },
-            { label: 'confiança', value: hiredCoach ? `${trust}%` : '—', icon: Handshake },
-            { label: 'afinidade', value: hiredCoach ? `${affinityCurrent}%` : '—', icon: Brain },
-          ]}
+          action={<StatusBadge tone="neutral">Saldo {currency(profile?.coins)}</StatusBadge>}
         />
 
         {marketState === 'error' && (
@@ -261,68 +260,73 @@ export default function Coaches() {
           <EmptyState icon={Users} eyebrow="Mercado de tÃ©cnicos" title="Nenhum treinador disponÃ­vel" description="O bootstrap e a consulta terminaram sem encontrar profissionais para esta carreira." compact />
         )}
 
+        {/* Fase 5.31 — quem é o técnico, quanto custa, até quando e como está a
+            relação, num cartão só (antes: HUD + cartão repetiam os mesmos
+            números). Sem técnico: o estado e o próximo passo, sem CTA falso. */}
         {hiredCoach ? (
-          <Surface tone="brand" className="p-4">
-            <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <section data-coach-hero="active" className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-4 shadow-sm">
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-primary" />
+            <div className="flex items-start gap-3">
               <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 font-black text-primary">{(hiredCoach.name || '?')[0]}</div>
               <div className="min-w-0 flex-1">
-                <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide text-primary"><UserCheck className="h-3.5 w-3.5" /> Técnico atual</p>
+                <div className="flex items-center justify-between gap-2">
+                  <p className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-wide text-primary"><UserCheck className="h-3.5 w-3.5" /> Técnico atual</p>
+                  <StatusBadge tone="success" className="shrink-0">Contratado</StatusBadge>
+                </div>
                 <p className="mt-0.5 truncate text-base font-black">{hiredCoach.name}</p>
-                <p className="text-[10px] text-muted-foreground">{COACH_SPECIALTY_INFO[hiredCoach.specialty]?.label || hiredCoach.specialty} · {COACH_TIERS[hiredCoach.tier]?.label || hiredCoach.tier} · {profile?.coach_paid_by_club ? 'pago pelo clube' : `${currency(profile?.coach_monthly_salary || hiredCoach.monthly_cost)}/mês`}</p>
-              </div>
-              <div className="flex gap-2">
-                <button type="button" onClick={handleRenew} className="rounded-xl bg-secondary/60 px-3 py-2 text-[11px] font-bold hover:bg-secondary">Renovar</button>
-                <button type="button" onClick={() => setSelected(hiredCoach)} className="rounded-xl bg-primary/10 px-3 py-2 text-[11px] font-black text-primary hover:bg-primary/15">Ver detalhes</button>
+                <p className="truncate text-[11px] text-muted-foreground">{COACH_SPECIALTY_INFO[hiredCoach.specialty]?.label || hiredCoach.specialty} · {COACH_TIERS[hiredCoach.tier]?.label || hiredCoach.tier}</p>
+                <p className="mt-0.5 text-[11px] font-bold">{profile?.coach_paid_by_club ? 'Pago pelo clube' : `${currency(profile?.coach_monthly_salary || hiredCoach.monthly_cost)}/mês`}{coachContractLine ? <span className="font-semibold text-muted-foreground"> · {coachContractLine}</span> : null}</p>
               </div>
             </div>
-            <div className="mt-3">
-              <p className="mb-1 text-[9px] font-bold uppercase text-muted-foreground">Entendimento tático</p>
-              <ProgressBar value={tactical} tone="info" />
+            <p className="mt-3 flex flex-wrap gap-x-3 text-xs text-muted-foreground">
+              <span>Confiança <strong className="text-foreground">{trust}%</strong></span>
+              <span>Afinidade <strong className="text-foreground">{affinityCurrent}%</strong></span>
+            </p>
+            <ProgressBar label="Entendimento tático" value={tactical} tone="info" size="sm" className="mt-2" />
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <Button level="ghost" size="sm" onClick={() => setSelected(hiredCoach)}>Ver detalhes</Button>
+              <Button level="secondary" size="sm" onClick={handleRenew}>Renovar 12 meses</Button>
             </div>
-          </Surface>
+          </section>
         ) : (
-          <Surface className="flex flex-col gap-2 p-4 sm:flex-row sm:items-center sm:justify-between">
-            <div>
+          <section data-coach-hero="none" className="relative overflow-hidden rounded-2xl border border-border/50 bg-card/70 p-4 shadow-sm">
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1 bg-amber-400" />
+            <div className="flex items-center justify-between gap-2">
               <p className="text-[10px] font-black uppercase tracking-wide text-muted-foreground">Técnico principal</p>
-              <p className="mt-0.5 text-sm font-black">Nenhum contratado</p>
+              <StatusBadge tone="warning" className="shrink-0">Vaga aberta</StatusBadge>
             </div>
-            <span className="rounded-xl bg-primary/10 px-3 py-2 text-center text-[11px] font-black text-primary">Escolha um treinador abaixo</span>
-          </Surface>
+            <p className="mt-0.5 text-base font-black">Nenhum treinador contratado</p>
+            <p className="mt-1 text-xs text-muted-foreground">O técnico guia seus treinos e lidera a comissão. Compare os recomendados abaixo: custo e efeito principal aparecem em cada cartão.</p>
+          </section>
         )}
 
-        <Surface className="space-y-3 p-4">
-          {/* Mobile M4 (docs/MOBILE_M4_COMPACT_UX.md, M4.15): a legenda
-              removida aqui explicava um detalhe de cache interno (quando o
-              mercado é recalculado), não uma regra útil ao jogador — não é
-              informação de jogo perdida, só ruído técnico que não deveria
-              ter estado na UI. */}
-          <div className="flex items-center gap-2">
-            <SlidersHorizontal className="h-4 w-4 text-primary" />
-            <p className="text-sm font-black">Encontre seu próximo técnico</p>
-          </div>
-          <div className="flex flex-wrap gap-2">
-            {STATUS_FILTERS.map(([id, label]) => (
-              <button key={id} type="button" onClick={() => setStatusFilter(id)} className={`rounded-full border px-3 py-1.5 text-[10px] font-bold transition ${statusFilter === id ? 'border-primary/40 bg-primary/15 text-primary' : 'border-border/60 bg-secondary/30 text-muted-foreground hover:text-foreground'}`}>{label}</button>
-            ))}
-          </div>
-          <div className="grid gap-2 md:grid-cols-[1fr_190px_190px]">
-            <label className="flex items-center gap-2 rounded-xl border border-border/60 bg-background/35 px-3">
+        <div className="space-y-2" data-coach-filters>
+          <div className="flex gap-2">
+            <label className="flex min-w-0 flex-1 items-center gap-2 rounded-xl border border-border/60 bg-background/35 px-3">
               <Search className="h-4 w-4 shrink-0 text-muted-foreground" />
-              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Nome, cidade ou especialidade..." className="min-h-10 w-full bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
+              <input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Nome, cidade ou especialidade..." className="min-h-10 w-full min-w-0 bg-transparent text-sm outline-none placeholder:text-muted-foreground" />
             </label>
-            <select value={specialtyFilter} onChange={(event) => setSpecialtyFilter(event.target.value)} aria-label="Filtrar especialidade" className="min-h-10 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
-              <option value="all">Todas as especialidades</option>
-              {Object.entries(COACH_SPECIALTY_INFO).map(([id, info]) => <option key={id} value={id}>{info.label}</option>)}
-            </select>
-            <select value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} aria-label="Ordenar técnicos" className="min-h-10 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
-              <option value="recommendation">Mais relevantes</option>
-              <option value="quality">Maior OVR</option>
-              <option value="salary">Menor salário</option>
-              <option value="value">Custo-benefício</option>
-              <option value="name">Nome</option>
-            </select>
+            <Button level="ghost" size="sm" aria-expanded={filtersOpen} onClick={() => setFiltersOpen((open) => !open)} className="shrink-0 border border-border/60"><SlidersHorizontal className="h-3.5 w-3.5" /> Filtros{filtersChanged ? ' •' : ''}</Button>
           </div>
-        </Surface>
+          {filtersOpen && (
+            <div className="grid gap-2 sm:grid-cols-3">
+              <select value={statusFilter} onChange={(event) => setStatusFilter(event.target.value)} aria-label="Filtrar situação" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
+                {STATUS_FILTERS.map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+              </select>
+              <select value={specialtyFilter} onChange={(event) => setSpecialtyFilter(event.target.value)} aria-label="Filtrar especialidade" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
+                <option value="all">Todas as especialidades</option>
+                {Object.entries(COACH_SPECIALTY_INFO).map(([id, info]) => <option key={id} value={id}>{info.label}</option>)}
+              </select>
+              <select value={sortOrder} onChange={(event) => setSortOrder(event.target.value)} aria-label="Ordenar técnicos" className="min-h-10 min-w-0 rounded-xl border border-border/60 bg-background/70 px-3 text-xs font-bold outline-none">
+                <option value="recommendation">Mais relevantes</option>
+                <option value="quality">Maior OVR</option>
+                <option value="salary">Menor salário</option>
+                <option value="value">Custo-benefício</option>
+                <option value="name">Nome</option>
+              </select>
+            </div>
+          )}
+        </div>
 
         {isDefaultMarketView ? (
           // Starter Coach Flow (docs/STARTER_COACH_FLOW.md, Parte 7/8/9/15):
@@ -334,8 +338,8 @@ export default function Coaches() {
             {market.highlighted.length > 0 && (
               <section className="space-y-3">
                 <div>
-                  <h2 className="text-lg font-black">Recomendados para você</h2>
-                  <p className="text-xs text-muted-foreground">Melhor combinação de afinidade, nível e custo-benefício para sua carreira agora.</p>
+                  <h2 className="text-sm font-black">Recomendados para você</h2>
+                  <p className="text-[11px] text-muted-foreground">Afinidade, nível e custo-benefício para sua carreira agora.</p>
                 </div>
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                   {market.highlighted.slice(0, highlightedVisibleCount).map((evaluation) => (
@@ -352,8 +356,8 @@ export default function Coaches() {
             {marketRest.length > 0 && (
               <section className="space-y-3">
                 <div>
-                  <h2 className="text-lg font-black">Outras opções disponíveis</h2>
-                  <p className="text-xs text-muted-foreground">Também elegíveis agora, fora da recomendação principal.</p>
+                  <h2 className="text-sm font-black">Outras opções disponíveis</h2>
+                  <p className="text-[11px] text-muted-foreground">Também elegíveis agora.</p>
                 </div>
                 <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
                   {marketRest.slice(0, restVisibleCount).map((evaluation) => (
@@ -382,7 +386,7 @@ export default function Coaches() {
         ) : sections.map((section) => section.items.length > 0 && (
           <section key={section.id} className="space-y-3">
             <div>
-              <h2 className="text-lg font-black">{section.title}</h2>
+              <h2 className="text-sm font-black">{section.title}</h2>
               <p className="text-xs text-muted-foreground">{section.description} · {section.items.length} resultado{section.items.length === 1 ? '' : 's'}</p>
             </div>
             <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">

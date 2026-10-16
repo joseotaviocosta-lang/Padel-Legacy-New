@@ -83,7 +83,14 @@ for (const [path, source] of Object.entries(pages)) {
     gate(`${path} integra estado curto no bloco de status da carreira (5.30)`, source.includes('<HomeStatusCard') && source.includes('data-home-status'));
   } else {
     gate(`${path} usa PageHeader denso`, /<\w*PageHeader\s+[\s\S]{0,80}?dense/.test(source));
-    gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));
+    // Fase 5.31: em Minha dupla e Treinador o HUD repetia o cartão logo
+    // abaixo; o estado curto passou a ser o próprio cartão (hero).
+    const heroSummary = {
+      'src/pages/PartnerHub.jsx': () => read('src/components/partner/PartnerOverview.jsx').includes('data-partner-hero="active"'),
+      'src/pages/Coaches.jsx': () => source.includes('data-coach-hero="active"'),
+    }[path];
+    if (heroSummary) gate(`${path} integra estado curto no cartão da página (5.31)`, heroSummary() && !source.includes('hudItems='));
+    else gate(`${path} integra estado curto no HUD`, source.includes('hudItems='));
   }
   gate(`${path} não mantém CompactStats separado`, !source.includes('<CompactStats'));
 }

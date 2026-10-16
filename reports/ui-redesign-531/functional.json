@@ -1,0 +1,206 @@
+{
+  "com-parceiro": {
+    "hasPartner": true,
+    "offerCount": 0,
+    "steps": [
+      {
+        "name": "Dupla abre com o cartão da dupla no topo",
+        "ok": true
+      },
+      {
+        "name": "aba Contrato",
+        "ok": true
+      },
+      {
+        "name": "aba Histórico",
+        "ok": true
+      },
+      {
+        "name": "aba Visão geral",
+        "ok": true
+      },
+      {
+        "name": "\"Mais sobre a dupla\" abre e fecha",
+        "ok": true
+      },
+      {
+        "name": "\"Encerrar\" pede confirmação e \"cancelar\" desfaz (nada gravado)",
+        "ok": true
+      },
+      {
+        "name": "filtro Buscar",
+        "ok": true
+      },
+      {
+        "name": "busca: expandir e recolher candidato",
+        "ok": true
+      },
+      {
+        "name": "busca: trocar lado e ordenação (selects)",
+        "ok": true
+      },
+      {
+        "name": "filtro Caixa de entrada",
+        "ok": true
+      },
+      {
+        "name": "filtro Recebidas",
+        "ok": true
+      },
+      {
+        "name": "Treinador: \"Filtros\" abre os 3 seletores e muda a situação",
+        "ok": true
+      },
+      {
+        "name": "abrir técnico (Ver detalhes) → modal",
+        "ok": true
+      },
+      {
+        "name": "modal: \"Perfil completo\" expande (Filosofia)",
+        "ok": true
+      },
+      {
+        "name": "fechar modal do técnico",
+        "ok": true
+      },
+      {
+        "name": "aba Comissão",
+        "ok": true
+      },
+      {
+        "name": "vaga livre leva ao Mercado mensal",
+        "ok": true
+      },
+      {
+        "name": "Mercado mensal: \"Mostrar mais\" pagina",
+        "ok": true
+      },
+      {
+        "name": "filtro de função (select)",
+        "ok": true
+      },
+      {
+        "name": "aba Minha comissão + \"Reunião da comissão\" abre",
+        "ok": true
+      },
+      {
+        "name": "voltar para a Home pela aba Início",
+        "ok": true
+      },
+      {
+        "name": "0 erro de JS no roteiro",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "pass": 22,
+    "total": 22,
+    "at": "2026-10-16T14:43:25.745Z"
+  },
+  "sem-parceiro": {
+    "hasPartner": false,
+    "offerCount": 4,
+    "steps": [
+      {
+        "name": "Dupla abre com o cartão da dupla no topo",
+        "ok": true
+      },
+      {
+        "name": "aba Contrato",
+        "ok": true
+      },
+      {
+        "name": "aba Histórico",
+        "ok": true
+      },
+      {
+        "name": "aba Visão geral",
+        "ok": true
+      },
+      {
+        "name": "primário \"Analisar propostas\" leva às propostas recebidas",
+        "ok": true
+      },
+      {
+        "name": "filtro Buscar",
+        "ok": true
+      },
+      {
+        "name": "busca: expandir e recolher candidato",
+        "ok": true
+      },
+      {
+        "name": "busca: trocar lado e ordenação (selects)",
+        "ok": true
+      },
+      {
+        "name": "filtro Caixa de entrada",
+        "ok": true
+      },
+      {
+        "name": "filtro Recebidas",
+        "ok": true
+      },
+      {
+        "name": "abrir proposta 1 (modal) e fechar",
+        "ok": true
+      },
+      {
+        "name": "navegar para proposta 2 (modal com outro nome)",
+        "ok": true
+      },
+      {
+        "name": "comparar 2 propostas e fechar a comparação",
+        "ok": true
+      },
+      {
+        "name": "Treinador: \"Filtros\" abre os 3 seletores e muda a situação",
+        "ok": true
+      },
+      {
+        "name": "abrir técnico (Ver detalhes) → modal",
+        "ok": true
+      },
+      {
+        "name": "modal: \"Perfil completo\" expande (Filosofia)",
+        "ok": true
+      },
+      {
+        "name": "fechar modal do técnico",
+        "ok": true
+      },
+      {
+        "name": "aba Comissão",
+        "ok": true
+      },
+      {
+        "name": "vaga livre leva ao Mercado mensal",
+        "ok": true
+      },
+      {
+        "name": "Mercado mensal: \"Mostrar mais\" pagina",
+        "ok": true
+      },
+      {
+        "name": "filtro de função (select)",
+        "ok": true
+      },
+      {
+        "name": "aba Minha comissão + \"Reunião da comissão\" abre",
+        "ok": true
+      },
+      {
+        "name": "voltar para a Home pela aba Início",
+        "ok": true
+      },
+      {
+        "name": "0 erro de JS no roteiro",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "pass": 24,
+    "total": 24,
+    "at": "2026-10-16T14:44:49.011Z"
+  }
+}
