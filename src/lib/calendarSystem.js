@@ -12,6 +12,40 @@ import { resolveUnavailablePlayerMatch } from '@/game-core/tournamentLifecycle.j
 import { isInjured } from '@/lib/padel.js';
 import { evaluatePartnershipRegistrationAuthority } from '@/lib/committedRoster.js';
 import { getActivePartnership } from '@/lib/partnershipSystem.js';
+import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
+
+// CLOUD-2 — o sorteio (e sua notificação) roda dentro do avanço de dia e é
+// opcional para aquele dia: se falhar, o evento continua 'scheduled' sem
+// `tournament_run` e a pipeline tenta de novo no dia seguinte enquanto
+// isTournamentDrawDue (D-3..D-0). Antes, a falha era descartada em silêncio
+// (`.catch(() => null)`) e, por isso, uma inscrição recusada passava por
+// "run sumiu". Agora ela vira um diagnóstico rastreável, sem mudar o fluxo:
+//  - nada é mostrado ao jogador (sem toast/notificação nova);
+//  - a atomicidade não muda: se a falha veio de uma escrita dentro da
+//    transação do dia, a transação já está invalidada e o dia inteiro é
+//    desfeito no commit (calendarLifecycle registra CareerDayAdvance), sem
+//    evento incompleto; se veio antes de escrever, nada foi gravado;
+//  - contexto só com ids técnicos e data de carreira (sem nome do atleta).
+export function reportTournamentDrawFailure(stage, error, { event, tournament, careerDate } = {}) {
+  const context = {
+    stage,
+    calendarEventId: event?.id || null,
+    tournamentId: tournament?.id || event?.related_id || null,
+    tier: tournament?.tier || null,
+    careerDate: careerDate || null,
+    hadRegistration: Boolean(event?.metadata?.registration_id),
+  };
+  registerBetaDiagnostic({
+    type: 'tournament-draw',
+    code: stage === 'draw' ? 'TOURNAMENT_DRAW_FAILED' : 'TOURNAMENT_DRAW_NOTIFICATION_FAILED',
+    message: String(error?.message || error || 'Falha no sorteio do torneio.'),
+    errorCode: error?.code || null,
+    context,
+    stack: error?.stack,
+  });
+  console.warn('[TournamentDraw]', { ...context, message: String(error?.message || error) });
+  return null;
+}
 
 // ── Event type metadata ───────────────────────────────────────────────────
 export const EVENT_TYPES = {
@@ -444,7 +478,7 @@ export async function processCalendarEvents(profile, newDate) {
           profile: { ...profile, career_date: newDate },
           tournament,
           calendarEvent: event,
-        }).catch(() => null);
+        }).catch((error) => reportTournamentDrawFailure('draw', error, { event, tournament, careerDate: newDate }));
         if (drawResult?.created && drawResult.event) {
           event = drawResult.event;
           hasTournamentRun = true;
@@ -460,7 +494,7 @@ export async function processCalendarEvents(profile, newDate) {
       // verifica se a mensagem existe antes de escrever) e self-healing
       // (se a chave já existia de uma sessão anterior sem notificação, cria
       // a mensagem atrasada aqui, uma única vez).
-      if (tournament) await ensureTournamentDrawNotification({ ...profile, career_date: newDate }, tournament, event).catch(() => null);
+      if (tournament) await ensureTournamentDrawNotification({ ...profile, career_date: newDate }, tournament, event).catch((error) => reportTournamentDrawFailure('draw-notification', error, { event, tournament, careerDate: newDate }));
     }
 
     // Mark past events as missed if they were tournaments requiring decisions
