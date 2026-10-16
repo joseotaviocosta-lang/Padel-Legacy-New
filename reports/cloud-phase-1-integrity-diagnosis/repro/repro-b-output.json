@@ -1,0 +1,45 @@
+{
+  "constantRandomSuffix": "zn1fu8",
+  "case1_realRandom": {
+    "ok": true,
+    "ids": [
+      "worldevent-1792182168802-7s132a",
+      "worldevent-1792182168802-2nhnb5"
+    ]
+  },
+  "case2_constantRandom": {
+    "ok": false,
+    "error": "WorldEvent já existe com o id: worldevent-1792182168803-zn1fu8"
+  },
+  "case3_transaction": {
+    "steps": [
+      {
+        "step": "bulkCreate colidente",
+        "ok": false,
+        "error": "WorldEvent já existe com o id: worldevent-1792182168806-zn1fu8"
+      },
+      {
+        "step": "update NÃO relacionado (PlayerProfile.coins + 1)",
+        "ok": false,
+        "error": "WorldEvent já existe com o id: worldevent-1792182168806-zn1fu8"
+      }
+    ],
+    "transaction": {
+      "ok": false,
+      "error": "WorldEvent já existe com o id: worldevent-1792182168806-zn1fu8"
+    },
+    "committedFileUnchanged": true,
+    "coinsAfterReload": 1000,
+    "coinsBefore": 1000
+  },
+  "case4_probability": {
+    "suffixSpace": 2176782336,
+    "note": "Só ids gerados no MESMO milissegundo podem colidir (Date.now faz parte do id). Em bulkCreate o laço é síncrono: todos os itens do lote compartilham o ms.",
+    "perBatch": {
+      "n=10": 2.067271460990025e-8,
+      "n=50": 5.627572310472847e-7,
+      "n=200": 0.000009141933794155889
+    },
+    "tenYearsAt50PerDay": 0.0020519563245003924
+  }
+}

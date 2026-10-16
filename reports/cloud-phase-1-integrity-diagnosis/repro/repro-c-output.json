@@ -1,0 +1,754 @@
+{
+  "source": "src/game-core/rankingWindow.js (RANKING_WINDOW_DAYS=364, RANKING_BEST_N=22, effectiveResultPoints linear para legacy_seed desde 5.26-C)",
+  "gateUnderTest": "(4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (6000)",
+  "week52": {
+    "week": 52,
+    "date": "2026-12-21",
+    "anchorAgeDays": 357,
+    "anchorExpired": false,
+    "inactivePoints_currentRule": 115,
+    "inactivePoints_testExpectation": 6000,
+    "fillerPoints": 2200,
+    "inactiveAheadOfFillers_currentRule": false
+  },
+  "week53": {
+    "week": 53,
+    "date": "2026-12-28",
+    "anchorAgeDays": 364,
+    "anchorExpired": false,
+    "inactivePoints_currentRule": 0,
+    "inactivePoints_testExpectation": 6000,
+    "fillerPoints": 2200,
+    "inactiveAheadOfFillers_currentRule": false
+  },
+  "week54": {
+    "week": 54,
+    "date": "2027-01-04",
+    "anchorAgeDays": 371,
+    "anchorExpired": true,
+    "inactivePoints_currentRule": 0,
+    "inactivePoints_testExpectation": 0,
+    "fillerPoints": 2200,
+    "inactiveAheadOfFillers_currentRule": false
+  },
+  "firstWeekInactiveFallsBehindFillers_currentRule": {
+    "week": 34,
+    "date": "2026-08-17",
+    "inactive": 2192,
+    "filler": 2200
+  },
+  "sample": [
+    {
+      "week": 1,
+      "date": "2025-12-29",
+      "anchorAgeDays": 0,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 6000,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 100,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 2,
+      "date": "2026-01-05",
+      "anchorAgeDays": 7,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5885,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 10,
+      "date": "2026-03-02",
+      "anchorAgeDays": 63,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4962,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1000,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 13,
+      "date": "2026-03-23",
+      "anchorAgeDays": 84,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4615,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1300,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 20,
+      "date": "2026-05-11",
+      "anchorAgeDays": 133,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3808,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2000,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 26,
+      "date": "2026-06-22",
+      "anchorAgeDays": 175,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3115,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 39,
+      "date": "2026-09-21",
+      "anchorAgeDays": 266,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1615,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 52,
+      "date": "2026-12-21",
+      "anchorAgeDays": 357,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 115,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 53,
+      "date": "2026-12-28",
+      "anchorAgeDays": 364,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 54,
+      "date": "2027-01-04",
+      "anchorAgeDays": 371,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 60,
+      "date": "2027-02-15",
+      "anchorAgeDays": 413,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    }
+  ],
+  "timeline": [
+    {
+      "week": 1,
+      "date": "2025-12-29",
+      "anchorAgeDays": 0,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 6000,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 100,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 2,
+      "date": "2026-01-05",
+      "anchorAgeDays": 7,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5885,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 3,
+      "date": "2026-01-12",
+      "anchorAgeDays": 14,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5769,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 300,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 4,
+      "date": "2026-01-19",
+      "anchorAgeDays": 21,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5654,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 400,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 5,
+      "date": "2026-01-26",
+      "anchorAgeDays": 28,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5538,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 500,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 6,
+      "date": "2026-02-02",
+      "anchorAgeDays": 35,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5423,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 600,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 7,
+      "date": "2026-02-09",
+      "anchorAgeDays": 42,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5308,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 700,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 8,
+      "date": "2026-02-16",
+      "anchorAgeDays": 49,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5192,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 800,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 9,
+      "date": "2026-02-23",
+      "anchorAgeDays": 56,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 5077,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 900,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 10,
+      "date": "2026-03-02",
+      "anchorAgeDays": 63,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4962,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1000,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 11,
+      "date": "2026-03-09",
+      "anchorAgeDays": 70,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4846,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1100,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 12,
+      "date": "2026-03-16",
+      "anchorAgeDays": 77,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4731,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 13,
+      "date": "2026-03-23",
+      "anchorAgeDays": 84,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4615,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1300,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 14,
+      "date": "2026-03-30",
+      "anchorAgeDays": 91,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4500,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1400,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 15,
+      "date": "2026-04-06",
+      "anchorAgeDays": 98,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4385,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1500,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 16,
+      "date": "2026-04-13",
+      "anchorAgeDays": 105,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4269,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1600,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 17,
+      "date": "2026-04-20",
+      "anchorAgeDays": 112,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4154,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1700,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 18,
+      "date": "2026-04-27",
+      "anchorAgeDays": 119,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 4038,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1800,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 19,
+      "date": "2026-05-04",
+      "anchorAgeDays": 126,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3923,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 1900,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 20,
+      "date": "2026-05-11",
+      "anchorAgeDays": 133,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3808,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2000,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 21,
+      "date": "2026-05-18",
+      "anchorAgeDays": 140,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3692,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2100,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 22,
+      "date": "2026-05-25",
+      "anchorAgeDays": 147,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3577,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 23,
+      "date": "2026-06-01",
+      "anchorAgeDays": 154,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3462,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 24,
+      "date": "2026-06-08",
+      "anchorAgeDays": 161,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3346,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 25,
+      "date": "2026-06-15",
+      "anchorAgeDays": 168,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3231,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 26,
+      "date": "2026-06-22",
+      "anchorAgeDays": 175,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3115,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 27,
+      "date": "2026-06-29",
+      "anchorAgeDays": 182,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 3000,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 28,
+      "date": "2026-07-06",
+      "anchorAgeDays": 189,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2885,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 29,
+      "date": "2026-07-13",
+      "anchorAgeDays": 196,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2769,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 30,
+      "date": "2026-07-20",
+      "anchorAgeDays": 203,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2654,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 31,
+      "date": "2026-07-27",
+      "anchorAgeDays": 210,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2538,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 32,
+      "date": "2026-08-03",
+      "anchorAgeDays": 217,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2423,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 33,
+      "date": "2026-08-10",
+      "anchorAgeDays": 224,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2308,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": true
+    },
+    {
+      "week": 34,
+      "date": "2026-08-17",
+      "anchorAgeDays": 231,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2192,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 35,
+      "date": "2026-08-24",
+      "anchorAgeDays": 238,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 2077,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 36,
+      "date": "2026-08-31",
+      "anchorAgeDays": 245,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1962,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 37,
+      "date": "2026-09-07",
+      "anchorAgeDays": 252,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1846,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 38,
+      "date": "2026-09-14",
+      "anchorAgeDays": 259,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1731,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 39,
+      "date": "2026-09-21",
+      "anchorAgeDays": 266,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1615,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 40,
+      "date": "2026-09-28",
+      "anchorAgeDays": 273,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1500,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 41,
+      "date": "2026-10-05",
+      "anchorAgeDays": 280,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1385,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 42,
+      "date": "2026-10-12",
+      "anchorAgeDays": 287,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1269,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 43,
+      "date": "2026-10-19",
+      "anchorAgeDays": 294,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1154,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 44,
+      "date": "2026-10-26",
+      "anchorAgeDays": 301,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 1038,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 45,
+      "date": "2026-11-02",
+      "anchorAgeDays": 308,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 923,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 46,
+      "date": "2026-11-09",
+      "anchorAgeDays": 315,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 808,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 47,
+      "date": "2026-11-16",
+      "anchorAgeDays": 322,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 692,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 48,
+      "date": "2026-11-23",
+      "anchorAgeDays": 329,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 577,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 49,
+      "date": "2026-11-30",
+      "anchorAgeDays": 336,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 462,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 50,
+      "date": "2026-12-07",
+      "anchorAgeDays": 343,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 346,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 51,
+      "date": "2026-12-14",
+      "anchorAgeDays": 350,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 231,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 52,
+      "date": "2026-12-21",
+      "anchorAgeDays": 357,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 115,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 53,
+      "date": "2026-12-28",
+      "anchorAgeDays": 364,
+      "anchorExpired": false,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 6000,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 54,
+      "date": "2027-01-04",
+      "anchorAgeDays": 371,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 55,
+      "date": "2027-01-11",
+      "anchorAgeDays": 378,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 56,
+      "date": "2027-01-18",
+      "anchorAgeDays": 385,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 57,
+      "date": "2027-01-25",
+      "anchorAgeDays": 392,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 58,
+      "date": "2027-02-01",
+      "anchorAgeDays": 399,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 59,
+      "date": "2027-02-08",
+      "anchorAgeDays": 406,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    },
+    {
+      "week": 60,
+      "date": "2027-02-15",
+      "anchorAgeDays": 413,
+      "anchorExpired": true,
+      "inactivePoints_currentRule": 0,
+      "inactivePoints_testExpectation": 0,
+      "fillerPoints": 2200,
+      "inactiveAheadOfFillers_currentRule": false
+    }
+  ]
+}

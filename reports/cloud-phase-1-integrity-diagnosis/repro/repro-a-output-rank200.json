@@ -1,0 +1,161 @@
+{
+  "scenario": "test-career-persistence-integrity §8",
+  "timeline": [
+    {
+      "label": "após inscrição",
+      "career_date": "2026-01-01",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-02",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-03",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-04",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-05",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-06",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-07",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-08",
+      "tournament": {
+        "status": "em_andamento",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": []
+    }
+  ],
+  "drawProbe": {
+    "probeDate": null,
+    "threw": false,
+    "created": false,
+    "drawn": false,
+    "hasRun": false
+  },
+  "persisted": {
+    "file": "careers/159d06b4-4249-4f2c-9342-58f2cca1bac7.json",
+    "save_version": 9,
+    "calendarEventsForTournament": []
+  },
+  "reloaded": {
+    "hasEvent": false,
+    "hasRun": false,
+    "status": null
+  },
+  "teamRank": 200,
+  "registration": {
+    "success": false,
+    "reasons": [
+      {
+        "code": "SPORTING_INELIGIBLE",
+        "message": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base."
+      }
+    ],
+    "warnings": [],
+    "validation": {
+      "allowed": false,
+      "reasons": [
+        {
+          "code": "SPORTING_INELIGIBLE",
+          "message": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base."
+        }
+      ],
+      "warnings": [],
+      "registrationWindow": {
+        "opensAt": "2025-12-09",
+        "closesAt": "2026-01-04"
+      },
+      "interval": {
+        "start": "2026-01-08",
+        "end": "2026-01-11"
+      },
+      "entry": {
+        "path": "ineligible",
+        "eligible": false,
+        "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+        "overqualified": true
+      }
+    }
+  }
+}

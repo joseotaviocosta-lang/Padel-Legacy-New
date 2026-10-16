@@ -1,0 +1,283 @@
+{
+ "note": "CLOUD-1 Parte 3 — auditoria dos 9 testes obsoletos e 22 testes de interface antiga do CLOUD-0. Nenhum teste foi alterado, excluído ou desativado. 'recommendation': atualizar | substituir | manter | remover. 'coverage' = cobertura equivalente atual.",
+ "obsolete": [
+  {
+   "test": "test-achievement-save-migration",
+   "protects": "Reconciliação de conquistas tolera linha legada pré-Fase-12 (sem 'reconciled') sem duplicar nem revogar.",
+   "failure": "Usa a linha de seed 'player-achievement-001' como fixture; o 9002 (c5bf7c8) pôs PlayerAchievement em NEVER_SEED_WITH_DEMO_DATA (achado 4 do playtest), então a linha não existe mais numa carreira nova.",
+   "currentBehavior": "Carreira nova nasce sem conquista de demonstração; as demais garantias do teste (reconciled:true, is_new:false nas linhas novas) passam.",
+   "coverage": "Parcial: test-reward-no-duplicate-first-week-v527m e test-reward-ledger-balance-v527m (ambos passam) cobrem pagamento; NINGUÉM cobre linha legada pré-Fase-12.",
+   "recommendation": "atualizar",
+   "how": "Injetar explicitamente uma linha legada (sem 'reconciled') na fixture em vez de depender do seed."
+  },
+  {
+   "test": "test-global-header-calendar-rc",
+   "protects": "Todos os atalhos de avanço de 1 dia usam o coordenador single-flight (advanceCareerDayOnce).",
+   "failure": "Exige advanceCareerDayOnce em src/pages/Training.jsx, que é um redirecionamento de 15 linhas para o Centro de Treinamento (sem atalho de dia) desde o 1º commit.",
+   "currentBehavior": "CalendarPage.jsx e CareerCalendar.jsx usam advanceCareerDayOnce; Training.jsx não tem atalho.",
+   "coverage": "As outras 13 verificações do mesmo teste; test-header-advance-day-rc.",
+   "recommendation": "atualizar",
+   "how": "Trocar Training.jsx pelo componente que hoje tem o atalho (ou retirar Training.jsx da lista)."
+  },
+  {
+   "test": "test-tournament-guided-flow",
+   "protects": "Fluxo guiado do torneio até a entrevista pós-jogo, com rota canônica.",
+   "failure": "Espera '/press?tab=interviews'; buildInterviewRoute (src/lib/tournamentNextAction.js:30) gera '/world/circuit?tab=press' desde o 9001.",
+   "currentBehavior": "Entrevista abre no Circuito → aba Imprensa.",
+   "coverage": "test-post-match-interviews-rc (passa). test-interview-overlay-transition também falha (fora da baseline; ver extraFindings).",
+   "recommendation": "atualizar",
+   "how": "Asserir a rota canônica atual (usar buildInterviewRoute como oráculo, não string literal)."
+  },
+  {
+   "test": "test-phase15-5-1-tournament-interview-consistency",
+   "protects": "Helpers de torneio/entrevista são puros (não leem storage).",
+   "failure": "Gate 79 usa regex /localGame/ e casa um COMENTÁRIO em src/lib/tournamentBracketView.js:358 (adicionado no 565437f). 78/79 gates passam.",
+   "currentBehavior": "O arquivo não importa localGame; só o menciona em comentário.",
+   "coverage": "Os outros 78 gates.",
+   "recommendation": "atualizar",
+   "how": "Procurar import/uso (ex.: /import[^\\n]*localGame|localGame\\./) em vez da palavra."
+  },
+  {
+   "test": "test-mobile-persistence-m3-7",
+   "protects": "Avanço de dia transacional = mesmo estado final que o não transacional, com 1 commit físico.",
+   "failure": "deepEqual da carreira inteira difere só em save_version (457 vs 3) — contador de gravações, que diverge por definição quando o caminho transacional faz menos commits (save_version entrou depois do teste).",
+   "currentBehavior": "Estado de jogo idêntico; só o contador difere.",
+   "coverage": "test-career-atomicity (passa), test-achievement-reward-atomicity-v524e (passa).",
+   "recommendation": "atualizar",
+   "how": "Excluir save_version (e timestamps de diagnóstico) da comparação."
+  },
+  {
+   "test": "test-global-overlays-audit",
+   "protects": "Auditoria de overlays globais (z-index, back-stack, sobreposição).",
+   "failure": "Lê src/components/career/CareerAssistant.jsx, removido.",
+   "currentBehavior": "Componente não existe mais.",
+   "coverage": "test-overlay-back-stack, test-viewport-overlays-rc1, test-global-header-overlay-rc, test-modal-safety.",
+   "recommendation": "atualizar",
+   "how": "Remover CareerAssistant.jsx da lista de arquivos auditados; manter o restante."
+  },
+  {
+   "test": "test-living-career-v34-5",
+   "protects": "Momentos de carreira (careerMoments).",
+   "failure": "Roda src/ com node puro; quebra ao resolver o alias '@/' (ERR_MODULE_NOT_FOUND).",
+   "currentBehavior": "Módulo usa imports '@/...' como o resto do app.",
+   "coverage": "Nenhuma específica identificada.",
+   "recommendation": "atualizar",
+   "how": "Carregar via Vite SSR (padrão dos kits v52x)."
+  },
+  {
+   "test": "test-living-career-v34-7",
+   "protects": "Central de decisões da carreira (careerDecisionCenter).",
+   "failure": "Mesmo problema de alias '@/navigation' com node puro.",
+   "currentBehavior": "Idem.",
+   "coverage": "Nenhuma específica identificada.",
+   "recommendation": "atualizar",
+   "how": "Vite SSR."
+  },
+  {
+   "test": "test-living-career-v34-8",
+   "protects": "Revisão semanal da carreira (weeklyCareerReview).",
+   "failure": "Mesmo problema de alias '@/navigation' com node puro.",
+   "currentBehavior": "Idem.",
+   "coverage": "Nenhuma específica identificada.",
+   "recommendation": "atualizar",
+   "how": "Vite SSR."
+  }
+ ],
+ "legacyUi": [
+  {
+   "test": "test-home-redesign",
+   "protects": "Home com NextObjectiveCard como objetivo principal.",
+   "failure": "NextObjectiveCard não existe mais.",
+   "currentBehavior": "Home redesenhada na 5.30 (src/lib/homeDashboard.js + CareerHub.jsx).",
+   "coverage": "8 testes *-v530 (home-primary-hierarchy, home-priorities, home-next-commitment...).",
+   "recommendation": "remover"
+  },
+  {
+   "test": "test-premium-home-v33-2",
+   "protects": "Home premium v33 (PremiumQuickStats).",
+   "failure": "PremiumQuickStats não existe mais.",
+   "currentBehavior": "Home 5.30.",
+   "coverage": "*-v530.",
+   "recommendation": "remover"
+  },
+  {
+   "test": "test-premium-interfaces-v33",
+   "protects": "Strings/componentes v33 em CareerHub, Coaches, Staff, Ranking.",
+   "failure": "Strings literais do layout v33 (ex.: 'Treinador separado', 'Folha mensal', 'XpBar').",
+   "currentBehavior": "Telas redesenhadas (5.24, 5.30, 5.31).",
+   "coverage": "*-v531 (staff/coach), *-v530 (home), *-v524 (ranking/header).",
+   "recommendation": "remover"
+  },
+  {
+   "test": "test-premium-relations-v33-8",
+   "protects": "PartnerHub exibe indicadores e propostas; 'Versão beta.12'.",
+   "failure": "Strings do PartnerHub antigo + versão fixa beta.12.",
+   "currentBehavior": "PartnerHub 5.31 (partnerScreen.js).",
+   "coverage": "test-partner-screen-hierarchy-v531, test-partner-market-cards-v531.",
+   "recommendation": "remover"
+  },
+  {
+   "test": "test-redesign-polish2",
+   "protects": "Motor de próximo passo getNextStep presente na Home.",
+   "failure": "Procura 'function getNextStep(profile, upcomingTournaments)' em CareerHub.jsx; a função mora hoje em src/onboarding/onboardingNextAction.js.",
+   "currentBehavior": "getNextStep existe, em outro módulo.",
+   "coverage": "test-home-primary-hierarchy-v530 (passa). test-onboarding-home-cta falha por falso positivo (ver extraFindings).",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-redesign-polish21",
+   "protects": "Home não duplica o 'próximo torneio' (NextEventCard como fonte única).",
+   "failure": "Espera NextEventCard e um 'continue' específico em buildPriorityActions na Home.",
+   "currentBehavior": "Fonte única agora é selectNextRelevantEvent (5.30-B); NextEventCard só no calendário.",
+   "coverage": "test-next-event-authority-consistency-v530b, test-home-no-duplicate-summary-v530.",
+   "recommendation": "substituir"
+  },
+  {
+   "test": "test-ui-redesign",
+   "protects": "Páginas importam o design system oficial.",
+   "failure": "Exige import do design system em Training.jsx (hoje só redireciona).",
+   "currentBehavior": "Treino vive em TrainingCenter/TrainingView.",
+   "coverage": "test-design-system-v33 (parcial).",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-page-hierarchy",
+   "protects": "1 PageHeader por página (identidade única).",
+   "failure": "Exige 1 PageHeader em Training.jsx (redirecionamento). 25 outros gates passam.",
+   "currentBehavior": "Idem.",
+   "coverage": "Os 25 gates restantes.",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-onboarding-priority",
+   "protects": "Prioridade onboarding > fallback getNextStep.",
+   "failure": "Procura getNextStep em CareerHub.jsx (mudou de módulo). 88 outros gates passam.",
+   "currentBehavior": "Mesma prioridade; função em src/onboarding/onboardingNextAction.js.",
+   "coverage": "Os 88 gates restantes.",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-mobile-compact-ux-m4",
+   "protects": "PageHeader com prop dense só para mobile.",
+   "failure": "Regex exige 'dense = false' (padrão desligado); hoje o padrão é 'dense = true' (PageHeader.jsx:20) — mudança INTENCIONAL de padrão, mobile compacto por default.",
+   "currentBehavior": "PageHeader é denso por padrão no mobile (classes só sob max-width:767px).",
+   "coverage": "Nenhum teste dedicado ao padrão atual identificado.",
+   "recommendation": "atualizar",
+   "how": "Asserir o padrão atual (dense = true) e manter o gate de 'só CSS, sem duplicar DOM'."
+  },
+  {
+   "test": "test-mobile-filters-postmatch-m4-2-2",
+   "protects": "FilterPills não comprime itens (shrink-0).",
+   "failure": "Exige a sequência de classes do trilho rolável com shrink-0 (M4.2.2). A 5.20-B substituiu o trilho por pílulas que QUEBRAM LINHA no mobile (o trilho escondia até 496 px de filtros em 360 px) — decisão documentada em FilterPills.jsx.",
+   "currentBehavior": "Mobile: pílulas em várias linhas, todas visíveis; md+: inalterado.",
+   "coverage": "Nenhum teste dedicado ao FilterPills atual identificado (o v531b cobre o InboxPanel, que voltou a usar faixa rolável com shrink-0).",
+   "recommendation": "atualizar",
+   "how": "Asserir flex-wrap no mobile e ausência de compressão."
+  },
+  {
+   "test": "test-mobile-game-app-experience-m4-2",
+   "protects": "Home com atalhos diretos Treinar/Competir/Agenda.",
+   "failure": "Exige CommandLink específicos da Home antiga.",
+   "currentBehavior": "Home 5.30 com ações principais/secundárias.",
+   "coverage": "test-home-actions-v530.",
+   "recommendation": "substituir"
+  },
+  {
+   "test": "test-mobile-game-flow-m4-3",
+   "protects": "Um único herói/ação dominante na Home.",
+   "failure": "Exige 'const heroStep = useMemo' + 'PriorityActionsPanel step={heroStep}' (14 gates passam).",
+   "currentBehavior": "heroStep existe, estrutura mudou na 5.30.",
+   "coverage": "test-home-primary-hierarchy-v530.",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-mobile-m3-1-device-hotfix",
+   "protects": "Nenhum link para a rota inexistente /game/matches (404 no Android).",
+   "failure": "Exige que /game/matches NÃO seja rota; hoje é rota de redirecionamento deliberada (Matches.jsx → Centro de Treinamento, aba Partida).",
+   "currentBehavior": "Sem 404: a rota redireciona.",
+   "coverage": "test-notification-deep-links-rc.",
+   "recommendation": "atualizar",
+   "how": "Aceitar /game/matches se o elemento for redirecionamento."
+  },
+  {
+   "test": "test-mobile-m3-2-android-ux",
+   "protects": "Inputs de nome rolam para a vista no foco (teclado do Android não cobre).",
+   "failure": "O input 'tutorial-athlete-name' (src/pages/Missions.jsx:465) NÃO tem onFocus→scrollIntoView; ausente em todas as versões do histórico Git (desde 0275b9c). O input 'save-name' (CareerManager.jsx:585) tem.",
+   "currentBehavior": "POSSÍVEL LACUNA REAL de UX: o campo do nome do atleta no tutorial pode ficar sob o teclado.",
+   "coverage": "Nenhuma.",
+   "recommendation": "manter",
+   "how": "Manter o teste como está; validar no Redmi 12 e, se reproduzir, corrigir o input (1 linha) com autorização."
+  },
+  {
+   "test": "test-staff-architecture-v29-1",
+   "protects": "Vagas da comissão sem contar o treinador; rota /staff; item de navegação.",
+   "failure": "Exige nav \"to: '/staff'\" em 'Dupla e relações'; navegação reorganizada (Equipe → Treinador | Comissão).",
+   "currentBehavior": "Comissão no hub Equipe.",
+   "coverage": "test-staff-screen-hierarchy-v531, test-staff-market-cards-v531.",
+   "recommendation": "atualizar",
+   "how": "Manter os asserts de vagas (regra de economia); trocar o de navegação."
+  },
+  {
+   "test": "test-training-center-unification-phase15-5",
+   "protects": "Centro de Treinamento unificado com HUD local (treinos/partida/energia/fadiga).",
+   "failure": "Exige labels literais do HUD antigo; redesenhado na 5.29.",
+   "currentBehavior": "Centro de Treinamento 5.29.",
+   "coverage": "Gates do redesign 5.29 em test-mobile-training-game-experience-m4-2-1 e test-mobile-game-feel-m4-1.",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-ranking-ui-authority-v56",
+   "protects": "UI usa formatIndividualRankLabel como autoridade do rótulo de ranking.",
+   "failure": "Asserção sobre o CareerHud alterado na 5.24 (já registrado como preexistente na 5.26-C).",
+   "currentBehavior": "formatIndividualRankLabel usado em HeaderRankShortcuts.jsx e RankingCards.jsx.",
+   "coverage": "test-header-ranking-v524 (4 testes).",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-living-career-v34-4",
+   "protects": "Painel de carreira viva v34.4.",
+   "failure": "Checagens estruturais de strings do layout v34.",
+   "currentBehavior": "Home/Carreira redesenhadas.",
+   "coverage": "*-v530.",
+   "recommendation": "remover"
+  },
+  {
+   "test": "test-living-career-v34-9",
+   "protects": "Plano de temporada (SeasonCareerPlan) com 4 pilares.",
+   "failure": "1 de 8 checagens: texto 'Entrar no Top 500' não existe mais na lógica (metas mudaram).",
+   "currentBehavior": "SeasonCareerPlan presente; textos das metas diferentes.",
+   "coverage": "test-career-long-term-goals.",
+   "recommendation": "atualizar"
+  },
+  {
+   "test": "test-phase15-4-mobile-flow-polish",
+   "protects": "Home com 'Próximo objetivo', ranking no HUD, ação dominante única, padding compacto.",
+   "failure": "Strings/markup da Home pré-5.30.",
+   "currentBehavior": "Home 5.30.",
+   "coverage": "*-v530.",
+   "recommendation": "substituir"
+  },
+  {
+   "test": "test-phase15-5-4-critical-mobile-qa",
+   "protects": "QA crítico mobile 15.5.4 (21 gates passam).",
+   "failure": "Gate 21 exige '${nextTournament.name' no título da notificação em careerCommunications.js; o texto passou a ser montado de outra forma.",
+   "currentBehavior": "Notificação de torneio existe; montagem do título mudou.",
+   "coverage": "test-tournament-notification-deeplink-rc, test-notification-editorial-quality.",
+   "recommendation": "atualizar"
+  }
+ ],
+ "extraFindings": [
+  {
+   "test": "test-interview-overlay-transition",
+   "status": "falha (fora da seleção CLOUD-0)",
+   "failure": "Gate sobre o caminho 'Não dar entrevista' (onClose do FinalState/StateMessage = goBackToCareer). Não investigado a fundo nesta fase.",
+   "recommendation": "incluir na baseline e triar no CLOUD-2"
+  },
+  {
+   "test": "test-onboarding-home-cta",
+   "status": "falha (fora da seleção CLOUD-0)",
+   "failure": "Regex só reconhece <Route path=\"literal\">; /game/training-center é registrada via APP_ROUTES.TRAINING_CENTER (App.jsx:153). Falso positivo — rota existe.",
+   "recommendation": "atualizar (resolver constantes de rota)"
+  }
+ ]
+}

@@ -1,0 +1,332 @@
+{
+  "scenario": "test-career-persistence-integrity §8",
+  "timeline": [
+    {
+      "label": "após inscrição",
+      "career_date": "2026-01-01",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": false,
+          "drawAnchor": "2026-01-08",
+          "drawDue": false
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-02",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": false,
+          "drawAnchor": "2026-01-08",
+          "drawDue": false
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-03",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": false,
+          "drawAnchor": "2026-01-08",
+          "drawDue": false
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-04",
+      "tournament": {
+        "status": "inscricoes",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": null,
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": false,
+          "drawAnchor": "2026-01-08",
+          "drawDue": false
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-05",
+      "tournament": {
+        "status": "chaveamento",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": "2026-01-05",
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": true,
+          "drawAnchor": "2026-01-08",
+          "drawDue": true
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-06",
+      "tournament": {
+        "status": "chaveamento",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": "2026-01-05",
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": true,
+          "drawAnchor": "2026-01-08",
+          "drawDue": true
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-07",
+      "tournament": {
+        "status": "chaveamento",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": "2026-01-05",
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": true,
+          "drawAnchor": "2026-01-08",
+          "drawDue": true
+        }
+      ]
+    },
+    {
+      "label": "após advanceCareerDay",
+      "career_date": "2026-01-08",
+      "tournament": {
+        "status": "em_andamento",
+        "start_date": "2026-01-08",
+        "end_date": null,
+        "draw_date": "2026-01-05",
+        "draw_pending_reason": null,
+        "participants": null
+      },
+      "calendarEvents": [
+        {
+          "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+          "status": "scheduled",
+          "event_type": "tournament",
+          "start_date": "2026-01-08",
+          "metadataKeys": [
+            "entry_path",
+            "original_start_date",
+            "partner_id",
+            "planned_end_date",
+            "qualifying_required",
+            "qualifying_status",
+            "registration_id",
+            "registration_schema_version",
+            "team_rank",
+            "tournament_run",
+            "tournament_run_schema_version"
+          ],
+          "hasRun": true,
+          "drawAnchor": "2026-01-08",
+          "drawDue": true
+        }
+      ]
+    }
+  ],
+  "drawProbe": {
+    "probeDate": "2026-01-08",
+    "threw": false,
+    "created": false,
+    "drawn": true,
+    "hasRun": true
+  },
+  "persisted": {
+    "file": "careers/7cd449b3-18fe-4b67-a92c-7ee15b82503c.json",
+    "save_version": 11,
+    "calendarEventsForTournament": [
+      {
+        "id": "calendar-registration-repro-a-player-tournament-reload-t1",
+        "status": "scheduled",
+        "hasRun": true,
+        "metadataKeys": [
+          "entry_path",
+          "original_start_date",
+          "partner_id",
+          "planned_end_date",
+          "qualifying_required",
+          "qualifying_status",
+          "registration_id",
+          "registration_schema_version",
+          "team_rank",
+          "tournament_run",
+          "tournament_run_schema_version"
+        ]
+      }
+    ]
+  },
+  "reloaded": {
+    "hasEvent": true,
+    "hasRun": true,
+    "status": "scheduled"
+  },
+  "teamRank": 600,
+  "registration": {
+    "success": true,
+    "reasons": null,
+    "warnings": [],
+    "validation": null
+  }
+}
