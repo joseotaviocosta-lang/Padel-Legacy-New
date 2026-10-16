@@ -98,6 +98,7 @@ try {
   let week11Snapshot = null;
   let week52Snapshot = null;
   let week1SeedRow = null;
+  const weekly = [];
 
   for (let week = 1; week <= TOTAL_WEEKS; week += 1) {
     // Injeta resultado semanal pros fillers (mantém o "chão" da população
@@ -157,6 +158,22 @@ try {
         falling: await localGame.entities.AthleteProfile.get('falling-tier'),
       };
     }
+    // CLOUD-2 (C): série semanal completa para checar a regra vigente
+    // (âncora com decaimento linear — 5.26-C) semana a semana.
+    {
+      const top10 = await localGame.entities.AthleteProfile.get('top10-inactive');
+      const falling = await localGame.entities.AthleteProfile.get('falling-tier');
+      const filler = await localGame.entities.AthleteProfile.get('filler-0');
+      const anchorRows = (await localGame.entities.AthleteRankingResult.filter({ athlete_id: 'top10-inactive' })) || [];
+      weekly.push({
+        week, date: currentDate,
+        top10Points: top10.world_ranking_points, top10Position: top10.ranking_position,
+        fallingPoints: falling.world_ranking_points, fallingCategory: falling.circuit_category,
+        fillerPoints: filler.world_ranking_points,
+        anchorRows: anchorRows.length,
+        anchorExpired: anchorRows.length ? isResultExpired(anchorRows[0], currentDate) : null,
+      });
+    }
 
     previousDate = currentDate;
     currentDate = addDays(currentDate, 7);
@@ -169,10 +186,36 @@ try {
   gate('(migração) âncora é distinguível como não-torneio (tournament_id null)', week1SeedRow?.tournament_id === null);
   gate('(migração) âncora tem a flag explícita is_legacy_seed', week1SeedRow?.is_legacy_seed === true);
 
-  // ── 4C.1 (crítico): top 10 inativo NÃO perde posição antes da janela
-  // fechar (semana 52, 364 dias — a âncora ainda não expirou) ─────────────
-  gate('(4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (sem decaimento antecipado)', week52Snapshot.top10.world_ranking_points === 6000);
-  gate('(4C.1) na semana 52, o inativo ainda está no top 20 (ninguém ultrapassou 6000 ainda)', week52Snapshot.top10.ranking_position <= 20);
+  // ── 4C.1 (crítico) — regra VIGENTE desde a 5.26-C ────────────────────
+  // A premissa original ("valor cheio até a semana 52") foi revogada na
+  // 5.26-C (reports/progression-clean-526c, §1): ~1.000 âncoras com a mesma
+  // data expiravam juntas em 03/01/2027 (−64% dos pontos do mundo num dia).
+  // A âncora representa resultados espalhados pelas 52 semanas anteriores e
+  // passou a valer pontos × (364 − idade) / 364. Resultados reais, best-22 e
+  // a janela de 364 dias (expira quando idade > 364) não mudaram.
+  // O valor esperado é calculado AQUI, de forma independente da função do
+  // jogo, para o teste continuar sendo um oráculo da regra.
+  const ANCHOR = 6000;
+  const WINDOW = 364;
+  const expectedAnchor = (points, ageDays) => Math.round(points * Math.max(0, Math.min(1, (WINDOW - ageDays) / WINDOW)));
+  const at = (week) => weekly.find((row) => row.week === week);
+  const ageAt = (week) => 7 * (week - 1);
+  gate('(4C.1 — migração) semana 1: âncora vale o total cheio (sem reset visível no 1º toque)', at(1).top10Points === ANCHOR);
+  const decayMismatches = weekly.filter((row) => row.week <= 53 && Math.abs(row.top10Points - expectedAnchor(ANCHOR, ageAt(row.week))) > 1);
+  gate('(4C.1 — 5.26-C) semanas 1–53: o inativo vale pontos × (364 − idade)/364 (±1 de arredondamento)', decayMismatches.length === 0);
+  gate('(4C.1) decaimento é gradual e monotônico (nunca sobe sem resultado novo, nenhum degrau > 1/52 do total)', weekly.slice(1).every((row, i) => row.top10Points <= weekly[i].top10Points && weekly[i].top10Points - row.top10Points <= Math.ceil(ANCHOR / 52) + 1));
+  gate('(4C.1) semana 26 (idade 175 d): ~metade do total', Math.abs(at(26).top10Points - expectedAnchor(ANCHOR, 175)) <= 1);
+  // Bordas da janela.
+  gate('(4C.1 — borda) semana 52 (idade 357 d): âncora ainda NÃO expirou e vale > 0', at(52).anchorExpired === false && at(52).top10Points > 0 && at(52).top10Points === expectedAnchor(ANCHOR, 357));
+  gate('(4C.1 — borda) semana 53 (idade 364 d): âncora ainda não expirou (expira com idade > 364) e já vale 0', at(53).anchorExpired === false && at(53).top10Points === 0);
+  gate('(4C.1 — borda) semana 54 (idade 371 d): âncora expirada e podada', at(54).anchorRows === 0 && at(54).top10Points === 0);
+  // Ativo × inativo.
+  const firstOvertaken = weekly.find((row) => row.top10Points < row.fillerPoints);
+  gate('(4C.1 — ativo × inativo) os ativos ultrapassam o inativo ANTES do fim da janela (gradual, não num único dia)', Boolean(firstOvertaken) && firstOvertaken.week < 52);
+  gate('(4C.1) semana 52: o inativo já saiu do top 20 (ativos à frente)', week52Snapshot.top10.ranking_position > 20);
+  // Virada de temporada (2026-12-28 → 2027-01-04): o World não tem corte anual.
+  gate('(virada de temporada) World dos ativos não zera na virada do ano (semana 53 → 54 iguais)', at(53).fillerPoints === at(54).fillerPoints && at(54).fillerPoints > 0);
+  gate('(virada de temporada) inativo não "volta" nem cai em degrau na virada (0 → 0)', at(53).top10Points === 0 && at(54).top10Points === 0);
 
   const afterWindow = await localGame.entities.AthleteProfile.get('top10-inactive');
   const fillerSample = await localGame.entities.AthleteProfile.get('filler-0');
@@ -193,7 +236,11 @@ try {
   // cada um move a categoria por um motivo diferente).
   gate('(4C.3 — CRÍTICO, sentido ASCENDENTE) rising-tier cruzou pra Masters depois de pontuar (elegibilidade sobe)', week11Snapshot?.circuit_category === 'Masters');
 
-  gate('(4C.3 — antes) falling-tier ainda em Masters na semana 52 (âncora de 2600 não expirou)', week52Snapshot.falling.circuit_category === 'Masters');
+  // 4C.3 descendente sob a regra vigente: começa em Masters (2600 ≥ 2500) e
+  // sai do Masters assim que a âncora decai abaixo do corte — antes de expirar.
+  gate('(4C.3 — antes) falling-tier começa em Masters (âncora 2600, acima do corte)', at(1).fallingCategory === 'Masters');
+  const fallingLeft = weekly.find((row) => row.fallingCategory !== 'Masters');
+  gate('(4C.3 — 5.26-C) falling-tier sai do Masters quando a âncora decai abaixo do corte, antes de expirar', Boolean(fallingLeft) && fallingLeft.week < 53 && fallingLeft.fallingPoints < 2500);
   const fallingFinal = await localGame.entities.AthleteProfile.get('falling-tier');
   console.log(`[4C.3 descendente] falling-tier.world_ranking_points=${fallingFinal.world_ranking_points}, circuit_category=${fallingFinal.circuit_category}`);
   gate('(4C.3 — CRÍTICO, sentido DESCENDENTE) falling-tier SAIU do Masters depois da âncora expirar (elegibilidade desce, sem ranking fantasma)', fallingFinal.circuit_category !== 'Masters' && fallingFinal.world_ranking_points === 0);
@@ -205,7 +252,7 @@ try {
   gate('(4C.4) cada resultado tem uma data e é possível calcular se/quando expira (isResultExpired é uma função pura, consultável a qualquer momento)', withExpiry.every((row) => typeof row.date === 'string' && typeof row.expired === 'boolean'));
   console.log('[4C.4 — item de UI pra depois, não implementado agora] dado já existe: cada linha de AthleteRankingResult tem `date`; "semanas até expirar" = 52 - Math.floor(careerDaysBetween(row.date, hoje)/7). Suficiente pra uma tela futura de "resultados a defender".');
 
-  console.log(`\n${gates} gates executados, todos PASS — Fase 4, item 4C: topo não é mais vitalício (4C.1), elegibilidade de tier é móvel nos dois sentidos (4C.3), dado de defesa de pontos existe (4C.4), migração sem reset visível (item 3).`);
+  console.log(`\n${gates} gates executados, todos PASS — Fase 4, item 4C (regra vigente 5.26-C): âncora decai linearmente e expira em 364 dias (4C.1), elegibilidade de tier é móvel nos dois sentidos (4C.3), dado de defesa de pontos existe (4C.4), migração sem reset visível (item 3).`);
 } finally {
   await server.close();
 }
