@@ -36,7 +36,10 @@ const pkg = JSON.parse(read('package.json'));
 // mesmos casos — este era o terceiro lugar que sobrava.
 check('buildPriorityActions voltou a incluir o item "tournament" do briefing diário (duplica NextEventCard)', /if \(priority\.id === 'tournament'\) continue;/.test(careerHub));
 check('CareerMomentStrip voltou a mostrar o tipo "tournament" (regressão do Polish 2)', careerHub.includes("!['tournament', 'injury'].includes(careerMoment.type)"));
-check('NextEventCard (fonte única do "próximo torneio" informativo) foi removido da Home', careerHub.includes('function NextEventCard') && /<NextEventCard event=\{nextEvent\}(?: embedded)? \/>/.test(careerHub));
+// CLOUD-2 (substituído): a fonte única do "próximo torneio" da Home passou a ser a autoridade
+// selectNextRelevantEvent (nextEventAuthority.js, hotfix 5.30-B), a mesma do header e de
+// Torneios — cobertura detalhada em test-next-event-authority-consistency-v530b.
+check('Home deixou de usar a autoridade única do próximo evento (selectNextRelevantEvent)', careerHub.includes("import { selectNextRelevantEvent } from '@/lib/nextEventAuthority.js'") && /selectNextRelevantEvent\(\{ tournaments: upcomingTournaments/.test(careerHub));
 // Evento acionável continua podendo aparecer — via decisionCenter, id diferente de "tournament".
 check('decisionCenter perdeu a decisão acionável de torneio próximo (ex.: preparar torneio)', /id: `tournament-\$\{nextTournament\.id/.test(decisionCenter) && decisionCenter.includes("actionLabel: 'Preparar torneio'"));
 // Nenhuma regra de torneio (dado/lógica) foi removida — só a apresentação.
@@ -72,7 +75,9 @@ check('botão de Carreiras não é mais acessado com 1 clique', /onClick=\{onOpe
 // não se aplica mais por design — substituída por uma equivalente para o
 // novo atalho.
 check('botão do Centro de Treinamento não é mais acessado com 1 clique', /to=\{APP_ROUTES\.TRAINING_CENTER\}/.test(floatingRail) && !floatingRail.includes('DockRow'));
-check('BETA não é mais acessado com 1 clique (voltou a exigir abrir um menu antes)', floatingRail.includes('<BetaTools compact />'));
+// CLOUD-2 (substituído): Playthrough 5.25 (decisão do playtest) — no celular o BETA saiu da superfície
+// flutuante e abre pelo item "Beta testers" do menu ☰; no desktop continua a 1 clique.
+check('BETA não é mais acessível (1 clique no desktop; item "Beta testers" do menu ☰ no celular)', /<BetaTools compact open=\{betaOpen\} onOpenChange=\{onBetaOpenChange\} triggerClassName="hidden md:inline-flex" \/>/.test(floatingRail) && /aria-label="Beta testers"/.test(read('src/components/AppLayout.jsx')) && /setBetaOpen\(true\)/.test(read('src/components/AppLayout.jsx')));
 check('botão "Abrir guia da carreira" sem aria-label', onboardingGuide.includes('aria-label="Abrir guia da carreira"'));
 check('botão "Gerenciar carreiras" sem aria-label', floatingRail.includes('aria-label="Gerenciar carreiras"'));
 check('Guia contextual voltou a ser acoplado ao FloatingUtilityRail', !exists('src/components/career/CareerAssistant.jsx') && !floatingRail.includes('<OnboardingGuide') && !floatingRail.includes("from '@/components/onboarding/OnboardingGuide"));
@@ -86,7 +91,8 @@ check('algum botão do rail perdeu pointer-events-auto', (floatingRail.match(/po
 
 // ── TREINO (freeze) ──────────────────────────────────────────────────────
 
-check('TrainingActivityCard parou de mostrar atributo atual + ganho previsto', /profile\?\.\[attribute\]/.test(activityCard) && activityCard.includes('gain.toFixed(2)'));
+// CLOUD-2 (substituído): a formatação do ganho passou a formatAttributeGain(gain); o card continua mostrando atributo atual + ganho.
+check('TrainingActivityCard parou de mostrar atributo atual + ganho previsto', /profile\?\.\[attribute\]/.test(activityCard) && activityCard.includes('formatAttributeGain(gain)'));
 check('linha compacta duração/fadiga/energia foi removida do card de treino', activityCard.includes('activity.duration') && activityCard.includes('fadiga') && activityCard.includes('energia'));
 for (const fn of ['getPredictedGain', 'distributeTrainingGain', 'previewTraining']) {
   check(`trainingSystemV2.js não exporta mais ${fn} (fórmula tocada)`, trainingSystemV2.includes(`export function ${fn}`));

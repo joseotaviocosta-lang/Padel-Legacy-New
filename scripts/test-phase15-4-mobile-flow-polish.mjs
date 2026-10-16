@@ -57,14 +57,18 @@ try {
   gate('Home não mantém o resolver legado getNextStep', !/function getNextStep\s*\(/.test(sources.home));
   gate('Home não renderiza o card duplicado NextEventCard', !/function NextEventCard|<NextEventCard/.test(sources.home));
   gate('Home não renderiza ActiveTournamentBanner concorrente', !/function ActiveTournamentBanner|<ActiveTournamentBanner/.test(sources.home));
-  gate('Home preserva Próximo objetivo', sources.home.includes('title="Próximo objetivo"'));
-  gate('Home preserva ranking no HUD do atleta', sources.home.includes("label: 'ranking'"));
-  gate('Home possui uma única instância da ação dominante', (sources.home.match(/PriorityActionsPanel step=\{heroStep\}/g) || []).length === 1);
+  // CLOUD-2 (substituído — Home 5.30): o "Próximo objetivo" vive no HomeStatusCard (objetivo de ranking).
+  gate('Home preserva Próximo objetivo (objetivo de ranking no cartão de status)', /aria-label=\{`Objetivo de ranking: \$\{rankingGoal\.title\}`\}/.test(sources.home) && sources.home.includes('Objetivo em definição'));
+  // CLOUD-2 (substituído — Home 5.30): desde a 5.24 o ranking vive nos atalhos do header (HeaderRankShortcuts), em todas as telas.
+  gate('Home preserva ranking visível (atalhos de ranking no header, desktop e mobile)', (sources.layout.match(/<HeaderRankShortcuts/g) || []).length >= 2);
+  // CLOUD-2 (substituído — Home 5.30): o hero é HomeNextCommitment (única ação dominante).
+  gate('Home possui uma única instância da ação dominante', (sources.home.match(/step=\{heroStep\}/g) || []).length === 1 && (sources.home.match(/<HomeNextCommitment /g) || []).length === 1);
   gate('Home removeu os CommandLinks Treinar/Competir/Agenda do hero', !/function CommandLink|<CommandLink/.test(sources.home));
   gate('Ações rápidas não repetem Calendário', !/QuickActionsBar[\s\S]*>Calendário</.test(sources.home));
   gate('Ações rápidas não repetem Torneios', !/QuickActionsBar[\s\S]*>Torneios</.test(sources.home));
   gate('Home usa gaps compactos no bloco principal', sources.home.includes('grid gap-3 xl:grid-cols-12'));
-  gate('Painel dominante usa padding compacto', sources.home.includes('<Surface variant="elevated" padding="compact">'));
+  // CLOUD-2 (substituído — Home 5.30): painel dominante = HomeNextCommitment, compacto (p-4, sem Surface elevated grande).
+  gate('Painel dominante usa padding compacto', sources.home.includes('bg-card/70 p-4 shadow-sm" data-home-next-commitment'));
 
   const baseProfile = { id: 'phase15-4', partner_id: 'partner', energy: 80, practice_matches_today: 1, trainings_today: 0 };
   gate('Ação normal distinta de torneio futuro é treino', getCareerNextAction(baseProfile).id === 'training');
@@ -172,9 +176,12 @@ try {
   gate('Source da entrevista é determinística', identity.sourceId === 'match:match-qa');
   gate('Mensagem da entrevista é determinística', postMatchInterviewMessageId('p1', 'match-qa') === postMatchInterviewMessageId('p1', 'match-qa'));
   gate('Vitória não terminal mantém CTA Dar entrevista', sources.tournamentModal.includes('phase === \'round_result\'') && sources.tournamentModal.includes('onClick={openPostMatchInterview}'));
-  gate('Derrota terminal recebe onInterview', /phase === 'eliminated'[\s\S]{0,420}onInterview=\{openPostMatchInterview\}/.test(sources.tournamentModal));
-  gate('Título recebe onInterview equivalente', /phase === 'champion'[\s\S]{0,420}onInterview=\{openPostMatchInterview\}/.test(sources.tournamentModal));
-  gate('FinalState exibe Dar entrevista', /function FinalState[\s\S]*Dar entrevista/.test(sources.tournamentModal));
+  // CLOUD-2 (substituído): o FinalState com onInterview saiu; a tela de campeão/eliminado
+  // mostra "Dar entrevista" como botão opcional (postMatchInterviewActionable) nos dois casos.
+  const finalResultBlock = (sources.tournamentModal.match(/\(phase === 'champion' \|\| phase === 'eliminated'\) && lastResult \? \([\s\S]*?\) : phase ===/) || [''])[0];
+  gate('Derrota terminal oferece a entrevista (openPostMatchInterview)', /postMatchInterviewActionable && <button onClick=\{openPostMatchInterview\}/.test(finalResultBlock));
+  gate('Título oferece a entrevista equivalente (mesmo bloco de campeão/eliminado)', finalResultBlock.startsWith("(phase === 'champion' || phase === 'eliminated')"));
+  gate('Tela final exibe Dar entrevista', /Dar entrevista<\/button>/.test(finalResultBlock));
   gate('Derrota mostra Eliminado do torneio', sources.tournamentModal.includes("title={champion ? 'CAMPEÃO!' : 'Eliminado do torneio'}"));
   gate('Fluxo terminal retorna à Home após entrevista', sources.tournamentModal.includes(': APP_ROUTES.HOME'));
   gate('Fluxo de vitória intermediária retorna ao torneio', sources.tournamentModal.includes('buildTournamentReturnRoute(tournament.id)'));
