@@ -50,6 +50,7 @@
     "test:tournament-flow-rc": "node scripts/test-tournament-flow-rc.mjs",
     "test:partner-offers": "node scripts/test-partner-offers-v2.mjs",
     "test:partner-day1-gate": "node scripts/test-partner-day1-gate.mjs",
+    "test:partner-search-side-3b": "node scripts/test-partner-search-undefined-side-3b.mjs",
     "test:tournament-draw-name-collision": "node scripts/test-tournament-draw-name-collision.mjs",
     "test:tournament-confirm-no-skip": "node scripts/test-tournament-confirm-no-skip.mjs",
     "test:tournament-result-authority": "node scripts/test-tournament-result-authority.mjs",

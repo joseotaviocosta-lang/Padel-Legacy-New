@@ -9,6 +9,10 @@ import { calculatePartnershipInterest } from '@/players/teamCompatibility.js';
 import { localGame } from '@/api/localGameClient.js';
 import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
 
+// Fase 3B — a busca lista candidatos mesmo sem `court_side`; convidar segue
+// exigindo lado definido (regra anterior preservada, agora com orientação).
+const SEARCH_OPTIONS = Object.freeze({ allowUndefinedSide: true });
+
 export default function PartnerSearch({ profile, relationships, onInvite, onCompare }) {
   const [search, setSearch] = useState('');
   const [sort, setSort] = useState('compat');
@@ -33,11 +37,12 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
   const [retiredIds, setRetiredIds] = useState(() => new Set());
   const canChange = canChangePartner(profile);
   const daysLocked = daysUntilPartnerUnlock(profile);
+  const hasSide = Boolean(profile?.court_side);
 
   useEffect(() => {
     let active = true;
     if (!profile) { setRealCandidates([]); return undefined; }
-    getRealPartnerCandidates(profile).then((rows) => { if (active) setRealCandidates(rows || []); }).catch(() => { if (active) setRealCandidates([]); });
+    getRealPartnerCandidates(profile, SEARCH_OPTIONS).then((rows) => { if (active) setRealCandidates(rows || []); }).catch(() => { if (active) setRealCandidates([]); });
     listRetiredPartnerOriginIds().then((ids) => { if (active) setRetiredIds(ids); }).catch(() => {});
     return () => { active = false; };
   }, [profile]);
@@ -54,7 +59,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
       const compat = computeCompatibility(profile, candidate, relationships);
       return { bot: candidate, compat, interest: calculatePartnershipInterest(profile, candidate, compat) };
     };
-    return [...excludeRetiredPartnerTemplates(getAvailablePartners(profile), retiredIds), ...realCandidates].map(scored);
+    return [...excludeRetiredPartnerTemplates(getAvailablePartners(profile, SEARCH_OPTIONS), retiredIds), ...realCandidates].map(scored);
   }, [profile, relationships, realCandidates, retiredIds]);
 
   const available = useMemo(() => allCandidates.filter(({ interest }) => interest.available), [allCandidates]);
@@ -93,7 +98,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
   // barato (4 candidatos, mesmo teto de antes), evita reimplementar a
   // checagem de nível em getLockedPartners só pra devolver o motivo.
   const locked = useMemo(() => {
-    const lockedBots = getLockedPartners(profile).slice(0, 4).map(bot => {
+    const lockedBots = getLockedPartners(profile, SEARCH_OPTIONS).slice(0, 4).map(bot => {
       const interest = calculatePartnershipInterest(profile, bot);
       return { bot, interestGated: !interest.available, interest };
     });
@@ -142,6 +147,15 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
         </label>
       </div>
 
+      {!hasSide && (
+        <div className="glass flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-2.5" data-partner-search-side-notice>
+          <X className="h-4 w-4 shrink-0 text-amber-400" />
+          <p className="text-xs text-muted-foreground">
+            Você ainda não definiu seu lado em quadra. Pode ver os candidatos, mas precisa escolher direita ou esquerda (missão &quot;Escolha seu lado&quot;) para convidar.
+          </p>
+        </div>
+      )}
+
       {!canChange && (
         <div className="glass flex items-center gap-2 rounded-xl border border-amber-500/30 bg-amber-500/5 p-2.5">
           <X className="h-4 w-4 shrink-0 text-amber-400" />
@@ -187,7 +201,7 @@ export default function PartnerSearch({ profile, relationships, onInvite, onComp
                       <span className="w-8 text-right text-[10px] font-bold tabular-nums">{val}</span>
                     </div>
                   ))}
-                  {canChange && (
+                  {canChange && hasSide && (
                     <Button level="primary" size="touch" onClick={() => onInvite(bot)} className="mt-1 w-full">
                       <Users className="h-3.5 w-3.5" /> Convidar {bot.name.split(' ')[0]}
                     </Button>

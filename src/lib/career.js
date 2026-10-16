@@ -324,25 +324,29 @@ function isInterestGated(profile, candidate) {
   return !calculatePartnershipInterest(profile, candidate).available;
 }
 
-export function getAvailablePartners(profile) {
+// Fase 3B — `court_side` indefinido (carreira recém-criada) zerava a busca
+// manual. O padrão continua `[]` (ofertas automáticas, onboarding e mercado
+// seguem dependendo do lado); só a busca manual (PartnerSearch) passa
+// `allowUndefinedSide` para listar candidatos SEM atribuir lado ao jogador.
+export function getAvailablePartners(profile, { allowUndefinedSide = false } = {}) {
   const playerLevelIdx = LEVELS.indexOf(levelForXp(profile?.xp || 0));
   const availableDiffs = BOT_DIFFICULTIES.slice(0, playerLevelIdx + 1);
   let pool = [];
   availableDiffs.forEach(diff => {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
-  if (!profile?.court_side) return [];
+  if (!allowUndefinedSide && !profile?.court_side) return [];
   return pool.filter(candidate => !isInterestGated(profile, candidate));
 }
 
-export function getLockedPartners(profile) {
+export function getLockedPartners(profile, { allowUndefinedSide = false } = {}) {
   const playerLevelIdx = LEVELS.indexOf(levelForXp(profile?.xp || 0));
   const lockedDiffs = BOT_DIFFICULTIES.slice(playerLevelIdx + 1);
   let pool = [];
   lockedDiffs.forEach(diff => {
     pool = pool.concat(BOTS_BY_DIFFICULTY[diff.id] || []);
   });
-  if (!profile?.court_side) return [];
+  if (!allowUndefinedSide && !profile?.court_side) return [];
   const byLevel = BOT_DIFFICULTIES.slice(0, playerLevelIdx + 1).flatMap(diff => BOTS_BY_DIFFICULTY[diff.id] || []);
   const byInterest = byLevel.filter(candidate => isInterestGated(profile, candidate));
   return [...pool, ...byInterest];
@@ -372,8 +376,8 @@ function adaptRealAthleteForPartnerSearch(real) {
   };
 }
 
-export async function getRealPartnerCandidates(profile) {
-  if (!profile?.court_side) return [];
+export async function getRealPartnerCandidates(profile, { allowUndefinedSide = false } = {}) {
+  if (!allowUndefinedSide && !profile?.court_side) return [];
   const rows = await localGame.entities.AthleteProfile.filter({ market_status: 'livre', is_real: true }).catch(() => []);
   // 5.26-C, Bloco D — aposentado não volta como candidato (mesma regra de processPartnerDay).
   return (rows || []).filter((row) => !isRetiredAthlete(row)).map(adaptRealAthleteForPartnerSearch);
