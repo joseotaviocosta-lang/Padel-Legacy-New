@@ -61,6 +61,15 @@ try {
     await localGame.entities.Match.create({ id: `old-match-${i}`, profile_id: profile.id, competition_type: 'tournament', is_official: true, is_tournament: true, result: i < 6 ? 'vitória' : 'derrota' });
   }
   await localGame.entities.FinancialTransaction.create({ id: 'old-ft-1', profile_id: profile.id, type: 'income', category: 'torneio', amount: 60000, date: '2027-01-01' });
+  // CLOUD-2: linha de conquista de um save PRÉ-Fase-12, explícita na fixture.
+  // Antes o teste usava a linha de demonstração do seed
+  // ('player-achievement-001'), que o build 9002 deixou de semear
+  // (PlayerAchievement em NEVER_SEED_WITH_DEMO_DATA, achado 4 do playtest).
+  // Formato de antes da Fase 12: sem `reconciled`, desbloqueada há tempos.
+  const LEGACY_ROW = { id: 'legacy-player-achievement-1', profile_id: profile.id, achievement_id: 'achv-primeiro-treino', unlocked_date: '2026-02-10', career_date: '2026-02-10', is_new: false, progress: 1 };
+  await localGame.entities.PlayerAchievement.create(LEGACY_ROW);
+  const legacyBefore = (await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id })).find((row) => row.id === LEGACY_ROW.id);
+  gate('Fixture: linha legada pré-Fase-12 presente e sem o campo reconciled', Boolean(legacyBefore) && legacyBefore.reconciled === undefined);
 
   gate('Save antigo simulado não tem achievements_v2_reconciled (mesmo estado de um save real pré-Fase 12)', !profile.achievements_v2_reconciled);
 
@@ -79,23 +88,20 @@ try {
   gate('ZERO recompensa retroativa: xp do save antigo inalterado', profile.xp === beforeXp);
 
   const allRows = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id });
-  // localSeed.js semeia uma linha PlayerAchievement legada
-  // ('player-achievement-001', achv-primeiro-treino) sem o campo
-  // `reconciled` — exatamente o tipo de dado pré-Fase-12 que este teste
-  // simula. Ela é remapeada para o profile_id real da carreira nova (ver
-  // CareerInitialDataService.js:30), então aparece em `allRows` mas não
-  // foi criada por esta chamada de sync — as garantias de reconciled/is_new
-  // valem só para as linhas que ESTA sincronização de fato produziu.
+  // As garantias de reconciled/is_new valem para as linhas que ESTA
+  // sincronização produziu; a linha legada da fixture é verificada à parte.
   const unlockedIds = new Set(firstSync.unlocked.map((a) => a.id));
   const rowsFromThisSync = allRows.filter((row) => unlockedIds.has(row.achievement_id));
   gate('Toda linha NOVA criada por esta reconciliação está marcada reconciled:true', rowsFromThisSync.length === unlockedIds.size && rowsFromThisSync.every((row) => row.reconciled === true));
   gate('Toda linha NOVA criada por esta reconciliação está marcada is_new:false (não gera notificação)', rowsFromThisSync.every((row) => row.is_new === false));
 
-  // A própria linha legada do seed (sem campo `reconciled`, de antes desta
-  // fase existir) prova que o motor tolera dado pré-Fase-12 sem quebrar e
-  // sem duplicar: ela continua existindo, intacta, e não foi recriada.
-  const legacyRow = allRows.find((row) => row.id === 'player-achievement-001');
-  gate('Linha legada do seed (pré-Fase-12, sem campo reconciled) sobrevive intacta, sem ser duplicada ou revogada', legacyRow && legacyRow.reconciled === undefined);
+  // A linha legada (pré-Fase-12, sem `reconciled`) prova que o motor tolera
+  // dado antigo: continua existindo, intacta, não é recriada nem revogada,
+  // e o desbloqueio já provado não paga de novo.
+  const legacyRow = allRows.find((row) => row.id === LEGACY_ROW.id);
+  gate('Linha legada pré-Fase-12 sobrevive intacta (mesmos campos, sem reconciled)', legacyRow && legacyRow.reconciled === undefined && legacyRow.achievement_id === LEGACY_ROW.achievement_id && legacyRow.unlocked_date === LEGACY_ROW.unlocked_date && legacyRow.is_new === false);
+  gate('Conquista já desbloqueada no save antigo NÃO é desbloqueada de novo pela reconciliação', !firstSync.unlocked.some((a) => a.id === LEGACY_ROW.achievement_id));
+  gate('Conquista legada não é duplicada (uma linha só para achv-primeiro-treino)', allRows.filter((row) => row.achievement_id === LEGACY_ROW.achievement_id).length === 1);
 
   // Marca o perfil como reconciliado — mesmo passo que AchievementsPanel.jsx faz.
   profile = await localGame.entities.PlayerProfile.update(profile.id, { achievements_v2_reconciled: true });
@@ -149,6 +155,14 @@ try {
   const postFase13Rows = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id });
   gate('Fase 13: nenhuma linha pré-existente foi duplicada (só a nova de Top 250 foi adicionada)', postFase13Rows.length === preFase13Count + 1);
   gate('Fase 13: reprocessar o mesmo estado de novo não concede nada a mais (idempotência mantida com o catálogo expandido)', (await syncPlayerAchievements(profile, improvedRankContext, { localGame, reconciliation: false })).unlocked.length === 0);
+
+  // CLOUD-2: preservação após save/reload real (nova leitura do arquivo).
+  const activeCareer = await activeCareerAdapter.getActiveCareer();
+  const reloadedCareer = await careerManager.loadCareer(activeCareer.career_id);
+  const persistedRows = (reloadedCareer.entities.PlayerAchievement || []).filter((row) => row.profile_id === profile.id);
+  gate('Save/reload: todas as conquistas (legada + reconciliadas + novas) persistem', persistedRows.length === postFase13Rows.length);
+  gate('Save/reload: linha legada pré-Fase-12 persiste intacta', persistedRows.some((row) => row.id === LEGACY_ROW.id && row.reconciled === undefined && row.unlocked_date === LEGACY_ROW.unlocked_date));
+  gate('Save/reload: nenhuma conquista duplicada no arquivo', new Set(persistedRows.map((row) => row.achievement_id)).size === persistedRows.length);
 
   console.log(`\n${gates} gates executados, todos PASS — Reconciliação de save antigo (desbloqueio correto, zero recompensa retroativa, idempotente, progresso normal depois; catálogo expandido da Fase 13 não re-concede nem duplica o que já existia).`);
 } finally {
