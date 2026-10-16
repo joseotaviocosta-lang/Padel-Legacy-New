@@ -22,6 +22,42 @@ function makeId(prefix = 'entity') {
   return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
+// CLOUD-2 (B) — colisão de id GERADO. Só ids do mesmo milissegundo podem
+// colidir, e o laço de bulkCreate é síncrono: com uma fonte aleatória fixa
+// (testes) dois itens saíam iguais e a transação inteira do dia era
+// desfeita; com Math.random real a chance é pequena, mas não zero.
+// A 1ª tentativa é SEMPRE o makeId de antes (mesmo formato, mesma quantidade
+// de chamadas a Math.random), então ids sem colisão, o harness determinístico
+// e o hash de selectPair ficam idênticos. Só na colisão o sufixo é derivado
+// do próprio id + um contador sequencial do processo (FNV-1a, sem
+// Math.random): mesmo formato `<prefixo>-<ms>-<6 base36>`, determinístico
+// para a mesma sequência de operações e, como o contador nunca volta,
+// progride mesmo com fonte aleatória E relógio fixos. O limite por chamada
+// garante que nunca vira laço infinito.
+const MAX_ID_COLLISION_ATTEMPTS = 64;
+let idCollisionSequence = 0;
+/** Só para testes: reinicia o contador para comparar duas execuções. */
+export function resetIdCollisionSequence() { idCollisionSequence = 0; }
+function fnv1aSuffix(text) {
+  let hash = 0x811c9dc5;
+  for (let index = 0; index < text.length; index += 1) {
+    hash ^= text.charCodeAt(index);
+    hash = Math.imul(hash, 0x01000193) >>> 0;
+  }
+  return hash.toString(36).padStart(6, '0').slice(-6);
+}
+export function makeUniqueId(prefix, isTaken) {
+  const base = makeId(prefix);
+  if (!isTaken(base)) return base;
+  const stem = base.slice(0, base.lastIndexOf('-') + 1);
+  for (let attempt = 1; attempt <= MAX_ID_COLLISION_ATTEMPTS; attempt += 1) {
+    idCollisionSequence += 1;
+    const candidate = `${stem}${fnv1aSuffix(`${base}#${idCollisionSequence}`)}`;
+    if (!isTaken(candidate)) return candidate;
+  }
+  throw new Error(`Não foi possível gerar id único para ${prefix} após ${MAX_ID_COLLISION_ATTEMPTS} tentativas.`);
+}
+
 // Contador de gravações completas do save (uma por chamada a
 // mutateActiveCareer). Usado por benchmarks/instrumentação de performance
 // para medir amplificação de escrita; sem custo em produção além de um
@@ -235,7 +271,7 @@ export class CareerEntityRepository {
     return this.withCareer(async (career) => {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const timestamp = new Date().toISOString();
-      const record = { ...clone(data), id: data.id || makeId(entityName.toLowerCase()), created_date: data.created_date || timestamp, updated_date: timestamp };
+      const record = { ...clone(data), id: data.id || makeUniqueId(entityName.toLowerCase(), (id) => rows.some((row) => row?.id === id)), created_date: data.created_date || timestamp, updated_date: timestamp };
       if (rows.some((row) => row?.id === record.id)) {
         throw new Error(`${entityName} já existe com o id: ${record.id}`);
       }
@@ -295,7 +331,7 @@ export class CareerEntityRepository {
       const timestamp = new Date().toISOString();
       const created = [];
       for (const item of data) {
-        const record = { ...clone(item), id: item.id || makeId(entityName.toLowerCase()), created_date: item.created_date || timestamp, updated_date: timestamp };
+        const record = { ...clone(item), id: item.id || makeUniqueId(entityName.toLowerCase(), (id) => knownIds.has(id)), created_date: item.created_date || timestamp, updated_date: timestamp };
         if (knownIds.has(record.id)) throw new Error(`${entityName} já existe com o id: ${record.id}`);
         knownIds.add(record.id);
         rows.push(record);
@@ -372,7 +408,7 @@ export class CareerEntityRepository {
         const entityName = operation.entityName;
         if (!entityName) throw new Error('entityName obrigatório em operação batch.');
         const rows = this.ensureCollection(entityName, career, { persist: true });
-        const id = operation.id || operation.data?.id || makeId(entityName.toLowerCase());
+        const id = operation.id || operation.data?.id || makeUniqueId(entityName.toLowerCase(), (candidate) => rows.some((row) => row?.id === candidate));
         const index = rows.findIndex((row) => row?.id === id);
         if (operation.type === 'delete') {
           if (index >= 0) rows.splice(index, 1);

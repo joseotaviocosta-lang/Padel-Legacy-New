@@ -131,6 +131,11 @@ try {
   Math.random = () => 0.99;
   const trainingActivity = trainingModule.TRAINING_ACTIVITIES.find((item) => item.id === 'court-groundstrokes');
   const trainingCareer = await createCareer('Training Pipeline');
+  // CLOUD-2 (B): com Math.random fixo, ids gerados no mesmo ms colidiam
+  // (`worldevent-<ms>-zn1fu8`) e desfaziam a transação inteira do dia.
+  const collisionProbe = await localGame.entities.WorldEvent.bulkCreate([{ event_type: 'qa-id-probe', title: 'a' }, { event_type: 'qa-id-probe', title: 'b' }]);
+  gate('ids gerados continuam únicos com Math.random fixo (sem colisão no mesmo ms)', collisionProbe.length === 2 && collisionProbe[0].id !== collisionProbe[1].id);
+  gate('ids gerados mantêm o formato <prefixo>-<ms>-<6 base36>', collisionProbe.every((row) => /^worldevent-\d+-[0-9a-z]{6}$/.test(row.id)));
   let trainingProfile = trainingCareer.profile;
   const initialTraining = { ...trainingProfile };
   const firstCost = getTrainingCost(trainingProfile, 'moderado');
