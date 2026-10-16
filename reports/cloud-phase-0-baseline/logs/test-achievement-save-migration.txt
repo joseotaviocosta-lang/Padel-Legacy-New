@@ -1,0 +1,18 @@
+PASS — Save antigo simulado não tem achievements_v2_reconciled (mesmo estado de um save real pré-Fase 12)
+PASS — Reconciliação desbloqueia múltiplas conquistas já provadas pelo estado existente
+PASS — Reconciliação desbloqueia "Bicampeão" (win_tournament≥2, já provado por tournaments_won=8)
+PASS — Reconciliação desbloqueia partidas oficiais reais (play_official_match/win_official_match)
+PASS — ZERO recompensa retroativa: coins do save antigo inalterados
+PASS — ZERO recompensa retroativa: xp do save antigo inalterado
+PASS — Toda linha NOVA criada por esta reconciliação está marcada reconciled:true
+PASS — Toda linha NOVA criada por esta reconciliação está marcada is_new:false (não gera notificação)
+FAIL — Linha legada do seed (pré-Fase-12, sem campo reconciled) sobrevive intacta, sem ser duplicada ou revogada
+file://<worktree>/scripts/test-achievement-save-migration.mjs:13
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: Linha legada do seed (pré-Fase-12, sem campo reconciled) sobrevive intacta, sem ser duplicada ou revogada
+    at gate (file://<worktree>/scripts/test-achievement-save-migration.mjs:13:25)
+    at file://<worktree>/scripts/test-achievement-save-migration.mjs:98:3
+
+Node.js v22.22.0

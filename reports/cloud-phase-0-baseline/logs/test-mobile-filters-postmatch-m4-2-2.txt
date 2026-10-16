@@ -1,0 +1,14 @@
+PASS — 1. Loja usa o FilterPills do design-system para a faixa de categorias (nunca padel/ui.jsx — Shop.jsx é proibido de importar de lá)
+FAIL — 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)
+file://<worktree>/scripts/test-mobile-filters-postmatch-m4-2-2.mjs:16
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)
+    at gate (file://<worktree>/scripts/test-mobile-filters-postmatch-m4-2-2.mjs:16:25)
+    at file://<worktree>/scripts/test-mobile-filters-postmatch-m4-2-2.mjs:41:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.22.0

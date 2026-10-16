@@ -1,0 +1,38 @@
+# npm run typecheck — resumo (log completo: 2201 linhas de erro, não versionado)
+   1292 error TS2339
+    298 error TS2741
+    270 error TS2739
+    158 error TS2322
+     34 error TS2362
+     32 error TS2363
+     30 error TS2353
+     24 error TS2345
+     13 error TS2307
+     12 error TS2304
+     10 error TS2554
+      9 error TS2365
+      4 error TS2559
+      3 error TS2561
+      3 error TS2367
+      2 error TS2591
+      2 error TS2349
+      1 error TS2769
+      1 error TS2740
+      1 error TS2551
+      1 error TS2305
+      1 error TS1117
+
+## por pasta
+    659 src/pages
+    635 src/components
+    562 src/lib
+    195 src/game-core
+     65 src/gameplay
+     32 src/engine
+     24 src/onboarding
+     10 src/hooks
+      7 src/players
+      6 src/careers
+      3 src/dev
+      2 src/storage
+      1 src/main.jsx

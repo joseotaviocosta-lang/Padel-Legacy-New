@@ -1,0 +1,119 @@
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] create AthleteProfile Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] população de atletas Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] população de duplas Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[Save Foundation] perfil preservado, patch ignorado Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async advanceCareerDayWork (<worktree>/src/game-core/calendarLifecycle.js:206:9)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+[Game Core] Metadados do GameState não foram salvos: Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+Error: WorldEvent já existe com o id: worldevent-1792181235338-zn1fu8
+    at withCareer.save (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:247:15)
+    at transaction.repository.mutateActiveCareer.caller.caller (<worktree>/src/gameplay/repositories/CareerEntityRepository.js:155:18)
+    at eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:247:32)
+
+Node.js v22.22.0

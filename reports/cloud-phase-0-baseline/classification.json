@@ -1,0 +1,84 @@
+{
+ "summary": {
+  "unique_tests": 368,
+  "pass": 308,
+  "fail": 60,
+  "classification_counts": {
+   "obsolete": 9,
+   "env": 15,
+   "undetermined": 3,
+   "preexisting": 33
+  },
+  "new_confirmed_regressions": []
+ },
+ "by_class": {
+  "obsolete": [
+   "test-achievement-save-migration",
+   "test-global-header-calendar-rc",
+   "test-global-overlays-audit",
+   "test-living-career-v34-5",
+   "test-living-career-v34-7",
+   "test-living-career-v34-8",
+   "test-mobile-persistence-m3-7",
+   "test-phase15-5-1-tournament-interview-consistency",
+   "test-tournament-guided-flow"
+  ],
+  "env": [
+   "test-career-pace-production",
+   "test-final-commitment-triggers-separation-v527j",
+   "test-live-match-landscape-contract-v520d",
+   "test-live-match-mobile-contract-v520d",
+   "test-mobile-rendered-complexity-v520c",
+   "test-no-new-commitment-after-exit-v527j",
+   "test-no-overlapping-partnership-v527j",
+   "test-normal-partner-strength-floor-v527g",
+   "test-normal-vs-optimizer-partner-choice-v527g",
+   "test-optimizer-no-stale-partner-v527i",
+   "test-optimizer-partner-refresh-v527i",
+   "test-partner-quality-over-time-v527h",
+   "test-partnership-state-segmentation-v527h",
+   "test-preexisting-commitment-preserved-v527j",
+   "test-settlement-after-exit-preserves-roster-v527j"
+  ],
+  "undetermined": [
+   "test-career-persistence-integrity",
+   "test-masters-draw-size-comparison-v517",
+   "test-ranking-rolling-window-fase4"
+  ],
+  "preexisting": [
+   "test-former-partner-world-continuity-v518",
+   "test-home-redesign",
+   "test-living-career-v34-4",
+   "test-living-career-v34-9",
+   "test-micro-gate-post-partner-tactics-v527g",
+   "test-mobile-compact-ux-m4",
+   "test-mobile-filters-postmatch-m4-2-2",
+   "test-mobile-game-app-experience-m4-2",
+   "test-mobile-game-flow-m4-3",
+   "test-mobile-m3-1-device-hotfix",
+   "test-mobile-m3-2-android-ux",
+   "test-notification-system-audit-rc",
+   "test-onboarding-priority",
+   "test-page-hierarchy",
+   "test-partner-athlete-ovr-scale-v512",
+   "test-partner-engine-ovr-authority-v526b",
+   "test-phase15-3-economy-progression-navigation",
+   "test-phase15-4-mobile-flow-polish",
+   "test-phase15-5-1-critical-training-center",
+   "test-phase15-5-4-critical-mobile-qa",
+   "test-phase15-6-1-tournament-draw-consistency",
+   "test-phase15-6-2-tournament-canonical-state",
+   "test-phase15-6-app-performance-calendar-hardening",
+   "test-phase15-7-first-tournament-parity",
+   "test-premium-home-v33-2",
+   "test-premium-interfaces-v33",
+   "test-premium-relations-v33-8",
+   "test-ranking-ui-authority-v56",
+   "test-redesign-polish2",
+   "test-redesign-polish21",
+   "test-staff-architecture-v29-1",
+   "test-training-center-unification-phase15-5",
+   "test-ui-redesign"
+  ]
+ }
+}

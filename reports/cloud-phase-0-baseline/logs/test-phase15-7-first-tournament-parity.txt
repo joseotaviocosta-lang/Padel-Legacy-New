@@ -1,0 +1,9 @@
+file://<worktree>/scripts/test-phase15-7-first-tournament-parity.mjs:53
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: Rebalance: 1º torneio da temporada ocorre dentro da janela de 30-45 dias (obtido: 28 dias)
+    at gate (file://<worktree>/scripts/test-phase15-7-first-tournament-parity.mjs:53:25)
+    at file://<worktree>/scripts/test-phase15-7-first-tournament-parity.mjs:113:3
+
+Node.js v22.22.0

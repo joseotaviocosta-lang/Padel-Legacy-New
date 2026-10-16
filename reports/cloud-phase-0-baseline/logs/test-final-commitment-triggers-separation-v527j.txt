@@ -1,0 +1,30 @@
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async bootstrap (file://<worktree>/scripts/lib/competitiveReviewGates.mjs:70:3)
+    at async runExitScenario (file://<worktree>/scripts/lib/v527jScenario.mjs:18:15)
+    at async file://<worktree>/scripts/test-final-commitment-triggers-separation-v527j.mjs:11:15 {
+}
+✓ lifecycle: separação = último compromisso legítimo + 1 dia (próximo tick)
+✓ lifecycle: nunca antes do último compromisso
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async bootstrap (file://<worktree>/scripts/lib/competitiveReviewGates.mjs:70:3)
+    at async runExitScenario (file://<worktree>/scripts/lib/v527jScenario.mjs:18:15)
+    at async file://<worktree>/scripts/test-final-commitment-triggers-separation-v527j.mjs:11:15 {
+}
+✓ player-scheduled: separação = último compromisso legítimo + 1 dia (próximo tick)
+✓ player-scheduled: nunca antes do último compromisso
+✗ carreiras reais: separação agendada = fim do último compromisso anterior à decisão (sem atraso extra)
+  ENOENT: no such file or directory, open '<worktree>/reports/rebalance-527j/reload-weekly/normal-003.json'
+
+test-final-commitment-triggers-separation-v527j: 4/5 passaram

@@ -1,0 +1,11 @@
+file://<worktree>/scripts/test-living-career-v34-9.mjs:24
+if (checks.some((value) => !value)) throw new Error(`Falha estrutural: ${checks.map(Number).join(',')}`);
+                                          ^
+
+Error: Falha estrutural: 1,1,0,1,1,1,1,1
+    at file://<worktree>/scripts/test-living-career-v34-9.mjs:24:43
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.22.0

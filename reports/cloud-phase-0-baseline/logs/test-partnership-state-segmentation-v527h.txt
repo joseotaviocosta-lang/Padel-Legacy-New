@@ -1,0 +1,11 @@
+✓ regra: A antes da recusa, B entre recusa e troca, C após a troca; sem recusa tudo A
+✓ recusa = última decisão "não" de um contrato; recusa seguida de renovação não conta
+✗ matriz: toda partida do 1º ano de toda carreira cai em exatamente um estado
+  sem runs
+✗ partnership-state.csv: A+B+C = partidas do 1º ano por preset/perfil, com OVR jogador/parceiro/dupla/adversário
+  conservative-e/casual
+  
+  148 !== 0
+  
+
+test-partnership-state-segmentation-v527h: 2/4 passaram

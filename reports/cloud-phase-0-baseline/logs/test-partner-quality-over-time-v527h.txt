@@ -1,0 +1,11 @@
+✓ toda carreira tem os 7 marcos, cada um no 1º snapshot a partir do dia do marco
+✗ partner-quality.csv: gap = melhor alcançável − parceiro atual
+  Expected values to be strictly equal:
+  
+  315 !== 0
+  
+✓ Normal ≠ Otimizador (sequência de parceiros) em todos os presets
+✓ Normal sem padrão de ESCOLHA de parceiro obsoleto com alternativa forte (2 marcos seguidos)
+✓ marcos obsoletos restantes são todos de limbo (renovação já recusada), registrados
+
+test-partner-quality-over-time-v527h: 4/5 passaram

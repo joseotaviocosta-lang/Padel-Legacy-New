@@ -1,0 +1,15 @@
+✗ Easy 1º ano >= 40% (38.9%)
+  The expression evaluated to a falsy value:
+  
+    assert.ok(y1.easyWR >= 40)
+  
+✗ R1 1º ano >= 35% (33.3%)
+  The expression evaluated to a falsy value:
+  
+    assert.ok(y1.r1WR >= 35)
+  
+✓ Medium >= 28% com amostra (2 anos: 36%, n=150)
+✓ qualidade de parceiro no micro: OVR do parceiro na partida (mediana) >= 55 no 2º ano
+✓ energia na partida preservada (mediana >= 90)
+
+test-micro-gate-post-partner-tactics-v527g: 3/5 passaram

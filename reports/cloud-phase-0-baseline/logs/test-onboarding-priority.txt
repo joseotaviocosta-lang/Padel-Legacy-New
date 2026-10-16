@@ -1,0 +1,98 @@
+PASS — null sem tutorial_onboarding nenhum
+PASS — null sem profile
+PASS — null quando status é completed
+PASS — null quando status é skipped
+PASS — action reflete a etapa "career-created" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "career-created" (nunca atalho por modal)
+PASS — action tem ícone definido para "career-created"
+PASS — action reflete a etapa "athlete-named" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "athlete-named" (nunca atalho por modal)
+PASS — action tem ícone definido para "athlete-named"
+PASS — action reflete a etapa "side-selected" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "side-selected" (nunca atalho por modal)
+PASS — action tem ícone definido para "side-selected"
+PASS — action reflete a etapa "difficulty-selected" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "difficulty-selected" (nunca atalho por modal)
+PASS — action tem ícone definido para "difficulty-selected"
+PASS — action reflete a etapa "style-selected" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "style-selected" (nunca atalho por modal)
+PASS — action tem ícone definido para "style-selected"
+PASS — action reflete a etapa "appearance-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "appearance-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "appearance-known"
+PASS — action reflete a etapa "profile-reviewed" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "profile-reviewed" (nunca atalho por modal)
+PASS — action tem ícone definido para "profile-reviewed"
+PASS — action reflete a etapa "offers-reviewed" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "offers-reviewed" (nunca atalho por modal)
+PASS — action tem ícone definido para "offers-reviewed"
+PASS — action reflete a etapa "partner-selected" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "partner-selected" (nunca atalho por modal)
+PASS — action tem ícone definido para "partner-selected"
+PASS — action reflete a etapa "coaches-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "coaches-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "coaches-known"
+PASS — action reflete a etapa "first-training" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "first-training" (nunca atalho por modal)
+PASS — action tem ícone definido para "first-training"
+PASS — action reflete a etapa "calendar-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "calendar-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "calendar-known"
+PASS — action reflete a etapa "tournament-registered" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "tournament-registered" (nunca atalho por modal)
+PASS — action tem ícone definido para "tournament-registered"
+PASS — action reflete a etapa "first-match" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "first-match" (nunca atalho por modal)
+PASS — action tem ícone definido para "first-match"
+PASS — action reflete a etapa "staff-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "staff-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "staff-known"
+PASS — action reflete a etapa "economy-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "economy-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "economy-known"
+PASS — action reflete a etapa "sponsors-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "sponsors-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "sponsors-known"
+PASS — action reflete a etapa "opportunities-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "opportunities-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "opportunities-known"
+PASS — action reflete a etapa "shop-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "shop-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "shop-known"
+PASS — action reflete a etapa "equipment-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "equipment-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "equipment-known"
+PASS — action reflete a etapa "athletes-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "athletes-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "athletes-known"
+PASS — action reflete a etapa "ranking-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "ranking-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "ranking-known"
+PASS — action reflete a etapa "world-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "world-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "world-known"
+PASS — action reflete a etapa "news-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "news-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "news-known"
+PASS — action reflete a etapa "press-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "press-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "press-known"
+PASS — action reflete a etapa "notifications-known" (stepId/to/cta/description)
+PASS — action.partnerAction é false na etapa "notifications-known" (nunca atalho por modal)
+PASS — action tem ícone definido para "notifications-known"
+PASS — null na etapa de encerramento "autonomy" (fluxo próprio em CareerHub.jsx, não pela Home)
+PASS — offers-reviewed: to aponta para a rota real (nunca um atalho sem navegação)
+PASS — offers-reviewed: partnerAction é false (o auto-complete por visita depende de navegação real)
+PASS — partner-selected: partnerAction também é false
+PASS — CareerHub.jsx importa getOnboardingNextAction
+PASS — heroStep prioriza onboardingNextAction, com fallbackHeroStep preservado
+FAIL — getNextStep (motor de fallback) continua definido, não foi removido
+file://<worktree>/scripts/test-onboarding-priority.mjs:26
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: getNextStep (motor de fallback) continua definido, não foi removido
+    at gate (file://<worktree>/scripts/test-onboarding-priority.mjs:26:25)
+    at file://<worktree>/scripts/test-onboarding-priority.mjs:71:3
+
+Node.js v22.22.0

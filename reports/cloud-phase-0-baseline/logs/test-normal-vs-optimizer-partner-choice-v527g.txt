@@ -1,0 +1,14 @@
+✗ Normal coincide com o Otimizador em <= 30% dos mercados
+  0/0
+✗ Normal mantém compatibilidade mediana maior que a do Otimizador
+  The expression evaluated to a falsy value:
+  
+    assert.ok(median(markets.map((m) => pickNormal(m).compatibility)) > median(markets.map((m) => pickOptimizer(m).compatibility)))
+  
+✗ Otimizador escolhe OVR mediano >= ao do Normal (o Normal não virou maximizador)
+  The expression evaluated to a falsy value:
+  
+    assert.ok(median(markets.map((m) => pickOptimizer(m).uiOvr)) >= median(markets.map((m) => pickNormal(m).uiOvr)))
+  
+
+test-normal-vs-optimizer-partner-choice-v527g: 0/3 passaram

@@ -1,0 +1,12 @@
+✗ >= 20 mercados de Busca (0)
+  The expression evaluated to a falsy value:
+  
+    assert.ok(markets.length >= 20)
+  
+✗ antes (só compatibilidade): reproduz a escolha fraca — OVR mediano <= 50% do melhor disponível
+  Cannot read properties of undefined (reading 'toFixed')
+✗ depois: OVR escolhido mediano >= 85% do melhor alcançável
+  Cannot read properties of undefined (reading 'toFixed')
+✓ piso: nunca abaixo de jogador−15 quando existe candidato do nível do jogador
+
+test-normal-partner-strength-floor-v527g: 1/4 passaram

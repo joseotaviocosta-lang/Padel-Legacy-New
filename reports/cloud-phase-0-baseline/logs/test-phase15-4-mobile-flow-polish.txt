@@ -1,0 +1,22 @@
+FAIL — 5. Home preserva Próximo objetivo
+FAIL — 6. Home preserva ranking no HUD do atleta
+FAIL — 7. Home possui uma única instância da ação dominante
+FAIL — 12. Painel dominante usa padding compacto
+FAIL — 94. Derrota terminal recebe onInterview
+FAIL — 95. Título recebe onInterview equivalente
+FAIL — 96. FinalState exibe Dar entrevista
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Fase 15.4 falhou: 7/132 gate(s)
+    at file://<worktree>/scripts/test-phase15-4-mobile-flow-polish.mjs:222:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: undefined,
+  operator: 'fail',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

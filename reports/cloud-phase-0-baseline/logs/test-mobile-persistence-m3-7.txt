@@ -1,0 +1,119 @@
+          tournament_id: null,
+          tournament_name: 'Ranking anterior à Fase 4 (pré-migração)',
+          tier: null,
+          date: '2026-12-01',
+          points: 775,
+          finish: 'legacy_seed',
+          is_legacy_seed: true,
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        },
+        {
+          id: 'player-fictional-1c0jx13:legacy-seed',
+          athlete_id: 'player-fictional-1c0jx13',
+          tournament_id: null,
+          tournament_name: 'Ranking anterior à Fase 4 (pré-migração)',
+          tier: null,
+          date: '2026-12-01',
+          points: 900,
+          finish: 'legacy_seed',
+          is_legacy_seed: true,
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        },
+        {
+          id: 'player-fictional-18yoaee:legacy-seed',
+          athlete_id: 'player-fictional-18yoaee',
+          tournament_id: null,
+          tournament_name: 'Ranking anterior à Fase 4 (pré-migração)',
+          tier: null,
+          date: '2026-12-01',
+          points: 675,
+          finish: 'legacy_seed',
+          is_legacy_seed: true,
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        },
+        {
+          id: 'player-fictional-198nw3d:legacy-seed',
+          athlete_id: 'player-fictional-198nw3d',
+          tournament_id: null,
+          tournament_name: 'Ranking anterior à Fase 4 (pré-migração)',
+          tier: null,
+          date: '2026-12-01',
+          points: 825,
+          finish: 'legacy_seed',
+          is_legacy_seed: true,
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        },
+        {
+          id: 'player-fictional-i56kyc:legacy-seed',
+          athlete_id: 'player-fictional-i56kyc',
+          tournament_id: null,
+          tournament_name: 'Ranking anterior à Fase 4 (pré-migração)',
+          tier: null,
+          date: '2026-12-01',
+          points: 725,
+          finish: 'legacy_seed',
+          is_legacy_seed: true,
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        },
+        {
+          id: 'player-fictional-if66nb:legacy-seed',
+          athlete_id: 'player-fictional-if66nb',
+          tournament_id: null,
+          tournament_name: 'Ranking anterior à Fase 4 (pré-migração)',
+          tier: null,
+          date: '2026-12-01',
+          points: 1100,
+          finish: 'legacy_seed',
+          is_legacy_seed: true,
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        },
+        ... 200 more items
+      ],
+      HistoryEntry: [
+        {
+          id: 'history-001',
+          year: 1998,
+          title: 'Fundação do Circuito Mundial',
+          description: 'Primeira temporada organizada do universo Padel Legacy.',
+          category: 'circuito'
+        },
+        {
+          profile_id: 'm3-7-player',
+          year: 2026,
+          event_date: '2026-12-01',
+          title: 'Novo mês da carreira — 2026-12',
+          description: 'Benchmark iniciou um novo mês. Mercado, atletas, contratos e tendências mundiais foram sincronizados pelo GameState.',
+          category: 'carreira',
+          id: 'historyentry-1893553445000-4idxrw',
+          created_date: '2030-01-02T03:04:05.000Z',
+          updated_date: '2030-01-02T03:04:05.000Z'
+        }
+      ]
+    },
+    tutorial: {
+      version: 14,
+      status: 'in_progress',
+      currentStepId: 'career-created',
+      completedStepIds: [],
+      completedSteps: [],
+      skippedStepIds: [],
+      dismissedHints: [],
+      pageIntroductionsSeen: [],
+      collapsedIntroductions: [],
+      minimized: false,
+      welcomeSeen: false,
+      lastUpdatedAt: '2026-10-16T19:35:15.011Z',
+      completedAt: null
+    }
+  },
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

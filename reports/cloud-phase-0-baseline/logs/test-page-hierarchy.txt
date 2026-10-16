@@ -1,0 +1,38 @@
+PASS — AppLayout não referencia mais currentTitle (título de rota removido)
+PASS — AppLayout não referencia mais currentItem (derivava o título de rota)
+PASS — AppLayout não usa mais ALL_SHELL_ITEMS (só existia para achar o título de rota)
+PASS — Cabeçalho global ainda mostra CareerHeaderContext (contexto operacional) no mobile
+PASS — Cabeçalho global ainda mostra CareerHeaderContext (contexto operacional) no desktop
+PASS — Cabeçalho global ainda controla o avanço de dia (CareerDayControl) 2x (mobile+desktop)
+PASS — Cabeçalho global ainda mostra o sino de notificações (CommunicationBell) 2x (mobile+desktop)
+PASS — Header mobile mantém a altura compacta original (min-h-16, sem nova altura fixa gigante)
+PASS — Safe-area (pl-safe-t) preservada nos dois cabeçalhos (mobile + desktop sticky bar)
+PASS — Exatamente um <header> fixo mobile (nenhum spacer/cabeçalho duplicado introduzido)
+PASS — Exatamente uma barra sticky desktop (app-desktop-bar), sem duplicata
+PASS — BottomNav preservada
+PASS — main mantém overflow-x-hidden (não virou overflow-hidden, scroll vertical normal)
+PASS — PageIntroductionSection não imprime {intro.title} como texto visível (identidade da página continua só no PageHeader)
+PASS — PageIntroductionSection não tem nenhuma tag <h1>/<h2> (não reidentifica a página)
+PASS — PageIntroductionSection ainda usa intro.description/purpose/tip (conteúdo preservado, só mudou de lugar)
+PASS — Guia continua pulando o conteúdo de introdução/próximo-passo na página de missões (isMissionCenter) — lógica não tocada
+PASS — OnboardingGuide (controller) não renderiza PageIntroductionSection inline no fluxo da página
+PASS — OnboardingGuide (controller) não renderiza NextStepSection inline no fluxo da página
+PASS — OnboardingGuide (controller) só devolve o botão flutuante + o painel (nada mais no fluxo visual)
+PASS — Varredura encontrou as páginas reais do projeto (> 40 arquivos em src/pages)
+PASS — Nenhuma página tem mais PageHeaders do que o permitido (nenhum problema)
+PASS — Press.jsx tem exatamente 1 PageHeader (identidade única da página)
+PASS — Athletes.jsx tem exatamente 2 PageHeader (identidade única da página)
+PASS — CalendarPage.jsx tem exatamente 1 PageHeader (identidade única da página)
+FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página)
+file://<worktree>/scripts/test-page-hierarchy.mjs:30
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: Training.jsx tem exatamente 1 PageHeader (identidade única da página)
+    at gate (file://<worktree>/scripts/test-page-hierarchy.mjs:30:25)
+    at file://<worktree>/scripts/test-page-hierarchy.mjs:136:3
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.22.0

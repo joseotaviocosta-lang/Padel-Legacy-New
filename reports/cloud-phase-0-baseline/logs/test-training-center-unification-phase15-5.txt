@@ -1,0 +1,20 @@
+FAIL — 43. HUD local mostra treinos
+FAIL — 44. HUD local mostra partida
+FAIL — 45. HUD local mostra energia
+FAIL — 46. HUD local mostra fadiga
+FAIL — 102. Navegação possui uma única entrada Centro de Treinamento
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Fase 15.5 falhou: 5/144 gate(s)
+    at file://<worktree>/scripts/test-training-center-unification-phase15-5.mjs:219:12 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: undefined,
+  expected: undefined,
+  operator: 'fail',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

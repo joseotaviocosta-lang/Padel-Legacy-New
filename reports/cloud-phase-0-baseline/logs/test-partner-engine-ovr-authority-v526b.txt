@@ -1,0 +1,15 @@
+✓ parceiro persistente normal: card 35 → motor 35
+✓ parceiro elite: card 88 → motor 88
+✓ parceiro fraco legítimo: card 9 → motor 9 (não é inflado)
+✓ template legado parcial (6/10 atributos, OVR 31) → 31, não ~19
+✓ jogador com atributos completos: motor = média (igual a antes da correção)
+✓ nenhum atleta com fonte de OVR cai no piso artificial 1
+✗ modificadores de contexto do motor preservados (química/energia/coach/vínculo)
+  Expected values to be strictly equal:
+  
+  47.5 !== 44.5
+  
+✓ UI e motor usam a MESMA função-base (attributes.js:baseOverallRating)
+✓ determinismo do novo build: mesma seed → mesmo placar
+
+test-partner-engine-ovr-authority-v526b: 8/9 passaram

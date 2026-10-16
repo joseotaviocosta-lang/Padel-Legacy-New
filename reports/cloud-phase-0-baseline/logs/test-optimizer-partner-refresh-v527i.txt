@@ -1,0 +1,11 @@
+✓ parceiro 33 com 80+ alcançável e sustentável → NÃO renova (item 7)
+✓ alternativa forte cara demais (< 3 meses de caixa) → renova (item 10)
+✓ atual a até 8 OVR do melhor sustentável → renova
+✓ Busca: escolhe a dupla mais forte que o caixa sustenta; compatibilidade só desempata
+✗ micro 2a (5 seeds): troca para parceiro forte dentro de 1 ano e nenhum trecho gap > 30 por > 180 dias (item 42)
+  Expected values to be strictly equal:
+  
+  0 !== 5
+  
+
+test-optimizer-partner-refresh-v527i: 4/5 passaram

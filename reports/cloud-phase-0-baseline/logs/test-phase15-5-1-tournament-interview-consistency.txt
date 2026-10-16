@@ -1,0 +1,9 @@
+file://<worktree>/scripts/test-phase15-5-1-tournament-interview-consistency.mjs:240
+    throw new Error(`Phase15.5.1 Tournament/Interview: FAIL (${failures.length}/${gates})\n${failures.join('\n')}`);
+          ^
+
+Error: Phase15.5.1 Tournament/Interview: FAIL (1/79)
+79. helpers não leem storage
+    at file://<worktree>/scripts/test-phase15-5-1-tournament-interview-consistency.mjs:240:11
+
+Node.js v22.22.0

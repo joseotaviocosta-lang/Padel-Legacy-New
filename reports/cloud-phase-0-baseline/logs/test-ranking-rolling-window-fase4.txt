@@ -1,0 +1,74 @@
+PASS — (setup) top10-inactive começa em Elite (6000 pts, sem tocar categoria ainda)
+PASS — (semana 1) processWorldCircuit não pulou o passe
+PASS — (semana 2) processWorldCircuit não pulou o passe
+PASS — (semana 3) processWorldCircuit não pulou o passe
+PASS — (semana 4) processWorldCircuit não pulou o passe
+PASS — (semana 5) processWorldCircuit não pulou o passe
+PASS — (semana 6) processWorldCircuit não pulou o passe
+PASS — (semana 7) processWorldCircuit não pulou o passe
+PASS — (semana 8) processWorldCircuit não pulou o passe
+PASS — (semana 9) processWorldCircuit não pulou o passe
+PASS — (semana 10) processWorldCircuit não pulou o passe
+PASS — (semana 11) processWorldCircuit não pulou o passe
+PASS — (semana 12) processWorldCircuit não pulou o passe
+PASS — (semana 13) processWorldCircuit não pulou o passe
+PASS — (semana 14) processWorldCircuit não pulou o passe
+PASS — (semana 15) processWorldCircuit não pulou o passe
+PASS — (semana 16) processWorldCircuit não pulou o passe
+PASS — (semana 17) processWorldCircuit não pulou o passe
+PASS — (semana 18) processWorldCircuit não pulou o passe
+PASS — (semana 19) processWorldCircuit não pulou o passe
+PASS — (semana 20) processWorldCircuit não pulou o passe
+PASS — (semana 21) processWorldCircuit não pulou o passe
+PASS — (semana 22) processWorldCircuit não pulou o passe
+PASS — (semana 23) processWorldCircuit não pulou o passe
+PASS — (semana 24) processWorldCircuit não pulou o passe
+PASS — (semana 25) processWorldCircuit não pulou o passe
+PASS — (semana 26) processWorldCircuit não pulou o passe
+PASS — (semana 27) processWorldCircuit não pulou o passe
+PASS — (semana 28) processWorldCircuit não pulou o passe
+PASS — (semana 29) processWorldCircuit não pulou o passe
+PASS — (semana 30) processWorldCircuit não pulou o passe
+PASS — (semana 31) processWorldCircuit não pulou o passe
+PASS — (semana 32) processWorldCircuit não pulou o passe
+PASS — (semana 33) processWorldCircuit não pulou o passe
+PASS — (semana 34) processWorldCircuit não pulou o passe
+PASS — (semana 35) processWorldCircuit não pulou o passe
+PASS — (semana 36) processWorldCircuit não pulou o passe
+PASS — (semana 37) processWorldCircuit não pulou o passe
+PASS — (semana 38) processWorldCircuit não pulou o passe
+PASS — (semana 39) processWorldCircuit não pulou o passe
+PASS — (semana 40) processWorldCircuit não pulou o passe
+PASS — (semana 41) processWorldCircuit não pulou o passe
+PASS — (semana 42) processWorldCircuit não pulou o passe
+PASS — (semana 43) processWorldCircuit não pulou o passe
+PASS — (semana 44) processWorldCircuit não pulou o passe
+PASS — (semana 45) processWorldCircuit não pulou o passe
+PASS — (semana 46) processWorldCircuit não pulou o passe
+PASS — (semana 47) processWorldCircuit não pulou o passe
+PASS — (semana 48) processWorldCircuit não pulou o passe
+PASS — (semana 49) processWorldCircuit não pulou o passe
+PASS — (semana 50) processWorldCircuit não pulou o passe
+PASS — (semana 51) processWorldCircuit não pulou o passe
+PASS — (semana 52) processWorldCircuit não pulou o passe
+PASS — (semana 53) processWorldCircuit não pulou o passe
+PASS — (semana 54) processWorldCircuit não pulou o passe
+PASS — (semana 55) processWorldCircuit não pulou o passe
+PASS — (semana 56) processWorldCircuit não pulou o passe
+PASS — (semana 57) processWorldCircuit não pulou o passe
+PASS — (semana 58) processWorldCircuit não pulou o passe
+PASS — (semana 59) processWorldCircuit não pulou o passe
+PASS — (semana 60) processWorldCircuit não pulou o passe
+PASS — (migração) âncora sintética gravada pro atleta legado, valendo o total cheio
+PASS — (migração) âncora é distinguível como não-torneio (tournament_id null)
+PASS — (migração) âncora tem a flag explícita is_legacy_seed
+FAIL — (4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (sem decaimento antecipado)
+file://<worktree>/scripts/test-ranking-rolling-window-fase4.mjs:23
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: (4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (sem decaimento antecipado)
+    at gate (file://<worktree>/scripts/test-ranking-rolling-window-fase4.mjs:23:25)
+    at file://<worktree>/scripts/test-ranking-rolling-window-fase4.mjs:174:3
+
+Node.js v22.22.0

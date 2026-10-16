@@ -1,0 +1,20 @@
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async bootstrap (file://<worktree>/scripts/lib/competitiveReviewGates.mjs:70:3)
+    at async runExitScenario (file://<worktree>/scripts/lib/v527jScenario.mjs:18:15)
+    at async file://<worktree>/scripts/test-no-new-commitment-after-exit-v527j.mjs:11:13 {
+}
+✓ saída agendada: torneio que terminaria após a data nominal → recusado antes da escrita
+✓ saída agendada: torneio que termina dentro do contrato continua permitido (regra 5.17)
+✓ separação não é empurrada: data efetiva = dia seguinte ao último compromisso legítimo
+✗ carreiras reais: 0 inscrições que estendem a dupla depois da saída (smoke 5 seeds + save/reload)
+  ENOENT: no such file or directory, open '<worktree>/reports/rebalance-527j/reload-weekly/normal-003.json'
+✗ carreiras reais: a data de separação agendada nunca é empurrada depois de marcada
+  ENOENT: no such file or directory, open '<worktree>/reports/rebalance-527j/reload-weekly/normal-003.json'
+
+test-no-new-commitment-after-exit-v527j: 3/5 passaram

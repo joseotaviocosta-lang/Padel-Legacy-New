@@ -1,0 +1,9 @@
+file://<worktree>/scripts/test-phase15-6-1-tournament-draw-consistency.mjs:31
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: D-7: nenhuma chave existe ainda (modal mostraria not_drawn)
+    at gate (file://<worktree>/scripts/test-phase15-6-1-tournament-draw-consistency.mjs:31:25)
+    at file://<worktree>/scripts/test-phase15-6-1-tournament-draw-consistency.mjs:102:5
+
+Node.js v22.22.0

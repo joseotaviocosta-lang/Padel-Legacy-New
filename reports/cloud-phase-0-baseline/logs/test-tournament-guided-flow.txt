@@ -1,0 +1,25 @@
+
+--- Parte A: prioridade canônica (getTournamentNextAction) ---
+PASS — Cenário 33: checkpoint ativo vence entrevista E partida disponível hoje
+PASS — entrevista pendente tem prioridade sobre "jogar hoje"
+PASS — Cenário 31 (sem entrevista): vai direto para a próxima rodada/data, sem inventar uma entrevista
+PASS — Cenário 32: rodada hoje vira play_match (não advance_to_round)
+PASS — próxima rodada amanhã vira advance_to_round com a data certa
+PASS — torneio encerrado (campeão) vira tournament_complete
+PASS — sem contexto nenhum retorna "none" sem lançar
+PASS — destino nunca é "/tournaments" genérico — sempre inclui o tournamentId
+
+--- Parte B: R16 → vitória → entrevista real (contrato de dados) ---
+PASS — R16 inicia com status playing
+PASS — R16 termina jogando pontos reais
+PASS — recordTournamentMatchResult marca a R16 como concluída
+FAIL — a rota da entrevista usa o formato canônico (/press?tab=interviews&interview=...&source=...&returnTo=...)
+file://<worktree>/scripts/test-tournament-guided-flow.mjs:22
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: a rota da entrevista usa o formato canônico (/press?tab=interviews&interview=...&source=...&returnTo=...)
+    at gate (file://<worktree>/scripts/test-tournament-guided-flow.mjs:22:25)
+    at file://<worktree>/scripts/test-tournament-guided-flow.mjs:185:3
+
+Node.js v22.22.0

@@ -1,0 +1,8 @@
+file://<worktree>/scripts/test-notification-system-audit-rc.mjs:67
+  record('cenário 2: clicar marca a notificação como lida', messages[0].is_read === true && messages[0].status === 'lida');
+                                                                        ^
+
+TypeError: Cannot read properties of undefined (reading 'is_read')
+    at file://<worktree>/scripts/test-notification-system-audit-rc.mjs:67:73
+
+Node.js v22.22.0

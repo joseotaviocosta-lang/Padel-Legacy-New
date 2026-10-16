@@ -1,0 +1,954 @@
+{
+ "test-annual-career-report-rc": {
+  "530b": "pass"
+ },
+ "test-bracket-cta-availability-v516": {
+  "530b": "pass"
+ },
+ "test-calendar-tier-cadence-v513": {
+  "530b": "pass"
+ },
+ "test-career-beta-readiness": {
+  "530b": "pass"
+ },
+ "test-career-long-term-goals": {
+  "530b": "pass"
+ },
+ "test-career-null-safety": {
+  "530b": "pass",
+  "531b": "pass"
+ },
+ "test-career-pace-production": {
+  "530b": "pre-existing"
+ },
+ "test-career-persistence-integrity": {
+  "530b": "pre-existing"
+ },
+ "test-careerhub-stale-tournament-action-v59": {
+  "530b": "pass"
+ },
+ "test-careerhub-tournament-planning-ui-v58": {
+  "530b": "pass"
+ },
+ "test-coello-tapia-two-tournament-race": {
+  "530b": "pass"
+ },
+ "test-completed-tournament-card-v527m": {
+  "530b": "pass"
+ },
+ "test-consecutive-tournament-eligibility": {
+  "530b": "pass"
+ },
+ "test-draw-modal-fresh-state-v513": {
+  "530b": "pass"
+ },
+ "test-draw-notification-authority": {
+  "530b": "pass"
+ },
+ "test-draw-notification-bell-refresh": {
+  "530b": "pass"
+ },
+ "test-draw-notification-bracket-atomicity-v513": {
+  "530b": "pass"
+ },
+ "test-draw-notification-deep-link": {
+  "530b": "pass"
+ },
+ "test-draw-notification-deeplink-v59": {
+  "530b": "pass"
+ },
+ "test-draw-notification-fresh-tournament-read": {
+  "530b": "pass"
+ },
+ "test-draw-notification-no-ui-side-effect": {
+  "530b": "pass"
+ },
+ "test-draw-notification-preseason-real-flow": {
+  "530b": "pass"
+ },
+ "test-draw-notification-real-delivery": {
+  "530b": "pass"
+ },
+ "test-draw-notification-same-tick": {
+  "530b": "pass"
+ },
+ "test-draw-ui-independent-persistence": {
+  "530b": "pass"
+ },
+ "test-elite-event-choice-v59": {
+  "530b": "pass"
+ },
+ "test-extreme-elite-inactivity-v518": {
+  "530b": "pre-existing"
+ },
+ "test-finals-ui-semantics-v57": {
+  "530b": "pass"
+ },
+ "test-former-partner-reintegration-v518": {
+  "530b": "pre-existing",
+  "531": "load-flaky (PASS isolado, 7/7)"
+ },
+ "test-former-partner-world-continuity-v518": {
+  "530b": "pre-existing",
+  "531": "pre-existing"
+ },
+ "test-global-overlays-audit": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-header-next-tournament": {
+  "530b": "REGRESSION"
+ },
+ "test-header-tournament-shortcut-v527m": {
+  "530b": "pass"
+ },
+ "test-headless-registration-authority-v527j": {
+  "530b": "pass"
+ },
+ "test-home-redesign": {
+  "530b": "pre-existing"
+ },
+ "test-initial-opponent-origin-distribution-v515": {
+  "530b": "pass"
+ },
+ "test-injury-pre-match-walkover": {
+  "530b": "pass"
+ },
+ "test-legacy-save-tournament-continuity-v517": {
+  "530b": "pass"
+ },
+ "test-living-career-v34-4": {
+  "530b": "pre-existing"
+ },
+ "test-living-career-v34-5": {
+  "530b": "pre-existing"
+ },
+ "test-living-career-v34-6": {
+  "530b": "pass"
+ },
+ "test-living-career-v34-7": {
+  "530b": "pre-existing"
+ },
+ "test-living-career-v34-8": {
+  "530b": "pre-existing"
+ },
+ "test-living-career-v34-9": {
+  "530b": "pre-existing"
+ },
+ "test-living-world-v23": {
+  "530b": "pass"
+ },
+ "test-long-career-partner-ecology-v518": {
+  "530b": "pre-existing",
+  "531": "pre-existing"
+ },
+ "test-masters-draw-size-comparison-v517": {
+  "530b": "pre-existing"
+ },
+ "test-mobile-compact-ux-m4": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-mobile-game-app-experience-m4-2": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-mobile-game-feel-m4-1": {
+  "530b": "pass",
+  "531": "expected-test-update (PASS ap\u00f3s atualiza\u00e7\u00e3o)",
+  "531b": "pass"
+ },
+ "test-mobile-game-flow-m4-3": {
+  "530b": "pre-existing"
+ },
+ "test-mobile-header-height-v524b": {
+  "530b": "pass"
+ },
+ "test-mobile-header-two-rows-v524": {
+  "530b": "pass"
+ },
+ "test-mobile-m3-1-device-hotfix": {
+  "530b": "pre-existing"
+ },
+ "test-mobile-m3-2-android-ux": {
+  "530b": "pre-existing"
+ },
+ "test-mobile-m3-live-match": {
+  "530b": "pass"
+ },
+ "test-mobile-match-day-refresh-m3-7-2": {
+  "530b": "pass"
+ },
+ "test-mobile-page-performance-budget-v524b": {
+  "530b": "pass"
+ },
+ "test-mobile-visual-hotfix-m4-1-3": {
+  "530b": "pass",
+  "531b": "pass"
+ },
+ "test-mobile-visual-polish-m4-1-2": {
+  "530b": "pass"
+ },
+ "test-modal-safety": {
+  "530b": "pass"
+ },
+ "test-monthly-career-report-rc": {
+  "530b": "pass"
+ },
+ "test-new-player-opponent-tier-quality": {
+  "530b": "pass"
+ },
+ "test-notification-deep-links-rc": {
+  "530b": "pass",
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-notification-system-audit-rc": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-onboarding-priority": {
+  "530b": "pre-existing"
+ },
+ "test-onboarding-single-source-of-truth": {
+  "530b": "pass"
+ },
+ "test-opponent-strength-by-round": {
+  "530b": "pass"
+ },
+ "test-page-hierarchy": {
+  "530b": "pre-existing"
+ },
+ "test-parallel-draw-atomicity-v513": {
+  "530b": "pass"
+ },
+ "test-parallel-tournament-settlement-v59": {
+  "530b": "pass"
+ },
+ "test-partner-ecology-inventory-v518": {
+  "530b": "pre-existing",
+  "531": "pass"
+ },
+ "test-partnership-expiry-with-committed-tournament-v517": {
+  "530b": "pass",
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-partnership-registration-after-exit-v527j": {
+  "530b": "pass",
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-phase15-2-integrated-qa": {
+  "530b": "pass"
+ },
+ "test-phase15-3-economy-progression-navigation": {
+  "530b": "pre-existing",
+  "531": "pre-existing"
+ },
+ "test-phase15-4-mobile-flow-polish": {
+  "530b": "pre-existing"
+ },
+ "test-phase15-5-1-header-notifications-partnership-ui": {
+  "530b": "pass",
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-phase15-5-2-tournament-continuity": {
+  "530b": "pass"
+ },
+ "test-phase15-5-4-critical-mobile-qa": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-phase15-6-1-tournament-draw-consistency": {
+  "530b": "pre-existing"
+ },
+ "test-phase15-6-2-tournament-canonical-state": {
+  "530b": "pre-existing"
+ },
+ "test-phase15-6-app-performance-calendar-hardening": {
+  "530b": "pre-existing"
+ },
+ "test-phase15-7-first-tournament-parity": {
+  "530b": "pre-existing"
+ },
+ "test-player-low-rank-first-round-quality-v5": {
+  "530b": "pass"
+ },
+ "test-player-missed-registration-real-flow": {
+  "530b": "pass"
+ },
+ "test-player-opponent-progression-v5": {
+  "530b": "pass"
+ },
+ "test-player-partner-ranking-display-v5": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-player-post-separation-market-v518": {
+  "530b": "pre-existing",
+  "531": "pre-existing"
+ },
+ "test-player-registration-real-flow": {
+  "530b": "pass"
+ },
+ "test-player-tier-eligibility-matrix": {
+  "530b": "pass"
+ },
+ "test-playthrough-4-3-production-reconciliation": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-premium-home-v33-2": {
+  "530b": "pre-existing"
+ },
+ "test-premium-interfaces-v33": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-ranking-consistency": {
+  "530b": "pass"
+ },
+ "test-ranking-full-season-simulation": {
+  "530b": "pass"
+ },
+ "test-recovery-skip-tournament-walkover": {
+  "530b": "pass"
+ },
+ "test-redesign-polish2": {
+  "530b": "pre-existing"
+ },
+ "test-redesign-polish21": {
+  "530b": "pre-existing"
+ },
+ "test-registration-deadline-authority": {
+  "530b": "pass",
+  "527k": "pass"
+ },
+ "test-registration-deadline-boundary-v518": {
+  "530b": "pass"
+ },
+ "test-registration-last-day-warning": {
+  "530b": "pass"
+ },
+ "test-registration-overlap-conflict": {
+  "530b": "pass"
+ },
+ "test-registration-reload-idempotency": {
+  "530b": "pass"
+ },
+ "test-registration-reminder-tournament-authority-v59": {
+  "530b": "pass"
+ },
+ "test-staff-commitment-no-weekly-renotify-v516": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-report-cta-state-transition-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-report-registration-cta-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-review-career-progression-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-review-registration-cta-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-tournament-recommendation-authority-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-weekly-competitive-review-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-weekly-review-real-dedupe-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-staff-weekly-review-state-update-v514": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-stale-commitment-does-not-block-choice-v518": {
+  "530b": "pass"
+ },
+ "test-tier-ladder-migration-fase3": {
+  "530b": "pass"
+ },
+ "test-tier-qualifying-authority": {
+  "530b": "pass"
+ },
+ "test-tier-strength-distribution": {
+  "530b": "REGRESSION"
+ },
+ "test-tournament-cancellation-cause-v517": {
+  "530b": "pre-existing"
+ },
+ "test-tournament-canonical-results": {
+  "530b": "pass"
+ },
+ "test-tournament-card-primary-state-v520c": {
+  "530b": "pass"
+ },
+ "test-tournament-card-registration-state": {
+  "530b": "pass"
+ },
+ "test-tournament-confirm-no-skip": {
+  "530b": "pass"
+ },
+ "test-tournament-notification-deeplink-rc": {
+  "530b": "pass"
+ },
+ "test-tournament-registration-v2": {
+  "530b": "pass"
+ },
+ "test-tournament-resume-recovery": {
+  "530b": "pass"
+ },
+ "test-tournament-round-availability": {
+  "530b": "pass"
+ },
+ "test-training-center-unification-phase15-5": {
+  "530b": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-tutorial-auto-completion": {
+  "530b": "pass"
+ },
+ "test-tutorial-chronology": {
+  "530b": "pass"
+ },
+ "test-tutorial-first-official-match": {
+  "530b": "pass"
+ },
+ "test-tutorial-registration-condition-v527m": {
+  "530b": "pass"
+ },
+ "test-tutorial-visit-auto-completion": {
+  "530b": "pass"
+ },
+ "test-two-wave-draw-lifecycle": {
+  "530b": "pass"
+ },
+ "test-ui-redesign": {
+  "530b": "pre-existing",
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-unregistered-player-not-in-draw": {
+  "530b": "pass"
+ },
+ "test-ux-home-v36-3-1": {
+  "530b": "pass"
+ },
+ "test-walkover-achievement-isolation": {
+  "530b": "pass"
+ },
+ "test-walkover-does-not-block-parallel-events": {
+  "530b": "pass"
+ },
+ "test-walkover-player-tournament-settlement": {
+  "530b": "pass"
+ },
+ "test-walkover-reload-idempotency": {
+  "530b": "pass"
+ },
+ "test-weekly-assignment-authority-v5": {
+  "530b": "pass"
+ },
+ "test-weekly-planning-after-registration-v513": {
+  "530b": "pass"
+ },
+ "test-weekly-planning-career-progression-v59": {
+  "530b": "pass"
+ },
+ "test-weekly-planning-mobile-contract-v58": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-weekly-planning-player-visible-v513": {
+  "530b": "pass"
+ },
+ "test-weekly-planning-same-week-tier-choice-v59": {
+  "530b": "pass"
+ },
+ "test-weekly-planning-visible-decision-v59": {
+  "530b": "pass"
+ },
+ "test-world-tour-independent-from-player-partnership-v517": {
+  "530b": "pass",
+  "531": "pass"
+ },
+ "test-ai-partnership-exit-registration-v527j": {
+  "531": "pass"
+ },
+ "test-ai-player-tier-policy-separation": {
+  "531": "pass"
+ },
+ "test-app-shell-route-contract-v520e": {
+  "531": "pass"
+ },
+ "test-career-coach-history": {
+  "531": "pass"
+ },
+ "test-career-partnership-history": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-career-ui-v2": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-coach-card-effects": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-coach-discovery-rc": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-coach-market-compact-layout": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-coach-market-curation": {
+  "531": "expected-test-update (PASS ap\u00f3s atualiza\u00e7\u00e3o)",
+  "531b": "pass"
+ },
+ "test-coach-salary-consistency": {
+  "531": "pass"
+ },
+ "test-coach-selection-clarity": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-coach-system-v28": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-committed-partner-athlete-resolution-v519": {
+  "531": "pass"
+ },
+ "test-draw-after-exit-preserves-roster-v527j": {
+  "531": "pass"
+ },
+ "test-final-commitment-triggers-separation-v527j": {
+  "531": "pass"
+ },
+ "test-first-partnership-100-careers": {
+  "531": "pass"
+ },
+ "test-first-partnership-diversity": {
+  "531": "pass"
+ },
+ "test-first-partnership-poor-candidate-filter": {
+  "531": "pass"
+ },
+ "test-first-partnership-ranking": {
+  "531": "pass"
+ },
+ "test-first-partnership-veteran-mentor": {
+  "531": "pass"
+ },
+ "test-first-partnership-young-projects": {
+  "531": "pass"
+ },
+ "test-global-header-overlay-rc": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-historical-partnership-resolution-v518": {
+  "531": "pass"
+ },
+ "test-home-no-partner-state-v530": {
+  "531": "pass"
+ },
+ "test-legacy-partner-repair-v512": {
+  "531": "pass"
+ },
+ "test-live-coach": {
+  "531": "pass"
+ },
+ "test-live-coach-custom-plan": {
+  "531": "pass"
+ },
+ "test-live-coach-practice": {
+  "531": "pass"
+ },
+ "test-live-coach-realism": {
+  "531": "pass"
+ },
+ "test-live-coach-tournament": {
+  "531": "pass"
+ },
+ "test-live-match-landscape-contract-v520d": {
+  "531": "pre-existing"
+ },
+ "test-live-match-mobile-contract-v520d": {
+  "531": "pre-existing"
+ },
+ "test-living-partnership-market-phase15": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-living-partnerships-v29": {
+  "531": "pass"
+ },
+ "test-micro-gate-post-partner-tactics-v527g": {
+  "531": "pre-existing"
+ },
+ "test-mobile-rendered-complexity-v520c": {
+  "531": "pass"
+ },
+ "test-no-current-partnership-bracket-rebuild-v527m": {
+  "531": "pass"
+ },
+ "test-no-new-commitment-after-exit-v527j": {
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-no-overlapping-partnership-v527j": {
+  "531": "pass"
+ },
+ "test-normal-partner-score-v527g": {
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-normal-partner-strength-floor-v527g": {
+  "531": "pass"
+ },
+ "test-normal-vs-optimizer-partner-choice-v527g": {
+  "531": "pass"
+ },
+ "test-optimizer-no-stale-partner-v527i": {
+  "531": "pass"
+ },
+ "test-optimizer-partner-refresh-v527i": {
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-partner-athlete-chemistry-continuity-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-contract-continuity-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-development-veteran-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-development-young-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-idempotency-v512": {
+  "531": "pre-existing"
+ },
+ "test-partner-athlete-materialization-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-new-partnership-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-ovr-scale-v512": {
+  "531": "pre-existing"
+ },
+ "test-partner-athlete-ranking-credit-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-save-reload-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-separation-v512": {
+  "531": "pass"
+ },
+ "test-partner-athlete-teamranking-v512": {
+  "531": "pass"
+ },
+ "test-partner-choice-compatibility-preserved-v527g": {
+  "531": "pass"
+ },
+ "test-partner-committed-roster-ovr-v526b": {
+  "531": "pass"
+ },
+ "test-partner-contract-365d-v526c": {
+  "531": "pass"
+ },
+ "test-partner-contract-decision-ui-v519": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-contract-no-monthly-salary": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-contract-notification-deeplink-v519": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-conversation-cooldown-v517": {
+  "531": "pass"
+ },
+ "test-partner-conversation-effects-v517": {
+  "531": "pass"
+ },
+ "test-partner-day1-gate": {
+  "531": "pass"
+ },
+ "test-partner-decision-state-ui": {
+  "531": "expected-test-update (PASS ap\u00f3s atualiza\u00e7\u00e3o)",
+  "531b": "pass"
+ },
+ "test-partner-development-cadence-v513": {
+  "531": "pass"
+ },
+ "test-partner-development-v59": {
+  "531": "pass"
+ },
+ "test-partner-engine-ovr-authority-v526b": {
+  "531": "pre-existing"
+ },
+ "test-partner-hub-legacy-deeplink-v520c": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-hub-tab-consolidation-v520b": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-market-ui-contract-v518": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-offer-materializes-selected-only-v512": {
+  "531": "pass"
+ },
+ "test-partner-offer-notifications": {
+  "531": "pass"
+ },
+ "test-partner-offer-overall-integrity-v519": {
+  "531": "pass"
+ },
+ "test-partner-offer-persistence-v512": {
+  "531": "pass"
+ },
+ "test-partner-offers-v2": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-partner-overview-development-refresh-v512": {
+  "531": "pass"
+ },
+ "test-partner-overview-persistent-athlete-v512": {
+  "531": "pass"
+ },
+ "test-partner-quality-over-time-v527h": {
+  "531": "pass"
+ },
+ "test-partner-rejection-cooldown": {
+  "531": "pass"
+ },
+ "test-partner-resign-loop-v526c": {
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-partnership-change-does-not-rewrite-draw-v526d": {
+  "531": "pass"
+ },
+ "test-partnership-contract-notification-lifecycle-v517": {
+  "531": "pass"
+ },
+ "test-partnership-history-v518": {
+  "531": "pass"
+ },
+ "test-partnership-legacy-scope-fase29": {
+  "531": "pass"
+ },
+ "test-partnership-repair-preserves-completed-tournaments-v517": {
+  "531": "pass"
+ },
+ "test-partnership-scheduled-separation-v517": {
+  "531": "pass"
+ },
+ "test-partnership-state-segmentation-v527h": {
+  "531": "pass"
+ },
+ "test-phase15-5-1-critical-training-center": {
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-player-partner-offer-flow-v518": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-post-separation-partner-market-v517": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-premium-relations-v33-8": {
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-ranking-no-active-partner-states-v523": {
+  "531": "pass"
+ },
+ "test-ranking-ui-authority-v56": {
+  "531": "pre-existing"
+ },
+ "test-save-reload-pending-separation-v527j": {
+  "531": "pass",
+  "527k": "pass"
+ },
+ "test-settlement-after-exit-preserves-roster-v527j": {
+  "531": "pass"
+ },
+ "test-severance-exit-path-v527b": {
+  "531": "pass"
+ },
+ "test-staff-architecture-v29-1": {
+  "531": "pre-existing",
+  "531b": "pre-existing"
+ },
+ "test-staff-next-decision-chronology-v516": {
+  "531": "pass"
+ },
+ "test-staff-notification-deeplink-v513": {
+  "531": "pass"
+ },
+ "test-staff-report-presentation-contract-v519": {
+  "531": "pass"
+ },
+ "test-staff-review-after-registration-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-deeplink-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-federation-reminder-separation-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-idempotency-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-multi-tournament-choice-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-no-event-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-player-chooses-alternative-v514": {
+  "531": "pass"
+ },
+ "test-staff-review-single-message-per-week-v514": {
+  "531": "pass"
+ },
+ "test-staff-state-transition-notification-policy-v516": {
+  "531": "pass"
+ },
+ "test-staff-weekly-review-next-week-v514": {
+  "531": "pass"
+ },
+ "test-starter-coach-flow": {
+  "531": "pass",
+  "531b": "pass"
+ },
+ "test-team-ranking-partnership-change-v510": {
+  "531": "pass"
+ },
+ "test-team-ranking-ui-consistency-v510": {
+  "531": "pass"
+ },
+ "test-tournament-roster-survives-partner-change-v519": {
+  "531": "pass"
+ },
+ "test-coach-detail-layout-v531": {
+  "531b": "pass"
+ },
+ "test-contract-cta-overflow-v531": {
+  "531b": "pass"
+ },
+ "test-mobile-filters-postmatch-m4-2-2": {
+  "531b": "pre-existing"
+ },
+ "test-mobile-foundation": {
+  "531b": "pass"
+ },
+ "test-partner-contract-state-v531": {
+  "531b": "pass"
+ },
+ "test-partner-exit-pending-ui-v531": {
+  "531b": "pass"
+ },
+ "test-partner-market-cards-v531": {
+  "531b": "pass"
+ },
+ "test-partner-no-overflow-v531": {
+  "531b": "pass"
+ },
+ "test-partner-screen-hierarchy-v531": {
+  "531b": "pass"
+ },
+ "test-staff-market-cards-v531": {
+  "531b": "pass"
+ },
+ "test-staff-no-overflow-v531": {
+  "531b": "pass"
+ },
+ "test-staff-screen-hierarchy-v531": {
+  "531b": "pass"
+ },
+ "test-tutorial-complete-flow": {
+  "531b": "pass"
+ },
+ "test-ux-interfaces-v36-3-2": {
+  "531b": "pass"
+ },
+ "test-preexisting-commitment-preserved-v527j": {
+  "527k": "pass"
+ },
+ "test-match-engine-identical-teams-v527f": {
+  "527k": "pass"
+ },
+ "test-energy-sensitivity-v527f": {
+  "527k": "pass"
+ },
+ "test-energy-single-application-v527f": {
+  "527k": "pass"
+ },
+ "test-zero-win-ranking-progression-v527f": {
+  "527k": "pass"
+ },
+ "test-team-ranking-sum-formula-v522e": {
+  "527k": "pass"
+ },
+ "test-race-year-reset-v526c": {
+  "527k": "pass"
+ },
+ "test-bye-visible-from-draw": {
+  "527k": "pass"
+ },
+ "test-masters-24-8byes-r16-v522f": {
+  "527k": "pass"
+ },
+ "test-settlement-uses-persisted-draw-roster": {
+  "527k": "pass"
+ },
+ "test-tournament-result-authority": {
+  "527k": "pass"
+ },
+ "test-achievement-reward-atomicity-v524e": {
+  "527k": "pass"
+ }
+}

@@ -1,0 +1,14 @@
+
+=== Playthrough 5.20-D: Teste 1 — Contrato Mobile do Live Match ===
+
+file:///home/user/Padel-Legacy-New/node_modules/puppeteer-core/lib/puppeteer/node/BrowserLauncher.js:105
+            throw new Error(`Browser was not found at the configured executablePath (${launchArgs.executablePath})`);
+                  ^
+
+Error: Browser was not found at the configured executablePath (C:/Program Files/Google/Chrome/Application/chrome.exe)
+    at ChromeLauncher.launch (file:///home/user/Padel-Legacy-New/node_modules/puppeteer-core/lib/puppeteer/node/BrowserLauncher.js:105:19)
+    at async ChromeLauncher.launch (file:///home/user/Padel-Legacy-New/node_modules/puppeteer-core/lib/puppeteer/node/ChromeLauncher.js:39:16)
+    at async PuppeteerNode.launch (file:///home/user/Padel-Legacy-New/node_modules/puppeteer-core/lib/puppeteer/node/PuppeteerNode.js:124:16)
+    at async file://<worktree>/scripts/test-live-match-mobile-contract-v520d.mjs:40:17
+
+Node.js v22.22.0

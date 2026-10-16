@@ -1,0 +1,19 @@
+
+--- M4.1: primitives compartilhados ---
+PASS — CompactStats exportado
+PASS — GameHud exportado (M4.1, sucessor visual do CompactStats separado)
+PASS — CompactListItem exportado
+PASS — CompactActionCard exportado
+PASS — CollapsibleSection exportado
+PASS — SummaryRow exportado
+PASS — PageHeader continua exportado (não duplicado)
+FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente)
+file://<worktree>/scripts/test-mobile-compact-ux-m4.mjs:23
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: PageHeader ganhou a prop `dense` (default false — não quebra uso existente)
+    at gate (file://<worktree>/scripts/test-mobile-compact-ux-m4.mjs:23:25)
+    at file://<worktree>/scripts/test-mobile-compact-ux-m4.mjs:47:3
+
+Node.js v22.22.0

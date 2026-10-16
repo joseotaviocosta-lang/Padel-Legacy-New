@@ -1,0 +1,119 @@
+  `    <div className={cn('pl-career-hud flex min-w-0 items-center gap-1.5', compact && 'gap-1', className)} aria-label="Status rápido da carreira">\n` +
+  '      {items.map(({ label, value, icon: Icon, tone, to }, index) => {\n' +
+  '        const className = cn(\n' +
+  "          'flex min-h-[var(--pl-touch-min)] min-w-0 items-center gap-2 rounded-xl border border-border/55 bg-card/62 px-2.5 py-1.5',\n" +
+  "          compact && index > 2 && 'hidden xl:flex',\n" +
+  "          to && 'transition-colors hover:border-premium/40 hover:bg-premium/10',\n" +
+  '        );\n' +
+  '        const content = <>\n' +
+  "          <Icon className={cn('h-3.5 w-3.5 shrink-0', tone)} />\n" +
+  '          <div className="min-w-0">\n' +
+  '            {!compact && <p className="text-[8px] font-extrabold uppercase tracking-[0.13em] text-muted-foreground">{label}</p>}\n' +
+  "            <p className={cn('whitespace-nowrap text-[11px] font-black tabular-nums', compact && 'text-[10px]')}>{value}</p>\n" +
+  '          </div>\n' +
+  '        </>;\n' +
+  '        return to\n' +
+  '          ? <Link key={label} to={to} className={className} aria-label={`Abrir Economia. Saldo: ${value} moedas`}>{content}</Link>\n' +
+  '          : <div key={label} className={className}>{content}</div>;\n' +
+  '      })}\n' +
+  `      {!compact && <button type="button" onClick={toggleSound} title={soundEnabled ? 'Desativar sons da interface' : 'Ativar sons da interface'} aria-label={soundEnabled ? 'Desativar sons da interface' : 'Ativar sons da interface'} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card/62 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">\n` +
+  '        {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}\n' +
+  '      </button>}\n' +
+  '    </div>\n' +
+  '  );\n' +
+  '}\n' +
+  '\n' +
+  '// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): `profile` chega de\n' +
+  "// AppLayout's useCareerHeaderData(), que emite um objeto novo a cada busca\n" +
+  '// mesmo quando nada visível aqui mudou. Comparador dedicado só nos campos que\n' +
+  '// este componente realmente mostra.\n' +
+  'function areEqual(prev, next) {\n' +
+  '  return prev.compact === next.compact\n' +
+  '    && prev.className === next.className\n' +
+  '    && Number(prev.profile?.energy) === Number(next.profile?.energy)\n' +
+  '    && Number(prev.profile?.fatigue) === Number(next.profile?.fatigue)\n' +
+  '    && Number(prev.profile?.coins) === Number(next.profile?.coins);\n' +
+  '}\n' +
+  '\n' +
+  'export default React.memo(CareerHud, areEqual);\n'
+
+    at file://<worktree>/scripts/test-ranking-ui-authority-v56.mjs:19:8 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: "import React, { useState } from 'react';\n" +
+    "import { Link } from 'react-router-dom';\n" +
+    "import { Coins, HeartPulse, Volume2, VolumeX, Zap } from 'lucide-react';\n" +
+    "import { cn } from '@/lib/utils';\n" +
+    "import { loadUiSoundPreferences, playUiSound, saveUiSoundPreferences } from '@/lib/uiSound.js';\n" +
+    "import { useRenderCounter } from '@/dev/performanceProbe.js';\n" +
+    "import { APP_ROUTES } from '@/navigation/routes.js';\n" +
+    '\n' +
+    '// Playthrough 5.24, Parte B — o item "Ranking" saiu daqui: o ranking\n' +
+    '// individual, o da dupla e o OVR agora vivem em HeaderRankShortcuts, os três\n' +
+    '// clicáveis. O CareerHud fica com o STATUS (moedas/energia/fadiga).\n' +
+    'function CareerHud({ profile, compact = false, className }) {\n' +
+    "  useRenderCounter('CareerHud');\n" +
+    '  const [soundEnabled, setSoundEnabled] = useState(() => loadUiSoundPreferences().enabled);\n' +
+    '\n' +
+    '  const energy = Math.round(Number(profile?.energy) || 0);\n' +
+    '  const fatigue = Math.round(Number(profile?.fatigue) || 0);\n' +
+    '  const coins = Math.round(Number(profile?.coins) || 0);\n' +
+    '\n' +
+    '  const items = [\n' +
+    "    { label: 'Moedas', value: coins.toLocaleString('pt-BR'), icon: Coins, tone: 'text-premium', to: APP_ROUTES.ECONOMY },\n" +
+    "    { label: 'Energia', value: `${energy}%`, icon: Zap, tone: energy < 30 ? 'text-destructive' : energy < 60 ? 'text-warning' : 'text-success' },\n" +
+    "    { label: 'Fadiga', value: `${fatigue}%`, icon: HeartPulse, tone: fatigue > 70 ? 'text-destructive' : fatigue > 45 ? 'text-warning' : 'text-success' },\n" +
+    '  ];\n' +
+    '\n' +
+    '  const toggleSound = () => {\n' +
+    '    const next = !soundEnabled;\n' +
+    '    setSoundEnabled(next);\n' +
+    '    saveUiSoundPreferences({ enabled: next });\n' +
+    "    if (next) window.setTimeout(() => playUiSound('notification'), 20);\n" +
+    '  };\n' +
+    '\n' +
+    '  return (\n' +
+    `    <div className={cn('pl-career-hud flex min-w-0 items-center gap-1.5', compact && 'gap-1', className)} aria-label="Status rápido da carreira">\n` +
+    '      {items.map(({ label, value, icon: Icon, tone, to }, index) => {\n' +
+    '        const className = cn(\n' +
+    "          'flex min-h-[var(--pl-touch-min)] min-w-0 items-center gap-2 rounded-xl border border-border/55 bg-card/62 px-2.5 py-1.5',\n" +
+    "          compact && index > 2 && 'hidden xl:flex',\n" +
+    "          to && 'transition-colors hover:border-premium/40 hover:bg-premium/10',\n" +
+    '        );\n' +
+    '        const content = <>\n' +
+    "          <Icon className={cn('h-3.5 w-3.5 shrink-0', tone)} />\n" +
+    '          <div className="min-w-0">\n' +
+    '            {!compact && <p className="text-[8px] font-extrabold uppercase tracking-[0.13em] text-muted-foreground">{label}</p>}\n' +
+    "            <p className={cn('whitespace-nowrap text-[11px] font-black tabular-nums', compact && 'text-[10px]')}>{value}</p>\n" +
+    '          </div>\n' +
+    '        </>;\n' +
+    '        return to\n' +
+    '          ? <Link key={label} to={to} className={className} aria-label={`Abrir Economia. Saldo: ${value} moedas`}>{content}</Link>\n' +
+    '          : <div key={label} className={className}>{content}</div>;\n' +
+    '      })}\n' +
+    `      {!compact && <button type="button" onClick={toggleSound} title={soundEnabled ? 'Desativar sons da interface' : 'Ativar sons da interface'} aria-label={soundEnabled ? 'Desativar sons da interface' : 'Ativar sons da interface'} className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-border/55 bg-card/62 text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary">\n` +
+    '        {soundEnabled ? <Volume2 className="h-3.5 w-3.5" /> : <VolumeX className="h-3.5 w-3.5" />}\n' +
+    '      </button>}\n' +
+    '    </div>\n' +
+    '  );\n' +
+    '}\n' +
+    '\n' +
+    '// Mobile M3.5 (docs/MOBILE_M3_5_RENDER_STORM.md): `profile` chega de\n' +
+    "// AppLayout's useCareerHeaderData(), que emite um objeto novo a cada busca\n" +
+    '// mesmo quando nada visível aqui mudou. Comparador dedicado só nos campos que\n' +
+    '// este componente realmente mostra.\n' +
+    'function areEqual(prev, next) {\n' +
+    '  return prev.compact === next.compact\n' +
+    '    && prev.className === next.className\n' +
+    '    && Number(prev.profile?.energy) === Number(next.profile?.energy)\n' +
+    '    && Number(prev.profile?.fatigue) === Number(next.profile?.fatigue)\n' +
+    '    && Number(prev.profile?.coins) === Number(next.profile?.coins);\n' +
+    '}\n' +
+    '\n' +
+    'export default React.memo(CareerHud, areEqual);\n',
+  expected: /formatIndividualRankLabel\(ranking\)/,
+  operator: 'match',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

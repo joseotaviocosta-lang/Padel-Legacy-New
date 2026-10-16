@@ -1,0 +1,35 @@
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async file://<worktree>/scripts/test-former-partner-world-continuity-v518.mjs:74:1 {
+}
+ex-parceiro antes: Facundo Sosa OVR=64 rank=0 race=0 circuit=0
+   [registro] Facundo Sosa
+✓ Parte I: o ex-parceiro CONTINUA AthleteProfile após a separação
+ex-parceiro depois: OVR=64 rank=1001 race=0 circuit=0 dupla=athlete-001
+✓ Parte I: permanece no mundo depois de 6 meses
+   [registro] rank 0 -> 1001
+✓ Parte I: o ranking individual continua existindo
+   [registro] race 0 -> 0 | circuit 0 -> 0
+✓ Parte I: Race e Circuit continuam acumulando/existindo
+   [registro] OVR 64 -> 64
+✓ Parte I: o desenvolvimento (OVR) segue seu curso
+   [registro] parceiro de IA atual: athlete-001
+✓ Parte I: pode formar dupla de IA pelo mercado
+   [registro] aparições em campo sorteado após a separação: 0
+✗ Parte I: pode voltar a competir (aparece em campo sorteado)
+   AssertionError [ERR_ASSERTION]: pareado mas nunca competiu em 6 meses
+    at file://<worktree>/scripts/test-former-partner-world-continuity-v518.mjs:196:12
+    at check (file://<worktree>/scripts/test-former-partner-world-continuity-v518.mjs:18:15)
+    at file://<worktree>/scripts/test-former-partner-world-continuity-v518.mjs:177:7
+   [registro] registros com bot_id=player-fictional-dzriqv: 0
+✓ Parte I: NÃO voltou a ser template estático
+   [registro] pareado=true race=0 circuit=0 OVR 64->64 rank=1001
+✓ SONDA DE DÍVIDA: o ex-parceiro não fica em beco sem saída
+
+=== Resultado: 8 passed, 1 failed ===
+

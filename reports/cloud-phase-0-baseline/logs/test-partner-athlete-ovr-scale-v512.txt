@@ -1,0 +1,53 @@
+=== Atributos que definem o OVR ===
+  ATTRIBUTE_KEYS (10): serve, forehand, backhand, volley, bandeja, smash, defense, agility, strategy, emotional_control
+
+=== Faixas de dificuldade dos bots ===
+  iniciante       1– 24 (base 12)
+  amador         25– 39 (base 28)
+  competitivo    40– 54 (base 42)
+  avancado       55– 69 (base 58)
+  elite          70– 84 (base 75)
+  lenda          85–100 (base 90)
+✓ Parte U/3: existe UMA função de OVR, derivada dos mesmos atributos
+✓ Parte U/1: as faixas de bot cobrem 1–100 de forma CONTÍNUA (uma escala só)
+
+catálogo: 340 atletas | bots expostos: 340
+✓ Parte A/U: todo bot é uma PROJEÇÃO de um atleta do catálogo (mesmo template_id)
+   [registro] bots verificados: 200
+✓ Parte U/2: o OVR do bot é o MESMO do atleta de catálogo
+
+=== Parte V: vocabulário de atributos ===
+  ATTRIBUTE_KEYS ausentes no bot: defense, agility, strategy, emotional_control
+  chaves numéricas do bot: side_flexibility, athlete_schema_version, nationality_code, tags, serve, forehand, backhand, volley, lob, smash, bandeja, speed, stamina, strength, reflexes, tactics, positioning, concentration, resilience
+   [registro] 6 de 10 chaves em comum
+✓ Parte V/3 (achado): bot e ATTRIBUTE_KEYS usam vocabulários DIFERENTES
+   [registro] divergência máxima entre overallRating() e overall_rating: 6
+✗ Parte G/2 (achado): overallRating() NÃO é a autoridade de OVR de atleta
+   AssertionError [ERR_ASSERTION]: overallRating() passou a reproduzir overall_rating — a autoridade mudou, rever partnerAthlete.js
+    at file://<worktree>/scripts/test-partner-athlete-ovr-scale-v512.mjs:127:12
+    at check (file://<worktree>/scripts/test-partner-athlete-ovr-scale-v512.mjs:34:15)
+    at file://<worktree>/scripts/test-partner-athlete-ovr-scale-v512.mjs:118:9
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async file://<worktree>/scripts/test-partner-athlete-ovr-scale-v512.mjs:140:3 {
+}
+
+=== Distribuição de OVR ===
+  atletas do MUNDO (1000): min 35 | p50 72 | max 96
+  bots do CATÁLOGO (340): min 10 | p50 69 | max 96
+   [registro] sobreposição de OVR: 35–96
+✓ Parte U/4: mundo e bots NÃO são sistemas distintos — as faixas se sobrepõem
+   [registro] OVR 13 pertence à faixa "Iniciante" (1–24) da MESMA escala 1–100
+✓ Parte U/7: OVR 13 é um valor LEGÍTIMO da mesma escala (Iniciante), não outra unidade
+
+=== Parte A/8: bots "iniciante" que JÁ existem como AthleteProfile ===
+  0 de 46
+✓ Parte A/8 (achado): o parceiro inicial NÃO existe como AthleteProfile persistido
+
+=== Resultado: 8 passed, 1 failed ===
+

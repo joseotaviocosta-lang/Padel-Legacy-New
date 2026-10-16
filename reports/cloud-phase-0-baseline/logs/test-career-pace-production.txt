@@ -1,0 +1,119 @@
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18)
+    at async eval (<worktree>/src/game-core/calendarLifecycle.js:307:13)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+[easy] 1) Equilibrado seed=0: 1460d, 23 partidas, rank final=244, 294290ms
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18)
+    at async eval (<worktree>/src/game-core/calendarLifecycle.js:307:13)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+[easy] 1) Equilibrado seed=1: 1460d, 25 partidas, rank final=253, 286339ms
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18)
+    at async eval (<worktree>/src/game-core/calendarLifecycle.js:307:13)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+[easy] 1) Equilibrado seed=2: 1460d, 29 partidas, rank final=296, 283546ms
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18)
+    at async eval (<worktree>/src/game-core/calendarLifecycle.js:307:13)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+[easy] 2) Competitivo (prioriza torneios) seed=0: 1460d, 18 partidas, rank final=206, 279199ms
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18)
+    at async eval (<worktree>/src/game-core/calendarLifecycle.js:307:13)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+[easy] 2) Competitivo (prioriza torneios) seed=1: 1460d, 24 partidas, rank final=218, 284722ms
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async finalizeCareerAdvanceRangeWork (<worktree>/src/game-core/calendarLifecycle.js:246:18)
+    at async eval (<worktree>/src/game-core/calendarLifecycle.js:307:13)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)

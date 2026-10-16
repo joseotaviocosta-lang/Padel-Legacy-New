@@ -1,0 +1,7 @@
+PASS: PartnerHub usa PageHeader premium
+FAIL: PartnerHub exibe indicadores da parceria
+FAIL: PartnerHub exibe propostas
+PASS: Economia usa PageHeader premium
+PASS: Economia exibe saldo
+PASS: Economia separa patrocínios e equipe
+FAIL: Versão beta.12

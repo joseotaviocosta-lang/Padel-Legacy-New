@@ -1,0 +1,24 @@
+PASS — 1. getCareerNextAction é determinístico (mesma entrada -> mesma saída)
+PASS — 2. Torneio hoje tem prioridade sobre treino (mesmo com treino disponível)
+PASS — 3. Decisão obrigatória tem prioridade sobre inscrição de torneio/treino
+PASS — 3b. Decisão obrigatória nunca vence torneio HOJE (torneio hoje é mais urgente)
+PASS — 4. Torneio de inscrição (futuro) gera sugestão, não um bloqueio (actionType navigate, nunca advance-day)
+PASS — 5. Sem torneio/decisão/partida pendente, mas com partida treino livre, sugere partida (prioridade 4, acima de treino)
+PASS — 5b. Sem partida treino disponível, sugere treino
+PASS — 6. getPostMatchPrimaryAction (M4.2.2) preservado — CTA nunca "Jogar Novamente" com limite consumido
+PASS — 7. TrainingView calcula postTrainingAction a partir do profile compartilhado já atualizado, reagindo ao resultado
+PASS — 7b. Com treino E partida do dia esgotados, next action cai para avançar o dia
+PASS — 8. Resetar contadores diários (avanço de dia) libera a sugestão de partida treino de novo
+PASS — 9. Blocker de torneio possui destination real (não null)
+PASS — 10. Destination do blocker de torneio usa buildTournamentPlayRoute (mesma rota que o Home/torneio usam)
+PASS — 11. Notificação de treino resolve para uma rota real e acionável
+FAIL — 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos)
+file://<worktree>/scripts/test-mobile-game-flow-m4-3.mjs:14
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos)
+    at gate (file://<worktree>/scripts/test-mobile-game-flow-m4-3.mjs:14:25)
+    at file://<worktree>/scripts/test-mobile-game-flow-m4-3.mjs:87:3
+
+Node.js v22.22.0

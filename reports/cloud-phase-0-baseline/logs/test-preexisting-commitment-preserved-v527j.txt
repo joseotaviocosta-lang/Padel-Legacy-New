@@ -1,0 +1,33 @@
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async bootstrap (file://<worktree>/scripts/lib/competitiveReviewGates.mjs:70:3)
+    at async runExitScenario (file://<worktree>/scripts/lib/v527jScenario.mjs:18:15)
+    at async file://<worktree>/scripts/test-preexisting-commitment-preserved-v527j.mjs:12:15 {
+}
+✓ lifecycle: compromisso anterior segue 'confirmed' com o parceiro original após a separação
+✓ lifecycle: roster comprometido resolve o parceiro ORIGINAL depois da separação
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async bootstrap (file://<worktree>/scripts/lib/competitiveReviewGates.mjs:70:3)
+    at async runExitScenario (file://<worktree>/scripts/lib/v527jScenario.mjs:18:15)
+    at async file://<worktree>/scripts/test-preexisting-commitment-preserved-v527j.mjs:12:15 {
+}
+✓ player-scheduled: compromisso anterior segue 'confirmed' com o parceiro original após a separação
+✓ player-scheduled: roster comprometido resolve o parceiro ORIGINAL depois da separação
+✗ carreiras reais (smoke 5 seeds): todo compromisso PENDENTE na decisão de saída foi jogado (nenhum cancelado pela saída)
+  Expected values to be strictly equal:
+  
+  0 !== 5
+  
+
+test-preexisting-commitment-preserved-v527j: 4/5 passaram

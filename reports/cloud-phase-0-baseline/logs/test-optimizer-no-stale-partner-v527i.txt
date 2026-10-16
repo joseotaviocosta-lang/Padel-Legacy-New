@@ -1,0 +1,9 @@
+✗ 15 carreiras do Otimizador na matriz
+  Expected values to be strictly equal:
+  
+  0 !== 15
+  
+✓ nenhum trecho gap > 30 por > 180 dias sem causa de custo
+✓ decidiu deixar o parceiro → não inscreveu torneio novo com ele
+
+test-optimizer-no-stale-partner-v527i: 2/3 passaram

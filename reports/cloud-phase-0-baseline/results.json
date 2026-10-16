@@ -1,0 +1,4272 @@
+{
+ "summary": {
+  "unique_tests": 368,
+  "pass": 308,
+  "fail": 60,
+  "classification_counts": {
+   "obsolete": 9,
+   "env": 15,
+   "undetermined": 3,
+   "preexisting": 33
+  },
+  "new_confirmed_regressions": []
+ },
+ "results": [
+  {
+   "test": "test-achievement-relevance-ranking",
+   "sources": [
+    "pkg:test:achievement-relevance-ranking"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "19 gates executados, todos PASS — Relevância de \"Próximas conquistas\" (Achievements Polish 12.1)."
+  },
+  {
+   "test": "test-achievement-reward-atomicity-v524e",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 4,
+   "summary": "test-achievement-reward-atomicity-v524e: PASS (7 gates)"
+  },
+  {
+   "test": "test-achievement-save-migration",
+   "sources": [
+    "pkg:test:achievement-save-migration"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": "FAIL — Linha legada do seed (pré-Fase-12, sem campo reconciled) sobrevive intacta, sem ser duplicada ou revogada",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — Linha legada do seed (pré-Fase-12, sem campo reconciled) sobrevive intacta, sem ser duplicada ou revogada",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: Linha legada do seed (pré-Fase-12, sem campo reconciled) sobrevive intacta, sem ser duplicada ou revogada"
+   ],
+   "history_windows": null,
+   "older_commits": {
+    "565437f": "pass",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "obsolete",
+   "evidence": "PASSA no 9001 (565437f) e FALHA desde o 9002 (c5bf7c8), que pôs PlayerAchievement em NEVER_SEED_WITH_DEMO_DATA de propósito (achado 4 do playtest). O teste usava essa linha de seed como fixture legada. Lacuna: a tolerância a linhas pré-Fase-12 ficou sem cobertura."
+  },
+  {
+   "test": "test-ai-partnership-exit-registration-v527j",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-ai-partnership-exit-registration-v527j: 3/3 passaram"
+  },
+  {
+   "test": "test-ai-player-tier-policy-separation",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-ai-player-tier-policy-separation: PASS"
+  },
+  {
+   "test": "test-annual-career-report-rc",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "AnnualCareerReportRCTest: PASS (30/30) · 3 temporadas em 26.33ms"
+  },
+  {
+   "test": "test-app-shell-route-contract-v520e",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-backup-cleanup-existing-installs-fase29",
+   "sources": [
+    "pkg:test:backup-cleanup-existing-installs-fase29"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "6 checagens, todas PASS."
+  },
+  {
+   "test": "test-backup-rotation-fase29",
+   "sources": [
+    "pkg:test:backup-rotation-fase29"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "6 checagens, todas PASS."
+  },
+  {
+   "test": "test-bracket-cta-availability-v516",
+   "sources": [
+    "527k",
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-bracket-cta-availability-v516: PASS"
+  },
+  {
+   "test": "test-bye-visible-from-draw",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-bye-visible-from-draw: PASS"
+  },
+  {
+   "test": "test-calendar-advance-v24",
+   "sources": [
+    "pkg:test:calendar-advance"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "CalendarAdvanceV24Test: PASS"
+  },
+  {
+   "test": "test-calendar-tier-cadence-v513",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-calendar-tier-cadence-v513: PASS"
+  },
+  {
+   "test": "test-career-atomicity",
+   "sources": [
+    "pkg:test:career-atomicity"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "PASS — B3: exatamente uma escrita de cada tipo no caminho feliz"
+  },
+  {
+   "test": "test-career-beta-readiness",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 119,
+   "summary": "✓ CareerBetaReadinessTest: PASS"
+  },
+  {
+   "test": "test-career-coach-history",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "8 gates executados, todos PASS — Histórico de treinadores (Fase 14): período real preservado na troca, sem dado inventado, saves antigos reconstruídos honestamente."
+  },
+  {
+   "test": "test-career-long-term-goals",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "8 gates executados, todos PASS — Fonte única de objetivo de longo prazo (Fase 13, Parte 8): onboarding soberano no tutorial, conquistas como fonte única depois."
+  },
+  {
+   "test": "test-career-null-safety",
+   "sources": [
+    "530b",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "37 gates executados, todos PASS — Career Null Safety (P0 hotfix)."
+  },
+  {
+   "test": "test-career-pace-production",
+   "sources": [
+    "530b"
+   ],
+   "run1": "timeout",
+   "seconds": 2400,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "env",
+   "evidence": "Simulação de ~4 anos (1460 dias): estourou 40 min no paralelo e foi interrompida aos 26 min no serial. No Windows (5.30-B) também não concluiu. Não executável no orçamento de tempo desta fase."
+  },
+  {
+   "test": "test-career-partnership-history",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "19 gates executados, todos PASS — Histórico de parcerias (Fase 14 + Fase 2.9 item 1/2/4): duração real corrigida, melhor parceria/mais partidas/mais longa, troca de parceiro preserva histórico, Partne"
+  },
+  {
+   "test": "test-career-persistence-integrity",
+   "sources": [
+    "530b",
+    "pkg:test:career-persistence-integrity"
+   ],
+   "run1": "fail",
+   "seconds": 7,
+   "summary": "PASS — Após torneio completo + reload: perfil do jogador preservado",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "PASS — ActiveCareerAdapter.getActiveCareer não apaga a carreira em memória quando a leitura falha por arquivo ausente — usa o cache quente como fallback",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: Após torneio completo + reload: tournament_run do torneio disputado continua presente"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "undetermined",
+   "evidence": "Após torneio completo + reload, o tournament_run do torneio disputado não está presente. Falha já no 9001. No Windows (5.30-B) estava como preexistente, sem a linha de falha. Persistência: PRIORIDADE ALTA para investigar."
+  },
+  {
+   "test": "test-career-ui-v2",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "CareerUiV2Test: PASS"
+  },
+  {
+   "test": "test-careerhub-stale-tournament-action-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 13,
+   "summary": "test-careerhub-stale-tournament-action-v59: PASS"
+  },
+  {
+   "test": "test-careerhub-tournament-planning-ui-v58",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-careerhub-tournament-planning-ui-v58: PASS"
+  },
+  {
+   "test": "test-coach-card-badges-wrap-v531b",
+   "sources": [
+    "new:v531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-coach-card-badges-wrap-v531b: 12/12 passaram"
+  },
+  {
+   "test": "test-coach-card-effects",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "32 gates executados, todos PASS — Clareza do card de treinador (impacto real no card, nunca lista editorial, card === \"Ver detalhes\")."
+  },
+  {
+   "test": "test-coach-card-name-priority-v531b",
+   "sources": [
+    "new:v531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-coach-card-name-priority-v531b: 15/15 passaram"
+  },
+  {
+   "test": "test-coach-detail-layout-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-coach-detail-layout-v531: 16/16 passaram"
+  },
+  {
+   "test": "test-coach-discovery-rc",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "CoachDiscoveryRCTest: PASS"
+  },
+  {
+   "test": "test-coach-market-compact-layout",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-coach-market-compact-layout: PASS"
+  },
+  {
+   "test": "test-coach-market-curation",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "29 gates executados, todos PASS — mercado de treinadores curado por estágio de carreira.",
+   "note": "falhava no Windows {'531': 'expected-test-update (PASS após atualização)', '531b': 'pass'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-coach-salary-consistency",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "34 gates executados, todos PASS — Consistência de salário de treinador (mercado === contratação === contrato === toast === folha mensal, nunca \"1 moeda\" silencioso)."
+  },
+  {
+   "test": "test-coach-selection-clarity",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "24 gates executados, todos PASS — Onboarding Flow 3.1 (clareza na seleção de treinador)."
+  },
+  {
+   "test": "test-coach-system-v28",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "CoachSystemV28Test: PASS"
+  },
+  {
+   "test": "test-coello-tapia-two-tournament-race",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 54,
+   "summary": "test-coello-tapia-two-tournament-race: PASS"
+  },
+  {
+   "test": "test-committed-partner-athlete-resolution-v519",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-completed-tournament-card-v527m",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-completed-tournament-card-v527m: 7/7 passaram"
+  },
+  {
+   "test": "test-consecutive-tournament-eligibility",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-consecutive-tournament-eligibility: PASS"
+  },
+  {
+   "test": "test-contract-cta-overflow-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-contract-cta-overflow-v531: 9/9 passaram"
+  },
+  {
+   "test": "test-countries-authority-v524",
+   "sources": [
+    "pkg:test:header-ranking-v524"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-countries-authority-v524: PASS (4 países)"
+  },
+  {
+   "test": "test-draw-after-exit-preserves-roster-v527j",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-draw-after-exit-preserves-roster-v527j: 0/0 passaram"
+  },
+  {
+   "test": "test-draw-modal-fresh-state-v513",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-draw-modal-fresh-state-v513: PASS"
+  },
+  {
+   "test": "test-draw-notification-authority",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-draw-notification-authority: PASS"
+  },
+  {
+   "test": "test-draw-notification-bell-refresh",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-draw-notification-bell-refresh: PASS"
+  },
+  {
+   "test": "test-draw-notification-bracket-atomicity-v513",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-draw-notification-bracket-atomicity-v513: PASS"
+  },
+  {
+   "test": "test-draw-notification-deep-link",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-draw-notification-deep-link: PASS"
+  },
+  {
+   "test": "test-draw-notification-deeplink-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-draw-notification-deeplink-v59: PASS"
+  },
+  {
+   "test": "test-draw-notification-fresh-tournament-read",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 10,
+   "summary": "test-draw-notification-fresh-tournament-read: PASS"
+  },
+  {
+   "test": "test-draw-notification-no-ui-side-effect",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-draw-notification-no-ui-side-effect: PASS"
+  },
+  {
+   "test": "test-draw-notification-preseason-real-flow",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-draw-notification-preseason-real-flow: PASS"
+  },
+  {
+   "test": "test-draw-notification-real-delivery",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 10,
+   "summary": "test-draw-notification-real-delivery: PASS"
+  },
+  {
+   "test": "test-draw-notification-same-tick",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 10,
+   "summary": "test-draw-notification-same-tick: PASS"
+  },
+  {
+   "test": "test-draw-ui-independent-persistence",
+   "sources": [
+    "527k",
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 14,
+   "summary": "test-draw-ui-independent-persistence: PASS"
+  },
+  {
+   "test": "test-elite-event-choice-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-elite-event-choice-v59: PASS"
+  },
+  {
+   "test": "test-energy-sensitivity-v527f",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 221,
+   "summary": "test-energy-sensitivity-v527f: 9/9 passaram"
+  },
+  {
+   "test": "test-energy-single-application-v527f",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-energy-single-application-v527f: 5/5 passaram"
+  },
+  {
+   "test": "test-extreme-elite-inactivity-v518",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 1085,
+   "summary": "test-extreme-elite-inactivity-v518: PASS",
+   "note": "falhava no Windows {'530b': 'pre-existing'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-final-commitment-triggers-separation-v527j",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 15,
+   "summary": "test-final-commitment-triggers-separation-v527j: 4/5 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "✗ carreiras reais: separação agendada = fim do último compromisso anterior à decisão (sem atraso extra)"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-finals-ui-semantics-v57",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-finals-ui-semantics-v57: PASS"
+  },
+  {
+   "test": "test-first-partnership-100-careers",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-first-partnership-100-careers: PASS"
+  },
+  {
+   "test": "test-first-partnership-diversity",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-first-partnership-diversity: PASS"
+  },
+  {
+   "test": "test-first-partnership-poor-candidate-filter",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-first-partnership-poor-candidate-filter: PASS"
+  },
+  {
+   "test": "test-first-partnership-ranking",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-first-partnership-ranking: PASS"
+  },
+  {
+   "test": "test-first-partnership-veteran-mentor",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-first-partnership-veteran-mentor: PASS"
+  },
+  {
+   "test": "test-first-partnership-young-projects",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-first-partnership-young-projects: PASS"
+  },
+  {
+   "test": "test-former-partner-reintegration-v518",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 215,
+   "summary": "test-former-partner-reintegration-v518: PASS",
+   "note": "falhava no Windows {'530b': 'pre-existing', '531': 'load-flaky (PASS isolado, 7/7)'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-former-partner-world-continuity-v518",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 76,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "\u001b[31m✗\u001b[0m Parte I: pode voltar a competir (aparece em campo sorteado)",
+    "AssertionError [ERR_ASSERTION]: pareado mas nunca competiu em 6 meses",
+    "=== Resultado: 8 passed, 1 failed ==="
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma asserção no Windows (5.30-B/5.31): ex-parceiro pareado mas nunca volta a campo sorteado."
+  },
+  {
+   "test": "test-global-header-calendar-rc",
+   "sources": [
+    "pkg:test:global-header-calendar"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "AssertionError [ERR_ASSERTION]: FAIL: todos os atalhos de um dia usam o coordenador",
+   "run2_serial": "fail",
+   "failLines": [
+    "AssertionError [ERR_ASSERTION]: FAIL: todos os atalhos de um dia usam o coordenador",
+    "code: 'ERR_ASSERTION',",
+    "expected: true,"
+   ],
+   "history_windows": null,
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "obsolete",
+   "evidence": "Exige advanceCareerDayOnce em src/pages/Training.jsx, que desde 0275b9c é um redirecionamento de 15 linhas sem atalho de dia."
+  },
+  {
+   "test": "test-global-header-overlay-rc",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "GlobalHeaderOverlayRCTest: PASS (19/19)"
+  },
+  {
+   "test": "test-global-overlays-audit",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "Error: ENOENT: no such file or directory, open 'src/components/career/CareerAssistant.jsx'"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "obsolete",
+   "evidence": "Lê src/components/career/CareerAssistant.jsx, que não existe mais. Mesma mensagem no Windows (5.30-B/5.31/5.31-B)."
+  },
+  {
+   "test": "test-header-calendar-shortcut",
+   "sources": [
+    "pkg:test:header-calendar-shortcut"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "11 gates executados, todos PASS — Atalho de calendário no header (Hotfix 14.1): data clicável, rota canônica, Avançar intocado."
+  },
+  {
+   "test": "test-header-next-event-active-preseason-v530b",
+   "sources": [
+    "new:v530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-header-next-event-active-preseason-v530b: 6/6 passaram"
+  },
+  {
+   "test": "test-header-next-event-after-preseason-v530b",
+   "sources": [
+    "new:v530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-header-next-event-after-preseason-v530b: 5/5 passaram"
+  },
+  {
+   "test": "test-header-next-event-includes-preseason-v530b",
+   "sources": [
+    "new:v530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-header-next-event-includes-preseason-v530b: 11/11 passaram"
+  },
+  {
+   "test": "test-header-next-event-registered-preseason-v530b",
+   "sources": [
+    "new:v530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-header-next-event-registered-preseason-v530b: 8/8 passaram"
+  },
+  {
+   "test": "test-header-next-tournament",
+   "sources": [
+    "530b",
+    "pkg:test:header-next-tournament"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "30 gates executados, todos PASS.",
+   "note": "falhava no Windows {'530b': 'REGRESSION'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-header-rank-shortcuts-v524",
+   "sources": [
+    "pkg:test:header-ranking-v524"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-header-rank-shortcuts-v524: PASS"
+  },
+  {
+   "test": "test-header-tournament-shortcut-v527m",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-header-tournament-shortcut-v527m: 7/7 passaram"
+  },
+  {
+   "test": "test-headless-registration-authority-v527j",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-headless-registration-authority-v527j: 6/6 passaram"
+  },
+  {
+   "test": "test-historical-partnership-resolution-v518",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-home-actions-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-actions-v530: 14/14 passaram"
+  },
+  {
+   "test": "test-home-empty-state-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-empty-state-v530: 9/9 passaram"
+  },
+  {
+   "test": "test-home-mobile-overflow-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-mobile-overflow-v530: 30/30 passaram"
+  },
+  {
+   "test": "test-home-next-commitment-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-next-commitment-v530: 7/7 passaram"
+  },
+  {
+   "test": "test-home-no-duplicate-summary-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-no-duplicate-summary-v530: 7/7 passaram"
+  },
+  {
+   "test": "test-home-no-partner-state-v530",
+   "sources": [
+    "531",
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-no-partner-state-v530: 7/7 passaram"
+  },
+  {
+   "test": "test-home-primary-hierarchy-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-primary-hierarchy-v530: 14/14 passaram"
+  },
+  {
+   "test": "test-home-priorities-v530",
+   "sources": [
+    "new:v530"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-home-priorities-v530: 8/8 passaram"
+  },
+  {
+   "test": "test-home-redesign",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!condition) throw new Error(`FALHA: ${label}`);",
+    "Error: FALHA: NextObjectiveCard ausente (objetivo principal)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-initial-opponent-origin-distribution-v515",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-initial-opponent-origin-distribution-v515: PASS"
+  },
+  {
+   "test": "test-injury-pre-match-walkover",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-injury-pre-match-walkover: PASS"
+  },
+  {
+   "test": "test-legacy-partner-repair-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-legacy-partner-repair-v512: PASS"
+  },
+  {
+   "test": "test-legacy-save-tournament-continuity-v517",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 19,
+   "summary": "test-legacy-save-tournament-continuity-v517: PASS"
+  },
+  {
+   "test": "test-live-coach",
+   "sources": [
+    "531",
+    "pkg:test:live-coach"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-live-coach-custom-plan",
+   "sources": [
+    "531",
+    "pkg:test:live-coach-custom-plan"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "PASS — a migração de carreira (v1 -> schema atual) continua íntegra com custom_tactic_plan adicionado"
+  },
+  {
+   "test": "test-live-coach-practice",
+   "sources": [
+    "531",
+    "pkg:test:live-coach-practice"
+   ],
+   "run1": "pass",
+   "seconds": 4,
+   "summary": "PASS — sem treinador, LiveMatch renderiza sem exceção e sem banner de sugestão"
+  },
+  {
+   "test": "test-live-coach-realism",
+   "sources": [
+    "531",
+    "pkg:test:live-coach-realism"
+   ],
+   "run1": "pass",
+   "seconds": 28,
+   "summary": "PASS — o padrão histórico do \"22/22\" (opponent_targeting_player) foi exercitado nesta amostra"
+  },
+  {
+   "test": "test-live-coach-tournament",
+   "sources": [
+    "531",
+    "pkg:test:live-coach-tournament"
+   ],
+   "run1": "pass",
+   "seconds": 4,
+   "summary": "PASS — a UI real mostra o banner \"Nova sugestão do técnico\" em partida de torneio"
+  },
+  {
+   "test": "test-live-match-landscape-contract-v520d",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "throw new Error(`Browser was not found at the configured executablePath (${launchArgs.executablePath})`);",
+    "Error: Browser was not found at the configured executablePath (C:/Program Files/Google/Chrome/Application/chrome.exe)"
+   ],
+   "history_windows": {
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "env",
+   "evidence": "Limitação cloud: puppeteer com Chrome fixo em C:/Program Files/Google/Chrome (caminho Windows). No Windows (5.31) também falhava, por asserção de viewport."
+  },
+  {
+   "test": "test-live-match-mobile-contract-v520d",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "throw new Error(`Browser was not found at the configured executablePath (${launchArgs.executablePath})`);",
+    "Error: Browser was not found at the configured executablePath (C:/Program Files/Google/Chrome/Application/chrome.exe)"
+   ],
+   "history_windows": {
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "env",
+   "evidence": "Limitação cloud: puppeteer com Chrome fixo em C:/Program Files/Google/Chrome (caminho Windows). No Windows (5.31) também falhava, por asserção de viewport."
+  },
+  {
+   "test": "test-living-career-v34-4",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "LivingCareerV34_4Test: FAIL",
+   "run2_serial": "fail",
+   "failLines": [
+    "LivingCareerV34_4Test: FAIL"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-living-career-v34-5",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/lib' imported from <worktree>/src/lib/careerMoments.js"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "obsolete",
+   "evidence": "Roda src/ com node puro e quebra ao resolver o alias '@/'. Mesma mensagem no Windows (5.30-B)."
+  },
+  {
+   "test": "test-living-career-v34-6",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "LivingCareerV34_6Test: PASS (7/7)"
+  },
+  {
+   "test": "test-living-career-v34-7",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from <worktree>/src/lib/careerDecisionCenter.js"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "obsolete",
+   "evidence": "Roda src/ com node puro e quebra ao resolver o alias '@/'. Mesma mensagem no Windows (5.30-B)."
+  },
+  {
+   "test": "test-living-career-v34-8",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "Error [ERR_MODULE_NOT_FOUND]: Cannot find package '@/navigation' imported from <worktree>/src/lib/weeklyCareerReview.js"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "obsolete",
+   "evidence": "Roda src/ com node puro e quebra ao resolver o alias '@/'. Mesma mensagem no Windows (5.30-B)."
+  },
+  {
+   "test": "test-living-career-v34-9",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (checks.some((value) => !value)) throw new Error(`Falha estrutural: ${checks.map(Number).join(',')}`);",
+    "Error: Falha estrutural: 1,1,0,1,1,1,1,1"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-living-partnership-market-phase15",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "LivingPartnershipMarketPhase15: PASS"
+  },
+  {
+   "test": "test-living-partnerships-v29",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "LivingPartnershipsV29Test: PASS"
+  },
+  {
+   "test": "test-living-world-v23",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "LivingWorldV23Test: PASS"
+  },
+  {
+   "test": "test-long-career-partner-ecology-v518",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 625,
+   "summary": "test-long-career-partner-ecology-v518: PASS",
+   "note": "falhava no Windows {'530b': 'pre-existing', '531': 'pre-existing'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-masters-24-8byes-r16-v522f",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-masters-24-8byes-r16-v522f: PASS (24 entrantes · 8 BYEs · seeds 1-8 · R16 com 16)"
+  },
+  {
+   "test": "test-masters-draw-size-comparison-v517",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 236,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "\u001b[31m✗\u001b[0m Parte L: nenhuma dupla do Top20 fica com 0 partidas em qualquer modelo",
+    "AssertionError [ERR_ASSERTION]: 24: 2 duplas do Top20 sem partida"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "undetermined",
+   "evidence": "2 duplas do Top20 sem partida no modelo 24. No Windows estourava 240 s (sem resultado); aqui conclui e falha. Provável efeito do calendário de elite reduzido (Masters 44->12)."
+  },
+  {
+   "test": "test-match-engine-identical-teams-v527f",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 248,
+   "summary": "test-match-engine-identical-teams-v527f: 21/21 passaram"
+  },
+  {
+   "test": "test-micro-gate-post-partner-tactics-v527g",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 1,
+   "summary": "test-micro-gate-post-partner-tactics-v527g: 3/5 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ Easy 1º ano >= 40% (38.9%)",
+    "assert.ok(y1.easyWR >= 40)",
+    "✗ R1 1º ano >= 35% (33.3%)",
+    "assert.ok(y1.r1WR >= 35)"
+   ],
+   "history_windows": {
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Lê o artefato versionado reports/rebalance-527g/micro-post-527g.json, que não atinge o gate (Easy 38,9% < 40; R1 33,3% < 35). Dado congelado da 5.27-G; preexistente na 5.31."
+  },
+  {
+   "test": "test-mobile-compact-ux-m4",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 5,
+   "summary": "FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — PageHeader ganhou a prop `dense` (default false — não quebra uso existente)",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: PageHeader ganhou a prop `dense` (default false — não quebra uso existente)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-mobile-filters-postmatch-m4-2-2",
+   "sources": [
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 1,
+   "summary": "FAIL — 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)",
+   "run2_serial": "fail",
+   "failLines": [
+    "FAIL — 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: 2. FilterPills aplica shrink-0 em cada item (raiz do bug de compressão corrigida)"
+   ],
+   "history_windows": {
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-mobile-foundation",
+   "sources": [
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-mobile-game-app-experience-m4-2",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu",
+   "run2_serial": "fail",
+   "failLines": [
+    "FAIL — Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: Home oferece atalhos diretos (Treinar/Competir/Agenda) sem precisar de menu"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-mobile-game-feel-m4-1",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "PASS — landscape curto recebe compactação específica e leve",
+   "note": "falhava no Windows {'530b': 'pass', '531': 'expected-test-update (PASS após atualização)', '531b': 'pass'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-mobile-game-flow-m4-3",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 4,
+   "summary": "FAIL — 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos)",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: 12. CareerHub.jsx mantém um único heroStep como ação dominante (onboarding > getNextStep, nunca dois heróis simultâneos)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-mobile-header-height-v524b",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-mobile-header-height-v524b: PASS"
+  },
+  {
+   "test": "test-mobile-header-two-rows-v524",
+   "sources": [
+    "530b",
+    "pkg:test:header-ranking-v524"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-mobile-header-two-rows-v524: PASS"
+  },
+  {
+   "test": "test-mobile-m3-1-device-hotfix",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!condition) throw new Error(`FALHA: ${label}`);",
+    "Error: FALHA: /game/matches passou a existir como rota real (não deveria)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-mobile-m3-2-android-ux",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 1,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!condition) throw new Error(`FALHA: ${label}`);",
+    "Error: FALHA: input de nome do atleta perdeu o scrollIntoView no foco (Parte 8, ficaria coberto pelo teclado)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-mobile-m3-live-match",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-mobile-match-day-refresh-m3-7-2",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 12,
+   "summary": "20 gates executados, todos PASS — Mobile M3.7.2 (Matches/Training/Missions reagem ao avanço de dia sem remontar)."
+  },
+  {
+   "test": "test-mobile-page-performance-budget-v524b",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 5,
+   "summary": "test-mobile-page-performance-budget-v524b: PASS (24 gates)"
+  },
+  {
+   "test": "test-mobile-persistence-m3-7",
+   "sources": [
+    "pkg:test:mobile-persistence-m3-7"
+   ],
+   "run1": "fail",
+   "seconds": 26,
+   "summary": "description: 'A dupla foi formada com compatibilidade estimada em 91/100 e entrosamento inicial 83/100.',",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "PASS — falha interna restaura memória e disco anteriores",
+    "PASS — falha do commit não publica draft em memória",
+    "PASS — falha do commit preserva disco anterior",
+    "PASS — falha injetada em write preserva o save antigo",
+    "PASS — falha injetada em rename preserva o save antigo"
+   ],
+   "history_windows": null,
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "obsolete",
+   "evidence": "deepEqual entre avanço não transacional e transacional difere só em save_version (457 vs 3), um contador de gravações que diverge por definição quando o caminho transacional faz 1 commit. Falha já no 9001. Provável obsoleto; confirmar com o autor."
+  },
+  {
+   "test": "test-mobile-rendered-complexity-v520c",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 1,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "throw new Error(`Browser was not found at the configured executablePath (${launchArgs.executablePath})`);",
+    "Error: Browser was not found at the configured executablePath (C:/Program Files/Google/Chrome/Application/chrome.exe)"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": null,
+   "classification": "env",
+   "evidence": "Limitação cloud: puppeteer com Chrome fixo em C:/Program Files/Google/Chrome (caminho Windows)."
+  },
+  {
+   "test": "test-mobile-visual-hotfix-m4-1-3",
+   "sources": [
+    "530b",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "35 gates executados, todos PASS — M4.1.3 Mobile Visual Hotfix (estrutural — screenshot-driven QA física ainda pendente, ver relatório)."
+  },
+  {
+   "test": "test-mobile-visual-polish-m4-1-2",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "19 gates executados, todos PASS — M4.1.2 (bottom nav com superfície própria, HUD sem informação colada, botões densos). QA visual manual nos 5 viewports continua obrigatória — este teste não a substit"
+  },
+  {
+   "test": "test-modal-safety",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-monthly-career-report-rc",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "MonthlyCareerReportRCTest: PASS (23/23)"
+  },
+  {
+   "test": "test-new-player-opponent-tier-quality",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 86,
+   "summary": "test-new-player-opponent-tier-quality: PASS"
+  },
+  {
+   "test": "test-next-event-authority-consistency-v530b",
+   "sources": [
+    "new:v530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-next-event-authority-consistency-v530b: 36/36 passaram"
+  },
+  {
+   "test": "test-no-current-partnership-bracket-rebuild-v527m",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-no-current-partnership-bracket-rebuild-v527m: 8/8 passaram"
+  },
+  {
+   "test": "test-no-new-commitment-after-exit-v527j",
+   "sources": [
+    "527k",
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 18,
+   "summary": "test-no-new-commitment-after-exit-v527j: 3/5 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "✗ carreiras reais: 0 inscrições que estendem a dupla depois da saída (smoke 5 seeds + save/reload)",
+    "✗ carreiras reais: a data de separação agendada nunca é empurrada depois de marcada"
+   ],
+   "history_windows": {
+    "531": "pass",
+    "527k": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-no-overlapping-partnership-v527j",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 17,
+   "summary": "test-no-overlapping-partnership-v527j: 2/3 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "✗ carreiras reais: a nova dupla só joga depois da última partida do limbo (sem colisão de agenda)"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-normal-partner-score-v527g",
+   "sources": [
+    "527k",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-normal-partner-score-v527g: 6/6 passaram"
+  },
+  {
+   "test": "test-normal-partner-strength-floor-v527g",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "test-normal-partner-strength-floor-v527g: 1/4 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ >= 20 mercados de Busca (0)",
+    "assert.ok(markets.length >= 20)",
+    "✗ antes (só compatibilidade): reproduz a escolha fraca — OVR mediano <= 50% do melhor disponível",
+    "✗ depois: OVR escolhido mediano >= 85% do melhor alcançável"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-normal-vs-optimizer-partner-choice-v527g",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "test-normal-vs-optimizer-partner-choice-v527g: 0/3 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ Normal coincide com o Otimizador em <= 30% dos mercados",
+    "✗ Normal mantém compatibilidade mediana maior que a do Otimizador",
+    "assert.ok(median(markets.map((m) => pickNormal(m).compatibility)) > median(markets.map((m) => pickOptimizer(m).compatibility)))",
+    "✗ Otimizador escolhe OVR mediano >= ao do Normal (o Normal não virou maximizador)",
+    "assert.ok(median(markets.map((m) => pickOptimizer(m).uiOvr)) >= median(markets.map((m) => pickNormal(m).uiOvr)))"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-notification-deep-links-rc",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "NotificationDeepLinksRCTest: PASS (26/26)"
+  },
+  {
+   "test": "test-notification-system-audit-rc",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 5,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "TypeError: Cannot read properties of undefined (reading 'is_read')"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "TypeError lendo 'is_read' de undefined. Mesma falha no Windows nas 3 fases. Causa não investigada a fundo (pode ser fixture)."
+  },
+  {
+   "test": "test-onboarding-priority",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 2,
+   "summary": "FAIL — getNextStep (motor de fallback) continua definido, não foi removido",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — getNextStep (motor de fallback) continua definido, não foi removido",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: getNextStep (motor de fallback) continua definido, não foi removido"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-onboarding-single-source-of-truth",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "219 gates executados, todos PASS — Single Source of Truth (Home === Guia em todas as 15 etapas)."
+  },
+  {
+   "test": "test-onboarding-tournament-gate",
+   "sources": [
+    "pkg:test:onboarding-tournament-gate"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": null
+  },
+  {
+   "test": "test-opponent-strength-by-round",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 34,
+   "summary": "test-opponent-strength-by-round: PASS"
+  },
+  {
+   "test": "test-optimizer-no-stale-partner-v527i",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "test-optimizer-no-stale-partner-v527i: 2/3 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ 15 carreiras do Otimizador na matriz",
+    "Expected values to be strictly equal:"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-optimizer-partner-refresh-v527i",
+   "sources": [
+    "527k",
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "test-optimizer-partner-refresh-v527i: 4/5 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ micro 2a (5 seeds): troca para parceiro forte dentro de 1 ano e nenhum trecho gap > 30 por > 180 dias (item 42)",
+    "Expected values to be strictly equal:"
+   ],
+   "history_windows": {
+    "531": "pass",
+    "527k": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-page-hierarchy",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página)",
+   "run2_serial": "fail",
+   "failLines": [
+    "FAIL — Training.jsx tem exatamente 1 PageHeader (identidade única da página)",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: Training.jsx tem exatamente 1 PageHeader (identidade única da página)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-parallel-draw-atomicity-v513",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-parallel-draw-atomicity-v513: PASS"
+  },
+  {
+   "test": "test-parallel-tournament-settlement-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 29,
+   "summary": "test-parallel-tournament-settlement-v59: PASS"
+  },
+  {
+   "test": "test-partner-athlete-chemistry-continuity-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-partner-athlete-chemistry-continuity-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-contract-continuity-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-athlete-contract-continuity-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-development-veteran-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-partner-athlete-development-veteran-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-development-young-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-partner-athlete-development-young-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-idempotency-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1249,
+   "summary": "test-partner-athlete-idempotency-v512: PASS",
+   "note": "falhava no Windows {'531': 'pre-existing'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-partner-athlete-materialization-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-partner-athlete-materialization-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-new-partnership-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-athlete-new-partnership-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-ovr-scale-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 6,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "\u001b[31m✗\u001b[0m Parte G/2 (achado): overallRating() NÃO é a autoridade de OVR de atleta",
+    "AssertionError [ERR_ASSERTION]: overallRating() passou a reproduzir overall_rating — a autoridade mudou, rever partnerAthlete.js",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "=== Resultado: 8 passed, 1 failed ==="
+   ],
+   "history_windows": {
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Gate G/2 é um \"achado\" documental (overallRating não é a autoridade de OVR). Mesma falha na 5.31."
+  },
+  {
+   "test": "test-partner-athlete-ranking-credit-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-athlete-ranking-credit-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-save-reload-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-athlete-save-reload-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-separation-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-partner-athlete-separation-v512: PASS"
+  },
+  {
+   "test": "test-partner-athlete-teamranking-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-athlete-teamranking-v512: PASS"
+  },
+  {
+   "test": "test-partner-choice-compatibility-preserved-v527g",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-partner-choice-compatibility-preserved-v527g: 4/4 passaram"
+  },
+  {
+   "test": "test-partner-committed-roster-ovr-v526b",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-committed-roster-ovr-v526b: 5/5 passaram"
+  },
+  {
+   "test": "test-partner-contract-365d-v526c",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 116,
+   "summary": "test-partner-contract-365d-v526c: 6/6 passaram"
+  },
+  {
+   "test": "test-partner-contract-decision-ui-v519",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": null
+  },
+  {
+   "test": "test-partner-contract-no-monthly-salary",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "partner-contract-no-monthly-salary: PASS"
+  },
+  {
+   "test": "test-partner-contract-notification-deeplink-v519",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": null
+  },
+  {
+   "test": "test-partner-contract-state-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-partner-contract-state-v531: 16/16 passaram"
+  },
+  {
+   "test": "test-partner-conversation-cooldown-v517",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-conversation-cooldown-v517: PASS"
+  },
+  {
+   "test": "test-partner-conversation-effects-v517",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-partner-conversation-effects-v517: PASS"
+  },
+  {
+   "test": "test-partner-day1-gate",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-partner-decision-state-ui",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "partner-decision-state-ui: PASS",
+   "note": "falhava no Windows {'531': 'expected-test-update (PASS após atualização)', '531b': 'pass'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-partner-development-cadence-v513",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-partner-development-cadence-v513: PASS"
+  },
+  {
+   "test": "test-partner-development-v59",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-partner-development-v59: PASS"
+  },
+  {
+   "test": "test-partner-ecology-inventory-v518",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 230,
+   "summary": "test-partner-ecology-inventory-v518: PASS",
+   "note": "falhava no Windows {'530b': 'pre-existing', '531': 'pass'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-partner-engine-ovr-authority-v526b",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 2,
+   "summary": "test-partner-engine-ovr-authority-v526b: 8/9 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ modificadores de contexto do motor preservados (química/energia/coach/vínculo)",
+    "Expected values to be strictly equal:"
+   ],
+   "history_windows": {
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Modificadores de contexto do motor (química/energia/coach/vínculo). Falhava na 5.31 (sem log). Causa não determinada; tocar só com autorização (motor)."
+  },
+  {
+   "test": "test-partner-exit-pending-ui-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-partner-exit-pending-ui-v531: 11/11 passaram"
+  },
+  {
+   "test": "test-partner-hub-legacy-deeplink-v520c",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-partner-hub-tab-consolidation-v520b",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-partner-inbox-filters-scroll-v531b",
+   "sources": [
+    "new:v531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-partner-inbox-filters-scroll-v531b: 13/13 passaram"
+  },
+  {
+   "test": "test-partner-market-cards-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-partner-market-cards-v531: 17/17 passaram"
+  },
+  {
+   "test": "test-partner-market-selects-v531b",
+   "sources": [
+    "new:v531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-partner-market-selects-v531b: 11/11 passaram"
+  },
+  {
+   "test": "test-partner-market-ui-contract-v518",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-market-ui-contract-v518: PASS"
+  },
+  {
+   "test": "test-partner-no-overflow-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-partner-no-overflow-v531: 6/6 passaram"
+  },
+  {
+   "test": "test-partner-offer-materializes-selected-only-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-offer-materializes-selected-only-v512: PASS"
+  },
+  {
+   "test": "test-partner-offer-notifications",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "17 gates executados, todos PASS — Partner Offer Notifications (bug de notificações indevidas)."
+  },
+  {
+   "test": "test-partner-offer-overall-integrity-v519",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "[registro] candidatos com OVR divergente do declarado (>2): 0/22"
+  },
+  {
+   "test": "test-partner-offer-persistence-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partner-offer-persistence-v512: PASS"
+  },
+  {
+   "test": "test-partner-offers-v2",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-partner-overview-development-refresh-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-partner-overview-development-refresh-v512: PASS"
+  },
+  {
+   "test": "test-partner-overview-persistent-athlete-v512",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-partner-overview-persistent-athlete-v512: PASS"
+  },
+  {
+   "test": "test-partner-quality-over-time-v527h",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "test-partner-quality-over-time-v527h: 4/5 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ partner-quality.csv: gap = melhor alcançável − parceiro atual",
+    "Expected values to be strictly equal:"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-partner-rejection-cooldown",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "partner-rejection-cooldown: PASS"
+  },
+  {
+   "test": "test-partner-resign-loop-v526c",
+   "sources": [
+    "527k",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 19,
+   "summary": "test-partner-resign-loop-v526c: 6/6 passaram"
+  },
+  {
+   "test": "test-partner-screen-hierarchy-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-partner-screen-hierarchy-v531: 18/18 passaram"
+  },
+  {
+   "test": "test-partner-tabs-mobile-containment-v531b",
+   "sources": [
+    "new:v531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-partner-tabs-mobile-containment-v531b: 12/12 passaram"
+  },
+  {
+   "test": "test-partnership-change-does-not-rewrite-draw-v526d",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partnership-change-does-not-rewrite-draw-v526d: 3/3 passaram"
+  },
+  {
+   "test": "test-partnership-contract-notification-lifecycle-v517",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partnership-contract-notification-lifecycle-v517: PASS"
+  },
+  {
+   "test": "test-partnership-expiry-with-committed-tournament-v517",
+   "sources": [
+    "527k",
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partnership-expiry-with-committed-tournament-v517: PASS"
+  },
+  {
+   "test": "test-partnership-history-v518",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partnership-history-v518: PASS"
+  },
+  {
+   "test": "test-partnership-legacy-scope-fase29",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "11 gates executados, todos PASS — Fase 2.9, item 2/3/4: escopo de PartnershipLegacy (só jogador/atleta real), TeamRanking apagado uniformemente, Partnership nunca apagada na hora, poda com carência de"
+  },
+  {
+   "test": "test-partnership-registration-after-exit-v527j",
+   "sources": [
+    "527k",
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 16,
+   "summary": "test-partnership-registration-after-exit-v527j: 9/9 passaram"
+  },
+  {
+   "test": "test-partnership-repair-preserves-completed-tournaments-v517",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-partnership-repair-preserves-completed-tournaments-v517: PASS"
+  },
+  {
+   "test": "test-partnership-scheduled-separation-v517",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": "test-partnership-scheduled-separation-v517: PASS"
+  },
+  {
+   "test": "test-partnership-state-segmentation-v527h",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "test-partnership-state-segmentation-v527h: 2/4 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ matriz: toda partida do 1º ano de toda carreira cai em exatamente um estado",
+    "✗ partnership-state.csv: A+B+C = partidas do 1º ano por preset/perfil, com OVR jogador/parceiro/dupla/adversário"
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-phase15-2-integrated-qa",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "35 gates executados, todos PASS — Fase 15.2 Integrated QA."
+  },
+  {
+   "test": "test-phase15-3-economy-progression-navigation",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "Phase 15.3: 4/66 gate(s) falharam:",
+   "run2_serial": "fail",
+   "failLines": [
+    "Phase 15.3: 4/66 gate(s) falharam:",
+    "AssertionError [ERR_ASSERTION]: Fase 15.3 integrada falhou",
+    "code: 'ERR_ASSERTION',",
+    "expected: undefined,",
+    "operator: 'fail',"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "4/66 gates; mesma contagem no Windows (5.30-B/5.31)."
+  },
+  {
+   "test": "test-phase15-4-mobile-flow-polish",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": "AssertionError [ERR_ASSERTION]: Fase 15.4 falhou: 7/132 gate(s)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — 5. Home preserva Próximo objetivo",
+    "FAIL — 6. Home preserva ranking no HUD do atleta",
+    "FAIL — 7. Home possui uma única instância da ação dominante",
+    "FAIL — 12. Painel dominante usa padding compacto",
+    "FAIL — 94. Derrota terminal recebe onInterview"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-phase15-5-1-critical-training-center",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 4,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Game Core] Circuito mundial não processado: Error: WorldEvent já existe com o id: worldevent-1792178068430-zn1fu8",
+    "[Game Core 3.5] Falha ao atualizar AthleteProfile em lote: WorldEvent já existe com o id: worldevent-1792178068430-zn1fu8",
+    "[Game Core 3.5] Falha ao atualizar PlayerProfile: WorldEvent já existe com o id: worldevent-1792178068430-zn1fu8",
+    "[Game Core] Inteligência dos atletas não processada: Error: WorldEvent já existe com o id: worldevent-1792178068430-zn1fu8",
+    "[Game Core] Sistema médico não processado: Error: WorldEvent já existe com o id: worldevent-1792178068430-zn1fu8"
+   ],
+   "history_windows": {
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "WorldEvent com id duplicado ao processar o circuito. Mesma mensagem no Windows (5.31/5.31-B). Possível bug real de id não determinístico; investigar."
+  },
+  {
+   "test": "test-phase15-5-1-header-notifications-partnership-ui",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-phase15-5-1-tournament-interview-consistency",
+   "sources": [
+    "pkg:test:phase15-5-1-tournament-interview-consistency"
+   ],
+   "run1": "fail",
+   "seconds": 2,
+   "summary": "Error: Phase15.5.1 Tournament/Interview: FAIL (1/79)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "throw new Error(`Phase15.5.1 Tournament/Interview: FAIL (${failures.length}/${gates})\\n${failures.join('\\n')}`);",
+    "Error: Phase15.5.1 Tournament/Interview: FAIL (1/79)"
+   ],
+   "history_windows": null,
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "obsolete",
+   "evidence": "Gate 79 (regex /localGame/) casa um COMENTÁRIO em tournamentBracketView.js:358, adicionado no 565437f. Falso positivo; 78/79 gates passam."
+  },
+  {
+   "test": "test-phase15-5-2-tournament-continuity",
+   "sources": [
+    "530b",
+    "pkg:test:phase15-5-2-tournament-continuity"
+   ],
+   "run1": "pass",
+   "seconds": 16,
+   "summary": "44 gates executados, todos PASS — Fase 15.5.2 Tournament Continuity Hotfix (100 campanhas simuladas)."
+  },
+  {
+   "test": "test-phase15-5-4-critical-mobile-qa",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": "PASS — 20. D-3 cria exatamente uma notificação (um único marco na lista)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-phase15-6-1-tournament-draw-consistency",
+   "sources": [
+    "530b",
+    "pkg:test:phase15-6-1-tournament-draw-consistency"
+   ],
+   "run1": "fail",
+   "seconds": 2,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: D-7: nenhuma chave existe ainda (modal mostraria not_drawn)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "D-7: espera nenhuma chave, mas há chave. Mesma falha no Windows (5.30-B). Provável efeito do sorteio D-3 unificado (d5e5a2e); confirmar."
+  },
+  {
+   "test": "test-phase15-6-2-tournament-canonical-state",
+   "sources": [
+    "530b",
+    "pkg:test:phase15-6-2-tournament-canonical-state"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "AssertionError [ERR_ASSERTION]: inscrição real deve suceder mesmo com a linha seed já presente",
+    "code: 'ERR_ASSERTION',",
+    "expected: true,"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma asserção no Windows (5.30-B): inscrição real deve suceder com a linha seed presente."
+  },
+  {
+   "test": "test-phase15-6-app-performance-calendar-hardening",
+   "sources": [
+    "530b",
+    "pkg:test:phase15-6-app-performance-calendar-hardening"
+   ],
+   "run1": "fail",
+   "seconds": 7,
+   "summary": "PASS — 1b. Evento de demonstração (cal-002) nunca ganha tournament_run sem inscrição real",
+   "run2_serial": "fail",
+   "failLines": [
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: 2. Torneio já registrado: registerTournament sucesso"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha no Windows (5.30-B)."
+  },
+  {
+   "test": "test-phase15-7-first-tournament-parity",
+   "sources": [
+    "530b",
+    "pkg:test:phase15-7-first-tournament-parity"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: Rebalance: 1º torneio da temporada ocorre dentro da janela de 30-45 dias (obtido: 28 dias)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Espera 1º torneio em 30-45 dias, obtém 28 (Londres). Mesma falha no Windows (5.30-B). Provável efeito do calendário de elite rebalanceado; decisão de design."
+  },
+  {
+   "test": "test-player-low-rank-first-round-quality-v5",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 13,
+   "summary": "test-player-low-rank-first-round-quality-v5: PASS"
+  },
+  {
+   "test": "test-player-missed-registration-real-flow",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 12,
+   "summary": "test-player-missed-registration-real-flow: PASS"
+  },
+  {
+   "test": "test-player-opponent-progression-v5",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 19,
+   "summary": "test-player-opponent-progression-v5: PASS"
+  },
+  {
+   "test": "test-player-partner-offer-flow-v518",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-player-partner-offer-flow-v518: PASS"
+  },
+  {
+   "test": "test-player-partner-ranking-display-v5",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-player-partner-ranking-display-v5: PASS"
+  },
+  {
+   "test": "test-player-post-separation-market-v518",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 228,
+   "summary": "test-player-post-separation-market-v518: PASS",
+   "note": "falhava no Windows {'530b': 'pre-existing', '531': 'pre-existing'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-player-registration-real-flow",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 12,
+   "summary": "test-player-registration-real-flow: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-active-pair-key-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-team-ranking-active-pair-key-v522g: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-existing-save-repair-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-team-ranking-existing-save-repair-v522g: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-materialization-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-team-ranking-materialization-v522g: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-pair-change-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-player-team-ranking-pair-change-v522g: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-points-reprojection-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-team-ranking-points-reprojection-v522g: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-position-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-team-ranking-position-v522g: PASS"
+  },
+  {
+   "test": "test-player-team-ranking-zero-zero-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-team-ranking-zero-zero-v522g: PASS"
+  },
+  {
+   "test": "test-player-tier-eligibility-matrix",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-player-tier-eligibility-matrix: PASS"
+  },
+  {
+   "test": "test-playthrough-4-3-production-reconciliation",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 13,
+   "summary": "test-playthrough-4-3-production-reconciliation: PASS"
+  },
+  {
+   "test": "test-post-separation-partner-market-v517",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-post-separation-partner-market-v517: PASS"
+  },
+  {
+   "test": "test-preexisting-commitment-preserved-v527j",
+   "sources": [
+    "527k"
+   ],
+   "run1": "fail",
+   "seconds": 17,
+   "summary": "test-preexisting-commitment-preserved-v527j: 4/5 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.",
+    "✗ carreiras reais (smoke 5 seeds): todo compromisso PENDENTE na decisão de saída foi jogado (nenhum cancelado pela saída)",
+    "Expected values to be strictly equal:"
+   ],
+   "history_windows": {
+    "527k": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-premium-home-v33-2",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!content.includes(needle)) throw new Error(`${file}: conteúdo ausente: ${needle}`);",
+    "Error: src/pages/CareerHub.jsx: conteúdo ausente: PremiumQuickStats"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-premium-interfaces-v33",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "PremiumInterfacesV33Test: FAIL",
+   "run2_serial": "fail",
+   "failLines": [
+    "PremiumInterfacesV33Test: FAIL"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-premium-relations-v33-8",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": "FAIL: Versão beta.12",
+   "run2_serial": "fail",
+   "failLines": [
+    "FAIL: PartnerHub exibe indicadores da parceria",
+    "FAIL: PartnerHub exibe propostas",
+    "FAIL: Versão beta.12"
+   ],
+   "history_windows": {
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-race-year-reset-v526c",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 24,
+   "summary": "test-race-year-reset-v526c: 8/8 passaram"
+  },
+  {
+   "test": "test-ranking-consistency",
+   "sources": [
+    "530b",
+    "pkg:test:ranking-consistency"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "PASS — todas as 1000 novas entradas presentes, além da baseline"
+  },
+  {
+   "test": "test-ranking-country-club-links-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-country-club-links-v522e: PASS"
+  },
+  {
+   "test": "test-ranking-finals-cut-semantic-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-finals-cut-semantic-v523: PASS (faltam 85 pontos para o Top 8)"
+  },
+  {
+   "test": "test-ranking-four-view-architecture-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-four-view-architecture-v523: PASS"
+  },
+  {
+   "test": "test-ranking-full-season-simulation",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 153,
+   "summary": "test-ranking-full-season-simulation: PASS"
+  },
+  {
+   "test": "test-ranking-history-navigation-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-history-navigation-v523: PASS"
+  },
+  {
+   "test": "test-ranking-legacy-tab-redirects-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-legacy-tab-redirects-v523: PASS"
+  },
+  {
+   "test": "test-ranking-milestone-ladder",
+   "sources": [
+    "pkg:test:ranking-milestone-ladder"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "39 gates executados, todos PASS — Ladder de milestones de ranking (Fase 13, Parte 3/17)."
+  },
+  {
+   "test": "test-ranking-mobile-two-level-tabs-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-mobile-two-level-tabs-v523: PASS"
+  },
+  {
+   "test": "test-ranking-no-active-partner-states-v523",
+   "sources": [
+    "531",
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-ranking-no-active-partner-states-v523: PASS"
+  },
+  {
+   "test": "test-ranking-player-pair-card-authority-v522g",
+   "sources": [
+    "pkg:test:player-team-ranking-v522g"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-player-pair-card-authority-v522g: PASS"
+  },
+  {
+   "test": "test-ranking-player-pair-points-breakdown-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-player-pair-points-breakdown-v522e: PASS"
+  },
+  {
+   "test": "test-ranking-race-distinct-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-race-distinct-v522e: PASS"
+  },
+  {
+   "test": "test-ranking-race-doubles-card-v524",
+   "sources": [
+    "pkg:test:header-ranking-v524"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-race-doubles-card-v524: PASS"
+  },
+  {
+   "test": "test-ranking-race-doubles-player-context-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-ranking-race-doubles-player-context-v523: PASS"
+  },
+  {
+   "test": "test-ranking-race-doubles-view-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-race-doubles-view-v523: PASS"
+  },
+  {
+   "test": "test-ranking-race-individual-view-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-race-individual-view-v523: PASS"
+  },
+  {
+   "test": "test-ranking-race-no-duplicate-summary-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-race-no-duplicate-summary-v522e: PASS"
+  },
+  {
+   "test": "test-ranking-race-season",
+   "sources": [
+    "pkg:test:ranking-race-season"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "27 gates executados, todos PASS — Ranking Race Season (pontos indevidos no início da carreira)."
+  },
+  {
+   "test": "test-ranking-rolling-window-fase4",
+   "sources": [
+    "pkg:test:ranking-rolling-window-fase4"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": "FAIL — (4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (sem decaimento antecipado)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — (4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (sem decaimento antecipado)",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: (4C.1) na semana 52, o total do inativo ainda é o valor cheio da âncora (sem decaimento antecipado)"
+   ],
+   "history_windows": null,
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "undetermined",
+   "evidence": "4C.1: na semana 52 o total do inativo já decaiu (espera âncora cheia). Falha já no 9001; sem histórico Windows. rankingWindow.js mudou no 565437f. Pode ser regra nova ou bug de borda de janela."
+  },
+  {
+   "test": "test-ranking-season-carryover-v32",
+   "sources": [
+    "pkg:test:ranking-carryover-v32"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "RankingSeasonCarryoverV32Test: PASS (Fase 4 — carryover removido, janela rolling confirmada)"
+  },
+  {
+   "test": "test-ranking-ui-authority-v56",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "AssertionError [ERR_ASSERTION]: The input did not match the regular expression /formatIndividualRankLabel\\(ranking\\)/. Input:",
+    "code: 'ERR_ASSERTION',",
+    "expected: /formatIndividualRankLabel\\(ranking\\)/,"
+   ],
+   "history_windows": {
+    "531": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-ranking-world-compact-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-world-compact-v522e: PASS"
+  },
+  {
+   "test": "test-ranking-world-doubles-view-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-world-doubles-view-v523: PASS"
+  },
+  {
+   "test": "test-ranking-world-individual-view-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-world-individual-view-v523: PASS"
+  },
+  {
+   "test": "test-ranking-world-race-divergent-fixture-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-ranking-world-race-divergent-fixture-v522e: PASS (World #400 · Race #63)"
+  },
+  {
+   "test": "test-ranking-world-race-team-authority-v523",
+   "sources": [
+    "pkg:test:ranking-architecture-v523"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-ranking-world-race-team-authority-v523: PASS"
+  },
+  {
+   "test": "test-recovery-skip-tournament-walkover",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 13,
+   "summary": "test-recovery-skip-tournament-walkover: PASS"
+  },
+  {
+   "test": "test-redesign-polish2",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!condition) throw new Error(`FALHA: ${label}`);",
+    "Error: FALHA: getNextStep (motor de próximo passo) removida/renomeada"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-redesign-polish21",
+   "sources": [
+    "530b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!condition) throw new Error(`FALHA: ${label}`);",
+    "Error: FALHA: NextEventCard (fonte única do \"próximo torneio\" informativo) foi removido da Home"
+   ],
+   "history_windows": {
+    "530b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-registration-deadline-authority",
+   "sources": [
+    "527k",
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-registration-deadline-authority: PASS"
+  },
+  {
+   "test": "test-registration-deadline-boundary-v518",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-registration-last-day-warning",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-registration-last-day-warning: PASS"
+  },
+  {
+   "test": "test-registration-overlap-conflict",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-registration-overlap-conflict: PASS"
+  },
+  {
+   "test": "test-registration-reload-idempotency",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 12,
+   "summary": "test-registration-reload-idempotency: PASS"
+  },
+  {
+   "test": "test-registration-reminder-tournament-authority-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 8,
+   "summary": "test-registration-reminder-tournament-authority-v59: PASS"
+  },
+  {
+   "test": "test-save-reload-pending-separation-v527j",
+   "sources": [
+    "527k",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-save-reload-pending-separation-v527j: 0/0 passaram"
+  },
+  {
+   "test": "test-settlement-after-exit-preserves-roster-v527j",
+   "sources": [
+    "531"
+   ],
+   "run1": "fail",
+   "seconds": 16,
+   "summary": "test-settlement-after-exit-preserves-roster-v527j: 2/3 passaram",
+   "run2_serial": "fail",
+   "failLines": [
+    "✗ carreiras reais: todo torneio jogado no limbo foi liquidado (finalização com pontos/prêmio)",
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível."
+   ],
+   "history_windows": {
+    "531": "pass"
+   },
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "env",
+   "evidence": "Limitação cloud: lê artefatos de simulação só locais (reports/rebalance-527*/runs|micro|smoke|partner-dump, nunca versionados). Gates de lógica do mesmo teste passam."
+  },
+  {
+   "test": "test-settlement-uses-persisted-draw-roster",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 211,
+   "summary": "test-settlement-uses-persisted-draw-roster: PASS"
+  },
+  {
+   "test": "test-severance-exit-path-v527b",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-severance-exit-path-v527b: 4/4 passaram"
+  },
+  {
+   "test": "test-staff-architecture-v29-1",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "AssertionError [ERR_ASSERTION]: Comissão técnica não foi movida para Dupla e relações.",
+    "code: 'ERR_ASSERTION',",
+    "expected: true,"
+   ],
+   "history_windows": {
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-staff-commitment-no-weekly-renotify-v516",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-commitment-no-weekly-renotify-v516: PASS"
+  },
+  {
+   "test": "test-staff-market-cards-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-staff-market-cards-v531: 14/14 passaram"
+  },
+  {
+   "test": "test-staff-next-decision-chronology-v516",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-staff-next-decision-chronology-v516: PASS"
+  },
+  {
+   "test": "test-staff-no-overflow-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-staff-no-overflow-v531: 6/6 passaram"
+  },
+  {
+   "test": "test-staff-notification-deeplink-v513",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-staff-notification-deeplink-v513: PASS"
+  },
+  {
+   "test": "test-staff-report-cta-state-transition-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-report-cta-state-transition-v514: PASS"
+  },
+  {
+   "test": "test-staff-report-presentation-contract-v519",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 1,
+   "summary": null
+  },
+  {
+   "test": "test-staff-report-registration-cta-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-report-registration-cta-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-after-registration-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-after-registration-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-career-progression-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-staff-review-career-progression-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-deeplink-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-deeplink-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-federation-reminder-separation-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-federation-reminder-separation-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-idempotency-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-idempotency-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-multi-tournament-choice-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-multi-tournament-choice-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-no-event-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-no-event-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-player-chooses-alternative-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-player-chooses-alternative-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-registration-cta-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-registration-cta-v514: PASS"
+  },
+  {
+   "test": "test-staff-review-single-message-per-week-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-review-single-message-per-week-v514: PASS"
+  },
+  {
+   "test": "test-staff-screen-hierarchy-v531",
+   "sources": [
+    "531b",
+    "new:v531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-staff-screen-hierarchy-v531: 14/14 passaram"
+  },
+  {
+   "test": "test-staff-state-transition-notification-policy-v516",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-staff-state-transition-notification-policy-v516: PASS"
+  },
+  {
+   "test": "test-staff-tournament-recommendation-authority-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-tournament-recommendation-authority-v514: PASS"
+  },
+  {
+   "test": "test-staff-weekly-competitive-review-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-weekly-competitive-review-v514: PASS"
+  },
+  {
+   "test": "test-staff-weekly-review-next-week-v514",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-weekly-review-next-week-v514: PASS"
+  },
+  {
+   "test": "test-staff-weekly-review-real-dedupe-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-weekly-review-real-dedupe-v514: PASS"
+  },
+  {
+   "test": "test-staff-weekly-review-state-update-v514",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-staff-weekly-review-state-update-v514: PASS"
+  },
+  {
+   "test": "test-stale-commitment-does-not-block-choice-v518",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-starter-coach-flow",
+   "sources": [
+    "531",
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "16 gates executados, todos PASS — Starter Coach Flow (sem contratação fantasma)."
+  },
+  {
+   "test": "test-team-ranking-existing-save-recalc-v522e",
+   "sources": [
+    "pkg:test:team-ranking-sum-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-team-ranking-existing-save-recalc-v522e: PASS"
+  },
+  {
+   "test": "test-team-ranking-new-pair-inherits-points-v522e",
+   "sources": [
+    "pkg:test:team-ranking-sum-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-team-ranking-new-pair-inherits-points-v522e: PASS"
+  },
+  {
+   "test": "test-team-ranking-no-geometric-authority-v522f",
+   "sources": [
+    "pkg:test:team-ranking-no-geometric-v522f"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-team-ranking-no-geometric-authority-v522f: PASS (121 arquivos da família auditados)"
+  },
+  {
+   "test": "test-team-ranking-old-pair-history-v522f",
+   "sources": [
+    "pkg:test:team-ranking-old-pair-v522f"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-team-ranking-old-pair-history-v522f: PASS"
+  },
+  {
+   "test": "test-team-ranking-pair-change-sum-v522e",
+   "sources": [
+    "pkg:test:team-ranking-sum-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-team-ranking-pair-change-sum-v522e: PASS"
+  },
+  {
+   "test": "test-team-ranking-pair-entry-fallback-v522f",
+   "sources": [
+    "pkg:test:team-ranking-fallback-v522f"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-team-ranking-pair-entry-fallback-v522f: PASS (divergência material mediana 251 → fallback alinhado à soma)"
+  },
+  {
+   "test": "test-team-ranking-partnership-change-v510",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-team-ranking-partnership-change-v510: PASS"
+  },
+  {
+   "test": "test-team-ranking-seeding-after-sum-v522e",
+   "sources": [
+    "pkg:test:team-ranking-sum-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-team-ranking-seeding-after-sum-v522e: PASS"
+  },
+  {
+   "test": "test-team-ranking-sum-formula-v522e",
+   "sources": [
+    "527k",
+    "pkg:test:team-ranking-sum-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-team-ranking-sum-formula-v522e: PASS"
+  },
+  {
+   "test": "test-team-ranking-ui-consistency-v510",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 206,
+   "summary": "test-team-ranking-ui-consistency-v510: PASS"
+  },
+  {
+   "test": "test-team-ranking-zero-zero-unranked-v522e",
+   "sources": [
+    "pkg:test:team-ranking-sum-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "test-team-ranking-zero-zero-unranked-v522e: PASS"
+  },
+  {
+   "test": "test-tier-ladder-migration-fase3",
+   "sources": [
+    "530b",
+    "pkg:test:tier-ladder-migration-fase3"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "13 gates executados, todos PASS — Fase 3, item 3E: migração de carreira salva de antes da escada de 9 tiers não quebra."
+  },
+  {
+   "test": "test-tier-qualifying-authority",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-tier-qualifying-authority: PASS"
+  },
+  {
+   "test": "test-tier-strength-distribution",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 116,
+   "summary": "test-tier-strength-distribution: PASS",
+   "note": "falhava no Windows {'530b': 'REGRESSION'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-tournament-cancellation-cause-v517",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 551,
+   "summary": "test-tournament-cancellation-cause-v517: PASS",
+   "note": "falhava no Windows {'530b': 'pre-existing'}; aqui passa (o runner de fase cortava em 240 s ou o gate foi atualizado)"
+  },
+  {
+   "test": "test-tournament-canonical-results",
+   "sources": [
+    "530b",
+    "pkg:test:tournament-canonical-results"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-tournament-canonical-results: PASS"
+  },
+  {
+   "test": "test-tournament-card-primary-state-v520c",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": null
+  },
+  {
+   "test": "test-tournament-card-registration-state",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "test-tournament-card-registration-state: PASS"
+  },
+  {
+   "test": "test-tournament-confirm-no-skip",
+   "sources": [
+    "530b",
+    "pkg:test:tournament-confirm-no-skip"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-tournament-date-continuity-hotfix",
+   "sources": [
+    "pkg:test:tournament-date-continuity-hotfix"
+   ],
+   "run1": "pass",
+   "seconds": 21,
+   "summary": "17 gates executados, todos PASS — Tournament Date Continuity Hotfix M4.1.1."
+  },
+  {
+   "test": "test-tournament-draw-name-collision",
+   "sources": [
+    "pkg:test:tournament-draw-name-collision"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": null
+  },
+  {
+   "test": "test-tournament-flow-rc",
+   "sources": [
+    "527k",
+    "pkg:test:tournament-flow-rc"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "TournamentFlowRCTest: PASS"
+  },
+  {
+   "test": "test-tournament-guided-flow",
+   "sources": [
+    "pkg:test:tournament-guided-flow"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": "FAIL — a rota da entrevista usa o formato canônico (/press?tab=interviews&interview=...&source=...&returnTo=...)",
+   "run2_serial": "fail",
+   "failLines": [
+    "\u001b[31mWebSocket server error: Port 24678 is already in use\u001b[39m",
+    "FAIL — a rota da entrevista usa o formato canônico (/press?tab=interviews&interview=...&source=...&returnTo=...)",
+    "if (!condition) throw new Error(`GATE FALHOU: ${label}`);",
+    "Error: GATE FALHOU: a rota da entrevista usa o formato canônico (/press?tab=interviews&interview=...&source=...&returnTo=...)"
+   ],
+   "history_windows": null,
+   "older_commits": {
+    "565437f": "fail",
+    "c5bf7c8": "fail",
+    "742ee4a": "fail"
+   },
+   "classification": "obsolete",
+   "evidence": "Espera /press?tab=interviews; buildInterviewRoute passou a gerar /world/circuit?tab=press no 9001 (565437f)."
+  },
+  {
+   "test": "test-tournament-match-lifecycle",
+   "sources": [
+    "pkg:test:tournament-match-lifecycle"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "TournamentMatchLifecycle: PASS"
+  },
+  {
+   "test": "test-tournament-notification-deeplink-rc",
+   "sources": [
+    "530b",
+    "pkg:test:tournament-notification-deeplink"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "TournamentNotificationDeepLinkRCTest: PASS"
+  },
+  {
+   "test": "test-tournament-registration-v2",
+   "sources": [
+    "527k",
+    "530b",
+    "pkg:test:tournament-registration"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-tournament-result-authority",
+   "sources": [
+    "527k",
+    "pkg:test:tournament-result-authority"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-tournament-resume-recovery",
+   "sources": [
+    "530b",
+    "pkg:test:tournament-resume-recovery"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "TournamentResumeRecovery: PASS"
+  },
+  {
+   "test": "test-tournament-roster-survives-partner-change-v519",
+   "sources": [
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": null
+  },
+  {
+   "test": "test-tournament-round-availability",
+   "sources": [
+    "530b",
+    "pkg:test:tournament-round-availability"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "25 gates executados, todos PASS."
+  },
+  {
+   "test": "test-training-center-unification-phase15-5",
+   "sources": [
+    "530b",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 3,
+   "summary": "AssertionError [ERR_ASSERTION]: Fase 15.5 falhou: 5/144 gate(s)",
+   "run2_serial": "fail",
+   "failLines": [
+    "FAIL — 43. HUD local mostra treinos",
+    "FAIL — 44. HUD local mostra partida",
+    "FAIL — 45. HUD local mostra energia",
+    "FAIL — 46. HUD local mostra fadiga",
+    "FAIL — 102. Navegação possui uma única entrada Centro de Treinamento",
+    "AssertionError [ERR_ASSERTION]: Fase 15.5 falhou: 5/144 gate(s)"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-tutorial-auto-completion",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "43 gates executados, todos PASS — Onboarding Flow 3.1 (auto-complete de etapas VISIT), TUTORIAL_VERSION v14."
+  },
+  {
+   "test": "test-tutorial-chronology",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": null
+  },
+  {
+   "test": "test-tutorial-complete-flow",
+   "sources": [
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "16 gates executados, todos PASS — Tutorial fluxo (identidade → dupla → treinador → treino → inscrição → torneio → partida oficial conclui a Fase 1; partida de treino não conclui)."
+  },
+  {
+   "test": "test-tutorial-first-official-match",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 3,
+   "summary": "26 gates executados, todos PASS — Tutorial 4.0 hotfix \"first-match\" (fato de conclusão + CTA nunca mais aponta para Partidas de treino)."
+  },
+  {
+   "test": "test-tutorial-registration-condition-v527m",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-tutorial-registration-condition-v527m: 14/14 passaram"
+  },
+  {
+   "test": "test-tutorial-visit-auto-completion",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 2,
+   "summary": "100 gates executados, todos PASS — Auto-conclusão por visita das 12 novas etapas (rota+query correta, pipeline real, fonte única preservada)."
+  },
+  {
+   "test": "test-two-wave-draw-lifecycle",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 13,
+   "summary": "test-two-wave-draw-lifecycle: PASS"
+  },
+  {
+   "test": "test-ui-redesign",
+   "sources": [
+    "530b",
+    "531",
+    "531b"
+   ],
+   "run1": "fail",
+   "seconds": 0,
+   "summary": null,
+   "run2_serial": "fail",
+   "failLines": [
+    "if (!condition) throw new Error(`FALHA: ${label}`);",
+    "Error: FALHA: Training.jsx não importa do design-system oficial"
+   ],
+   "history_windows": {
+    "530b": "pre-existing",
+    "531": "pre-existing",
+    "531b": "pre-existing"
+   },
+   "older_commits": null,
+   "classification": "preexisting",
+   "evidence": "Mesma falha registrada no Windows. Asserção estática sobre markup/estrutura que mudou nos redesigns; candidata a teste obsoleto, sem bug de jogo evidente."
+  },
+  {
+   "test": "test-unregistered-player-not-in-draw",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-unregistered-player-not-in-draw: PASS"
+  },
+  {
+   "test": "test-ux-home-v36-3-1",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "UXHomeV36_3_1Test: PASS (6/6)"
+  },
+  {
+   "test": "test-ux-interfaces-v36-3-2",
+   "sources": [
+    "531b"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "UXInterfacesV36_3_2Test: PASS (5 páginas migradas + 3 componentes base)"
+  },
+  {
+   "test": "test-walkover-achievement-isolation",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 10,
+   "summary": "test-walkover-achievement-isolation: PASS"
+  },
+  {
+   "test": "test-walkover-does-not-block-parallel-events",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-walkover-does-not-block-parallel-events: PASS"
+  },
+  {
+   "test": "test-walkover-player-tournament-settlement",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-walkover-player-tournament-settlement: PASS"
+  },
+  {
+   "test": "test-walkover-reload-idempotency",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 11,
+   "summary": "test-walkover-reload-idempotency: PASS"
+  },
+  {
+   "test": "test-weekly-assignment-authority-v5",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-weekly-assignment-authority-v5: PASS"
+  },
+  {
+   "test": "test-weekly-planning-after-registration-v513",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-weekly-planning-after-registration-v513: PASS"
+  },
+  {
+   "test": "test-weekly-planning-career-progression-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-weekly-planning-career-progression-v59: PASS"
+  },
+  {
+   "test": "test-weekly-planning-mobile-contract-v58",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-weekly-planning-mobile-contract-v58: PASS"
+  },
+  {
+   "test": "test-weekly-planning-player-visible-v513",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-weekly-planning-player-visible-v513: PASS"
+  },
+  {
+   "test": "test-weekly-planning-same-week-tier-choice-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 7,
+   "summary": "test-weekly-planning-same-week-tier-choice-v59: PASS"
+  },
+  {
+   "test": "test-weekly-planning-visible-decision-v59",
+   "sources": [
+    "530b"
+   ],
+   "run1": "pass",
+   "seconds": 6,
+   "summary": "test-weekly-planning-visible-decision-v59: PASS"
+  },
+  {
+   "test": "test-world-career-phase15",
+   "sources": [
+    "pkg:test:world-ranking-milestones",
+    "pkg:test:world-save-load"
+   ],
+   "run1": "pass",
+   "seconds": 5,
+   "summary": "WorldCareerPhase15 (all): PASS"
+  },
+  {
+   "test": "test-world-directory-clubs-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-world-directory-clubs-v522e: PASS"
+  },
+  {
+   "test": "test-world-directory-countries-v522e",
+   "sources": [
+    "pkg:test:ranking-ui-v522e"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-world-directory-countries-v522e: PASS"
+  },
+  {
+   "test": "test-world-tour-independent-from-player-partnership-v517",
+   "sources": [
+    "530b",
+    "531"
+   ],
+   "run1": "pass",
+   "seconds": 33,
+   "summary": "test-world-tour-independent-from-player-partnership-v517: PASS"
+  },
+  {
+   "test": "test-zero-win-ranking-progression-v527f",
+   "sources": [
+    "527k"
+   ],
+   "run1": "pass",
+   "seconds": 0,
+   "summary": "test-zero-win-ranking-progression-v527f: 0/0 passaram"
+  }
+ ]
+}

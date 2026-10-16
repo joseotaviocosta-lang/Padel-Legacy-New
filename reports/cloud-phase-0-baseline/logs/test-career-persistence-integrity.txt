@@ -1,0 +1,56 @@
+PASS — Crash simulado: o interceptor de rename realmente disparou (cenário reproduzido)
+PASS — Crash mid-write (exceção JS capturável): a carreira NUNCA aparece como perdida
+PASS — Crash mid-write (exceção JS capturável): recupera automaticamente para a ÚLTIMA versão válida (ranking_position=10, não 999 nem corrompido)
+PASS — Kill de processo real (sem catch em JS): a carreira NUNCA aparece como perdida
+PASS — Kill de processo real: recupera para a última versão confirmada antes do kill (ranking_position=42)
+PASS — Diagnóstico: CAREER_RECOVERY_SUCCESS (source=crash-rollback) foi registrado para este caso
+PASS — Sem rollback disponível: a carreira ainda assim NÃO desaparece (recupera do backup)
+PASS — Backup restaurado é a versão mais recente disponível em backups/ (ranking_position=2, o penúltimo salvo)
+PASS — Diagnóstico: CAREER_RECOVERY_SUCCESS (source=backup) foi registrado
+PASS — TauriStorage.exists() tenta novamente antes de concluir ausência (não trata 1º erro como "não existe")
+PASS — CareerProvider nunca chama deleteCareer fora do callback explícito do usuário (deleteCareer só aparece 1x, na função exportada)
+PASS — ActiveCareerAdapter.getActiveCareer não apaga a carreira em memória quando a leitura falha por arquivo ausente — usa o cache quente como fallback
+PASS — clearActiveCareer() nunca é chamado dentro do catch de erro de leitura de getActiveCareer (só no caminho "sem last_career_id")
+PASS — writeCareer usa crashRecovery por padrão (só desliga com false explícito)
+PASS — writeIndex agora protege o índice com backup + crashRecovery (antes era backup:false)
+PASS — updateIndex também protege o índice
+PASS — save_version começa em 0 na criação
+PASS — save_version incrementa a cada saveCareer (0 → 1)
+PASS — save_version continua incrementando (1 → 2)
+PASS — Diagnóstico de persistência registra CAREER_LOAD_START
+PASS — Diagnóstico de persistência registra CAREER_LOAD_SUCCESS
+PASS — Diagnóstico de persistência registra CAREER_SAVE_START
+PASS — Diagnóstico de persistência registra CAREER_SAVE_SUCCESS
+PASS — Diagnóstico de persistência registra CAREER_INDEX_UPDATE
+PASS — Saves concorrentes: pelo menos um dos dois completa com sucesso
+PASS — Arquivo final é um JSON válido e íntegro (career_id preservado, nunca uma mistura corrompida)
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async advanceCareerDayWork (<worktree>/src/game-core/calendarLifecycle.js:206:9) {
+}
+[WorldTour] reparo de fundação falhou: ReferenceError: window is not defined
+    at ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:334:3)
+    at async processWorldTourDay (<worktree>/src/gameplay/worldTour/WorldTourLifecycle.js:1973:31)
+    at async processLivingWorldDay (<worktree>/src/lib/livingWorldEngine.js:263:27)
+    at async processGameStateDay (<worktree>/src/game-core/gameStateLifecycle.js:215:21)
+    at async advanceCareerDayWork (<worktree>/src/game-core/calendarLifecycle.js:206:9)
+    at async eval (<worktree>/src/gameplay/adapters/ActiveCareerAdapter.js:363:24)
+PASS — Após torneio completo (D-3..D-0) + reload: career_id preservado
+PASS — Após torneio completo + reload: perfil do jogador preservado
+file://<worktree>/scripts/test-career-persistence-integrity.mjs:61
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: Após torneio completo + reload: tournament_run do torneio disputado continua presente
+    at gate (file://<worktree>/scripts/test-career-persistence-integrity.mjs:61:25)
+    at file://<worktree>/scripts/test-career-persistence-integrity.mjs:315:5
+
+Node.js v22.22.0

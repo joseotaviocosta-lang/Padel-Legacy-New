@@ -1,0 +1,7 @@
+PremiumInterfacesV33Test: FAIL
+- src/pages/CareerHub.jsx: import órfão calculateAge
+- src/pages/Coaches.jsx: não contém StatCard
+- src/pages/Staff.jsx: não contém Treinador separado
+- src/pages/Staff.jsx: não contém Folha mensal
+- src/pages/Ranking.jsx: não contém Líder mundial
+- src/pages/Ranking.jsx: não contém Melhor dupla

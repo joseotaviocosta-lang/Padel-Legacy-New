@@ -1,0 +1,5 @@
+LivingCareerV34_4Test: FAIL
+- src/lib/careerAssistant.js: ausente
+- src/components/career/CareerAssistant.jsx: ausente
+- src/components/AppLayout.jsx: faltando <CareerAssistant />
+- src/pages/CareerHub.jsx: faltando <SmartAgenda

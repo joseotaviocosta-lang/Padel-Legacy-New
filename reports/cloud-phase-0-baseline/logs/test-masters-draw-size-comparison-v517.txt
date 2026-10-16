@@ -1,0 +1,65 @@
+=== Modelo A: Masters 24 ===
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async runSeason (file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:81:3)
+    at async file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:219:11 {
+}
+  campo observado: 24 | eventos=12 campo médio=24.0
+
+=== Modelo B: Masters 32 ===
+[Save Foundation] backup nativo não criado StorageError: O ambiente Tauri não está disponível.
+    at GameStorage.initialize (<worktree>/src/storage/GameStorage.js:41:13)
+    at GameStorage.exists (<worktree>/src/storage/GameStorage.js:346:16)
+    at CareerRepository.careerExists (<worktree>/src/careers/CareerRepository.js:87:25)
+    at async Object.checkpoint (<worktree>/src/local/careerDataStore.js:49:23)
+    at async createCriticalBackup (<worktree>/src/lib/saveFoundation.js:53:24)
+    at async ensureWorldSeed2025 (<worktree>/src/lib/saveFoundation.js:77:3)
+    at async runSeason (file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:81:3)
+    at async file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:223:11 {
+}
+  campo observado: 32 | eventos=12 campo médio=32.0
+
+=== PARTE J: comparativo 24 vs 32 ===
+Métrica                            24          32           Δ
+Masters/temporada                    12.00       12.00       +0.00
+campo médio                          24.00       32.00       +8.00
+Top5 slots/evento                     3.92        4.17       +0.25
+Top10 slots/evento                    6.42        7.92       +1.50
+Top20 slots/evento                   10.92       14.00       +3.08
+rank médio do campo                  74.04       71.16       -2.88
+mediana rank                         22.00       27.00       +5.00
+P25 rank                              9.00       11.00       +2.00
+P75 rank                             96.00       75.00      -21.00
+RR share                              0.73        0.72       -0.01
+PP share                              0.27        0.28       +0.01
+byes/temporada                       96.00        0.00      -96.00
+partidas/temporada                  276.00      372.00      +96.00
+cancelamentos                         0.00        0.00       +0.00
+Top20 idle rate                       0.55        0.45       -0.10
+Top20 eventos/dupla                  19.20       23.45       +4.25
+Top20 com 0 partidas                  2.00        0.00       -2.00
+   [registro] campo médio 24=24.0 | 32=32.0
+✓ Parte I: os dois modelos realmente diferem no tamanho de chave
+   [registro] cancelados 24=0 32=0
+✓ Parte J: nenhum modelo aumenta cancelamentos
+   [registro] byes 24=96 32=0
+✓ Parte M: o modelo de 24 concede bye; o de 32 não
+   [registro] ganho Top20/evento=3.08 | queda de idle=9.6pp | custo PP=0.5pp
+✓ Parte K: a pergunta principal tem resposta numérica
+✗ Parte L: nenhuma dupla do Top20 fica com 0 partidas em qualquer modelo
+   AssertionError [ERR_ASSERTION]: 24: 2 duplas do Top20 sem partida
+
+2 !== 0
+
+    at file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:278:10
+    at check (file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:21:9)
+    at file://<worktree>/scripts/test-masters-draw-size-comparison-v517.mjs:277:1
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+
+=== Resultado: 4 passed, 1 failed ===
+

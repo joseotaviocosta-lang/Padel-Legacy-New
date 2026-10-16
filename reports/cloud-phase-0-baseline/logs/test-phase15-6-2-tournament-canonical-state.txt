@@ -1,0 +1,19 @@
+node:internal/modules/run_main:123
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: inscrição real deve suceder mesmo com a linha seed já presente
+
+false !== true
+
+    at createDualRowScenario (file://<worktree>/scripts/test-phase15-6-2-tournament-canonical-state.mjs:141:12)
+    at async file://<worktree>/scripts/test-phase15-6-2-tournament-canonical-state.mjs:197:14 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v22.22.0

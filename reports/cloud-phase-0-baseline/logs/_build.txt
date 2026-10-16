@@ -1,0 +1,41 @@
+# npm run build (últimas 40 linhas)
+dist/assets/ClubDetail-DY4t5s4P.js                      20.54 kB │ gzip:   5.96 kB
+dist/assets/Fans-nz3HNqXD.js                            22.76 kB │ gzip:   7.71 kB
+dist/assets/CareerManager-kKHGimWz.js                   24.16 kB │ gzip:   6.90 kB
+dist/assets/sponsors-QIRjh_tp.js                        25.11 kB │ gzip:   5.64 kB
+dist/assets/Ranking-8arrlm59.js                         26.21 kB │ gzip:   7.85 kB
+dist/assets/History-CYnCBZNH.js                         26.47 kB │ gzip:   8.01 kB
+dist/assets/CharacterEditor-C31DxyiI.js                 27.67 kB │ gzip:   8.86 kB
+dist/assets/Press-VZK_kk6X.js                           27.86 kB │ gzip:   8.03 kB
+dist/assets/AnnualReports-mUidYfbY.js                   28.97 kB │ gzip:   8.03 kB
+dist/assets/Staff-Pu9HJGFm.js                           30.59 kB │ gzip:   9.41 kB
+dist/assets/Community-DmkMZah1.js                       30.99 kB │ gzip:   9.90 kB
+dist/assets/Coaches-rae-cWHz.js                         32.89 kB │ gzip:   9.22 kB
+dist/assets/Legacy-BSCHfLOg.js                          34.81 kB │ gzip:   9.53 kB
+dist/assets/WorldMarket-CS2zI7D6.js                     36.58 kB │ gzip:  11.60 kB
+dist/assets/PracticeMatchView-DxVhefWF.js               37.37 kB │ gzip:  12.57 kB
+dist/assets/HallOfFame-CV2spWUv.js                      40.74 kB │ gzip:  10.83 kB
+dist/assets/Admin-CCSr9sTC.js                           43.86 kB │ gzip:  11.92 kB
+dist/assets/Shop-BgH2lLTU.js                            48.10 kB │ gzip:  13.93 kB
+dist/assets/TournamentModal-gFbkMkf9.js                 49.68 kB │ gzip:  16.01 kB
+dist/assets/Tournaments-B7B_NKfi.js                     50.74 kB │ gzip:  14.84 kB
+dist/assets/Missions-Jv5M0vrK.js                        51.56 kB │ gzip:  15.43 kB
+dist/assets/coaches-D31Dkm40.js                         51.85 kB │ gzip:  15.13 kB
+dist/assets/Economy-hcRTi7qw.js                         54.96 kB │ gzip:  14.36 kB
+dist/assets/CalendarPage-D9WznP_E.js                    61.04 kB │ gzip:  18.00 kB
+dist/assets/PartnerHub-WE7QRQem.js                      63.51 kB │ gzip:  18.11 kB
+dist/assets/Encyclopedia-DbFkf0WD.js                    64.01 kB │ gzip:  19.36 kB
+dist/assets/CareerHub-BZTx_N5r.js                       66.54 kB │ gzip:  20.34 kB
+dist/assets/MatchRecapPremium-COckE20Y.js              110.73 kB │ gzip:  33.82 kB
+dist/assets/generateCategoricalChart-DR780CAv.js       374.01 kB │ gzip: 103.31 kB
+dist/assets/index-BV4LqFNO.js                        1,636.96 kB │ gzip: 497.35 kB
+
+(!) Some chunks are larger than 500 kB after minification. Consider:
+- Using dynamic import() to code-split the application
+- Use build.rollupOptions.output.manualChunks to improve chunking: https://rollupjs.org/configuration-options/#output-manualchunks
+- Adjust chunk size limit for this warning via build.chunkSizeWarningLimit.
+✓ built in 16.00s
+
+real	0m16.815s
+user	0m21.328s
+sys	0m3.583s

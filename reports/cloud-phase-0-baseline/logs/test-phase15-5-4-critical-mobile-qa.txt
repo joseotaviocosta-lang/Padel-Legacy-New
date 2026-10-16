@@ -1,0 +1,30 @@
+PASS — 1. Inscrição válida confirma presença (isTournamentParticipationConfirmed)
+PASS — 2. Presença confirmada uma vez (registro) já cobre R16
+PASS — 3. Presença continua válida R16→QF (sem novo registro)
+PASS — 4. Presença continua válida QF→SF
+PASS — 5. Presença continua válida SF→F
+PASS — 6. Nenhuma etapa exigiu Calendar/nova confirmação entre rodadas (mesma linha de registro o tempo todo)
+PASS — 7. handleMatchFinished define fase ANTES/junto de setRun (nenhum await entre eles)
+PASS — 8. Nenhum await entre a transição de fase e setRun — mesmo commit síncrono do React (elimina a janela em que phase=match via currentMatch da rodada nova)
+PASS — 8b. QF (rodada seguinte) tem status "scheduled" logo após a vitória (nunca "playing")
+PASS — 9. QF não inicia antes da data (getTournamentRunPhase = waiting um dia antes)
+PASS — 10. Data é validada antes de considerar a rodada jogável (canônica: matches[currentRound].date)
+PASS — 11. Chegada à data da QF libera a fase (playable), sem exigir Calendário
+PASS — 12. Eliminação encerra a campanha (status eliminated, sem próxima rodada)
+PASS — 13. Final encerra o torneio (status champion)
+PASS — 14. Nenhuma rodada fantasma: sequência R16→QF→SF→F sem pular/repetir
+PASS — 15. Rodada já superada é rejeitada (não reprocessada silenciosamente): reenviar o matchId da R16 após a QF lança erro em vez de duplicar avanço
+PASS — 16. Nenhuma recompensa duplicada em resultado terminal: reenviar o mesmo matchId da final já concluída retorna idempotent=true e não readianta nada
+PASS — 17. D-7 sem notificação genérica
+PASS — 18. D-4 sem notificação
+PASS — 19. D-3 é um marco válido (sorteio)
+PASS — 20. D-3 cria exatamente uma notificação (um único marco na lista)
+file://<worktree>/scripts/test-phase15-5-4-critical-mobile-qa.mjs:16
+  if (!condition) throw new Error(`GATE FALHOU: ${label}`);
+                        ^
+
+Error: GATE FALHOU: 21. Notificação contém o nome do torneio (título usa nextTournament.name)
+    at gate (file://<worktree>/scripts/test-phase15-5-4-critical-mobile-qa.mjs:16:25)
+    at file://<worktree>/scripts/test-phase15-5-4-critical-mobile-qa.mjs:133:3
+
+Node.js v22.22.0

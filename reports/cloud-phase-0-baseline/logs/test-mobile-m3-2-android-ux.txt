@@ -1,0 +1,12 @@
+file://<worktree>/scripts/test-mobile-m3-2-android-ux.mjs:23
+  if (!condition) throw new Error(`FALHA: ${label}`);
+                        ^
+
+Error: FALHA: input de nome do atleta perdeu o scrollIntoView no foco (Parte 8, ficaria coberto pelo teclado)
+    at check (file://<worktree>/scripts/test-mobile-m3-2-android-ux.mjs:23:25)
+    at file://<worktree>/scripts/test-mobile-m3-2-android-ux.mjs:106:1
+    at ModuleJob.run (node:internal/modules/esm/module_job:343:25)
+    at async onImport.tracePromise.__proto__ (node:internal/modules/esm/loader:665:26)
+    at async asyncRunEntryPointWithESMLoader (node:internal/modules/run_main:117:5)
+
+Node.js v22.22.0
