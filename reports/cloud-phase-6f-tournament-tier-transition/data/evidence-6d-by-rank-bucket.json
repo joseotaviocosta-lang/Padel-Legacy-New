@@ -1,0 +1,364 @@
+{
+ "normal-cloud6d-5a8350a": {
+  "matchesByBucketTier": {
+   "sem|Bronze": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 35,
+    "medianDelta": -16
+   },
+   ">450|Silver": {
+    "n": 15,
+    "wins": 1,
+    "medianOpp": 46.5,
+    "medianDelta": -10.5
+   },
+   ">450|Bronze": {
+    "n": 12,
+    "wins": 1,
+    "medianOpp": 35,
+    "medianDelta": 1.5
+   },
+   "401-450|Gold": {
+    "n": 5,
+    "wins": 0,
+    "medianOpp": 74,
+    "medianDelta": -31
+   },
+   "401-450|Bronze": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 34,
+    "medianDelta": 9
+   },
+   "361-400|Gold": {
+    "n": 2,
+    "wins": 0,
+    "medianOpp": 78.5,
+    "medianDelta": -34.5
+   },
+   "321-360|Gold": {
+    "n": 5,
+    "wins": 0,
+    "medianOpp": 79,
+    "medianDelta": -35
+   },
+   "321-360|Silver": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 51,
+    "medianDelta": -7.5
+   },
+   "321-360|Platinum": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 81,
+    "medianDelta": -36.5
+   },
+   "<=320|Gold": {
+    "n": 9,
+    "wins": 0,
+    "medianOpp": 79,
+    "medianDelta": -31.5
+   },
+   "<=320|Platinum": {
+    "n": 16,
+    "wins": 0,
+    "medianOpp": 78,
+    "medianDelta": -31
+   },
+   "<=320|Masters": {
+    "n": 2,
+    "wins": 0,
+    "medianOpp": 81,
+    "medianDelta": -33
+   }
+  },
+  "tournamentsByBucketTier": {
+   "sem|Bronze": 1,
+   ">450|Silver": 14,
+   ">450|Bronze": 11,
+   "401-450|Gold": 5,
+   "401-450|Bronze": 1,
+   "361-400|Gold": 2,
+   "321-360|Gold": 5,
+   "321-360|Silver": 1,
+   "321-360|Platinum": 1,
+   "<=320|Gold": 9,
+   "<=320|Platinum": 16,
+   "<=320|Masters": 2
+  },
+  "openTierAtOrBelow400": [
+   {
+    "date": "2027-04-08",
+    "tier": "Silver",
+    "weeklyTeamRank": 357,
+    "weeklyRank": 342
+   }
+  ]
+ },
+ "optimizer-cloud6d-5a8350a": {
+  "matchesByBucketTier": {
+   "sem|Bronze": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 35,
+    "medianDelta": -5
+   },
+   ">450|Silver": {
+    "n": 10,
+    "wins": 0,
+    "medianOpp": 51,
+    "medianDelta": -3.5
+   },
+   ">450|Bronze": {
+    "n": 36,
+    "wins": 25,
+    "medianOpp": 35,
+    "medianDelta": 8.5
+   },
+   ">450|Gold": {
+    "n": 10,
+    "wins": 7,
+    "medianOpp": 52,
+    "medianDelta": 11
+   },
+   "401-450|Bronze": {
+    "n": 3,
+    "wins": 3,
+    "medianOpp": 38.5,
+    "medianDelta": 12
+   },
+   "401-450|Gold": {
+    "n": 3,
+    "wins": 0,
+    "medianOpp": 75,
+    "medianDelta": -24
+   },
+   "361-400|Gold": {
+    "n": 2,
+    "wins": 0,
+    "medianOpp": 76,
+    "medianDelta": -17
+   },
+   "321-360|Silver": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 53.5,
+    "medianDelta": -2.5
+   },
+   "321-360|Gold": {
+    "n": 3,
+    "wins": 0,
+    "medianOpp": 73,
+    "medianDelta": -22
+   },
+   "<=320|Gold": {
+    "n": 13,
+    "wins": 0,
+    "medianOpp": 77,
+    "medianDelta": -23.5
+   },
+   "<=320|Platinum": {
+    "n": 20,
+    "wins": 0,
+    "medianOpp": 79,
+    "medianDelta": -25
+   },
+   "<=320|Masters": {
+    "n": 6,
+    "wins": 0,
+    "medianOpp": 80,
+    "medianDelta": -25.5
+   },
+   "<=320|Elite": {
+    "n": 2,
+    "wins": 1,
+    "medianOpp": 83,
+    "medianDelta": -6.5
+   }
+  },
+  "tournamentsByBucketTier": {
+   "sem|Bronze": 1,
+   ">450|Silver": 10,
+   ">450|Bronze": 11,
+   ">450|Gold": 3,
+   "401-450|Gold": 3,
+   "361-400|Gold": 2,
+   "321-360|Silver": 1,
+   "321-360|Gold": 3,
+   "<=320|Gold": 13,
+   "<=320|Platinum": 20,
+   "<=320|Masters": 6,
+   "<=320|Elite": 1
+  },
+  "openTierAtOrBelow400": [
+   {
+    "date": "2027-04-08",
+    "tier": "Silver",
+    "weeklyTeamRank": 358,
+    "weeklyRank": 353
+   }
+  ]
+ },
+ "normal-baseline-fbb0bc4": {
+  "matchesByBucketTier": {
+   "sem|Bronze": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 35,
+    "medianDelta": -15
+   },
+   ">450|Silver": {
+    "n": 16,
+    "wins": 2,
+    "medianOpp": 47.5,
+    "medianDelta": -4
+   },
+   ">450|Bronze": {
+    "n": 27,
+    "wins": 16,
+    "medianOpp": 35.5,
+    "medianDelta": 9.5
+   },
+   "401-450|Silver": {
+    "n": 2,
+    "wins": 0,
+    "medianOpp": 49,
+    "medianDelta": 8.5
+   },
+   "401-450|Bronze": {
+    "n": 3,
+    "wins": 2,
+    "medianOpp": 35.5,
+    "medianDelta": 15
+   },
+   "321-360|Gold": {
+    "n": 3,
+    "wins": 0,
+    "medianOpp": 75.5,
+    "medianDelta": -21
+   },
+   "<=320|Gold": {
+    "n": 10,
+    "wins": 0,
+    "medianOpp": 78.5,
+    "medianDelta": -19.5
+   },
+   "<=320|Platinum": {
+    "n": 18,
+    "wins": 0,
+    "medianOpp": 81,
+    "medianDelta": -20.5
+   },
+   "<=320|Masters": {
+    "n": 7,
+    "wins": 0,
+    "medianOpp": 80.5,
+    "medianDelta": -19
+   },
+   "<=320|Elite": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 82,
+    "medianDelta": -18.5
+   }
+  },
+  "tournamentsByBucketTier": {
+   "sem|Bronze": 1,
+   ">450|Silver": 14,
+   ">450|Bronze": 12,
+   "401-450|Silver": 2,
+   "401-450|Bronze": 1,
+   "321-360|Gold": 3,
+   "<=320|Gold": 10,
+   "<=320|Platinum": 18,
+   "<=320|Masters": 7,
+   "<=320|Elite": 1
+  },
+  "openTierAtOrBelow400": []
+ },
+ "optimizer-baseline-fbb0bc4": {
+  "matchesByBucketTier": {
+   "sem|Bronze": {
+    "n": 1,
+    "wins": 0,
+    "medianOpp": 35,
+    "medianDelta": -5
+   },
+   ">450|Silver": {
+    "n": 11,
+    "wins": 4,
+    "medianOpp": 46,
+    "medianDelta": -6
+   },
+   ">450|Bronze": {
+    "n": 24,
+    "wins": 14,
+    "medianOpp": 36,
+    "medianDelta": 2
+   },
+   "<=320|Silver": {
+    "n": 17,
+    "wins": 17,
+    "medianOpp": 48.5,
+    "medianDelta": 24
+   },
+   "<=320|Bronze": {
+    "n": 10,
+    "wins": 10,
+    "medianOpp": 36.5,
+    "medianDelta": 37.5
+   },
+   "<=320|Gold": {
+    "n": 27,
+    "wins": 11,
+    "medianOpp": 77.5,
+    "medianDelta": 0.5
+   },
+   "<=320|Platinum": {
+    "n": 27,
+    "wins": 10,
+    "medianOpp": 80.5,
+    "medianDelta": -0.5
+   },
+   "<=320|Masters": {
+    "n": 10,
+    "wins": 2,
+    "medianOpp": 82,
+    "medianDelta": -1.5
+   },
+   "<=320|Elite": {
+    "n": 7,
+    "wins": 4,
+    "medianOpp": 82,
+    "medianDelta": -1
+   },
+   "<=320|Crown": {
+    "n": 2,
+    "wins": 1,
+    "medianOpp": 97.5,
+    "medianDelta": 9
+   }
+  },
+  "tournamentsByBucketTier": {
+   "sem|Bronze": 1,
+   ">450|Silver": 7,
+   ">450|Bronze": 10,
+   "<=320|Gold": 16,
+   "<=320|Silver": 1,
+   "<=320|Platinum": 17,
+   "<=320|Masters": 8,
+   "<=320|Elite": 3,
+   "<=320|Crown": 1
+  },
+  "openTierAtOrBelow400": [
+   {
+    "date": "2027-04-11",
+    "tier": "Silver",
+    "weeklyTeamRank": 197,
+    "weeklyRank": 318
+   }
+  ]
+ }
+}

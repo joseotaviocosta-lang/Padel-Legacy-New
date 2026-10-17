@@ -1,0 +1,779 @@
+{
+ "OPEN_TIER_CEILING": 400,
+ "boundary": {
+  "350": {
+   "Bronze": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Silver": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 88
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 77
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "375": {
+   "Bronze": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Silver": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 79
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 58
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "399": {
+   "Bronze": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Silver": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 70
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 39
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "400": {
+   "Bronze": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 55
+   },
+   "Silver": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking já classifica para tiers acima (Top 400) — não disputa mais a base.",
+     "overqualified": true
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 100
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 69
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 38
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "401": {
+   "Bronze": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 55
+   },
+   "Silver": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 100
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 69
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 38
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "425": {
+   "Bronze": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 56
+   },
+   "Silver": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 100
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 60
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 19
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "450": {
+   "Bronze": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 58
+   },
+   "Silver": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 100
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 50
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 0
+   },
+   "Masters": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  },
+  "500": {
+   "Bronze": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 61
+   },
+   "Silver": {
+    "player": {
+     "eligible": true,
+     "path": "direct",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "direct"
+    },
+    "fit": 100
+   },
+   "Gold": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": true,
+     "path": "qualifying"
+    },
+    "fit": 89
+   },
+   "Platinum": {
+    "player": {
+     "eligible": true,
+     "path": "qualifying",
+     "reason": null,
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Masters": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 460 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Elite": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 280 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   },
+   "Crown": {
+    "player": {
+     "eligible": false,
+     "path": "ineligible",
+     "reason": "Ranking necessário: Top 155 ou convite.",
+     "overqualified": false
+    },
+    "ai": {
+     "eligible": false,
+     "path": "ineligible"
+    },
+    "fit": 0
+   }
+  }
+ },
+ "flips": [
+  401,
+  451
+ ],
+ "unranked": {
+  "Bronze": true,
+  "Silver": true,
+  "Gold": false,
+  "Platinum": false,
+  "Masters": false,
+  "Elite": false,
+  "Crown": false
+ },
+ "wildcardOverridesCeiling": true,
+ "ovrByRank": {
+  "200": 77,
+  "300": 77.1,
+  "350": 76,
+  "400": 76.9,
+  "450": 76.8,
+  "500": 73.8,
+  "550": 72.4,
+  "600": 69.5,
+  "650": 63.7,
+  "700": 58.5,
+  "750": 53.7,
+  "800": 47.2,
+  "900": 35.6
+ },
+ "gold": 450
+}
