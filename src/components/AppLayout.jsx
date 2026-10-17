@@ -263,6 +263,12 @@ export default function AppLayout() {
   useRenderCounter('AppLayout');
   const location = useLocation();
   const performanceProfile = useAdaptivePerformance();
+  // CLOUD-6M: o shell compacto (<768px, mesmo corte do `md:` do Tailwind) e a
+  // barra desktop eram ambos montados e alternados só por CSS. No celular a
+  // barra desktop ficava `display:none` mas seguia viva — duplicando as
+  // consultas do sino (8 leituras + reconciliação por evento) e do contexto de
+  // torneio (Tournament.list de até 2000 linhas a cada troca de rota).
+  const isCompactShell = performanceProfile.compactViewport;
   const keyboardOpen = useKeyboardInset();
   const activeGroup = groupForPath(location.pathname);
   const [expandedGroup, setExpandedGroup] = useState(() => localStorage.getItem(EXPANDED_GROUP_KEY) || activeGroup?.id || 'career');
@@ -355,6 +361,7 @@ export default function AppLayout() {
           faixa 2: atalhos (ranking individual/dupla/OVR) + Avançar.
           Cada faixa cabe em 360px sem scroll horizontal; o desktop mantém a
           barra única de sempre (esta é md:hidden). */}
+      {isCompactShell && (
       <header className="pl-layer-header pl-safe-t fixed inset-x-0 top-0 flex h-[calc(var(--pl-header-h-mobile)+env(safe-area-inset-top))] flex-col justify-center overflow-hidden border-b border-border/45 bg-background/95 pl-[calc(0.375rem+var(--pl-safe-l))] pr-[calc(0.375rem+var(--pl-safe-r))] md:hidden">
         <div className="flex w-full min-w-0 items-center gap-1">
           <button type="button" onClick={() => setMobileOpen(true)} aria-label="Abrir navegação" aria-expanded={mobileOpen} aria-controls="mobile-navigation-drawer" className="pl-icon-tap shrink-0 rounded-xl p-2 transition-colors hover:bg-secondary focus-visible:ring-2 focus-visible:ring-primary">
@@ -389,6 +396,7 @@ export default function AppLayout() {
           <div className="shrink-0"><CareerDayControl profile={headerProfile} compact /></div>
         </div>
       </header>
+      )}
 
       <AnimatePresence>
         {mobileOpen && (
@@ -435,6 +443,7 @@ export default function AppLayout() {
           descasar dos dois lugares. A folga sobre a altura real da nav subiu
           de 1.25rem para 1.75rem como margem de segurança extra. */}
       <main className={`${sidebarCollapsed ? 'md:pl-[4.5rem]' : 'md:pl-[16rem]'} min-h-screen overflow-x-hidden pb-[calc(var(--pl-bottom-nav-h)+env(safe-area-inset-bottom)+3.5rem)] pt-[calc(var(--pl-header-h-mobile)+env(safe-area-inset-top))] transition-[padding] duration-300 md:pb-0 md:pt-0`}>
+        {!isCompactShell && (
         <div className="app-desktop-bar pl-layer-header pl-safe-t sticky top-0 hidden min-h-16 items-center gap-3 border-b border-border/50 bg-background/80 pl-[calc(1rem+var(--pl-safe-l))] pr-[calc(1rem+var(--pl-safe-r))] backdrop-blur-xl md:flex lg:pl-[calc(1.25rem+var(--pl-safe-l))] lg:pr-[calc(1.25rem+var(--pl-safe-r))]">
           {/* Hotfix hierarquia de páginas: idem ao cabeçalho mobile — sem
               reimprimir breadcrumb/título da rota aqui, só contexto
@@ -466,6 +475,7 @@ export default function AppLayout() {
             <div className="shrink-0"><CommunicationBell /></div>
           </div>
         </div>
+        )}
 
         <OnboardingGuide />
         {performanceProfile.allowDecorativeMotion ? (
