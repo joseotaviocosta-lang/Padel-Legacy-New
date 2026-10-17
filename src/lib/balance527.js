@@ -97,6 +97,27 @@ export function getBalance527() {
   return preset;
 }
 
+// CLOUD-6L — CALIBRAÇÃO SILVER EXPERIMENTAL (isolada, reversível, DEV/TESTE).
+// Troca SOMENTE `silverFieldOffsetPct` (0,25 → 0,15) no campo Silver do jogador.
+// Não toca o preset (`balanced` segue sem `competition`), nem o `balanced-e`.
+// Default DESLIGADO. Estado só em memória: nunca entra em save, nunca é lido de
+// storage/ambiente e não há UI. Lido a cada chamada de `buildPlayerTournamentField`,
+// então não depende de ordem de import. Ativação (harness/teste):
+//   const { setSilverCalibrationExperiment6L } = await load('/src/lib/balance527.js');
+//   setSilverCalibrationExperiment6L(true);   // ... e (false) para reverter.
+export const SILVER_CALIBRATION_6L_OFFSET_PCT = 0.15;
+let silverCalibrationExperiment6L = false;
+export function setSilverCalibrationExperiment6L(enabled) {
+  silverCalibrationExperiment6L = enabled === true;
+}
+export function isSilverCalibrationExperiment6LEnabled() {
+  return silverCalibrationExperiment6L;
+}
+/** 0,15 com a flag ligada; `null` com ela desligada (o chamador mantém o valor do preset/0,25). */
+export function getSilverCalibrationOffsetOverride6L() {
+  return silverCalibrationExperiment6L ? SILVER_CALIBRATION_6L_OFFSET_PCT : null;
+}
+
 // Prova mínima de carreira antes do primeiro patrocínio (Bloco B): reusa
 // contadores que já existem no perfil (torneios disputados). Não inventa
 // mecânica nova — só exige atividade real.

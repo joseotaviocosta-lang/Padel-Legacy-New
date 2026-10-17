@@ -12,7 +12,7 @@ import { buildCanonicalTournamentBracket, buildSeededDrawSlots, deriveTournament
 import { getCanonicalRoundDates } from '@/lib/tournamentSchedule.js';
 import { verifySaveFoundation, ensureWorldSeed2025 } from '@/lib/saveFoundation.js';
 import { getTeamRankings } from '@/lib/teamRanking.js';
-import { getBalance527 } from '@/lib/balance527.js';
+import { getBalance527, getSilverCalibrationOffsetOverride6L } from '@/lib/balance527.js';
 
 const entities = /** @type {any} */ (localGame.entities);
 // Fase 2E.3: o limite era 1000 sobre uma população que agora É 1000 —
@@ -1185,7 +1185,8 @@ export async function buildPlayerTournamentField({
   // corte mantêm o blendedCutScore (topo).
   // 5.27-I: a largura dessa janela vem do preset (`competition.silverFieldOffsetPct`);
   // sem `competition` (presets antigos) continua 25%.
-  const silverOffsetPct = Number(getBalance527().competition?.silverFieldOffsetPct ?? 0.25);
+  // CLOUD-6L: flag experimental (default desligada → null → comportamento anterior).
+  const silverOffsetPct = getSilverCalibrationOffsetOverride6L() ?? Number(getBalance527().competition?.silverFieldOffsetPct ?? 0.25);
   const openTierOffset = isOpenTier && tournament.tier === 'Silver'
     ? Math.max(need, Math.round(ordered.length * silverOffsetPct))
     : 0;

@@ -1,0 +1,82 @@
+{
+  "seeds": {
+    "6l-seed-a": {
+      "Bronze": {
+        "offsetOff": 0,
+        "offsetOn": 0,
+        "ovrOff": 35.333333333333336,
+        "ovrOn": 35.333333333333336,
+        "n": 15,
+        "sameField": true
+      },
+      "Silver": {
+        "offsetOff": 75,
+        "offsetOn": 45,
+        "ovrOff": 43.733333333333334,
+        "ovrOn": 38.666666666666664,
+        "n": 15,
+        "sameField": false
+      },
+      "Gold": {
+        "offsetOff": 0,
+        "offsetOn": 0,
+        "ovrOff": 78.38709677419355,
+        "ovrOn": 78.38709677419355,
+        "n": 31,
+        "sameField": true
+      }
+    },
+    "6l-seed-b": {
+      "Bronze": {
+        "offsetOff": 0,
+        "offsetOn": 0,
+        "ovrOff": 35.63333333333333,
+        "ovrOn": 35.63333333333333,
+        "n": 15,
+        "sameField": true
+      },
+      "Silver": {
+        "offsetOff": 75,
+        "offsetOn": 45,
+        "ovrOff": 44.1,
+        "ovrOn": 38.36666666666667,
+        "n": 15,
+        "sameField": false
+      },
+      "Gold": {
+        "offsetOff": 0,
+        "offsetOn": 0,
+        "ovrOff": 77.03225806451613,
+        "ovrOn": 77.03225806451613,
+        "n": 31,
+        "sameField": true
+      }
+    }
+  },
+  "ovrScenarios": {
+    "22": {
+      "fieldOvrOff": 43.733333333333334,
+      "fieldOvrOn": 38.666666666666664,
+      "gapOff": 21.733333333333334,
+      "gapOn": 16.666666666666664
+    },
+    "30": {
+      "fieldOvrOff": 43.733333333333334,
+      "fieldOvrOn": 38.666666666666664,
+      "gapOff": 13.733333333333334,
+      "gapOn": 8.666666666666664
+    },
+    "40": {
+      "fieldOvrOff": 43.733333333333334,
+      "fieldOvrOn": 38.666666666666664,
+      "gapOff": 3.7333333333333343,
+      "gapOn": -1.3333333333333357
+    },
+    "45": {
+      "fieldOvrOff": 43.733333333333334,
+      "fieldOvrOn": 38.666666666666664,
+      "gapOff": -1.2666666666666657,
+      "gapOn": -6.333333333333336
+    }
+  }
+}
