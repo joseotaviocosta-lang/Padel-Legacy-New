@@ -65,11 +65,24 @@ export function getAttributeDevelopmentCeiling(profile, attribute) {
   return Math.round(clamp(base + specialization + initialModifier, 65, 98));
 }
 
+// Fase 6B: janela contínua. Antes era degrau (×1 até faltarem 15 pontos para o
+// teto) — o ganho ficava no máximo por ~70% do caminho e o jogador saturava
+// ~3 anos depois de começar. Agora o ritmo é proporcional ao que falta para o
+// teto individual (saturação gradual): o início segue perceptível, o fim
+// desacelera sem parede e quem tem mais potencial (teto maior) cresce por mais
+// tempo. Constantes em um só lugar para o relatório/testes.
+export const DEVELOPMENT_WINDOW = Object.freeze({ scale: 0.56, fullRemaining: 60, floor: 0.40, exhausted: 0.08 });
+export function getDevelopmentWindowMultiplier(remaining) {
+  if (!(remaining >= 1)) return DEVELOPMENT_WINDOW.exhausted;
+  const share = Math.min(1, remaining / DEVELOPMENT_WINDOW.fullRemaining);
+  return round(DEVELOPMENT_WINDOW.scale * Math.max(DEVELOPMENT_WINDOW.floor, share), 4);
+}
+
 export function getDevelopmentWindow(profile, attributes = ATTRIBUTE_KEYS) {
   const current = attributes.reduce((sum, key) => sum + clamp(profile?.[key]), 0) / Math.max(1, attributes.length);
   const ceiling = attributes.reduce((sum, key) => sum + getAttributeDevelopmentCeiling(profile, key), 0) / Math.max(1, attributes.length);
   const remaining = Math.max(0, ceiling - current);
-  const multiplier = remaining >= 15 ? 1 : remaining >= 8 ? 0.82 : remaining >= 4 ? 0.58 : remaining >= 1 ? 0.3 : 0.08;
+  const multiplier = getDevelopmentWindowMultiplier(remaining);
   return { current, ceiling, remaining, multiplier };
 }
 
@@ -205,6 +218,29 @@ export async function getWeeklyTrainingCounts(profileId, careerDate) {
   } catch { return {}; }
 }
 
+// Aplica os ganhos de um treino aos atributos respeitando o teto individual.
+// Pura (sem I/O): extraída de executeTrainingWork sem mudar a regra, para que os
+// testes exercitem o mesmo código do jogo. Nunca reduz um atributo.
+export function applyAttributeGains(profile, gains) {
+  const progress = { ...(profile.attribute_progress || {}) };
+  const updates = {};
+  const appliedGains = {};
+  for (const [attribute, gain] of Object.entries(gains)) {
+    const current = Number(profile[attribute]) || 0;
+    const ceiling = getAttributeDevelopmentCeiling(profile, attribute);
+    const remainingLevels = Math.max(0, ceiling - current);
+    const effectiveGain = remainingLevels <= 0 ? 0 : gain * clamp(remainingLevels / 6, 0.15, 1);
+    const total = (Number(progress[attribute]) || 0) + effectiveGain;
+    const levelGain = Math.min(remainingLevels, Math.floor(total + 1e-9));
+    progress[attribute] = remainingLevels <= 0 ? 0 : round(total - levelGain);
+    // Atributo já acima do teto (ex.: bônus de vitória em partida, que não conhece o
+    // teto) é mantido: antes o min() aqui o rebaixava ao teto no treino seguinte.
+    updates[attribute] = Math.max(current, Math.min(ceiling, current + levelGain));
+    appliedGains[attribute] = { progress: round(effectiveGain), levels: updates[attribute] - current, ceiling };
+  }
+  return { updates, progress, appliedGains };
+}
+
 async function executeTrainingWork(profile, activity, intensityId, coachBonus = {}) {
   const training = getTrainingFocus(activity?.id);
   if (!training) return { error: 'Treino inválido ou desatualizado.' };
@@ -225,20 +261,7 @@ async function executeTrainingWork(profile, activity, intensityId, coachBonus = 
   if (currentCoins < preview.cost) return { error: `Moedas insuficientes: este treino custa ${preview.cost}, você tem ${currentCoins}.` };
 
   const oldProgress = { ...(profile.attribute_progress || {}) };
-  const progress = { ...oldProgress };
-  const updates = {};
-  const appliedGains = {};
-  for (const [attribute, gain] of Object.entries(preview.gains)) {
-    const current = Number(profile[attribute]) || 0;
-    const ceiling = getAttributeDevelopmentCeiling(profile, attribute);
-    const remainingLevels = Math.max(0, ceiling - current);
-    const effectiveGain = remainingLevels <= 0 ? 0 : gain * clamp(remainingLevels / 6, 0.15, 1);
-    const total = (Number(progress[attribute]) || 0) + effectiveGain;
-    const levelGain = Math.min(remainingLevels, Math.floor(total + 1e-9));
-    progress[attribute] = remainingLevels <= 0 ? 0 : round(total - levelGain);
-    updates[attribute] = Math.min(ceiling, current + levelGain);
-    appliedGains[attribute] = { progress: round(effectiveGain), levels: updates[attribute] - current, ceiling };
-  }
+  const { updates, progress, appliedGains } = applyAttributeGains(profile, preview.gains);
   const conditionBefore = { energy: Number(profile.energy ?? 100), fatigue: normalizeFatigue(profile.fatigue), morale: Number(profile.morale ?? 70), confidence: Number(profile.confidence ?? 50), form: Number(profile.form ?? 50) };
   const injured = Math.random() < preview.injuryRisk;
   const recoveryDays = injured ? Math.max(1, 5 + Math.floor(Math.random() * 7) - (Number(profile?.facility_injury_recovery_bonus) || 0)) : 0;
