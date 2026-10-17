@@ -1,0 +1,4238 @@
+{
+ "states": [
+  {
+   "label": "N1 normal ago/26",
+   "run": "normal-cloud6d-5a8350a",
+   "date": "2026-08-13",
+   "ind": 702,
+   "team": 722,
+   "ovr": 39,
+   "partnerOvr": 35,
+   "avg": 37
+  },
+  {
+   "label": "N2 normal out/26",
+   "run": "normal-cloud6d-5a8350a",
+   "date": "2026-10-29",
+   "ind": 521,
+   "team": 500,
+   "ovr": 43,
+   "partnerOvr": 35,
+   "avg": 39
+  },
+  {
+   "label": "N3 normal fev/27",
+   "run": "normal-cloud6d-5a8350a",
+   "date": "2027-02-04",
+   "ind": 432,
+   "team": 443,
+   "ovr": 48,
+   "partnerOvr": 37,
+   "avg": 42.5
+  },
+  {
+   "label": "N4 normal mar/27",
+   "run": "normal-cloud6d-5a8350a",
+   "date": "2027-03-18",
+   "ind": 373,
+   "team": 387,
+   "ovr": 50,
+   "partnerOvr": 37,
+   "avg": 43.5
+  },
+  {
+   "label": "O1 otimizador out/26",
+   "run": "optimizer-cloud6d-5a8350a",
+   "date": "2026-10-29",
+   "ind": 516,
+   "team": 520,
+   "ovr": 44,
+   "partnerOvr": 52,
+   "avg": 48
+  },
+  {
+   "label": "O2 otimizador fev/27",
+   "run": "optimizer-cloud6d-5a8350a",
+   "date": "2027-02-04",
+   "ind": 437,
+   "team": 462,
+   "ovr": 49,
+   "partnerOvr": 51,
+   "avg": 50
+  },
+  {
+   "label": "O3 otimizador mar/27",
+   "run": "optimizer-cloud6d-5a8350a",
+   "date": "2027-03-25",
+   "ind": 381,
+   "team": 389,
+   "ovr": 51,
+   "partnerOvr": 51,
+   "avg": 51
+  }
+ ],
+ "fields": {
+  "A": {
+   "N1 normal ago/26": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 664
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 620
+      },
+      {
+       "m": [
+        37,
+        35
+       ],
+       "avg": 36,
+       "rank": 583
+      },
+      {
+       "m": [
+        41,
+        35
+       ],
+       "avg": 38,
+       "rank": 560
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 36,
+      "max": 38,
+      "ranks": [
+       560,
+       580,
+       583,
+       "...",
+       653,
+       664
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        50,
+        40
+       ],
+       "avg": 45,
+       "rank": 531
+      },
+      {
+       "m": [
+        47,
+        51
+       ],
+       "avg": 49,
+       "rank": 526
+      },
+      {
+       "m": [
+        43,
+        53
+       ],
+       "avg": 48,
+       "rank": 503
+      },
+      {
+       "m": [
+        68,
+        35
+       ],
+       "avg": 51.5,
+       "rank": 470
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 39.5,
+      "p25": 45,
+      "median": 48,
+      "p75": 49.5,
+      "max": 52,
+      "ranks": [
+       470,
+       492,
+       503,
+       "...",
+       570,
+       589
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 91,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        59,
+        72
+       ],
+       "avg": 65.5,
+       "rank": 415
+      },
+      {
+       "m": [
+        60,
+        72
+       ],
+       "avg": 66,
+       "rank": 412
+      },
+      {
+       "m": [
+        52,
+        69
+       ],
+       "avg": 60.5,
+       "rank": 407
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "N2 normal out/26": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 664
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 620
+      },
+      {
+       "m": [
+        37,
+        35
+       ],
+       "avg": 36,
+       "rank": 583
+      },
+      {
+       "m": [
+        41,
+        35
+       ],
+       "avg": 38,
+       "rank": 560
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 36,
+      "max": 38,
+      "ranks": [
+       560,
+       580,
+       583,
+       "...",
+       653,
+       664
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        50,
+        40
+       ],
+       "avg": 45,
+       "rank": 531
+      },
+      {
+       "m": [
+        47,
+        51
+       ],
+       "avg": 49,
+       "rank": 526
+      },
+      {
+       "m": [
+        43,
+        53
+       ],
+       "avg": 48,
+       "rank": 503
+      },
+      {
+       "m": [
+        68,
+        35
+       ],
+       "avg": 51.5,
+       "rank": 470
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 39.5,
+      "p25": 45,
+      "median": 48,
+      "p75": 49.5,
+      "max": 52,
+      "ranks": [
+       470,
+       492,
+       503,
+       "...",
+       570,
+       589
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 91,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        59,
+        72
+       ],
+       "avg": 65.5,
+       "rank": 415
+      },
+      {
+       "m": [
+        60,
+        72
+       ],
+       "avg": 66,
+       "rank": 412
+      },
+      {
+       "m": [
+        52,
+        69
+       ],
+       "avg": 60.5,
+       "rank": 407
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      },
+      {
+       "m": [
+        78,
+        70
+       ],
+       "avg": 74,
+       "rank": 207
+      },
+      {
+       "m": [
+        73,
+        83
+       ],
+       "avg": 78,
+       "rank": 169
+      },
+      {
+       "m": [
+        78,
+        81
+       ],
+       "avg": 79.5,
+       "rank": 148
+      },
+      {
+       "m": [
+        79,
+        79
+       ],
+       "avg": 79,
+       "rank": 126
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        83,
+        80
+       ],
+       "avg": 81.5,
+       "rank": 287
+      },
+      {
+       "m": [
+        74,
+        78
+       ],
+       "avg": 76,
+       "rank": 278
+      },
+      {
+       "m": [
+        74,
+        75
+       ],
+       "avg": 74.5,
+       "rank": 275
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 70,
+      "p25": 74.5,
+      "median": 78,
+      "p75": 79,
+      "max": 83,
+      "ranks": [
+       126,
+       141,
+       148,
+       "...",
+       254,
+       258
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 112,
+      "preferredPool": 26,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "N3 normal fev/27": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 664
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 620
+      },
+      {
+       "m": [
+        37,
+        35
+       ],
+       "avg": 36,
+       "rank": 583
+      },
+      {
+       "m": [
+        41,
+        35
+       ],
+       "avg": 38,
+       "rank": 560
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 36,
+      "max": 38,
+      "ranks": [
+       560,
+       580,
+       583,
+       "...",
+       653,
+       664
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        50,
+        40
+       ],
+       "avg": 45,
+       "rank": 531
+      },
+      {
+       "m": [
+        47,
+        51
+       ],
+       "avg": 49,
+       "rank": 526
+      },
+      {
+       "m": [
+        43,
+        53
+       ],
+       "avg": 48,
+       "rank": 503
+      },
+      {
+       "m": [
+        68,
+        35
+       ],
+       "avg": 51.5,
+       "rank": 470
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 39.5,
+      "p25": 45,
+      "median": 48,
+      "p75": 49.5,
+      "max": 52,
+      "ranks": [
+       470,
+       492,
+       503,
+       "...",
+       570,
+       589
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 91,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      },
+      {
+       "m": [
+        78,
+        70
+       ],
+       "avg": 74,
+       "rank": 207
+      },
+      {
+       "m": [
+        73,
+        83
+       ],
+       "avg": 78,
+       "rank": 169
+      },
+      {
+       "m": [
+        78,
+        81
+       ],
+       "avg": 79.5,
+       "rank": 148
+      },
+      {
+       "m": [
+        79,
+        79
+       ],
+       "avg": 79,
+       "rank": 126
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        83,
+        80
+       ],
+       "avg": 81.5,
+       "rank": 287
+      },
+      {
+       "m": [
+        74,
+        78
+       ],
+       "avg": 76,
+       "rank": 278
+      },
+      {
+       "m": [
+        74,
+        75
+       ],
+       "avg": 74.5,
+       "rank": 275
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 70,
+      "p25": 74.5,
+      "median": 78,
+      "p75": 79,
+      "max": 83,
+      "ranks": [
+       126,
+       141,
+       148,
+       "...",
+       254,
+       258
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 112,
+      "preferredPool": 26,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Masters": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        76,
+        80
+       ],
+       "avg": 78,
+       "rank": 85
+      },
+      {
+       "m": [
+        82,
+        84
+       ],
+       "avg": 83,
+       "rank": 162
+      },
+      {
+       "m": [
+        73,
+        79
+       ],
+       "avg": 76,
+       "rank": 80
+      },
+      {
+       "m": [
+        88,
+        83
+       ],
+       "avg": 85.5,
+       "rank": 57
+      },
+      {
+       "m": [
+        78,
+        78
+       ],
+       "avg": 78,
+       "rank": 47
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        72,
+        73
+       ],
+       "avg": 72.5,
+       "rank": 234
+      },
+      {
+       "m": [
+        71,
+        77
+       ],
+       "avg": 74,
+       "rank": 210
+      },
+      {
+       "m": [
+        70,
+        75
+       ],
+       "avg": 72.5,
+       "rank": 218
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 72,
+      "p25": 77,
+      "median": 78.5,
+      "p75": 81,
+      "max": 85.5,
+      "ranks": [
+       47,
+       48,
+       57,
+       "...",
+       164,
+       167
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 96,
+      "preferredPool": 78,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "N4 normal mar/27": {
+    "Gold": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      },
+      {
+       "m": [
+        78,
+        70
+       ],
+       "avg": 74,
+       "rank": 207
+      },
+      {
+       "m": [
+        73,
+        83
+       ],
+       "avg": 78,
+       "rank": 169
+      },
+      {
+       "m": [
+        78,
+        81
+       ],
+       "avg": 79.5,
+       "rank": 148
+      },
+      {
+       "m": [
+        79,
+        79
+       ],
+       "avg": 79,
+       "rank": 126
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        83,
+        80
+       ],
+       "avg": 81.5,
+       "rank": 287
+      },
+      {
+       "m": [
+        74,
+        78
+       ],
+       "avg": 76,
+       "rank": 278
+      },
+      {
+       "m": [
+        74,
+        75
+       ],
+       "avg": 74.5,
+       "rank": 275
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 70,
+      "p25": 74.5,
+      "median": 78,
+      "p75": 79,
+      "max": 83,
+      "ranks": [
+       126,
+       141,
+       148,
+       "...",
+       254,
+       258
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 112,
+      "preferredPool": 26,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Masters": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        76,
+        80
+       ],
+       "avg": 78,
+       "rank": 85
+      },
+      {
+       "m": [
+        82,
+        84
+       ],
+       "avg": 83,
+       "rank": 162
+      },
+      {
+       "m": [
+        73,
+        79
+       ],
+       "avg": 76,
+       "rank": 80
+      },
+      {
+       "m": [
+        88,
+        83
+       ],
+       "avg": 85.5,
+       "rank": 57
+      },
+      {
+       "m": [
+        78,
+        78
+       ],
+       "avg": 78,
+       "rank": 47
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        72,
+        73
+       ],
+       "avg": 72.5,
+       "rank": 234
+      },
+      {
+       "m": [
+        71,
+        77
+       ],
+       "avg": 74,
+       "rank": 210
+      },
+      {
+       "m": [
+        70,
+        75
+       ],
+       "avg": 72.5,
+       "rank": 218
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 72,
+      "p25": 77,
+      "median": 78.5,
+      "p75": 81,
+      "max": 85.5,
+      "ranks": [
+       47,
+       48,
+       57,
+       "...",
+       164,
+       167
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 96,
+      "preferredPool": 78,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "O1 otimizador out/26": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 664
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 620
+      },
+      {
+       "m": [
+        37,
+        35
+       ],
+       "avg": 36,
+       "rank": 583
+      },
+      {
+       "m": [
+        41,
+        35
+       ],
+       "avg": 38,
+       "rank": 560
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 36,
+      "max": 38,
+      "ranks": [
+       560,
+       580,
+       583,
+       "...",
+       653,
+       664
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        50,
+        40
+       ],
+       "avg": 45,
+       "rank": 531
+      },
+      {
+       "m": [
+        47,
+        51
+       ],
+       "avg": 49,
+       "rank": 526
+      },
+      {
+       "m": [
+        43,
+        53
+       ],
+       "avg": 48,
+       "rank": 503
+      },
+      {
+       "m": [
+        68,
+        35
+       ],
+       "avg": 51.5,
+       "rank": 470
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 39.5,
+      "p25": 45,
+      "median": 48,
+      "p75": 49.5,
+      "max": 52,
+      "ranks": [
+       470,
+       492,
+       503,
+       "...",
+       570,
+       589
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 91,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        59,
+        72
+       ],
+       "avg": 65.5,
+       "rank": 415
+      },
+      {
+       "m": [
+        60,
+        72
+       ],
+       "avg": 66,
+       "rank": 412
+      },
+      {
+       "m": [
+        52,
+        69
+       ],
+       "avg": 60.5,
+       "rank": 407
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      },
+      {
+       "m": [
+        78,
+        70
+       ],
+       "avg": 74,
+       "rank": 207
+      },
+      {
+       "m": [
+        73,
+        83
+       ],
+       "avg": 78,
+       "rank": 169
+      },
+      {
+       "m": [
+        78,
+        81
+       ],
+       "avg": 79.5,
+       "rank": 148
+      },
+      {
+       "m": [
+        79,
+        79
+       ],
+       "avg": 79,
+       "rank": 126
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        83,
+        80
+       ],
+       "avg": 81.5,
+       "rank": 287
+      },
+      {
+       "m": [
+        74,
+        78
+       ],
+       "avg": 76,
+       "rank": 278
+      },
+      {
+       "m": [
+        74,
+        75
+       ],
+       "avg": 74.5,
+       "rank": 275
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 70,
+      "p25": 74.5,
+      "median": 78,
+      "p75": 79,
+      "max": 83,
+      "ranks": [
+       126,
+       141,
+       148,
+       "...",
+       254,
+       258
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 112,
+      "preferredPool": 26,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "O2 otimizador fev/27": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 664
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 620
+      },
+      {
+       "m": [
+        37,
+        35
+       ],
+       "avg": 36,
+       "rank": 583
+      },
+      {
+       "m": [
+        41,
+        35
+       ],
+       "avg": 38,
+       "rank": 560
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 36,
+      "max": 38,
+      "ranks": [
+       560,
+       580,
+       583,
+       "...",
+       653,
+       664
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        50,
+        40
+       ],
+       "avg": 45,
+       "rank": 531
+      },
+      {
+       "m": [
+        47,
+        51
+       ],
+       "avg": 49,
+       "rank": 526
+      },
+      {
+       "m": [
+        43,
+        53
+       ],
+       "avg": 48,
+       "rank": 503
+      },
+      {
+       "m": [
+        68,
+        35
+       ],
+       "avg": 51.5,
+       "rank": 470
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 39.5,
+      "p25": 45,
+      "median": 48,
+      "p75": 49.5,
+      "max": 52,
+      "ranks": [
+       470,
+       492,
+       503,
+       "...",
+       570,
+       589
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 117,
+      "preferredPool": 91,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        59,
+        72
+       ],
+       "avg": 65.5,
+       "rank": 415
+      },
+      {
+       "m": [
+        60,
+        72
+       ],
+       "avg": 66,
+       "rank": 412
+      },
+      {
+       "m": [
+        52,
+        69
+       ],
+       "avg": 60.5,
+       "rank": 407
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      },
+      {
+       "m": [
+        78,
+        70
+       ],
+       "avg": 74,
+       "rank": 207
+      },
+      {
+       "m": [
+        73,
+        83
+       ],
+       "avg": 78,
+       "rank": 169
+      },
+      {
+       "m": [
+        78,
+        81
+       ],
+       "avg": 79.5,
+       "rank": 148
+      },
+      {
+       "m": [
+        79,
+        79
+       ],
+       "avg": 79,
+       "rank": 126
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        83,
+        80
+       ],
+       "avg": 81.5,
+       "rank": 287
+      },
+      {
+       "m": [
+        74,
+        78
+       ],
+       "avg": 76,
+       "rank": 278
+      },
+      {
+       "m": [
+        74,
+        75
+       ],
+       "avg": 74.5,
+       "rank": 275
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 70,
+      "p25": 74.5,
+      "median": 78,
+      "p75": 79,
+      "max": 83,
+      "ranks": [
+       126,
+       141,
+       148,
+       "...",
+       254,
+       258
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 112,
+      "preferredPool": 26,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "O3 otimizador mar/27": {
+    "Gold": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        68,
+        81
+       ],
+       "avg": 74.5,
+       "rank": 323
+      },
+      {
+       "m": [
+        67,
+        71
+       ],
+       "avg": 69,
+       "rank": 352
+      },
+      {
+       "m": [
+        77,
+        73
+       ],
+       "avg": 75,
+       "rank": 298
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 258
+      },
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 31,
+      "min": 64,
+      "p25": 69,
+      "median": 73,
+      "p75": 75.5,
+      "max": 78.5,
+      "ranks": [
+       248,
+       254,
+       258,
+       "...",
+       395,
+       397
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 141,
+      "preferredPool": 31,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        72,
+        77
+       ],
+       "avg": 74.5,
+       "rank": 248
+      },
+      {
+       "m": [
+        78,
+        70
+       ],
+       "avg": 74,
+       "rank": 207
+      },
+      {
+       "m": [
+        73,
+        83
+       ],
+       "avg": 78,
+       "rank": 169
+      },
+      {
+       "m": [
+        78,
+        81
+       ],
+       "avg": 79.5,
+       "rank": 148
+      },
+      {
+       "m": [
+        79,
+        79
+       ],
+       "avg": 79,
+       "rank": 126
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        83,
+        80
+       ],
+       "avg": 81.5,
+       "rank": 287
+      },
+      {
+       "m": [
+        74,
+        78
+       ],
+       "avg": 76,
+       "rank": 278
+      },
+      {
+       "m": [
+        74,
+        75
+       ],
+       "avg": 74.5,
+       "rank": 275
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 70,
+      "p25": 74.5,
+      "median": 78,
+      "p75": 79,
+      "max": 83,
+      "ranks": [
+       126,
+       141,
+       148,
+       "...",
+       254,
+       258
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 112,
+      "preferredPool": 26,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Masters": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        76,
+        80
+       ],
+       "avg": 78,
+       "rank": 85
+      },
+      {
+       "m": [
+        82,
+        84
+       ],
+       "avg": 83,
+       "rank": 162
+      },
+      {
+       "m": [
+        73,
+        79
+       ],
+       "avg": 76,
+       "rank": 80
+      },
+      {
+       "m": [
+        88,
+        83
+       ],
+       "avg": 85.5,
+       "rank": 57
+      },
+      {
+       "m": [
+        78,
+        78
+       ],
+       "avg": 78,
+       "rank": 47
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        72,
+        73
+       ],
+       "avg": 72.5,
+       "rank": 234
+      },
+      {
+       "m": [
+        71,
+        77
+       ],
+       "avg": 74,
+       "rank": 210
+      },
+      {
+       "m": [
+        70,
+        75
+       ],
+       "avg": 72.5,
+       "rank": 218
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 72,
+      "p25": 77,
+      "median": 78.5,
+      "p75": 81,
+      "max": 85.5,
+      "ranks": [
+       47,
+       48,
+       57,
+       "...",
+       164,
+       167
+      ]
+     },
+     "diag": {
+      "candidatePool": 220,
+      "eligiblePool": 96,
+      "preferredPool": 78,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   }
+  },
+  "B": {
+   "N1 normal ago/26": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 940
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 872
+      },
+      {
+       "m": [
+        35,
+        39
+       ],
+       "avg": 37,
+       "rank": 835
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 810
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 35,
+      "max": 39,
+      "ranks": [
+       810,
+       813,
+       835,
+       "...",
+       913,
+       940
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        52,
+        42
+       ],
+       "avg": 47,
+       "rank": 762
+      },
+      {
+       "m": [
+        49,
+        39
+       ],
+       "avg": 44,
+       "rank": 762
+      },
+      {
+       "m": [
+        36,
+        53
+       ],
+       "avg": 44.5,
+       "rank": 736
+      },
+      {
+       "m": [
+        51,
+        49
+       ],
+       "avg": 50,
+       "rank": 688
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 38,
+      "p25": 39.5,
+      "median": 42.5,
+      "p75": 46,
+      "max": 50,
+      "ranks": [
+       688,
+       734,
+       736,
+       "...",
+       839,
+       840
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 227,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        67,
+        62
+       ],
+       "avg": 64.5,
+       "rank": 593
+      },
+      {
+       "m": [
+        59,
+        60
+       ],
+       "avg": 59.5,
+       "rank": 592
+      },
+      {
+       "m": [
+        68,
+        68
+       ],
+       "avg": 68,
+       "rank": 589
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "N2 normal out/26": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 940
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 872
+      },
+      {
+       "m": [
+        35,
+        39
+       ],
+       "avg": 37,
+       "rank": 835
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 810
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 35,
+      "max": 39,
+      "ranks": [
+       810,
+       813,
+       835,
+       "...",
+       913,
+       940
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        52,
+        42
+       ],
+       "avg": 47,
+       "rank": 762
+      },
+      {
+       "m": [
+        49,
+        39
+       ],
+       "avg": 44,
+       "rank": 762
+      },
+      {
+       "m": [
+        36,
+        53
+       ],
+       "avg": 44.5,
+       "rank": 736
+      },
+      {
+       "m": [
+        51,
+        49
+       ],
+       "avg": 50,
+       "rank": 688
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 38,
+      "p25": 39.5,
+      "median": 42.5,
+      "p75": 46,
+      "max": 50,
+      "ranks": [
+       688,
+       734,
+       736,
+       "...",
+       839,
+       840
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 227,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        67,
+        62
+       ],
+       "avg": 64.5,
+       "rank": 593
+      },
+      {
+       "m": [
+        59,
+        60
+       ],
+       "avg": 59.5,
+       "rank": 592
+      },
+      {
+       "m": [
+        68,
+        68
+       ],
+       "avg": 68,
+       "rank": 589
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        78,
+        79
+       ],
+       "avg": 78.5,
+       "rank": 274
+      },
+      {
+       "m": [
+        83,
+        76
+       ],
+       "avg": 79.5,
+       "rank": 250
+      },
+      {
+       "m": [
+        83,
+        70
+       ],
+       "avg": 76.5,
+       "rank": 224
+      },
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 201
+      },
+      {
+       "m": [
+        78,
+        83
+       ],
+       "avg": 80.5,
+       "rank": 181
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        70,
+        81
+       ],
+       "avg": 75.5,
+       "rank": 408
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 406
+      },
+      {
+       "m": [
+        78,
+        71
+       ],
+       "avg": 74.5,
+       "rank": 403
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 71,
+      "p25": 74.5,
+      "median": 77,
+      "p75": 80.5,
+      "max": 81.5,
+      "ranks": [
+       181,
+       197,
+       201,
+       "...",
+       280,
+       282
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 228,
+      "preferredPool": 77,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "N3 normal fev/27": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 940
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 872
+      },
+      {
+       "m": [
+        35,
+        39
+       ],
+       "avg": 37,
+       "rank": 835
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 810
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 35,
+      "max": 39,
+      "ranks": [
+       810,
+       813,
+       835,
+       "...",
+       913,
+       940
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        52,
+        42
+       ],
+       "avg": 47,
+       "rank": 762
+      },
+      {
+       "m": [
+        49,
+        39
+       ],
+       "avg": 44,
+       "rank": 762
+      },
+      {
+       "m": [
+        36,
+        53
+       ],
+       "avg": 44.5,
+       "rank": 736
+      },
+      {
+       "m": [
+        51,
+        49
+       ],
+       "avg": 50,
+       "rank": 688
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 38,
+      "p25": 39.5,
+      "median": 42.5,
+      "p75": 46,
+      "max": 50,
+      "ranks": [
+       688,
+       734,
+       736,
+       "...",
+       839,
+       840
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 227,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        78,
+        79
+       ],
+       "avg": 78.5,
+       "rank": 274
+      },
+      {
+       "m": [
+        83,
+        76
+       ],
+       "avg": 79.5,
+       "rank": 250
+      },
+      {
+       "m": [
+        83,
+        70
+       ],
+       "avg": 76.5,
+       "rank": 224
+      },
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 201
+      },
+      {
+       "m": [
+        78,
+        83
+       ],
+       "avg": 80.5,
+       "rank": 181
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        70,
+        81
+       ],
+       "avg": 75.5,
+       "rank": 408
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 406
+      },
+      {
+       "m": [
+        78,
+        71
+       ],
+       "avg": 74.5,
+       "rank": 403
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 71,
+      "p25": 74.5,
+      "median": 77,
+      "p75": 80.5,
+      "max": 81.5,
+      "ranks": [
+       181,
+       197,
+       201,
+       "...",
+       280,
+       282
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 228,
+      "preferredPool": 77,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Masters": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 91
+      },
+      {
+       "m": [
+        78,
+        80
+       ],
+       "avg": 79,
+       "rank": 168
+      },
+      {
+       "m": [
+        87,
+        81
+       ],
+       "avg": 84,
+       "rank": 91
+      },
+      {
+       "m": [
+        81,
+        79
+       ],
+       "avg": 80,
+       "rank": 85
+      },
+      {
+       "m": [
+        86,
+        84
+       ],
+       "avg": 85,
+       "rank": 83
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 321
+      },
+      {
+       "m": [
+        76,
+        76
+       ],
+       "avg": 76,
+       "rank": 238
+      },
+      {
+       "m": [
+        74,
+        82
+       ],
+       "avg": 78,
+       "rank": 307
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 75,
+      "p25": 79,
+      "median": 80,
+      "p75": 81.5,
+      "max": 85.5,
+      "ranks": [
+       83,
+       84,
+       85,
+       "...",
+       175,
+       178
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 181,
+      "preferredPool": 128,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "N4 normal mar/27": {
+    "Gold": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        78,
+        79
+       ],
+       "avg": 78.5,
+       "rank": 274
+      },
+      {
+       "m": [
+        83,
+        76
+       ],
+       "avg": 79.5,
+       "rank": 250
+      },
+      {
+       "m": [
+        83,
+        70
+       ],
+       "avg": 76.5,
+       "rank": 224
+      },
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 201
+      },
+      {
+       "m": [
+        78,
+        83
+       ],
+       "avg": 80.5,
+       "rank": 181
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        70,
+        81
+       ],
+       "avg": 75.5,
+       "rank": 408
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 406
+      },
+      {
+       "m": [
+        78,
+        71
+       ],
+       "avg": 74.5,
+       "rank": 403
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 71,
+      "p25": 74.5,
+      "median": 77,
+      "p75": 80.5,
+      "max": 81.5,
+      "ranks": [
+       181,
+       197,
+       201,
+       "...",
+       280,
+       282
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 228,
+      "preferredPool": 77,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Masters": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 91
+      },
+      {
+       "m": [
+        78,
+        80
+       ],
+       "avg": 79,
+       "rank": 168
+      },
+      {
+       "m": [
+        87,
+        81
+       ],
+       "avg": 84,
+       "rank": 91
+      },
+      {
+       "m": [
+        81,
+        79
+       ],
+       "avg": 80,
+       "rank": 85
+      },
+      {
+       "m": [
+        86,
+        84
+       ],
+       "avg": 85,
+       "rank": 83
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 321
+      },
+      {
+       "m": [
+        76,
+        76
+       ],
+       "avg": 76,
+       "rank": 238
+      },
+      {
+       "m": [
+        74,
+        82
+       ],
+       "avg": 78,
+       "rank": 307
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 75,
+      "p25": 79,
+      "median": 80,
+      "p75": 81.5,
+      "max": 85.5,
+      "ranks": [
+       83,
+       84,
+       85,
+       "...",
+       175,
+       178
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 181,
+      "preferredPool": 128,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "O1 otimizador out/26": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 940
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 872
+      },
+      {
+       "m": [
+        35,
+        39
+       ],
+       "avg": 37,
+       "rank": 835
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 810
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 35,
+      "max": 39,
+      "ranks": [
+       810,
+       813,
+       835,
+       "...",
+       913,
+       940
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        52,
+        42
+       ],
+       "avg": 47,
+       "rank": 762
+      },
+      {
+       "m": [
+        49,
+        39
+       ],
+       "avg": 44,
+       "rank": 762
+      },
+      {
+       "m": [
+        36,
+        53
+       ],
+       "avg": 44.5,
+       "rank": 736
+      },
+      {
+       "m": [
+        51,
+        49
+       ],
+       "avg": 50,
+       "rank": 688
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 38,
+      "p25": 39.5,
+      "median": 42.5,
+      "p75": 46,
+      "max": 50,
+      "ranks": [
+       688,
+       734,
+       736,
+       "...",
+       839,
+       840
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 227,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        67,
+        62
+       ],
+       "avg": 64.5,
+       "rank": 593
+      },
+      {
+       "m": [
+        59,
+        60
+       ],
+       "avg": 59.5,
+       "rank": 592
+      },
+      {
+       "m": [
+        68,
+        68
+       ],
+       "avg": 68,
+       "rank": 589
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        78,
+        79
+       ],
+       "avg": 78.5,
+       "rank": 274
+      },
+      {
+       "m": [
+        83,
+        76
+       ],
+       "avg": 79.5,
+       "rank": 250
+      },
+      {
+       "m": [
+        83,
+        70
+       ],
+       "avg": 76.5,
+       "rank": 224
+      },
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 201
+      },
+      {
+       "m": [
+        78,
+        83
+       ],
+       "avg": 80.5,
+       "rank": 181
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        70,
+        81
+       ],
+       "avg": 75.5,
+       "rank": 408
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 406
+      },
+      {
+       "m": [
+        78,
+        71
+       ],
+       "avg": 74.5,
+       "rank": 403
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 71,
+      "p25": 74.5,
+      "median": 77,
+      "p75": 80.5,
+      "max": 81.5,
+      "ranks": [
+       181,
+       197,
+       201,
+       "...",
+       280,
+       282
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 228,
+      "preferredPool": 77,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "O2 otimizador fev/27": {
+    "Bronze": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 940
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 872
+      },
+      {
+       "m": [
+        35,
+        39
+       ],
+       "avg": 37,
+       "rank": 835
+      },
+      {
+       "m": [
+        35,
+        35
+       ],
+       "avg": 35,
+       "rank": 810
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 35,
+      "p25": 35,
+      "median": 35,
+      "p75": 35,
+      "max": 39,
+      "ranks": [
+       810,
+       813,
+       835,
+       "...",
+       913,
+       940
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 0,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Silver": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        52,
+        42
+       ],
+       "avg": 47,
+       "rank": 762
+      },
+      {
+       "m": [
+        49,
+        39
+       ],
+       "avg": 44,
+       "rank": 762
+      },
+      {
+       "m": [
+        36,
+        53
+       ],
+       "avg": 44.5,
+       "rank": 736
+      },
+      {
+       "m": [
+        51,
+        49
+       ],
+       "avg": 50,
+       "rank": 688
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 15,
+      "min": 38,
+      "p25": 39.5,
+      "median": 42.5,
+      "p75": 46,
+      "max": 50,
+      "ranks": [
+       688,
+       734,
+       736,
+       "...",
+       839,
+       840
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 299,
+      "preferredPool": 227,
+      "realSelected": 15,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Gold": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        67,
+        62
+       ],
+       "avg": 64.5,
+       "rank": 593
+      },
+      {
+       "m": [
+        59,
+        60
+       ],
+       "avg": 59.5,
+       "rank": 592
+      },
+      {
+       "m": [
+        68,
+        68
+       ],
+       "avg": 68,
+       "rank": 589
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        78,
+        79
+       ],
+       "avg": 78.5,
+       "rank": 274
+      },
+      {
+       "m": [
+        83,
+        76
+       ],
+       "avg": 79.5,
+       "rank": 250
+      },
+      {
+       "m": [
+        83,
+        70
+       ],
+       "avg": 76.5,
+       "rank": 224
+      },
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 201
+      },
+      {
+       "m": [
+        78,
+        83
+       ],
+       "avg": 80.5,
+       "rank": 181
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        70,
+        81
+       ],
+       "avg": 75.5,
+       "rank": 408
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 406
+      },
+      {
+       "m": [
+        78,
+        71
+       ],
+       "avg": 74.5,
+       "rank": 403
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 71,
+      "p25": 74.5,
+      "median": 77,
+      "p75": 80.5,
+      "max": 81.5,
+      "ranks": [
+       181,
+       197,
+       201,
+       "...",
+       280,
+       282
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 228,
+      "preferredPool": 77,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   },
+   "O3 otimizador mar/27": {
+    "Gold": {
+     "path": "direct",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 433
+      },
+      {
+       "m": [
+        75,
+        79
+       ],
+       "avg": 77,
+       "rank": 452
+      },
+      {
+       "m": [
+        82,
+        78
+       ],
+       "avg": 80,
+       "rank": 416
+      },
+      {
+       "m": [
+        78,
+        57
+       ],
+       "avg": 67.5,
+       "rank": 397
+      },
+      {
+       "m": [
+        80,
+        83
+       ],
+       "avg": 81.5,
+       "rank": 344
+      }
+     ],
+     "qual": [],
+     "entrants": {
+      "n": 31,
+      "min": 67.5,
+      "p25": 73,
+      "median": 76,
+      "p75": 77.5,
+      "max": 82.5,
+      "ranks": [
+       344,
+       351,
+       397,
+       "...",
+       492,
+       502
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 320,
+      "preferredPool": 103,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Platinum": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        78,
+        79
+       ],
+       "avg": 78.5,
+       "rank": 274
+      },
+      {
+       "m": [
+        83,
+        76
+       ],
+       "avg": 79.5,
+       "rank": 250
+      },
+      {
+       "m": [
+        83,
+        70
+       ],
+       "avg": 76.5,
+       "rank": 224
+      },
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 201
+      },
+      {
+       "m": [
+        78,
+        83
+       ],
+       "avg": 80.5,
+       "rank": 181
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        70,
+        81
+       ],
+       "avg": 75.5,
+       "rank": 408
+      },
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 406
+      },
+      {
+       "m": [
+        78,
+        71
+       ],
+       "avg": 74.5,
+       "rank": 403
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 71,
+      "p25": 74.5,
+      "median": 77,
+      "p75": 80.5,
+      "max": 81.5,
+      "ranks": [
+       181,
+       197,
+       201,
+       "...",
+       280,
+       282
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 228,
+      "preferredPool": 77,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    },
+    "Masters": {
+     "path": "qualifying",
+     "main": [
+      {
+       "m": [
+        79,
+        74
+       ],
+       "avg": 76.5,
+       "rank": 91
+      },
+      {
+       "m": [
+        78,
+        80
+       ],
+       "avg": 79,
+       "rank": 168
+      },
+      {
+       "m": [
+        87,
+        81
+       ],
+       "avg": 84,
+       "rank": 91
+      },
+      {
+       "m": [
+        81,
+        79
+       ],
+       "avg": 80,
+       "rank": 85
+      },
+      {
+       "m": [
+        86,
+        84
+       ],
+       "avg": 85,
+       "rank": 83
+      }
+     ],
+     "qual": [
+      {
+       "m": [
+        81,
+        71
+       ],
+       "avg": 76,
+       "rank": 321
+      },
+      {
+       "m": [
+        76,
+        76
+       ],
+       "avg": 76,
+       "rank": 238
+      },
+      {
+       "m": [
+        74,
+        82
+       ],
+       "avg": 78,
+       "rank": 307
+      }
+     ],
+     "entrants": {
+      "n": 31,
+      "min": 75,
+      "p25": 79,
+      "median": 80,
+      "p75": 81.5,
+      "max": 85.5,
+      "ranks": [
+       83,
+       84,
+       85,
+       "...",
+       175,
+       178
+      ]
+     },
+     "diag": {
+      "candidatePool": 496,
+      "eligiblePool": 181,
+      "preferredPool": 128,
+      "realSelected": 31,
+      "rescueSelected": 0,
+      "unrankedSelected": 0
+     }
+    }
+   }
+  }
+ }
+}

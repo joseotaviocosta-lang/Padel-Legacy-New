@@ -1,0 +1,530 @@
+{
+ "normal-cloud6d-5a8350a": {
+  "weeksWithTeamRank": 111,
+  "weeksWhereHarnessHidesRealEligibleTier": 66,
+  "medianAbsGapIndividualVsTeam": 13,
+  "maxAbsGap": 48,
+  "goldQualifyingOpenByTeamRankWeeks": 33,
+  "goldQualifyingOpenButHarnessHidWeeks": 33,
+  "tournamentsByEntryPath": {
+   "sem-ranking": 1,
+   "direct": 65,
+   "ineligible": 1,
+   "qualifying": 1
+  },
+  "playedButRealIneligible": [
+   "2027-04-08 Silver team=357 ind=342"
+  ],
+  "firstGoldPlayed": {
+   "date": "2027-02-04",
+   "tier": "Gold",
+   "ind": 432,
+   "team": 443,
+   "path": "direct",
+   "realEligible": true,
+   "harnessVisible": true
+  },
+  "goldPlayedByPath": {
+   "direct": 21
+  },
+  "samples": [
+   {
+    "date": "2026-03-26",
+    "ind": 939,
+    "team": 899,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-04-02",
+    "ind": 930,
+    "team": 898,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-06-04",
+    "ind": 842,
+    "team": 875,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-06-11",
+    "ind": 842,
+    "team": 867,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-06-18",
+    "ind": 838,
+    "team": 864,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-06-25",
+    "ind": 810,
+    "team": 836,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   }
+  ]
+ },
+ "optimizer-cloud6d-5a8350a": {
+  "weeksWithTeamRank": 124,
+  "weeksWhereHarnessHidesRealEligibleTier": 59,
+  "medianAbsGapIndividualVsTeam": 11,
+  "maxAbsGap": 152,
+  "goldQualifyingOpenByTeamRankWeeks": 31,
+  "goldQualifyingOpenButHarnessHidWeeks": 24,
+  "tournamentsByEntryPath": {
+   "sem-ranking": 1,
+   "direct": 68,
+   "qualifying": 4,
+   "ineligible": 1
+  },
+  "playedButRealIneligible": [
+   "2027-04-08 Silver team=358 ind=353"
+  ],
+  "firstGoldPlayed": {
+   "date": "2027-02-07",
+   "tier": "Gold",
+   "ind": 437,
+   "team": 462,
+   "path": "qualifying",
+   "realEligible": true,
+   "harnessVisible": true
+  },
+  "goldPlayedByPath": {
+   "qualifying": 3,
+   "direct": 21
+  },
+  "samples": [
+   {
+    "date": "2026-05-21",
+    "ind": 888,
+    "team": 894,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-05-28",
+    "ind": 878,
+    "team": 882,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-08-06",
+    "ind": 730,
+    "team": 880,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-08-13",
+    "ind": 721,
+    "team": 873,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-08-20",
+    "ind": 699,
+    "team": 824,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-08-27",
+    "ind": 668,
+    "team": 746,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   }
+  ]
+ },
+ "normal-baseline-fbb0bc4": {
+  "weeksWithTeamRank": 111,
+  "weeksWhereHarnessHidesRealEligibleTier": 61,
+  "medianAbsGapIndividualVsTeam": 11,
+  "maxAbsGap": 56,
+  "goldQualifyingOpenByTeamRankWeeks": 25,
+  "goldQualifyingOpenButHarnessHidWeeks": 25,
+  "tournamentsByEntryPath": {
+   "sem-ranking": 1,
+   "direct": 68
+  },
+  "playedButRealIneligible": [],
+  "firstGoldPlayed": {
+   "date": "2027-02-04",
+   "tier": "Gold",
+   "ind": 358,
+   "team": 342,
+   "path": "direct",
+   "realEligible": true,
+   "harnessVisible": true
+  },
+  "goldPlayedByPath": {
+   "direct": 13
+  },
+  "samples": [
+   {
+    "date": "2026-03-26",
+    "ind": 922,
+    "team": 892,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-04-02",
+    "ind": 910,
+    "team": 890,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-05-21",
+    "ind": 850,
+    "team": 881,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-05-28",
+    "ind": 821,
+    "team": 850,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-06-04",
+    "ind": 789,
+    "team": 817,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-06-11",
+    "ind": 715,
+    "team": 771,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   }
+  ]
+ },
+ "optimizer-baseline-fbb0bc4": {
+  "weeksWithTeamRank": 124,
+  "weeksWhereHarnessHidesRealEligibleTier": 67,
+  "medianAbsGapIndividualVsTeam": 32,
+  "maxAbsGap": 553,
+  "goldQualifyingOpenByTeamRankWeeks": 25,
+  "goldQualifyingOpenButHarnessHidWeeks": 25,
+  "tournamentsByEntryPath": {
+   "sem-ranking": 1,
+   "direct": 62,
+   "ineligible": 1
+  },
+  "playedButRealIneligible": [
+   "2027-04-11 Silver team=197 ind=318"
+  ],
+  "firstGoldPlayed": {
+   "date": "2027-02-11",
+   "tier": "Gold",
+   "ind": 443,
+   "team": 120,
+   "path": "direct",
+   "realEligible": true,
+   "harnessVisible": true
+  },
+  "goldPlayedByPath": {
+   "direct": 16
+  },
+  "samples": [
+   {
+    "date": "2026-02-26",
+    "ind": 942,
+    "team": 891,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-03-05",
+    "ind": 918,
+    "team": 879,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-03-12",
+    "ind": 905,
+    "team": 861,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-03-19",
+    "ind": 901,
+    "team": 861,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-03-26",
+    "ind": 894,
+    "team": 842,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   },
+   {
+    "date": "2026-04-02",
+    "ind": 881,
+    "team": 841,
+    "real": [
+     "Bronze",
+     "Silver",
+     "Gold"
+    ],
+    "harness": [
+     "Bronze",
+     "Silver"
+    ],
+    "hidden": [
+     "Gold"
+    ]
+   }
+  ]
+ }
+}

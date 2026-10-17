@@ -1,0 +1,1224 @@
+{
+ "observed": {
+  "Bronze|main": [
+   {
+    "avg": 35,
+    "n": 33,
+    "m": [
+     35,
+     35
+    ]
+   },
+   {
+    "avg": 35,
+    "n": 14,
+    "m": [
+     35,
+     35
+    ]
+   },
+   {
+    "avg": 36.5,
+    "n": 7,
+    "m": [
+     36.5,
+     36.5
+    ]
+   },
+   {
+    "avg": 36.5,
+    "n": 0,
+    "m": [
+     36.5,
+     36.5
+    ]
+   }
+  ],
+  "Silver|main": [
+   {
+    "avg": 47.5,
+    "n": 26,
+    "m": [
+     47.5,
+     47.5
+    ]
+   },
+   {
+    "avg": 49.5,
+    "n": 1,
+    "m": [
+     49.5,
+     49.5
+    ]
+   },
+   {
+    "avg": 49.5,
+    "n": 0,
+    "m": [
+     49.5,
+     49.5
+    ]
+   },
+   {
+    "avg": 49.5,
+    "n": 0,
+    "m": [
+     49.5,
+     49.5
+    ]
+   }
+  ],
+  "Gold|main": [
+   {
+    "avg": 77,
+    "n": 43,
+    "m": [
+     77,
+     77
+    ]
+   },
+   {
+    "avg": 77,
+    "n": 0,
+    "m": [
+     77,
+     77
+    ]
+   },
+   {
+    "avg": 77,
+    "n": 0,
+    "m": [
+     77,
+     77
+    ]
+   },
+   {
+    "avg": 77,
+    "n": 0,
+    "m": [
+     77,
+     77
+    ]
+   },
+   {
+    "avg": 77,
+    "n": 0,
+    "m": [
+     77,
+     77
+    ]
+   }
+  ],
+  "Platinum|main": [
+   {
+    "avg": 79,
+    "n": 33,
+    "m": [
+     79,
+     79
+    ]
+   },
+   {
+    "avg": 79,
+    "n": 0,
+    "m": [
+     79,
+     79
+    ]
+   },
+   {
+    "avg": 79,
+    "n": 0,
+    "m": [
+     79,
+     79
+    ]
+   },
+   {
+    "avg": 79,
+    "n": 0,
+    "m": [
+     79,
+     79
+    ]
+   },
+   {
+    "avg": 79,
+    "n": 0,
+    "m": [
+     79,
+     79
+    ]
+   }
+  ],
+  "Masters|main": [
+   {
+    "avg": 81,
+    "n": 8,
+    "m": [
+     81,
+     81
+    ]
+   },
+   {
+    "avg": 81,
+    "n": 0,
+    "m": [
+     81,
+     81
+    ]
+   },
+   {
+    "avg": 81,
+    "n": 0,
+    "m": [
+     81,
+     81
+    ]
+   },
+   {
+    "avg": 81,
+    "n": 0,
+    "m": [
+     81,
+     81
+    ]
+   },
+   {
+    "avg": 81,
+    "n": 0,
+    "m": [
+     81,
+     81
+    ]
+   }
+  ],
+  "Gold|qualifying": [
+   {
+    "avg": 39,
+    "n": 4,
+    "m": [
+     39,
+     39
+    ]
+   },
+   {
+    "avg": 38,
+    "n": 3,
+    "m": [
+     38,
+     38
+    ]
+   },
+   {
+    "avg": 55.5,
+    "n": 2,
+    "m": [
+     55.5,
+     55.5
+    ]
+   }
+  ],
+  "Platinum|qualifying": [
+   {
+    "avg": 77,
+    "n": 4,
+    "m": [
+     77,
+     77
+    ]
+   },
+   {
+    "avg": 77,
+    "n": 0,
+    "m": [
+     77,
+     77
+    ]
+   },
+   {
+    "avg": 77,
+    "n": 0,
+    "m": [
+     77,
+     77
+    ]
+   }
+  ],
+  "Masters|qualifying": [
+   {
+    "avg": null,
+    "n": 0,
+    "m": null
+   },
+   {
+    "avg": null,
+    "n": 0,
+    "m": null
+   },
+   {
+    "avg": null,
+    "n": 0,
+    "m": null
+   }
+  ]
+ },
+ "states": [
+  {
+   "state": {
+    "label": "N1 normal ago/26",
+    "run": "normal-cloud6d-5a8350a",
+    "date": "2026-08-13",
+    "ind": 702,
+    "team": 722,
+    "ovr": 39,
+    "partnerOvr": 35,
+    "avg": 37
+   },
+   "options": [
+    {
+     "tier": "Bronze",
+     "path": "direct",
+     "est": {
+      "ePts": 2.9,
+      "firstOppAvg": 35,
+      "pFirst": 0.57
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.53,
+      "eMainRoundsWon": 1.12,
+      "ePoints": 2.9,
+      "pChampion": 0.1,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Silver",
+     "path": "direct",
+     "est": {
+      "ePts": 2.28,
+      "firstOppAvg": 47.5,
+      "pFirst": 0.08
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.15,
+      "eMainRoundsWon": 0.15,
+      "ePoints": 2.45,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Gold",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0.01,
+      "firstOppAvg": 39,
+      "pFirst": 0.37
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0.28,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Silver",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.15,
+      "eMainRoundsWon": 0.15,
+      "ePoints": 2.45,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Gold",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0.28,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.53,
+      "eMainRoundsWon": 1.12,
+      "ePoints": 2.9,
+      "pChampion": 0.1,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.53,
+      "eMainRoundsWon": 1.12,
+      "ePoints": 2.9,
+      "pChampion": 0.1,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.53,
+      "eMainRoundsWon": 1.12,
+      "ePoints": 2.9,
+      "pChampion": 0.1,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  },
+  {
+   "state": {
+    "label": "N2 normal out/26",
+    "run": "normal-cloud6d-5a8350a",
+    "date": "2026-10-29",
+    "ind": 521,
+    "team": 500,
+    "ovr": 43,
+    "partnerOvr": 35,
+    "avg": 39
+   },
+   "options": [
+    {
+     "tier": "Bronze",
+     "path": "direct",
+     "est": {
+      "ePts": 3.69,
+      "firstOppAvg": 35,
+      "pFirst": 0.66
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.67,
+      "eMainRoundsWon": 1.58,
+      "ePoints": 3.77,
+      "pChampion": 0.13,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Silver",
+     "path": "direct",
+     "est": {
+      "ePts": 2.43,
+      "firstOppAvg": 47.5,
+      "pFirst": 0.13
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.17,
+      "eMainRoundsWon": 0.22,
+      "ePoints": 2.73,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Gold",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0.03,
+      "firstOppAvg": 39,
+      "pFirst": 0.48
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0.65,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Silver",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.17,
+      "eMainRoundsWon": 0.22,
+      "ePoints": 2.73,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Gold",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0.65,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.67,
+      "eMainRoundsWon": 1.58,
+      "ePoints": 3.77,
+      "pChampion": 0.13,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.67,
+      "eMainRoundsWon": 1.58,
+      "ePoints": 3.77,
+      "pChampion": 0.13,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  },
+  {
+   "state": {
+    "label": "N3 normal fev/27",
+    "run": "normal-cloud6d-5a8350a",
+    "date": "2027-02-04",
+    "ind": 432,
+    "team": 443,
+    "ovr": 48,
+    "partnerOvr": 37,
+    "avg": 42.5
+   },
+   "options": [
+    {
+     "tier": "Bronze",
+     "path": "direct",
+     "est": {
+      "ePts": 5.4,
+      "firstOppAvg": 35,
+      "pFirst": 0.8
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.83,
+      "eMainRoundsWon": 2.28,
+      "ePoints": 5.4,
+      "pChampion": 0.33,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Silver",
+     "path": "direct",
+     "est": {
+      "ePts": 2.8,
+      "firstOppAvg": 47.5,
+      "pFirst": 0.21
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.22,
+      "eMainRoundsWon": 0.25,
+      "ePoints": 2.78,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Gold",
+     "path": "direct",
+     "est": {
+      "ePts": 5,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Silver",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.22,
+      "eMainRoundsWon": 0.25,
+      "ePoints": 2.78,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.83,
+      "eMainRoundsWon": 2.28,
+      "ePoints": 5.4,
+      "pChampion": 0.33,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.83,
+      "eMainRoundsWon": 2.28,
+      "ePoints": 5.4,
+      "pChampion": 0.33,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  },
+  {
+   "state": {
+    "label": "N4 normal mar/27",
+    "run": "normal-cloud6d-5a8350a",
+    "date": "2027-03-18",
+    "ind": 373,
+    "team": 387,
+    "ovr": 50,
+    "partnerOvr": 37,
+    "avg": 43.5
+   },
+   "options": [
+    {
+     "tier": "Gold",
+     "path": "direct",
+     "est": {
+      "ePts": 5,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  },
+  {
+   "state": {
+    "label": "O1 otimizador out/26",
+    "run": "optimizer-cloud6d-5a8350a",
+    "date": "2026-10-29",
+    "ind": 516,
+    "team": 520,
+    "ovr": 44,
+    "partnerOvr": 52,
+    "avg": 48
+   },
+   "options": [
+    {
+     "tier": "Bronze",
+     "path": "direct",
+     "est": {
+      "ePts": 7.77,
+      "firstOppAvg": 35,
+      "pFirst": 0.91
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.95,
+      "eMainRoundsWon": 2.97,
+      "ePoints": 7.05,
+      "pChampion": 0.53,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Silver",
+     "path": "direct",
+     "est": {
+      "ePts": 5.14,
+      "firstOppAvg": 47.5,
+      "pFirst": 0.51
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.6,
+      "eMainRoundsWon": 0.95,
+      "ePoints": 5.57,
+      "pChampion": 0.03,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Gold",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0.56,
+      "firstOppAvg": 39,
+      "pFirst": 0.85
+     },
+     "real": {
+      "pReachMain": 0.12,
+      "pWinAny": 0.88,
+      "eMainRoundsWon": 0,
+      "ePoints": 0.58,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Silver",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.6,
+      "eMainRoundsWon": 0.95,
+      "ePoints": 5.57,
+      "pChampion": 0.03,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Silver",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.6,
+      "eMainRoundsWon": 0.95,
+      "ePoints": 5.57,
+      "pChampion": 0.03,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.95,
+      "eMainRoundsWon": 2.97,
+      "ePoints": 7.05,
+      "pChampion": 0.53,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.95,
+      "eMainRoundsWon": 2.97,
+      "ePoints": 7.05,
+      "pChampion": 0.53,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  },
+  {
+   "state": {
+    "label": "O2 otimizador fev/27",
+    "run": "optimizer-cloud6d-5a8350a",
+    "date": "2027-02-04",
+    "ind": 437,
+    "team": 462,
+    "ovr": 49,
+    "partnerOvr": 51,
+    "avg": 50
+   },
+   "options": [
+    {
+     "tier": "Bronze",
+     "path": "direct",
+     "est": {
+      "ePts": 8.21,
+      "firstOppAvg": 35,
+      "pFirst": 0.93
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.95,
+      "eMainRoundsWon": 3.37,
+      "ePoints": 8.18,
+      "pChampion": 0.7,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Silver",
+     "path": "direct",
+     "est": {
+      "ePts": 6.68,
+      "firstOppAvg": 47.5,
+      "pFirst": 0.6
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.52,
+      "eMainRoundsWon": 0.92,
+      "ePoints": 5.68,
+      "pChampion": 0.05,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Gold",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0.79,
+      "firstOppAvg": 39,
+      "pFirst": 0.89
+     },
+     "real": {
+      "pReachMain": 0.17,
+      "pWinAny": 0.93,
+      "eMainRoundsWon": 0,
+      "ePoints": 0.83,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Gold",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0.17,
+      "pWinAny": 0.93,
+      "eMainRoundsWon": 0,
+      "ePoints": 0.83,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Silver",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.52,
+      "eMainRoundsWon": 0.92,
+      "ePoints": 5.68,
+      "pChampion": 0.05,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.95,
+      "eMainRoundsWon": 3.37,
+      "ePoints": 8.18,
+      "pChampion": 0.7,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Bronze",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0.95,
+      "eMainRoundsWon": 3.37,
+      "ePoints": 8.18,
+      "pChampion": 0.7,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  },
+  {
+   "state": {
+    "label": "O3 otimizador mar/27",
+    "run": "optimizer-cloud6d-5a8350a",
+    "date": "2027-03-25",
+    "ind": 381,
+    "team": 389,
+    "ovr": 51,
+    "partnerOvr": 51,
+    "avg": 51
+   },
+   "options": [
+    {
+     "tier": "Gold",
+     "path": "direct",
+     "est": {
+      "ePts": 5,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "est": {
+      "ePts": 0,
+      "firstOppAvg": 77,
+      "pFirst": 0
+     },
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   ],
+   "picks": {
+    "A_harness": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "A_real": {
+     "tier": "Platinum",
+     "path": "qualifying",
+     "real": {
+      "pReachMain": 0,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 0,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "B_closest": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "C_balanced": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    },
+    "oracle": {
+     "tier": "Gold",
+     "path": "direct",
+     "real": {
+      "pReachMain": 1,
+      "pWinAny": 0,
+      "eMainRoundsWon": 0,
+      "ePoints": 5,
+      "pChampion": 0,
+      "nullMainRounds": 0
+     }
+    }
+   }
+  }
+ ],
+ "totals": {
+  "A_harness": {
+   "states": 7,
+   "sumEPoints": 26.58,
+   "meanPWinAny": 0.26,
+   "meanMainRoundsWon": 0.19
+  },
+  "A_real": {
+   "states": 7,
+   "sumEPoints": 0,
+   "meanPWinAny": 0.04,
+   "meanMainRoundsWon": 0
+  },
+  "B_closest": {
+   "states": 7,
+   "sumEPoints": 26.93,
+   "meanPWinAny": 0.36,
+   "meanMainRoundsWon": 0.46
+  },
+  "C_balanced": {
+   "states": 7,
+   "sumEPoints": 37.3,
+   "meanPWinAny": 0.56,
+   "meanMainRoundsWon": 1.62
+  },
+  "oracle": {
+   "states": 7,
+   "sumEPoints": 37.3,
+   "meanPWinAny": 0.56,
+   "meanMainRoundsWon": 1.62
+  }
+ }
+}
