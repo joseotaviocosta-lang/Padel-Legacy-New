@@ -1,0 +1,114 @@
+date,tier,stage,round,playerOvr,partnerOvr,oppStrength,strengthDelta,won
+2026-02-05,Silver,main,Oitavas de Final,26,33,47,-17.5,false
+2026-02-12,Bronze,main,Oitavas de Final,26,33,35,-5.5,true
+2026-02-13,Bronze,main,Quartas de Final,26,33,36,-6.5,false
+2026-02-19,Bronze,main,Oitavas de Final,27,33,35,-5,true
+2026-02-20,Bronze,main,Quartas de Final,27,33,35,-5,false
+2026-04-02,Bronze,main,Oitavas de Final,32,33,35.5,-3,false
+2026-04-23,Bronze,main,Oitavas de Final,35,33,35,-1,false
+2026-05-07,Bronze,main,Oitavas de Final,36,33,36,-1.5,true
+2026-05-08,Bronze,main,Quartas de Final,36,33,35,-0.5,false
+2026-05-21,Bronze,main,Oitavas de Final,37,33,34.5,0.5,true
+2026-05-22,Bronze,main,Quartas de Final,37,33,35.5,-0.5,true
+2026-05-23,Bronze,main,Semifinal,38,33,35.5,0,true
+2026-05-24,Bronze,main,Final,38,33,35.5,0,true
+2026-05-28,Silver,main,Oitavas de Final,38,33,44.5,-9,true
+2026-05-29,Silver,main,Quartas de Final,38,33,43.5,-8,true
+2026-05-30,Silver,main,Semifinal,38,33,49,-13.5,false
+2026-06-18,Gold,main,Primeira Rodada,40,33,81,-44.5,false
+2026-06-25,Gold,qualifying,Quartas do qualifying,40,33,66.5,-30,false
+2026-07-09,Bronze,main,Oitavas de Final,42,33,37,0.5,false
+2026-07-30,Gold,qualifying,Quartas do qualifying,44,33,64,-25.5,false
+2026-08-06,Platinum,qualifying,Quartas do qualifying,45,33,75.5,-36.5,false
+2026-09-03,Silver,main,Oitavas de Final,48,33,48.5,-8,true
+2026-09-04,Silver,main,Quartas de Final,48,33,50.5,-10,false
+2026-11-12,Bronze,main,Oitavas de Final,52,34,37,6,true
+2026-11-13,Bronze,main,Quartas de Final,52,34,35.5,7.5,true
+2026-11-14,Bronze,main,Semifinal,52,34,34,9,true
+2026-11-15,Bronze,main,Final,52,34,35.5,7.5,true
+2026-11-19,Silver,main,Oitavas de Final,52,34,50.5,-7.5,false
+2027-03-25,Platinum,qualifying,Quartas do qualifying,58,34,79,-33,false
+2027-04-15,Masters,qualifying,Quartas do qualifying,60,34,75.5,-28.5,false
+2027-04-22,Gold,main,Primeira Rodada,61,34,74,-26.5,false
+2027-04-29,Gold,main,Primeira Rodada,61,34,80,-32.5,false
+2027-05-06,Masters,qualifying,Quartas do qualifying,61,34,76,-28.5,false
+2027-05-20,Gold,main,Primeira Rodada,62,34,56.5,-8.5,false
+2027-06-03,Gold,main,Primeira Rodada,63,34,75,-26.5,false
+2027-06-24,Gold,main,Primeira Rodada,64,34,82,-33,false
+2027-07-01,Platinum,main,Rodada de 32,64,34,77,-28,false
+2027-07-22,Masters,qualifying,Quartas do qualifying,64,34,74,-25,false
+2027-07-29,Elite,qualifying,Quartas do qualifying,65,34,77,-27.5,false
+2027-08-12,Gold,main,Primeira Rodada,65,34,75.5,-26,false
+2027-08-19,Gold,main,Primeira Rodada,65,34,78,-28.5,false
+2027-09-23,Gold,main,Primeira Rodada,66,34,75,-25,false
+2027-10-28,Masters,main,Primeira Rodada,68,34,81.5,-30.5,false
+2027-11-11,Platinum,main,Rodada de 32,68,34,78.5,-27.5,false
+2027-11-25,Platinum,main,Rodada de 32,68,34,70.5,-19.5,false
+2028-03-16,Gold,main,Primeira Rodada,71,34,70.5,-18,false
+2028-03-30,Platinum,main,Rodada de 32,72,34,86,-33,false
+2028-04-13,Gold,main,Primeira Rodada,72,34,68,-15,false
+2028-04-20,Gold,main,Primeira Rodada,72,34,63,-10,false
+2028-05-04,Gold,main,Primeira Rodada,73,34,72.5,-19,false
+2028-05-18,Platinum,main,Rodada de 32,73,34,82,-28.5,false
+2028-06-01,Masters,main,Primeira Rodada,74,34,81,-27,false
+2028-06-15,Platinum,main,Rodada de 32,74,34,81,-27,false
+2028-06-29,Platinum,main,Rodada de 32,74,34,76.5,-22.5,false
+2028-07-13,Gold,main,Primeira Rodada,75,34,63,-8.5,false
+2028-07-20,Gold,main,Primeira Rodada,75,34,69.5,-15,false
+2028-08-03,Platinum,main,Rodada de 32,75,34,81.5,-27,false
+2028-08-10,Gold,main,Primeira Rodada,75,34,67.5,-13,false
+2028-08-24,Gold,main,Primeira Rodada,75,34,59.5,-5,false
+2028-09-14,Platinum,main,Rodada de 32,76,34,84,-29,false
+2028-09-28,Platinum,main,Rodada de 32,76,34,73.5,-18.5,false
+2028-10-05,Gold,main,Primeira Rodada,76,34,69,-14,false
+2028-10-19,Platinum,main,Rodada de 32,77,34,76,-20.5,false
+2028-10-26,Platinum,main,Rodada de 32,77,34,80.5,-25,false
+2028-11-02,Elite,qualifying,Quartas do qualifying,77,34,67,-11.5,true
+2028-11-03,Elite,qualifying,Semifinal do qualifying,77,34,76,-20.5,false
+2028-11-09,Platinum,main,Rodada de 32,77,34,77.5,-22,false
+2028-11-23,Platinum,main,Rodada de 32,77,34,77.5,-22,false
+2029-02-01,Masters,main,Primeira Rodada,78,34,80.5,-24.5,false
+2029-02-08,Gold,main,Primeira Rodada,78,34,74,-18,false
+2029-02-15,Platinum,main,Rodada de 32,78,34,71.5,-15.5,false
+2029-02-22,Platinum,main,Rodada de 32,78,34,88,-32,false
+2029-03-01,Elite,qualifying,Quartas do qualifying,78,34,83.5,-27.5,false
+2029-03-22,Gold,main,Primeira Rodada,78,34,77.5,-21.5,false
+2029-04-12,Platinum,main,Rodada de 32,79,34,82.5,-26,false
+2029-04-26,Gold,main,Primeira Rodada,79,34,82.5,-26,false
+2029-05-03,Masters,main,Primeira Rodada,79,34,79,-22.5,false
+2029-06-14,Platinum,main,Rodada de 32,79,34,77,-20.5,false
+2029-06-21,Masters,main,Primeira Rodada,80,34,78.5,-21.5,false
+2029-07-05,Gold,main,Primeira Rodada,80,34,72,-15,false
+2029-08-09,Masters,main,Primeira Rodada,80,34,82.5,-25.5,false
+2029-08-23,Gold,main,Primeira Rodada,80,34,71,-14,false
+2029-09-06,Gold,main,Primeira Rodada,80,34,68.5,-11.5,false
+2029-09-20,Gold,main,Primeira Rodada,81,34,70.5,-13,false
+2029-09-27,Gold,main,Primeira Rodada,81,34,66,-8.5,true
+2029-09-28,Gold,main,Oitavas de Final,81,34,73,-15.5,false
+2029-10-25,Platinum,main,Rodada de 32,81,34,85,-27.5,false
+2029-11-01,Gold,main,Primeira Rodada,81,34,64,-6.5,false
+2029-11-22,Platinum,main,Rodada de 32,81,34,78.5,-21,false
+2030-02-07,Gold,main,Primeira Rodada,82,34,64.5,-6.5,true
+2030-02-08,Gold,main,Oitavas de Final,82,34,73.5,-15.5,true
+2030-02-09,Gold,main,Quartas de Final,82,34,69,-11,false
+2030-02-14,Platinum,main,Rodada de 32,82,34,80,-22,false
+2030-02-21,Platinum,main,Rodada de 32,82,34,77,-19,false
+2030-03-28,Platinum,main,Rodada de 32,82,34,80.5,-22.5,false
+2030-05-02,Masters,main,Primeira Rodada,82,34,81.5,-23.5,false
+2030-05-23,Gold,main,Primeira Rodada,83,34,71.5,-13,false
+2030-06-06,Platinum,main,Rodada de 32,83,34,73.5,-15,false
+2030-06-27,Gold,main,Primeira Rodada,83,34,68.5,-10,false
+2030-07-04,Gold,main,Primeira Rodada,83,34,71.5,-13,false
+2030-07-11,Platinum,main,Rodada de 32,83,34,77.5,-19,false
+2030-07-18,Platinum,main,Rodada de 32,83,34,72.5,-14,false
+2030-08-08,Masters,qualifying,Quartas do qualifying,83,34,72,-13.5,false
+2030-08-15,Gold,main,Primeira Rodada,83,34,70,-11.5,false
+2030-08-22,Platinum,main,Rodada de 32,83,34,72,-13.5,false
+2030-08-29,Platinum,main,Rodada de 32,83,34,81.5,-23,false
+2030-09-12,Elite,qualifying,Quartas do qualifying,83,34,69,-10.5,false
+2030-09-19,Gold,main,Primeira Rodada,83,34,73.5,-15,false
+2030-09-26,Gold,main,Primeira Rodada,83,34,67.5,-9,false
+2030-10-03,Masters,main,Primeira Rodada,83,34,80,-21.5,false
+2030-10-17,Platinum,main,Rodada de 32,83,34,79.5,-21,false
+2030-10-24,Gold,main,Primeira Rodada,83,34,67.5,-9,false
+2030-10-31,Elite,qualifying,Quartas do qualifying,83,34,75,-16.5,false
