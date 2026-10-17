@@ -1,0 +1,67 @@
+{
+  "environment": {
+    "node": "v22.22.0",
+    "cpus": 4,
+    "athletes": 800,
+    "startDate": "2026-11-29",
+    "days": 4,
+    "storage": "memória (sem I/O de disco)"
+  },
+  "seed": {
+    "ms": 219.25,
+    "writes": 8,
+    "foundationOk": true,
+    "athletes": 1000,
+    "teams": 500,
+    "realAthletes": 900,
+    "seededTeams": 50,
+    "sha256": "4c47c747f72a85d10a2ef33325d927a0b09de026f91f04469cc1c95d1bbae758"
+  },
+  "days": [
+    {
+      "date": "2026-12-01",
+      "ms": 809.89,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-12-02",
+      "ms": 116.56,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-12-03",
+      "ms": 98.53,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-12-04",
+      "ms": 97.81,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    }
+  ],
+  "sevenDays": {
+    "ms": 646.16,
+    "physicalSaves": 7,
+    "saveCallers": {
+      "transaction-commit:advance-day-range": 7
+    }
+  },
+  "summary": {
+    "oneDayMsMedian": 98.53,
+    "oneDayMsMin": 97.81,
+    "oneDayMsMax": 809.89,
+    "oneDayPhysicalSavesMedian": 1
+  }
+}

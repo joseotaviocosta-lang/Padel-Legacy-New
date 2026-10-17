@@ -1,0 +1,115 @@
+{
+  "environment": {
+    "node": "v22.22.0",
+    "cpus": 4,
+    "athletes": 800,
+    "startDate": "2026-11-10",
+    "days": 10,
+    "storage": "memória (sem I/O de disco)"
+  },
+  "seed": {
+    "ms": 2163.6,
+    "writes": 156,
+    "foundationOk": true,
+    "athletes": 1000,
+    "teams": 500,
+    "realAthletes": 900,
+    "seededTeams": 50,
+    "sha256": "4c47c747f72a85d10a2ef33325d927a0b09de026f91f04469cc1c95d1bbae758"
+  },
+  "days": [
+    {
+      "date": "2026-11-12",
+      "ms": 112.58,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-13",
+      "ms": 86.6,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-14",
+      "ms": 90.56,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-15",
+      "ms": 173.77,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-16",
+      "ms": 169.92,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-17",
+      "ms": 99.47,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-18",
+      "ms": 85.46,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-19",
+      "ms": 87.18,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-20",
+      "ms": 91.63,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    },
+    {
+      "date": "2026-11-21",
+      "ms": 106.6,
+      "physicalSaves": 1,
+      "saveCallers": {
+        "transaction-commit:advance-day": 1
+      }
+    }
+  ],
+  "sevenDays": {
+    "ms": 561.21,
+    "physicalSaves": 7,
+    "saveCallers": {
+      "transaction-commit:advance-day-range": 7
+    }
+  },
+  "summary": {
+    "oneDayMsMedian": 91.63,
+    "oneDayMsMin": 85.46,
+    "oneDayMsMax": 173.77,
+    "oneDayPhysicalSavesMedian": 1
+  }
+}

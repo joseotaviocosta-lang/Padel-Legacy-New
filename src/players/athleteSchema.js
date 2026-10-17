@@ -35,10 +35,21 @@ export function stableAthleteId({ source_type = 'fictional', template_id, id, na
 
 const clamp = (value, min, max, fallback) => Math.max(min, Math.min(max, Number.isFinite(Number(value)) ? Number(value) : fallback));
 
-export function normalizeAthlete(raw = {}, options = {}) {
-  const sourceType = Object.values(ATHLETE_SOURCES).includes(raw.source_type) ? raw.source_type : (options.sourceType || ATHLETE_SOURCES.FICTIONAL);
+// Subconjunto de normalizeAthlete usado na resolução de lados: mesma derivação
+// (única fonte), sem o custo de hash de id/cópia do registro inteiro.
+export function normalizeSideProfile(raw = {}) {
   const preferredSide = normalizeCourtSide(raw.preferred_side ?? raw.court_side ?? raw.position);
   const flexibility = clamp(raw.side_flexibility, 0, 1, preferredSide === COURT_SIDES.FLEX ? 0.9 : 0.25);
+  const sideExperience = {
+    right: clamp(raw.side_experience?.right, 0, 100, preferredSide === COURT_SIDES.RIGHT ? 85 : preferredSide === COURT_SIDES.FLEX ? 72 : 30),
+    left: clamp(raw.side_experience?.left, 0, 100, preferredSide === COURT_SIDES.LEFT ? 85 : preferredSide === COURT_SIDES.FLEX ? 72 : 30),
+  };
+  return { preferredSide, flexibility, sideExperience };
+}
+
+export function normalizeAthlete(raw = {}, options = {}) {
+  const sourceType = Object.values(ATHLETE_SOURCES).includes(raw.source_type) ? raw.source_type : (options.sourceType || ATHLETE_SOURCES.FICTIONAL);
+  const { preferredSide, flexibility, sideExperience } = normalizeSideProfile(raw);
   const overall = clamp(raw.overall_rating ?? raw.overall, 1, 100, 50);
   const templateId = raw.template_id || raw.bot_id || raw.id || `${sourceType}:${raw.name || raw.sport_name || 'unknown'}`;
   const attributes = raw.attributes && typeof raw.attributes === 'object' ? { ...raw.attributes } : {};
@@ -57,10 +68,7 @@ export function normalizeAthlete(raw = {}, options = {}) {
     preferred_side: preferredSide,
     secondary_side: normalizeCourtSide(raw.secondary_side, preferredSide === COURT_SIDES.LEFT ? COURT_SIDES.RIGHT : COURT_SIDES.LEFT),
     side_flexibility: flexibility,
-    side_experience: {
-      right: clamp(raw.side_experience?.right, 0, 100, preferredSide === COURT_SIDES.RIGHT ? 85 : preferredSide === COURT_SIDES.FLEX ? 72 : 30),
-      left: clamp(raw.side_experience?.left, 0, 100, preferredSide === COURT_SIDES.LEFT ? 85 : preferredSide === COURT_SIDES.FLEX ? 72 : 30),
-    },
+    side_experience: sideExperience,
     position: toLegacyCourtSide(preferredSide),
     overall,
     overall_rating: overall,

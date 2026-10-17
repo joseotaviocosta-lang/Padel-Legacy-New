@@ -1,5 +1,5 @@
 import { baseOverallRating } from '../lib/attributes.js';
-import { normalizeAthlete, normalizeCourtSide, toLegacyCourtSide } from './athleteSchema.js';
+import { normalizeAthlete, normalizeCourtSide, normalizeSideProfile, toLegacyCourtSide } from './athleteSchema.js';
 
 const clamp = (value, min, max) => Math.max(min, Math.min(max, Number(value) || 0));
 const nameOf = athlete => athlete?.sport_name || athlete?.name || 'Atleta';
@@ -14,19 +14,22 @@ const ratingOf = athlete => {
   return base == null ? 50 : clamp(base, 1, 100);
 };
 
-function assignmentPenalty(raw, assignedSide) {
-  const athlete = normalizeAthlete(raw, { sourceType: raw?.source_type || 'career' });
-  const preferred = normalizeCourtSide(athlete.preferred_side);
-  if (preferred === 'flex' || preferred === assignedSide) return 0;
-  const experience = clamp(athlete.side_experience?.[assignedSide], 0, 100) / 100;
-  return clamp(Math.round(24 * (1 - athlete.side_flexibility) * (1 - experience * 0.55)), 3, 24);
+function assignmentPenalty(sideProfile, assignedSide) {
+  const { preferredSide, flexibility, sideExperience } = sideProfile;
+  if (preferredSide === 'flex' || preferredSide === assignedSide) return 0;
+  const experience = clamp(sideExperience?.[assignedSide], 0, 100) / 100;
+  return clamp(Math.round(24 * (1 - flexibility) * (1 - experience * 0.55)), 3, 24);
 }
 
 export function resolveTeamCourtSides(playerA, playerB, { preservePlayerA = true } = {}) {
+  // CLOUD-5 — cada jogador é normalizado uma vez (antes: 2x por jogador, com
+  // normalizeAthlete completo, a cada chamada).
+  const profileA = normalizeSideProfile(playerA ?? undefined);
+  const profileB = normalizeSideProfile(playerB ?? undefined);
   const options = [
     { a: 'right', b: 'left' },
     { a: 'left', b: 'right' },
-  ].map(option => ({ ...option, penaltyA: assignmentPenalty(playerA, option.a), penaltyB: assignmentPenalty(playerB, option.b) }))
+  ].map(option => ({ ...option, penaltyA: assignmentPenalty(profileA, option.a), penaltyB: assignmentPenalty(profileB, option.b) }))
     .map(option => ({ ...option, totalPenalty: option.penaltyA + option.penaltyB }));
   options.sort((x, y) => x.totalPenalty - y.totalPenalty || (preservePlayerA && x.a === normalizeCourtSide(playerA?.court_side ?? playerA?.preferred_side) ? -1 : 1));
   const best = options[0];

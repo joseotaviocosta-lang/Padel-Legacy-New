@@ -1,0 +1,16 @@
+{
+ "benchmark": "evaluatePartnerCompatibility",
+ "pairs": 60000,
+ "node": "v22.22.0",
+ "samplesMs": [
+  475.5,
+  470.4,
+  445.8,
+  413.7,
+  400.2,
+  394.1,
+  384.7
+ ],
+ "medianMs": 413.7,
+ "outputSha256": "30d43f59ee30621707c0e9dda4ab007cba3d26e999bb801524885b60ccef5524"
+}

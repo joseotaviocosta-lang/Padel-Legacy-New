@@ -56,6 +56,42 @@ export async function createCriticalBackup() {
 // para os "prováveis" (heurística de pontos parecidos, sem confirmação).
 const SEED_PAIR_CHEMISTRY = Object.freeze({ locked: 88, unlocked: 60 });
 
+// CLOUD-5 — variante em lote de `upsertBy`: as linhas que já existem seguem o
+// mesmo caminho (patch só de campos ausentes); as que não existem são criadas
+// com UM `bulkCreate` (uma gravação física do save) em vez de uma gravação
+// completa por linha. Chaves repetidas na mesma lista, ou falha do lote,
+// recaem no `upsertBy` sequencial original, preservando o comportamento.
+async function upsertManyBy(entity, existing, key, items) {
+  const keys = items.map(({ value }) => String(value));
+  if (new Set(keys).size !== keys.length) {
+    const rows = [];
+    for (const { value, payload } of items) rows.push(await upsertBy(entity, existing, key, value, payload));
+    return rows;
+  }
+  const rows = new Array(items.length).fill(null);
+  const pending = [];
+  for (let index = 0; index < items.length; index += 1) {
+    const { value, payload } = items[index];
+    if (existing.some(item => String(item?.[key] || '') === String(value) && item?.id)) {
+      rows[index] = await upsertBy(entity, existing, key, value, payload);
+    } else {
+      pending.push(index);
+    }
+  }
+  if (!pending.length) return rows;
+  try {
+    const created = await localGame.entities[entity].bulkCreate(pending.map(index => items[index].payload));
+    pending.forEach((itemIndex, position) => {
+      rows[itemIndex] = created[position] || null;
+      existing.push(created[position] || items[itemIndex].payload);
+    });
+  } catch (error) {
+    console.warn(`[Save Foundation] create em lote ${entity}`, error);
+    for (const index of pending) rows[index] = await upsertBy(entity, existing, key, items[index].value, items[index].payload);
+  }
+  return rows;
+}
+
 export async function ensureWorldSeed2025({ force = false } = {}) {
   // Playthrough 5.26-B — identidade na coleção INTEIRA (antes: top 500 por
   // pontos, que recriava atletas reais e TeamRanking já existentes fora do
@@ -101,6 +137,7 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
   const registryAthletes = getRealAthleteRegistry();
   const botIdToRealId = new Map();
   const botIdToRow = new Map();
+  const registryUpserts = [];
   for (const athlete of registryAthletes) {
     // Playthrough 5.26-B — aposentado e podado: conhecido pelo legado, nunca recriado.
     if (!realByKey.has(String(athlete.bot_id)) && retiredIds.has(String(athlete.bot_id))) continue;
@@ -123,9 +160,14 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
     // Fase 2.6, item 3: marca quando este atleta passou a existir NESTA
     // carreira — usado só pra "anos ativos" na linha-resumo de
     // aposentadoria (AthleteCareerLegacy), nunca uma biografia pré-jogo.
-    const row = await upsertBy('AthleteProfile', athletes, 'bot_id', athlete.bot_id, { ...athlete, ranking_position, circuit_entry_date: worldSeedMeta.career_start_date });
-    if (row?.id) { botIdToRealId.set(athlete.bot_id, row.id); botIdToRow.set(athlete.bot_id, row); }
+    registryUpserts.push({ value: athlete.bot_id, payload: { ...athlete, ranking_position, circuit_entry_date: worldSeedMeta.career_start_date } });
   }
+  // CLOUD-5 — uma gravação para todos os atletas reais ausentes (antes: uma por atleta).
+  const registryRows = await upsertManyBy('AthleteProfile', athletes, 'bot_id', registryUpserts);
+  registryRows.forEach((row, index) => {
+    const botId = registryUpserts[index].value;
+    if (row?.id) { botIdToRealId.set(botId, row.id); botIdToRow.set(botId, row); }
+  });
 
   // Fase 2F/2G: pares pré-existentes na semeadura. team_key SEMPRE derivado
   // dos ids REAIS (pós-criação), nunca de uma string estática no JSON —
@@ -237,9 +279,7 @@ export async function ensureWorldSeed2025({ force = false } = {}) {
     try { await localGame.entities.AthleteProfile.bulkUpdate(athletePairUpdates); }
     catch (error) { console.warn('[Save Foundation] parcerias pré-existentes', error); }
   }
-  for (const team of teamPairPayloads) {
-    await upsertBy('TeamRanking', teams, 'team_key', team.team_key, team);
-  }
+  await upsertManyBy('TeamRanking', teams, 'team_key', teamPairPayloads.map((team) => ({ value: team.team_key, payload: team })));
 
   // Completa o universo competitivo. O registro real traz só o topo; a
   // população suplementar cria profundidade suficiente para uma carreira
