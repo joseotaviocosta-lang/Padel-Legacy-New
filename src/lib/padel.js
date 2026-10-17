@@ -6,6 +6,7 @@ import { ATTRIBUTES, ATTRIBUTE_KEYS, baseOverallRating } from '@/lib/attributes.
 import { APP_ROUTES } from '@/navigation/routes.js';
 import { activeCareerAdapter } from '@/gameplay/services/runtime.js';
 import { getBalance527 } from '@/lib/balance527.js';
+import { getAttributeDevelopmentCeiling } from '@/lib/attributeCeiling.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
@@ -1095,8 +1096,14 @@ export function buildMatchRewardsPatch(profile, won, options = {}) {
     const randomAttr = ATTRIBUTE_KEYS[Math.floor(Math.random() * ATTRIBUTE_KEYS.length)];
     const currentVal = Number(profile[randomAttr]) || 0;
     const gain = calculateTrainingGain(currentVal);
-    if (gain > 0) {
-      updates[randomAttr] = Math.min(100, currentVal + gain);
+    // Fase 6C: o bônus respeita o teto individual canônico (o mesmo do treino).
+    // O sorteio e a rolagem acima seguem inalterados (mesmo consumo de RNG); só o
+    // ganho é limitado. Atributo no/acima do teto (inclusive saves antigos) não
+    // muda e nunca é reduzido.
+    const headroom = getAttributeDevelopmentCeiling(profile, randomAttr) - currentVal;
+    const cappedGain = Math.min(gain, headroom);
+    if (cappedGain > 0) {
+      updates[randomAttr] = Math.min(100, currentVal + cappedGain);
     }
   }
   if (profile.partner_id) {

@@ -47,6 +47,7 @@
     "test:player-builds": "node scripts/test-player-builds.mjs",
     "test:training-v2": "node scripts/test-training-system-v2.mjs",
     "test:player-development-6b": "node scripts/test-player-development-curve-6b.mjs",
+    "test:victory-attribute-integrity-6c": "node scripts/test-victory-attribute-integrity-6c.mjs",
     "test:tournament-registration": "node scripts/test-tournament-registration-v2.mjs",
     "test:tournament-flow-rc": "node scripts/test-tournament-flow-rc.mjs",
     "test:partner-offers": "node scripts/test-partner-offers-v2.mjs",
