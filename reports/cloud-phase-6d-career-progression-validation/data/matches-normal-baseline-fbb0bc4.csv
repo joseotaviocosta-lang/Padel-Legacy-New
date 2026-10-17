@@ -1,0 +1,89 @@
+date,tier,stage,round,playerOvr,partnerOvr,oppStrength,strengthDelta,won
+2026-01-29,Bronze,main,Oitavas de Final,26,14,35,-15,false
+2026-02-05,Silver,main,Oitavas de Final,28,14,45.5,-24.5,false
+2026-02-12,Bronze,main,Oitavas de Final,30,14,35,-13,false
+2026-02-19,Bronze,main,Oitavas de Final,31,14,35,-12.5,false
+2026-02-26,Silver,main,Oitavas de Final,33,14,43.5,-20,false
+2026-03-05,Bronze,main,Oitavas de Final,33,15,35.5,-11.5,false
+2026-03-19,Silver,main,Oitavas de Final,36,15,47.5,-22,false
+2026-04-02,Silver,main,Oitavas de Final,38,15,45.5,-19,false
+2026-04-23,Silver,main,Oitavas de Final,41,40,50,-9.5,false
+2026-05-14,Silver,main,Oitavas de Final,43,40,50.5,-9,false
+2026-05-21,Bronze,main,Oitavas de Final,44,40,35.5,6.5,true
+2026-05-22,Bronze,main,Quartas de Final,45,40,36,6.5,true
+2026-05-23,Bronze,main,Semifinal,45,40,35,7.5,false
+2026-05-28,Silver,main,Oitavas de Final,45,40,47,-4.5,false
+2026-06-04,Bronze,main,Oitavas de Final,46,41,35,8.5,true
+2026-06-05,Bronze,main,Quartas de Final,46,41,36.5,7,true
+2026-06-06,Bronze,main,Semifinal,46,41,37,6.5,true
+2026-06-07,Bronze,main,Final,46,41,36,7.5,true
+2026-06-18,Silver,main,Oitavas de Final,48,41,50,-5.5,false
+2026-06-25,Bronze,main,Oitavas de Final,48,41,35,9.5,true
+2026-06-26,Bronze,main,Quartas de Final,49,41,38,7,false
+2026-07-09,Silver,main,Oitavas de Final,50,41,47.5,-2,false
+2026-07-23,Bronze,main,Oitavas de Final,51,41,35,11,true
+2026-07-24,Bronze,main,Quartas de Final,51,41,36.5,9.5,true
+2026-07-25,Bronze,main,Semifinal,51,41,34,12,true
+2026-07-26,Bronze,main,Final,51,41,58,-12,false
+2026-07-30,Silver,main,Oitavas de Final,52,41,50.5,-4,false
+2026-08-06,Bronze,main,Oitavas de Final,52,41,35.5,11,false
+2026-08-13,Silver,main,Oitavas de Final,53,41,45,2,true
+2026-08-14,Silver,main,Quartas de Final,53,41,48.5,-1.5,false
+2026-08-20,Bronze,main,Oitavas de Final,53,41,35,12,true
+2026-08-21,Bronze,main,Quartas de Final,53,41,36.5,10.5,false
+2026-08-27,Bronze,main,Oitavas de Final,54,41,37.5,10,true
+2026-08-28,Bronze,main,Quartas de Final,54,41,35.5,12,true
+2026-08-29,Bronze,main,Semifinal,54,41,34.5,13,true
+2026-08-30,Bronze,main,Final,54,41,50.5,-3,false
+2026-09-03,Silver,main,Oitavas de Final,54,41,39.5,8,false
+2026-09-10,Bronze,main,Oitavas de Final,55,41,35,13,false
+2026-09-24,Silver,main,Oitavas de Final,56,41,43.5,5,true
+2026-09-25,Silver,main,Quartas de Final,56,41,52.5,-4,false
+2026-10-08,Silver,main,Oitavas de Final,58,41,53.5,-4,false
+2026-10-22,Bronze,main,Oitavas de Final,59,41,36.5,13.5,true
+2026-10-23,Bronze,main,Quartas de Final,59,41,36.5,13.5,true
+2026-10-24,Bronze,main,Semifinal,59,41,37,13,false
+2026-10-29,Silver,main,Oitavas de Final,59,41,41.5,8.5,false
+2026-11-12,Bronze,main,Oitavas de Final,60,41,35.5,15,true
+2026-11-13,Bronze,main,Quartas de Final,60,41,34.5,16,true
+2026-11-14,Bronze,main,Semifinal,60,41,48.5,2,false
+2026-11-19,Silver,main,Oitavas de Final,61,41,49,2,false
+2027-02-04,Gold,main,Primeira Rodada,66,41,71,-17.5,false
+2027-02-11,Gold,main,Primeira Rodada,67,41,80,-26,false
+2027-02-18,Gold,main,Primeira Rodada,68,41,75.5,-21,false
+2027-03-18,Gold,main,Primeira Rodada,68,42,79,-24,false
+2027-03-25,Gold,main,Primeira Rodada,69,42,77,-21.5,false
+2027-04-01,Gold,main,Primeira Rodada,69,42,76,-20.5,false
+2027-04-15,Platinum,main,Rodada de 32,70,42,73,-17,false
+2027-04-22,Platinum,main,Rodada de 32,70,42,83,-27,false
+2027-04-29,Gold,main,Primeira Rodada,70,42,83,-27,false
+2027-05-06,Platinum,main,Rodada de 32,70,43,76,-19.5,false
+2027-05-20,Platinum,main,Rodada de 32,71,43,82,-25,false
+2027-05-27,Platinum,main,Rodada de 32,71,43,80.5,-23.5,false
+2027-06-17,Platinum,main,Rodada de 32,72,43,79.5,-22,false
+2027-06-24,Gold,main,Primeira Rodada,72,43,73,-15.5,false
+2027-07-01,Platinum,main,Rodada de 32,72,44,83,-25,false
+2027-07-08,Gold,main,Primeira Rodada,73,44,79,-20.5,false
+2027-07-15,Platinum,main,Rodada de 32,73,44,81,-22.5,false
+2027-07-22,Platinum,main,Rodada de 32,73,44,79,-20.5,false
+2027-08-05,Platinum,main,Rodada de 32,73,45,82.5,-23.5,false
+2027-08-12,Masters,main,Primeira Rodada,73,45,79,-20,false
+2027-08-19,Gold,main,Primeira Rodada,73,45,78,-19,false
+2027-08-26,Platinum,main,Rodada de 32,74,45,81.5,-22,false
+2027-09-09,Masters,main,Primeira Rodada,74,46,77,-17,false
+2027-09-16,Platinum,main,Rodada de 32,74,46,83,-23,false
+2027-09-23,Gold,main,Primeira Rodada,74,46,78.5,-18.5,false
+2027-09-30,Platinum,main,Rodada de 32,75,46,80,-19.5,false
+2027-10-07,Masters,main,Primeira Rodada,75,46,83.5,-23,false
+2027-10-21,Platinum,main,Rodada de 32,75,46,79.5,-19,false
+2027-10-28,Masters,main,Primeira Rodada,75,46,79.5,-19,false
+2027-11-04,Gold,main,Primeira Rodada,76,46,76.5,-15.5,false
+2027-11-11,Platinum,main,Rodada de 32,76,46,79,-18,false
+2027-11-25,Platinum,main,Rodada de 32,76,46,81.5,-20.5,false
+2028-02-03,Masters,main,Primeira Rodada,78,48,80.5,-17.5,false
+2028-02-10,Gold,main,Primeira Rodada,78,48,82.5,-19.5,false
+2028-02-17,Masters,main,Primeira Rodada,78,48,81.5,-18.5,false
+2028-02-24,Platinum,main,Rodada de 32,78,48,75.5,-12.5,false
+2028-03-02,Elite,main,Primeira Rodada,79,48,82,-18.5,false
+2028-03-09,Platinum,main,Rodada de 32,79,48,81.5,-18,false
+2028-03-16,Masters,main,Primeira Rodada,79,48,86.5,-23,false

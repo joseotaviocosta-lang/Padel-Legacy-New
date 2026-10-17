@@ -1,0 +1,914 @@
+{
+  "profile": "optimizer",
+  "seed": 1,
+  "commonDay": 896,
+  "base": {
+    "source": "checkpoint d900",
+    "lastDay": 896,
+    "errors": 0,
+    "summary": {
+      "matches": 136,
+      "wins": 73,
+      "tournaments": 64,
+      "titles": 1,
+      "firstRoundExits": 37,
+      "prize": 62276,
+      "rankPoints": 1741,
+      "forfeits": 0,
+      "byTier": {
+        "Bronze": {
+          "n": 35,
+          "w": 24
+        },
+        "Silver": {
+          "n": 28,
+          "w": 21
+        },
+        "Gold": {
+          "n": 27,
+          "w": 11
+        },
+        "Platinum": {
+          "n": 27,
+          "w": 10
+        },
+        "Masters": {
+          "n": 10,
+          "w": 2
+        },
+        "Elite": {
+          "n": 7,
+          "w": 4
+        },
+        "Crown": {
+          "n": 2,
+          "w": 1
+        }
+      },
+      "meanEnergy": 75.36,
+      "meanFatigue": 50.03,
+      "injuredWeeks": 9,
+      "bestRank": 22,
+      "milestones": {
+        "top500": {
+          "day": 336,
+          "age": 16
+        },
+        "top250": {
+          "day": 518,
+          "age": 17
+        },
+        "top100": {
+          "day": 679,
+          "age": 17
+        },
+        "top50": {
+          "day": 882,
+          "age": 18
+        },
+        "top20": null,
+        "top10": null,
+        "top1": null
+      },
+      "partners": [
+        {
+          "day": 0,
+          "ovr": 20,
+          "via": "offer"
+        },
+        {
+          "day": 225,
+          "ovr": 81,
+          "via": "search"
+        }
+      ],
+      "registrations": 89,
+      "registrationsWithoutPlay": 25,
+      "cumulativeForfeitsAtLastDay": 20,
+      "bySeason": [
+        {
+          "season": 1,
+          "matches": 56,
+          "wins": 38,
+          "tournaments": 18,
+          "titles": 0,
+          "firstRoundExits": 11,
+          "prize": 1791,
+          "registrationsWithoutPlay": 12
+        },
+        {
+          "season": 2,
+          "matches": 56,
+          "wins": 23,
+          "tournaments": 34,
+          "titles": 1,
+          "firstRoundExits": 21,
+          "prize": 28334,
+          "registrationsWithoutPlay": 5
+        },
+        {
+          "season": 3,
+          "matches": 24,
+          "wins": 12,
+          "tournaments": 12,
+          "titles": 0,
+          "firstRoundExits": 5,
+          "prize": 32151,
+          "registrationsWithoutPlay": 8
+        }
+      ],
+      "deltaWinLoss": {
+        "<-10": [
+          0,
+          3
+        ],
+        "-10..-3": [
+          5,
+          17
+        ],
+        "-3..3": [
+          23,
+          66
+        ],
+        "3..10": [
+          17,
+          22
+        ],
+        ">10": [
+          28,
+          28
+        ]
+      },
+      "meanStrengthDelta": 5.82
+    }
+  },
+  "s6d": {
+    "source": "checkpoint d900",
+    "lastDay": 896,
+    "errors": 0,
+    "summary": {
+      "matches": 110,
+      "wins": 36,
+      "tournaments": 74,
+      "titles": 0,
+      "firstRoundExits": 68,
+      "prize": 27140,
+      "rankPoints": 777,
+      "forfeits": 0,
+      "byTier": {
+        "Bronze": {
+          "n": 40,
+          "w": 28
+        },
+        "Silver": {
+          "n": 11,
+          "w": 0
+        },
+        "Gold": {
+          "n": 31,
+          "w": 7
+        },
+        "Platinum": {
+          "n": 20,
+          "w": 0
+        },
+        "Masters": {
+          "n": 6,
+          "w": 0
+        },
+        "Elite": {
+          "n": 2,
+          "w": 1
+        }
+      },
+      "meanEnergy": 76.21,
+      "meanFatigue": 53.56,
+      "injuredWeeks": 6,
+      "bestRank": 128,
+      "milestones": {
+        "top500": {
+          "day": 336,
+          "age": 16
+        },
+        "top250": {
+          "day": 581,
+          "age": 17
+        },
+        "top100": null,
+        "top50": null,
+        "top20": null,
+        "top10": null,
+        "top1": null
+      },
+      "partners": [
+        {
+          "day": 0,
+          "ovr": 20,
+          "via": "offer"
+        },
+        {
+          "day": 53,
+          "ovr": 34,
+          "via": "search"
+        },
+        {
+          "day": 151,
+          "ovr": 34,
+          "via": "search"
+        },
+        {
+          "day": 869,
+          "ovr": 87,
+          "via": "search"
+        }
+      ],
+      "registrations": 87,
+      "registrationsWithoutPlay": 13,
+      "cumulativeForfeitsAtLastDay": 10,
+      "bySeason": [
+        {
+          "season": 1,
+          "matches": 47,
+          "wins": 25,
+          "tournaments": 22,
+          "titles": 0,
+          "firstRoundExits": 17,
+          "prize": 2097,
+          "registrationsWithoutPlay": 8
+        },
+        {
+          "season": 2,
+          "matches": 47,
+          "wins": 10,
+          "tournaments": 37,
+          "titles": 0,
+          "firstRoundExits": 37,
+          "prize": 13013,
+          "registrationsWithoutPlay": 2
+        },
+        {
+          "season": 3,
+          "matches": 16,
+          "wins": 1,
+          "tournaments": 15,
+          "titles": 0,
+          "firstRoundExits": 14,
+          "prize": 12030,
+          "registrationsWithoutPlay": 3
+        }
+      ],
+      "deltaWinLoss": {
+        "<-10": [
+          0,
+          49
+        ],
+        "-10..-3": [
+          3,
+          13
+        ],
+        "-3..3": [
+          1,
+          7
+        ],
+        "3..10": [
+          15,
+          20
+        ],
+        ">10": [
+          17,
+          21
+        ]
+      },
+      "meanStrengthDelta": -7.63
+    }
+  },
+  "snaps": [
+    {
+      "day": 0,
+      "base": {
+        "attrs": {
+          "serve": 19,
+          "forehand": 28,
+          "backhand": 19,
+          "volley": 25,
+          "bandeja": 19,
+          "smash": 17,
+          "defense": 23,
+          "agility": 21,
+          "strategy": 26,
+          "emotional_control": 21
+        },
+        "day": 0,
+        "age": 16,
+        "rank": 1001,
+        "teamRank": null,
+        "ovr": 22,
+        "partnerOvr": 37,
+        "attrMean": 21.8,
+        "attrMax": 28,
+        "energy": 100,
+        "fatigue": 0,
+        "coins": 900,
+        "sponsorMonthly": 0,
+        "staffMonthly": 0
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 19,
+          "forehand": 28,
+          "backhand": 19,
+          "volley": 25,
+          "bandeja": 19,
+          "smash": 17,
+          "defense": 23,
+          "agility": 21,
+          "strategy": 26,
+          "emotional_control": 21
+        },
+        "day": 0,
+        "age": 16,
+        "rank": 1001,
+        "teamRank": null,
+        "ovr": 22,
+        "partnerOvr": 37,
+        "attrMean": 21.8,
+        "attrMax": 28,
+        "energy": 100,
+        "fatigue": 0,
+        "coins": 900,
+        "sponsorMonthly": 0,
+        "staffMonthly": 0
+      }
+    },
+    {
+      "day": 90,
+      "base": {
+        "attrs": {
+          "serve": 28,
+          "forehand": 41,
+          "backhand": 28,
+          "volley": 42,
+          "bandeja": 28,
+          "smash": 29,
+          "defense": 31,
+          "agility": 35,
+          "strategy": 47,
+          "emotional_control": 37
+        },
+        "day": 91,
+        "age": 16,
+        "rank": 881,
+        "teamRank": 841,
+        "ovr": 35,
+        "partnerOvr": 37,
+        "attrMean": 34.6,
+        "attrMax": 47,
+        "energy": 69,
+        "fatigue": 71,
+        "coins": 5203,
+        "sponsorMonthly": 1576,
+        "staffMonthly": 0
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 23,
+          "forehand": 37,
+          "backhand": 24,
+          "volley": 34,
+          "bandeja": 24,
+          "smash": 25,
+          "defense": 27,
+          "agility": 31,
+          "strategy": 37,
+          "emotional_control": 32
+        },
+        "day": 91,
+        "age": 16,
+        "rank": 933,
+        "teamRank": 929,
+        "ovr": 29,
+        "partnerOvr": 53,
+        "attrMean": 29.4,
+        "attrMax": 37,
+        "energy": 70,
+        "fatigue": 70,
+        "coins": 4371,
+        "sponsorMonthly": 1539,
+        "staffMonthly": 0
+      }
+    },
+    {
+      "day": 180,
+      "base": {
+        "attrs": {
+          "serve": 35,
+          "forehand": 54,
+          "backhand": 36,
+          "volley": 62,
+          "bandeja": 40,
+          "smash": 47,
+          "defense": 42,
+          "agility": 49,
+          "strategy": 65,
+          "emotional_control": 57
+        },
+        "day": 182,
+        "age": 16,
+        "rank": 716,
+        "teamRank": 695,
+        "ovr": 49,
+        "partnerOvr": 36,
+        "attrMean": 48.7,
+        "attrMax": 65,
+        "energy": 77,
+        "fatigue": 63,
+        "coins": 5109,
+        "sponsorMonthly": 1576,
+        "staffMonthly": 0
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 26,
+          "forehand": 44,
+          "backhand": 29,
+          "volley": 42,
+          "bandeja": 31,
+          "smash": 33,
+          "defense": 32,
+          "agility": 39,
+          "strategy": 48,
+          "emotional_control": 43
+        },
+        "day": 182,
+        "age": 16,
+        "rank": 800,
+        "teamRank": 912,
+        "ovr": 37,
+        "partnerOvr": 53,
+        "attrMean": 36.7,
+        "attrMax": 48,
+        "energy": 64,
+        "fatigue": 22,
+        "coins": 4726,
+        "sponsorMonthly": 1539,
+        "staffMonthly": 0
+      }
+    },
+    {
+      "day": 270,
+      "base": {
+        "attrs": {
+          "serve": 42,
+          "forehand": 66,
+          "backhand": 44,
+          "volley": 75,
+          "bandeja": 48,
+          "smash": 62,
+          "defense": 54,
+          "agility": 62,
+          "strategy": 80,
+          "emotional_control": 71
+        },
+        "day": 273,
+        "age": 16,
+        "rank": 538,
+        "teamRank": 74,
+        "ovr": 60,
+        "partnerOvr": 81,
+        "attrMean": 60.4,
+        "attrMax": 80,
+        "energy": 78,
+        "fatigue": 64,
+        "coins": 4775,
+        "sponsorMonthly": 1570,
+        "staffMonthly": 0
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 30,
+          "forehand": 50,
+          "backhand": 34,
+          "volley": 49,
+          "bandeja": 36,
+          "smash": 41,
+          "defense": 37,
+          "agility": 43,
+          "strategy": 58,
+          "emotional_control": 49
+        },
+        "day": 273,
+        "age": 16,
+        "rank": 562,
+        "teamRank": 613,
+        "ovr": 43,
+        "partnerOvr": 52,
+        "attrMean": 42.7,
+        "attrMax": 58,
+        "energy": 75,
+        "fatigue": 72,
+        "coins": 3411,
+        "sponsorMonthly": 1436,
+        "staffMonthly": 0
+      }
+    },
+    {
+      "day": 360,
+      "base": {
+        "attrs": {
+          "serve": 49,
+          "forehand": 75,
+          "backhand": 53,
+          "volley": 83,
+          "bandeja": 54,
+          "smash": 68,
+          "defense": 61,
+          "agility": 74,
+          "strategy": 84,
+          "emotional_control": 79
+        },
+        "day": 357,
+        "age": 16,
+        "rank": 472,
+        "teamRank": 105,
+        "ovr": 68,
+        "partnerOvr": 81,
+        "attrMean": 68,
+        "attrMax": 84,
+        "energy": 69,
+        "fatigue": 17,
+        "coins": 4727,
+        "sponsorMonthly": 1560,
+        "staffMonthly": 0
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 33,
+          "forehand": 54,
+          "backhand": 37,
+          "volley": 55,
+          "bandeja": 38,
+          "smash": 47,
+          "defense": 41,
+          "agility": 48,
+          "strategy": 63,
+          "emotional_control": 53
+        },
+        "day": 357,
+        "age": 16,
+        "rank": 464,
+        "teamRank": 473,
+        "ovr": 47,
+        "partnerOvr": 52,
+        "attrMean": 46.9,
+        "attrMax": 63,
+        "energy": 100,
+        "fatigue": 41,
+        "coins": 1311,
+        "sponsorMonthly": 1485,
+        "staffMonthly": 0
+      }
+    },
+    {
+      "day": 450,
+      "base": {
+        "attrs": {
+          "serve": 56,
+          "forehand": 82,
+          "backhand": 60,
+          "volley": 85,
+          "bandeja": 61,
+          "smash": 78,
+          "defense": 71,
+          "agility": 83,
+          "strategy": 85,
+          "emotional_control": 83
+        },
+        "day": 448,
+        "age": 17,
+        "rank": 331,
+        "teamRank": 151,
+        "ovr": 74,
+        "partnerOvr": 81,
+        "attrMean": 74.4,
+        "attrMax": 85,
+        "energy": 66,
+        "fatigue": 76,
+        "coins": 8416,
+        "sponsorMonthly": 1560,
+        "staffMonthly": 0
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 35,
+          "forehand": 58,
+          "backhand": 39,
+          "volley": 59,
+          "bandeja": 41,
+          "smash": 52,
+          "defense": 48,
+          "agility": 55,
+          "strategy": 68,
+          "emotional_control": 57
+        },
+        "day": 448,
+        "age": 17,
+        "rank": 381,
+        "teamRank": 389,
+        "ovr": 51,
+        "partnerOvr": 51,
+        "attrMean": 51.2,
+        "attrMax": 68,
+        "energy": 70,
+        "fatigue": 78,
+        "coins": 4811,
+        "sponsorMonthly": 1485,
+        "staffMonthly": 0
+      }
+    },
+    {
+      "day": 540,
+      "base": {
+        "attrs": {
+          "serve": 61,
+          "forehand": 84,
+          "backhand": 64,
+          "volley": 85,
+          "bandeja": 66,
+          "smash": 82,
+          "defense": 79,
+          "agility": 85,
+          "strategy": 85,
+          "emotional_control": 84
+        },
+        "day": 539,
+        "age": 17,
+        "rank": 207,
+        "teamRank": 185,
+        "ovr": 78,
+        "partnerOvr": 81,
+        "attrMean": 77.5,
+        "attrMax": 85,
+        "energy": 70.94999999999979,
+        "fatigue": 77,
+        "coins": 3741,
+        "sponsorMonthly": 2385,
+        "staffMonthly": 1050
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 36,
+          "forehand": 61,
+          "backhand": 41,
+          "volley": 63,
+          "bandeja": 44,
+          "smash": 56,
+          "defense": 50,
+          "agility": 58,
+          "strategy": 74,
+          "emotional_control": 61
+        },
+        "day": 539,
+        "age": 17,
+        "rank": 286,
+        "teamRank": 285,
+        "ovr": 54,
+        "partnerOvr": 50,
+        "attrMean": 54.4,
+        "attrMax": 74,
+        "energy": 69,
+        "fatigue": 78,
+        "coins": 2609,
+        "sponsorMonthly": 2691,
+        "staffMonthly": 850
+      }
+    },
+    {
+      "day": 630,
+      "base": {
+        "attrs": {
+          "serve": 65,
+          "forehand": 84,
+          "backhand": 68,
+          "volley": 85,
+          "bandeja": 72,
+          "smash": 84,
+          "defense": 82,
+          "agility": 85,
+          "strategy": 85,
+          "emotional_control": 84
+        },
+        "day": 630,
+        "age": 17,
+        "rank": 123,
+        "teamRank": 96,
+        "ovr": 79,
+        "partnerOvr": 81,
+        "attrMean": 79.4,
+        "attrMax": 85,
+        "energy": 73.84999999999994,
+        "fatigue": 62,
+        "coins": 1826,
+        "sponsorMonthly": 1943,
+        "staffMonthly": 1050
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 39,
+          "forehand": 64,
+          "backhand": 43,
+          "volley": 66,
+          "bandeja": 46,
+          "smash": 59,
+          "defense": 53,
+          "agility": 61,
+          "strategy": 78,
+          "emotional_control": 64
+        },
+        "day": 630,
+        "age": 17,
+        "rank": 210,
+        "teamRank": 212,
+        "ovr": 57,
+        "partnerOvr": 50,
+        "attrMean": 57.3,
+        "attrMax": 78,
+        "energy": 78,
+        "fatigue": 72,
+        "coins": 5556,
+        "sponsorMonthly": 2628,
+        "staffMonthly": 850
+      }
+    },
+    {
+      "day": 720,
+      "base": {
+        "attrs": {
+          "serve": 69,
+          "forehand": 85,
+          "backhand": 71,
+          "volley": 85,
+          "bandeja": 74,
+          "smash": 84,
+          "defense": 83,
+          "agility": 85,
+          "strategy": 85,
+          "emotional_control": 85
+        },
+        "day": 721,
+        "age": 17,
+        "rank": 62,
+        "teamRank": 48,
+        "ovr": 81,
+        "partnerOvr": 80,
+        "attrMean": 80.6,
+        "attrMax": 85,
+        "energy": 77.40000000000005,
+        "fatigue": 79,
+        "coins": 3012,
+        "sponsorMonthly": 2407,
+        "staffMonthly": 2650
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 41,
+          "forehand": 66,
+          "backhand": 45,
+          "volley": 70,
+          "bandeja": 48,
+          "smash": 62,
+          "defense": 56,
+          "agility": 64,
+          "strategy": 82,
+          "emotional_control": 67
+        },
+        "day": 721,
+        "age": 17,
+        "rank": 154,
+        "teamRank": 161,
+        "ovr": 60,
+        "partnerOvr": 50,
+        "attrMean": 60.1,
+        "attrMax": 82,
+        "energy": 75.84999999999988,
+        "fatigue": 88,
+        "coins": 4187,
+        "sponsorMonthly": 2609,
+        "staffMonthly": 1700
+      }
+    },
+    {
+      "day": 810,
+      "base": {
+        "attrs": {
+          "serve": 73,
+          "forehand": 85,
+          "backhand": 74,
+          "volley": 85,
+          "bandeja": 77,
+          "smash": 84,
+          "defense": 84,
+          "agility": 85,
+          "strategy": 85,
+          "emotional_control": 85
+        },
+        "day": 812,
+        "age": 18,
+        "rank": 62,
+        "teamRank": 36,
+        "ovr": 82,
+        "partnerOvr": 80,
+        "attrMean": 81.7,
+        "attrMax": 85,
+        "energy": 79.01250000000016,
+        "fatigue": 71,
+        "coins": 5897,
+        "sponsorMonthly": 6276,
+        "staffMonthly": 2650
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 42,
+          "forehand": 69,
+          "backhand": 47,
+          "volley": 73,
+          "bandeja": 51,
+          "smash": 66,
+          "defense": 57,
+          "agility": 67,
+          "strategy": 84,
+          "emotional_control": 71
+        },
+        "day": 812,
+        "age": 18,
+        "rank": 145,
+        "teamRank": 132,
+        "ovr": 63,
+        "partnerOvr": 50,
+        "attrMean": 62.7,
+        "attrMax": 84,
+        "energy": 100,
+        "fatigue": 3,
+        "coins": 40,
+        "sponsorMonthly": 3489,
+        "staffMonthly": 1700
+      }
+    },
+    {
+      "day": 896,
+      "base": {
+        "attrs": {
+          "serve": 77,
+          "forehand": 82,
+          "backhand": 75,
+          "volley": 89,
+          "bandeja": 80,
+          "smash": 85,
+          "defense": 88,
+          "agility": 85,
+          "strategy": 85,
+          "emotional_control": 85
+        },
+        "day": 896,
+        "age": 18,
+        "rank": 22,
+        "teamRank": 8,
+        "ovr": 83,
+        "partnerOvr": 80,
+        "attrMean": 83.1,
+        "attrMax": 89,
+        "energy": 71.35000000000011,
+        "fatigue": 14,
+        "coins": 26925,
+        "sponsorMonthly": 8220,
+        "staffMonthly": 4800
+      },
+      "s6d": {
+        "attrs": {
+          "serve": 45,
+          "forehand": 71,
+          "backhand": 49,
+          "volley": 76,
+          "bandeja": 52,
+          "smash": 69,
+          "defense": 60,
+          "agility": 71,
+          "strategy": 84,
+          "emotional_control": 74
+        },
+        "day": 896,
+        "age": 18,
+        "rank": 128,
+        "teamRank": 108,
+        "ovr": 65,
+        "partnerOvr": 87,
+        "attrMean": 65.1,
+        "attrMax": 84,
+        "energy": 77.80000000000001,
+        "fatigue": 58,
+        "coins": 3737,
+        "sponsorMonthly": 4151,
+        "staffMonthly": 1650
+      }
+    }
+  ]
+}
