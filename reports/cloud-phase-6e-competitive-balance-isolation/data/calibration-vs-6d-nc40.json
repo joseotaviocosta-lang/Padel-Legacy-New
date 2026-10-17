@@ -1,0 +1,154 @@
+{
+ "meta": {
+  "n": 400,
+  "seeds": "6e:0..n-1 (mesmos índices em todas as células)",
+  "engine": "src/engine/match/MatchEngine.js (createMatch/playPoint)",
+  "elapsedSec": 178
+ },
+ "calibration": [
+  {
+   "file": "normal-cloud6d-5a8350a",
+   "nPerMatch": 40,
+   "byTier": {
+    "Bronze": {
+     "n": 14,
+     "observedWins": 1,
+     "expectedWins": 6.1
+    },
+    "Silver": {
+     "n": 16,
+     "observedWins": 1,
+     "expectedWins": 2.1
+    },
+    "Gold": {
+     "n": 21,
+     "observedWins": 0,
+     "expectedWins": 0.1
+    },
+    "Platinum": {
+     "n": 17,
+     "observedWins": 0,
+     "expectedWins": 0
+    },
+    "Masters": {
+     "n": 2,
+     "observedWins": 0,
+     "expectedWins": 0
+    }
+   }
+  },
+  {
+   "file": "optimizer-cloud6d-5a8350a",
+   "nPerMatch": 40,
+   "byTier": {
+    "Bronze": {
+     "n": 40,
+     "observedWins": 28,
+     "expectedWins": 30.1
+    },
+    "Silver": {
+     "n": 11,
+     "observedWins": 0,
+     "expectedWins": 4
+    },
+    "Gold": {
+     "n": 31,
+     "observedWins": 7,
+     "expectedWins": 6.1
+    },
+    "Platinum": {
+     "n": 20,
+     "observedWins": 0,
+     "expectedWins": 0.1
+    },
+    "Masters": {
+     "n": 6,
+     "observedWins": 0,
+     "expectedWins": 0
+    },
+    "Elite": {
+     "n": 2,
+     "observedWins": 1,
+     "expectedWins": 0.2
+    }
+   }
+  },
+  {
+   "file": "normal-baseline-fbb0bc4",
+   "nPerMatch": 40,
+   "byTier": {
+    "Bronze": {
+     "n": 31,
+     "observedWins": 18,
+     "expectedWins": 21.7
+    },
+    "Silver": {
+     "n": 18,
+     "observedWins": 2,
+     "expectedWins": 5.7
+    },
+    "Gold": {
+     "n": 13,
+     "observedWins": 0,
+     "expectedWins": 0
+    },
+    "Platinum": {
+     "n": 18,
+     "observedWins": 0,
+     "expectedWins": 0.1
+    },
+    "Masters": {
+     "n": 7,
+     "observedWins": 0,
+     "expectedWins": 0
+    },
+    "Elite": {
+     "n": 1,
+     "observedWins": 0,
+     "expectedWins": 0
+    }
+   }
+  },
+  {
+   "file": "optimizer-baseline-fbb0bc4",
+   "nPerMatch": 40,
+   "byTier": {
+    "Bronze": {
+     "n": 35,
+     "observedWins": 24,
+     "expectedWins": 24.7
+    },
+    "Silver": {
+     "n": 28,
+     "observedWins": 21,
+     "expectedWins": 20.3
+    },
+    "Gold": {
+     "n": 27,
+     "observedWins": 11,
+     "expectedWins": 14.4
+    },
+    "Platinum": {
+     "n": 27,
+     "observedWins": 10,
+     "expectedWins": 11.8
+    },
+    "Masters": {
+     "n": 10,
+     "observedWins": 2,
+     "expectedWins": 3.8
+    },
+    "Elite": {
+     "n": 7,
+     "observedWins": 4,
+     "expectedWins": 3.6
+    },
+    "Crown": {
+     "n": 2,
+     "observedWins": 1,
+     "expectedWins": 1
+    }
+   }
+  }
+ ]
+}

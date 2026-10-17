@@ -1,0 +1,397 @@
+{
+ "meta": {
+  "n": 400,
+  "seeds": "6e:0..n-1 (mesmos índices em todas as células)",
+  "engine": "src/engine/match/MatchEngine.js (createMatch/playPoint)",
+  "elapsedSec": 132
+ },
+ "controls": {
+  "sameAverage": [
+   {
+    "label": "P45/Q75 vs 48",
+    "n": 400,
+    "wins": 372,
+    "winRate": 93,
+    "ci95": 2.5,
+    "meanSetDiff": 1.6,
+    "meanGameDiff12": 4.73,
+    "pointWinPct": 56.2,
+    "decidingSetPct": 23,
+    "player": 45,
+    "partner": 75,
+    "opp": 48
+   },
+   {
+    "label": "P75/Q45 vs 48",
+    "n": 400,
+    "wins": 365,
+    "winRate": 91.3,
+    "ci95": 2.8,
+    "meanSetDiff": 1.56,
+    "meanGameDiff12": 4.9,
+    "pointWinPct": 56.6,
+    "decidingSetPct": 20,
+    "player": 75,
+    "partner": 45,
+    "opp": 48
+   },
+   {
+    "label": "P60/Q60 vs 48",
+    "n": 400,
+    "wins": 365,
+    "winRate": 91.3,
+    "ci95": 2.8,
+    "meanSetDiff": 1.58,
+    "meanGameDiff12": 5.11,
+    "pointWinPct": 56.6,
+    "decidingSetPct": 22,
+    "player": 60,
+    "partner": 60,
+    "opp": 48
+   },
+   {
+    "label": "P55/Q65 vs 48",
+    "n": 400,
+    "wins": 377,
+    "winRate": 94.3,
+    "ci95": 2.3,
+    "meanSetDiff": 1.61,
+    "meanGameDiff12": 4.76,
+    "pointWinPct": 56.4,
+    "decidingSetPct": 24,
+    "player": 55,
+    "partner": 65,
+    "opp": 48
+   },
+   {
+    "label": "P65/Q55 vs 48",
+    "n": 400,
+    "wins": 371,
+    "winRate": 92.8,
+    "ci95": 2.5,
+    "meanSetDiff": 1.62,
+    "meanGameDiff12": 4.97,
+    "pointWinPct": 56.4,
+    "decidingSetPct": 20,
+    "player": 65,
+    "partner": 55,
+    "opp": 48
+   },
+   {
+    "label": "P45/Q75 vs 80",
+    "n": 400,
+    "wins": 0,
+    "winRate": 0,
+    "ci95": 0,
+    "meanSetDiff": -1.99,
+    "meanGameDiff12": -8.34,
+    "pointWinPct": 36.9,
+    "decidingSetPct": 1,
+    "player": 45,
+    "partner": 75,
+    "opp": 80
+   },
+   {
+    "label": "P75/Q45 vs 80",
+    "n": 400,
+    "wins": 1,
+    "winRate": 0.3,
+    "ci95": 0.5,
+    "meanSetDiff": -1.97,
+    "meanGameDiff12": -8.51,
+    "pointWinPct": 36.6,
+    "decidingSetPct": 2,
+    "player": 75,
+    "partner": 45,
+    "opp": 80
+   },
+   {
+    "label": "P60/Q60 vs 80",
+    "n": 400,
+    "wins": 0,
+    "winRate": 0,
+    "ci95": 0,
+    "meanSetDiff": -1.99,
+    "meanGameDiff12": -8.58,
+    "pointWinPct": 36.4,
+    "decidingSetPct": 1,
+    "player": 60,
+    "partner": 60,
+    "opp": 80
+   },
+   {
+    "label": "P55/Q65 vs 80",
+    "n": 400,
+    "wins": 0,
+    "winRate": 0,
+    "ci95": 0,
+    "meanSetDiff": -1.99,
+    "meanGameDiff12": -8.37,
+    "pointWinPct": 37.1,
+    "decidingSetPct": 1,
+    "player": 55,
+    "partner": 65,
+    "opp": 80
+   },
+   {
+    "label": "P65/Q55 vs 80",
+    "n": 400,
+    "wins": 0,
+    "winRate": 0,
+    "ci95": 0,
+    "meanSetDiff": -1.99,
+    "meanGameDiff12": -8.48,
+    "pointWinPct": 36.4,
+    "decidingSetPct": 1,
+    "player": 65,
+    "partner": 55,
+    "opp": 80
+   }
+  ],
+  "side": [
+   {
+    "label": "P55(dir)/Q60(esq) vs 48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "sidePlayer": "right"
+   },
+   {
+    "label": "P55(esq)/Q60(dir) vs 48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "sidePlayer": "left"
+   },
+   {
+    "label": "P65(dir)/Q75(esq) vs 80",
+    "n": 400,
+    "wins": 13,
+    "winRate": 3.3,
+    "ci95": 1.7,
+    "meanSetDiff": -1.76,
+    "meanGameDiff12": -5.53,
+    "pointWinPct": 43,
+    "decidingSetPct": 16,
+    "sidePlayer": "right"
+   },
+   {
+    "label": "P65(esq)/Q75(dir) vs 80",
+    "n": 400,
+    "wins": 13,
+    "winRate": 3.3,
+    "ci95": 1.7,
+    "meanSetDiff": -1.76,
+    "meanGameDiff12": -5.53,
+    "pointWinPct": 43,
+    "decidingSetPct": 16,
+    "sidePlayer": "left"
+   }
+  ],
+  "energy": [
+   {
+    "label": "P55/Q60 energia jogador 100 vs 48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "energy": 100
+   },
+   {
+    "label": "P55/Q60 energia jogador 90 vs 48",
+    "n": 400,
+    "wins": 332,
+    "winRate": 83,
+    "ci95": 3.7,
+    "meanSetDiff": 1.19,
+    "meanGameDiff12": 3.4,
+    "pointWinPct": 54.4,
+    "decidingSetPct": 36,
+    "energy": 90
+   },
+   {
+    "label": "P55/Q60 energia jogador 75 vs 48",
+    "n": 400,
+    "wins": 328,
+    "winRate": 82,
+    "ci95": 3.8,
+    "meanSetDiff": 1.12,
+    "meanGameDiff12": 3.05,
+    "pointWinPct": 53.9,
+    "decidingSetPct": 37,
+    "energy": 75
+   },
+   {
+    "label": "P55/Q60 energia jogador 60 vs 48",
+    "n": 400,
+    "wins": 312,
+    "winRate": 78,
+    "ci95": 4.1,
+    "meanSetDiff": 0.98,
+    "meanGameDiff12": 2.74,
+    "pointWinPct": 53.4,
+    "decidingSetPct": 38,
+    "energy": 60
+   }
+  ],
+  "contextBonus": [
+   {
+    "label": "P55/Q60 sem bônus vs 48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "bonus": "sem bônus"
+   },
+   {
+    "label": "P55/Q60 +chem 5 +coach 3 +bond 2.5 vs 48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "bonus": "+chem 5 +coach 3 +bond 2.5"
+   }
+  ],
+  "uneven": [
+   {
+    "label": "jogador plano 55 / parceiro 60 vs 35",
+    "n": 400,
+    "wins": 398,
+    "winRate": 99.5,
+    "ci95": 0.7,
+    "meanSetDiff": 1.95,
+    "meanGameDiff12": 6.97,
+    "pointWinPct": 60.9,
+    "decidingSetPct": 5,
+    "profile": "flat55",
+    "opp": 35
+   },
+   {
+    "label": "jogador desigual(avg 55) / parceiro 60 vs 35",
+    "n": 400,
+    "wins": 395,
+    "winRate": 98.8,
+    "ci95": 1.1,
+    "meanSetDiff": 1.89,
+    "meanGameDiff12": 6.02,
+    "pointWinPct": 58.9,
+    "decidingSetPct": 9,
+    "profile": "uneven_normal6d",
+    "opp": 35
+   },
+   {
+    "label": "jogador plano 55 / parceiro 60 vs 48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "profile": "flat55",
+    "opp": 48
+   },
+   {
+    "label": "jogador desigual(avg 55) / parceiro 60 vs 48",
+    "n": 400,
+    "wins": 291,
+    "winRate": 72.8,
+    "ci95": 4.4,
+    "meanSetDiff": 0.84,
+    "meanGameDiff12": 2.36,
+    "pointWinPct": 53,
+    "decidingSetPct": 37,
+    "profile": "uneven_normal6d",
+    "opp": 48
+   },
+   {
+    "label": "jogador plano 65 / parceiro 60 vs 48",
+    "n": 400,
+    "wins": 391,
+    "winRate": 97.8,
+    "ci95": 1.5,
+    "meanSetDiff": 1.8,
+    "meanGameDiff12": 5.89,
+    "pointWinPct": 58.1,
+    "decidingSetPct": 14,
+    "profile": "flat65",
+    "opp": 48
+   },
+   {
+    "label": "jogador desigual(avg 65) / parceiro 60 vs 48",
+    "n": 400,
+    "wins": 392,
+    "winRate": 98,
+    "ci95": 1.4,
+    "meanSetDiff": 1.84,
+    "meanGameDiff12": 6.22,
+    "pointWinPct": 58.9,
+    "decidingSetPct": 12,
+    "profile": "uneven_optimizer6d",
+    "opp": 48
+   }
+  ],
+  "oppSpread": [
+   {
+    "label": "P55/Q60 vs 48/48",
+    "n": 400,
+    "wins": 337,
+    "winRate": 84.3,
+    "ci95": 3.6,
+    "meanSetDiff": 1.25,
+    "meanGameDiff12": 3.69,
+    "pointWinPct": 54.7,
+    "decidingSetPct": 34,
+    "opp": "48/48"
+   },
+   {
+    "label": "P55/Q60 vs 38/58",
+    "n": 400,
+    "wins": 347,
+    "winRate": 86.8,
+    "ci95": 3.3,
+    "meanSetDiff": 1.36,
+    "meanGameDiff12": 3.86,
+    "pointWinPct": 55,
+    "decidingSetPct": 30,
+    "opp": "38/58"
+   }
+  ],
+  "mirror": [
+   {
+    "label": "espelho 55/55 vs 55/55",
+    "n": 400,
+    "wins": 208,
+    "winRate": 52,
+    "ci95": 4.9,
+    "meanSetDiff": 0.05,
+    "meanGameDiff12": 0.5,
+    "pointWinPct": 50.4,
+    "decidingSetPct": 46
+   }
+  ]
+ }
+}
