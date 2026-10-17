@@ -392,13 +392,41 @@ export async function registrationCandidates(rt, A, profile) {
     return w.opensAt && w.closesAt && profile.career_date >= w.opensAt && profile.career_date <= w.closesAt;
   });
 }
+// CLOUD-6H — fonte de verdade da seleção: a MESMA da tela (Tournaments.jsx /
+// TournamentRegistrationModal): teamRank = getTeamRank(perfil, parceiro).rank e
+// elegibilidade = evaluateTournamentEntry(buildAthleteEntryContext(perfil, teamRank, torneio)).
+// Sem rank da dupla (0), buildAthleteEntryContext recai no rank individual, como no jogo.
+export async function resolveGameTeamRank(A, profile) {
+  const bot = profile.partner_id ? A.career.getPartnerBot(profile) : null;
+  return bot ? Number((await A.teamRanking.getTeamRank(profile, bot).catch(() => ({ rank: 0 })))?.rank) || 0 : 0;
+}
+export function gameEntryFor(A, profile, teamRank, tournament) {
+  return A.entryManager.evaluateTournamentEntry(tournament, A.entryManager.buildAthleteEntryContext(profile, teamRank, tournament));
+}
+// Comportamento histórico (rank INDIVIDUAL, só entrada direta; esconde o Gold por qualifying).
+// Mantido apenas para reproduzir relatórios anteriores à CLOUD-6H: PL526_LEGACY_INDIVIDUAL_RANK_SELECTION=1.
+export function legacyIndividualRankSelection() { return process.env.PL526_LEGACY_INDIVIDUAL_RANK_SELECTION === '1'; }
+// Filtro "respeita o ranking exibido no card" (perfis atentos) e rank usado pela política de encaixe.
+export function selectionRankFilter(A, profile, teamRank, individualRank) {
+  if (legacyIndividualRankSelection()) {
+    const rank = individualRank || 9999;
+    return {
+      rank,
+      allows: (t) => { const min = Number(A.circuit.getTournamentTierConfig(t.tier)?.minRanking) || 0; return !min || rank <= min; },
+    };
+  }
+  return {
+    rank: A.entryManager.buildAthleteEntryContext(profile, teamRank, {}).rank || 9999,
+    allows: (t) => gameEntryFor(A, profile, teamRank, t).eligible,
+  };
+}
 export async function tryRegister(rt, A, profile, tournament, partner) {
   try {
     // Igual a Tournaments.jsx → registerForTournament: parceiro = getPartnerBot(perfil)
     // e teamRank = getTeamRank(perfil, parceiro).rank (sem ele, a elegibilidade
     // trata a dupla como "sem ranking" e só o Silver aceita).
     const bot = profile.partner_id ? A.career.getPartnerBot(profile) : null;
-    const teamRank = bot ? Number((await A.teamRanking.getTeamRank(profile, bot).catch(() => ({ rank: 0 })))?.rank) || 0 : 0;
+    const teamRank = await resolveGameTeamRank(A, profile);
     const res = await A.registration.registerTournament({ player: profile, partner: bot || { id: partner.id, status: 'active', name: partner.name }, tournament, teamRank });
     // registerTournament devolve {success:false, reasons} (não lança) e é idempotente.
     if (!res?.success) return { ok: false, reason: (res?.reasons || []).map((x) => (typeof x === 'string' ? x : x?.code || x?.message || '?')).join('; ') || 'recusado', profile };

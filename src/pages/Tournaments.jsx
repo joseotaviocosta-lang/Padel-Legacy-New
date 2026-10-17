@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
 import { localGame } from '@/api/localGameClient.js';
 import { Crown, Flame, Coins, Zap, Star, Calendar, Trophy, Award, Play, CheckCircle, Lock, Newspaper, BarChart3, TrendingUp, AlertCircle, Shield, ChevronDown, ChevronUp, Clock3 } from 'lucide-react';
 import { useSearchParams } from 'react-router-dom';
@@ -21,6 +21,7 @@ import { getPartnerBot } from '@/lib/career';
 import { isRegistrationOpen } from '@/lib/calendarSystem';
 import { selectNextOpenTournament } from '@/lib/nextEventAuthority.js';
 import { evaluateTournamentChoice } from '@/gameplay/worldTour/TournamentSelectionAI.js';
+import { buildCoachAnalysisRows, RANK_ONLY_PROJECTION_NOTE } from '@/lib/tournamentProjectionDisplay.js';
 import { buildAthleteEntryContext, evaluateTournamentEntry, getEntryPathLabel } from '@/gameplay/worldTour/EntryManager.js';
 import { validateTournamentIntegrity } from '@/lib/tournamentIntegrity.js';
 import { cancelTournamentRegistration, isPlayerRegisteredForTournament, isTournamentParticipationConfirmed, listTournamentRegistrations, wasTournamentUnreachableAtCareerStart } from '@/lib/tournamentRegistration.js';
@@ -958,11 +959,13 @@ function TournamentCard({ tournament, isPlayable, isPast, isPlayed, isRegistered
           </button>
           {showAnalysis && (
             <div className="mt-1.5 grid grid-cols-2 gap-x-3 gap-y-1 rounded-xl bg-secondary/30 p-2.5 text-[10px]">
-              <span className="text-muted-foreground">Chance de título</span><strong className="text-right">{coach.titleChance}%</strong>
-              <span className="text-muted-foreground">Chance de semifinal</span><strong className="text-right">{coach.semifinalChance}%</strong>
-              <span className="text-muted-foreground">Lucro esperado</span><strong className="text-right">{coach.expectedNet >= 0 ? '+' : ''}{coach.expectedNet}</strong>
-              <span className="text-muted-foreground">Pontos esperados</span><strong className="text-right">{coach.expectedPoints}</strong>
-              <span className="text-muted-foreground">Fadiga estimada</span><strong className="text-right text-orange-400">+{coach.fatigueIncrease}%</strong>
+              {buildCoachAnalysisRows(coach).map((row) => (
+                <Fragment key={row.key}>
+                  <span className="text-muted-foreground">{row.label}</span>
+                  <strong className={`text-right ${row.tone === 'fatigue' ? 'text-orange-400' : ''}`}>{row.value}</strong>
+                </Fragment>
+              ))}
+              <p className="col-span-2 mt-1 text-[10px] leading-snug text-muted-foreground">{RANK_ONLY_PROJECTION_NOTE}</p>
             </div>
           )}
         </div>

@@ -591,9 +591,13 @@ async function simulateCareer(seed) {
       const leaving = OPTIMIZER_V4 && partnership && (partnership.id === out.optimizerLeavingPartnershipId || ['encerra_apos_compromisso', 'encerrar_ao_final', 'nao_renovara'].includes(String(partnership.contract_status || '')));
       if (leaving) out.optimizerSkippedRegistrations = (out.optimizerSkippedRegistrations || 0) + 1;
       if (partner && !leaving) {
+        // CLOUD-6H: ranking e elegibilidade da DUPLA (mesma fonte da tela e de registerTournament),
+        // inclusive Gold/Platinum/Masters por qualifying. Histórico: PL526_LEGACY_INDIVIDUAL_RANK_SELECTION=1.
+        const teamRank = await act.resolveGameTeamRank(A, profile);
+        const sel = act.selectionRankFilter(A, profile, teamRank, wr?.rank);
         let cands = (await act.registrationCandidates(rt, A, profile)).filter((t) => (Number(t.entry_fee) || 0) <= (profile.coins || 0))
           // Ranking mínimo é exibido no card do torneio; perfis atentos o respeitam.
-          .filter((t) => { if (!policy.respectMinRanking) return true; const min = Number(A.circuit.getTournamentTierConfig(t.tier)?.minRanking) || 0; return !min || ((wr?.rank || 9999) <= min); });
+          .filter((t) => !policy.respectMinRanking || sel.allows(t));
         const order = (t) => A.circuit.getTournamentTierConfig(t.tier)?.order ?? 0;
         // 5.27-E (política v2 do normal): escolhe pelo encaixe de rank que o jogo
         // expõe (como o otimizador), não sempre o tier aberto mais alto.
@@ -601,7 +605,7 @@ async function simulateCareer(seed) {
         if (tierPick === 'random') cands = cands.sort(() => rng() - 0.5);
         else if (tierPick === 'best-eligible') cands = cands.sort((a, b) => order(b) - order(a));
         else cands = cands.sort((a, b) => {
-          const fit = (t) => (A.circuit.isRankInTierDiagnosticCore?.(wr?.rank || 9999, t.tier) ? 1 : 0);
+          const fit = (t) => (A.circuit.isRankInTierDiagnosticCore?.(sel.rank, t.tier) ? 1 : 0);
           return fit(b) - fit(a) || order(b) - order(a);
         });
         for (const t of cands.slice(0, 6)) {
