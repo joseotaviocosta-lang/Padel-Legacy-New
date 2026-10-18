@@ -1,4 +1,5 @@
 import { TauriStorage } from './TauriStorage.js';
+import { BrowserStorage } from './BrowserStorage.js';
 import { BackupManager } from './BackupManager.js';
 import { validateSaveData, normalizeCareerMetadata, validateStoragePayload } from './SaveValidator.js';
 import { StorageError } from './StorageError.js';
@@ -25,7 +26,7 @@ function getFileName(relativePath) {
 }
 
 export class GameStorage {
-  constructor(storage = new TauriStorage()) {
+  constructor(storage = TauriStorage.isSupported() ? new TauriStorage() : new BrowserStorage()) {
     this.storage = storage;
     this.backupManager = new BackupManager(this.storage);
     this.initialized = false;
