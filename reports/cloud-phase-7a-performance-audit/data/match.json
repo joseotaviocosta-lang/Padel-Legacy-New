@@ -1,0 +1,149 @@
+{
+  "environment": {
+    "node": "v22.22.0",
+    "platform": "linux",
+    "matches": 60,
+    "note": "Node, CPU do contêiner; NÃO representa o Android"
+  },
+  "perMatch": {
+    "points": {
+      "n": 60,
+      "median": 140,
+      "p95": 167,
+      "max": 176,
+      "total": 8334
+    },
+    "createMatchMs": {
+      "n": 60,
+      "median": 0.14,
+      "p95": 0.37,
+      "max": 1.878,
+      "total": 11.668
+    },
+    "totalPlayMs": {
+      "n": 60,
+      "median": 19.065,
+      "p95": 35.261,
+      "max": 53.47,
+      "total": 1210.087
+    },
+    "stateJsonBytes": {
+      "n": 60,
+      "median": 451001,
+      "p95": 548117,
+      "max": 557837,
+      "total": 26559221
+    },
+    "stringifyFinalStateMs": {
+      "n": 60,
+      "median": 2.362,
+      "p95": 3.806,
+      "max": 4.247,
+      "total": 148.942
+    },
+    "structuredCloneFinalStateMs": {
+      "n": 60,
+      "median": 3.755,
+      "p95": 7.118,
+      "max": 11.05,
+      "total": 245.436
+    }
+  },
+  "perPointMs": {
+    "n": 8334,
+    "median": 0.117,
+    "p95": 0.247,
+    "max": 6.046,
+    "total": 1210.087
+  },
+  "perPointMsByMatchDecile": [
+    {
+      "decile": 1,
+      "n": 860,
+      "median": 0.097,
+      "p95": 0.226,
+      "max": 5.012,
+      "total": 115.786
+    },
+    {
+      "decile": 2,
+      "n": 828,
+      "median": 0.092,
+      "p95": 0.2,
+      "max": 1.362,
+      "total": 93.686
+    },
+    {
+      "decile": 3,
+      "n": 838,
+      "median": 0.099,
+      "p95": 0.202,
+      "max": 5.085,
+      "total": 104.587
+    },
+    {
+      "decile": 4,
+      "n": 832,
+      "median": 0.104,
+      "p95": 0.211,
+      "max": 5.934,
+      "total": 104.502
+    },
+    {
+      "decile": 5,
+      "n": 827,
+      "median": 0.115,
+      "p95": 0.272,
+      "max": 4.304,
+      "total": 125.747
+    },
+    {
+      "decile": 6,
+      "n": 838,
+      "median": 0.122,
+      "p95": 0.25,
+      "max": 4.37,
+      "total": 132.578
+    },
+    {
+      "decile": 7,
+      "n": 839,
+      "median": 0.122,
+      "p95": 0.232,
+      "max": 6.046,
+      "total": 127.109
+    },
+    {
+      "decile": 8,
+      "n": 831,
+      "median": 0.126,
+      "p95": 0.248,
+      "max": 2.419,
+      "total": 127.083
+    },
+    {
+      "decile": 9,
+      "n": 835,
+      "median": 0.136,
+      "p95": 0.254,
+      "max": 1.906,
+      "total": 135.798
+    },
+    {
+      "decile": 10,
+      "n": 806,
+      "median": 0.146,
+      "p95": 0.313,
+      "max": 2.064,
+      "total": 143.21
+    }
+  ],
+  "firstHalfVsSecondHalfAvgPointMs": {
+    "first": 0.129,
+    "second": 0.158
+  },
+  "determinism": {
+    "repeatedSeeds": 10,
+    "mismatches": 0
+  }
+}
