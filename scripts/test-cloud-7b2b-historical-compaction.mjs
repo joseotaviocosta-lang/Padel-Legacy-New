@@ -145,7 +145,10 @@ try {
   // C. Compatibilidade
   {
     const rt = await newCareer();
-    await quiet(() => rt.manager.saveCareer(rt.careerId, rt.withHistory));
+    // O bloco C mede o formato padrão: ignora a chave global (preload) só durante esta gravação.
+    const preloadFlag = globalThis.__PADEL_HISTORICAL_COMPACTION__;
+    delete globalThis.__PADEL_HISTORICAL_COMPACTION__;
+    try { await quiet(() => rt.manager.saveCareer(rt.careerId, rt.withHistory)); } finally { if (preloadFlag !== undefined) globalThis.__PADEL_HISTORICAL_COMPACTION__ = preloadFlag; }
     const legacyFile = rt.file();
     ok('C. gravação padrão (compactação desligada) não produz history_pack: formato idêntico ao anterior', !legacyFile.includes('history_pack'));
     const legacyLoaded = await rt.manager.loadCareer(rt.careerId);
