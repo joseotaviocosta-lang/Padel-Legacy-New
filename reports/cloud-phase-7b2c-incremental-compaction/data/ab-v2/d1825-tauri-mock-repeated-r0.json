@@ -1,0 +1,77 @@
+{
+  "label": "repeated-r0",
+  "strategy": "repeated",
+  "warmDays": 1,
+  "firstDayMs": 1731.6,
+  "heapMB": 296.7,
+  "storage": "tauri-mock",
+  "node": "v22.22.0",
+  "saveBytes": 27236855,
+  "saveFile": "day1825.json",
+  "loadMs": {
+    "n": 3,
+    "median": 670.1,
+    "p95": 919.1,
+    "min": 620,
+    "max": 919.1,
+    "samples": [
+      919.1,
+      670.1,
+      620
+    ]
+  },
+  "loadFirstMs": 919.1,
+  "dayMs": {
+    "n": 8,
+    "median": 1383.3,
+    "p95": 1596.3,
+    "min": 1112.4,
+    "max": 1596.3,
+    "samples": [
+      1408.7,
+      1275.4,
+      1324.5,
+      1112.4,
+      1504.5,
+      1222.6,
+      1596.3,
+      1383.3
+    ]
+  },
+  "writeMs": {
+    "n": 3,
+    "median": 1001.5,
+    "p95": 1059.8,
+    "min": 942.4,
+    "max": 1059.8,
+    "samples": [
+      942.4,
+      1001.5,
+      1059.8
+    ]
+  },
+  "tauriInvokesPerDay": {
+    "storage_write_text": 1,
+    "storage_read_text": 1,
+    "storage_exists": 2,
+    "storage_copy": 1,
+    "storage_remove": 2,
+    "storage_rename": 1
+  },
+  "tauriInvokesPerLoadTotal": {
+    "storage_exists": 17,
+    "storage_read_text": 9,
+    "storage_list": 4
+  },
+  "incrementalStats": {
+    "packs": 0,
+    "packSkips": 0,
+    "packMs": 0,
+    "views": 0,
+    "materializations": 0,
+    "materializeMs": 0,
+    "writeExpansions": 0,
+    "sweeps": 0
+  },
+  "endSaveBytes": 27255129
+}

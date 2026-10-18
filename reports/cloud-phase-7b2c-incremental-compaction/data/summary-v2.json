@@ -1,0 +1,140 @@
+{
+  "day1825.json|memory|incremental": {
+    "runs": 3,
+    "samples": 24,
+    "saveBytes": 30986421,
+    "endSaveBytes": 28239284,
+    "dayMedianMs": 797,
+    "dayP95Ms": 1250,
+    "loadMedianMs": 649,
+    "writeMedianMs": 507,
+    "firstDayMs": 1958,
+    "heapMB": 297,
+    "incremental": {
+      "packs": 620,
+      "packSkips": 0,
+      "packMs": 514.5869919999941,
+      "views": 22320,
+      "materializations": 0,
+      "materializeMs": 0,
+      "writeExpansions": 0,
+      "sweeps": 40
+    }
+  },
+  "day1825.json|memory|off": {
+    "runs": 3,
+    "samples": 24,
+    "saveBytes": 30986421,
+    "endSaveBytes": 31004695,
+    "dayMedianMs": 908,
+    "dayP95Ms": 1314,
+    "loadMedianMs": 618,
+    "writeMedianMs": 632,
+    "firstDayMs": 1307,
+    "heapMB": 310
+  },
+  "day1825.json|memory|repeated": {
+    "runs": 3,
+    "samples": 24,
+    "saveBytes": 27236855,
+    "endSaveBytes": 27255129,
+    "dayMedianMs": 1230,
+    "dayP95Ms": 1673,
+    "loadMedianMs": 757,
+    "writeMedianMs": 1076,
+    "firstDayMs": 1833,
+    "heapMB": 297
+  },
+  "day1825.json|tauri-mock|incremental": {
+    "runs": 2,
+    "samples": 16,
+    "saveBytes": 30986421,
+    "endSaveBytes": 28239284,
+    "dayMedianMs": 782,
+    "dayP95Ms": 1320,
+    "loadMedianMs": 634,
+    "writeMedianMs": 616,
+    "firstDayMs": 2006,
+    "heapMB": 297,
+    "incremental": {
+      "packs": 620,
+      "packSkips": 0,
+      "packMs": 477.91045600002235,
+      "views": 22320,
+      "materializations": 0,
+      "materializeMs": 0,
+      "writeExpansions": 0,
+      "sweeps": 40
+    }
+  },
+  "day1825.json|tauri-mock|off": {
+    "runs": 2,
+    "samples": 16,
+    "saveBytes": 30986421,
+    "endSaveBytes": 31004695,
+    "dayMedianMs": 920,
+    "dayP95Ms": 1474,
+    "loadMedianMs": 633,
+    "writeMedianMs": 698,
+    "firstDayMs": 1458,
+    "heapMB": 310
+  },
+  "day1825.json|tauri-mock|repeated": {
+    "runs": 2,
+    "samples": 16,
+    "saveBytes": 27236855,
+    "endSaveBytes": 27255129,
+    "dayMedianMs": 1383,
+    "dayP95Ms": 1629,
+    "loadMedianMs": 687,
+    "writeMedianMs": 1119,
+    "firstDayMs": 1752,
+    "heapMB": 297
+  },
+  "day365.json|memory|incremental": {
+    "runs": 3,
+    "samples": 24,
+    "saveBytes": 12287613,
+    "endSaveBytes": 11740754,
+    "dayMedianMs": 380,
+    "dayP95Ms": 651,
+    "loadMedianMs": 255,
+    "writeMedianMs": 217,
+    "firstDayMs": 536,
+    "heapMB": 182,
+    "incremental": {
+      "packs": 124,
+      "packSkips": 0,
+      "packMs": 102.90289599999869,
+      "views": 4464,
+      "materializations": 0,
+      "materializeMs": 0,
+      "writeExpansions": 0,
+      "sweeps": 38
+    }
+  },
+  "day365.json|memory|off": {
+    "runs": 3,
+    "samples": 24,
+    "saveBytes": 12287613,
+    "endSaveBytes": 12300111,
+    "dayMedianMs": 402,
+    "dayP95Ms": 658,
+    "loadMedianMs": 225,
+    "writeMedianMs": 228,
+    "firstDayMs": 401,
+    "heapMB": 185
+  },
+  "day365.json|memory|repeated": {
+    "runs": 3,
+    "samples": 24,
+    "saveBytes": 11531281,
+    "endSaveBytes": 11543779,
+    "dayMedianMs": 513,
+    "dayP95Ms": 856,
+    "loadMedianMs": 295,
+    "writeMedianMs": 322,
+    "firstDayMs": 504,
+    "heapMB": 182
+  }
+}

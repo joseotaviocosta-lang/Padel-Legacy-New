@@ -1,0 +1,66 @@
+{
+  "label": "off-r1",
+  "strategy": "off",
+  "warmDays": 1,
+  "firstDayMs": 1384.3,
+  "heapMB": 310.2,
+  "storage": "memory",
+  "node": "v22.22.0",
+  "saveBytes": 30986421,
+  "saveFile": "day1825.json",
+  "loadMs": {
+    "n": 3,
+    "median": 657.7,
+    "p95": 812.6,
+    "min": 555.9,
+    "max": 812.6,
+    "samples": [
+      812.6,
+      657.7,
+      555.9
+    ]
+  },
+  "loadFirstMs": 812.6,
+  "dayMs": {
+    "n": 8,
+    "median": 922.6,
+    "p95": 1313.8,
+    "min": 764.8,
+    "max": 1313.8,
+    "samples": [
+      1195.9,
+      764.8,
+      849.2,
+      891.4,
+      770.9,
+      944.7,
+      1313.8,
+      922.6
+    ]
+  },
+  "writeMs": {
+    "n": 3,
+    "median": 604.7,
+    "p95": 774.2,
+    "min": 594.3,
+    "max": 774.2,
+    "samples": [
+      604.7,
+      774.2,
+      594.3
+    ]
+  },
+  "tauriInvokesPerDay": null,
+  "tauriInvokesPerLoadTotal": null,
+  "incrementalStats": {
+    "packs": 0,
+    "packSkips": 0,
+    "packMs": 0,
+    "views": 0,
+    "materializations": 0,
+    "materializeMs": 0,
+    "writeExpansions": 0,
+    "sweeps": 0
+  },
+  "endSaveBytes": 31004695
+}
