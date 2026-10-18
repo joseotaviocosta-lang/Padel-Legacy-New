@@ -2,6 +2,7 @@ import { validateCareerData, validateCareerIndex } from './CareerValidator.js';
 import { migrateCareer, migrateIndex } from './CareerMigration.js';
 import { createDefaultCareerData, normalizeSaveName } from './careerDefaults.js';
 import { CareerRepository } from './CareerRepository.js';
+import { unpackCareerFromStorage } from './tournamentHistoryCodec.js';
 import { CAREER_INDEX_FILE_NAME, CAREER_BACKUPS_DIRECTORY } from './careerSchema.js';
 import { registerBetaDiagnostic } from '../lib/betaDiagnostics.js';
 
@@ -408,7 +409,7 @@ export class CareerManager {
       throw new Error('Nenhum backup encontrado para a carreira.');
     }
     const latestBackup = backups.sort().pop();
-    const raw = await this.repository.storage.readJson(latestBackup);
+    const raw = unpackCareerFromStorage(await this.repository.storage.readJson(latestBackup));
     const validated = validateCareerData(raw);
     await this.repository.writeCareer(careerId, validated);
     return validated;
