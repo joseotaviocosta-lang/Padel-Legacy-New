@@ -1,0 +1,16 @@
+{
+  "fileA": "/tmp/claude-0/s7c/run-off/save-season-10.json",
+  "fileB": "/tmp/claude-0/s7c/run-incremental/save-season-10.json",
+  "entitiesCompared": 34,
+  "rawDifferentEntities": [
+    "AnnualCareerReport"
+  ],
+  "differentAfterNormalizingTelemetry": [],
+  "playerDiffRaw": false,
+  "playerDiffNormalized": false,
+  "otherTopLevelDiffs": [],
+  "telemetryFieldsNormalized": {
+    "generation.durationMs": 10
+  },
+  "logicallyEquivalent": true
+}
