@@ -141,7 +141,9 @@ export class CareerManager {
       }
 
       const career = await this.repository.readCareer(careerId);
-      const migrated = migrateCareer(career);
+      // CLOUD-7B1 — `career` é o objeto privado devolvido por readCareer (nada o retém): migrar no próprio
+      // objeto, sem outra cópia completa do save.
+      const migrated = migrateCareer(career, { owned: true });
       const careerData = migrated.data;
       // Playthrough 5.24-E — BOOT OCIOSO NÃO GRAVA.
       //

@@ -7,12 +7,15 @@
 //
 // Uso: node scripts/benchmark-cloud-7a-career-growth.mjs [--days=365] [--seed=7a] [--sample=30]
 //        [--reloadAt=365,1825] [--output=reports/cloud-phase-7a-performance-audit/data/growth.json]
+//        [--storage=tauri-mock] (CLOUD-7B1: TauriStorage real sobre invoke simulado; padrão = memória instrumentada)
+//        [--dumpAt=365,1825 --dumpDir=<dir>] (grava o save nesses dias; para os benchmarks A/B por tamanho)
 //        [--fakeClock] [--dumpSave=<arquivo>] (grava o JSON final do save, para os benchmarks de armazenamento; não versionar)
 import { createServer } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
 import { performance } from 'node:perf_hooks';
 import { createHash } from 'node:crypto';
+import { installTauriMock } from './lib/cloud7b1TauriMock.mjs';
 
 const args = Object.fromEntries(process.argv.slice(2).map((arg) => {
   const [key, value] = arg.replace(/^--/, '').split('=');
@@ -21,6 +24,7 @@ const args = Object.fromEntries(process.argv.slice(2).map((arg) => {
 const DAYS = Number(args.days) || 365;
 const SEED = String(args.seed || '7a');
 const SAMPLE = Number(args.sample) || 30;
+const DUMP_AT = new Set(String(args.dumpAt || '').split(',').filter(Boolean).map(Number));
 const RELOAD_AT = new Set(String(args.reloadAt || '').split(',').filter(Boolean).map(Number));
 const OUTPUT = args.output || 'reports/cloud-phase-7a-performance-audit/data/growth.json';
 const START = args.date || '2026-01-05';
@@ -78,8 +82,9 @@ try {
   const { advanceCareerDayOnce, waitForCareerDaySecondaryWork } = await server.ssrLoadModule('/src/game-core/dayAdvanceCoordinator.js');
   const { BOTS_BY_DIFFICULTY } = await server.ssrLoadModule('/src/lib/bots.js');
 
-  const storage = createInstrumentedStorage();
-  const manager = new CareerManager(new CareerRepository(new GameStorage(storage)));
+  const tauriMock = args.storage === 'tauri-mock' ? installTauriMock() : null;
+  const storage = tauriMock ? { files: tauriMock.files } : createInstrumentedStorage();
+  const manager = new CareerManager(new CareerRepository(tauriMock ? new GameStorage() : new GameStorage(storage)));
   activeCareerAdapter.careerManager = manager;
 
   const t0 = performance.now();
@@ -131,6 +136,7 @@ try {
       activeCareerAdapter.setActiveCareer(loaded.career || loaded);
       profile = await localGame.entities.PlayerProfile.get('c7a-player');
     }
+    if (DUMP_AT.has(day) && args.dumpDir && key) fs.writeFileSync(path.join(path.resolve(String(args.dumpDir)), `save-day-${day}.json`), storage.files.get(key));
     checkpoints.push({
       day, date: profile.career_date, saveBytes: bytes, saveMs: r2(saveMs), loadMs: loadMs === null ? null : r2(loadMs), counts,
       duplicateTournamentIds: dupes(tournaments.map((t) => t.id)), duplicateEventIds: dupes(events.map((e) => e.id)),
@@ -184,6 +190,7 @@ try {
   wall = performance.now();
   for (let day = 1; day <= DAYS; day += 1) {
     resetIo();
+    tauriMock?.reset();
     const before = profile.career_date;
     const t = performance.now();
     let ok = true;
@@ -198,9 +205,10 @@ try {
       profile = await localGame.entities.PlayerProfile.get('c7a-player');
     }
     const ms = performance.now() - t;
-    daily.push({ day, date: before, ok, ms: r2(ms), writes: io.writes, writeBytes: io.writeBytes, reads: io.reads, ioMs: r2(io.writeMs + io.readMs), month: before.slice(5, 7), dom: Number(before.slice(8, 10)) });
+    if (tauriMock) { const c = tauriMock.counters; io.writes = c.byCommand.storage_write_text || 0; io.reads = c.byCommand.storage_read_text || 0; io.writeBytes = c.writeBytes; io.readBytes = c.readBytes; }
+    daily.push({ day, date: before, ok, ms: r2(ms), writes: io.writes, writeBytes: io.writeBytes, reads: io.reads, invokes: tauriMock ? tauriMock.counters.calls : null, ioMs: r2(io.writeMs + io.readMs), month: before.slice(5, 7), dom: Number(before.slice(8, 10)) });
     if (!ok && blocked.length >= 20) { console.log('muitos bloqueios consecutivos; interrompendo'); break; }
-    if (day % SAMPLE === 0 && (day % 365 === 0 || RELOAD_AT.has(day) || day === DAYS || day % 365 === 0)) { await snapshot(day); await writePartial(); }
+    if (day % SAMPLE === 0 && (day % 365 === 0 || RELOAD_AT.has(day) || DUMP_AT.has(day) || day === DAYS)) { await snapshot(day); await writePartial(); }
   }
 
   const report = await buildReport(true);

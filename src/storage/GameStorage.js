@@ -138,7 +138,8 @@ export class GameStorage {
       return await measureStorageOperation(
         { operation: 'parse', key: normalizedPath, caller, layer: 'serialization' },
         () => JSON.parse(raw),
-        { bytes: typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(raw).byteLength : raw.length },
+        // CLOUD-7B1 — lazy (ver TauriStorage.writeText): só é calculado com o probe de desempenho ligado.
+        { bytes: () => (typeof TextEncoder !== 'undefined' ? new TextEncoder().encode(raw).byteLength : raw.length) },
       );
     } catch (error) {
       throw new StorageError(

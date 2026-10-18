@@ -142,7 +142,11 @@ export async function measureStorageOperation(meta, task, options = {}) {
     record(meta, nowMs() - start, { bytes });
     return result;
   } catch (error) {
-    record(meta, nowMs() - start, { bytes: options.bytes, failed: true });
+    // `bytes` pode ser lazy (função); na falha não há resultado, então resolve sem argumento e nunca
+    // deixa a medição mascarar o erro original.
+    let failedBytes = 0;
+    try { failedBytes = typeof options.bytes === 'function' ? options.bytes() : options.bytes; } catch { failedBytes = 0; }
+    record(meta, nowMs() - start, { bytes: failedBytes, failed: true });
     throw error;
   }
 }

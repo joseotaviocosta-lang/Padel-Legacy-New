@@ -1,0 +1,447 @@
+{
+  "environment": {
+    "node": "v22.22.0",
+    "warmDays": 0,
+    "measuredDays": 3,
+    "saveBytesBeforeProbe": 52593735,
+    "seed": "7b1",
+    "fakeClock": true,
+    "storage": "TauriStorage real + invoke simulado"
+  },
+  "perDay": {
+    "dayMsMedian": 2065.9,
+    "structuredClone": {
+      "calls": 951,
+      "ms": 659.12,
+      "fullSaveCalls": 1,
+      "fullSaveMs": 564.51
+    },
+    "stringify": {
+      "calls": 20.33,
+      "ms": 665.22,
+      "fullSaveCalls": 1,
+      "fullSaveMs": 660.53,
+      "fullSaveBytes": 52595390,
+      "bytes": 53204465
+    },
+    "textEncoderLarge": {
+      "calls": 1,
+      "ms": 354.72,
+      "chars": 52595391
+    },
+    "parse": {
+      "calls": 5,
+      "ms": 1.81,
+      "fullSaveCalls": 0,
+      "bytes": 608511
+    },
+    "storageOps": {
+      "storage_exists": 5.67,
+      "storage_read_text": 3,
+      "storage_list": 1.33
+    }
+  },
+  "load": {
+    "loadMsMedian": 2958.1,
+    "loads": 3,
+    "structuredClone": {
+      "calls": 11,
+      "ms": 2504.59,
+      "fullSaveCalls": 5,
+      "fullSaveMs": 2504.47
+    },
+    "stringify": {
+      "calls": 24,
+      "ms": 0.02
+    },
+    "parse": {
+      "calls": 3,
+      "ms": 325.36,
+      "fullSaveCalls": 1,
+      "bytes": 52594696
+    },
+    "textEncoderLarge": {
+      "calls": 1,
+      "ms": 140.74
+    },
+    "tauriInvokes": {
+      "storage_exists": 5.67,
+      "storage_read_text": 3,
+      "storage_list": 1.33
+    },
+    "topSites": [
+      {
+        "op": "clone",
+        "full": true,
+        "site": "clone [FULL_SAVE] @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < ActiveCareerAdapter.getActiveCareer gameplay/adapters/ActiveCareerAdapter.js:120",
+        "n": 3,
+        "ms": 1597.6,
+        "bytes": 0,
+        "perLoadN": 1,
+        "perLoadMs": 532.52
+      },
+      {
+        "op": "clone",
+        "full": true,
+        "site": "clone [FULL_SAVE] @ cloneDeep careers/CareerMigration.js:17 < migrateCareer careers/CareerMigration.js:22 < CareerRepository.readCareer careers/CareerRepository.js:97",
+        "n": 3,
+        "ms": 1538.4,
+        "bytes": 0,
+        "perLoadN": 1,
+        "perLoadMs": 512.81
+      },
+      {
+        "op": "clone",
+        "full": true,
+        "site": "clone [FULL_SAVE] @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < ActiveCareerAdapter.setActiveCareer gameplay/adapters/ActiveCareerAdapter.js:52 < ActiveCareerAdapter.getActiveCareer gameplay/adapters/ActiveCareerAdapter.js:119",
+        "n": 3,
+        "ms": 1523.8,
+        "bytes": 0,
+        "perLoadN": 1,
+        "perLoadMs": 507.95
+      },
+      {
+        "op": "clone",
+        "full": true,
+        "site": "clone [FULL_SAVE] @ cloneDeep careers/CareerValidator.js:41 < validateCareerData careers/CareerValidator.js:107 < CareerRepository.readCareer careers/CareerRepository.js:98",
+        "n": 3,
+        "ms": 1427.4,
+        "bytes": 0,
+        "perLoadN": 1,
+        "perLoadMs": 475.81
+      },
+      {
+        "op": "clone",
+        "full": true,
+        "site": "clone [FULL_SAVE] @ cloneDeep careers/CareerMigration.js:17 < migrateCareer careers/CareerMigration.js:22 < CareerManager.loadCareer careers/CareerManager.js:147",
+        "n": 3,
+        "ms": 1426.2,
+        "bytes": 0,
+        "perLoadN": 1,
+        "perLoadMs": 475.39
+      },
+      {
+        "op": "parse",
+        "full": true,
+        "site": "parse [FULL_SAVE] @ eval storage/GameStorage.js:143 < measureStorageOperation dev/storageIOProbe.js:146 < GameStorage.readJson storage/GameStorage.js:141",
+        "n": 3,
+        "ms": 976,
+        "bytes": 157781220,
+        "perLoadN": 1,
+        "perLoadMs": 325.33
+      },
+      {
+        "op": "encode",
+        "full": false,
+        "site": "encode @ GameStorage.readJson storage/GameStorage.js:144 < CareerRepository.readCareer careers/CareerRepository.js:92 < CareerManager.loadCareer careers/CareerManager.js:146",
+        "n": 3,
+        "ms": 422.2,
+        "bytes": 157781220,
+        "perLoadN": 1,
+        "perLoadMs": 140.74
+      },
+      {
+        "op": "clone",
+        "full": false,
+        "site": "clone @ cloneDeep careers/CareerMigration.js:17 < migrateIndex careers/CareerMigration.js:486 < CareerRepository.readIndex careers/CareerRepository.js:48",
+        "n": 6,
+        "ms": 0.2,
+        "bytes": 0,
+        "perLoadN": 2,
+        "perLoadMs": 0.06
+      },
+      {
+        "op": "parse",
+        "full": false,
+        "site": "parse @ eval storage/GameStorage.js:143 < measureStorageOperation dev/storageIOProbe.js:146 < GameStorage.readJson storage/GameStorage.js:141",
+        "n": 6,
+        "ms": 0.1,
+        "bytes": 2868,
+        "perLoadN": 2,
+        "perLoadMs": 0.04
+      },
+      {
+        "op": "clone",
+        "full": false,
+        "site": "clone @ cloneDeep careers/CareerValidator.js:41 < validateCareerIndex careers/CareerValidator.js:126 < CareerRepository.readIndex careers/CareerRepository.js:50",
+        "n": 6,
+        "ms": 0.1,
+        "bytes": 0,
+        "perLoadN": 2,
+        "perLoadMs": 0.04
+      },
+      {
+        "op": "clone",
+        "full": false,
+        "site": "clone @ cloneDeep careers/CareerMigration.js:17 < migrateIndex careers/CareerMigration.js:486 < CareerManager.loadFreshIndex careers/CareerManager.js:72",
+        "n": 6,
+        "ms": 0.1,
+        "bytes": 0,
+        "perLoadN": 2,
+        "perLoadMs": 0.02
+      },
+      {
+        "op": "stringify",
+        "full": false,
+        "site": "stringify @ eval careers/CareerManager.js:172 < CareerManager.loadCareer careers/CareerManager.js:172 < ActiveCareerAdapter.getActiveCareer gameplay/adapters/ActiveCareerAdapter.js:118",
+        "n": 72,
+        "ms": 0,
+        "bytes": 804,
+        "perLoadN": 24,
+        "perLoadMs": 0.02
+      }
+    ]
+  },
+  "topSitesByMs": [
+    {
+      "op": "stringify",
+      "full": true,
+      "site": "stringify [FULL_SAVE] @ eval storage/GameStorage.js:257 < measureStorageOperation dev/storageIOProbe.js:146 < GameStorage.writeJsonUnlocked storage/GameStorage.js:253",
+      "n": 3,
+      "ms": 1981.6,
+      "bytes": 157786170,
+      "perDayN": 1,
+      "perDayMs": 660.53
+    },
+    {
+      "op": "clone",
+      "full": true,
+      "site": "clone [FULL_SAVE] @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < eval gameplay/adapters/ActiveCareerAdapter.js:353",
+      "n": 3,
+      "ms": 1693.5,
+      "bytes": 0,
+      "perDayN": 1,
+      "perDayMs": 564.51
+    },
+    {
+      "op": "encode",
+      "full": false,
+      "site": "encode @ byteLength storage/TauriStorage.js:73 < TauriStorage.writeText storage/TauriStorage.js:116 < GameStorage.writeJsonUnlocked storage/GameStorage.js:267",
+      "n": 3,
+      "ms": 1064.2,
+      "bytes": 157786173,
+      "perDayN": 1,
+      "perDayMs": 354.72
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < eval gameplay/adapters/ActiveCareerAdapter.js:254",
+      "n": 27,
+      "ms": 106.7,
+      "bytes": 0,
+      "perDayN": 9,
+      "perDayMs": 35.58
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:195 < processWorldCircuit game-core/circuitLifecycle.js:354",
+      "n": 1,
+      "ms": 52.9,
+      "bytes": 0,
+      "perDayN": 0.33,
+      "perDayMs": 17.63
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < ActiveCareerAdapter.updatePlayerProfile gameplay/adapters/ActiveCareerAdapter.js:234 < Object.update gameplay/adapters/PlayerAdapter.js:56",
+      "n": 14,
+      "ms": 35.8,
+      "bytes": 0,
+      "perDayN": 4.67,
+      "perDayMs": 11.92
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < transaction.mutateActiveCareer.caller gameplay/adapters/ActiveCareerAdapter.js:205 < eval gameplay/adapters/ActiveCareerAdapter.js:247",
+      "n": 14,
+      "ms": 29.2,
+      "bytes": 0,
+      "perDayN": 4.67,
+      "perDayMs": 9.73
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < withCareer.save gameplay/repositories/CareerEntityRepository.js:370 < transaction.repository.mutateActiveCareer.caller.caller gameplay/repositories/CareerEntityRepository.js:193",
+      "n": 2385,
+      "ms": 13.4,
+      "bytes": 0,
+      "perDayN": 795,
+      "perDayMs": 4.46
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < ActiveCareerAdapter.getPlayerProfile gameplay/adapters/ActiveCareerAdapter.js:150 < Object.get gameplay/adapters/PlayerAdapter.js:46",
+      "n": 6,
+      "ms": 12.8,
+      "bytes": 0,
+      "perDayN": 2,
+      "perDayMs": 4.28
+    },
+    {
+      "op": "stringify",
+      "full": false,
+      "site": "stringify @ clone gameplay/adapters/PlayerAdapter.js:8 < Object.get gameplay/adapters/PlayerAdapter.js:48",
+      "n": 3,
+      "ms": 11.6,
+      "bytes": 912792,
+      "perDayN": 1,
+      "perDayMs": 3.87
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:195 < processAthletePersonalityWeek game-core/athletePersonalityLifecycle.js:205",
+      "n": 1,
+      "ms": 11.4,
+      "bytes": 0,
+      "perDayN": 0.33,
+      "perDayMs": 3.81
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:195 < simulateWorldDay game-core/worldSimulationLifecycle.js:465",
+      "n": 3,
+      "ms": 8.2,
+      "bytes": 0,
+      "perDayN": 1,
+      "perDayMs": 2.72
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:195 < processWorldCircuit game-core/circuitLifecycle.js:357",
+      "n": 1,
+      "ms": 6.4,
+      "bytes": 0,
+      "perDayN": 0.33,
+      "perDayMs": 2.12
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:195 < CareerEntityRepository.batch gameplay/repositories/CareerEntityRepository.js:398",
+      "n": 1,
+      "ms": 4,
+      "bytes": 0,
+      "perDayN": 0.33,
+      "perDayMs": 1.35
+    },
+    {
+      "op": "parse",
+      "full": false,
+      "site": "parse @ clone gameplay/adapters/PlayerAdapter.js:8 < Object.get gameplay/adapters/PlayerAdapter.js:48",
+      "n": 3,
+      "ms": 3.1,
+      "bytes": 912792,
+      "perDayN": 1,
+      "perDayMs": 1.03
+    },
+    {
+      "op": "parse",
+      "full": false,
+      "site": "parse @ clone gameplay/adapters/PlayerAdapter.js:8 < Object.get gameplay/adapters/PlayerAdapter.js:48 < processSecondary game-core/dayAdvanceCoordinator.js:46",
+      "n": 3,
+      "ms": 2.3,
+      "bytes": 912723,
+      "perDayN": 1,
+      "perDayMs": 0.78
+    },
+    {
+      "op": "stringify",
+      "full": false,
+      "site": "stringify @ clone gameplay/adapters/PlayerAdapter.js:8 < Object.get gameplay/adapters/PlayerAdapter.js:48 < processSecondary game-core/dayAdvanceCoordinator.js:46",
+      "n": 3,
+      "ms": 2.3,
+      "bytes": 912723,
+      "perDayN": 1,
+      "perDayMs": 0.76
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < result.withCareer.save gameplay/repositories/CareerEntityRepository.js:429 < transaction.repository.mutateActiveCareer.caller.caller gameplay/repositories/CareerEntityRepository.js:193",
+      "n": 372,
+      "ms": 2.3,
+      "bytes": 0,
+      "perDayN": 124,
+      "perDayMs": 0.76
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/adapters/ActiveCareerAdapter.js:19 < transaction.mutateActiveCareer.caller gameplay/adapters/ActiveCareerAdapter.js:206 < eval gameplay/adapters/ActiveCareerAdapter.js:247",
+      "n": 14,
+      "ms": 0.5,
+      "bytes": 0,
+      "perDayN": 4.67,
+      "perDayMs": 0.18
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < withCareer.save gameplay/repositories/CareerEntityRepository.js:283 < transaction.repository.mutateActiveCareer.caller.caller gameplay/repositories/CareerEntityRepository.js:193",
+      "n": 4,
+      "ms": 0.1,
+      "bytes": 0,
+      "perDayN": 1.33,
+      "perDayMs": 0.02
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < withCareer.save gameplay/repositories/CareerEntityRepository.js:343 < transaction.repository.mutateActiveCareer.caller.caller gameplay/repositories/CareerEntityRepository.js:193",
+      "n": 1,
+      "ms": 0,
+      "bytes": 0,
+      "perDayN": 0.33,
+      "perDayMs": 0.01
+    },
+    {
+      "op": "stringify",
+      "full": false,
+      "site": "stringify @ withCareer.save gameplay/repositories/CareerEntityRepository.js:245 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:204 < getPlayerRelationships lib/relationships.js:49",
+      "n": 9,
+      "ms": 0,
+      "bytes": 243,
+      "perDayN": 3,
+      "perDayMs": 0.01
+    },
+    {
+      "op": "parse",
+      "full": false,
+      "site": "parse @ clone gameplay/services/CareerInitialDataService.js:29 < seedCollection gameplay/services/CareerInitialDataService.js:87 < CareerEntityRepository.seedFor gameplay/repositories/CareerEntityRepository.js:214",
+      "n": 9,
+      "ms": 0,
+      "bytes": 18,
+      "perDayN": 3,
+      "perDayMs": 0.01
+    },
+    {
+      "op": "clone",
+      "full": false,
+      "site": "clone @ clone gameplay/repositories/CareerEntityRepository.js:17 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:195 < createWorldEvent game-core/athletePersonalityLifecycle.js:91",
+      "n": 2,
+      "ms": 0,
+      "bytes": 0,
+      "perDayN": 0.67,
+      "perDayMs": 0.01
+    },
+    {
+      "op": "stringify",
+      "full": false,
+      "site": "stringify @ withCareer.save gameplay/repositories/CareerEntityRepository.js:245 < CareerEntityRepository.withCareer gameplay/repositories/CareerEntityRepository.js:204 < getPendingDecisions lib/calendarSystem.js:433",
+      "n": 3,
+      "ms": 0,
+      "bytes": 219,
+      "perDayN": 1,
+      "perDayMs": 0.01
+    }
+  ]
+}

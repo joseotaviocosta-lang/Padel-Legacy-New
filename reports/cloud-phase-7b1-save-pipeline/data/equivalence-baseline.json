@@ -1,0 +1,11 @@
+{
+  "note": "Gerado pelo código anterior à CLOUD-7B1 (commit 9804adc); node --record",
+  "results": {
+    "memoria-dia-15": "b6be6965ef0c8509bdfbd8e688127835b846b913a22337c7a258eab45beac5e3",
+    "memoria-dia-30": "1de19f4e797166695ab94fdb53c26f3a55e352d63850c30439a00a1ad39477e9",
+    "memoria-dia-45": "33ead48a1c50955bbcd141453370194a4a5af7dd8ea7295a167dd82345c58a91",
+    "tauri-mock-dia-15": "2c5e47083ec31f86da37c142a82a7ac9d7a5afc57017212c905cb80f8e14de1c",
+    "fixture-sha": "158b6693ceca4f1ee9ff9a61d89b8f20362fbbdb4b6c4650cc22309ffed750e3",
+    "fixture-mais-10-dias": "b42cd3e525dc150210ae9669b4e97f6423ac1b72a34afd7ba15407fc288a4584"
+  }
+}

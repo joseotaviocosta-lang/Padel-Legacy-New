@@ -113,7 +113,10 @@ export class ActiveCareerAdapter {
       const career = fresh
         ? await this.careerManager.readCareer(careerId)
         : await this.careerManager.loadCareer(careerId);
-      this.setActiveCareer(career);
+      // CLOUD-7B1 — `career` acabou de ser lido/validado pelo CareerManager, que não guarda referência a ele:
+      // o adaptador assume a posse (como já faz após cada commit) em vez de clonar o save inteiro. O
+      // chamador continua recebendo uma cópia isolada quando `cloneResult` é verdadeiro.
+      this.adoptActiveCareer(career);
       return cloneResult ? clone(this.activeCareer) : this.activeCareer;
     } catch (error) {
       // Durante a primeira montagem, a referência em memória já representa a

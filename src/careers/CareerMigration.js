@@ -14,8 +14,12 @@ function cloneDeep(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-export function migrateCareer(career) {
-  const data = cloneDeep(career);
+// CLOUD-7B1 — `owned: true`: o chamador garante que `career` é privado (acabou de sair de JSON.parse ou de
+// uma validação que já o copiou e nenhuma outra referência existe). A migração então é feita no próprio
+// objeto, sem o structuredClone do save inteiro (medido: ~0,5 s por cópia num save de 52 MB). Sem a
+// opção, o comportamento não muda: a entrada nunca é mutada.
+export function migrateCareer(career, { owned = false } = {}) {
+  const data = owned ? career : cloneDeep(career);
   const fromVersion = Number(data.save_schema_version ?? 1);
   const toVersion = CAREER_SAVE_SCHEMA_VERSION;
   if (!Number.isInteger(fromVersion) || fromVersion < 1) {

@@ -91,8 +91,12 @@ export class CareerRepository {
     // A migração precisa ocorrer antes da validação estrita. Saves de versões
     // anteriores são válidos para a versão em que foram criados, mas ainda não
     // satisfazem necessariamente o schema atual.
-    const migration = migrateCareer(rawCareer);
-    const validated = validateCareerData(migration.data);
+    //
+    // CLOUD-7B1 — `rawCareer` acabou de sair de JSON.parse (GameStorage.readJson não guarda cache) e
+    // `migration.data` é ele mesmo: ambos são privados deste método. Migrar e validar no próprio objeto
+    // evita 2 structuredClone do save inteiro por leitura.
+    const migration = migrateCareer(rawCareer, { owned: true });
+    const validated = validateCareerData(migration.data, { owned: true });
 
     if (validated.career_id !== careerId) {
       throw new Error('career_id no arquivo difere do careerId solicitado.');

@@ -110,7 +110,9 @@ export class TauriStorage {
     return measureStorageOperation(
       { operation: 'write', key: normalizedPath, caller, layer: 'tauri-ipc', cache: 'miss' },
       () => invoke('storage_write_text', { path: normalizedPath, content: serialized }),
-      { bytes: byteLength(serialized) },
+      // CLOUD-7B1 — lazy: a contagem codifica o save inteiro em UTF-8 (≈0,1 s por 50 MB) e só serve ao
+      // painel ?perfdebug=1; antes rodava em TODA gravação, mesmo com o probe desligado.
+      { bytes: () => byteLength(serialized) },
     );
   }
 
