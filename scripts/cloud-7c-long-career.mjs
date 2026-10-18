@@ -88,9 +88,10 @@ try {
   const { resolveDecision } = await load('/src/lib/calendarSystem.js');
   const { registerTournament, getTournamentRegistrationWindow } = await load('/src/lib/tournamentRegistration.js');
   const { finalizePracticeMatch } = await load('/src/game-core/matchLifecycle.js');
-  const { createMatch, playPoint } = await load('/src/lib/matchEngine.js');
+  const { createMatch, playPoint, getSetScoreString } = await load('/src/lib/matchEngine.js');
+  const { applyPlayerMatchToCanonicalBracket } = await load('/src/gameplay/worldTour/tournamentSettlement.js');
   const { getRandomBots, getDifficultyForPlayer, BOTS_BY_DIFFICULTY } = await load('/src/lib/bots.js');
-  const { isInjured, canPlayMatchToday, getChemistryBonus, getEnergyPenalty, getWorldRank } = await load('/src/lib/padel.js');
+  const { isInjured, canPlayMatchToday, getChemistryBonus, getEnergyPenalty, getWorldRank, buildMatchRewardsPatch } = await load('/src/lib/padel.js');
   const { createTournamentRun, getCurrentTournamentMatch, recordTournamentMatchResult } = await load('/src/gameplay/worldTour/TournamentRunManager.js');
   const { prepareTournamentFinalization } = await load('/src/game-core/tournamentLifecycle.js');
   const { getTournamentRounds, generateTournamentOpponent } = await load('/src/lib/career.js');
@@ -142,6 +143,7 @@ try {
     await localGame.entities.CalendarEvent.update(event.id, { metadata: { ...event.metadata, tournament_run: run } });
     return run;
   }
+  const registeredTournaments = new Set();
   const counters = { tournamentMatches: 0, practiceMatches: 0, wins: 0, losses: 0, tournamentsPlayed: 0, titles: 0, registrations: 0, registrationRefused: 0, trainings: 0, partnerChanges: 0, partnerChangeFailures: 0, decisionsPlayed: 0, decisionsSkipped: 0, blockedUnresolved: 0 };
   let matchCounter = 0;
   async function playTournamentRound(eventId, tournament, p) {
@@ -159,11 +161,28 @@ try {
     if (!state.finished) { await resolveDecision(eventId, 'skip'); return p; }
     const won = state.winner === 'A';
     counters.tournamentMatches += 1; if (won) counters.wins += 1; else counters.losses += 1;
-    const transition = recordTournamentMatchResult(run, { matchId: match.id, won, score: `${state.setsA}-${state.setsB}`, tournament, upset: won && Number(match.opponentRank || 9999) < 100 });
+    const score = getSetScoreString(state);
+    const transition = recordTournamentMatchResult(run, { matchId: match.id, won, score, tournament, upset: won && Number(match.opponentRank || 9999) < 100 });
     run = transition.run;
+    const completedMatch = run.matches.find((m) => m.id === match.id);
+    // Mesmos passos do TournamentModal (sem UI/mídia/checkpoint): recompensa real da partida e aplicação do resultado na
+    // chave CANÔNICA do torneio (sem isso a chave do mundo nunca fecha o confronto do jogador).
+    const reward = buildMatchRewardsPatch(await localGame.entities.PlayerProfile.get(p.id), won, { skipPhysical: true, idempotencyKey: match.id, officialTournament: true });
+    await localGame.entities.PlayerProfile.update(p.id, reward.updates);
+    const freshTournament = await localGame.entities.Tournament.get(tournament.id);
+    if (Number(freshTournament?.bracket_schema_version) >= 2 && Array.isArray(freshTournament.bracket_history) && freshTournament.bracket_history.length && completedMatch?.stage === 'main') {
+      const rounds = applyPlayerMatchToCanonicalBracket(freshTournament.bracket_history, {
+        roundIndex: completedMatch.stageRoundIndex,
+        playerTeamName: `${p.sport_name || 'Jogador'} & ${partner.name || 'Parceiro'}`,
+        opponentTeamName: Array.isArray(completedMatch.opponent) && completedMatch.opponent.length ? completedMatch.opponent.map((i) => i.name).filter(Boolean).join(' & ') : null,
+        won, score: completedMatch.result?.score || null, date: completedMatch.date,
+      }).rounds;
+      await localGame.entities.Tournament.update(tournament.id, { bracket_history: rounds, current_phase: run.status === 'champion' ? 'concluido' : run.status });
+    }
     await localGame.entities.Match.create({
       id: `${match.id}-play`, profile_id: p.id, career_date: p.career_date, date: p.career_date, tournament_id: tournament.id, tournament_name: tournament.name,
       tournament_round: match.round, competition_type: 'tournament', is_official: true, is_tournament: true, result: won ? 'vitória' : 'derrota', winner: state.winner, opponent_rank: match.opponentRank || null,
+      score, status: 'completed', match_type: 'tournament', tournament_outcome: run.status === 'champion' ? 'champion' : run.status === 'eliminated' ? 'eliminated' : 'advanced',
     }).catch(() => {});
     const terminal = ['eliminated', 'champion', 'finished'].includes(run.status);
     await localGame.entities.CalendarEvent.update(eventId, { metadata: { ...event.metadata, tournament_run: run }, requires_decision: false, status: terminal ? 'completed' : 'scheduled' });
@@ -203,7 +222,7 @@ try {
     if (!candidate) return p;
     try {
       const res = await registerTournament({ player: p, partner: { id: partnerFor(p).id, status: 'active', name: partnerFor(p).name }, tournament: candidate });
-      if (res?.success === false) counters.registrationRefused += 1; else counters.registrations += 1;
+      if (res?.success === false) counters.registrationRefused += 1; else if (!registeredTournaments.has(candidate.id)) { registeredTournaments.add(candidate.id); counters.registrations += 1; }
     } catch { counters.registrationRefused += 1; }
     return localGame.entities.PlayerProfile.get(p.id);
   }
