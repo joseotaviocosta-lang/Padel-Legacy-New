@@ -2,6 +2,8 @@ import { GameStorage } from '../storage/GameStorage.js';
 import { CAREER_INDEX_FILE_NAME, CAREERS_DIRECTORY, CAREER_BACKUPS_DIRECTORY } from './careerSchema.js';
 import { validateCareerData, validateCareerIndex } from './CareerValidator.js';
 import { migrateCareer, migrateIndex } from './CareerMigration.js';
+import { CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
+import { isIncrementalCompactionEnabled } from './incrementalHistory.js';
 import { isHistoricalCompactionWriteEnabled, packCareerForStorage, unpackCareerFromStorage } from './tournamentHistoryCodec.js';
 
 const careerFileName = (careerId) => `${careerId}.json`;
@@ -88,7 +90,11 @@ export class CareerRepository {
   async readCareer(careerId) {
     const path = await this.getCareerPath(careerId);
     // CLOUD-7B2B — expande torneios gravados em formato compacto (no-op para saves anteriores).
-    const rawCareer = unpackCareerFromStorage(await this.storage.readJson(path, { caller: 'CareerRepository.readCareer' }));
+    // CLOUD-7B2C (experimental): com a compactação incremental ligada os torneios seguem empacotados em memória;
+    // só saves que ainda precisam de migração (que lê torneios diretamente) são expandidos antes.
+    const stored = await this.storage.readJson(path, { caller: 'CareerRepository.readCareer' });
+    const keepPacked = isIncrementalCompactionEnabled() && Number(stored?.save_schema_version) >= CAREER_SAVE_SCHEMA_VERSION;
+    const rawCareer = keepPacked ? stored : unpackCareerFromStorage(stored);
 
     // A migração precisa ocorrer antes da validação estrita. Saves de versões
     // anteriores são válidos para a versão em que foram criados, mas ainda não

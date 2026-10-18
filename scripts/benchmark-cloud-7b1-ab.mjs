@@ -5,6 +5,8 @@
 //
 // Uso: node scripts/benchmark-cloud-7b1-ab.mjs --save=<save.json> [--storage=memory|tauri-mock] [--loads=5] [--days=10] [--writes=5]
 //        [--label=base|7b1] [--output=<arquivo.json>]
+//        CLOUD-7B2C: [--strategy=off|repeated|incremental] (compactação histórica; padrão off) [--warmDays=0] (dias descartados antes
+//        da medição; o primeiro dia é reportado em `firstDayMs`) e, com `node --expose-gc`, `heapMB` após o aquecimento.
 import { createServer } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -15,6 +17,10 @@ const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] 
 if (!args.save) { console.error('Informe --save=<save.json>'); process.exit(1); }
 const LOADS = Number(args.loads ?? 5); const DAYS = Number(args.days ?? 10); const WRITES = Number(args.writes ?? 5);
 const STORAGE = args.storage || 'memory';
+const STRATEGY = args.strategy || 'off';
+const WARM = Number(args.warmDays ?? 0);
+if (STRATEGY === 'repeated') globalThis.__PADEL_HISTORICAL_COMPACTION__ = true;
+if (STRATEGY === 'incremental') globalThis.__PADEL_INCREMENTAL_COMPACTION__ = true;
 const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0; };
 const sum = (xs) => ({ n: xs.length, median: Number(pct(xs, 0.5).toFixed(1)), p95: Number(pct(xs, 0.95).toFixed(1)), min: xs.length ? Number(Math.min(...xs).toFixed(1)) : null, max: xs.length ? Number(Math.max(...xs).toFixed(1)) : null, samples: xs.map((x) => Number(x.toFixed(1))) });
 
@@ -72,6 +78,15 @@ try {
   // avanço diário (caminho de produção do botão)
   let profile = await localGame.entities.PlayerProfile.get(profileId);
   const dayMs = [];
+  let firstDayMs = null;
+  for (let i = 0; i < WARM; i += 1) {
+    const t = performance.now();
+    await quiet(async () => { await advanceCareerDayOnce(profile); await waitForCareerDaySecondaryWork(); });
+    if (i === 0) firstDayMs = performance.now() - t;
+    profile = await localGame.entities.PlayerProfile.get(profileId);
+  }
+  let heapMB = null;
+  if (typeof globalThis.gc === 'function') { globalThis.gc(); heapMB = Number((process.memoryUsage().heapUsed / 1048576).toFixed(1)); }
   mock?.reset();
   for (let i = 0; i < DAYS; i += 1) {
     const t = performance.now();
@@ -89,9 +104,15 @@ try {
     writeMs.push(performance.now() - t);
   }
   const out = {
-    label: args.label || null, storage: STORAGE, node: process.version, saveBytes, saveFile: path.basename(String(args.save)),
+    label: args.label || null, strategy: STRATEGY, warmDays: WARM, firstDayMs: firstDayMs === null ? null : Number(firstDayMs.toFixed(1)), heapMB, storage: STORAGE, node: process.version, saveBytes, saveFile: path.basename(String(args.save)),
     loadMs: sum(loadMs), loadFirstMs: loadMs.length ? Number(loadMs[0].toFixed(1)) : null, dayMs: sum(dayMs), writeMs: sum(writeMs), tauriInvokesPerDay: dayInvokes, tauriInvokesPerLoadTotal: loadInvokes,
   };
+  try {
+    const inc = await server.ssrLoadModule('/src/careers/incrementalHistory.js');
+    out.incrementalStats = inc.getIncrementalStats();
+  } catch { /* base anterior à 7B2C */ }
+  const endFile = files.get(`careers/${career.career_id}.json`);
+  out.endSaveBytes = endFile ? endFile.length : null;
   if (args.output) { fs.mkdirSync(path.dirname(path.resolve(String(args.output))), { recursive: true }); fs.writeFileSync(path.resolve(String(args.output)), JSON.stringify(out, null, 2)); }
   console.log(JSON.stringify({ ...out, loadMs: { median: out.loadMs.median }, dayMs: { median: out.dayMs.median, p95: out.dayMs.p95 }, writeMs: { median: out.writeMs.median } }));
 } finally {

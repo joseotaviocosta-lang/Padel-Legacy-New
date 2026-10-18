@@ -379,8 +379,9 @@ export class CareerManager {
   }
 
   async exportCareer(careerId) {
+    // Exportação sempre sai no formato expandido (CLOUD-7B2C: em memória os torneios podem estar empacotados).
     const career = await this.loadCareer(careerId);
-    return career;
+    return unpackCareerFromStorage(career);
   }
 
   async importCareer(data) {

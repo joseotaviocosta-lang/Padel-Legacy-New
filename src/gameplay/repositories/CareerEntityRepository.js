@@ -2,6 +2,9 @@ import { gameRepository as repository } from '../services/runtime.js';
 import { seedCollection } from '../services/CareerInitialDataService.js';
 import { normalizeFatiguePatch } from '../../game-core/physicalStats.js';
 import { recordStorageCacheAccess } from '../../dev/storageIOProbe.js';
+import {
+  compactSettledRows, isIncrementalCompactionEnabled, lazyTournamentView, viewForResult, writableRow,
+} from '../../careers/incrementalHistory.js';
 
 function clone(value) {
   if (value === undefined || value === null) return value;
@@ -171,7 +174,7 @@ export class CareerEntityRepository {
     // Entidades do jogo são majoritariamente objetos planos. Um clone raso
     // protege a lista do cache sem structuredClone de centenas/milhares de
     // registros em toda montagem de tela.
-    return rows.map((row) => (row && typeof row === 'object' ? { ...row } : row));
+    return rows.map((row) => (row && typeof row === 'object' ? (row.history_pack ? lazyTournamentView(row) : { ...row }) : row));
   }
 
   async withCareer(mutator, { save = false, caller = save ? 'CareerEntityRepository.write' : 'CareerEntityRepository.read' } = {}) {
@@ -181,7 +184,10 @@ export class CareerEntityRepository {
         careerWriteStats.count += 1;
         const transaction = await this.repository.mutateActiveCareer(async (career) => {
           if (!career.entities || typeof career.entities !== 'object' || Array.isArray(career.entities)) career.entities = {};
-          return mutator(career);
+          const result = await mutator(career);
+          // CLOUD-7B2C (experimental) — empacota, uma única vez, torneios que acabaram de ser liquidados.
+          if (isIncrementalCompactionEnabled()) compactSettledRows(career.entities.Tournament);
+          return result;
         }, { caller });
         return clone(transaction.result);
       }
@@ -255,14 +261,14 @@ export class CareerEntityRepository {
       const cached = this.queryCache.get(key);
       if (cached) {
         recordStorageCacheAccess({ key, caller: `CareerEntityRepository.get:${entityName}`, cache: 'hit' });
-        return { ...cached };
+        return cached.history_pack ? lazyTournamentView(cached) : { ...cached };
       }
       recordStorageCacheAccess({ key, caller: `CareerEntityRepository.get:${entityName}`, cache: 'miss' });
       const rows = this.ensureCollection(entityName, career);
       const found = rows.find((row) => row.id === id);
       if (!found) throw new Error(`${entityName} não encontrado: ${id}`);
       this.queryCache.set(key, found);
-      return { ...found };
+      return found.history_pack ? lazyTournamentView(found) : { ...found };
     }, { save: false, caller: `CareerEntityRepository.get:${entityName}` });
   }
 
@@ -286,8 +292,8 @@ export class CareerEntityRepository {
       const rows = this.ensureCollection(entityName, career, { persist: true });
       const index = rows.findIndex((row) => row.id === id);
       if (index < 0) throw new Error(`${entityName} não encontrado para atualização: ${id}`);
-      rows[index] = { ...rows[index], ...clone(data), id, updated_date: new Date().toISOString() };
-      return rows[index];
+      rows[index] = { ...writableRow(rows[index], data), ...clone(data), id, updated_date: new Date().toISOString() };
+      return viewForResult(rows[index]);
     }, { save: true, caller: `CareerEntityRepository.update:${entityName}` });
   }
 
@@ -307,8 +313,8 @@ export class CareerEntityRepository {
         rows.push(record);
         return record;
       }
-      rows[index] = { ...rows[index], ...clone(data), id, updated_date: timestamp };
-      return rows[index];
+      rows[index] = { ...writableRow(rows[index], data), ...clone(data), id, updated_date: timestamp };
+      return viewForResult(rows[index]);
     }, { save: true, caller: `CareerEntityRepository.upsert:${entityName}` });
   }
 
@@ -358,8 +364,8 @@ export class CareerEntityRepository {
           indexById.set(item.id, rows.length - 1);
           result.push(record);
         } else {
-          rows[index] = { ...rows[index], ...clone(item), id: item.id, updated_date: timestamp };
-          result.push(rows[index]);
+          rows[index] = { ...writableRow(rows[index], item), ...clone(item), id: item.id, updated_date: timestamp };
+          result.push(viewForResult(rows[index]));
         }
       }
       return result;
@@ -423,8 +429,8 @@ export class CareerEntityRepository {
           rows.push(record);
           records.push(record);
         } else {
-          rows[index] = { ...rows[index], ...data, id, updated_date: timestamp };
-          records.push(rows[index]);
+          rows[index] = { ...writableRow(rows[index], data), ...data, id, updated_date: timestamp };
+          records.push(viewForResult(rows[index]));
         }
       }
 

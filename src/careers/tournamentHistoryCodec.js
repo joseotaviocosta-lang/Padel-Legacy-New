@@ -96,15 +96,36 @@ function buildPack(tournament) {
   return { v: HISTORY_PACK_VERSION, dict, fields: encoded, at: Object.keys(tournament).map((key, i) => [key, i]).filter(([key]) => HEAVY_FIELDS.includes(key)) };
 }
 
+// CLOUD-7B2C — o corpo do pacote (dict + fields) pode vir inline (7B2B) ou como UM string JSON (`blob`), que o
+// structuredClone/stringify do estado em memória copia como um valor só em vez de milhares de objetos.
+function packBody(tournamentId, pack) {
+  if (typeof pack.blob !== 'string') return pack;
+  try {
+    return JSON.parse(pack.blob);
+  } catch {
+    throw new Error(`history_pack corrompido no torneio ${tournamentId}: blob ilegível.`);
+  }
+}
+
 function readPack(tournamentId, pack) {
-  const fields = mapStrings(pack.fields, (text) => {
+  const body = packBody(tournamentId, pack);
+  if (!Array.isArray(body.dict) || !body.fields || typeof body.fields !== 'object') throw new Error(`history_pack inválido no torneio ${tournamentId}.`);
+  const fields = mapStrings(body.fields, (text) => {
     if (!text.startsWith(REF)) return text;
-    const entry = pack.dict[parseInt(text.slice(1), 36)];
+    const entry = body.dict[parseInt(text.slice(1), 36)];
     if (typeof entry !== 'string') throw new Error(`history_pack corrompido no torneio ${tournamentId}: referência fora do dicionário.`);
     return entry;
   });
   if (Array.isArray(fields.bracket_history)) fields.bracket_history = restoreDerivedMatchFields(tournamentId, fields.bracket_history);
   return fields;
+}
+
+export const TOURNAMENT_HEAVY_FIELDS = HEAVY_FIELDS;
+// Campos pesados de um torneio empacotado, sem montar o objeto completo (usado pela leitura preguiçosa).
+export function expandHistoryFields(tournament) {
+  const pack = tournament?.history_pack;
+  if (!pack || pack.v !== HISTORY_PACK_VERSION) throw new Error(`history_pack inválido no torneio ${tournament?.id}.`);
+  return readPack(tournament.id, pack);
 }
 
 function hasReservedStrings(tournament) {
@@ -114,10 +135,11 @@ function hasReservedStrings(tournament) {
 }
 
 // Devolve o torneio empacotado, ou o MESMO objeto quando não é elegível/verificável.
-export function packTournament(tournament) {
+export function packTournament(tournament, { blob = false } = {}) {
   if (!isTournamentSettled(tournament) || hasReservedStrings(tournament)) return tournament;
   try {
-    const pack = buildPack(tournament);
+    let pack = buildPack(tournament);
+    if (blob) pack = { v: pack.v, at: pack.at, blob: JSON.stringify({ dict: pack.dict, fields: pack.fields }) };
     const packed = { history_pack: pack };
     for (const key of Object.keys(tournament)) if (!HEAVY_FIELDS.includes(key)) packed[key] = tournament[key];
     // Prova de equivalência do objeto inteiro (chaves, ordem e valores).
@@ -133,7 +155,7 @@ export function packTournament(tournament) {
 export function unpackTournament(tournament) {
   const pack = tournament?.history_pack;
   if (!pack) return tournament;
-  if (pack.v !== HISTORY_PACK_VERSION || !Array.isArray(pack.at) || !Array.isArray(pack.dict) || !pack.fields || typeof pack.fields !== 'object') {
+  if (pack.v !== HISTORY_PACK_VERSION || !Array.isArray(pack.at) || (typeof pack.blob !== 'string' && (!Array.isArray(pack.dict) || !pack.fields || typeof pack.fields !== 'object'))) {
     throw new Error(`history_pack inválido no torneio ${tournament.id}.`);
   }
   const fields = readPack(tournament.id, pack);
