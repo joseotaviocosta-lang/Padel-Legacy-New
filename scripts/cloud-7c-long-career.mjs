@@ -272,7 +272,7 @@ try {
     const problems = [];
     const dup = (xs) => xs.length - new Set(xs).size;
     if (dup(T.map((t) => t.id))) problems.push(`ids de torneio duplicados: ${dup(T.map((t) => t.id))}`);
-    let finishedChecked = 0; let stalePending = 0; let prematurePacked = 0;
+    let finishedChecked = 0; let stalePending = 0; let prematurePacked = 0; let stuckQualifyingElimination = 0;
     for (const t of T) {
       if (t.status === 'finalizado') {
         finishedChecked += 1;
@@ -297,7 +297,14 @@ try {
         }
       } else if (t.status !== 'cancelado' && t.end_date && t.end_date < careerDate) {
         const days = (new Date(careerDate) - new Date(t.end_date)) / 86400000;
-        if (days > 14) stalePending += 1;
+        if (days > 14) {
+          // ACHADO (não é erro do harness): jogador eliminado no qualifying nunca altera a chave canônica; o slot dele fica
+          // "scheduled" sem times e a liquidação (deriveTournamentFactsFromFullBracket) nunca fecha o torneio.
+          const run = (E.CalendarEvent || []).find((e) => e.related_id === t.id && e.profile_id === profileId)?.metadata?.tournament_run;
+          const mainPlayed = (run?.matches || []).filter((m) => m.stage === 'main' && m.status === 'completed').length;
+          if (t.player_participated && run?.status === 'eliminated' && mainPlayed === 0 && (run.matches || []).some((m) => m.stage === 'qualifying')) stuckQualifyingElimination += 1;
+          else stalePending += 1;
+        }
       }
     }
     if (stalePending) problems.push(`torneios pendentes indevidamente (>14 dias após o fim): ${stalePending}`);
@@ -318,7 +325,7 @@ try {
     const partnerships = E.Partnership || [];
     if (dup(partnerships.map((x) => x.id))) problems.push('duplas com id duplicado');
     const entityCounts = Object.fromEntries(Object.entries(E).map(([k, v]) => [k, Array.isArray(v) ? v.length : null]));
-    return { ok: problems.length === 0, problems: problems.slice(0, 20), problemCount: problems.length, finishedChecked, entityRows: Object.values(entityCounts).reduce((a, b) => a + (b || 0), 0), tournaments: T.length, finished: finishedChecked, playerTournamentEvents: events.length, matchRows: matches.length, playerMatchRows: matches.filter((m) => m.profile_id === profileId).length, rankingResultDupes: arrDup, entityCounts };
+    return { ok: problems.length === 0, stuckQualifyingElimination, problems: problems.slice(0, 20), problemCount: problems.length, finishedChecked, entityRows: Object.values(entityCounts).reduce((a, b) => a + (b || 0), 0), tournaments: T.length, finished: finishedChecked, playerTournamentEvents: events.length, matchRows: matches.length, playerMatchRows: matches.filter((m) => m.profile_id === profileId).length, rankingResultDupes: arrDup, entityCounts };
   }
   const checkpoint = async (day) => {
     const L = logicalState();
@@ -403,7 +410,7 @@ try {
         entityRows: integrity.entityRows, tournaments: integrity.tournaments, finishedTournaments: integrity.finished, matchRows: integrity.matchRows, playerMatchRows: integrity.playerMatchRows,
         saveBytes: sizeOf(), dayMs: { n: seasonDayMs.length, median: r1(pct(seasonDayMs, 0.5)), p95: r1(pct(seasonDayMs, 0.95)), max: r1(Math.max(...seasonDayMs)), mean: r1(seasonDayMs.reduce((a, b) => a + b, 0) / seasonDayMs.length) },
         loadMs: r1(loadMs), writeMs: r1(writeMs), cloneMs: r1(clonedMs), heapMB: r1(mem.heapUsed / 1048576), rssMB: r1(mem.rss / 1048576),
-        packedRowsInFile: (file().match(/"history_pack"/g) || []).length, incrementalStats: stats, integrity: { ok: integrity.ok, problemCount: integrity.problemCount, problems: integrity.problems, integrityMs: r1(integrityMs) },
+        packedRowsInFile: (file().match(/"history_pack"/g) || []).length, incrementalStats: stats, integrity: { ok: integrity.ok, stuckQualifyingElimination: integrity.stuckQualifyingElimination, problemCount: integrity.problemCount, problems: integrity.problems, integrityMs: r1(integrityMs) },
         elapsedMs: RealDate.now() - startedAt,
       };
       log('seasons.jsonl', row);
