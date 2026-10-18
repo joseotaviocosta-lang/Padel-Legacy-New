@@ -89,10 +89,12 @@ export async function resolvePendingPlayerCanonicalTournaments(careerDate, profi
   if (!careerDate) return { resolved: 0, errors: [] };
   const entities = /** @type {any} */ (localGame.entities);
   const tournaments = (await entities.Tournament.list('start_date', 2000)) || [];
+  // CLOUD-7B2C — predicados puros reordenados (resultado idêntico): os escalares baratos vêm antes de varrer a chave,
+  // então torneios já resolvidos (a maioria, em carreiras longas) nunca leem `bracket_history` neste filtro diário.
   const pending = tournaments.filter((tournament) => (
-    (tournament.player_participated || hasPlayerMatchInBracket(tournament))
-    && !tournament.world_tour_resolved
+    !tournament.world_tour_resolved
     && Number(tournament.bracket_schema_version) >= 2
+    && (tournament.player_participated || hasPlayerMatchInBracket(tournament))
     && Array.isArray(tournament.bracket_history)
     && tournament.bracket_history.length > 0
   ));

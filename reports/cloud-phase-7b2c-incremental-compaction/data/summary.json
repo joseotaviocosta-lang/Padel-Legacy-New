@@ -1,0 +1,122 @@
+{
+  "day1825.json|memory|incremental": {
+    "runs": 3,
+    "bytes": 30986421,
+    "endBytes": 28239284,
+    "dayMed": 947,
+    "dayP95": 1477,
+    "loadMed": 734,
+    "writeMed": 643,
+    "firstDay": 2079,
+    "heap": 297,
+    "st": {
+      "packs": 620,
+      "mat": 5580,
+      "views": 22320
+    }
+  },
+  "day1825.json|memory|off": {
+    "runs": 3,
+    "bytes": 30986421,
+    "endBytes": 31004695,
+    "dayMed": 1007,
+    "dayP95": 1974,
+    "loadMed": 670,
+    "writeMed": 876,
+    "firstDay": 1589,
+    "heap": 310,
+    "st": null
+  },
+  "day1825.json|memory|repeated": {
+    "runs": 3,
+    "bytes": 27236855,
+    "endBytes": 27255129,
+    "dayMed": 1405,
+    "dayP95": 1838,
+    "loadMed": 792,
+    "writeMed": 1108,
+    "firstDay": 1673,
+    "heap": 297,
+    "st": null
+  },
+  "day1825.json|tauri-mock|incremental": {
+    "runs": 2,
+    "bytes": 30986421,
+    "endBytes": 28239284,
+    "dayMed": 878,
+    "dayP95": 1351,
+    "loadMed": 695,
+    "writeMed": 534,
+    "firstDay": 2142,
+    "heap": 297,
+    "st": {
+      "packs": 620,
+      "mat": 5580,
+      "views": 22320
+    }
+  },
+  "day1825.json|tauri-mock|off": {
+    "runs": 2,
+    "bytes": 30986421,
+    "endBytes": 31004695,
+    "dayMed": 929,
+    "dayP95": 1533,
+    "loadMed": 754,
+    "writeMed": 688,
+    "firstDay": 1522,
+    "heap": 310,
+    "st": null
+  },
+  "day1825.json|tauri-mock|repeated": {
+    "runs": 2,
+    "bytes": 27236855,
+    "endBytes": 27255129,
+    "dayMed": 1271,
+    "dayP95": 1655,
+    "loadMed": 790,
+    "writeMed": 1002,
+    "firstDay": 1898,
+    "heap": 297,
+    "st": null
+  },
+  "day365.json|memory|incremental": {
+    "runs": 3,
+    "bytes": 12287613,
+    "endBytes": 11740754,
+    "dayMed": 433,
+    "dayP95": 783,
+    "loadMed": 260,
+    "writeMed": 231,
+    "firstDay": 596,
+    "heap": 182,
+    "st": {
+      "packs": 124,
+      "mat": 1116,
+      "views": 4464
+    }
+  },
+  "day365.json|memory|off": {
+    "runs": 3,
+    "bytes": 12287613,
+    "endBytes": 12300111,
+    "dayMed": 460,
+    "dayP95": 664,
+    "loadMed": 266,
+    "writeMed": 222,
+    "firstDay": 427,
+    "heap": 185,
+    "st": null
+  },
+  "day365.json|memory|repeated": {
+    "runs": 3,
+    "bytes": 11531281,
+    "endBytes": 11543779,
+    "dayMed": 472,
+    "dayP95": 844,
+    "loadMed": 239,
+    "writeMed": 304,
+    "firstDay": 535,
+    "heap": 182,
+    "st": null
+  }
+}

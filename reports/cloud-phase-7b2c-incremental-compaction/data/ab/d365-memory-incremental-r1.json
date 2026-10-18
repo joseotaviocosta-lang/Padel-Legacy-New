@@ -1,0 +1,66 @@
+{
+  "label": "incremental-r1",
+  "strategy": "incremental",
+  "warmDays": 1,
+  "firstDayMs": 607,
+  "heapMB": 182.4,
+  "storage": "memory",
+  "node": "v22.22.0",
+  "saveBytes": 12287613,
+  "saveFile": "day365.json",
+  "loadMs": {
+    "n": 3,
+    "median": 260,
+    "p95": 349.9,
+    "min": 251.1,
+    "max": 349.9,
+    "samples": [
+      349.9,
+      251.1,
+      260
+    ]
+  },
+  "loadFirstMs": 349.9,
+  "dayMs": {
+    "n": 8,
+    "median": 438.5,
+    "p95": 837.6,
+    "min": 363.6,
+    "max": 837.6,
+    "samples": [
+      438.5,
+      419.1,
+      408.4,
+      837.6,
+      511.7,
+      516,
+      363.6,
+      431.5
+    ]
+  },
+  "writeMs": {
+    "n": 3,
+    "median": 226,
+    "p95": 238.3,
+    "min": 179.9,
+    "max": 238.3,
+    "samples": [
+      238.3,
+      226,
+      179.9
+    ]
+  },
+  "tauriInvokesPerDay": null,
+  "tauriInvokesPerLoadTotal": null,
+  "incrementalStats": {
+    "packs": 124,
+    "packSkips": 0,
+    "packMs": 119.71255499999552,
+    "views": 4464,
+    "materializations": 1116,
+    "materializeMs": 201.7159920000313,
+    "writeExpansions": 0,
+    "sweeps": 38
+  },
+  "endSaveBytes": 11740754
+}
