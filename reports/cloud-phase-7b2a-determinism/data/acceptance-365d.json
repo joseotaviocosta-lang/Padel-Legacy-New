@@ -1,0 +1,55 @@
+{
+  "quick": false,
+  "results": [
+    {
+      "name": "T1 mesma seed → estados idênticos",
+      "ok": true,
+      "detail": "45 dias, 942 duplas"
+    },
+    {
+      "name": "T1b controle negativo: estado compartilhado sem isolamento diverge (prova do mecanismo)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T2 seeds diferentes → resultados variados",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T3 longa duração (365 dias) idêntica em todos os checkpoints",
+      "ok": true,
+      "detail": "943 duplas"
+    },
+    {
+      "name": "T4 carreira contínua == carreira com recarga no dia 30 (60 dias; exceção: last_played_at)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T5 isolamento: X, Y, X no mesmo processo → X idêntico",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T6 duplas/rankings consistentes (ids únicos, team_key única, sem atleta em duas duplas ativas)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T7 save antigo carrega, avança 10 dias, recarrega e avança",
+      "ok": true,
+      "detail": "2026-02-04 → 2026-02-15"
+    },
+    {
+      "name": "T7b nenhuma entidade antiga perdida (Tournament/Match/AthleteProfile)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "name": "T7c save antigo + mesma seed → mesmo resultado em duas execuções",
+      "ok": true,
+      "detail": ""
+    }
+  ]
+}

@@ -1,0 +1,22 @@
+{
+  "base": { "branch": "cloud/phase-7b1-save-pipeline-optimization", "commit": "7795e8e", "ancestors": ["9804adc", "d264c22"] },
+  "crossProcessReproduction": [
+    { "run": "2 processos separados, harness 7B2A (mesma seed 7b2a, relógio/UUID fixos), 30 dias", "result": "idênticos" },
+    { "run": "2 processos em paralelo, harness 7B2A, 365 dias", "result": "idênticos em estado de jogo; único campo divergente: AnnualCareerReport[0].generation.durationMs (dia 361; performance.now, telemetria)" },
+    { "run": "2 processos em paralelo, benchmark-cloud-7a-career-growth --fakeClock --storage=tauri-mock --seed=7b1, 365 dias", "result": "idênticos (954 TeamRanking, mesma contagem e bytes em todos os checkpoints)" },
+    { "run": "2 processos concluídos de 6 concorrentes, 7a --fakeClock memória --seed=7b1, 365 dias (4 falharam ao carregar vite.config por concorrência)", "result": "idênticos (mesmo digest)" },
+    { "conclusion": "929 vs 947 (CLOUD-7B1) NÃO foi reproduzido entre processos separados neste ambiente." }
+  ],
+  "sameProcessReproduction": {
+    "condition": "duas carreiras sequenciais no mesmo processo, mesma seed/relógio/UUID",
+    "firstDivergentDay": 1,
+    "firstDivergentFields": ["updated_at", "player.updated_date", "ids de WorldEvent (worldevent-<ms>-...)", "created/updated_date de AthleteProfile"],
+    "clockOffsetTicks": { "createCareerAndProfile": 4, "day1": 1 },
+    "firstGameStateDivergence": "TeamRanking/Partnership, por pareamento mensal",
+    "teamRankingCountBeforeIsolation": { "runA": { "d30": 940, "d60": 942, "d90": 943, "d120": 946 }, "runB": { "d30": 945, "d60": 946, "d90": 947, "d120": 948 } },
+    "teamRankingCountAfterIsolation": { "runA": { "d30": 940, "d60": 942, "d90": 943, "d120": 946 }, "runB": { "d30": 940, "d60": 942, "d90": 943, "d120": 946 } },
+    "ioDifferenceRunAvsB": "run A: saveCareer(backup:true, updateIndex:true) 1x a mais; 3 vs 2 escritas do índice; 4 vs 2 backups de carreira",
+    "rootCause": "ActiveCareerAdapter (singleton) guarda lastRoutineBackupAt/lastIndexSyncAt comparados com Date.now(); career_id igual (UUID derivado da seed) => a 2ª carreira herda o limitador => menos backups/índice => menos leituras do relógio simulado (1 tick por leitura) => ids com ms diferentes => selectPair (hash FNV do id) escolhe duplas diferentes."
+  },
+  "hypothesisRejected": "resetar os limitadores em adoptActiveCareer por career_id não altera nada: o career_id é idêntico entre as execuções. Mudança revertida."
+}

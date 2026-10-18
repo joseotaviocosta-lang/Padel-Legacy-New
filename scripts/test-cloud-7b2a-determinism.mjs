@@ -39,8 +39,10 @@ try {
   check(`T3 longa duração (${LONG} dias) idêntica em todos os checkpoints`, firstBad === -1 && l1.digest === l2.digest && !l1.blocked.length, firstBad === -1 ? `${countOf(l1.text, 'TeamRanking')} duplas` : `primeiro checkpoint divergente: dia ${l1.marks[firstBad][0]}`);
   // 4 — save/load intermediário (o kit restaura o relógio simulado após a recarga: mesmas condições; nenhuma diferença é mascarada)
   const c1 = await simulate({ seed: 'det-sl' }, 60); const c2 = await simulate({ seed: 'det-sl' }, 60, { reloadAt: 30 });
-  const t4ok = canonicalSave(c1.text) === canonicalSave(c2.text);
-  check('T4 carreira contínua == carreira com recarga no dia 30 (60 dias)', t4ok, t4ok ? '' : JSON.stringify(firstDiff(summarizeSave(JSON.parse(c1.text)), summarizeSave(JSON.parse(c2.text))).slice(0, 8)));
+  // Única exceção: `last_played_at` (raiz do save) — por definição é atualizado quando a carreira é aberta/recarregada.
+  const noLastPlayed = (text) => { const o = JSON.parse(text); delete o.last_played_at; return JSON.stringify(o); };
+  const t4ok = canonicalSave(noLastPlayed(c1.text)) === canonicalSave(noLastPlayed(c2.text));
+  check('T4 carreira contínua == carreira com recarga no dia 30 (60 dias; exceção: last_played_at)', t4ok, t4ok ? '' : JSON.stringify(firstDiff(summarizeSave(JSON.parse(noLastPlayed(c1.text))), summarizeSave(JSON.parse(noLastPlayed(c2.text)))).slice(0, 8)));
   // 5 — isolamento: X, Y, X' no mesmo processo
   const x1 = await simulate({ seed: 'det-iso-x' }, 30); await simulate({ seed: 'det-iso-y' }, 30); const x2 = await simulate({ seed: 'det-iso-x' }, 30);
   check('T5 isolamento: X, Y, X no mesmo processo → X idêntico', x1.digest === x2.digest);
