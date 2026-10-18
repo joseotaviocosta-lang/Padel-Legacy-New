@@ -37,7 +37,7 @@ Por carregamento, antes → depois (52 MB): cópias completas **5 → 1**, parse
 | 3 | `ActiveCareerAdapter.getActiveCareer`: `adoptActiveCareer(career)` em vez de `setActiveCareer` (clone) | 1 clone completo (≈0,5 s) | `CareerManager` não guarda referência ao objeto devolvido; o chamador continua recebendo cópia isolada (`cloneResult`). Teste C cobre. |
 | 4 | `TauriStorage.writeText` e `GameStorage.readJson`: métrica de bytes **lazy** | UTF-8 do save inteiro em toda gravação/leitura, mesmo com o probe desligado | Só o valor reportado no painel `?perfdebug=1` é calculado mais tarde; `storageIOProbe` agora também resolve `bytes` lazy no caminho de falha (antes passava a função como número → NaN). |
 
-Total: 7 arquivos de produção em `src/` (+29/−8 linhas) e 1 linha em `package.json`. Reversível por Git.
+Total: 7 arquivos de produção em `src/` (+29/−9 linhas) e 1 linha em `package.json`. Reversível por Git.
 
 ## 5. Otimizações rejeitadas (documentadas para a 7B2)
 
