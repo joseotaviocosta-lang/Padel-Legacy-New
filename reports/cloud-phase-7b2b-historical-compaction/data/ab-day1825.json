@@ -1,0 +1,56 @@
+{
+  "save": "/tmp/claude-0/s7/day1825.json",
+  "runs": 9,
+  "nodeVersion": "v22.22.0",
+  "tournaments": 773,
+  "finished": 621,
+  "settled": 620,
+  "modes": {
+    "on": {
+      "bytes": 27236855,
+      "equivalentAfterLoad": true,
+      "writeMs": {
+        "median": 667.7,
+        "p95": 1458.1
+      },
+      "loadMs": {
+        "median": 381.8,
+        "p95": 835.9
+      },
+      "packMs": {
+        "median": 371.1,
+        "p95": 398.4
+      },
+      "cloneMs": {
+        "median": 390,
+        "p95": 833.2
+      }
+    },
+    "off": {
+      "bytes": 30986421,
+      "equivalentAfterLoad": true,
+      "writeMs": {
+        "median": 232.3,
+        "p95": 338.6
+      },
+      "loadMs": {
+        "median": 258.8,
+        "p95": 406
+      },
+      "packMs": {
+        "median": 0,
+        "p95": 0
+      },
+      "cloneMs": {
+        "median": 374.6,
+        "p95": 681.8
+      }
+    }
+  },
+  "sizeReductionPct": 12.1,
+  "finishedTournamentBytes": {
+    "before": 10928135,
+    "after": 7178569
+  },
+  "tournamentEntityShareOfSavePct": 35.9
+}
