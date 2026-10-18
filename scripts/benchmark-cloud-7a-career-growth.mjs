@@ -47,6 +47,9 @@ if (args.fakeClock) {
     constructor(...a) { if (a.length === 0) super(tick()); else super(...a); }
     static now() { return tick(); }
   };
+  // career_id vem de crypto.randomUUID(); sem fixá-lo a execução não é reprodutível (CLOUD-7B1).
+  const hex = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join('');
+  Object.defineProperty(globalThis.crypto, 'randomUUID', { configurable: true, writable: true, value: () => `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}` });
 }
 
 const sorted = (xs) => [...xs].sort((a, b) => a - b);

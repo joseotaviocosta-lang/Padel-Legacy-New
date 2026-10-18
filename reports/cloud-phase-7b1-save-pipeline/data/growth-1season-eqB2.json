@@ -1,0 +1,224 @@
+{
+  "environment": {
+    "node": "v22.22.0",
+    "platform": "linux",
+    "storage": "memória instrumentada (sem I/O de disco real)",
+    "seed": "7b1",
+    "startDate": "2026-01-05",
+    "days": 365,
+    "path": "advanceCareerDayOnce (transação única)"
+  },
+  "creation": {
+    "createCareerMs": 18.96,
+    "createPlayerProfileMs": 19.17,
+    "io": {
+      "writes": 0,
+      "writeBytes": 0,
+      "writeMs": 0,
+      "reads": 0,
+      "readBytes": 0,
+      "readMs": 0,
+      "copies": 0,
+      "renames": 0
+    }
+  },
+  "wallMs": 86347.72,
+  "advancedOk": 365,
+  "blocked": [],
+  "overall": {
+    "ms": {
+      "n": 365,
+      "median": 217.73,
+      "p95": 426.89,
+      "max": 1883.47,
+      "total": 85079.22
+    },
+    "writesPerDay": {
+      "n": 365,
+      "median": 1,
+      "p95": 1,
+      "max": 1,
+      "total": 365
+    }
+  },
+  "seasons": [
+    {
+      "season": 1,
+      "days": 365,
+      "ms": {
+        "n": 365,
+        "median": 217.73,
+        "p95": 426.89,
+        "max": 1883.47,
+        "total": 85079.22
+      },
+      "msOrdinaryDays": {
+        "n": 353,
+        "median": 217.73,
+        "p95": 433.06,
+        "max": 1883.47,
+        "total": 82377.32
+      },
+      "msMonthBoundary": {
+        "n": 12,
+        "median": 232.55,
+        "p95": 366.88,
+        "max": 366.88,
+        "total": 2701.9
+      },
+      "writesPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "bytesWrittenPerDay": {
+        "n": 365,
+        "median": 7956080,
+        "p95": 11445059,
+        "max": 12261180,
+        "total": 2853627088
+      },
+      "readsPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "ioMsPerDay": {
+        "n": 365,
+        "median": 0,
+        "p95": 0,
+        "max": 0,
+        "total": 0
+      }
+    }
+  ],
+  "slowest": [
+    {
+      "day": 1,
+      "date": "2026-01-05",
+      "ms": 1883.47,
+      "writes": 1
+    },
+    {
+      "day": 361,
+      "date": "2026-12-31",
+      "ms": 1108.22,
+      "writes": 1
+    },
+    {
+      "day": 300,
+      "date": "2026-10-31",
+      "ms": 768.35,
+      "writes": 1
+    },
+    {
+      "day": 356,
+      "date": "2026-12-26",
+      "ms": 608.24,
+      "writes": 1
+    },
+    {
+      "day": 308,
+      "date": "2026-11-08",
+      "ms": 569.15,
+      "writes": 1
+    },
+    {
+      "day": 177,
+      "date": "2026-06-30",
+      "ms": 533.05,
+      "writes": 1
+    },
+    {
+      "day": 321,
+      "date": "2026-11-21",
+      "ms": 529.03,
+      "writes": 1
+    },
+    {
+      "day": 330,
+      "date": "2026-11-30",
+      "ms": 493.62,
+      "writes": 1
+    },
+    {
+      "day": 335,
+      "date": "2026-12-05",
+      "ms": 475.87,
+      "writes": 1
+    },
+    {
+      "day": 314,
+      "date": "2026-11-14",
+      "ms": 475.55,
+      "writes": 1
+    }
+  ],
+  "checkpoints": [
+    {
+      "day": 0,
+      "date": "2026-01-05",
+      "saveBytes": 227711,
+      "saveMs": 10.83,
+      "loadMs": null,
+      "counts": {
+        "AthleteProfile": 6,
+        "TeamRanking": 2,
+        "Tournament": 124,
+        "CalendarEvent": 2,
+        "Match": 0,
+        "WorldEvent": 1,
+        "Post": 2,
+        "PressArticle": 0,
+        "CareerMessage": 1,
+        "AnalyticsEvent": 0
+      },
+      "duplicateTournamentIds": 0,
+      "duplicateEventIds": 0,
+      "rankingPosition": null,
+      "rankPoints": null,
+      "coins": 20000
+    },
+    {
+      "day": 365,
+      "date": "2027-01-05",
+      "saveBytes": 12249164,
+      "saveMs": 700.67,
+      "loadMs": 352.34,
+      "counts": {
+        "AthleteProfile": 1071,
+        "TeamRanking": 947,
+        "Tournament": 275,
+        "CalendarEvent": 2,
+        "Match": 0,
+        "WorldEvent": 1667,
+        "Post": 2,
+        "PressArticle": 0,
+        "CareerMessage": 188,
+        "AnalyticsEvent": 0
+      },
+      "duplicateTournamentIds": 0,
+      "duplicateEventIds": 0,
+      "rankingPosition": null,
+      "rankPoints": 0,
+      "coins": 20000
+    }
+  ],
+  "finalCounts": {
+    "AthleteProfile": 1071,
+    "TeamRanking": 947,
+    "Tournament": 275,
+    "CalendarEvent": 2,
+    "Match": 0,
+    "WorldEvent": 1667,
+    "Post": 2,
+    "PressArticle": 0,
+    "CareerMessage": 188,
+    "AnalyticsEvent": 0
+  },
+  "determinismDigest": "d5897a4641bc0373a33c15fbb9681f5dc4547995652482b4cff7151fa7097a6e"
+}

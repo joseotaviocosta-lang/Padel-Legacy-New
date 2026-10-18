@@ -1,0 +1,54 @@
+{
+  "label": "base",
+  "storage": "memory",
+  "node": "v22.22.0",
+  "saveBytes": 30869093,
+  "saveFile": "save-day-1825.json",
+  "loadMs": {
+    "n": 0,
+    "median": 0,
+    "p95": 0,
+    "min": null,
+    "max": null,
+    "samples": []
+  },
+  "loadFirstMs": null,
+  "dayMs": {
+    "n": 15,
+    "median": 593.9,
+    "p95": 1055.8,
+    "min": 519.3,
+    "max": 1055.8,
+    "samples": [
+      897.3,
+      560.5,
+      552.2,
+      593.9,
+      519.3,
+      628.7,
+      701.7,
+      780.2,
+      552.9,
+      550.3,
+      555.9,
+      646,
+      585.2,
+      789.9,
+      1055.8
+    ]
+  },
+  "writeMs": {
+    "n": 3,
+    "median": 389.3,
+    "p95": 550.5,
+    "min": 385.2,
+    "max": 550.5,
+    "samples": [
+      550.5,
+      385.2,
+      389.3
+    ]
+  },
+  "tauriInvokesPerDay": null,
+  "tauriInvokesPerLoadTotal": null
+}
