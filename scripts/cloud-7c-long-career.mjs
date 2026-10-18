@@ -185,7 +185,14 @@ try {
       score, status: 'completed', match_type: 'tournament', tournament_outcome: run.status === 'champion' ? 'champion' : run.status === 'eliminated' ? 'eliminated' : 'advanced',
     }).catch(() => {});
     const terminal = ['eliminated', 'champion', 'finished'].includes(run.status);
-    await localGame.entities.CalendarEvent.update(eventId, { metadata: { ...event.metadata, tournament_run: run }, requires_decision: false, status: terminal ? 'completed' : 'scheduled' });
+    // Mesmo eventPatch do TournamentModal: o evento passa para a data da PRÓXIMA rodada e volta a exigir decisão.
+    const nextMatch = getCurrentTournamentMatch(run);
+    await localGame.entities.CalendarEvent.update(eventId, {
+      title: terminal ? tournament.name : `${tournament.name} — ${nextMatch?.round || 'Torneio'}`,
+      start_date: nextMatch?.date || event.start_date, end_date: nextMatch?.date || event.end_date,
+      status: terminal ? 'completed' : 'scheduled', requires_decision: !terminal,
+      metadata: { ...(event.metadata || {}), tournament_run: run, tournament_run_schema_version: 2, last_completed_match_id: match.id },
+    });
     if (!terminal) return p;
     counters.tournamentsPlayed += 1; if (run.status === 'champion') counters.titles += 1;
     const roundsWon = run.matches.filter((m) => m.stage === 'main' && m.result?.won).length;
@@ -331,7 +338,7 @@ try {
           .filter((e) => e.status !== 'completed' && e.status !== 'cancelled' && (e.requires_decision || e.event_type === 'tournament') && e.start_date <= fresh.career_date)
           .sort((a, b) => String(a.start_date).localeCompare(String(b.start_date)))[0];
         if (!pending) { counters.blockedUnresolved += 1; log('blocked.jsonl', { day, date: fresh.career_date, error: String(error?.message || error).slice(0, 200), code: error?.code || null }); break; }
-        const play = decisionRng() < DECISION_PLAY;
+        const play = pending.event_type === 'tournament' || decisionRng() < DECISION_PLAY; // jogador ativo sempre disputa o torneio em que se inscreveu
         if (play && pending.event_type === 'tournament' && pending.related_id) {
           const tournament = await localGame.entities.Tournament.get(pending.related_id).catch(() => null);
           if (tournament) { counters.decisionsPlayed += 1; profile = await quiet(() => playTournamentRound(pending.id, tournament, fresh).catch(() => fresh)); }
