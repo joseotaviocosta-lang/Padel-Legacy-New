@@ -22,23 +22,23 @@
       "renames": 2
     }
   },
-  "wallMs": 1147799.04,
-  "advancedOk": 2190,
+  "wallMs": 1482070.12,
+  "advancedOk": 2555,
   "blocked": [],
   "overall": {
     "ms": {
-      "n": 2190,
-      "median": 506.12,
-      "p95": 933.91,
+      "n": 2555,
+      "median": 556.62,
+      "p95": 1073.18,
       "max": 1864.69,
-      "total": 1135591.92
+      "total": 1467309.89
     },
     "writesPerDay": {
-      "n": 2190,
+      "n": 2555,
       "median": 1,
       "p95": 1,
       "max": 1,
-      "total": 2190
+      "total": 2555
     }
   },
   "seasons": [
@@ -359,6 +359,59 @@
         "max": 0.05,
         "total": 4.57
       }
+    },
+    {
+      "season": 7,
+      "days": 365,
+      "ms": {
+        "n": 365,
+        "median": 869.12,
+        "p95": 1287.38,
+        "max": 1815.79,
+        "total": 331717.97
+      },
+      "msOrdinaryDays": {
+        "n": 353,
+        "median": 871.92,
+        "p95": 1312.31,
+        "max": 1815.79,
+        "total": 321315.36
+      },
+      "msMonthBoundary": {
+        "n": 12,
+        "median": 867.88,
+        "p95": 1156.51,
+        "max": 1156.51,
+        "total": 10402.61
+      },
+      "writesPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "bytesWrittenPerDay": {
+        "n": 365,
+        "median": 37507032,
+        "p95": 39160608,
+        "max": 39868041,
+        "total": 13670882312
+      },
+      "readsPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "ioMsPerDay": {
+        "n": 365,
+        "median": 0.01,
+        "p95": 0.03,
+        "max": 0.14,
+        "total": 5.13
+      }
     }
   ],
   "slowest": [
@@ -366,6 +419,24 @@
       "day": 1,
       "date": "2026-01-05",
       "ms": 1864.69,
+      "writes": 1
+    },
+    {
+      "day": 2553,
+      "date": "2032-12-31",
+      "ms": 1815.79,
+      "writes": 1
+    },
+    {
+      "day": 2400,
+      "date": "2032-07-31",
+      "ms": 1812.58,
+      "writes": 1
+    },
+    {
+      "day": 2431,
+      "date": "2032-08-31",
+      "ms": 1812.24,
       "writes": 1
     },
     {
@@ -387,39 +458,21 @@
       "writes": 1
     },
     {
+      "day": 2211,
+      "date": "2032-01-24",
+      "ms": 1470.79,
+      "writes": 1
+    },
+    {
+      "day": 2492,
+      "date": "2032-10-31",
+      "ms": 1455.17,
+      "writes": 1
+    },
+    {
       "day": 1973,
       "date": "2031-05-31",
       "ms": 1453.46,
-      "writes": 1
-    },
-    {
-      "day": 1882,
-      "date": "2031-03-01",
-      "ms": 1419.96,
-      "writes": 1
-    },
-    {
-      "day": 1457,
-      "date": "2029-12-31",
-      "ms": 1364.94,
-      "writes": 1
-    },
-    {
-      "day": 1638,
-      "date": "2030-06-30",
-      "ms": 1364.6,
-      "writes": 1
-    },
-    {
-      "day": 1092,
-      "date": "2028-12-31",
-      "ms": 1359.12,
-      "writes": 1
-    },
-    {
-      "day": 1881,
-      "date": "2031-02-28",
-      "ms": 1356.48,
       "writes": 1
     }
   ],
@@ -591,20 +644,44 @@
       "rankingPosition": null,
       "rankPoints": 0,
       "coins": 20000
+    },
+    {
+      "day": 2555,
+      "date": "2033-01-03",
+      "saveBytes": 39862158,
+      "saveMs": 2476.78,
+      "loadMs": null,
+      "counts": {
+        "AthleteProfile": 1115,
+        "TeamRanking": 1994,
+        "Tournament": 1019,
+        "CalendarEvent": 2,
+        "Match": 0,
+        "WorldEvent": 8965,
+        "Post": 2,
+        "PressArticle": 0,
+        "CareerMessage": 1312,
+        "AnalyticsEvent": 0
+      },
+      "duplicateTournamentIds": 0,
+      "duplicateEventIds": 0,
+      "rankingPosition": null,
+      "rankPoints": 0,
+      "coins": 20000
     }
   ],
   "finalCounts": {
-    "AthleteProfile": 1124,
-    "TeamRanking": 1793,
-    "Tournament": 895,
+    "AthleteProfile": 1115,
+    "TeamRanking": 1994,
+    "Tournament": 1019,
     "CalendarEvent": 2,
     "Match": 0,
-    "WorldEvent": 7750,
+    "WorldEvent": 8965,
     "Post": 2,
     "PressArticle": 0,
-    "CareerMessage": 1124,
+    "CareerMessage": 1312,
     "AnalyticsEvent": 0
   },
-  "determinismDigest": "b364b3caca3e917876395d5ab736f5e208cd3a3ae7b2baacfe8d6e6776024bc8",
+  "determinismDigest": "077ce427020926209ffa98b9c3d7f330dbf204b2751271836f7fb0187a1616d8",
   "partial": true
 }
