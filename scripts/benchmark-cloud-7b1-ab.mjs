@@ -16,7 +16,7 @@ if (!args.save) { console.error('Informe --save=<save.json>'); process.exit(1); 
 const LOADS = Number(args.loads ?? 5); const DAYS = Number(args.days ?? 10); const WRITES = Number(args.writes ?? 5);
 const STORAGE = args.storage || 'memory';
 const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0; };
-const sum = (xs) => ({ n: xs.length, median: Number(pct(xs, 0.5).toFixed(1)), p95: Number(pct(xs, 0.95).toFixed(1)), min: Number(Math.min(...xs).toFixed(1)), max: Number(Math.max(...xs).toFixed(1)), samples: xs.map((x) => Number(x.toFixed(1))) });
+const sum = (xs) => ({ n: xs.length, median: Number(pct(xs, 0.5).toFixed(1)), p95: Number(pct(xs, 0.95).toFixed(1)), min: xs.length ? Number(Math.min(...xs).toFixed(1)) : null, max: xs.length ? Number(Math.max(...xs).toFixed(1)) : null, samples: xs.map((x) => Number(x.toFixed(1))) });
 
 globalThis.window = globalThis.window || { location: { pathname: '/', hostname: 'bench' }, dispatchEvent() { return true; }, addEventListener() {}, removeEventListener() {} };
 globalThis.CustomEvent = globalThis.CustomEvent || class CustomEvent { constructor(type, init) { this.type = type; this.detail = init?.detail; } };
@@ -90,10 +90,10 @@ try {
   }
   const out = {
     label: args.label || null, storage: STORAGE, node: process.version, saveBytes, saveFile: path.basename(String(args.save)),
-    loadMs: sum(loadMs), loadFirstMs: Number(loadMs[0].toFixed(1)), dayMs: sum(dayMs), writeMs: sum(writeMs), tauriInvokesPerDay: dayInvokes, tauriInvokesPerLoadTotal: loadInvokes,
+    loadMs: sum(loadMs), loadFirstMs: loadMs.length ? Number(loadMs[0].toFixed(1)) : null, dayMs: sum(dayMs), writeMs: sum(writeMs), tauriInvokesPerDay: dayInvokes, tauriInvokesPerLoadTotal: loadInvokes,
   };
   if (args.output) { fs.mkdirSync(path.dirname(path.resolve(String(args.output))), { recursive: true }); fs.writeFileSync(path.resolve(String(args.output)), JSON.stringify(out, null, 2)); }
-  console.log(JSON.stringify({ ...out, loadMs: { median: out.loadMs.median, p95: out.loadMs.p95 }, dayMs: { median: out.dayMs.median, p95: out.dayMs.p95 }, writeMs: { median: out.writeMs.median } }));
+  console.log(JSON.stringify({ ...out, loadMs: { median: out.loadMs.median }, dayMs: { median: out.dayMs.median, p95: out.dayMs.p95 }, writeMs: { median: out.writeMs.median } }));
 } finally {
   await server.close();
 }
