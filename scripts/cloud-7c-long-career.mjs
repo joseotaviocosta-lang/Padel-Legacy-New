@@ -92,7 +92,9 @@ try {
   const { applyPlayerMatchToCanonicalBracket } = await load('/src/gameplay/worldTour/tournamentSettlement.js');
   const { getRandomBots, getDifficultyForPlayer, BOTS_BY_DIFFICULTY } = await load('/src/lib/bots.js');
   const { isInjured, canPlayMatchToday, getChemistryBonus, getEnergyPenalty, getWorldRank, buildMatchRewardsPatch } = await load('/src/lib/padel.js');
-  const { createTournamentRun, getCurrentTournamentMatch, recordTournamentMatchResult } = await load('/src/gameplay/worldTour/TournamentRunManager.js');
+  const { createTournamentRun, getCurrentTournamentMatch, recordTournamentMatchResult, countMainDrawWins } = await load('/src/gameplay/worldTour/TournamentRunManager.js');
+  const { syncPlayerAchievements } = await load('/src/lib/achievementEngine.js');
+  const { buildAchievementContext } = await load('/src/lib/achievementContext.js');
   const { prepareTournamentFinalization } = await load('/src/game-core/tournamentLifecycle.js');
   const { getTournamentRounds, generateTournamentOpponent } = await load('/src/lib/career.js');
   const { getQualifyingRoundLabels } = await load('/src/gameplay/worldTour/QualifyingManager.js');
@@ -170,6 +172,7 @@ try {
     const reward = buildMatchRewardsPatch(await localGame.entities.PlayerProfile.get(p.id), won, { skipPhysical: true, idempotencyKey: match.id, officialTournament: true });
     await localGame.entities.PlayerProfile.update(p.id, reward.updates);
     const freshTournament = await localGame.entities.Tournament.get(tournament.id);
+    let bracketForFinal = Array.isArray(freshTournament?.bracket_history) ? freshTournament.bracket_history : null;
     if (Number(freshTournament?.bracket_schema_version) >= 2 && Array.isArray(freshTournament.bracket_history) && freshTournament.bracket_history.length && completedMatch?.stage === 'main') {
       const rounds = applyPlayerMatchToCanonicalBracket(freshTournament.bracket_history, {
         roundIndex: completedMatch.stageRoundIndex,
@@ -177,6 +180,7 @@ try {
         opponentTeamName: Array.isArray(completedMatch.opponent) && completedMatch.opponent.length ? completedMatch.opponent.map((i) => i.name).filter(Boolean).join(' & ') : null,
         won, score: completedMatch.result?.score || null, date: completedMatch.date,
       }).rounds;
+      bracketForFinal = rounds;
       await localGame.entities.Tournament.update(tournament.id, { bracket_history: rounds, current_phase: run.status === 'champion' ? 'concluido' : run.status });
     }
     await localGame.entities.Match.create({
@@ -193,11 +197,20 @@ try {
       status: terminal ? 'completed' : 'scheduled', requires_decision: !terminal,
       metadata: { ...(event.metadata || {}), tournament_run: run, tournament_run_schema_version: 2, last_completed_match_id: match.id },
     });
-    if (!terminal) return p;
+    // Conquistas por partida oficial (mesmo passo do TournamentModal, após cada partida).
+    try {
+      const current = await localGame.entities.PlayerProfile.get(p.id);
+      const ctx = await buildAchievementContext(current, { worldRank: await getWorldRank(current).catch(() => null) });
+      await syncPlayerAchievements(current, ctx, { localGame });
+    } catch { /* melhor esforço, como na UI */ }
+    if (!terminal) return localGame.entities.PlayerProfile.get(p.id);
     counters.tournamentsPlayed += 1; if (run.status === 'champion') counters.titles += 1;
-    const roundsWon = run.matches.filter((m) => m.stage === 'main' && m.result?.won).length;
-    const totalRounds = run.matches.filter((m) => m.stage === 'main').length;
-    const completion = await prepareTournamentFinalization({ profile: p, tournament, partner, roundsWon, totalRounds, runId: `${p.id}:${tournament.id}:${tournament.start_date || 'edition'}` });
+    const livePlayer = await localGame.entities.PlayerProfile.get(p.id);
+    const completion = await prepareTournamentFinalization({
+      profile: livePlayer, tournament, partner, roundsWon: countMainDrawWins(run), totalRounds: getTournamentRounds(tournament).length,
+      runId: `${tournament.id}:${run.createdAt}`, bracketHistory: bracketForFinal,
+      runnerUp: won ? (completedMatch.opponent || []).map((i) => i.name).join(' & ') : `${p.sport_name || 'Jogador'} & ${partner.name || 'Parceiro'}`, run,
+    });
     if (completion.operations?.length) await localGame.batch(completion.operations).catch(async () => {
       for (const op of completion.operations) {
         if (op.type === 'upsert') await localGame.entities[op.entityName].upsert?.(op.id, op.data).catch(() => {});
