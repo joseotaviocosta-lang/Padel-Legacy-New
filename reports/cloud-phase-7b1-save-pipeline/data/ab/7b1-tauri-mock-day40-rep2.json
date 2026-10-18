@@ -1,0 +1,68 @@
+{
+  "label": "7b1",
+  "storage": "tauri-mock",
+  "node": "v22.22.0",
+  "saveBytes": 4268310,
+  "saveFile": "save-day-40.json",
+  "loadMs": {
+    "n": 5,
+    "median": 59.3,
+    "p95": 80.6,
+    "min": 54.9,
+    "max": 80.6,
+    "samples": [
+      70.2,
+      80.6,
+      54.9,
+      59.3,
+      56.3
+    ]
+  },
+  "loadFirstMs": 70.2,
+  "dayMs": {
+    "n": 8,
+    "median": 154.6,
+    "p95": 269,
+    "min": 83.5,
+    "max": 269,
+    "samples": [
+      241.9,
+      225.6,
+      154.6,
+      129.5,
+      87.5,
+      83.5,
+      86.6,
+      269
+    ]
+  },
+  "writeMs": {
+    "n": 5,
+    "median": 54.3,
+    "p95": 74.3,
+    "min": 45.3,
+    "max": 74.3,
+    "samples": [
+      54.3,
+      74.3,
+      62.3,
+      46,
+      45.3
+    ]
+  },
+  "tauriInvokesPerDay": {
+    "storage_mkdir": 0.625,
+    "storage_exists": 2.25,
+    "storage_write_text": 1,
+    "storage_read_text": 1,
+    "storage_copy": 1.125,
+    "storage_list": 0.125,
+    "storage_remove": 2,
+    "storage_rename": 1
+  },
+  "tauriInvokesPerLoadTotal": {
+    "storage_exists": 29,
+    "storage_read_text": 15,
+    "storage_list": 8
+  }
+}
