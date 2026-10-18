@@ -58,7 +58,8 @@ Não foi alterado código de produção: o dano em jogo real é nulo (o relógio
 `npm run test:cloud-7b2a-determinism` (T1–T7, 365 dias na longa duração):
 
 - **Antes** (sem isolamento): T1b mostra a divergência (controle negativo) e o experimento de 120 dias dava 940/942/943/946 × 945/946/947/948.
-- **Depois**: ver resultado em `reports/cloud-phase-7b2a-determinism/data/acceptance-365d.json`.
+- **Depois**: 10/10 verificações (T1, T1b, T2, T3 com 365 dias e checkpoints a cada 30 dias, T4, T5, T6, T7, T7b, T7c), 4 min 30 s. Detalhe em `reports/cloud-phase-7b2a-determinism/data/acceptance-365d.json`.
+- **Regressões** (todas com saída 0): `test:cloud-6n-career-flows`, `test:cloud-7b1-save-pipeline`, `test:browser-career-storage`, `test:mobile-storage-m3-6`, `test:mobile-persistence-m3-7`, `test:career-persistence-integrity`, `test:world-save-load`, `lint`, `build`; `git diff --check` limpo. Como nenhum código de jogo mudou, são garantias de não regressão do restante do repositório.
 
 Exceções justificadas (únicas): `generation.durationMs` do `AnnualCareerReport` (medição de `performance.now()`, telemetria) e, apenas no T4, `last_played_at` (atualizado por definição ao reabrir a carreira). Nenhum campo de estado de jogo é excluído.
 
