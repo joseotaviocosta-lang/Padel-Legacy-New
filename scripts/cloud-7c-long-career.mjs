@@ -21,7 +21,10 @@ const args = Object.fromEntries(process.argv.slice(2).map((a) => { const [k, v] 
 const STRATEGY = args.strategy || 'off';
 const SEASONS = Number(args.seasons || 1);
 const SEED = String(args.seed || '7c');
-const OUT = path.resolve(String(args.out || `/tmp/cloud7c-${STRATEGY}`));
+const OUT0 = path.resolve(String(args.out || `/tmp/cloud7c-${STRATEGY}`));
+let OUT = OUT0;
+const CAREERS = Number(args.careers || 1);
+const RESET_SINGLETONS = Boolean(args.resetSingletons);
 const RELOAD = new Set(String(args.reloadSeasons || '').split(',').filter(Boolean).map(Number));
 const DUMP = new Set(String(args.dumpSeasons || '').split(',').filter(Boolean).map(Number));
 const HASH_EVERY = Number(args.hashEvery ?? 7);
@@ -49,7 +52,7 @@ globalThis.Date = class DeterministicDate extends RealDate {
 };
 const hex = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 Object.defineProperty(globalThis.crypto, 'randomUUID', { configurable: true, writable: true, value: () => `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}` });
-const decisionRng = mulberry32(hashSeed(`${SEED}-decisions`));
+let decisionRng = mulberry32(hashSeed(`${SEED}-decisions`));
 const sha = (v) => createHash('sha1').update(typeof v === 'string' ? v : JSON.stringify(v)).digest('hex').slice(0, 16);
 const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0; };
 const r1 = (n) => Number(Number(n).toFixed(1));
@@ -72,7 +75,7 @@ const log = (name, obj) => fs.appendFileSync(path.join(OUT, name), `${JSON.strin
 const quiet = async (fn) => { const w = console.warn; const d = console.debug; const e = console.error; const l = console.log; console.warn = () => {}; console.debug = () => {}; console.error = () => {}; console.log = () => {}; try { return await fn(); } finally { console.warn = w; console.debug = d; console.error = e; console.log = l; } };
 
 const server = await createServer({ server: { middlewareMode: true, hmr: false }, optimizeDeps: { noDiscovery: true, include: [] }, appType: 'custom', logLevel: 'error' });
-const startedAt = RealDate.now();
+let startedAt = RealDate.now();
 let progress = { strategy: STRATEGY, seed: SEED, seasonsTarget: SEASONS, seasonsDone: 0, status: 'running' };
 const saveProgress = () => fs.writeFileSync(path.join(OUT, 'progress.json'), JSON.stringify({ ...progress, elapsedMs: RealDate.now() - startedAt }, null, 1));
 try {
@@ -105,6 +108,22 @@ try {
   const trainingActivity = TRAINING_ACTIVITIES.find((a) => a.id === 'court-groundstrokes');
   const allBots = Object.values(BOTS_BY_DIFFICULTY).flat();
   const initialPartner = BOTS_BY_DIFFICULTY.iniciante[0];
+  // CLOUD-7C determinismo: `--careers=N` roda N carreiras em sequência NO MESMO PROCESSO (mesmo servidor/módulos).
+  // Com `--resetSingletons` reinicia, entre carreiras, os singletons conhecidos (sequência de ids, transação ativa);
+  // sem ela reproduz o uso real de dois jogos no mesmo processo (contaminação da 7B2A).
+  const { resetIdCollisionSequence } = await load('/src/gameplay/repositories/CareerEntityRepository.js');
+  for (let careerIndex = 0; careerIndex < CAREERS; careerIndex += 1) {
+  if (careerIndex > 0) {
+    OUT = `${OUT0}-c${careerIndex}`; fs.mkdirSync(OUT, { recursive: true });
+    worldRng = mulberry32(hashSeed(`${SEED}-world`));
+    fakeNow = new RealDate('2026-01-01T00:00:00.000Z').getTime() + (hashSeed(SEED) % 100000);
+    decisionRng = mulberry32(hashSeed(`${SEED}-decisions`));
+    progress = { strategy: STRATEGY, seed: SEED, seasonsTarget: SEASONS, seasonsDone: 0, status: 'running', careerIndex };
+    startedAt = RealDate.now();
+    inc.resetIncrementalStats();
+    if (RESET_SINGLETONS) { resetIdCollisionSequence(); activeCareerAdapter.activePersistenceTransaction = null; activeCareerAdapter.writeChain = Promise.resolve(); }
+    activeCareerAdapter.clearActiveCareer();
+  }
   const backend = memoryBackend();
   const manager = new CareerManager(new CareerRepository(new GameStorage(backend)));
   activeCareerAdapter.careerManager = manager;
@@ -434,6 +453,7 @@ try {
   fs.writeFileSync(path.join(OUT, 'summary.json'), JSON.stringify(summary, null, 2));
   progress.status = summary.status; saveProgress();
   console.log(`CONCLUÍDO ${STRATEGY}: ${summary.seasons} temporadas, ${(summary.totalMs / 60000).toFixed(1)} min, hash=${summary.whole}`);
+  }
 } catch (error) {
   progress.status = 'failed'; progress.error = String(error?.stack || error).slice(0, 2000); saveProgress();
   console.error('FALHOU', error);
