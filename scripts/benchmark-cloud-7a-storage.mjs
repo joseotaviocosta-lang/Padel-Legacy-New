@@ -63,17 +63,18 @@ try {
   const { GameStorage } = await vite.ssrLoadModule('/src/storage/GameStorage.js');
   const { BrowserStorage } = await vite.ssrLoadModule('/src/storage/BrowserStorage.js');
 
-  const cpu = { stringify: [], parse: [] };
+  const cpu = { stringify: [], parse: [], structuredClone: [] };
   for (let i = 0; i < RUNS; i += 1) {
     let t = performance.now(); const s = JSON.stringify(payload); cpu.stringify.push(performance.now() - t);
     t = performance.now(); JSON.parse(s); cpu.parse.push(performance.now() - t);
+    t = performance.now(); structuredClone(payload); cpu.structuredClone.push(performance.now() - t);
   }
 
   const backends = {
     memoria: () => counting(memoryBackend()),
     indexeddb_fake: () => counting(new BrowserStorage()),
   };
-  const result = { environment: { node: process.version, platform: process.platform, saveBytes: rawBytes, runs: RUNS }, jsonCpuMs: { stringify: summary(cpu.stringify), parse: summary(cpu.parse) }, backends: {} };
+  const result = { environment: { node: process.version, platform: process.platform, saveBytes: rawBytes, runs: RUNS }, jsonCpuMs: { stringify: summary(cpu.stringify), parse: summary(cpu.parse), structuredClone: summary(cpu.structuredClone) }, backends: {} };
 
   for (const [name, make] of Object.entries(backends)) {
     const counted = make();

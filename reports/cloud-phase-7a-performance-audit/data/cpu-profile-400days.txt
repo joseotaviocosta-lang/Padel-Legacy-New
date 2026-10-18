@@ -1,0 +1,12 @@
+node --cpu-prof scripts/benchmark-cloud-7a-career-growth.mjs --days=400 --sample=400  (Node v22, 4 vCPU, armazenamento em memória)
+Top self-time (total amostrado 93,6 s, 400 dias de avanço pelo caminho de produção):
+ 34607ms 37.0% structuredClone (worker/js_transferable)
+ 16815ms 18.0% GameStorage.js:254  (fechamento do JSON.stringify do save, writeJsonUnlocked)
+  9467ms 10.1% (garbage collector)
+  9281ms  9.9% CareerEntityRepository.js:182 (withCareer, escrita com mutateActiveCareer)
+  3434ms  3.7% CareerEntityRepository.js:106 (comparador de sortRows)
+  1255ms  1.3% withCareer.save CareerEntityRepository.js:355
+   972ms  1.0% aiPartnershipLifecycle.js:174
+   926ms  1.0% sortRows CareerEntityRepository.js:103
+   713ms  0.8% normalizeAthlete WorldTourLifecycle.js:811
+Nenhuma função de regra de jogo (mundo, ranking, mercado, torneios) passa de ~1% do tempo próprio.

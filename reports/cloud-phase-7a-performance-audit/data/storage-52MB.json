@@ -1,0 +1,110 @@
+{
+  "environment": {
+    "node": "v22.22.0",
+    "platform": "linux",
+    "saveBytes": 52927495,
+    "runs": 5
+  },
+  "jsonCpuMs": {
+    "stringify": {
+      "n": 5,
+      "median": 291.19,
+      "p95": 325.04,
+      "max": 325.04
+    },
+    "parse": {
+      "n": 5,
+      "median": 207.66,
+      "p95": 368.97,
+      "max": 368.97
+    },
+    "structuredClone": {
+      "n": 5,
+      "median": 408.27,
+      "p95": 522.49,
+      "max": 522.49
+    }
+  },
+  "backends": {
+    "memoria": {
+      "firstWriteMs": 682.6,
+      "firstWriteOps": {
+        "writeText": 1,
+        "readText": 1,
+        "copy": 0,
+        "rename": 1,
+        "remove": 0,
+        "exists": 1,
+        "writeBytes": 52593735,
+        "readBytes": 52593735
+      },
+      "steadyWriteMs": {
+        "n": 5,
+        "median": 598.78,
+        "p95": 615.89,
+        "max": 615.89
+      },
+      "steadyWriteOps": {
+        "writeText": 1,
+        "readText": 1,
+        "copy": 1,
+        "rename": 1,
+        "remove": 1,
+        "exists": 1,
+        "writeBytes": 52593735,
+        "readBytes": 52593735
+      },
+      "readJsonMs": {
+        "n": 5,
+        "median": 359.36,
+        "p95": 466.65,
+        "max": 466.65
+      },
+      "amplification": {
+        "bytesWrittenPerSave": 52593735,
+        "bytesReadPerSave": 52593735,
+        "ratioWrittenToSave": 0.99
+      }
+    },
+    "indexeddb_fake": {
+      "firstWriteMs": 1886.39,
+      "firstWriteOps": {
+        "writeText": 1,
+        "readText": 1,
+        "copy": 0,
+        "rename": 1,
+        "remove": 0,
+        "exists": 1,
+        "writeBytes": 52593735,
+        "readBytes": 52593735
+      },
+      "steadyWriteMs": {
+        "n": 5,
+        "median": 5664.74,
+        "p95": 6610.53,
+        "max": 6610.53
+      },
+      "steadyWriteOps": {
+        "writeText": 1,
+        "readText": 1,
+        "copy": 1,
+        "rename": 1,
+        "remove": 2,
+        "exists": 1,
+        "writeBytes": 52593735,
+        "readBytes": 52593735
+      },
+      "readJsonMs": {
+        "n": 5,
+        "median": 684.3,
+        "p95": 899.58,
+        "max": 899.58
+      },
+      "amplification": {
+        "bytesWrittenPerSave": 52593735,
+        "bytesReadPerSave": 52593735,
+        "ratioWrittenToSave": 0.99
+      }
+    }
+  }
+}

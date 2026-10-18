@@ -7,7 +7,7 @@
 //
 // Uso: node scripts/benchmark-cloud-7a-career-growth.mjs [--days=365] [--seed=7a] [--sample=30]
 //        [--reloadAt=365,1825] [--output=reports/cloud-phase-7a-performance-audit/data/growth.json]
-//        [--dumpSave=<arquivo>] (grava o JSON final do save, para os benchmarks de armazenamento; não versionar)
+//        [--fakeClock] [--dumpSave=<arquivo>] (grava o JSON final do save, para os benchmarks de armazenamento; não versionar)
 import { createServer } from 'vite';
 import fs from 'node:fs';
 import path from 'node:path';
@@ -31,6 +31,19 @@ globalThis.CustomEvent = globalThis.CustomEvent || class CustomEvent { construct
 function hashSeed(value) { let h = 2166136261; for (const ch of String(value)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 let rng = hashSeed(SEED);
 Math.random = () => { rng = (Math.imul(rng, 1664525) + 1013904223) >>> 0; return rng / 2 ** 32; };
+
+// --fakeClock: relógio determinístico (mesmo padrão de installDeterminism em audit-real-athletes-simulation.mjs).
+// Os ids de entidade usam Date.now() e alimentam o hash FNV de selectPair; sem isso, duas execuções
+// com a mesma seed divergem (comportamento pré-existente, documentado na CLOUD-5).
+if (args.fakeClock) {
+  const RealDate = Date;
+  let fake = new RealDate('2026-01-01T00:00:00.000Z').getTime() + (hashSeed(SEED) % 100000);
+  const tick = () => { fake += 1000; return fake; };
+  globalThis.Date = class DeterministicDate extends RealDate {
+    constructor(...a) { if (a.length === 0) super(tick()); else super(...a); }
+    static now() { return tick(); }
+  };
+}
 
 const sorted = (xs) => [...xs].sort((a, b) => a - b);
 const pct = (xs, p) => { const s = sorted(xs); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0; };

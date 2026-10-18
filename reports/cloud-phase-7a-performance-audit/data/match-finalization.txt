@@ -1,0 +1,45 @@
+  "ok": true,
+  "matches": 100,
+  "baseline": {
+    "finalPointMs": {
+      "average": 0.739,
+      "p50": 0.606,
+      "p95": 1.338,
+      "worst": 4.75
+    },
+    "averageRecordBytes": 366436,
+    "writesPerPracticeMatch": "8-20",
+    "writesPerTournamentRound": "9-13"
+  },
+  "optimized": {
+    "finalPointMs": {
+      "average": 0.349,
+      "p50": 0.254,
+      "p95": 0.538,
+      "worst": 1.958
+    },
+    "persistenceMs": {
+      "average": 12.301,
+      "p50": 12.91,
+      "p95": 21.281,
+      "worst": 27.657
+    },
+    "averageRecordBytes": 5977,
+    "saveGrowthBytes": 667304,
+    "averageSaveGrowthBytesPerMatch": 6673,
+    "writesPerMatch": 2,
+    "duplicateWrites": 0
+  },
+  "improvement": {
+    "finalPointAveragePercent": 52.8,
+    "recordSizePercent": 98.4,
+    "writes": "8-20/9-13 → 2"
+  },
+  "functional": {
+    "resultAndStats": true,
+    "singleIdempotentFinalization": true,
+    "rankingMoneyEnergyTournamentPersistedTogether": true,
+    "recapCompact": true,
+    "interviewNotificationAnalyticsNonBlocking": true
+  }
+}

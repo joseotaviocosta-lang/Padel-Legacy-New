@@ -22,23 +22,23 @@
       "renames": 2
     }
   },
-  "wallMs": 1482070.12,
-  "advancedOk": 2555,
+  "wallMs": 2747822.98,
+  "advancedOk": 3650,
   "blocked": [],
   "overall": {
     "ms": {
-      "n": 2555,
-      "median": 556.62,
-      "p95": 1073.18,
-      "max": 1864.69,
-      "total": 1467309.89
+      "n": 3650,
+      "median": 706.27,
+      "p95": 1399.28,
+      "max": 2254.32,
+      "total": 2719306.46
     },
     "writesPerDay": {
-      "n": 2555,
+      "n": 3650,
       "median": 1,
       "p95": 1,
       "max": 1,
-      "total": 2555
+      "total": 3650
     }
   },
   "seasons": [
@@ -412,67 +412,226 @@
         "max": 0.14,
         "total": 5.13
       }
+    },
+    {
+      "season": 8,
+      "days": 365,
+      "ms": {
+        "n": 365,
+        "median": 1023.55,
+        "p95": 1501.39,
+        "max": 2254.32,
+        "total": 381852.38
+      },
+      "msOrdinaryDays": {
+        "n": 353,
+        "median": 1026.32,
+        "p95": 1546.05,
+        "max": 2254.32,
+        "total": 370165.65
+      },
+      "msMonthBoundary": {
+        "n": 12,
+        "median": 952.41,
+        "p95": 1296.03,
+        "max": 1296.03,
+        "total": 11686.73
+      },
+      "writesPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "bytesWrittenPerDay": {
+        "n": 365,
+        "median": 41757647,
+        "p95": 43515224,
+        "max": 44248458,
+        "total": 15233140424
+      },
+      "readsPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "ioMsPerDay": {
+        "n": 365,
+        "median": 0.01,
+        "p95": 0.03,
+        "max": 0.08,
+        "total": 4.84
+      }
+    },
+    {
+      "season": 9,
+      "days": 365,
+      "ms": {
+        "n": 365,
+        "median": 1147.04,
+        "p95": 1561.64,
+        "max": 2205.6,
+        "total": 420644.31
+      },
+      "msOrdinaryDays": {
+        "n": 353,
+        "median": 1147.04,
+        "p95": 1563.02,
+        "max": 2205.6,
+        "total": 407369.51
+      },
+      "msMonthBoundary": {
+        "n": 12,
+        "median": 1152.25,
+        "p95": 1434.05,
+        "max": 1434.05,
+        "total": 13274.8
+      },
+      "writesPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "bytesWrittenPerDay": {
+        "n": 365,
+        "median": 46195813,
+        "p95": 47885852,
+        "max": 48584704,
+        "total": 16853607984
+      },
+      "readsPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "ioMsPerDay": {
+        "n": 365,
+        "median": 0.01,
+        "p95": 0.03,
+        "max": 0.09,
+        "total": 5.39
+      }
+    },
+    {
+      "season": 10,
+      "days": 365,
+      "ms": {
+        "n": 365,
+        "median": 1209.47,
+        "p95": 1733.47,
+        "max": 2195.82,
+        "total": 449499.88
+      },
+      "msOrdinaryDays": {
+        "n": 353,
+        "median": 1209.88,
+        "p95": 1739.22,
+        "max": 2195.82,
+        "total": 435518.45
+      },
+      "msMonthBoundary": {
+        "n": 12,
+        "median": 1102.31,
+        "p95": 1621.97,
+        "max": 1621.97,
+        "total": 13981.43
+      },
+      "writesPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "bytesWrittenPerDay": {
+        "n": 365,
+        "median": 50438194,
+        "p95": 51943058,
+        "max": 52608839,
+        "total": 18395108916
+      },
+      "readsPerDay": {
+        "n": 365,
+        "median": 1,
+        "p95": 1,
+        "max": 1,
+        "total": 365
+      },
+      "ioMsPerDay": {
+        "n": 365,
+        "median": 0.01,
+        "p95": 0.02,
+        "max": 0.07,
+        "total": 4.25
+      }
     }
   ],
   "slowest": [
     {
-      "day": 1,
-      "date": "2026-01-05",
-      "ms": 1864.69,
+      "day": 2918,
+      "date": "2033-12-31",
+      "ms": 2254.32,
       "writes": 1
     },
     {
-      "day": 2553,
-      "date": "2032-12-31",
-      "ms": 1815.79,
+      "day": 3283,
+      "date": "2034-12-31",
+      "ms": 2205.6,
       "writes": 1
     },
     {
-      "day": 2400,
-      "date": "2032-07-31",
-      "ms": 1812.58,
+      "day": 3403,
+      "date": "2035-04-30",
+      "ms": 2195.82,
       "writes": 1
     },
     {
-      "day": 2431,
-      "date": "2032-08-31",
-      "ms": 1812.24,
+      "day": 3495,
+      "date": "2035-07-31",
+      "ms": 2178.57,
       "writes": 1
     },
     {
-      "day": 726,
-      "date": "2027-12-31",
-      "ms": 1750.96,
+      "day": 3464,
+      "date": "2035-06-30",
+      "ms": 2163.68,
       "writes": 1
     },
     {
-      "day": 2187,
-      "date": "2031-12-31",
-      "ms": 1638.39,
+      "day": 3289,
+      "date": "2035-01-06",
+      "ms": 2090.59,
       "writes": 1
     },
     {
-      "day": 2065,
-      "date": "2031-08-31",
-      "ms": 1476.95,
+      "day": 2977,
+      "date": "2034-02-28",
+      "ms": 2077.9,
       "writes": 1
     },
     {
-      "day": 2211,
-      "date": "2032-01-24",
-      "ms": 1470.79,
+      "day": 3191,
+      "date": "2034-09-30",
+      "ms": 2039.34,
       "writes": 1
     },
     {
-      "day": 2492,
-      "date": "2032-10-31",
-      "ms": 1455.17,
+      "day": 3130,
+      "date": "2034-07-31",
+      "ms": 2027.09,
       "writes": 1
     },
     {
-      "day": 1973,
-      "date": "2031-05-31",
-      "ms": 1453.46,
+      "day": 3069,
+      "date": "2034-05-31",
+      "ms": 1983.81,
       "writes": 1
     }
   ],
@@ -668,20 +827,91 @@
       "rankingPosition": null,
       "rankPoints": 0,
       "coins": 20000
+    },
+    {
+      "day": 2920,
+      "date": "2034-01-03",
+      "saveBytes": 44233763,
+      "saveMs": 3562.25,
+      "loadMs": null,
+      "counts": {
+        "AthleteProfile": 1127,
+        "TeamRanking": 2198,
+        "Tournament": 1143,
+        "CalendarEvent": 2,
+        "Match": 0,
+        "WorldEvent": 10237,
+        "Post": 2,
+        "PressArticle": 0,
+        "CareerMessage": 1499,
+        "AnalyticsEvent": 0
+      },
+      "duplicateTournamentIds": 0,
+      "duplicateEventIds": 0,
+      "rankingPosition": null,
+      "rankPoints": 0,
+      "coins": 20000
+    },
+    {
+      "day": 3285,
+      "date": "2035-01-03",
+      "saveBytes": 48564973,
+      "saveMs": 3840.5,
+      "loadMs": null,
+      "counts": {
+        "AthleteProfile": 1142,
+        "TeamRanking": 2404,
+        "Tournament": 1267,
+        "CalendarEvent": 2,
+        "Match": 0,
+        "WorldEvent": 11482,
+        "Post": 2,
+        "PressArticle": 0,
+        "CareerMessage": 1687,
+        "AnalyticsEvent": 0
+      },
+      "duplicateTournamentIds": 0,
+      "duplicateEventIds": 0,
+      "rankingPosition": null,
+      "rankPoints": 0,
+      "coins": 20000
+    },
+    {
+      "day": 3650,
+      "date": "2036-01-03",
+      "saveBytes": 52593735,
+      "saveMs": 3252.36,
+      "loadMs": 2047.47,
+      "counts": {
+        "AthleteProfile": 1129,
+        "TeamRanking": 2592,
+        "Tournament": 1391,
+        "CalendarEvent": 2,
+        "Match": 0,
+        "WorldEvent": 12691,
+        "Post": 2,
+        "PressArticle": 0,
+        "CareerMessage": 1875,
+        "AnalyticsEvent": 0
+      },
+      "duplicateTournamentIds": 0,
+      "duplicateEventIds": 0,
+      "rankingPosition": null,
+      "rankPoints": 0,
+      "coins": 20000
     }
   ],
   "finalCounts": {
-    "AthleteProfile": 1115,
-    "TeamRanking": 1994,
-    "Tournament": 1019,
+    "AthleteProfile": 1129,
+    "TeamRanking": 2592,
+    "Tournament": 1391,
     "CalendarEvent": 2,
     "Match": 0,
-    "WorldEvent": 8965,
+    "WorldEvent": 12691,
     "Post": 2,
     "PressArticle": 0,
-    "CareerMessage": 1312,
+    "CareerMessage": 1875,
     "AnalyticsEvent": 0
   },
-  "determinismDigest": "077ce427020926209ffa98b9c3d7f330dbf204b2751271836f7fb0187a1616d8",
-  "partial": true
+  "determinismDigest": "65fcee30fd445b70607bd164940a447768b2b77980b20f290d0cac1c859e7752"
 }
