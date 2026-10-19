@@ -1,0 +1,51 @@
+{
+  "pairsBuilt": 8,
+  "distinctPairIdsWithSameName": [
+    "p-A",
+    "p-B"
+  ],
+  "identityByName": 7,
+  "identityById": 8,
+  "bracket": {
+    "drawnPairs": 8,
+    "participantsInBracket": 8,
+    "placements": 8,
+    "uniquePlacementTeams": 7,
+    "nameAppearancesInBracket": 2
+  },
+  "settlementLookupByName": [
+    {
+      "pairId": "p-A",
+      "resolvedPosition": 6
+    },
+    {
+      "pairId": "p-B",
+      "resolvedPosition": 6
+    },
+    {
+      "pairId": "p-o0",
+      "resolvedPosition": 8
+    },
+    {
+      "pairId": "p-o1",
+      "resolvedPosition": 1
+    },
+    {
+      "pairId": "p-o2",
+      "resolvedPosition": 4
+    },
+    {
+      "pairId": "p-o3",
+      "resolvedPosition": 7
+    },
+    {
+      "pairId": "p-o4",
+      "resolvedPosition": 2
+    },
+    {
+      "pairId": "p-o5",
+      "resolvedPosition": 3
+    }
+  ],
+  "conclusion": "A chave e as colocações identificam equipes por NOME; duas duplas distintas com o mesmo nome compartilham a mesma posição/entrada (Map por nome) e a contagem de colocações fica menor que a de duplas sorteadas. Pontuação e histórico por ID divergem do que a chave mostra."
+}

@@ -592,30 +592,77 @@ export function applyPlayerMatchToCanonicalBracket(rounds, {
       nextMatch.team_b = nextDecidedOpponent(next, roundIndex + 1);
     }
   } else {
-    let carryTeam = match.winner;
-    for (let r = roundIndex + 1; r < next.length; r += 1) {
-      const opponentName = nextDecidedOpponent(next, r);
-      if (!opponentName) break;
-      const roundMatch = next[r].matches[0];
-      roundMatch.team_a = carryTeam;
-      roundMatch.team_b = opponentName;
-      const seed = `${roundMatch.match_id}:cascade`;
-      const [winnerTeam] = chooseWinner(
-        { name: carryTeam, strength: fillerTeamStrength(carryTeam) },
-        { name: opponentName, strength: fillerTeamStrength(opponentName) },
-        seed,
-      );
-      roundMatch.winner = winnerTeam.name;
-      roundMatch.score = scoreFor(seed, winnerTeam.name === carryTeam);
-      roundMatch.status = 'completed';
-      carryTeam = winnerTeam.name;
-    }
+    cascadeAiOnlyRounds(next, roundIndex + 1, match.winner);
   }
 
-  next.forEach((round) => {
+  refreshRoundStatuses(next);
+  return { rounds: next, idempotent: false };
+}
+
+function refreshRoundStatuses(rounds) {
+  rounds.forEach((round) => {
     round.status = round.matches.length > 0 && round.matches.every((item) => item.winner) ? 'completed' : 'scheduled';
   });
+}
 
+// O time `carryTeam` ocupa o confronto do jogador da rodada `fromRound` e segue
+// até a final contra os adversários já decididos pelas sub-chaves, pelo motor
+// determinístico do AI-only (mesmo critério usado para toda partida da IA).
+function cascadeAiOnlyRounds(rounds, fromRound, carryTeam) {
+  let carry = carryTeam;
+  for (let r = fromRound; r < rounds.length; r += 1) {
+    const opponentName = nextDecidedOpponent(rounds, r);
+    if (!opponentName) break;
+    const roundMatch = rounds[r].matches[0];
+    roundMatch.team_a = carry;
+    roundMatch.team_b = opponentName;
+    const seed = `${roundMatch.match_id}:cascade`;
+    const [winnerTeam] = chooseWinner(
+      { name: carry, strength: fillerTeamStrength(carry) },
+      { name: opponentName, strength: fillerTeamStrength(opponentName) },
+      seed,
+    );
+    roundMatch.winner = winnerTeam.name;
+    roundMatch.score = scoreFor(seed, winnerTeam.name === carry);
+    roundMatch.status = 'completed';
+    carry = winnerTeam.name;
+  }
+}
+
+// Nome da dupla adversária de uma partida do tournament_run (mesmo formato de nome usado na chave).
+export function opponentTeamNameOfRunMatch(runMatch) {
+  const names = Array.isArray(runMatch?.opponent) ? runMatch.opponent.map((item) => item?.name).filter(Boolean) : [];
+  return names.length ? names.join(' & ') : null;
+}
+
+// CLOUD-7D1 — o jogador foi eliminado (ou saiu) ANTES da chave principal: a
+// vaga dele na rodada 0 nunca será disputada por ele. A dupla que o eliminou
+// no qualifying (`qualifierTeamName`) herda a vaga e disputa a chave principal
+// como qualquer outra dupla; a primeira partida e as seguintes são decididas
+// pelo mesmo motor determinístico do AI-only. Nenhuma partida já disputada é
+// alterada e nenhum resultado é atribuído por W.O. Idempotente.
+export function applyQualifyingExitToCanonicalBracket(rounds, { qualifierTeamName, date = null } = {}) {
+  if (!Array.isArray(rounds) || !rounds[0]?.matches?.[0]) {
+    throw new Error('A chave canônica não possui o confronto do jogador para a rodada 0.');
+  }
+  const next = clone(rounds);
+  const match = next[0].matches[0];
+  if (match.status === 'completed' && match.winner) return { rounds: next, idempotent: true };
+  const opponentName = match.team_b;
+  if (!opponentName || !qualifierTeamName) throw new Error('Chave sem adversário da rodada 0 ou sem a dupla classificada.');
+  match.team_a = qualifierTeamName;
+  const seed = `${match.match_id}:qualifier-seat`;
+  const [winnerTeam] = chooseWinner(
+    { name: qualifierTeamName, strength: fillerTeamStrength(qualifierTeamName) },
+    { name: opponentName, strength: fillerTeamStrength(opponentName) },
+    seed,
+  );
+  match.winner = winnerTeam.name;
+  match.score = scoreFor(seed, winnerTeam.name === qualifierTeamName);
+  match.status = 'completed';
+  if (date) match.date = date;
+  cascadeAiOnlyRounds(next, 1, match.winner);
+  refreshRoundStatuses(next);
   return { rounds: next, idempotent: false };
 }
 

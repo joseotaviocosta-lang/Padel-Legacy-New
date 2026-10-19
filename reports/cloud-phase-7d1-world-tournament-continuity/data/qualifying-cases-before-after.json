@@ -1,0 +1,202 @@
+{
+  "fixtureDate": "2027-01-05",
+  "stuckBeforeFix": 7,
+  "rows": [
+    {
+      "tournament": "tournament-2026-vie-gol-w18-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-04-30",
+      "endDate": "2026-05-04",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-04-30",
+      "playerExitScore": "2-6, 1-6",
+      "qualifierInheritingSeat": "Gonzalo Navarro & Hugo Herrera",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 246
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Gonzalo Navarro & Hugo Herrera",
+        "runnerUp": "Marco Medina & Martín Campos 252",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    },
+    {
+      "tournament": "tournament-2026-lon-gol-w27-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-07-02",
+      "endDate": "2026-07-06",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-07-02",
+      "playerExitScore": "0-6, 0-6",
+      "qualifierInheritingSeat": "João Vega & Pedro García",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 183
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Javier Miranda 577 & Lucas Torres",
+        "runnerUp": "Ignacio Herrera & Samuel Giménez",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    },
+    {
+      "tournament": "tournament-2026-sha-gol-w29-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-07-16",
+      "endDate": "2026-07-20",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-07-16",
+      "playerExitScore": "2-6, 1-6",
+      "qualifierInheritingSeat": "João Molina & Felipe Martínez",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 169
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Thiago Martínez 466 & Lucas Silva",
+        "runnerUp": "Tomás Rojas 469 & Javier Fernández 476",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    },
+    {
+      "tournament": "tournament-2026-seo-gol-w38-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-09-17",
+      "endDate": "2026-09-21",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-09-17",
+      "playerExitScore": "1-6, 1-6",
+      "qualifierInheritingSeat": "Enzo Costa 619 & João López",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 106
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Javier Silva & Rubén Romero",
+        "runnerUp": "Javier Martínez 508 & Samuel Romero",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    },
+    {
+      "tournament": "tournament-2026-cas-gol-w40-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-10-01",
+      "endDate": "2026-10-05",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-10-01",
+      "playerExitScore": "1-6, 1-6",
+      "qualifierInheritingSeat": "Marco Miranda & Pedro Suárez",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 92
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Martín Martínez & Ignacio Ramos",
+        "runnerUp": "Rafael Navarro & Marco Molina",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    },
+    {
+      "tournament": "tournament-2026-bkk-gol-w42-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-10-15",
+      "endDate": "2026-10-19",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-10-15",
+      "playerExitScore": "1-6, 1-6",
+      "qualifierInheritingSeat": "Daniel Sánchez & Tomás Medina",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 78
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Franco Ferrer & Miguel Molina",
+        "runnerUp": "Tomás Rojas 469 & Javier Fernández 476",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    },
+    {
+      "tournament": "tournament-2026-pra-gol-w45-1",
+      "tier": "Gold",
+      "season": 2026,
+      "startDate": "2026-11-05",
+      "endDate": "2026-11-09",
+      "playerExitRound": "Quartas do qualifying",
+      "playerExitDate": "2026-11-05",
+      "playerExitScore": "2-6, 0-6",
+      "qualifierInheritingSeat": "Enzo Acosta 608 & Carlos Giménez 629",
+      "before": {
+        "status": "em_andamento",
+        "champion": null,
+        "runnerUp": null,
+        "resolved": false,
+        "worldEvent": false,
+        "ageDaysAtFixture": 57
+      },
+      "after": {
+        "status": "finalizado",
+        "champion": "Martín Suárez & Adrián Torres",
+        "runnerUp": "Samuel Iglesias & Nicolás Vega",
+        "resolved": true,
+        "worldEvent": true,
+        "resolvedAt": "2027-01-06",
+        "placements": 32
+      }
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "note": "Temporada 1 (seed 7c, 2026-01-05 -> 2027-01-05), adaptador CLOUD-7C. 'started' = start_date <= data final.",
+  "before_fix_player_active": { "scheduled": 275, "started": 125, "finished": 119, "champions": 119, "pending_started_not_finished": 6, "future": 150, "world_events_result": 118, "player_qualifying_exits": 6, "player_main_draw_tournaments": 32 },
+  "after_fix_player_active": { "scheduled": 275, "started": 125, "finished": 125, "champions": 125, "pending_started_not_finished": 0, "future": 150, "world_events_result": 124, "player_qualifying_exits": 7, "player_main_draw_tournaments": 32 },
+  "after_fix_no_player": { "scheduled": 275, "started": 125, "finished": 125, "champions": 125, "pending_started_not_finished": 0, "future": 150, "world_events_result": 124, "player_qualifying_exits": 0, "player_main_draw_tournaments": 0 },
+  "note_world_events": "1 torneio finalizado sem WorldEvent/ranking em todos os cenários: tournament-2026-rom-exh-2026 (Exibição pré-definida, fora do circuito; world_tour_resolved ausente) — comportamento preexistente e legítimo."
+}

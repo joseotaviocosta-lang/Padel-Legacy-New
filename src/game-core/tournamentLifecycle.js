@@ -5,7 +5,7 @@ import { teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
 import { buildPartnershipTitlePatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { safeName, todayForProfile } from './utils';
 import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
-import { bracketFactsFromHistory, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket, applyPlayerMatchToCanonicalBracket } from '@/gameplay/worldTour/tournamentSettlement.js';
+import { bracketFactsFromHistory, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket, applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch } from '@/gameplay/worldTour/tournamentSettlement.js';
 import { getCurrentTournamentMatch, withdrawTournamentRun, countMainDrawWins, buildTournamentBracketHistory } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { getTournamentRounds, getPartnerBot } from '@/lib/career.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
@@ -49,6 +49,24 @@ function buildCanonicalTitleWorldEventOperation(tournament, canonicalSettlement,
     author_name: 'Redação Padel Legacy World Tour',
     tags: ['tournament-result', String(tournament.tier || '').toLowerCase()],
   } };
+}
+
+async function findPlayerTournamentRun(entities, profileId, tournamentId) {
+  const event = (await entities.CalendarEvent.filter({ profile_id: profileId, related_id: tournamentId }).catch(() => []))
+    .find((item) => item.event_type === 'tournament' && item.metadata?.tournament_run);
+  return event?.metadata?.tournament_run || null;
+}
+
+// CLOUD-7D1 — se a vaga do jogador na rodada 0 segue aberta porque a campanha dele terminou no qualifying (derrota ou
+// W.O.), devolve a chave com a vaga herdada pela dupla que o eliminou; em qualquer outro caso devolve a chave intacta.
+function repairOpenQualifyingSeat(bracketHistory, run) {
+  const seat = bracketHistory?.[0]?.matches?.find((match) => match?.player_match === true);
+  if (!seat || seat.winner || !run || !['eliminated', 'finished'].includes(run.status)) return bracketHistory;
+  const exitMatch = (run.matches || []).find((match) => (match.status === 'completed' && match.result && !match.result.won) || match.status === 'cancelled');
+  if (exitMatch?.stage !== 'qualifying') return bracketHistory;
+  const qualifierTeamName = opponentTeamNameOfRunMatch(exitMatch);
+  if (!qualifierTeamName) return bracketHistory;
+  return applyQualifyingExitToCanonicalBracket(bracketHistory, { qualifierTeamName, date: exitMatch.date }).rounds;
 }
 
 // Item 3/4/15 — day-tick complementar a prepareTournamentFinalization. Um
@@ -103,7 +121,17 @@ export async function resolvePendingPlayerCanonicalTournaments(careerDate, profi
   let resolved = 0;
   for (const tournament of pending) {
     try {
-      const { canonicalSettlement } = deriveDueCanonicalSettlement(tournament, tournament.bracket_history, careerDate);
+      // CLOUD-7D1 — reparo de saves/torneios em que o jogador saiu no qualifying e a vaga dele na rodada 0 ficou
+      // aberta (a chave nunca fecha). Só a vaga aberta é preenchida; nada já disputado é alterado.
+      let run = null;
+      let runLoaded = false;
+      const loadRun = async () => {
+        if (!runLoaded) { run = profile?.id ? await findPlayerTournamentRun(entities, profile.id, tournament.id) : null; runLoaded = true; }
+        return run;
+      };
+      const seatOpen = tournament.bracket_history[0]?.matches?.some((match) => match?.player_match === true && !match.winner);
+      const bracketHistory = seatOpen ? repairOpenQualifyingSeat(tournament.bracket_history, await loadRun()) : tournament.bracket_history;
+      const { canonicalSettlement } = deriveDueCanonicalSettlement(tournament, bracketHistory, careerDate);
       if (!canonicalSettlement?.result?.champion) continue;
       const worldEventOp = buildCanonicalTitleWorldEventOperation(tournament, canonicalSettlement, careerDate);
       if (worldEventOp) operations.push(worldEventOp);
@@ -114,11 +142,11 @@ export async function resolvePendingPlayerCanonicalTournaments(careerDate, profi
         player_decided_result: true,
       } });
       if (profile?.id) {
-        const event = (await entities.CalendarEvent.filter({ profile_id: profile.id, related_id: tournament.id }).catch(() => []))
-          .find((item) => item.event_type === 'tournament' && item.metadata?.tournament_run);
-        const run = event?.metadata?.tournament_run;
+        await loadRun();
         const totalRounds = Array.isArray(tournament.bracket_history) ? tournament.bracket_history.length : 0;
-        const finalRoundIndex = totalRounds - 1;
+        // `run.matches` inclui as rodadas de qualifying: a final é a última partida da chave principal do run.
+        const finalRunMatch = [...(run?.matches || [])].reverse().find((item) => item.stage !== 'qualifying') || null;
+        const finalRoundIndex = finalRunMatch ? run.matches.indexOf(finalRunMatch) : -1;
         // O jogador já foi eliminado ANTES desta final (por definição desta
         // fila — a final chegou depois, sem mais nenhuma partida dele pra
         // disparar prepareTournamentFinalization). O único fato determinável
@@ -128,9 +156,11 @@ export async function resolvePendingPlayerCanonicalTournaments(careerDate, profi
         // que existe um campeão, e não pode ser o jogador — ele não chegou
         // lá). Nunca credita rodadas intermediárias aqui (destino
         // desconhecido de quem eliminou o jogador antes da final).
-        if (run?.matches?.[finalRoundIndex] && finalRoundIndex >= 0) {
+        // CLOUD-7D1 — só credita o título se o adversário da final no run for de fato o campeão da chave; senão o
+        // crédito iria para uma dupla que não ganhou (a dupla que eliminou o jogador também pode vencer a final).
+        if (finalRunMatch && finalRoundIndex >= 0 && (finalRunMatch.opponent || []).every((member) => member?.name && String(canonicalSettlement.result.champion).includes(member.name))) {
           const credits = new Map();
-          for (const member of run.matches[finalRoundIndex].opponent || []) {
+          for (const member of finalRunMatch.opponent || []) {
             if (member?.id) credits.set(member.id, { member, roundsWon: totalRounds });
           }
           operations.push(...await applyPairPlacementCredits({ tournament, credits, totalRounds, date: careerDate }));
@@ -204,7 +234,10 @@ export async function resolveUnavailablePlayerMatch({ profile, tournament, calen
       score: null,
       date: currentMatch.date,
     }).rounds
-    : (hasCanonicalBracket ? freshTournament.bracket_history : buildTournamentBracketHistory(withdrawn, playerTeamName));
+    // CLOUD-7D1 — W.O. durante o qualifying: a dupla adversária herda a vaga do jogador na chave principal.
+    : (hasCanonicalBracket && currentMatch.stage === 'qualifying' && currentMatch.status !== 'completed'
+      ? applyQualifyingExitToCanonicalBracket(freshTournament.bracket_history, { qualifierTeamName: opponentTeamNameOfRunMatch(currentMatch), date: currentMatch.date }).rounds
+      : (hasCanonicalBracket ? freshTournament.bracket_history : buildTournamentBracketHistory(withdrawn, playerTeamName)));
 
   const mainRounds = getTournamentRounds(tournament);
   const completion = await finalizeTournamentRun({

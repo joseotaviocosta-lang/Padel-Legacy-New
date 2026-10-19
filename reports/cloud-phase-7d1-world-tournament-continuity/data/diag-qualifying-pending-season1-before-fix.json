@@ -1,0 +1,131 @@
+{
+  "file": "/tmp/claude-0/r7d1/s1-baseline/save-season-1.json",
+  "careerDate": "2027-01-05",
+  "classes": {
+    "DEFEITO: jogador eliminado no qualifying; slot do jogador nunca fecha": 6,
+    "em_andamento_ou_futuro (legitimo)": 150
+  },
+  "qualifyingOutcomes": {
+    "eliminado_no_qualifying | torneio=em_andamento/nao_resolvido": 6
+  },
+  "stuck": [
+    {
+      "id": "tournament-2026-lon-gol-w27-1",
+      "tier": "Gold",
+      "start": "2026-07-02",
+      "end": "2026-07-06",
+      "ageDays": 183,
+      "status": "em_andamento",
+      "phase": "em_andamento",
+      "champion": null,
+      "runner_up": null,
+      "resolved": false,
+      "rankingResultRows": 3,
+      "hasWorldEventResult": false,
+      "playerSlots": "scheduled/times scheduled/vazio scheduled/vazio scheduled/vazio scheduled/vazio",
+      "playerRunStatus": "eliminated",
+      "playerPaidEntry": "completed"
+    },
+    {
+      "id": "tournament-2026-sha-gol-w29-1",
+      "tier": "Gold",
+      "start": "2026-07-16",
+      "end": "2026-07-20",
+      "ageDays": 169,
+      "status": "em_andamento",
+      "phase": "em_andamento",
+      "champion": null,
+      "runner_up": null,
+      "resolved": false,
+      "rankingResultRows": 3,
+      "hasWorldEventResult": false,
+      "playerSlots": "scheduled/times scheduled/vazio scheduled/vazio scheduled/vazio scheduled/vazio",
+      "playerRunStatus": "eliminated",
+      "playerPaidEntry": "completed"
+    },
+    {
+      "id": "tournament-2026-seo-gol-w38-1",
+      "tier": "Gold",
+      "start": "2026-09-17",
+      "end": "2026-09-21",
+      "ageDays": 106,
+      "status": "em_andamento",
+      "phase": "em_andamento",
+      "champion": null,
+      "runner_up": null,
+      "resolved": false,
+      "rankingResultRows": 3,
+      "hasWorldEventResult": false,
+      "playerSlots": "scheduled/times scheduled/vazio scheduled/vazio scheduled/vazio scheduled/vazio",
+      "playerRunStatus": "eliminated",
+      "playerPaidEntry": "completed"
+    },
+    {
+      "id": "tournament-2026-cas-gol-w40-1",
+      "tier": "Gold",
+      "start": "2026-10-01",
+      "end": "2026-10-05",
+      "ageDays": 92,
+      "status": "em_andamento",
+      "phase": "em_andamento",
+      "champion": null,
+      "runner_up": null,
+      "resolved": false,
+      "rankingResultRows": 3,
+      "hasWorldEventResult": false,
+      "playerSlots": "scheduled/times scheduled/vazio scheduled/vazio scheduled/vazio scheduled/vazio",
+      "playerRunStatus": "eliminated",
+      "playerPaidEntry": "completed"
+    },
+    {
+      "id": "tournament-2026-bkk-gol-w42-1",
+      "tier": "Gold",
+      "start": "2026-10-15",
+      "end": "2026-10-19",
+      "ageDays": 78,
+      "status": "em_andamento",
+      "phase": "em_andamento",
+      "champion": null,
+      "runner_up": null,
+      "resolved": false,
+      "rankingResultRows": 3,
+      "hasWorldEventResult": false,
+      "playerSlots": "scheduled/times scheduled/vazio scheduled/vazio scheduled/vazio scheduled/vazio",
+      "playerRunStatus": "eliminated",
+      "playerPaidEntry": "completed"
+    },
+    {
+      "id": "tournament-2026-pra-gol-w45-1",
+      "tier": "Gold",
+      "start": "2026-11-05",
+      "end": "2026-11-09",
+      "ageDays": 57,
+      "status": "em_andamento",
+      "phase": "em_andamento",
+      "champion": null,
+      "runner_up": null,
+      "resolved": false,
+      "rankingResultRows": 3,
+      "hasWorldEventResult": false,
+      "playerSlots": "scheduled/times scheduled/vazio scheduled/vazio scheduled/vazio scheduled/vazio",
+      "playerRunStatus": "eliminated",
+      "playerPaidEntry": "completed"
+    }
+  ],
+  "pastNotFinalized": 6,
+  "referenceResolvedTournaments": {
+    "sampled": 118,
+    "withRankingResults": 118,
+    "withWorldEvent": 118
+  },
+  "stuckSummary": {
+    "count": 6,
+    "withAnyRankingResult": 6,
+    "withWorldEvent": 0,
+    "withChampion": 0,
+    "byTier": {
+      "Gold": 6
+    },
+    "maxAgeDays": 183
+  }
+}

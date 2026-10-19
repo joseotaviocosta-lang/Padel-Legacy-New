@@ -1,0 +1,68 @@
+{
+  "file": "/tmp/claude-0/r7d1/s1-baseline/save-season-1.json",
+  "careerDate": "2027-01-05",
+  "scheduled_total": 275,
+  "cancelled": 0,
+  "finished_with_champion": 119,
+  "finished_without_champion": 0,
+  "future_or_in_progress": 150,
+  "in_grace_window": 0,
+  "overdue_unresolved": 6,
+  "player": {
+    "total": 38,
+    "eliminated_in_qualifying": 6,
+    "reached_main": 32,
+    "finished": 32,
+    "unresolved_overdue": 6
+  },
+  "champions_defined": 119,
+  "finished_with_world_event": 118,
+  "finished_with_ranking_rows": 118,
+  "duplicate_world_events": 0,
+  "duplicate_ranking_row_ids": 0,
+  "tournaments_with_repeated_team_in_placements": [],
+  "overdue_unresolved_list": [
+    {
+      "id": "tournament-2026-lon-gol-w27-1",
+      "tier": "Gold",
+      "end": "2026-07-06",
+      "ageDays": 183,
+      "playerRun": "eliminated"
+    },
+    {
+      "id": "tournament-2026-sha-gol-w29-1",
+      "tier": "Gold",
+      "end": "2026-07-20",
+      "ageDays": 169,
+      "playerRun": "eliminated"
+    },
+    {
+      "id": "tournament-2026-seo-gol-w38-1",
+      "tier": "Gold",
+      "end": "2026-09-21",
+      "ageDays": 106,
+      "playerRun": "eliminated"
+    },
+    {
+      "id": "tournament-2026-cas-gol-w40-1",
+      "tier": "Gold",
+      "end": "2026-10-05",
+      "ageDays": 92,
+      "playerRun": "eliminated"
+    },
+    {
+      "id": "tournament-2026-bkk-gol-w42-1",
+      "tier": "Gold",
+      "end": "2026-10-19",
+      "ageDays": 78,
+      "playerRun": "eliminated"
+    },
+    {
+      "id": "tournament-2026-pra-gol-w45-1",
+      "tier": "Gold",
+      "end": "2026-11-09",
+      "ageDays": 57,
+      "playerRun": "eliminated"
+    }
+  ]
+}

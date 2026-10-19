@@ -33,6 +33,8 @@ const MAX_DAYS = Number(args.maxDays || 0); // diagnóstico: encerra cedo (0 = t
 const RELOAD_EVERY_DAYS = Number(args.reloadEveryDays || 0); // diagnóstico: recarrega o save do disco a cada N dias
 const HASH_DAY0 = Boolean(args.hashDay0); // diagnóstico: checkpoint logo após criar o perfil
 const DECISION_PLAY = Number(args.decisionPlayChance ?? 0.95);
+const NO_PLAYER_REGISTRATION = Boolean(args.noPlayerRegistration); // CLOUD-7D1: jogador nunca se inscreve (mundo independente)
+const LEGACY_QUALIFYING_FLOW = Boolean(args.legacyQualifyingFlow); // CLOUD-7D1: reproduz o fluxo anterior à correção (diagnóstico)
 const TRAIN_CHANCE = 0.4;
 const PRACTICE_CHANCE = 0.1;
 const SEASON_DAYS = 365;
@@ -115,7 +117,7 @@ try {
   const { registerTournament, getTournamentRegistrationWindow } = await load('/src/lib/tournamentRegistration.js');
   const { finalizePracticeMatch } = await load('/src/game-core/matchLifecycle.js');
   const { createMatch, playPoint, getSetScoreString } = await load('/src/lib/matchEngine.js');
-  const { applyPlayerMatchToCanonicalBracket } = await load('/src/gameplay/worldTour/tournamentSettlement.js');
+  const { applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch } = await load('/src/gameplay/worldTour/tournamentSettlement.js');
   const { getRandomBots, getDifficultyForPlayer, BOTS_BY_DIFFICULTY } = await load('/src/lib/bots.js');
   const { isInjured, canPlayMatchToday, getChemistryBonus, getEnergyPenalty, getWorldRank, buildMatchRewardsPatch } = await load('/src/lib/padel.js');
   const { createTournamentRun, getCurrentTournamentMatch, recordTournamentMatchResult, countMainDrawWins } = await load('/src/gameplay/worldTour/TournamentRunManager.js');
@@ -228,6 +230,11 @@ try {
       }).rounds;
       bracketForFinal = rounds;
       await localGame.entities.Tournament.update(tournament.id, { bracket_history: rounds, current_phase: run.status === 'champion' ? 'concluido' : run.status });
+    } else if (Number(freshTournament?.bracket_schema_version) >= 2 && Array.isArray(freshTournament.bracket_history) && freshTournament.bracket_history.length && completedMatch?.stage === 'qualifying' && !won && !LEGACY_QUALIFYING_FLOW) {
+      // CLOUD-7D1 — mesmo passo do TournamentModal: derrota no qualifying => a dupla que eliminou o jogador herda a vaga.
+      const rounds = applyQualifyingExitToCanonicalBracket(freshTournament.bracket_history, { qualifierTeamName: opponentTeamNameOfRunMatch(completedMatch), date: completedMatch.date }).rounds;
+      bracketForFinal = rounds;
+      await localGame.entities.Tournament.update(tournament.id, { bracket_history: rounds, current_phase: run.status });
     }
     await localGame.entities.Match.create({
       id: `${match.id}-play`, profile_id: p.id, career_date: p.career_date, date: p.career_date, tournament_id: tournament.id, tournament_name: tournament.name,
@@ -398,7 +405,7 @@ try {
   for (let day = 0; day < totalDays; day += 1) {
     const season = Math.floor(day / SEASON_DAYS) + 1;
     if (args.traceDateDay && day === Number(args.traceDateDay) - 1) dateTrace = {};
-    if (day % 3 === 0) profile = await maybeRegister(profile);
+    if (day % 3 === 0 && !NO_PLAYER_REGISTRATION) profile = await maybeRegister(profile);
 
     // dia (botão real); se o motor bloquear por decisão/torneio, resolve com as APIs reais e tenta de novo
     let advanced = false;

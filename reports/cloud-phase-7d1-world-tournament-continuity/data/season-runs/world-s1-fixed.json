@@ -1,0 +1,25 @@
+{
+  "file": "/tmp/claude-0/r7d1/s1-fixed/save-season-1.json",
+  "careerDate": "2027-01-05",
+  "scheduled_total": 275,
+  "cancelled": 0,
+  "finished_with_champion": 125,
+  "finished_without_champion": 0,
+  "future_or_in_progress": 150,
+  "in_grace_window": 0,
+  "overdue_unresolved": 0,
+  "player": {
+    "total": 39,
+    "eliminated_in_qualifying": 7,
+    "reached_main": 32,
+    "finished": 39,
+    "unresolved_overdue": 0
+  },
+  "champions_defined": 125,
+  "finished_with_world_event": 124,
+  "finished_with_ranking_rows": 124,
+  "duplicate_world_events": 0,
+  "duplicate_ranking_row_ids": 0,
+  "tournaments_with_repeated_team_in_placements": [],
+  "overdue_unresolved_list": []
+}
