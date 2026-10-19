@@ -1,0 +1,136 @@
+{
+  "dirA": "/tmp/claude-0/s7c/seq-noreset",
+  "dirB": "/tmp/claude-0/s7c/seq-noreset-c1",
+  "checkpointsCompared": 52,
+  "identicalThroughout": false,
+  "firstDivergence": {
+    "checkpointIndex": 0,
+    "day": 7,
+    "date": "2026-01-12",
+    "diffEntities": [
+      "AthleteProfile",
+      "TeamRanking",
+      "CalendarEvent",
+      "WorldEvent",
+      "TournamentRegistration",
+      "FinancialTransaction",
+      "AthleteRankingHistory",
+      "AthleteRankingResult",
+      "CareerMessage",
+      "Partnership",
+      "TrainingSession",
+      "Relationship",
+      "player"
+    ]
+  },
+  "lastCommonCheckpoint": {
+    "day": 364,
+    "diffEntities": [
+      "AthleteProfile",
+      "TeamRanking",
+      "Tournament",
+      "Season",
+      "CalendarEvent",
+      "Club",
+      "WorldEvent",
+      "Post",
+      "TournamentRegistration",
+      "FinancialTransaction",
+      "AthleteRankingHistory",
+      "AthleteRankingResult",
+      "CareerMessage",
+      "Partnership",
+      "TrainingSession",
+      "Relationship",
+      "Match",
+      "PlayerAchievement",
+      "HistoryEntry",
+      "PressArticle",
+      "PlayerContract",
+      "ClubMember",
+      "AthleteCareerLegacy",
+      "MonthlyCareerReport",
+      "PartnerOffer",
+      "PartnershipLegacy",
+      "AnnualCareerReport",
+      "player"
+    ]
+  },
+  "finalWholeEqual": false,
+  "finalPartsDiff": [
+    "AthleteProfile",
+    "TeamRanking",
+    "Tournament",
+    "Season",
+    "CalendarEvent",
+    "Club",
+    "WorldEvent",
+    "Post",
+    "TournamentRegistration",
+    "FinancialTransaction",
+    "AthleteRankingHistory",
+    "AthleteRankingResult",
+    "CareerMessage",
+    "Partnership",
+    "TrainingSession",
+    "Relationship",
+    "Match",
+    "PlayerAchievement",
+    "HistoryEntry",
+    "PressArticle",
+    "PlayerContract",
+    "ClubMember",
+    "AthleteCareerLegacy",
+    "MonthlyCareerReport",
+    "PartnerOffer",
+    "PartnershipLegacy",
+    "AnnualCareerReport",
+    "player"
+  ],
+  "countersEqual": false,
+  "seasons": [
+    {
+      "season": 1,
+      "saveBytes": [
+        12587723,
+        12566090
+      ],
+      "dayMedian": [
+        328.1,
+        328.9
+      ],
+      "dayP95": [
+        623.6,
+        704
+      ],
+      "loadMs": [
+        97.3,
+        100.3
+      ],
+      "writeMs": [
+        250.4,
+        323.5
+      ],
+      "cloneMs": [
+        187.3,
+        168.9
+      ],
+      "heapMB": [
+        261.4,
+        213
+      ],
+      "worldRank": [
+        384,
+        380
+      ],
+      "tournamentsPlayed": [
+        39,
+        39
+      ],
+      "matches": [
+        48,
+        44
+      ]
+    }
+  ]
+}

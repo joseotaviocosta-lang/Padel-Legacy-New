@@ -1,0 +1,15 @@
+{
+  "dirA": "/tmp/claude-0/s7c/seqh",
+  "dirB": "/tmp/claude-0/s7c/seqh-c1",
+  "checkpointsCompared": 15,
+  "identicalThroughout": true,
+  "firstDivergence": null,
+  "lastCommonCheckpoint": {
+    "day": 14,
+    "diffEntities": []
+  },
+  "finalWholeEqual": true,
+  "finalPartsDiff": [],
+  "countersEqual": true,
+  "seasons": []
+}

@@ -25,9 +25,12 @@ const OUT0 = path.resolve(String(args.out || `/tmp/cloud7c-${STRATEGY}`));
 let OUT = OUT0;
 const CAREERS = Number(args.careers || 1);
 const RESET_SINGLETONS = Boolean(args.resetSingletons);
+const RESEED_ALWAYS = Boolean(args.reseedAlways);
 const RELOAD = new Set(String(args.reloadSeasons || '').split(',').filter(Boolean).map(Number));
 const DUMP = new Set(String(args.dumpSeasons || '').split(',').filter(Boolean).map(Number));
 const HASH_EVERY = Number(args.hashEvery ?? 7);
+const MAX_DAYS = Number(args.maxDays || 0); // diagnóstico: encerra cedo (0 = temporadas completas)
+const HASH_DAY0 = Boolean(args.hashDay0); // diagnóstico: checkpoint logo após criar o perfil
 const DECISION_PLAY = Number(args.decisionPlayChance ?? 0.95);
 const TRAIN_CHANCE = 0.4;
 const PRACTICE_CHANCE = 0.1;
@@ -46,9 +49,21 @@ let worldRng = mulberry32(hashSeed(`${SEED}-world`));
 Math.random = () => worldRng();
 const RealDate = Date;
 let fakeNow = new RealDate('2026-01-01T00:00:00.000Z').getTime() + (hashSeed(SEED) % 100000);
+let dateTrace = null; // diagnóstico (--traceDateDay): assinatura de quem consome ticks do relógio falso
+const traceTick = (kind) => {
+  if (!dateTrace) return;
+  const frames = new Error().stack.split('\n').slice(3, 9).map((l) => l.trim().replace(/\(?file:\/\/\/[^)]*Padel-Legacy-New\//, '(').replace(/\?t=\d+/g, '').replace(/:\d+:\d+\)?$/, ''));
+  const key = `${kind} <- ${frames.join(' <- ')}`;
+  dateTrace[key] = (dateTrace[key] || 0) + 1;
+};
+// `--clockIgnoresPersistence` (diagnóstico): leituras do relógio feitas pela persistência/telemetria NÃO avançam o relógio
+// falso; só o código de jogo consome ticks. Isola o acoplamento relógio-falso x cadência de gravação/backup.
+const CLOCK_IGNORES_PERSISTENCE = Boolean(args.clockIgnoresPersistence);
+const isInfraCaller = () => /GameStorage|BackupManager|betaDiagnostics|performanceProbe|storageIOProbe|TauriStorage|BrowserStorage/.test(new Error().stack);
+const nextTick = () => (CLOCK_IGNORES_PERSISTENCE && isInfraCaller() ? fakeNow : (fakeNow += 1000));
 globalThis.Date = class DeterministicDate extends RealDate {
-  constructor(...a) { if (a.length === 0) super((fakeNow += 1000)); else super(...a); }
-  static now() { return (fakeNow += 1000); }
+  constructor(...a) { if (a.length === 0) { traceTick('new Date()'); super(nextTick()); } else super(...a); }
+  static now() { traceTick('Date.now()'); return nextTick(); }
 };
 const hex = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 Object.defineProperty(globalThis.crypto, 'randomUUID', { configurable: true, writable: true, value: () => `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}` });
@@ -112,11 +127,15 @@ try {
   // Com `--resetSingletons` reinicia, entre carreiras, os singletons conhecidos (sequência de ids, transação ativa);
   // sem ela reproduz o uso real de dois jogos no mesmo processo (contaminação da 7B2A).
   for (let careerIndex = 0; careerIndex < CAREERS; careerIndex += 1) {
-  if (careerIndex > 0) {
-    OUT = `${OUT0}-c${careerIndex}`; fs.mkdirSync(OUT, { recursive: true });
+  // `--reseedAlways`: a carreira 0 também reinicia RNG/relógio logo antes de criar a carreira. Sem isso a carreira 0 parte de um
+  // fluxo já consumido pelo carregamento dos módulos e a carreira 1 (reseed puro) NÃO é comparável — a divergência seria do harness.
+  if (careerIndex > 0 || RESEED_ALWAYS) {
     worldRng = mulberry32(hashSeed(`${SEED}-world`));
     fakeNow = new RealDate('2026-01-01T00:00:00.000Z').getTime() + (hashSeed(SEED) % 100000);
     decisionRng = mulberry32(hashSeed(`${SEED}-decisions`));
+  }
+  if (careerIndex > 0) {
+    OUT = `${OUT0}-c${careerIndex}`; fs.mkdirSync(OUT, { recursive: true });
     progress = { strategy: STRATEGY, seed: SEED, seasonsTarget: SEASONS, seasonsDone: 0, status: 'running', careerIndex };
     startedAt = RealDate.now();
     inc.resetIncrementalStats();
@@ -352,15 +371,18 @@ try {
     for (const [k, v] of Object.entries(L.entities)) parts[k] = sha(v);
     parts.player = sha(L.player);
     log('hashes.jsonl', { day, date: profile.career_date, whole: sha({ ...parts }), parts });
+    if (args.dumpDay && Number(args.dumpDay) === day) fs.writeFileSync(path.join(OUT, `save-day${day}.json`), file());
   };
 
   // ── loop principal ──
-  const totalDays = SEASONS * SEASON_DAYS;
+  const totalDays = MAX_DAYS || SEASONS * SEASON_DAYS;
+  if (HASH_DAY0) { await checkpoint(0); if (args.dumpDay0) fs.writeFileSync(path.join(OUT, 'save-day0.json'), file()); }
   let seasonDayMs = [];
   let seasonStartCounters = { ...counters };
   const sizeOf = () => file()?.length || 0;
   for (let day = 0; day < totalDays; day += 1) {
     const season = Math.floor(day / SEASON_DAYS) + 1;
+    if (args.traceDateDay && day === Number(args.traceDateDay) - 1) dateTrace = {};
     if (day % 3 === 0) profile = await maybeRegister(profile);
 
     // dia (botão real); se o motor bloquear por decisão/torneio, resolve com as APIs reais e tenta de novo
@@ -388,6 +410,7 @@ try {
         }
       }
     }
+    if (dateTrace && args.traceDateDay && day === Number(args.traceDateDay) - 1) { fs.writeFileSync(path.join(OUT, 'date-trace.json'), JSON.stringify(dateTrace, null, 1)); dateTrace = null; }
     if (!advanced) { progress.status = 'stuck'; progress.stuckAtDay = day; saveProgress(); break; }
 
     if (decisionRng() < TRAIN_CHANCE && Number(profile.trainings_today || 0) < 3) {

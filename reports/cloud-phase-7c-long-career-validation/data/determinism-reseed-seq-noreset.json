@@ -1,0 +1,60 @@
+{
+  "dirA": "/tmp/claude-0/s7c/seqe-noreset",
+  "dirB": "/tmp/claude-0/s7c/seqe-noreset-c1",
+  "checkpointsCompared": 15,
+  "identicalThroughout": false,
+  "firstDivergence": {
+    "checkpointIndex": 1,
+    "day": 1,
+    "date": "2026-01-06",
+    "diffEntities": [
+      "AthleteProfile",
+      "TeamRanking",
+      "CalendarEvent",
+      "WorldEvent",
+      "TournamentRegistration",
+      "FinancialTransaction",
+      "AthleteRankingHistory",
+      "AthleteRankingResult",
+      "CareerMessage",
+      "Partnership",
+      "player"
+    ]
+  },
+  "lastCommonCheckpoint": {
+    "day": 14,
+    "diffEntities": [
+      "AthleteProfile",
+      "TeamRanking",
+      "CalendarEvent",
+      "WorldEvent",
+      "TournamentRegistration",
+      "FinancialTransaction",
+      "AthleteRankingHistory",
+      "AthleteRankingResult",
+      "CareerMessage",
+      "Partnership",
+      "TrainingSession",
+      "Relationship",
+      "player"
+    ]
+  },
+  "finalWholeEqual": false,
+  "finalPartsDiff": [
+    "AthleteProfile",
+    "TeamRanking",
+    "CalendarEvent",
+    "WorldEvent",
+    "TournamentRegistration",
+    "FinancialTransaction",
+    "AthleteRankingHistory",
+    "AthleteRankingResult",
+    "CareerMessage",
+    "Partnership",
+    "TrainingSession",
+    "Relationship",
+    "player"
+  ],
+  "countersEqual": true,
+  "seasons": []
+}
