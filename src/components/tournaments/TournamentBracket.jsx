@@ -149,8 +149,10 @@ function Info({ icon: Icon, value, color }) {
 function MatchCard({ match, number, byeNames = [] }) {
   const aState = describeBracketEntry(match.team_a, byeNames);
   const bState = describeBracketEntry(match.team_b, byeNames);
-  const aWon = match.winner === match.team_a;
-  const bWon = match.winner === match.team_b;
+  // LOCAL-7E — com homônimas a chave traz `winner_pair_id`; o destaque segue o id, não o nome.
+  const byId = Boolean(match.winner_pair_id && match.team_a_pair_id && match.team_b_pair_id);
+  const aWon = byId ? match.winner_pair_id === match.team_a_pair_id : match.winner === match.team_a;
+  const bWon = byId ? match.winner_pair_id === match.team_b_pair_id : match.winner === match.team_b;
   const hasBye = aState.kind === 'bye' || bState.kind === 'bye';
   const unresolved = /^Vencedor Jogo/.test(match.team_a) || /^Vencedor Jogo/.test(match.team_b);
   const matchLabel = match.score || (hasBye ? 'BYE' : unresolved ? 'A definir' : match.status === 'scheduled' ? 'Agendada' : '—');

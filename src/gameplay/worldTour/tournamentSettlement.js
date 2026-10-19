@@ -57,6 +57,39 @@ export function normalizeTournamentTeam(value) {
   return asTeam(value).name;
 }
 
+// LOCAL-7E — IDENTIDADE DA DUPLA NA CHAVE.
+//
+// A chave sempre identificou equipes por NOME (`team_a`/`team_b`/`winner`/
+// `placements[].team`). Duas duplas distintas com o mesmo nome de exibição
+// (o gerador de atletas não garante nomes únicos — CLOUD-7C: dois "Hugo López"
+// e dois "Rafael López") eram fundidas ou duplicadas nas colocações, e o
+// settlement as resolvia pelo nome.
+//
+// A identidade canônica já existe e é a do resto do pipeline: `pair.id`
+// (Partnership ou `profile-pair:`), a mesma de `draw_pair_ids`. Quando o
+// sorteio tem nomes REPETIDOS e todo entrante traz `pair_id`, a chave grava o
+// id ao lado de cada nome (`team_a_pair_id`/`team_b_pair_id`/`winner_pair_id`,
+// `placements[].pair_id`). Sem colisão nada muda: a saída continua byte a
+// byte igual (saves, determinismo e tamanho preservados). O nome segue sendo
+// só rótulo.
+export function hasDuplicateTeamNames(teams = []) {
+  const names = teams.map((team) => asTeam(team).name);
+  return new Set(names).size !== names.length;
+}
+
+const sideKey = (name, pairId) => (pairId ? `id:${pairId}` : `name:${name}`);
+
+function matchSides(match) {
+  const a = { name: match.team_a, pair_id: match.team_a_pair_id || null };
+  const b = { name: match.team_b, pair_id: match.team_b_pair_id || null };
+  const aWon = match.winner_pair_id && a.pair_id && b.pair_id
+    ? match.winner_pair_id === a.pair_id
+    : match.winner === match.team_a;
+  return { a, b, winner: aWon ? a : b, loser: aWon ? b : a };
+}
+
+const withPairId = (entry, pairId) => (pairId ? { ...entry, pair_id: pairId } : entry);
+
 // ═══════════════════════════════════════════════════════════════════════
 // Playthrough 4.6 — SEEDING ESPORTIVO (item 1-5, 8, 16)
 // ═══════════════════════════════════════════════════════════════════════
@@ -243,6 +276,12 @@ export function buildSeededDrawSlots({ entrants = [], tournamentId = 'tournament
 export function buildCanonicalTournamentBracket({ tournamentId, participants = [], date = null, roundDates = null, seedCount = null } = {}) {
   const entrants = participants.map(asTeam).filter((team) => team.name);
   if (entrants.length < 2) throw new Error('Uma chave precisa de pelo menos duas duplas.');
+  // LOCAL-7E — ids só entram na chave quando há nome repetido (ver acima).
+  const carryIds = hasDuplicateTeamNames(entrants) && entrants.every((team) => team.pair_id);
+  const idOf = (team) => (carryIds ? team.pair_id : null);
+  const sideIds = (teamA, teamB, winner) => (carryIds
+    ? { team_a_pair_id: teamA.pair_id, team_b_pair_id: teamB.pair_id, winner_pair_id: winner.pair_id }
+    : {});
 
   const { slots } = buildSeededDrawSlots({ entrants, tournamentId, seedCount });
   const rounds = [];
@@ -256,13 +295,14 @@ export function buildCanonicalTournamentBracket({ tournamentId, participants = [
     const next = [];
     const matches = [];
     const byes = [];
+    const byePairIds = [];
     const roundDate = Array.isArray(roundDates) ? (roundDates[0] ?? date) : date;
     for (let index = 0; index < slots.length; index += 2) {
       const teamA = slots[index] ? { ...slots[index], sourceMatchId: null } : null;
       const teamB = slots[index + 1] ? { ...slots[index + 1], sourceMatchId: null } : null;
       if (!teamA && !teamB) continue; // par de fantasmas — impossível por construção, defensivo.
-      if (!teamB) { next.push(teamA); byes.push(teamA.name); continue; }
-      if (!teamA) { next.push(teamB); byes.push(teamB.name); continue; }
+      if (!teamB) { next.push(teamA); byes.push(teamA.name); byePairIds.push(idOf(teamA)); continue; }
+      if (!teamA) { next.push(teamB); byes.push(teamB.name); byePairIds.push(idOf(teamB)); continue; }
       const matchId = `${tournamentId || 'tournament'}:r0:m${index / 2}`;
       const [winner, loser] = chooseWinner(teamA, teamB, `${tournamentId}:0:${index / 2}`);
       matches.push({
@@ -273,10 +313,11 @@ export function buildCanonicalTournamentBracket({ tournamentId, participants = [
         team_a: teamA.name,
         team_b: teamB.name,
         winner: winner.name,
+        ...sideIds(teamA, teamB, winner),
         score: scoreFor(`${tournamentId}:0:${index / 2}`, winner === teamA),
       });
       next.push({ ...winner, sourceMatchId: matchId });
-      eliminated.push({ team: loser.name, roundIndex: 0 });
+      eliminated.push({ team: loser.name, pairId: idOf(loser), roundIndex: 0 });
     }
     rounds.push({
       // Rótulo pela contagem REAL de entrantes (item 6, Playthrough 4.5B:
@@ -285,6 +326,7 @@ export function buildCanonicalTournamentBracket({ tournamentId, participants = [
       // jogador. Da rodada 1 em diante o esqueleto já é a contagem real.
       round: roundLabel(entrants.length), date: roundDate, status: 'completed',
       is_final: next.length === 1, matches, ...(byes.length ? { byes } : {}),
+      ...(byes.length && carryIds ? { bye_pair_ids: byePairIds } : {}),
     });
     roundIndex = 1;
     current = next;
@@ -308,10 +350,11 @@ export function buildCanonicalTournamentBracket({ tournamentId, participants = [
         team_a: teamA.name,
         team_b: teamB.name,
         winner: winner.name,
+        ...sideIds(teamA, teamB, winner),
         score: scoreFor(`${tournamentId}:${roundIndex}:${index / 2}`, winner === teamA),
       });
       next.push({ ...winner, sourceMatchId: matchId });
-      eliminated.push({ team: loser.name, roundIndex });
+      eliminated.push({ team: loser.name, pairId: idOf(loser), roundIndex });
     }
     rounds.push({ round: roundLabel(current.length), date: roundDate, status: 'completed', is_final: next.length === 1, matches });
     current = next;
@@ -319,10 +362,21 @@ export function buildCanonicalTournamentBracket({ tournamentId, participants = [
   }
 
   const champion = current[0].name;
-  const runnerUp = eliminated.find((entry) => entry.roundIndex === rounds.length - 1)?.team || null;
-  const finishOrder = [champion, runnerUp, ...eliminated.filter((entry) => entry.team !== runnerUp).map((entry) => entry.team).reverse()];
-  const placements = finishOrder.map((team, index) => ({ position: index + 1, team, finish: placementLabel(index, entrants.length) }));
-  return { bracket_history: rounds, champion, runner_up: runnerUp, placements, participants: entrants.map((team) => team.name) };
+  // LOCAL-7E — o vice sai da lista de eliminados pela ENTRADA (a última: a
+  // final é a última partida), não pelo nome; filtrar por nome apagava
+  // também a homônima eliminada antes (colocação fundida, CLOUD-7C).
+  const runnerUpEntry = eliminated.at(-1)?.roundIndex === rounds.length - 1 ? eliminated.at(-1) : null;
+  const runnerUp = runnerUpEntry?.team || null;
+  const finishOrder = [
+    { team: champion, pairId: idOf(current[0]) },
+    ...(runnerUpEntry ? [runnerUpEntry] : []),
+    ...eliminated.filter((entry) => entry !== runnerUpEntry).reverse(),
+  ];
+  const placements = finishOrder.map((entry, index) => withPairId({ position: index + 1, team: entry.team, finish: placementLabel(index, entrants.length) }, entry.pairId));
+  return {
+    bracket_history: rounds, champion, runner_up: runnerUp, placements, participants: entrants.map((team) => team.name),
+    ...(carryIds ? { champion_pair_id: idOf(current[0]), runner_up_pair_id: runnerUpEntry?.pairId || null } : {}),
+  };
 }
 
 // Item 4 (Playthrough 4.5B) — validador PURO do grafo estrutural de uma
@@ -360,16 +414,19 @@ export function validateCanonicalBracketGraph(bracket) {
   }
 
   // Invariantes 3/4 — nenhuma dupla ocupa dois slots (partida OU bye) na
-  // mesma rodada.
+  // mesma rodada. LOCAL-7E — a dupla é o `pair_id` quando a chave o traz
+  // (homônimas são duplas distintas, não repetição).
   for (const round of rounds) {
     const seenThisRound = new Set();
-    const names = [
-      ...(round.matches || []).flatMap((match) => [match.team_a, match.team_b]),
-      ...(Array.isArray(round.byes) ? round.byes : []),
-    ].filter(Boolean);
-    for (const name of names) {
-      if (seenThisRound.has(name)) errors.push(`"${name}" aparece mais de uma vez na rodada "${round.round}"`);
-      seenThisRound.add(name);
+    const byes = Array.isArray(round.byes) ? round.byes : [];
+    const sides = [
+      ...(round.matches || []).flatMap((match) => [[match.team_a, match.team_a_pair_id], [match.team_b, match.team_b_pair_id]]),
+      ...byes.map((name, index) => [name, round.bye_pair_ids?.[index]]),
+    ].filter(([name]) => name);
+    for (const [name, pairId] of sides) {
+      const key = sideKey(name, pairId);
+      if (seenThisRound.has(key)) errors.push(`"${name}" aparece mais de uma vez na rodada "${round.round}"`);
+      seenThisRound.add(key);
     }
   }
 
@@ -380,6 +437,12 @@ export function validateCanonicalBracketGraph(bracket) {
     for (const sourceId of (match.source_match_ids || [])) {
       const source = matchById.get(sourceId);
       if (!source) { errors.push(`${match.match_id} referencia source_match_id inexistente: ${sourceId}`); continue; }
+      if (source.match.winner_pair_id && match.team_a_pair_id && match.team_b_pair_id) {
+        if (source.match.winner_pair_id !== match.team_a_pair_id && source.match.winner_pair_id !== match.team_b_pair_id) {
+          errors.push(`vencedor de ${sourceId} (${source.match.winner_pair_id}) não aparece em ${match.match_id} (${match.team_a_pair_id} x ${match.team_b_pair_id})`);
+        }
+        continue;
+      }
       if (source.match.winner && source.match.winner !== match.team_a && source.match.winner !== match.team_b) {
         errors.push(`vencedor de ${sourceId} ("${source.match.winner}") não aparece em ${match.match_id} (team_a="${match.team_a}", team_b="${match.team_b}")`);
       }
@@ -680,21 +743,31 @@ export function deriveTournamentFactsFromFullBracket(rounds = []) {
   for (const round of rounds) {
     for (const match of round.matches || []) {
       if (!match.winner || !match.team_a || !match.team_b) return null;
-      eliminated.push({ team: match.winner === match.team_a ? match.team_b : match.team_a });
+      eliminated.push(matchSides(match).loser);
     }
   }
   const finalMatch = rounds.at(-1)?.matches?.[0];
   if (!finalMatch?.winner) return null;
-  const champion = finalMatch.winner;
-  const runnerUp = finalMatch.team_a === champion ? finalMatch.team_b : finalMatch.team_a;
-  const finishOrder = [champion, runnerUp, ...eliminated.filter((entry) => entry.team !== runnerUp).map((entry) => entry.team).reverse()];
-  const placements = finishOrder.map((team, index) => ({ position: index + 1, team, finish: placementLabel(index, entrantCount) }));
+  const { winner: championSide, loser: runnerUpSide } = matchSides(finalMatch);
+  // LOCAL-7E — a final é a última partida: o vice é a última entrada de
+  // `eliminated`, retirada por posição e não por nome (o filtro por nome
+  // apagava também a homônima eliminada antes).
+  const finishOrder = [championSide, runnerUpSide, ...eliminated.slice(0, -1).reverse()];
+  const placements = finishOrder.map((side, index) => withPairId({ position: index + 1, team: side.name, finish: placementLabel(index, entrantCount) }, side.pair_id));
+  const participantsByKey = new Map();
+  for (const round of rounds) {
+    for (const match of round.matches || []) {
+      const { a, b } = matchSides(match);
+      for (const side of [a, b]) if (side.name && !participantsByKey.has(sideKey(side.name, side.pair_id))) participantsByKey.set(sideKey(side.name, side.pair_id), side.name);
+    }
+  }
   return {
     bracket_history: clone(rounds),
-    champion,
-    runner_up: runnerUp,
+    champion: championSide.name,
+    runner_up: runnerUpSide.name,
     placements,
-    participants: [...new Set(rounds.flatMap((round) => (round.matches || []).flatMap((match) => [match.team_a, match.team_b])))].filter(Boolean),
+    participants: [...participantsByKey.values()],
+    ...(championSide.pair_id && runnerUpSide.pair_id ? { champion_pair_id: championSide.pair_id, runner_up_pair_id: runnerUpSide.pair_id } : {}),
   };
 }
 
@@ -712,9 +785,62 @@ export function finalizeTournamentFromBracket({ tournament, bracket, date = null
     resolved_at: date,
     champion: bracket.champion,
     runner_up: bracket.runner_up,
+    ...(bracket.champion_pair_id ? { champion_pair_id: bracket.champion_pair_id, runner_up_pair_id: bracket.runner_up_pair_id || null } : {}),
     participants: bracket.participants,
     bracket_history: clone(bracket.bracket_history),
     placements: clone(bracket.placements),
   };
   return { idempotent: false, settlementId, patch, result: { ...tournament, ...patch } };
+}
+
+// LOCAL-7E — colocação de cada dupla sorteada a partir do resultado da chave.
+//
+//   * `placements[].pair_id` presente (chave nova com homônimas): por id.
+//   * nome único no campo (o caso normal, inclusive saves antigos): por nome,
+//     exatamente como antes — inclusive o fallback `index + 1` de quem não
+//     aparece nas colocações.
+//   * nome REPETIDO sem id (chave sorteada antes desta correção): ambíguo. Não
+//     se escolhe qual homônima ficou onde. Cada uma recebe a PIOR posição que
+//     o nome pode representar — a pior das listadas, ou a última do torneio
+//     quando a chave fundiu as duas e listou menos entradas que duplas. Nunca
+//     credita acima do que a chave prova; campeão/vice ambíguos ficam `null`
+//     (quem chama não escolhe um deles arbitrariamente).
+export function resolvePairPlacements(pairs = [], result = {}) {
+  const placements = Array.isArray(result.placements) ? result.placements : [];
+  const byPairId = new Map(placements.filter((placement) => placement.pair_id).map((placement) => [placement.pair_id, placement.position]));
+  const positionsByName = new Map();
+  for (const placement of placements) {
+    if (!positionsByName.has(placement.team)) positionsByName.set(placement.team, []);
+    positionsByName.get(placement.team).push(Number(placement.position));
+  }
+  const pairsByName = new Map();
+  for (const pair of pairs) {
+    if (!pairsByName.has(pair.name)) pairsByName.set(pair.name, []);
+    pairsByName.get(pair.name).push(pair);
+  }
+  const lastPosition = Math.max(pairs.length, placements.length, 1);
+  const ambiguousNames = new Set();
+  const positions = new Map();
+  pairs.forEach((pair, index) => {
+    if (byPairId.has(pair.id)) { positions.set(pair.id, byPairId.get(pair.id)); return; }
+    const homonyms = pairsByName.get(pair.name) || [];
+    const listed = positionsByName.get(pair.name) || [];
+    if (homonyms.length > 1 && !byPairId.size) {
+      ambiguousNames.add(pair.name);
+      positions.set(pair.id, listed.length >= homonyms.length ? Math.max(...listed) : lastPosition);
+      return;
+    }
+    positions.set(pair.id, listed.length ? listed[0] : index + 1);
+  });
+  const pick = (pairId, name) => {
+    if (pairId) return pairs.find((pair) => pair.id === pairId) || null;
+    const matches = pairsByName.get(name) || [];
+    return matches.length === 1 ? matches[0] : null;
+  };
+  return {
+    positions,
+    champion: pick(result.champion_pair_id, result.champion),
+    runnerUp: pick(result.runner_up_pair_id, result.runner_up),
+    ambiguousNames: [...ambiguousNames],
+  };
 }

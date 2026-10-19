@@ -56,7 +56,7 @@ const normalizeIdentityName = (value) => String(value || '').trim().toLocaleLowe
 // `diagnostics.syntheticFallback`, marcado como synthetic e NUNCA com rank
 // canônico. Evita reutilizar a mesma dupla real e evita um template cujo nome
 // colida com atleta real já presente (dupla entrada de identidade).
-function createFieldFillerFactory({ field, tournament, profile, usedPairIds, usedMemberNames, diagnostics }) {
+function createFieldFillerFactory({ field, tournament, profile, usedPairIds, usedMemberNames, usedTeamNames, diagnostics }) {
   const queue = (field.entrants || []).filter((pair) => !usedPairIds.has(pair.id));
   let cursor = 1000;
   let guard = 0;
@@ -67,7 +67,10 @@ function createFieldFillerFactory({ field, tournament, profile, usedPairIds, use
       const pair = queue.shift();
       if (pair) {
         if (usedPairIds.has(pair.id)) continue;
+        // LOCAL-7E — homônima de uma equipe já na chave fica de fora (ver usedTeamNames).
+        if (usedTeamNames.has(normalizeIdentityName(pair.name))) continue;
         usedPairIds.add(pair.id);
+        usedTeamNames.add(normalizeIdentityName(pair.name));
         pair.athletes.forEach((athlete) => athlete?.name && usedMemberNames.add(normalizeIdentityName(athlete.name)));
         fillers.push({ name: pair.name, strength: Number(pair.strength) || 0 });
         continue;
@@ -78,6 +81,7 @@ function createFieldFillerFactory({ field, tournament, profile, usedPairIds, use
       if (members.some((member) => usedMemberNames.has(normalizeIdentityName(member?.name)))) continue;
       members.forEach((member) => member?.id && usedPairIds.add(member.id));
       diagnostics.syntheticFallback += 1;
+      usedTeamNames.add(normalizeIdentityName(members.map((member) => member.name).filter(Boolean).join(' & ')));
       fillers.push({
         name: members.map((member) => member.name).filter(Boolean).join(' & '),
         strength: members.reduce((sum, member) => sum + Number(member.overall_rating || 50), 0) / members.length,
@@ -247,6 +251,15 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
   const usedPairIds = new Set();
   const usedMemberNames = new Set();
   if (partner?.name) usedMemberNames.add(normalizeIdentityName(partner.name));
+  // LOCAL-7E — a chave do jogador identifica equipes por NOME (propagação de
+  // vencedor, cascata, saída no qualifying). Duas duplas REAIS distintas com o
+  // mesmo nome de exibição (o gerador não garante nomes únicos) seriam
+  // indistinguíveis ali. Dentro de uma mesma chave, nenhuma equipe repete o
+  // nome de outra: a homônima de quem já entrou fica de fora do preenchimento
+  // ou cede a vaga ao fallback, como o catálogo sintético já fazia por membro.
+  // A escolha dos adversários do qualifying não muda; os nomes deles só entram
+  // como já usados.
+  const usedTeamNames = new Set([normalizeIdentityName(playerTeam)]);
   const diagnostics = field?.diagnostics || { syntheticFallback: 0, realSelected: 0, candidatePool: 0 };
   const seededMainOpponentRanks = computeSeededOpponentRanksForMainDraw({
     tournamentId: tournament?.id, drawSize: mainDrawSize, playerRank: rank.rank,
@@ -259,6 +272,7 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
     const pair = pairId ? field.pairsById.get(pairId) : null;
     if (pair) {
       usedPairIds.add(pair.id);
+      usedTeamNames.add(normalizeIdentityName(pair.name));
       pair.athletes.forEach((athlete) => athlete?.name && usedMemberNames.add(normalizeIdentityName(athlete.name)));
       return {
         members: pair.athletes.map(fieldMemberIdentity).filter(Boolean),
@@ -269,6 +283,7 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
     let members = generateTournamentOpponent(tournament, profile, index, [partner?.id].filter(Boolean), opponentRank, 'qualifying');
     if (members.length < 2) members = generateTournamentOpponent(tournament, profile, index + 300, [partner?.id].filter(Boolean), opponentRank, 'qualifying');
     members.forEach((item) => item?.name && usedMemberNames.add(normalizeIdentityName(item.name)));
+    usedTeamNames.add(normalizeIdentityName(members.map((item) => item?.name).filter(Boolean).join(' & ')));
     return { members, rank: opponentRank, pairId: null, source: 'synthetic-qualifying' };
   });
 
@@ -276,8 +291,9 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
   const mainEntries = mainRounds.map((round, index) => {
     const pairId = field?.mainOpponentIds?.[index] || null;
     const pair = pairId ? field.pairsById.get(pairId) : null;
-    if (pair) {
+    if (pair && !usedTeamNames.has(normalizeIdentityName(pair.name))) {
       usedPairIds.add(pair.id);
+      usedTeamNames.add(normalizeIdentityName(pair.name));
       pair.athletes.forEach((athlete) => athlete?.name && usedMemberNames.add(normalizeIdentityName(athlete.name)));
       return {
         name: pair.name,
@@ -296,6 +312,7 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
       members = generateTournamentOpponent(tournament, profile, index + 500, exclude, opponentRank, 'main');
     }
     members.forEach((item) => item?.name && usedMemberNames.add(normalizeIdentityName(item.name)));
+    usedTeamNames.add(normalizeIdentityName(members.map((item) => item?.name).filter(Boolean).join(' & ')));
     diagnostics.syntheticFallback = (diagnostics.syntheticFallback || 0) + 1;
     return {
       name: members.map((item) => item.name).filter(Boolean).join(' & ') || `Adversário ${index + 1}`,
@@ -336,7 +353,7 @@ async function createDrawnRun({ profile, tournament, calendarEvent }) {
   // catálogo só entra como fallback explícito.
   const mainOpponents = mainEntries.map((entry) => ({ name: entry.name }));
   const fillerFactory = createFieldFillerFactory({
-    field: field || { entrants: [] }, tournament, profile, usedPairIds, usedMemberNames, diagnostics,
+    field: field || { entrants: [] }, tournament, profile, usedPairIds, usedMemberNames, usedTeamNames, diagnostics,
   });
   let canonicalBracket = null;
   try {

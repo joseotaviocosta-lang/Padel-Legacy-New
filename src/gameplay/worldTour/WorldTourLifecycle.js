@@ -8,7 +8,7 @@ import {
   RANKING_RESULT_ENTITY, RANKING_RESULT_POPULATION_CAP,
   buildLegacySeedRow, needsLegacySeed, computeRollingPoints, groupResultsByAthlete,
 } from '@/game-core/rankingWindow.js';
-import { buildCanonicalTournamentBracket, buildSeededDrawSlots, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket } from './tournamentSettlement.js';
+import { buildCanonicalTournamentBracket, buildSeededDrawSlots, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket, resolvePairPlacements } from './tournamentSettlement.js';
 import { getCanonicalRoundDates } from '@/lib/tournamentSchedule.js';
 import { verifySaveFoundation, ensureWorldSeed2025 } from '@/lib/saveFoundation.js';
 import { getTeamRankings } from '@/lib/teamRanking.js';
@@ -750,6 +750,8 @@ export async function ensureWorldTourDraws(careerDate) {
           name: pair.name,
           strength: pairScore(pair, tournament),
           seedRank: pairSeedRank(pair),
+          // LOCAL-7E — identidade da dupla; só é gravada na chave quando há homônimas.
+          pair_id: pair.id,
         })),
       });
       await entities.Tournament.update(tournament.id, {
@@ -1573,6 +1575,7 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
             name: pair.name,
             strength: pairScore(pair, tournament),
             seedRank: pairEntryRank(pair),
+            pair_id: pair.id,
           })),
         });
       const settlement = finalizeTournamentFromBracket({ tournament, bracket, date: careerDate });
@@ -1580,12 +1583,19 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         settlement.patch.bracket_origin = 'retroactive-recovery';
         settlement.patch.bracket_recovery_date = careerDate;
       }
-      const champion = ordered.find((pair) => pair.name === settlement.result.champion) || ordered[0];
-      const runnerUp = ordered.find((pair) => pair.name === settlement.result.runner_up) || ordered[1];
-      const placementByTeam = new Map(settlement.result.placements.map((placement) => [placement.team, placement.position]));
+      // LOCAL-7E — colocação/campeão/vice por identidade da dupla (por nome só
+      // quando o nome é único no campo). Homônimas sem id na chave (sorteio
+      // anterior à correção) são ambíguas: recebem a pior posição possível e
+      // campeão/vice não são atribuídos a nenhuma delas por palpite.
+      const identity = resolvePairPlacements(ordered, settlement.result);
+      const ambiguous = identity.ambiguousNames.length > 0;
+      const champion = identity.champion || (ambiguous ? null : ordered[0]);
+      const runnerUp = identity.runnerUp || (ambiguous ? null : ordered[1]);
+      const championName = champion?.name || settlement.result.champion;
+      const runnerUpName = runnerUp?.name || settlement.result.runner_up;
 
       ordered.forEach((pair, index) => {
-        const position = Math.max(1, Number(placementByTeam.get(pair.name) || index + 1));
+        const position = Math.max(1, Number(identity.positions.get(pair.id) || index + 1));
         const { finish, points, wins: finishWins } = resolveFinish(tournament, position - 1, ordered.length);
         // Playthrough 5.17, Parte J — LEDGER REAL DA DUPLA.
         //
@@ -1651,21 +1661,22 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         // seguros como referência pendurada (dangling) depois que a poda
         // remover — nenhum consumidor mais PRECISA deles pra saber quem
         // venceu ou classificar reais-vs-bots.
-        champion_athlete_ids: champion.athletes.map((athlete) => athlete.id),
-        champion_athlete_names: champion.athletes.map((athlete) => athlete.name),
-        runner_up_athlete_ids: runnerUp.athletes.map((athlete) => athlete.id),
-        runner_up_athlete_names: runnerUp.athletes.map((athlete) => athlete.name),
-        champion_partnership_id: champion.partnershipId,
-        runner_up_partnership_id: runnerUp.partnershipId,
+        champion_athlete_ids: champion ? champion.athletes.map((athlete) => athlete.id) : [],
+        champion_athlete_names: champion ? champion.athletes.map((athlete) => athlete.name) : [],
+        runner_up_athlete_ids: runnerUp ? runnerUp.athletes.map((athlete) => athlete.id) : [],
+        runner_up_athlete_names: runnerUp ? runnerUp.athletes.map((athlete) => athlete.name) : [],
+        champion_partnership_id: champion?.partnershipId ?? null,
+        runner_up_partnership_id: runnerUp?.partnershipId ?? null,
         simulated_entrants: ordered.length,
+        ...(ambiguous ? { pair_identity_ambiguous: true, pair_identity_ambiguous_names: identity.ambiguousNames } : {}),
       });
 
       news.push({
         event_type: 'tournament_result',
-        title: `${champion.name} conquista o ${tournament.name}`,
-        content: `${champion.name} venceu ${runnerUp.name} na final e levantou o troféu do ${tournament.name}, em ${tournament.location || tournament.city || 'uma etapa do World Tour'}.`,
+        title: `${championName} conquista o ${tournament.name}`,
+        content: `${championName} venceu ${runnerUpName} na final e levantou o troféu do ${tournament.name}, em ${tournament.location || tournament.city || 'uma etapa do World Tour'}.`,
         author_name: 'Redação Padel Legacy World Tour',
-        related_players: [...champion.athletes, ...runnerUp.athletes].map((athlete) => athlete.name),
+        related_players: [...(champion?.athletes || []), ...(runnerUp?.athletes || [])].map((athlete) => athlete.name),
         tier: String(tournament.tier || 'normal').toLowerCase(),
         event_date: tournamentEndDate(tournament),
         likes: 150 + (hash(tournament.id) % 4850),
@@ -1678,8 +1689,9 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
         settlement_started: true, cancelled: false, entrants_found: ordered.length,
         canonical_pairs_found: pairs.length,
         athlete_ids_involved: ordered.flatMap((pair) => pair.athletes.map((athlete) => athlete.id)).slice(0, 40),
-        champion: champion.name, champion_athlete_ids: champion.athletes.map((athlete) => athlete.id),
-        runner_up: runnerUp.name, world_event_created: true,
+        champion: championName, champion_athlete_ids: champion ? champion.athletes.map((athlete) => athlete.id) : [],
+        runner_up: runnerUpName, world_event_created: true,
+        ...(ambiguous ? { pair_identity_ambiguous: identity.ambiguousNames } : {}),
         athlete_ranking_results_created: ordered.length * 2,
       });
 
