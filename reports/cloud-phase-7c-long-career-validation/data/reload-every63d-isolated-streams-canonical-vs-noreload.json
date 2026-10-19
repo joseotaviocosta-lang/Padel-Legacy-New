@@ -1,0 +1,62 @@
+{
+  "dirA": "/tmp/claude-0/s7c/rc-reload",
+  "dirB": "/tmp/claude-0/s7c/rc-noreload",
+  "checkpointsCompared": 54,
+  "identicalThroughout": true,
+  "firstDivergence": null,
+  "lastCommonCheckpoint": {
+    "day": 378,
+    "diffEntities": []
+  },
+  "ignoredEntities": [
+    "AnnualCareerReport"
+  ],
+  "finalWholeEqual": true,
+  "finalPartsDiff": [],
+  "countersEqual": true,
+  "seasons": [
+    {
+      "season": 1,
+      "saveBytes": [
+        12097481,
+        12097481
+      ],
+      "dayMedian": [
+        270,
+        280.8
+      ],
+      "dayP95": [
+        647,
+        607.8
+      ],
+      "loadMs": [
+        42.2,
+        52.2
+      ],
+      "writeMs": [
+        175.2,
+        199.1
+      ],
+      "cloneMs": [
+        97.6,
+        105.3
+      ],
+      "heapMB": [
+        269.4,
+        253.9
+      ],
+      "worldRank": [
+        395,
+        395
+      ],
+      "tournamentsPlayed": [
+        38,
+        38
+      ],
+      "matches": [
+        42,
+        42
+      ]
+    }
+  ]
+}

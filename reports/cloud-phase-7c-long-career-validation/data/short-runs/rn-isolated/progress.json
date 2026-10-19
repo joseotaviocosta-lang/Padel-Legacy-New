@@ -1,0 +1,8 @@
+{
+ "strategy": "incremental",
+ "seed": "7c",
+ "seasonsTarget": 2,
+ "seasonsDone": 0,
+ "status": "completed",
+ "elapsedMs": 35103
+}
