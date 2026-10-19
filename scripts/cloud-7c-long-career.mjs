@@ -373,6 +373,13 @@ try {
     parts.player = sha(L.player);
     log('hashes.jsonl', { day, date: profile.career_date, whole: sha({ ...parts }), parts });
     if (args.dumpDay && Number(args.dumpDay) === day) fs.writeFileSync(path.join(OUT, `save-day${day}.json`), file());
+    if (args.hashMemory) {
+      // diagnóstico: hash do estado ATIVO em memória (não do arquivo), para ver se recarregar muda o que o jogo realmente usa
+      const M = unpackCareerFromStorage(await activeCareerAdapter.getActiveCareer({ cloneResult: false }));
+      const mparts = {}; for (const [k, v] of Object.entries(M.entities)) mparts[k] = sha(v); mparts.player = sha(M.player);
+      log('mem-hashes.jsonl', { day, whole: sha({ ...mparts }), parts: mparts });
+      if (args.dumpMemDay && Number(args.dumpMemDay) === day) fs.writeFileSync(path.join(OUT, `mem-day${day}.json`), JSON.stringify(M));
+    }
   };
 
   // ── loop principal ──
