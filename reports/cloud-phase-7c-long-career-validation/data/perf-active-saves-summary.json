@@ -1,0 +1,108 @@
+{
+  "groups": {
+    "1|incremental": {
+      "runs": 2,
+      "samples": 10,
+      "saveMB": 12,
+      "endSaveMB": 11.6,
+      "dayMedianMs": 400,
+      "dayP95Ms": 723,
+      "loadMedianMs": 188,
+      "writeMedianMs": 196,
+      "firstDayMs": 470,
+      "heapMB": 186,
+      "dayRangeAcrossRoundsMs": "400/371"
+    },
+    "1|off": {
+      "runs": 2,
+      "samples": 10,
+      "saveMB": 12,
+      "endSaveMB": 12,
+      "dayMedianMs": 346,
+      "dayP95Ms": 643,
+      "loadMedianMs": 185,
+      "writeMedianMs": 184,
+      "firstDayMs": 404,
+      "heapMB": 187,
+      "dayRangeAcrossRoundsMs": "335/346"
+    },
+    "5|incremental": {
+      "runs": 2,
+      "samples": 10,
+      "saveMB": 36.2,
+      "endSaveMB": 33.9,
+      "dayMedianMs": 1331,
+      "dayP95Ms": 1470,
+      "loadMedianMs": 596,
+      "writeMedianMs": 1228,
+      "firstDayMs": 2098,
+      "heapMB": 345,
+      "dayRangeAcrossRoundsMs": "1196/1331"
+    },
+    "5|off": {
+      "runs": 2,
+      "samples": 10,
+      "saveMB": 36.2,
+      "endSaveMB": 36.3,
+      "dayMedianMs": 1215,
+      "dayP95Ms": 1480,
+      "loadMedianMs": 666,
+      "writeMedianMs": 1252,
+      "firstDayMs": 1465,
+      "heapMB": 356,
+      "dayRangeAcrossRoundsMs": "1240/845"
+    },
+    "10|incremental": {
+      "runs": 2,
+      "samples": 10,
+      "saveMB": 63.6,
+      "endSaveMB": 58.9,
+      "dayMedianMs": 2668,
+      "dayP95Ms": 3093,
+      "loadMedianMs": 1206,
+      "writeMedianMs": 2289,
+      "firstDayMs": 2380,
+      "heapMB": 521,
+      "dayRangeAcrossRoundsMs": "2668/2544"
+    },
+    "10|off": {
+      "runs": 2,
+      "samples": 10,
+      "saveMB": 63.6,
+      "endSaveMB": 63.7,
+      "dayMedianMs": 2451,
+      "dayP95Ms": 3024,
+      "loadMedianMs": 1086,
+      "writeMedianMs": 2195,
+      "firstDayMs": 1387,
+      "heapMB": 544,
+      "dayRangeAcrossRoundsMs": "2471/2349"
+    }
+  },
+  "deltaIncrementalVsOffPct": {
+    "season1": {
+      "daily_median_pct": 15.6,
+      "daily_p95_pct": 12.4,
+      "load_pct": 1.6,
+      "write_pct": 6.5,
+      "heap_pct": -0.5,
+      "endSave_pct": -3.3
+    },
+    "season5": {
+      "daily_median_pct": 9.5,
+      "daily_p95_pct": -0.7,
+      "load_pct": -10.5,
+      "write_pct": -1.9,
+      "heap_pct": -3.1,
+      "endSave_pct": -6.6
+    },
+    "season10": {
+      "daily_median_pct": 8.9,
+      "daily_p95_pct": 2.3,
+      "load_pct": 11,
+      "write_pct": 4.3,
+      "heap_pct": -4.2,
+      "endSave_pct": -7.5
+    }
+  }
+}

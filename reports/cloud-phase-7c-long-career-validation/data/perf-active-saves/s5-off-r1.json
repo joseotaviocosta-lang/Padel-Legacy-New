@@ -1,0 +1,63 @@
+{
+  "label": "off-s5-r1",
+  "strategy": "off",
+  "warmDays": 1,
+  "firstDayMs": 1351.8,
+  "heapMB": 356,
+  "storage": "memory",
+  "node": "v22.22.0",
+  "saveBytes": 37998027,
+  "saveFile": "save-season-5.json",
+  "loadMs": {
+    "n": 3,
+    "median": 674.6,
+    "p95": 813.1,
+    "min": 558.3,
+    "max": 813.1,
+    "samples": [
+      813.1,
+      674.6,
+      558.3
+    ]
+  },
+  "loadFirstMs": 813.1,
+  "dayMs": {
+    "n": 5,
+    "median": 845.1,
+    "p95": 1480.1,
+    "min": 797,
+    "max": 1480.1,
+    "samples": [
+      956.8,
+      807.8,
+      845.1,
+      797,
+      1480.1
+    ]
+  },
+  "writeMs": {
+    "n": 3,
+    "median": 1320.7,
+    "p95": 1327.9,
+    "min": 1252,
+    "max": 1327.9,
+    "samples": [
+      1252,
+      1327.9,
+      1320.7
+    ]
+  },
+  "tauriInvokesPerDay": null,
+  "tauriInvokesPerLoadTotal": null,
+  "incrementalStats": {
+    "packs": 0,
+    "packSkips": 0,
+    "packMs": 0,
+    "views": 0,
+    "materializations": 0,
+    "materializeMs": 0,
+    "writeExpansions": 0,
+    "sweeps": 0
+  },
+  "endSaveBytes": 38030356
+}

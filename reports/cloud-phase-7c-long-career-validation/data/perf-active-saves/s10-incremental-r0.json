@@ -1,0 +1,63 @@
+{
+  "label": "incremental-s10-r0",
+  "strategy": "incremental",
+  "warmDays": 1,
+  "firstDayMs": 2380.2,
+  "heapMB": 521.1,
+  "storage": "memory",
+  "node": "v22.22.0",
+  "saveBytes": 66728924,
+  "saveFile": "save-season-10.json",
+  "loadMs": {
+    "n": 3,
+    "median": 1079,
+    "p95": 1267.6,
+    "min": 931.8,
+    "max": 1267.6,
+    "samples": [
+      1079,
+      1267.6,
+      931.8
+    ]
+  },
+  "loadFirstMs": 1079,
+  "dayMs": {
+    "n": 5,
+    "median": 2668.4,
+    "p95": 3093.3,
+    "min": 1998.6,
+    "max": 3093.3,
+    "samples": [
+      1998.6,
+      3093.3,
+      2493.2,
+      2668.4,
+      2715.8
+    ]
+  },
+  "writeMs": {
+    "n": 3,
+    "median": 2305.7,
+    "p95": 2501.8,
+    "min": 1375.2,
+    "max": 2501.8,
+    "samples": [
+      2501.8,
+      2305.7,
+      1375.2
+    ]
+  },
+  "tauriInvokesPerDay": null,
+  "tauriInvokesPerLoadTotal": null,
+  "incrementalStats": {
+    "packs": 1102,
+    "packSkips": 3612,
+    "packMs": 3148.5605729999916,
+    "views": 26448,
+    "materializations": 0,
+    "materializeMs": 0,
+    "writeExpansions": 0,
+    "sweeps": 28
+  },
+  "endSaveBytes": 61811303
+}
