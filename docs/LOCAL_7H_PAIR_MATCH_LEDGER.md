@@ -103,6 +103,10 @@ No código anterior falham 12 verificações (B1, C1, D1, E1, G1, F1, E3, G2, I1
 
 ## 8. Decisão pendente — inversão de nome de `profile-pair` no AI-only
 
+> **Atualização (LOCAL-7H.1):** corrigido. A causa real era outra: a dupla sorteada como `profile-pair:` ganhava
+> `Partnership` antes do settlement e era reconstruída com o nome na ordem dos ids. A troca semanal de posição em
+> `buildCanonicalPairs` não se confirmou nos 8 casos. Ver `docs/LOCAL_7H1_AI_PAIR_IDENTITY.md`.
+
 Correção proposta (pequena): no settlement de um torneio já sorteado, resolver a colocação de cada dupla pelo **nome do
 sorteio** (`draw_ranking_snapshot[pair_id].name`, ou `participants` alinhado a `draw_pair_ids`) em vez do nome
 reconstruído agora. Alternativa equivalente: tornar estável a ordem dos membros de `profile-pair:` em

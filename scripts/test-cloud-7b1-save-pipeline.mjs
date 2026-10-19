@@ -26,8 +26,16 @@ const FIXTURE_FILE = path.resolve(`${DIR}/fixtures/career-day30-pre7b1.json.gz`)
 // forma esperada e documentada, parte dos hashes; o arquivo abaixo registra esses hashes novos e QUAIS chaves divergem
 // do histórico, com a causa. Ver docs/LOCAL_7G1_RETIREMENT_SETTLEMENT.md.
 const POST_7G1_BASELINE_FILE = path.resolve(`${DIR}/data/equivalence-baseline-post-local-7g1.json`);
+// LOCAL-7H.1 — terceiro elo da cadeia (histórico → pós-7G.1 → pós-7H.1). Cada elo declara as chaves que divergem do
+// anterior e a causa; nenhum elo anterior é regravado. Ver docs/LOCAL_7H1_AI_PAIR_IDENTITY.md.
+const RECORD_POST_7H1 = process.argv.includes('--record-post-local-7h1');
+const POST_7H1_BASELINE_FILE = path.resolve(`${DIR}/data/equivalence-baseline-post-local-7h1.json`);
 if (RECORD && (fs.existsSync(BASELINE_FILE) || fs.existsSync(FIXTURE_FILE))) {
-  console.error('[7B1] --record recusado: o baseline e o fixture históricos já existem e não são sobrescritos (LOCAL-7G.1). Use --record-post-local-7g1.');
+  console.error('[7B1] --record recusado: o baseline e o fixture históricos já existem e não são sobrescritos (LOCAL-7G.1). Use o modo do elo novo.');
+  process.exit(2);
+}
+if ((RECORD_POST_7G1 && fs.existsSync(POST_7G1_BASELINE_FILE)) || (RECORD_POST_7H1 && fs.existsSync(POST_7H1_BASELINE_FILE))) {
+  console.error('[7B1] gravação recusada: o baseline desse elo já existe e não é sobrescrito; crie um elo novo.');
   process.exit(2);
 }
 const sha = (text) => createHash('sha256').update(text).digest('hex');
@@ -171,21 +179,44 @@ try {
       results,
     }, null, 2));
     console.log('baseline pós-LOCAL-7G.1 gravado; chaves divergentes do histórico:', divergent.join(', ') || 'nenhuma');
+  } else if (RECORD_POST_7H1) {
+    const previous = JSON.parse(fs.readFileSync(POST_7G1_BASELINE_FILE, 'utf8')).results;
+    const divergent = Object.keys(previous).filter((key) => results[key] !== previous[key]);
+    fs.writeFileSync(POST_7H1_BASELINE_FILE, JSON.stringify({
+      note: 'Baseline POSTERIOR à LOCAL-7H.1 (node --record-post-local-7h1). Elo seguinte a equivalence-baseline-post-local-7g1.json; não substitui nenhum elo anterior.',
+      previous: 'equivalence-baseline-post-local-7g1.json',
+      expected_divergence_from_previous: {
+        keys: divergent,
+        first_divergent_day: 29,
+        cause: 'LOCAL-7H.1: no dia 29 liquidam o Madri Gold (tournament-2026-mad-gol-w05-2) e o Doha Masters (tournament-2026-doh-mas-w05-4). Duplas reais sorteadas como profile-pair que ganharam Partnership antes do settlement eram refeitas com o nome invertido e recebiam a colocação da ordem de força; agora recebem a colocação real da chave (pontos, Race, ledger; no Madri, o vice gravado passa a ser a dupla que jogou a final). Campeões inalterados.',
+      },
+      results,
+    }, null, 2));
+    console.log('baseline pós-LOCAL-7H.1 gravado; chaves divergentes do pós-7G.1:', divergent.join(', ') || 'nenhuma');
   } else {
-    // A1 — histórico preservado: o que a LOCAL-7G.1 não muda continua byte a byte igual ao código anterior à CLOUD-7B1.
-    // A2 — divergência ESPERADA: só as chaves declaradas diferem do histórico, e exatamente para os hashes pós-7G.1.
-    // A3 — regressão real: qualquer chave fora do baseline pós-7G.1 falha.
-    const historical = JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf8')).results;
-    const post = JSON.parse(fs.readFileSync(POST_7G1_BASELINE_FILE, 'utf8'));
-    const expectedDivergent = new Set(post.expected_divergence_from_historical?.keys || []);
-    for (const key of Object.keys(historical)) {
-      if (expectedDivergent.has(key)) {
-        ok(`A. divergência esperada da LOCAL-7G.1 em relação ao histórico (${key})`, results[key] !== historical[key] && results[key] === post.results[key]);
-      } else {
-        ok(`A. equivalência byte a byte com o histórico anterior à CLOUD-7B1 (${key})`, results[key] === historical[key]);
+    // Cadeia de baselines (histórico → pós-7G.1 → pós-7H.1):
+    //   1. cada elo continua válido para as chaves que NENHUM elo posterior declarou divergentes (evidência preservada);
+    //   2. cada divergência declarada é real (difere do elo anterior);
+    //   3. regressão real: qualquer diferença em relação ao elo mais recente falha.
+    const historical = JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf8'));
+    const post7g1 = JSON.parse(fs.readFileSync(POST_7G1_BASELINE_FILE, 'utf8'));
+    const post7h1 = JSON.parse(fs.readFileSync(POST_7H1_BASELINE_FILE, 'utf8'));
+    const chain = [
+      { label: 'histórico anterior à CLOUD-7B1', results: historical.results, divergent: [] },
+      { label: 'pós-LOCAL-7G.1', results: post7g1.results, divergent: post7g1.expected_divergence_from_historical?.keys || [] },
+      { label: 'pós-LOCAL-7H.1', results: post7h1.results, divergent: post7h1.expected_divergence_from_previous?.keys || [] },
+    ];
+    chain.forEach((stage, index) => {
+      const changedLater = new Set(chain.slice(index + 1).flatMap((later) => later.divergent));
+      for (const key of Object.keys(stage.results)) {
+        if (!changedLater.has(key)) ok(`A. equivalência byte a byte com o baseline ${stage.label} (${key})`, results[key] === stage.results[key]);
       }
-    }
-    for (const key of Object.keys(post.results)) ok(`A. equivalência byte a byte com o baseline pós-LOCAL-7G.1 (${key})`, results[key] === post.results[key]);
+      if (index > 0) {
+        for (const key of stage.divergent) ok(`A. divergência declarada ${stage.label} é real em relação a ${chain[index - 1].label} (${key})`, stage.results[key] !== chain[index - 1].results[key]);
+      }
+    });
+    const latest = chain.at(-1);
+    ok('A. o elo mais recente cobre todas as chaves do histórico', Object.keys(historical.results).every((key) => key in latest.results));
   }
 
   // ═══ B. Save antigo: carrega, avança, grava, recarrega ═══

@@ -1595,7 +1595,23 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
       // quando o nome é único no campo). Homônimas sem id na chave (sorteio
       // anterior à correção) são ambíguas: recebem a pior posição possível e
       // campeão/vice não são atribuídos a nenhuma delas por palpite.
-      const identity = resolvePairPlacements(ordered, settlement.result);
+      // LOCAL-7H.1 — a chave identifica cada dupla pelo RÓTULO GRAVADO NO
+      // SORTEIO. O nome reconstruído agora pode divergir dele: uma dupla real
+      // sorteada como `profile-pair:` ganha `Partnership` antes do settlement,
+      // sai de `pairsById` e `resolveDrawnPair` a refaz com os membros na ordem
+      // dos ids ("B & A" em vez de "A & B"). A busca por nome falhava e a
+      // colocação caía no fallback `index + 1` (ordem de força) — pontos, Race e
+      // ledger errados (medido: 8 de 88 duplas; campeão de Gold com 60 em vez de
+      // 100). A colocação resolve pelo rótulo do sorteio do MESMO `pair_id`
+      // (`draw_ranking_snapshot`, ou `participants` alinhado a `draw_pair_ids`).
+      const drawLabelById = new Map((tournament.draw_ranking_snapshot || []).filter((entry) => entry?.pair_id && entry.name).map((entry) => [entry.pair_id, entry.name]));
+      if (hadCanonicalDraw && Array.isArray(tournament.participants) && tournament.participants.length === (tournament.draw_pair_ids || []).length) {
+        tournament.draw_pair_ids.forEach((pairId, index) => { if (!drawLabelById.has(pairId) && tournament.participants[index]) drawLabelById.set(pairId, tournament.participants[index]); });
+      }
+      const identity = resolvePairPlacements(
+        hadCanonicalDraw ? ordered.map((pair) => (drawLabelById.has(pair.id) ? { ...pair, name: drawLabelById.get(pair.id) } : pair)) : ordered,
+        settlement.result,
+      );
       const ambiguous = identity.ambiguousNames.length > 0;
       const champion = identity.champion || (ambiguous ? null : ordered[0]);
       const runnerUp = identity.runnerUp || (ambiguous ? null : ordered[1]);

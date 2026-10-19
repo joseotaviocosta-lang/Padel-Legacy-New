@@ -332,17 +332,18 @@ try {
       const rec = realRecord(t.bracket_history);
       const byes = new Set(t.bracket_history[0].byes || []);
       for (const e of t.draw_ranking_snapshot || []) {
-        if (String(e.pair_id).startsWith('profile-pair:')) { profilePairsSkipped += 1; continue; } // ver §8 da doc (pendente)
-        const p = parts.get(e.pair_id);
-        const row = p && ledger.get(key([p.athlete_a_id, p.athlete_b_id]));
+        // LOCAL-7H.1 — `profile-pair` incluídas (a inversão de nome no settlement foi corrigida).
+        const memberIds = String(e.pair_id).startsWith('profile-pair:') ? String(e.pair_id).slice('profile-pair:'.length).split(':') : [parts.get(e.pair_id)?.athlete_a_id, parts.get(e.pair_id)?.athlete_b_id];
+        if (String(e.pair_id).startsWith('profile-pair:')) profilePairsSkipped += 1;
+        const row = memberIds.every(Boolean) && ledger.get(key(memberIds));
         if (!row || row.src !== 'ledger' || row.ev !== 1) continue;
         checked += 1;
         const real = rec.get(e.name) || { w: 0, l: 0 };
         if (row.w !== real.w + (byes.has(e.name) ? 1 : 0) || row.l !== real.l) issues.push(`${t.id} ${e.name}: ${row.w}V/${row.l}D real ${real.w}V/${real.l}D bye=${byes.has(e.name)}`);
       }
     }
-    ok('A1. só IA: ledger = partidas reais + BYE como rodada avançada (regra existente), por id de parceria', ai.length >= 3 && checked >= 15 && issues.length === 0,
-      `${ai.length} torneios, ${checked} duplas; ${profilePairsSkipped} profile-pair fora (§8); ${issues.slice(0, 3).join(' | ')}`);
+    ok('A1. só IA: ledger = partidas reais + BYE como rodada avançada (regra existente), por ids dos membros (inclui profile-pair)', ai.length >= 3 && checked >= 15 && issues.length === 0,
+      `${ai.length} torneios, ${checked} duplas (${profilePairsSkipped} profile-pair incluídas); ${issues.slice(0, 3).join(' | ')}`);
   }
 
   // H: homônimas — ledger por ids (LOCAL-7E): duplas renomeadas com nomes iguais mantêm registros independentes.

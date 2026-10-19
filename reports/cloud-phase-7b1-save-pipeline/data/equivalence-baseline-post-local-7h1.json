@@ -1,0 +1,20 @@
+{
+  "note": "Baseline POSTERIOR à LOCAL-7H.1 (node --record-post-local-7h1). Elo seguinte a equivalence-baseline-post-local-7g1.json; não substitui nenhum elo anterior.",
+  "previous": "equivalence-baseline-post-local-7g1.json",
+  "expected_divergence_from_previous": {
+    "keys": [
+      "memoria-dia-30",
+      "memoria-dia-45"
+    ],
+    "first_divergent_day": 29,
+    "cause": "LOCAL-7H.1: no dia 29 liquidam o Madri Gold (tournament-2026-mad-gol-w05-2) e o Doha Masters (tournament-2026-doh-mas-w05-4). Duplas reais sorteadas como profile-pair que ganharam Partnership antes do settlement eram refeitas com o nome invertido e recebiam a colocação da ordem de força; agora recebem a colocação real da chave (pontos, Race, ledger; no Madri, o vice gravado passa a ser a dupla que jogou a final). Campeões inalterados."
+  },
+  "results": {
+    "memoria-dia-15": "b6be6965ef0c8509bdfbd8e688127835b846b913a22337c7a258eab45beac5e3",
+    "memoria-dia-30": "05bf0cd6c85342fe23cf95d3c52bdd573f1fab57a48eecf4dd64c239d19dde18",
+    "memoria-dia-45": "ffdac49b65ff973a80f36bead680d73df4a3ed9083cf721bfc6dcfca385e5650",
+    "tauri-mock-dia-15": "2c5e47083ec31f86da37c142a82a7ac9d7a5afc57017212c905cb80f8e14de1c",
+    "fixture-sha": "158b6693ceca4f1ee9ff9a61d89b8f20362fbbdb4b6c4650cc22309ffed750e3",
+    "fixture-mais-10-dias": "b42cd3e525dc150210ae9669b4e97f6423ac1b72a34afd7ba15407fc288a4584"
+  }
+}
