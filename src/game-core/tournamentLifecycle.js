@@ -144,7 +144,13 @@ export async function resolvePendingPlayerCanonicalTournaments(careerDate, profi
         ...canonicalSettlement.patch,
         player_decided_result: true,
       } });
-      if (profile?.id) {
+      // LOCAL-7G — chave canônica completa: todo o campo pontua pela colocação real
+      // (o jogador e o parceiro já foram creditados na finalização da campanha).
+      if (isFullCanonicalBracket(tournament, bracketHistory)) {
+        operations.push(...await buildCanonicalFieldCreditOperations({
+          tournament, bracketHistory, run: profile?.id ? await loadRun() : null, excludeIds: [profile?.id], date: careerDate,
+        }));
+      } else if (profile?.id) {
         await loadRun();
         const totalRounds = Array.isArray(tournament.bracket_history) ? tournament.bracket_history.length : 0;
         // `run.matches` inclui as rodadas de qualifying: a final é a última partida da chave principal do run.
@@ -383,6 +389,10 @@ async function applyPairPlacementCredits({ tournament, credits, totalRounds, dat
     // mundial) — nada pra creditar, nunca fabrica um registro novo aqui.
     const athlete = athleteById.get(member.id);
     if (!athlete?.id) continue;
+    // LOCAL-7G — um resultado por atleta e torneio: quem já foi creditado neste
+    // torneio (ex.: adversário do caminho do jogador num save anterior) nunca é
+    // creditado de novo — a Race e os contadores de carreira são acumulados.
+    if ((resultsByAthlete.get(athlete.id) || []).some((row) => row.tournament_id === tournament.id)) continue;
     const pairRewards = getTournamentRewards(tournament.tier, pairRoundsWon);
     if (!pairRewards.rankPoints) continue;
     const pairChampion = pairRoundsWon >= totalRounds;
@@ -423,6 +433,70 @@ async function applyPairPlacementCredits({ tournament, credits, totalRounds, dat
 
 async function buildNonPlayerPairCreditOperations({ tournament, run, roundsWon, totalRounds, date }) {
   const credits = placementRoundsWonForOpponent(run, roundsWon, totalRounds);
+  return applyPairPlacementCredits({ tournament, credits, totalRounds, date });
+}
+
+// LOCAL-7G — PONTUAÇÃO DE TODO O CAMPO num torneio com o jogador.
+//
+// O settlement do AI-only credita toda dupla sorteada pela sua colocação; um
+// torneio com o jogador nunca passa por lá (isWorldTourResolutionPending). Aqui
+// só eram creditados os adversários do CAMINHO do jogador e, quando ele caía
+// antes da final, o campeão — o resto da chave principal (vice, semifinalistas,
+// duplas que ele não enfrentou; todo o campo quando ele caía no qualifying)
+// ficava sem pontos e sem Race. Medido numa Gold de 32: 5 de 31 duplas reais
+// creditadas com o jogador campeão, 1 de 31 com ele eliminado na 1ª rodada.
+//
+// A chave canônica (schema 2) é completa e definitiva quando o torneio é
+// liquidado: cada equipe tem a rodada em que caiu. Crédito pela MESMA regra do
+// caminho do jogador (getTournamentRewards(tier, rodadas vencidas) — a tabela
+// `roundPoints` da categoria, a mesma do AI-only), pelo MESMO writer
+// (applyPairPlacementCredits: AthleteRankingResult + rolling + Race), uma única
+// vez, no momento do settlement. Identidade: o nome na chave do jogador é único
+// por construção (LOCAL-7E) e resolve para os ids dos membros pelo snapshot do
+// sorteio (ou pelos adversários do run); nome ambíguo/desconhecido não pontua
+// (nunca se adivinha a dupla). Jogador/parceiro ficam de fora (creditados na
+// finalização do jogador) e qualifying não pontua.
+// Chave completa = todas as partidas de todas as rodadas existem (rodada r de R
+// tem 2^(R-1-r) confrontos) e estão decididas. Chave parcial/legada (só o
+// caminho do jogador) segue a regra antiga.
+function isFullCanonicalBracket(tournament, bracketHistory) {
+  if (Number(tournament?.bracket_schema_version) < 2 || !Array.isArray(bracketHistory) || !bracketHistory.length) return false;
+  const rounds = bracketHistory.length;
+  const complete = bracketHistory.every((round, index) => (round?.matches || []).length === 2 ** (rounds - 1 - index));
+  return complete && Boolean(deriveTournamentFactsFromFullBracket(bracketHistory));
+}
+
+async function buildCanonicalFieldCreditOperations({ tournament, bracketHistory, run = null, excludeIds = [], date }) {
+  const facts = deriveTournamentFactsFromFullBracket(bracketHistory);
+  if (!facts?.champion) return [];
+  const totalRounds = bracketHistory.length;
+  const roundsWonByTeam = new Map([[facts.champion, totalRounds]]);
+  bracketHistory.forEach((round, roundIndex) => {
+    for (const match of round?.matches || []) {
+      if (!match?.winner) continue;
+      const loser = match.winner === match.team_a ? match.team_b : match.team_a;
+      if (loser && !roundsWonByTeam.has(loser)) roundsWonByTeam.set(loser, roundIndex);
+    }
+  });
+  const membersByTeam = new Map();
+  const ambiguous = new Set();
+  const register = (name, ids) => {
+    if (!name || ids.length !== 2) return;
+    const key = [...ids].sort().join(',');
+    const known = membersByTeam.get(name);
+    if (known && known.key !== key) ambiguous.add(name);
+    else membersByTeam.set(name, { key, ids });
+  };
+  for (const entry of tournament?.draw_ranking_snapshot || []) register(entry?.name, (entry?.member_ids || []).filter(Boolean));
+  for (const match of run?.matches || []) register(opponentTeamNameOfRunMatch(match), (match?.opponent || []).map((member) => member?.id).filter(Boolean));
+  const excluded = new Set(excludeIds.filter(Boolean));
+  const credits = new Map();
+  for (const [team, pairRoundsWon] of roundsWonByTeam) {
+    if (ambiguous.has(team)) continue;
+    for (const id of membersByTeam.get(team)?.ids || []) {
+      if (!excluded.has(id)) credits.set(id, { member: { id }, roundsWon: pairRoundsWon });
+    }
+  }
   return applyPairPlacementCredits({ tournament, credits, totalRounds, date });
 }
 
@@ -632,8 +706,17 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   for (const registration of (registrations || []).filter((item) => ['pending', 'confirmed'].includes(item.status))) {
     operations.push({ type: 'update', entityName: 'TournamentRegistration', id: registration.id, data: { status: 'completed', completed_at: new Date().toISOString() } });
   }
-  if (!alreadyProcessed) {
+  // LOCAL-7G — com a chave canônica completa, os adversários (inclusive os do
+  // caminho do jogador) são creditados uma única vez, no settlement do torneio,
+  // pela rodada REAL em que caíram (aqui, se a final já chegou; senão no
+  // day-tick). Chave legada (só o caminho do jogador): crédito de antes.
+  if (!alreadyProcessed && !isFullCanonicalBracket(tournament, bracketHistory)) {
     operations.push(...await buildNonPlayerPairCreditOperations({ tournament, run, roundsWon, totalRounds, date }));
+  }
+  if (canonicalSettlement && !canonicalSettlement.idempotent && isFullCanonicalBracket(tournament, bracketHistory)) {
+    operations.push(...await buildCanonicalFieldCreditOperations({
+      tournament, bracketHistory, run, excludeIds: [profile.id, partnerWorld?.id, partner?.id], date,
+    }));
   }
 
   const placement = placementLabel(roundsWon, totalRounds, champion);

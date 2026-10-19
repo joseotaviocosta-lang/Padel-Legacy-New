@@ -224,6 +224,8 @@ try {
   }
 
   // ═══ E. Vence todo o qualifying e entra na chave principal ═══
+  let eMainOpponentIds = new Set();
+  let eQualifyingIds = new Set();
   {
     const draw = await drawQualifying(rt, 'l7f-e', { partner });
     const initial = await getRun(draw.eventId);
@@ -234,8 +236,11 @@ try {
     const main = await playQualifying(rt, draw, [false], partner);
     const rows = await resultRowsFor(draw.id);
     const mainOpponentIds = new Set((initial.matches.find((m) => m.stage === 'main').opponent || []).map((o) => o.id));
-    ok('E2. eliminado na 1ª rodada principal: crédito vai para o adversário da CHAVE PRINCIPAL, nunca para os do qualifying',
-      rows.some((r) => mainOpponentIds.has(r.athlete_id)) && rows.every((r) => !qualifyingMemberIds(main.run).has(r.athlete_id)), JSON.stringify(rows.map((r) => r.athlete_id)));
+    // LOCAL-7G — os adversários passam a pontuar no settlement do torneio (data da final), pela rodada real; aqui só se
+    // confere que nenhum do qualifying pontua. O crédito do adversário da chave principal é conferido em I5.
+    ok('E2. eliminado na 1ª rodada principal: nenhum adversário do qualifying pontua', rows.every((r) => !qualifyingMemberIds(main.run).has(r.athlete_id)), JSON.stringify(rows.map((r) => r.athlete_id)));
+    eMainOpponentIds = mainOpponentIds;
+    eQualifyingIds = qualifyingMemberIds(main.run);
     const seat = seatOf(main.tournament);
     ok('E3. a vaga do jogador é disputada pelo próprio jogador (não por um classificado simulado)', seat.team_a?.startsWith('Local 7F') && !seat.qualifying_path);
   }
@@ -303,6 +308,8 @@ try {
     const before = sha(finished.map((t) => [t.id, t.bracket_history, t.champion]));
     await rt.advance(2);
     ok('I4. torneios concluídos não são reprocessados', sha((await E.Tournament.filter({})).filter((t) => finished.some((f) => f.id === t.id)).map((t) => [t.id, t.bracket_history, t.champion])) === before);
+    const eRows = await resultRowsFor('l7f-e');
+    ok('I5. após o settlement: o adversário da CHAVE PRINCIPAL pontua; os do qualifying, não', eRows.some((r) => eMainOpponentIds.has(r.athlete_id)) && eRows.every((r) => !eQualifyingIds.has(r.athlete_id)));
   }
 
   // ═══ A. Jogador não inscrito: o mundo segue (qualifying abstrato do AI-only + chave principal) ═══

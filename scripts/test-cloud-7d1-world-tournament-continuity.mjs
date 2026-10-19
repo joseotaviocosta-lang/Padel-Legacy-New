@@ -200,8 +200,20 @@ try {
     ok('B8. o jogador continua eliminado e não ganha novas partidas nesses torneios', [...stuckIds].every((id) => runsAfter.get(id)?.status === 'eliminated'
       && JSON.stringify(runsAfter.get(id).matches.map((m) => m.status)) === JSON.stringify(runs.get(id).matches.map((m) => m.status))));
     const creditedAthleteRows = rankingRows1.filter((r) => stuckIds.has(r.tournament_id) && r.athlete_id !== rt.profileId && !rowIdsBefore.has(r.id));
-    ok('B9. ranking: as linhas NOVAS do tick só creditam a dupla da final do run quando ela é de fato a campeã',
-      creditedAthleteRows.every((r) => { const t = tournaments1.find((x) => x.id === r.tournament_id); const finalOpp = [...runsAfter.get(r.tournament_id).matches].reverse().find((m) => m.stage !== 'qualifying'); return finalOpp.opponent.map((o) => o.name).join(' & ') === t.champion; }));
+    // LOCAL-7G — o tick pontua TODO o campo da chave canônica (antes: só a dupla da final do run, se campeã). Invariante
+    // mantido: nenhum crédito fabricado — cada linha nova vale exatamente a rodada em que a dupla do atleta caiu na chave.
+    const { getTournamentRewards } = await load('/src/lib/career.js');
+    const creditMatchesBracket = (r) => {
+      const t = tournaments1.find((x) => x.id === r.tournament_id);
+      const team = (t.draw_ranking_snapshot || []).find((e) => (e.member_ids || []).includes(r.athlete_id))?.name
+        || runsAfter.get(r.tournament_id).matches.find((m) => (m.opponent || []).some((o) => o.id === r.athlete_id))?.opponent.map((o) => o.name).join(' & ');
+      const rounds = t.bracket_history;
+      let roundsWon = team === t.champion ? rounds.length : null;
+      rounds.forEach((round, index) => round.matches.forEach((m) => { const loser = m.winner === m.team_a ? m.team_b : m.team_a; if (roundsWon === null && loser === team) roundsWon = index; }));
+      return roundsWon !== null && Number(r.points) === getTournamentRewards(t.tier, roundsWon).rankPoints;
+    };
+    ok('B9. ranking: as linhas NOVAS do tick creditam o campo pela rodada real de cada dupla na chave (nenhum crédito fabricado)',
+      creditedAthleteRows.length > 0 && creditedAthleteRows.every(creditMatchesBracket));
 
     if (process.env.CLOUD_7D1_EVIDENCE_OUT) {
       const worldEventIds = new Set(worldEvents1.map((w) => w.related_tournament_id));
