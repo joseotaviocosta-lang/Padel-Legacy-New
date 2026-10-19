@@ -443,6 +443,11 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
     const byBotId = await localGame.entities.AthleteProfile.filter({ bot_id: partner.id }).catch(() => []);
     partnerWorld = byBotId?.[0] || null;
   }
+  // LOCAL-7D — resultados do parceiro, para recalcular o rolling dele NESTA
+  // finalização (ver `nextPartnerPoints` abaixo).
+  const partnerPriorRows = !alreadyProcessed && partnerWorld?.id
+    ? ((await localGame.entities[RANKING_RESULT_ENTITY].filter({ athlete_id: partnerWorld.id }).catch(() => [])) || [])
+    : [];
 
   const newXp = (Number(profile.xp) || 0) + rewards.xp;
 
@@ -458,6 +463,8 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   let playerLegacySeed = null;
   let playerResultRow = null;
   let partnerResultRow = null;
+  let partnerLegacySeed = null;
+  let nextPartnerPoints = null;
   if (!alreadyProcessed) {
     const priorRows = playerResultRows || [];
     const lifetimeFallback = Math.max(0, Number(profile.rank_points ?? profile.world_ranking_points) || 0);
@@ -483,6 +490,15 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
         points: rewards.rankPoints,
         finish: champion ? 'champion' : placementLabel(roundsWon, totalRounds, champion),
       };
+      // LOCAL-7D — o parceiro recebia o resultado datado mas mantinha o
+      // `world_ranking_points` antigo até a próxima passada semanal do
+      // circuito; a linha da dupla era gravada com jogador novo + parceiro
+      // antigo. Mesma conta que applyPairPlacementCredits já faz para os
+      // adversários de IA e que o jogador recebe logo acima.
+      const partnerRows = partnerPriorRows.filter((row) => row.id !== partnerResultRow.id);
+      const partnerFallback = Math.max(0, Number(partnerWorld.world_ranking_points ?? partnerWorld.ranking_points) || 0);
+      partnerLegacySeed = needsLegacySeed(partnerRows, partnerFallback) ? buildLegacySeedRow(partnerWorld.id, partnerFallback, date) : null;
+      nextPartnerPoints = computeRollingPoints(partnerRows, partnerLegacySeed ? [partnerLegacySeed, partnerResultRow] : [partnerResultRow], date);
     }
     const extraRows = playerLegacySeed ? [playerLegacySeed, playerResultRow] : [playerResultRow];
     nextRankPoints = computeRollingPoints(priorRows, extraRows, date);
@@ -514,11 +530,13 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
   if (!alreadyProcessed && playerResultRow) {
     if (playerLegacySeed) operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: playerLegacySeed.id, data: playerLegacySeed });
     operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: playerResultRow.id, data: playerResultRow });
+    if (partnerLegacySeed) operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: partnerLegacySeed.id, data: partnerLegacySeed });
     if (partnerResultRow) operations.push({ type: 'upsert', entityName: RANKING_RESULT_ENTITY, id: partnerResultRow.id, data: partnerResultRow });
   }
   if (!alreadyProcessed && partnerWorld?.id) {
     operations.push({ type: 'update', entityName: 'AthleteProfile', id: partnerWorld.id, data: {
       race_points: Math.max(0, Number(partnerWorld.race_points) || 0) + rewards.rankPoints,
+      ...(nextPartnerPoints !== null ? { world_ranking_points: nextPartnerPoints, ranking_points: nextPartnerPoints } : {}),
     } });
   }
 
@@ -531,7 +549,9 @@ export async function prepareTournamentFinalization({ profile, tournament, partn
     // ATUAIS (o do jogador já recalculado acima; o do parceiro, se for de
     // IA, já é rolling desde circuitLifecycle.js) — mesmo padrão que
     // duplas de IA já seguem em updateTeamRankings.
-    const partnerPoints = Math.max(0, Number(partner.world_ranking_points ?? partner.ranking_points) || 0);
+    const partnerPoints = nextPartnerPoints !== null
+      ? nextPartnerPoints
+      : Math.max(0, Number(partner.world_ranking_points ?? partner.ranking_points) || 0);
     operations.push({ type: 'upsert', entityName: 'TeamRanking', id: ranking?.id || `team-ranking-${rankingKey}`, data: {
       team_key: rankingKey,
       player1_id: players[0].id,

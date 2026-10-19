@@ -5,7 +5,7 @@ import { Trophy, Users, User, Crown, Link, CalendarDays, Medal, Activity, Target
 import { ensureMyProfile, buildWorldRankingSnapshot } from '@/lib/padel';
 import { getTeamRank, getTeamRankings, ensurePlayerTeamRanking, teamKey } from '@/lib/teamRanking';
 import { getTeamRaceRankings, getTeamRaceRank } from '@/lib/teamRaceRanking';
-import { buildPlayerRankingContext, bestRaceResult, buildTeamFinalsCut, TEAM_FINALS_CUT, resolveRankingView } from '@/lib/rankingDisplay';
+import { buildPlayerRankingContext, bestRaceResult, buildTeamFinalsCut, TEAM_FINALS_CUT, resolveRankingView, teamListPoints } from '@/lib/rankingDisplay';
 import { buildCountryDirectory } from '@/lib/countryDirectory.js';
 import {
   CompactListItem, CountryFlag, EmptyState, Page, PageContent, PageHeader, PageSkeleton, PlayerAvatar,
@@ -114,16 +114,19 @@ function IndividualList({ items, race = false, visibleCount, onLoadMore, onSelec
   );
 }
 
-function TeamList({ items, visibleCount, onLoadMore, playerPairKey, pointsLabel = 'pontos', emptyTitle = 'Sem duplas', emptyDescription = 'Nenhuma dupla ranqueada ainda.' }) {
+// LOCAL-7D — o campo exibido vem do período (`race`), como em IndividualList
+// (ver teamListPoints em rankingDisplay.js).
+function TeamList({ items, visibleCount, onLoadMore, playerPairKey, race = false, pointsLabel = 'pontos', emptyTitle = 'Sem duplas', emptyDescription = 'Nenhuma dupla ranqueada ainda.' }) {
   if (!items.length) {
     return <EmptyState compact icon={Link} title={emptyTitle} description={emptyDescription} />;
   }
+  const pointsOf = (t) => teamListPoints(t, { race });
   return (
     <>
-      <Podium items={items} renderName={(t) => `${t.player1_name} & ${t.player2_name}`} renderSub={(t) => `${formatPoints(t.race_points ?? t.ranking_points)} pts`} />
+      <Podium items={items} renderName={(t) => `${t.player1_name} & ${t.player2_name}`} renderSub={(t) => `${formatPoints(pointsOf(t))} pts`} />
       {items.slice(0, visibleCount).map((t, i) => {
         const isPlayerPair = playerPairKey && t.team_key === playerPairKey;
-        const points = Number(t.race_points ?? t.ranking_points) || 0;
+        const points = pointsOf(t);
         return (
           <CompactListItem
             key={t.id || t.team_key}
@@ -616,6 +619,7 @@ export default function Ranking() {
             )}
             <TeamList
               items={raceTeams}
+              race
               visibleCount={visibleCount}
               onLoadMore={() => setVisibleCount((v) => v + LIST_PAGE_SIZE)}
               playerPairKey={playerPairKey}

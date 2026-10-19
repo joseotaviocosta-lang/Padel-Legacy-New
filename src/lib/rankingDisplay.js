@@ -34,6 +34,15 @@ export function resolveRankingView(searchParams) {
   };
 }
 
+// LOCAL-7D — pontos de uma linha da lista de Duplas, pelo PERÍODO da view.
+// Antes a lista fazia `race_points ?? ranking_points` nas duas views: as
+// linhas mundiais semeadas gravam `race_points: 0`, e `0 ?? x` é 0 — o
+// Mundial exibia a Race zerada no lugar dos pontos mundiais (Coello/Tapia
+// 5V·0D com "0 pontos"). Mundial = ranking_points; Race = race_points.
+export function teamListPoints(row, { race = false } = {}) {
+  return Math.max(0, Number(race ? row?.race_points : row?.ranking_points) || 0);
+}
+
 export function formatIndividualRankLabel(ranking) {
   if (!ranking || ranking.unranked || !(Number(ranking.rank) > 0)) return '#1000+';
   return `#${ranking.displayRank || ranking.rank}`;

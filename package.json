@@ -32,6 +32,7 @@
     "test:cloud-7b2b-historical-compaction": "node scripts/test-cloud-7b2b-historical-compaction.mjs",
     "test:cloud-7b2c-incremental-compaction": "node scripts/test-cloud-7b2c-incremental-compaction.mjs",
     "test:cloud-7d1-world-continuity": "node scripts/test-cloud-7d1-world-tournament-continuity.mjs",
+    "test:local-7d-team-world-ranking": "node scripts/test-local-7d-team-world-ranking.mjs",
     "test:browser-career-storage": "node scripts/test-browser-career-storage.mjs",
     "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js",
     "test:onboarding-v2": "node scripts/test-onboarding-v2.mjs",
