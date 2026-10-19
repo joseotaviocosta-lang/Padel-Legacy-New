@@ -73,7 +73,10 @@ globalThis.Date = class DeterministicDate extends RealDate {
 const hex = (n) => Array.from({ length: n }, () => Math.floor(Math.random() * 16).toString(16)).join('');
 Object.defineProperty(globalThis.crypto, 'randomUUID', { configurable: true, writable: true, value: () => `${hex(8)}-${hex(4)}-4${hex(3)}-a${hex(3)}-${hex(12)}` });
 let decisionRng = mulberry32(hashSeed(`${SEED}-decisions`));
-const sha = (v) => createHash('sha1').update(typeof v === 'string' ? v : JSON.stringify(v)).digest('hex').slice(0, 16);
+// `--canonicalHash`: hash insensível à ORDEM das chaves (o estado lógico é o mesmo; só a ordem de inserção das propriedades muda
+// quando um objeto é recriado por migração/validação). Sem a opção o hash é estrito (mais forte).
+const canon = (v) => (Array.isArray(v) ? v.map(canon) : v && typeof v === 'object' ? Object.fromEntries(Object.keys(v).sort().map((k) => [k, canon(v[k])])) : v);
+const sha = (v) => createHash('sha1').update(typeof v === 'string' ? v : JSON.stringify(args.canonicalHash ? canon(v) : v)).digest('hex').slice(0, 16);
 const pct = (xs, p) => { const s = [...xs].sort((a, b) => a - b); return s.length ? s[Math.min(s.length - 1, Math.floor(p * s.length))] : 0; };
 const r1 = (n) => Number(Number(n).toFixed(1));
 
