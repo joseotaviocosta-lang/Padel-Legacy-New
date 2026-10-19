@@ -1,7 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { levelForXp, rebasePlayerPatchIncrements } from '@/lib/padel';
 import { getTournamentRewards } from '@/lib/career';
-import { teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
+import { teamKey, computeCanonicalTeamRankingPoints, buildPairLedgerPatch, indexTeamRankingRowsByMembers } from '@/lib/teamRanking';
 import { buildPartnershipTitlePatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { safeName, todayForProfile } from './utils';
 import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
@@ -497,7 +497,53 @@ async function buildCanonicalFieldCreditOperations({ tournament, bracketHistory,
       if (!excluded.has(id)) credits.set(id, { member: { id }, roundsWon: pairRoundsWon });
     }
   }
-  return applyPairPlacementCredits({ tournament, credits, totalRounds, date });
+  const creditOperations = await applyPairPlacementCredits({ tournament, credits, totalRounds, date });
+  return [...creditOperations, ...await buildCanonicalPairLedgerOperations({ bracketHistory, membersByTeam, ambiguous, champion: facts.champion })];
+}
+
+// LOCAL-7H — LEDGER DAS DUPLAS DE IA num torneio com o jogador.
+//
+// O ledger (TeamRanking.wins/losses/ledger_titles/ledger_events) só era escrito
+// pelo settlement AI-only; num torneio com o jogador nenhuma dupla de IA da
+// chave principal ganhava registro (medido: 0 de 31 duplas por torneio), embora
+// pontos/Race/estatísticas individuais estivessem corretos (LOCAL-7G).
+//
+// Fonte: as PARTIDAS REAIS da chave canônica, não a colocação — cada confronto
+// disputado dá uma vitória ao vencedor e uma derrota ao perdedor. Não contam:
+// BYE (não há na chave do jogador), a partida do jogador sem placar (W.O. ou
+// abandono — não foi disputada; o adversário avança sem vitória registrada) e o
+// qualifying (não pontua nem entra no ledger, como no AI-only). Mesmo writer do
+// AI-only (buildPairLedgerPatch), só sobre linhas de TeamRanking existentes,
+// identidade pelos ids dos membros; roda uma única vez, no mesmo lote do
+// settlement canônico (que marca o torneio como resolvido).
+async function buildCanonicalPairLedgerOperations({ bracketHistory, membersByTeam, ambiguous, champion }) {
+  const record = new Map();
+  const add = (team, field) => {
+    if (!membersByTeam.has(team) || ambiguous.has(team)) return;
+    const entry = record.get(team) || { wins: 0, losses: 0, titles: 0, events: 1 };
+    entry[field] += 1;
+    record.set(team, entry);
+  };
+  for (const round of bracketHistory || []) {
+    for (const match of round?.matches || []) {
+      if (!match?.winner || !match.team_a || !match.team_b) continue;
+      if (match.player_match && !match.score) continue; // W.O./abandono do jogador: partida não disputada
+      add(match.winner, 'wins');
+      add(match.winner === match.team_a ? match.team_b : match.team_a, 'losses');
+    }
+  }
+  for (const [team, entry] of record) if (team === champion) entry.titles = 1;
+  if (!record.size) return [];
+  const rows = await localGame.entities.TeamRanking.list(null, 5000).catch(() => []);
+  const rowByKey = indexTeamRankingRowsByMembers(rows);
+  const operations = [];
+  for (const [team, entry] of record) {
+    const row = rowByKey.get([...membersByTeam.get(team).ids].sort().join('_'));
+    if (!row?.id) continue;
+    const { id, ...data } = buildPairLedgerPatch(row, entry);
+    operations.push({ type: 'update', entityName: 'TeamRanking', id, data });
+  }
+  return operations;
 }
 
 export async function prepareTournamentFinalization({ profile, tournament, partner, roundsWon, totalRounds, runId = null, bracketHistory = null, runnerUp = null, run = null }) {

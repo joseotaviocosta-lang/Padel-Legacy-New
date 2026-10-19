@@ -55,6 +55,38 @@ export function canonicalPairId(id1, id2) {
   return teamKey(id1, id2);
 }
 
+// LOCAL-7H — LEDGER DA DUPLA (V/D/títulos por evento), autoridade única para
+// os dois fluxos de settlement: AI-only (WorldTourLifecycle) e torneio com o
+// jogador (tournamentLifecycle). Incremento sobre a linha canônica de
+// TeamRanking; uma linha que ainda não era ledger começa do zero (o histórico
+// anterior dela não existe). `entry` = { wins, losses, titles, events }.
+export function buildPairLedgerPatch(row, entry) {
+  const priorLedger = row.stats_source === 'ledger';
+  const wins = (priorLedger ? Number(row.wins) || 0 : 0) + entry.wins;
+  const losses = (priorLedger ? Number(row.losses) || 0 : 0) + entry.losses;
+  const titles = (priorLedger ? Number(row.ledger_titles) || 0 : 0) + entry.titles;
+  return {
+    id: row.id,
+    wins,
+    losses,
+    matches_played: wins + losses,
+    ledger_titles: titles,
+    ledger_events: (priorLedger ? Number(row.ledger_events) || 0 : 0) + entry.events,
+    stats_source: 'ledger',
+  };
+}
+
+// Linha canônica de TeamRanking por dupla de atletas (ids ordenados), a mesma
+// chave do ledger. A primeira linha encontrada vence (mesma regra de antes).
+export function indexTeamRankingRowsByMembers(rows = []) {
+  const rowByKey = new Map();
+  for (const row of rows || []) {
+    const key = [row.player1_id, row.player2_id].filter(Boolean).sort().join('_');
+    if (key && !rowByKey.has(key)) rowByKey.set(key, row);
+  }
+  return rowByKey;
+}
+
 const normalizeMemberName = (value) => String(value || '').trim().toLocaleLowerCase('pt-BR');
 
 // Recupera linhas legadas apenas quando cada membro resolve por um alias de

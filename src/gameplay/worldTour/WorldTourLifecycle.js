@@ -11,7 +11,7 @@ import {
 import { buildCanonicalTournamentBracket, buildSeededDrawSlots, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket, resolvePairPlacements } from './tournamentSettlement.js';
 import { getCanonicalRoundDates } from '@/lib/tournamentSchedule.js';
 import { verifySaveFoundation, ensureWorldSeed2025 } from '@/lib/saveFoundation.js';
-import { getTeamRankings } from '@/lib/teamRanking.js';
+import { getTeamRankings, buildPairLedgerPatch, indexTeamRankingRowsByMembers } from '@/lib/teamRanking.js';
 import { getBalance527, getSilverCalibrationOffsetOverride6L } from '@/lib/balance527.js';
 
 const entities = /** @type {any} */ (localGame.entities);
@@ -1797,28 +1797,13 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   if (pairLedger.size) {
     try {
       const rows = await entities.TeamRanking.list(null, 5000).catch(() => []);
-      const rowByKey = new Map();
-      for (const row of rows || []) {
-        const key = [row.player1_id, row.player2_id].filter(Boolean).sort().join('_');
-        if (key && !rowByKey.has(key)) rowByKey.set(key, row);
-      }
+      // LOCAL-7H — mesma autoridade de ledger do torneio com o jogador (teamRanking.js).
+      const rowByKey = indexTeamRankingRowsByMembers(rows);
       const ledgerUpdates = [];
       for (const [key, entry] of pairLedger.entries()) {
         const row = rowByKey.get(key);
         if (!row?.id) continue;
-        const priorLedger = row.stats_source === 'ledger';
-        const wins = (priorLedger ? Number(row.wins) || 0 : 0) + entry.wins;
-        const losses = (priorLedger ? Number(row.losses) || 0 : 0) + entry.losses;
-        const titles = (priorLedger ? Number(row.ledger_titles) || 0 : 0) + entry.titles;
-        ledgerUpdates.push({
-          id: row.id,
-          wins,
-          losses,
-          matches_played: wins + losses,
-          ledger_titles: titles,
-          ledger_events: (priorLedger ? Number(row.ledger_events) || 0 : 0) + entry.events,
-          stats_source: 'ledger',
-        });
+        ledgerUpdates.push(buildPairLedgerPatch(row, entry));
       }
       if (ledgerUpdates.length && entities.TeamRanking.bulkUpdate) {
         await entities.TeamRanking.bulkUpdate(ledgerUpdates);
