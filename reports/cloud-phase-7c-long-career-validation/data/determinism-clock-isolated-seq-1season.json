@@ -1,0 +1,70 @@
+{
+  "dirA": "/tmp/claude-0/s7c/seqi",
+  "dirB": "/tmp/claude-0/s7c/seqi-c1",
+  "checkpointsCompared": 52,
+  "identicalThroughout": false,
+  "firstDivergence": {
+    "checkpointIndex": 51,
+    "day": 364,
+    "date": "2027-01-04",
+    "diffEntities": [
+      "AnnualCareerReport"
+    ]
+  },
+  "lastCommonCheckpoint": {
+    "day": 364,
+    "diffEntities": [
+      "AnnualCareerReport"
+    ]
+  },
+  "finalWholeEqual": false,
+  "finalPartsDiff": [
+    "AnnualCareerReport"
+  ],
+  "countersEqual": true,
+  "seasons": [
+    {
+      "season": 1,
+      "saveBytes": [
+        12551449,
+        12551449
+      ],
+      "dayMedian": [
+        326.5,
+        326.4
+      ],
+      "dayP95": [
+        674.2,
+        697.8
+      ],
+      "loadMs": [
+        111.7,
+        112.1
+      ],
+      "writeMs": [
+        235,
+        267.2
+      ],
+      "cloneMs": [
+        138.4,
+        134.6
+      ],
+      "heapMB": [
+        262.1,
+        211.7
+      ],
+      "worldRank": [
+        375,
+        375
+      ],
+      "tournamentsPlayed": [
+        38,
+        38
+      ],
+      "matches": [
+        51,
+        51
+      ]
+    }
+  ]
+}
