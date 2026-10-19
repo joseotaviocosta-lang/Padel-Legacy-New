@@ -5,7 +5,7 @@ import { teamKey, computeCanonicalTeamRankingPoints } from '@/lib/teamRanking';
 import { buildPartnershipTitlePatch, getActivePartnership } from '@/lib/partnershipSystem';
 import { safeName, todayForProfile } from './utils';
 import { RANKING_RESULT_ENTITY, buildLegacySeedRow, needsLegacySeed, computeRollingPoints } from './rankingWindow.js';
-import { bracketFactsFromHistory, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket, applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch } from '@/gameplay/worldTour/tournamentSettlement.js';
+import { bracketFactsFromHistory, deriveTournamentFactsFromFullBracket, finalizeTournamentFromBracket, applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch, remainingQualifyingOpponentNames } from '@/gameplay/worldTour/tournamentSettlement.js';
 import { getCurrentTournamentMatch, withdrawTournamentRun, countMainDrawWins, buildTournamentBracketHistory } from '@/gameplay/worldTour/TournamentRunManager.js';
 import { getTournamentRounds, getPartnerBot } from '@/lib/career.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
@@ -66,7 +66,10 @@ function repairOpenQualifyingSeat(bracketHistory, run) {
   if (exitMatch?.stage !== 'qualifying') return bracketHistory;
   const qualifierTeamName = opponentTeamNameOfRunMatch(exitMatch);
   if (!qualifierTeamName) return bracketHistory;
-  return applyQualifyingExitToCanonicalBracket(bracketHistory, { qualifierTeamName, date: exitMatch.date }).rounds;
+  // LOCAL-7F — quem eliminou o jogador ainda disputa as rodadas de qualifying que faltam.
+  return applyQualifyingExitToCanonicalBracket(bracketHistory, {
+    qualifierTeamName, remainingOpponents: remainingQualifyingOpponentNames(run, exitMatch), date: exitMatch.date,
+  }).rounds;
 }
 
 // Item 3/4/15 — day-tick complementar a prepareTournamentFinalization. Um
@@ -236,7 +239,9 @@ export async function resolveUnavailablePlayerMatch({ profile, tournament, calen
     }).rounds
     // CLOUD-7D1 — W.O. durante o qualifying: a dupla adversária herda a vaga do jogador na chave principal.
     : (hasCanonicalBracket && currentMatch.stage === 'qualifying' && currentMatch.status !== 'completed'
-      ? applyQualifyingExitToCanonicalBracket(freshTournament.bracket_history, { qualifierTeamName: opponentTeamNameOfRunMatch(currentMatch), date: currentMatch.date }).rounds
+      ? applyQualifyingExitToCanonicalBracket(freshTournament.bracket_history, {
+        qualifierTeamName: opponentTeamNameOfRunMatch(currentMatch), remainingOpponents: remainingQualifyingOpponentNames(withdrawn, currentMatch), date: currentMatch.date,
+      }).rounds
       : (hasCanonicalBracket ? freshTournament.bracket_history : buildTournamentBracketHistory(withdrawn, playerTeamName)));
 
   const mainRounds = getTournamentRounds(tournament);
@@ -317,6 +322,15 @@ function placementLabel(roundsWon, totalRounds, champion) {
 function placementRoundsWonForOpponent(run, roundsWon, totalRounds) {
   const credits = new Map();
   if (!Array.isArray(run?.matches)) return credits;
+  // LOCAL-7F — `roundsWon`/`totalRounds` contam rodadas da CHAVE PRINCIPAL, mas
+  // `run.matches` começa pelas rodadas de qualifying: indexar a lista inteira
+  // creditava os adversários do qualifying como se tivessem disputado a chave
+  // principal (medido: W.O. na Q1 dava 9 pontos de "rodada principal" à dupla da
+  // Q1). Qualifying não pontua (como no AI-only); se a campanha terminou no
+  // qualifying, o run não sabe nada sobre a chave principal — nenhum crédito.
+  const exitMatch = run.matches.find((match) => (match?.status === 'completed' && match.result && !match.result.won) || match?.status === 'cancelled');
+  if (exitMatch?.stage === 'qualifying') return credits;
+  const mainMatches = run.matches.filter((match) => match?.stage !== 'qualifying');
   const addCredit = (members, pairRoundsWon) => {
     for (const member of members || []) {
       if (!member?.id) continue;
@@ -324,12 +338,12 @@ function placementRoundsWonForOpponent(run, roundsWon, totalRounds) {
       if (!current || pairRoundsWon > current.roundsWon) credits.set(member.id, { member, roundsWon: pairRoundsWon });
     }
   };
-  for (let k = 0; k < roundsWon && k < run.matches.length; k += 1) {
-    addCredit(run.matches[k]?.opponent, k);
+  for (let k = 0; k < roundsWon && k < mainMatches.length; k += 1) {
+    addCredit(mainMatches[k]?.opponent, k);
   }
-  if (roundsWon < totalRounds && run.matches[roundsWon]) {
+  if (roundsWon < totalRounds && mainMatches[roundsWon]) {
     const eliminatingRoundsWon = roundsWon === totalRounds - 1 ? totalRounds : roundsWon + 1;
-    addCredit(run.matches[roundsWon]?.opponent, eliminatingRoundsWon);
+    addCredit(mainMatches[roundsWon]?.opponent, eliminatingRoundsWon);
   }
   return credits;
 }

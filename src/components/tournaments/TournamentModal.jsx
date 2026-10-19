@@ -48,7 +48,7 @@ import {
   recordTournamentMatchResult, startTournamentMatch, summarizeTournamentMatch,
   withdrawTournamentRun,
 } from '@/gameplay/worldTour/TournamentRunManager.js';
-import { applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch } from '@/gameplay/worldTour/tournamentSettlement.js';
+import { applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch, remainingQualifyingOpponentNames } from '@/gameplay/worldTour/tournamentSettlement.js';
 import { getMatchCheckpointRepository } from '@/careers/MatchCheckpointRepository.js';
 import { registerBetaDiagnostic } from '@/lib/betaDiagnostics.js';
 import {
@@ -803,7 +803,10 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         // CLOUD-7D1 — derrota no qualifying: a dupla que eliminou o jogador herda a vaga dele na chave principal,
         // para o torneio chegar à final sem depender do jogador.
         : (hasCanonicalBracket && completedMatch.stage === 'qualifying' && !won
-          ? applyQualifyingExitToCanonicalBracket(baseTournament.bracket_history, { qualifierTeamName: opponentTeamNameOfRunMatch(completedMatch), date: completedMatch.date }).rounds
+          // LOCAL-7F — quem eliminou o jogador ainda disputa as rodadas de qualifying que faltam.
+          ? applyQualifyingExitToCanonicalBracket(baseTournament.bracket_history, {
+            qualifierTeamName: opponentTeamNameOfRunMatch(completedMatch), remainingOpponents: remainingQualifyingOpponentNames(nextRun, completedMatch), date: completedMatch.date,
+          }).rounds
           : (hasCanonicalBracket ? baseTournament.bracket_history : buildTournamentBracketHistory(nextRun, teamName(updatedDraft, partner))));
       const nextScheduledMatch = getCurrentTournamentMatch(nextRun);
       const terminalStatus = ['eliminated', 'champion', 'finished'].includes(nextRun.status);
@@ -1027,7 +1030,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
           date: abandonedMatch.date,
         }).rounds
         : (hasCanonicalBracket && abandonedMatch?.stage === 'qualifying' && abandonedMatch.status !== 'completed'
-          ? applyQualifyingExitToCanonicalBracket(baseTournament.bracket_history, { qualifierTeamName: opponentTeamNameOfRunMatch(abandonedMatch), date: abandonedMatch.date }).rounds
+          ? applyQualifyingExitToCanonicalBracket(baseTournament.bracket_history, {
+            qualifierTeamName: opponentTeamNameOfRunMatch(abandonedMatch), remainingOpponents: remainingQualifyingOpponentNames(withdrawn, abandonedMatch), date: abandonedMatch.date,
+          }).rounds
           : (hasCanonicalBracket ? baseTournament.bracket_history : buildTournamentBracketHistory(withdrawn, teamName(profile, partner))));
       const completion = await finalizeTournamentRun({
         profile, tournament, partner, roundsWon: countMainDrawWins(withdrawn), totalRounds: mainRounds.length,

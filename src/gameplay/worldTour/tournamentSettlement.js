@@ -698,13 +698,31 @@ export function opponentTeamNameOfRunMatch(runMatch) {
   return names.length ? names.join(' & ') : null;
 }
 
+// LOCAL-7F — adversários das rodadas de qualifying que vêm DEPOIS da partida
+// em que a campanha do jogador terminou, na ordem do caminho. São as duplas já
+// sorteadas para aquele caminho do qualifying (o caminho que alimenta a vaga
+// reservada na chave principal).
+export function remainingQualifyingOpponentNames(run, exitMatch) {
+  const qualifying = (run?.matches || []).filter((match) => match?.stage === 'qualifying');
+  const index = qualifying.findIndex((match) => (exitMatch?.id ? match.id === exitMatch.id : match.stageRoundIndex === exitMatch?.stageRoundIndex));
+  if (index < 0) return [];
+  return qualifying.slice(index + 1).map(opponentTeamNameOfRunMatch);
+}
+
 // CLOUD-7D1 — o jogador foi eliminado (ou saiu) ANTES da chave principal: a
 // vaga dele na rodada 0 nunca será disputada por ele. A dupla que o eliminou
-// no qualifying (`qualifierTeamName`) herda a vaga e disputa a chave principal
-// como qualquer outra dupla; a primeira partida e as seguintes são decididas
-// pelo mesmo motor determinístico do AI-only. Nenhuma partida já disputada é
-// alterada e nenhum resultado é atribuído por W.O. Idempotente.
-export function applyQualifyingExitToCanonicalBracket(rounds, { qualifierTeamName, date = null } = {}) {
+// no qualifying (`qualifierTeamName`) disputa a chave principal como qualquer
+// outra dupla; a primeira partida e as seguintes são decididas pelo mesmo motor
+// determinístico do AI-only. Nenhuma partida já disputada é alterada e nenhum
+// resultado é atribuído por W.O. Idempotente.
+//
+// LOCAL-7F — a dupla que eliminou o jogador NÃO herda a vaga se ainda faltam
+// rodadas de qualifying: ela segue o caminho contra os adversários já sorteados
+// das rodadas restantes (`remainingOpponents`), cada partida decidida pelo
+// MESMO motor da cascata da chave, e só quem vence a última rodada ocupa a
+// vaga. Eliminação na última rodada (nada restante) é exatamente o caminho de
+// antes. As partidas simuladas ficam gravadas na vaga (`qualifying_path`).
+export function applyQualifyingExitToCanonicalBracket(rounds, { qualifierTeamName, remainingOpponents = [], date = null } = {}) {
   if (!Array.isArray(rounds) || !rounds[0]?.matches?.[0]) {
     throw new Error('A chave canônica não possui o confronto do jogador para a rodada 0.');
   }
@@ -713,15 +731,32 @@ export function applyQualifyingExitToCanonicalBracket(rounds, { qualifierTeamNam
   if (match.status === 'completed' && match.winner) return { rounds: next, idempotent: true };
   const opponentName = match.team_b;
   if (!opponentName || !qualifierTeamName) throw new Error('Chave sem adversário da rodada 0 ou sem a dupla classificada.');
-  match.team_a = qualifierTeamName;
+  // Run antigo/incompleto: o caminho só é jogado até o último adversário
+  // identificável — nenhuma dupla é inventada para completá-lo.
+  const knownRivals = [];
+  for (const name of remainingOpponents || []) { if (!name) break; knownRivals.push(name); }
+  let seatHolder = qualifierTeamName;
+  const qualifyingPath = knownRivals.map((rival, index) => {
+    const pathSeed = `${match.match_id}:qualifying-path:${index}`;
+    const [pathWinner] = chooseWinner(
+      { name: seatHolder, strength: fillerTeamStrength(seatHolder) },
+      { name: rival, strength: fillerTeamStrength(rival) },
+      pathSeed,
+    );
+    const played = { team_a: seatHolder, team_b: rival, winner: pathWinner.name, score: scoreFor(pathSeed, pathWinner.name === seatHolder) };
+    seatHolder = pathWinner.name;
+    return played;
+  });
+  match.team_a = seatHolder;
+  if (qualifyingPath.length) match.qualifying_path = qualifyingPath;
   const seed = `${match.match_id}:qualifier-seat`;
   const [winnerTeam] = chooseWinner(
-    { name: qualifierTeamName, strength: fillerTeamStrength(qualifierTeamName) },
+    { name: seatHolder, strength: fillerTeamStrength(seatHolder) },
     { name: opponentName, strength: fillerTeamStrength(opponentName) },
     seed,
   );
   match.winner = winnerTeam.name;
-  match.score = scoreFor(seed, winnerTeam.name === qualifierTeamName);
+  match.score = scoreFor(seed, winnerTeam.name === seatHolder);
   match.status = 'completed';
   if (date) match.date = date;
   cascadeAiOnlyRounds(next, 1, match.winner);

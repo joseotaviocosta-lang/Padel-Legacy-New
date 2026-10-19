@@ -34,6 +34,7 @@
     "test:cloud-7d1-world-continuity": "node scripts/test-cloud-7d1-world-tournament-continuity.mjs",
     "test:local-7d-team-world-ranking": "node scripts/test-local-7d-team-world-ranking.mjs",
     "test:local-7e-pair-identity": "node scripts/test-local-7e-pair-identity.mjs",
+    "test:local-7f-qualifying-continuity": "node scripts/test-local-7f-qualifying-continuity.mjs",
     "test:browser-career-storage": "node scripts/test-browser-career-storage.mjs",
     "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js",
     "test:onboarding-v2": "node scripts/test-onboarding-v2.mjs",
