@@ -16,9 +16,20 @@ import { createServer } from 'vite';
 import { installTauriMock } from './lib/cloud7b1TauriMock.mjs';
 
 const RECORD = process.argv.includes('--record');
+// LOCAL-7G.1 — grava SÓ o baseline posterior à LOCAL-7G.1 (o histórico nunca é tocado).
+const RECORD_POST_7G1 = process.argv.includes('--record-post-local-7g1');
 const DIR = 'reports/cloud-phase-7b1-save-pipeline';
 const BASELINE_FILE = path.resolve(`${DIR}/data/equivalence-baseline.json`);
 const FIXTURE_FILE = path.resolve(`${DIR}/fixtures/career-day30-pre7b1.json.gz`);
+// LOCAL-7G.1 — `equivalence-baseline.json` e o fixture são EVIDÊNCIA HISTÓRICA (código anterior à CLOUD-7B1) e não
+// são regravados. A correção da LOCAL-7G.1 (dupla sorteada com membro aposentado continua no settlement) muda, de
+// forma esperada e documentada, parte dos hashes; o arquivo abaixo registra esses hashes novos e QUAIS chaves divergem
+// do histórico, com a causa. Ver docs/LOCAL_7G1_RETIREMENT_SETTLEMENT.md.
+const POST_7G1_BASELINE_FILE = path.resolve(`${DIR}/data/equivalence-baseline-post-local-7g1.json`);
+if (RECORD && (fs.existsSync(BASELINE_FILE) || fs.existsSync(FIXTURE_FILE))) {
+  console.error('[7B1] --record recusado: o baseline e o fixture históricos já existem e não são sobrescritos (LOCAL-7G.1). Use --record-post-local-7g1.');
+  process.exit(2);
+}
 const sha = (text) => createHash('sha256').update(text).digest('hex');
 
 globalThis.window = globalThis.window || { location: { pathname: '/', hostname: 'bench' }, dispatchEvent() { return true; }, addEventListener() {}, removeEventListener() {} };
@@ -147,9 +158,34 @@ try {
     fs.mkdirSync(path.dirname(BASELINE_FILE), { recursive: true });
     fs.writeFileSync(BASELINE_FILE, JSON.stringify({ note: 'Gerado pelo código anterior à CLOUD-7B1 (commit 9804adc); node --record', results }, null, 2));
     console.log('baseline e fixture gravados:', JSON.stringify(results, null, 1));
+  } else if (RECORD_POST_7G1) {
+    const historical = JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf8')).results;
+    const divergent = Object.keys(historical).filter((key) => results[key] !== historical[key]);
+    fs.writeFileSync(POST_7G1_BASELINE_FILE, JSON.stringify({
+      note: 'Baseline POSTERIOR à LOCAL-7G.1 (node --record-post-local-7g1). Não substitui equivalence-baseline.json (histórico, anterior à CLOUD-7B1).',
+      expected_divergence_from_historical: {
+        keys: divergent,
+        first_divergent_day: 28,
+        cause: 'LOCAL-7G.1: no settlement do Londres Challenge (tournament-2026-lon-bro-w05-1, liquidado no dia 28), a dupla sorteada cujo membro se aposentou após o sorteio passa a continuar no campo; o parceiro ativo recebe o resultado da 1ª rodada (1 ponto), o perfil/Race dele e o ledger da dupla mudam. Campeão inalterado.',
+      },
+      results,
+    }, null, 2));
+    console.log('baseline pós-LOCAL-7G.1 gravado; chaves divergentes do histórico:', divergent.join(', ') || 'nenhuma');
   } else {
-    const baseline = JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf8')).results;
-    for (const key of Object.keys(baseline)) ok(`A. equivalência byte a byte (${key})`, results[key] === baseline[key]);
+    // A1 — histórico preservado: o que a LOCAL-7G.1 não muda continua byte a byte igual ao código anterior à CLOUD-7B1.
+    // A2 — divergência ESPERADA: só as chaves declaradas diferem do histórico, e exatamente para os hashes pós-7G.1.
+    // A3 — regressão real: qualquer chave fora do baseline pós-7G.1 falha.
+    const historical = JSON.parse(fs.readFileSync(BASELINE_FILE, 'utf8')).results;
+    const post = JSON.parse(fs.readFileSync(POST_7G1_BASELINE_FILE, 'utf8'));
+    const expectedDivergent = new Set(post.expected_divergence_from_historical?.keys || []);
+    for (const key of Object.keys(historical)) {
+      if (expectedDivergent.has(key)) {
+        ok(`A. divergência esperada da LOCAL-7G.1 em relação ao histórico (${key})`, results[key] !== historical[key] && results[key] === post.results[key]);
+      } else {
+        ok(`A. equivalência byte a byte com o histórico anterior à CLOUD-7B1 (${key})`, results[key] === historical[key]);
+      }
+    }
+    for (const key of Object.keys(post.results)) ok(`A. equivalência byte a byte com o baseline pós-LOCAL-7G.1 (${key})`, results[key] === post.results[key]);
   }
 
   // ═══ B. Save antigo: carrega, avança, grava, recarrega ═══

@@ -1375,7 +1375,15 @@ export async function resolveCompletedWorldTourEvents(careerDate) {
   // Playthrough 5.4, Parte F/M — usados pra recreditar o campo REALMENTE
   // sorteado (`tournament.draw_pair_ids`) em vez de reconfiar só no `pairs`
   // recém-recomputado (ver resolveDrawnPair, acima).
-  const athleteById = new Map(athletes.map((athlete) => [athlete.id, athlete]));
+  // LOCAL-7G.1 — a dupla SORTEADA disputou a chave mesmo que um membro tenha se
+  // aposentado (e a parceria encerrado) entre o sorteio e o settlement. Resolver
+  // os membros só entre ativos tirava a dupla do campo: ninguém dela pontuava —
+  // nem o parceiro ativo — e, se fosse a campeã, o título ia para `ordered[0]`.
+  // Os membros resolvem entre TODOS os atletas; os ativos usam a MESMA instância
+  // de `athletes` (é nela que o settlement escreve). A gravação continua só para
+  // ativos (`athleteUpdates`), então o aposentado não é tocado.
+  const athleteById = new Map((rawAthletes || []).filter((athlete) => athlete?.id).map((athlete) => [athlete.id, normalizeAthlete(athlete)]));
+  for (const athlete of athletes) athleteById.set(athlete.id, athlete);
   const partnershipById = new Map((partnerships || []).map((partnership) => [partnership.id, partnership]));
   const pairsById = new Map(pairs.map((pair) => [pair.id, pair]));
   if (!pairs.length) {

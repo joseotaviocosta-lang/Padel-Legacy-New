@@ -121,6 +121,9 @@ cerca de 60 resultados numa única transação), uma vez por torneio.
 
 ### Defeito 2 — decisão pendente
 
+> **Atualização:** corrigido na LOCAL-7G.1 (`docs/LOCAL_7G1_RETIREMENT_SETTLEMENT.md`), sem regravar o baseline histórico
+> da CLOUD-7B1. Foi criado um baseline posterior e identificado, e a divergência ficou documentada.
+
 A correção do defeito 2 é uma linha em `resolveCompletedWorldTourEvents`: resolver os membros das duplas **sorteadas**
 entre todos os atletas, mantendo a gravação só para os ativos.
 

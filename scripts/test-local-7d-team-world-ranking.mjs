@@ -148,11 +148,14 @@ try {
       && t.champion_athlete_ids?.length === 2 && t.runner_up_athlete_ids?.length === 2);
     ok('B5. há torneios mundiais concluídos com campeão e vice identificados', finals.length > 0);
     const pointsFor = (athleteId, tournamentId) => results.filter((r) => r.athlete_id === athleteId && r.tournament_id === tournamentId).reduce((s, r) => s + (Number(r.points) || 0), 0);
+    // LOCAL-7G.1 — a dupla sorteada continua no campo mesmo se um membro se aposentou antes do settlement; o aposentado
+    // não recebe gravação (só ativos são atualizados), então a verificação vale para os membros ativos.
+    const active = (id) => athletes.get(id) && !athletes.get(id).retired && athletes.get(id).career_status !== 'aposentado';
     ok('B6. campeão e vice recebem pontos individuais do torneio, campeão acima do vice',
       finals.every((t) => {
-        const champ = t.champion_athlete_ids.map((id) => pointsFor(id, t.id));
-        const runner = t.runner_up_athlete_ids.map((id) => pointsFor(id, t.id));
-        return champ.every((p) => p > 0) && runner.every((p) => p > 0) && Math.min(...champ) > Math.max(...runner);
+        const champ = t.champion_athlete_ids.filter(active).map((id) => pointsFor(id, t.id));
+        const runner = t.runner_up_athlete_ids.filter(active).map((id) => pointsFor(id, t.id));
+        return champ.length > 0 && runner.length > 0 && champ.every((p) => p > 0) && runner.every((p) => p > 0) && Math.min(...champ) > Math.max(...runner);
       }));
     ok('B7. campeão e vice que ainda formam dupla aparecem com pontos no Mundial',
       finals.flatMap((t) => [t.champion_athlete_ids, t.runner_up_athlete_ids]).map((ids) => findPair(rows, ids)).filter(Boolean).every((r) => teamListPoints(r) > 0));

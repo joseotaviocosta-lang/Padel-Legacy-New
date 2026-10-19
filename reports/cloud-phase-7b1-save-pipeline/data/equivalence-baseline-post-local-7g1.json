@@ -1,0 +1,19 @@
+{
+  "note": "Baseline POSTERIOR à LOCAL-7G.1 (node --record-post-local-7g1). Não substitui equivalence-baseline.json (histórico, anterior à CLOUD-7B1).",
+  "expected_divergence_from_historical": {
+    "keys": [
+      "memoria-dia-30",
+      "memoria-dia-45"
+    ],
+    "first_divergent_day": 28,
+    "cause": "LOCAL-7G.1: no settlement do Londres Challenge (tournament-2026-lon-bro-w05-1, liquidado no dia 28), a dupla sorteada cujo membro se aposentou após o sorteio passa a continuar no campo; o parceiro ativo recebe o resultado da 1ª rodada (1 ponto), o perfil/Race dele e o ledger da dupla mudam. Campeão inalterado."
+  },
+  "results": {
+    "memoria-dia-15": "b6be6965ef0c8509bdfbd8e688127835b846b913a22337c7a258eab45beac5e3",
+    "memoria-dia-30": "ab89e869080d96d59d3c6477261856474b11d0e56f5673e9164b178bbd81b333",
+    "memoria-dia-45": "d093415951da9ef92181214edbf90587e6b0591809f1a7a27128cd9e2255ac35",
+    "tauri-mock-dia-15": "2c5e47083ec31f86da37c142a82a7ac9d7a5afc57017212c905cb80f8e14de1c",
+    "fixture-sha": "158b6693ceca4f1ee9ff9a61d89b8f20362fbbdb4b6c4650cc22309ffed750e3",
+    "fixture-mais-10-dias": "b42cd3e525dc150210ae9669b4e97f6423ac1b72a34afd7ba15407fc288a4584"
+  }
+}

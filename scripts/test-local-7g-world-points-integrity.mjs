@@ -283,21 +283,15 @@ try {
       ? String(pairId).slice('profile-pair:'.length).split(':')
       : [partnerships.get(pairId)?.athlete_a_id, partnerships.get(pairId)?.athlete_b_id]).filter(Boolean);
     const isActive = (id) => athletesAll.get(id) && !athletesAll.get(id).retired && athletesAll.get(id).career_status !== 'aposentado';
+    // LOCAL-7G.1 — inclui a dupla desfeita por aposentadoria depois do sorteio: o parceiro ativo pontua; o aposentado
+    // não recebe gravação (ver test:local-7g1-retirement-settlement).
     const aiIssues = [];
-    const retiredGap = [];
     for (const t of ai) {
       const credited = new Set(allRows.filter((r) => r.tournament_id === t.id).map((r) => r.athlete_id));
-      for (const pairId of t.draw_pair_ids || []) {
-        const ids = membersOfPair(pairId);
-        if (ids.every((id) => credited.has(id))) continue;
-        // Defeito 2 (documentado, correção pendente de decisão — ver docs/LOCAL_7G_WORLD_POINTS_INTEGRITY.md §2/§7):
-        // dupla sorteada cujo membro se aposentou antes do settlement sai do campo e não pontua.
-        if (ids.some((id) => !isActive(id))) { retiredGap.push(`${t.id}:${pairId}`); continue; }
-        aiIssues.push(`${t.id}: ${pairId} sem resultado`);
-      }
+      const missing = (t.draw_pair_ids || []).flatMap(membersOfPair).filter((id) => isActive(id) && !credited.has(id));
+      if (missing.length) aiIssues.push(`${t.id}: ${missing.length} atletas ativos sem resultado`);
     }
-    if (retiredGap.length) console.log(`INFO — defeito 2 (AI-only, pendente): ${retiredGap.length} dupla(s) desfeita(s) por aposentadoria após o sorteio sem pontos: ${retiredGap.join(', ')}`);
-    ok('E1. sem o jogador: todo torneio liquidado credita todas as duplas sorteadas com membros ativos',
+    ok('E1. sem o jogador: todo torneio liquidado credita todo atleta ativo de todas as duplas sorteadas (inclusive dupla desfeita por aposentadoria após o sorteio)',
       ai.length >= 3 && aiIssues.length === 0, `${ai.length} torneios; ${aiIssues.slice(0, 3).join(' | ')}`);
     const sameScale = ['Gold', 'Platinum', 'Silver', 'Masters'].every((tier) => {
       const table = getRoundOutcomeTable(tier, getTournamentTierConfig(tier).mainDrawSize);
