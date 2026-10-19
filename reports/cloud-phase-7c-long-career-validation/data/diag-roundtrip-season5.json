@@ -1,0 +1,63 @@
+{
+  "file": "/tmp/claude-0/s7c/run-incremental/save-season-5.json",
+  "tournaments": 773,
+  "finalizados": 612,
+  "settledUnpacked": 74,
+  "causes": {
+    "source_match_ids_ausente+ordem_de_chaves": 74
+  },
+  "examples": [
+    {
+      "tournament": "tournament-2026-lon-bro-w05-1",
+      "hasPlayerMatch": true,
+      "nonPatternMatchIds": 4,
+      "originalKeyOrder": [
+        "match_id",
+        "date",
+        "status",
+        "team_a",
+        "team_b",
+        "winner",
+        "score",
+        "player_match",
+        "source_match_ids"
+      ],
+      "restoredKeyOrder": [
+        "match_id",
+        "source_match_ids",
+        "date",
+        "status",
+        "team_a",
+        "team_b",
+        "winner",
+        "score",
+        "player_match"
+      ],
+      "originalJson": "{\"match_id\":\"tournament-2026-lon-bro-w05-1:player:r1\",\"date\":\"2026-01-30\",\"status\":\"completed\",\"team_a\":\"Rafael Molina 933 & Adrián Acosta\",\"team_b\":\"Rubén Campos 939 & Ignacio Castro 842\",\"winner\":\"Rubén Campos 939 & Ignacio Castro 842\",\"score\":\"4-6 6-4 3-6\",\"player_match\":true,\"source_match_ids\":[\"tournament-2026-lon-bro-w05-1:player:r0\",\"tournament-2026-lon-bro-w05-1:opp1:r0:m0\"]}",
+      "restoredJson": "{\"match_id\":\"tournament-2026-lon-bro-w05-1:player:r1\",\"source_match_ids\":[\"tournament-2026-lon-bro-w05-1:player:r0\",\"tournament-2026-lon-bro-w05-1:opp1:r0:m0\"],\"date\":\"2026-01-30\",\"status\":\"completed\",\"team_a\":\"Rafael Molina 933 & Adrián Acosta\",\"team_b\":\"Rubén Campos 939 & Ignacio Castro 842\",\"winner\":\"Rubén Campos 939 & Ignacio Castro 842\",\"score\":\"4-6 6-4 3-6\",\"player_match\":true}"
+    }
+  ],
+  "experiments": {
+    "reorderOnly": 0,
+    "injectOnly": 0,
+    "reorderAndInject": 74
+  },
+  "absentSourceMatchesPerTournament": {
+    "1": 74
+  },
+  "exampleAbsentKey": {
+    "tournament": "tournament-2026-lon-bro-w05-1",
+    "originalJson": "{\"match_id\":\"tournament-2026-lon-bro-w05-1:player:r0\",\"date\":\"2026-01-29\",\"status\":\"completed\",\"team_a\":\"Atleta 7C & Alessio Romano\",\"team_b\":\"Rafael Molina 933 & Adrián Acosta\",\"winner\":\"Rafael Molina 933 & Adrián Acosta\",\"score\":\"4-6, 6-7\",\"player_match\":true}",
+    "restoredByCodecJson": "{\"match_id\":\"tournament-2026-lon-bro-w05-1:player:r0\",\"date\":\"2026-01-29\",\"status\":\"completed\",\"team_a\":\"Atleta 7C & Alessio Romano\",\"team_b\":\"Rafael Molina 933 & Adrián Acosta\",\"winner\":\"Rafael Molina 933 & Adrián Acosta\",\"score\":\"4-6, 6-7\",\"player_match\":true,\"source_match_ids\":[]}",
+    "note": "o codec deriva source_match_ids=[] para partida da rodada 0 quando a chave está ausente: o torneio restaurado ganha uma chave que o original não tinha"
+  },
+  "withPlayerMatch": 74,
+  "withoutPlayerMatch": 0,
+  "semanticallyIdenticalIgnoringKeyOrder": 74,
+  "matchKeyOrderSignatures": {
+    "match_id,date,status,team_a,team_b,winner,score,player_match": 74,
+    "match_id,source_match_ids,date,status,team_a,team_b,winner,score,player_match": 1444,
+    "match_id,date,status,team_a,team_b,winner,score,player_match,source_match_ids": 264
+  },
+  "packedTournaments": 537
+}

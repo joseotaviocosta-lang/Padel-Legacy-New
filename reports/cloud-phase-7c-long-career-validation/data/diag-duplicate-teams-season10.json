@@ -1,0 +1,189 @@
+{
+  "file": "/tmp/claude-0/s7c/run-off/save-season-10.json",
+  "tournamentsWithDrawSnapshot": 1240,
+  "affectedTournaments": 3,
+  "firstOccurrence": {
+    "tournament": "tournament-2035-riy-gol-w26-2",
+    "drawDate": "2035-06-25",
+    "resolvedAt": "2035-07-03"
+  },
+  "affected": [
+    {
+      "tournament": "tournament-2035-riy-gol-w26-2",
+      "tier": "Gold",
+      "status": "finalizado",
+      "drawDate": "2035-06-25",
+      "start": "2035-06-28",
+      "resolvedAt": "2035-07-03",
+      "drawPairIds": 24,
+      "participantsNames": 23,
+      "uniqueParticipantNames": 23,
+      "placementsRows": 24,
+      "uniquePlacementTeams": 23,
+      "manifestation": "colocacoes_com_equipe_duplicada",
+      "collisions": [
+        {
+          "name": "Hugo López & Rafael López",
+          "pairs": [
+            {
+              "pairId": "partnership-athleteprofile-1767226700727-ly6kwk-athleteprofile-1767319076727-my2ipp-2034-04-01",
+              "status": "encerrada_parceiro",
+              "formedOn": "2034-04-01",
+              "members": [
+                {
+                  "id": "athleteprofile-1767226700727-ly6kwk",
+                  "name": "Hugo López",
+                  "country": "França"
+                },
+                {
+                  "id": "athleteprofile-1767319076727-my2ipp",
+                  "name": "Rafael López",
+                  "country": "Argentina",
+                  "birth_date": "2015-03-01"
+                }
+              ]
+            },
+            {
+              "pairId": "partnership-athleteprofile-1767230143727-n3jmm5-athleteprofile-1767298307727-y842jj-2034-03-01",
+              "status": "ativa",
+              "formedOn": "2034-03-01",
+              "members": [
+                {
+                  "id": "athleteprofile-1767230143727-n3jmm5",
+                  "name": "Hugo López",
+                  "country": "França",
+                  "birth_date": "2009-03-01"
+                },
+                {
+                  "id": "athleteprofile-1767298307727-y842jj",
+                  "name": "Rafael López",
+                  "country": "Paraguai",
+                  "birth_date": "2013-07-01"
+                }
+              ]
+            }
+          ],
+          "appearancesInBracket": 3
+        }
+      ]
+    },
+    {
+      "tournament": "tournament-2035-bkk-gol-w28-3",
+      "tier": "Gold",
+      "status": "finalizado",
+      "drawDate": "2035-07-09",
+      "start": "2035-07-12",
+      "resolvedAt": "2035-07-17",
+      "drawPairIds": 24,
+      "participantsNames": 23,
+      "uniqueParticipantNames": 23,
+      "placementsRows": 24,
+      "uniquePlacementTeams": 23,
+      "manifestation": "colocacoes_com_equipe_duplicada",
+      "collisions": [
+        {
+          "name": "Hugo López & Rafael López",
+          "pairs": [
+            {
+              "pairId": "partnership-athleteprofile-1767230143727-n3jmm5-athleteprofile-1767298307727-y842jj-2034-03-01",
+              "status": "ativa",
+              "formedOn": "2034-03-01",
+              "members": [
+                {
+                  "id": "athleteprofile-1767230143727-n3jmm5",
+                  "name": "Hugo López",
+                  "country": "França",
+                  "birth_date": "2009-03-01"
+                },
+                {
+                  "id": "athleteprofile-1767298307727-y842jj",
+                  "name": "Rafael López",
+                  "country": "Paraguai",
+                  "birth_date": "2013-07-01"
+                }
+              ]
+            },
+            {
+              "pairId": "partnership-athleteprofile-1767226700727-ly6kwk-athleteprofile-1767319076727-my2ipp-2034-04-01",
+              "status": "encerrada_parceiro",
+              "formedOn": "2034-04-01",
+              "members": [
+                {
+                  "id": "athleteprofile-1767226700727-ly6kwk",
+                  "name": "Hugo López",
+                  "country": "França"
+                },
+                {
+                  "id": "athleteprofile-1767319076727-my2ipp",
+                  "name": "Rafael López",
+                  "country": "Argentina",
+                  "birth_date": "2015-03-01"
+                }
+              ]
+            }
+          ],
+          "appearancesInBracket": 4
+        }
+      ]
+    },
+    {
+      "tournament": "tournament-2035-tor-gol-w31-2",
+      "tier": "Gold",
+      "status": "finalizado",
+      "drawDate": "2035-07-30",
+      "start": "2035-08-02",
+      "resolvedAt": "2035-08-07",
+      "drawPairIds": 24,
+      "participantsNames": 23,
+      "uniqueParticipantNames": 23,
+      "placementsRows": 23,
+      "uniquePlacementTeams": 23,
+      "manifestation": "dupla_fundida_silenciosamente_na_chave",
+      "collisions": [
+        {
+          "name": "Hugo López & Rafael López",
+          "pairs": [
+            {
+              "pairId": "partnership-athleteprofile-1767230143727-n3jmm5-athleteprofile-1767298307727-y842jj-2034-03-01",
+              "status": "ativa",
+              "formedOn": "2034-03-01",
+              "members": [
+                {
+                  "id": "athleteprofile-1767230143727-n3jmm5",
+                  "name": "Hugo López",
+                  "country": "França",
+                  "birth_date": "2009-03-01"
+                },
+                {
+                  "id": "athleteprofile-1767298307727-y842jj",
+                  "name": "Rafael López",
+                  "country": "Paraguai",
+                  "birth_date": "2013-07-01"
+                }
+              ]
+            },
+            {
+              "pairId": "partnership-athleteprofile-1767226700727-ly6kwk-athleteprofile-1767319076727-my2ipp-2034-04-01",
+              "status": "encerrada_parceiro",
+              "formedOn": "2034-04-01",
+              "members": [
+                {
+                  "id": "athleteprofile-1767226700727-ly6kwk",
+                  "name": "Hugo López",
+                  "country": "França"
+                },
+                {
+                  "id": "athleteprofile-1767319076727-my2ipp",
+                  "name": "Rafael López",
+                  "country": "Argentina",
+                  "birth_date": "2015-03-01"
+                }
+              ]
+            }
+          ],
+          "appearancesInBracket": 5
+        }
+      ]
+    }
+  ]
+}

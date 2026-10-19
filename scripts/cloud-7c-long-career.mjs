@@ -111,7 +111,6 @@ try {
   // CLOUD-7C determinismo: `--careers=N` roda N carreiras em sequência NO MESMO PROCESSO (mesmo servidor/módulos).
   // Com `--resetSingletons` reinicia, entre carreiras, os singletons conhecidos (sequência de ids, transação ativa);
   // sem ela reproduz o uso real de dois jogos no mesmo processo (contaminação da 7B2A).
-  const { resetIdCollisionSequence } = await load('/src/gameplay/repositories/CareerEntityRepository.js');
   for (let careerIndex = 0; careerIndex < CAREERS; careerIndex += 1) {
   if (careerIndex > 0) {
     OUT = `${OUT0}-c${careerIndex}`; fs.mkdirSync(OUT, { recursive: true });
@@ -121,7 +120,8 @@ try {
     progress = { strategy: STRATEGY, seed: SEED, seasonsTarget: SEASONS, seasonsDone: 0, status: 'running', careerIndex };
     startedAt = RealDate.now();
     inc.resetIncrementalStats();
-    if (RESET_SINGLETONS) { resetIdCollisionSequence(); activeCareerAdapter.activePersistenceTransaction = null; activeCareerAdapter.writeChain = Promise.resolve(); }
+    // carregado só aqui (não no início): qualquer load extra consome ticks do relógio falso e muda o mundo inteiro da carreira 0
+    if (RESET_SINGLETONS) { (await load('/src/gameplay/repositories/CareerEntityRepository.js')).resetIdCollisionSequence(); activeCareerAdapter.activePersistenceTransaction = null; activeCareerAdapter.writeChain = Promise.resolve(); }
     activeCareerAdapter.clearActiveCareer();
   }
   const backend = memoryBackend();
