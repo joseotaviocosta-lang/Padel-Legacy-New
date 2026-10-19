@@ -1,0 +1,277 @@
+{
+  "dirA": "/tmp/claude-0/s7c/reload-off",
+  "dirB": "/tmp/claude-0/s7c/reload-incremental",
+  "checkpointsCompared": 318,
+  "identicalThroughout": true,
+  "firstDivergence": null,
+  "lastCommonCheckpoint": {
+    "day": 2226,
+    "diffEntities": []
+  },
+  "ignoredEntities": [
+    "AnnualCareerReport"
+  ],
+  "finalWholeEqual": null,
+  "finalPartsDiff": null,
+  "countersEqual": null,
+  "seasons": [
+    {
+      "season": 1,
+      "saveBytes": [
+        12587723,
+        12157736
+      ],
+      "dayMedian": [
+        325.1,
+        388.6
+      ],
+      "dayP95": [
+        652.7,
+        851.9
+      ],
+      "loadMs": [
+        103.4,
+        93.4
+      ],
+      "writeMs": [
+        279.8,
+        286.8
+      ],
+      "cloneMs": [
+        139.8,
+        134.1
+      ],
+      "heapMB": [
+        261.5,
+        254
+      ],
+      "worldRank": [
+        384,
+        384
+      ],
+      "tournamentsPlayed": [
+        39,
+        39
+      ],
+      "matches": [
+        48,
+        48
+      ]
+    },
+    {
+      "season": 2,
+      "saveBytes": [
+        19758234,
+        18820225
+      ],
+      "dayMedian": [
+        660.5,
+        788.3
+      ],
+      "dayP95": [
+        1144.8,
+        1553.1
+      ],
+      "loadMs": [
+        163.2,
+        188.7
+      ],
+      "writeMs": [
+        468.5,
+        564.9
+      ],
+      "cloneMs": [
+        367.1,
+        620
+      ],
+      "heapMB": [
+        368.2,
+        350.2
+      ],
+      "worldRank": [
+        316,
+        316
+      ],
+      "tournamentsPlayed": [
+        11,
+        11
+      ],
+      "matches": [
+        11,
+        11
+      ]
+    },
+    {
+      "season": 3,
+      "saveBytes": [
+        25827438,
+        24388696
+      ],
+      "dayMedian": [
+        840.9,
+        1083.3
+      ],
+      "dayP95": [
+        1401.9,
+        1870.4
+      ],
+      "loadMs": [
+        232.9,
+        155.2
+      ],
+      "writeMs": [
+        537.8,
+        518.4
+      ],
+      "cloneMs": [
+        329.5,
+        266.4
+      ],
+      "heapMB": [
+        440.2,
+        413.5
+      ],
+      "worldRank": [
+        333,
+        333
+      ],
+      "tournamentsPlayed": [
+        11,
+        11
+      ],
+      "matches": [
+        11,
+        11
+      ]
+    },
+    {
+      "season": 4,
+      "saveBytes": [
+        32073359,
+        30129446
+      ],
+      "dayMedian": [
+        1000.2,
+        1294.5
+      ],
+      "dayP95": [
+        1598.9,
+        2139.7
+      ],
+      "loadMs": [
+        217.7,
+        181.8
+      ],
+      "writeMs": [
+        726.8,
+        652
+      ],
+      "cloneMs": [
+        429.8,
+        432.4
+      ],
+      "heapMB": [
+        534.1,
+        495.2
+      ],
+      "worldRank": [
+        296,
+        296
+      ],
+      "tournamentsPlayed": [
+        11,
+        11
+      ],
+      "matches": [
+        11,
+        11
+      ]
+    },
+    {
+      "season": 5,
+      "saveBytes": [
+        38232400,
+        35780483
+      ],
+      "dayMedian": [
+        1154.3,
+        1552.3
+      ],
+      "dayP95": [
+        1681.5,
+        2677.2
+      ],
+      "loadMs": [
+        293,
+        279.3
+      ],
+      "writeMs": [
+        980,
+        796.8
+      ],
+      "cloneMs": [
+        480.6,
+        426.5
+      ],
+      "heapMB": [
+        607.7,
+        559.9
+      ],
+      "worldRank": [
+        293,
+        293
+      ],
+      "tournamentsPlayed": [
+        11,
+        11
+      ],
+      "matches": [
+        11,
+        11
+      ]
+    },
+    {
+      "season": 6,
+      "saveBytes": [
+        44427106,
+        41471435
+      ],
+      "dayMedian": [
+        1280.6,
+        1622.9
+      ],
+      "dayP95": [
+        1914,
+        2610.3
+      ],
+      "loadMs": [
+        291.9,
+        242.2
+      ],
+      "writeMs": [
+        942.7,
+        808.6
+      ],
+      "cloneMs": [
+        529.8,
+        394
+      ],
+      "heapMB": [
+        696,
+        636
+      ],
+      "worldRank": [
+        287,
+        287
+      ],
+      "tournamentsPlayed": [
+        11,
+        11
+      ],
+      "matches": [
+        11,
+        11
+      ]
+    }
+  ]
+}

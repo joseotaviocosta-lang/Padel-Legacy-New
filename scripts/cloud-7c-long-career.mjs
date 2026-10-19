@@ -30,6 +30,7 @@ const RELOAD = new Set(String(args.reloadSeasons || '').split(',').filter(Boolea
 const DUMP = new Set(String(args.dumpSeasons || '').split(',').filter(Boolean).map(Number));
 const HASH_EVERY = Number(args.hashEvery ?? 7);
 const MAX_DAYS = Number(args.maxDays || 0); // diagnóstico: encerra cedo (0 = temporadas completas)
+const RELOAD_EVERY_DAYS = Number(args.reloadEveryDays || 0); // diagnóstico: recarrega o save do disco a cada N dias
 const HASH_DAY0 = Boolean(args.hashDay0); // diagnóstico: checkpoint logo após criar o perfil
 const DECISION_PLAY = Number(args.decisionPlayChance ?? 0.95);
 const TRAIN_CHANCE = 0.4;
@@ -420,6 +421,13 @@ try {
     if (!isInjured(profile) && (await canPlayMatchToday(profile)).allowed && decisionRng() < PRACTICE_CHANCE) {
       await quiet(() => playPractice(profile).catch(() => {}));
       profile = await localGame.entities.PlayerProfile.get(profileId);
+    }
+    if (RELOAD_EVERY_DAYS > 0 && (day + 1) % RELOAD_EVERY_DAYS === 0) {
+      activeCareerAdapter.clearActiveCareer();
+      const loaded = await quiet(() => manager.loadCareer(careerId));
+      activeCareerAdapter.setActiveCareer(loaded);
+      profile = await localGame.entities.PlayerProfile.get(profileId);
+      log('reloads.jsonl', { day: day + 1, date: profile.career_date });
     }
     if (HASH_EVERY > 0 && (day + 1) % HASH_EVERY === 0) await checkpoint(day + 1);
 
