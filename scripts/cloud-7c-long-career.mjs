@@ -47,7 +47,11 @@ globalThis.CustomEvent = globalThis.CustomEvent || class CustomEvent { construct
 function hashSeed(text) { let h = 2166136261; for (const ch of String(text)) { h ^= ch.charCodeAt(0); h = Math.imul(h, 16777619); } return h >>> 0; }
 function mulberry32(seed) { let a = seed >>> 0; return () => { a |= 0; a = (a + 0x6D2B79F5) | 0; let t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
 let worldRng = mulberry32(hashSeed(`${SEED}-world`));
-Math.random = () => worldRng();
+// `infraMode` (diagnóstico --reloadIsolatesStreams): durante o reload, Math.random usa outro PRNG e o relógio falso não avança;
+// contadores registram quanto o caminho de carga consome do fluxo compartilhado.
+let infraMode = false; let randomCalls = 0; let tickCalls = 0;
+const infraRng = mulberry32(hashSeed(`${SEED}-infra`));
+Math.random = () => { randomCalls += 1; return infraMode ? infraRng() : worldRng(); };
 const RealDate = Date;
 let fakeNow = new RealDate('2026-01-01T00:00:00.000Z').getTime() + (hashSeed(SEED) % 100000);
 let dateTrace = null; // diagnóstico (--traceDateDay): assinatura de quem consome ticks do relógio falso
@@ -61,7 +65,7 @@ const traceTick = (kind) => {
 // falso; só o código de jogo consome ticks. Isola o acoplamento relógio-falso x cadência de gravação/backup.
 const CLOCK_IGNORES_PERSISTENCE = Boolean(args.clockIgnoresPersistence);
 const isInfraCaller = () => /GameStorage|BackupManager|betaDiagnostics|performanceProbe|storageIOProbe|TauriStorage|BrowserStorage/.test(new Error().stack);
-const nextTick = () => (CLOCK_IGNORES_PERSISTENCE && isInfraCaller() ? fakeNow : (fakeNow += 1000));
+const nextTick = () => { tickCalls += 1; return (infraMode || (CLOCK_IGNORES_PERSISTENCE && isInfraCaller())) ? fakeNow : (fakeNow += 1000); };
 globalThis.Date = class DeterministicDate extends RealDate {
   constructor(...a) { if (a.length === 0) { traceTick('new Date()'); super(nextTick()); } else super(...a); }
   static now() { traceTick('Date.now()'); return nextTick(); }
@@ -430,11 +434,14 @@ try {
       profile = await localGame.entities.PlayerProfile.get(profileId);
     }
     if (RELOAD_EVERY_DAYS > 0 && (day + 1) % RELOAD_EVERY_DAYS === 0) {
+      const r0 = randomCalls; const t0c = tickCalls; const fn0 = fakeNow;
+      if (args.reloadIsolatesStreams) infraMode = true;
       activeCareerAdapter.clearActiveCareer();
       const loaded = await quiet(() => manager.loadCareer(careerId));
       activeCareerAdapter.setActiveCareer(loaded);
       profile = await localGame.entities.PlayerProfile.get(profileId);
-      log('reloads.jsonl', { day: day + 1, date: profile.career_date });
+      infraMode = false;
+      log('reloads.jsonl', { day: day + 1, date: profile.career_date, randomCallsInReload: randomCalls - r0, clockReadsInReload: tickCalls - t0c, clockAdvancedMsInReload: fakeNow - fn0, isolated: Boolean(args.reloadIsolatesStreams) });
     }
     if (HASH_EVERY > 0 && (day + 1) % HASH_EVERY === 0) await checkpoint(day + 1);
 
