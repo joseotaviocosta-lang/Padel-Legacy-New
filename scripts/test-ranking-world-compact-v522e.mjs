@@ -19,7 +19,8 @@ assert.match(source, /pontos/i, 'pontos devem aparecer');
 
 // Pontos com destaque (não metadado irrelevante): o número da posição e o de
 // pontos usam tamanho grande.
-assert.match(source, /text-4xl font-black tabular-nums text-primary[^>]*>\{rankLabel\}/, 'posição mundial deve ser grande');
+// Fase 5.32-A: a posição vem de `rank` (null = "Ainda sem ranking").
+assert.match(source, /text-4xl font-black leading-none tabular-nums text-primary">#\{rank\}/, 'posição mundial deve ser grande');
 assert.match(source, /text-lg font-black tabular-nums text-foreground/, 'pontos devem ter destaque');
 
 console.log('test-ranking-world-compact-v522e: PASS');

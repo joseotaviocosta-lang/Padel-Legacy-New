@@ -21,8 +21,9 @@ assert.match(source, /function WorldDoublesCard/);
 assert.match(source, /function RaceIndividualCard/);
 assert.match(source, /function RaceDoublesCard/);
 
-// Duas linhas de tabs, nunca quatro botões no mesmo nível.
-const tabRows = (source.match(/<Tabs /g) || []).length;
-assert.equal(tabRows, 2, `esperado 2 linhas de Tabs, encontrado ${tabRows}`);
+// Dois controles de 2 opções, nunca quatro botões no mesmo nível
+// (5.32-A: SegmentedToggle no lugar de Tabs).
+const tabRows = (source.match(/<SegmentedToggle /g) || []).length;
+assert.equal(tabRows, 2, `esperado 2 controles, encontrado ${tabRows}`);
 
 console.log('test-ranking-four-view-architecture-v523: PASS');

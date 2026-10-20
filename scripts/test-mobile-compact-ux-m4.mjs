@@ -143,6 +143,10 @@ try {
     'src/pages/Tournaments.jsx': () => read('src/pages/Tournaments.jsx').includes('<CompetitionHeroCard') && read('src/pages/Tournaments.jsx').includes('data-competition-hero'),
     'src/pages/PartnerHub.jsx': () => read('src/components/partner/PartnerOverview.jsx').includes('data-partner-hero="active"'),
     'src/pages/Coaches.jsx': () => read('src/pages/Coaches.jsx').includes('data-coach-hero="active"'),
+    // Fase 5.32-A: o HUD do Ranking (líder/race/países/clubes) empurrava a
+    // posição do jogador para baixo da dobra. O estado curto passou a ser o
+    // cartão "Sua posição" (hero) logo abaixo do alternador de período/tipo.
+    'src/pages/Ranking.jsx': () => read('src/pages/Ranking.jsx').includes('data-ranking-hero={kind}') && read('src/pages/Ranking.jsx').includes('data-ranking-view-switch'),
   };
   for (const path of pagesUsingCompactStats) {
     if (HERO_SUMMARY[path]) gate(`${path} resume o estado no primeiro bloco (cartão hero, sem HUD duplicado)`, HERO_SUMMARY[path]() && !read(path).includes('hudItems='));

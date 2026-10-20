@@ -1,3 +1,5 @@
+import { RANKING_WINDOW_DAYS, RANKING_BEST_N } from '../game-core/rankingWindow.js';
+
 // Uma convenção de exibição, duas autoridades distintas: ranking individual
 // vem do snapshot mundial; ranking de dupla vem de TeamRanking. O formatador
 // nunca calcula posição — apenas traduz o estado canônico recebido.
@@ -161,4 +163,124 @@ export function buildPlayerRankingContext({ rank, points, above, below, total = 
     neighborhood,
     total: Number(total) || 1500,
   };
+}
+
+// ── Fase 5.32-A — escada competitiva ("POSITION FIRST") ──────────────────
+// Helpers PUROS de apresentação. Nenhum calcula pontos ou posição: recebem
+// o que as autoridades já entregaram (snapshot mundial, TeamRanking,
+// projeção da Race) e só decidem o que é exibível.
+
+export const RANKING_WINDOW_WEEKS = Math.round(RANKING_WINDOW_DAYS / 7);
+
+// Micro-explicação do período. O ano vem da data da carreira (nunca fixo).
+export function describeRankingPeriod(scope, seasonYear) {
+  if (scope === 'race') {
+    const year = Number(seasonYear) > 0 ? Math.trunc(Number(seasonYear)) : null;
+    return year
+      ? `Race ${year}: pontos da temporada desde 1º de janeiro. Zera na virada do ano.`
+      : 'Race: pontos da temporada atual. Zera na virada do ano.';
+  }
+  return `Mundial: os ${RANKING_BEST_N} melhores resultados das últimas ${RANKING_WINDOW_WEEKS} semanas.`;
+}
+
+// Posição exibível. Sem ranking real (flag da autoridade, posição 0 ou 0
+// pontos) devolve null: a UI escreve "Ainda sem ranking" — nunca o fim da
+// fila (#1001) nem "#1000+" como se fosse uma posição.
+export function resolveStandingRank({ rank, unranked = false, points } = {}) {
+  const value = Number(rank);
+  if (unranked || !(value > 0)) return null;
+  if (points !== undefined && points !== null && !(Number(points) > 0)) return null;
+  return Math.trunc(value);
+}
+
+// Pontos que faltam para alcançar quem está logo acima (0 = empatado).
+export function pointsGapToAbove(points, abovePoints) {
+  if (abovePoints === null || abovePoints === undefined) return null;
+  return Math.max(0, Math.round((Number(abovePoints) || 0) - (Number(points) || 0)));
+}
+
+// Vizinhos na escada: até `radius` acima e abaixo de `index`, na ordem que a
+// autoridade já entregou.
+export function sliceLadderNeighbors(items = [], index = -1, radius = 2) {
+  if (!Array.isArray(items) || !(index >= 0) || index >= items.length) return [];
+  const start = Math.max(0, index - radius);
+  const end = Math.min(items.length, index + radius + 1);
+  return items.slice(start, end).map((item, offset) => ({ item, index: start + offset, isSelf: start + offset === index }));
+}
+
+// Pódio só com pontos reais: se algum dos 3 primeiros tem 0 (Race recém-
+// zerada, circuito vazio), não há pódio — "0 pts" no degrau não é pódio.
+export function hasMeaningfulPodium(items = [], pointsOf = (row) => row?.points) {
+  return Array.isArray(items) && items.length >= 3 && items.slice(0, 3).every((row) => Number(pointsOf(row)) > 0);
+}
+
+// Variação semanal de uma linha individual: só com a posição anterior que o
+// circuito gravou (ranking_previous_position). Sem ela → null (não "estável").
+export function ladderMovement(previousPosition, position) {
+  const previous = Number(previousPosition);
+  const current = Number(position);
+  if (!(previous > 0) || !(current > 0)) return null;
+  return previous - current;
+}
+
+// V/D/títulos de uma dupla, pela mesma autoridade de V/D: o ledger
+// (LOCAL-7H: wins/losses/ledger_titles com stats_source 'ledger'). Linha sem
+// ledger → null ("Histórico indisponível").
+export function teamLedgerRecord(row) {
+  if (!row || row.stats_source !== 'ledger') return null;
+  return {
+    wins: Math.max(0, Number(row.wins) || 0),
+    losses: Math.max(0, Number(row.losses) || 0),
+    titles: Math.max(0, Number(row.ledger_titles) || 0),
+  };
+}
+
+export function normalizeSearchText(value) {
+  return String(value || '').normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase().trim();
+}
+
+// Busca/filtros da lista. A posição de cada linha NÃO muda com o filtro (ela
+// vem da autoridade, em `ladder_position`).
+export function filterLadderRows(rows = [], { query = '', country = null, maxPosition = null, namesOf = (row) => [row?.name], countryOf = (row) => row?.country } = {}) {
+  const q = normalizeSearchText(query);
+  const wantedCountry = country ? normalizeSearchText(country) : null;
+  return (rows || []).filter((row) => {
+    if (q && !namesOf(row).some((name) => normalizeSearchText(name).includes(q))) return false;
+    if (wantedCountry && normalizeSearchText(countryOf(row)) !== wantedCountry) return false;
+    if (maxPosition && !(Number(row?.ladder_position) > 0 && Number(row.ladder_position) <= maxPosition)) return false;
+    return true;
+  });
+}
+
+// ── Fase 5.32-A.1 — contexto para subir (empates sem ambiguidade) ────────
+// Lê a escada JÁ ordenada pela autoridade e devolve, para a linha `index`:
+//   - target: a linha mais próxima ACIMA com MAIS pontos (para onde subir) e
+//     quantos pontos faltam — nunca "faltam 0";
+//   - tieAbove: a linha logo acima com os MESMOS pontos, e se ela divide a
+//     posição (duplas: ranking de competição) ou não (individual: a
+//     ordenação já desempatou). O critério do desempate não é afirmado;
+//   - below: a linha logo abaixo e a vantagem sobre ela;
+//   - isLeader: posição 1 sem ninguém com mais pontos.
+// Fora da escada (index < 0) → null: sem vizinho real, nada é dito (antes a
+// tela caía em "lidera o ranking" para uma dupla fora da lista carregada).
+export function buildClimbContext(rows = [], index = -1, {
+  pointsOf = (row) => row?.points,
+  positionOf = (row) => row?.ladder_position,
+  nameOf = (row) => row?.name,
+} = {}) {
+  if (!Array.isArray(rows) || !(index >= 0) || index >= rows.length) return null;
+  const self = rows[index];
+  const points = Math.max(0, Number(pointsOf(self)) || 0);
+  const position = Number(positionOf(self)) || null;
+  const view = (row) => ({ rank: Number(positionOf(row)) || null, name: nameOf(row), points: Math.max(0, Number(pointsOf(row)) || 0) });
+  let target = null;
+  for (let i = index - 1; i >= 0; i -= 1) {
+    const candidate = view(rows[i]);
+    if (candidate.points > points) { target = { ...candidate, gap: Math.round(candidate.points - points) }; break; }
+  }
+  const prev = index > 0 ? view(rows[index - 1]) : null;
+  const tieAbove = prev && prev.points === points ? { ...prev, sharesPosition: prev.rank !== null && prev.rank === position } : null;
+  const next = index < rows.length - 1 ? view(rows[index + 1]) : null;
+  const below = next ? { ...next, gap: Math.max(0, Math.round(points - next.points)) } : null;
+  return { position, points, target, tieAbove, below, isLeader: position === 1 && !target };
 }

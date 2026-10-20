@@ -19,9 +19,10 @@ assert.match(mountEffect, /ensurePlayerTeamRanking\(profile\)/, 'linha canônica
 const doublesEffect = source.slice(source.indexOf('// Playthrough 5.24-B, Parte I — dados de Duplas sob demanda'), source.indexOf('// URL → estado'));
 assert.match(doublesEffect, /type !== 'doubles'/, 'só roda com Duplas ativa');
 assert.match(doublesEffect, /doublesRequestedRef\.current\[period\]/, 'uma vez por período (sem loop)');
-assert.match(doublesEffect, /getTeamRankings\(600\)/);
+// 5.32-A.1: a escada lê a população inteira (TEAM_BOARD_CAP = corte de getTeamRank).
+assert.match(doublesEffect, /getTeamRankings\(TEAM_BOARD_CAP\)/);
 assert.match(doublesEffect, /getTeamRank\(playerProfile, \{ id: partnerId \}\)/);
-assert.match(doublesEffect, /getTeamRaceRankings\(600, \{ profile: playerProfile \}\)/);
+assert.match(doublesEffect, /getTeamRaceRankings\(TEAM_BOARD_CAP, \{ profile: playerProfile \}\)/);
 assert.match(doublesEffect, /getTeamRaceRank\(playerProfile, \{ id: partnerId \}\)/);
 
 // Views de Duplas esperam seus dados (sem mostrar "Sem ranking" provisório).

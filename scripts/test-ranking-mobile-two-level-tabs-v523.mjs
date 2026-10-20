@@ -1,5 +1,7 @@
-// Playthrough 5.23, Partes K/O — mobile: dois seletores empilhados de 2
-// opções cada, nunca quatro tabs concorrentes numa linha.
+// Playthrough 5.23, Partes K/O — mobile: dois seletores de 2 opções cada,
+// nunca quatro tabs concorrentes no mesmo controle.
+// Fase 5.32-A: os dois níveis viraram dois controles segmentados
+// (SegmentedToggle) lado a lado; o princípio — 2 níveis × 2 opções — segue.
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
@@ -10,10 +12,10 @@ const typeBlock = source.match(/const TYPE_TABS = \[[\s\S]*?\];/)[0];
 assert.equal((scopeBlock.match(/key:/g) || []).length, 2, 'scope deve ter 2 opções');
 assert.equal((typeBlock.match(/key:/g) || []).length, 2, 'type deve ter 2 opções');
 
-// Duas linhas de Tabs (segmented + buttons), nunca uma com 4.
-assert.match(source, /<Tabs tabs=\{SCOPE_TABS\}[\s\S]*?variant="segmented"/);
-assert.match(source, /<Tabs tabs=\{TYPE_TABS\}[\s\S]*?variant="buttons"/);
-assert.equal((source.match(/<Tabs /g) || []).length, 2);
+// Dois controles (período e tipo), nunca um com 4.
+assert.match(source, /<SegmentedToggle label="Período do ranking" options=\{SCOPE_TABS\}/);
+assert.match(source, /<SegmentedToggle label="Tipo de ranking" options=\{TYPE_TABS\}/);
+assert.equal((source.match(/<SegmentedToggle /g) || []).length, 2);
 
 // Labels curtos o suficiente para 360px.
 assert.match(scopeBlock, /label: 'Mundial'/);

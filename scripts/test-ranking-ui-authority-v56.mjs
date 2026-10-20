@@ -14,7 +14,10 @@ const partner = await readFile(new URL('../src/components/partner/PartnerOvervie
 const tournament = await readFile(new URL('../src/components/tournaments/TournamentModal.jsx', import.meta.url), 'utf8');
 const appLayout = await readFile(new URL('../src/components/AppLayout.jsx', import.meta.url), 'utf8');
 assert.match(ranking, /buildWorldRankingSnapshot/);
-assert.match(ranking, /getTeamRankings\(600\)/);
+// 5.32-A.1: a escada lê a população inteira com a MESMA autoridade
+// (TEAM_BOARD_CAP = corte com que getTeamRank calcula a posição).
+assert.match(ranking, /getTeamRankings\(TEAM_BOARD_CAP\)/);
+assert.match(ranking, /export const TEAM_BOARD_CAP = 5000;/);
 assert.match(season, /formatIndividualRankLabel\(worldRank\)/);
 // CLOUD-2: desde a Playthrough 5.24 (Parte B) o ranking individual saiu do
 // CareerHud e vive em HeaderRankShortcuts — a autoridade do rótulo é a mesma.

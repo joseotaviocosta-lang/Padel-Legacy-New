@@ -77,6 +77,11 @@ for (const [path, source] of Object.entries(pages)) {
   // (estado curto + ação no mesmo bloco). O princípio do gate é o mesmo.
   if (path === 'src/pages/Tournaments.jsx') {
     gate(`${path} integra estado curto + ação no cartão de competição (5.29)`, source.includes('<CompetitionHeroCard') && source.includes('data-competition-hero'));
+  } else if (path === 'src/pages/Ranking.jsx') {
+    // Fase 5.32-A — o Ranking trocou PageHeader+HUD pelo cartão "Sua
+    // posição" (estado curto no topo, POSITION FIRST); no celular o hub já
+    // nomeia a página. Mesmo princípio do gate.
+    gate(`${path} integra estado curto no cartão de posição (5.32)`, source.includes('data-ranking-hero={kind}') && source.includes('data-ranking-view-switch') && !source.includes('hudItems='));
   } else if (path === 'src/pages/CareerHub.jsx') {
     // Fase 5.30 — a Home trocou PageHeader+HUD pelo bloco de status da
     // carreira (estado curto no topo, sem repetir ranking/OVR do header).

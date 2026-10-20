@@ -1,26 +1,40 @@
 import React from 'react';
-import { Minus, TrendingDown, TrendingUp } from 'lucide-react';
+import { ArrowDown, ArrowUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 /**
- * Posição de ranking + variação (auditoria UI/UX, seção 13). Consolida o
- * cálculo/renderização de "sobe/desce/estável" que hoje se repete em
- * Ranking.jsx para cada lista (circuito, race, duplas, clubes, países).
+ * Posição de ranking + variação (auditoria UI/UX, seção 13).
+ *
+ * Fase 5.32-A — coluna compacta (posição em cima, variação embaixo) para
+ * caber nas linhas de 360px. A variação só aparece quando existe dado real
+ * (`movement` numérico e ≠ 0): sem posição anterior gravada, nada é
+ * exibido — antes o padrão `movement = 0` escrevia "estável" em toda linha,
+ * inclusive nas duplas, que não têm posição anterior. `position` vazio
+ * (sem ranking) vira "—", nunca um número.
  */
-export function RankingPosition({ position, movement = 0, size = 'default', className }) {
-  const direction = movement > 0 ? 'up' : movement < 0 ? 'down' : 'stable';
-  const Icon = direction === 'up' ? TrendingUp : direction === 'down' ? TrendingDown : Minus;
-  const tone = direction === 'up' ? 'text-success' : direction === 'down' ? 'text-destructive' : 'text-muted-foreground';
-
+export function RankingPosition({ position, movement = null, size = 'default', className }) {
+  const value = Number(position) > 0 ? Number(position) : null;
+  const delta = Number.isFinite(movement) ? movement : 0;
   return (
-    <div className={cn('flex items-center gap-2', className)}>
-      <span className={cn('w-8 shrink-0 text-center font-black tabular-nums', size === 'lg' ? 'text-2xl' : 'text-lg', position === 1 ? 'text-premium' : 'text-muted-foreground/60')}>
-        {position}
+    <div className={cn('flex w-10 shrink-0 flex-col items-center leading-none', className)}>
+      <span
+        className={cn(
+          'font-black tabular-nums',
+          size === 'lg' ? 'text-2xl' : 'text-[15px]',
+          value === 1 ? 'text-amber-400' : value && value <= 3 ? 'text-foreground' : 'text-muted-foreground',
+        )}
+      >
+        {value || '—'}
       </span>
-      <span className={cn('inline-flex items-center gap-0.5 text-[9px] font-bold uppercase', tone)}>
-        <Icon className="h-3 w-3" />
-        {direction === 'stable' ? 'estável' : `${Math.abs(movement)} pos.`}
-      </span>
+      {delta !== 0 && (
+        <span
+          className={cn('mt-0.5 inline-flex items-center text-[9px] font-black tabular-nums', delta > 0 ? 'text-success' : 'text-destructive')}
+          aria-label={delta > 0 ? `subiu ${delta}` : `caiu ${Math.abs(delta)}`}
+        >
+          {delta > 0 ? <ArrowUp className="h-2.5 w-2.5" aria-hidden="true" /> : <ArrowDown className="h-2.5 w-2.5" aria-hidden="true" />}
+          {Math.abs(delta)}
+        </span>
+      )}
     </div>
   );
 }

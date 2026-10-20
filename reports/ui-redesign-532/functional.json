@@ -1,0 +1,330 @@
+{
+  "t5-com-dupla": {
+    "ranked": true,
+    "pairKind": "world-doubles",
+    "steps": [
+      {
+        "name": "cartão \"Sua posição mundial\" no topo",
+        "ok": true
+      },
+      {
+        "name": "busca \"coello\" filtra a escada e esconde o pódio",
+        "ok": true
+      },
+      {
+        "name": "a posição das linhas filtradas é a original (não 1, 2, 3…)",
+        "ok": true
+      },
+      {
+        "name": "limpar a busca (X) restaura pódio e escada",
+        "ok": true
+      },
+      {
+        "name": "chip \"Top 100\": só posições ≤ 100; tocar de novo desliga",
+        "ok": true
+      },
+      {
+        "name": "chip do país do jogador: todas as linhas do país",
+        "ok": true
+      },
+      {
+        "name": "\"Ao seu redor\": 5 linhas, a do meio é \"Você\"",
+        "ok": true
+      },
+      {
+        "name": "\"Ver na lista\" abre as páginas até a sua linha e a centraliza",
+        "ok": true
+      },
+      {
+        "name": "tocar numa linha abre o atleta (modal) e Esc fecha",
+        "ok": true
+      },
+      {
+        "name": "\"Carregar mais posições\" pagina a escada",
+        "ok": true
+      },
+      {
+        "name": "A.1 Duplas: \"Ao seu redor\" com 2 acima, a dupla e 2 abaixo (dois membros e pontos em cada)",
+        "ok": true
+      },
+      {
+        "name": "A.1 Duplas: cartão diz quanto falta para subir (alvo com mais pontos), sem \"lidera\"",
+        "ok": true
+      },
+      {
+        "name": "A.1 Duplas: empate em pontos dito como \"Empate em #N\" (posição dividida) quando há",
+        "ok": true
+      },
+      {
+        "name": "A.1 Duplas @360: linhas de \"Ao seu redor\" com posição, nomes e pontos inteiros",
+        "ok": true
+      },
+      {
+        "name": "A.1 Duplas @1600: linhas de \"Ao seu redor\" com posição, nomes e pontos inteiros",
+        "ok": true
+      },
+      {
+        "name": "Duplas: exatamente uma linha \"Sua dupla\" na escada aberta (após \"Ver na lista\")",
+        "ok": true
+      },
+      {
+        "name": "\"Composição dos pontos\" abre e fecha (detalhe sob demanda)",
+        "ok": true
+      },
+      {
+        "name": "Duplas: busca por um membro acha a dupla (qualquer lado)",
+        "ok": true
+      },
+      {
+        "name": "Race individual: escada só com pontos > 0 (ou estado \"ainda não começou\")",
+        "ok": true
+      },
+      {
+        "name": "Race: a micro-explicação traz o ano da carreira",
+        "ok": true
+      },
+      {
+        "name": "Race duplas: escada só com pontos > 0 (ou \"Ainda sem pontos na Race\")",
+        "ok": true
+      },
+      {
+        "name": "\"países\" leva ao diretório de países e voltar retorna ao Ranking",
+        "ok": true
+      },
+      {
+        "name": "0 erro de JS no roteiro",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "pass": 23,
+    "total": 23,
+    "at": "2026-10-20T12:24:14.455Z"
+  },
+  "t5-race-sem-dupla": {
+    "ranked": true,
+    "pairKind": "no-pair",
+    "steps": [
+      {
+        "name": "cartão \"Sua posição mundial\" no topo",
+        "ok": true
+      },
+      {
+        "name": "busca \"coello\" filtra a escada e esconde o pódio",
+        "ok": true
+      },
+      {
+        "name": "a posição das linhas filtradas é a original (não 1, 2, 3…)",
+        "ok": true
+      },
+      {
+        "name": "limpar a busca (X) restaura pódio e escada",
+        "ok": true
+      },
+      {
+        "name": "chip \"Top 100\": só posições ≤ 100; tocar de novo desliga",
+        "ok": true
+      },
+      {
+        "name": "chip do país do jogador: todas as linhas do país",
+        "ok": true
+      },
+      {
+        "name": "\"Ao seu redor\": 5 linhas, a do meio é \"Você\"",
+        "ok": true
+      },
+      {
+        "name": "\"Ver na lista\" abre as páginas até a sua linha e a centraliza",
+        "ok": true
+      },
+      {
+        "name": "tocar numa linha abre o atleta (modal) e Esc fecha",
+        "ok": true
+      },
+      {
+        "name": "\"Carregar mais posições\" pagina a escada",
+        "ok": true
+      },
+      {
+        "name": "sem dupla: \"Procurar parceiro\" leva ao mercado de parceiros",
+        "ok": true
+      },
+      {
+        "name": "Duplas: busca por um membro acha a dupla (qualquer lado)",
+        "ok": true
+      },
+      {
+        "name": "Race individual: escada só com pontos > 0 (ou estado \"ainda não começou\")",
+        "ok": true
+      },
+      {
+        "name": "Race: a micro-explicação traz o ano da carreira",
+        "ok": true
+      },
+      {
+        "name": "Race duplas: escada só com pontos > 0 (ou \"Ainda sem pontos na Race\")",
+        "ok": true
+      },
+      {
+        "name": "\"países\" leva ao diretório de países e voltar retorna ao Ranking",
+        "ok": true
+      },
+      {
+        "name": "0 erro de JS no roteiro",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "pass": 17,
+    "total": 17,
+    "at": "2026-10-20T12:25:21.190Z"
+  },
+  "t5-sem-dupla": {
+    "ranked": true,
+    "pairKind": "no-pair",
+    "steps": [
+      {
+        "name": "cartão \"Sua posição mundial\" no topo",
+        "ok": true
+      },
+      {
+        "name": "busca \"coello\" filtra a escada e esconde o pódio",
+        "ok": true
+      },
+      {
+        "name": "a posição das linhas filtradas é a original (não 1, 2, 3…)",
+        "ok": true
+      },
+      {
+        "name": "limpar a busca (X) restaura pódio e escada",
+        "ok": true
+      },
+      {
+        "name": "chip \"Top 100\": só posições ≤ 100; tocar de novo desliga",
+        "ok": true
+      },
+      {
+        "name": "chip do país do jogador: todas as linhas do país",
+        "ok": true
+      },
+      {
+        "name": "\"Ao seu redor\": 5 linhas, a do meio é \"Você\"",
+        "ok": true
+      },
+      {
+        "name": "\"Ver na lista\" abre as páginas até a sua linha e a centraliza",
+        "ok": true
+      },
+      {
+        "name": "tocar numa linha abre o atleta (modal) e Esc fecha",
+        "ok": true
+      },
+      {
+        "name": "\"Carregar mais posições\" pagina a escada",
+        "ok": true
+      },
+      {
+        "name": "sem dupla: \"Procurar parceiro\" leva ao mercado de parceiros",
+        "ok": true
+      },
+      {
+        "name": "Duplas: busca por um membro acha a dupla (qualquer lado)",
+        "ok": true
+      },
+      {
+        "name": "Race individual: escada só com pontos > 0 (ou estado \"ainda não começou\")",
+        "ok": true
+      },
+      {
+        "name": "Race: a micro-explicação traz o ano da carreira",
+        "ok": true
+      },
+      {
+        "name": "Race duplas: escada só com pontos > 0 (ou \"Ainda sem pontos na Race\")",
+        "ok": true
+      },
+      {
+        "name": "\"países\" leva ao diretório de países e voltar retorna ao Ranking",
+        "ok": true
+      },
+      {
+        "name": "0 erro de JS no roteiro",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "pass": 17,
+    "total": 17,
+    "at": "2026-10-20T12:26:32.692Z"
+  },
+  "carreira-nova": {
+    "ranked": false,
+    "pairKind": "no-pair",
+    "steps": [
+      {
+        "name": "cartão \"Sua posição mundial\" no topo",
+        "ok": true
+      },
+      {
+        "name": "busca \"coello\" filtra a escada e esconde o pódio",
+        "ok": true
+      },
+      {
+        "name": "a posição das linhas filtradas é a original (não 1, 2, 3…)",
+        "ok": true
+      },
+      {
+        "name": "limpar a busca (X) restaura pódio e escada",
+        "ok": true
+      },
+      {
+        "name": "chip \"Top 100\": só posições ≤ 100; tocar de novo desliga",
+        "ok": true
+      },
+      {
+        "name": "chip do país do jogador: todas as linhas do país",
+        "ok": true
+      },
+      {
+        "name": "tocar numa linha abre o atleta (modal) e Esc fecha",
+        "ok": true
+      },
+      {
+        "name": "\"Carregar mais posições\" pagina a escada",
+        "ok": true
+      },
+      {
+        "name": "sem dupla: \"Procurar parceiro\" leva ao mercado de parceiros",
+        "ok": true
+      },
+      {
+        "name": "Duplas: busca por um membro acha a dupla (qualquer lado)",
+        "ok": true
+      },
+      {
+        "name": "Race individual: escada só com pontos > 0 (ou estado \"ainda não começou\")",
+        "ok": true
+      },
+      {
+        "name": "Race: a micro-explicação traz o ano da carreira",
+        "ok": true
+      },
+      {
+        "name": "Race duplas: escada só com pontos > 0 (ou \"Ainda sem pontos na Race\")",
+        "ok": true
+      },
+      {
+        "name": "\"países\" leva ao diretório de países e voltar retorna ao Ranking",
+        "ok": true
+      },
+      {
+        "name": "0 erro de JS no roteiro",
+        "ok": true
+      }
+    ],
+    "errors": [],
+    "pass": 15,
+    "total": 15,
+    "at": "2026-10-20T12:27:30.673Z"
+  }
+}
