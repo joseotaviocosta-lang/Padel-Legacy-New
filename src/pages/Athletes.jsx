@@ -8,7 +8,7 @@ import { localGame } from '@/api/localGameClient.js';
 // arquivo) para os primitives reais do design-system — esta era a única
 // página do app inteiro ainda fora de Page/PageContent.
 import { EmptyState, Page, PageContent, PageHeader, PageSkeleton, Tabs } from '@/components/design-system';
-import { ensureAthleteProfiles, generateRelationships, PERSONALITIES } from '@/lib/athleteBehavior';
+import { PERSONALITIES } from '@/lib/athleteBehavior';
 import {
   DIRECTORY_SEGMENTS, buildStandingIndex, compareAthletes, inSegment, matchesAthleteSearch, standingOf, styleLabel, styleOptions,
 } from '@/lib/athleteProfileDisplay.js';
@@ -28,9 +28,24 @@ const PAGE_SIZE = 60;
 //     em athleteProfileDisplay.js; estilos vindos dos dados;
 //   - perfil por deep link (`?athlete=<id>`, só leitura), como no Ranking;
 //     parceiros e ex-parceiros abrem dentro do perfil, com "voltar para".
-// Só leitura ao abrir o perfil. A montagem segue chamando
-// ensureAthleteProfiles (cria só bots ausentes) e generateRelationships,
-// como antes desta fase.
+//
+// LOCAL-8C — o Diretório é SÓ LEITURA. A montagem chamava
+// ensureAthleteProfiles() e generateRelationships(): a 1ª materializava
+// como atletas os 240–282 MODELOS do catálogo de parceiros (bots.js, ids
+// player-real-*/player-fictional-*) que o mundo semeado não usa — inclusive
+// um 2º "Alejandro Galán" —, e a 2ª regravava `relationships` de 200
+// atletas a cada abertura (com Math.random). O motor só usa as duas como
+// fallback de save SEM atletas (evolveAthletesMonthly); a semeadura do
+// mundo e a materialização de parceiro (materializePartnerAthlete) cuidam
+// do catálogo. Ver docs/LOCAL_8C_DIRECTORY_SAVE_INTEGRITY.md.
+
+/** Leituras do Diretório (nenhuma escrita): catálogo inteiro + posições. */
+export async function loadAthleteDirectory(profile) {
+  const list = await localGame.entities.AthleteProfile.list('-overall_rating');
+  const snapshot = profile ? await buildWorldRankingSnapshot(profile) : null;
+  return { athletes: list || [], standingIndex: snapshot ? buildStandingIndex(snapshot) : null };
+}
+
 export default function Athletes() {
   const [searchParams] = useSearchParams();
   const [athletes, setAthletes] = useState([]);
@@ -64,18 +79,12 @@ export default function Athletes() {
         const p = await ensureMyProfile(user);
         if (!active) return;
         setProfile(p);
-        await ensureAthleteProfiles();
-        await generateRelationships();
-        // Catálogo inteiro (sem o corte de 200 de getAthletes()).
-        const list = await localGame.entities.AthleteProfile.list('-overall_rating');
+        // Catálogo inteiro (sem o corte de 200 de getAthletes()) e posição
+        // canônica (buildWorldRankingSnapshot, a mesma do Ranking).
+        const directory = await loadAthleteDirectory(p);
         if (!active) return;
-        setAthletes(list || []);
-        // Posição canônica (buildWorldRankingSnapshot, a mesma do Ranking).
-        if (p) {
-          const snapshot = await buildWorldRankingSnapshot(p);
-          if (!active) return;
-          setStandingIndex(buildStandingIndex(snapshot));
-        }
+        setAthletes(directory.athletes);
+        setStandingIndex(directory.standingIndex);
       } catch (e) {
         console.error('[Athletes] falha ao carregar atletas', e);
         if (active) setSourceError(e);

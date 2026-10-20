@@ -1,0 +1,2 @@
+test-local-8c-save-integrity
+test-local-8c-directory-readonly

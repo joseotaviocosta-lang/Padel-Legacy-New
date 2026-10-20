@@ -1,0 +1,269 @@
+{
+  "createdAt": "2026-10-20T19:12:19.137Z",
+  "base": "before-fix",
+  "rounds": 2,
+  "scenarios": {
+    "carreira-nova": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder",
+        "homônimos \"Mateo Ruiz\"",
+        "ranking → perfil",
+        "mundo → ranking"
+      ],
+      "athleteCounts": [
+        1000,
+        1240,
+        1240
+      ],
+      "total": {
+        "total": 407,
+        "created": {
+          "AthleteProfile": 240
+        },
+        "removed": {},
+        "changed": {
+          "AthleteProfile": 163
+        },
+        "top": [
+          "save_version",
+          "updated_at",
+          "player",
+          "tutorial"
+        ],
+        "sampleCreated": [
+          "player-fictional-7i55ge",
+          "player-fictional-785jrf",
+          "player-fictional-6y5y2g",
+          "player-fictional-8w35x9",
+          "player-fictional-8m3k8a"
+        ],
+        "sampleChanged": [
+          "AthleteProfile:athlete-003",
+          "AthleteProfile:real_arturo_coello",
+          "AthleteProfile:real_agustin_tapia"
+        ]
+      },
+      "perRound": [
+        {
+          "total": 407,
+          "created": {
+            "AthleteProfile": 240
+          },
+          "removed": {},
+          "changed": {
+            "AthleteProfile": 163
+          },
+          "top": [
+            "save_version",
+            "updated_at",
+            "player",
+            "tutorial"
+          ],
+          "sampleCreated": [
+            "player-fictional-7i55ge",
+            "player-fictional-785jrf",
+            "player-fictional-6y5y2g",
+            "player-fictional-8w35x9",
+            "player-fictional-8m3k8a"
+          ],
+          "sampleChanged": [
+            "AthleteProfile:athlete-003",
+            "AthleteProfile:real_arturo_coello",
+            "AthleteProfile:real_agustin_tapia"
+          ]
+        },
+        {
+          "total": 202,
+          "created": {},
+          "removed": {},
+          "changed": {
+            "AthleteProfile": 200
+          },
+          "top": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": [
+            "AthleteProfile:athlete-003",
+            "AthleteProfile:real_arturo_coello",
+            "AthleteProfile:real_agustin_tapia"
+          ]
+        }
+      ],
+      "reload": {
+        "total": 410,
+        "created": {
+          "AthleteProfile": 240
+        },
+        "removed": {
+          "MissionProgress": 1,
+          "FinancialTransaction": 1
+        },
+        "changed": {
+          "AthleteProfile": 163
+        },
+        "top": [
+          "save_version",
+          "updated_at",
+          "last_played_at",
+          "player",
+          "tutorial"
+        ],
+        "sampleCreated": [
+          "player-fictional-7i55ge",
+          "player-fictional-785jrf",
+          "player-fictional-6y5y2g",
+          "player-fictional-8w35x9",
+          "player-fictional-8m3k8a"
+        ],
+        "sampleChanged": [
+          "AthleteProfile:athlete-003",
+          "AthleteProfile:real_arturo_coello",
+          "AthleteProfile:real_agustin_tapia"
+        ]
+      },
+      "relationshipsChanged": true,
+      "jsErrors": []
+    },
+    "t10": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder",
+        "perfil aposentado",
+        "homônimos \"Bruno López\"",
+        "ranking → perfil",
+        "mundo → ranking"
+      ],
+      "athleteCounts": [
+        1141,
+        1423,
+        1423
+      ],
+      "total": {
+        "total": 456,
+        "created": {
+          "AthleteProfile": 282
+        },
+        "removed": {},
+        "changed": {
+          "AthleteProfile": 170
+        },
+        "top": [
+          "save_version",
+          "updated_at",
+          "player",
+          "tutorial"
+        ],
+        "sampleCreated": [
+          "player-fictional-7i55ge",
+          "player-fictional-785jrf",
+          "player-fictional-6y5y2g",
+          "player-fictional-8w35x9",
+          "player-fictional-8m3k8a"
+        ],
+        "sampleChanged": [
+          "AthleteProfile:athlete-001",
+          "AthleteProfile:athlete-002",
+          "AthleteProfile:athlete-003"
+        ]
+      },
+      "perRound": [
+        {
+          "total": 456,
+          "created": {
+            "AthleteProfile": 282
+          },
+          "removed": {},
+          "changed": {
+            "AthleteProfile": 170
+          },
+          "top": [
+            "save_version",
+            "updated_at",
+            "player",
+            "tutorial"
+          ],
+          "sampleCreated": [
+            "player-fictional-7i55ge",
+            "player-fictional-785jrf",
+            "player-fictional-6y5y2g",
+            "player-fictional-8w35x9",
+            "player-fictional-8m3k8a"
+          ],
+          "sampleChanged": [
+            "AthleteProfile:athlete-001",
+            "AthleteProfile:athlete-002",
+            "AthleteProfile:athlete-003"
+          ]
+        },
+        {
+          "total": 202,
+          "created": {},
+          "removed": {},
+          "changed": {
+            "AthleteProfile": 200
+          },
+          "top": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": [
+            "AthleteProfile:athlete-001",
+            "AthleteProfile:athlete-002",
+            "AthleteProfile:athlete-003"
+          ]
+        }
+      ],
+      "reload": {
+        "total": 515,
+        "created": {
+          "AthleteProfile": 282,
+          "MissionProgress": 5
+        },
+        "removed": {
+          "FinancialTransaction": 1,
+          "MissionProgress": 6
+        },
+        "changed": {
+          "AthleteProfile": 170,
+          "Mission": 27,
+          "CareerMessage": 18,
+          "PressInterview": 1
+        },
+        "top": [
+          "save_version",
+          "updated_at",
+          "last_played_at",
+          "player",
+          "tutorial"
+        ],
+        "sampleCreated": [
+          "player-fictional-7i55ge",
+          "player-fictional-785jrf",
+          "player-fictional-6y5y2g",
+          "player-fictional-8w35x9",
+          "player-fictional-8m3k8a"
+        ],
+        "sampleChanged": [
+          "AthleteProfile:athlete-001",
+          "AthleteProfile:athlete-002",
+          "AthleteProfile:athlete-003",
+          "Mission:tutorial-career-created",
+          "Mission:tutorial-athlete-named",
+          "Mission:tutorial-side-selected"
+        ]
+      },
+      "relationshipsChanged": true,
+      "jsErrors": []
+    }
+  }
+}

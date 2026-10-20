@@ -1,0 +1,210 @@
+{
+  "createdAt": "2026-10-20T19:38:17.003Z",
+  "method": "mesma sessão; rodadas alternadas depois/antes/depois/antes; 1ª abertura de cada rodada descartada; 4 medidas por rodada",
+  "states": {
+    "carreira-nova": {
+      "before": {
+        "directory": {
+          "runs": [
+            127,
+            90,
+            81,
+            74,
+            96,
+            86,
+            80,
+            83
+          ],
+          "median": 86
+        },
+        "search": {
+          "runs": [
+            20,
+            20,
+            26,
+            63,
+            24,
+            29,
+            24,
+            43
+          ],
+          "median": 26
+        },
+        "profile": {
+          "runs": [
+            23,
+            16,
+            19,
+            22,
+            30,
+            19,
+            21,
+            26
+          ],
+          "median": 22
+        },
+        "section": {
+          "runs": [],
+          "median": null
+        }
+      },
+      "after": {
+        "directory": {
+          "runs": [
+            61,
+            67,
+            166,
+            58,
+            78,
+            51,
+            58,
+            57
+          ],
+          "median": 61
+        },
+        "search": {
+          "runs": [
+            25,
+            87,
+            22,
+            24,
+            24,
+            21,
+            25,
+            18
+          ],
+          "median": 24
+        },
+        "profile": {
+          "runs": [
+            36,
+            37,
+            23,
+            18,
+            26,
+            17,
+            19,
+            16
+          ],
+          "median": 23
+        },
+        "section": {
+          "runs": [
+            20,
+            24,
+            13,
+            15,
+            12,
+            12,
+            12,
+            8
+          ],
+          "median": 13
+        }
+      },
+      "jsErrors": []
+    },
+    "t10": {
+      "before": {
+        "directory": {
+          "runs": [
+            581,
+            583,
+            565,
+            635,
+            1025,
+            880,
+            1001,
+            566
+          ],
+          "median": 635
+        },
+        "search": {
+          "runs": [
+            34,
+            39,
+            25,
+            27,
+            37,
+            57,
+            45,
+            30
+          ],
+          "median": 37
+        },
+        "profile": {
+          "runs": [
+            24,
+            17,
+            19,
+            17,
+            40,
+            45,
+            48,
+            22
+          ],
+          "median": 24
+        },
+        "section": {
+          "runs": [],
+          "median": null
+        }
+      },
+      "after": {
+        "directory": {
+          "runs": [
+            93,
+            88,
+            150,
+            82,
+            94,
+            89,
+            91,
+            94
+          ],
+          "median": 93
+        },
+        "search": {
+          "runs": [
+            51,
+            38,
+            40,
+            32,
+            49,
+            28,
+            36,
+            56
+          ],
+          "median": 40
+        },
+        "profile": {
+          "runs": [
+            38,
+            28,
+            22,
+            25,
+            23,
+            20,
+            28,
+            20
+          ],
+          "median": 25
+        },
+        "section": {
+          "runs": [
+            81,
+            18,
+            13,
+            10,
+            14,
+            14,
+            15,
+            12
+          ],
+          "median": 14
+        }
+      },
+      "jsErrors": []
+    }
+  }
+}

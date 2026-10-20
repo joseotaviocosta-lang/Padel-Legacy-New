@@ -1,0 +1,14 @@
+{
+  "carreira-nova": {
+    "bytesBefore": 2116109,
+    "afterNewDirectory": 0,
+    "afterLegacyMount": 308088,
+    "afterSecondLegacyMount": 2
+  },
+  "t10": {
+    "bytesBefore": 67095584,
+    "afterNewDirectory": 0,
+    "afterLegacyMount": 359097,
+    "afterSecondLegacyMount": -1
+  }
+}

@@ -1,0 +1,515 @@
+{
+  "createdAt": "2026-10-20T19:24:33.292Z",
+  "base": "after-fix",
+  "rounds": 2,
+  "scenarios": {
+    "carreira-nova": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder"
+      ],
+      "athleteCounts": [
+        1000,
+        1000,
+        1000
+      ],
+      "total": {
+        "total": 0,
+        "created": {},
+        "removed": {},
+        "changed": {},
+        "top": [],
+        "introductionsSeenAdded": [
+          "/world/directory"
+        ],
+        "stamp": [
+          "save_version",
+          "updated_at"
+        ],
+        "sampleCreated": [],
+        "sampleChanged": []
+      },
+      "perRound": [
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/world/directory"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      ],
+      "crossNavigation": {
+        "steps": [
+          "perfil → ranking",
+          "ranking → perfil",
+          "mundo → ranking"
+        ],
+        "all": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/ranking",
+            "/world"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        "universe": {}
+      },
+      "reload": {
+        "athleteCountAfterBoot": 1000,
+        "afterNavigation": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      },
+      "relationshipsChanged": false,
+      "jsErrors": []
+    },
+    "t5-com-dupla": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder",
+        "perfil aposentado",
+        "homônimos \"Nicolás Alonso\""
+      ],
+      "athleteCounts": [
+        1118,
+        1118,
+        1118
+      ],
+      "total": {
+        "total": 0,
+        "created": {},
+        "removed": {},
+        "changed": {},
+        "top": [],
+        "introductionsSeenAdded": [
+          "/world/directory"
+        ],
+        "stamp": [
+          "save_version",
+          "updated_at"
+        ],
+        "sampleCreated": [],
+        "sampleChanged": []
+      },
+      "perRound": [
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/world/directory"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      ],
+      "crossNavigation": {
+        "steps": [
+          "perfil → ranking",
+          "ranking → perfil",
+          "mundo → ranking"
+        ],
+        "all": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/ranking",
+            "/world"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        "universe": {}
+      },
+      "reload": {
+        "athleteCountAfterBoot": 1118,
+        "afterNavigation": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      },
+      "relationshipsChanged": false,
+      "jsErrors": []
+    },
+    "t1": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder",
+        "perfil aposentado",
+        "homônimos \"Thiago Santos\""
+      ],
+      "athleteCounts": [
+        1072,
+        1072,
+        1072
+      ],
+      "total": {
+        "total": 0,
+        "created": {},
+        "removed": {},
+        "changed": {},
+        "top": [],
+        "introductionsSeenAdded": [
+          "/world/directory"
+        ],
+        "stamp": [
+          "save_version",
+          "updated_at"
+        ],
+        "sampleCreated": [],
+        "sampleChanged": []
+      },
+      "perRound": [
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/world/directory"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      ],
+      "crossNavigation": {
+        "steps": [
+          "perfil → ranking",
+          "ranking → perfil",
+          "mundo → ranking"
+        ],
+        "all": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/ranking",
+            "/world"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        "universe": {}
+      },
+      "reload": {
+        "athleteCountAfterBoot": 1072,
+        "afterNavigation": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      },
+      "relationshipsChanged": false,
+      "jsErrors": []
+    },
+    "t5": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder",
+        "perfil aposentado",
+        "homônimos \"Nicolás Alonso\""
+      ],
+      "athleteCounts": [
+        1118,
+        1118,
+        1118
+      ],
+      "total": {
+        "total": 0,
+        "created": {},
+        "removed": {},
+        "changed": {},
+        "top": [],
+        "introductionsSeenAdded": [
+          "/world/directory"
+        ],
+        "stamp": [
+          "save_version",
+          "updated_at"
+        ],
+        "sampleCreated": [],
+        "sampleChanged": []
+      },
+      "perRound": [
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/world/directory"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      ],
+      "crossNavigation": {
+        "steps": [
+          "perfil → ranking",
+          "ranking → perfil",
+          "mundo → ranking"
+        ],
+        "all": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/ranking",
+            "/world"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        "universe": {}
+      },
+      "reload": {
+        "athleteCountAfterBoot": 1118,
+        "afterNavigation": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      },
+      "relationshipsChanged": false,
+      "jsErrors": []
+    },
+    "t10": {
+      "navigation": [
+        "diretório",
+        "busca",
+        "recortes",
+        "ordenação",
+        "perfil líder",
+        "perfil aposentado",
+        "homônimos \"Bruno López\""
+      ],
+      "athleteCounts": [
+        1141,
+        1141,
+        1141
+      ],
+      "total": {
+        "total": 0,
+        "created": {},
+        "removed": {},
+        "changed": {},
+        "top": [],
+        "introductionsSeenAdded": [
+          "/world/directory"
+        ],
+        "stamp": [
+          "save_version",
+          "updated_at"
+        ],
+        "sampleCreated": [],
+        "sampleChanged": []
+      },
+      "perRound": [
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/world/directory"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      ],
+      "crossNavigation": {
+        "steps": [
+          "perfil → ranking",
+          "ranking → perfil",
+          "mundo → ranking"
+        ],
+        "all": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [
+            "/ranking",
+            "/world"
+          ],
+          "stamp": [
+            "save_version",
+            "updated_at"
+          ],
+          "sampleCreated": [],
+          "sampleChanged": []
+        },
+        "universe": {}
+      },
+      "reload": {
+        "athleteCountAfterBoot": 1141,
+        "afterNavigation": {
+          "total": 0,
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": [],
+          "introductionsSeenAdded": [],
+          "stamp": [],
+          "sampleCreated": [],
+          "sampleChanged": []
+        }
+      },
+      "relationshipsChanged": false,
+      "jsErrors": []
+    }
+  }
+}
