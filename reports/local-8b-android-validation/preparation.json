@@ -1,0 +1,57 @@
+{
+  "phase": "LOCAL-8B",
+  "commit": "838461aa10ed890c53c8f0bb6653698dbff30f28",
+  "branch": "integracao/cloud-6o",
+  "environment": {
+    "node": "v24.21.0",
+    "npm": "11.19.0",
+    "rustc": "1.98.1",
+    "cargo": "1.98.1",
+    "rustTargets": ["aarch64-linux-android", "armv7-linux-androideabi", "i686-linux-android", "x86_64-linux-android", "x86_64-pc-windows-msvc"],
+    "jdk": "OpenJDK 17.0.20.1 (Eclipse Adoptium; JAVA_HOME definido)",
+    "tauriCli": "2.11.4",
+    "gradle": "8.14.3 (wrapper do projeto; nenhum gradle global no PATH)",
+    "androidSdks": {
+      "C:\\Android\\Sdk": { "ndk": ["26.3.11579264"], "buildTools": ["35.0.0", "36.0.0"], "platforms": ["android-36"], "adb": "1.0.41" },
+      "%LOCALAPPDATA%\\Android\\Sdk": { "ndk": ["29.0.13846066-beta3"], "buildTools": ["35.0.0", "36.0.0"], "platforms": ["android-36", "android-37.0"], "adb": "1.0.41" }
+    },
+    "envVars": "ANDROID_HOME, ANDROID_SDK_ROOT e NDK_HOME não estão definidos no Windows; adb não está no PATH",
+    "buildEnvUsed": "ANDROID_HOME=C:\\Android\\Sdk, NDK_HOME=C:\\Android\\Sdk\\ndk\\26.3.11579264 (somente no processo do build)"
+  },
+  "device": { "detected": false, "adbDevices": "lista vazia (daemon iniciado; nenhum aparelho)" },
+  "buildConfig": {
+    "applicationId": "com.padellegacy.game",
+    "versionCode": 9007,
+    "versionName": "0.9.0",
+    "minSdk": 24,
+    "targetSdk": 36,
+    "compileSdk": 36,
+    "permissions": ["android.permission.INTERNET", "com.padellegacy.game.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"],
+    "signingInGradle": "somente se src-tauri/gen/android/keystore.properties existir (ausente; o .txt versionado está vazio) — por isso o release sai sem assinatura",
+    "persistence": "TauriStorage → arquivos JSON em AppData do app (careers/<id>.json, índice e backups/) no armazenamento interno privado"
+  },
+  "signing": {
+    "keystore": "%USERPROFILE%\\PadelLegacy-Keys\\padel-legacy-release.jks (existe; conteúdo não lido)",
+    "expectedAlias": "padel-legacy (não verificado: exige senha)",
+    "previousSignedApk": "Padel-Legacy-CLOUD-6O.apk (2026-10-18), versionCode 9007",
+    "previousCertSha256": "c9fc42134c1898d6af7e4dc45e0634b21d899a321e769191c6b3c57c612d2a78",
+    "olderBuildsCert": "fases M3.x/Fase 15 usaram o certificado Android Debug (SHA-256 2924f0d2…e90a6)"
+  },
+  "apkCandidate": {
+    "buildCommand": "npm run android:build (tauri android build), 1 612 s",
+    "path": "src-tauri/gen/android/app/build/outputs/apk/universal/release/app-universal-release-unsigned.apk",
+    "copy": "reports/local-8b-android-validation/apk/Padel-Legacy-LOCAL-8B-unsigned.apk (fora do Git)",
+    "bytes": 56073189,
+    "sha256": "afd90ed932d5eccb5eaf6d3d0a160b9c80cb506ca500cdbc06c3742878d4f6d8",
+    "type": "universal release, sem assinatura",
+    "abis": ["arm64-v8a", "armeabi-v7a", "x86", "x86_64"],
+    "aab": "src-tauri/gen/android/app/build/outputs/bundle/universalRelease/app-universal-release.aab",
+    "apksignerVerify": "DOES NOT VERIFY (Missing META-INF/MANIFEST.MF) — esperado, sem assinatura"
+  },
+  "saves": {
+    "season5": { "source": "reports/local-8a-career-audit/run10/save-season-5.json", "bytes": 38801981, "sha256": "dc62796060f7e6ba3f2ebb8f3daa35af204beb3c3aea2b01ff4c7484677e10d7", "date": "2031-01-04", "validateCareerData": "ok" },
+    "season10": { "source": "reports/local-8a-career-audit/run10/save-season-10.json", "bytes": 67474383, "sha256": "0bfbd36d3ee28e8015ee1bf5074b4b3d67eaf3552309afd277eff625445db9c7", "date": "2036-01-03", "validateCareerData": "ok" },
+    "careerId": "bd83ba91-e824-4539-ae0c-97afc1ffa7be (o mesmo nos dois: importCareer aceita só um por vez)",
+    "format": "arquivo de carreira expandido (sem history_pack), 34 coleções — o mesmo formato que o TauriStorage grava"
+  }
+}
