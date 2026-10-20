@@ -1,0 +1,5 @@
+before/*.png
+after/*.png
+*.log
+partner-choice/before/*.png
+partner-choice/after/*.png

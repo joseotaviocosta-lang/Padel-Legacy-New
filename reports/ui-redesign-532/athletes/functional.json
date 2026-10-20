@@ -1,0 +1,462 @@
+{
+  "phase": "5.32-C",
+  "base": "7f9d8fd",
+  "createdAt": "2026-10-20T18:24:39.028Z",
+  "authorities": {
+    "worldRank": "buildWorldRankingSnapshot (= Ranking 5.32-A)",
+    "race": "snapshot racePoints (ordem da escada da Race)",
+    "currentPartner": "ai_partner_id mútuo + não aposentado; jogador pela Partnership ativa",
+    "partnerships": "Partnership + PartnershipLegacy por ids",
+    "results": "AthleteRankingResult + recent_results (parceiro por id)",
+    "retirement": "flags do atleta + AthleteCareerLegacy"
+  },
+  "divergence": {
+    "season10": "357 de 380 atletas ranqueados com ranking_position gravado ≠ posição atual; tela não lê o campo"
+  },
+  "before": {
+    "carreira-nova": {
+      "directory": {
+        "360": {
+          "firstRowY": 620,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "390": {
+          "firstRowY": 568,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "768": {
+          "firstRowY": 479,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 1,
+          "jsErrors": 0
+        },
+        "1600": {
+          "firstRowY": 417,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "desktop": {
+          "firstRowY": 417,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "landscape": {
+          "firstRowY": 426,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        }
+      },
+      "profilesOpened": 4,
+      "profilesTried": 6
+    },
+    "t10": {
+      "directory": {
+        "360": {
+          "firstRowY": 620,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "390": {
+          "firstRowY": 568,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "768": {
+          "firstRowY": 479,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 1,
+          "jsErrors": 0
+        },
+        "1600": {
+          "firstRowY": 417,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "desktop": {
+          "firstRowY": 417,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "landscape": {
+          "firstRowY": 426,
+          "filterControls": 11,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        }
+      },
+      "profilesOpened": 4,
+      "profilesTried": 10
+    }
+  },
+  "after": {
+    "carreira-nova": {
+      "directory": {
+        "360": {
+          "firstRowY": 458,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "390": {
+          "firstRowY": 458,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "768": {
+          "firstRowY": 405,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "1600": {
+          "firstRowY": 387,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "desktop": {
+          "firstRowY": 387,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "landscape": {
+          "firstRowY": 400,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        }
+      },
+      "profilesOpened": 6,
+      "profilesTried": 6
+    },
+    "t10": {
+      "directory": {
+        "360": {
+          "firstRowY": 458,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "390": {
+          "firstRowY": 458,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "768": {
+          "firstRowY": 405,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "1600": {
+          "firstRowY": 387,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "desktop": {
+          "firstRowY": 387,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        },
+        "landscape": {
+          "firstRowY": 400,
+          "filterControls": 10,
+          "overflowX": 0,
+          "offenders": 0,
+          "jsErrors": 0
+        }
+      },
+      "profilesOpened": 10,
+      "profilesTried": 10
+    }
+  },
+  "perf": {
+    "carreira-nova": {
+      "before": {
+        "directory": {
+          "runs": [
+            77,
+            82,
+            79,
+            90,
+            83,
+            68,
+            81,
+            112
+          ],
+          "median": 82
+        },
+        "search": {
+          "runs": [
+            21,
+            18,
+            18,
+            18,
+            20,
+            20,
+            13,
+            13
+          ],
+          "median": 18
+        },
+        "profile": {
+          "runs": [
+            71,
+            19,
+            20,
+            22,
+            20,
+            19,
+            16,
+            20
+          ],
+          "median": 20
+        },
+        "section": {
+          "runs": [],
+          "median": null
+        }
+      },
+      "after": {
+        "directory": {
+          "runs": [
+            120,
+            124,
+            161,
+            117,
+            96,
+            106,
+            119,
+            263
+          ],
+          "median": 120
+        },
+        "search": {
+          "runs": [
+            42,
+            31,
+            25,
+            31,
+            22,
+            30,
+            39,
+            19
+          ],
+          "median": 31
+        },
+        "profile": {
+          "runs": [
+            42,
+            46,
+            16,
+            23,
+            28,
+            45,
+            23,
+            23
+          ],
+          "median": 28
+        },
+        "section": {
+          "runs": [
+            19,
+            29,
+            11,
+            14,
+            15,
+            18,
+            18,
+            14
+          ],
+          "median": 18
+        }
+      }
+    },
+    "t10": {
+      "before": {
+        "directory": {
+          "runs": [
+            672,
+            593,
+            593,
+            597,
+            582,
+            812,
+            661,
+            667
+          ],
+          "median": 661
+        },
+        "search": {
+          "runs": [
+            34,
+            16,
+            23,
+            22,
+            23,
+            24,
+            32,
+            25
+          ],
+          "median": 24
+        },
+        "profile": {
+          "runs": [
+            39,
+            17,
+            20,
+            16,
+            27,
+            22,
+            20,
+            23
+          ],
+          "median": 22
+        },
+        "section": {
+          "runs": [],
+          "median": null
+        }
+      },
+      "after": {
+        "directory": {
+          "runs": [
+            802,
+            846,
+            714,
+            678,
+            754,
+            623,
+            777,
+            649
+          ],
+          "median": 754
+        },
+        "search": {
+          "runs": [
+            29,
+            41,
+            35,
+            23,
+            34,
+            23,
+            25,
+            25
+          ],
+          "median": 29
+        },
+        "profile": {
+          "runs": [
+            36,
+            42,
+            25,
+            19,
+            30,
+            24,
+            25,
+            23
+          ],
+          "median": 25
+        },
+        "section": {
+          "runs": [
+            48,
+            37,
+            17,
+            13,
+            34,
+            12,
+            17,
+            19
+          ],
+          "median": 19
+        }
+      },
+      "note": "rodada com ordem invertida (antes/depois/antes/depois). A 1ª medição (ordem depois/antes/...) teve pico só na 3ª rodada (efeito de posição: memória/GC com save de 67 MB) — dados brutos em perf-run1.json."
+    }
+  },
+  "preExistingDirectoryWrites": {
+    "save": "reports/local-8a-career-audit/run10/save-season-10.json",
+    "athletesInSave": 1141,
+    "createdByEnsureAthleteProfiles": 282,
+    "createdSample": [
+      {
+        "id": "player-fictional-1dwe2kc",
+        "name": "Vinícius Pereira",
+        "overall": 98,
+        "points": null
+      },
+      {
+        "id": "player-fictional-j3up65",
+        "name": "Rui Monteiro",
+        "overall": 97,
+        "points": null
+      },
+      {
+        "id": "player-real-1ljqig6",
+        "name": "Alejandro Galán",
+        "overall": 94,
+        "points": null
+      },
+      {
+        "id": "player-fictional-1fkboq6",
+        "name": "Rafael Santos",
+        "overall": 94,
+        "points": null
+      },
+      {
+        "id": "player-fictional-hpwopa",
+        "name": "Davi Oliveira",
+        "overall": 92,
+        "points": null
+      }
+    ],
+    "createdWithWorldPoints": 0,
+    "relationshipsChangedFirstOpen": 199,
+    "relationshipsChangedSecondOpen": 22,
+    "note": "Comportamento anterior à 5.32-C (montagem do diretório). Não alterado nesta fase: mudar exigiria tocar em persistência/geração de dados."
+  },
+  "behavioralTests": {
+    "test-athletes-profile-v532c": "58 PASS",
+    "test-athletes-mobile-containment-v532c": "160 PASS"
+  }
+}

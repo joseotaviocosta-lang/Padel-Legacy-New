@@ -16,6 +16,7 @@ import {
 } from '@/components/design-system';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 import AthleteDetail from '@/components/athletes/AthleteDetail.jsx';
+import { buildStandingIndex, standingOf } from '@/lib/athleteProfileDisplay.js';
 
 const LIST_PAGE_SIZE = 50;
 // 5.32-A.1 — a escada de duplas lê a população INTEIRA, o mesmo corte com que
@@ -777,6 +778,14 @@ export default function Ranking() {
   // única (countryDirectory.js), com as MESMAS listas da página de Países.
   const countries = useMemo(() => buildCountryDirectory(athletes, clubs), [athletes, clubs]);
   const { circuitAthletes, raceAthletes, raceHasPoints } = useMemo(() => deriveIndividualLadders(rankingSnapshot), [rankingSnapshot]);
+  // 5.32-C — posição Mundial/Race do perfil pelo MESMO snapshot desta tela
+  // (o perfil nunca lê o ranking_position gravado).
+  const standingIndex = useMemo(() => buildStandingIndex(rankingSnapshot), [rankingSnapshot]);
+  const openAthleteFromProfile = useCallback((id) => {
+    const row = circuitAthletes.find((athlete) => String(athlete.id) === String(id));
+    if (row) setSelectedAthlete(row);
+    else navigate(`/world/directory?tab=athletes&athlete=${encodeURIComponent(id)}`);
+  }, [circuitAthletes, navigate]);
 
   useEffect(() => {
     const requestedId = searchParams.get('athlete');
@@ -1040,7 +1049,15 @@ export default function Ranking() {
           ))}
         </nav>
       </div>
-      {selectedAthlete && <AthleteDetail athlete={selectedAthlete} onClose={() => setSelectedAthlete(null)} />}
+      {selectedAthlete && (
+        <AthleteDetail
+          athlete={selectedAthlete}
+          standing={standingOf(standingIndex, selectedAthlete.id)}
+          onClose={() => setSelectedAthlete(null)}
+          onOpenAthlete={openAthleteFromProfile}
+          context="ranking"
+        />
+      )}
       </PageContent>
     </Page>
   );

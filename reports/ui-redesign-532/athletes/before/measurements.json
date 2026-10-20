@@ -1,0 +1,446 @@
+{
+  "carreira-nova": {
+    "directory": {
+      "360": {
+        "viewport": "360x800",
+        "pageHeight": 6429,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 356,
+        "firstRowY": 620,
+        "rowsInFold": 3,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Agustín Tapia Argentina · lado livre · 27a · Agressivo #1 96 OVR",
+          "A Arturo Coello Espanha · lado livre · 23a · Potência #2 96 OVR",
+          "A Alejandro Galán Espanha · lado livre · 27a · Agressivo #3 94 OVR",
+          "F Federico Chingotto Argentina · lado livre · 21a · Tático #4 93 OVR",
+          "J Juan Lebrón Espanha · lado livre · 28a · Agressivo #5 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "390": {
+        "viewport": "390x844",
+        "pageHeight": 6377,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 356,
+        "firstRowY": 568,
+        "rowsInFold": 4,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Agustín Tapia Argentina · lado livre · 27a · Agressivo #1 96 OVR",
+          "A Arturo Coello Espanha · lado livre · 23a · Potência #2 96 OVR",
+          "A Alejandro Galán Espanha · lado livre · 27a · Agressivo #3 94 OVR",
+          "F Federico Chingotto Argentina · lado livre · 21a · Tático #4 93 OVR",
+          "J Juan Lebrón Espanha · lado livre · 28a · Agressivo #5 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "768": {
+        "viewport": "768x1024",
+        "pageHeight": 5867,
+        "overflowX": 0,
+        "offenders": [
+          "SELECT.min-h-11 rounded-lg border border-border"
+        ],
+        "filterControls": 11,
+        "searchY": 349,
+        "firstRowY": 479,
+        "rowsInFold": 8,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Agustín Tapia Argentina · lado livre · 27a · Agressivo #1 96 OVR AUGE",
+          "A Arturo Coello Espanha · lado livre · 23a · Potência #2 96 OVR AUGE",
+          "A Alejandro Galán Espanha · lado livre · 27a · Agressivo #3 94 OVR AUGE",
+          "F Federico Chingotto Argentina · lado livre · 21a · Tático #4 93 OVR AUGE",
+          "J Juan Lebrón Espanha · lado livre · 28a · Agressivo #5 91 OVR AUGE"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "1600": {
+        "viewport": "1600x900",
+        "pageHeight": 5972,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 279,
+        "firstRowY": 417,
+        "rowsInFold": 7,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Agustín Tapia Argentina · lado livre · 27a · Agressivo #1 96 OVR AUGE",
+          "A Arturo Coello Espanha · lado livre · 23a · Potência #2 96 OVR AUGE",
+          "A Alejandro Galán Espanha · lado livre · 27a · Agressivo #3 94 OVR AUGE",
+          "F Federico Chingotto Argentina · lado livre · 21a · Tático #4 93 OVR AUGE",
+          "J Juan Lebrón Espanha · lado livre · 28a · Agressivo #5 91 OVR AUGE"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "desktop": {
+        "viewport": "1366x768",
+        "pageHeight": 6170,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 279,
+        "firstRowY": 417,
+        "rowsInFold": 6,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Agustín Tapia Argentina · lado livre · 27a · Agressivo #1 96 OVR AUGE",
+          "A Arturo Coello Espanha · lado livre · 23a · Potência #2 96 OVR AUGE",
+          "A Alejandro Galán Espanha · lado livre · 27a · Agressivo #3 94 OVR AUGE",
+          "F Federico Chingotto Argentina · lado livre · 21a · Tático #4 93 OVR AUGE",
+          "J Juan Lebrón Espanha · lado livre · 28a · Agressivo #5 91 OVR AUGE"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "landscape": {
+        "viewport": "844x390",
+        "pageHeight": 7044,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 296,
+        "firstRowY": 426,
+        "rowsInFold": 0,
+        "rowHeights": [
+          109,
+          109,
+          109,
+          109,
+          109,
+          109,
+          109,
+          109
+        ],
+        "rowText": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      }
+    },
+    "profiles": {
+      "lider@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 1284,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello · Espanha A Arturo Coello Espanha · 23 anos · Pico aos 96 OVERALL RANKING #2 MELHOR RANKING Sem dados TÍTULOS 0 FORMA Regular PARCEIRO ATUAL Agustín Tapia Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 97 PATROCINADORES 95 TREINADOR 0 Auge No auge da carreira Ambição Disciplina Moral 72 Fadiga 5 INTELIGÊNCIA COMPETITIVA IA 2.5 Perfil competitivo em formação. Agressividade 50 Consistência 50 Decisões 50 Jogo em dupla 50 Leitura tática 50 Tolerância ao risco 50 Lado preferido Não definido Sob pressão Em avaliação Forma atual 60/100 Confiança 72/100 TREINADOR PREFERIDO Técnico Foco em fundamentos e mecânica de golpes ATRIBUTOS EVOLUTIVO",
+        "jsErrors": []
+      },
+      "comum@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 1284,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Iglesias · Argentina R Rafael Iglesias Argentina · 36 anos · Pico aos 83 OVERALL RANKING #121 MELHOR RANKING Sem dados TÍTULOS 0 FORMA Regular PARCEIRO ATUAL Thiago Acosta Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 0 PATROCINADORES 0 TREINADOR 0 Elite Jovem em crescimento Ambição Disciplina Moral Fadiga 0 INTELIGÊNCIA COMPETITIVA IA 2.5 Perfil competitivo em formação. Agressividade 50 Consistência 50 Decisões 50 Jogo em dupla 50 Leitura tática 50 Tolerância ao risco 50 Lado preferido Não definido Sob pressão Em avaliação Forma atual 60/100 Confiança 65/100 TREINADOR PREFERIDO Técnico Foco em fundamentos e mecânica de golpes ATRIBUTOS EV",
+        "jsErrors": []
+      },
+      "sem-parceiro@390": null,
+      "lider@desktop": {
+        "width": 448,
+        "height": 736,
+        "scrollHeight": 1262,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello · Espanha A Arturo Coello Espanha · 23 anos · Pico aos 96 OVERALL RANKING #2 MELHOR RANKING Sem dados TÍTULOS 0 FORMA Regular PARCEIRO ATUAL Agustín Tapia Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 97 PATROCINADORES 95 TREINADOR 0 Auge No auge da carreira Ambição Disciplina Moral 72 Fadiga 5 INTELIGÊNCIA COMPETITIVA IA 2.5 Perfil competitivo em formação. Agressividade 50 Consistência 50 Decisões 50 Jogo em dupla 50 Leitura tática 50 Tolerância ao risco 50 Lado preferido Não definido Sob pressão Em avaliação Forma atual 60/100 Confiança 72/100 TREINADOR PREFERIDO Técnico Foco em fundamentos e mecânica de golpes ATRIBUTOS EVOLUTIVO",
+        "jsErrors": []
+      },
+      "comum@desktop": {
+        "width": 448,
+        "height": 736,
+        "scrollHeight": 1262,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Iglesias · Argentina R Rafael Iglesias Argentina · 36 anos · Pico aos 83 OVERALL RANKING #121 MELHOR RANKING Sem dados TÍTULOS 0 FORMA Regular PARCEIRO ATUAL Thiago Acosta Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 0 PATROCINADORES 0 TREINADOR 0 Elite Jovem em crescimento Ambição Disciplina Moral Fadiga 0 INTELIGÊNCIA COMPETITIVA IA 2.5 Perfil competitivo em formação. Agressividade 50 Consistência 50 Decisões 50 Jogo em dupla 50 Leitura tática 50 Tolerância ao risco 50 Lado preferido Não definido Sob pressão Em avaliação Forma atual 60/100 Confiança 65/100 TREINADOR PREFERIDO Técnico Foco em fundamentos e mecânica de golpes ATRIBUTOS EV",
+        "jsErrors": []
+      },
+      "sem-parceiro@desktop": null
+    }
+  },
+  "t10": {
+    "directory": {
+      "360": {
+        "viewport": "360x800",
+        "pageHeight": 6429,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 356,
+        "firstRowY": 620,
+        "rowsInFold": 3,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Arturo Coello Espanha · Esquerda · 32a · Potência #1 99 OVR",
+          "A Agustín Tapia Argentina · Direita · 36a · Agressivo #2 86 OVR",
+          "D Diego Castro Espanha · Direita · 32a · Defensivo #3 98 OVR",
+          "H Hugo López França · Direita · 26a · #3 93 OVR",
+          "M Martín Di Nenno Argentina · Esquerda · 34a · Defensivo #4 90 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "390": {
+        "viewport": "390x844",
+        "pageHeight": 6377,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 356,
+        "firstRowY": 568,
+        "rowsInFold": 4,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Arturo Coello Espanha · Esquerda · 32a · Potência #1 99 OVR",
+          "A Agustín Tapia Argentina · Direita · 36a · Agressivo #2 86 OVR",
+          "D Diego Castro Espanha · Direita · 32a · Defensivo #3 98 OVR",
+          "H Hugo López França · Direita · 26a · #3 93 OVR",
+          "M Martín Di Nenno Argentina · Esquerda · 34a · Defensivo #4 90 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "768": {
+        "viewport": "768x1024",
+        "pageHeight": 5867,
+        "overflowX": 0,
+        "offenders": [
+          "SELECT.min-h-11 rounded-lg border border-border"
+        ],
+        "filterControls": 11,
+        "searchY": 349,
+        "firstRowY": 479,
+        "rowsInFold": 8,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Arturo Coello Espanha · Esquerda · 32a · Potência #1 99 OVR",
+          "A Agustín Tapia Argentina · Direita · 36a · Agressivo #2 86 OVR",
+          "D Diego Castro Espanha · Direita · 32a · Defensivo #3 98 OVR AUGE",
+          "H Hugo López França · Direita · 26a · #3 93 OVR",
+          "M Martín Di Nenno Argentina · Esquerda · 34a · Defensivo #4 90 OVR DECLÍNIO"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "1600": {
+        "viewport": "1600x900",
+        "pageHeight": 5972,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 279,
+        "firstRowY": 417,
+        "rowsInFold": 7,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Arturo Coello Espanha · Esquerda · 32a · Potência #1 99 OVR",
+          "A Agustín Tapia Argentina · Direita · 36a · Agressivo #2 86 OVR",
+          "D Diego Castro Espanha · Direita · 32a · Defensivo #3 98 OVR AUGE",
+          "H Hugo López França · Direita · 26a · #3 93 OVR",
+          "M Martín Di Nenno Argentina · Esquerda · 34a · Defensivo #4 90 OVR DECLÍNIO"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "desktop": {
+        "viewport": "1366x768",
+        "pageHeight": 6170,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 279,
+        "firstRowY": 417,
+        "rowsInFold": 6,
+        "rowHeights": [
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69,
+          69
+        ],
+        "rowText": [
+          "A Arturo Coello Espanha · Esquerda · 32a · Potência #1 99 OVR",
+          "A Agustín Tapia Argentina · Direita · 36a · Agressivo #2 86 OVR",
+          "D Diego Castro Espanha · Direita · 32a · Defensivo #3 98 OVR AUGE",
+          "H Hugo López França · Direita · 26a · #3 93 OVR",
+          "M Martín Di Nenno Argentina · Esquerda · 34a · Defensivo #4 90 OVR DECLÍNIO"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "landscape": {
+        "viewport": "844x390",
+        "pageHeight": 7044,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 11,
+        "searchY": 296,
+        "firstRowY": 426,
+        "rowsInFold": 0,
+        "rowHeights": [
+          109,
+          109,
+          109,
+          109,
+          109,
+          109,
+          109,
+          109
+        ],
+        "rowText": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      }
+    },
+    "profiles": {
+      "lider@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 1413,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello · Espanha A Arturo Coello Espanha · 32 anos · Pico aos 99 OVERALL RANKING #1 MELHOR RANKING #1 TÍTULOS 177 FORMA Excelente PARCEIRO ATUAL Agustín Tapia TRAJETÓRIA RECENTE 2035-12-29 · Mumbai Legacy Finals · champion 2035-12-08 · Copenhague Circuit Finals · champion 2035-11-27 · Lima Championship · champion 2035-11-06 · Toronto Elite Open · champion Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 48.661540064799155 PATROCINADORES 49.89173060401822 TREINADOR 49.70823064670389 Jovem em crescimento Ambição Disciplina Moral 98 Fadiga 0 INTELIGÊNCIA COMPETITIVA IA 2.5 eleva o rendimento da dupla Agressividade 53 Consistência 45 Decisões 66 ",
+        "jsErrors": []
+      },
+      "comum@390": null,
+      "sem-parceiro@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 1391,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Martínez · Argentina R Rafael Martínez Argentina · 25 anos · Pico aos 87 OVERALL RANKING #167 MELHOR RANKING #31 TÍTULOS 1 FORMA Boa PARCEIRO ATUAL João Herrera 171 TRAJETÓRIA RECENTE 2035-11-27 · Sydney World Platinum · final 2035-05-08 · Praga Grand Prix · quarterfinal 2035-04-23 · Bangkok Classic · r16 2035-04-16 · Atenas World Masters · r16 Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 49.46024042087685 PATROCINADORES 49.7102589523955 TREINADOR 53.183638628498244 Jovem em crescimento Ambição Disciplina Moral 96 Fadiga 0 INTELIGÊNCIA COMPETITIVA IA 2.5 perfil equilibrado, adaptável e sem extremos marcantes Agressividade 60 Consistência ",
+        "jsErrors": []
+      },
+      "aposentado@390": null,
+      "aposentado-antigo@390": null,
+      "lider@desktop": {
+        "width": 448,
+        "height": 736,
+        "scrollHeight": 1371,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello · Espanha A Arturo Coello Espanha · 32 anos · Pico aos 99 OVERALL RANKING #1 MELHOR RANKING #1 TÍTULOS 177 FORMA Excelente PARCEIRO ATUAL Agustín Tapia TRAJETÓRIA RECENTE 2035-12-29 · Mumbai Legacy Finals · champion 2035-12-08 · Copenhague Circuit Finals · champion 2035-11-27 · Lima Championship · champion 2035-11-06 · Toronto Elite Open · champion Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 48.661540064799155 PATROCINADORES 49.89173060401822 TREINADOR 49.70823064670389 Jovem em crescimento Ambição Disciplina Moral 98 Fadiga 0 INTELIGÊNCIA COMPETITIVA IA 2.5 eleva o rendimento da dupla Agressividade 53 Consistência 45 Decisões 66 ",
+        "jsErrors": []
+      },
+      "comum@desktop": null,
+      "sem-parceiro@desktop": {
+        "width": 448,
+        "height": 736,
+        "scrollHeight": 1349,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Martínez · Argentina R Rafael Martínez Argentina · 25 anos · Pico aos 87 OVERALL RANKING #167 MELHOR RANKING #31 TÍTULOS 1 FORMA Boa PARCEIRO ATUAL João Herrera 171 TRAJETÓRIA RECENTE 2035-11-27 · Sydney World Platinum · final 2035-05-08 · Praga Grand Prix · quarterfinal 2035-04-23 · Bangkok Classic · r16 2035-04-16 · Atenas World Masters · r16 Carismático Líder natural que inspira parceiros e fascina torcidas TORCIDA 49.46024042087685 PATROCINADORES 49.7102589523955 TREINADOR 53.183638628498244 Jovem em crescimento Ambição Disciplina Moral 96 Fadiga 0 INTELIGÊNCIA COMPETITIVA IA 2.5 perfil equilibrado, adaptável e sem extremos marcantes Agressividade 60 Consistência ",
+        "jsErrors": []
+      },
+      "aposentado@desktop": null,
+      "aposentado-antigo@desktop": null
+    }
+  }
+}

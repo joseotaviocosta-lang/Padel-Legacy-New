@@ -1,0 +1,506 @@
+{
+  "carreira-nova": {
+    "directory": {
+      "360": {
+        "viewport": "360x800",
+        "pageHeight": 5874,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 301,
+        "firstRowY": 458,
+        "rowsInFold": 6,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Agustín Tapia 🇦🇷 Argentina · 27 anos 96 OVR",
+          "2 A Arturo Coello 🇪🇸 Espanha · 23 anos 96 OVR",
+          "3 A Alejandro Galán 🇪🇸 Espanha · 27 anos 94 OVR",
+          "4 F Federico Chingotto 🇦🇷 Argentina · 21 anos 93 OVR",
+          "5 J Juan Lebrón 🇪🇸 Espanha · 28 anos 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "390": {
+        "viewport": "390x844",
+        "pageHeight": 5874,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 301,
+        "firstRowY": 458,
+        "rowsInFold": 7,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Agustín Tapia 🇦🇷 Argentina · 27 anos 96 OVR",
+          "2 A Arturo Coello 🇪🇸 Espanha · 23 anos 96 OVR",
+          "3 A Alejandro Galán 🇪🇸 Espanha · 27 anos 94 OVR",
+          "4 F Federico Chingotto 🇦🇷 Argentina · 21 anos 93 OVR",
+          "5 J Juan Lebrón 🇪🇸 Espanha · 28 anos 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "768": {
+        "viewport": "768x1024",
+        "pageHeight": 5389,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 292,
+        "firstRowY": 405,
+        "rowsInFold": 10,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Agustín Tapia 🇦🇷 Argentina · 27 anos 96 OVR",
+          "2 A Arturo Coello 🇪🇸 Espanha · 23 anos 96 OVR",
+          "3 A Alejandro Galán 🇪🇸 Espanha · 27 anos 94 OVR",
+          "4 F Federico Chingotto 🇦🇷 Argentina · 21 anos 93 OVR",
+          "5 J Juan Lebrón 🇪🇸 Espanha · 28 anos 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "1600": {
+        "viewport": "1600x900",
+        "pageHeight": 5543,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 270,
+        "firstRowY": 387,
+        "rowsInFold": 9,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Agustín Tapia 🇦🇷 Argentina · 27 anos 96 OVR",
+          "2 A Arturo Coello 🇪🇸 Espanha · 23 anos 96 OVR",
+          "3 A Alejandro Galán 🇪🇸 Espanha · 27 anos 94 OVR",
+          "4 F Federico Chingotto 🇦🇷 Argentina · 21 anos 93 OVR",
+          "5 J Juan Lebrón 🇪🇸 Espanha · 28 anos 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "desktop": {
+        "viewport": "1366x768",
+        "pageHeight": 5789,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 270,
+        "firstRowY": 387,
+        "rowsInFold": 6,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Agustín Tapia 🇦🇷 Argentina · 27 anos 96 OVR",
+          "2 A Arturo Coello 🇪🇸 Espanha · 23 anos 96 OVR",
+          "3 A Alejandro Galán 🇪🇸 Espanha · 27 anos 94 OVR",
+          "4 F Federico Chingotto 🇦🇷 Argentina · 21 anos 93 OVR",
+          "5 J Juan Lebrón 🇪🇸 Espanha · 28 anos 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "landscape": {
+        "viewport": "844x390",
+        "pageHeight": 6778,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 287,
+        "firstRowY": 400,
+        "rowsInFold": 0,
+        "rowHeights": [
+          105,
+          105,
+          105,
+          105,
+          105,
+          105,
+          105,
+          105
+        ],
+        "rowText": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      }
+    },
+    "profiles": {
+      "lider@390": {
+        "width": 374,
+        "height": 724,
+        "scrollHeight": 652,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello A Arturo Coello ATIVO 🇪🇸 Espanha · 23 anos MUNDIAL #2 13.000 pts OVR 96 PARCEIRO ATUAL Agustín Tapia Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS não registrado TORNEIOS não registrado VITÓRIAS não registrado DERROTAS não registrado MELHOR POSIÇÃO #2 posição atual PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "comum@390": {
+        "width": 374,
+        "height": 724,
+        "scrollHeight": 652,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Iglesias R Rafael Iglesias ATIVO 🇦🇷 Argentina · 36 anos · Esquerda MUNDIAL #121 1.057 pts OVR 83 PARCEIRO ATUAL Thiago Acosta Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS não registrado TORNEIOS não registrado VITÓRIAS não registrado DERROTAS não registrado MELHOR POSIÇÃO #121 posição atual PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "sem-parceiro@390": {
+        "width": 374,
+        "height": 708,
+        "scrollHeight": 636,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Mateo Ruiz M Mateo Ruiz ATIVO 🇦🇷 Argentina · 21 anos MUNDIAL #113 1.100 pts OVR 78 PARCEIRO ATUAL Sem parceiro no momento Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS não registrado TORNEIOS não registrado VITÓRIAS não registrado DERROTAS não registrado MELHOR POSIÇÃO #113 posição atual PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "lider@desktop": {
+        "width": 672,
+        "height": 663,
+        "scrollHeight": 578,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello A Arturo Coello ATIVO 🇪🇸 Espanha · 23 anos MUNDIAL #2 13.000 pts OVR 96 PARCEIRO ATUAL Agustín Tapia Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS não registrado TORNEIOS não registrado VITÓRIAS não registrado DERROTAS não registrado MELHOR POSIÇÃO #2 posição atual PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "comum@desktop": {
+        "width": 672,
+        "height": 663,
+        "scrollHeight": 578,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Iglesias R Rafael Iglesias ATIVO 🇦🇷 Argentina · 36 anos · Esquerda MUNDIAL #121 1.057 pts OVR 83 PARCEIRO ATUAL Thiago Acosta Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS não registrado TORNEIOS não registrado VITÓRIAS não registrado DERROTAS não registrado MELHOR POSIÇÃO #121 posição atual PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "sem-parceiro@desktop": {
+        "width": 672,
+        "height": 647,
+        "scrollHeight": 562,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Mateo Ruiz M Mateo Ruiz ATIVO 🇦🇷 Argentina · 21 anos MUNDIAL #113 1.100 pts OVR 78 PARCEIRO ATUAL Sem parceiro no momento Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS não registrado TORNEIOS não registrado VITÓRIAS não registrado DERROTAS não registrado MELHOR POSIÇÃO #113 posição atual PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      }
+    }
+  },
+  "t10": {
+    "directory": {
+      "360": {
+        "viewport": "360x800",
+        "pageHeight": 5874,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 301,
+        "firstRowY": 458,
+        "rowsInFold": 6,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Arturo Coello 🇪🇸 Espanha · 32 anos · Esquerda 99 OVR",
+          "2 A Agustín Tapia 🇦🇷 Argentina · 36 anos · Direita 86 OVR",
+          "3 H Hugo López 🇫🇷 França · 26 anos · Direita 93 OVR",
+          "4 N Nicolás Méndez 🇦🇷 Argentina · 33 anos · Esquerda 89 OVR",
+          "5 M Mateo Alonso 🇵🇾 Paraguai · 26 anos · Direita 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "390": {
+        "viewport": "390x844",
+        "pageHeight": 5874,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 301,
+        "firstRowY": 458,
+        "rowsInFold": 7,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Arturo Coello 🇪🇸 Espanha · 32 anos · Esquerda 99 OVR",
+          "2 A Agustín Tapia 🇦🇷 Argentina · 36 anos · Direita 86 OVR",
+          "3 H Hugo López 🇫🇷 França · 26 anos · Direita 93 OVR",
+          "4 N Nicolás Méndez 🇦🇷 Argentina · 33 anos · Esquerda 89 OVR",
+          "5 M Mateo Alonso 🇵🇾 Paraguai · 26 anos · Direita 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "768": {
+        "viewport": "768x1024",
+        "pageHeight": 5389,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 292,
+        "firstRowY": 405,
+        "rowsInFold": 10,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Arturo Coello 🇪🇸 Espanha · 32 anos · Esquerda 99 OVR",
+          "2 A Agustín Tapia 🇦🇷 Argentina · 36 anos · Direita 86 OVR",
+          "3 H Hugo López 🇫🇷 França · 26 anos · Direita 93 OVR",
+          "4 N Nicolás Méndez 🇦🇷 Argentina · 33 anos · Esquerda 89 OVR",
+          "5 M Mateo Alonso 🇵🇾 Paraguai · 26 anos · Direita 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "1600": {
+        "viewport": "1600x900",
+        "pageHeight": 5543,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 270,
+        "firstRowY": 387,
+        "rowsInFold": 9,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Arturo Coello 🇪🇸 Espanha · 32 anos · Esquerda 99 OVR",
+          "2 A Agustín Tapia 🇦🇷 Argentina · 36 anos · Direita 86 OVR",
+          "3 H Hugo López 🇫🇷 França · 26 anos · Direita 93 OVR",
+          "4 N Nicolás Méndez 🇦🇷 Argentina · 33 anos · Esquerda 89 OVR",
+          "5 M Mateo Alonso 🇵🇾 Paraguai · 26 anos · Direita 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "desktop": {
+        "viewport": "1366x768",
+        "pageHeight": 5789,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 270,
+        "firstRowY": 387,
+        "rowsInFold": 6,
+        "rowHeights": [
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64,
+          64
+        ],
+        "rowText": [
+          "1 A Arturo Coello 🇪🇸 Espanha · 32 anos · Esquerda 99 OVR",
+          "2 A Agustín Tapia 🇦🇷 Argentina · 36 anos · Direita 86 OVR",
+          "3 H Hugo López 🇫🇷 França · 26 anos · Direita 93 OVR",
+          "4 N Nicolás Méndez 🇦🇷 Argentina · 33 anos · Esquerda 89 OVR",
+          "5 M Mateo Alonso 🇵🇾 Paraguai · 26 anos · Direita 91 OVR"
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      },
+      "landscape": {
+        "viewport": "844x390",
+        "pageHeight": 6778,
+        "overflowX": 0,
+        "offenders": [],
+        "filterControls": 10,
+        "searchY": 287,
+        "firstRowY": 400,
+        "rowsInFold": 0,
+        "rowHeights": [
+          105,
+          105,
+          105,
+          105,
+          105,
+          105,
+          105,
+          105
+        ],
+        "rowText": [
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "listCount": 60,
+        "jsErrors": []
+      }
+    },
+    "profiles": {
+      "lider@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 790,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello A Arturo Coello ATIVO 🇪🇸 Espanha · 32 anos · Esquerda MUNDIAL #1 10.474 pts OVR 99 PARCEIRO ATUAL Agustín Tapia Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS 177 TORNEIOS 217 VITÓRIAS 1005 96% das partidas DERROTAS 40 MELHOR POSIÇÃO #1 registro do circuito PONTOS RACE 0 temporada atual TÍTULOS POR CATEGORIA Legacy Finals 8 Crown 16 Elite 22 Masters 59 Circuit Finals 10 Platinum 62 Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "comum@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 763,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Martín Mendes M Martín Mendes ATIVO 🇪🇸 Espanha · 21 anos MUNDIAL #100 462 pts OVR 73 PARCEIRO ATUAL Ignacio Santos Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS 1 TORNEIOS 9 VITÓRIAS 21 72% das partidas DERROTAS 8 MELHOR POSIÇÃO #35 registro do circuito PONTOS RACE 0 temporada atual TÍTULOS POR CATEGORIA Gold 1 Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "sem-parceiro@390": {
+        "width": 374,
+        "height": 721,
+        "scrollHeight": 649,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Martínez R Rafael Martínez ATIVO 🇸🇪 Suécia · 17 anos MUNDIAL #32 1.525 pts OVR 61 PARCEIRO ATUAL Sem parceiro no momento Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS 0 TORNEIOS não registrado VITÓRIAS 0 DERROTAS 0 MELHOR POSIÇÃO #32 registro do circuito PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "aposentado@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 768,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Álvaro Cepero Á Álvaro Cepero APOSENTADO 🇪🇸 Espanha · 33 anos · Esquerda MUNDIAL Aposentado OVR 81 PARCEIRO ATUAL Encerrou a carreira Resumo Resultados Parcerias Jogo Carreira encerrada Aposentou-se em 1 jan 2036, aos 33 anos · 10 anos no circuito · principal parceiro: Gael Pereira CARREIRA carreira registrada no save TÍTULOS 5 TORNEIOS 49 VITÓRIAS 77 64% das partidas DERROTAS 44 MELHOR POSIÇÃO #52 registro do circuito ANOS NO CIRCUITO 10 até a aposentadoria TÍTULOS POR CATEGORIA Platinum 1 Gold 2 Silver 2",
+        "jsErrors": []
+      },
+      "aposentado-antigo@390": {
+        "width": 374,
+        "height": 828,
+        "scrollHeight": 768,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Carlos Molina C Carlos Molina APOSENTADO Estados Unidos · 37 anos · Esquerda MUNDIAL Aposentado OVR 68 PARCEIRO ATUAL Encerrou a carreira Resumo Resultados Parcerias Jogo Carreira encerrada Aposentou-se em 3 jan 2033 CARREIRA carreira registrada no save TÍTULOS 2 TORNEIOS 67 VITÓRIAS 73 53% das partidas DERROTAS 65 MELHOR POSIÇÃO #158 registro do circuito ANOS NO CIRCUITO não registrado até a aposentadoria TÍTULOS POR CATEGORIA Gold 2",
+        "jsErrors": []
+      },
+      "lider@desktop": {
+        "width": 672,
+        "height": 736,
+        "scrollHeight": 683,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Arturo Coello A Arturo Coello ATIVO 🇪🇸 Espanha · 32 anos · Esquerda MUNDIAL #1 10.474 pts OVR 99 PARCEIRO ATUAL Agustín Tapia Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS 177 TORNEIOS 217 VITÓRIAS 1005 96% das partidas DERROTAS 40 MELHOR POSIÇÃO #1 registro do circuito PONTOS RACE 0 temporada atual TÍTULOS POR CATEGORIA Legacy Finals 8 Crown 16 Elite 22 Masters 59 Circuit Finals 10 Platinum 62 Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "comum@desktop": {
+        "width": 672,
+        "height": 736,
+        "scrollHeight": 683,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Martín Mendes M Martín Mendes ATIVO 🇪🇸 Espanha · 21 anos MUNDIAL #100 462 pts OVR 73 PARCEIRO ATUAL Ignacio Santos Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS 1 TORNEIOS 9 VITÓRIAS 21 72% das partidas DERROTAS 8 MELHOR POSIÇÃO #35 registro do circuito PONTOS RACE 0 temporada atual TÍTULOS POR CATEGORIA Gold 1 Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "sem-parceiro@desktop": {
+        "width": 672,
+        "height": 654,
+        "scrollHeight": 569,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Rafael Martínez R Rafael Martínez ATIVO 🇸🇪 Suécia · 17 anos MUNDIAL #32 1.525 pts OVR 61 PARCEIRO ATUAL Sem parceiro no momento Resumo Resultados Parcerias Jogo CARREIRA carreira registrada no save TÍTULOS 0 TORNEIOS não registrado VITÓRIAS 0 DERROTAS 0 MELHOR POSIÇÃO #32 registro do circuito PONTOS RACE 0 temporada atual Ver no ranking mundial",
+        "jsErrors": []
+      },
+      "aposentado@desktop": {
+        "width": 672,
+        "height": 736,
+        "scrollHeight": 664,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Álvaro Cepero Á Álvaro Cepero APOSENTADO 🇪🇸 Espanha · 33 anos · Esquerda MUNDIAL Aposentado OVR 81 PARCEIRO ATUAL Encerrou a carreira Resumo Resultados Parcerias Jogo Carreira encerrada Aposentou-se em 1 jan 2036, aos 33 anos · 10 anos no circuito · principal parceiro: Gael Pereira CARREIRA carreira registrada no save TÍTULOS 5 TORNEIOS 49 VITÓRIAS 77 64% das partidas DERROTAS 44 MELHOR POSIÇÃO #52 registro do circuito ANOS NO CIRCUITO 10 até a aposentadoria TÍTULOS POR CATEGORIA Platinum 1 Gold 2 Silver 2",
+        "jsErrors": []
+      },
+      "aposentado-antigo@desktop": {
+        "width": 672,
+        "height": 736,
+        "scrollHeight": 664,
+        "overflowX": 0,
+        "innerOverflow": [],
+        "text": "Perfil de atleta Carlos Molina C Carlos Molina APOSENTADO Estados Unidos · 37 anos · Esquerda MUNDIAL Aposentado OVR 68 PARCEIRO ATUAL Encerrou a carreira Resumo Resultados Parcerias Jogo Carreira encerrada Aposentou-se em 3 jan 2033 CARREIRA carreira registrada no save TÍTULOS 2 TORNEIOS 67 VITÓRIAS 73 53% das partidas DERROTAS 65 MELHOR POSIÇÃO #158 registro do circuito ANOS NO CIRCUITO não registrado até a aposentadoria TÍTULOS POR CATEGORIA Gold 2",
+        "jsErrors": []
+      }
+    }
+  }
+}

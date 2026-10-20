@@ -1,0 +1,209 @@
+{
+  "createdAt": "2026-10-20T17:25:07.730Z",
+  "method": "mesma sessão, variantes alternadas, 1ª abertura de cada rodada descartada (tools/perf-athletes.mjs)",
+  "states": {
+    "carreira-nova": {
+      "before": {
+        "directory": {
+          "runs": [
+            77,
+            82,
+            79,
+            90,
+            83,
+            68,
+            81,
+            112
+          ],
+          "median": 82
+        },
+        "search": {
+          "runs": [
+            21,
+            18,
+            18,
+            18,
+            20,
+            20,
+            13,
+            13
+          ],
+          "median": 18
+        },
+        "profile": {
+          "runs": [
+            71,
+            19,
+            20,
+            22,
+            20,
+            19,
+            16,
+            20
+          ],
+          "median": 20
+        },
+        "section": {
+          "runs": [],
+          "median": null
+        }
+      },
+      "after": {
+        "directory": {
+          "runs": [
+            120,
+            124,
+            161,
+            117,
+            96,
+            106,
+            119,
+            263
+          ],
+          "median": 120
+        },
+        "search": {
+          "runs": [
+            42,
+            31,
+            25,
+            31,
+            22,
+            30,
+            39,
+            19
+          ],
+          "median": 31
+        },
+        "profile": {
+          "runs": [
+            42,
+            46,
+            16,
+            23,
+            28,
+            45,
+            23,
+            23
+          ],
+          "median": 28
+        },
+        "section": {
+          "runs": [
+            19,
+            29,
+            11,
+            14,
+            15,
+            18,
+            18,
+            14
+          ],
+          "median": 18
+        }
+      }
+    },
+    "t10": {
+      "before": {
+        "directory": {
+          "runs": [
+            672,
+            593,
+            593,
+            597,
+            582,
+            812,
+            661,
+            667
+          ],
+          "median": 661
+        },
+        "search": {
+          "runs": [
+            34,
+            16,
+            23,
+            22,
+            23,
+            24,
+            32,
+            25
+          ],
+          "median": 24
+        },
+        "profile": {
+          "runs": [
+            39,
+            17,
+            20,
+            16,
+            27,
+            22,
+            20,
+            23
+          ],
+          "median": 22
+        },
+        "section": {
+          "runs": [],
+          "median": null
+        }
+      },
+      "after": {
+        "directory": {
+          "runs": [
+            802,
+            846,
+            714,
+            678,
+            754,
+            623,
+            777,
+            649
+          ],
+          "median": 754
+        },
+        "search": {
+          "runs": [
+            29,
+            41,
+            35,
+            23,
+            34,
+            23,
+            25,
+            25
+          ],
+          "median": 29
+        },
+        "profile": {
+          "runs": [
+            36,
+            42,
+            25,
+            19,
+            30,
+            24,
+            25,
+            23
+          ],
+          "median": 25
+        },
+        "section": {
+          "runs": [
+            48,
+            37,
+            17,
+            13,
+            34,
+            12,
+            17,
+            19
+          ],
+          "median": 19
+        }
+      },
+      "note": "rodada com ordem invertida (antes/depois/antes/depois). A 1ª medição (ordem depois/antes/...) teve pico só na 3ª rodada (efeito de posição: memória/GC com save de 67 MB) — dados brutos em perf-run1.json."
+    }
+  }
+}

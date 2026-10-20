@@ -3,6 +3,7 @@ import { Users, Lock, Check } from 'lucide-react';
 import { getAvailablePartners, getLockedPartners, canChangePartner, daysUntilPartnerUnlock } from '@/lib/career';
 import { formPartnerContract, getSuggestedPartnerTerms } from '@/game-core';
 import { overallRating } from '@/lib/padel';
+import { candidateAgeAt, candidateIdentityLine } from '@/lib/candidateDisplay.js';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import { useToast } from '@/components/ui/use-toast';
 import { ModalShell } from '@/components/design-system';
@@ -88,6 +89,7 @@ export default function PartnerSelection({ profile, onClose, onPartnerSelected }
         {available.map(bot => (
           <button
             key={bot.id}
+            data-partner-candidate="selection"
             onClick={() => canChange && setSelected(bot)}
             disabled={!canChange}
             className={`w-full glass rounded-xl p-3 flex items-center gap-3 transition-all border ${
@@ -104,7 +106,9 @@ export default function PartnerSelection({ profile, onClose, onPartnerSelected }
                   {bot.level}
                 </span>
               </div>
-              <p className="text-[10px] text-muted-foreground mb-1">OVR {overallRating(bot)}</p>
+              {/* 5.32-C.1: país · idade (na data da carreira) · lado — essenciais para escolher a dupla. */}
+              {candidateIdentityLine(bot, profile?.career_date) && <p className="truncate text-[10px] text-muted-foreground" data-candidate-identity data-candidate-age={candidateAgeAt(bot, profile?.career_date) || undefined}>{candidateIdentityLine(bot, profile?.career_date)}</p>}
+              <p className="text-[10px] text-muted-foreground mb-1" data-candidate-ovr>OVR {overallRating(bot)}</p>
               <PlayStyleSummary profile={bot} compact />
             </div>
             {currentPartnerId === bot.id && (

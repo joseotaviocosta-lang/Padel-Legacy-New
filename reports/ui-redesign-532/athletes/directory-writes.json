@@ -1,0 +1,41 @@
+{
+  "save": "reports/local-8a-career-audit/run10/save-season-10.json",
+  "athletesInSave": 1141,
+  "createdByEnsureAthleteProfiles": 282,
+  "createdSample": [
+    {
+      "id": "player-fictional-1dwe2kc",
+      "name": "Vinícius Pereira",
+      "overall": 98,
+      "points": null
+    },
+    {
+      "id": "player-fictional-j3up65",
+      "name": "Rui Monteiro",
+      "overall": 97,
+      "points": null
+    },
+    {
+      "id": "player-real-1ljqig6",
+      "name": "Alejandro Galán",
+      "overall": 94,
+      "points": null
+    },
+    {
+      "id": "player-fictional-1fkboq6",
+      "name": "Rafael Santos",
+      "overall": 94,
+      "points": null
+    },
+    {
+      "id": "player-fictional-hpwopa",
+      "name": "Davi Oliveira",
+      "overall": 92,
+      "points": null
+    }
+  ],
+  "createdWithWorldPoints": 0,
+  "relationshipsChangedFirstOpen": 199,
+  "relationshipsChangedSecondOpen": 22,
+  "note": "Comportamento anterior à 5.32-C (montagem do diretório). Não alterado nesta fase: mudar exigiria tocar em persistência/geração de dados."
+}
