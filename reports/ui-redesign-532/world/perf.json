@@ -1,0 +1,66 @@
+{
+  "createdAt": "2026-10-20T14:23:10.449Z",
+  "method": "pushState /game → /world até a página pronta; 1 fria descartada + 5 medidas por rodada; rodadas alternadas depois/antes/depois/antes",
+  "states": {
+    "carreira-nova": {
+      "beforeMs": [
+        124,
+        25,
+        55,
+        23,
+        111,
+        21,
+        23,
+        36,
+        26,
+        23
+      ],
+      "afterMs": [
+        138,
+        81,
+        72,
+        147,
+        38,
+        31,
+        43,
+        31,
+        37,
+        37
+      ],
+      "beforeMedian": 26,
+      "afterMedian": 43,
+      "deltaMedianMs": 17,
+      "jsErrors": []
+    },
+    "t10": {
+      "beforeMs": [
+        43,
+        47,
+        48,
+        53,
+        54,
+        47,
+        40,
+        43,
+        50,
+        51
+      ],
+      "afterMs": [
+        84,
+        57,
+        87,
+        87,
+        53,
+        62,
+        86,
+        73,
+        69,
+        63
+      ],
+      "beforeMedian": 48,
+      "afterMedian": 73,
+      "deltaMedianMs": 25,
+      "jsErrors": []
+    }
+  }
+}

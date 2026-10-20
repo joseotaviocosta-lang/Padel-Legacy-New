@@ -1,0 +1,595 @@
+{
+  "phase": "5.32-B",
+  "createdAt": "2026-10-20T15:34:32.881Z",
+  "base": "20023c8378d20a70feb5425f851c4cb9d6503368",
+  "authorities": {
+    "individual": "buildWorldRankingSnapshot (posição = ordem do snapshot, igual ao Ranking 5.32-A)",
+    "race": "buildWorldRankingSnapshot.racePoints com a ordenação da escada da Race do Ranking",
+    "doubles": "getTeamRankings (ranking_display_position, ranking_points)",
+    "pairCurrent": "ai_partner_id mútuo + não aposentado (fonte do motor de IA); dupla do jogador pela Partnership ativa (regra do Ranking)",
+    "events": "Tournament (isSelectableTournament + janela de inscrição de nextEventAuthority)",
+    "champions": "Tournament.champion_athlete_ids/names (settlement, LOCAL-7E)",
+    "news": "getLivingWorldSnapshot (inalterado)"
+  },
+  "behavioralTests": {
+    "test-world-circuit-v532b": "69 PASS",
+    "test-world-mobile-containment-v532b": "162 PASS"
+  },
+  "layout": {
+    "carreira-nova": {
+      "360": {
+        "before": {
+          "pageHeight": 2126,
+          "topBlocks": 4,
+          "cards": 22,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2224,
+          "topBlocks": 6,
+          "cards": 12,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "390": {
+        "before": {
+          "pageHeight": 2075,
+          "topBlocks": 4,
+          "cards": 22,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2186,
+          "topBlocks": 6,
+          "cards": 12,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "768": {
+        "before": {
+          "pageHeight": 1892,
+          "topBlocks": 4,
+          "cards": 22,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 1810,
+          "topBlocks": 6,
+          "cards": 12,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "1600": {
+        "before": {
+          "pageHeight": 1387,
+          "topBlocks": 4,
+          "cards": 24,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 1582,
+          "topBlocks": 6,
+          "cards": 14,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "desktop": {
+        "before": {
+          "pageHeight": 1387,
+          "topBlocks": 4,
+          "cards": 24,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 1582,
+          "topBlocks": 6,
+          "cards": 14,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "landscape": {
+        "before": {
+          "pageHeight": 1889,
+          "topBlocks": 4,
+          "cards": 22,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 1810,
+          "topBlocks": 6,
+          "cards": 12,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "firstUsefulContentY390": {
+        "before": 796,
+        "after": 193
+      },
+      "heroKind390": "NÚMERO 1 DO MUNDO Agustín Tapia 13.000 p"
+    },
+    "t1": {
+      "360": {
+        "before": {
+          "pageHeight": 3026,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 3051,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "390": {
+        "before": {
+          "pageHeight": 2969,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 3051,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "768": {
+        "before": {
+          "pageHeight": 2761,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2621,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "1600": {
+        "before": {
+          "pageHeight": 2064,
+          "topBlocks": 4,
+          "cards": 29,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2083,
+          "topBlocks": 6,
+          "cards": 15,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "desktop": {
+        "before": {
+          "pageHeight": 2086,
+          "topBlocks": 4,
+          "cards": 29,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2083,
+          "topBlocks": 6,
+          "cards": 15,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "landscape": {
+        "before": {
+          "pageHeight": 2759,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2589,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "firstUsefulContentY390": {
+        "before": 796,
+        "after": 193
+      },
+      "heroKind390": "CAMPEÕES · LEGACY FINALS Alejandro Galán"
+    },
+    "t5-com-dupla": {
+      "360": {
+        "before": {
+          "pageHeight": 3055,
+          "topBlocks": 4,
+          "cards": 25,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 3053,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "390": {
+        "before": {
+          "pageHeight": 2952,
+          "topBlocks": 4,
+          "cards": 25,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 3008,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "768": {
+        "before": {
+          "pageHeight": 2732,
+          "topBlocks": 4,
+          "cards": 25,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2626,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "1600": {
+        "before": {
+          "pageHeight": 2143,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2161,
+          "topBlocks": 6,
+          "cards": 15,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "desktop": {
+        "before": {
+          "pageHeight": 2143,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2161,
+          "topBlocks": 6,
+          "cards": 15,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "landscape": {
+        "before": {
+          "pageHeight": 2679,
+          "topBlocks": 4,
+          "cards": 25,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2575,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "firstUsefulContentY390": {
+        "before": 796,
+        "after": 193
+      },
+      "heroKind390": "NÚMERO 1 DO MUNDO Arturo Coello 13.300 p"
+    },
+    "t10": {
+      "360": {
+        "before": {
+          "pageHeight": 3094,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 3160,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "390": {
+        "before": {
+          "pageHeight": 2968,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 4,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 3115,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 5,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "768": {
+        "before": {
+          "pageHeight": 2771,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2691,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "1600": {
+        "before": {
+          "pageHeight": 2117,
+          "topBlocks": 4,
+          "cards": 29,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2173,
+          "topBlocks": 6,
+          "cards": 15,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "desktop": {
+        "before": {
+          "pageHeight": 2117,
+          "topBlocks": 4,
+          "cards": 29,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2173,
+          "topBlocks": 6,
+          "cards": 15,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "landscape": {
+        "before": {
+          "pageHeight": 2746,
+          "topBlocks": 4,
+          "cards": 27,
+          "filters": 4,
+          "primaryActions": 8,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        },
+        "after": {
+          "pageHeight": 2641,
+          "topBlocks": 6,
+          "cards": 13,
+          "filters": 4,
+          "primaryActions": 9,
+          "overflowX": 0,
+          "cut": 0,
+          "jsErrors": 0
+        }
+      },
+      "firstUsefulContentY390": {
+        "before": 796,
+        "after": 193
+      },
+      "heroKind390": "CAMPEÕES · LEGACY FINALS Arturo Coello &"
+    }
+  },
+  "perf": {
+    "carreira-nova": {
+      "beforeMedianMs": 26,
+      "afterMedianMs": 43,
+      "deltaMs": 17,
+      "jsErrors": 0
+    },
+    "t10": {
+      "beforeMedianMs": 48,
+      "afterMedianMs": 73,
+      "deltaMs": 25,
+      "jsErrors": 0
+    }
+  },
+  "gates": {
+    "lint": "pass",
+    "build": "pass (WorldHub chunk 29.91 kB / gzip 8.79 kB)",
+    "validateArchitecture": "pass"
+  }
+}
