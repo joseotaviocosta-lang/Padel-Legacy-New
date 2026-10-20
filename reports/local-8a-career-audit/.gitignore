@@ -1,0 +1,4 @@
+run10/save-*.json
+cp1-*/save-*.json
+run10/hashes.jsonl
+run10/an*/

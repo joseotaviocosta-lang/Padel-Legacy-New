@@ -1,0 +1,93 @@
+{
+ "run": "C:\\Projetos\\Padel-Legacy-Integracao\\reports\\local-8a-career-audit\\run10\\an1",
+ "seasons": [
+  {
+   "season": "temporada 1",
+   "date": "2027-01-05",
+   "saveBytes": 13041785,
+   "tournaments": {
+    "total": 275,
+    "finished": 125,
+    "cancelled": 0,
+    "future": 150,
+    "inProgress": 0,
+    "stuck": 0,
+    "stuckIds": [],
+    "withoutChampion": 0,
+    "championMismatch": 0,
+    "runnerUpMismatch": 0,
+    "placementDuplicates": 0,
+    "placementCountMismatch": 0,
+    "invalidWinner": 0,
+    "missingSettlementId": 0,
+    "settlementDup": 0,
+    "playerTournaments": 38,
+    "aiOnly": 86,
+    "ambiguousIdentity": 0,
+    "homonymBrackets": 0,
+    "bySeason": {
+     "1": {
+      "scheduled": 125,
+      "finished": 125,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "2": {
+      "scheduled": 124,
+      "finished": 0,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "3": {
+      "scheduled": 26,
+      "finished": 0,
+      "cancelled": 0,
+      "stuck": 0
+     }
+    }
+   },
+   "points": {
+    "checked": 5347,
+    "wrong": 0,
+    "examples": []
+   },
+   "ranking": {
+    "results": 6762,
+    "duplicateResults": 0,
+    "rollingChecked": 959,
+    "rollingWrong": 0,
+    "rollingExamples": [],
+    "raceChecked": 0,
+    "raceWrong": 0,
+    "raceExamples": []
+   },
+   "teams": {
+    "rows": 951,
+    "duplicates": 0,
+    "sumChecked": 333,
+    "sumWrong": 0,
+    "ledgerRows": 310,
+    "ledgerChecked": 310,
+    "ledgerWrong": 0,
+    "ledgerMathWrong": 0,
+    "ledgerExamples": []
+   },
+   "world": {
+    "athletes": 1072,
+    "active": 959,
+    "retired": 113,
+    "partnerships": 618,
+    "activePartnerships": 335,
+    "homonymNameGroups": 37
+   },
+   "player": {
+    "rankPoints": 80,
+    "racePoints": 0,
+    "titles": 0,
+    "tournamentsPlayed": 38,
+    "results": 38,
+    "bestFinish": 7
+   }
+  }
+ ]
+}

@@ -1,0 +1,118 @@
+{
+ "run": "C:\\Projetos\\Padel-Legacy-Integracao\\reports\\local-8a-career-audit\\run10\\an5",
+ "seasons": [
+  {
+   "season": "temporada 5",
+   "date": "2031-01-04",
+   "saveBytes": 38801981,
+   "tournaments": {
+    "total": 773,
+    "finished": 621,
+    "cancelled": 0,
+    "future": 152,
+    "inProgress": 0,
+    "stuck": 0,
+    "stuckIds": [],
+    "withoutChampion": 0,
+    "championMismatch": 0,
+    "runnerUpMismatch": 0,
+    "placementDuplicates": 0,
+    "placementCountMismatch": 0,
+    "invalidWinner": 0,
+    "missingSettlementId": 0,
+    "settlementDup": 0,
+    "playerTournaments": 85,
+    "aiOnly": 535,
+    "ambiguousIdentity": 0,
+    "homonymBrackets": 0,
+    "bySeason": {
+     "1": {
+      "scheduled": 125,
+      "finished": 125,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "2": {
+      "scheduled": 124,
+      "finished": 124,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "3": {
+      "scheduled": 124,
+      "finished": 124,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "4": {
+      "scheduled": 124,
+      "finished": 124,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "5": {
+      "scheduled": 124,
+      "finished": 124,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "6": {
+      "scheduled": 124,
+      "finished": 0,
+      "cancelled": 0,
+      "stuck": 0
+     },
+     "7": {
+      "scheduled": 28,
+      "finished": 0,
+      "cancelled": 0,
+      "stuck": 0
+     }
+    }
+   },
+   "points": {
+    "checked": 5553,
+    "wrong": 0,
+    "examples": [],
+    "expiredTournaments": 496
+   },
+   "ranking": {
+    "results": 7470,
+    "duplicateResults": 0,
+    "rollingChecked": 971,
+    "rollingWrong": 0,
+    "rollingExamples": [],
+    "raceChecked": 0,
+    "raceWrong": 0,
+    "raceExamples": []
+   },
+   "teams": {
+    "rows": 1616,
+    "duplicates": 0,
+    "sumChecked": 378,
+    "sumWrong": 0,
+    "ledgerRows": 756,
+    "ledgerChecked": 541,
+    "ledgerWrong": 0,
+    "ledgerMathWrong": 0,
+    "ledgerExamples": []
+   },
+   "world": {
+    "athletes": 1118,
+    "active": 995,
+    "retired": 123,
+    "partnerships": 797,
+    "activePartnerships": 378,
+    "homonymNameGroups": 111
+   },
+   "player": {
+    "rankPoints": 82,
+    "racePoints": 0,
+    "titles": 1,
+    "tournamentsPlayed": 85,
+    "results": 11,
+    "bestFinish": 12
+   }
+  }
+ ]
+}

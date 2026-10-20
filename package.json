@@ -39,6 +39,7 @@
     "test:local-7g1-retirement-settlement": "node scripts/test-local-7g1-retirement-settlement.mjs",
     "test:local-7h-pair-match-ledger": "node scripts/test-local-7h-pair-match-ledger.mjs",
     "test:local-7h1-ai-pair-identity": "node scripts/test-local-7h1-ai-pair-identity.mjs",
+    "test:local-8a-career-audit": "node scripts/audit-local-8a-career.mjs",
     "test:browser-career-storage": "node scripts/test-browser-career-storage.mjs",
     "test:onboarding": "node src/gameplay/tests/TutorialSideFlowTest.js",
     "test:onboarding-v2": "node scripts/test-onboarding-v2.mjs",

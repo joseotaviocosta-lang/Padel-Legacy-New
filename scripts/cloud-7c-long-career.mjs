@@ -117,7 +117,7 @@ try {
   const { registerTournament, getTournamentRegistrationWindow } = await load('/src/lib/tournamentRegistration.js');
   const { finalizePracticeMatch } = await load('/src/game-core/matchLifecycle.js');
   const { createMatch, playPoint, getSetScoreString } = await load('/src/lib/matchEngine.js');
-  const { applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch } = await load('/src/gameplay/worldTour/tournamentSettlement.js');
+  const { applyPlayerMatchToCanonicalBracket, applyQualifyingExitToCanonicalBracket, opponentTeamNameOfRunMatch, remainingQualifyingOpponentNames } = await load('/src/gameplay/worldTour/tournamentSettlement.js');
   const { getRandomBots, getDifficultyForPlayer, BOTS_BY_DIFFICULTY } = await load('/src/lib/bots.js');
   const { isInjured, canPlayMatchToday, getChemistryBonus, getEnergyPenalty, getWorldRank, buildMatchRewardsPatch } = await load('/src/lib/padel.js');
   const { createTournamentRun, getCurrentTournamentMatch, recordTournamentMatchResult, countMainDrawWins } = await load('/src/gameplay/worldTour/TournamentRunManager.js');
@@ -231,8 +231,11 @@ try {
       bracketForFinal = rounds;
       await localGame.entities.Tournament.update(tournament.id, { bracket_history: rounds, current_phase: run.status === 'champion' ? 'concluido' : run.status });
     } else if (Number(freshTournament?.bracket_schema_version) >= 2 && Array.isArray(freshTournament.bracket_history) && freshTournament.bracket_history.length && completedMatch?.stage === 'qualifying' && !won && !LEGACY_QUALIFYING_FLOW) {
-      // CLOUD-7D1 — mesmo passo do TournamentModal: derrota no qualifying => a dupla que eliminou o jogador herda a vaga.
-      const rounds = applyQualifyingExitToCanonicalBracket(freshTournament.bracket_history, { qualifierTeamName: opponentTeamNameOfRunMatch(completedMatch), date: completedMatch.date }).rounds;
+      // CLOUD-7D1 — mesmo passo do TournamentModal: derrota no qualifying => a dupla que eliminou o jogador disputa a vaga.
+      // LOCAL-8A — alinhado à LOCAL-7F (TournamentModal atual): ela ainda joga as rodadas de qualifying que faltam.
+      const rounds = applyQualifyingExitToCanonicalBracket(freshTournament.bracket_history, {
+        qualifierTeamName: opponentTeamNameOfRunMatch(completedMatch), remainingOpponents: remainingQualifyingOpponentNames(run, completedMatch), date: completedMatch.date,
+      }).rounds;
       bracketForFinal = rounds;
       await localGame.entities.Tournament.update(tournament.id, { bracket_history: rounds, current_phase: run.status });
     }
@@ -345,7 +348,8 @@ try {
             if (pl[0].team !== t.champion) problems.push(`${t.id}: placements[0] != campeão`);
             if (pl[1] && pl[1].team !== t.runner_up) problems.push(`${t.id}: placements[1] != vice`);
             if (dup(pl.map((x) => x.position))) problems.push(`${t.id}: posições duplicadas`);
-            if (dup(pl.map((x) => x.team))) problems.push(`${t.id}: times duplicados nas colocações`);
+            // LOCAL-8A — identidade da LOCAL-7E: homônimas distintas trazem pair_id e não são duplicação.
+            if (dup(pl.map((x) => (x.pair_id ? `id:${x.pair_id}` : `name:${x.team}`)))) problems.push(`${t.id}: times duplicados nas colocações`);
           }
         }
       } else if (t.status !== 'cancelado' && t.end_date && t.end_date < careerDate) {
