@@ -70,7 +70,7 @@ try {
   const { activeCareerAdapter } = await server.ssrLoadModule('/src/gameplay/services/runtime.js');
   const { localGame } = await server.ssrLoadModule('/src/api/localGameClient.js');
   const { evaluateCoachForCareer } = await server.ssrLoadModule('/src/lib/coaches.js');
-  const { hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach, ensureCoachCatalog } = await server.ssrLoadModule('/src/game-core/coachLifecycle.js');
+  const { hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach, ensureCoachCatalog, listCoachMarketForDate } = await server.ssrLoadModule('/src/game-core/coachLifecycle.js');
 
   const fakeStorage = createMemoryStorage();
   const careerManager = new CareerManager(new CareerRepository(new GameStorage(fakeStorage)));
@@ -93,8 +93,13 @@ try {
   console.log('\n--- Consistência por tier (mercado vs. contratação) ---');
   const catalog = await ensureCoachCatalog();
   gate('Catálogo de treinadores carrega com entradas reais', catalog.length > 50);
+  // LOCAL-8F (8F-06): "salário de mercado" é o da projeção mensal que a tela
+  // Treinadores exibe (listCoachMarketForDate, a mesma fonte do Mercado
+  // Mundial e da contratação) — não mais o card cru do catálogo. Só um
+  // treinador disponível no mês pode ser contratado, como na interface.
+  const market = await listCoachMarketForDate(profile.career_date, catalog);
   for (const tier of ['iniciante', 'regional', 'profissional', 'elite']) {
-    const coach = catalog.find((c) => c.tier === tier);
+    const coach = market.find((c) => c.tier === tier && c.market_available !== false);
     gate(`Existe ao menos 1 treinador tier "${tier}" no catálogo`, Boolean(coach));
     if (!coach) continue;
     await resetCoachFields();

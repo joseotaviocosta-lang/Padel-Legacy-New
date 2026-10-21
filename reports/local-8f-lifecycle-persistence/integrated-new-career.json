@@ -1,0 +1,121 @@
+{
+  "results": [
+    {
+      "label": "carreira nova criada pela UI",
+      "ok": true,
+      "detail": "\"2026-01-01\""
+    },
+    {
+      "label": "catálogos inicializados na ativação (clubes, treinadores, Loja, missões)",
+      "ok": true,
+      "detail": "[74,118,125,30]"
+    },
+    {
+      "label": "propostas recebidas ao definir lado e estilo (4)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "parceiro escolhido e dupla confirmada pela UI (botão \"Aceitar proposta\n60 dias · você fica com\")",
+      "ok": true,
+      "detail": "{\"active\":1,\"partner\":\"player-fictional-965x47\"}"
+    },
+    {
+      "label": "1ª navegação pelas 9 telas: só a recompensa única da etapa 1 do tutorial ({\"MissionProgress\":{\"created\":1,\"removed\":0,\"changed\":0},\"FinancialTransaction\":{\"created\":1,\"removed\":0,\"changed\":0}})",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "avançar 3 dias pela UI (2026-01-01→2026-01-02, 2026-01-02→2026-01-03, 2026-01-03→2026-01-04)",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "salvar e recarregar: mesma data e nenhum registro alterado (2026-01-04, {})",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "2ª navegação após recarregar: nenhum registro alterado ({})",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "sem erros de JavaScript (0)",
+      "ok": true,
+      "detail": "[]"
+    }
+  ],
+  "report": {
+    "steps": [
+      {
+        "step": "navegação 1",
+        "diff": {
+          "MissionProgress": {
+            "created": 1,
+            "removed": 0,
+            "changed": 0
+          },
+          "FinancialTransaction": {
+            "created": 1,
+            "removed": 0,
+            "changed": 0
+          }
+        },
+        "createdRows": {
+          "MissionProgress": [
+            {
+              "id": "mission-progress-playerprofile-1792597736369-4t01db-tutorial-career-created-tutorial-career",
+              "mission_id": "tutorial-career-created",
+              "status": "rewarded"
+            }
+          ],
+          "FinancialTransaction": [
+            {
+              "id": "reward-mission-progress-playerprofile-1792597736369-4t01db-tutorial-career-created-tutorial-career",
+              "category": "tutorial",
+              "description": "Tutorial: Conheça o painel da carreira",
+              "amount": 50
+            }
+          ]
+        },
+        "introAdded": [
+          "/game",
+          "/world/circuit",
+          "/world/directory",
+          "/career/team",
+          "/career/training",
+          "/world-market"
+        ]
+      },
+      {
+        "step": "avanço",
+        "days": [
+          {
+            "before": "2026-01-01",
+            "after": "2026-01-02",
+            "clicked": true
+          },
+          {
+            "before": "2026-01-02",
+            "after": "2026-01-03",
+            "clicked": true
+          },
+          {
+            "before": "2026-01-03",
+            "after": "2026-01-04",
+            "clicked": true
+          }
+        ]
+      },
+      {
+        "step": "recarregar",
+        "diff": {}
+      },
+      {
+        "step": "navegação 2",
+        "diff": {}
+      }
+    ]
+  }
+}

@@ -306,7 +306,7 @@ export async function processLivingWorldDay(profile, date, options = {}) {
   ];
 
   const editorialEvents = options.generateEditorial !== false && isEditorialDay(date)
-    ? [generateEventObject(date)]
+    ? [generateEventObject(date, `editorial:${date}`)]
     : [];
 
   const bulletinResult = await buildWeeklyWorldBulletinPayload(profile, date);

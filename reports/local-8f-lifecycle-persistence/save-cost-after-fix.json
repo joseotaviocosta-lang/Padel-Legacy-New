@@ -1,0 +1,264 @@
+{
+  "label": "after-fix",
+  "mode": "corrigido",
+  "scenarios": {
+    "t1": {
+      "activation": {
+        "writes": 8,
+        "ms": 1954,
+        "bytes": 331939
+      },
+      "serializeMs": 130,
+      "saveBytes": 12988576,
+      "partners": {
+        "ms": [
+          1,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "missions": {
+        "ms": [
+          1,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "achievements": {
+        "ms": [
+          231,
+          8
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "news": {
+        "ms": [
+          2,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "clubs": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "coaches": {
+        "ms": [
+          3,
+          1
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "shop": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      }
+    },
+    "t5": {
+      "activation": {
+        "writes": 6,
+        "ms": 4078,
+        "bytes": 310315
+      },
+      "serializeMs": 370,
+      "saveBytes": 38599805,
+      "partners": {
+        "ms": [
+          83,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "missions": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "achievements": {
+        "ms": [
+          1940,
+          99
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "news": {
+        "ms": [
+          12,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "clubs": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "coaches": {
+        "ms": [
+          2,
+          1
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "shop": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      }
+    },
+    "t10": {
+      "activation": {
+        "writes": 6,
+        "ms": 17882,
+        "bytes": 310315
+      },
+      "serializeMs": 521,
+      "saveBytes": 67095584,
+      "partners": {
+        "ms": [
+          622,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "missions": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "achievements": {
+        "ms": [
+          4442,
+          1130
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "news": {
+        "ms": [
+          179,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "clubs": {
+        "ms": [
+          0,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "coaches": {
+        "ms": [
+          2,
+          1
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "shop": {
+        "ms": [
+          1,
+          0
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      }
+    }
+  }
+}

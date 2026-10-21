@@ -3,6 +3,7 @@ import { upsertCareerMessage } from '@/lib/careerCommunications.js';
 import { getActivePartnership } from '@/lib/partnershipSystem.js';
 
 import { buildInitialPartnerOffers } from '@/lib/partnerOfferRules.js';
+import { buildRenewedFirstPartnershipOffers } from '@/lib/partnerOffers.js';
 
 // Playthrough 5.17, Parte F — MERCADO PROATIVO APÓS SEPARAÇÃO.
 //
@@ -71,6 +72,25 @@ export async function findLastSeparationDate(profileId) {
   return ended.length ? ended[ended.length - 1] : null;
 }
 
+/**
+ * LOCAL-8F — data em que o lote inicial de propostas se esgotou: existe lote
+ * inicial, nenhuma proposta está pendente e válida nem aceita. A âncora é a
+ * resolução mais recente (recusa) ou, para as que só expiraram, o vencimento.
+ */
+export async function findInitialOffersExhaustedAnchor(profileId, currentDate) {
+  const offers = await entities.PartnerOffer.filter({ profile_id: profileId }).catch(() => []);
+  const seed = (offers || []).filter((offer) => offer?.source === 'initial-partner-offer');
+  if (!seed.length) return null;
+  const open = (offers || []).some((offer) => offer?.status === 'accepted'
+    || (offer?.status === 'pending' && (!offer.expires_career_date || String(offer.expires_career_date) >= String(currentDate))));
+  if (open) return null;
+  const dates = seed
+    .map((offer) => String(offer.rejected_career_date || offer.resolved_career_date || offer.expires_career_date || '').slice(0, 10))
+    .filter(Boolean)
+    .sort();
+  return dates.length ? { date: dates[dates.length - 1], prefix: 'initial-offers-exhausted' } : null;
+}
+
 export async function ensurePostSeparationPartnerMarket(profile, currentDate) {
   if (!profile?.id || !currentDate) return { created: 0, reason: 'invalid-input' };
   if (profile.partner_id) return { created: 0, reason: 'has-partner' };
@@ -78,15 +98,23 @@ export async function ensurePostSeparationPartnerMarket(profile, currentDate) {
   const active = await getActivePartnership(profile.id).catch(() => null);
   if (active) return { created: 0, reason: 'has-partnership' };
 
+  // LOCAL-8F (8D-05) — segunda âncora do mesmo mercado: quem nunca teve dupla
+  // e esgotou o lote inicial (todas recusadas/expiradas, nenhuma pendente).
+  // Antes, reabrir Duplas gerava um lote novo na hora, sem limite; agora a
+  // nova busca segue o MESMO ritmo de quem ficou sem dupla (3 dias, depois a
+  // cada 7), pelo tick diário.
   const separationDate = await findLastSeparationDate(profile.id);
-  if (!separationDate) return { created: 0, reason: 'never-separated' };
+  const anchor = separationDate
+    ? { date: separationDate, prefix: 'post-separation' }
+    : await findInitialOffersExhaustedAnchor(profile.id, currentDate);
+  if (!anchor) return { created: 0, reason: 'never-separated' };
 
-  const windowIndex = postSeparationWindowIndex(separationDate, currentDate);
-  if (windowIndex === null) return { created: 0, reason: 'too-soon', separationDate };
+  const windowIndex = postSeparationWindowIndex(anchor.date, currentDate);
+  if (windowIndex === null) return { created: 0, reason: 'too-soon', separationDate: anchor.date };
 
   // Idempotência: uma janela = uma leva de propostas, mesmo que o dia seja
   // reprocessado.
-  const windowKey = `post-separation:${separationDate}:w${windowIndex}`;
+  const windowKey = `${anchor.prefix}:${anchor.date}:w${windowIndex}`;
   const existingForWindow = await entities.PartnerOffer
     .filter({ profile_id: profile.id, market_window: windowKey }).catch(() => []);
   if (existingForWindow?.length) {
@@ -118,10 +146,17 @@ export async function ensurePostSeparationPartnerMarket(profile, currentDate) {
   // Dedupe entre janelas: quem já foi proposto não volta.
   const alreadyOffered = new Set((previousOffers || []).map((o) => o.candidate_player_id).filter(Boolean));
 
-  const free = (candidatesRaw || [])
+  // LOCAL-8F — estreante que esgotou o lote inicial: mesmo pool/seleção do
+  // lote inicial (catálogo de parceiros por nível), não os atletas do mundo.
+  const renewal = anchor.prefix === 'initial-offers-exhausted'
+    ? (await buildRenewedFirstPartnershipOffers({ ...profile, career_date: currentDate }, alreadyOffered)).slice(0, MAX_CANDIDATES)
+    : null;
+  if (renewal && !renewal.length) return { created: 0, reason: 'no-viable-offer', windowKey };
+
+  const free = renewal ? [] : (candidatesRaw || [])
     .filter((candidate) => isCandidateAvailable(candidate, activePartnerIds))
     .filter((candidate) => !alreadyOffered.has(candidate.id));
-  if (!free.length) return { created: 0, reason: 'no-candidates', windowKey };
+  if (!renewal && !free.length) return { created: 0, reason: 'no-candidates', windowKey };
 
   // Proximidade de ranking antes de pontuar: sem isto, avaliaríamos mil
   // atletas por janela e ofereceríamos sempre os mesmos nomes do topo, que
@@ -137,7 +172,7 @@ export async function ensurePostSeparationPartnerMarket(profile, currentDate) {
 
   // Reaproveita a MESMA seleção/termos das ofertas existentes — nada de uma
   // segunda régua de compatibilidade (Parte Q: não inventar segunda escala).
-  const built = buildInitialPartnerOffers({ ...profile, career_date: currentDate }, pool, MAX_CANDIDATES)
+  const built = renewal || buildInitialPartnerOffers({ ...profile, career_date: currentDate }, pool, MAX_CANDIDATES)
     .slice(0, MAX_CANDIDATES);
   if (built.length < MIN_CANDIDATES && built.length === 0) {
     return { created: 0, reason: 'no-viable-offer', windowKey };
@@ -147,7 +182,7 @@ export async function ensurePostSeparationPartnerMarket(profile, currentDate) {
   for (const offer of built) {
     const saved = await entities.PartnerOffer.upsert(offer.id, {
       ...offer,
-      source: 'post-separation-market',
+      source: renewal ? 'initial-offers-renewal' : 'post-separation-market',
       market_window: windowKey,
       created_career_date: currentDate,
     }).catch(() => null);
@@ -174,5 +209,5 @@ export async function ensurePostSeparationPartnerMarket(profile, currentDate) {
     });
   }
 
-  return { created: created.length, windowKey, windowIndex, separationDate, offers: created };
+  return { created: created.length, windowKey, windowIndex, separationDate: anchor.date, anchor: anchor.prefix, offers: created };
 }

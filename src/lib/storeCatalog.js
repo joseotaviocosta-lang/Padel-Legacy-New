@@ -357,6 +357,11 @@ export async function ensureExpandedShopCatalog() {
   const missing = catalog.filter(item => !names.has(cleanKey(item.name)));
 
   let repaired = 0;
+  // LOCAL-8F: os reparos abaixo são acumulados e gravados num ÚNICO
+  // bulkUpdate no fim (antes: um update — e uma serialização do save
+  // inteiro — por item). Mesmos patches, mesma ordem de precedência.
+  const pending = new Map();
+  const queuePatch = (id, patch) => { pending.set(id, { ...(pending.get(id) || {}), ...patch }); };
   for (const item of existing) {
     if (!item?.id) continue;
     const template = byName.get(cleanKey(item.name));
@@ -383,7 +388,7 @@ export async function ensureExpandedShopCatalog() {
     // localSeed.js) — deriva de category+rarity, não do nome do item.
     if (!normalized.sponsor_id && template.sponsor_id) patch.sponsor_id = template.sponsor_id;
     if (Object.keys(patch).length > 0) {
-      await localGame.entities.ShopItem.update(item.id, patch);
+      queuePatch(item.id, patch);
       repaired += 1;
     }
   }
@@ -411,7 +416,7 @@ export async function ensureExpandedShopCatalog() {
     if (item.price !== fix.price) patch.price = fix.price;
     if (item.rarity !== fix.rarity) patch.rarity = fix.rarity;
     if (Object.keys(patch).length > 0) {
-      await localGame.entities.ShopItem.update(item.id, patch);
+      queuePatch(item.id, patch);
       repaired += 1;
     }
   }
@@ -425,9 +430,12 @@ export async function ensureExpandedShopCatalog() {
     if (!item?.id || item.image_url) continue;
     const iconPath = getCategoryRarityIconAssetPath(item.category, item.rarity);
     if (iconPath) {
-      await localGame.entities.ShopItem.update(item.id, { image_url: iconPath });
+      queuePatch(item.id, { image_url: iconPath });
       repaired += 1;
     }
+  }
+  if (pending.size) {
+    await localGame.entities.ShopItem.bulkUpdate([...pending].map(([id, patch]) => ({ id, ...patch })));
   }
 
   if (missing.length > 0) {

@@ -1,0 +1,357 @@
+{
+  "label": "before-fix",
+  "mode": "head",
+  "sections": {
+    "activation": {
+      "result": null,
+      "writes": 0,
+      "ms": 0,
+      "diff": {}
+    },
+    "newCareerScreens": {
+      "partners": {
+        "open1": {
+          "records": 4,
+          "diff": {
+            "PartnerOffer": {
+              "created": 4,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 4,
+          "ms": 237
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 21
+        }
+      },
+      "missions": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 1
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 15
+        }
+      },
+      "achievements": {
+        "open1": {
+          "records": 3,
+          "diff": {
+            "PlayerAchievement": {
+              "created": 1,
+              "removed": 0,
+              "changed": 0
+            },
+            "FinancialTransaction": {
+              "created": 1,
+              "removed": 0,
+              "changed": 0
+            },
+            "__player": {
+              "changed": 1
+            }
+          },
+          "writes": 1,
+          "ms": 41
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 22
+        }
+      },
+      "news": {
+        "open1": {
+          "records": 2,
+          "diff": {
+            "WorldEvent": {
+              "created": 2,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 1,
+          "ms": 24
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 17
+        }
+      },
+      "clubs": {
+        "open1": {
+          "records": 71,
+          "diff": {
+            "Club": {
+              "created": 71,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 71,
+          "ms": 1871
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 17
+        }
+      },
+      "coaches": {
+        "open1": {
+          "records": 118,
+          "diff": {
+            "Coach": {
+              "created": 118,
+              "removed": 0,
+              "changed": 0
+            }
+          },
+          "writes": 2,
+          "ms": 54
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 24
+        }
+      },
+      "shop": {
+        "open1": {
+          "records": 115,
+          "diff": {
+            "ShopItem": {
+              "created": 111,
+              "removed": 0,
+              "changed": 4
+            }
+          },
+          "writes": 5,
+          "ms": 158
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 20
+        }
+      }
+    },
+    "partners": {
+      "concurrent": [
+        "ok:4",
+        "erro:PartnerOffer já existe com o id: partner-offer-playerprofile"
+      ],
+      "afterRejectAll": {
+        "offers": 4,
+        "diff": {
+          "PartnerOffer": {
+            "created": 4,
+            "removed": 0,
+            "changed": 0
+          }
+        }
+      },
+      "calendarWindows": {
+        "d3": {
+          "created": 0,
+          "reason": "never-separated"
+        },
+        "repeat": {
+          "created": 0,
+          "reason": "never-separated"
+        },
+        "sameWindow": {
+          "created": 0,
+          "reason": "never-separated"
+        }
+      }
+    },
+    "missions": {
+      "open1": {
+        "records": 3,
+        "diff": {
+          "Mission": {
+            "created": 0,
+            "removed": 0,
+            "changed": 3
+          }
+        },
+        "writes": 1,
+        "ms": 556
+      },
+      "open2": {
+        "records": 3,
+        "diff": {
+          "Mission": {
+            "created": 0,
+            "removed": 0,
+            "changed": 3
+          }
+        },
+        "writes": 1,
+        "ms": 1249
+      }
+    },
+    "achievements": {
+      "merited": [
+        "achv-nascido-para-vencer"
+      ],
+      "open": {
+        "open1": {
+          "records": 3,
+          "diff": {
+            "PlayerAchievement": {
+              "created": 1,
+              "removed": 0,
+              "changed": 0
+            },
+            "FinancialTransaction": {
+              "created": 1,
+              "removed": 0,
+              "changed": 0
+            },
+            "__player": {
+              "changed": 1
+            }
+          },
+          "writes": 1,
+          "ms": 42
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 32
+        }
+      },
+      "afterDay": {
+        "recorded": 1,
+        "coins": 250100,
+        "date": "2026-01-02"
+      }
+    },
+    "news": {
+      "open1": {
+        "records": 15,
+        "diff": {
+          "WorldEvent": {
+            "created": 15,
+            "removed": 0,
+            "changed": 0
+          }
+        },
+        "writes": 1,
+        "ms": 440
+      },
+      "open2": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 336
+      },
+      "dailyDeterminism": {
+        "days": 40,
+        "identical": 0
+      }
+    },
+    "clubs": {
+      "created": 71,
+      "catalogWrites": 71,
+      "catalogMs": 49256,
+      "open1": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 2
+      },
+      "open2": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 340
+      }
+    },
+    "coaches": {
+      "mismatches": 117,
+      "total": 118,
+      "hire": {
+        "coach": "Caio Silva",
+        "shownSalary": 250,
+        "contracted": 250
+      },
+      "monthTurn": {
+        "coach": "Enzo Navarro",
+        "shownOld": 286,
+        "expectedNew": 300,
+        "contracted": 286
+      }
+    },
+    "relics": {
+      "relics": 0,
+      "stock": 0,
+      "after10": {
+        "diff": {},
+        "items": 115
+      }
+    },
+    "newCareerFlow": {
+      "offers": 0,
+      "catalogs": {
+        "clubs": 3,
+        "coaches": 0,
+        "shop": 4,
+        "missions": 3
+      },
+      "advance": {
+        "date": "2026-01-04",
+        "errors": 0
+      }
+    }
+  },
+  "passed": 33,
+  "failures": [
+    "carreira nova: abrir partners (1ª vez) não grava registros (4 registro(s), 4 gravação(ões) {\"PartnerOffer\":{\"created\":4,\"removed\":0,\"changed\":0}})",
+    "carreira nova: abrir achievements (1ª vez) não grava registros (3 registro(s), 1 gravação(ões) {\"PlayerAchievement\":{\"created\":1,\"removed\":0,\"changed\":0},\"FinancialTransaction\":{\"created\":1,\"removed\":0,\"changed\":0},\"__player\":{\"changed\":1}})",
+    "carreira nova: abrir news (1ª vez) não grava registros (2 registro(s), 1 gravação(ões) {\"WorldEvent\":{\"created\":2,\"removed\":0,\"changed\":0}})",
+    "carreira nova: abrir clubs (1ª vez) não grava registros (71 registro(s), 71 gravação(ões) {\"Club\":{\"created\":71,\"removed\":0,\"changed\":0}})",
+    "carreira nova: abrir coaches (1ª vez) não grava registros (118 registro(s), 2 gravação(ões) {\"Coach\":{\"created\":118,\"removed\":0,\"changed\":0}})",
+    "carreira nova: abrir shop (1ª vez) não grava registros (115 registro(s), 5 gravação(ões) {\"ShopItem\":{\"created\":111,\"removed\":0,\"changed\":4}})",
+    "aberturas simultâneas não lançam erro (ok:4 | erro:PartnerOffer já existe com o id: partner-offer-playerprofile)",
+    "ordem das propostas estável entre aberturas (4 propostas)",
+    "recusar todas e reabrir NÃO gera lote novo no mesmo dia (4 registro(s) {\"PartnerOffer\":{\"created\":4,\"removed\":0,\"changed\":0}})",
+    "após recusar todas, o calendário abre nova janela de propostas em +3 dias (0 criada(s), motivo never-separated)",
+    "Objetivos (1ª abertura) não altera missões ({\"Mission\":{\"created\":0,\"removed\":0,\"changed\":3}})",
+    "Objetivos (2ª abertura) não altera missões ({\"Mission\":{\"created\":0,\"removed\":0,\"changed\":3}})",
+    "abrir Conquistas não credita moedas nem registra conquistas ({\"PlayerAchievement\":{\"created\":1,\"removed\":0,\"changed\":0},\"FinancialTransaction\":{\"created\":1,\"removed\":0,\"changed\":0},\"__player\":{\"changed\":1}})",
+    "reabrir a aba e avançar outro dia não paga de novo (2 registro(s), 2 lançamento(s))",
+    "data de desbloqueio é a data da carreira",
+    "abrir Notícias/Circuito não cria notícias ({\"WorldEvent\":{\"created\":15,\"removed\":0,\"changed\":0}})",
+    "geração diária de notícias determinística (0/40 dias idênticos)",
+    "inicializar o catálogo de clubes: 71 clubes em 71 gravação(ões) (49256 ms)",
+    "clubes sem duplicatas e com ids estáveis (74)",
+    "Treinadores × Mercado Mundial: disponibilidade, salário e luvas iguais (117 divergência(s) em 118)",
+    "luvas debitadas = luvas exibidas (217 × 200)",
+    "mês vira entre consulta e confirmação: contrata pelos termos do mês vigente (286 → 286, esperado 300)",
+    "as 10 relíquias existem (0)",
+    "relíquias com preço, raridade e coleção do modelo",
+    "carreira nova: propostas iniciais após escolher o estilo, sem abrir Duplas (0)",
+    "carreira nova: primeira dupla confirmada (sem proposta)",
+    "carreira nova: catálogos prontos sem visitar telas ({\"clubs\":3,\"coaches\":0,\"shop\":4,\"missions\":3})"
+  ]
+}

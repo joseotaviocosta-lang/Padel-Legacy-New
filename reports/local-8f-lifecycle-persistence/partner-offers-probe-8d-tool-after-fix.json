@@ -1,0 +1,109 @@
+{
+  "report": {
+    "sequential": {
+      "existingBeforeOpen": 0,
+      "createdOnFirstOpen": 4,
+      "afterSecondOpen": 4,
+      "candidates": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "displayOrder": {
+        "firstOpen": [
+          "Tomás Acosta",
+          "Théo Leroy",
+          "Andrea Moretti",
+          "Thiago Oliveira"
+        ],
+        "laterOpens": [
+          "Tomás Acosta",
+          "Théo Leroy",
+          "Andrea Moretti",
+          "Thiago Oliveira"
+        ]
+      },
+      "courtSide": null,
+      "poolSize": 0
+    },
+    "concurrent": {
+      "offers": 4,
+      "distinctCandidates": 4,
+      "outcomes": [
+        "ok:4",
+        "ok:4"
+      ]
+    },
+    "determinism": {
+      "sameCandidates": true,
+      "a": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "b": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ]
+    },
+    "profileDrift": {
+      "sameIfProfileChanges": false,
+      "first": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "withCourtSideAndXp": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3bjog9"
+      ]
+    },
+    "rejection": {
+      "initial": [
+        "player-fictional-11q11d2",
+        "player-fictional-15x1byv",
+        "player-fictional-17b5nfo",
+        "player-fictional-3vivu7"
+      ],
+      "regeneratedAfterAllRejected": [],
+      "cooldown": [
+        "2026-01-15",
+        "2026-01-15",
+        "2026-01-15",
+        "2026-01-15"
+      ]
+    }
+  },
+  "findings": [
+    {
+      "label": "o lote depende do perfil no momento da 1ª abertura (lado/XP): abrir antes ou depois do onboarding muda os candidatos",
+      "fact": {
+        "first": [
+          "player-fictional-11q11d2",
+          "player-fictional-15x1byv",
+          "player-fictional-17b5nfo",
+          "player-fictional-3vivu7"
+        ],
+        "withCourtSideAndXp": [
+          "player-fictional-11q11d2",
+          "player-fictional-15x1byv",
+          "player-fictional-17b5nfo",
+          "player-fictional-3bjog9"
+        ]
+      }
+    },
+    {
+      "label": "com todas recusadas, reabrir a página GERA um novo lote (sem avanço do calendário)",
+      "fact": {
+        "novas": 0
+      }
+    }
+  ]
+}

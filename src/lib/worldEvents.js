@@ -1,5 +1,6 @@
 import { localGame } from '@/api/localGameClient.js';
 import { createWorldEventObjects, normalizeWorldEventIds, validateWorldEventIds } from './worldEventIds.js';
+import { seededRandom } from './hashUtils.js';
 
 function addDays(dateStr, days) {
   const d = new Date(dateStr + 'T00:00:00');
@@ -87,9 +88,18 @@ export const IMPACT_META = {
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-function chance(pct) { return Math.random() < pct; }
+// LOCAL-8F (8D-08): o sorteio dos macroeventos do avanço diário passa a ser
+// semeado pela data (withSeed) — o mesmo dia produz o mesmo evento. Fora de
+// um withSeed (ação explícita), continua Math.random.
+let random = Math.random;
+function withSeed(seed, fn) {
+  const previous = random;
+  random = seededRandom(seed);
+  try { return fn(); } finally { random = previous; }
+}
+function pick(arr) { return arr[Math.floor(random() * arr.length)]; }
+function randInt(min, max) { return Math.floor(random() * (max - min + 1)) + min; }
+function chance(pct) { return random() < pct; }
 
 // ── Macro Event Templates ─────────────────────────────────────────────────
 
@@ -450,7 +460,7 @@ export function generateMacroEventObject(date) {
     event_date: date,
     likes: randInt(500, 15000),
     tags: [type, 'macro'],
-    source_event_id: `macro:${date}:${type}:${Math.random().toString(36).slice(2, 10)}`,
+    source_event_id: `macro:${date}:${type}:${random().toString(36).slice(2, 10)}`,
     is_macro: true,
     impact_level: tpl.impact || 'medio',
     effects: tpl.effects || {},
@@ -468,6 +478,10 @@ export async function generateMacroEvents(date, count = 1) {
   for (let i = 0; i < count; i++) {
     events.push(generateMacroEventObject(date));
   }
+  return persistMacroEvents(events);
+}
+
+async function persistMacroEvents(events) {
   if (events.length === 0) return [];
 
   const prepared = normalizeWorldEventIds(createWorldEventObjects(events));
@@ -538,10 +552,12 @@ export function computeCombinedEffects(macroEvents) {
 // Maybe generate a macro event (called on day advance)
 // Chance increases on certain milestones
 export async function maybeGenerateMacroEvent(date) {
-  // ~12% chance per day for a macro event
-  if (!chance(0.12)) return null;
-  const event = await generateMacroEvents(date, 1);
-  return event?.[0] || null;
+  // ~12% chance per day for a macro event — sorteio semeado pela data
+  // (LOCAL-8F): reprocessar o mesmo dia não cria um segundo evento diferente.
+  const event = withSeed(`macro-event:${date}`, () => (chance(0.12) ? generateMacroEventObject(date) : null));
+  if (!event) return null;
+  const saved = await persistMacroEvents([event]);
+  return saved?.[0] || null;
 }
 
 // Ensure minimum macro events exist for a given date

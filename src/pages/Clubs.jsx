@@ -6,7 +6,6 @@ import { ensureMyProfile } from '@/lib/padel';
 import { LoadingScreen } from '@/components/padel/ui';
 import { Page, PageContent, PageHeader, Surface, StatCard, StatusBadge, EmptyState, ModalShell } from '@/components/design-system';
 import { createClub } from '@/lib/clubs';
-import { ensureWorldClubCatalog } from '@/lib/sportsEconomyV26';
 
 export default function Clubs() {
   const navigate = useNavigate();
@@ -23,7 +22,8 @@ export default function Clubs() {
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
-        await ensureWorldClubCatalog(72);
+        // LOCAL-8F (8D-09): o catálogo de clubes é inicializado na ativação
+        // da carreira (careerSystemsInitialization); abrir Clubes só consulta.
         const list = await localGame.entities.Club.list('-club_points', 120);
         setClubs(list || []);
       } catch (e) { console.error(e); }

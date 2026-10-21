@@ -19,7 +19,7 @@ import {
   sortCoachDiscovery,
 } from '@/lib/coaches';
 import { useToast } from '@/components/ui/use-toast';
-import { ensureCoachMarketInitialized, hirePrimaryCoach, renewPrimaryCoach, resolveActiveCoach } from '@/game-core/coachLifecycle';
+import { ensureCoachMarketInitialized, hirePrimaryCoach, listCoachMarketForDate, renewPrimaryCoach, resolveActiveCoach } from '@/game-core/coachLifecycle';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
 const STATUS_FILTERS = [
@@ -113,7 +113,9 @@ export default function Coaches() {
         .sort((a, b) => String(b.month || '').localeCompare(String(a.month || '')))[0];
       const hired = resolved.coach || (dbCoaches || []).find((coach) => coach.id === activeProfile?.coach_id) || null;
       setProfile(activeProfile);
-      setCoaches(dbCoaches || []);
+      // LOCAL-8F (8F-06): disponibilidade e salário do mês vêm da mesma
+      // projeção usada pelo Mercado Mundial e pela contratação.
+      setCoaches(activeProfile ? await listCoachMarketForDate(activeProfile.career_date, dbCoaches || []) : []);
       setHiredCoach(hired);
       setMonthlyIncome(Number(latestClose?.income) > 0 ? Number(latestClose.income) : null);
       setStatusFilter(getDefaultCoachDiscoveryFilter(activeProfile));

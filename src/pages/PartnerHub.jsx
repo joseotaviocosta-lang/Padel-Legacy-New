@@ -12,8 +12,6 @@ import {
 } from '@/lib/partnershipSystem';
 import { listCareerCommunications } from '@/lib/careerCommunications.js';
 import { countUnreadCareerMessages } from '@/lib/notificationSelectors.js';
-import { getAvailablePartners } from '@/lib/career';
-import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from '@/lib/partnerAthlete.js';
 import { getSuggestedPartnerTerms } from '@/game-core/partnerLifecycle.js';
 import { CollapsibleSection, EmptyState, ModalShell, Page, PageContent, PageHeader, PageSkeleton, StatusBadge, Surface, Tabs, Button } from '@/components/design-system';
 import { useToast } from '@/components/ui/use-toast';
@@ -25,7 +23,7 @@ import AdvisorPanel from '@/components/partner/AdvisorPanel';
 import PartnerNegotiationModal from '@/components/partner/PartnerNegotiationModal';
 import { renewPartnerContract, releasePartner, schedulePartnerSeparation, calculatePartnerRenewalInterest, getContractDecisionState, CONTRACT_DECISION_STATES } from '@/game-core/partnerLifecycle';
 import PartnerOffersPanel from '@/components/partner/PartnerOffersPanel';
-import { acceptPartnerOffer, ensureInitialPartnerOffers, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
+import { acceptPartnerOffer, listPartnerOffers, rejectPartnerOffer } from '@/lib/partnerOffers';
 import { findCommittedTournaments, resolveScheduledSeparationDate } from '@/lib/committedRoster.js';
 import { useCareerProfileSync } from '@/hooks/useCareerProfileSync.js';
 
@@ -207,8 +205,10 @@ export default function PartnerHub() {
     (async () => {
       setOffersLoading(true); setOffersError(null);
       try {
-        const available = await getAvailablePartnersForSearch(profile);
-        const rows = activePartnership ? await listPartnerOffers(profile.id) : await ensureInitialPartnerOffers(profile, available);
+        // LOCAL-8F (8D-05): abrir Duplas só CONSULTA as propostas. O lote
+        // inicial nasce quando a identidade do atleta fica completa e na
+        // ativação da carreira; renovações vêm do calendário.
+        const rows = await loadPartnerHubOffers(profile);
         proposalsRef.current = rows; setProposals(rows);
         await load();
         if (activePartnership && !searchParams.get('view')) selectTab('overview');
@@ -545,9 +545,10 @@ export default function PartnerHub() {
   );
 }
 
-// 5.26-C, Bloco D — o catálogo não sabe quem já se aposentou.
-async function getAvailablePartnersForSearch(profile) {
-  return excludeRetiredPartnerTemplates(getAvailablePartners(profile), await listRetiredPartnerOriginIds());
+// LOCAL-8F — leitura das propostas exibidas em Duplas (exportada para os
+// testes de integridade; não cria nem altera registros).
+export async function loadPartnerHubOffers(profile) {
+  return profile?.id ? listPartnerOffers(profile.id) : [];
 }
 
 // Fase 5.31 — CONTRATO. Antes: cabeçalho + 2 avisos + 3 métricas em caixa +

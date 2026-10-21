@@ -5,8 +5,8 @@ import { localGame } from '@/api/localGameClient.js';
 import { ensureMyProfile } from '@/lib/padel';
 import { EmptyStateCard, GlassCard, FilterPills } from '@/components/padel/ui';
 import WorldEventCard from '@/components/world/WorldEventCard';
-import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
-import { ensureMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
+import { getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
+import { getActiveMacroEvents, computeCombinedEffects, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
 import { loadModuleTasks } from '@/lib/moduleLoading';
 import { Page, PageContent, PageHeader, PageSkeleton, ModalShell } from '@/components/design-system';
 
@@ -56,10 +56,11 @@ export default function WorldEventsPage() {
         const p = await ensureMyProfile(user);
         setProfile(p);
         const date = p?.career_date || new Date().toISOString().slice(0, 10);
-        await ensureWorldEvents(date, 15);
+        // LOCAL-8F (8D-08): abrir só CONSULTA. Notícias e macroeventos nascem
+        // no avanço diário (livingWorldEngine) e na ação explícita "gerar".
         const { list, macros } = await loadModuleTasks({
           list: { task: () => getRecentWorldEvents(50), fallback: [], label: 'eventos mundiais recentes' },
-          macros: { task: () => ensureMacroEvents(date, 2), fallback: [], label: 'macroeventos' },
+          macros: { task: () => getActiveMacroEvents(date), fallback: [], label: 'macroeventos' },
         });
         setEvents(list || []);
         setMacroEvents(macros || []);

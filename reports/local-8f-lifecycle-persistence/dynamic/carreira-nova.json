@@ -1,0 +1,250 @@
+{
+  "scenario": "carreira-nova",
+  "routes": {
+    "/partners?view=offers": {
+      "route": "/partners?view=offers",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 11,
+        "careerWrites": 1,
+        "path": "/partners?view=offers"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/partners?view=offers"
+      }
+    },
+    "/game/missions": {
+      "route": "/game/missions",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/missions"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/missions"
+      }
+    },
+    "/game/missions?tab=achievements": {
+      "route": "/game/missions?tab=achievements",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/missions?tab=achievements"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/game/missions?tab=achievements"
+      }
+    },
+    "/world/circuit": {
+      "route": "/world/circuit",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world/circuit"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit"
+      }
+    },
+    "/world/circuit?tab=circuit": {
+      "route": "/world/circuit?tab=circuit",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=circuit"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/circuit?tab=circuit"
+      }
+    },
+    "/world/directory?tab=clubs": {
+      "route": "/world/directory?tab=clubs",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/directory?tab=clubs"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 0,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world/directory?tab=clubs"
+      }
+    },
+    "/career/team": {
+      "route": "/career/team",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/career/team"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/team"
+      }
+    },
+    "/career/training?tab=shop": {
+      "route": "/career/training?tab=shop",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/career/training?tab=shop"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/career/training?tab=shop"
+      }
+    },
+    "/world-market": {
+      "route": "/world-market",
+      "open1": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 12,
+        "careerWrites": 1,
+        "path": "/world-market"
+      },
+      "open2": {
+        "diff": {
+          "created": {},
+          "removed": {},
+          "changed": {},
+          "top": {}
+        },
+        "mathRandomCalls": 1,
+        "persistCalls": 0,
+        "careerWrites": 0,
+        "path": "/world-market"
+      }
+    }
+  },
+  "boot": null,
+  "jsErrors": []
+}

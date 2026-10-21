@@ -1,0 +1,49 @@
+[
+  {
+    "open": 1,
+    "items": 125,
+    "created": 121,
+    "createdNames": [
+      "Raquete de Madeira Original (1969)",
+      "Raquete Vintage Marplatense (1975)",
+      "Raquete Espanhola Clássica (1980)",
+      "Bola de Padel Original (1970)"
+    ],
+    "rewritten": 4,
+    "sample": {
+      "id": "shop-001",
+      "before": {
+        "name": "Raquete Starter Control",
+        "price": 500
+      },
+      "after": {
+        "name": "Raquete Starter Control",
+        "price": 500
+      }
+    }
+  },
+  {
+    "open": 2,
+    "items": 125,
+    "created": 0,
+    "createdNames": [],
+    "rewritten": 0,
+    "sample": null
+  },
+  {
+    "open": 3,
+    "items": 125,
+    "created": 0,
+    "createdNames": [],
+    "rewritten": 0,
+    "sample": null
+  },
+  {
+    "open": 4,
+    "items": 125,
+    "created": 0,
+    "createdNames": [],
+    "rewritten": 0,
+    "sample": null
+  }
+]

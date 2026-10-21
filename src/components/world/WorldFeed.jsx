@@ -2,8 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { Globe, RefreshCw, Flame, Sparkles } from 'lucide-react';
 import WorldEventCard from '@/components/world/WorldEventCard';
 import { FilterPills, EmptyStateCard, GlassCard } from '@/components/padel/ui';
-import { ensureWorldEvents, getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
-import { ensureMacroEvents, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
+import { getRecentWorldEvents, EVENT_TYPES, EVENT_TYPE_META, generateWorldEvents } from '@/lib/world';
+import { getActiveMacroEvents, MACRO_EVENT_TYPES, MACRO_EVENT_META } from '@/lib/worldEvents';
 
 const ALL_FILTERS = [
   { id: 'all', label: 'Todos' },
@@ -51,10 +51,10 @@ export default function WorldFeed({ profile }) {
   useEffect(() => {
     (async () => {
       try {
-        await ensureWorldEvents(careerDate, 15);
+        // LOCAL-8F (8D-08): abrir só CONSULTA (ver WorldEvents.jsx).
         const [list, macros] = await Promise.all([
           getRecentWorldEvents(40),
-          ensureMacroEvents(careerDate, 2),
+          getActiveMacroEvents(careerDate),
         ]);
         setEvents(list || []);
         setMacroEvents(macros || []);

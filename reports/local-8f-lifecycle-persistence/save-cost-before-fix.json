@@ -1,0 +1,264 @@
+{
+  "label": "before-fix",
+  "mode": "head",
+  "scenarios": {
+    "t1": {
+      "activation": {
+        "writes": 0,
+        "ms": 0,
+        "bytes": 0
+      },
+      "serializeMs": 84,
+      "saveBytes": 12988576,
+      "partners": {
+        "ms": [
+          8,
+          2
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "missions": {
+        "ms": [
+          217,
+          120
+        ],
+        "writes": [
+          2,
+          1
+        ],
+        "bytesDelta": 21798
+      },
+      "achievements": {
+        "ms": [
+          244,
+          144
+        ],
+        "writes": [
+          2,
+          1
+        ],
+        "bytesDelta": 925
+      },
+      "news": {
+        "ms": [
+          120,
+          0
+        ],
+        "writes": [
+          1,
+          0
+        ],
+        "bytesDelta": 8197
+      },
+      "clubs": {
+        "ms": [
+          10419,
+          1
+        ],
+        "writes": [
+          71,
+          0
+        ],
+        "bytesDelta": 43629
+      },
+      "coaches": {
+        "ms": [
+          427,
+          1
+        ],
+        "writes": [
+          2,
+          0
+        ],
+        "bytesDelta": 162339
+      },
+      "shop": {
+        "ms": [
+          615,
+          2
+        ],
+        "writes": [
+          5,
+          0
+        ],
+        "bytesDelta": 90282
+      }
+    },
+    "t5": {
+      "activation": {
+        "writes": 0,
+        "ms": 0,
+        "bytes": 0
+      },
+      "serializeMs": 256,
+      "saveBytes": 38599805,
+      "partners": {
+        "ms": [
+          7,
+          4
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "missions": {
+        "ms": [
+          923,
+          411
+        ],
+        "writes": [
+          2,
+          1
+        ],
+        "bytesDelta": 21798
+      },
+      "achievements": {
+        "ms": [
+          1148,
+          604
+        ],
+        "writes": [
+          2,
+          1
+        ],
+        "bytesDelta": 494
+      },
+      "news": {
+        "ms": [
+          629,
+          0
+        ],
+        "writes": [
+          1,
+          0
+        ],
+        "bytesDelta": 8734
+      },
+      "clubs": {
+        "ms": [
+          40230,
+          2
+        ],
+        "writes": [
+          71,
+          0
+        ],
+        "bytesDelta": 43628
+      },
+      "coaches": {
+        "ms": [
+          879,
+          1
+        ],
+        "writes": [
+          2,
+          0
+        ],
+        "bytesDelta": 162339
+      },
+      "shop": {
+        "ms": [
+          3543,
+          4
+        ],
+        "writes": [
+          5,
+          0
+        ],
+        "bytesDelta": 90282
+      }
+    },
+    "t10": {
+      "activation": {
+        "writes": 0,
+        "ms": 0,
+        "bytes": 0
+      },
+      "serializeMs": 522,
+      "saveBytes": 67095584,
+      "partners": {
+        "ms": [
+          870,
+          41
+        ],
+        "writes": [
+          0,
+          0
+        ],
+        "bytesDelta": 0
+      },
+      "missions": {
+        "ms": [
+          1912,
+          1452
+        ],
+        "writes": [
+          2,
+          1
+        ],
+        "bytesDelta": 21798
+      },
+      "achievements": {
+        "ms": [
+          2676,
+          1657
+        ],
+        "writes": [
+          2,
+          1
+        ],
+        "bytesDelta": 515
+      },
+      "news": {
+        "ms": [
+          2690,
+          0
+        ],
+        "writes": [
+          1,
+          0
+        ],
+        "bytesDelta": 8180
+      },
+      "clubs": {
+        "ms": [
+          77318,
+          4
+        ],
+        "writes": [
+          71,
+          0
+        ],
+        "bytesDelta": 43628
+      },
+      "coaches": {
+        "ms": [
+          2176,
+          1
+        ],
+        "writes": [
+          2,
+          0
+        ],
+        "bytesDelta": 162339
+      },
+      "shop": {
+        "ms": [
+          8762,
+          16
+        ],
+        "writes": [
+          5,
+          0
+        ],
+        "bytesDelta": 90282
+      }
+    }
+  }
+}

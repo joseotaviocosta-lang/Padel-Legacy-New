@@ -217,7 +217,9 @@ export async function syncPlayerAchievements(profile, context, { localGame, reco
   // registro da conquista. O registro passa a guardar o que foi pago
   // (reward_delivered/reward_xp/reward_coins) — dentro da mesma linha, sem
   // fonte paralela — para auditoria de saves futuros.
-  const unlockedDate = new Date().toISOString();
+  // LOCAL-8F: data da CARREIRA (antes: relógio do computador — dois avanços
+  // idênticos gravavam datas diferentes). Sem data de carreira, o relógio.
+  const unlockedDate = profile.career_date ? `${String(profile.career_date).slice(0, 10)}T12:00:00.000Z` : new Date().toISOString();
   const unlocked = [];
   const operations = [];
   let xpGain = 0;

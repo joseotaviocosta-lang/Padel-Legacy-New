@@ -1,0 +1,61 @@
+{
+  "scenario": "t5-com-dupla",
+  "dates": [
+    "2031-01-25",
+    "2031-01-25",
+    "2031-01-25"
+  ],
+  "routesNavigated": 9,
+  "noiseAvsA2": {},
+  "navigationAvsB": {},
+  "attributableToNavigation": {},
+  "fieldsNoise": {
+    "AthleteProfile": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Match": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Mission": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Coach": {
+      "changed": 0,
+      "fields": {}
+    },
+    "ShopItem": {
+      "changed": 0,
+      "fields": {}
+    }
+  },
+  "fieldsNavigation": {
+    "AthleteProfile": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Match": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Mission": {
+      "changed": 0,
+      "fields": {}
+    },
+    "Coach": {
+      "changed": 0,
+      "fields": {}
+    },
+    "ShopItem": {
+      "changed": 0,
+      "fields": {}
+    }
+  },
+  "errors": {
+    "A": [],
+    "A2": [],
+    "B": []
+  }
+}

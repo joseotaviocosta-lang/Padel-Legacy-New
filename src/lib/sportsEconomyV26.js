@@ -122,7 +122,10 @@ export async function ensureWorldClubCatalog(target = 72) {
   const existing = await localGame.entities.Club.list('-club_points', Math.max(target * 2, 200));
   const keys = new Set((existing || []).map(club => club.world_club_key || `${club.name}|${club.city}`));
   const missing = buildWorldClubCatalog(target).filter(club => !keys.has(club.world_club_key) && !keys.has(`${club.name}|${club.city}`));
-  for (const club of missing) await localGame.entities.Club.create(club);
+  // LOCAL-8F (8D-09): uma gravação em lote, com id estável derivado da chave
+  // do clube — antes era um Club.create por clube (71 serializações do save
+  // inteiro na 1ª abertura de Clubes; ~67 MB cada numa temporada 10).
+  if (missing.length) await localGame.entities.Club.bulkCreate(missing.map(club => ({ ...club, id: club.world_club_key })));
   return { existing: (existing || []).length, created: missing.length, target };
 }
 

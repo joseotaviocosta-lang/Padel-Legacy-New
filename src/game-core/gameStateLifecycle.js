@@ -16,6 +16,7 @@ import { processStaffDay } from './staffLifecycle';
 import { processCircuitLifeWeek } from './circuitLifeLifecycle';
 import { compactGameStateReport } from './gameStateReport.js';
 import { upsertCareerMessage } from '@/lib/careerCommunications.js';
+import { processAchievementsDay } from './achievementLifecycle.js';
 
 function monthChanged(oldDate, newDate) {
   return String(oldDate || '').slice(0, 7) !== String(newDate || '').slice(0, 7);
@@ -236,6 +237,17 @@ export async function processGameStateDay(profile, previousDate, currentDate, { 
       }],
     };
     console.warn('[Game Core] Universo vivo não processado:', error);
+  }
+
+  // LOCAL-8F (8D-07): conquistas merecidas são desbloqueadas e pagas no
+  // fechamento do dia — não mais ao abrir a aba Conquistas.
+  try {
+    const result = await stage('achievements', () => processAchievementsDay(updatedProfile));
+    updatedProfile = result.profile || updatedProfile;
+    report.achievements = { unlocked: result.unlocked, reconciliation: result.reconciliation };
+  } catch (error) {
+    report.achievements = { unlocked: 0, error: error?.message || String(error) };
+    console.warn('[Game Core] Conquistas não processadas:', error);
   }
 
   // Compara o índice de semana entre previousDate e currentDate (não apenas

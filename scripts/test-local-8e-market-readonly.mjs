@@ -124,7 +124,10 @@ try {
     const before = await entityHashes();
     await quiet(() => processGlobalMarketMonth(profile, profile.career_date));
     const d = diff(before, await entityHashes());
-    ok(`processGlobalMarketMonth (botão) segue processando o mês (${JSON.stringify(d).slice(0, 120)})`, Boolean(d.AthleteProfile?.changed) && Boolean(d.Coach?.changed || d.Coach?.created));
+    // LOCAL-8F (8F-06): o mercado de treinadores do mês passou a ser uma
+    // projeção pura (src/lib/coachMarket.js) — processar o mês evolui os
+    // atletas e não grava mais campos market_* nos treinadores.
+    ok(`processGlobalMarketMonth (botão) segue processando o mês (${JSON.stringify(d).slice(0, 120)})`, Boolean(d.AthleteProfile?.changed) && !d.Coach);
   }
 } finally { await vite.close(); }
 mkdirSync('reports/local-8e-p1-navigation-integrity', { recursive: true });

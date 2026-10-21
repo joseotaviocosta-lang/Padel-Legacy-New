@@ -2,14 +2,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { localGame } from '@/api/localGameClient.js';
 import { Target, Check, Coins, Zap, Award, Trophy, Clock, RotateCcw, GraduationCap, ArrowRight, Lock, AlertTriangle } from 'lucide-react';
-import { ensureMyProfile, TUTORIAL_MISSIONS, incrementMissionProgress, syncMissionProgressPeriods } from '@/lib/padel';
+import { ensureMyProfile, ensureTutorialMissionCatalog, incrementMissionProgress, syncMissionProgressPeriods } from '@/lib/padel';
 import { SectionCard, EmptyState, ProgressBar } from '@/components/padel/GameShared';
 import { LoadingScreen } from '@/components/padel/ui';
 import { CollapsibleSection, CompactListItem, Page, PageContent, PageHeader, Tabs } from '@/components/design-system';
 import { safeModuleTask } from '@/lib/moduleLoading';
 import { ATTRIBUTE_LABELS, COURT_SIDE_OPTIONS, DOMINANT_HANDS, PLAY_STYLE_OPTIONS, buildInitialProfile } from '@/lib/initialCareerProfiles';
 import { CAREER_DIFFICULTY_OPTIONS, DEFAULT_NEW_CAREER_DIFFICULTY } from '@/lib/careerDifficultyLabels.js';
-import { buildMissionAliasUpdates, findMissingMissionCatalog } from '@/lib/missionCatalogLogic';
 import { reconcilePersistedTutorial } from '@/onboarding/tutorialReconciliation.js';
 import { completeTutorialStep, isTutorialRouteMatch, resolveTutorialMission } from '@/onboarding/tutorialEngine.js';
 import { getCurrentTutorialStep, getTutorialProgress } from '@/onboarding/tutorialState.js';
@@ -20,6 +19,7 @@ import { useCareer } from '@/careers/useCareer.js';
 import AchievementsPanel from '@/components/achievements/AchievementsPanel.jsx';
 import { summarizeAchievements } from '@/lib/achievementEngine.js';
 import { saveAthleteNameFlow } from '@/onboarding/athleteNameSave.js';
+import { ensureInitialPartnerOffers, isReadyForInitialPartnerOffers } from '@/lib/partnerOffers.js';
 
 // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 7/8): as
 // missões diárias/semanais/mensais/sazonais (antes definidas aqui em
@@ -49,48 +49,13 @@ function notifyProfileUpdated(profile, stepId) {
   window.dispatchEvent(new CustomEvent('padel:profile-updated', { detail: { profile } }));
 }
 
-const RETIRED_PERIODIC_MISSION_TYPES = ['diaria', 'semanal', 'mensal', 'sazonal'];
-
-async function syncExtendedMissionCatalog() {
-  let existing = await localGame.entities.Mission.list('-created_date', 300);
-  const missing = findMissingMissionCatalog(existing, TUTORIAL_MISSIONS);
-  if (missing.length) {
-    try {
-      const created = await localGame.entities.Mission.bulkCreate(missing.map(m => ({ ...m, is_active: true })));
-      existing = [...existing, ...created];
-    }
-    catch {
-      const refreshed = await localGame.entities.Mission.list('-created_date', 300);
-      const stillMissing = findMissingMissionCatalog(refreshed, missing);
-      for (const mission of stillMissing) await localGame.entities.Mission.create({ ...mission, is_active: true });
-      existing = refreshed;
-    }
-  }
-  const aliases = buildMissionAliasUpdates(existing);
-  if (aliases.length) await localGame.entities.Mission.bulkUpdate(aliases);
-  // Tutorial 4.0 (Parte 12): saves antigos podem ter linhas de Mission com
-  // mission_type diaria/semanal/mensal/sazonal (o catálogo periódico
-  // removido acima). Nunca deletamos — só arquivamos (is_active:false),
-  // mesmo padrão já usado por ensureTutorialMissionCatalog para catálogo
-  // obsoleto (padel.js). MissionProgress dessas missões continua intocado:
-  // linhas já reivindicadas mantêm a recompensa histórica, nada é
-  // re-concedido nem revogado — só param de aparecer na UI porque a aba
-  // Conquistas não lê mission_type nenhum.
-  const stillActivePeriodic = existing.filter((mission) => RETIRED_PERIODIC_MISSION_TYPES.includes(mission.mission_type) && mission.is_active !== false);
-  if (stillActivePeriodic.length) {
-    await localGame.entities.Mission.bulkUpdate(stillActivePeriodic.map((mission) => ({ id: mission.id, is_active: false, retired_reason: 'periodic_missions_removed_v40' }))).catch(async () => {
-      for (const mission of stillActivePeriodic) await localGame.entities.Mission.update(mission.id, { is_active: false, retired_reason: 'periodic_missions_removed_v40' }).catch(() => {});
-    });
-  }
-}
-
-let catalogSyncPromise = null;
-function ensureExtendedMissionCatalog() {
-  if (!catalogSyncPromise) {
-    catalogSyncPromise = syncExtendedMissionCatalog().finally(() => { catalogSyncPromise = null; });
-  }
-  return catalogSyncPromise;
-}
+// LOCAL-8F (8D-06): a migração de catálogo que rodava AQUI a cada abertura
+// (syncExtendedMissionCatalog: criação por título, aliases de recompensa que
+// convertiam as missões de demonstração em "semanal" e arquivamento na visita
+// seguinte) foi removida. O catálogo é inicializado pela rotina canônica
+// ensureTutorialMissionCatalog (padel.js) na ativação da carreira e nos
+// eventos de missão; aqui ela só confirma o catálogo (sem gravar depois da
+// inicialização).
 
 function Missions() {
   const navigate = useNavigate();
@@ -170,7 +135,7 @@ function Missions() {
     try {
       const user = await localGame.auth.me();
       let p = await ensureMyProfile(user);
-      await ensureExtendedMissionCatalog();
+      await ensureTutorialMissionCatalog();
       const missionsData = await safeModuleTask(
         () => localGame.entities.Mission.filter({ is_active: true }),
         { label: 'missões ativas', fallback: [] },
@@ -310,6 +275,9 @@ function Missions() {
         onboarding_stage: 'first-training',
       });
       await incrementMissionProgress(updated.id, 'choose_play_style', 1, updated.career_date);
+      // LOCAL-8F (8D-05): identidade completa (lado + estilo) → o lote
+      // inicial de propostas de dupla nasce aqui, não na 1ª visita a Duplas.
+      if (isReadyForInitialPartnerOffers(updated)) await ensureInitialPartnerOffers(updated).catch((error) => console.warn('[tutorial] propostas iniciais', error));
       setActionFeedback('Estilo salvo. Próximo passo: faça seu primeiro treino.');
       notifyProfileUpdated(await load(), 'style-selected');
     } catch (error) {

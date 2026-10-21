@@ -10,9 +10,9 @@ import ItemDetailModal from '@/components/shop/ItemDetailModal';
 import ItemImage from '@/components/shop/ItemImage';
 import MarketEventsBanner from '@/components/shop/MarketEventsBanner';
 import { RARITY_STYLES, RARITY_ORDER } from '@/lib/equipmentCatalog';
-import { computeItemPrice, BADGE_COLORS, isMarketEventActive, normalizeMarketEvent, seedMarket } from '@/lib/marketEngine';
-import { ensureExpandedShopCatalog, normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
-import { loadModuleTasks, safeModuleTask } from '@/lib/moduleLoading';
+import { computeItemPrice, BADGE_COLORS, isMarketEventActive, normalizeMarketEvent } from '@/lib/marketEngine';
+import { normalizeShopItem, getShopItemAccess } from '@/lib/storeCatalog';
+import { loadModuleTasks } from '@/lib/moduleLoading';
 import { getEquipmentMarketState } from '@/lib/sportsEconomyV26';
 import { recordFinancialEntry } from '@/lib/financialLedger.js';
 
@@ -82,8 +82,9 @@ export default function Shop() {
   useEffect(() => {
     (async () => {
       try {
-        await safeModuleTask(() => seedMarket(), { label: 'semente do mercado', fallback: null, timeoutMs: 6000 });
-        await safeModuleTask(() => ensureExpandedShopCatalog(), { label: 'catálogo ampliado', fallback: null, timeoutMs: 6000 });
+        // LOCAL-8F: semente do mercado, relíquias e catálogo ampliado nascem
+        // na ativação da carreira (careerSystemsInitialization); abrir a Loja
+        // só consulta.
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);

@@ -127,6 +127,18 @@ try {
   const page = await openCareer(browser, VPS[1]);
   const errors = [];
   page.on('pageerror', (e) => errors.push(String(e.message).slice(0, 200)));
+  // LOCAL-8F (8F-01): o lote inicial de propostas não nasce mais ao ABRIR
+  // Duplas — nasce quando a identidade fica completa (lado + estilo), como
+  // em Missions.jsx (chooseSide/chooseStyle). A carreira criada pela UI
+  // ainda não passou por essas escolhas; elas são feitas aqui pelo mesmo
+  // caminho de domínio antes de abrir a tela.
+  await page.evaluate(async () => {
+    const { localGame } = await import('/src/api/localGameClient.js');
+    const { ensureInitialPartnerOffers, isReadyForInitialPartnerOffers } = await import('/src/lib/partnerOffers.js');
+    const [p] = await localGame.entities.PlayerProfile.list('-created_date', 1);
+    const updated = await localGame.entities.PlayerProfile.update(p.id, { court_side: p.court_side || 'direita', preferred_side: p.preferred_side || p.court_side || 'direita', play_style: p.play_style || 'equilibrado' });
+    if (isReadyForInitialPartnerOffers(updated)) await ensureInitialPartnerOffers(updated);
+  });
   await goto(page, '/partners?view=offers', { settle: 4000 });
   await dismissOverlays(page);
   for (const vp of VPS) {

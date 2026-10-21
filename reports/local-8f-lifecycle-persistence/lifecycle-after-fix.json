@@ -1,0 +1,796 @@
+{
+  "label": "after-fix",
+  "mode": "corrigido",
+  "sections": {
+    "activation": {
+      "result": {
+        "missions": "ok",
+        "clubs": "ok",
+        "coaches": "ok",
+        "shop": "ok",
+        "partnerOffers": "ok"
+      },
+      "writes": 10,
+      "ms": 246,
+      "diff": {
+        "Coach": {
+          "created": 118,
+          "removed": 0,
+          "changed": 0
+        },
+        "Club": {
+          "created": 71,
+          "removed": 0,
+          "changed": 0
+        },
+        "ShopItem": {
+          "created": 121,
+          "removed": 0,
+          "changed": 4
+        },
+        "MarketPriceHistory": {
+          "created": 14,
+          "removed": 0,
+          "changed": 0
+        },
+        "PartnerOffer": {
+          "created": 4,
+          "removed": 0,
+          "changed": 0
+        }
+      }
+    },
+    "newCareerScreens": {
+      "partners": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 0
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 17
+        }
+      },
+      "missions": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 0
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 21
+        }
+      },
+      "achievements": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 6
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 19
+        }
+      },
+      "news": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 1
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 105
+        }
+      },
+      "clubs": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 0
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 19
+        }
+      },
+      "coaches": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 2
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 18
+        }
+      },
+      "shop": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 0
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 18
+        }
+      }
+    },
+    "partners": {
+      "concurrent": [
+        "ok:0",
+        "ok:4"
+      ],
+      "afterRejectAll": {
+        "offers": 4,
+        "diff": {}
+      },
+      "calendarWindows": {
+        "d3": {
+          "created": 4,
+          "windowKey": "initial-offers-exhausted:2026-01-01:w0",
+          "windowIndex": 0,
+          "separationDate": "2026-01-01",
+          "anchor": "initial-offers-exhausted",
+          "offers": [
+            {
+              "id": "partner-offer-playerprofile-1792461470154-0047m0-player-fictional-643zhk",
+              "profile_id": "playerprofile-1792461470154-0047m0",
+              "candidate_player_id": "player-fictional-643zhk",
+              "status": "pending",
+              "created_career_date": "2026-01-04",
+              "expires_career_date": "2026-01-14",
+              "source": "initial-offers-renewal",
+              "candidate_snapshot": {
+                "template_id": "bot:padel-legacy-world-v1:0010",
+                "source_type": "fictional",
+                "name": "Joaquín Vega",
+                "country": "Argentina",
+                "preferred_side": "left",
+                "handedness": "right",
+                "side_flexibility": 0.21,
+                "play_style": "defensivo",
+                "tactical_role": "defensor",
+                "archetype_id": "left-right-defensor",
+                "personality": "calmo",
+                "overall": 14,
+                "overall_rating": 14,
+                "potential": 28,
+                "age": 20,
+                "attributes": {
+                  "serve": 8,
+                  "forehand": 16,
+                  "backhand": 16,
+                  "volley": 19,
+                  "lob": 21,
+                  "smash": 21,
+                  "bandeja": 15,
+                  "speed": 8,
+                  "stamina": 7,
+                  "strength": 13,
+                  "reflexes": 10,
+                  "tactics": 16,
+                  "positioning": 8,
+                  "concentration": 16,
+                  "resilience": 21
+                },
+                "ranking_position": 34,
+                "world_rank": 34,
+                "market_status": "livre",
+                "career_status": "ativo",
+                "id": "player-fictional-643zhk",
+                "athlete_schema_version": 1,
+                "licensing_mode": "original",
+                "sport_name": "Joaquín Vega",
+                "nationality_code": null,
+                "secondary_side": "right",
+                "side_experience": {
+                  "right": 30,
+                  "left": 85
+                },
+                "position": "esquerda",
+                "tags": [],
+                "bot_id": "bot:padel-legacy-world-v1:0010",
+                "level": "Iniciante",
+                "serve": 8,
+                "forehand": 16,
+                "backhand": 16,
+                "volley": 19,
+                "lob": 21,
+                "smash": 21,
+                "bandeja": 15,
+                "speed": 8,
+                "stamina": 7,
+                "strength": 13,
+                "reflexes": 10,
+                "tactics": 16,
+                "positioning": 8,
+                "concentration": 16,
+                "resilience": 21
+              },
+              "contract": {
+                "type": "temporary",
+                "durationDays": 60,
+                "prizeSplit": 52,
+                "monthlySalary": 80,
+                "morale": 70,
+                "conditions": []
+              },
+              "compatibility_snapshot": {
+                "total": 88,
+                "sideResolution": {
+                  "assignments": {
+                    "playerA": "right",
+                    "playerB": "left"
+                  },
+                  "legacyAssignments": {
+                    "playerA": "direita",
+                    "playerB": "esquerda"
+                  },
+                  "penalties": {
+                    "playerA": 0,
+                    "playerB": 0,
+                    "total": 0
+                  },
+                  "naturalFit": true,
+                  "samePreference": false,
+                  "explanation": "Novo Atleta e Joaquín Vega ocupam lados naturais complementares."
+                },
+                "breakdown": {
+                  "position": 100,
+                  "style": 80,
+                  "role": 80,
+                  "handedness": 76,
+                  "level": 88
+                },
+                "strengths": [
+                  "Lados naturalmente complementares",
+                  "Combinação tática viável"
+                ],
+                "warnings": []
+              },
+              "recommendation_score": 74,
+              "recommended": true,
+              "schema_version": 1,
+              "first_partnership_category": "YOUNG_PROJECT",
+              "first_partnership_reason": {
+                "title": "Projeto de longo prazo",
+                "body": "Jovem com boa margem de evolução e perfil compatível com sua carreira."
+              },
+              "market_window": "initial-offers-exhausted:2026-01-01:w0",
+              "created_date": "2026-10-21T14:10:46.269Z",
+              "updated_date": "2026-10-21T14:10:46.269Z"
+            },
+            {
+              "id": "partner-offer-playerprofile-1792461470154-0047m0-player-fictional-7i1zyf",
+              "profile_id": "playerprofile-1792461470154-0047m0",
+              "candidate_player_id": "player-fictional-7i1zyf",
+              "status": "pending",
+              "created_career_date": "2026-01-04",
+              "expires_career_date": "2026-01-14",
+              "source": "initial-offers-renewal",
+              "candidate_snapshot": {
+                "template_id": "bot:padel-legacy-world-v1:0015",
+                "source_type": "fictional",
+                "name": "Nicolás Ruiz",
+                "country": "Argentina",
+                "preferred_side": "left",
+                "handedness": "right",
+                "side_flexibility": 0.26,
+                "play_style": "construtor",
+                "tactical_role": "construtor",
+                "archetype_id": "left-right-construtor",
+                "personality": "calmo",
+                "overall": 20,
+                "overall_rating": 20,
+                "potential": 32,
+                "age": 22,
+                "attributes": {
+                  "serve": 16,
+                  "forehand": 16,
+                  "backhand": 23,
+                  "volley": 18,
+                  "lob": 15,
+                  "smash": 20,
+                  "bandeja": 13,
+                  "speed": 19,
+                  "stamina": 15,
+                  "strength": 27,
+                  "reflexes": 16,
+                  "tactics": 18,
+                  "positioning": 25,
+                  "concentration": 20,
+                  "resilience": 16
+                },
+                "ranking_position": 39,
+                "world_rank": 39,
+                "market_status": "livre",
+                "career_status": "ativo",
+                "id": "player-fictional-7i1zyf",
+                "athlete_schema_version": 1,
+                "licensing_mode": "original",
+                "sport_name": "Nicolás Ruiz",
+                "nationality_code": null,
+                "secondary_side": "right",
+                "side_experience": {
+                  "right": 30,
+                  "left": 85
+                },
+                "position": "esquerda",
+                "tags": [],
+                "bot_id": "bot:padel-legacy-world-v1:0015",
+                "level": "Iniciante",
+                "serve": 16,
+                "forehand": 16,
+                "backhand": 23,
+                "volley": 18,
+                "lob": 15,
+                "smash": 20,
+                "bandeja": 13,
+                "speed": 19,
+                "stamina": 15,
+                "strength": 27,
+                "reflexes": 16,
+                "tactics": 18,
+                "positioning": 25,
+                "concentration": 20,
+                "resilience": 16
+              },
+              "contract": {
+                "type": "temporary",
+                "durationDays": 45,
+                "prizeSplit": 53,
+                "monthlySalary": 80,
+                "morale": 70,
+                "conditions": []
+              },
+              "compatibility_snapshot": {
+                "total": 87,
+                "sideResolution": {
+                  "assignments": {
+                    "playerA": "right",
+                    "playerB": "left"
+                  },
+                  "legacyAssignments": {
+                    "playerA": "direita",
+                    "playerB": "esquerda"
+                  },
+                  "penalties": {
+                    "playerA": 0,
+                    "playerB": 0,
+                    "total": 0
+                  },
+                  "naturalFit": true,
+                  "samePreference": false,
+                  "explanation": "Novo Atleta e Nicolás Ruiz ocupam lados naturais complementares."
+                },
+                "breakdown": {
+                  "position": 100,
+                  "style": 80,
+                  "role": 80,
+                  "handedness": 76,
+                  "level": 84
+                },
+                "strengths": [
+                  "Lados naturalmente complementares",
+                  "Combinação tática viável"
+                ],
+                "warnings": []
+              },
+              "recommendation_score": 73,
+              "recommended": false,
+              "schema_version": 1,
+              "first_partnership_category": "YOUNG_PROJECT",
+              "first_partnership_reason": {
+                "title": "Projeto de longo prazo",
+                "body": "Jovem com boa margem de evolução e perfil compatível com sua carreira."
+              },
+              "market_window": "initial-offers-exhausted:2026-01-01:w0",
+              "created_date": "2026-10-21T14:10:46.292Z",
+              "updated_date": "2026-10-21T14:10:46.292Z"
+            },
+            {
+              "id": "partner-offer-playerprofile-1792461470154-0047m0-player-fictional-8m6pq9",
+              "profile_id": "playerprofile-1792461470154-0047m0",
+              "candidate_player_id": "player-fictional-8m6pq9",
+              "status": "pending",
+              "created_career_date": "2026-01-04",
+              "expires_career_date": "2026-01-14",
+              "source": "initial-offers-renewal",
+              "candidate_snapshot": {
+                "template_id": "bot:padel-legacy-world-v1:0035",
+                "source_type": "fictional",
+                "name": "Théo Laurent",
+                "country": "França",
+                "preferred_side": "left",
+                "handedness": "right",
+                "side_flexibility": 0.28,
+                "play_style": "finalizador",
+                "tactical_role": "finalizador",
+                "archetype_id": "left-right-finalizador",
+                "personality": "reservado",
+                "overall": 22,
+                "overall_rating": 22,
+                "potential": 32,
+                "age": 28,
+                "attributes": {
+                  "serve": 15,
+                  "forehand": 27,
+                  "backhand": 25,
+                  "volley": 28,
+                  "lob": 19,
+                  "smash": 16,
+                  "bandeja": 15,
+                  "speed": 18,
+                  "stamina": 25,
+                  "strength": 19,
+                  "reflexes": 23,
+                  "tactics": 16,
+                  "positioning": 21,
+                  "concentration": 15,
+                  "resilience": 25
+                },
+                "ranking_position": 59,
+                "world_rank": 59,
+                "market_status": "livre",
+                "career_status": "ativo",
+                "id": "player-fictional-8m6pq9",
+                "athlete_schema_version": 1,
+                "licensing_mode": "original",
+                "sport_name": "Théo Laurent",
+                "nationality_code": null,
+                "secondary_side": "right",
+                "side_experience": {
+                  "right": 30,
+                  "left": 85
+                },
+                "position": "esquerda",
+                "tags": [],
+                "bot_id": "bot:padel-legacy-world-v1:0035",
+                "level": "Iniciante",
+                "serve": 15,
+                "forehand": 27,
+                "backhand": 25,
+                "volley": 28,
+                "lob": 19,
+                "smash": 16,
+                "bandeja": 15,
+                "speed": 18,
+                "stamina": 25,
+                "strength": 19,
+                "reflexes": 23,
+                "tactics": 16,
+                "positioning": 21,
+                "concentration": 15,
+                "resilience": 25
+              },
+              "contract": {
+                "type": "temporary",
+                "durationDays": 45,
+                "prizeSplit": 54,
+                "monthlySalary": 80,
+                "morale": 70,
+                "conditions": []
+              },
+              "compatibility_snapshot": {
+                "total": 86,
+                "sideResolution": {
+                  "assignments": {
+                    "playerA": "right",
+                    "playerB": "left"
+                  },
+                  "legacyAssignments": {
+                    "playerA": "direita",
+                    "playerB": "esquerda"
+                  },
+                  "penalties": {
+                    "playerA": 0,
+                    "playerB": 0,
+                    "total": 0
+                  },
+                  "naturalFit": true,
+                  "samePreference": false,
+                  "explanation": "Novo Atleta e Théo Laurent ocupam lados naturais complementares."
+                },
+                "breakdown": {
+                  "position": 100,
+                  "style": 80,
+                  "role": 80,
+                  "handedness": 76,
+                  "level": 78
+                },
+                "strengths": [
+                  "Lados naturalmente complementares",
+                  "Combinação tática viável"
+                ],
+                "warnings": []
+              },
+              "recommendation_score": 68,
+              "recommended": false,
+              "schema_version": 1,
+              "first_partnership_category": "VETERAN_MENTOR",
+              "first_partnership_reason": {
+                "title": "Mentor experiente",
+                "body": "Menor potencial de evolução, mas agrega leitura tática e experiência imediata."
+              },
+              "market_window": "initial-offers-exhausted:2026-01-01:w0",
+              "created_date": "2026-10-21T14:10:46.331Z",
+              "updated_date": "2026-10-21T14:10:46.331Z"
+            },
+            {
+              "id": "partner-offer-playerprofile-1792461470154-0047m0-player-fictional-9q54i5",
+              "profile_id": "playerprofile-1792461470154-0047m0",
+              "candidate_player_id": "player-fictional-9q54i5",
+              "status": "pending",
+              "created_career_date": "2026-01-04",
+              "expires_career_date": "2026-01-14",
+              "source": "initial-offers-renewal",
+              "candidate_snapshot": {
+                "template_id": "bot:padel-legacy-world-v1:0031",
+                "source_type": "fictional",
+                "name": "Nuno Correia",
+                "country": "Portugal",
+                "preferred_side": "left",
+                "handedness": "right",
+                "side_flexibility": 0.27,
+                "play_style": "equilibrado",
+                "tactical_role": "coringa",
+                "archetype_id": "left-right-coringa",
+                "personality": "perfeccionista",
+                "overall": 16,
+                "overall_rating": 16,
+                "potential": 22,
+                "age": 20,
+                "attributes": {
+                  "serve": 16,
+                  "forehand": 21,
+                  "backhand": 19,
+                  "volley": 16,
+                  "lob": 11,
+                  "smash": 11,
+                  "bandeja": 19,
+                  "speed": 9,
+                  "stamina": 22,
+                  "strength": 18,
+                  "reflexes": 18,
+                  "tactics": 17,
+                  "positioning": 20,
+                  "concentration": 14,
+                  "resilience": 16
+                },
+                "ranking_position": 55,
+                "world_rank": 55,
+                "market_status": "livre",
+                "career_status": "ativo",
+                "id": "player-fictional-9q54i5",
+                "athlete_schema_version": 1,
+                "licensing_mode": "original",
+                "sport_name": "Nuno Correia",
+                "nationality_code": null,
+                "secondary_side": "right",
+                "side_experience": {
+                  "right": 30,
+                  "left": 85
+                },
+                "position": "esquerda",
+                "tags": [],
+                "bot_id": "bot:padel-legacy-world-v1:0031",
+                "level": "Iniciante",
+                "serve": 16,
+                "forehand": 21,
+                "backhand": 19,
+                "volley": 16,
+                "lob": 11,
+                "smash": 11,
+                "bandeja": 19,
+                "speed": 9,
+                "stamina": 22,
+                "strength": 18,
+                "reflexes": 18,
+                "tactics": 17,
+                "positioning": 20,
+                "concentration": 14,
+                "resilience": 16
+              },
+              "contract": {
+                "type": "temporary",
+                "durationDays": 60,
+                "prizeSplit": 52,
+                "monthlySalary": 80,
+                "morale": 70,
+                "conditions": []
+              },
+              "compatibility_snapshot": {
+                "total": 83,
+                "sideResolution": {
+                  "assignments": {
+                    "playerA": "right",
+                    "playerB": "left"
+                  },
+                  "legacyAssignments": {
+                    "playerA": "direita",
+                    "playerB": "esquerda"
+                  },
+                  "penalties": {
+                    "playerA": 0,
+                    "playerB": 0,
+                    "total": 0
+                  },
+                  "naturalFit": true,
+                  "samePreference": false,
+                  "explanation": "Novo Atleta e Nuno Correia ocupam lados naturais complementares."
+                },
+                "breakdown": {
+                  "position": 100,
+                  "style": 62,
+                  "role": 62,
+                  "handedness": 76,
+                  "level": 86
+                },
+                "strengths": [
+                  "Lados naturalmente complementares",
+                  "Combinação tática viável"
+                ],
+                "warnings": []
+              },
+              "recommendation_score": 72,
+              "recommended": false,
+              "schema_version": 1,
+              "first_partnership_category": "YOUNG_PROJECT",
+              "first_partnership_reason": {
+                "title": "Projeto de longo prazo",
+                "body": "Jovem com boa margem de evolução e perfil compatível com sua carreira."
+              },
+              "market_window": "initial-offers-exhausted:2026-01-01:w0",
+              "created_date": "2026-10-21T14:10:46.391Z",
+              "updated_date": "2026-10-21T14:10:46.391Z"
+            }
+          ]
+        },
+        "repeat": {
+          "created": 0,
+          "reason": "never-separated"
+        },
+        "sameWindow": {
+          "created": 0,
+          "reason": "never-separated"
+        }
+      }
+    },
+    "missions": {
+      "open1": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 7
+      },
+      "open2": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 441
+      }
+    },
+    "achievements": {
+      "merited": [
+        "achv-nascido-para-vencer"
+      ],
+      "open": {
+        "open1": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 13
+        },
+        "open2": {
+          "records": 0,
+          "diff": {},
+          "writes": 0,
+          "ms": 31
+        }
+      },
+      "afterDay": {
+        "recorded": 2,
+        "coins": 250200,
+        "date": "2026-01-02"
+      }
+    },
+    "news": {
+      "open1": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 14
+      },
+      "open2": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 639
+      },
+      "dailyDeterminism": {
+        "days": 40,
+        "identical": 40
+      }
+    },
+    "clubs": {
+      "created": 71,
+      "catalogWrites": 1,
+      "catalogMs": 477,
+      "open1": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 0
+      },
+      "open2": {
+        "records": 0,
+        "diff": {},
+        "writes": 0,
+        "ms": 3638
+      }
+    },
+    "coaches": {
+      "mismatches": 0,
+      "total": 118,
+      "hire": {
+        "coach": "Caio Silva",
+        "shownSalary": 250,
+        "contracted": 250
+      },
+      "monthTurn": {
+        "coach": "Enzo Navarro",
+        "shownOld": 250,
+        "expectedNew": 300,
+        "contracted": 300
+      }
+    },
+    "relics": {
+      "relics": 10,
+      "stock": 10,
+      "after10": {
+        "diff": {},
+        "items": 125
+      }
+    },
+    "newCareerFlow": {
+      "offers": 4,
+      "catalogs": {
+        "clubs": 74,
+        "coaches": 118,
+        "shop": 125,
+        "missions": 27
+      },
+      "advance": {
+        "date": "2026-01-04",
+        "errors": 0
+      }
+    }
+  },
+  "passed": 60,
+  "failures": []
+}

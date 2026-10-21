@@ -2,6 +2,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { COACHES_DATA, canHireCoach, getCoachEffects, resolveCoachCanonicalSalary } from '@/lib/coaches.js';
 import { incrementMissionProgress, overallRating } from '@/lib/padel.js';
 import { publishContractEvent } from '@/lib/contractNews.js';
+import { projectCoachMarket, resolveCoachMarketTerms } from '@/lib/coachMarket.js';
 
 // Fase 14 (docs/FASE_14_CAREER_IDENTITY.md, Parte 7): achado real na
 // auditoria — trocar de treinador sempre sobrescrevia coach_id/coach_name
@@ -58,8 +59,14 @@ async function initializeCoachCatalog(careerId) {
   const startedAt = nowMs();
   let coaches = (await localGame.entities.Coach.list('-reputation', 500)) || [];
   const firstQueryMs = nowMs() - startedAt;
-  const byName = new Map(coaches.map(coach => [normalizeName(coach.name), coach]));
-  const missing = COACHES_DATA.filter(coach => !byName.has(normalizeName(coach.name)));
+  // LOCAL-8F (8F-06): identidade pelo catalog_key — o catálogo tem nomes
+  // repetidos legítimos (duas "Elena Ruiz" distintas). Por nome, a segunda
+  // nunca era criada num save que já tivesse a primeira e o patch abaixo
+  // aplicava a ficha da segunda nas duas. O nome só identifica linhas legadas
+  // sem catalog_key.
+  const existingKeys = new Set(coaches.map(coach => coach.catalog_key).filter(Boolean));
+  const legacyNames = new Set(coaches.filter(coach => !coach.catalog_key).map(coach => normalizeName(coach.name)));
+  const missing = COACHES_DATA.filter(coach => !existingKeys.has(coach.catalog_key) && !legacyNames.has(normalizeName(coach.name)));
   if (missing.length) {
     await localGame.entities.Coach.bulkCreate(missing.map(coach => ({
       ...coach,
@@ -67,9 +74,11 @@ async function initializeCoachCatalog(careerId) {
     })));
     coaches = (await localGame.entities.Coach.list('-reputation', 500)) || [];
   }
-  const catalogByName = new Map(COACHES_DATA.map(coach => [normalizeName(coach.name), coach]));
+  const catalogByKey = new Map(COACHES_DATA.map(coach => [coach.catalog_key, coach]));
+  const catalogByName = new Map();
+  for (const coach of COACHES_DATA) if (!catalogByName.has(normalizeName(coach.name))) catalogByName.set(normalizeName(coach.name), coach);
   const updates = coaches.map(existing => {
-    const catalog = catalogByName.get(normalizeName(existing.name));
+    const catalog = existing.catalog_key ? catalogByKey.get(existing.catalog_key) : catalogByName.get(normalizeName(existing.name));
     if (!catalog || !existing.id) return null;
     const patch = { tier: catalog.tier, specialty: catalog.specialty, competencies: catalog.competencies, overall: catalog.overall, potential: catalog.potential, monthly_cost: catalog.monthly_cost, sign_on_bonus: catalog.sign_on_bonus, performance_bonus_pct: catalog.performance_bonus_pct, training_bonus: catalog.training_bonus, specializations: catalog.specializations, preferred_styles: catalog.preferred_styles, demands: catalog.demands };
     const changed = Object.entries(patch).some(([key, value]) => JSON.stringify(existing[key]) !== JSON.stringify(value));
@@ -151,8 +160,22 @@ export async function resolveActiveCoach(profile) {
   return { profile, coach: current || null };
 }
 
-export async function hirePrimaryCoach(profile, coach, months = 12) {
-  if (!profile?.id || !coach?.id) throw new Error('Dados do treinador incompletos.');
+/**
+ * LOCAL-8F (8F-06) — catálogo com os termos do mês (fonte única,
+ * src/lib/coachMarket.js). Usado pela tela Treinadores e pela contratação,
+ * para que o valor exibido seja o valor cobrado.
+ */
+export async function listCoachMarketForDate(date, coaches = null) {
+  const source = coaches || await ensureCoachCatalog();
+  return projectCoachMarket(source, date);
+}
+
+export async function hirePrimaryCoach(profile, rawCoach, months = 12) {
+  if (!profile?.id || !rawCoach?.id) throw new Error('Dados do treinador incompletos.');
+  // Termos recalculados na data da CONFIRMAÇÃO (o mês pode ter virado desde
+  // a consulta) — nunca os campos market_* persistidos, que não são mais
+  // fonte de verdade.
+  const coach = resolveCoachMarketTerms(rawCoach, await ensureCoachCatalog(), profile.career_date || '2026-01-01');
   const check = canHireCoach(coach, profile);
   if (!check.allowed) throw new Error(check.reason || 'Treinador indisponível.');
   // Tutorial 4.1 (Parte H/I): nunca cair silenciosamente em 1 moeda —

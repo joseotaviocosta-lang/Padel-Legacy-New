@@ -760,6 +760,14 @@ async function ensureTutorialMissionCatalogUncached() {
       // MissionProgress associado continua intocado (recompensas já
       // reivindicadas não são revogadas nem re-concedidas).
       updates.push({ ...mission, is_active: false, retired_reason: 'periodic_missions_removed_v40' });
+    } else if (!mission.mission_type && mission.is_active !== false) {
+      // LOCAL-8F (8D-06): as 3 missões de demonstração de localSeed.js (sem
+      // mission_type, fora do catálogo) eram convertidas em "semanal" pela
+      // migração da TELA de Objetivos na 1ª visita e arquivadas na 2ª — entre
+      // as duas, podiam ser sorteadas como missão periódica e pagar
+      // recompensa. Arquivadas aqui, na inicialização canônica, de forma
+      // determinística. MissionProgress não é tocado (nada é revogado).
+      updates.push({ ...mission, is_active: false, retired_reason: 'legacy_demo_mission_removed_8f' });
     }
   }
 

@@ -5,6 +5,7 @@ import { localGame } from '@/api/localGameClient.js';
 import { BOTS_BY_DIFFICULTY } from '@/lib/bots';
 import { repairLegacyPlayerPartnerAthlete } from '@/lib/partnerAthlete.js';
 import { ensurePlayerTeamRanking } from '@/lib/teamRanking.js';
+import { ensureCareerSystemsInitialized } from '@/game-core/careerSystemsInitialization.js';
 
 // Playthrough 5.12, Parte F — carreiras criadas antes desta fase têm
 // parceria e contrato, mas o parceiro nunca virou AthleteProfile. O reparo
@@ -41,6 +42,9 @@ export default function SaveFoundationBootstrap() {
         // load (materializa se ausente, recalcula A+B se 0/desatualizada).
         // Idempotente; roda sempre, mesmo quando a fundação já está ok.
         if (!cancelled && profile) await ensurePlayerTeamRanking(profile);
+        // LOCAL-8F — catálogos e lote inicial de propostas nascem aqui, na
+        // ativação da carreira, e não na 1ª visita a cada tela.
+        if (!cancelled) await ensureCareerSystemsInitialized({ careerId: activeCareer.career_id });
       } catch (error) {
         console.error('[Save Foundation] inicialização segura falhou; nenhum save foi apagado.', error);
       }

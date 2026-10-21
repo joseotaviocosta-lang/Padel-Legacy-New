@@ -3,6 +3,8 @@ import { formPartnerContract } from '@/game-core/partnerLifecycle.js';
 export { partnerOfferId, compatibilityLabel, buildInitialPartnerOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
 import { partnerOfferId, buildInitialPartnerOffers, buildFirstPartnershipOffers, validatePartnerOfferAcceptance } from './partnerOfferRules.js';
 import { BOTS_BY_DIFFICULTY } from './bots.js';
+import { getAvailablePartners } from './career.js';
+import { listRetiredPartnerOriginIds, excludeRetiredPartnerTemplates } from './partnerAthlete.js';
 import { fnv1aHash } from './hashUtils.js';
 
 export const PARTNER_OFFERS_ROUTE = '/partners?view=offers';
@@ -81,21 +83,60 @@ export function getRecentRejectionCooldowns(offers = [], currentDate) {
     .filter(Boolean));
 }
 
+// 5.26-C, Bloco D — o catálogo não sabe quem já se aposentou. (Movido de
+// PartnerHub.jsx na LOCAL-8F para que o lote inicial possa nascer fora da
+// tela, no momento em que a identidade do atleta fica completa.)
+export async function getFirstPartnershipCandidates(profile) {
+  return excludeRetiredPartnerTemplates(getAvailablePartners(profile), await listRetiredPartnerOriginIds());
+}
+
+// LOCAL-8F (8D-05) — o lote inicial é uma INICIALIZAÇÃO de carreira, não um
+// efeito de abrir Duplas. Ele nasce quando a identidade do atleta fica
+// completa (lado + estilo, Missions.jsx) e, de forma idempotente, na
+// ativação da carreira (SaveFoundationBootstrap). A tela só consulta.
+export function isReadyForInitialPartnerOffers(profile) {
+  return Boolean(profile?.id && !profile.partner_id && profile.court_side && profile.play_style);
+}
+
+/**
+ * LOCAL-8F — nova leva de propostas para quem esgotou o lote inicial sem
+ * formar dupla, chamada pelo tick diário (postSeparationMarket) nas janelas
+ * do calendário. Mesmo pool e mesma seleção do lote inicial (o estreante não
+ * é aceito pelos atletas do mundo), sem repetir candidato já proposto.
+ */
+export async function buildRenewedFirstPartnershipOffers(profile, excludeIds = new Set()) {
+  const pool = widenedFirstPartnershipPool(await getFirstPartnershipCandidates(profile)).filter((candidate) => !excludeIds.has(candidate.id));
+  return buildFirstPartnershipOffers(profile, pool);
+}
+
+const initialOfferLocks = new Map();
+
 export async function ensureInitialPartnerOffers(profile, candidates) {
-  const existing = await listPartnerOffers(profile.id).catch(() => []);
-  if (profile.partner_id) return existing;
-  const coolingDownIds = getRecentRejectionCooldowns(existing, profile.career_date);
-  const activePending = existing.filter((offer) => offer?.status === 'pending' || offer?.status === 'accepted');
-  if (activePending.length) return existing;
-  const built = buildFirstPartnershipOffers(profile, widenedFirstPartnershipPool(candidates).filter((candidate) => !coolingDownIds.has(candidate.id)));
-  const created = [];
-  for (const offer of built) {
-    const duplicate = await localGame.entities.PartnerOffer.filter({ profile_id: profile.id, candidate_player_id: offer.candidate_player_id }, null, 1).catch(() => []);
-    const saved = duplicate[0] || await localGame.entities.PartnerOffer.create(offer);
-    created.push(saved);
-    if (!isSeedPartnerOffer(saved)) await createOfferMessage(profile, saved);
-  }
-  return created;
+  if (!profile?.id) return [];
+  // Duas chamadas simultâneas (ex.: tela + ativação) compartilham a mesma
+  // operação — antes a segunda tentava criar o mesmo id e lançava erro.
+  if (initialOfferLocks.has(profile.id)) return initialOfferLocks.get(profile.id);
+  const operation = (async () => {
+    const existing = await listPartnerOffers(profile.id).catch(() => []);
+    if (profile.partner_id) return existing;
+    // O lote inicial existe uma única vez por carreira. Antes, recusar todas
+    // as propostas e reabrir a tela gerava um lote novo no mesmo dia, sem
+    // limite. A renovação agora é do calendário: o tick diário sem dupla
+    // (postSeparationMarket) abre janelas a partir da recusa do lote.
+    if (existing.some((offer) => isSeedPartnerOffer(offer))) return existing;
+    const activePending = existing.filter((offer) => offer?.status === 'pending' || offer?.status === 'accepted');
+    if (activePending.length) return existing;
+    const pool = candidates || await getFirstPartnershipCandidates(profile);
+    const coolingDownIds = getRecentRejectionCooldowns(existing, profile.career_date);
+    const built = buildFirstPartnershipOffers(profile, widenedFirstPartnershipPool(pool).filter((candidate) => !coolingDownIds.has(candidate.id)));
+    for (const offer of built) {
+      const saved = await localGame.entities.PartnerOffer.upsert(offer.id, offer);
+      if (!isSeedPartnerOffer(saved)) await createOfferMessage(profile, saved);
+    }
+    return listPartnerOffers(profile.id);
+  })().finally(() => initialOfferLocks.delete(profile.id));
+  initialOfferLocks.set(profile.id, operation);
+  return operation;
 }
 
 async function resolveOfferMessages(profileId, offerId, actionId) {

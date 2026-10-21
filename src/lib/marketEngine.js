@@ -4,6 +4,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { RARITY_STYLES } from '@/lib/equipmentCatalog';
 import { normalizeMarketEvent } from '@/lib/marketPromotion.js';
+import { fnv1aHash } from '@/lib/hashUtils.js';
 export { isMarketEventActive, normalizeMarketEvent } from '@/lib/marketPromotion.js';
 
 // ─── Price Computation ────────────────────────────────────────────────────────
@@ -475,11 +476,59 @@ export const HISTORICAL_RARE_ITEMS = [
 
 // ─── Seeding ─────────────────────────────────────────────────────────────────
 
+// LOCAL-8F (8F-07) — relíquia VERDADEIRA: um dos 10 HISTORICAL_RARE_ITEMS,
+// sem catalog_order (os colecionáveis do catálogo ampliado têm) e com a
+// raridade da relíquia ('exclusivo'). Id estável por ano+categoria (par único
+// entre os 10), para que nenhuma relíquia seja recriada ou duplicada.
+export function historicalRelicKey(item) { return `${item?.release_year}:${item?.category}`; }
+export function historicalRelicId(item) { return `historical-relic-${item.release_year}-${item.category}`; }
+function isTrueHistoricalRelic(item, templatesByKey) {
+  const template = templatesByKey.get(historicalRelicKey(item));
+  return Boolean(template) && item?.catalog_order == null && String(item?.rarity || '').trim().toLowerCase() === template.rarity;
+}
+
+async function ensureHistoricalRelics(existingHeritage, date) {
+  const templatesByKey = new Map(HISTORICAL_RARE_ITEMS.map((item) => [historicalRelicKey(item), item]));
+  const present = new Set((existingHeritage || []).filter((item) => isTrueHistoricalRelic(item, templatesByKey)).map(historicalRelicKey));
+  const missing = HISTORICAL_RARE_ITEMS.filter((item) => !present.has(historicalRelicKey(item)));
+  if (!missing.length) return [];
+  // Intenção original (seedMarket): relíquias liberadas para venda com
+  // estoque limitado. Preço, raridade, bônus e coleção vêm do modelo.
+  const relics = missing.map((item) => ({ ...item, id: historicalRelicId(item), is_available: true }));
+  await localGame.asServiceRole.entities.ShopItem.bulkCreate(relics);
+  const histories = await localGame.asServiceRole.entities.MarketPriceHistory.filter({ is_limited_stock: true }).catch(() => []);
+  const withStock = new Set((histories || []).map((row) => row.item_id));
+  const stockEntries = relics.filter((item) => !withStock.has(item.id)).map((item) => ({
+    id: `stock-${item.id}`,
+    item_id: item.id,
+    item_name: item.name,
+    base_price: item.price,
+    current_price: item.price,
+    previous_price: item.price,
+    all_time_low: item.price,
+    all_time_high: item.price,
+    demand_score: 80,
+    supply_level: 10,
+    purchase_count: 0,
+    trend: 'subindo',
+    volatility: 50,
+    price_history: [{ date, price: item.price }],
+    last_updated_date: date,
+    is_limited_stock: true,
+    // 1-5 unidades, como antes — agora determinístico por relíquia.
+    stock_remaining: (fnv1aHash(`relic-stock:${item.id}`) % 5) + 1,
+  }));
+  if (stockEntries.length) await localGame.asServiceRole.entities.MarketPriceHistory.bulkCreate(stockEntries);
+  return relics;
+}
+
 /**
  * Seeds initial market events and makes historical items available periodically.
  */
-export async function seedMarket() {
-  const today = new Date().toISOString().slice(0, 10);
+export async function seedMarket(careerDate = null) {
+  // LOCAL-8F: datas da carreira quando conhecidas (antes: sempre a data do
+  // computador, o que tornava eventos/estoque dependentes do relógio real).
+  const today = careerDate ? String(careerDate).slice(0, 10) : new Date().toISOString().slice(0, 10);
 
   // Repara saves que já semearam os itens históricos com o preço antigo
   // (250k-300k, até 10x acima do teto de 90.000 recalibrado na Fase 0 do
@@ -516,6 +565,14 @@ export async function seedMarket() {
       await localGame.asServiceRole.entities.ShopItem.update(existingItem.id, patch);
     }
   }
+
+  // LOCAL-8F (8F-07): as relíquias nascem ANTES do "já semeado, sai". Antes
+  // elas só eram criadas junto com os eventos iniciais — e toda carreira
+  // nasce com um MarketEvent ativo de localSeed.js ("Semana de lançamento"),
+  // então o retorno antecipado abaixo impedia a criação para sempre. A
+  // guarda antiga (`existingHistorical.length === 0`) também contava os
+  // colecionáveis "Padel Heritage" do catálogo como se fossem relíquias.
+  await ensureHistoricalRelics(existingHistorical, today);
 
   // Check if already seeded
   const existing = await localGame.asServiceRole.entities.MarketEvent.filter({ is_active: true });
@@ -628,35 +685,6 @@ export async function seedMarket() {
   }));
 
   await localGame.asServiceRole.entities.MarketEvent.bulkCreate(events);
-
-  // Add historical rare items to ShopItem (reparo dos já existentes já
-  // rodou no topo da função, antes do "já semeado, sai" acima)
-  if (existingHistorical.length === 0) {
-    const historicalItems = HISTORICAL_RARE_ITEMS.map(item => ({ ...item, is_available: true }));
-    await localGame.asServiceRole.entities.ShopItem.bulkCreate(historicalItems);
-
-    // Create limited stock entries for historical items
-    const createdItems = await localGame.asServiceRole.entities.ShopItem.filter({ manufacturer: 'Padel Heritage' });
-    const stockEntries = createdItems.map(item => ({
-      item_id: item.id,
-      item_name: item.name,
-      base_price: item.price,
-      current_price: item.price,
-      previous_price: item.price,
-      all_time_low: item.price,
-      all_time_high: item.price,
-      demand_score: 80,
-      supply_level: 10,
-      purchase_count: 0,
-      trend: 'subindo',
-      volatility: 50,
-      price_history: [{ date: today, price: item.price }],
-      last_updated_date: today,
-      is_limited_stock: true,
-      stock_remaining: Math.floor(Math.random() * 5) + 1, // 1-5 units
-    }));
-    await localGame.asServiceRole.entities.MarketPriceHistory.bulkCreate(stockEntries);
-  }
 
   return { seeded: true, events: events.length };
 }

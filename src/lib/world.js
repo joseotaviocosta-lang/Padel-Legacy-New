@@ -1,6 +1,7 @@
 import { localGame } from '@/api/localGameClient.js';
 import { createKeyedInitializer } from '@/lib/keyedInitialization.js';
 import { createWorldEventObjects, normalizeWorldEventIds, validateWorldEventIds } from './worldEventIds.js';
+import { seededRandom } from './hashUtils.js';
 
 // ── Name pools ────────────────────────────────────────────────────────────
 
@@ -63,14 +64,23 @@ const QUOTES = [
 
 // ── Helpers ────────────────────────────────────────────────────────────────
 
-function pick(arr) { return arr[Math.floor(Math.random() * arr.length)]; }
+// LOCAL-8F (8D-08): a notícia editorial do avanço diário é semeada pela data
+// (generateEventObject(date, seed)). Sem semente (botão "gerar"), Math.random.
+let random = Math.random;
+function withSeed(seed, fn) {
+  if (seed == null) return fn();
+  const previous = random;
+  random = seededRandom(seed);
+  try { return fn(); } finally { random = previous; }
+}
+function pick(arr) { return arr[Math.floor(random() * arr.length)]; }
 function pickTwo(arr) {
-  const i = Math.floor(Math.random() * arr.length);
-  let j = Math.floor(Math.random() * arr.length);
-  while (j === i) j = Math.floor(Math.random() * arr.length);
+  const i = Math.floor(random() * arr.length);
+  let j = Math.floor(random() * arr.length);
+  while (j === i) j = Math.floor(random() * arr.length);
   return [arr[i], arr[j]];
 }
-function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+function randInt(min, max) { return Math.floor(random() * (max - min + 1)) + min; }
 
 // ── Event type metadata ──────────────────────────────────────────────────
 
@@ -247,20 +257,22 @@ const AMBIENT_WORLD_EVENTS = [
   },
 ];
 
-export function generateEventObject(date) {
+export function generateEventObject(date, seed = null) {
   // Eventos aleatórios servem apenas como ambientação. Lesões, resultados,
   // aposentadorias, transferências e mudanças de ranking devem ser publicadas
   // exclusivamente pelos sistemas que realmente processaram esses fatos.
-  const template = pick(AMBIENT_WORLD_EVENTS);
-  return {
-    ...template,
-    author_name: 'Redação Mundo do Padel',
-    related_players: [],
-    event_date: date,
-    likes: randInt(25, 450),
-    tags: [template.event_type, 'ambientacao'],
-    source_event_id: `ambient:${date}:${Math.random().toString(36).slice(2, 8)}`,
-  };
+  return withSeed(seed, () => {
+    const template = pick(AMBIENT_WORLD_EVENTS);
+    return {
+      ...template,
+      author_name: 'Redação Mundo do Padel',
+      related_players: [],
+      event_date: date,
+      likes: randInt(25, 450),
+      tags: [template.event_type, 'ambientacao'],
+      source_event_id: `ambient:${date}:${random().toString(36).slice(2, 8)}`,
+    };
+  });
 }
 
 export async function generateWorldEvents(date, count = 3) {

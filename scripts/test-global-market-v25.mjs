@@ -2,10 +2,14 @@ import fs from 'node:fs';
 import path from 'node:path';
 const root = process.cwd();
 const lifecycle = fs.readFileSync(path.join(root, 'src/game-core/globalMarketLifecycle.js'), 'utf8');
+// LOCAL-8F (8F-06): a regra do mercado mensal de treinadores (mínimos por
+// tier, guaranteeCoachAvailability) foi movida para src/lib/coachMarket.js,
+// a fonte única usada também por Treinadores e pela contratação.
+const coachMarket = fs.readFileSync(path.join(root, 'src/lib/coachMarket.js'), 'utf8');
 const page = fs.readFileSync(path.join(root, 'src/pages/WorldMarket.jsx'), 'utf8');
 const index = fs.readFileSync(path.join(root, 'src/game-core/index.js'), 'utf8');
 const checks = [
-  ['mercado garante iniciantes', lifecycle.includes('iniciante: 6') && lifecycle.includes('guaranteeCoachAvailability')],
+  ['mercado garante iniciantes', coachMarket.includes('iniciante: 6') && coachMarket.includes('guaranteeCoachAvailability') && lifecycle.includes('projectCoachMarket')],
   ['snapshot reúne atletas, duplas e técnicos', lifecycle.includes('athletes,') && lifecycle.includes('teams,') && lifecycle.includes('coaches,')],
   ['processamento mensal centralizado', lifecycle.includes('processGlobalMarketMonth') && lifecycle.includes('evolveWorldMarket')],
   ['página possui quatro áreas', ['athletes','teams','coaches','movements'].every((id) => page.includes(`id: '${id}'`))],

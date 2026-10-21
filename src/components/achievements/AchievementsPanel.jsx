@@ -3,7 +3,7 @@ import { Trophy, Star, Coins, Search, ChevronDown, ChevronUp, HelpCircle, Check,
 import { localGame } from '@/api/localGameClient.js';
 import { CompactStats, CompactListItem, EmptyState, ProgressBar } from '@/components/design-system';
 import { CATEGORY_META } from '@/lib/achievementsData';
-import { presentableAchievements, evaluateAchievements, syncPlayerAchievements } from '@/lib/achievementEngine.js';
+import { presentableAchievements, evaluateAchievements } from '@/lib/achievementEngine.js';
 import { buildAchievementContext } from '@/lib/achievementContext.js';
 import { findNextRelevantAchievements } from '@/lib/achievementRelevance.js';
 import { getWorldRank } from '@/lib/padel';
@@ -91,17 +91,15 @@ export default function AchievementsPanel({ profile }) {
       try {
         const worldRank = await getWorldRank(profile).catch(() => ({ rank: 0 }));
         const context = await buildAchievementContext(profile, { worldRank });
-        // Fase 12 (Parte 33-36): reconciliação de save antigo roda UMA vez
-        // por perfil (flag persistida) — depois disso, todo sync aqui é um
-        // desbloqueio ao vivo normal, com recompensa normal.
-        const needsReconciliation = !profile.achievements_v2_reconciled;
-        const syncResult = await syncPlayerAchievements(profile, context, { localGame, reconciliation: needsReconciliation }).catch(() => null);
-        if (needsReconciliation) {
-          await localGame.entities.PlayerProfile.update(profile.id, { achievements_v2_reconciled: true }).catch(() => {});
-        }
+        // LOCAL-8F (8D-07): abrir Conquistas só CONSULTA. Antes, esta aba
+        // desbloqueava as conquistas já merecidas e creditava as moedas —
+        // a economia dependia de visitar a tela. O desbloqueio com
+        // recompensa (e a reconciliação única de saves antigos) agora roda
+        // no avanço diário (gameStateLifecycle, etapa "achievements") e ao
+        // fim das partidas de torneio (TournamentModal), como antes.
         const unlocked = await localGame.entities.PlayerAchievement.filter({ profile_id: profile.id }).catch(() => []);
         if (cancelled) return;
-        const effectiveProfile = syncResult?.profile || profile;
+        const effectiveProfile = profile;
         setUnlockedMeta(new Map(unlocked.map((u) => [u.achievement_id, u])));
         setRows(evaluateAchievements(effectiveProfile, context));
         // Achievements Polish 12.1 (Parte 26/M): uma única chamada síncrona,
