@@ -8,6 +8,7 @@ import { getExpandedCatalogSummary, normalizeShopItem } from '@/lib/storeCatalog
 import { resolveActiveCoach } from '@/game-core/coachLifecycle.js';
 import { calculateAffinity } from '@/lib/coaches.js';
 import { isOfficialRankedTournament } from '@/lib/circuitCatalog.js';
+import { computeEquipmentModifiers } from '@/lib/equipmentModifiers.js';
 
 // Partida OFICIAL de torneio (Parte C/6/7): a raiz do bug corrigido no
 // Tutorial 4.0 — profile.matches_played/wins só contam treino
@@ -98,7 +99,11 @@ async function fetchInventoryStats(profileId) {
   const ownedRarities = new Set(owned.map((row) => itemById.get(row.item_id)).filter(Boolean).map((item) => normalizeShopItem(item).rarity).filter(Boolean));
   rarities.clear();
   ownedRarities.forEach((rarity) => rarities.add(rarity));
-  return { totalOwned: owned.length, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, ...categoryCounts };
+  // LOCAL-9B: modificadores do equipamento equipado (mesma passada). As
+  // conquistas "Alcance 100 em X" avaliam o atributo EFETIVO, como antes,
+  // quando o bônus ficava gravado no atributo (ver achievementEngine.js).
+  const equipmentModifiers = computeEquipmentModifiers(inventory, itemById);
+  return { totalOwned: owned.length, categories: categories.size, rarities: rarities.size, legendary, mythic, exclusive, totalCategoriesInCatalog, totalRaritiesInCatalog, equipmentModifiers, ...categoryCounts };
 }
 
 async function fetchTrainingCenter(profileId) {

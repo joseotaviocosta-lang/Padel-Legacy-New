@@ -53,6 +53,7 @@ export async function loadActionModules(rt) {
     achievements: await L('/src/lib/achievementEngine.js'),
     achievementContext: await L('/src/lib/achievementContext.js'),
     entryManager: await L('/src/gameplay/worldTour/EntryManager.js'),
+    equipment: await L('/src/game-core/equipmentLifecycle.js'),
   };
 }
 
@@ -338,31 +339,14 @@ export async function buyAndEquip(rt, profile, row, inventory) {
   // Shop.jsx dispara sem await; aqui aguardamos só para o ledger atribuir a
   // recompensa da missão ao passo certo (mesmo efeito, outra ordem).
   await rt.padel.incrementMissionProgress(p.id, 'buy_item').catch(() => {});
-  // Equipar (Inventory.jsx): desequipa o da mesma categoria, aplica bônus com
-  // piso 0 / teto 100 e grava o delta realmente aplicado.
-  const working = { ...p };
-  const profileUpdates = {};
-  const invUpdates = [];
-  const apply = (k, v) => { working[k] = v; profileUpdates[k] = v; };
-  const shopMap = {};
-  for (const other of inventory.filter((i) => i.category === item.category && i.equipped)) {
-    const applied = other.applied_bonus || shopMap[other.item_id]?.attribute_bonus || {};
-    for (const [k, v] of Object.entries(applied)) apply(k, Math.max(0, (working[k] || 0) - v));
-    invUpdates.push({ id: other.id, equipped: false, applied_bonus: null });
-  }
-  const appliedBonus = {};
-  for (const [k, v] of Object.entries(item.attribute_bonus || {})) {
-    const before = working[k] || 0;
-    const after = Math.max(0, Math.min(100, before + Number(v || 0)));
-    apply(k, after);
-    appliedBonus[k] = after - before;
-  }
-  if (item.category === 'raquete') profileUpdates.racket = item.name;
-  invUpdates.push({ id: inv.id, equipped: true, applied_bonus: appliedBonus });
-  if (Object.keys(profileUpdates).length) p = await localGame.entities.PlayerProfile.update(p.id, profileUpdates);
-  await localGame.entities.PlayerInventory.bulkUpdate(invUpdates);
+  // Equipar (Inventory.jsx → equipmentLifecycle.toggleEquipItem, LOCAL-9B):
+  // mesmo plano puro da tela — só flags do inventário (um item por
+  // categoria) e o nome da raquete. O bônus não é gravado no atributo-base.
+  const { toggleEquipItem } = await rt.load('/src/game-core/equipmentLifecycle.js');
+  const shopItems = await localGame.entities.ShopItem.list();
+  await toggleEquipItem({ profile: p, inventory: [...inventory, inv], target: inv, shopItems });
   await rt.padel.incrementMissionProgress(p.id, 'equip_item').catch(() => {});
-  return { profile: await localGame.entities.PlayerProfile.get(p.id), bought: true, appliedBonus };
+  return { profile: await localGame.entities.PlayerProfile.get(p.id), bought: true, appliedBonus: { ...(item.attribute_bonus || {}) } };
 }
 
 // ── Investimento (Economy.jsx) ──────────────────────────────────────────────

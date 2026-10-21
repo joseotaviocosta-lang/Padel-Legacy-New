@@ -1,6 +1,7 @@
 import { ACHIEVEMENT_CATALOG } from './achievementsData.js';
 import { ATTRIBUTES, ATTRIBUTE_KEYS, calculateAge } from './padel.js';
 import { CAREER_START_DATE, daysBetween } from './career.js';
+import { describeAttribute } from './equipmentModifiers.js';
 
 // Tutorial 4.0 (docs/TUTORIAL_4_0_OBJECTIVES_UNIFICATION.md, Parte 9/10):
 // nada no projeto avaliava conquistas de verdade antes desta fase — o
@@ -47,6 +48,10 @@ const EVALUABLE_TRIGGER_TYPES = new Set([
 
 const COACH_CAREER_LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
+function effectiveAttribute(profile, context, key) {
+  return describeAttribute(Number(profile?.[key]) || 0, context?.inventory?.equipmentModifiers?.[key] || 0).effective;
+}
+
 function rawMetricValue(achievement, profile, context) {
   const triggerType = achievement.trigger_type;
   switch (triggerType) {
@@ -62,11 +67,15 @@ function rawMetricValue(achievement, profile, context) {
     case 'beat_top10': return context?.officialMatches?.beatTop10 ? 1 : 0;
     case 'beat_rank1': return context?.officialMatches?.beatRank1 ? 1 : 0;
 
-    case 'max_attribute': return achievement.attribute_key ? Number(profile?.[achievement.attribute_key]) || 0 : null;
+    // LOCAL-9B: atributo EFETIVO (base + equipamento, limite 100). Até a 9A o
+    // bônus ficava gravado no atributo e estas conquistas o enxergavam; o
+    // teto natural vai até 98, então avaliar só a base as tornaria
+    // inalcançáveis. Sem contexto de inventário, cai na base.
+    case 'max_attribute': return achievement.attribute_key ? effectiveAttribute(profile, context, achievement.attribute_key) : null;
     // threshold é 1 (estilo booleano, como beat_top10/all_categories) — o
     // achado real é "todos os 10 atributos chegaram a 100", não o valor
     // mínimo cru (que faria qualquer perfil "desbloquear" com min>=1).
-    case 'all_max_attributes': return ATTRIBUTE_KEYS.every((key) => (Number(profile?.[key]) || 0) >= 100) ? 1 : 0;
+    case 'all_max_attributes': return ATTRIBUTE_KEYS.every((key) => effectiveAttribute(profile, context, key) >= 100) ? 1 : 0;
     case 'reach_level': return Math.max(0, COACH_CAREER_LEVELS.indexOf(profile?.level));
 
     case 'hire_coach': return profile?.coach_id ? 1 : 0;

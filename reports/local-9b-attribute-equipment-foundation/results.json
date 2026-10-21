@@ -1,0 +1,1229 @@
+{
+ "generatedBy": "LOCAL-9B attribute-equipment-foundation",
+ "matchesPerScenario": 400,
+ "sessions": 6000,
+ "checks": [
+  {
+   "name": "I7: base 98 + 10 → 100 (limite do efetivo); bônus negativo reduz só o efetivo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I7: piso 0 no efetivo (bônus negativo sobre base baixa)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I4: aplicação dupla impedida (perfil já efetivo não recebe o bônus de novo)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I4: cópia duplicada equipada não acumula (um item por categoria)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I4: duas raquetes equipadas (save inconsistente) → só uma conta, a de menor id",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I4: item não equipado, sem ShopItem ou de categoria fora dos slots não concede bônus",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I4: chaves de bônus que não são atributo são ignoradas",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "equipar: plano só muda flags e o nome da raquete — nenhum atributo-base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I1: 6000 sessões — base idêntica com e sem equipamento",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I2: equipar no início × no fim — base final idêntica e efetivo final idêntico",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "1.000 sessões: base sem perda; vantagem 7.9 OVR = +8.8 declarado − 0.9 cortado pelo limite 100 (antes +2.8, base −6)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "6000 sessões: base sem perda; vantagem 7.2 OVR = +8.8 − 1.6 do limite 100 (antes +1, base −7.8)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "medio_60: motor recebe base + modificador, limitado a 100, nos 5 kits",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I6: medio_60 — mesmas seeds produzem exatamente os mesmos 400 resultados",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "elite_85: motor recebe base + modificador, limitado a 100, nos 5 kits",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I6: elite_85 — mesmas seeds produzem exatamente os mesmos 400 resultados",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "teto_98: motor recebe base + modificador, limitado a 100, nos 5 kits",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I6: teto_98 — mesmas seeds produzem exatamente os mesmos 400 resultados",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "impacto (médio 60): melhor kit do catálogo e kit com relíquias vencem mais que sem equipamento (pareado)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "impacto após treino prolongado: o kit continua dando vantagem",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "migração 21→22: schema atual é 22",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "migração: base = gravado − applied_bonus (e − bônus declarado em linha sem applied_bonus), piso 0",
+   "ok": true,
+   "detail": {
+    "got": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 92,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "want": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 92,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    }
+   }
+  },
+  {
+   "name": "migração: com applied_bonus a base natural volta exata (smash 97 coberto pelo teto 100)",
+   "ok": true,
+   "detail": {
+    "got": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "want": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    }
+   }
+  },
+  {
+   "name": "migração: itens continuam equipados e applied_bonus é zerado",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "migração: entrada não é mutada; marca attribute_model_version = 2",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "migração: idempotente (save 22 não é migrado de novo)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "save de versão futura é recusado explicitamente (não carrega em silêncio)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "fixture real t5 (v21, 0 item(ns) equipado(s)) migra sem alterar atributos indevidamente",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I3/equipar: equipar 9 itens pelo fluxo real não altera nenhum atributo-base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I1: carreiras gêmeas, 40 treinos reais + 20 avanços de dia — atributos-base idênticos com e sem equipamento",
+   "ok": true,
+   "detail": {
+    "A": {
+     "serve": 40,
+     "forehand": 42,
+     "backhand": 42,
+     "volley": 40,
+     "bandeja": 40,
+     "smash": 40,
+     "defense": 41,
+     "agility": 44,
+     "strategy": 45,
+     "emotional_control": 44
+    },
+    "B": {
+     "serve": 40,
+     "forehand": 42,
+     "backhand": 42,
+     "volley": 40,
+     "bandeja": 40,
+     "smash": 40,
+     "defense": 41,
+     "agility": 44,
+     "strategy": 45,
+     "emotional_control": 44
+    }
+   }
+  },
+  {
+   "name": "I1: o treino real desenvolveu a base (não é um teste vazio)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I1: efetivo = base + kit na carreira equipada; igual à base na outra",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I6: mesma seed e mesmas ações → mesmo resultado de carreira (base, efetivo, data)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "I2 (caminho real): equipar→treinar × treinar→equipar — base, efetivo e itens equipados idênticos",
+   "ok": true,
+   "detail": {
+    "first": {
+     "serve": 45,
+     "forehand": 45,
+     "backhand": 45,
+     "volley": 45,
+     "bandeja": 45,
+     "smash": 45,
+     "defense": 45,
+     "agility": 46,
+     "strategy": 47,
+     "emotional_control": 46
+    },
+    "later": {
+     "serve": 45,
+     "forehand": 45,
+     "backhand": 45,
+     "volley": 45,
+     "bandeja": 45,
+     "smash": 45,
+     "defense": 45,
+     "agility": 46,
+     "strategy": 47,
+     "emotional_control": 46
+    }
+   }
+  },
+  {
+   "name": "iniciante: comprar não altera a base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: equipar kit épico não altera a base; efetivo = base + kit",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: I4 — reequipar e equipar cópia duplicada não acumulam bônus",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: treino real equipado aplica exatamente o ganho calculado sobre a base",
+   "ok": true,
+   "detail": {
+    "expected": {
+     "forehand": 22,
+     "backhand": 22,
+     "strategy": 22,
+     "agility": 22
+    },
+    "got": {
+     "serve": 22,
+     "forehand": 22,
+     "backhand": 22,
+     "volley": 22,
+     "bandeja": 22,
+     "smash": 22,
+     "defense": 22,
+     "agility": 22,
+     "strategy": 22,
+     "emotional_control": 22
+    }
+   }
+  },
+  {
+   "name": "iniciante: partida treino — motor recebe o efetivo (base + equipamento)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: I5 — save→load preserva base, itens equipados, modificadores e efetivo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: troca para o melhor kit não altera a base; modificador = kit D",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: I8 — trocar equipamento não altera a partida concluída nem o snapshot do motor",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: I3 — desequipar tudo deixa a base intacta e o efetivo volta à base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: carreira continua (treino e avanço de dia) depois de tudo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "iniciante: I7 — base nunca passa do teto natural nem de 100",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: comprar não altera a base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: equipar kit épico não altera a base; efetivo = base + kit",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: I4 — reequipar e equipar cópia duplicada não acumulam bônus",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: treino real equipado aplica exatamente o ganho calculado sobre a base",
+   "ok": true,
+   "detail": {
+    "expected": {
+     "forehand": 55,
+     "backhand": 55,
+     "strategy": 55,
+     "agility": 55
+    },
+    "got": {
+     "serve": 55,
+     "forehand": 55,
+     "backhand": 55,
+     "volley": 55,
+     "bandeja": 55,
+     "smash": 55,
+     "defense": 55,
+     "agility": 55,
+     "strategy": 55,
+     "emotional_control": 55
+    }
+   }
+  },
+  {
+   "name": "intermediario: partida treino — motor recebe o efetivo (base + equipamento)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: I5 — save→load preserva base, itens equipados, modificadores e efetivo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: troca para o melhor kit não altera a base; modificador = kit D",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: I8 — trocar equipamento não altera a partida concluída nem o snapshot do motor",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: I3 — desequipar tudo deixa a base intacta e o efetivo volta à base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: carreira continua (treino e avanço de dia) depois de tudo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "intermediario: I7 — base nunca passa do teto natural nem de 100",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: comprar não altera a base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: equipar kit épico não altera a base; efetivo = base + kit",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: I4 — reequipar e equipar cópia duplicada não acumulam bônus",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: treino real equipado aplica exatamente o ganho calculado sobre a base",
+   "ok": true,
+   "detail": {
+    "expected": {
+     "forehand": 84,
+     "backhand": 84,
+     "strategy": 84,
+     "agility": 84
+    },
+    "got": {
+     "serve": 84,
+     "forehand": 84,
+     "backhand": 84,
+     "volley": 84,
+     "bandeja": 84,
+     "smash": 84,
+     "defense": 84,
+     "agility": 84,
+     "strategy": 84,
+     "emotional_control": 84
+    }
+   }
+  },
+  {
+   "name": "proximo_ao_teto: partida treino — motor recebe o efetivo (base + equipamento)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: I5 — save→load preserva base, itens equipados, modificadores e efetivo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: troca para o melhor kit não altera a base; modificador = kit D",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: I8 — trocar equipamento não altera a partida concluída nem o snapshot do motor",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: I3 — desequipar tudo deixa a base intacta e o efetivo volta à base",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: carreira continua (treino e avanço de dia) depois de tudo",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "proximo_ao_teto: I7 — base nunca passa do teto natural nem de 100",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "Inventory.jsx não grava atributo no equipar (usa toggleEquipItem)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "TournamentModal monta o jogador com applyEquipmentModifiers e só começa depois de carregar o equipamento",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "SimulationModal/practiceMatchSession aplicam o modificador só no jogador da partida",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "treino e teto continuam lendo o perfil gravado (base) — sem modificador",
+   "ok": true,
+   "detail": null
+  }
+ ],
+ "sections": {
+  "loadouts": {
+   "A_sem_equipamento": {
+    "items": 0,
+    "declaredTotal": 0,
+    "modifiers": {}
+   },
+   "B_basicos": {
+    "items": 7,
+    "declaredTotal": 8,
+    "modifiers": {
+     "forehand": 2,
+     "backhand": 1,
+     "serve": 1,
+     "agility": 2,
+     "strategy": 1,
+     "emotional_control": 1
+    }
+   },
+   "C_intermediarios": {
+    "items": 9,
+    "declaredTotal": 45,
+    "modifiers": {
+     "forehand": 6,
+     "backhand": 3,
+     "volley": 3,
+     "strategy": 9,
+     "emotional_control": 12,
+     "agility": 9,
+     "defense": 3
+    }
+   },
+   "D_melhores_catalogo": {
+    "items": 9,
+    "declaredTotal": 88,
+    "modifiers": {
+     "smash": 11,
+     "bandeja": 6,
+     "volley": 5,
+     "strategy": 21,
+     "agility": 19,
+     "emotional_control": 21,
+     "defense": 5
+    }
+   },
+   "D2_melhores_com_reliquias": {
+    "items": 9,
+    "declaredTotal": 155,
+    "modifiers": {
+     "smash": 32,
+     "forehand": 18,
+     "emotional_control": 48,
+     "strategy": 32,
+     "volley": 5,
+     "agility": 15,
+     "defense": 5
+    }
+   }
+  },
+  "trainingHorizon": {
+   "start": 40,
+   "kit": {
+    "smash": 11,
+    "bandeja": 6,
+    "volley": 5,
+    "strategy": 21,
+    "agility": 19,
+    "emotional_control": 21,
+    "defense": 5
+   },
+   "kitDeclaredOvr": 8.8,
+   "rows": [
+    {
+     "session": 0,
+     "semEquip": 40,
+     "novo_base": 40,
+     "novo_efetivo": 48.8,
+     "novo_vantagem": 8.8,
+     "novo_perdaNoLimite100": 0,
+     "antigo_base": 40,
+     "antigo_efetivo": 48.8,
+     "antigo_vantagem": 8.8,
+     "antigo_basePerdida": 0
+    },
+    {
+     "session": 1000,
+     "semEquip": 60.2,
+     "novo_base": 60.2,
+     "novo_efetivo": 68.1,
+     "novo_vantagem": 7.9,
+     "novo_perdaNoLimite100": 0.9,
+     "antigo_base": 54.2,
+     "antigo_efetivo": 63,
+     "antigo_vantagem": 2.8,
+     "antigo_basePerdida": 6
+    },
+    {
+     "session": 2000,
+     "semEquip": 68.5,
+     "novo_base": 68.5,
+     "novo_efetivo": 76.3,
+     "novo_vantagem": 7.8,
+     "novo_perdaNoLimite100": 1,
+     "antigo_base": 61.4,
+     "antigo_efetivo": 70.2,
+     "antigo_vantagem": 1.7,
+     "antigo_basePerdida": 7.1
+    },
+    {
+     "session": 3000,
+     "semEquip": 73.9,
+     "novo_base": 73.9,
+     "novo_efetivo": 81.2,
+     "novo_vantagem": 7.3,
+     "novo_perdaNoLimite100": 1.5,
+     "antigo_base": 66.3,
+     "antigo_efetivo": 75.1,
+     "antigo_vantagem": 1.2,
+     "antigo_basePerdida": 7.6
+    },
+    {
+     "session": 4000,
+     "semEquip": 76.1,
+     "novo_base": 76.1,
+     "novo_efetivo": 83.3,
+     "novo_vantagem": 7.2,
+     "novo_perdaNoLimite100": 1.6,
+     "antigo_base": 68.5,
+     "antigo_efetivo": 77.3,
+     "antigo_vantagem": 1.2,
+     "antigo_basePerdida": 7.6
+    },
+    {
+     "session": 5000,
+     "semEquip": 77.3,
+     "novo_base": 77.3,
+     "novo_efetivo": 84.5,
+     "novo_vantagem": 7.2,
+     "novo_perdaNoLimite100": 1.6,
+     "antigo_base": 69.6,
+     "antigo_efetivo": 78.4,
+     "antigo_vantagem": 1.1,
+     "antigo_basePerdida": 7.7
+    },
+    {
+     "session": 6000,
+     "semEquip": 77.9,
+     "novo_base": 77.9,
+     "novo_efetivo": 85.1,
+     "novo_vantagem": 7.2,
+     "novo_perdaNoLimite100": 1.6,
+     "antigo_base": 70.1,
+     "antigo_efetivo": 78.9,
+     "antigo_vantagem": 1,
+     "antigo_basePerdida": 7.8
+    }
+   ]
+  },
+  "impact": {
+   "medio_60": {
+    "level": 60,
+    "opponentsLevel": 60,
+    "rows": {
+     "A_sem_equipamento": {
+      "declared": 0,
+      "effectiveOvr": 60,
+      "engine": {
+       "overall": 60,
+       "attributes": {
+        "serve": 60,
+        "forehand": 60,
+        "backhand": 60,
+        "volley": 60,
+        "bandeja": 60,
+        "smash": 60,
+        "defense": 60,
+        "agility": 60,
+        "strategy": 60,
+        "emotional": 60
+       }
+      },
+      "winRate": 0.4875,
+      "pointShare": 0.5004,
+      "pairedVsA": {
+       "winRateDiff": 0,
+       "ci95": [
+        0,
+        0
+       ]
+      }
+     },
+     "B_basicos": {
+      "declared": 8,
+      "effectiveOvr": 60.8,
+      "engine": {
+       "overall": 61,
+       "attributes": {
+        "serve": 61,
+        "forehand": 62,
+        "backhand": 61,
+        "volley": 60,
+        "bandeja": 60,
+        "smash": 60,
+        "defense": 60,
+        "agility": 62,
+        "strategy": 61,
+        "emotional": 61
+       }
+      },
+      "winRate": 0.52,
+      "pointShare": 0.5057,
+      "pairedVsA": {
+       "winRateDiff": 0.0325,
+       "ci95": [
+        -0.0362,
+        0.1012
+       ]
+      }
+     },
+     "C_intermediarios": {
+      "declared": 45,
+      "effectiveOvr": 64.5,
+      "engine": {
+       "overall": 65,
+       "attributes": {
+        "serve": 60,
+        "forehand": 66,
+        "backhand": 63,
+        "volley": 63,
+        "bandeja": 60,
+        "smash": 60,
+        "defense": 63,
+        "agility": 69,
+        "strategy": 69,
+        "emotional": 72
+       }
+      },
+      "winRate": 0.615,
+      "pointShare": 0.5148,
+      "pairedVsA": {
+       "winRateDiff": 0.1275,
+       "ci95": [
+        0.0571,
+        0.1979
+       ]
+      }
+     },
+     "D_melhores_catalogo": {
+      "declared": 88,
+      "effectiveOvr": 68.8,
+      "engine": {
+       "overall": 69,
+       "attributes": {
+        "serve": 60,
+        "forehand": 60,
+        "backhand": 60,
+        "volley": 65,
+        "bandeja": 66,
+        "smash": 71,
+        "defense": 65,
+        "agility": 79,
+        "strategy": 81,
+        "emotional": 81
+       }
+      },
+      "winRate": 0.655,
+      "pointShare": 0.5199,
+      "pairedVsA": {
+       "winRateDiff": 0.1675,
+       "ci95": [
+        0.0993,
+        0.2357
+       ]
+      }
+     },
+     "D2_melhores_com_reliquias": {
+      "declared": 155,
+      "effectiveOvr": 74.7,
+      "engine": {
+       "overall": 75,
+       "attributes": {
+        "serve": 60,
+        "forehand": 78,
+        "backhand": 60,
+        "volley": 65,
+        "bandeja": 60,
+        "smash": 92,
+        "defense": 65,
+        "agility": 75,
+        "strategy": 92,
+        "emotional": 100
+       }
+      },
+      "winRate": 0.88,
+      "pointShare": 0.5525,
+      "pairedVsA": {
+       "winRateDiff": 0.3925,
+       "ci95": [
+        0.3376,
+        0.4474
+       ]
+      }
+     }
+    }
+   },
+   "elite_85": {
+    "level": 85,
+    "opponentsLevel": 85,
+    "rows": {
+     "A_sem_equipamento": {
+      "declared": 0,
+      "effectiveOvr": 85,
+      "engine": {
+       "overall": 85,
+       "attributes": {
+        "serve": 85,
+        "forehand": 85,
+        "backhand": 85,
+        "volley": 85,
+        "bandeja": 85,
+        "smash": 85,
+        "defense": 85,
+        "agility": 85,
+        "strategy": 85,
+        "emotional": 85
+       }
+      },
+      "winRate": 0.48,
+      "pointShare": 0.4994,
+      "pairedVsA": {
+       "winRateDiff": 0,
+       "ci95": [
+        0,
+        0
+       ]
+      }
+     },
+     "B_basicos": {
+      "declared": 8,
+      "effectiveOvr": 85.8,
+      "engine": {
+       "overall": 86,
+       "attributes": {
+        "serve": 86,
+        "forehand": 87,
+        "backhand": 86,
+        "volley": 85,
+        "bandeja": 85,
+        "smash": 85,
+        "defense": 85,
+        "agility": 87,
+        "strategy": 86,
+        "emotional": 86
+       }
+      },
+      "winRate": 0.5225,
+      "pointShare": 0.5075,
+      "pairedVsA": {
+       "winRateDiff": 0.0425,
+       "ci95": [
+        -0.0222,
+        0.1072
+       ]
+      }
+     },
+     "C_intermediarios": {
+      "declared": 45,
+      "effectiveOvr": 89.5,
+      "engine": {
+       "overall": 90,
+       "attributes": {
+        "serve": 85,
+        "forehand": 91,
+        "backhand": 88,
+        "volley": 88,
+        "bandeja": 85,
+        "smash": 85,
+        "defense": 88,
+        "agility": 94,
+        "strategy": 94,
+        "emotional": 97
+       }
+      },
+      "winRate": 0.63,
+      "pointShare": 0.5173,
+      "pairedVsA": {
+       "winRateDiff": 0.15,
+       "ci95": [
+        0.083,
+        0.217
+       ]
+      }
+     },
+     "D_melhores_catalogo": {
+      "declared": 88,
+      "effectiveOvr": 92.2,
+      "engine": {
+       "overall": 92,
+       "attributes": {
+        "serve": 85,
+        "forehand": 85,
+        "backhand": 85,
+        "volley": 90,
+        "bandeja": 91,
+        "smash": 96,
+        "defense": 90,
+        "agility": 100,
+        "strategy": 100,
+        "emotional": 100
+       }
+      },
+      "winRate": 0.6725,
+      "pointShare": 0.52,
+      "pairedVsA": {
+       "winRateDiff": 0.1925,
+       "ci95": [
+        0.1264,
+        0.2586
+       ]
+      }
+     },
+     "D2_melhores_com_reliquias": {
+      "declared": 155,
+      "effectiveOvr": 93.5,
+      "engine": {
+       "overall": 94,
+       "attributes": {
+        "serve": 85,
+        "forehand": 100,
+        "backhand": 85,
+        "volley": 90,
+        "bandeja": 85,
+        "smash": 100,
+        "defense": 90,
+        "agility": 100,
+        "strategy": 100,
+        "emotional": 100
+       }
+      },
+      "winRate": 0.78,
+      "pointShare": 0.5352,
+      "pairedVsA": {
+       "winRateDiff": 0.3,
+       "ci95": [
+        0.2376,
+        0.3624
+       ]
+      }
+     }
+    }
+   },
+   "teto_98": {
+    "level": 98,
+    "opponentsLevel": 90,
+    "rows": {
+     "A_sem_equipamento": {
+      "declared": 0,
+      "effectiveOvr": 98,
+      "engine": {
+       "overall": 98,
+       "attributes": {
+        "serve": 98,
+        "forehand": 98,
+        "backhand": 98,
+        "volley": 98,
+        "bandeja": 98,
+        "smash": 98,
+        "defense": 98,
+        "agility": 98,
+        "strategy": 98,
+        "emotional": 98
+       }
+      },
+      "winRate": 0.7375,
+      "pointShare": 0.5281,
+      "pairedVsA": {
+       "winRateDiff": 0,
+       "ci95": [
+        0,
+        0
+       ]
+      }
+     },
+     "B_basicos": {
+      "declared": 8,
+      "effectiveOvr": 98.8,
+      "engine": {
+       "overall": 99,
+       "attributes": {
+        "serve": 99,
+        "forehand": 100,
+        "backhand": 99,
+        "volley": 98,
+        "bandeja": 98,
+        "smash": 98,
+        "defense": 98,
+        "agility": 100,
+        "strategy": 99,
+        "emotional": 99
+       }
+      },
+      "winRate": 0.7475,
+      "pointShare": 0.5319,
+      "pairedVsA": {
+       "winRateDiff": 0.01,
+       "ci95": [
+        -0.0524,
+        0.0724
+       ]
+      }
+     },
+     "C_intermediarios": {
+      "declared": 45,
+      "effectiveOvr": 99.4,
+      "engine": {
+       "overall": 99,
+       "attributes": {
+        "serve": 98,
+        "forehand": 100,
+        "backhand": 100,
+        "volley": 100,
+        "bandeja": 98,
+        "smash": 98,
+        "defense": 100,
+        "agility": 100,
+        "strategy": 100,
+        "emotional": 100
+       }
+      },
+      "winRate": 0.8125,
+      "pointShare": 0.5432,
+      "pairedVsA": {
+       "winRateDiff": 0.075,
+       "ci95": [
+        0.0154,
+        0.1346
+       ]
+      }
+     },
+     "D_melhores_catalogo": {
+      "declared": 88,
+      "effectiveOvr": 99.4,
+      "engine": {
+       "overall": 99,
+       "attributes": {
+        "serve": 98,
+        "forehand": 98,
+        "backhand": 98,
+        "volley": 100,
+        "bandeja": 100,
+        "smash": 100,
+        "defense": 100,
+        "agility": 100,
+        "strategy": 100,
+        "emotional": 100
+       }
+      },
+      "winRate": 0.78,
+      "pointShare": 0.5313,
+      "pairedVsA": {
+       "winRateDiff": 0.0425,
+       "ci95": [
+        -0.0159,
+        0.1009
+       ]
+      }
+     },
+     "D2_melhores_com_reliquias": {
+      "declared": 155,
+      "effectiveOvr": 99.4,
+      "engine": {
+       "overall": 99,
+       "attributes": {
+        "serve": 98,
+        "forehand": 100,
+        "backhand": 98,
+        "volley": 100,
+        "bandeja": 98,
+        "smash": 100,
+        "defense": 100,
+        "agility": 100,
+        "strategy": 100,
+        "emotional": 100
+       }
+      },
+      "winRate": 0.7375,
+      "pointShare": 0.5353,
+      "pairedVsA": {
+       "winRateDiff": 0,
+       "ci95": [
+        -0.0596,
+        0.0596
+       ]
+      }
+     }
+    }
+   }
+  },
+  "impactAfterTraining": {
+   "sessions": 6000,
+   "baseLevel": 78,
+   "winRateNoKit": 0.4525,
+   "winRateKitD": 0.735,
+   "effectiveOvrKitD": 86.8
+  },
+  "migration": {
+   "naturalBase": {
+    "serve": 70,
+    "forehand": 70,
+    "backhand": 70,
+    "volley": 70,
+    "bandeja": 70,
+    "smash": 97,
+    "defense": 70,
+    "agility": 70,
+    "strategy": 70,
+    "emotional_control": 70
+   },
+   "storedLegacy": {
+    "serve": 70,
+    "forehand": 70,
+    "backhand": 70,
+    "volley": 70,
+    "bandeja": 76,
+    "smash": 100,
+    "defense": 70,
+    "agility": 75,
+    "strategy": 70,
+    "emotional_control": 70
+   },
+   "migratedBase": {
+    "serve": 70,
+    "forehand": 70,
+    "backhand": 70,
+    "volley": 70,
+    "bandeja": 70,
+    "smash": 92,
+    "defense": 70,
+    "agility": 70,
+    "strategy": 70,
+    "emotional_control": 70
+   },
+   "migrationNote": {
+    "from": "stored_bonus",
+    "removed": {
+     "smash": 8,
+     "bandeja": 6,
+     "agility": 5
+    },
+    "items": 2
+   }
+  },
+  "twins": {
+   "days": 20,
+   "A": {
+    "sessions": 40,
+    "date": "2026-01-21",
+    "baseOvr": 41.8,
+    "effectiveOvr": 41.8,
+    "errors": []
+   },
+   "B": {
+    "sessions": 40,
+    "date": "2026-01-21",
+    "baseOvr": 41.8,
+    "effectiveOvr": 50.6,
+    "errors": []
+   }
+  },
+  "careerFlow": {
+   "iniciante": {
+    "result": {
+     "startOvr": 22,
+     "endBaseOvr": 22.4,
+     "daysTrained": 8,
+     "matchWinner": "B",
+     "finalizeSkipped": false
+    }
+   },
+   "intermediario": {
+    "result": {
+     "startOvr": 55,
+     "endBaseOvr": 55,
+     "daysTrained": 8,
+     "matchWinner": "A",
+     "finalizeSkipped": false
+    }
+   },
+   "proximo_ao_teto": {
+    "result": {
+     "startOvr": 84,
+     "endBaseOvr": 84,
+     "daysTrained": 8,
+     "matchWinner": "A",
+     "finalizeSkipped": false
+    }
+   }
+  }
+ },
+ "timingsMs": {
+  "training-6000": 189,
+  "impact": 98386,
+  "twins": 22076,
+  "order": 10197,
+  "career-flow": 23046
+ },
+ "summary": {
+  "checks": 71,
+  "failed": 0
+ }
+}

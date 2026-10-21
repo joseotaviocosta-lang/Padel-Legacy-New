@@ -1,0 +1,499 @@
+{
+ "generatedBy": "LOCAL-9B-R1 validation",
+ "checks": [
+  {
+   "name": "D1: as 11 conquistas de atributo 100 dizem que o equipamento conta",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D1: attribute_key continua derivado da descrição — 10 chaves distintas e corretas",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D1: limiar continua 100 (não 98)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D1: base 95 sem equipamento — não desbloqueia (controle)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D1: equipado (efetivo 100) — desbloqueia no fechamento do dia, sem abrir a tela",
+   "ok": true,
+   "detail": {
+    "unlocked": 1,
+    "payments": 1,
+    "coinsDelta": 2000
+   }
+  },
+  {
+   "name": "D1: mais dias + save/load + mais dias — continua 1 desbloqueio e 1 pagamento",
+   "ok": true,
+   "detail": {
+    "unlocked": 1,
+    "payments": 1
+   }
+  },
+  {
+   "name": "D1: desequipar não revoga a conquista nem paga de novo; base continua 95",
+   "ok": true,
+   "detail": {
+    "unlocked": 1,
+    "payments": 1,
+    "base": 95
+   }
+  },
+  {
+   "name": "D2: termos de parceria, negociação e compatibilidade usam o perfil gravado (natural); equipado = sem equipamento",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D2: o teste é sensível — com atributos efetivos o resultado mudaria",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D2/D3: o efetivo só é calculado na partida, na exibição, nas conquistas e no desempate do ranking",
+   "ok": true,
+   "detail": []
+  },
+  {
+   "name": "D2: parceiros/negociação/compatibilidade não aplicam equipamento",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D3: inscrição, entrada e pontos de ranking não leem OVR do jogador",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D3: empate de pontos — sem equipamento o jogador (OVR 50) fica abaixo do rival (OVR 60)",
+   "ok": true,
+   "detail": {
+    "me": 631,
+    "rival": 630,
+    "shownOvr": 50,
+    "tiebreak": 50,
+    "points": 130
+   }
+  },
+  {
+   "name": "D3: equipado — desempate pelo OVR com equipamento (62), como antes da 9B; OVR exibido continua natural (50)",
+   "ok": true,
+   "detail": {
+    "me": 630,
+    "rival": 631,
+    "shownOvr": 50,
+    "tiebreak": 62,
+    "points": 130
+   }
+  },
+  {
+   "name": "D3: pontos do jogador não mudam com equipamento",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D4: importCareer(v21) → base natural, item equipado, modelo 2, descrições atualizadas",
+   "ok": true,
+   "detail": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "model": 2,
+    "descriptionsUpdated": true
+   }
+  },
+  {
+   "name": "D4: importCareer(v22) → atributos inalterados (nada subtraído)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D4: saveCareer(v21) → migra antes de validar; base natural",
+   "ok": true,
+   "detail": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "model": 2,
+    "descriptionsUpdated": true
+   }
+  },
+  {
+   "name": "D4: saveCareer(v22) → atributos inalterados",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D4: loadCareer de arquivo v21 → migra, regrava como v22 com a base natural",
+   "ok": true,
+   "detail": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "model": 2,
+    "descriptionsUpdated": true,
+    "disk": {
+     "version": 22,
+     "base": {
+      "serve": 70,
+      "forehand": 70,
+      "backhand": 70,
+      "volley": 70,
+      "bandeja": 70,
+      "smash": 97,
+      "defense": 70,
+      "agility": 70,
+      "strategy": 70,
+      "emotional_control": 70
+     }
+    },
+    "backups": 2
+   }
+  },
+  {
+   "name": "D4: o save v21 original fica preservado em backup (nada apagado)",
+   "ok": true,
+   "detail": {
+    "backups": [
+     "backups/careers-index.json-2026-10-04T12-39-57-068Z-backup.json",
+     "backups/bfbea1d1-3cd2-4206-b43c-9ac12d02fec9.json-2026-10-04T12-40-00-068Z-backup.json"
+    ]
+   }
+  },
+  {
+   "name": "D4: 5 ciclos loadCareer→saveCareer em v22 — atributos idênticos em todos",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D4: migração repetida não subtrai de novo (migrate(migrate(v21)))",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D4: determinística (duas migrações do mesmo v21 → mesmo resultado)",
+   "ok": true,
+   "detail": null
+  },
+  {
+   "name": "D4: versão futura recusada também no saveCareer",
+   "ok": true,
+   "detail": "save_schema_version desconhecido: 23."
+  }
+ ],
+ "sections": {
+  "achievementUnlock": {
+   "withoutEquip": {
+    "unlocked": 0
+   },
+   "afterEquip": {
+    "unlocked": 1,
+    "payments": 1,
+    "coinsDelta": 2000
+   },
+   "afterMoreDays": {
+    "unlocked": 1,
+    "payments": 1
+   },
+   "afterUnequip": {
+    "unlocked": 1,
+    "payments": 1,
+    "base": 95
+   }
+  },
+  "effectiveUsers": [
+   "src/components/matches/SimulationModal.jsx",
+   "src/components/tournaments/TournamentModal.jsx",
+   "src/game-core/practiceMatchSession.js",
+   "src/lib/achievementContext.js",
+   "src/lib/padel.js",
+   "src/pages/Inventory.jsx",
+   "src/pages/PlayerProfile.jsx",
+   "src/lib/equipmentModifiers.js",
+   "src/game-core/equipmentLifecycle.js"
+  ],
+  "rankingTiebreak": {
+   "rival": {
+    "points": 130,
+    "ovr": 60
+   },
+   "unequipped": {
+    "me": 631,
+    "rival": 630,
+    "shownOvr": 50,
+    "tiebreak": 50,
+    "points": 130
+   },
+   "equipped": {
+    "me": 630,
+    "rival": 631,
+    "shownOvr": 50,
+    "tiebreak": 62,
+    "points": 130
+   }
+  },
+  "migrationPaths": {
+   "importV21": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "model": 2,
+    "descriptionsUpdated": true
+   },
+   "importV22": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "descriptionsUpdated": true
+   },
+   "saveV21": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "model": 2,
+    "descriptionsUpdated": true
+   },
+   "saveV22": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "descriptionsUpdated": true
+   },
+   "loadV21": {
+    "base": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 97,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "effective": {
+     "serve": 70,
+     "forehand": 70,
+     "backhand": 70,
+     "volley": 70,
+     "bandeja": 70,
+     "smash": 100,
+     "defense": 70,
+     "agility": 70,
+     "strategy": 70,
+     "emotional_control": 70
+    },
+    "equipped": 1,
+    "model": 2,
+    "descriptionsUpdated": true,
+    "disk": {
+     "version": 22,
+     "base": {
+      "serve": 70,
+      "forehand": 70,
+      "backhand": 70,
+      "volley": 70,
+      "bandeja": 70,
+      "smash": 97,
+      "defense": 70,
+      "agility": 70,
+      "strategy": 70,
+      "emotional_control": 70
+     }
+    },
+    "backups": 2
+   },
+   "natural": {
+    "serve": 70,
+    "forehand": 70,
+    "backhand": 70,
+    "volley": 70,
+    "bandeja": 70,
+    "smash": 97,
+    "defense": 70,
+    "agility": 70,
+    "strategy": 70,
+    "emotional_control": 70
+   },
+   "legacyStored": {
+    "serve": 70,
+    "forehand": 70,
+    "backhand": 70,
+    "volley": 70,
+    "bandeja": 70,
+    "smash": 100,
+    "defense": 70,
+    "agility": 70,
+    "strategy": 70,
+    "emotional_control": 70
+   }
+  }
+ },
+ "summary": {
+  "checks": 25,
+  "failed": 0
+ }
+}

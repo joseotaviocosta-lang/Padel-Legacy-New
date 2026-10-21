@@ -7,6 +7,7 @@ import { APP_ROUTES } from '@/navigation/routes.js';
 import { activeCareerAdapter } from '@/gameplay/services/runtime.js';
 import { getBalance527 } from '@/lib/balance527.js';
 import { getAttributeDevelopmentCeiling } from '@/lib/attributeCeiling.js';
+import { applyEquipmentModifiers, computeEquipmentModifiers } from '@/lib/equipmentModifiers.js';
 
 export const LEVELS = ['Iniciante', 'Amador', 'Competitivo', 'Avançado', 'Elite', 'Lenda'];
 
@@ -468,7 +469,13 @@ function athleteOverallValue(athlete) {
 // dependente da ordem de leitura/paginação do storage).
 function compareRankingEntries(a, b) {
   if (b.points !== a.points) return b.points - a.points;
-  if (b.overallRating !== a.overallRating) return b.overallRating - a.overallRating;
+  // LOCAL-9B-R1 (D3): o desempate usa o mesmo valor de antes da 9B — para o
+  // jogador, o OVR com equipamento (`tiebreakRating`). Sem isso, separar base
+  // e equipamento mudaria a posição em empates de pontos sem nenhuma regra
+  // nova. O OVR exibido (`overallRating`) continua o natural.
+  const ratingA = a.tiebreakRating ?? a.overallRating;
+  const ratingB = b.tiebreakRating ?? b.overallRating;
+  if (ratingB !== ratingA) return ratingB - ratingA;
   return String(a.id).localeCompare(String(b.id));
 }
 
@@ -522,11 +529,16 @@ export async function buildWorldRankingSnapshot(profile) {
     const playerPoints = Math.max(0, Number(profile.rank_points ?? profile.ranking_points ?? profile.world_ranking_points) || 0);
     const officialMatches = Math.max(0, Number(profile.matches_played) || 0);
     const officialTournaments = Math.max(0, Number(profile.tournaments_played) || 0);
+    const [playerInventory, shopItems] = await Promise.all([
+      localGame.entities.PlayerInventory.filter({ profile_id: profile.id }).catch(() => []),
+      localGame.entities.ShopItem.list().catch(() => []),
+    ]);
     const playerEntryBase = {
       id: profile.id,
       name: profile.sport_name || profile.name || 'Você',
       points: playerPoints,
       overallRating: overallRating(profile),
+      tiebreakRating: overallRating(applyEquipmentModifiers(profile, computeEquipmentModifiers(playerInventory || [], shopItems || []))),
       racePoints: Math.max(0, Number(profile.race_points) || 0),
       country: profile.country || profile.nationality || 'Brasil',
       circuitCategory: null,

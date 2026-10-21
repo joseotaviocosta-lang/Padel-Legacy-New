@@ -86,36 +86,37 @@ try {
   gate('Catálogo tem itens com bônus declarado', itemsWithBonus.length > 0);
   gate(`Auditoria DECLARED->CONSUMED: ${consumedKeys.length} chave(s) de bônus mapeiam para ATTRIBUTE_KEYS reais (${consumedKeys.sort().join(', ') || 'nenhuma'})`, consumedKeys.length > 0);
   console.log(`  [info] Chaves ambíguas/órfãs (declaradas, sem consumidor em ATTRIBUTE_KEYS): ${orphanKeys.sort().join(', ') || 'nenhuma'}`);
-  console.log(`  [info] Total de itens: ${allItems.length} · com bônus: ${itemsWithBonus.length} · consumidores reais (equip muda profile[attr]): sim, via Inventory.jsx`);
+  console.log(`  [info] Total de itens: ${allItems.length} · com bônus: ${itemsWithBonus.length} · consumidor real: atributo efetivo na partida (equipmentModifiers.js, LOCAL-9B)`);
 
-  // ── 2. Resolver real (Inventory.jsx toggleEquip) — auditoria estática ───
+  // ── 2. Resolver real — auditoria estática ────────────────────────────────
+  // LOCAL-9B: o equipar deixou de gravar o bônus no atributo (que consumia a
+  // margem do teto de treino, 9A-01). As invariantes da 15.5.3 continuam
+  // valendo, agora no modelo base + modificador derivado: sem deriva (nada é
+  // gravado, então nada é revertido), piso 0 / teto 100 no efetivo, um item
+  // por categoria. Os gates antigos verificavam o TEXTO da implementação
+  // removida; foram trocados pelos equivalentes do modelo novo.
   const inventorySrc = readFileSync(new URL('../src/pages/Inventory.jsx', import.meta.url), 'utf8');
-  gate('toggleEquip lê attribute_bonus do ShopItem (resolver único, não duplicado)', inventorySrc.includes('shopItem?.attribute_bonus'));
-  gate('Hotfix 15.5.3: equip grava o delta REALMENTE aplicado (applied_bonus), pós-clamp', inventorySrc.includes('appliedBonus[key] = after - before'));
-  gate('Hotfix 15.5.3: unequip reverte applied_bonus (não o bônus declarado bruto) quando disponível', inventorySrc.includes('const appliedBonus = invItem.applied_bonus || bonus'));
-  gate('Hotfix 15.5.3: equip tem piso 0 além do teto 100 (raquetes com penalidade negativa não zeram/negativam sem limite)', inventorySrc.includes('Math.max(0, Math.min(100, before + val))'));
-  gate('Categoria exclusiva por slot: equipar desequipa qualquer item da mesma categoria antes', inventorySrc.includes('sameCategory'));
+  const modifiersSrc = readFileSync(new URL('../src/lib/equipmentModifiers.js', import.meta.url), 'utf8');
+  const lifecycleSrc = readFileSync(new URL('../src/game-core/equipmentLifecycle.js', import.meta.url), 'utf8');
+  const EM = await vite.ssrLoadModule('/src/lib/equipmentModifiers.js');
+  gate('Bônus derivado do attribute_bonus do ShopItem (resolver único: equipmentModifiers.js)', modifiersSrc.includes('sanitizeBonus(item.attribute_bonus)'));
+  gate('Inventory.jsx equipa pelo domínio (toggleEquipItem) e não grava atributo-base', inventorySrc.includes('toggleEquipItem') && !/applyToProfile|appliedBonus\[key\]/.test(inventorySrc));
+  gate('Efetivo tem piso 0 e teto 100 (raquetes com penalidade negativa não negativam)', EM.describeAttribute(3, -8).effective === 0 && EM.describeAttribute(98, 5).effective === 100);
+  gate('Categoria exclusiva por slot: equipar desequipa o item da mesma categoria', EM.planEquipToggle({ inventory: [{ id: 'a', item_id: 'r1', category: 'raquete', equipped: true }], target: { id: 'b', item_id: 'r2', category: 'raquete', equipped: false }, shopItems: { r1: { id: 'r1', category: 'raquete' }, r2: { id: 'r2', category: 'raquete' } } }).invUpdates.some((u) => u.id === 'a' && u.equipped === false));
   gate('Botão de equipar/desequipar desabilita durante a chamada em voo (proteção contra duplo clique)', inventorySrc.includes('disabled={toggling === invItem.id}'));
 
-  // ── 3. Prova numérica do bug de deriva por cap e da correção ────────────
-  // Simula exatamente a fórmula de Inventory.jsx: sem correção, unequip
-  // subtrairia o bônus DECLARADO cheio mesmo quando o equip só aplicou
-  // parte dele por causa do teto 100.
-  function equipDelta(before, declaredVal) {
-    const after = Math.max(0, Math.min(100, before + declaredVal));
-    return { after, applied: after - before };
-  }
+  // ── 3. Deriva perto do teto: impossível no modelo novo ──────────────────
+  // 15.5.3: desequipar pelo bônus declarado (e não pelo aplicado) drenava
+  // pontos reais perto de 100. Agora a base nunca é tocada pelo equipar.
   const nearCap = 98;
   const declaredBonus = 5; // ex.: raquete diamante de alta raridade em `smash`
-  const { after: afterEquip, applied } = equipDelta(nearCap, declaredBonus);
-  gate('Perto do teto: equipar aplica só o que cabe até 100 (não o valor declarado inteiro)', afterEquip === 100 && applied === 2);
-  const afterUnequipFixed = Math.max(0, afterEquip - applied);
-  const afterUnequipBuggy = Math.max(0, afterEquip - declaredBonus);
-  gate('Correção: desequipar com applied_bonus devolve exatamente o valor de antes do equip (sem deriva)', afterUnequipFixed === nearCap);
-  gate('BUG REPRODUZIDO (comportamento pré-correção): desequipar pelo bônus declarado bruto perderia pontos reais (98 -> 97, nunca volta a 98)', afterUnequipBuggy === nearCap - (declaredBonus - applied) && afterUnequipBuggy < nearCap);
+  const view = EM.describeAttribute(nearCap, declaredBonus);
+  gate('Perto do teto: o efetivo vai só até 100 (aplicado 2 de 5 declarados)', view.effective === 100 && view.applied === 2);
+  const equippedProfile = EM.applyEquipmentModifiers({ smash: nearCap }, { smash: declaredBonus });
+  gate('Equipar/desequipar não altera a base (sem deriva possível): perfil gravado continua 98', equippedProfile.smash === 100 && EM.applyEquipmentModifiers({ smash: nearCap }, {}).smash === nearCap);
 
-  // ── 4. Reload preserva (equip é persistido, não recalculado do zero) ───
-  gate('equipped e applied_bonus são persistidos via PlayerInventory.bulkUpdate (não recalculados a cada leitura)', inventorySrc.includes('PlayerInventory.bulkUpdate(invUpdates)'));
+  // ── 4. Reload preserva (flag de equipado persistida; bônus recalculado do catálogo) ─
+  gate('equipped é persistido via PlayerInventory.bulkUpdate; o bônus não é gravado em lugar nenhum', lifecycleSrc.includes('PlayerInventory.bulkUpdate(plan.invUpdates)') && modifiersSrc.includes('applied_bonus: null'));
 
   // ── 5. Consumíveis ───────────────────────────────────────────────────────
   console.log('  [info] Nenhum item do catálogo é consumível (sem campo quantity/uses decrementável) — item 22 do briefing não se aplica; nada a testar/pular.');

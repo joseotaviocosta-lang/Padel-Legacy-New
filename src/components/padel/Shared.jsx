@@ -54,12 +54,15 @@ export function StatCard({ icon, label, value, accent }) {
 }
 
 /** @deprecated Prefira `ProgressBar` do design-system em código novo (com `label`/`valueLabel`). */
-export function AttributeBar({ label, value, icon }) {
+// LOCAL-9B: `bonus` (opcional) é o que o equipamento acrescenta à base. A
+// barra mostra a base; o rótulo mostra "base +bônus = efetivo".
+export function AttributeBar({ label, value, icon, bonus = 0 }) {
+  const valueLabel = bonus ? `${value} ${bonus > 0 ? '+' : '−'}${Math.abs(bonus)} = ${value + bonus}` : String(value);
   return (
     <div className="flex items-center gap-3">
       <IconFrame icon={icon} tone="brand" size="sm" />
       <div className="min-w-0 flex-1">
-        <DSProgressBar value={value} max={100} label={label} valueLabel={String(value)} tone="brand" size="sm" />
+        <DSProgressBar value={value} max={100} label={label} valueLabel={valueLabel} tone="brand" size="sm" />
       </div>
     </div>
   );

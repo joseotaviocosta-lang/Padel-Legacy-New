@@ -81,8 +81,9 @@ export async function playTournamentRound(rt, A, { eventId, strategyId = 'balanc
   const opponent = Array.isArray(match?.opponent) ? match.opponent : [];
   const coachEffects = coach ? A.coaches.getCoachEffects(coach, profile) : null;
   const coachMatchBonus = coach ? Math.min(3, ((coachEffects?.strategyBonus || 0) + (coachEffects?.partnershipBonus || 0)) * 0.35) : 0;
+  // LOCAL-9B: mesmo passo do TournamentModal — base + equipamento equipado.
   const playerForMatch = {
-    ...profile,
+    ...(A.equipment ? await A.equipment.loadEffectivePlayerProfile(profile) : profile),
     _chemistryBonus: padel.getChemistryBonus(profile.partner_chemistry || 50),
     _energyPenalty: padel.getEnergyPenalty(profile.energy || 100),
     _coachMatchBonus: coachMatchBonus,

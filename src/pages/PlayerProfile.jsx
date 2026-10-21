@@ -9,6 +9,8 @@ import LogoutButton from '@/components/LogoutButton';
 import { LevelBadge, AttributeBar } from '@/components/padel/Shared';
 import PlayStyleSummary from '@/components/career/PlayStyleSummary';
 import AttributeDistribution from '@/components/career/AttributeDistribution';
+import { loadEquipmentModifiers } from '@/game-core/equipmentLifecycle.js';
+import { applyEquipmentModifiers, describeAttribute } from '@/lib/equipmentModifiers.js';
 import { Page, PageContent, PageHeader, PageSkeleton, StatCard as PremiumStatCard, StatusBadge, Surface, SurfaceHeader, ProgressBar as PremiumProgressBar, Button } from '@/components/design-system';
 
 const ICON_MAP = { Zap, ArrowUpRight, ArrowUpLeft, Waves, Circle, Hammer, Shield, Gauge, Brain, Flame };
@@ -34,6 +36,8 @@ export default function PlayerProfile() {
   const [form, setForm] = useState({});
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
+  // LOCAL-9B: o perfil guarda o atributo-base; o equipamento é exibido à parte.
+  const [equipmentModifiers, setEquipmentModifiers] = useState({});
 
   useEffect(() => {
     (async () => {
@@ -41,6 +45,7 @@ export default function PlayerProfile() {
         const user = await localGame.auth.me();
         const p = await ensureMyProfile(user);
         setProfile(p);
+        setEquipmentModifiers(p?.id ? await loadEquipmentModifiers(p.id).catch(() => ({})) : {});
         setForm({
           sport_name: p?.sport_name || '',
           avatar_url: p?.avatar_url || '',
@@ -61,6 +66,8 @@ export default function PlayerProfile() {
   }
 
   const careerExperience = careerExperienceSummary(profile?.xp || 0);
+  const effectiveOverall = overallRating(applyEquipmentModifiers(profile, equipmentModifiers));
+  const equipmentOverallBonus = Math.max(0, effectiveOverall - overallRating(profile));
   const experienceUnlocks = careerExperienceUnlocks(careerExperience.level);
 
   async function save() {
@@ -84,7 +91,7 @@ export default function PlayerProfile() {
           tone="brand"
           breadcrumb={['Carreira', 'Perfil']}
           stats={<>
-            <StatusBadge tone="brand">Overall {overallRating(profile)}</StatusBadge>
+            <StatusBadge tone="brand">Overall {overallRating(profile)}{equipmentOverallBonus ? ` (+${equipmentOverallBonus} equip.)` : ''}</StatusBadge>
             <StatusBadge tone="info">Experiência {careerExperience.level}/{careerExperience.maxLevel}</StatusBadge>
             <StatusBadge tone={isRetired(profile) ? 'neutral' : 'success'}>{isRetired(profile) ? 'Aposentado' : 'Carreira ativa'}</StatusBadge>
             <StatusBadge tone="premium">Dificuldade: {getCareerDifficultyOption(profile?.career_difficulty)?.label || 'Difícil'}</StatusBadge>
@@ -115,7 +122,7 @@ export default function PlayerProfile() {
           <Link to="/character" className="mt-4 inline-flex items-center gap-1.5 text-xs font-bold text-primary hover:underline"><Palette className="h-3.5 w-3.5" /> Personalizar aparência <ChevronRight className="h-3.5 w-3.5" /></Link>
         </Surface>
         <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          <PremiumStatCard label="Overall" value={overallRating(profile)} detail="Força esportiva atual" icon={Sword} tone="brand" />
+          <PremiumStatCard label="Overall" value={overallRating(profile)} detail={equipmentOverallBonus ? `Natural · ${effectiveOverall} com equipamento` : 'Natural · sem bônus de equipamento'} icon={Sword} tone="brand" />
           <PremiumStatCard label="XP de carreira" value={(profile?.xp || 0).toLocaleString('pt-BR')} detail={careerExperience.title} icon={Zap} tone="info" />
           <PremiumStatCard label="Aproveitamento" value={`${winRate(profile)}%`} detail={`${profile?.wins || 0} vitórias`} icon={Trophy} tone="success" />
           <PremiumStatCard label="Moedas" value={(profile?.coins || 0).toLocaleString('pt-BR')} detail="Saldo disponível" icon={Coins} tone="premium" />
@@ -180,7 +187,7 @@ export default function PlayerProfile() {
                 <p className="mb-3 text-[10px] font-black uppercase tracking-wider text-muted-foreground">{group.label}</p>
                 <div className="grid gap-4 md:grid-cols-2">
                   {groupAttrs.map(attr => (
-                    <AttributeBar key={attr.key} label={attr.label} value={profile?.[attr.key] || 0} icon={ICON_MAP[attr.icon]} />
+                    <AttributeBar key={attr.key} label={attr.label} value={profile?.[attr.key] || 0} bonus={describeAttribute(profile?.[attr.key] || 0, equipmentModifiers[attr.key] || 0).applied} icon={ICON_MAP[attr.icon]} />
                   ))}
                 </div>
               </div>

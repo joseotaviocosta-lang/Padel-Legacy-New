@@ -79,7 +79,10 @@ try {
   gate('atributo no teto não ganha mais nível', (() => { const p = baseProfile({ forehand: 85 }); const ceil = T.getAttributeDevelopmentCeiling(p, 'forehand'); p.forehand = ceil; return T.applyAttributeGains(p, { forehand: 5 }).updates.forehand === ceil; })());
 
   // ── 6. Integridade de saves existentes ───────────────────────────────────────
-  gate('schema de save inalterado (21)', S.CAREER_SAVE_SCHEMA_VERSION === 21);
+  // A 6B não exigiu migração própria (o gate guardava isso com o valor da
+  // época, 21). A LOCAL-9B subiu o schema para 22 pela própria migração
+  // (atributo-base × equipamento); a curva de treino continua sem migração.
+  gate('schema de save atual (22, LOCAL-9B) — a curva 6B não exige migração própria', S.CAREER_SAVE_SCHEMA_VERSION === 22);
   const old = baseProfile({ forehand: 60, backhand: 90, attribute_progress: { forehand: 0.7, backhand: 0.4, serve: 0.2 } });
   const r = T.applyAttributeGains(old, { forehand: 0.5, backhand: 3 });
   gate('save antigo: atributo acima do teto (bônus de vitória) NÃO é rebaixado', r.updates.backhand >= 90 && T.getAttributeDevelopmentCeiling(old, 'backhand') < 90);

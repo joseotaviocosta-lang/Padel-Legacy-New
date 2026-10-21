@@ -8,6 +8,8 @@ import { Page, PageContent, PageHeader, PageSkeleton, Surface, SurfaceHeader, St
 import { useToast } from '@/components/ui/use-toast';
 import ItemImage from '@/components/shop/ItemImage';
 import { recordFinancialEntry } from '@/lib/financialLedger.js';
+import { toggleEquipItem } from '@/game-core/equipmentLifecycle.js';
+import { computeEquipmentModifiers, totalAppliedModifier } from '@/lib/equipmentModifiers.js';
 const CATEGORY_LABELS = {
   raquete: 'Raquetes',
   grip: 'Grips',
@@ -61,73 +63,12 @@ export default function Inventory() {
     if (!profile) return;
     setToggling(invItem.id);
     try {
-      const shopItem = shopMap[invItem.item_id];
-      const bonus = shopItem?.attribute_bonus || {};
       const wasEquipped = invItem.equipped;
-
-      // Track running attribute state for correct multi-item math
-      let working = { ...profile };
-      const profileUpdates = {};
-      const invUpdates = [];
-
-      const applyToProfile = (key, newVal) => {
-        working[key] = newVal;
-        profileUpdates[key] = newVal;
-      };
-
-      // Hotfix 15.5.3: o bônus é somado permanentemente no atributo base
-      // (não é um modificador calculado em tempo real) — perto do teto 100 o
-      // ganho real do equipar é menor que o valor declarado (clampado), mas
-      // desequipar sempre subtraía o valor declarado inteiro, drenando
-      // pontos reais do atleta a cada ciclo equipar/desequipar perto do
-      // teto. `applied_bonus` grava o delta REALMENTE aplicado (pós-clamp)
-      // no momento do equip, e é isso — não o bônus declarado do item — que
-      // é revertido ao desequipar. Itens já equipados antes desta correção
-      // (sem applied_bonus salvo) caem no bônus declarado, comportamento
-      // idêntico ao anterior só para esse caso legado.
-      if (wasEquipped) {
-        // Unequip: remove exatamente o que foi aplicado no equip.
-        const appliedBonus = invItem.applied_bonus || bonus;
-        for (const [key, val] of Object.entries(appliedBonus)) {
-          applyToProfile(key, Math.max(0, (working[key] || 0) - val));
-        }
-        if (invItem.category === 'raquete') profileUpdates.racket = '';
-        invUpdates.push({ id: invItem.id, equipped: false, applied_bonus: null });
-      } else {
-        // Unequip any currently equipped item in the same category
-        const sameCategory = inventory.filter(i => i.category === invItem.category && i.equipped && i.id !== invItem.id);
-        for (const other of sameCategory) {
-          const otherAppliedBonus = other.applied_bonus || shopMap[other.item_id]?.attribute_bonus || {};
-          for (const [key, val] of Object.entries(otherAppliedBonus)) {
-            applyToProfile(key, Math.max(0, (working[key] || 0) - val));
-          }
-          if (other.category === 'raquete') profileUpdates.racket = '';
-          invUpdates.push({ id: other.id, equipped: false, applied_bonus: null });
-        }
-        // Equip new item: add bonuses, gravando o delta pós-clamp de verdade.
-        const appliedBonus = {};
-        for (const [key, val] of Object.entries(bonus)) {
-          const before = working[key] || 0;
-          // Raquetes de formato "redonda"/"diamante" declaram penalidades
-          // negativas em alguns atributos (SHAPE_BONUS, rackets.js) — sem o
-          // piso 0 aqui (só havia teto 100), um atleta com atributo base
-          // baixo podia ficar com valor negativo ao equipar.
-          const after = Math.max(0, Math.min(100, before + val));
-          applyToProfile(key, after);
-          appliedBonus[key] = after - before;
-        }
-        if (invItem.category === 'raquete') profileUpdates.racket = invItem.item_name;
-        invUpdates.push({ id: invItem.id, equipped: true, applied_bonus: appliedBonus });
-      }
-
-      // Single profile update
-      if (Object.keys(profileUpdates).length > 0) {
-        await localGame.entities.PlayerProfile.update(profile.id, profileUpdates);
-      }
-      // Batch inventory updates
-      if (invUpdates.length > 0) {
-        await localGame.entities.PlayerInventory.bulkUpdate(invUpdates);
-      }
+      // LOCAL-9B: equipar/desequipar só troca as flags do inventário (um item
+      // por categoria) e o nome da raquete. O bônus nunca é gravado no
+      // atributo-base: é derivado do catálogo (equipmentModifiers.js) na
+      // partida e na exibição, então o treino não perde margem de teto.
+      const { invUpdates, profileUpdates } = await toggleEquipItem({ profile, inventory, target: invItem, shopItems: shopMap });
 
       setProfile(prev => ({ ...prev, ...profileUpdates }));
       setInventory(prev => prev.map(i => {
@@ -172,10 +113,10 @@ export default function Inventory() {
 
   const categories = [...new Set(inventory.map(i => i.category))];
   const equippedCount = inventory.filter(item => item.equipped).length;
-  const totalBonus = inventory.filter(item => item.equipped).reduce((sum, item) => {
-    const bonus = shopMap[item.item_id]?.attribute_bonus || {};
-    return sum + Object.values(bonus).reduce((subtotal, value) => subtotal + Number(value || 0), 0);
-  }, 0);
+  // LOCAL-9B (9A-12): soma do que o equipamento REALMENTE acrescenta aos
+  // atributos-base (um item por categoria, limite de 100), não a soma bruta
+  // dos bônus declarados.
+  const totalBonus = totalAppliedModifier(profile, computeEquipmentModifiers(inventory, shopMap));
 
   return (
     <Page>

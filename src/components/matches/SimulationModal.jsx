@@ -16,6 +16,8 @@ import MatchPreparationControls from '@/components/matches/MatchPreparationContr
 import MatchRecapPremium from '@/components/matches/MatchRecapPremium';
 import { useToast } from '@/components/ui/use-toast';
 import { preparePracticeMatchSession } from '@/game-core/practiceMatchSession.js';
+import { loadEquipmentModifiers } from '@/game-core/equipmentLifecycle.js';
+import { applyEquipmentModifiers } from '@/lib/equipmentModifiers.js';
 import { Surface, StatusBadge, ProgressBar } from '@/components/design-system';
 import { getMatchCheckpointRepository, createCheckpointMatchId } from '@/careers/MatchCheckpointRepository.js';
 import { useActiveMatchCheckpoint } from '@/hooks/useActiveMatchCheckpoint.js';
@@ -61,6 +63,9 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const [teams, setTeams] = useState(null);
   const [result, setResult] = useState(null);
   const [coach,setCoach]=useState(null);
+  // LOCAL-9B: modificadores do equipamento equipado (null = carregando). A
+  // partida só começa depois de carregados, para nunca sair sem o bônus.
+  const [equipmentModifiers,setEquipmentModifiers]=useState(null);
   const [liveCoachSettings,setLiveCoachSettings]=useState(()=>({liveCoachEnabled:true,suggestionFrequency:'normal',allowMinorAutoAdjustments:false,showLiveMetrics:true,showConfidence:true,pauseOnImportantSuggestion:true,...(initialProfile?.live_coach_settings||{})}));
   const [useCustomPlan, setUseCustomPlan] = useState(() => Boolean(initialProfile?.custom_tactic_plan?.shotWeights));
   const [customShotWeights, setCustomShotWeights] = useState(() => ({ ...NEUTRAL_SHOT_WEIGHTS, ...(initialProfile?.custom_tactic_plan?.shotWeights || {}) }));
@@ -81,6 +86,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const { checkpoint, loading: checkpointLoading, clear: clearCheckpoint } = useActiveMatchCheckpoint(careerId);
   const pendingResume = !checkpointLoading && checkpoint?.type === 'practice' && !resumeDecided;
   useEffect(()=>{let active=true;(async()=>{if(!profile?.id)return;const result=await resolveActiveCoach(profile);if(!active)return;setCoach(result.coach||null);})().catch(()=>{if(active)setCoach(null);});return()=>{active=false;};},[profile?.id,profile?.coach_id]);
+  useEffect(()=>{let active=true;if(!profile?.id)return undefined;loadEquipmentModifiers(profile.id).then((mods)=>{if(active)setEquipmentModifiers(mods||{});}).catch(()=>{if(active)setEquipmentModifiers({});});return()=>{active=false;};},[profile?.id]);
   const changeLiveCoachSettings=(patch)=>{const next={...liveCoachSettings,...patch};setLiveCoachSettings(next);if(profile?.id)localGame.entities.PlayerProfile.update(profile.id,{live_coach_settings:next}).catch(()=>{});};
   const persistCustomTacticPlan=(shotWeights)=>{if(!profile?.id)return;localGame.entities.PlayerProfile.update(profile.id,{custom_tactic_plan:{baseTacticId:initialTacticId,shotWeights,updatedAt:new Date().toISOString()}}).catch(()=>{});};
   const changeShotWeight=(shot,value)=>{const next={...customShotWeights,[shot]:value};setCustomShotWeights(next);persistCustomTacticPlan(next);};
@@ -89,7 +95,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
   const changeDisplayMode=(mode)=>setDisplayMode(mode);
 
   function startMatch() {
-    if (launchFlightRef.current) return;
+    if (launchFlightRef.current || equipmentModifiers === null) return;
     launchFlightRef.current = true;
     setLaunching(true);
     if (isInjured(profile)) {
@@ -107,7 +113,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     }
     let session;
     try {
-      session = preparePracticeMatchSession(profile, coach);
+      session = preparePracticeMatchSession(profile, coach, { equipmentModifiers });
     } catch (error) {
       console.error('[SimulationModal] Falha ao preparar partida treino.', error);
       toast({ title: 'NÃ£o foi possÃ­vel iniciar', description: error?.message || 'Falha ao preparar a partida treino.', variant: 'destructive' });
@@ -247,7 +253,8 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
     setPhase('config');
   }
 
-  const playerOvr = overallRating(profile);
+  // Overall que entra na partida (base + equipamento). O perfil guarda a base.
+  const playerOvr = overallRating(applyEquipmentModifiers(profile, equipmentModifiers || {}));
   const readiness = Math.max(0, Math.min(100, Math.round(((Number(profile?.energy) || 0) * 0.7) + ((100 - (Number(profile?.fatigue) || 0)) * 0.3))));
   const phaseLabel = phase === 'config' ? 'Preparação' : phase === 'live' ? 'Ao vivo' : 'Resumo';
 
@@ -426,7 +433,7 @@ export default function SimulationModal({ profile: initialProfile, careerId, onC
 
             <button
               onClick={startMatch}
-              disabled={launching}
+              disabled={launching || equipmentModifiers === null}
               data-practice-launch-ms={Math.round(launchMetrics?.preparationMs || 0)}
               className="flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-primary px-4 text-sm font-black text-primary-foreground shadow-lg transition hover:brightness-110 disabled:opacity-60"
             >

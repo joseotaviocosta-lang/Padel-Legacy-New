@@ -58,6 +58,8 @@ import {
   buildTournamentRoundCoreOperations,
 } from '@/game-core/tournamentMatchLifecycle.js';
 import { buildFreshTournamentRoundRecovery, probeTournamentRecoverySession } from '@/game-core/tournamentMatchRecoveryEngine.js';
+import { loadEquipmentModifiers } from '@/game-core/equipmentLifecycle.js';
+import { applyEquipmentModifiers } from '@/lib/equipmentModifiers.js';
 import { buildInterviewRoute } from '@/lib/tournamentNextAction.js';
 import { APP_ROUTES } from '@/navigation/routes.js';
 
@@ -154,6 +156,19 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   // 'not_drawn', para informar quando a chave sai (ver render abaixo).
   const [drawDate, setDrawDate] = useState(null);
   const [committedPartner, setCommittedPartner] = useState(null);
+  // LOCAL-9B: modificadores do equipamento (null = carregando). O jogador da
+  // partida é base + equipamento; uma partida retomada usa o snapshot do
+  // engine_state, então trocar equipamento nunca muda partida em andamento
+  // nem concluída.
+  const [equipmentModifiers, setEquipmentModifiers] = useState(null);
+  useEffect(() => {
+    let active = true;
+    if (!profile?.id) return undefined;
+    loadEquipmentModifiers(profile.id)
+      .then((mods) => { if (active) setEquipmentModifiers(mods || {}); })
+      .catch(() => { if (active) setEquipmentModifiers({}); });
+    return () => { active = false; };
+  }, [profile?.id]);
   const savedRef = useRef(false);
   const { toast } = useToast();
 
@@ -425,7 +440,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   }
 
   async function startMatch() {
-    if (!registration) return;
+    if (!registration || equipmentModifiers === null) return;
     if (isInjured(profile)) {
       toast({ title: 'Lesionado', description: `Recupera em ${injuryRecoveryDays(profile)} dias.` });
       return;
@@ -495,7 +510,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
   }
 
   async function restartRoundFromZero() {
-    if (resuming) return;
+    if (resuming || equipmentModifiers === null) return;
     setResuming(true);
     setResumeError('');
     try {
@@ -503,7 +518,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
         careerId,
         tournament,
         run,
-        teamA: [profile, partner].filter(Boolean),
+        teamA: [applyEquipmentModifiers(profile, equipmentModifiers), partner].filter(Boolean),
         teamB: opponent,
         initialTacticId: run.strategy?.matchTacticId || 'equilibrado',
         coach,
@@ -1049,7 +1064,9 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     }
   }
 
-  const playerOvr = overallRating(profile);
+  // LOCAL-9B: o jogador entra na partida com base + equipamento.
+  const effectiveProfile = applyEquipmentModifiers(profile, equipmentModifiers || {});
+  const playerOvr = overallRating(effectiveProfile);
   const partnerOvr = partner ? overallRating(partner) : 0;
   const medical = currentMatch ? getCoachPhysicalRecommendation(profile, tournament, currentMatch.round) : null;
   const coachEffects = getCoachEffects(coach, profile);
@@ -1062,7 +1079,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     status: (profile.processed_press_interview_sources || []).includes(resultInterviewIdentity.sourceId) ? 'completed' : 'available',
   } : null, profile.career_date);
   const playerForMatch = {
-    ...profile,
+    ...effectiveProfile,
     _chemistryBonus: getChemistryBonus(profile.partner_chemistry || 50),
     _energyPenalty: getEnergyPenalty(profile.energy || 100),
     _coachMatchBonus: coachMatchBonus,
@@ -1100,7 +1117,7 @@ export default function TournamentModal({ tournament, profile: initialProfile, c
     </div>
   ) : phase === 'playable' && currentMatch ? (
     <div className="space-y-2">
-      <button onClick={startMatch} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
+      <button onClick={startMatch} disabled={equipmentModifiers === null} className="flex w-full items-center justify-center gap-2 rounded-xl bg-emerald-500 py-3 text-sm font-bold text-white disabled:opacity-60"><Play className="h-4 w-4" />Jogar {currentMatch.round}</button>
       {lowEnergyOrInjured && <button onClick={abandonTournament} className="w-full rounded-xl border border-red-500/30 py-2 text-xs font-bold text-red-300">Abandonar torneio e priorizar recuperação</button>}
     </div>
   ) : phase === 'round_result' && lastResult ? (

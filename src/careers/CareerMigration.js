@@ -8,6 +8,8 @@ import { migrateTrainingReference } from '../lib/trainingCatalog.js';
 import { DEFAULT_MIGRATED_CAREER_DIFFICULTY } from '../gameplay/difficulty/difficultyConfig.js';
 import { normalizeFatigue } from '../game-core/physicalStats.js';
 import { getCenterEffects } from '../lib/trainingCenter.js';
+import { ATTRIBUTE_MODEL_VERSION, extractBaseAttributesFromLegacy } from '../lib/equipmentModifiers.js';
+import { ACHIEVEMENT_CATALOG } from '../lib/achievementsData.js';
 
 function cloneDeep(value) {
   if (typeof structuredClone === 'function') return structuredClone(value);
@@ -466,6 +468,42 @@ export function migrateCareer(career, { owned = false } = {}) {
       ));
     }
     data.save_schema_version = 21; version = 21;
+  }
+  if (version < 22) {
+    // LOCAL-9B — atributo-base separado do equipamento. Até aqui o equipar
+    // SOMAVA o bônus no atributo gravado (e guardava o delta real em
+    // `applied_bonus`). Agora o atributo gravado é só a base e o bônus é
+    // derivado do catálogo na partida. A conversão é exata e é a mesma
+    // operação que o jogo já fazia ao desequipar: subtrair `applied_bonus`
+    // (ou o bônus declarado, em linhas anteriores ao hotfix 15.5.3), piso 0.
+    // Os itens continuam equipados; só o bônus deixa de estar no atributo.
+    // O desenvolvimento que o modelo antigo já tinha impedido (9A-01) não é
+    // reconstruído: não há como saber quanto o atleta teria treinado a mais.
+    const player = data.player;
+    const inventory = Array.isArray(data.entities?.PlayerInventory) ? data.entities.PlayerInventory : [];
+    const shopItems = Array.isArray(data.entities?.ShopItem) ? data.entities.ShopItem : [];
+    if (player && typeof player === 'object' && Number(player.attribute_model_version) !== ATTRIBUTE_MODEL_VERSION) {
+      const { base, removed, rows } = extractBaseAttributesFromLegacy(player, inventory, shopItems);
+      const converted = new Set(rows);
+      data.player = { ...player, ...base, attribute_model_version: ATTRIBUTE_MODEL_VERSION };
+      if (Object.keys(removed).length) data.player.attribute_model_migration = { from: 'stored_bonus', removed, items: rows.length };
+      if (converted.size) data.entities.PlayerInventory = inventory.map((row) => (converted.has(row?.id) ? { ...row, applied_bonus: null } : row));
+    }
+    // Decisão D1: as conquistas "Alcance 100" passaram a dizer que o
+    // equipamento conta. O save guarda uma cópia do catálogo (entidade
+    // Achievement, semeada na criação); só a descrição dessas 11 é
+    // atualizada — progresso e desbloqueios (PlayerAchievement) não mudam.
+    if (Array.isArray(data.entities?.Achievement)) {
+      const descriptions = new Map(ACHIEVEMENT_CATALOG
+        .filter((entry) => entry.trigger_type === 'max_attribute' || entry.trigger_type === 'all_max_attributes')
+        .map((entry) => [entry.name, entry.description]));
+      data.entities.Achievement = data.entities.Achievement.map((row) => (
+        row && descriptions.has(row.name) && (row.trigger_type === 'max_attribute' || row.trigger_type === 'all_max_attributes') && row.description !== descriptions.get(row.name)
+          ? { ...row, description: descriptions.get(row.name) }
+          : row
+      ));
+    }
+    data.save_schema_version = 22; version = 22;
   }
   const normalizedFatigue = normalizeFatigue(data.player?.fatigue);
   let repairedFatigue = Boolean(data.player) && data.player.fatigue !== normalizedFatigue;

@@ -3,7 +3,7 @@ import { migrateCareer, migrateIndex } from './CareerMigration.js';
 import { createDefaultCareerData, normalizeSaveName } from './careerDefaults.js';
 import { CareerRepository } from './CareerRepository.js';
 import { unpackCareerFromStorage } from './tournamentHistoryCodec.js';
-import { CAREER_INDEX_FILE_NAME, CAREER_BACKUPS_DIRECTORY } from './careerSchema.js';
+import { CAREER_INDEX_FILE_NAME, CAREER_BACKUPS_DIRECTORY, CAREER_SAVE_SCHEMA_VERSION } from './careerSchema.js';
 import { registerBetaDiagnostic } from '../lib/betaDiagnostics.js';
 
 function cloneDeep(value) {
@@ -222,7 +222,14 @@ export class CareerManager {
   } = {}) {
     registerBetaDiagnostic({ type: 'CAREER_SAVE_START', careerId, caller });
     try {
-      const validated = validateCareerData(careerData, { owned });
+      // LOCAL-9B: payload de versão anterior (save externo/fixture) passa pela
+      // migração, como na leitura e no import. O jogo sempre grava a versão
+      // atual (a carreira em memória já foi migrada no load), então o caminho
+      // de rotina não muda nem clona nada a mais. Versão futura: recusada.
+      const outdated = Number(careerData?.save_schema_version) < CAREER_SAVE_SCHEMA_VERSION;
+      const validated = outdated
+        ? validateCareerData(migrateCareer(careerData).data, { owned: true })
+        : validateCareerData(careerData, { owned });
       if (validated.career_id !== careerId) {
         throw new Error('career_id no conteúdo não pode ser alterado.');
       }
@@ -385,7 +392,11 @@ export class CareerManager {
   }
 
   async importCareer(data) {
-    const careerData = validateCareerData(data);
+    // LOCAL-9B: mesmo contrato da leitura (CareerRepository.readCareer) —
+    // migra antes da validação estrita. Sem isso, qualquer save exportado na
+    // versão anterior era recusado só por ser anterior. Versão futura continua
+    // recusada pela própria migração. A entrada não é mutada.
+    const careerData = validateCareerData(migrateCareer(data).data);
     const index = await this.loadFreshIndex();
     if (index.careers.some((item) => item.id === careerData.career_id)) {
       throw new Error('Carreira já existe com o mesmo career_id.');

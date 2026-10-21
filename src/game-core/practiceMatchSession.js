@@ -3,6 +3,7 @@ import { getPartnerBot } from '@/lib/career';
 import { getChemistryBonus, getEnergyPenalty } from '@/lib/padel';
 import { getCoachEffects } from '@/lib/coaches';
 import { calculatePartnershipPerformanceBonus } from '@/lib/partnerBondSystem.js';
+import { applyEquipmentModifiers } from '@/lib/equipmentModifiers.js';
 
 function nowMs() {
   return typeof performance !== 'undefined' && performance.now ? performance.now() : Date.now();
@@ -13,7 +14,9 @@ function nowMs() {
  * nÃ£o pontua e nÃ£o possui RNG prÃ³prio; apenas centraliza a integraÃ§Ã£o que
  * antes ficava embutida no componente do modal.
  */
-export function preparePracticeMatchSession(profile, coach = null) {
+// LOCAL-9B: `equipmentModifiers` (equipmentLifecycle.loadEquipmentModifiers)
+// entra só aqui, no jogador da partida — o perfil gravado guarda a base.
+export function preparePracticeMatchSession(profile, coach = null, { equipmentModifiers = {} } = {}) {
   const startedAt = nowMs();
   const partner = getPartnerBot(profile);
   if (!partner) throw new Error('Selecione um parceiro antes de iniciar a partida treino.');
@@ -34,7 +37,7 @@ export function preparePracticeMatchSession(profile, coach = null) {
     shared_matches: profile.matches_played || 0,
   }) * 40;
   const playerForMatch = {
-    ...profile,
+    ...applyEquipmentModifiers(profile, equipmentModifiers),
     _chemistryBonus: chemistryBonus,
     _energyPenalty: energyPenalty,
     _coachMatchBonus: coachMatchBonus,

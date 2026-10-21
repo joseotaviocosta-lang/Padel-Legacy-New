@@ -255,7 +255,10 @@ try {
   gate('72. Erro não gera sucesso falso: toast de erro só no catch, nunca antes da confirmação real das duas escritas', facilityViewSrc.indexOf("toast({ title: 'Evoluído!'") > facilityViewSrc.indexOf('PlayerProfile.update'));
   gate('73. Instalação não vai 1→3: upgrade sempre soma exatamente +1 nível (currentLevel + 1, nunca um incremento maior)', !facilityViewSrc.includes('currentLevel + 2'));
   gate('74. getCenterEffects não duplica: soma uma vez por instalação (Object.entries(FACILITIES), sem iteração aninhada)', (trainingCenterLib.getCenterEffects({ facilities: { courts: 2, gym: 0 } }).dailyTrainingBonus === 1));
-  gate('75. equipment applied_bonus preservado (Fase 15.5.3, não regredido)', read('src/pages/Inventory.jsx').includes('appliedBonus[key] = after - before;'));
+  // LOCAL-9B: o anti-deriva da 15.5.3 (reverter o bônus aplicado) ficou sem
+  // objeto — o equipar não grava mais atributo nenhum, então não há o que
+  // reverter. A garantia equivalente é o Inventário equipar pelo domínio.
+  gate('75. equipar não grava atributo (sem deriva possível; LOCAL-9B substitui o applied_bonus da 15.5.3)', read('src/pages/Inventory.jsx').includes('toggleEquipItem') && !read('src/pages/Inventory.jsx').includes('appliedBonus[key] = after - before;'));
 
   // ── Revalidação das 11 instalações (Parte N — não regredir 15.5.3) ──────
   const facilityIds = trainingCenterLib.FACILITY_LIST.map((f) => f.id);
